@@ -75,7 +75,7 @@
     "dotenv-webpack": "^2.0.0",
     "faker": "^4.1.0",
     "file-loader": "^6.1.0",
-    "formik": "^2.1.5",
+    "formik": "^2.1.6",
     "generate-schema": "^2.6.0",
     "handlebars": "^4.7.6",
     "history": "^4.10.1",
