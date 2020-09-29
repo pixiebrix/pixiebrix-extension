@@ -24,16 +24,18 @@ employee training site
 
 ### Kinds of Bricks
 
+The PixieBrix ecosystem is composed of combinable components that we call "bricks":
+
 * **Foundations (aka Extension Points):** points where users can attach functionality. Current support: information panels,
 menu items/buttons.
-* **Blocks:** blocks are functions that you can write together and attach to an extension point. You can also create
-composite blocks by combining them into a single unit.
+* **Blocks:** blocks are functions that you can wire together and attach to an extension point. You can also create
+composite blocks that behave as a single brick.
     * **Readers:** read information from a document. Current Support: HTML via JQuery, EmberJS, React,
     window variables. Each Extension Point has a default reader it provides.
     * **Effects:** take an input and perform a side effect. Examples: append a row to spreadsheet,
     send a message to Slack, open a new tab with a Google search.
     * **Transforms:** take an input and produce an output. Example: call an API,
-    run a [jq transform](https://github.com/stedolan/jq), extract data with a regular expression
+    run a [jq transform](https://github.com/stedolan/jq), extract data using a regular expression
     * **Renderers:** a transform that returns HTML, e.g., to render in a panel extension point. Examples:
     renderer markdown, a data table.
 * **Services:** re-usable resources and configuration that can also be used to authenticate
@@ -60,7 +62,8 @@ PixieBrix currently supports the following approaches to wiring inputs:
 ### Input/Output Specifications
 
 PixieBrix uses [JSON Schema](http://json-schema.org/) for specifying the shapes of inputs and outputs.
-In addition to serving as documentation, having a schema PixieBrix detect which blocks are misbehaving.
+In addition to serving as documentation, having a schema facilitates detecting which bricks are
+misbehaving.
 
 ## Why not _X_?
 
@@ -81,7 +84,7 @@ data. With PixieBrix, the extension and all the bricks you install are open-sour
 
 **Why not Userscripts?**
 
-* **Development Learning Curve:** while better than Browser Extensions, developing userscripts that integrate with modern
+* **Development Learning Curve:** while better than browser extensions, developing userscripts that integrate with modern
 SaaS applications involves a steep learning curve.
 * **Security:** userscripts are just Javascript, and therefore can perform arbitrary behaviors including stealing your
 private data. PixieBrix's block and service model makes it easy to understand and control how your data is used.
