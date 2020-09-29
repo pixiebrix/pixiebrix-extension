@@ -1,13 +1,30 @@
 # PixieBrix Browser Extension
 
-[PixieBrix](https://www.pixiebrix.com/) is a platform for safely extending websites and
-SaaS applications with low/no-code.
+PixieBrix is a platform for safely extending your favorite websites and SaaS applications
+with low/no-code.
+
+This repository is for our open-source browser extension. Currently, it only supports
+Chrome. We'll be adding support for Firefox, Edge, et al. soon.
+
+In addition to the extension, we maintain [pixiebrix.com](https://www.pixiebrix.com/), a
+registry of bricks and pre-made blueprints. You can create a PixieBrix account to enable
+support for team features, such as shared service configurations and team bricks.
+
+## Example Uses
+
+Whenever you notice yourself switching back and forth between browser tabs, it's
+a great time to use PixieBrix:
+
+* Add a button to Apartments.com to send your favorite apartment listings to a Google sheet
+* Show Google Scholar results on a person's LinkedIn profile
+* Embed a [YouTube video](https://www.youtube.com/watch?v=dQw4w9WgXcQ) in your
+employee training site
 
 ## Key Concepts
 
-### Domain Entities
+### Kinds of Bricks
 
-* **Extension Points:** points where users can attach functionality. Current support: information panels,
+* **Foundations (aka Extension Points):** points where users can attach functionality. Current support: information panels,
 menu items/buttons.
 * **Blocks:** blocks are functions that you can write together and attach to an extension point. You can also create
 composite blocks by combining them into a single unit.
@@ -22,7 +39,7 @@ composite blocks by combining them into a single unit.
 * **Services:** re-usable resources and configuration that can also be used to authenticate
 requests to APIs. By creating a [PixieBrix](https://www.pixiebrix.com/) account, you can
 share service configurations with your team. Examples: an API credential, a Google Sheet.
-* **Recipes:** collections of extension point + block combinations that a user can install
+* **Blueprints (aka Recipes):** collections of extension point + block combinations that a user can install
 together. Example: Hubspot actions and panels for LinkedIn
 
 ### Data Flow
@@ -35,19 +52,19 @@ To attach a block to an extension point, you wire the output of the Extension Po
 to the block. To define a composite block, you define an input schema, and wire the inputs to the
 component blocks.
 
-To facilitate wiring, PixieBrix currently supports the following:
+PixieBrix currently supports the following approaches to wiring inputs:
 * Object paths with [optional chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
-* [Mustache](https://mustache.github.io/)
-* [Nunjucks](https://mozilla.github.io/nunjucks/) (similar to Jinja2)
+* [Mustache templates](https://mustache.github.io/)
+* [Nunjucks templates](https://mozilla.github.io/nunjucks/) (similar to Jinja2)
 
 ### Input/Output Specifications
 
 PixieBrix uses [JSON Schema](http://json-schema.org/) for specifying the shapes of inputs and outputs.
-In addition to serving as documentation, this helps to detect which blocks are misbehaving.
+In addition to serving as documentation, having a schema PixieBrix detect which blocks are misbehaving.
 
 ## Why not _X_?
 
-We're avid users of Browser Extensions and Userscripts, and they'll always have their place. We're building
+We're avid users of browser extensions and userscripts, and they'll always have their place. We're building
 PixieBrix to bring their power to a broader audience.
 
 **Why not Browser Extensions?**
@@ -64,9 +81,9 @@ data. With PixieBrix, the extension and all the bricks you install are open-sour
 
 **Why not Userscripts?**
 
-* **Development Learning Curve:** while better than Browser Extensions, developing Userscripts that integrate with modern
-SaaS applications has a steep learning curve.
+* **Development Learning Curve:** while better than Browser Extensions, developing userscripts that integrate with modern
+SaaS applications involves a steep learning curve.
 * **Security:** userscripts are just Javascript, and therefore can perform arbitrary behaviors including stealing your
-private data.
+private data. PixieBrix's block and service model makes it easy to understand and control how your data is used.
 * **Availability:** Chrome is moving to [eliminate remote code in browser extensions](https://developer.chrome.com/extensions/migrating_to_manifest_v3#api_checklist).
-This will prohibit userscript managers from the Chrome Web Store.
+This rule will prohibit userscript managers such as [Tampermonkey](http://www.tampermonkey.net/) from the Chrome Web Store.
