@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: reader
+metadata:
+  id: com.zillow.property.reader
+  version: 0.0.1
+  name: Zillow Property Info
+  description: Read property information from Zillow
+  author: pixiebrix
+definition:
+  reader:
+    type: react
+    selector: ".details-page-container #ds-container .ds-home-details-chip"
+    rootProp: property
+  isAvailable:
+    matchPatterns: "https://www.zillow.com/homedetails/*"
+outputSchema:
+  type: object
+  properties:
+    zpid:
+      type: string
+      description: The Zillow ID
+    mlsid:
+      type: string
+    description:
+      type: string
+    address:
+      type: object
+      properties:
+        streetAddress:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        zipcode:
+          type: string
+    yearBuilt:
+      type: number
+    bathrooms:
+      type: number
+    bedrooms:
+      type: number
+    latitude:
+      type: number
+    longitude:
+      type: number
+    price:
+      type: number

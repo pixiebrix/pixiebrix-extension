@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: pixiebrix/examples-nytimes-articlesearch-organization-yaml
+  version: 0.0.1
+  name: NYTimes Organization Article Search
+  description: Search NYTimes articles for an organization
+  author: pixiebrix
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    nytimesService:
+      $ref: "https://app.pixiebrix.com/schemas/services/nytimes"
+    organizationName:
+      type: string
+      description: The name of the company to search for
+  required:
+    - organizationName
+pipeline:
+  - id: pixiebrix/contrib-api
+    config:
+      service: nytimesService
+      url: https://api.nytimes.com/svc/search/v2/articlesearch.json
+      params:
+        fq: organizations.contains:("{{organizationName}}")
+        fl: web_url,source,headline
+  - id: pixiebrix/contrib-jq
+    config:
+      filter: "[.response.docs[] | {url: .web_url, title: .headline.main, source: .source}]"
+  - id: pixiebrix/contrib-table
+    config:
+      columns:
+        - property: source
+          label: Source
+        - property: title
+          label: Article Title
+          href: url

@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: slack-incoming-webhook
+  version: 0.0.1
+  name: Slack Hook
+  description: Slack incoming webhook for sending messages
+  author: pixiebrix
+  url: https://api.slack.com/messaging/webhooks
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    hookUrl:
+      type: string
+      description: Your incoming webhook URL, starting with https://hooks.slack.com/services/
+      pattern: ^https://hooks.slack.com/services/\S*$
+    channel:
+      type: string
+      description: The default channel, or blank to use the default
+    botName:
+      type: string
+      description: The default bot name, or blank to use the default
+      default: "pixiebrix"
+    iconEmoji:
+      type: string
+      description: The default message icon, or blank to use the default
+      default: ":sparkles:"
+      pattern: "^:[a-z\_].*:$"
+  required:
+    - hookUrl

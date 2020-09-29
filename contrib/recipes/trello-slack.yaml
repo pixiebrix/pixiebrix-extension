@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: pixiebrix/contrib-trello-slack
+  name: Send Trello Cards to Slack
+  description: Sends a Trello Card to a Slack Channel
+  author: pixiebrix
+extensionPoints:
+  - id: pixiebrix/examples-trello-card-action
+    label: Send to Slack
+    services:
+      slack: slack-incoming-webhook
+    config:
+      caption: Send to Slack
+      icon:
+        id: slack
+        library: simple-icons
+        size: 12
+      action:
+        id: pixiebrix/contrib-slack-advanced-message
+        config:
+          hookUrl: "@slack.hookUrl"
+          iconEmoji: "@slack.iconEmoji"
+          botName: "@slack.botName"
+          attachments:
+            - fallback: "Check out this Trello card: {{name}}"
+              text: "Check out this Trello card <{{&url}}|{{name}}>"
+              fields:
+                - title: Due
+                  value: "{{due}}"
+                  short: true

@@ -1,0 +1,214 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://app.pixiebrix.com/schemas/reader#",
+  "type": "object",
+  "title": "PixieBrix Reader",
+  "description": "A PixieBrix reader definition",
+  "definitions": {
+    "stringArray": {
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        }
+      ]
+    },
+    "emberjsReader": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "emberjs"
+        },
+        "selector": {
+          "type": "string"
+        },
+        "attrs": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            }
+          ]
+        }
+      },
+      "required": [
+        "type",
+        "selector"
+      ]
+    },
+    "reactReader": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "react"
+        },
+        "selector": {
+          "type": "string"
+        },
+        "traverseUp": {
+          "type": "number"
+        },
+        "waitMillis": {
+          "type": "number"
+        },
+        "rootProp": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "selector"
+      ]
+    },
+    "windowReader": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "window"
+        },
+        "waitMillis": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "type"
+      ]
+    },
+    "jqueryReader": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "jquery"
+        },
+        "selectors": {
+          "type": "object",
+          "additionalProperties": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "selector": {
+                    "type": "string"
+                  },
+                  "multi": {
+                    "type": "boolean"
+                  },
+                  "data": {
+                    "type": "string"
+                  },
+                  "attr": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "string",
+                      "boolean",
+                      "number"
+                    ]
+                  },
+                  "find": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "minProperties": 1
+                  }
+                }
+              }
+            ]
+          },
+          "minProperties": 1
+        }
+      },
+      "required": [
+        "type",
+        "selectors"
+      ]
+    }
+  },
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "enum": [
+        "v1"
+      ]
+    },
+    "kind": {
+      "type": "string",
+      "const": "reader"
+    },
+    "metadata": {
+      "$ref": "https://app.pixiebrix.com/schemas/metadata#"
+    },
+    "outputSchema": {
+      "$ref": "http://json-schema.org/draft-07/schema#"
+    },
+    "definition": {
+      "type": "object",
+      "properties": {
+        "reader": {
+          "oneOf": [
+            {
+              "$ref": "#/definitions/emberjsReader"
+            },
+            {
+              "$ref": "#/definitions/windowReader"
+            },
+            {
+              "$ref": "#/definitions/jqueryReader"
+            },
+            {
+              "$ref": "#/definitions/reactReader"
+            }
+          ]
+        },
+        "isAvailable": {
+          "type": "object",
+          "properties": {
+            "matchPatterns": {
+              "$ref": "#/definitions/stringArray"
+            },
+            "selectors": {
+              "$ref": "#/definitions/stringArray"
+            }
+          }
+        }
+      },
+      "required": [
+        "isAvailable",
+        "reader"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "apiVersion",
+    "kind",
+    "metadata",
+    "definition"
+  ]
+}

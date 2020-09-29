@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://app.pixiebrix.com/schemas/service",
+  "type": "object",
+  "title": "PixieBrix Service",
+  "description": "A PixieBrix service account",
+  "definitions": {
+    "configuredService": {
+      "type": "object",
+      "properties": {
+        "serviceId": {
+          "type": "string"
+        },
+        "proxy": {
+          "type": "boolean"
+        },
+        "config": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        }
+      }
+    }
+  },
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "enum": ["v1"]
+    },
+    "kind": {
+      "type": "string",
+      "const": "service"
+    },
+    "metadata": { "$ref": "https://app.pixiebrix.com/schemas/metadata#" },
+    "inputSchema": { "$ref": "http://json-schema.org/draft-07/schema#" },
+    "authentication": {
+      "type": "object",
+      "properties": {
+        "params": {
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "headers": {
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "inputSchema"]
+}

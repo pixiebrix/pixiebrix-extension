@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: pipedrive
+  version: 0.0.1
+  name: Pipedrive
+  description: Pipedrive CRM API
+  author: pixiebrix
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    apiToken:
+      $ref: "https://app.pixiebrix.com/schemas/key#"
+      description: Your Pipedrive API Key
+    subdomain:
+      type: string
+      description: "The subdomain of your Pipedrive instance URL"
+  required:
+    - apiToken
+authentication:
+  params:
+    api_token: "{{apiToken}}"

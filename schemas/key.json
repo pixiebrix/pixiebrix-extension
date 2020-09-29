@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://app.pixiebrix.com/schemas/key#",
+  "type": "string",
+  "description": "An key/secret used for authentication with an external service",
+  "minLength": 1
+}

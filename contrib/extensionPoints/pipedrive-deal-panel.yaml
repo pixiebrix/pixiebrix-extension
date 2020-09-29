@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: extensionPoint
+metadata:
+  id: pixiebrix/contrib-pipedrive-deal-panel
+  version: 0.0.1
+  name: Pipedrive Deal Panel
+  description: A Pipedrive deal panel
+  author: pixiebrix
+definition:
+  type: panel
+  reader: com.pipedrive.deal.reader
+  isAvailable:
+    matchPatterns: https://*.pipedrive.com/deal/*
+  containerSelector: ".sidebar"
+  template: |
+    <div class="widget">
+        <div class="columnTitle"><span class="columnItem">{{heading}}</span></div>
+        <div>{{&body}}</div>
+    </div>

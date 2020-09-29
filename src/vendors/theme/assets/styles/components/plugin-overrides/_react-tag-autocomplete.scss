@@ -1,0 +1,139 @@
+.react-tags {
+  position: relative;
+  padding: 15px 15px 10px;
+  border: 1px solid $border-color;
+  border-radius: 1px;
+  width: 100%;
+  min-height: 75%;
+  height: 75%;
+
+  /* shared font styles */
+  font-size: 1em;
+  line-height: 1.2;
+
+  /* clicking anywhere will focus the input */
+  cursor: text;
+}
+
+.react-tags.is-focused {
+  border-color: #b1b1b1;
+}
+
+.react-tags__selected {
+  display: inline;
+}
+
+.react-tags__selected-tag {
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    from(#da8cff),
+    to(#9a55ff)
+  );
+  background: linear-gradient(to right, #da8cff, #9a55ff);
+  border: 0;
+  border-radius: 2px;
+  color: #ffffff;
+  padding: 6px 14px;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  line-height: 1;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.react-tags__selected-tag:after {
+  content: "x";
+  color: #fff;
+  margin-left: 8px;
+}
+
+.react-tags__selected-tag:hover,
+.react-tags__selected-tag:focus {
+  border-color: #b1b1b1;
+}
+
+.react-tags__search {
+  display: inline-block;
+
+  /* match tag layout */
+  padding: 7px 2px;
+  margin-bottom: 6px;
+
+  /* prevent autoresize overflowing the container */
+  max-width: 100%;
+}
+
+@media screen and (min-width: 30em) {
+  .react-tags__search {
+    /* this will become the offsetParent for suggestions */
+    position: relative;
+  }
+}
+
+.react-tags__search input {
+  /* prevent autoresize overflowing the container */
+  max-width: 100%;
+
+  margin: 0 5px 5px 0;
+  font-family: helvetica;
+  font-size: 13px;
+  border: 1px solid transparent;
+  padding: 5px;
+  outline: none;
+  color: $black;
+  min-width: 100px;
+}
+
+.react-tags__search input::-ms-clear {
+  display: none;
+}
+
+.react-tags__suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+}
+
+@media screen and (min-width: 30em) {
+  .react-tags__suggestions {
+    width: 240px;
+  }
+}
+
+.react-tags__suggestions ul {
+  margin: 4px -1px;
+  padding: 0;
+  list-style: none;
+  background: white;
+  border: 1px solid #d1d1d1;
+  border-radius: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.react-tags__suggestions li {
+  border-bottom: 1px solid #ddd;
+  padding: 6px 8px;
+}
+
+.react-tags__suggestions li mark {
+  text-decoration: underline;
+  background: none;
+  font-weight: 600;
+}
+
+.react-tags__suggestions li:hover {
+  cursor: pointer;
+  background: #eee;
+}
+
+.react-tags__suggestions li.is-active {
+  background: #b7cfe0;
+}
+
+.react-tags__suggestions li.is-disabled {
+  opacity: 0.5;
+  cursor: auto;
+}

@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: pixiebrix/contrib-linkedin-slack
+  name: Send LinkedIn Profiles to Slack
+  description: Sends a LinkedIn profile to a Slack Channel
+  author: pixiebrix
+extensionPoints:
+  - id: com.linkedin.person.menu
+    label: Send to Slack
+    services:
+      slack: slack-incoming-webhook
+    config:
+      caption: Send to Slack
+      icon:
+        id: slack
+        library: simple-icons
+        size: 14
+      action:
+        id: pixiebrix/contrib-slack-advanced-message
+        config:
+          hookUrl: "@slack.hookUrl"
+          iconEmoji: "@slack.iconEmoji"
+          botName: "@slack.botName"
+          attachments:
+            - fallback: "Hey, checkout {{firstName}} {{lastName}} on LinkedIn: {{&url}}"
+              text: "Hey, checkout {{firstName}} {{lastName}} on <{{&url}}|LinkedIn>"
+              fields:
+                - title: Company
+                  value: currentCompanyName
+                  short: true
+                - title: School
+                  value: schoolName
+                  short: true
+                - title: Location
+                  value: geoLocationName
+                  short: true
+                - title: Followers
+                  value: followersCount
+                  short: true
+  - id: com.linkedin.organization.button
+    label: Send to Slack
+    services:
+      slack: slack-incoming-webhook
+    config:
+      caption: Send to Slack
+      icon:
+        id: slack
+        library: simple-icons
+        size: 14
+      action:
+        id: pixiebrix/contrib-slack-advanced-message
+        config:
+          hookUrl: "@slack.hookUrl"
+          iconEmoji: "@slack.iconEmoji"
+          botName: "@slack.botName"
+          attachments:
+            - fallback: "Hey, checkout {{name}} on LinkedIn: {{&url}}"
+              text: "Hey, checkout {{name}} on <{{&url}}|LinkedIn>"
+              fields:
+                - title: "# Employees"
+                  value: staffCount
+                  short: true
+                - title: Followers
+                  value: followingInfo.followerCount
+                  short: true
+                - title: Location
+                  value: headquarter.geographicArea
+                  short: true
+                - title: Tagline
+                  value: tagline
+                  short: false

@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "es6",
+    "target": "es6",
+    "jsx": "react",
+    "allowJs": false,
+    "resolveJsonModule": true,
+    "moduleResolution": "Node",
+    "noUnusedLocals": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@img/*": ["img/*"],
+      "@contrib/*": ["contrib/*"],
+      "@schemas/*": ["schemas/*"]
+    },
+    "lib": [
+      "dom",
+      "es2019"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "venv",
+    "**/bundles/**",
+    "**/node_modules/**",
+    "node_modules/**"
+  ]
+}

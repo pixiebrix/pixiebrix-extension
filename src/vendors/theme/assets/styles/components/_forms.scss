@@ -1,0 +1,93 @@
+/* Forms */
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-group-append,
+.input-group-prepend {
+  color: $input-placeholder-color;
+  width: auto;
+  border: none;
+  .input-group-text {
+    border-color: $border-color;
+    padding: 0.575rem 0.75rem;
+    color: $input-placeholder-color;
+  }
+  button {
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+  }
+}
+
+.custom-control {
+  .custom-control-label {
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+}
+
+.form-control {
+  border: 1px solid $border-color;
+  font-size: $input-font-size;
+}
+
+select {
+  &.form-control {
+    padding: 0.4375rem 0.75rem;
+    border: 0;
+    outline: 1px solid $border-color;
+    color: $input-placeholder-color;
+    &:focus {
+      outline: 1px solid $border-color;
+    }
+    @each $color, $value in $theme-colors {
+      &.border-#{$color} {
+        outline: 1px solid $value;
+        &:focus {
+          outline: 1px solid $value;
+        }
+      }
+    }
+  }
+}
+
+.form-group {
+  label {
+    font-size: $default-font-size;
+    line-height: 1;
+    vertical-align: top;
+    margin-bottom: 0.5rem;
+  }
+  &.has-danger {
+    .form-control {
+      border-color: theme-color(danger);
+    }
+  }
+  .file-upload-default {
+    visibility: hidden;
+    position: absolute;
+  }
+  .file-upload-info {
+    background: transparent;
+  }
+}
+.custom-file {
+  .visibility-hidden {
+    visibility: hidden;
+  }
+  .custom-file-label {
+    background: $input-bg;
+    border: 1px solid $border-color;
+    height: calc(2.25rem + 2px);
+    font-weight: normal;
+    font-size: 0.875rem;
+    padding: 0.625rem 0.6875rem;
+    border-radius: 2px;
+    &:after {
+      background-color: theme-color(primary);
+      height: auto;
+      @extend .btn-primary;
+    }
+  }
+}

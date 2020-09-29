@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: pixiebrix
+  version: 0.0.1
+  name: PixieBrix API
+  description: The PixieBrix API, also used to access services with shared credentials
+  author: pixiebrix
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    apiKey:
+      $ref: "https://app.pixiebrix.com/schemas/key#"
+      description: Your PixieBrix API key
+  required:
+    - apiKey
+authentication:
+  headers:
+    Authorization: Token {{apiKey}}

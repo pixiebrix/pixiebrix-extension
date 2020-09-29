@@ -1,0 +1,29 @@
+/* Slick-carousel */
+
+.slick-slider {
+  .slick-arrow {
+    &.slick-prev,
+    &.slick-next {
+      z-index: 999;
+      width: 40px;
+      height: 40px;
+      &::before {
+        font-size: 40px;
+      }
+    }
+    &.slick-prev {
+      left: 25px;
+    }
+    &.slick-next {
+      right: 25px;
+    }
+  }
+  .slick-list {
+    .slick-track {
+      .slick-slide {
+        position: relative;
+        color: $white;
+      }
+    }
+  }
+}

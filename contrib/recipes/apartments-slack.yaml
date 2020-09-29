@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: pixiebrix/contrib-apartments-slack
+  name: Send Apartments to Slack
+  description: Send apartments you've found to Slack
+  author: pixiebrix
+extensionPoints:
+  - id: com.apartments.property.button
+    label: Send Apartment to Slack
+    services:
+      slack: slack-incoming-webhook
+    config:
+      caption: Send to Slack
+      icon:
+        id: slack
+        library: simple-icons
+        size: 32
+      action:
+        - id: pixiebrix/contrib-regex
+          outputKey: units
+          config:
+            input: propertySize
+            regex: "(?<count>\\d+) Units"
+        - id: pixiebrix/contrib-regex
+          outputKey: built
+          config:
+            input: propertyYearBuilt
+            regex: "Built in (?<year>\\d\\d\\d\\d)"
+        - id: pixiebrix/contrib-jq
+          outputKey: rent
+          config:
+            filter: "[.availability[] | select(.beds == 1) | select(.maxrent != \"\")] | map(.maxrent) | max"
+            input: availability
+        - id: pixiebrix/contrib-slack-advanced-message
+          config:
+            hookUrl: "@slack.hookUrl"
+            iconEmoji: "@slack.iconEmoji"
+            botName: "@slack.botName"
+            attachments:
+              - fallback: "Hey, check out this apartment I found on Apartments.com: {{propertyName}} {{&document.url}}"
+                text: "Hey, check out this apartment I found: {{propertyName}} <{{&document.url}}|apartments.com>"
+                fields:
+                  - title: Address
+                    value: propertyAddress
+                    short: true
+                  - title: Neighborhood
+                    value: neighborhood
+                    short: true
+                  - title: Units
+                    value: "@units.count"
+                    short: true
+                  - title: Year Built
+                    value: "@built.year"
+                    short: true
+                  - title: Company
+                    value: propertyCompany
+                    short: true
+                  - title: 1bdrm Rent
+                    value: "@rent"
+                    short: true
+                  - title: Agent
+                    value: agent?.name
+                    short: true

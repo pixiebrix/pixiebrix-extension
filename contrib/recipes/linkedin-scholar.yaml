@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: pixiebrix/contrib-linkedin-google-scholar
+  name: LinkedIn Google Scholar
+  description: Show Google Scholar results on LinkedIn profiles
+  author: pixiebrix
+extensionPoints:
+  - id: com.linkedin.person.panel
+    label: Google Scholar
+    config:
+      heading: Google Scholar results for for {{firstName}} {{lastName}}
+      collapsible: True
+      body:
+        id: serpapi.google.scholar.search
+        config:
+          query:
+            template: "\"{{&firstName}} {{&lastName}}\""

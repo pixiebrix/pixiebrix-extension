@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: extensionPoint
+metadata:
+  id: com.redfin.property.button
+  version: 0.0.1
+  name: Redfin Button
+  description: Add a Button to Redfin
+  author: pixiebrix
+definition:
+  type: menuItem
+  reader:
+    - com.redfin.property.reader
+    - document: pixiebrix/context-reader
+  isAvailable:
+    matchPatterns: https://www.redfin.com/*
+    selectors: "body.HomeDetailsPage"
+  containerSelector:
+    - "#overview-scroll"
+    - ".HomeControls"
+    - ".pill-container"
+  template: |
+    <div>
+      <div>
+        <div class="HomeControlButton">
+          <div>
+            <div role="button" title="{{caption}}" tabindex="0" class="clickable button tertiary-alt">
+              <span>{{&icon}}</span>
+            </div>
+            <div class="pill-label font-size-smaller">{{caption}}</div>
+          </div>
+        </div>
+      </div>
+    </div>

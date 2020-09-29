@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: pixiebrix/contrib-zillow-sheets
+  name: Send Zillow Properties to Google Sheets
+  description: Send Zillow properties you've found to Google Sheets
+  author: pixiebrix
+extensionPoints:
+  - id: com.zillow.property.button
+    label: Send Property to Google Sheets
+    services:
+      sheet: google-sheet
+    config:
+      caption: Sheets
+      icon:
+        id: googlesheets
+        library: simple-icons
+        size: 24
+      action:
+        - id: pixiebrix/contrib-google-sheets-record
+          config:
+            spreadsheetId: "@sheet.spreadsheetId"
+            tabName: "Zillow"
+            rowValues:
+              - header: Zillow Id
+                value: zpid
+              - header: MLS ID
+                value: mlsid
+              - header: Address
+                value: address.streetAddress
+              - header: City
+                value: address.city
+              - header: State
+                value: address.state
+              - header: Price
+                value: price
+              - header: "# Beds"
+                value: bedrooms
+              - header: "# Full Baths"
+                value: bathrooms
+              - header: Built
+                value: yearBuilt
+              - header: Latitude
+                value: latitude
+              - header: Longitude
+                value: longitude
+              - header: Retrieved From
+                value: document.url

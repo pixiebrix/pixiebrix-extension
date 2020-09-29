@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: extensionPoint
+metadata:
+  id: com.zillow.property.button
+  version: 0.0.1
+  name: Zillow Button
+  description: Add a Button to Zillow's Property Action Menu
+  author: pixiebrix
+definition:
+  type: menuItem
+  reader:
+    - com.zillow.property.reader
+    - document: pixiebrix/context-reader
+  isAvailable:
+    matchPatterns: https://www.zillow.com/homedetails/*
+  containerSelector:
+    - ".details-page-container"
+    - ".ds-action-bar"
+    - "ul"
+  template: |
+    <li>
+      <button aria-pressed="false">
+        <div>
+          <div aria-hidden="true">
+            {{&icon}}
+          </div>
+          <span> {{caption}}<!-- --> </span>
+        </div>
+      </button>
+    </li>

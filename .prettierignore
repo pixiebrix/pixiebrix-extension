@@ -1,0 +1,6 @@
+# ignore artifacts
+bundles
+coverage
+
+# ignore libraries
+node_modules

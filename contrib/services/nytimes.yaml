@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: nytimes
+  version: 0.0.1
+  name: New York Times API
+  description: The New York Times API
+  author: pixiebrix
+  url: https://developer.nytimes.com/
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    apiKey:
+      $ref: "https://app.pixiebrix.com/schemas/key#"
+      description: Your NYT API key
+  required:
+    - apiKey
+authentication:
+  params:
+    api-key: "{{apiKey}}"

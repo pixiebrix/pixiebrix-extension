@@ -1,0 +1,120 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* === Plugin styles === */
+
+//@import "~react-bootstrap-table-next/dist/react-bootstrap-table2.min.css";
+//@import "~chartist/dist/chartist.min.css";
+//@import "~nouislider/distribute/nouislider.min.css";
+//@import "~slick-carousel/slick/slick.css";
+//@import "~slick-carousel/slick/slick-theme.css";
+//@import '~@fullcalendar/core/main.css';
+//@import '~@fullcalendar/daygrid/main.css';
+//@import '~react-bootstrap-typeahead/css/Typeahead.css';
+//@import '~react-bootstrap-typeahead/css/Typeahead-bs4.css';
+//@import '~react-datepicker/dist/react-datepicker.css';
+
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+
+@import "../assets/styles/variables";
+//@import "~compass-mixins/lib/compass";
+@import "~compass-mixins/lib/animate";
+@import "~bootstrap/scss/bootstrap";
+@import "../assets/styles/fonts";
+@import "../assets/styles/functions";
+
+/* === Icon fonts === */
+//@import "~ti-icons/css/themify-icons.css";
+// @import "~@mdi/font/scss/materialdesignicons";
+//@import "~font-awesome/scss/font-awesome";
+//@import "~flag-icon-css/sass/flag-icon";
+//@import "~simple-line-icons/scss/simple-line-icons";
+//@import "~simple-line-icons/scss/simple-line-icons";
+//@import "~typicons.font/src/font/typicons.css";
+
+/* === Template mixins === */
+@import "../assets/styles/mixins/animation";
+@import "../assets/styles/mixins/badges";
+@import "../assets/styles/mixins/buttons";
+@import "../assets/styles/mixins/misc";
+@import "../assets/styles/mixins/color-functions";
+@import "../assets/styles/mixins/cards";
+@import "../assets/styles/mixins/blockqoute";
+@import "../assets/styles/mixins/popovers";
+@import "../assets/styles/mixins/tooltips";
+@import "../assets/styles/mixins/no-ui-slider";
+
+/* === Core Styles === */
+@import "../assets/styles/background";
+@import "../assets/styles/typography";
+@import "../assets/styles/reset";
+@import "../assets/styles/responsive";
+@import "../assets/styles/misc";
+@import "../assets/styles/utilities";
+@import "../assets/styles/demo";
+@import "../assets/styles/spinner";
+@import "../assets/styles/dashboard";
+
+/* === Components === */
+
+@import "../assets/styles/components/widgets";
+@import "../assets/styles/components/forms";
+@import "../assets/styles/components/checkbox-radio";
+@import "../assets/styles/components/icons";
+@import "../assets/styles/components/tables";
+@import "../assets/styles/components/accordions";
+@import "../assets/styles/components/buttons";
+@import "../assets/styles/components/breadcrumbs";
+@import "../assets/styles/components/badges";
+@import "../assets/styles/components/cards";
+@import "../assets/styles/components/preview";
+@import "../assets/styles/components/tooltips";
+@import "../assets/styles/components/user-profile";
+@import "../assets/styles/components/popovers";
+@import "../assets/styles/components/lists";
+@import "../assets/styles/components/bootstrap-progress";
+@import "../assets/styles/components/bootstrap-alerts";
+@import "../assets/styles/components/tabs";
+@import "../assets/styles/components/dropdowns";
+@import "../assets/styles/components/pagination";
+@import "../assets/styles/components/loaders/loaders";
+@import "../assets/styles/components/timeline";
+@import "../assets/styles/components/portfolio";
+@import "../assets/styles/components/pricing-table";
+@import "../assets/styles/components/email/mail-list-container";
+@import "../assets/styles/components/email/mail-sidebar";
+@import "../assets/styles/components/email/message-content";
+@import "../assets/styles/components/todo-list";
+@import "../assets/styles/components/spinner";
+@import "../assets/styles/components/tickets";
+//@import "../assets/styles/components/project-list";
+@import "../assets/styles/components/product-tile";
+@import "../assets/styles/components/user-listing";
+@import "../assets/styles/components/landing";
+@import "../assets/styles/components/chats";
+@import "../assets/styles/components/kanban";
+@import "../assets/styles/components/react-table";
+
+@import "../assets/styles/components/landing-screens/auth";
+
+/* === Plugin Overrides === */
+@import "../assets/styles/components/plugin-overrides/contex-menu";
+@import "../assets/styles/components/plugin-overrides/no-ui-slider";
+@import "../assets/styles/components/plugin-overrides/slick-carousel";
+@import "../assets/styles/components/plugin-overrides/rating";
+@import "../assets/styles/components/plugin-overrides/date-picker";
+@import "../assets/styles/components/plugin-overrides/wizard";
+@import "../assets/styles/components/plugin-overrides/react-bootstrap-table";
+@import "../assets/styles/components/plugin-overrides/sweet-alert";
+@import "../assets/styles/components/plugin-overrides/full-calendar";
+@import "../assets/styles/components/plugin-overrides/react-photo-gallery";
+@import "../assets/styles/components/plugin-overrides/react-tag-autocomplete";
+@import "../assets/styles/components/plugin-overrides/jquery-jvectormap";
+@import "../assets/styles/components/plugin-overrides/react-table";
+
+/* === Layout === */
+@import "../assets/styles/navbar";
+@import "../assets/styles/sidebar";
+@import "../assets/styles/footer";
+@import "../assets/styles/layout";
+@import "../assets/styles/settings-panel";

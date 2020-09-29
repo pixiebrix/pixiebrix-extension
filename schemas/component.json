@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://app.pixiebrix.com/schemas/component#",
+  "type": "object",
+  "title": "PixieBrix Component",
+  "description": "A PixieBrix composite block, i.e., a combination of transformers, renderers, etc.",
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "enum": ["v1"]
+    },
+    "kind": {
+      "type": "string",
+      "const": "component"
+    },
+    "metadata": { "$ref": "https://app.pixiebrix.com/schemas/metadata#" },
+    "inputSchema": { "$ref": "http://json-schema.org/draft-07/schema#" },
+    "services": {
+      "type": "object",
+      "description": "Optionally declare services to inject into the component",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "pipeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The id of the block"
+          },
+          "config": {
+            "type": "object",
+            "description": "The configuration for the block"
+          }
+        }
+      },
+      "minItems": 1
+    }
+  },
+  "additionalProperties": false,
+  "required": ["apiVersion", "kind", "metadata", "inputSchema", "pipeline"]
+}

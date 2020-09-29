@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "sourceMap": true
+  },
+  "exclude": [
+    "**/*.test.ts",
+    "node_modules",
+    "venv",
+    "**/bundles/**",
+    "**/node_modules/**",
+    "node_modules/**"
+  ]
+}

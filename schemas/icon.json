@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://app.pixiebrix.com/schemas/icon#",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "library": {
+      "type": "string",
+      "enum": ["bootstrap", "simple-icons"]
+    },
+    "size": {
+      "type": "number",
+      "default": 14,
+      "minimum": 1
+    }
+  },
+  "required": ["id", "library"]
+}

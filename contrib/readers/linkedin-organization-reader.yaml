@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: reader
+metadata:
+  id: com.linkedin.organization.summary
+  version: 0.0.1
+  name: LinkedIn Company Summary
+  description: Read company information from a company profile page
+  author: pixiebrix
+definition:
+  reader:
+    type: emberjs
+    selector: ".org-top-card"
+    attrs: organization
+  isAvailable:
+    matchPatterns: "https://*.linkedin.com/*"
+    selectors: ".organization-outlet"

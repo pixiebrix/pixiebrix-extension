@@ -1,0 +1,27 @@
+.notifyjs-corner {
+    z-index: 9999999 !important;
+}
+
+.notifyjs-corner .notifyjs-wrapper {
+    z-index: 9999999 !important;
+}
+
+.pixiebrix .collapse:not(.show) {
+    display: none;
+}
+
+.pixiebrix [data-toggle="collapse"] {
+    cursor: pointer;
+}
+
+.pixiebrix [data-toggle="collapse"]:after {
+    content: '\02795'; /* Unicode character for "plus" sign (+) */
+    font-size: 13px;
+    color: black;
+    float: right;
+    margin-left: 5px;
+}
+
+.pixiebrix [data-toggle="collapse"].active:after {
+    content: "\2796"; /* Unicode character for "minus" sign (-) */
+}

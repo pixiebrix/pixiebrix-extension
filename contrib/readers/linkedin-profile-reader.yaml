@@ -1,0 +1,1251 @@
+apiVersion: v1
+kind: reader
+metadata:
+  id: com.linkedin.person.summary.all
+  version: 0.0.1
+  name: LinkedIn Person Summary (All)
+  description: Read all available person summary information from a profile page
+  author: pixiebrix
+definition:
+  reader:
+    type: emberjs
+    selector: ".pv-content main.core-rail div:first-child"
+  isAvailable:
+    matchPatterns: "https://*.linkedin.com/*"
+    selectors: "#profile-content"
+outputSchema:
+  type: object
+  properties:
+    dashMember:
+      type: object
+      properties:
+        entityUrn:
+          type: string
+        publicIdentifier:
+          type: string
+        primaryLocale:
+          type: object
+          properties:
+            language:
+              type: string
+            country:
+              type: string
+        profileCertifications:
+          type: object
+          properties:
+            paging:
+              type: object
+              properties:
+                total:
+                  type: number
+                start:
+                  type: number
+                count:
+                  type: number
+                links:
+                  type: object
+                  properties: {}
+                "$recipeTypes":
+                  type: object
+                  properties:
+                    '0':
+                      type: string
+            elements:
+              type: array
+              items: {}
+        profileCourses:
+          type: object
+          properties: {}
+        profileEducations:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+            paging:
+              type: object
+              properties:
+                total:
+                  type: number
+                start:
+                  type: number
+                count:
+                  type: number
+                links:
+                  type: object
+                  properties: {}
+                "$recipeTypes":
+                  type: object
+                  properties:
+                    '0':
+                      type: string
+        profileHonors:
+          type: object
+          properties: {}
+        profileLanguages:
+          type: object
+          properties: {}
+        profileOrganizations:
+          type: object
+          properties: {}
+        profilePatents:
+          type: object
+          properties: {}
+        profilePositionGroups:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+            paging:
+              type: object
+              properties:
+                total:
+                  type: number
+                start:
+                  type: number
+                count:
+                  type: number
+                links:
+                  type: object
+                  properties: {}
+                "$recipeTypes":
+                  type: object
+                  properties:
+                    '0':
+                      type: string
+        profileProjects:
+          type: object
+          properties: {}
+        profilePublications:
+          type: object
+          properties: {}
+        profileTestScores:
+          type: object
+          properties: {}
+        profileVolunteerExperiences:
+          type: object
+          properties:
+            paging:
+              type: object
+              properties:
+                total:
+                  type: number
+                start:
+                  type: number
+                count:
+                  type: number
+                links:
+                  type: object
+                  properties: {}
+                "$recipeTypes":
+                  type: object
+                  properties:
+                    '0':
+                      type: string
+            elements:
+              type: array
+              items: {}
+        backgroundPicture:
+          type:
+            - object
+            - 'null'
+          properties:
+            displayImageReference:
+              type: object
+              properties:
+                vectorImage:
+                  type: object
+                  properties:
+                    artifacts:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          width:
+                            type: number
+                          height:
+                            type: number
+                          fileIdentifyingUrlPathSegment:
+                            type: string
+                        required:
+                          - width
+                    rootUrl:
+                      type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        maidenName:
+          type: 'null'
+        multiLocaleFirstName:
+          type: object
+          properties:
+            en_US:
+              type: string
+        multiLocaleLastName:
+          type: object
+          properties:
+            en_US:
+              type: string
+        profilePicture:
+          type: object
+          properties:
+            displayImageReference:
+              type: object
+              properties:
+                vectorImage:
+                  type: object
+                  properties:
+                    artifacts:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          width:
+                            type: number
+                          height:
+                            type: number
+                          fileIdentifyingUrlPathSegment:
+                            type: string
+                        required:
+                          - width
+                          - height
+                          - fileIdentifyingUrlPathSegment
+                    rootUrl:
+                      type: string
+        multiLocaleMaidenName:
+          type: 'null'
+        multiLocaleFullNamePronunciationAudio:
+          type: object
+          properties: {}
+        multiLocaleHeadline:
+          type: object
+          properties:
+            en_US:
+              type: string
+        locationName:
+          type: string
+        geoLocationBackfilled:
+          type: boolean
+        geoLocation:
+          type: object
+          properties:
+            geo:
+              type: object
+              properties:
+                defaultLocalizedName:
+                  type: string
+                country:
+                  type: object
+                  properties: {}
+        educationOnProfileTopCardShown:
+          type: boolean
+        multiLocaleSummary:
+          type:
+            - object
+            - 'null'
+          properties:
+            en_US:
+              type: string
+        supportedLocales:
+          type: array
+          items:
+            type: object
+            properties: {}
+            required: []
+        objectUrn:
+          type: string
+        trackingId:
+          type: string
+    primaryLocale:
+      type: string
+    viewingLocale:
+      type: string
+    memberMiniProfile:
+      type: object
+      properties:
+        picture:
+          type: object
+          properties:
+            rootUrl:
+              type: string
+            artifacts:
+              type: array
+              items:
+                type: object
+                properties:
+                  width:
+                    type: number
+                  height:
+                    type: number
+                  fileIdentifyingUrlPathSegment:
+                    type: string
+                required:
+                  - width
+                  - height
+                  - fileIdentifyingUrlPathSegment
+        firstName:
+          type: string
+        lastName:
+          type: string
+        emberEntityName:
+          type: string
+        entityUrn:
+          type: string
+        publicIdentifier:
+          type: string
+        occupation:
+          type: string
+        objectUrn:
+          type: string
+        backgroundImage:
+          type: 'null'
+        "$type":
+          type: string
+        trackingId:
+          type: string
+    opportunityCards:
+      type: object
+      properties:
+        elements:
+          type: array
+          items: {}
+    networkInfo:
+      type: object
+      properties:
+        entityUrn:
+          type: string
+        distance:
+          type: string
+        connectionsCount:
+          type: number
+        following:
+          type: boolean
+        followable:
+          type: boolean
+        followingInfo:
+          type: object
+          properties: {}
+        followersCount:
+          type: number
+        "$type":
+          type: string
+    profileActions:
+      type: object
+      properties:
+        primaryAction:
+          type: object
+          properties:
+            action:
+              type: object
+              properties:
+                composeOption:
+                  type: object
+                  properties:
+                    displayText:
+                      type: object
+                      properties:
+                        text:
+                          type: string
+                        attributes:
+                          type: array
+                          items: {}
+                        textDirection:
+                          type: string
+                    composeNavigationContext:
+                      type: object
+                      properties:
+                        existingConversationUrn:
+                          type: string
+                    composeOptionType:
+                      type: string
+                profileActionType:
+                  type: string
+        secondaryAction:
+          type: 'null'
+        primaryExternalAction:
+          type: 'null'
+        entityUrn:
+          type: string
+        overflowActions:
+          type: array
+          items:
+            type: object
+            properties:
+              action:
+                type: object
+                properties:
+                  "$type":
+                    type: string
+                  profileActionType:
+                    type: string
+                  isPending:
+                    type: boolean
+            required:
+              - action
+        actions:
+          type: array
+          items: {}
+    vieweeMemberBadges:
+      type: object
+      properties:
+        entityUrn:
+          type: string
+        influencer:
+          type: boolean
+        premium:
+          type: boolean
+        openLink:
+          type: boolean
+        jobSeeker:
+          type: boolean
+        "$type":
+          type: string
+    privacySettings:
+      type: object
+      properties:
+        entityUrn:
+          type: string
+    dashViewerProfile:
+      type: object
+      properties:
+        profilePicture:
+          type: object
+          properties: {}
+    vanityName:
+      type: string
+    photoPromotionCategory:
+      type: 'null'
+    connections:
+      type: object
+      properties:
+        elements:
+          type: array
+          items:
+            type: object
+            properties: {}
+            required: []
+    model:
+      type: object
+      properties:
+        discloseAsProfileViewer:
+          type: string
+        profileViewDash:
+          type: object
+          properties:
+            entityUrn:
+              type: string
+            publicIdentifier:
+              type: string
+            primaryLocale:
+              type: object
+              properties:
+                language:
+                  type: string
+                country:
+                  type: string
+            profileCertifications:
+              type: object
+              properties:
+                paging:
+                  type: object
+                  properties:
+                    total:
+                      type: number
+                    start:
+                      type: number
+                    count:
+                      type: number
+                    links:
+                      type: object
+                      properties: {}
+                    "$recipeTypes":
+                      type: object
+                      properties:
+                        '0':
+                          type: string
+                elements:
+                  type: array
+                  items: {}
+            profileCourses:
+              type: object
+              properties: {}
+            profileEducations:
+              type: object
+              properties:
+                elements:
+                  type: array
+                  items: {}
+                paging:
+                  type: object
+                  properties:
+                    total:
+                      type: number
+                    start:
+                      type: number
+                    count:
+                      type: number
+                    links:
+                      type: object
+                      properties: {}
+                    "$recipeTypes":
+                      type: object
+                      properties:
+                        '0':
+                          type: string
+            profileHonors:
+              type: object
+              properties: {}
+            profileLanguages:
+              type: object
+              properties: {}
+            profileOrganizations:
+              type: object
+              properties: {}
+            profilePatents:
+              type: object
+              properties: {}
+            profilePositionGroups:
+              type: object
+              properties:
+                elements:
+                  type: array
+                  items: {}
+                paging:
+                  type: object
+                  properties:
+                    total:
+                      type: number
+                    start:
+                      type: number
+                    count:
+                      type: number
+                    links:
+                      type: object
+                      properties: {}
+                    "$recipeTypes":
+                      type: object
+                      properties:
+                        '0':
+                          type: string
+            profileProjects:
+              type: object
+              properties: {}
+            profilePublications:
+              type: object
+              properties: {}
+            profileTestScores:
+              type: object
+              properties: {}
+            profileVolunteerExperiences:
+              type: object
+              properties:
+                paging:
+                  type: object
+                  properties:
+                    total:
+                      type: number
+                    start:
+                      type: number
+                    count:
+                      type: number
+                    links:
+                      type: object
+                      properties: {}
+                    "$recipeTypes":
+                      type: object
+                      properties:
+                        '0':
+                          type: string
+                elements:
+                  type: array
+                  items: {}
+            backgroundPicture:
+              type:
+                - object
+                - 'null'
+              properties:
+                displayImageReference:
+                  type: object
+                  properties:
+                    vectorImage:
+                      type: object
+                      properties:
+                        artifacts:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              width:
+                                type: number
+                              height:
+                                type: number
+                              fileIdentifyingUrlPathSegment:
+                                type: string
+                            required:
+                              - width
+                        rootUrl:
+                          type: string
+            firstName:
+              type: string
+            lastName:
+              type: string
+            maidenName:
+              type: 'null'
+            multiLocaleFirstName:
+              type: object
+              properties:
+                en_US:
+                  type: string
+            multiLocaleLastName:
+              type: object
+              properties:
+                en_US:
+                  type: string
+            profilePicture:
+              type: object
+              properties:
+                displayImageReference:
+                  type: object
+                  properties:
+                    vectorImage:
+                      type: object
+                      properties:
+                        artifacts:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              width:
+                                type: number
+                              height:
+                                type: number
+                              fileIdentifyingUrlPathSegment:
+                                type: string
+                            required:
+                              - width
+                              - height
+                              - fileIdentifyingUrlPathSegment
+                        rootUrl:
+                          type: string
+            multiLocaleMaidenName:
+              type: 'null'
+            multiLocaleFullNamePronunciationAudio:
+              type: object
+              properties: {}
+            multiLocaleHeadline:
+              type: object
+              properties:
+                en_US:
+                  type: string
+            locationName:
+              type: string
+            geoLocationBackfilled:
+              type: boolean
+            geoLocation:
+              type: object
+              properties:
+                geo:
+                  type: object
+                  properties:
+                    defaultLocalizedName:
+                      type: string
+                    country:
+                      type: object
+                      properties: {}
+            educationOnProfileTopCardShown:
+              type: boolean
+            multiLocaleSummary:
+              type:
+                - object
+                - 'null'
+              properties:
+                en_US:
+                  type: string
+            supportedLocales:
+              type: array
+              items:
+                type: object
+                properties: {}
+                required: []
+            objectUrn:
+              type: string
+            trackingId:
+              type: string
+        networkInfo:
+          type: object
+          properties:
+            entityUrn:
+              type: string
+            distance:
+              type: string
+            connectionsCount:
+              type: number
+            following:
+              type: boolean
+            followable:
+              type: boolean
+            followingInfo:
+              type: object
+              properties: {}
+            followersCount:
+              type: number
+            "$type":
+              type: string
+        privacySettings:
+          type: object
+          properties:
+            entityUrn:
+              type: string
+        connections:
+          type: object
+          properties:
+            elements:
+              type: array
+              items:
+                type: object
+                properties: {}
+                required: []
+        vieweeProfileUrn:
+          type: string
+        vieweeMemberBadges:
+          type: object
+          properties:
+            entityUrn:
+              type: string
+            influencer:
+              type: boolean
+            premium:
+              type: boolean
+            openLink:
+              type: boolean
+            jobSeeker:
+              type: boolean
+            "$type":
+              type: string
+        vieweeMiniProfile:
+          type: object
+          properties:
+            picture:
+              type: object
+              properties:
+                rootUrl:
+                  type: string
+                artifacts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      width:
+                        type: number
+                      height:
+                        type: number
+                      fileIdentifyingUrlPathSegment:
+                        type: string
+                    required:
+                      - width
+                      - height
+                      - fileIdentifyingUrlPathSegment
+            firstName:
+              type: string
+            lastName:
+              type: string
+            emberEntityName:
+              type: string
+            entityUrn:
+              type: string
+            publicIdentifier:
+              type: string
+            occupation:
+              type: string
+            objectUrn:
+              type: string
+            backgroundImage:
+              type: 'null'
+            "$type":
+              type: string
+            trackingId:
+              type: string
+        vanityUrl:
+          type: string
+        primaryLocale:
+          type: object
+          properties:
+            language:
+              type: string
+            country:
+              type: string
+        dashCertifications:
+          type: object
+          properties:
+            paging:
+              type: object
+              properties:
+                total:
+                  type: number
+                start:
+                  type: number
+                count:
+                  type: number
+                links:
+                  type: object
+                  properties: {}
+                "$recipeTypes":
+                  type: object
+                  properties:
+                    '0':
+                      type: string
+            elements:
+              type: array
+              items: {}
+        dashCourses:
+          type: object
+          properties: {}
+        dashEducations:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+            paging:
+              type: object
+              properties:
+                total:
+                  type: number
+                start:
+                  type: number
+                count:
+                  type: number
+                links:
+                  type: object
+                  properties: {}
+                "$recipeTypes":
+                  type: object
+                  properties:
+                    '0':
+                      type: string
+        dashHonors:
+          type: object
+          properties: {}
+        dashLanguages:
+          type: object
+          properties: {}
+        dashOrganizations:
+          type: object
+          properties: {}
+        dashPatents:
+          type: object
+          properties: {}
+        dashPositions:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+            paging:
+              type: object
+              properties:
+                total:
+                  type: number
+                start:
+                  type: number
+                count:
+                  type: number
+                links:
+                  type: object
+                  properties: {}
+                "$recipeTypes":
+                  type: object
+                  properties:
+                    '0':
+                      type: string
+        dashProjects:
+          type: object
+          properties: {}
+        dashPublications:
+          type: object
+          properties: {}
+        dashTestScores:
+          type: object
+          properties: {}
+        dashVolunteerExperiences:
+          type: object
+          properties:
+            paging:
+              type: object
+              properties:
+                total:
+                  type: number
+                start:
+                  type: number
+                count:
+                  type: number
+                links:
+                  type: object
+                  properties: {}
+                "$recipeTypes":
+                  type: object
+                  properties:
+                    '0':
+                      type: string
+            elements:
+              type: array
+              items: {}
+        me:
+          type: object
+          properties:
+            isFulfilled:
+              type: boolean
+            isRejected:
+              type: boolean
+            content:
+              type: object
+              properties:
+                picture:
+                  type: object
+                  properties:
+                    rootUrl:
+                      type: string
+                    artifacts:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          width:
+                            type: number
+                          height:
+                            type: number
+                          fileIdentifyingUrlPathSegment:
+                            type: string
+                        required:
+                          - width
+                          - height
+                          - fileIdentifyingUrlPathSegment
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                publicIdentifier:
+                  type: string
+                occupation:
+                  type: string
+                objectUrn:
+                  type: string
+                entityUrn:
+                  type: string
+                emberEntityName:
+                  type: string
+        vanityName:
+          type: string
+        profileActions:
+          type: object
+          properties:
+            primaryAction:
+              type: object
+              properties:
+                action:
+                  type: object
+                  properties:
+                    composeOption:
+                      type: object
+                      properties:
+                        displayText:
+                          type: object
+                          properties:
+                            text:
+                              type: string
+                            attributes:
+                              type: array
+                              items: {}
+                            textDirection:
+                              type: string
+                        composeNavigationContext:
+                          type: object
+                          properties:
+                            existingConversationUrn:
+                              type: string
+                        composeOptionType:
+                          type: string
+                    profileActionType:
+                      type: string
+            secondaryAction:
+              type: 'null'
+            primaryExternalAction:
+              type: 'null'
+            entityUrn:
+              type: string
+            overflowActions:
+              type: array
+              items:
+                type: object
+                properties:
+                  action:
+                    type: object
+                    properties:
+                      "$type":
+                        type: string
+                      profileActionType:
+                        type: string
+                      isPending:
+                        type: boolean
+                required:
+                  - action
+            actions:
+              type: array
+              items: {}
+        featuredItems:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+        dashViewerProfile:
+          type: object
+          properties:
+            profilePicture:
+              type: object
+              properties: {}
+        courseRecommendations:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+            metadata:
+              type: object
+              properties:
+                headline:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+                    attributes:
+                      type: array
+                      items: {}
+                ctaUrl:
+                  type: string
+                cta:
+                  type: object
+                  properties:
+                    text:
+                      type: string
+        opportunitiesGoals:
+          type: object
+          properties: {}
+        opportunityCards:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+        highlights:
+          type: object
+          properties:
+            elements:
+              type: array
+              items:
+                type: object
+                properties:
+                  detail:
+                    type: object
+                    properties:
+                      headerImage:
+                        type: object
+                        properties:
+                          attributes:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                sourceType:
+                                  type: string
+                                miniProfile:
+                                  type: object
+                                  properties:
+                                    picture:
+                                      type: object
+                                      properties:
+                                        artifacts:
+                                          type: array
+                                          items:
+                                            type: object
+                                            properties:
+                                              width:
+                                                type: number
+                                              height:
+                                                type: number
+                                              fileIdentifyingUrlPathSegment:
+                                                type: string
+                                            required:
+                                              - width
+                                              - height
+                                              - fileIdentifyingUrlPathSegment
+                                        rootUrl:
+                                          type: string
+                                    firstName:
+                                      type: string
+                                    lastName:
+                                      type: string
+                                miniCompany:
+                                  type: object
+                                  properties:
+                                    name:
+                                      type: string
+                                    logo:
+                                      type: object
+                                      properties:
+                                        artifacts:
+                                          type: array
+                                          items:
+                                            type: object
+                                            properties:
+                                              width:
+                                                type: number
+                                              height:
+                                                type: number
+                                              fileIdentifyingUrlPathSegment:
+                                                type: string
+                                            required:
+                                              - width
+                                        rootUrl:
+                                          type: string
+                                artDecoIcon:
+                                  type: string
+                              required:
+                                - sourceType
+                                - miniProfile
+                          accessibilityText:
+                            type: string
+                          accessibilityTextAttributes:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                start:
+                                  type: number
+                                length:
+                                  type: number
+                                type:
+                                  type: string
+                                miniCompany:
+                                  type: object
+                                  properties:
+                                    name:
+                                      type: string
+                                    logo:
+                                      type: object
+                                      properties:
+                                        artifacts:
+                                          type: array
+                                          items:
+                                            type: object
+                                            properties:
+                                              width:
+                                                type: number
+                                              height:
+                                                type: number
+                                              fileIdentifyingUrlPathSegment:
+                                                type: string
+                                            required:
+                                              - width
+                                        rootUrl:
+                                          type: string
+                              required:
+                                - start
+                                - length
+                                - type
+                      highlightTarget:
+                        type: string
+                      secondaryText:
+                        type: object
+                        properties:
+                          text:
+                            type: string
+                          attributes:
+                            type: array
+                            items: {}
+                          textDirection:
+                            type: string
+                      primaryText:
+                        type: object
+                        properties:
+                          text:
+                            type: string
+                          attributes:
+                            type: array
+                            items: {}
+                          textDirection:
+                            type: string
+                      ctaAction:
+                        type: object
+                        properties:
+                          actionTarget:
+                            type: string
+                          displayText:
+                            type: object
+                            properties:
+                              text:
+                                type: string
+                              attributes:
+                                type: array
+                                items: {}
+                              textDirection:
+                                type: string
+                  controlName:
+                    type: string
+                  highlightUrn:
+                    type: string
+                  trackingId:
+                    type: string
+                required:
+                  - detail
+                  - controlName
+                  - highlightUrn
+                  - trackingId
+        browseMap:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+            metadata:
+              type: object
+              properties:
+                browsemapUpsellState:
+                  type: string
+                showUpgrade:
+                  type: boolean
+        browseMapProfileActions:
+          type: object
+          properties: {}
+        pymk:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+        activity:
+          type: object
+          properties:
+            elements:
+              type: array
+              items: {}
+        posts:
+          type: object
+          properties: {}
+  required:
+    - dashMember
+    - primaryLocale
+    - viewingLocale
+    - memberMiniProfile
+    - opportunityCards
+    - networkInfo
+    - profileActions
+    - vieweeMemberBadges
+    - privacySettings
+    - dashViewerProfile
+    - vanityName
+    - photoPromotionCategory
+    - connections
+    - model

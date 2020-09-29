@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: extensionPoint
+metadata:
+  id: pixiebrix/contrib-pipedrive-organization-panel
+  version: 0.0.1
+  name: Pipedrive Organization Panel
+  description: A Pipedrive organization panel
+  author: pixiebrix
+definition:
+  type: panel
+  reader: com.pipedrive.organization.reader
+  isAvailable:
+    matchPatterns: https://*.pipedrive.com/organization/*
+  containerSelector: ".sidebar"
+  template: |
+    <div class="widget">
+        <div class="columnTitle"><span class="columnItem">{{heading}}</span></div>
+        <div>{{&body}}</div>
+    </div>

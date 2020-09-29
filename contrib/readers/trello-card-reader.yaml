@@ -1,0 +1,209 @@
+apiVersion: v1
+kind: reader
+metadata:
+  id: pixiebrix/examples-trello-card-reader
+  version: 0.0.1
+  name: Trello Card Reader
+  description: Read information from the active Trello card
+  author: pixiebrix
+definition:
+  reader:
+    type: window
+    pathSpec: Dialog.view.model.attributes
+    waitMillis: 500
+  isAvailable:
+    matchPatterns: "https://*.trello.com/*"
+    selectors: ".card-detail-window"
+outputSchema:
+  type: object
+  properties:
+    id:
+      type: string
+    closed:
+      type: boolean
+    dateLastActivity:
+      type: string
+    desc:
+      type: string
+    descData:
+      type: object
+      properties: {}
+    dueReminder:
+      type: object
+      properties: {}
+    idAttachmentCover:
+      type: object
+      properties: {}
+    idList:
+      type: string
+    idBoard:
+      type: string
+    idShort:
+      type: number
+    idLabels:
+      type: array
+      items:
+        type: string
+    name:
+      type: string
+    pos:
+      type: number
+    shortLink:
+      type: string
+    locationName:
+      type: object
+      properties: {}
+    address:
+      type: object
+      properties: {}
+    coordinates:
+      type: object
+      properties: {}
+    isTemplate:
+      type: boolean
+    badges:
+      type: object
+      properties:
+        attachmentsByType:
+          type: object
+          properties:
+            trello:
+              type: object
+              properties:
+                board:
+                  type: number
+                card:
+                  type: number
+        location:
+          type: boolean
+        votes:
+          type: number
+        viewingMemberVoted:
+          type: boolean
+        subscribed:
+          type: boolean
+        fogbugz:
+          type: string
+        checkItems:
+          type: number
+        checkItemsChecked:
+          type: number
+        checkItemsEarliestDue:
+          type: object
+          properties: {}
+        comments:
+          type: number
+        attachments:
+          type: number
+        description:
+          type: boolean
+        due:
+          type: object
+          properties: {}
+        dueComplete:
+          type: boolean
+    due:
+      type: object
+      properties: {}
+    dueComplete:
+      type: boolean
+    idMembers:
+      type: array
+      items: {}
+    limits:
+      type: object
+      properties:
+        attachments:
+          type: object
+          properties:
+            perCard:
+              type: object
+              properties:
+                status:
+                  type: string
+                disableAt:
+                  type: number
+                warnAt:
+                  type: number
+        checklists:
+          type: object
+          properties:
+            perCard:
+              type: object
+              properties:
+                status:
+                  type: string
+                disableAt:
+                  type: number
+                warnAt:
+                  type: number
+        stickers:
+          type: object
+          properties:
+            perCard:
+              type: object
+              properties:
+                status:
+                  type: string
+                disableAt:
+                  type: number
+                warnAt:
+                  type: number
+    shortUrl:
+      type: string
+    subscribed:
+      type: boolean
+    url:
+      type: string
+    cover:
+      type: object
+      properties:
+        idAttachment:
+          type: object
+          properties: {}
+        color:
+          type: object
+          properties: {}
+        idUploadedBackground:
+          type: object
+          properties: {}
+        size:
+          type: string
+        brightness:
+          type: string
+    stickers:
+      type: array
+      items: {}
+    attachments:
+      type: array
+      items: {}
+  required:
+    - id
+    - closed
+    - dateLastActivity
+    - desc
+    - descData
+    - dueReminder
+    - idAttachmentCover
+    - idList
+    - idBoard
+    - idShort
+    - idLabels
+    - name
+    - pos
+    - shortLink
+    - locationName
+    - address
+    - coordinates
+    - isTemplate
+    - badges
+    - due
+    - dueComplete
+    - idMembers
+    - limits
+    - shortUrl
+    - subscribed
+    - url
+    - cover
+    - stickers
+    - attachments

@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: pixiebrix/examples-youtube
+  version: 0.0.1
+  name: YouTube Video
+  description: Embedded YouTube video
+  author: pixiebrix
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    videoId:
+      type: string
+      description: The YouTube video id (not the URL)
+    width:
+      type: integer
+    height:
+      type: integer
+  required:
+    - videoId
+pipeline:
+  - id: pixiebrix/contrib-sandboxed-iframe
+    config:
+      url: https://www.youtube.com/embed/{{videoId}}
+      width: width
+      height: height

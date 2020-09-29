@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: pixiebrix/hubspot-person-search
+  version: 0.0.1
+  name: Search for a person
+  description: Search for contacts by email, name, phone number, or company
+  author: pixiebrix
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    hubspotService:
+      $ref: "https://app.pixiebrix.com/schemas/services/hubspot"
+    query:
+      type: string
+      description: The search query. You can use all of a word or just parts of a word as well.
+  required:
+    - query
+pipeline:
+  - id: pixiebrix/contrib-api
+    config:
+      service: hubspotService
+      url: https://api.hubapi.com/contacts/v1/search/query
+      params:
+        q: query
+  - id: pixiebrix/contrib-jq
+    config:
+      filter: ".contacts[0]"

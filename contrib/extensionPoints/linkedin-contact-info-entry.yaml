@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: extensionPoint
+metadata:
+  id: com.linkedin.person.contactInfo.entry
+  version: 0.0.1
+  name: LinkedIn Contact Info Entry
+  description: Add an entry to the contact information modal
+  author: pixiebrix
+definition:
+  type: panel
+  reader:
+    - com.linkedin.person.summary
+    - com.linkedin.person.contactInfo
+  isAvailable:
+    matchPatterns: https://*.linkedin.com/*/detail/contact-info/
+    selectors: "#pv-contact-info"
+  defaultOptions:
+    caption: Custom Entry
+  containerSelector:
+    - "[aria-labelledby='pv-contact-info']"
+    - ".pv-contact-info"
+    - ".section-info"
+  position: append
+  template: |
+    <section class="pv-contact-info__contact-type">
+        <li-icon aria-hidden="true" type="people-icon" class="pv-contact-info__contact-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" data-supported-dps="24x24" fill="currentColor" width="24" height="24" focusable="false">
+          <path d="M20.74 14.2L19 13.54v-.68l.25-.41A5 5 0 0020 9.82V9a3 3 0 00-6 0v.82a5 5 0 00.75 2.63l.25.41v.68l-1 .37a4 4 0 00-.58-.28l-2.45-1v-1.8A8 8 0 0012 7V6a4 4 0 00-8 0v1a8 8 0 001 3.86v1.84l-2.45 1A4 4 0 000 17.35V20a1 1 0 001 1h21a1 1 0 001-1v-2.53a3.5 3.5 0 00-2.26-3.27zM16 8.75a1 1 0 012 0v1.44a3 3 0 01-.38 1.46l-.33.6a.25.25 0 01-.22.13h-.14a.25.25 0 01-.22-.13l-.33-.6a3 3 0 01-.38-1.46V8.75zM6 5.85a2 2 0 014 0v1.43a6 6 0 01-.71 2.83l-.29.61a1 1 0 01-.88.53h-.2a1 1 0 01-.92-.53l-.33-.61A6 6 0 016 7.28V5.85zM14 19H2v-1.75a2 2 0 011.26-1.86L7 13.92v-1a3 3 0 001 .18 3 3 0 001-.18v1l3.72 1.42A2 2 0 0114 17.21V19zm7 0h-5v-1.65a4 4 0 00-.55-2l1.05-.4v-.88a2 2 0 00.4.05h.2a2 2 0 00.4-.05v.88l2.53 1a1.5 1.5 0 011 1.4V19z"></path>
+        </svg></li-icon>
+        <header class="pv-contact-info__header t-16 t-black t-bold">{{heading}}</header>
+        <div class="pv-contact-info__ci-container t-14">
+          {{&body}}
+        </div>
+    </section>

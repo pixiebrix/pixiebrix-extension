@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: pixiebrix/contrib-apartments-sheets
+  name: Send Apartments to Google Sheets
+  description: Send apartments you've found to Google Sheets
+  author: pixiebrix
+extensionPoints:
+  - id: com.apartments.property.button
+    label: Send Apartment to Google Sheets
+    services:
+      sheet: google-sheet
+    config:
+      caption: Send to Google Sheets
+      icon:
+        id: googlesheets
+        library: simple-icons
+        size: 32
+      action:
+        - id: pixiebrix/contrib-regex
+          outputKey: units
+          config:
+            input: propertySize
+            regex: "(?<count>\\d+) Units"
+        - id: pixiebrix/contrib-regex
+          outputKey: built
+          config:
+            input: propertyYearBuilt
+            regex: "Built in (?<year>\\d\\d\\d\\d)"
+        - id: pixiebrix/contrib-jq
+          outputKey: rent
+          config:
+            filter: "[.availability[] | select(.beds == 1) | select(.maxrent != \"\")] | map(.maxrent) | max"
+            input: availability
+        - id: pixiebrix/contrib-google-sheets-record
+          config:
+            spreadsheetId: "@sheet.spreadsheetId"
+            tabName: "Apartments"
+            rowValues:
+              - header: Property
+                value: propertyName
+              - header: Address
+                value: propertyAddress
+              - header: Neighborhood
+                value: neighborhood
+              - header: "# Units"
+                value: "@units.count"
+              - header: Built
+                value: "@built.year"
+              - header: Management Company
+                value: propertyCompany
+              - header: Management Phone
+                value: propertyPhone
+              - header: 1bdrm Rent
+                value: "@rent"
+              - header: Agent
+                value: agent?.name
+              - header: Agent Phone
+                value: agent?.phone
+              - header: Website
+                value: website
+              - header: Retrieved From
+                value: document.url
