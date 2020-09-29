@@ -59,7 +59,7 @@ PixieBrix currently supports the following approaches to wiring inputs:
 * [Mustache templates](https://mustache.github.io/)
 * [Nunjucks templates](https://mozilla.github.io/nunjucks/) (similar to Jinja2)
 
-### Input/Output Specifications
+### Input/Output Schemas
 
 PixieBrix uses [JSON Schema](http://json-schema.org/) for specifying the shapes of inputs and outputs.
 In addition to serving as documentation, having a schema facilitates detecting which bricks are
@@ -90,3 +90,14 @@ SaaS applications involves a steep learning curve.
 private data. PixieBrix's block and service model makes it easy to understand and control how your data is used.
 * **Availability:** Chrome is moving to [eliminate remote code in browser extensions](https://developer.chrome.com/extensions/migrating_to_manifest_v3#api_checklist).
 This rule will prohibit userscript managers such as [Tampermonkey](http://www.tampermonkey.net/) from the Chrome Web Store.
+
+**Why not SaaS Apps?**
+
+Many SaaS applications have introduced their own App frameworks/marketplaces. Why not use those?
+
+* **Extensibility:** integrating N services with each other requires N^2 integrations. With PixieBrix,
+a brick can be re-used to integrate with any number of applications.
+* **Cost:** with marketplaces, you often have to pay extra for additional integrations. These integration costs
+add up fast.
+* **Niche SaaS:** indie and niche SaaS apps can't all create their own app frameworks. With PixieBrix,
+you can add missing functionality to your any SaaS application.
