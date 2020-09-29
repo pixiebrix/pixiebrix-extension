@@ -3,12 +3,14 @@
 [PixieBrix](https://www.pixiebrix.com/) is a platform for safely extending websites and
 SaaS applications with low/no-code.
 
-
 ## Key Concepts
+
+### Domain Entities
 
 * **Extension Points:** points where users can attach functionality. Current support: information panels,
 menu items/buttons.
-* **Blocks:** blocks are functions that you can write together and attach to an extension point
+* **Blocks:** blocks are functions that you can write together and attach to an extension point. You can also create
+composite blocks by combining them into a single unit.
     * **Readers:** read information from a document. Current Support: HTML via JQuery, EmberJS, React,
     window variables. Each Extension Point has a default reader it provides.
     * **Effects:** take an input and perform a side effect. Examples: append a row to spreadsheet,
@@ -16,18 +18,37 @@ menu items/buttons.
     * **Transforms:** take an input and produce an output. Example: call an API,
     run a [jq transform](https://github.com/stedolan/jq), extract data with a regular expression
     * **Renderers:** a transform that returns HTML, e.g., to render in a panel extension point. Examples:
-    renderer markdown, show data in a table.
+    renderer markdown, a data table.
 * **Services:** re-usable resources and configuration that can also be used to authenticate
 requests to APIs. By creating a [PixieBrix](https://www.pixiebrix.com/) account, you can
-share service configurations with your team.
+share service configurations with your team. Examples: an API credential, a Google Sheet.
 * **Recipes:** collections of extension point + block combinations that a user can install
-together.
+together. Example: Hubspot actions and panels for LinkedIn
 
+### Data Flow
+
+PixieBrix supports acyclic data flow between named inputs/outputs. By default, data flows
+from one block to the next. However, a block may instead store its outputs to a variable
+that subsequent blocks can then reference.
+
+To attach a block to an extension point, you wire the output of the Extension Point's default Reader
+to the block. To define a composite block, you define an input schema, and wire the inputs to the
+component blocks.
+
+To facilitate wiring, PixieBrix currently supports the following:
+* Object paths with [optional chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
+* [Mustache](https://mustache.github.io/)
+* [Nunjucks](https://mozilla.github.io/nunjucks/) (similar to Jinja2)
+
+### Input/Output Specifications
+
+PixieBrix uses [JSON Schema](http://json-schema.org/) for specifying the shapes of inputs and outputs.
+In addition to serving as documentation, this helps to detect which blocks are misbehaving.
 
 ## Why not _X_?
 
-We're building PixieBrix because we want to bring the power of Browser Extensions and
-Userscripts to a broader audience.
+We're avid users of Browser Extensions and Userscripts, and they'll always have their place. We're building
+PixieBrix to bring their power to a broader audience.
 
 **Why not Browser Extensions?**
 

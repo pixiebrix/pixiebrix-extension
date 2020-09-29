@@ -10,7 +10,7 @@
   },
   "author": "Todd Schiller",
   "license": "UNLICENSED",
-  "repository": "https://github.com/pixiebrix/pixiebrix-browser",
+  "repository": "https://github.com/pixiebrix/pixiebrix-extension",
   "dependencies": {
     "@babel/core": "^7.10.3",
     "@babel/plugin-proposal-class-properties": "^7.10.4",
