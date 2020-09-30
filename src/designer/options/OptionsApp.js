@@ -13,7 +13,7 @@ import Marketplace from "@/pages/Marketplace";
 import Settings from "./pages/Settings";
 import Navbar from "./layout/Navbar";
 import Footer from "./layout/Footer";
-import { Route, Switch, useLocation } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import { ToastProvider, useToasts } from "react-toast-notifications";
 import Sidebar from "./layout/Sidebar";
@@ -33,7 +33,7 @@ import { getBaseURL } from "@/services/baseService";
 const Layout = ({}) => {
   const [loaded, setLoaded] = useState(false);
   const { addToast } = useToasts();
-  const location = useLocation();
+  // const location = useLocation();
 
   useAsyncEffect(async (isMounted) => {
     try {
@@ -67,7 +67,7 @@ const Layout = ({}) => {
         <div className="main-panel">
           <div className="content-wrapper">
             {loaded ? (
-              <ErrorBoundary key={location.pathname}>
+              <ErrorBoundary>
                 <Switch>
                   <Route exact path="/marketplace" component={Marketplace} />
                   <Route exact path="/settings" component={Settings} />

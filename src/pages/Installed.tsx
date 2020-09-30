@@ -156,14 +156,13 @@ const Installed: React.FunctionComponent<{
         </Col>
       </Row>
       <Row>
-        <Col>
+        <Col xl={9} lg={10} md={12}>
           <Card>
             <Card.Header>Active Brix</Card.Header>
             <Card.Body>
               <Table>
                 <thead>
                   <tr>
-                    {/*<th>Active?</th>*/}
                     <th>Location</th>
                     <th>Name</th>
                     <th>Status</th>

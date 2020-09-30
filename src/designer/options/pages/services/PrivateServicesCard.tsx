@@ -37,29 +37,19 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   );
 
   return (
-    <Card>
-      <Card.Header>My Private Services</Card.Header>
-      <Card.Body className="pb-0">
+    <>
+      <Card.Body className="pb-2">
         <p>
           Private services you configure here are not shared with your
-          organization.{" "}
-          <b>
-            Information you enter here is not transferred to our PixieBrix
-            servers.
-          </b>
+          organization or transferred to the PixieBrix servers.
         </p>
-        <div className="d-flex align-content-center mb-4">
-          <div className="ml-2" style={{ width: 300 }}>
-            <ServiceSelector onSelect={onSelect} />
-          </div>
-        </div>
       </Card.Body>
       {configuredServices.length > 0 && (
         <Table>
           <thead>
             <tr>
-              <th>Service</th>
               <th>Name</th>
+              <th>Id</th>
               <th>Label</th>
               <th>Actions</th>
             </tr>
@@ -76,10 +66,10 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
               }
               return (
                 <tr key={service.id}>
+                  <td>{service.name}</td>
                   <td>
                     <code>{service.id}</code>
                   </td>
-                  <td>{service.name}</td>
                   <td>{configuredService.label}</td>
                   <td>
                     <Button
@@ -103,7 +93,12 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           </tbody>
         </Table>
       )}
-    </Card>
+      <Card.Footer>
+        <div style={{ width: 300 }}>
+          <ServiceSelector onSelect={onSelect} />
+        </div>
+      </Card.Footer>
+    </>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import Table from "react-bootstrap/Table";
 import Select from "react-select";
 import Button from "react-bootstrap/Button";
@@ -169,6 +169,7 @@ const DependencyRow: React.FunctionComponent<{
 const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
   ...props
 }) => {
+  const [selectKey, setKey] = useState(0);
   const [field, meta] = useField(props);
   const [authOptions] = useAuthOptions();
 
@@ -176,25 +177,11 @@ const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
     <FieldArray name={props.name}>
       {({ push, remove }) => (
         <>
-          <Card.Body className="pb-0">
+          <Card.Body className="pb-2">
             <p>
               Add services to re-use external accounts and resources that you or
               your team have configured.
             </p>
-
-            <div className="my-4" style={{ width: 300 }}>
-              <ServiceSelector
-                onSelect={(x) =>
-                  push({
-                    id: x.metadata.id,
-                    outputKey: "",
-                    config: undefined,
-                  })
-                }
-                placeholder="Pick a service to add"
-              />
-            </div>
-            {typeof meta.error === "string" && <p>{meta.error}</p>}
           </Card.Body>
           {field.value.length > 0 && (
             <Table>
@@ -222,6 +209,23 @@ const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
               </tbody>
             </Table>
           )}
+          <Card.Footer>
+            <div style={{ width: 300 }}>
+              <ServiceSelector
+                key={selectKey}
+                placeholder="Pick a service to add"
+                onSelect={(x) => {
+                  setKey((k) => k + 1);
+                  push({
+                    id: x.metadata.id,
+                    outputKey: "",
+                    config: undefined,
+                  });
+                }}
+              />
+            </div>
+            {typeof meta.error === "string" && <span>{meta.error}</span>}
+          </Card.Footer>
         </>
       )}
     </FieldArray>

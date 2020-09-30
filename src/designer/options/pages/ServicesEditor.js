@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useState } from "react";
 import { connect, useSelector } from "react-redux";
 import { servicesSlice } from "@/designer/options/slices";
 import registry from "@/services/registry";
@@ -14,6 +14,10 @@ import PrivateServicesCard from "@/designer/options/pages/services/PrivateServic
 import ConnectExtensionCard from "@/designer/options/pages/services/ConnectExtensionCard";
 import SharedServicesCard from "@/designer/options/pages/services/SharedServicesCard";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
+import Card from "react-bootstrap/Card";
+import Nav from "react-bootstrap/Nav";
+import Badge from "react-bootstrap/Badge";
+import { useFetch } from "../../../hooks/fetch";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -52,6 +56,14 @@ const ServicesEditor = ({
   deleteServiceConfig,
   navigate,
 }) => {
+  const remoteAuths = useFetch("/api/services/shared/?meta=1");
+
+  const configuredServices = useSelector(({ services }) =>
+    Object.values(services.configured)
+  );
+
+  const [activeTab, setTab] = useState("private");
+
   const { addToast } = useToasts();
   const {
     serviceDefinitions,
@@ -107,20 +119,48 @@ const ServicesEditor = ({
         </Col>
       </Row>
       <Row>
-        <Col>
-          <PrivateServicesCard
-            navigate={navigate}
-            services={serviceDefinitions}
-            onCreate={(config) => {
-              updateServiceConfig(config);
-              navigate(`/services/${encodeURIComponent(config.id)}`);
-            }}
-          />
-        </Col>
-      </Row>
-      <Row>
-        <Col>
-          <SharedServicesCard className="mt-3" />
+        <Col xl={8} lg={10} md={12}>
+          <Card>
+            <Card.Header>
+              <Nav
+                variant="tabs"
+                defaultActiveKey={activeTab}
+                onSelect={(x) => setTab(x)}
+              >
+                <Nav.Item>
+                  <Nav.Link eventKey="private">
+                    Private Services{" "}
+                    <Badge variant="info">
+                      {configuredServices ? configuredServices.length : "?"}
+                    </Badge>
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link eventKey="shared">
+                    Shared Services{" "}
+                    <Badge variant="info">
+                      {remoteAuths ? remoteAuths.length : "?"}
+                    </Badge>
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+            </Card.Header>
+
+            {activeTab === "private" && (
+              <PrivateServicesCard
+                navigate={navigate}
+                services={serviceDefinitions}
+                onCreate={(config) => {
+                  updateServiceConfig(config);
+                  navigate(`/services/${encodeURIComponent(config.id)}`);
+                }}
+              />
+            )}
+
+            {activeTab === "shared" && (
+              <SharedServicesCard remoteAuths={remoteAuths} />
+            )}
+          </Card>
         </Col>
       </Row>
     </div>
