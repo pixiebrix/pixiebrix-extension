@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/pixiebrix-browser.iml" filepath="$PROJECT_DIR$/pixiebrix-browser.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pixiebrix-extension.iml" filepath="$PROJECT_DIR$/pixiebrix-extension.iml" />
     </modules>
   </component>
 </project>

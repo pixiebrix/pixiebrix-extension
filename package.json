@@ -1,5 +1,5 @@
 {
-  "name": "pixiebrix-browser",
+  "name": "pixiebrix-extension",
   "version": "0.0.19",
   "description": "PixieBrix Browser Extension",
   "main": "index.js",
@@ -9,7 +9,7 @@
     "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js"
   },
   "author": "Todd Schiller",
-  "license": "UNLICENSED",
+  "license": "BSD-3-Clause",
   "repository": "https://github.com/pixiebrix/pixiebrix-extension",
   "dependencies": {
     "@babel/core": "^7.10.3",
