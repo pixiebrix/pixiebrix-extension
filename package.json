@@ -47,7 +47,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/react-redux": "^7.1.9",
     "@types/react-router-dom": "^5.1.5",
-    "@types/react-select": "^3.0.19",
+    "@types/react-select": "^3.0.21",
     "@types/react-toast-notifications": "^2.4.0",
     "@types/redux-logger": "^3.0.8",
     "@types/simple-icons": "^2.5.0",
