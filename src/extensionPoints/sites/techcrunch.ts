@@ -66,7 +66,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
 
   defaultReader() {
     return blockRegistry.lookup(
-      `com.techcrunch.mention.${this.entityType}.reader`
+      `techcrunch/${this.entityType}-mention`
     ) as IReader;
   }
 

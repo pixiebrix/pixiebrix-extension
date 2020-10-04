@@ -5,7 +5,6 @@ metadata:
   version: 0.0.1
   name: LinkedIn Contact Info
   description: Read contact info from the LinkedIn contact info pane
-  author: pixiebrix
 definition:
   reader:
     type: emberjs

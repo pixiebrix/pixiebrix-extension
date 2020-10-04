@@ -18,14 +18,14 @@ const BRICK_RUN_METHODS = {
   "#/definitions/effect": "effect",
   "#/definitions/reader": "read",
   "#/definitions/transformer": "transform",
-  "https://app.pixiebrix.com/schemas/renderer#": "render",
-  "https://app.pixiebrix.com/schemas/effect#": "effect",
-  "https://app.pixiebrix.com/schemas/reader#": "read",
-  "https://app.pixiebrix.com/schemas/transformer#": "transform",
   "https://app.pixiebrix.com/schemas/renderer": "render",
   "https://app.pixiebrix.com/schemas/effect": "effect",
   "https://app.pixiebrix.com/schemas/reader": "read",
   "https://app.pixiebrix.com/schemas/transformer": "transform",
+  "https://app.pixiebrix.com/schemas/renderer#": "render",
+  "https://app.pixiebrix.com/schemas/effect#": "effect",
+  "https://app.pixiebrix.com/schemas/reader#": "read",
+  "https://app.pixiebrix.com/schemas/transformer#": "transform",
 };
 
 type Options = {
@@ -33,7 +33,7 @@ type Options = {
 };
 
 function blockSchemaFactory(val: any): Yup.Schema<object> {
-  if (val.hasOwnProperty("id")) {
+  if (val && val.hasOwnProperty("id")) {
     let block: IBlock;
     try {
       block = blockRegistry.lookup(val.id);
@@ -67,7 +67,13 @@ export function configSchemaFactory(
   const wrapRequired = (x: any) => (options.required ? x.required() : x);
 
   if (BRICK_RUN_METHODS.hasOwnProperty(schema.$ref)) {
-    return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
+    return Yup.lazy((val) => {
+      if (isPlainObject(val)) {
+        return Yup.lazy(blockSchemaFactory);
+      } else {
+        return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
+      }
+    });
   } else if (schema.type === "object") {
     return Yup.lazy((val) => {
       if (isPlainObject(val)) {

@@ -5,7 +5,6 @@ metadata:
   version: 0.0.1
   name: Redfin Property Info
   description: Read property information from Redfin
-  author: pixiebrix
 definition:
   reader:
     type: react

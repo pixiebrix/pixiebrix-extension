@@ -5,7 +5,6 @@ metadata:
   version: 0.0.1
   name: Apartments.com Property Info
   description: Read property information from Apartments.com
-  author: pixiebrix
 definition:
   reader:
     type: jquery

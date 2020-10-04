@@ -5,7 +5,6 @@ metadata:
   version: 1.0.0
   name: Hubspot API
   description: The legacy Hubspot API
-  author: pixiebrix
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object

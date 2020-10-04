@@ -10,6 +10,8 @@ import cloneDeep from "lodash/cloneDeep";
 import { useAsyncState } from "@/hooks/common";
 import genericOptionsFactory from "@/components/fields/blockOptions";
 import { buildYup } from "schema-to-yup";
+import * as Yup from "yup";
+import { reportError } from "@/telemetry/rollbar";
 
 interface OwnProps {
   configuration: RawServiceConfiguration;
@@ -58,6 +60,18 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 
   const [schema] = useAsyncState(schemaPromise);
 
+  const validationSchema = useMemo(() => {
+    if (!schema) {
+      return Yup.object();
+    }
+    try {
+      return buildYup(schema, {});
+    } catch (ex) {
+      reportError(ex);
+      return Yup.object();
+    }
+  }, [schema]);
+
   if (!schema) {
     return null;
   }
@@ -71,7 +85,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
       <Formik
         onSubmit={handleSave}
         initialValues={originalConfiguration}
-        validationSchema={buildYup(schema, {})}
+        validationSchema={validationSchema}
       >
         {({
           handleSubmit,

@@ -30,7 +30,6 @@ import {
   MultipleConfigurationError,
 } from "@/services/errors";
 import { extensionValidatorFactory } from "./validation";
-import isEmpty from "lodash/isEmpty";
 
 const SCHEMA_URLS = {
   "http://json-schema.org/draft-07/schema": draft07,
@@ -141,7 +140,15 @@ async function validateExtension(
     extensionPoint.inputSchema
   );
 
-  const schemaErrors = await extensionValidator.validate(extension);
+  let schemaErrors: any;
+  let validated = true;
+  try {
+    await extensionValidator.validate(extension);
+  } catch (ex) {
+    validated = false;
+    schemaErrors = ex;
+  }
+
   const notConfigured = [];
   const multipleAuths = [];
   const missingConfiguration = [];
@@ -172,7 +179,7 @@ async function validateExtension(
       !notConfigured.length &&
       !multipleAuths.length &&
       !missingConfiguration.length &&
-      isEmpty(schemaErrors),
+      validated,
     notConfigured,
     multipleAuths,
     missingConfiguration,
