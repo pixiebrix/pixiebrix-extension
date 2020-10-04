@@ -134,7 +134,7 @@
     "reselect": "^4.0.0",
     "rollbar": "^2.18.0",
     "rollbar-sourcemap-webpack-plugin": "^2.11.1",
-    "sass-loader": "^8.0.2",
+    "sass-loader": "^10.0.2",
     "schema-to-yup": "1.9.16",
     "simple-icons": "^3.7.0",
     "svg-inline-loader": "^0.8.2",
