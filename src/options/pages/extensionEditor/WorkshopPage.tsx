@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 import Row from "react-bootstrap/Row";
@@ -13,6 +13,7 @@ import { Link } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import { useFetch } from "@/hooks/fetch";
+import { AuthContext } from "@/auth/context";
 
 interface OwnProps {
   navigate: (url: string) => void;
@@ -25,8 +26,50 @@ interface Brick {
   kind: string;
 }
 
+const CustomBricksCard: React.FunctionComponent<OwnProps> = ({ navigate }) => {
+  const remoteBricks = useFetch<Brick[]>("/api/bricks/");
+
+  return (
+    <Card>
+      <Card.Header>Advanced: Custom Bricks</Card.Header>
+      <Table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Version</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {(remoteBricks ?? []).map((x) => (
+            <tr key={x.id}>
+              <td>{x.name}</td>
+              <td>{x.kind}</td>
+              <td>{x.version}</td>
+              <td>
+                <Button
+                  size="sm"
+                  onClick={() => navigate(`/workshop/bricks/${x.id}`)}
+                >
+                  Edit
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+      <Card.Footer>
+        <Button size="sm" onClick={() => navigate(`/workshop/create/`)}>
+          Create New Brick
+        </Button>
+      </Card.Footer>
+    </Card>
+  );
+};
+
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
-  const bricks = useFetch<Brick[]>("/api/bricks/");
+  const { isLoggedIn } = useContext(AuthContext);
 
   return (
     <div>
@@ -57,45 +100,13 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
         </Col>
       </Row>
 
-      <Row>
-        <Col className="mt-4" md="12" lg="8">
-          <Card>
-            <Card.Header>Advanced: Custom Bricks</Card.Header>
-            <Table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Type</th>
-                  <th>Version</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(bricks ?? []).map((x) => (
-                  <tr key={x.id}>
-                    <td>{x.name}</td>
-                    <td>{x.kind}</td>
-                    <td>{x.version}</td>
-                    <td>
-                      <Button
-                        size="sm"
-                        onClick={() => navigate(`/workshop/bricks/${x.id}`)}
-                      >
-                        Edit
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-            <Card.Footer>
-              <Button size="sm" onClick={() => navigate(`/workshop/create/`)}>
-                Create New Brick
-              </Button>
-            </Card.Footer>
-          </Card>
-        </Col>
-      </Row>
+      {isLoggedIn && (
+        <Row>
+          <Col className="mt-4" md="12" lg="8">
+            <CustomBricksCard navigate={navigate} />
+          </Col>
+        </Row>
+      )}
     </div>
   );
 };

@@ -5,6 +5,9 @@ import { getBaseURL } from "@/services/baseService";
 import compact from "lodash/compact";
 import urljoin from "url-join";
 import isPlainObject from "lodash/isPlainObject";
+import pickBy from "lodash/pickBy";
+
+const LOCAL_SCOPE = "@local";
 
 interface RegistryItem {
   id: string;
@@ -50,6 +53,12 @@ export class Registry<TItem extends RegistryItem> {
 
   all(): TItem[] {
     return Object.values(this.data);
+  }
+
+  local(): TItem[] {
+    return Object.values(
+      pickBy(this.data, (value, key) => key.startsWith(`${LOCAL_SCOPE}/`))
+    );
   }
 
   register(...items: TItem[]): void {
