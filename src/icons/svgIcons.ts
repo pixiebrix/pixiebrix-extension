@@ -1,3 +1,4 @@
+import sortBy from "lodash/sortBy";
 const filenameRegex = /^\.\/(?<fileName>.*?)\.svg$/i;
 
 export type IconLibrary = "bootstrap" | "simple-icons";
@@ -35,12 +36,14 @@ export interface IconOption {
   label: string;
 }
 
-export const iconOptions: IconOption[] = Object.entries(iconCache).flatMap(
-  ([library, libraryCache]) =>
+export const iconOptions: IconOption[] = sortBy(
+  Object.entries(iconCache).flatMap(([library, libraryCache]) =>
     Object.keys(libraryCache).map((id) => ({
       value: { library, id } as { library: IconLibrary; id: string },
       label: id,
     }))
+  ),
+  (x) => x.label
 );
 
 function iconAsSVG(config: IconConfig): string {

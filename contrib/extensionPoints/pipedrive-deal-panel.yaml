@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: extensionPoint
 metadata:
-  id: pixiebrix/contrib-pipedrive-deal-panel
+  id: pipedrive/deal-panel
   version: 0.0.1
   name: Pipedrive Deal Panel
   description: A Pipedrive deal panel
-  author: pixiebrix
 definition:
   type: panel
   reader: com.pipedrive.deal.reader

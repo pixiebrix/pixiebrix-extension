@@ -7,7 +7,7 @@ import { propertiesToSchema } from "@/validators/generic";
 export class LogEffect extends Effect {
   constructor() {
     super(
-      "browser.console.log",
+      "@pixiebrix/browser/log",
       "Log To Console",
       "Log a message to the Browser's console",
       faSearch

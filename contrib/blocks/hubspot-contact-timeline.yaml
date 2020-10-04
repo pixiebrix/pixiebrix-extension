@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: component
 metadata:
-  id: pixiebrix/contrib-hubspot-contact-timeline
+  id: "hubspot/contact-timeline"
   version: 0.0.1
   name: HubSpot Contact Timeline
   description: |
     The custom view includes the contact's HubSpot score and allows full timeline filtering.
     For Marketing Professional/Enterprise portals, the embed also provides the option to enroll contacts
     in HubSpot workflows.
-  author: pixiebrix
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object
@@ -21,11 +20,11 @@ inputSchema:
   required:
     - query
 pipeline:
-  - id: pixiebrix/hubspot-person-search
+  - id: "hubspot/contact-search"
     config:
       hubspotService: hubspotService
       query: query
-  - id: pixiebrix/contrib-iframe
+  - id: "@pixiebrix/iframe"
     config:
       url: https://app.hubspot.com/contact-timeline-embed/{{portal-id}}/login?id={{vid}}
       width: "100%"

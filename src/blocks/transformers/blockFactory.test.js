@@ -13,14 +13,12 @@ test("can read yaml fixture", () => {
 
 test("can read yaml fixture", async () => {
   const block = await fromJS(nytimes);
-  expect(block.id).toBe(
-    "pixiebrix/examples-nytimes-articlesearch-organization-yaml"
-  );
+  expect(block.id).toBe("nytimes/organization-articles");
 });
 
 test("can read trello reader", async () => {
   const block = await fromJS(trelloReader);
-  expect(block.id).toBe("pixiebrix/examples-trello-card-reader");
+  expect(block.id).toBe("trello/card");
 });
 
 test("reject invalid fixture fixture", async () => {

@@ -1,14 +1,13 @@
 apiVersion: v1
 kind: extensionPoint
 metadata:
-  id: com.linkedin.organization.button
+  id: "linkedin/organization-button"
   version: 0.0.1
   name: LinkedIn Company Button
   description: Add a button to the LinkedIn company page
-  author: pixiebrix
 definition:
   type: menuItem
-  reader: com.linkedin.organization.summary
+  reader: "linkedin/organization-summary"
   isAvailable:
     matchPatterns: https://*.linkedin.com/company/*
     selectors: ".organization-outlet"

@@ -8,6 +8,7 @@ import {
   makeServiceContext,
 } from "@/blocks/combinators";
 import { IBlock, IExtension, Schema, ServiceLocator } from "@/core";
+import { propertiesToSchema } from "@/validators/generic";
 
 interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
@@ -37,16 +38,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     return true;
   }
 
-  inputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    properties: {
-      action: {
-        $ref: "#/definitions/effect",
-      },
+  inputSchema: Schema = propertiesToSchema({
+    action: {
+      $ref: "https://app.pixiebrix.com/schemas/effect#",
     },
-    required: ["action"],
-  };
+  });
 
   getBlocks(extension: IExtension<TriggerConfig>): IBlock[] {
     return blockList(extension.config.action);

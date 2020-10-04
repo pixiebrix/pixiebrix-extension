@@ -3,6 +3,12 @@
   "compilerOptions": {
     "sourceMap": true
   },
+  "paths": {
+    "@/*": ["src/*"],
+    "@img/*": ["img/*"],
+    "@contrib/*": ["contrib/*"],
+    "@schemas/*": ["schemas/*"]
+  },
   "exclude": [
     "**/*.test.ts",
     "node_modules",

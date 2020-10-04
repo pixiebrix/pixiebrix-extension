@@ -4,7 +4,7 @@ import { BlockArg, Schema } from "@/core";
 
 export class IFrameRenderer extends Renderer {
   constructor() {
-    super("pixiebrix/contrib-iframe", "IFrame", "Show a website in an iframe");
+    super("@pixiebrix/iframe", "IFrame", "Show a website in an iframe");
   }
 
   inputSchema: Schema = {

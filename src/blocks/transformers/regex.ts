@@ -7,7 +7,7 @@ import { propertiesToSchema } from "@/validators/generic";
 export class RegexTransformer extends Transformer {
   constructor() {
     super(
-      "pixiebrix/contrib-regex",
+      "@pixiebrix/regex",
       "Regex Extractor",
       "Extract data using a Regex (regular expression)",
       faCode

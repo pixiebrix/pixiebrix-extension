@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: recipe
 metadata:
-  id: pixiebrix/contrib-apartments-slack
+  id: apartments.com/share-slack
+  version: 0.0.1
   name: Send Apartments to Slack
   description: Send apartments you've found to Slack
-  author: pixiebrix
 extensionPoints:
-  - id: com.apartments.property.button
+  - id: apartments.com/property-button
     label: Send Apartment to Slack
     services:
-      slack: slack-incoming-webhook
+      slack: slack/incoming-webhook
     config:
       caption: Send to Slack
       icon:
@@ -17,22 +17,22 @@ extensionPoints:
         library: simple-icons
         size: 32
       action:
-        - id: pixiebrix/contrib-regex
+        - id: "@pixiebrix/regex"
           outputKey: units
           config:
             input: propertySize
             regex: "(?<count>\\d+) Units"
-        - id: pixiebrix/contrib-regex
+        - id: "@pixiebrix/regex"
           outputKey: built
           config:
             input: propertyYearBuilt
             regex: "Built in (?<year>\\d\\d\\d\\d)"
-        - id: pixiebrix/contrib-jq
+        - id: "@pixiebrix/jq"
           outputKey: rent
           config:
             filter: "[.availability[] | select(.beds == 1) | select(.maxrent != \"\")] | map(.maxrent) | max"
             input: availability
-        - id: pixiebrix/contrib-slack-advanced-message
+        - id: "slack/advanced-message"
           config:
             hookUrl: "@slack.hookUrl"
             iconEmoji: "@slack.iconEmoji"

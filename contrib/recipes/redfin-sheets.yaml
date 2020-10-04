@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: recipe
 metadata:
-  id: pixiebrix/contrib-redfin-sheets
+  id: redfin/google-sheets
+  version: 0.0.1
   name: Send Redfin Properties to Google Sheets
   description: Send properties you've found to Google Sheets
-  author: pixiebrix
 extensionPoints:
-  - id: com.redfin.property.button
+  - id: "redfin/property-button"
     label: Send Property to Google Sheets
     services:
-      sheet: google-sheet
+      sheet: "google/sheet"
     config:
       caption: Sheets
       icon:
@@ -17,7 +17,7 @@ extensionPoints:
         library: simple-icons
         size: 24
       action:
-        - id: pixiebrix/contrib-google-sheets-record
+        - id: "@pixiebrix/google/sheets-append"
           config:
             spreadsheetId: "@sheet.spreadsheetId"
             tabName: "Redfin"

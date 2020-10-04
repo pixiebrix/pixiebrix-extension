@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: reader
 metadata:
-  id: com.linkedin.person.summary.all
+  id: linkedin/person-summary
   version: 0.0.1
   name: LinkedIn Person Summary (All)
   description: Read all available person summary information from a profile page
-  author: pixiebrix
 definition:
   reader:
     type: emberjs

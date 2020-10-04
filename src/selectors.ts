@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useSelector } from "react-redux";
-import { RootState } from "@/designer/options/store";
+import { RootState } from "@/options/store";
 import { IExtensionPoint } from "@/core";
-import { ExtensionOptions } from "@/designer/options/slices";
+import { ExtensionOptions } from "@/options/slices";
 
 interface ExtensionResult {
   extensionPoint: IExtensionPoint | null;

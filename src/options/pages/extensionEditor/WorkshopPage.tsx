@@ -1,0 +1,103 @@
+import React from "react";
+import { PageTitle } from "@/layout/Page";
+import { faHammer } from "@fortawesome/free-solid-svg-icons";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+import Card from "react-bootstrap/Card";
+import AsyncSelect from "react-select/async";
+import {
+  ExtensionPointOption,
+  getExtensionPointOptions,
+} from "@/extensionPoints/registry";
+import { Link } from "react-router-dom";
+import Table from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
+import { useFetch } from "@/hooks/fetch";
+
+interface OwnProps {
+  navigate: (url: string) => void;
+}
+
+interface Brick {
+  id: string;
+  name: string;
+  version: string;
+  kind: string;
+}
+
+const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
+  const bricks = useFetch<Brick[]>("/api/bricks/");
+
+  return (
+    <div>
+      <PageTitle icon={faHammer} title="Workshop" />
+      <div className="pb-4">
+        <p>
+          Build and install bricks. To install pre-made blueprints, visit the{" "}
+          <Link to={"/marketplace"}>Marketplace</Link>
+        </p>
+      </div>
+      <Row>
+        <Col md="12" lg="8">
+          <div className="d-flex align-items-center">
+            <div className="mr-2">Install a brick:</div>
+            <div style={{ width: 250 }}>
+              <AsyncSelect
+                defaultOptions
+                placeholder="Select a foundation"
+                loadOptions={getExtensionPointOptions}
+                onChange={(option: ExtensionPointOption) =>
+                  navigate(
+                    `/workshop/install/${encodeURIComponent(option.value)}`
+                  )
+                }
+              />
+            </div>
+          </div>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col className="mt-4" md="12" lg="8">
+          <Card>
+            <Card.Header>Advanced: Custom Bricks</Card.Header>
+            <Table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Type</th>
+                  <th>Version</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(bricks ?? []).map((x) => (
+                  <tr key={x.id}>
+                    <td>{x.name}</td>
+                    <td>{x.kind}</td>
+                    <td>{x.version}</td>
+                    <td>
+                      <Button
+                        size="sm"
+                        onClick={() => navigate(`/workshop/bricks/${x.id}`)}
+                      >
+                        Edit
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+            <Card.Footer>
+              <Button size="sm" onClick={() => navigate(`/workshop/create/`)}>
+                Create New Brick
+              </Button>
+            </Card.Footer>
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+};
+
+export default WorkshopPage;

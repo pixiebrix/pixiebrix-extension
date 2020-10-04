@@ -19,10 +19,7 @@ interface SearchResult {
 
 export class ResolvePerson extends Transformer {
   constructor() {
-    super(
-      "pixiebrix/contrib-pipedrive-persons-search",
-      "Search for a person in Pipedrive"
-    );
+    super("pipedrive/persons-search", "Search for a person in Pipedrive");
   }
 
   inputSchema: Schema = {

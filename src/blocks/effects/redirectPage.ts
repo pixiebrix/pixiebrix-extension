@@ -14,7 +14,7 @@ const URL_INPUT_SPEC = propertiesToSchema({
 export class NavigateURLEffect extends Effect {
   constructor() {
     super(
-      "browser.document.location",
+      "@pixiebrix/browser/location",
       "Redirect Page",
       "Navigate the current page to a URL",
       faWindowMaximize
@@ -31,8 +31,8 @@ export class NavigateURLEffect extends Effect {
 export class OpenURLEffect extends Effect {
   constructor() {
     super(
-      "browser.window._blank",
-      "Open Tab/Window",
+      "@pixiebrix/browser/open-tab",
+      "Open a Tab/Window",
       "Open a URL in a new tab/window",
       faWindowMaximize
     );

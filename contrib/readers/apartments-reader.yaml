@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: reader
 metadata:
-  id: com.apartments.property.reader
+  id: apartments.com/property-reader
   version: 0.0.1
   name: Apartments.com Property Info
   description: Read property information from Apartments.com
-  author: pixiebrix
 definition:
   reader:
     type: jquery

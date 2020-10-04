@@ -26,7 +26,7 @@ export const tableTemplate = `
 export class PropertyTableRenderer extends Renderer {
   constructor() {
     super(
-      "renderer.propertyTable",
+      "@pixiebrix/property-table",
       "Property Table",
       "Shows all properties and their values"
     );

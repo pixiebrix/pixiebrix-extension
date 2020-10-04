@@ -9,7 +9,7 @@ import { BlockArg, Schema } from "@/core";
 export class ShowNotificationEffect extends Effect {
   constructor() {
     super(
-      "system.notification",
+      "@pixiebrix/system/notification",
       "System Notification",
       "Show a system notification",
       faStickyNote

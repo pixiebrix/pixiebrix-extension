@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: service
 metadata:
-  id: slack-incoming-webhook
+  id: slack/incoming-webhook
   version: 0.0.1
   name: Slack Hook
   description: Slack incoming webhook for sending messages
-  author: pixiebrix
   url: https://api.slack.com/messaging/webhooks
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"

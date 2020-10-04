@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: service
 metadata:
-  id: google-geocode
+  id: google/geocode
   version: 0.0.1
   name: Google Geocoding API
   description: Geocoding API for looking up place names
-  author: pixiebrix
   url: https://developers.google.com/maps/documentation/geocoding/overview
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"

@@ -23,7 +23,7 @@ class PipedriveReader extends Reader {
 
   constructor(resourceType: string, pathSpec: PathSpec) {
     super(
-      `com.pipedrive.${resourceType}.reader`,
+      `pipedrive/${resourceType}`,
       `Pipedrive ${startCase(resourceType)} Reader`,
       `Read information from the Pipedrive ${resourceType} page`
     );

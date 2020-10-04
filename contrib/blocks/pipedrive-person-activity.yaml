@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: component
 metadata:
-  id: pixiebrix/examples-pipedrive-person-activity
+  id: "pipedrive/person-activity"
   version: 0.0.1
   name: Pipedrive Person Activity
   description: A table of activity from Pipedrive for a person
-  author: pixiebrix
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object
@@ -22,19 +21,19 @@ inputSchema:
     - pipedrive
     - personName
 pipeline:
-  - id: pixiebrix/contrib-pipedrive-persons-search
+  - id: pipedrive/persons-search
     config:
       pipedriveService: pipedrive
       name: personName
       organization: organizationName
-  - id: pixiebrix/contrib-api
+  - id: "@pixiebrix/http-get"
     config:
       accountName: pipedrive
       url: https://api.pipedrive.com/v1/persons/{{id}}/activities
-  - id: pixiebrix/contrib-jq
+  - id: "@pixiebrix/jq"
     config:
       filter: "[.data[]?]"
-  - id: pixiebrix/contrib-table
+  - id: "@pixiebrix/table"
     config:
       columns:
         - property: subject

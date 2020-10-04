@@ -79,9 +79,15 @@ export function useExtensionPermissions(
 
   useAsyncEffect(
     async (mounted) => {
-      const result = await permissionsEnabled(extension);
-      if (!mounted()) return;
-      setEnabled(result);
+      try {
+        const result = await permissionsEnabled(extension);
+        if (!mounted()) return;
+        setEnabled(result);
+      } catch (ex) {
+        // If there's an error checking permissions, just assume they're OK. The use will
+        // need to fix the configuration before we can check permissions.
+        setEnabled(true);
+      }
     },
     [extension]
   );

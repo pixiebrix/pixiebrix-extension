@@ -9,7 +9,7 @@ import { propertiesToSchema } from "@/validators/generic";
 export class JQTransformer extends Transformer {
   constructor() {
     super(
-      "pixiebrix/contrib-jq",
+      "@pixiebrix/jq",
       "jq - JSON processor",
       "Apply a jq expression: https://stedolan.github.io/jq/",
       faCode
@@ -32,7 +32,7 @@ export class JQTransformer extends Transformer {
 
   async transform({ filter, data }: BlockArg, { ctxt }: BlockOptions) {
     const input = (data ?? "").trim() !== "" ? data : ctxt;
-    console.debug("pixiebrix/contrib-jq", { filter, data, ctxt, input });
+    console.debug("@pixiebrix/jq", { filter, data, ctxt, input });
     return await jq.promised.json(input, filter);
   }
 }

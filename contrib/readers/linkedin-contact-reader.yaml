@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: reader
 metadata:
-  id: com.linkedin.person.contactInfo
+  id: linkedin/contact-info
   version: 0.0.1
   name: LinkedIn Contact Info
   description: Read contact info from the LinkedIn contact info pane
-  author: pixiebrix
 definition:
   reader:
     type: emberjs

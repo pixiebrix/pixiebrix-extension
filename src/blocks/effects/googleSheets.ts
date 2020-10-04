@@ -78,7 +78,7 @@ async function getHeaders(
 export class GoogleSheetsAppend extends Effect {
   constructor() {
     super(
-      "pixiebrix/contrib-google-sheets-record",
+      "@pixiebrix/google/sheets-append",
       "Add Google sheet row",
       "Record data to Google sheets",
       faTable

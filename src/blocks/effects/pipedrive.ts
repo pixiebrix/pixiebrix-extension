@@ -11,7 +11,7 @@ export class AddOrganization extends Effect {
 
   constructor() {
     super(
-      "pixiebrix/contrib-pipedrive-organizations-add",
+      "pipedrive/organizations-add",
       "Add Organization in Pipedrive",
       "Add an organization in Pipedrive CRM if it does not already exist",
       faUserPlus
@@ -21,7 +21,7 @@ export class AddOrganization extends Effect {
   inputSchema = propertiesToSchema(
     {
       pipedrive: {
-        $ref: "https://app.pixiebrix.com/schemas/services/pipedrive",
+        $ref: "https://app.pixiebrix.com/schemas/services/pipedrive/api",
       },
       name: {
         type: "string",
@@ -70,7 +70,7 @@ export class AddPerson extends Effect {
 
   constructor() {
     super(
-      "pixiebrix/contrib-pipedrive-persons-add",
+      "pipedrive/persons-add",
       "Add Person in Pipedrive",
       "Add a person in Pipedrive CRM if they do not already exist",
       faUserPlus
@@ -80,7 +80,7 @@ export class AddPerson extends Effect {
   inputSchema = propertiesToSchema(
     {
       pipedrive: {
-        $ref: "https://app.pixiebrix.com/schemas/services/pipedrive",
+        $ref: "https://app.pixiebrix.com/schemas/services/pipedrive/api",
       },
       name: {
         type: "string",

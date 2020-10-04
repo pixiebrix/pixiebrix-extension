@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: reader
 metadata:
-  id: com.redfin.property.reader
+  id: redfin/property
   version: 0.0.1
   name: Redfin Property Info
   description: Read property information from Redfin
-  author: pixiebrix
 definition:
   reader:
     type: react

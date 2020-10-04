@@ -6,7 +6,7 @@ import { BlockArg, Schema } from "@/core";
 
 export class RemoteMethod extends Effect {
   constructor() {
-    super("pixiebrix/contrib-api-modify", "HTTP Request");
+    super("@pixiebrix/http", "HTTP Request");
   }
 
   inputSchema: Schema = {
@@ -28,6 +28,7 @@ export class RemoteMethod extends Effect {
         type: "string",
         default: "post",
         description: "The HTTP method",
+        enum: ["post", "put", "patch", "delete", "get"],
       },
       params: {
         type: "object",

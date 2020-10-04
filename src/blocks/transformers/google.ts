@@ -43,7 +43,7 @@ async function geocodeAddress(
 export class GeocodeTransformer extends Transformer {
   constructor() {
     super(
-      "pixiebrix/contrib-google-geocode",
+      "google/geocode",
       "Google Geocode",
       "Geocode an address using the Google Geocode API"
     );
@@ -51,7 +51,7 @@ export class GeocodeTransformer extends Transformer {
 
   inputSchema: Schema = propertiesToSchema({
     service: {
-      $ref: "https://app.pixiebrix.com/schemas/services/google-geocode",
+      $ref: "https://app.pixiebrix.com/schemas/services/google/geocode",
       description: "A Google Geocode service to authenticate the request",
     },
     address: {

@@ -1,4 +1,4 @@
-import { loadOptions } from "@/designer/options/loader";
+import { loadOptions } from "@/options/loader";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
