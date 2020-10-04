@@ -22,7 +22,7 @@ class MentionReader extends Reader {
 
   constructor(entityType: EntityType) {
     super(
-      `com.techcrunch.mention.${entityType}.reader`,
+      `techcrunch/${entityType}-mention`,
       `Techcrunch ${startCase(entityType)} Mention Reader`
     );
     this.entityType = entityType;

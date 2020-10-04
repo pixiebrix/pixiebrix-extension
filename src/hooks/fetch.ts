@@ -9,6 +9,12 @@ function isAbsoluteURL(url: string): boolean {
   return url.indexOf("http://") === 0 || url.indexOf("https://") === 0;
 }
 
+export async function makeURL(relativeOrAbsoluteUrl: string): Promise<string> {
+  return isAbsoluteURL(relativeOrAbsoluteUrl)
+    ? relativeOrAbsoluteUrl
+    : joinURL(await getBaseURL(), relativeOrAbsoluteUrl);
+}
+
 function joinURL(host: string, relativeUrl: string): string {
   const cleanHost = host.replace(/\/$/, "");
   const cleanPath = relativeUrl.replace(/^\//, "");

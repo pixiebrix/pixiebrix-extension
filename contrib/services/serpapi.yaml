@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: service
 metadata:
-  id: serpapi
+  id: serpapi/api
   version: 0.0.1
   name: SerpAPI
   description: Access Google, Ebay, Walmart and services via API
-  author: serpapi
   url: https://serpapi.com/
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"

@@ -3,7 +3,7 @@
   "name": "PixieBrix WebApp Integrator",
   "short_name": "PixieBrix",
   "minimum_chrome_version": "42.0",
-  "version": "0.0.18",
+  "version": "0.1.0",
   "description": "PixieBrix - integrate your favorite web applications without code",
   "icons": {
     "16": "icons/logo16.png",

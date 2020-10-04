@@ -6,7 +6,7 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 export class CopyToClipboard extends Effect {
   constructor() {
     super(
-      "pixiebrix/contrib-clipboard",
+      "@pixiebrix/clipboard/copy",
       "Copy to clipboard",
       "Copy content to your clipboard"
     );

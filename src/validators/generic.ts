@@ -18,27 +18,59 @@ import $RefParser, {
 
 import draft07 from "@schemas/draft-07.json";
 import serviceSchema from "@schemas/service.json";
+import readerSchema from "@schemas/reader.json";
+import extensionPointSchema from "@schemas/extensionPoint.json";
+import iconSchema from "@schemas/icon.json";
+import recipeSchema from "@schemas/recipe.json";
 import keySchema from "@schemas/key.json";
 import metadataSchema from "@schemas/metadata.json";
+import componentSchema from "@schemas/component.json";
 import {
   MissingConfigurationError,
   MultipleConfigurationError,
 } from "@/services/errors";
-import { extensionValidatorFactory } from "@/designer/options/pages/ExtensionEditor/validation";
+import { extensionValidatorFactory } from "./validation";
 
 const SCHEMA_URLS = {
   "http://json-schema.org/draft-07/schema": draft07,
   "https://app.pixiebrix.com/schemas/metadata": metadataSchema,
   "https://app.pixiebrix.com/schemas/key": keySchema,
   "https://app.pixiebrix.com/schemas/service": serviceSchema,
+  "https://app.pixiebrix.com/schemas/extensionPoint": extensionPointSchema,
+  "https://app.pixiebrix.com/schemas/icon": iconSchema,
+  "https://app.pixiebrix.com/schemas/recipe": recipeSchema,
+  "https://app.pixiebrix.com/schemas/reader": readerSchema,
+  "https://app.pixiebrix.com/schemas/component": componentSchema,
 };
 
 const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";
 
 const REF_SECRETS = [
+  "https://www.pixiebrix.com/schemas/key",
   "https://www.pixiebrix.com/schemas/key#",
+  "https://app.pixiebrix.com/schemas/key",
   "https://app.pixiebrix.com/schemas/key#",
 ];
+
+export const KIND_SCHEMAS = {
+  service: serviceSchema,
+  reader: readerSchema,
+  extensionPoint: extensionPointSchema,
+  recipe: recipeSchema,
+  component: componentSchema,
+};
+
+export async function validateKind(
+  instance: string,
+  kind: keyof typeof KIND_SCHEMAS
+): Promise<ValidationResult> {
+  const finalSchema = await dereference(KIND_SCHEMAS[kind] as Schema);
+  const validator = new Validator(finalSchema as any);
+
+  validator.addSchema(draft07 as any);
+
+  return validator.validate(instance);
+}
 
 export function validateInput(
   schema: Schema,
@@ -90,6 +122,7 @@ export interface ExtensionValidationResult {
   notConfigured: MissingConfigurationError[];
   missingConfiguration: MissingConfigurationError[];
   multipleAuths: MultipleConfigurationError[];
+  schemaErrors: any;
 }
 
 async function validateExtension(
@@ -107,7 +140,14 @@ async function validateExtension(
     extensionPoint.inputSchema
   );
 
-  const isValid = await extensionValidator.isValid(extension);
+  let schemaErrors: any;
+  let validated = true;
+  try {
+    await extensionValidator.validate(extension);
+  } catch (ex) {
+    validated = false;
+    schemaErrors = ex;
+  }
 
   const notConfigured = [];
   const multipleAuths = [];
@@ -139,10 +179,11 @@ async function validateExtension(
       !notConfigured.length &&
       !multipleAuths.length &&
       !missingConfiguration.length &&
-      isValid,
+      validated,
     notConfigured,
     multipleAuths,
     missingConfiguration,
+    schemaErrors,
   };
 }
 
@@ -171,8 +212,17 @@ const pixieResolver: ResolverOptions = {
   },
 };
 
+export async function bundle(schema: Schema): Promise<Schema> {
+  return (await $RefParser.bundle(schema as any, {
+    resolve: { pixieResolver },
+  })) as Schema;
+}
+
 export async function dereference(schema: Schema): Promise<Schema> {
   return (await $RefParser.dereference(schema as any, {
     resolve: { pixieResolver },
+    dereference: {
+      circular: "ignore",
+    },
   })) as Schema;
 }

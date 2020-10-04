@@ -1,16 +1,15 @@
 apiVersion: v1
 kind: extensionPoint
 metadata:
-  id: com.linkedin.person.contactInfo.button
+  id: "linkedin/contact-info-button"
   version: 0.0.1
   name: LinkedIn Contact Info Button
   description: Add a button to the LinkedIn Contact Info dialog
-  author: pixiebrix
 definition:
   type: menuItem
   reader:
-    - com.linkedin.person.summary
-    - com.linkedin.person.contactInfo
+    - linkedin/person-summary
+    - "linkedin/contact-info"
   isAvailable:
     matchPatterns: https://*.linkedin.com/*/detail/contact-info/
     selectors: "#profile-content"

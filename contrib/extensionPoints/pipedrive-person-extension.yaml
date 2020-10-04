@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: extensionPoint
 metadata:
-  id: pixiebrix/examples-pipedrive-person-panel
+  id: pipedrive/person-panel
   version: 0.0.1
   name: Pipedrive Person Panel
   description: A Pipedrive person panel
-  author: pixiebrix
 definition:
   type: panel
   reader: com.pipedrive.person.reader

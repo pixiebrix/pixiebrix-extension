@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: "google/search"
+  version: 0.0.1
+  name: Google Search in new tab
+  description: Runs a Google search in a new tab
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    query:
+      type: string
+      description: The search query
+  required:
+    - query
+pipeline:
+  - id: "@pixiebrix/browser/open-tab"
+    config:
+      url: https://www.google.com/search
+      params:
+        q: query

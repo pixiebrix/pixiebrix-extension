@@ -17,7 +17,7 @@ function makeProperties(obj: object, propertyKey: string = "property") {
 export class AddUpdateContact extends Effect {
   constructor() {
     super(
-      "pixiebrix/contrib-hubspot-contact",
+      "@pixiebrix/hubspot-contact",
       "Create/Update a HubSpot contact",
       "Create/Update a HubSpot contact email and/or other information available"
     );
@@ -28,7 +28,7 @@ export class AddUpdateContact extends Effect {
     type: "object",
     properties: {
       service: {
-        $ref: "https://app.pixiebrix.com/schemas/services/hubspot",
+        $ref: "https://app.pixiebrix.com/schemas/services/hubspot/api",
       },
       email: {
         type: "string",
@@ -131,7 +131,7 @@ export class AddUpdateContact extends Effect {
 export class AddUpdateCompany extends Effect {
   constructor() {
     super(
-      "pixiebrix/contrib-hubspot-company",
+      "hubspot/create-update-company",
       "Create/Update a HubSpot company",
       "Create/Update a HubSpot company by website domain"
     );
@@ -143,7 +143,7 @@ export class AddUpdateCompany extends Effect {
     type: "object",
     properties: {
       hubspot: {
-        $ref: "https://app.pixiebrix.com/schemas/services/hubspot",
+        $ref: "https://app.pixiebrix.com/schemas/services/hubspot/api",
       },
       name: {
         type: "string",
@@ -173,11 +173,6 @@ export class AddUpdateCompany extends Effect {
     if (!website) {
       console.error("Website is required", config);
       throw new Error("Website is required");
-    } else {
-      console.debug(
-        "Running pixiebrix/contrib-hubspot-company with config",
-        config
-      );
     }
 
     const properties = makeProperties(config, "name");

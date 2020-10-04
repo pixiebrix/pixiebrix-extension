@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: reader
 metadata:
-  id: com.zillow.property.reader
+  id: zillow/property
   version: 0.0.1
   name: Zillow Property Info
   description: Read property information from Zillow
-  author: pixiebrix
 definition:
   reader:
     type: react

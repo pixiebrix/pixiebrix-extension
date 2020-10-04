@@ -7,7 +7,7 @@ import { registerBlock } from "@/blocks/registry";
 class PageMetadataReader extends Reader {
   constructor() {
     super(
-      "pixiebrix/mozilla-page-metadata",
+      "@pixiebrix/document-metadata",
       "Page metadata reader",
       "Read OpenGraph, Twitter, and Meta tags"
     );

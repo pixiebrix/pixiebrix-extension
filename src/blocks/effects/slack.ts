@@ -6,7 +6,7 @@ import { BlockArg, Schema } from "@/core";
 export class SendSimpleSlackMessage extends Effect {
   constructor() {
     super(
-      "pixiebrix/contrib-slack-simple-message",
+      "slack/simple-message",
       "Send a Slack message",
       "Send a Slack message via its Incoming WebHooks App"
     );
@@ -66,7 +66,7 @@ export class SendSimpleSlackMessage extends Effect {
 export class SendAdvancedSlackMessage extends Effect {
   constructor() {
     super(
-      "pixiebrix/contrib-slack-advanced-message",
+      "slack/advanced-message",
       "Send a Slack richly-formatted message with attachments",
       "Send a Slack richly-formatted message via its Incoming WebHooks App"
     );

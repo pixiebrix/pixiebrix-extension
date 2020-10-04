@@ -10,7 +10,7 @@ type UserInfo = chromeNamespace.identity.UserInfo;
 class ChromeProfileReader extends Reader {
   constructor() {
     super(
-      "pixiebrix/chrome-profile-reader",
+      "@pixiebrix/chrome-profile",
       "Chrome user profile reader",
       "Read data from the Chrome user profile"
     );
@@ -51,7 +51,7 @@ class ChromeProfileReader extends Reader {
 class PixieBrixProfileReader extends Reader {
   constructor() {
     super(
-      "pixiebrix/pixiebrix-profile-reader",
+      "@pixiebrix/profile",
       "PixieBrix user profile reader",
       "Read email and other profile information from PixieBrix app"
     );
@@ -86,7 +86,7 @@ class PixieBrixProfileReader extends Reader {
 class DocumentReader extends Reader {
   constructor() {
     super(
-      "pixiebrix/context-reader",
+      "@pixiebrix/document-context",
       "Context reader",
       "Read generic metadata about the current page context"
     );
@@ -125,7 +125,7 @@ class DocumentReader extends Reader {
 class ManifestReader extends Reader {
   constructor() {
     super(
-      "pixiebrix/manifest-reader",
+      "@pixiebrix/chrome-extension-manifest",
       "Chrome manifest reader",
       "Read the Chrome extension manifest"
     );

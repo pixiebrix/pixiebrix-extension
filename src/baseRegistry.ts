@@ -5,6 +5,9 @@ import { getBaseURL } from "@/services/baseService";
 import compact from "lodash/compact";
 import urljoin from "url-join";
 import isPlainObject from "lodash/isPlainObject";
+import pickBy from "lodash/pickBy";
+
+const LOCAL_SCOPE = "@local";
 
 interface RegistryItem {
   id: string;
@@ -42,6 +45,7 @@ export class Registry<TItem extends RegistryItem> {
     }
     const result = this.data[id];
     if (!result) {
+      console.debug("Installed blocks", this.data);
       throw new DoesNotExistError(id);
     }
     return result;
@@ -49,6 +53,12 @@ export class Registry<TItem extends RegistryItem> {
 
   all(): TItem[] {
     return Object.values(this.data);
+  }
+
+  local(): TItem[] {
+    return Object.values(
+      pickBy(this.data, (value, key) => key.startsWith(`${LOCAL_SCOPE}/`))
+    );
   }
 
   register(...items: TItem[]): void {
@@ -87,24 +97,21 @@ export class Registry<TItem extends RegistryItem> {
 
   async fetch(): Promise<void> {
     const serviceUrl = await getBaseURL();
-    const { data } = await axios.get(
-      urljoin(serviceUrl, "api", this.resourcePath, "/")
-    );
+    const url = urljoin(serviceUrl, "api", this.resourcePath, "/");
+    const { data } = await axios.get(url);
 
     if (!Array.isArray(data)) {
       throw new Error(`Expected array from ${this.resourcePath}`);
     }
-    // console.debug(`Got items from ${this.resourcePath}`, { data });
 
     if (chrome?.storage) {
       await setStorage(this.storageKey, JSON.stringify(data));
     }
 
-    // console.trace(`Current storage: `, await readAllStorage());
-    // console.debug('Stored', await readStorage(this.storageKey));
-
     const parsed = compact(flatten(data.map((x) => this._parse(x))));
-    // console.debug("Parsed elements", parsed);
+
+    console.debug(`Fetched ${parsed.length} items from ${url}`);
+
     this.register(...parsed);
   }
 
@@ -127,16 +134,18 @@ export class Registry<TItem extends RegistryItem> {
       throw new Error("Error refreshing configuration from storage");
     }
 
-    if (!data?.length) {
-      if (allowFetch) {
-        await this.fetch();
-      } else {
-        throw new Error("No items stored locally and fetch is not allowed");
-      }
-    } else {
+    // Load local first
+    if (data?.length) {
       const parsed: TItem[] = compact(data.map((x: unknown) => this._parse(x)));
       this.register(...flatten(parsed));
     }
+
+    if (allowFetch) {
+      await this.fetch();
+    } else if (!data?.length) {
+      throw new Error("No items stored locally and fetch is not allowed");
+    }
+
     this.refreshed = true;
   }
 

@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: service
 metadata:
-  id: nytimes
+  id: nytimes/api
   version: 0.0.1
   name: New York Times API
   description: The New York Times API
-  author: pixiebrix
   url: https://developer.nytimes.com/
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"

@@ -1,16 +1,15 @@
 apiVersion: v1
 kind: extensionPoint
 metadata:
-  id: com.linkedin.person.contactInfo.entry
+  id: "linkedin/contact-info-entry"
   version: 0.0.1
   name: LinkedIn Contact Info Entry
   description: Add an entry to the contact information modal
-  author: pixiebrix
 definition:
   type: panel
   reader:
-    - com.linkedin.person.summary
-    - com.linkedin.person.contactInfo
+    - linkedin/person-summary
+    - "linkedin/contact-info"
   isAvailable:
     matchPatterns: https://*.linkedin.com/*/detail/contact-info/
     selectors: "#pv-contact-info"

@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: recipe
 metadata:
-  id: pixiebrix/contrib-linkedin-hubspot
+  id: linkedin/hubspot
+  version: 0.0.1
   name: LinkedIn HubSpot Integration
   description: LinkedIn HubSpot Integration, e.g., send profiles to HubSpot
-  author: pixiebrix
 extensionPoints:
-  - id: com.linkedin.person.contactInfo.button
+  - id: "linkedin/contact-info-button"
     label: Create/Update in HubSpot
     services:
       hubspot: hubspot
-      geocode: google-geocode
+      geocode: google/geocode
     config:
       caption: Create in HubSpot
       icon:
@@ -18,14 +18,14 @@ extensionPoints:
         library: simple-icons
         size: 10
       action:
-        - id: pixiebrix/contrib-google-geocode
+        - id: pixiebrix/contrib-google/geocode
           outputKey: location
           config:
             service: "@geocode"
             address: locationName
-        - id: pixiebrix/pixiebrix-profile-reader
+        - id: "@pixiebrix/profile"
           outputKey: profile
-        - id: pixiebrix/contrib-api
+        - id: "@pixiebrix/http-get"
           outputKey: owners
           config:
             service: "@hubspot"
@@ -47,7 +47,7 @@ extensionPoints:
             address: address
             jobtitle: headline
             hubspot_owner_id: "@owners.0?.ownerId"
-  - id: com.linkedin.person.panel
+  - id: "linkedin/person-panel"
     label: HubSpot Timeline
     services:
       hubspot: hubspot
@@ -59,7 +59,7 @@ extensionPoints:
         config:
           hubspotService: "@hubspot"
           query: "{{&firstName}} {{&lastName}} {{&currentCompanyName}}"
-  - id: com.linkedin.person.contactInfo.entry
+  - id: "linkedin/contact-info-entry"
     label: Hubspot Contact Info Entry
     services:
       hubspot: hubspot
@@ -80,7 +80,7 @@ extensionPoints:
               {% else %}
                 Not found in Hubspot
               {% endif %}
-  - id: com.linkedin.organization.button
+  - id: "linkedin/organization-button"
     label: Hubspot Company Entry
     services:
       hubspot: hubspot
@@ -91,9 +91,9 @@ extensionPoints:
         library: simple-icons
         size: 10
       action:
-        - id: pixiebrix/pixiebrix-profile-reader
+        - id: "@pixiebrix/profile"
           outputKey: profile
-        - id: pixiebrix/contrib-api
+        - id: "@pixiebrix/get"
           outputKey: owners
           config:
             service: "@hubspot"

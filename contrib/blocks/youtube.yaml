@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: component
 metadata:
-  id: pixiebrix/examples-youtube
+  id: "youtube/video"
   version: 0.0.1
   name: YouTube Video
   description: Embedded YouTube video
-  author: pixiebrix
 inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object

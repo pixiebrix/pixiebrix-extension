@@ -4,7 +4,7 @@ import { persistStore, persistReducer } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
 import { createLogger } from "redux-logger";
 
-import { optionsSlice, servicesSlice } from "@/designer/options/slices";
+import { optionsSlice, servicesSlice } from "@/options/slices";
 
 const persistOptionsConfig = {
   key: "extensionOptions",

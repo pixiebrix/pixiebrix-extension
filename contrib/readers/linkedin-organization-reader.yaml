@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: reader
 metadata:
-  id: com.linkedin.organization.summary
+  id: linkedin/organization-summary
   version: 0.0.1
   name: LinkedIn Company Summary
   description: Read company information from a company profile page
-  author: pixiebrix
 definition:
   reader:
     type: emberjs

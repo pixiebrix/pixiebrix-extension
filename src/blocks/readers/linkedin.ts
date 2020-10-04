@@ -33,7 +33,7 @@ class LinkedInProfileReader extends Reader {
 
   constructor() {
     super(
-      "com.linkedin.person.summary",
+      "linkedin/person-summary",
       "LinkedIn Profile Summary",
       "Read summary information from a LinkedIn profile"
     );

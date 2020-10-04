@@ -1,11 +1,10 @@
 apiVersion: v1
 kind: reader
 metadata:
-  id: pixiebrix/examples-trello-card-reader
+  id: trello/card
   version: 0.0.1
   name: Trello Card Reader
   description: Read information from the active Trello card
-  author: pixiebrix
 definition:
   reader:
     type: window

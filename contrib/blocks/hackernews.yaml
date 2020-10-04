@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: "hackernews/article-table"
+  version: 0.0.1
+  name: Hacker News article search
+  description: A table of the latest HN articles for a search
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    query:
+      type: string
+      description: The query to search on Hacker News
+  required:
+    - organizationName
+pipeline:
+  # TODO: add a jq step to filter articles without titles
+  - id: "@pixiebrix/http-get"
+    config:
+      url: https://hn.algolia.com/api/v1/search
+      params:
+        query: query
+  - id: "@pixiebrix/table"
+    config:
+      columns:
+        - property: author
+          label: Author
+        - property: title
+          label: Article Title
+          href: url

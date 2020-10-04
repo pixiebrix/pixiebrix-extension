@@ -3,7 +3,7 @@ import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/services/factory";
 import { RawServiceConfiguration } from "@/core";
 
-export const PIXIEBRIX_SERVICE_ID = "pixiebrix";
+export const PIXIEBRIX_SERVICE_ID = "@pixiebrix/api";
 
 const storageKey = "persist:servicesOptions";
 

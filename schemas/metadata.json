@@ -6,7 +6,8 @@
   "properties": {
       "id": {
         "type": "string",
-        "description": "A unique identifier for the object across the PixieBrix ecosystem"
+        "description": "A unique identifier for the object across the PixieBrix ecosystem",
+        "pattern": "^(@[a-z0-9-~][a-z0-9-._~]*/)?([a-z0-9-~][a-z0-9-._~]*/)?([a-z0-9-~][a-z0-9-._~]*)$"
       },
       "version": {
         "type": "string",

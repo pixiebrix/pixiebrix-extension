@@ -2,8 +2,7 @@ import { ServiceDefinition } from "@/types/definitions";
 import React, { useMemo } from "react";
 import { useFetch } from "@/hooks/fetch";
 import Select from "react-select";
-
-const PIXIEBRIX_SERVICE_ID = "pixiebrix";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 
 interface ServiceOption {
   value: string;

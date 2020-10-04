@@ -7,7 +7,7 @@ import { BlockArg, BlockOptions, Schema } from "@/core";
 export class JSONPathTransformer extends Transformer {
   constructor() {
     super(
-      "pixiebrix/contrib-jsonpath",
+      "@pixiebrix/jsonpath",
       "JSONPath",
       "Apply a JSONPath expression: https://github.com/s3u/JSONPath",
       faCode

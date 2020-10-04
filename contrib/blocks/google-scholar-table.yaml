@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: "google/scholar-table"
+  version: 0.0.1
+  name: Show Google Scholar results in a table
+  description: A table of Google Scholar Search Results
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    service:
+      $ref: "https://app.pixiebrix.com/schemas/services/serpapi/api"
+    query:
+      type: string
+      description: The search query
+  required:
+    - query
+    - service
+pipeline:
+  - id: "@pixiebrix/http-get"
+    config:
+      service: service
+      url: https://serpapi.com/search
+      params:
+        engine: google_scholar
+        q: query
+  - id: "@pixiebrix/jq"
+    config:
+      filter: "[.organic_results[]]"
+  - id: "@pixiebrix/table"
+    config:
+      columns:
+        - property: title
+          label: Title
+          href: link
+        - property: inline_links.cited_by?.total
+          label: Citation Count
+        - property: publication_info?.summary
+        - label: Publication

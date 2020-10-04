@@ -31,7 +31,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
 
   constructor(entityType: EntityType) {
     super(
-      `com.techcrunch.mention.${entityType}.action`,
+      `techcrunch/${entityType}-mention-action`,
       `Techcrunch ${startCase(entityType)} Link Action`,
       `Add a button next to each ${entityType} mention in an article`,
       faMousePointer
@@ -46,7 +46,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
       description: "The caption for the button.",
     },
     action: {
-      $ref: "#/definitions/effect",
+      $ref: "https://app.pixiebrix.com/schemas/effect#",
       description: "The action to perform when clicked.",
     },
   });
@@ -66,7 +66,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
 
   defaultReader() {
     return blockRegistry.lookup(
-      `com.techcrunch.mention.${this.entityType}.reader`
+      `techcrunch/${this.entityType}-mention`
     ) as IReader;
   }
 
