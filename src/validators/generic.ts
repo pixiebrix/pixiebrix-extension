@@ -46,8 +46,6 @@ const SCHEMA_URLS = {
 const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";
 
 const REF_SECRETS = [
-  "https://www.pixiebrix.com/schemas/key",
-  "https://www.pixiebrix.com/schemas/key#",
   "https://app.pixiebrix.com/schemas/key",
   "https://app.pixiebrix.com/schemas/key#",
 ];
@@ -61,7 +59,7 @@ export const KIND_SCHEMAS = {
 };
 
 export async function validateKind(
-  instance: string,
+  instance: object,
   kind: keyof typeof KIND_SCHEMAS
 ): Promise<ValidationResult> {
   const finalSchema = await dereference(KIND_SCHEMAS[kind] as Schema);

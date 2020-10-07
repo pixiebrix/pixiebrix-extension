@@ -1,8 +1,12 @@
 import { validateKind } from "@/validators/generic";
+import yaml from "js-yaml";
 
-const serviceTemplate = require("raw-loader!@contrib/templates/service.txt?esModule=false")
-  .default;
+// @ts-ignore: jest has a transformer for text files
+import serviceTemplate from "@contrib/templates/service.txt";
 
 test("can validate service", async () => {
-  expect((await validateKind(serviceTemplate, "service")).valid).toBeTruthy();
+  const json = yaml.safeLoad(serviceTemplate) as object;
+  const result = await validateKind(json, "service");
+  console.log(result.errors);
+  expect(result.valid).toBeTruthy();
 });
