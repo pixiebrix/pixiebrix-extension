@@ -127,8 +127,8 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
                     Delete
                   </AsyncButton>
                 </div>
-                {/* @ts-ignore: ts doesn't like the variant */}
                 <div>
+                  {/* @ts-ignore: ts doesn't like the default variant */}
                   <Button variant="default" onClick={onClose}>
                     Cancel
                   </Button>

@@ -80,7 +80,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       <div className="pb-4">
         <p>
           Services are external accounts and resources that you configure and
-          re-use across brix
+          re-use across bricks
         </p>
       </div>
       {activeConfiguration && (
@@ -104,7 +104,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
               <Nav
                 variant="tabs"
                 defaultActiveKey={activeTab}
-                onSelect={(x) => setTab(x)}
+                onSelect={(x: string) => setTab(x)}
               >
                 <Nav.Item>
                   <Nav.Link eventKey="private">

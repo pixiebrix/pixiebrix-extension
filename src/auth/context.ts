@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 
 axios.defaults.headers.post["X-CSRFToken"] = Cookies.get("csrftoken");
 
-interface Profile {
+export interface Profile {
   userId?: string;
   email?: string;
   isLoggedIn: boolean;
@@ -19,3 +19,5 @@ const initialState: Profile = {
 };
 
 export const AuthContext = React.createContext(initialState);
+
+export default AuthContext;

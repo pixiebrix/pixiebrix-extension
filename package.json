@@ -1,5 +1,5 @@
 {
-  "name": "pixiebrix-extension",
+  "name": "@pixiebrix/extension",
   "version": "0.1.1",
   "description": "PixieBrix Browser Extension",
   "main": "index.js",
