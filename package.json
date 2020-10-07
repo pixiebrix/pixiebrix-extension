@@ -77,7 +77,7 @@
     "deep-equal": "^2.0.4",
     "dompurify": "^2.0.12",
     "dotenv": "^8.2.0",
-    "dotenv-webpack": "^2.0.0",
+    "dotenv-webpack": "^3.0.0",
     "file-loader": "^6.1.0",
     "formik": "^2.1.6",
     "generate-schema": "^2.6.0",
