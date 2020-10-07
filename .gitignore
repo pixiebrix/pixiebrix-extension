@@ -36,3 +36,5 @@ browsers/**/bundles/**
 
 # Other artifacts
 artifacts
+/scripts/bin/
+headers.json

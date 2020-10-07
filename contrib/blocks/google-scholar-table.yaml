@@ -18,7 +18,7 @@ inputSchema:
     - query
     - service
 pipeline:
-  - id: "@pixiebrix/http-get"
+  - id: "@pixiebrix/get"
     config:
       service: service
       url: https://serpapi.com/search

@@ -16,7 +16,7 @@ inputSchema:
     - organizationName
 pipeline:
   # TODO: add a jq step to filter articles without titles
-  - id: "@pixiebrix/http-get"
+  - id: "@pixiebrix/get"
     config:
       url: https://hn.algolia.com/api/v1/search
       params:

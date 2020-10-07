@@ -1,5 +1,4 @@
 import { Effect } from "@/types";
-import "notifyjs-browser";
 import { proxyService } from "@/messaging/proxy";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";

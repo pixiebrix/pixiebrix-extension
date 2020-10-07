@@ -1,12 +1,15 @@
 {
-  "name": "pixiebrix-extension",
-  "version": "0.1.0",
+  "name": "@pixiebrix/extension",
+  "version": "0.1.1",
   "description": "PixieBrix Browser Extension",
   "main": "index.js",
   "scripts": {
     "test": "jest",
     "watch:chrome": "NODE_ENV='development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
-    "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js"
+    "stage:chrome": "NODE_ENV='staging' npx webpack --config browsers/chrome/webpack/webpack.prod.js",
+    "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js",
+    "build:scripts": "npx webpack --config scripts/webpack.scripts.js",
+    "generate:headers": "node scripts/bin/headers.js --stack-size=1024"
   },
   "author": "Todd Schiller",
   "license": "BSD-3-Clause",
@@ -20,7 +23,7 @@
     "@babel/preset-react": "^7.10.4",
     "@babel/preset-typescript": "^7.10.4",
     "@cfworker/json-schema": "^1.3.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.31",
+    "@fortawesome/fontawesome-svg-core": "1.2.29",
     "@fortawesome/free-brands-svg-icons": "^5.15.0",
     "@fortawesome/free-solid-svg-icons": "^5.13.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
@@ -191,5 +194,10 @@
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
+  },
+  "devDependencies": {
+    "@types/jsdom": "^16.2.4",
+    "canvas": "^2.6.1",
+    "jsdom": "^16.4.0"
   }
 }

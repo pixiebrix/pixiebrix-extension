@@ -13,7 +13,7 @@ inputSchema:
   type: object
   properties:
     hubspotService:
-      $ref: "https://app.pixiebrix.com/schemas/services/hubspot"
+      $ref: "https://app.pixiebrix.com/schemas/services/hubspot/api"
     query:
       type: string
       description: The search query, e.g., name and company

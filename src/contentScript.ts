@@ -8,6 +8,8 @@ import { withSearchWindow, withDetectFrameworkVersions } from "@/common";
 import { handleNavigate } from "@/lifecycle";
 import { reportError } from "@/telemetry/rollbar";
 import { Message } from "@/core";
+import "notifyjs-browser";
+import "jquery.initialize";
 import "@/telemetry/mixpanel";
 
 const _watchedReaders = {};

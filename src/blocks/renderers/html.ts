@@ -1,12 +1,12 @@
 import { Renderer } from "@/types";
-import createDOMPurify from "dompurify";
+import createDOMPurify, { DOMPurifyI } from "dompurify";
 import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
 
-const DOMPurify = createDOMPurify(window);
-
 export class Html extends Renderer {
+  private DOMPurify: DOMPurifyI;
+
   constructor() {
     super(
       "@pixiebrix/html",
@@ -23,7 +23,10 @@ export class Html extends Renderer {
   });
 
   async render({ html }: BlockArg) {
-    return DOMPurify.sanitize(html);
+    if (!this.DOMPurify) {
+      this.DOMPurify = createDOMPurify(window);
+    }
+    return this.DOMPurify.sanitize(html);
   }
 }
 
