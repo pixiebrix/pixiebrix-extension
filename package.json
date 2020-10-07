@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npx jest",
+    "lint": "npx eslint src/**",
     "watch:chrome": "NODE_ENV='development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
     "stage:chrome": "NODE_ENV='staging' npx webpack --config browsers/chrome/webpack/webpack.prod.js",
     "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js",
@@ -160,7 +161,11 @@
     "webpack-extension-reloader": "^1.1.4",
     "webpack-merge": "^4.2.2",
     "yaml-jest": "^1.0.5",
-    "yaml-loader": "^0.6.0"
+    "yaml-loader": "^0.6.0",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
+    "eslint": "^7.10.0",
+    "eslint-plugin-react": "^7.21.3"
   },
   "jest": {
     "modulePaths": [
