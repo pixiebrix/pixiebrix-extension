@@ -25,7 +25,7 @@ extensionPoints:
             address: locationName
         - id: "@pixiebrix/profile"
           outputKey: profile
-        - id: "@pixiebrix/http-get"
+        - id: "@pixiebrix/get"
           outputKey: owners
           config:
             service: "@hubspot"

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import store, { persistor, hashHistory } from "./store";
+import store, { hashHistory, persistor } from "./store";
 import useAsyncEffect from "use-async-effect";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -11,7 +11,7 @@ import ExtensionEditor from "./pages/extensionEditor/ExtensionEditor";
 import ServicesEditor from "./pages/services/ServicesEditor";
 import BrickCreatePage from "./pages/brickEditor/CreatePage";
 import BrickEditPage from "./pages/brickEditor/EditPage";
-import Marketplace from "./pages/Marketplace";
+import MarketplacePage from "./pages/MarketplacePage";
 import Settings from "./pages/Settings";
 import Navbar from "@/layout/Navbar";
 import Footer from "@/layout/Footer";
@@ -22,15 +22,14 @@ import { ToastProvider, useToasts } from "react-toast-notifications";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
-
-import "@/blocks"; // Import for the side effect
-
 import "vendors/theme/app/app.scss";
 import { AuthContext } from "@/auth/context";
 import axios from "axios";
 import { useAsyncState } from "@/hooks/common";
 import urljoin from "url-join";
 import { getBaseURL } from "@/services/baseService";
+
+import "@/blocks"; // Import for the side effect
 
 const Layout = ({}) => {
   const [loaded, setLoaded] = useState(false);
@@ -70,7 +69,11 @@ const Layout = ({}) => {
             {loaded ? (
               <ErrorBoundary>
                 <Switch>
-                  <Route exact path="/marketplace" component={Marketplace} />
+                  <Route
+                    exact
+                    path="/marketplace"
+                    component={MarketplacePage}
+                  />
                   <Route exact path="/settings" component={Settings} />
                   <Route path="/services/:id?" component={ServicesEditor} />
                   <Route exact path="/workshop" component={ExtensionEditor} />

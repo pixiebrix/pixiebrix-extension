@@ -1,5 +1,4 @@
 import { Effect } from "@/types";
-import "notifyjs-browser";
 import { proxyService } from "@/messaging/proxy";
 import { registerBlock } from "@/blocks/registry";
 import { Schema, BlockArg } from "@/core";
@@ -17,7 +16,7 @@ function makeProperties(obj: object, propertyKey: string = "property") {
 export class AddUpdateContact extends Effect {
   constructor() {
     super(
-      "@pixiebrix/hubspot-contact",
+      "hubspot/create-update-contact",
       "Create/Update a HubSpot contact",
       "Create/Update a HubSpot contact email and/or other information available"
     );

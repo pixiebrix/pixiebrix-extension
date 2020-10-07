@@ -34,6 +34,14 @@ module.exports = merge.strategy({ plugins: "prepend" })(common, {
         {
           from: path.resolve(chromeRoot, "manifests", "manifest.dev.json"),
           to: "manifest.json",
+          transform(content) {
+            return content
+              .toString()
+              .replace(
+                "__NPM_PACKAGE_VERSION__",
+                process.env.npm_package_version
+              );
+          },
         },
       ],
     }),

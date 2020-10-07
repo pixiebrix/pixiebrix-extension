@@ -65,12 +65,12 @@ function processFind(
   return mapValues(selector.find, (selector) => select(selector, $elt));
 }
 
-const CONTENT_TYPES: { [key: string]: number | undefined } = {
-  text: Node.TEXT_NODE,
-  comment: Node.COMMENT_NODE,
-};
-
 function processElement($elt: JQuery, selector: SingleSelector) {
+  const CONTENT_TYPES: { [key: string]: number | undefined } = {
+    text: Node.TEXT_NODE,
+    comment: Node.COMMENT_NODE,
+  };
+
   let value;
   if (selector.attr) {
     value = $elt.attr(selector.attr);

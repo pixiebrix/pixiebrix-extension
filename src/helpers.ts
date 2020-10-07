@@ -1,4 +1,3 @@
-import "jquery.initialize";
 import Mustache from "mustache";
 import nunjucks from "nunjucks";
 import isPlainObject from "lodash/isPlainObject";

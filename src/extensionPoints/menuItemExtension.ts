@@ -3,7 +3,6 @@ import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import Mustache from "mustache";
 import iconAsSVG, { IconConfig } from "@/icons/svgIcons";
 import { checkAvailable } from "@/blocks/available";
-import "notifyjs-browser";
 import castArray from "lodash/castArray";
 import { engineRenderer } from "@/helpers";
 import {

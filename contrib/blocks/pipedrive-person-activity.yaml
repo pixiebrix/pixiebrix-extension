@@ -10,7 +10,7 @@ inputSchema:
   type: object
   properties:
     pipedrive:
-      $ref: "https://app.pixiebrix.com/schemas/services/pipedrive"
+      $ref: "https://app.pixiebrix.com/schemas/services/pipedrive/api"
     personName:
       type: string
       description: The name of person
@@ -26,7 +26,7 @@ pipeline:
       pipedriveService: pipedrive
       name: personName
       organization: organizationName
-  - id: "@pixiebrix/http-get"
+  - id: "@pixiebrix/get"
     config:
       accountName: pipedrive
       url: https://api.pipedrive.com/v1/persons/{{id}}/activities

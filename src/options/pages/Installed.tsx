@@ -84,7 +84,7 @@ const ExtensionRow: React.FunctionComponent<{
       return <BeatLoader />;
     } else if (validation && !validation.valid) {
       return (
-        <span className="text-danger">
+        <span className="text-danger text-wrap">
           <FontAwesomeIcon icon={faExclamation} />{" "}
           {validationMessage(validation)}
         </span>
@@ -110,7 +110,7 @@ const ExtensionRow: React.FunctionComponent<{
       <td>
         <Link to={`/workshop/extensions/${extension.id}`}>{label ?? id}</Link>
       </td>
-      <td>{statusElt}</td>
+      <td className="text-wrap">{statusElt}</td>
       <td>
         <Button
           variant="danger"
@@ -158,39 +158,37 @@ const Installed: React.FunctionComponent<{
         <Col xl={9} lg={10} md={12}>
           <Card>
             <Card.Header>Active Bricks</Card.Header>
-            <Card.Body>
-              <Table>
-                <thead>
+            <Table>
+              <thead>
+                <tr>
+                  <th>Location</th>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Uninstall</th>
+                </tr>
+              </thead>
+              <tbody>
+                {extensions.map((extension) => (
+                  <ExtensionRow
+                    key={extension.id}
+                    extension={extension}
+                    locator={locator}
+                    onRemove={onRemove}
+                  />
+                ))}
+                {isEmpty(extensions) && (
                   <tr>
-                    <th>Location</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th>Uninstall</th>
+                    <td colSpan={4}>
+                      No bricks installed yet. Find some in the{" "}
+                      <Link to={"/marketplace"}>Marketplace</Link>
+                    </td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
+                    <td>&nbsp;</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {extensions.map((extension) => (
-                    <ExtensionRow
-                      key={extension.id}
-                      extension={extension}
-                      locator={locator}
-                      onRemove={onRemove}
-                    />
-                  ))}
-                  {isEmpty(extensions) && (
-                    <tr>
-                      <td colSpan={4}>
-                        No bricks installed yet. Find some in the{" "}
-                        <Link to={"/marketplace"}>Marketplace</Link>
-                      </td>
-                      <td>&nbsp;</td>
-                      <td>&nbsp;</td>
-                      <td>&nbsp;</td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>
-            </Card.Body>
+                )}
+              </tbody>
+            </Table>
           </Card>
         </Col>
       </Row>

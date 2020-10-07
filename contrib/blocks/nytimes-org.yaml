@@ -10,14 +10,14 @@ inputSchema:
   type: object
   properties:
     nytimesService:
-      $ref: "https://app.pixiebrix.com/schemas/services/nytimes"
+      $ref: "https://app.pixiebrix.com/schemas/services/nytimes/api"
     organizationName:
       type: string
       description: The name of the company to search for
   required:
     - organizationName
 pipeline:
-  - id: "@pixiebrix/http-get"
+  - id: "@pixiebrix/get"
     config:
       service: nytimesService
       url: https://api.nytimes.com/svc/search/v2/articlesearch.json

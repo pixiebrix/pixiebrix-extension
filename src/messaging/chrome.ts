@@ -39,6 +39,13 @@ type SendScriptMessage = (payload: any) => Promise<any>;
 export function createSendScriptMessage(
   messageType: string
 ): SendScriptMessage {
+  if (typeof document === "undefined") {
+    return () =>
+      new Promise<any>((resolve, reject) =>
+        reject("Not running in a browser context")
+      );
+  }
+
   let messageSeq = 0;
   const fulfillmentCallbacks: { [key: string]: (result: any) => void } = {};
   const rejectionCallbacks: { [key: string]: (result: any) => void } = {};

@@ -10,14 +10,14 @@ inputSchema:
   type: object
   properties:
     hubspotService:
-      $ref: "https://app.pixiebrix.com/schemas/services/hubspot"
+      $ref: "https://app.pixiebrix.com/schemas/services/hubspot/api"
     query:
       type: string
       description: The search query. You can use all of a word or just parts of a word as well.
   required:
     - query
 pipeline:
-  - id: "@pixiebrix/http-get"
+  - id: "@pixiebrix/get"
     config:
       service: hubspotService
       url: https://api.hubapi.com/contacts/v1/search/query

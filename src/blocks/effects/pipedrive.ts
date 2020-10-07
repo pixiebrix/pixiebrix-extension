@@ -1,5 +1,4 @@
 import { Effect } from "@/types";
-import "notifyjs-browser";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { proxyService } from "@/messaging/proxy";
 import { registerBlock } from "@/blocks/registry";

@@ -1,13 +1,13 @@
 import { Renderer } from "@/types";
 import marked from "marked";
-import createDOMPurify from "dompurify";
+import createDOMPurify, { DOMPurifyI } from "dompurify";
 import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
 
-const DOMPurify = createDOMPurify(window);
-
 export class Markdown extends Renderer {
+  private DOMPurify: DOMPurifyI;
+
   constructor() {
     super(
       "@pixiebrix/markdown",
@@ -24,7 +24,10 @@ export class Markdown extends Renderer {
   });
 
   async render({ markdown }: BlockArg) {
-    return DOMPurify.sanitize(marked(markdown));
+    if (!this.DOMPurify) {
+      this.DOMPurify = createDOMPurify(window);
+    }
+    return this.DOMPurify.sanitize(marked(markdown));
   }
 }
 

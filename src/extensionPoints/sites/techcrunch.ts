@@ -23,7 +23,7 @@ type EntityType = "organization" | "person";
 class MentionAction extends ExtensionPoint<MentionConfig> {
   private readonly entityType: EntityType;
 
-  protected $links: JQuery;
+  protected $links: JQuery | undefined;
 
   public get defaultOptions() {
     return { caption: "Action for {{name}}" };
@@ -37,7 +37,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
       faMousePointer
     );
     this.entityType = entityType;
-    this.$links = $();
+    this.$links = undefined;
   }
 
   inputSchema = propertiesToSchema({
@@ -111,7 +111,9 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
   }
 
   async run() {
-    await Promise.all(this.$links.map((_, link) => this.runOne($(link))));
+    if (this.$links?.length) {
+      await Promise.all(this.$links.map((_, link) => this.runOne($(link))));
+    }
   }
 }
 

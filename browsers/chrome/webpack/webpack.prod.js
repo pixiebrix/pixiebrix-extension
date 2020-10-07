@@ -75,8 +75,22 @@ module.exports = () => {
       new CopyPlugin({
         patterns: [
           {
-            from: path.resolve(chromeRoot, "manifests", "manifest.stg.json"),
+            from: path.resolve(
+              chromeRoot,
+              "manifests",
+              process.env.NODE_ENV === "staging"
+                ? "manifest.stg.json"
+                : "manifest.prod.json"
+            ),
             to: "manifest.json",
+            transform(content) {
+              return content
+                .toString()
+                .replace(
+                  "__NPM_PACKAGE_VERSION__",
+                  process.env.npm_package_version
+                );
+            },
           },
         ],
       }),
