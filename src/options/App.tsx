@@ -6,12 +6,12 @@ import { PersistGate } from "redux-persist/integration/react";
 import { GridLoader } from "react-spinners";
 import Container from "react-bootstrap/Container";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import InstalledExtensions from "./pages/Installed";
-import ExtensionEditor from "./pages/extensionEditor/ExtensionEditor";
-import ServicesEditor from "./pages/services/ServicesEditor";
-import BrickCreatePage from "./pages/brickEditor/CreatePage";
-import BrickEditPage from "./pages/brickEditor/EditPage";
-import MarketplacePage from "./pages/MarketplacePage";
+import InstalledExtensions from "@/options/pages/Installed";
+import ExtensionEditor from "@/options/pages/extensionEditor/ExtensionEditor";
+import ServicesEditor from "@/options/pages/services/ServicesEditor";
+import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
+import BrickEditPage from "@/options/pages/brickEditor/EditPage";
+import MarketplacePage from "@/options/pages/MarketplacePage";
 import Settings from "./pages/Settings";
 import Navbar from "@/layout/Navbar";
 import Footer from "@/layout/Footer";
@@ -29,9 +29,10 @@ import { useAsyncState } from "@/hooks/common";
 import urljoin from "url-join";
 import { getBaseURL } from "@/services/baseService";
 
-import "@/blocks"; // Import for the side effect
+import "@/blocks";
+import Banner from "@/layout/Banner"; // Import for the side effect
 
-const Layout = ({}) => {
+const Layout = () => {
   const [loaded, setLoaded] = useState(false);
   const { addToast } = useToasts();
 
@@ -65,6 +66,7 @@ const Layout = ({}) => {
       <Container fluid className="page-body-wrapper">
         <Sidebar />
         <div className="main-panel">
+          <Banner />
           <div className="content-wrapper">
             {loaded ? (
               <ErrorBoundary>
@@ -130,7 +132,7 @@ async function getAuth() {
   }
 }
 
-const App = ({}) => {
+const App: React.FunctionComponent = () => {
   const [authState] = useAsyncState(getAuth);
 
   return (

@@ -61,6 +61,8 @@
     "@types/webpack": "^4.41.22",
     "@types/webpack-env": "^1.15.2",
     "@types/yup": "^0.29.7",
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
     "@xops.net/json-schema-to-react-tree": "^1.0.2",
     "ace-builds": "^1.4.12",
     "axios": "^0.19.2",
@@ -81,6 +83,8 @@
     "dompurify": "^2.0.12",
     "dotenv": "^8.2.0",
     "dotenv-webpack": "^3.0.0",
+    "eslint": "^7.10.0",
+    "eslint-plugin-react": "^7.21.3",
     "file-loader": "^6.1.0",
     "formik": "^2.1.6",
     "generate-schema": "^2.6.0",
@@ -102,8 +106,6 @@
     "jsonpath": "^1.0.2",
     "jsonpath-plus": "^4.0.0",
     "jsonschema": "^1.2.6",
-    "lit-element": "^2.3.1",
-    "lit-html": "^1.2.1",
     "lodash": "^4.17.20",
     "marked": "^1.1.0",
     "match-pattern": "0.0.2",
@@ -115,7 +117,6 @@
     "nunjucks": "^3.2.2",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "page-metadata-parser": "^1.1.4",
-    "parse-address": "^1.1.2",
     "prettier": "2.0.5",
     "prop-types": "^15.7.2",
     "psl": "^1.8.0",
@@ -161,11 +162,7 @@
     "webpack-extension-reloader": "^1.1.4",
     "webpack-merge": "^4.2.2",
     "yaml-jest": "^1.0.5",
-    "yaml-loader": "^0.6.0",
-    "@typescript-eslint/eslint-plugin": "^4.4.0",
-    "@typescript-eslint/parser": "^4.4.0",
-    "eslint": "^7.10.0",
-    "eslint-plugin-react": "^7.21.3"
+    "yaml-loader": "^0.6.0"
   },
   "jest": {
     "modulePaths": [

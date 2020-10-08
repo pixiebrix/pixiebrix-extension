@@ -109,6 +109,7 @@ module.exports = () => {
           GOOGLE_API_KEY: JSON.stringify(process.env.GOOGLE_API_KEY),
           SERVICE_URL: JSON.stringify(process.env.SERVICE_URL),
           CHROME_EXTENSION_ID: JSON.stringify(process.env.CHROME_EXTENSION_ID),
+          NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
         },
       }),
       new MiniCssExtractPlugin({

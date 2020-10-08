@@ -1,0 +1,16 @@
+.environment-banner {
+  text-align: center;
+  padding: 10px;
+
+  &.unknown {
+    background-color: #ffd9b1;
+  }
+
+  &.development {
+    background-color: #bfd7bf;
+  }
+
+  &.staging {
+    background-color: #8bcaff;
+  }
+}

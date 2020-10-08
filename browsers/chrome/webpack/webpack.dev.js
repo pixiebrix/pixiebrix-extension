@@ -12,6 +12,12 @@ dotenv.config({
   path: path.resolve(chromeRoot, ".env.development"),
 });
 
+if (!process.env.SOURCE_VERSION) {
+  process.env.SOURCE_VERSION = require("child_process")
+    .execSync("git rev-parse --short HEAD")
+    .toString();
+}
+
 module.exports = merge.strategy({ plugins: "prepend" })(common, {
   mode: "development",
   devtool: "inline-source-map",
@@ -56,6 +62,8 @@ module.exports = merge.strategy({ plugins: "prepend" })(common, {
         ),
         GOOGLE_API_KEY: JSON.stringify(process.env.GOOGLE_API_KEY),
         SERVICE_URL: JSON.stringify("http://127.0.0.1:8000"),
+        SOURCE_VERSION: JSON.stringify(process.env.SOURCE_VERSION),
+        NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
       },
     }),
     new ExtensionReloader({

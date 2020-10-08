@@ -7,6 +7,7 @@ import { optionsSlice, OptionsState } from "../slices";
 import GenericMarketplacePage, {
   InstallRecipe,
 } from "@/pages/marketplace/MarketplacePage";
+import Rollbar from "rollbar";
 
 const { installRecipe } = optionsSlice.actions;
 
@@ -33,7 +34,7 @@ function useInstall(installRecipe: InstallAction): InstallRecipe {
           autoDismiss: true,
         });
       } catch (ex) {
-        // @ts-ignore: need to figure out how to import rollbar correctly in typescript
+        // @ts-ignore: rollbar typings are incorrect?
         Rollbar.error(ex);
         console.error(`Error installing ${recipe.metadata.name}`, ex);
         addToast(`Error installing ${recipe.metadata.name}`, {
