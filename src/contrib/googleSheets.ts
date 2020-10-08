@@ -7,6 +7,7 @@ import MessageSender = chrome.runtime.MessageSender;
 import AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
 import BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
 import BatchUpdateSpreadsheetResponse = gapi.client.sheets.BatchUpdateSpreadsheetResponse;
+import { reportError } from "@/telemetry/rollbar";
 
 const GOOGLE_SHEETS_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 
@@ -130,7 +131,19 @@ export function sheetsHandler(
       })
       .catch((err) => {
         console.debug(`sheetsHandler ${request.type} error`, { request, err });
-        sendResponse({ error: err ? err.toString() : "Unknown error" });
+        if (err.result.error.code === 404) {
+          sendResponse({
+            error:
+              "Cannot locate the Google sheet. Have you been granted access?",
+          });
+        } else if (err.result.error.code === 403) {
+          reportError(err);
+          sendResponse({
+            error: "Internal error: cannot connect to Google Sheets",
+          });
+        } else {
+          sendResponse({ error: err.result.error?.message ?? "Unknown error" });
+        }
       });
     return true;
   } else if (request.type) {

@@ -41,16 +41,16 @@ interface PanelConfig {
 /**
  * Extension point that adds a panel to a web page.
  */
-export class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
-  public get defaultOptions(): { heading: string } {
-    return { heading: "Custom Panel" };
-  }
+export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   protected template?: string;
-
   protected $container: JQuery;
   private readonly collapsedExtensions: { [key: string]: boolean };
 
-  constructor(
+  public get defaultOptions(): { heading: string } {
+    return { heading: "Custom Panel" };
+  }
+
+  protected constructor(
     id: string,
     name: string,
     description?: string,
@@ -94,7 +94,7 @@ export class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     throw new Error("PanelExtensionPoint.defaultReader not implemented");
   }
 
-  getTemplate() {
+  getTemplate(): string {
     if (this.template) return this.template;
     throw new Error("PanelExtensionPoint.getTemplate not implemented");
   }
@@ -107,7 +107,7 @@ export class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     throw new Error("PanelExtensionPoint.isAvailable not implemented");
   }
 
-  async install() {
+  async install(): Promise<boolean> {
     if (!(await this.isAvailable())) {
       console.debug(
         `Skipping panel extension ${this.id} because it's not available for the page`
@@ -216,7 +216,7 @@ export class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       $toggle.attr("aria-expanded", String(startExpanded));
       $toggle.toggleClass("active", startExpanded);
 
-      $toggle.click(() => {
+      $toggle.on("click", () => {
         $bodyContainer.toggleClass("show");
         const showing = $bodyContainer.hasClass("show");
         $toggle.attr("aria-expanded", String(showing));
@@ -231,7 +231,7 @@ export class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
   }
 
-  async run(locator: ServiceLocator) {
+  async run(locator: ServiceLocator): Promise<void> {
     if (!this.$container || !this.extensions.length) {
       return;
     }
@@ -249,7 +249,11 @@ export class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       try {
         await this.runExtension(readerContext, locator, extension);
       } catch (ex) {
-        reportError(ex);
+        // eslint-disable-next-line require-await
+        reportError(ex, {
+          extensionPointId: extension.extensionPointId,
+          extensionId: extension.id,
+        });
         errors.push(ex);
       }
     }
@@ -276,6 +280,18 @@ interface PanelDefinition extends ExtensionPointDefinition {
 
 class HydratedPanelExtensionPoint extends PanelExtensionPoint {
   private readonly _definition: PanelDefinition;
+  public readonly permissions: IPermissions;
+
+  constructor(config: ExtensionPointConfig<PanelDefinition>) {
+    const { id, name, description } = config.metadata;
+    super(id, name, description);
+    this._definition = config.definition;
+    const { isAvailable } = config.definition;
+    this.permissions = {
+      permissions: ["tabs", "webNavigation"],
+      origins: castArray(isAvailable.matchPatterns),
+    };
+  }
 
   public get defaultOptions(): {
     heading: string;
@@ -286,12 +302,6 @@ class HydratedPanelExtensionPoint extends PanelExtensionPoint {
       heading: heading ?? super.defaultOptions.heading,
       ...defaults,
     };
-  }
-
-  constructor(config: ExtensionPointConfig<PanelDefinition>) {
-    const { id, name, description } = config.metadata;
-    super(id, name, description);
-    this._definition = config.definition;
   }
 
   defaultReader(): IReader {
@@ -310,14 +320,6 @@ class HydratedPanelExtensionPoint extends PanelExtensionPoint {
         throw new Error(`Unexpected position ${position}`);
       }
     }
-  }
-
-  getPermissions(): IPermissions {
-    const { isAvailable } = this._definition;
-    return {
-      permissions: ["tabs", "webNavigation"],
-      origins: castArray(isAvailable.matchPatterns),
-    };
   }
 
   getContainerSelector(): string {

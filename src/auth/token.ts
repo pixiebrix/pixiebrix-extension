@@ -9,7 +9,7 @@ interface UserData {
   hostname?: string;
 }
 
-interface AuthData extends UserData {
+export interface AuthData extends UserData {
   token: string;
 }
 

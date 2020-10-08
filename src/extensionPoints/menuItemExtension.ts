@@ -28,6 +28,7 @@ import {
   IBlock,
   IExtension,
   IExtensionPoint,
+  IPermissions,
   ReaderOutput,
   Schema,
   ServiceLocator,
@@ -73,7 +74,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     required: ["caption", "action"],
   };
 
-  getTemplate() {
+  getTemplate(): string {
     if (this.template) return this.template;
     throw new Error("MenuItemExtensionPoint.getTemplate not implemented");
   }
@@ -88,7 +89,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     return blockList(extension.config.action);
   }
 
-  async install() {
+  async install(): Promise<boolean> {
     if (!(await this.isAvailable())) {
       return false;
     }
@@ -175,7 +176,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     });
   }
 
-  async run(locator: ServiceLocator) {
+  async run(locator: ServiceLocator): Promise<void> {
     if (!this.$menu || !this.extensions.length) {
       return;
     }
@@ -184,19 +185,22 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     const ctxt = await reader.read();
 
     if (ctxt == null) {
-      throw new Error("Reader returned null/undefined");
+      throw new Error(`Reader ${reader.id} returned null/undefined`);
     }
 
     const errors = [];
 
     for (const extension of this.extensions) {
-      // Run in order so that the order stays the same for where they get rendered. The service context is the
-      // only thing that's async as part of the initial configuration right now
+      // Run in order so that the order stays the same for where they get rendered. The service
+      // context is the only thing that's async as part of the initial configuration right now
       try {
         await this.runExtension(ctxt, locator, extension);
       } catch (ex) {
         // eslint-disable-next-line require-await
-        reportError(ex);
+        reportError(ex, {
+          extensionPointId: extension.extensionPointId,
+          extensionId: extension.id,
+        });
         errors.push(ex);
       }
     }
@@ -222,6 +226,7 @@ interface MenuDefinition extends ExtensionPointDefinition {
 
 class HydratedMenuItemExtensionPoint extends MenuItemExtensionPoint {
   private readonly _definition: MenuDefinition;
+  public readonly permissions: IPermissions;
 
   public get defaultOptions(): {
     caption: string;
@@ -238,18 +243,15 @@ class HydratedMenuItemExtensionPoint extends MenuItemExtensionPoint {
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
     this._definition = config.definition;
+    const { isAvailable } = config.definition;
+    this.permissions = {
+      permissions: ["tabs", "webNavigation"],
+      origins: castArray(isAvailable.matchPatterns),
+    };
   }
 
   defaultReader() {
     return mergeReaders(this._definition.reader);
-  }
-
-  getPermissions() {
-    const { isAvailable } = this._definition;
-    return {
-      permissions: ["tabs", "webNavigation"],
-      origins: castArray(isAvailable.matchPatterns),
-    };
   }
 
   getContainerSelector() {

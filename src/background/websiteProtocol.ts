@@ -5,18 +5,28 @@ import {
   OPEN_OPTIONS,
   SET_EXTENSION_AUTH,
 } from "@/messaging/constants";
-import { updateExtensionAuth } from "@/auth/token";
+import { AuthData, updateExtensionAuth } from "@/auth/token";
 import { openOptions } from "@/chrome";
 import store from "@/background/store";
+import { AnyAction } from "redux";
 
-function messageHandler(request, sendResponse) {
+interface Request {
+  type: string;
+  payload: unknown;
+}
+
+// FIXME: re-write using slices similar to redux toolkit so these are typesafe
+function messageHandler(
+  request: Request,
+  sendResponse: (response: unknown) => void
+) {
   switch (request.type) {
     case CONNECT_PAGE: {
       sendResponse(chrome.runtime.getManifest());
       break;
     }
     case SET_EXTENSION_AUTH: {
-      const auth = request.payload;
+      const auth = request.payload as AuthData;
       updateExtensionAuth(auth).then(sendResponse);
       return true;
     }
@@ -25,7 +35,7 @@ function messageHandler(request, sendResponse) {
       break;
     }
     case EXTENSION_STORE_DISPATCH: {
-      const action = request.payload;
+      const action = request.payload as AnyAction;
       sendResponse(store.dispatch(action));
       break;
     }
@@ -41,7 +51,7 @@ function messageHandler(request, sendResponse) {
   }
 }
 
-function initWebsiteProtocol() {
+function initWebsiteProtocol(): void {
   if (chrome.runtime.onMessageExternal) {
     chrome.runtime.onMessageExternal.addListener(
       (request, sender, sendResponse) => {

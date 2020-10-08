@@ -25,9 +25,9 @@ export class AuthenticationError extends Error {
 }
 
 export class RequestError extends Error {
-  readonly response: any;
+  readonly response: unknown;
 
-  constructor(message: string, response: any) {
+  constructor(message: string, response: unknown) {
     super(message);
     this.name = "RequestError";
     this.response = response;
@@ -93,11 +93,15 @@ export function messageExtension(payload: unknown): Promise<unknown> {
 }
 
 export async function getAuthToken(): Promise<string> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     chrome.identity.getAuthToken({ interactive: true }, function (
       token: string
     ) {
-      resolve(token);
+      if (chrome.runtime.lastError == null) {
+        resolve(token);
+      } else {
+        reject(chrome.runtime.lastError.message);
+      }
     });
   });
 }
@@ -120,7 +124,7 @@ export function readStorage(
 
 export function readAllStorage(
   storageType: StorageLocation = "local"
-): Promise<object> {
+): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
     chrome.storage[storageType].get(null, function (result) {
       if (chrome.runtime.lastError == null) {
@@ -134,13 +138,12 @@ export function readAllStorage(
 
 export function setStorage(
   storageKey: string,
-  value: any,
+  value: string,
   storageType: StorageLocation = "local"
 ): Promise<void> {
   if (typeof value !== "string") {
     throw new Error("Expected string value");
   }
-
   return new Promise((resolve, reject) => {
     chrome.storage[storageType].set({ [storageKey]: value }, function () {
       if (chrome.runtime.lastError != null) {
@@ -222,40 +225,52 @@ export function requestPermissions(
   });
 }
 
-export function messageBackgroundScript(
+// TODO: come back and rationalize how the background serializes errors from the contentScript
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function transformBackgroundResponse(response: any) {
+  if (typeof response === "object" && response.error) {
+    console.debug("Got error from background script", { response });
+    switch (response.statusCode) {
+      case 404:
+        return new NotFoundError("URL/resource was not found");
+      case 403:
+        return new AuthenticationError(
+          "Error authenticating with remote service"
+        );
+      default: {
+        if (typeof response.error === "string") {
+          return new Error(response.error);
+        } else if (response.statusCode) {
+          return new RequestError(
+            `Request error (status code: ${response.statusCode})`,
+            response
+          );
+        } else {
+          return new Error("Unknown error");
+        }
+      }
+    }
+  }
+  return response;
+}
+
+export function messageBackgroundScript<TResponse>(
   type: string,
+  // Types we want to pass in might not have an index signature, and we want to provide a default
+  // eslint-disable-next-line @typescript-eslint/ban-types
   payload: object = {}
-): Promise<any> {
+): Promise<TResponse> {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({ type, payload }, function (response) {
       if (chrome.runtime.lastError != null) {
         reject(chrome.runtime.lastError.message);
-      } else if (
-        typeof response === "object" &&
-        response.hasOwnProperty("error") &&
-        response.error
-      ) {
-        console.debug("Got error from background script", { response });
-        switch (response.statusCode) {
-          case 404: {
-            reject(new NotFoundError("URL/resource was not found"));
-            return;
-          }
-          case 403: {
-            reject(
-              new AuthenticationError(
-                "Error authenticating with remote service"
-              )
-            );
-            return;
-          }
-          default: {
-            reject(new RequestError("Request error", response));
-            return;
-          }
-        }
+        return;
+      }
+      const transformed = transformBackgroundResponse(response);
+      if (transformed instanceof Error) {
+        reject(transformed);
       } else {
-        resolve(response);
+        resolve(transformed);
       }
     });
     if (chrome.runtime.lastError != null) {
@@ -269,7 +284,7 @@ export function messageBackgroundScript(
  */
 export async function sendNotification(
   notificationOptions: NotificationOptions
-): Promise<{ id: any }> {
+): Promise<{ id: string }> {
   return await messageBackgroundScript(
     NOTIFICATION_CREATE,
     notificationOptions
@@ -288,6 +303,8 @@ export async function safeRequest(
 
 export async function safePOST(
   url: string,
+  // Types we want to pass in might not have an index signature, and we want to provide a default
+  // eslint-disable-next-line @typescript-eslint/ban-types
   data: object,
   params: { [key: string]: string | string[] } = {}
 ): Promise<unknown> {
