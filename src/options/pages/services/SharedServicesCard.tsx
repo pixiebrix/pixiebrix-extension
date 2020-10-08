@@ -1,14 +1,29 @@
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import React from "react";
-import { ConfigurableAuth } from "@/types/contract";
+import { RemoteService } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import urljoin from "url-join";
 import { GridLoader } from "react-spinners";
+import { ServiceConfig } from "@/core";
+
+export interface OrganizationMeta {
+  id: string;
+  name: string;
+}
+
+export interface SanitizedAuth {
+  id: string;
+  editable: boolean;
+  label: string | undefined;
+  organization: OrganizationMeta | undefined;
+  config: ServiceConfig;
+  service: RemoteService;
+}
 
 interface OwnProps {
-  remoteAuths: ConfigurableAuth[];
+  remoteAuths: SanitizedAuth[];
 }
 
 const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
@@ -22,14 +37,6 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
         <p>
           Services made available by your team and/or built-in to PixieBrix.
         </p>
-        {serviceUrl && (
-          <p>
-            To configure shared services, open the{" "}
-            <a href={urljoin(serviceUrl, "services")} target="_blank">
-              PixieBrix website
-            </a>
-          </p>
-        )}
       </Card.Body>
       {remoteAuths ? (
         <Table>
@@ -48,7 +55,7 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
                 <td>
                   <code>{remoteAuth.service.config.metadata.id}</code>
                 </td>
-                <td>{remoteAuth.organization ?? "✨ Built-in"}</td>
+                <td>{remoteAuth.organization?.name ?? "✨ Built-in"}</td>
                 <td>{remoteAuth.label}</td>
               </tr>
             ))}
@@ -59,6 +66,27 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
           <GridLoader />
         </Card.Body>
       )}
+      <Card.Footer>
+        {serviceUrl ? (
+          <span className="py-3">
+            To configure shared services, open the{" "}
+            <a
+              href={urljoin(serviceUrl, "services")}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              PixieBrix website
+            </a>
+          </span>
+        ) : (
+          <span className="py-3">
+            To configure shared services,
+            <a href="#" target="_blank" rel="noopener noreferrer">
+              create a PixieBrix account
+            </a>
+          </span>
+        )}
+      </Card.Footer>
     </>
   );
 };

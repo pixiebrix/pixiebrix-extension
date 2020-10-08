@@ -7,7 +7,7 @@ import { propertiesToSchema } from "@/validators/generic";
 
 export class GetAPITransformer extends Transformer {
   constructor() {
-    super("@pipedrive/get", "HTTP GET", "Fetch data from an API", faCloud);
+    super("@pixiebrix/get", "HTTP GET", "Fetch data from an API", faCloud);
   }
 
   inputSchema: Schema = propertiesToSchema(

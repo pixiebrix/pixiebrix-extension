@@ -9,8 +9,8 @@ extensionPoints:
   - id: "linkedin/contact-info-button"
     label: Create/Update in HubSpot
     services:
-      hubspot: hubspot
-      geocode: google/geocode
+      hubspot: hubspot/api
+      geocode: google/geocode-api
     config:
       caption: Create in HubSpot
       icon:
@@ -18,7 +18,7 @@ extensionPoints:
         library: simple-icons
         size: 10
       action:
-        - id: pixiebrix/contrib-google/geocode
+        - id: google/geocode
           outputKey: location
           config:
             service: "@geocode"
@@ -32,7 +32,7 @@ extensionPoints:
             url: https://api.hubapi.com/owners/v2/owners
             params:
               email: "@profile.email"
-        - id: pixiebrix/contrib-hubspot-contact
+        - id: hubspot/create-update-contact
           config:
             service: "@hubspot"
             email: emailAddress
@@ -50,28 +50,28 @@ extensionPoints:
   - id: "linkedin/person-panel"
     label: HubSpot Timeline
     services:
-      hubspot: hubspot
+      hubspot: hubspot/api
     config:
       heading: HubSpot Timeline
       collapsible: true
       body:
-        id: pixiebrix/contrib-hubspot-contact-timeline
+        id: hubspot/contact-timeline
         config:
           hubspotService: "@hubspot"
           query: "{{&firstName}} {{&lastName}} {{&currentCompanyName}}"
   - id: "linkedin/contact-info-entry"
     label: Hubspot Contact Info Entry
     services:
-      hubspot: hubspot
+      hubspot: hubspot/api
     config:
       heading: HubSpot Contact Entry
       shadowDOM: false
       body:
-        - id: pixiebrix/hubspot-person-search
+        - id: hubspot/contact-search
           config:
             hubspotService: "@hubspot"
             query: "{{&email}} {{&firstName}} {{&lastName}} {{&currentCompanyName}}"
-        - id: pixiebrix/contrib-html
+        - id: "@pixiebrix/html"
           templateEngine: nunjucks
           config:
             html: |
@@ -83,7 +83,7 @@ extensionPoints:
   - id: "linkedin/organization-button"
     label: Hubspot Company Entry
     services:
-      hubspot: hubspot
+      hubspot: hubspot/api
     config:
       caption: Create in HubSpot
       icon:
@@ -100,7 +100,7 @@ extensionPoints:
             url: https://api.hubapi.com/owners/v2/owners
             params:
               email: "@profile.email"
-        - id: pixiebrix/contrib-hubspot-company
+        - id: hubspot/create-update-company
           templateEngine: nunjucks
           config:
             name: name

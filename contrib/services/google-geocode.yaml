@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: service
 metadata:
-  id: google/geocode
+  id: google/geocode-api
   version: 0.0.1
   name: Google Geocoding API
   description: Geocoding API for looking up place names
