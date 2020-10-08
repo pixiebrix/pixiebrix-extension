@@ -1,13 +1,13 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "PixieBrix Browser Extension",
   "main": "index.js",
   "scripts": {
     "test": "npx jest",
     "lint": "npx eslint src/**",
     "watch:chrome": "NODE_ENV='development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
-    "stage:chrome": "NODE_ENV='staging' npx webpack --config browsers/chrome/webpack/webpack.prod.js",
+    "stage:chrome": "NODE_ENV='staging' SERVICE_URL='https://pixiebrix-staging.herokuapp.com' npx webpack --config browsers/chrome/webpack/webpack.prod.js",
     "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js",
     "build:scripts": "npx webpack --config scripts/webpack.scripts.js",
     "generate:headers": "node scripts/bin/headers.js --stack-size=1024"
