@@ -9,7 +9,7 @@ import { useToasts } from "react-toast-notifications";
 import ServiceEditorModal from "./ServiceEditorModal";
 import PrivateServicesCard from "./PrivateServicesCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
-import SharedServicesCard from "./SharedServicesCard";
+import SharedServicesCard, { SanitizedAuth } from "./SharedServicesCard";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import Card from "react-bootstrap/Card";
 import Nav from "react-bootstrap/Nav";
@@ -18,7 +18,6 @@ import { useFetch } from "@/hooks/fetch";
 import useServiceDefinitions from "./useServiceDefinitions";
 import { RootState } from "../../store";
 import { RawServiceConfiguration } from "@/core";
-import { ConfigurableAuth } from "@/types/contract";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -33,9 +32,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   deleteServiceConfig,
   navigate,
 }) => {
-  const remoteAuths = useFetch<ConfigurableAuth[]>(
-    "/api/services/shared/?meta=1"
-  );
+  const remoteAuths = useFetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     ({ services }) => Object.values(services.configured)

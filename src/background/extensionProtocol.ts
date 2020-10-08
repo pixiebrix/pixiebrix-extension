@@ -5,10 +5,25 @@ import {
   HTTP_REQUEST_POST,
   NOTIFICATION_CREATE,
 } from "@/messaging/constants";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import Rollbar from "rollbar";
 
-function initExtensionProtocol() {
+interface SerializedResponseError {
+  data: null;
+  error: string;
+  statusCode: number;
+}
+
+function transformRequestError(error: AxiosError): SerializedResponseError {
+  console.debug("Request error", error);
+  return {
+    data: null,
+    error: error.response.statusText,
+    statusCode: error.response.status,
+  };
+}
+
+function initExtensionProtocol(): void {
   chrome.runtime.onMessage.addListener(function (
     request,
     sender,
@@ -16,16 +31,8 @@ function initExtensionProtocol() {
   ) {
     const forwardResponse = (requestPromise: Promise<unknown>) =>
       requestPromise
-        .then(({ data }) => {
-          sendResponse(data);
-        })
-        .catch((err) => {
-          sendResponse({
-            data: null,
-            error: err.toString(),
-            statusCode: err.response.status,
-          });
-        });
+        .then(({ data }) => sendResponse(data))
+        .catch((err) => sendResponse(transformRequestError(err)));
 
     switch (request.type) {
       case HTTP_REQUEST_POST: {

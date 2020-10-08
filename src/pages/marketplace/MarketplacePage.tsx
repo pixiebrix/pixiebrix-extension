@@ -88,7 +88,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
       </div>
 
       <Row>
-        <Col>
+        <Col xl={8} lg={10} md={12}>
           <Form>
             <InputGroup className="mb-2 mr-sm-2">
               <InputGroup.Prepend>
@@ -106,7 +106,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
       </Row>
 
       <Row>
-        <Col>
+        <Col xl={8} lg={10} md={12}>
           {rawRecipes == null ? (
             <GridLoader />
           ) : (

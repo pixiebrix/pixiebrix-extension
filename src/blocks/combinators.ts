@@ -147,12 +147,12 @@ export async function reducePipeline(
             extraContext,
           });
 
-          throw new InputValidationError(
-            `Invalid inputs for block ${stage.id}`,
-            block.inputSchema,
-            blockArgs,
-            validationResult.errors
-          );
+          // throw new InputValidationError(
+          //   `Invalid inputs for block ${stage.id}`,
+          //   block.inputSchema,
+          //   blockArgs,
+          //   validationResult.errors
+          // );
         }
       }
 

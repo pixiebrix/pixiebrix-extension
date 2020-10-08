@@ -52,15 +52,15 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   protected readonly template?: string;
   public abstract readonly inputSchema: Schema;
 
-  public get defaultOptions(): { [key: string]: unknown } {
-    return {};
-  }
-
   /**
    * Permissions required to use this extensions
    * https://developer.chrome.com/extensions/permission_warnings
    */
-  permissions: IPermissions = {};
+  public abstract readonly permissions: IPermissions = {};
+
+  public get defaultOptions(): { [key: string]: unknown } {
+    return {};
+  }
 
   protected constructor(
     id: string,
