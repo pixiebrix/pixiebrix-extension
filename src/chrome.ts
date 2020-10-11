@@ -71,14 +71,13 @@ export async function getAuthToken(): Promise<string> {
   });
 }
 
-export function readStorage(
+export function readStorage<T>(
   storageKey: string,
   storageType: StorageLocation = "local"
-): Promise<unknown> {
+): Promise<T> {
   return new Promise((resolve, reject) => {
     chrome.storage[storageType].get(storageKey, function (result) {
       if (chrome.runtime.lastError == null) {
-        // console.trace(`Read ${storageKey} from storage`, result);
         resolve(result[storageKey]);
       } else {
         reject(chrome.runtime.lastError.message);

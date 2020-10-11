@@ -4,6 +4,7 @@ import isPlainObject from "lodash/isPlainObject";
 import { engineRenderer, mapArgs } from "@/helpers";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import CompositeReader from "@/blocks/readers/CompositeReader";
+import { locate } from "@/background/locator";
 import mapValues from "lodash/mapValues";
 import {
   IBlock,
@@ -12,7 +13,6 @@ import {
   Schema,
   ServiceDependency,
   ConfiguredService,
-  ServiceLocator,
 } from "@/core";
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
@@ -202,12 +202,11 @@ type ServiceContext = {
 
 /** Build the service context by locating the dependencies */
 export async function makeServiceContext(
-  dependencies: ServiceDependency[],
-  locator: ServiceLocator
+  dependencies: ServiceDependency[]
 ): Promise<ServiceContext> {
   const ctxt: ServiceContext = {};
   for (const dependency of dependencies) {
-    const configuredService = await locator(dependency.id, dependency.config);
+    const configuredService = await locate(dependency.id, dependency.config);
     ctxt[`@${dependency.outputKey}`] = {
       // our JSON validator gets mad at undefined values
       ...pickBy(configuredService.config, (x) => x !== undefined),

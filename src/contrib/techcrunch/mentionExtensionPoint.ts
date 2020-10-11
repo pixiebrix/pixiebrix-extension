@@ -12,6 +12,7 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { IExtension, IReader } from "@/core";
 import blockRegistry from "@/blocks/registry";
+import extensionPointRegistry from "@/extensionPoints/registry";
 
 interface MentionConfig {
   caption: string;
@@ -117,4 +118,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
   }
 }
 
-export default [new MentionAction("organization"), new MentionAction("person")];
+extensionPointRegistry.register(
+  new MentionAction("organization"),
+  new MentionAction("person")
+);

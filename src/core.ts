@@ -84,7 +84,7 @@ export interface IExtensionPoint extends Metadata {
 
   addExtension(extension: IExtension): void;
 
-  run(locator: ServiceLocator): Promise<void>;
+  run(): Promise<void>;
 
   /**
    * Returns any blocks configured in extension.

@@ -2,20 +2,21 @@ import { request } from "@/background/requests";
 import { pixieServiceFactory } from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import { getBaseURL } from "@/services/baseService";
-import { AxiosRequestConfig, AxiosResponse, Method } from "axios";
+import { AxiosRequestConfig, Method } from "axios";
 import { ConfiguredService } from "@/core";
+import { isBackgroundPage } from "webext-detect-page";
 
-interface ProxyResponse {
-  status_code: number;
-  message?: string;
-  reason?: string;
-  json?: unknown;
+export interface RemoteResponse<T> {
+  data: T;
+  status: number;
+  statusText: string;
+  __proxied?: boolean;
 }
 
-async function proxyRequest(
+async function proxyRequest<T>(
   service: ConfiguredService,
   requestConfig: AxiosRequestConfig
-): Promise<unknown> {
+): Promise<RemoteResponse<T>> {
   const proxyService = await pixieServiceFactory();
   const baseURL = await getBaseURL();
   const proxyRequest = {
@@ -26,9 +27,9 @@ async function proxyRequest(
       service_id: service.serviceId,
     },
   };
-  const proxyResponse = (await request(
+  const proxyResponse = await request(
     proxyService.authenticateRequest(proxyRequest)
-  )) as AxiosResponse<ProxyResponse>;
+  );
   console.debug(`Proxy response for ${service.serviceId}:`, proxyResponse);
   if (proxyResponse.data.status_code >= 400) {
     throw new RemoteServiceError(
@@ -36,19 +37,28 @@ async function proxyRequest(
       proxyResponse
     );
   } else {
-    return proxyResponse.data.json;
+    // The json payload from the proxy is the response from the remote server
+    return {
+      ...proxyResponse.data.json,
+      __proxied: true,
+    };
   }
 }
 
-export async function proxyService(
+export async function proxyService<T>(
   service: ConfiguredService | null,
   requestConfig: AxiosRequestConfig
-): Promise<unknown> {
+): Promise<RemoteResponse<T>> {
   if (!service) {
     return await request(requestConfig);
   } else if (service.proxy) {
-    return await proxyRequest(service, requestConfig);
+    return await proxyRequest<T>(service, requestConfig);
   } else {
+    if (!isBackgroundPage()) {
+      throw new Error(
+        "proxyService can only authenticate requests from the background page"
+      );
+    }
     return await request(service.authenticateRequest(requestConfig));
   }
 }

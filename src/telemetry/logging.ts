@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import {
   ErrorContext,
   SerializedError,
@@ -33,7 +34,12 @@ export async function reportError(
   // Wrap in try/catch, otherwise will enter infinite loop on unhandledrejection when
   // messaging the background script
   try {
-    await recordError(selectError(exc), context ?? {});
+    const fullContext = {
+      ...(context ?? {}),
+      timestamp: Date.now().toString(10),
+      uuid: uuidv4(),
+    };
+    await recordError(selectError(exc), fullContext);
   } catch (exc) {
     console.error(`Error reporting error to background script: ${exc}`);
   }

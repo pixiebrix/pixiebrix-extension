@@ -28,7 +28,7 @@ import refSchema from "@schemas/ref.json";
 import componentSchema from "@schemas/component.json";
 import {
   MissingConfigurationError,
-  MultipleConfigurationError,
+  NotConfiguredError,
 } from "@/services/errors";
 import { extensionValidatorFactory } from "./validation";
 
@@ -119,9 +119,8 @@ export function propertiesToSchema(
 
 export interface ExtensionValidationResult {
   valid: boolean;
-  notConfigured: MissingConfigurationError[];
+  notConfigured: NotConfiguredError[];
   missingConfiguration: MissingConfigurationError[];
-  multipleAuths: MultipleConfigurationError[];
   schemaErrors: any;
 }
 
@@ -150,7 +149,6 @@ async function validateExtension(
   }
 
   const notConfigured = [];
-  const multipleAuths = [];
   const missingConfiguration = [];
 
   if (extension.services?.length) {
@@ -160,13 +158,9 @@ async function validateExtension(
         await locator(service.id, service.config);
       } catch (ex) {
         if (ex instanceof MissingConfigurationError) {
-          if (ex.id) {
-            missingConfiguration.push(ex);
-          } else {
-            notConfigured.push(ex);
-          }
-        } else if (ex instanceof MultipleConfigurationError) {
-          multipleAuths.push(ex);
+          missingConfiguration.push(ex);
+        } else if (ex instanceof NotConfiguredError) {
+          notConfigured.push(ex);
         } else {
           console.debug(ex);
         }
@@ -175,13 +169,8 @@ async function validateExtension(
   }
 
   return {
-    valid:
-      !notConfigured.length &&
-      !multipleAuths.length &&
-      !missingConfiguration.length &&
-      validated,
+    valid: !notConfigured.length && !missingConfiguration.length && validated,
     notConfigured,
-    multipleAuths,
     missingConfiguration,
     schemaErrors,
   };

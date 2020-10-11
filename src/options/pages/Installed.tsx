@@ -42,11 +42,9 @@ function validationMessage(validation: ExtensionValidationResult) {
   if (validation.notConfigured.length) {
     const services = validation.notConfigured.map((x) => x.serviceId);
     if (services.length > 1) {
-      message = `The following services have no configurations: ${services.join(
-        ", "
-      )}`;
+      message = `You need to select configurations for ${services.join(", ")}`;
     } else {
-      message = `You need to add a configuration for ${services[0]}`;
+      message = `You need to select a configuration for ${services[0]}`;
     }
   } else if (validation.missingConfiguration.length) {
     const services = validation.missingConfiguration.map((x) => x.serviceId);
@@ -54,11 +52,6 @@ function validationMessage(validation: ExtensionValidationResult) {
       The following services use configurations that no longer exist: ${services.join(
         ", "
       )}`;
-  } else if (validation.multipleAuths.length) {
-    const services = validation.multipleAuths.map((x) => x.serviceId);
-    message = `Multiple configurations exist for these services, you must select which one to use: ${services.join(
-      ", "
-    )}`;
   } else {
     console.debug("Validation result", validation);
   }

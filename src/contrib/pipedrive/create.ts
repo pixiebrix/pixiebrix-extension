@@ -35,9 +35,8 @@ export class AddOrganization extends Effect {
     ["name"]
   );
 
-  async effect({ pipedrive, name, owner_id }: BlockArg) {
-    // @ts-ignore: write pipedrive response interface
-    const { data } = await proxyService(pipedrive, {
+  async effect({ pipedrive, name, owner_id }: BlockArg): Promise<void> {
+    const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/organizations/search",
       method: "get",
       params: {
@@ -102,9 +101,14 @@ export class AddPerson extends Effect {
     ["name"]
   );
 
-  async effect({ pipedrive, name, owner_id, email, phone }: BlockArg) {
-    // @ts-ignore: write pipedrive response interface
-    const { data } = await proxyService(pipedrive, {
+  async effect({
+    pipedrive,
+    name,
+    owner_id,
+    email,
+    phone,
+  }: BlockArg): Promise<void> {
+    const { data } = await proxyService<{ items: unknown[] }>(pipedrive, {
       url: "https://api.pipedrive.com/v1/persons/search",
       method: "get",
       params: {

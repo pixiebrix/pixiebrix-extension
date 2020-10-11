@@ -69,8 +69,11 @@ module.exports = merge.strategy({ plugins: "prepend" })(common, {
         MIXPANEL_BROWSER_TOKEN: JSON.stringify(
           process.env.MIXPANEL_BROWSER_TOKEN
         ),
+        CHROME_EXTENSION_ID: JSON.stringify(process.env.CHROME_EXTENSION_ID),
         GOOGLE_API_KEY: JSON.stringify(process.env.GOOGLE_API_KEY),
-        SERVICE_URL: JSON.stringify("http://127.0.0.1:8000"),
+        SERVICE_URL: JSON.stringify(
+          process.env.SERVICE_URL ?? "http://127.0.0.1:8000"
+        ),
         SOURCE_VERSION: JSON.stringify(process.env.SOURCE_VERSION),
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
       },

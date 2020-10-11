@@ -2,6 +2,7 @@ import { loadOptions } from "@/options/loader";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
+import { IExtensionPoint, IReader, Message } from "@/core";
 import {
   DEV_WATCH_READER_NOT_AVAILABLE,
   DEV_WATCH_READER_READ,
@@ -9,17 +10,11 @@ import {
 
 // Import for the side effect of registering js defined blocks
 import "@/blocks";
-import { IExtensionPoint, IReader, Message } from "@/core";
-import LazyLocatorFactory from "@/services/locator";
+import "@/contrib";
 
 let _loadedBlocks = false;
 let _extensionPoints: IExtensionPoint[] = undefined;
 let _navSequence = 1;
-
-// TODO: the locator has to be in the contentScript for now because we're authenticating the request before
-//  sending it to the background page to make the request. Probably in the future we should to the auth on the
-//  background page so the credentials don't have to be in the contentScript zone
-const locatorFactory = new LazyLocatorFactory();
 
 async function loadBlocksOnce() {
   if (!_loadedBlocks) {
@@ -28,12 +23,7 @@ async function loadBlocksOnce() {
       extensionPointRegistry.refresh({ allowFetch: false }),
       serviceRegistry.refresh({ allowFetch: false }),
     ]);
-
-    // Need the blocks first because it contains the pixiebrix service definition. If we wanted to avoid
-    // this, could just load the YAML config directly in the locator factory.
-    locatorFactory.refresh().then(() => {
-      console.debug("Eagerly initialized service locator");
-    });
+    _loadedBlocks = true;
   }
 }
 
@@ -55,7 +45,7 @@ async function runExtensionPoint(
     return;
   }
 
-  await extensionPoint.run(locatorFactory.getLocator());
+  await extensionPoint.run();
 }
 
 async function loadExtensionsOnce() {
@@ -93,7 +83,7 @@ function getNavSequence() {
 
 interface ReaderPorts {
   [key: string]: {
-    postMessage: (Noimessage: Message) => void;
+    postMessage: (message: Message) => void;
   };
 }
 
@@ -102,7 +92,9 @@ interface ReaderPorts {
  * @param watchedReaders optional mapping from reader id to devtools port.
  * @returns {Promise<void>}
  */
-export async function handleNavigate(watchedReaders: ReaderPorts) {
+export async function handleNavigate(
+  watchedReaders: ReaderPorts
+): Promise<void> {
   await loadBlocksOnce();
   const extensionPoints = await loadExtensionsOnce();
 

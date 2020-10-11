@@ -11,6 +11,7 @@ import { Message } from "@/core";
 import "notifyjs-browser";
 import "jquery.initialize";
 import "@/telemetry/mixpanel";
+import "@/contrib";
 
 const _watchedReaders = {};
 

@@ -19,16 +19,6 @@ export class MissingConfigurationError extends Error {
   }
 }
 
-export class MultipleConfigurationError extends Error {
-  serviceId: string;
-
-  constructor(message: string, serviceId: string) {
-    super(message);
-    this.name = "MultipleConfigurationError";
-    this.serviceId = serviceId;
-  }
-}
-
 export class NotConfiguredError extends Error {
   serviceId: string;
   missingProperties: string[];

@@ -1,6 +1,12 @@
 import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
-import { isBackgroundPage, isContentScript } from "webext-detect-page";
+import {
+  isBackgroundPage,
+  isContentScript,
+  isOptionsPage,
+} from "webext-detect-page";
 import { isEmpty, partial } from "lodash";
+
+const MESSAGE_PREFIX = "@@pixiebrix/background/";
 
 export class MessageError extends Error {
   errors: unknown;
@@ -33,13 +39,37 @@ type HandlerEntry = {
   options: HandlerOptions;
 };
 
-const contentScriptHandlers: { [key: string]: HandlerEntry } = {};
-const externalHandlers: { [key: string]: HandlerEntry } = {};
+const handlers: { [key: string]: HandlerEntry } = {};
 
-function initListener(
-  messageEvent: chrome.runtime.ExtensionMessageEvent,
-  handlers: { [key: string]: HandlerEntry }
-) {
+interface ErrorResponse {
+  $$error: SerializedError;
+}
+
+function isErrorResponse(ex: unknown): ex is ErrorResponse {
+  return typeof ex === "object" && "$$error" in ex;
+}
+
+function toErrorResponse(requestType: string, ex: unknown): ErrorResponse {
+  if (typeof ex === "string") {
+    return { $$error: { message: ex } };
+  } else if (typeof ex === "object") {
+    return { $$error: ex };
+  } else {
+    return {
+      $$error: { message: `Unknown error processing ${requestType}` },
+    };
+  }
+}
+
+function deserializeError(ex: SerializedError): Error {
+  const { name, message, stack } = ex;
+  const error = new Error(message);
+  error.name = name ?? "Error";
+  error.stack = stack;
+  return error;
+}
+
+function initListener(messageEvent: chrome.runtime.ExtensionMessageEvent) {
   messageEvent.addListener(function (request, sender, sendResponse) {
     const { handler, options: { asyncResponse } = { asyncResponse: true } } =
       handlers[request.type] ?? {};
@@ -49,33 +79,20 @@ function initListener(
       );
       handlerPromise
         .then((x) => sendResponse(x))
-        .catch((ex) => {
-          if (typeof ex === "string") {
-            sendResponse({ $$error: { message: ex } });
-          } else if (typeof ex === "object") {
-            sendResponse({ $$error: ex });
-          } else {
-            sendResponse({
-              $$error: { message: `Unknown error processing ${request.type}` },
-            });
-          }
-        });
+        .catch(partial(toErrorResponse, request.type));
       return asyncResponse;
+    } else if (request.type.startsWith(MESSAGE_PREFIX)) {
+      console.warn(`No handler installed for message ${request.type}`);
     }
     return false;
   });
-}
-
-if (isBackgroundPage()) {
-  initListener(chrome.runtime.onMessage, contentScriptHandlers);
-  initListener(chrome.runtime.onMessageExternal, externalHandlers);
 }
 
 function getExternalSendMessage() {
   const extensionId = getChromeExtensionId();
   if (chrome.runtime == null) {
     throw new RuntimeNotFoundError(
-      "Chrome runtime is unavailable; is extension externally connectable?"
+      "Chrome runtime is unavailable; is the extension externally connectable?"
     );
   } else if (isEmpty(extensionId)) {
     throw new Error("Could not find chrome extension id");
@@ -114,35 +131,35 @@ export function liftBackground<R extends SerializableResponse>(
   method: (...args: unknown[]) => R,
   options?: HandlerOptions
 ): (...args: unknown[]) => Promise<R> {
-  const fullType = `@@pixiebrix/background/${type}`;
+  const fullType = `${MESSAGE_PREFIX}${type}`;
 
-  const handlerDict = isContentScript()
-    ? contentScriptHandlers
-    : externalHandlers;
-  handlerDict[fullType] = { handler: method, options };
+  if (isBackgroundPage()) {
+    console.debug(`Installed background page handler for ${type}`);
+    handlers[fullType] = { handler: method, options };
+  }
 
   return (...args: unknown[]) => {
     if (isBackgroundPage()) {
-      throw new Error("Unexpected call from the background page");
+      return Promise.resolve(method(...args));
     }
 
-    const sendMessage: any = isContentScript()
-      ? chrome.runtime.sendMessage
-      : getExternalSendMessage();
+    const sendMessage: any =
+      isContentScript() || isOptionsPage()
+        ? chrome.runtime.sendMessage
+        : getExternalSendMessage();
 
     return new Promise((resolve, reject) => {
-      sendMessage({ type: fullType, payload: args }, function (response: any) {
-        if (chrome.runtime.lastError == null) {
-          if (typeof response === "object" && response["$$error"]) {
-            const error = new Error(response["$$error"].message);
-            error.name = response["$$error"].name ?? "Error";
-            error.stack = response["$$error"].stack;
-            reject(error);
-          } else {
-            resolve(response);
-          }
-        } else {
+      sendMessage({ type: fullType, payload: args }, function (
+        response: unknown
+      ) {
+        if (chrome.runtime.lastError != null) {
           reject(new MessageError(chrome.runtime.lastError.message));
+        } else if (isErrorResponse(response)) {
+          reject(deserializeError(response.$$error));
+        } else {
+          // Must have the expected type given liftBackground's type signature
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          resolve(response as any);
         }
       });
       if (chrome.runtime.lastError != null) {
@@ -150,4 +167,9 @@ export function liftBackground<R extends SerializableResponse>(
       }
     });
   };
+}
+
+if (isBackgroundPage()) {
+  initListener(chrome.runtime.onMessage);
+  initListener(chrome.runtime.onMessageExternal);
 }

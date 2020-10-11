@@ -12,7 +12,6 @@ import {
   RenderedHTML,
   Schema,
   ServiceConfig,
-  ServiceLocator,
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 
@@ -86,7 +85,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
 
   abstract async install(): Promise<boolean>;
 
-  abstract async run(locator: ServiceLocator): Promise<void>;
+  abstract async run(): Promise<void>;
 }
 
 export abstract class Block implements IBlock {

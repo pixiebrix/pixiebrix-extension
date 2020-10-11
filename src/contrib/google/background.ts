@@ -1,5 +1,8 @@
 const API_KEY = process.env.GOOGLE_API_KEY;
 
+// import for side-effect
+import "./sheets/handlers";
+
 const DISCOVERY_DOCS = [
   "https://sheets.googleapis.com/$discovery/rest?version=v4",
 ];

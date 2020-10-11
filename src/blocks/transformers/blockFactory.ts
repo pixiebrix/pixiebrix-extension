@@ -44,7 +44,7 @@ function validateBlockDefinition(
   }
 }
 
-class HydratedBlock extends Block {
+class ExternalBlock extends Block {
   private component: ComponentConfig;
   readonly inputSchema: Schema;
   readonly defaultOptions: { [key: string]: any };
@@ -83,5 +83,5 @@ export function fromJS(component: any): IBlock {
   }
 
   validateBlockDefinition(component);
-  return new HydratedBlock(component);
+  return new ExternalBlock(component);
 }

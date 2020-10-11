@@ -14,11 +14,11 @@ import registry, {
 } from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import { getExtensionToken } from "@/auth/token";
-import { proxyService } from "@/messaging/proxy";
+import { proxyService, RemoteResponse } from "@/messaging/proxy";
 import { getBaseURL } from "@/services/baseService";
 import {
   MissingConfigurationError,
-  MultipleConfigurationError,
+  NotConfiguredError,
 } from "@/services/errors";
 
 const REF_SECRETS = [
@@ -31,12 +31,6 @@ enum ServiceLevel {
   Team,
   BuiltIn,
 }
-
-const SERVICE_LEVEL_NAMES = {
-  [ServiceLevel.Private]: "private",
-  [ServiceLevel.Team]: "team",
-  [ServiceLevel.BuiltIn]: "built-in",
-};
 
 /** Return config excluding any secrets/keys. */
 export function excludeSecrets(
@@ -83,8 +77,8 @@ class LazyLocatorFactory {
   private remote: ConfigurableAuth[] = [];
   private local: RawServiceConfiguration[] = [];
   private options: Option[];
-  public _initialized: boolean = false;
-  private _refreshPromise: Promise<unknown>;
+  public _initialized = false;
+  private _refreshPromise: Promise<void>;
 
   constructor(baseURL?: string) {
     this.baseURL = baseURL;
@@ -94,25 +88,22 @@ class LazyLocatorFactory {
     return this._initialized;
   }
 
-  async refreshRemote() {
+  async refreshRemote(): Promise<void> {
     const baseURL = this.baseURL ?? (await getBaseURL());
-    try {
-      this.remote = (await proxyService(await pixieServiceFactory(), {
-        url: `${baseURL}/api/services/shared/?meta=1`,
-      })) as ConfigurableAuth[];
-      console.debug(`Fetched ${this.remote.length} remote auths`);
-    } catch (ex) {
-      console.warn("Not connected to pixiebrix service for remote auths", ex);
-    }
+    const { data } = (await proxyService(await pixieServiceFactory(), {
+      url: `${baseURL}/api/services/shared/?meta=1`,
+    })) as RemoteResponse<ConfigurableAuth[]>;
+    this.remote = data;
+    console.debug(`Fetched ${this.remote.length} remote auths`);
     this.makeOptions();
   }
 
-  async refreshLocal() {
+  async refreshLocal(): Promise<void> {
     this.local = await readRawConfigurations();
     this.makeOptions();
   }
 
-  async refresh() {
+  async refresh(): Promise<void> {
     if (this._refreshPromise) {
       return await this._refreshPromise;
     }
@@ -135,7 +126,7 @@ class LazyLocatorFactory {
           level: ServiceLevel.Private,
           local: true,
         })),
-        ...this.remote.map((x) => ({
+        ...(this.remote ?? []).map((x) => ({
           ...x,
           level: x.organization ? ServiceLevel.Team : ServiceLevel.BuiltIn,
           local: false,
@@ -150,10 +141,7 @@ class LazyLocatorFactory {
     return this.locate.bind(this);
   }
 
-  async locate(
-    serviceId: string,
-    id: string | null
-  ): Promise<ConfiguredService> {
+  async locate(serviceId: string, authId: string): Promise<ConfiguredService> {
     if (!this.initialized) {
       await this.refresh();
     }
@@ -161,48 +149,37 @@ class LazyLocatorFactory {
     if (serviceId === PIXIEBRIX_SERVICE_ID) {
       // HACK: for now use the separate storage for the extension key
       return await pixieServiceFactory();
+    } else if (!authId) {
+      throw new NotConfiguredError(
+        `No configuration selected for ${serviceId}`,
+        serviceId
+      );
     }
 
     const service = registry.lookup(serviceId);
 
-    const matches = this.options.filter(
-      (x) => x.serviceId === serviceId && (!id || id === x.id)
+    const match = this.options.find(
+      (x) => x.serviceId === serviceId && x.id === authId
     );
 
-    if (!matches.length && id) {
+    if (!match) {
       throw new MissingConfigurationError(
-        `Configuration ${id} not found for ${serviceId}`,
+        `Configuration ${authId} not found for ${serviceId}`,
         serviceId,
-        id
-      );
-    } else if (!matches.length && !id) {
-      throw new MissingConfigurationError(
-        `No configurations found for ${serviceId}`,
-        serviceId
+        authId
       );
     }
 
-    const best = sortBy(matches, (x) => x.level)[0];
-
-    if (matches.filter((x) => x.level === best.level).length > 1) {
-      throw new MultipleConfigurationError(
-        `Multiple ${
-          SERVICE_LEVEL_NAMES[best.level]
-        } services are configured for ${serviceId}, you must select a service`,
-        serviceId
-      );
-    }
-
-    const proxy = service.hasAuth && !best.local;
+    const proxy = service.hasAuth && !match.local;
 
     return {
       serviceId: serviceId,
       proxy,
-      config: excludeSecrets(service, best.config),
+      config: excludeSecrets(service, match.config),
       // include secrets required because they're required to authenticate the request
       authenticateRequest: proxy
         ? proxyRequiredAuthenticator
-        : (x) => service.authenticateRequest(best.config, x),
+        : (x) => service.authenticateRequest(match.config, x),
     };
   }
 }

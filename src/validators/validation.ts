@@ -3,10 +3,7 @@ import * as Yup from "yup";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
 import { DoesNotExistError } from "@/baseRegistry";
-import {
-  MissingConfigurationError,
-  MultipleConfigurationError,
-} from "@/services/errors";
+import { MissingConfigurationError } from "@/services/errors";
 import uniq from "lodash/uniq";
 import isPlainObject from "lodash/isPlainObject";
 import mapValues from "lodash/mapValues";
@@ -32,10 +29,11 @@ type Options = {
   required: boolean;
 };
 
-function blockSchemaFactory(val: any): Yup.Schema<object> {
-  if (val && val.id) {
+function blockSchemaFactory(val: unknown): Yup.Schema<object> {
+  if (typeof val === "object" && val != null && "id" in val) {
     let block: IBlock;
     try {
+      // @ts-ignore: checked for id above
       block = blockRegistry.lookup(val.id);
     } catch (ex) {
       if (ex instanceof DoesNotExistError) {
@@ -136,34 +134,26 @@ function serviceSchemaFactory(locator: ServiceLocator): Yup.Schema<unknown> {
           .required()
           .matches(IDENTIFIER_REGEX, "Not a valid identifier"),
         // https://github.com/jquense/yup/issues/954
-        config: Yup.string().test(
-          "is-config",
-          "Invalid service configuration",
-          async function (value) {
+        config: Yup.string()
+          .required(`Select a service configuration`)
+          .test("is-config", "Invalid service configuration", async function (
+            value
+          ) {
             try {
               await locator(this.parent.id, value);
             } catch (ex) {
               if (ex instanceof MissingConfigurationError) {
-                if (ex.id) {
-                  return this.createError({
-                    message: "Configuration no longer available",
-                  });
-                } else {
-                  return this.createError({
-                    message: `No services configured for ${this.parent.id}`,
-                  });
-                }
-              } else if (ex instanceof MultipleConfigurationError) {
                 return this.createError({
-                  message: `You must select a configuration because conflicting configurations exist for ${this.parent.id}`,
+                  message: "Configuration no longer available",
                 });
               } else {
-                return false;
+                return this.createError({
+                  message: `An error occurred validating the service: ${ex}`,
+                });
               }
             }
             return true;
-          }
-        ),
+          }),
       })
     )
     .test("unique-keys", "Services must have unique keys", function (value) {

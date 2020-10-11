@@ -18,4 +18,3 @@ export const DEV_WATCH_READER = "@@pixiebrix/DEV_WATCH_READER";
 export const DEV_WATCH_READER_READ = "@@pixiebrix/DEV_WATCH_READER_READ";
 export const DEV_WATCH_READER_NOT_AVAILABLE =
   "@@pixiebrix/DEV_WATCH_READER_NOT_AVAILABLE";
-export const DEV_WATCH_READER_PORT = "@@pixiebrix/DEV_WATCH_READER_PORT";

@@ -1,1 +1,1 @@
-export * from "./upsert";
+import "./upsert";

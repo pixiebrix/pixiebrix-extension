@@ -1,1 +1,2 @@
-export * from "./readers";
+import "./readers";
+import "./mentionExtensionPoint";

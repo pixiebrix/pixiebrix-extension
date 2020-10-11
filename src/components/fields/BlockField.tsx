@@ -106,7 +106,7 @@ interface ExtraProps {
 
 const BlockField: React.FunctionComponent<
   FieldProps<BlockConfig | BlockConfig[]> & ExtraProps
-> = ({ label, schema, blocks, ...props }) => {
+> = ({ label, blocks, ...props }) => {
   const [field, meta] = useField(props);
 
   const pipeline = useMemo(() => castArray(field.value ?? []), [field.value]);
@@ -127,7 +127,11 @@ const BlockField: React.FunctionComponent<
                   {pipeline.map((blockConfig, index) => (
                     <ErrorBoundary key={index}>
                       <BlockCard
-                        name={`${field.name}.${index}`}
+                        name={
+                          Array.isArray(field.value)
+                            ? `${field.name}.${index}`
+                            : field.name
+                        }
                         config={blockConfig}
                         showOutputKey={index < numBlocks - 1}
                         onRemove={() => remove(index)}

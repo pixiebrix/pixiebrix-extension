@@ -1,1 +1,1 @@
-export * from "./readers";
+import "./readers";

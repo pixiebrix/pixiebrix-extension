@@ -63,7 +63,7 @@ export function readerFactory(component: unknown): IReader {
     throw new Error(`Expected kind reader, got ${kind}`);
   }
 
-  class RemoteReader extends Reader {
+  class ExternalReader extends Reader {
     constructor() {
       super(id, name, description);
     }
@@ -84,5 +84,5 @@ export function readerFactory(component: unknown): IReader {
     }
   }
 
-  return new RemoteReader();
+  return new ExternalReader();
 }

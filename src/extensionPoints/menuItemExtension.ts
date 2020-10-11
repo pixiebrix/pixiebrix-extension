@@ -31,7 +31,6 @@ import {
   IPermissions,
   ReaderOutput,
   Schema,
-  ServiceLocator,
 } from "@/core";
 import psl, { ParsedDomain } from "psl";
 import { safeTrack } from "@/telemetry/mixpanel";
@@ -115,7 +114,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
 
   private async runExtension(
     ctxt: ReaderOutput,
-    locator: ServiceLocator,
     extension: IExtension<MenuItemExtensionConfig>
   ) {
     console.debug(`Running extension ${extension.id}`);
@@ -130,10 +128,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       `[data-pixiebrix-uuid="${extension.id}"]`
     );
 
-    const serviceContext = await makeServiceContext(
-      extension.services,
-      locator
-    );
+    const serviceContext = await makeServiceContext(extension.services);
     const renderTemplate = engineRenderer(extension.templateEngine);
     const extensionContext = { ...ctxt, ...serviceContext };
 
@@ -183,7 +178,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     });
   }
 
-  async run(locator: ServiceLocator): Promise<void> {
+  async run(): Promise<void> {
     if (!this.$menu || !this.extensions.length) {
       return;
     }
@@ -201,7 +196,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       // Run in order so that the order stays the same for where they get rendered. The service
       // context is the only thing that's async as part of the initial configuration right now
       try {
-        await this.runExtension(ctxt, locator, extension);
+        await this.runExtension(ctxt, extension);
       } catch (ex) {
         // eslint-disable-next-line require-await
         reportError(ex, {

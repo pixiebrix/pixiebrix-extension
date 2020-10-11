@@ -23,7 +23,6 @@ import {
   IReader,
   ReaderOutput,
   Schema,
-  ServiceLocator,
 } from "@/core";
 import {
   ExtensionPointDefinition,
@@ -31,6 +30,7 @@ import {
 } from "@/extensionPoints/types";
 import { reportError } from "@/telemetry/logging";
 import { propertiesToSchema } from "@/validators/generic";
+import { ErrorContext } from "@/background/errors";
 
 interface PanelConfig {
   heading?: string;
@@ -138,10 +138,13 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
   private async runExtension(
     readerContext: ReaderOutput,
-    locator: ServiceLocator,
     extension: IExtension<PanelConfig>
   ) {
     const bodyUUID = uuidv4();
+    const errorContext: ErrorContext = {
+      extensionPointId: this.id,
+      extensionId: extension.id,
+    };
 
     const {
       body,
@@ -153,10 +156,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const collapsible = boolean(rawCollapsible);
     const shadowDOM = boolean(rawShadowDOM);
 
-    const serviceContext = await makeServiceContext(
-      extension.services,
-      locator
-    );
+    const serviceContext = await makeServiceContext(extension.services);
     const extensionContext = { ...readerContext, ...serviceContext };
 
     const $panel = $(
@@ -194,7 +194,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           validate: true,
           serviceArgs: serviceContext,
         }) as Promise<string>;
-        errorBoundary(rendererPromise).then((bodyHTML) => {
+        errorBoundary(rendererPromise, errorContext).then((bodyHTML) => {
           if (boolean(shadowDOM)) {
             const shadowRoot = $bodyContainer
               .get(0)
@@ -236,7 +236,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
   }
 
-  async run(locator: ServiceLocator): Promise<void> {
+  async run(): Promise<void> {
     if (!this.$container || !this.extensions.length) {
       return;
     }
@@ -252,7 +252,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     for (const extension of this.extensions) {
       try {
-        await this.runExtension(readerContext, locator, extension);
+        await this.runExtension(readerContext, extension);
       } catch (ex) {
         // eslint-disable-next-line require-await
         reportError(ex, {
@@ -283,7 +283,7 @@ interface PanelDefinition extends ExtensionPointDefinition {
   defaultOptions: PanelDefaultOptions;
 }
 
-class HydratedPanelExtensionPoint extends PanelExtensionPoint {
+class RemotePanelExtensionPoint extends PanelExtensionPoint {
   private readonly _definition: PanelDefinition;
   public readonly permissions: IPermissions;
 
@@ -348,5 +348,5 @@ export function fromJS(
   if (type !== "panel") {
     throw new Error(`Expected type=panel, got ${type}`);
   }
-  return new HydratedPanelExtensionPoint(config);
+  return new RemotePanelExtensionPoint(config);
 }
