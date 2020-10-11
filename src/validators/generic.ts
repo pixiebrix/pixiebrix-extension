@@ -24,6 +24,7 @@ import iconSchema from "@schemas/icon.json";
 import recipeSchema from "@schemas/recipe.json";
 import keySchema from "@schemas/key.json";
 import metadataSchema from "@schemas/metadata.json";
+import refSchema from "@schemas/ref.json";
 import componentSchema from "@schemas/component.json";
 import {
   MissingConfigurationError,
@@ -31,7 +32,7 @@ import {
 } from "@/services/errors";
 import { extensionValidatorFactory } from "./validation";
 
-const SCHEMA_URLS = {
+const SCHEMA_URLS: Record<string, Record<string, unknown>> = {
   "http://json-schema.org/draft-07/schema": draft07,
   "https://app.pixiebrix.com/schemas/metadata": metadataSchema,
   "https://app.pixiebrix.com/schemas/key": keySchema,
@@ -41,6 +42,7 @@ const SCHEMA_URLS = {
   "https://app.pixiebrix.com/schemas/recipe": recipeSchema,
   "https://app.pixiebrix.com/schemas/reader": readerSchema,
   "https://app.pixiebrix.com/schemas/component": componentSchema,
+  "https://app.pixiebrix.com/schemas/ref": refSchema,
 };
 
 const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";
@@ -202,9 +204,8 @@ const pixieResolver: ResolverOptions = {
   order: 1,
   canRead: /^https?:\/\//i,
   async read(file: FileInfo) {
-    if (SCHEMA_URLS.hasOwnProperty(file.url)) {
-      // @ts-ignore
-      return SCHEMA_URLS[file.url];
+    if (SCHEMA_URLS[file.url]) {
+      return SCHEMA_URLS[file.url] as any;
     }
     throw new Error(`Unknown file ${file.url}`);
   },

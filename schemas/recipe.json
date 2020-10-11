@@ -3,7 +3,7 @@
   "$id": "https://app.pixiebrix.com/schemas/recipe#",
   "type": "object",
   "title": "PixieBrix Recipe",
-  "description": "A PixieBrix recipe for one or more installed blocks",
+  "description": "A PixieBrix blueprint for one or more installed bricks",
   "properties": {
     "apiVersion": {
       "type": "string",
@@ -16,32 +16,32 @@
     "metadata": {"$ref": "https://app.pixiebrix.com/schemas/metadata#"},
     "extensionPoints": {
       "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "string",
+            "$ref": "https://app.pixiebrix.com/schemas/ref#/extensionPoint",
             "description": "The id of the extension point"
           },
           "services": {
             "type": "object",
             "additionalProperties": {
-              "type": "string"
+              "$ref": "https://app.pixiebrix.com/schemas/ref#/service"
+              }
             }
           },
           "label": {
             "type": "string",
-            "description": "A human-readable name for the installed block"
+            "description": "A human-readable name for the installed brick"
           },
           "config": {
             "type": "object",
-            "description": "Configuration for the extension point"
+            "description": "Configuration for the extension"
           }
         },
         "required": ["id", "config"]
-      },
-      "minItems": 1
-    }
+      }
   },
   "additionalProperties": false,
   "required": ["apiVersion", "kind", "metadata"]

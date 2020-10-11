@@ -1,16 +1,6 @@
-import {
-  HTTP_REQUEST_POST,
-  HTTP_REQUEST,
-  NOTIFICATION_CREATE,
-} from "@/messaging/constants";
-// @ts-ignore: babel/plugin-transform-typescript doesn't support the import = syntax
-import chromeNamespace from "chrome";
-
 import isEmpty from "lodash/isEmpty";
-import { AxiosRequestConfig } from "axios";
 
-type RequestUpdateCheckStatus = chromeNamespace.runtime.RequestUpdateCheckStatus;
-type NotificationOptions = chromeNamespace.notifications.NotificationOptions;
+type RequestUpdateCheckStatus = chrome.runtime.RequestUpdateCheckStatus;
 
 export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -65,31 +55,6 @@ export class RuntimeNotFoundError extends Error {
     super(message);
     this.name = "RuntimeNotFoundError";
   }
-}
-
-/**
- * Send a message from the web app to the Chrome extension.
- */
-export function messageExtension(payload: unknown): Promise<unknown> {
-  const extensionId = getChromeExtensionId();
-
-  if (chrome.runtime == null) {
-    throw new RuntimeNotFoundError(
-      "chrome.runtime is undefined; is extension externally_connectable?"
-    );
-  } else if (isEmpty(extensionId)) {
-    throw new Error("Could not find chrome extension id");
-  }
-
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(extensionId, payload, function (response) {
-      if (chrome.runtime.lastError == null) {
-        resolve(response);
-      } else {
-        reject(chrome.runtime.lastError.message);
-      }
-    });
-  });
 }
 
 export async function getAuthToken(): Promise<string> {
@@ -222,95 +187,5 @@ export function requestPermissions(
         }
       }
     );
-  });
-}
-
-// TODO: come back and rationalize how the background serializes errors from the contentScript
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function transformBackgroundResponse(response: any) {
-  if (typeof response === "object" && response.error) {
-    console.debug("Got error from background script", { response });
-    switch (response.statusCode) {
-      case 404:
-        return new NotFoundError("URL/resource was not found");
-      case 403:
-        return new AuthenticationError(
-          "Error authenticating with remote service"
-        );
-      default: {
-        if (typeof response.error === "string") {
-          return new Error(response.error);
-        } else if (response.statusCode) {
-          return new RequestError(
-            `Request error (status code: ${response.statusCode})`,
-            response
-          );
-        } else {
-          return new Error("Unknown error");
-        }
-      }
-    }
-  }
-  return response;
-}
-
-export function messageBackgroundScript<TResponse>(
-  type: string,
-  // Types we want to pass in might not have an index signature, and we want to provide a default
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  payload: object = {}
-): Promise<TResponse> {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage({ type, payload }, function (response) {
-      if (chrome.runtime.lastError != null) {
-        reject(chrome.runtime.lastError.message);
-        return;
-      }
-      const transformed = transformBackgroundResponse(response);
-      if (transformed instanceof Error) {
-        reject(transformed);
-      } else {
-        resolve(transformed);
-      }
-    });
-    if (chrome.runtime.lastError != null) {
-      reject(chrome.runtime.lastError.message);
-    }
-  });
-}
-
-/**
- * https://developer.chrome.com/extensions/notifications#method-create
- */
-export async function sendNotification(
-  notificationOptions: NotificationOptions
-): Promise<{ id: string }> {
-  return await messageBackgroundScript(
-    NOTIFICATION_CREATE,
-    notificationOptions
-  );
-}
-
-/**
- * Make an HTTP request from the background page.
- * @param requestConfig https://github.com/axios/axios#request-config
- */
-export async function safeRequest(
-  requestConfig: AxiosRequestConfig
-): Promise<unknown> {
-  return await messageBackgroundScript(HTTP_REQUEST, requestConfig);
-}
-
-export async function safePOST(
-  url: string,
-  // Types we want to pass in might not have an index signature, and we want to provide a default
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  data: object,
-  params: { [key: string]: string | string[] } = {}
-): Promise<unknown> {
-  return await messageBackgroundScript(HTTP_REQUEST_POST, {
-    url,
-    data,
-    params,
   });
 }

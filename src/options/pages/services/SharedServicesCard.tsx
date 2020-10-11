@@ -1,26 +1,11 @@
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import React from "react";
-import { RemoteService } from "@/types/contract";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import urljoin from "url-join";
 import { GridLoader } from "react-spinners";
-import { ServiceConfig } from "@/core";
-
-export interface OrganizationMeta {
-  id: string;
-  name: string;
-}
-
-export interface SanitizedAuth {
-  id: string;
-  editable: boolean;
-  label: string | undefined;
-  organization: OrganizationMeta | undefined;
-  config: ServiceConfig;
-  service: RemoteService;
-}
+import { SanitizedAuth } from "@/types/contract";
 
 interface OwnProps {
   remoteAuths: SanitizedAuth[];

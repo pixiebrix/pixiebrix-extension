@@ -9,7 +9,7 @@ import Button from "react-bootstrap/Button";
 import { useToasts } from "react-toast-notifications";
 import { PageTitle } from "@/layout/Page";
 import { useExtensionPermissions } from "@/permissions";
-import { BeatLoader, GridLoader } from "react-spinners";
+import { BeatLoader } from "react-spinners";
 import Card from "react-bootstrap/Card";
 import {
   faCheck,
@@ -25,8 +25,6 @@ import {
   useExtensionValidator,
 } from "@/validators/generic";
 import { IExtension, ServiceLocator } from "@/core";
-import useExtensionStore from "../extensionStore";
-import { bindActionCreators } from "redux";
 import LazyLocatorFactory from "@/services/locator";
 
 const { removeExtension } = optionsSlice.actions;
@@ -147,8 +145,8 @@ const Installed: React.FunctionComponent<{
         <Col>
           <div className="pb-4">
             <p>
-              Here's a list of bricks you currently have installed. You can find
-              more to install in the{" "}
+              Here&apos;s a list of bricks you currently have installed. You can
+              find more to install in the{" "}
               <Link to={"/marketplace"}>Marketplace</Link>
             </p>
           </div>
@@ -210,27 +208,6 @@ function selectExtensions(state: { options: OptionsState }) {
       }))
   );
 }
-
-export const WebInstalledContainer: React.FunctionComponent = () => {
-  const [state, dispatch] = useExtensionStore();
-  const extensions = useMemo(
-    () => (state ? selectExtensions(state) : undefined),
-    [state]
-  );
-
-  // @ts-ignore: YOLO
-  const { onRemove } = useMemo(
-    // @ts-ignore: YOLO
-    () => bindActionCreators({ onRemove: removeExtension }, dispatch),
-    [dispatch]
-  );
-
-  if (extensions == null) {
-    return <GridLoader />;
-  }
-
-  return <Installed extensions={extensions} onRemove={onRemove} />;
-};
 
 export default connect(
   (state: { options: OptionsState }) => ({

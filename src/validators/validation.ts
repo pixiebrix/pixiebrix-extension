@@ -13,7 +13,7 @@ import mapValues from "lodash/mapValues";
 
 const IDENTIFIER_REGEX = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
 
-const BRICK_RUN_METHODS = {
+const BRICK_RUN_METHODS: Record<string, string> = {
   "#/definitions/renderer": "render",
   "#/definitions/effect": "effect",
   "#/definitions/reader": "read",
@@ -33,7 +33,7 @@ type Options = {
 };
 
 function blockSchemaFactory(val: any): Yup.Schema<object> {
-  if (val && val.hasOwnProperty("id")) {
+  if (val && val.id) {
     let block: IBlock;
     try {
       block = blockRegistry.lookup(val.id);
@@ -66,7 +66,7 @@ export function configSchemaFactory(
 ): Yup.Schema<unknown> {
   const wrapRequired = (x: any) => (options.required ? x.required() : x);
 
-  if (BRICK_RUN_METHODS.hasOwnProperty(schema.$ref)) {
+  if (BRICK_RUN_METHODS[schema.$ref]) {
     return Yup.lazy((val) => {
       if (isPlainObject(val)) {
         return Yup.lazy(blockSchemaFactory);

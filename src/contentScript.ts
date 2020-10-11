@@ -6,7 +6,7 @@ import {
 } from "./messaging/constants";
 import { withSearchWindow, withDetectFrameworkVersions } from "@/common";
 import { handleNavigate } from "@/lifecycle";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/telemetry/logging";
 import { Message } from "@/core";
 import "notifyjs-browser";
 import "jquery.initialize";

@@ -29,7 +29,8 @@ import {
   ExtensionPointDefinition,
   ExtensionPointConfig,
 } from "@/extensionPoints/types";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/telemetry/logging";
+import { propertiesToSchema } from "@/validators/generic";
 
 interface PanelConfig {
   heading?: string;
@@ -61,16 +62,20 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     this.collapsedExtensions = {};
   }
 
-  inputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema",
-    type: "object",
-    properties: {
+  inputSchema: Schema = propertiesToSchema(
+    {
       heading: {
         type: "string",
         description: "The panel heading",
       },
       body: {
-        $ref: "https://app.pixiebrix.com/schemas/renderer#",
+        oneOf: [
+          { $ref: "https://app.pixiebrix.com/schemas/renderer#" },
+          {
+            type: "array",
+            items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
+          },
+        ],
       },
       shadowDOM: {
         type: "boolean",
@@ -83,8 +88,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         default: false,
       },
     },
-    required: ["heading", "body"],
-  };
+    ["heading", "body"]
+  );
 
   getBlocks(extension: IExtension<PanelConfig>): IBlock[] {
     return blockList(extension.config.body);

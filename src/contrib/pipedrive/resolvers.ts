@@ -3,7 +3,7 @@ import { registerBlock } from "@/blocks/registry";
 import { proxyService } from "@/messaging/proxy";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 
-const PIPEDRIVE_SERVICE_ID = "pipedrive";
+const PIPEDRIVE_SERVICE_ID = "pipedrive/api";
 
 interface SearchResultItem {
   result_score: number;

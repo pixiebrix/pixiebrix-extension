@@ -1,6 +1,3 @@
-export * from "./linkedin";
-export * from "./pipedrive";
-export * from "./techcrunch";
 export * from "./meta";
 export * from "./pageMeta";
 

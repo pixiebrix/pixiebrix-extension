@@ -26,7 +26,7 @@ export type ReaderConfig =
 export interface BlockConfig {
   id: string;
   outputKey?: string;
-  config: object;
+  config: Record<string, unknown>;
   templateEngine?: TemplateEngine;
 }
 

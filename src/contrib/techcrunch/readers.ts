@@ -7,7 +7,7 @@ import { Schema } from "@/core";
 type EntityType = "person" | "organization";
 
 function cleanText(text: string): string {
-  let result = trim(text);
+  const result = trim(text);
   if (result.endsWith("'s") || result.endsWith("’s")) {
     return result.slice(0, -2);
   } else if (result.endsWith("'") || result.endsWith("’")) {
@@ -23,7 +23,7 @@ class MentionReader extends Reader {
   constructor(entityType: EntityType) {
     super(
       `techcrunch/${entityType}-mention`,
-      `Techcrunch ${startCase(entityType)} Mention Reader`
+      `TechCrunch ${startCase(entityType)} Mention Reader`
     );
     this.entityType = entityType;
   }

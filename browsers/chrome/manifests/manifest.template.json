@@ -3,7 +3,6 @@
   "name": "PixieBrix WebApp Integrator",
   "short_name": "PixieBrix",
   "minimum_chrome_version": "42.0",
-  "version": "__NPM_PACKAGE_VERSION__",
   "description": "PixieBrix - integrate your favorite web applications without code",
   "icons": {
     "16": "icons/logo16.png",
@@ -19,10 +18,6 @@
       "run_at": "document_end"
     }
   ],
-  "oauth2": {
-    "client_id": "676864882630-h7r607lgchgsr8thtbm5vt0i93kh57ao.apps.googleusercontent.com",
-    "scopes":[""]
-  },
   "optional_permissions": [
     "notifications",
     "clipboardWrite",
@@ -37,8 +32,7 @@
   ],
   "externally_connectable":  {
     "matches": [
-      "https://app.pixiebrix.com/*",
-      "https://pixiebrix-staging.herokuapp.com/*"
+      "https://app.pixiebrix.com/*"
     ]
   },
   "web_accessible_resources": [

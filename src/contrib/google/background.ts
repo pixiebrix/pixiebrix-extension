@@ -1,12 +1,10 @@
-import { sheetsHandler } from "@/contrib/googleSheets";
-
 const API_KEY = process.env.GOOGLE_API_KEY;
 
 const DISCOVERY_DOCS = [
   "https://sheets.googleapis.com/$discovery/rest?version=v4",
 ];
 
-function initGoogle() {
+function initGoogle(): void {
   if (!API_KEY || API_KEY === "undefined") {
     throw new Error("Google API_KEY not set");
   }
@@ -31,8 +29,6 @@ function initGoogle() {
   }
 
   (window as any).onGAPILoad = onGAPILoad;
-
-  chrome.runtime.onMessage.addListener(sheetsHandler);
 }
 
 export default initGoogle;

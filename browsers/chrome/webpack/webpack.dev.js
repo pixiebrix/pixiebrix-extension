@@ -38,15 +38,24 @@ module.exports = merge.strategy({ plugins: "prepend" })(common, {
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(chromeRoot, "manifests", "manifest.dev.json"),
+          from: path.resolve(chromeRoot, "manifests", "manifest.template.json"),
           to: "manifest.json",
           transform(content) {
-            return content
-              .toString()
-              .replace(
-                "__NPM_PACKAGE_VERSION__",
-                process.env.npm_package_version
-              );
+            const manifest = JSON.parse(content.toString());
+            manifest.version = process.env.npm_package_version;
+            manifest.externally_connectable.matches.push(
+              "http://127.0.0.1/*",
+              "http://localhost/*"
+            );
+            if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
+              manifest.oauth2 = {
+                client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,
+                // don't ask for any scopes up front, instead ask when they're required, e.g., when the user
+                // installs a brick for google sheets
+                scopes: [""],
+              };
+            }
+            return JSON.stringify(manifest);
           },
         },
       ],

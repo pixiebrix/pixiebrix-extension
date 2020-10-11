@@ -1,12 +1,11 @@
 import { Effect } from "@/types";
 import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
-import { messageBackgroundScript } from "@/chrome";
 import {
-  GOOGLE_SHEETS_APPEND,
-  GOOGLE_SHEETS_BATCH_UPDATE,
-  GOOGLE_SHEETS_GET,
-} from "@/messaging/constants";
+  appendRows,
+  batchGet,
+  createTab,
+} from "@/contrib/google/sheets/handlers";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
@@ -68,10 +67,10 @@ async function getHeaders(
   tabName: string
 ): Promise<string[]> {
   // Lookup the headers in the first row so we can determine where to put the values
-  const { response } = await messageBackgroundScript(GOOGLE_SHEETS_GET, {
-    spreadsheetId: spreadsheetId,
-    ranges: `${tabName}!A1:${columnToLetter(256)}1`,
-  });
+  const response = await batchGet(
+    spreadsheetId,
+    `${tabName}!A1:${columnToLetter(256)}1`
+  );
   return response.valueRanges[0].values[0];
 }
 
@@ -112,8 +111,8 @@ export class GoogleSheetsAppend extends Effect {
     ["spreadsheetId", "tabName", "rowValues"]
   );
 
-  async effect({ spreadsheetId, tabName, rowValues }: BlockArg) {
-    let valueHeaders = rowValues.map((x: RowValue) => x.header);
+  async effect({ spreadsheetId, tabName, rowValues }: BlockArg): Promise<void> {
+    const valueHeaders = rowValues.map((x: RowValue) => x.header);
     let currentHeaders: string[];
 
     try {
@@ -123,18 +122,7 @@ export class GoogleSheetsAppend extends Effect {
       );
     } catch (ex) {
       console.debug(`Creating tab ${tabName}`);
-      await messageBackgroundScript(GOOGLE_SHEETS_BATCH_UPDATE, {
-        spreadsheetId: spreadsheetId,
-        requests: [
-          {
-            addSheet: {
-              properties: {
-                title: tabName,
-              },
-            },
-          },
-        ],
-      });
+      await createTab(spreadsheetId, tabName);
     }
 
     if (
@@ -142,19 +130,13 @@ export class GoogleSheetsAppend extends Effect {
       currentHeaders.every((x) => x && x.toString().trim() === "")
     ) {
       console.debug(`Writing header row for ${tabName}`);
-      await messageBackgroundScript(GOOGLE_SHEETS_APPEND, {
-        spreadsheetId,
-        tabName,
-        values: [valueHeaders],
-      });
+      await appendRows(spreadsheetId, tabName, [valueHeaders]);
       currentHeaders = valueHeaders;
     }
 
-    await messageBackgroundScript(GOOGLE_SHEETS_APPEND, {
-      spreadsheetId,
-      tabName,
-      values: [makeValues(currentHeaders, rowValues)],
-    });
+    await appendRows(spreadsheetId, tabName, [
+      makeValues(currentHeaders, rowValues),
+    ]);
   }
 }
 

@@ -6,7 +6,7 @@ import "@/blocks";
 const blockDefinitions = blockRegistry.all().map((block) => ({
   apiVersion: "v1",
   header: true,
-  kind: !!(block as any).read ? "reader" : "component",
+  kind: (block as any).read ? "reader" : "component",
   metadata: {
     id: block.id,
     version: process.env.npm_package_version,

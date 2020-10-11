@@ -1,7 +1,6 @@
 /**
  * Type contract between the backend and front-end.
  */
-
 import { ServiceDefinition } from "@/types/definitions";
 import { ServiceConfig } from "@/core";
 
@@ -41,16 +40,51 @@ export interface PendingInvitation {
   organization: Organization;
 }
 
-// ServiceSerializer
 export interface RemoteService {
-  // the id is the internal uuid in pixiebrix
+  /**
+   * Internal UUID on PixieBrix backend.
+   */
   id: string;
-  // the name field stores the "id" in pixiebrix world
+
+  /**
+   * Unique identifier, including scope and collection.
+   */
   name: string;
+
   config: ServiceDefinition;
 }
 
-// ConfigurableAuthSerializer
+export interface OrganizationMeta {
+  id: string;
+  name: string;
+}
+
+export interface SanitizedAuth {
+  /**
+   * UUID of the auth configuration
+   */
+  id: string;
+
+  organization: OrganizationMeta | undefined;
+
+  label: string | undefined;
+
+  /**
+   * True if the user has edit-permissions for the configuration
+   */
+  editable: boolean;
+
+  /**
+   * Configuration excluding any secrets/keys.
+   */
+  config: ServiceConfig;
+
+  /**
+   * Service definition.
+   */
+  service: RemoteService;
+}
+
 export interface ConfigurableAuth {
   id: string;
   editable?: boolean;
@@ -60,7 +94,6 @@ export interface ConfigurableAuth {
   service: RemoteService;
 }
 
-// ReadonlyAuthSerializer
 export interface ReadOnlyAuth {
   id: string;
   organization?: string;

@@ -11,7 +11,7 @@ import { useAsyncState } from "@/hooks/common";
 import genericOptionsFactory from "@/components/fields/blockOptions";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/telemetry/logging";
 
 interface OwnProps {
   configuration: RawServiceConfiguration;

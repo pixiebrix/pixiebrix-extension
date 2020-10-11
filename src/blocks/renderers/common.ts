@@ -1,4 +1,4 @@
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/telemetry/logging";
 
 /** An error boundary for renderers */
 export async function errorBoundary(

@@ -32,7 +32,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
   constructor(entityType: EntityType) {
     super(
       `techcrunch/${entityType}-mention-action`,
-      `Techcrunch ${startCase(entityType)} Link Action`,
+      `TechCrunch ${startCase(entityType)} Link Action`,
       `Add a button next to each ${entityType} mention in an article`,
       faMousePointer
     );

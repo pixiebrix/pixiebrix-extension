@@ -51,7 +51,7 @@ export class GeocodeTransformer extends Transformer {
 
   inputSchema: Schema = propertiesToSchema({
     service: {
-      $ref: "https://app.pixiebrix.com/schemas/services/google/geocode",
+      $ref: "https://app.pixiebrix.com/schemas/services/google/geocode-api",
       description: "A Google Geocode service to authenticate the request",
     },
     address: {

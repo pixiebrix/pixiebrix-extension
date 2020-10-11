@@ -1,9 +1,16 @@
-import { safeRequest } from "@/chrome";
+import { request } from "@/background/requests";
 import { pixieServiceFactory } from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import { getBaseURL } from "@/services/baseService";
-import { AxiosRequestConfig, Method } from "axios";
+import { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import { ConfiguredService } from "@/core";
+
+interface ProxyResponse {
+  status_code: number;
+  message?: string;
+  reason?: string;
+  json?: unknown;
+}
 
 async function proxyRequest(
   service: ConfiguredService,
@@ -19,17 +26,17 @@ async function proxyRequest(
       service_id: service.serviceId,
     },
   };
-  const proxyResponse: any = await safeRequest(
+  const proxyResponse = (await request(
     proxyService.authenticateRequest(proxyRequest)
-  );
+  )) as AxiosResponse<ProxyResponse>;
   console.debug(`Proxy response for ${service.serviceId}:`, proxyResponse);
-  if (proxyResponse.status_code >= 400) {
+  if (proxyResponse.data.status_code >= 400) {
     throw new RemoteServiceError(
-      proxyResponse.message ?? proxyResponse.reason,
+      proxyResponse.data.message ?? proxyResponse.data.reason,
       proxyResponse
     );
   } else {
-    return proxyResponse.json;
+    return proxyResponse.data.json;
   }
 }
 
@@ -38,10 +45,10 @@ export async function proxyService(
   requestConfig: AxiosRequestConfig
 ): Promise<unknown> {
   if (!service) {
-    return await safeRequest(requestConfig);
+    return await request(requestConfig);
   } else if (service.proxy) {
     return await proxyRequest(service, requestConfig);
   } else {
-    return await safeRequest(service.authenticateRequest(requestConfig));
+    return await request(service.authenticateRequest(requestConfig));
   }
 }

@@ -13,7 +13,7 @@ import {
   BlockPipeline,
   makeServiceContext,
 } from "@/blocks/combinators";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/telemetry/logging";
 import {
   awaitElementOnce,
   acquireElement,
@@ -35,6 +35,7 @@ import {
 } from "@/core";
 import psl, { ParsedDomain } from "psl";
 import { safeTrack } from "@/telemetry/mixpanel";
+import { propertiesToSchema } from "@/validators/generic";
 
 interface MenuItemExtensionConfig {
   caption: string;
@@ -60,19 +61,25 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     this.$menu = undefined;
   }
 
-  inputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema",
-    type: "object",
-    properties: {
+  inputSchema: Schema = propertiesToSchema(
+    {
       caption: {
         type: "string",
         description: "The caption for the menu item.",
       },
-      action: { $ref: "https://app.pixiebrix.com/schemas/effect#" },
+      action: {
+        oneOf: [
+          { $ref: "https://app.pixiebrix.com/schemas/effect#" },
+          {
+            type: "array",
+            items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
+          },
+        ],
+      },
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
     },
-    required: ["caption", "action"],
-  };
+    ["caption", "action"]
+  );
 
   getTemplate(): string {
     if (this.template) return this.template;

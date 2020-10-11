@@ -37,4 +37,4 @@ pipeline:
         - property: inline_links.cited_by?.total
           label: Citation Count
         - property: publication_info?.summary
-        - label: Publication
+          label: Publication
