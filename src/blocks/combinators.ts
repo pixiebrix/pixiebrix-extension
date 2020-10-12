@@ -7,12 +7,13 @@ import CompositeReader from "@/blocks/readers/CompositeReader";
 import { locate } from "@/background/locator";
 import mapValues from "lodash/mapValues";
 import {
+  ConfiguredService,
   IBlock,
   IReader,
-  TemplateEngine,
+  Logger,
   Schema,
   ServiceDependency,
-  ConfiguredService,
+  TemplateEngine,
 } from "@/core";
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
@@ -112,6 +113,7 @@ function excludeUndefined(obj: unknown): unknown {
 export async function reducePipeline(
   config: BlockConfig | BlockPipeline,
   renderedArgs: RenderedArgs,
+  logger: Logger,
   options: ReduceOptions = { validate: true, serviceArgs: {} }
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
@@ -122,57 +124,47 @@ export async function reducePipeline(
   let ctxt: RenderedArgs = renderedArgs;
 
   for (const stage of castArray(config)) {
-    try {
-      const block = blockRegistry.lookup(stage.id);
+    const block = blockRegistry.lookup(stage.id);
+    const blockLogger = logger.childLogger({ blockId: stage.id });
 
-      const argContext = { ...extraContext, ...ctxt };
+    const argContext = { ...extraContext, ...ctxt };
 
-      const stageConfig = stage.config ?? {};
+    const stageConfig = stage.config ?? {};
 
-      // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
-      const blockArgs = isPlainObject(ctxt)
-        ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
-        : stageConfig;
+    // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
+    const blockArgs = isPlainObject(ctxt)
+      ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
+      : stageConfig;
 
-      if (options.validate) {
-        const validationResult = validateInput(
-          castSchema(block.inputSchema),
-          excludeUndefined(blockArgs)
+    if (options.validate) {
+      const validationResult = validateInput(
+        castSchema(block.inputSchema),
+        excludeUndefined(blockArgs)
+      );
+      if (!validationResult.valid) {
+        throw new InputValidationError(
+          `Invalid inputs for block ${stage.id}`,
+          block.inputSchema,
+          blockArgs,
+          validationResult.errors
         );
-        if (!validationResult.valid) {
-          console.warn(`Invalid inputs for block ${stage.id}`, {
-            schema: block.inputSchema,
-            blockArgs,
-            errors: validationResult.errors,
-            extraContext,
-          });
-
-          // throw new InputValidationError(
-          //   `Invalid inputs for block ${stage.id}`,
-          //   block.inputSchema,
-          //   blockArgs,
-          //   validationResult.errors
-          // );
-        }
       }
+    }
 
-      const output = (await block.run(blockArgs, { ctxt })) ?? {};
+    const output =
+      (await block.run(blockArgs, { ctxt, logger: blockLogger })) ?? {};
 
-      if (stage.outputKey) {
-        // if output key is defined, store to a variable instead of passing to the next stage
-        extraContext[`@${stage.outputKey}`] = output;
-        console.debug(`Storing ${stage.id} -> @${stage.outputKey}`, {
-          value: output,
-        });
-      } else if (isPlainObject(output)) {
-        ctxt = output as RenderedArgs;
-      } else {
-        // FIXME: need to rationalize how list outputs are passed along
-        ctxt = output as any;
-      }
-    } catch (ex) {
-      console.exception(ex);
-      throw ex;
+    if (stage.outputKey) {
+      // if output key is defined, store to a variable instead of passing to the next stage
+      extraContext[`@${stage.outputKey}`] = output;
+      logger.debug(`Storing ${stage.id} -> @${stage.outputKey}`, {
+        value: output,
+      });
+    } else if (isPlainObject(output)) {
+      ctxt = output as RenderedArgs;
+    } else {
+      // FIXME: need to rationalize how list outputs are passed along
+      ctxt = output as any;
     }
   }
 

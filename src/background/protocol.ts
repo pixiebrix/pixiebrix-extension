@@ -4,25 +4,19 @@ import {
   isContentScript,
   isOptionsPage,
 } from "webext-detect-page";
+import { serializeError, deserializeError } from "serialize-error";
 import { isEmpty, partial } from "lodash";
+import { SerializedError } from "@/core";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/";
 
-export class MessageError extends Error {
+export class BackgroundActionError extends Error {
   errors: unknown;
 
   constructor(message: string) {
     super(message);
     this.name = "BackgroundActionError";
   }
-}
-
-// copied from redux-toolkit: https://redux-toolkit.js.org/api/createAsyncThunk#promise-lifecycle-actions
-export interface SerializedError {
-  name?: string;
-  message?: string;
-  code?: string;
-  stack?: string;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -46,27 +40,11 @@ interface ErrorResponse {
 }
 
 function isErrorResponse(ex: unknown): ex is ErrorResponse {
-  return typeof ex === "object" && "$$error" in ex;
+  return typeof ex === "object" && ex != null && "$$error" in ex;
 }
 
 function toErrorResponse(requestType: string, ex: unknown): ErrorResponse {
-  if (typeof ex === "string") {
-    return { $$error: { message: ex } };
-  } else if (typeof ex === "object") {
-    return { $$error: ex };
-  } else {
-    return {
-      $$error: { message: `Unknown error processing ${requestType}` },
-    };
-  }
-}
-
-function deserializeError(ex: SerializedError): Error {
-  const { name, message, stack } = ex;
-  const error = new Error(message);
-  error.name = name ?? "Error";
-  error.stack = stack;
-  return error;
+  return { $$error: serializeError(ex) };
 }
 
 function initListener(messageEvent: chrome.runtime.ExtensionMessageEvent) {
@@ -126,6 +104,11 @@ export function liftBackground<T0, T1, T2, R extends SerializableResponse>(
   method: (a0: T0, a1: T1, a2: T2) => R,
   options?: HandlerOptions
 ): (a0: T0, a1: T1, a2: T2) => Promise<R>;
+export function liftBackground<T0, T1, T2, T3, R extends SerializableResponse>(
+  type: string,
+  method: (a0: T0, a1: T1, a2: T2, a3: T3) => R,
+  options?: HandlerOptions
+): (a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>;
 export function liftBackground<R extends SerializableResponse>(
   type: string,
   method: (...args: unknown[]) => R,
@@ -153,7 +136,7 @@ export function liftBackground<R extends SerializableResponse>(
         response: unknown
       ) {
         if (chrome.runtime.lastError != null) {
-          reject(new MessageError(chrome.runtime.lastError.message));
+          reject(new BackgroundActionError(chrome.runtime.lastError.message));
         } else if (isErrorResponse(response)) {
           reject(deserializeError(response.$$error));
         } else {
@@ -163,7 +146,7 @@ export function liftBackground<R extends SerializableResponse>(
         }
       });
       if (chrome.runtime.lastError != null) {
-        reject(new MessageError(chrome.runtime.lastError.message));
+        reject(new BackgroundActionError(chrome.runtime.lastError.message));
       }
     });
   };

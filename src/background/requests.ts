@@ -1,5 +1,17 @@
-import axios, { AxiosRequestConfig } from "axios";
+import axios, { AxiosRequestConfig, Method } from "axios";
 import { liftBackground } from "@/background/protocol";
+import { ConfiguredService } from "@/core";
+import { pixieServiceFactory } from "@/services/locator";
+import { getBaseURL } from "@/services/baseService";
+import { RemoteServiceError } from "@/services/errors";
+import serviceRegistry from "@/services/registry";
+
+export interface RemoteResponse<T> {
+  data: T;
+  status: number;
+  statusText: string;
+  $$proxied?: boolean;
+}
 
 export const post = liftBackground(
   "HTTP_POST",
@@ -14,14 +26,57 @@ export const post = liftBackground(
   }
 );
 
-export const requestWithAuth = liftBackground(
-  "HTTP_REQUEST",
-  (authId: string, config: AxiosRequestConfig) => {
-    return axios(config);
-  }
-);
-
 export const request = liftBackground(
   "HTTP_REQUEST",
   (config: AxiosRequestConfig) => axios(config)
 );
+
+function authenticate(
+  config: ConfiguredService,
+  request: AxiosRequestConfig
+): AxiosRequestConfig {
+  const service = serviceRegistry.lookup(config.serviceId);
+  return service.authenticateRequest(config.config, request);
+}
+
+async function proxyRequest<T>(
+  service: ConfiguredService,
+  requestConfig: AxiosRequestConfig
+): Promise<RemoteResponse<T>> {
+  const proxyResponse = await request(
+    authenticate(await pixieServiceFactory(), {
+      url: `${await getBaseURL()}/api/proxy/`,
+      method: "post" as Method,
+      data: {
+        ...requestConfig,
+        service_id: service.serviceId,
+      },
+    })
+  );
+  console.debug(`Proxy response for ${service.serviceId}:`, proxyResponse);
+  if (proxyResponse.data.status_code >= 400) {
+    throw new RemoteServiceError(
+      proxyResponse.data.message ?? proxyResponse.data.reason,
+      proxyResponse
+    );
+  } else {
+    // The json payload from the proxy is the response from the remote server
+    return {
+      ...proxyResponse.data.json,
+      $$proxied: true,
+    };
+  }
+}
+
+export async function proxyService<T>(
+  serviceConfig: ConfiguredService | null,
+  requestConfig: AxiosRequestConfig
+): Promise<RemoteResponse<T>> {
+  if (!serviceConfig) {
+    return await request(requestConfig);
+  } else if (serviceConfig.proxy) {
+    return await proxyRequest<T>(serviceConfig, requestConfig);
+  } else {
+    return await request(authenticate(serviceConfig, requestConfig));
+  }
+}

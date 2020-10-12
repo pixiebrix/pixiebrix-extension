@@ -127,10 +127,7 @@ export function missingProperties(
 }
 
 export function inputProperties(inputSchema: Schema): SchemaProperties {
-  if (
-    typeof inputSchema === "object" &&
-    inputSchema.hasOwnProperty("properties")
-  ) {
+  if (typeof inputSchema === "object" && "properties" in inputSchema) {
     return inputSchema.properties;
   } else {
     return inputSchema as SchemaProperties;

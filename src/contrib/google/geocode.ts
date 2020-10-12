@@ -1,8 +1,8 @@
 import isEmpty from "lodash/isEmpty";
-import { proxyService } from "@/messaging/proxy";
+import { proxyService } from "@/background/requests";
 import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
-import { BlockArg, BlockOptions, ConfiguredService, Schema } from "@/core";
+import { BlockArg, ConfiguredService, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 interface GeocodedAddress {
@@ -60,10 +60,7 @@ export class GeocodeTransformer extends Transformer {
     },
   });
 
-  async transform(
-    { service, address, ...requestParams }: BlockArg,
-    options: BlockOptions
-  ) {
+  async transform({ service, address }: BlockArg): Promise<GeocodedAddress> {
     return await geocodeAddress(service, address);
   }
 }

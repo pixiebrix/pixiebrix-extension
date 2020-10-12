@@ -8,7 +8,7 @@ initRollbar();
 import "./background/external";
 import "./background/requests";
 import "./background/locator";
-import "./background/errors";
+import "./background/logging";
 
 import initGoogle from "@/contrib/google/background";
 import initFrames from "@/background/iframes";

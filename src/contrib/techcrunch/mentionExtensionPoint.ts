@@ -10,9 +10,10 @@ import {
   reducePipeline,
 } from "@/blocks/combinators";
 import { propertiesToSchema } from "@/validators/generic";
-import { IExtension, IReader } from "@/core";
+import { IExtension, IReader, Logger } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
+import { BackgroundLogger } from "@/background/logging";
 
 interface MentionConfig {
   caption: string;
@@ -24,6 +25,7 @@ type EntityType = "organization" | "person";
 class MentionAction extends ExtensionPoint<MentionConfig> {
   private readonly entityType: EntityType;
 
+  protected logger: Logger;
   protected $links: JQuery | undefined;
 
   public get defaultOptions() {
@@ -39,6 +41,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
     );
     this.entityType = entityType;
     this.$links = undefined;
+    this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
   inputSchema = propertiesToSchema({
@@ -86,6 +89,9 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
 
     for (const extension of this.extensions) {
       const { caption, action } = extension.config;
+      const extensionLogger = this.logger.childLogger({
+        extensionId: extension.id,
+      });
 
       const $button = $(
         Mustache.render("<button>{{caption}}</button>", {
@@ -95,7 +101,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
       $button.attr("data-pixiebrix-uuid", extension.id);
 
       $button.on("click", () => {
-        reducePipeline(action, ctxt);
+        reducePipeline(action, ctxt, extensionLogger);
       });
 
       const $existingButton = $link

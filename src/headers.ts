@@ -2,6 +2,7 @@ import fs from "fs";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import "@/blocks";
+import "@/contrib";
 
 const blockDefinitions = blockRegistry.all().map((block) => ({
   apiVersion: "v1",

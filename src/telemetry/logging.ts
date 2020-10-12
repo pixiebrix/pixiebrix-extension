@@ -1,46 +1,34 @@
-import { v4 as uuidv4 } from "uuid";
-import {
-  ErrorContext,
-  SerializedError,
-  recordError,
-} from "@/background/errors";
+import { recordError } from "@/background/logging";
+import { MessageContext, SerializedError } from "@/core";
+import { serializeError } from "serialize-error";
 
 function selectError(exc: unknown): SerializedError {
   if (exc instanceof Error) {
-    return {
-      message: exc.toString(),
-      stack: exc.stack,
-    };
+    return serializeError(exc);
   } else if (typeof exc === "object") {
     const obj = exc as Record<string, unknown>;
-    if (obj && obj.stack && obj.message) {
-      return exc as SerializedError;
-    } else if (typeof exc === "string") {
-      return { message: exc };
-    } else if (obj.type === "unhandledrejection") {
+    if (obj.type === "unhandledrejection") {
       // @ts-ignore: OK given the type of reason on unhandledrejection
-      return { message: obj.reason?.message ?? "Uncaught error in promise" };
+      return serializeError({
+        message: obj.reason?.message ?? "Uncaught error in promise",
+      });
+    } else {
+      return serializeError(obj);
     }
   } else {
-    console.warn("reportError received unexpected error object", exc);
-    return { message: `Unknown error of type ${typeof exc}` };
+    return serializeError(exc);
   }
 }
 
 export async function reportError(
   exc: unknown,
-  context?: ErrorContext
+  context?: MessageContext
 ): Promise<void> {
   // Wrap in try/catch, otherwise will enter infinite loop on unhandledrejection when
   // messaging the background script
   try {
-    const fullContext = {
-      ...(context ?? {}),
-      timestamp: Date.now().toString(10),
-      uuid: uuidv4(),
-    };
-    await recordError(selectError(exc), fullContext);
+    await recordError(selectError(exc), context, null);
   } catch (exc) {
-    console.error(`Error reporting error to background script: ${exc}`);
+    console.error(`Another error occurred while reporting an error: ${exc}`);
   }
 }

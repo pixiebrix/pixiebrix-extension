@@ -1,6 +1,5 @@
 import { ConfigurableAuth } from "@/types/contract";
 import {
-  Authenticator,
   ConfiguredService,
   IService,
   RawServiceConfiguration,
@@ -13,8 +12,7 @@ import registry, {
   readRawConfigurations,
 } from "@/services/registry";
 import { inputProperties } from "@/helpers";
-import { getExtensionToken } from "@/auth/token";
-import { proxyService, RemoteResponse } from "@/messaging/proxy";
+import { proxyService, RemoteResponse } from "@/background/requests";
 import { getBaseURL } from "@/services/baseService";
 import {
   MissingConfigurationError,
@@ -23,7 +21,7 @@ import {
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
-  "https://www.pixiebrix.com/schemas/key#",
+  "https://app.pixiebrix.com/schemas/key",
 ];
 
 enum ServiceLevel {
@@ -48,20 +46,13 @@ export function excludeSecrets(
 }
 
 export async function pixieServiceFactory(): Promise<ConfiguredService> {
-  const token = await getExtensionToken();
-  const service = registry.lookup(PIXIEBRIX_SERVICE_ID);
   return {
-    proxy: false,
+    id: undefined,
     serviceId: PIXIEBRIX_SERVICE_ID,
+    proxy: false,
     config: {},
-    authenticateRequest: (x) =>
-      service.authenticateRequest({ apiKey: token }, x),
   };
 }
-
-const proxyRequiredAuthenticator: Authenticator = () => {
-  throw new Error("Request must be proxied");
-};
 
 type Option = {
   id: string;
@@ -77,7 +68,7 @@ class LazyLocatorFactory {
   private remote: ConfigurableAuth[] = [];
   private local: RawServiceConfiguration[] = [];
   private options: Option[];
-  public _initialized = false;
+  private _initialized = false;
   private _refreshPromise: Promise<void>;
 
   constructor(baseURL?: string) {
@@ -170,16 +161,11 @@ class LazyLocatorFactory {
       );
     }
 
-    const proxy = service.hasAuth && !match.local;
-
     return {
+      id: authId,
       serviceId: serviceId,
-      proxy,
+      proxy: service.hasAuth && !match.local,
       config: excludeSecrets(service, match.config),
-      // include secrets required because they're required to authenticate the request
-      authenticateRequest: proxy
-        ? proxyRequiredAuthenticator
-        : (x) => service.authenticateRequest(match.config, x),
     };
   }
 }

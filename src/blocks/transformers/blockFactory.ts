@@ -68,11 +68,15 @@ class ExternalBlock extends Block {
   }
 
   async run(renderedInputs: BlockArg, options: BlockOptions): Promise<unknown> {
-    return await reducePipeline(this.component.pipeline, renderedInputs);
+    return await reducePipeline(
+      this.component.pipeline,
+      renderedInputs,
+      options.logger
+    );
   }
 }
 
-export function fromJS(component: any): IBlock {
+export function fromJS(component: Record<string, unknown>): IBlock {
   if (component.kind == null) {
     throw new ValidationError(
       "Component definition is missing a 'kind' property",

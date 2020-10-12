@@ -23,7 +23,7 @@ import useAsyncEffect from "use-async-effect";
 import isEmpty from "lodash/isEmpty";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "react-bootstrap/Button";
-import ErrorLogCard from "@/options/pages/extensionEditor/ErrorLogCard";
+import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
 
 type TopConfig = { [prop: string]: unknown };
 
@@ -163,7 +163,7 @@ const ExtensionForm: React.FunctionComponent<{
                   eventKey="configuration"
                   fieldName="config"
                 />
-                <NavItem caption="Error Log" eventKey="errorLog" />
+                <NavItem caption="Run Log" eventKey="runLog" />
               </Nav>
             </Card.Header>
 
@@ -197,8 +197,8 @@ const ExtensionForm: React.FunctionComponent<{
                 blocks={blocks}
               />
             )}
-            {activeTab === "errorLog" && (
-              <ErrorLogCard
+            {activeTab === "runLog" && (
+              <RunLogCard
                 extensionPoint={extensionPoint}
                 extensionId={extensionId}
               />

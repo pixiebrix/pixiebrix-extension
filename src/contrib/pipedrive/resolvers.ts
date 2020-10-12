@@ -1,7 +1,7 @@
 import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
-import { proxyService } from "@/messaging/proxy";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { proxyService } from "@/background/requests";
+import { BlockArg, Schema } from "@/core";
 
 const PIPEDRIVE_SERVICE_ID = "pipedrive/api";
 
@@ -39,10 +39,11 @@ export class ResolvePerson extends Transformer {
     },
   };
 
-  async transform(
-    { pipedriveService, name, organization }: BlockArg,
-    options: BlockOptions
-  ): Promise<unknown> {
+  async transform({
+    pipedriveService,
+    name,
+    organization,
+  }: BlockArg): Promise<unknown> {
     let organization_id = undefined;
 
     if (organization) {

@@ -1,26 +1,27 @@
 import Card from "react-bootstrap/Card";
 import React, { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
-import { getErrors } from "@/background/errors";
+import { getLog } from "@/background/logging";
 import { GridLoader } from "react-spinners";
 import { Table } from "react-bootstrap";
 import { IExtensionPoint } from "@/core";
 import moment from "moment";
+import { LogEntry } from "@/background/logging";
 
 interface OwnProps {
   extensionPoint: IExtensionPoint;
   extensionId: string;
 }
 
-const ErrorLogCard: React.FunctionComponent<OwnProps> = ({
+const RunLogCard: React.FunctionComponent<OwnProps> = ({
   extensionPoint,
   extensionId,
 }) => {
   const stateFactory = useMemo(
-    () => getErrors({ extensionPointId: extensionPoint.id, extensionId }),
+    () => getLog({ extensionPointId: extensionPoint.id, extensionId }),
     [extensionPoint.id, extensionId]
   );
-  const [errors, isLoading] = useAsyncState(stateFactory);
+  const [entries, isLoading] = useAsyncState(stateFactory);
 
   return isLoading ? (
     <Card.Body>
@@ -31,16 +32,16 @@ const ErrorLogCard: React.FunctionComponent<OwnProps> = ({
       <thead>
         <tr>
           <td>Timestamp</td>
-          <td>Error</td>
+          <td>Kind</td>
+          <td>Message</td>
         </tr>
       </thead>
       <tbody>
-        {errors.map((x) => (
-          <tr key={x.context.uuid}>
-            <td>
-              {moment(Number.parseInt(x.context.timestamp, 10)).fromNow()}
-            </td>
-            <td>{x.error.message}</td>
+        {entries.map((x: LogEntry) => (
+          <tr key={x.uuid}>
+            <td>{moment(Number.parseInt(x.timestamp, 10)).calendar()}</td>
+            <td>Error</td>
+            <td>{typeof x.error === "object" ? x.error.message : x.error}</td>
           </tr>
         ))}
       </tbody>
@@ -48,4 +49,4 @@ const ErrorLogCard: React.FunctionComponent<OwnProps> = ({
   );
 };
 
-export default ErrorLogCard;
+export default RunLogCard;

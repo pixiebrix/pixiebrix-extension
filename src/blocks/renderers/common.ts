@@ -1,17 +1,14 @@
-import { reportError } from "@/telemetry/logging";
-import { ErrorContext } from "@/background/errors";
+import { Logger } from "@/core";
 
 /** An error boundary for renderers */
 export async function errorBoundary(
   renderPromise: Promise<string>,
-  errorContext: ErrorContext
+  logger: Logger
 ): Promise<string> {
   try {
     return await renderPromise;
   } catch (exc) {
-    // Intentionally don't block on error telemetry
-    // eslint-disable-next-line require-await
-    reportError(exc, errorContext);
+    logger.error(exc);
     return `<div>An error occurred: ${exc.toString()}</div>`;
   }
 }

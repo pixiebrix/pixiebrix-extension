@@ -1,6 +1,6 @@
 import { Effect } from "@/types";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-import { proxyService } from "@/messaging/proxy";
+import { proxyService } from "@/background/requests";
 import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";

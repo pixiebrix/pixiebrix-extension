@@ -1,8 +1,8 @@
 import { Transformer } from "@/types";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
-import { proxyService } from "@/messaging/proxy";
-import { Schema, BlockOptions, BlockArg } from "@/core";
+import { proxyService } from "@/background/requests";
+import { Schema, BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class GetAPITransformer extends Transformer {
@@ -37,10 +37,7 @@ export class GetAPITransformer extends Transformer {
     ["url"]
   );
 
-  async transform(
-    { service, ...requestProps }: BlockArg,
-    { ctxt }: BlockOptions
-  ): Promise<unknown> {
+  async transform({ service, ...requestProps }: BlockArg): Promise<unknown> {
     return await proxyService(service, { ...requestProps, method: "get" });
   }
 }

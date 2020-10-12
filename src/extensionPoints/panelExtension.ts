@@ -23,6 +23,7 @@ import {
   IReader,
   ReaderOutput,
   Schema,
+  Logger,
 } from "@/core";
 import {
   ExtensionPointDefinition,
@@ -30,7 +31,7 @@ import {
 } from "@/extensionPoints/types";
 import { reportError } from "@/telemetry/logging";
 import { propertiesToSchema } from "@/validators/generic";
-import { ErrorContext } from "@/background/errors";
+import { BackgroundLogger } from "@/background/logging";
 
 interface PanelConfig {
   heading?: string;
@@ -46,6 +47,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   protected template?: string;
   protected $container: JQuery;
   private readonly collapsedExtensions: { [key: string]: boolean };
+  protected readonly logger: Logger;
 
   public get defaultOptions(): { heading: string } {
     return { heading: "Custom Panel" };
@@ -60,6 +62,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     super(id, name, description, icon);
     this.$container = null;
     this.collapsedExtensions = {};
+    this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -141,10 +144,9 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     extension: IExtension<PanelConfig>
   ) {
     const bodyUUID = uuidv4();
-    const errorContext: ErrorContext = {
-      extensionPointId: this.id,
+    const extensionLogger = this.logger.childLogger({
       extensionId: extension.id,
-    };
+    });
 
     const {
       body,
@@ -190,11 +192,16 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const installBody = () => {
       if (!isBodyInstalled) {
         isBodyInstalled = true;
-        const rendererPromise = reducePipeline(body, readerContext, {
-          validate: true,
-          serviceArgs: serviceContext,
-        }) as Promise<string>;
-        errorBoundary(rendererPromise, errorContext).then((bodyHTML) => {
+        const rendererPromise = reducePipeline(
+          body,
+          readerContext,
+          extensionLogger,
+          {
+            validate: true,
+            serviceArgs: serviceContext,
+          }
+        ) as Promise<string>;
+        errorBoundary(rendererPromise, extensionLogger).then((bodyHTML) => {
           if (boolean(shadowDOM)) {
             const shadowRoot = $bodyContainer
               .get(0)

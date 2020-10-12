@@ -7,7 +7,7 @@ import { useHistory } from "react-router";
 import { useToasts } from "react-toast-notifications";
 import { EditorValues } from "./Editor";
 import { validateSchema } from "./validate";
-import { proxyService } from "@/messaging/proxy";
+import { proxyService } from "@/background/requests";
 import { pixieServiceFactory } from "@/services/locator";
 
 interface SubmitOptions {

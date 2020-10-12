@@ -15,7 +15,8 @@ import {
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 
-export abstract class Service implements IService {
+export abstract class Service<TConfig extends ServiceConfig = ServiceConfig>
+  implements IService<TConfig> {
   id: string;
   name: string;
   description?: string;
@@ -36,7 +37,7 @@ export abstract class Service implements IService {
   }
 
   abstract authenticateRequest(
-    serviceConfig: ServiceConfig,
+    serviceConfig: TConfig,
     requestConfig: AxiosRequestConfig
   ): AxiosRequestConfig;
 }
@@ -127,8 +128,8 @@ export abstract class Effect extends Block {
 
   abstract async effect(inputs: BlockArg, env?: BlockOptions): Promise<void>;
 
-  async run(value: BlockArg, options: BlockOptions) {
-    return this.effect(value);
+  async run(value: BlockArg, options: BlockOptions): Promise<void> {
+    return this.effect(value, options);
   }
 }
 

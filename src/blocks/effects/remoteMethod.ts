@@ -1,17 +1,16 @@
 import { Effect } from "@/types";
-import { proxyService } from "@/messaging/proxy";
+import { proxyService } from "@/background/requests";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
+import { propertiesToSchema } from "@/validators/generic";
 
 export class RemoteMethod extends Effect {
   constructor() {
     super("@pixiebrix/http", "HTTP Request");
   }
 
-  inputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    properties: {
+  inputSchema: Schema = propertiesToSchema(
+    {
       url: {
         type: "string",
         description: "The API URL",
@@ -43,10 +42,10 @@ export class RemoteMethod extends Effect {
         additionalProperties: true,
       },
     },
-    required: ["url", "data", "service"],
-  };
+    ["url", "data", "service"]
+  );
 
-  async effect({ service, ...requestConfig }: BlockArg) {
+  async effect({ service, ...requestConfig }: BlockArg): Promise<void> {
     await proxyService(service, requestConfig);
   }
 }

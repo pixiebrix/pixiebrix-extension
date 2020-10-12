@@ -29,12 +29,14 @@ import {
   IExtension,
   IExtensionPoint,
   IPermissions,
+  Logger,
   ReaderOutput,
   Schema,
 } from "@/core";
 import psl, { ParsedDomain } from "psl";
 import { safeTrack } from "@/telemetry/mixpanel";
 import { propertiesToSchema } from "@/validators/generic";
+import { BackgroundLogger } from "@/background/logging";
 
 interface MenuItemExtensionConfig {
   caption: string;
@@ -46,6 +48,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
   MenuItemExtensionConfig
 > {
   protected $menu?: JQuery;
+  protected readonly logger: Logger;
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
   }
@@ -58,6 +61,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
   ) {
     super(id, name, description, icon);
     this.$menu = undefined;
+    this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -116,6 +120,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     ctxt: ReaderOutput,
     extension: IExtension<MenuItemExtensionConfig>
   ) {
+    const extensionLogger = this.logger.childLogger({
+      extensionId: extension.id,
+    });
     console.debug(`Running extension ${extension.id}`);
 
     const {
@@ -152,14 +159,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
         domain: (psl.parse(window.location.hostname) as ParsedDomain).domain,
       });
       try {
-        await reducePipeline(actionConfig, ctxt, {
+        await reducePipeline(actionConfig, ctxt, extensionLogger, {
           validate: true,
           serviceArgs: serviceContext,
         });
         $.notify(`Successfully ran menu action`, { className: "success" });
       } catch (ex) {
         // eslint-disable-next-line require-await
-        reportError(ex);
+        extensionLogger.error(ex);
         $.notify(`Error running menu action: ${ex}`, { className: "error" });
       }
     });
