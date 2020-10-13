@@ -68,45 +68,5 @@ misbehaving.
 ## Why not _X_?
 
 We're avid users of browser extensions, bookmarklets, and userscripts. They'll always each have their place.
-We're building PixieBrix to bring their power to a broader audience.
+We're building PixieBrix to bring their power to a broader audience. See our Wiki for [a full comparison](https://github.com/pixiebrix/pixiebrix-extension/wiki/Why-not-X%3F)
 
-**Why not Browser Extensions?**
-
-* **Development Learning Curve:** creating a browser extension to extend a SaaS application has a steep learning curve:
-JS build systems, the extension API, messaging between contexts, SaaS page lifecycle. With PixieBrix, you just
-need to know programming basics, e.g., variables, CSS selectors, regular expressions. Our goal is go even further
-to allow anyone to extend their applications.
-* **Publishing Speed:** extension stores have slow and unpredictable review times (between 1-7 days). With PixieBrix,
-you can publish updates immediately.
-* **Security:** most browser extensions are closed-source. Despite web store security reviews, there have been
-high profile cases of bad actors buying popular extensions and repurposing the extension to steal private
-data. With PixieBrix, the extension and all the bricks you install are open-source.
-
-**Why not Userscripts?**
-
-* **Development Learning Curve:** while better than browser extensions, developing userscripts that integrate
-with modern SaaS applications involves a steep learning curve.
-* **Security:** userscripts are just Javascript, and therefore can perform arbitrary behaviors including stealing your
-private data. PixieBrix's block and service model makes it easy to understand and control how your data is used.
-* **Availability:** Chrome is moving to [eliminate remote code in browser extensions](https://developer.chrome.com/extensions/migrating_to_manifest_v3#api_checklist).
-This rule will prohibit userscript managers such as [Tampermonkey](http://www.tampermonkey.net/) from the Chrome Web Store.
-
-**Why not Bookmarklets?**
-
-* **Action-only:** you have to click on a bookmarklet to trigger it.
-* **Context:** bookmarklets all live in the bookmark toolbar, so you have to hunt for the bookmarklet you want.
-With PixieBrix, you can add buttons and menu items to the user interface of the site, so they're always right
-there when you need them.
-* **Limited Capabilities:** bookmarklets have length limits (Firefox limits bookmarklets to 64KB) and
-content security policy (CSP) incompatibility. To create complex behavior with bookmarklets, you end up
-re-directing a user to a different service, or injecting untrusted remote code into the source page.
-
-**Why not SaaS Apps?**
-
-Many SaaS applications have introduced their own App frameworks/marketplaces. Why not use those?
-
-* **Extensibility:** integrating N services with each other requires N^2 integrations. With PixieBrix,
-a brick can be re-used to integrate with any number of applications.
-* **Cost:** with marketplaces, you often have to pay extra for additional integrations.
-* **Long-Tail SaaS:** indie and niche SaaS apps can't all afford to create their own app frameworks.
-With PixieBrix, you can add missing functionality to you favorite SaaS application.
