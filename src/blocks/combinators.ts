@@ -123,18 +123,27 @@ export async function reducePipeline(
 
   let ctxt: RenderedArgs = renderedArgs;
 
-  for (const stage of castArray(config)) {
+  for (const [index, stage] of castArray(config).entries()) {
     const block = blockRegistry.lookup(stage.id);
     const blockLogger = logger.childLogger({ blockId: stage.id });
 
     const argContext = { ...extraContext, ...ctxt };
-
     const stageConfig = stage.config ?? {};
 
-    // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
-    const blockArgs = isPlainObject(ctxt)
-      ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
-      : stageConfig;
+    let blockArgs;
+
+    try {
+      // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
+      blockArgs = isPlainObject(ctxt)
+        ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
+        : stageConfig;
+    } catch (ex) {
+      throw new Error(
+        `An error occurred rendering inputs for ${stage.id} (block #${
+          index + 1
+        })`
+      );
+    }
 
     if (options.validate) {
       const validationResult = validateInput(
@@ -143,7 +152,7 @@ export async function reducePipeline(
       );
       if (!validationResult.valid) {
         throw new InputValidationError(
-          `Invalid inputs for block ${stage.id}`,
+          `Invalid inputs for block ${stage.id} (block #${index + 1})`,
           block.inputSchema,
           blockArgs,
           validationResult.errors
@@ -151,8 +160,15 @@ export async function reducePipeline(
       }
     }
 
-    const output =
-      (await block.run(blockArgs, { ctxt, logger: blockLogger })) ?? {};
+    let output;
+
+    try {
+      output =
+        (await block.run(blockArgs, { ctxt, logger: blockLogger })) ?? {};
+    } catch (ex) {
+      blockLogger.error(ex);
+      throw new Error(ex);
+    }
 
     if (stage.outputKey) {
       // if output key is defined, store to a variable instead of passing to the next stage

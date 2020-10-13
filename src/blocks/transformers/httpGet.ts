@@ -4,6 +4,7 @@ import { registerBlock } from "@/blocks/registry";
 import { proxyService } from "@/background/requests";
 import { Schema, BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { PropError } from "@/errors";
 
 export class GetAPITransformer extends Transformer {
   constructor() {
@@ -38,6 +39,14 @@ export class GetAPITransformer extends Transformer {
   );
 
   async transform({ service, ...requestProps }: BlockArg): Promise<unknown> {
+    if (service && typeof service !== "object") {
+      throw new PropError(
+        "Expected configured service",
+        this.id,
+        "service",
+        service
+      );
+    }
     return await proxyService(service, { ...requestProps, method: "get" });
   }
 }

@@ -29,11 +29,14 @@ export type SerializedError = Primitive | ErrorObject;
 
 export interface Logger {
   childLogger: (context: MessageContext) => Logger;
-  warn: (msg: string, data: Record<string, unknown>) => void;
-  debug: (msg: string, data: Record<string, unknown>) => void;
-  log: (msg: string, data: Record<string, unknown>) => void;
-  info: (msg: string, data: Record<string, unknown>) => void;
-  error: (error: SerializedError, data?: Record<string, unknown>) => void;
+  warn: (msg: string, data?: Record<string, unknown>) => void;
+  debug: (msg: string, data?: Record<string, unknown>) => void;
+  log: (msg: string, data?: Record<string, unknown>) => void;
+  info: (msg: string, data?: Record<string, unknown>) => void;
+  error: (
+    error: SerializedError | Error,
+    data?: Record<string, unknown>
+  ) => void;
 }
 
 export interface BlockOptions {
@@ -166,10 +169,6 @@ export interface RawServiceConfiguration {
   label: string | undefined;
   config: ServiceConfig;
 }
-
-export type Authenticator = (
-  requestConfig: AxiosRequestConfig
-) => AxiosRequestConfig;
 
 export interface ConfiguredService {
   /**

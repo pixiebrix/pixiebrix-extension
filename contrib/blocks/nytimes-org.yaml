@@ -9,17 +9,18 @@ inputSchema:
   $schema: "https://json-schema.org/draft/2019-09/schema#"
   type: object
   properties:
-    nytimesService:
+    service:
       $ref: "https://app.pixiebrix.com/schemas/services/nytimes/api"
     organizationName:
       type: string
       description: The name of the company to search for
   required:
+    - service
     - organizationName
 pipeline:
   - id: "@pixiebrix/get"
     config:
-      service: nytimesService
+      service: "@service"
       url: https://api.nytimes.com/svc/search/v2/articlesearch.json
       params:
         fq: organizations.contains:("{{organizationName}}")

@@ -72,7 +72,9 @@ export async function proxyService<T>(
   serviceConfig: ConfiguredService | null,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse<T>> {
-  if (!serviceConfig) {
+  if (typeof serviceConfig !== "object") {
+    throw new Error("expected configured service for serviceConfig");
+  } else if (!serviceConfig) {
     return await request(requestConfig);
   } else if (serviceConfig.proxy) {
     return await proxyRequest<T>(serviceConfig, requestConfig);

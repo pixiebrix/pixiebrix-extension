@@ -5,36 +5,61 @@ import { readStorage, setStorage } from "@/chrome";
 import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { JsonObject } from "type-fest";
 import { serializeError } from "serialize-error";
+import debounce from "lodash/debounce";
+import compact from "lodash/compact";
 
 const STORAGE_KEY = "LOG";
 
 type MessageLevel = "debug" | "info" | "warn" | "error" | "trace";
 
+const LOG_APPEND_DEBOUNCE_MILLIS = 150;
+
 export interface LogEntry {
   uuid: string;
   timestamp: string;
+  message: string;
   level: MessageLevel;
   context: MessageContext;
   data?: JsonObject;
   error?: SerializedError;
 }
 
-export async function appendEntry(entry: LogEntry): Promise<void> {
+const _logQueue: LogEntry[] = [];
+
+async function _append() {
   const current = JSON.parse(
     (await readStorage(STORAGE_KEY)) ?? "[]"
   ) as LogEntry[];
-  await setStorage(STORAGE_KEY, JSON.stringify([entry, ...current]));
+  await setStorage(
+    STORAGE_KEY,
+    JSON.stringify(compact([..._logQueue, ...current]))
+  );
+  _logQueue.length = 0;
 }
 
-export async function getLog(context?: MessageContext): Promise<LogEntry[]> {
+const debouncedAppend = debounce(_append, LOG_APPEND_DEBOUNCE_MILLIS);
+
+export async function appendEntry(entry: LogEntry): Promise<void> {
+  _logQueue.push(entry);
+  debouncedAppend();
+}
+
+export async function getLog(
+  context: MessageContext = {}
+): Promise<LogEntry[]> {
   const allErrors = JSON.parse(
     (await readStorage(STORAGE_KEY)) ?? "[]"
   ) as LogEntry[];
-  return allErrors.filter((x) =>
+  return allErrors.filter((entry) =>
     Object.entries(context ?? {}).every(
-      ([key, value]) => x.context[key as keyof MessageContext] === value
+      ([key, value]) =>
+        (entry.context ?? {})[key as keyof MessageContext] === value
     )
   );
+}
+
+function errorMessage(err: SerializedError): string {
+  return typeof err === "object" ? err.message : String(err);
 }
 
 export const recordError = liftBackground(
@@ -45,13 +70,13 @@ export const recordError = liftBackground(
     data: JsonObject | undefined
   ): Promise<void> => {
     try {
-      // @ts-ignore: not sure how to distinguish between the class and the namespace in the rollbar file
-      Rollbar.error(error.message, error);
+      (Rollbar as any).error(errorMessage(error), error);
       await appendEntry({
         uuid: uuidv4(),
         timestamp: Date.now().toString(),
         level: "error",
         context,
+        message: errorMessage(error),
         error,
         data,
       });
@@ -77,6 +102,7 @@ export const recordLog = liftBackground(
       uuid: uuidv4(),
       timestamp: Date.now().toString(),
       level,
+      message,
       data,
       context: context ?? {},
     });

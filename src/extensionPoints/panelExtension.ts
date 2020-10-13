@@ -23,15 +23,12 @@ import {
   IReader,
   ReaderOutput,
   Schema,
-  Logger,
 } from "@/core";
 import {
   ExtensionPointDefinition,
   ExtensionPointConfig,
 } from "@/extensionPoints/types";
-import { reportError } from "@/telemetry/logging";
 import { propertiesToSchema } from "@/validators/generic";
-import { BackgroundLogger } from "@/background/logging";
 
 interface PanelConfig {
   heading?: string;
@@ -47,7 +44,6 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   protected template?: string;
   protected $container: JQuery;
   private readonly collapsedExtensions: { [key: string]: boolean };
-  protected readonly logger: Logger;
 
   public get defaultOptions(): { heading: string } {
     return { heading: "Custom Panel" };
@@ -62,7 +58,6 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     super(id, name, description, icon);
     this.$container = null;
     this.collapsedExtensions = {};
-    this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -201,6 +196,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
             serviceArgs: serviceContext,
           }
         ) as Promise<string>;
+
         errorBoundary(rendererPromise, extensionLogger).then((bodyHTML) => {
           if (boolean(shadowDOM)) {
             const shadowRoot = $bodyContainer
@@ -210,6 +206,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           } else {
             $bodyContainer.html(bodyHTML);
           }
+          extensionLogger.debug("Successfully installed panel");
         });
       }
     };
@@ -261,12 +258,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       try {
         await this.runExtension(readerContext, extension);
       } catch (ex) {
-        // eslint-disable-next-line require-await
-        reportError(ex, {
-          extensionPointId: extension.extensionPointId,
-          extensionId: extension.id,
-        });
         errors.push(ex);
+        this.logger.childLogger({ extensionId: extension.id }).error(ex);
       }
     }
 

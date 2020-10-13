@@ -7,9 +7,8 @@ import {
   BlockConfig,
   makeServiceContext,
 } from "@/blocks/combinators";
-import { IBlock, IExtension, Logger, Schema } from "@/core";
+import { IBlock, IExtension, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { BackgroundLogger } from "@/background/logging";
 
 interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
@@ -18,8 +17,6 @@ interface TriggerConfig {
 export abstract class TriggerExtensionPoint extends ExtensionPoint<
   TriggerConfig
 > {
-  protected readonly logger: Logger;
-
   protected constructor(
     id: string,
     name: string,
@@ -27,7 +24,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     icon: string | IconDefinition = faBolt
   ) {
     super(id, name, description, icon);
-    this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
   async waitReady() {

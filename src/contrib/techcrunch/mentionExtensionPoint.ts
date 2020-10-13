@@ -10,10 +10,9 @@ import {
   reducePipeline,
 } from "@/blocks/combinators";
 import { propertiesToSchema } from "@/validators/generic";
-import { IExtension, IReader, Logger } from "@/core";
+import { IExtension, IReader } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { BackgroundLogger } from "@/background/logging";
 
 interface MentionConfig {
   caption: string;
@@ -25,7 +24,6 @@ type EntityType = "organization" | "person";
 class MentionAction extends ExtensionPoint<MentionConfig> {
   private readonly entityType: EntityType;
 
-  protected logger: Logger;
   protected $links: JQuery | undefined;
 
   public get defaultOptions() {
@@ -41,7 +39,6 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
     );
     this.entityType = entityType;
     this.$links = undefined;
-    this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
   inputSchema = propertiesToSchema({

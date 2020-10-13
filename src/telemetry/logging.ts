@@ -8,8 +8,8 @@ function selectError(exc: unknown): SerializedError {
   } else if (typeof exc === "object") {
     const obj = exc as Record<string, unknown>;
     if (obj.type === "unhandledrejection") {
-      // @ts-ignore: OK given the type of reason on unhandledrejection
       return serializeError({
+        // @ts-ignore: OK given the type of reason on unhandledrejection
         message: obj.reason?.message ?? "Uncaught error in promise",
       });
     } else {

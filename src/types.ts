@@ -9,11 +9,13 @@ import {
   IPermissions,
   IReader,
   IService,
+  Logger,
   RenderedHTML,
   Schema,
   ServiceConfig,
 } from "./core";
 import { AxiosRequestConfig } from "axios";
+import { BackgroundLogger } from "@/background/logging";
 
 export abstract class Service<TConfig extends ServiceConfig = ServiceConfig>
   implements IService<TConfig> {
@@ -51,6 +53,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   protected readonly extensions: IExtension<TConfig>[] = [];
   protected readonly template?: string;
   public abstract readonly inputSchema: Schema;
+  protected readonly logger: Logger;
 
   /**
    * Permissions required to use this extensions
@@ -72,6 +75,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
     this.name = name;
     this.description = description;
     this.icon = icon;
+    this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
   addExtension(extension: IExtension<TConfig>): void {

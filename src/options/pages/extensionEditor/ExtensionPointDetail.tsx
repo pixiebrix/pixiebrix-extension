@@ -163,7 +163,7 @@ const ExtensionForm: React.FunctionComponent<{
                   eventKey="configuration"
                   fieldName="config"
                 />
-                <NavItem caption="Run Log" eventKey="runLog" />
+                <NavItem caption="Log Stream" eventKey="runLog" />
               </Nav>
             </Card.Header>
 
