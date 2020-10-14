@@ -67,6 +67,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
           config: extensionConfig?.config,
           services: extensionConfig?.services ?? [],
         }}
+        extensionId={extensionId}
         extensionPoint={extensionPoint}
         onSave={save}
       />

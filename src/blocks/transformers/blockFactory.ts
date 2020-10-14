@@ -44,7 +44,7 @@ function validateBlockDefinition(
   }
 }
 
-class HydratedBlock extends Block {
+class ExternalBlock extends Block {
   private component: ComponentConfig;
   readonly inputSchema: Schema;
   readonly defaultOptions: { [key: string]: any };
@@ -68,11 +68,15 @@ class HydratedBlock extends Block {
   }
 
   async run(renderedInputs: BlockArg, options: BlockOptions): Promise<unknown> {
-    return await reducePipeline(this.component.pipeline, renderedInputs);
+    return await reducePipeline(
+      this.component.pipeline,
+      renderedInputs,
+      options.logger
+    );
   }
 }
 
-export function fromJS(component: any): IBlock {
+export function fromJS(component: Record<string, unknown>): IBlock {
   if (component.kind == null) {
     throw new ValidationError(
       "Component definition is missing a 'kind' property",
@@ -83,5 +87,5 @@ export function fromJS(component: any): IBlock {
   }
 
   validateBlockDefinition(component);
-  return new HydratedBlock(component);
+  return new ExternalBlock(component);
 }

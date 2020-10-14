@@ -1,4 +1,4 @@
-import { safePOST } from "@/chrome";
+import { post } from "@/background/requests";
 import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
@@ -52,8 +52,8 @@ export class SendSimpleSlackMessage extends Effect {
     iconEmoji,
     botName,
     unfurlLinks,
-  }: BlockArg) {
-    await safePOST(hookUrl, {
+  }: BlockArg): Promise<void> {
+    await post(hookUrl, {
       text,
       icon_emoji: iconEmoji,
       channel,
@@ -163,11 +163,11 @@ export class SendAdvancedSlackMessage extends Effect {
     botName,
     unfurlLinks,
     attachments,
-  }: BlockArg) {
+  }: BlockArg): Promise<void> {
     if (!hookUrl) {
       throw new Error("hookUrl not configured");
     }
-    await safePOST(hookUrl, {
+    await post(hookUrl, {
       text,
       icon_emoji: iconEmoji,
       channel,

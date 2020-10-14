@@ -14,11 +14,17 @@ if (process.env.MIXPANEL_BROWSER_TOKEN) {
   console.debug("Mixpanel not configured");
 }
 
-export function safeTrack(event_name: string, props: object) {
+export function safeTrack(
+  event_name: string,
+  props: Record<string, unknown>
+): void {
   if (process.env.MIXPANEL_BROWSER_TOKEN) {
     try {
       mixpanel.track(event_name, props);
-    } catch (exc) {}
+    } catch (exc) {
+      // pass
+    }
   } else {
+    // pass
   }
 }

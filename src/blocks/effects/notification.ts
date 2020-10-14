@@ -2,7 +2,7 @@ import { Effect } from "@/types";
 import { faStickyNote } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
 import { PERMISSIONS_NOTIFICATIONS } from "@/permissions/optional";
-import { sendNotification } from "@/chrome";
+import { createNotification } from "@/background/notifications";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, Schema } from "@/core";
 
@@ -33,8 +33,8 @@ export class ShowNotificationEffect extends Effect {
 
   permissions = PERMISSIONS_NOTIFICATIONS;
 
-  async effect({ title, message }: BlockArg) {
-    const { id } = await sendNotification({
+  async effect({ title, message }: BlockArg): Promise<void> {
+    const id = await createNotification({
       type: "basic",
       title,
       message,

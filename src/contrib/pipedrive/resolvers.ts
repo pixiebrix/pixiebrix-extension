@@ -1,9 +1,9 @@
 import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
-import { proxyService } from "@/messaging/proxy";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { proxyService } from "@/background/requests";
+import { BlockArg, Schema } from "@/core";
 
-const PIPEDRIVE_SERVICE_ID = "pipedrive";
+const PIPEDRIVE_SERVICE_ID = "pipedrive/api";
 
 interface SearchResultItem {
   result_score: number;
@@ -39,25 +39,30 @@ export class ResolvePerson extends Transformer {
     },
   };
 
-  async transform(
-    { pipedriveService, name, organization }: BlockArg,
-    options: BlockOptions
-  ): Promise<unknown> {
+  async transform({
+    pipedriveService,
+    name,
+    organization,
+  }: BlockArg): Promise<unknown> {
     let organization_id = undefined;
 
     if (organization) {
-      const { data } = (await proxyService(pipedriveService, {
+      const {
+        data: { data },
+      } = await proxyService<SearchResult>(pipedriveService, {
         url: "https://api.pipedrive.com/v1/organizations/search",
         method: "get",
         params: {
           exact_match: true,
           term: name,
         },
-      })) as SearchResult;
+      });
       organization_id = data.items.length ? data.items[0].item.id : undefined;
     }
 
-    const { data } = (await proxyService(pipedriveService, {
+    const {
+      data: { data },
+    } = await proxyService<SearchResult>(pipedriveService, {
       url: "https://api.pipedrive.com/v1/persons/search",
       method: "get",
       params: {
@@ -65,7 +70,7 @@ export class ResolvePerson extends Transformer {
         term: name,
         organization_id,
       },
-    })) as SearchResult;
+    });
 
     if (!data.items.length) {
       throw new Error(`Could not find person matching ${name}`);

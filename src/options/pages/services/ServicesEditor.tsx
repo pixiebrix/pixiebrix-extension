@@ -9,7 +9,7 @@ import { useToasts } from "react-toast-notifications";
 import ServiceEditorModal from "./ServiceEditorModal";
 import PrivateServicesCard from "./PrivateServicesCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
-import SharedServicesCard, { SanitizedAuth } from "./SharedServicesCard";
+import SharedServicesCard from "./SharedServicesCard";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import Card from "react-bootstrap/Card";
 import Nav from "react-bootstrap/Nav";
@@ -18,6 +18,7 @@ import { useFetch } from "@/hooks/fetch";
 import useServiceDefinitions from "./useServiceDefinitions";
 import { RootState } from "../../store";
 import { RawServiceConfiguration } from "@/core";
+import { SanitizedAuth } from "@/types/contract";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 

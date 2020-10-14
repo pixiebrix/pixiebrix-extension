@@ -12,13 +12,23 @@
           "type": "string"
         },
         "proxy": {
-          "type": "boolean"
+          "type": "boolean",
+          "description": "True to force the request to go through the PixieBrix proxy"
         },
         "config": {
           "type": "object",
           "additionalProperties": {"type": "string"}
         }
       }
+    },
+    "configuredServiceOrVar": {
+      "oneOf": [
+        {"$ref":  "#/definitions/configuredService"},
+        {
+          "type": "string",
+          "pattern": "^@?[a-zA-Z_]+$"
+        }
+      ]
     }
   },
   "properties": {

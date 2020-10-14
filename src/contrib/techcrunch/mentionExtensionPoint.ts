@@ -12,6 +12,7 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { IExtension, IReader } from "@/core";
 import blockRegistry from "@/blocks/registry";
+import extensionPointRegistry from "@/extensionPoints/registry";
 
 interface MentionConfig {
   caption: string;
@@ -32,7 +33,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
   constructor(entityType: EntityType) {
     super(
       `techcrunch/${entityType}-mention-action`,
-      `Techcrunch ${startCase(entityType)} Link Action`,
+      `TechCrunch ${startCase(entityType)} Link Action`,
       `Add a button next to each ${entityType} mention in an article`,
       faMousePointer
     );
@@ -85,6 +86,9 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
 
     for (const extension of this.extensions) {
       const { caption, action } = extension.config;
+      const extensionLogger = this.logger.childLogger({
+        extensionId: extension.id,
+      });
 
       const $button = $(
         Mustache.render("<button>{{caption}}</button>", {
@@ -94,7 +98,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
       $button.attr("data-pixiebrix-uuid", extension.id);
 
       $button.on("click", () => {
-        reducePipeline(action, ctxt);
+        reducePipeline(action, ctxt, extensionLogger);
       });
 
       const $existingButton = $link
@@ -117,4 +121,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
   }
 }
 
-export default [new MentionAction("organization"), new MentionAction("person")];
+extensionPointRegistry.register(
+  new MentionAction("organization"),
+  new MentionAction("person")
+);

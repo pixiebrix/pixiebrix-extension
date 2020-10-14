@@ -1,12 +1,13 @@
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
+import { locate } from "@/background/locator";
 import {
   Validator,
   Schema as ValidatorSchema,
   ValidationResult,
 } from "@cfworker/json-schema";
-import { IExtension, SchemaProperties, Schema, ServiceLocator } from "@/core";
+import { IExtension, SchemaProperties, Schema } from "@/core";
 import serviceRegistry from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import pickBy from "lodash/pickBy";
@@ -24,14 +25,15 @@ import iconSchema from "@schemas/icon.json";
 import recipeSchema from "@schemas/recipe.json";
 import keySchema from "@schemas/key.json";
 import metadataSchema from "@schemas/metadata.json";
+import refSchema from "@schemas/ref.json";
 import componentSchema from "@schemas/component.json";
 import {
   MissingConfigurationError,
-  MultipleConfigurationError,
+  NotConfiguredError,
 } from "@/services/errors";
 import { extensionValidatorFactory } from "./validation";
 
-const SCHEMA_URLS = {
+const SCHEMA_URLS: Record<string, Record<string, unknown>> = {
   "http://json-schema.org/draft-07/schema": draft07,
   "https://app.pixiebrix.com/schemas/metadata": metadataSchema,
   "https://app.pixiebrix.com/schemas/key": keySchema,
@@ -41,6 +43,7 @@ const SCHEMA_URLS = {
   "https://app.pixiebrix.com/schemas/recipe": recipeSchema,
   "https://app.pixiebrix.com/schemas/reader": readerSchema,
   "https://app.pixiebrix.com/schemas/component": componentSchema,
+  "https://app.pixiebrix.com/schemas/ref": refSchema,
 };
 
 const BASE_SCHEMA_URI = "https://app.pixiebrix.com/schemas/";
@@ -117,14 +120,12 @@ export function propertiesToSchema(
 
 export interface ExtensionValidationResult {
   valid: boolean;
-  notConfigured: MissingConfigurationError[];
+  notConfigured: NotConfiguredError[];
   missingConfiguration: MissingConfigurationError[];
-  multipleAuths: MultipleConfigurationError[];
   schemaErrors: any;
 }
 
 async function validateExtension(
-  locator: ServiceLocator,
   extension: IExtension
 ): Promise<ExtensionValidationResult> {
   console.debug(`Validating ${extension.id}`);
@@ -134,7 +135,6 @@ async function validateExtension(
   );
 
   const extensionValidator = extensionValidatorFactory(
-    locator,
     extensionPoint.inputSchema
   );
 
@@ -148,23 +148,18 @@ async function validateExtension(
   }
 
   const notConfigured = [];
-  const multipleAuths = [];
   const missingConfiguration = [];
 
   if (extension.services?.length) {
     for (const service of extension.services) {
       console.debug(`Validating ${extension.id} service ${service.id}`);
       try {
-        await locator(service.id, service.config);
+        await locate(service.id, service.config);
       } catch (ex) {
         if (ex instanceof MissingConfigurationError) {
-          if (ex.id) {
-            missingConfiguration.push(ex);
-          } else {
-            notConfigured.push(ex);
-          }
-        } else if (ex instanceof MultipleConfigurationError) {
-          multipleAuths.push(ex);
+          missingConfiguration.push(ex);
+        } else if (ex instanceof NotConfiguredError) {
+          notConfigured.push(ex);
         } else {
           console.debug(ex);
         }
@@ -173,26 +168,19 @@ async function validateExtension(
   }
 
   return {
-    valid:
-      !notConfigured.length &&
-      !multipleAuths.length &&
-      !missingConfiguration.length &&
-      validated,
+    valid: !notConfigured.length && !missingConfiguration.length && validated,
     notConfigured,
-    multipleAuths,
     missingConfiguration,
     schemaErrors,
   };
 }
 
 export function useExtensionValidator(
-  locator: ServiceLocator,
   extension: IExtension
 ): [ExtensionValidationResult | undefined, boolean] {
-  const validationPromise = useMemo(
-    () => validateExtension(locator, extension),
-    [extension, locator]
-  );
+  const validationPromise = useMemo(() => validateExtension(extension), [
+    extension,
+  ]);
   return useAsyncState(validationPromise);
 }
 
@@ -202,9 +190,8 @@ const pixieResolver: ResolverOptions = {
   order: 1,
   canRead: /^https?:\/\//i,
   async read(file: FileInfo) {
-    if (SCHEMA_URLS.hasOwnProperty(file.url)) {
-      // @ts-ignore
-      return SCHEMA_URLS[file.url];
+    if (SCHEMA_URLS[file.url]) {
+      return SCHEMA_URLS[file.url] as any;
     }
     throw new Error(`Unknown file ${file.url}`);
   },

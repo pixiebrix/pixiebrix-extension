@@ -10,7 +10,7 @@ type Request =
     }
   | { type: typeof REQUEST_FRAME_DATA; payload: { id: string } };
 
-function initFrames() {
+function initFrames(): void {
   // Save data to pass along to iframes
   chrome.runtime.onMessage.addListener(function (
     request: Request,

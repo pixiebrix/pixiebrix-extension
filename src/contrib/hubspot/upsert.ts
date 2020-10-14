@@ -1,10 +1,13 @@
 import { Effect } from "@/types";
-import { proxyService } from "@/messaging/proxy";
+import { proxyService } from "@/background/requests";
 import { registerBlock } from "@/blocks/registry";
 import { Schema, BlockArg } from "@/core";
 import partial from "lodash/partial";
 
-function makeProperties(obj: object, propertyKey: string = "property") {
+function makeProperties(
+  obj: Record<string, unknown>,
+  propertyKey = "property"
+) {
   return Object.entries(obj)
     .filter(([, value]) => !!value)
     .map(([property, value]) => ({
@@ -71,16 +74,14 @@ export class AddUpdateContact extends Effect {
     additionalProperties: { type: "string" },
   };
 
-  async effect(config: BlockArg) {
-    const {
-      service,
-      email,
-      firstname,
-      lastname,
-      company,
-      ...otherValues
-    } = config;
-
+  async effect({
+    service,
+    email,
+    firstname,
+    lastname,
+    company,
+    ...otherValues
+  }: BlockArg): Promise<void> {
     const proxyHubspot = partial(proxyService, service);
 
     const properties = makeProperties({
@@ -164,7 +165,7 @@ export class AddUpdateCompany extends Effect {
     required: ["website"],
   };
 
-  async effect(config: BlockArg) {
+  async effect(config: BlockArg): Promise<void> {
     const { hubspot, website } = config;
 
     const proxyHubspot = partial(proxyService, hubspot);

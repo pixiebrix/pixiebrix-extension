@@ -23,13 +23,12 @@ import {
   IReader,
   ReaderOutput,
   Schema,
-  ServiceLocator,
 } from "@/core";
 import {
   ExtensionPointDefinition,
   ExtensionPointConfig,
 } from "@/extensionPoints/types";
-import { reportError } from "@/telemetry/rollbar";
+import { propertiesToSchema } from "@/validators/generic";
 
 interface PanelConfig {
   heading?: string;
@@ -61,16 +60,20 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     this.collapsedExtensions = {};
   }
 
-  inputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema",
-    type: "object",
-    properties: {
+  inputSchema: Schema = propertiesToSchema(
+    {
       heading: {
         type: "string",
         description: "The panel heading",
       },
       body: {
-        $ref: "https://app.pixiebrix.com/schemas/renderer#",
+        oneOf: [
+          { $ref: "https://app.pixiebrix.com/schemas/renderer#" },
+          {
+            type: "array",
+            items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
+          },
+        ],
       },
       shadowDOM: {
         type: "boolean",
@@ -83,8 +86,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         default: false,
       },
     },
-    required: ["heading", "body"],
-  };
+    ["heading", "body"]
+  );
 
   getBlocks(extension: IExtension<PanelConfig>): IBlock[] {
     return blockList(extension.config.body);
@@ -133,10 +136,12 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
   private async runExtension(
     readerContext: ReaderOutput,
-    locator: ServiceLocator,
     extension: IExtension<PanelConfig>
   ) {
     const bodyUUID = uuidv4();
+    const extensionLogger = this.logger.childLogger({
+      extensionId: extension.id,
+    });
 
     const {
       body,
@@ -148,10 +153,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const collapsible = boolean(rawCollapsible);
     const shadowDOM = boolean(rawShadowDOM);
 
-    const serviceContext = await makeServiceContext(
-      extension.services,
-      locator
-    );
+    const serviceContext = await makeServiceContext(extension.services);
     const extensionContext = { ...readerContext, ...serviceContext };
 
     const $panel = $(
@@ -185,11 +187,17 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const installBody = () => {
       if (!isBodyInstalled) {
         isBodyInstalled = true;
-        const rendererPromise = reducePipeline(body, readerContext, {
-          validate: true,
-          serviceArgs: serviceContext,
-        }) as Promise<string>;
-        errorBoundary(rendererPromise).then((bodyHTML) => {
+        const rendererPromise = reducePipeline(
+          body,
+          readerContext,
+          extensionLogger,
+          {
+            validate: true,
+            serviceArgs: serviceContext,
+          }
+        ) as Promise<string>;
+
+        errorBoundary(rendererPromise, extensionLogger).then((bodyHTML) => {
           if (boolean(shadowDOM)) {
             const shadowRoot = $bodyContainer
               .get(0)
@@ -198,6 +206,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           } else {
             $bodyContainer.html(bodyHTML);
           }
+          extensionLogger.debug("Successfully installed panel");
         });
       }
     };
@@ -231,7 +240,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
   }
 
-  async run(locator: ServiceLocator): Promise<void> {
+  async run(): Promise<void> {
     if (!this.$container || !this.extensions.length) {
       return;
     }
@@ -247,14 +256,10 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     for (const extension of this.extensions) {
       try {
-        await this.runExtension(readerContext, locator, extension);
+        await this.runExtension(readerContext, extension);
       } catch (ex) {
-        // eslint-disable-next-line require-await
-        reportError(ex, {
-          extensionPointId: extension.extensionPointId,
-          extensionId: extension.id,
-        });
         errors.push(ex);
+        this.logger.childLogger({ extensionId: extension.id }).error(ex);
       }
     }
 
@@ -278,7 +283,7 @@ interface PanelDefinition extends ExtensionPointDefinition {
   defaultOptions: PanelDefaultOptions;
 }
 
-class HydratedPanelExtensionPoint extends PanelExtensionPoint {
+class RemotePanelExtensionPoint extends PanelExtensionPoint {
   private readonly _definition: PanelDefinition;
   public readonly permissions: IPermissions;
 
@@ -343,5 +348,5 @@ export function fromJS(
   if (type !== "panel") {
     throw new Error(`Expected type=panel, got ${type}`);
   }
-  return new HydratedPanelExtensionPoint(config);
+  return new RemotePanelExtensionPoint(config);
 }

@@ -88,6 +88,9 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
 }) => {
   return (
     <ListGroup variant="flush">
+      {isEmpty(schema.properties) && (
+        <ListGroup.Item>Reader provides no data</ListGroup.Item>
+      )}
       {sortBy(Object.entries(schema.properties ?? {}), (x) => x[0])
         .filter((x) => typeof x[1] !== "boolean")
         .map(([prop, definition]) => {

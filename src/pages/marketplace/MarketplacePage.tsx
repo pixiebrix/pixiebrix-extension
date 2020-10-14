@@ -33,13 +33,13 @@ const Entry: React.FunctionComponent<RecipeProps> = ({
     } else if (!installed) {
       return (
         <Button size="sm" variant="primary" onClick={onInstall}>
-          Install
+          Activate
         </Button>
       );
     } else {
       return (
         <Button size="sm" variant="primary" disabled>
-          Installed
+          Activated
         </Button>
       );
     }
@@ -82,7 +82,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
       <PageTitle icon={faStoreAlt} title="Marketplace" />
       <div className="pb-4">
         <p>
-          Find and install pre-made blueprints for your favorite websites and
+          Find and activate pre-made blueprints for your favorite websites and
           SaaS apps
         </p>
       </div>
@@ -96,7 +96,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
               </InputGroup.Prepend>
               <Form.Control
                 id="query"
-                placeholder="Enter a search term"
+                placeholder="Start typing to find results"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />

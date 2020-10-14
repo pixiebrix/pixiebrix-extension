@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { CSSProperties, useMemo, useState } from "react";
 import Table from "react-bootstrap/Table";
-import Select from "react-select";
+import Select, { StylesConfig } from "react-select";
 import Button from "react-bootstrap/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../store";
 import { RawServiceConfiguration, ServiceDependency } from "@/core";
 import { useFetch } from "@/hooks/fetch";
-import { ConfigurableAuth } from "@/types/contract";
+import { SanitizedAuth } from "@/types/contract";
 import ServiceSelector from "@/components/ServiceSelector";
 import { Field, FieldArray, FieldInputProps, useField } from "formik";
 import Form from "react-bootstrap/Form";
@@ -27,8 +27,10 @@ const colors = {
   divider: "#ebedf2",
 };
 
-export const customStyles = {
-  control: (base: any, state: any) => {
+export const customStyles: StylesConfig = {
+  // @ts-ignore: not sure how to pass the genetic argument to the react-select types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: (base: CSSProperties, state: { selectProps: any }) => {
     let statusColor = colors.divider;
 
     if (state.selectProps.error) {
@@ -86,9 +88,7 @@ function useAuthOptions(): [AuthOption[]] {
     ({ services }) => Object.values(services.configured)
   );
 
-  const remoteAuths = useFetch<ConfigurableAuth[]>(
-    "/api/services/shared/?meta=1"
-  );
+  const remoteAuths = useFetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
 
   const authOptions = useMemo(() => {
     const localOptions = (configuredServices ?? []).map((x) => ({
@@ -99,7 +99,9 @@ function useAuthOptions(): [AuthOption[]] {
 
     const sharedOptions = (remoteAuths ?? []).map((x) => ({
       value: x.id,
-      label: `${x.label ?? "Default"} — ${x.organization ?? "✨ Built-in"}`,
+      label: `${x.label ?? "Default"} — ${
+        x.organization.name ?? "✨ Built-in"
+      }`,
       serviceId: x.service.config.metadata.id,
     }));
 

@@ -14,7 +14,6 @@ import { IExtensionPoint, ServiceDependency } from "@/core";
 import DataSourceCard from "@/options/pages/extensionEditor/DataSourceCard";
 import { Formik, FormikProps, getIn, useFormikContext } from "formik";
 import TextField from "@/components/fields/TextField";
-import LazyLocatorFactory from "@/services/locator";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { extensionValidatorFactory } from "@/validators/validation";
 import { SCHEMA_TYPE_TO_BLOCK_PROPERTY } from "@/components/fields/BlockField";
@@ -23,6 +22,7 @@ import useAsyncEffect from "use-async-effect";
 import isEmpty from "lodash/isEmpty";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "react-bootstrap/Button";
+import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
 
 type TopConfig = { [prop: string]: unknown };
 
@@ -35,6 +35,7 @@ export interface Config {
 interface OwnProps {
   saveCaption: string;
   extensionPoint: IExtensionPoint;
+  extensionId: string | null;
   initialValue: Config;
   onSave: (update: Config) => void;
 }
@@ -57,7 +58,12 @@ function normalizeConfig(
   for (const [prop, definition] of Object.entries(schema.properties)) {
     if (typeof definition === "boolean") {
       throw Error("Expected schema definition not boolean");
-    } else if (SCHEMA_TYPE_TO_BLOCK_PROPERTY.hasOwnProperty(definition.$ref)) {
+    } else if (
+      Object.prototype.hasOwnProperty.call(
+        SCHEMA_TYPE_TO_BLOCK_PROPERTY,
+        definition.$ref
+      )
+    ) {
       result[prop] = castArray(config[prop] ?? []);
     } else if (config[prop] == null) {
       result[prop] = extensionPoint.defaultOptions[prop] ?? schema.default;
@@ -94,10 +100,12 @@ const NavItem: React.FunctionComponent<{
 const ExtensionForm: React.FunctionComponent<{
   formikProps: FormikProps<unknown>;
   extensionPoint: IExtensionPoint;
+  extensionId: string | null;
   saveCaption: string;
 }> = ({
   formikProps: { handleSubmit, isSubmitting, isValid, validateForm },
   extensionPoint,
+  extensionId,
   saveCaption,
 }) => {
   const blocks = useMemo(() => blockRegistry.all(), []);
@@ -154,6 +162,7 @@ const ExtensionForm: React.FunctionComponent<{
                   eventKey="configuration"
                   fieldName="config"
                 />
+                <NavItem caption="Log Stream" eventKey="runLog" />
               </Nav>
             </Card.Header>
 
@@ -187,6 +196,12 @@ const ExtensionForm: React.FunctionComponent<{
                 blocks={blocks}
               />
             )}
+            {activeTab === "runLog" && (
+              <RunLogCard
+                extensionPoint={extensionPoint}
+                extensionId={extensionId}
+              />
+            )}
           </Card>
         </Col>
       </Row>
@@ -196,6 +211,7 @@ const ExtensionForm: React.FunctionComponent<{
 
 const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
   extensionPoint,
+  extensionId,
   onSave,
   initialValue: {
     config: initialConfig,
@@ -204,8 +220,6 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
   },
   saveCaption,
 }) => {
-  const locatorFactory = useMemo(() => new LazyLocatorFactory(), []);
-
   const initialValues = useMemo(
     () => ({
       label: initialLabel,
@@ -216,11 +230,8 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
   );
 
   const validationSchema = useMemo(() => {
-    return extensionValidatorFactory(
-      locatorFactory.getLocator(),
-      extensionPoint.inputSchema
-    );
-  }, [extensionPoint, locatorFactory]);
+    return extensionValidatorFactory(extensionPoint.inputSchema);
+  }, [extensionPoint]);
 
   return (
     <Formik
@@ -232,6 +243,7 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
         <ExtensionForm
           formikProps={formikProps}
           extensionPoint={extensionPoint}
+          extensionId={extensionId}
           saveCaption={saveCaption}
         />
       )}

@@ -13,7 +13,7 @@ import {
   BlockPipeline,
   makeServiceContext,
 } from "@/blocks/combinators";
-import { reportError } from "@/telemetry/rollbar";
+import { reportError } from "@/telemetry/logging";
 import {
   awaitElementOnce,
   acquireElement,
@@ -31,10 +31,10 @@ import {
   IPermissions,
   ReaderOutput,
   Schema,
-  ServiceLocator,
 } from "@/core";
 import psl, { ParsedDomain } from "psl";
 import { safeTrack } from "@/telemetry/mixpanel";
+import { propertiesToSchema } from "@/validators/generic";
 
 interface MenuItemExtensionConfig {
   caption: string;
@@ -60,19 +60,25 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     this.$menu = undefined;
   }
 
-  inputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema",
-    type: "object",
-    properties: {
+  inputSchema: Schema = propertiesToSchema(
+    {
       caption: {
         type: "string",
         description: "The caption for the menu item.",
       },
-      action: { $ref: "https://app.pixiebrix.com/schemas/effect#" },
+      action: {
+        oneOf: [
+          { $ref: "https://app.pixiebrix.com/schemas/effect#" },
+          {
+            type: "array",
+            items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
+          },
+        ],
+      },
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
     },
-    required: ["caption", "action"],
-  };
+    ["caption", "action"]
+  );
 
   getTemplate(): string {
     if (this.template) return this.template;
@@ -108,9 +114,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
 
   private async runExtension(
     ctxt: ReaderOutput,
-    locator: ServiceLocator,
     extension: IExtension<MenuItemExtensionConfig>
   ) {
+    const extensionLogger = this.logger.childLogger({
+      extensionId: extension.id,
+    });
     console.debug(`Running extension ${extension.id}`);
 
     const {
@@ -123,10 +131,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       `[data-pixiebrix-uuid="${extension.id}"]`
     );
 
-    const serviceContext = await makeServiceContext(
-      extension.services,
-      locator
-    );
+    const serviceContext = await makeServiceContext(extension.services);
     const renderTemplate = engineRenderer(extension.templateEngine);
     const extensionContext = { ...ctxt, ...serviceContext };
 
@@ -144,20 +149,25 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     const blocks = castArray(actionConfig);
     const lastBlockId = blocks[blocks.length - 1].id;
 
-    $menuItem.on("click", async () => {
+    $menuItem.on("click", async (e) => {
+      e.preventDefault();
+
       safeTrack("MenuItemExtensionPoint:click", {
         actionId: lastBlockId,
         domain: (psl.parse(window.location.hostname) as ParsedDomain).domain,
       });
       try {
-        await reducePipeline(actionConfig, ctxt, {
+        await reducePipeline(actionConfig, ctxt, extensionLogger, {
           validate: true,
           serviceArgs: serviceContext,
         });
+
+        extensionLogger.debug("Successfully ran menu action");
+
         $.notify(`Successfully ran menu action`, { className: "success" });
       } catch (ex) {
         // eslint-disable-next-line require-await
-        reportError(ex);
+        extensionLogger.error(ex);
         $.notify(`Error running menu action: ${ex}`, { className: "error" });
       }
     });
@@ -176,7 +186,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     });
   }
 
-  async run(locator: ServiceLocator): Promise<void> {
+  async run(): Promise<void> {
     if (!this.$menu || !this.extensions.length) {
       return;
     }
@@ -194,7 +204,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       // Run in order so that the order stays the same for where they get rendered. The service
       // context is the only thing that's async as part of the initial configuration right now
       try {
-        await this.runExtension(ctxt, locator, extension);
+        await this.runExtension(ctxt, extension);
       } catch (ex) {
         // eslint-disable-next-line require-await
         reportError(ex, {

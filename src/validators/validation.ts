@@ -1,19 +1,17 @@
-import { IBlock, Schema, ServiceLocator } from "@/core";
+import { IBlock, Schema } from "@/core";
 import * as Yup from "yup";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
+import { locate } from "@/background/locator";
 import { DoesNotExistError } from "@/baseRegistry";
-import {
-  MissingConfigurationError,
-  MultipleConfigurationError,
-} from "@/services/errors";
+import { MissingConfigurationError } from "@/services/errors";
 import uniq from "lodash/uniq";
 import isPlainObject from "lodash/isPlainObject";
 import mapValues from "lodash/mapValues";
 
 const IDENTIFIER_REGEX = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
 
-const BRICK_RUN_METHODS = {
+const BRICK_RUN_METHODS: Record<string, string> = {
   "#/definitions/renderer": "render",
   "#/definitions/effect": "effect",
   "#/definitions/reader": "read",
@@ -32,10 +30,11 @@ type Options = {
   required: boolean;
 };
 
-function blockSchemaFactory(val: any): Yup.Schema<object> {
-  if (val && val.hasOwnProperty("id")) {
+function blockSchemaFactory(val: unknown): Yup.Schema<object> {
+  if (typeof val === "object" && val != null && "id" in val) {
     let block: IBlock;
     try {
+      // @ts-ignore: checked for id above
       block = blockRegistry.lookup(val.id);
     } catch (ex) {
       if (ex instanceof DoesNotExistError) {
@@ -66,7 +65,7 @@ export function configSchemaFactory(
 ): Yup.Schema<unknown> {
   const wrapRequired = (x: any) => (options.required ? x.required() : x);
 
-  if (BRICK_RUN_METHODS.hasOwnProperty(schema.$ref)) {
+  if (BRICK_RUN_METHODS[schema.$ref]) {
     return Yup.lazy((val) => {
       if (isPlainObject(val)) {
         return Yup.lazy(blockSchemaFactory);
@@ -118,7 +117,7 @@ export function configSchemaFactory(
   }
 }
 
-function serviceSchemaFactory(locator: ServiceLocator): Yup.Schema<unknown> {
+function serviceSchemaFactory(): Yup.Schema<unknown> {
   return Yup.array()
     .of(
       Yup.object().shape({
@@ -136,34 +135,26 @@ function serviceSchemaFactory(locator: ServiceLocator): Yup.Schema<unknown> {
           .required()
           .matches(IDENTIFIER_REGEX, "Not a valid identifier"),
         // https://github.com/jquense/yup/issues/954
-        config: Yup.string().test(
-          "is-config",
-          "Invalid service configuration",
-          async function (value) {
+        config: Yup.string()
+          .required(`Select a service configuration`)
+          .test("is-config", "Invalid service configuration", async function (
+            value
+          ) {
             try {
-              await locator(this.parent.id, value);
+              await locate(this.parent.id, value);
             } catch (ex) {
               if (ex instanceof MissingConfigurationError) {
-                if (ex.id) {
-                  return this.createError({
-                    message: "Configuration no longer available",
-                  });
-                } else {
-                  return this.createError({
-                    message: `No services configured for ${this.parent.id}`,
-                  });
-                }
-              } else if (ex instanceof MultipleConfigurationError) {
                 return this.createError({
-                  message: `You must select a configuration because conflicting configurations exist for ${this.parent.id}`,
+                  message: "Configuration no longer available",
                 });
               } else {
-                return false;
+                return this.createError({
+                  message: `An error occurred validating the service: ${ex}`,
+                });
               }
             }
             return true;
-          }
-        ),
+          }),
       })
     )
     .test("unique-keys", "Services must have unique keys", function (value) {
@@ -171,13 +162,10 @@ function serviceSchemaFactory(locator: ServiceLocator): Yup.Schema<unknown> {
     });
 }
 
-export function extensionValidatorFactory(
-  locator: ServiceLocator,
-  schema: Schema
-): Yup.Schema<unknown> {
+export function extensionValidatorFactory(schema: Schema): Yup.Schema<unknown> {
   return Yup.object().shape({
     label: Yup.string(),
-    services: serviceSchemaFactory(locator),
+    services: serviceSchemaFactory(),
     config: configSchemaFactory(schema),
   });
 }

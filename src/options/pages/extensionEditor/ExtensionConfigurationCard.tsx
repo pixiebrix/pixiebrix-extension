@@ -17,10 +17,19 @@ function defaultFieldRenderer(
     return BlockField;
   } else if (schema["$ref"] === "https://app.pixiebrix.com/schemas/icon#") {
     return IconField;
+  } else if (
+    (schema["oneOf"] ?? []).some(
+      (x) => SCHEMA_TYPE_TO_BLOCK_PROPERTY[(x as any)["$ref"]]
+    )
+  ) {
+    return BlockField;
+  } else if (schema["$ref"] && !schema.type) {
+    throw new Error(`Unexpected $ref ${schema["$ref"]}`);
+  } else {
+    const msg = `Unsupported field type: ${schema.type ?? "<No type found>"}`;
+    console.error(msg, schema);
+    throw new Error(msg);
   }
-  throw new Error(
-    `Unsupported field type: ${schema.type ?? "<No type found>"}`
-  );
 }
 
 interface OwnProps {

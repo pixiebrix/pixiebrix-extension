@@ -4,15 +4,16 @@ import isPlainObject from "lodash/isPlainObject";
 import { engineRenderer, mapArgs } from "@/helpers";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import CompositeReader from "@/blocks/readers/CompositeReader";
+import { locate } from "@/background/locator";
 import mapValues from "lodash/mapValues";
 import {
+  SanitizedServiceConfiguration,
   IBlock,
   IReader,
-  TemplateEngine,
+  Logger,
   Schema,
   ServiceDependency,
-  ConfiguredService,
-  ServiceLocator,
+  TemplateEngine,
 } from "@/core";
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
@@ -26,7 +27,7 @@ export type ReaderConfig =
 export interface BlockConfig {
   id: string;
   outputKey?: string;
-  config: object;
+  config: Record<string, unknown>;
   templateEngine?: TemplateEngine;
 }
 
@@ -112,6 +113,7 @@ function excludeUndefined(obj: unknown): unknown {
 export async function reducePipeline(
   config: BlockConfig | BlockPipeline,
   renderedArgs: RenderedArgs,
+  logger: Logger,
   options: ReduceOptions = { validate: true, serviceArgs: {} }
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
@@ -121,58 +123,64 @@ export async function reducePipeline(
 
   let ctxt: RenderedArgs = renderedArgs;
 
-  for (const stage of castArray(config)) {
+  for (const [index, stage] of castArray(config).entries()) {
+    const block = blockRegistry.lookup(stage.id);
+    const blockLogger = logger.childLogger({ blockId: stage.id });
+
+    const argContext = { ...extraContext, ...ctxt };
+    const stageConfig = stage.config ?? {};
+
+    let blockArgs;
+
     try {
-      const block = blockRegistry.lookup(stage.id);
-
-      const argContext = { ...extraContext, ...ctxt };
-
-      const stageConfig = stage.config ?? {};
-
       // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
-      const blockArgs = isPlainObject(ctxt)
+      blockArgs = isPlainObject(ctxt)
         ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
         : stageConfig;
-
-      if (options.validate) {
-        const validationResult = validateInput(
-          castSchema(block.inputSchema),
-          excludeUndefined(blockArgs)
-        );
-        if (!validationResult.valid) {
-          console.warn(`Invalid inputs for block ${stage.id}`, {
-            schema: block.inputSchema,
-            blockArgs,
-            errors: validationResult.errors,
-            extraContext,
-          });
-
-          // throw new InputValidationError(
-          //   `Invalid inputs for block ${stage.id}`,
-          //   block.inputSchema,
-          //   blockArgs,
-          //   validationResult.errors
-          // );
-        }
-      }
-
-      const output = (await block.run(blockArgs, { ctxt })) ?? {};
-
-      if (stage.outputKey) {
-        // if output key is defined, store to a variable instead of passing to the next stage
-        extraContext[`@${stage.outputKey}`] = output;
-        console.debug(`Storing ${stage.id} -> @${stage.outputKey}`, {
-          value: output,
-        });
-      } else if (isPlainObject(output)) {
-        ctxt = output as RenderedArgs;
-      } else {
-        // FIXME: need to rationalize how list outputs are passed along
-        ctxt = output as any;
-      }
     } catch (ex) {
-      console.exception(ex);
-      throw ex;
+      throw new Error(
+        `An error occurred rendering inputs for ${stage.id} (block #${
+          index + 1
+        })`
+      );
+    }
+
+    if (options.validate) {
+      const validationResult = validateInput(
+        castSchema(block.inputSchema),
+        excludeUndefined(blockArgs)
+      );
+      if (!validationResult.valid) {
+        throw new InputValidationError(
+          `Invalid inputs for block ${stage.id} (block #${index + 1})`,
+          block.inputSchema,
+          blockArgs,
+          validationResult.errors
+        );
+      }
+    }
+
+    let output;
+
+    try {
+      output =
+        (await block.run(blockArgs, { ctxt, logger: blockLogger })) ?? {};
+    } catch (ex) {
+      blockLogger.error(ex);
+      throw new Error(ex);
+    }
+
+    if (stage.outputKey) {
+      // if output key is defined, store to a variable instead of passing to the next stage
+      extraContext[`@${stage.outputKey}`] = output;
+      logger.debug(`Storing ${stage.id} -> @${stage.outputKey}`, {
+        value: output,
+      });
+    } else if (isPlainObject(output)) {
+      ctxt = output as RenderedArgs;
+    } else {
+      // FIXME: need to rationalize how list outputs are passed along
+      ctxt = output as any;
     }
   }
 
@@ -195,19 +203,18 @@ export function mergeReaders(readerConfig: ReaderConfig): IReader {
 
 type ServiceContext = {
   [outputKey: string]: {
-    __service: ConfiguredService;
-    [prop: string]: string | ConfiguredService | null;
+    __service: SanitizedServiceConfiguration;
+    [prop: string]: string | SanitizedServiceConfiguration | null;
   };
 };
 
 /** Build the service context by locating the dependencies */
 export async function makeServiceContext(
-  dependencies: ServiceDependency[],
-  locator: ServiceLocator
+  dependencies: ServiceDependency[]
 ): Promise<ServiceContext> {
   const ctxt: ServiceContext = {};
   for (const dependency of dependencies) {
-    const configuredService = await locator(dependency.id, dependency.config);
+    const configuredService = await locate(dependency.id, dependency.config);
     ctxt[`@${dependency.outputKey}`] = {
       // our JSON validator gets mad at undefined values
       ...pickBy(configuredService.config, (x) => x !== undefined),

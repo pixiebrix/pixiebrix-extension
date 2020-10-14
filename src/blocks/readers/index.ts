@@ -1,8 +1,6 @@
-export * from "./linkedin";
-export * from "./pipedrive";
-export * from "./techcrunch";
 export * from "./meta";
-export * from "./pageMeta";
+export * from "./PageMetadataReader";
+export * from "./BlankReader";
 
 // generic readers
 export * from "./emberjs";

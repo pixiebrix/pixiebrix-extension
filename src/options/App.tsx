@@ -28,9 +28,11 @@ import axios from "axios";
 import { useAsyncState } from "@/hooks/common";
 import urljoin from "url-join";
 import { getBaseURL } from "@/services/baseService";
+import Banner from "@/layout/Banner";
 
+// import the built-in bricks
 import "@/blocks";
-import Banner from "@/layout/Banner"; // Import for the side effect
+import "@/contrib";
 
 const Layout = () => {
   const [loaded, setLoaded] = useState(false);

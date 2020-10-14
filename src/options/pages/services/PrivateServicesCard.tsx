@@ -3,7 +3,7 @@ import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import React, { useCallback } from "react";
-import { RawServiceConfiguration, IService } from "@/core";
+import { RawServiceConfiguration, IService, ServiceConfig } from "@/core";
 import { RootState } from "../../store";
 import ServiceSelector from "@/components/ServiceSelector";
 import { v4 as uuidv4 } from "uuid";
@@ -30,8 +30,8 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         id: uuidv4(),
         label: undefined,
         serviceId: x.metadata.id,
-        config: {},
-      });
+        config: {} as ServiceConfig,
+      } as RawServiceConfiguration);
     },
     [onCreate]
   );

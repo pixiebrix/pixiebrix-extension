@@ -6,8 +6,36 @@ import {
 import blockRegistry from "@/blocks/registry";
 import { Block, Reader } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg } from "@/core";
+import { BlockArg, Logger } from "@/core";
 import { JQTransformer } from "@/blocks/transformers";
+
+class ConsoleLogger implements Logger {
+  childLogger(): Logger {
+    return undefined;
+  }
+
+  debug(msg: string, data: Record<string, unknown>): void {
+    console.debug(msg, data);
+  }
+
+  error(error: unknown, data: Record<string, unknown>): void {
+    console.error(error.toString(), { error, data });
+  }
+
+  info(msg: string, data: Record<string, unknown>): void {
+    console.info(msg, data);
+  }
+
+  log(msg: string, data: Record<string, unknown>): void {
+    console.log(msg, data);
+  }
+
+  warn(msg: string, data: Record<string, unknown>): void {
+    console.warn(msg, data);
+  }
+}
+
+const logger = new ConsoleLogger();
 
 class EchoBlock extends Block {
   constructor() {
@@ -58,7 +86,11 @@ test("reducePipeline can run a single block", async () => {
     id: block.id,
     config: { message: "{{inputArg}}" },
   };
-  const result = await reducePipeline(pipelineConfig, { inputArg: "hello" });
+  const result = await reducePipeline(
+    pipelineConfig,
+    { inputArg: "hello" },
+    logger
+  );
   expect(result).toStrictEqual({ message: "hello" });
 });
 
@@ -68,7 +100,7 @@ test("reducePipeline throws error on wrong input type", async () => {
     config: { message: "{{inputArg}}" },
   };
   try {
-    await reducePipeline(pipelineConfig, { inputArg: 42 });
+    await reducePipeline(pipelineConfig, { inputArg: 42 }, logger);
   } catch (exc) {
     expect(exc).toBeInstanceOf(InputValidationError);
   }
@@ -80,7 +112,7 @@ test("reducePipeline throws error on missing input", async () => {
     config: { message: "{{inputArg}}" },
   };
   try {
-    await reducePipeline(pipelineConfig, {});
+    await reducePipeline(pipelineConfig, {}, logger);
   } catch (exc) {
     expect(exc).toBeInstanceOf(InputValidationError);
   }
@@ -98,7 +130,11 @@ test("reducePipeline supports output key", async () => {
       config: { message: "hello, {{@foo.message}}" },
     },
   ];
-  const result = await reducePipeline(pipelineConfig, { inputArg: "bar" });
+  const result = await reducePipeline(
+    pipelineConfig,
+    { inputArg: "bar" },
+    logger
+  );
   expect(result).toStrictEqual({ message: "hello, bar" });
 });
 
@@ -113,7 +149,11 @@ test("reducePipeline can pipeline outputs", async () => {
       config: { message: "hello, {{message}}" },
     },
   ];
-  const result = await reducePipeline(pipelineConfig, { inputArg: "bar" });
+  const result = await reducePipeline(
+    pipelineConfig,
+    { inputArg: "bar" },
+    logger
+  );
   expect(result).toStrictEqual({ message: "hello, bar" });
 });
 
@@ -153,7 +193,7 @@ test("outputKey preserves context", async () => {
       config: { message: "inputArg" },
     },
   ];
-  const result = await reducePipeline(pipelineConfig, initialContext);
+  const result = await reducePipeline(pipelineConfig, initialContext, logger);
   expect(result).toStrictEqual(initialContext);
 });
 
@@ -173,6 +213,6 @@ test("jq transform using context", async () => {
       config: { filter: ".array | map(.field)" },
     },
   ];
-  const result = await reducePipeline(pipelineConfig, initialContext);
+  const result = await reducePipeline(pipelineConfig, initialContext, logger);
   expect(result).toStrictEqual(["foo"]);
 });

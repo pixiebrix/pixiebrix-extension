@@ -78,18 +78,22 @@ module.exports = () => {
             from: path.resolve(
               chromeRoot,
               "manifests",
-              process.env.NODE_ENV === "staging"
-                ? "manifest.stg.json"
-                : "manifest.prod.json"
+              "manifest.template.json"
             ),
             to: "manifest.json",
             transform(content) {
-              return content
-                .toString()
-                .replace(
-                  "__NPM_PACKAGE_VERSION__",
-                  process.env.npm_package_version
-                );
+              const manifest = JSON.parse(content.toString());
+              manifest.version = process.env.npm_package_version;
+              manifest.externally_connectable.matches.push(
+                ...process.env.EXTERNALLY_CONNECTABLE.split(",")
+              );
+              if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
+                manifest.oauth2 = {
+                  client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,
+                  scopes: [""],
+                };
+              }
+              return JSON.stringify(manifest);
             },
           },
         ],
@@ -110,6 +114,7 @@ module.exports = () => {
           SERVICE_URL: JSON.stringify(process.env.SERVICE_URL),
           CHROME_EXTENSION_ID: JSON.stringify(process.env.CHROME_EXTENSION_ID),
           NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
+          NODE_ENV: JSON.stringify(process.env.NODE_ENV),
         },
       }),
       new MiniCssExtractPlugin({

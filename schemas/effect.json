@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://app.pixiebrix.com/schemas/effect#",
+  "type": "object",
+  "title": "PixieBrix Effect",
+  "description": "Placeholder for a effect component/brick.",
+  "properties": {
+    "apiVersion": {
+      "type": "string",
+      "enum": ["v1"]
+    },
+    "kind": {
+      "type": "string",
+      "const": "component"
+    },
+    "metadata": { "$ref": "https://app.pixiebrix.com/schemas/metadata#" },
+    "inputSchema": { "$ref": "http://json-schema.org/draft-07/schema#" }
+  },
+  "additionalProperties": true,
+  "required": ["apiVersion", "kind", "metadata", "inputSchema"]
+}

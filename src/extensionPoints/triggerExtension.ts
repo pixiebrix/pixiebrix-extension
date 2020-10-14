@@ -7,7 +7,7 @@ import {
   BlockConfig,
   makeServiceContext,
 } from "@/blocks/combinators";
-import { IBlock, IExtension, Schema, ServiceLocator } from "@/core";
+import { IBlock, IExtension, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 interface TriggerConfig {
@@ -30,7 +30,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     throw new Error("TriggerExtensionPoint.waitReady not implemented");
   }
 
-  async install() {
+  async install(): Promise<boolean> {
     if (!(await this.isAvailable())) {
       return false;
     }
@@ -48,17 +48,17 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     return blockList(extension.config.action);
   }
 
-  async run(locator: ServiceLocator) {
+  async run(): Promise<void> {
     const reader = this.defaultReader();
     const readerContext = await reader.read();
 
     for (const extension of this.extensions) {
+      const extensionLogger = this.logger.childLogger({
+        extensionId: extension.id,
+      });
       const { action } = extension.config;
-      const serviceContext = await makeServiceContext(
-        extension.services,
-        locator
-      );
-      await reducePipeline(action, readerContext, {
+      const serviceContext = await makeServiceContext(extension.services);
+      await reducePipeline(action, readerContext, extensionLogger, {
         validate: true,
         serviceArgs: serviceContext,
       });

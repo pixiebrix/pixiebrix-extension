@@ -9,14 +9,16 @@ import {
   IPermissions,
   IReader,
   IService,
+  Logger,
   RenderedHTML,
   Schema,
   ServiceConfig,
-  ServiceLocator,
 } from "./core";
 import { AxiosRequestConfig } from "axios";
+import { BackgroundLogger } from "@/background/logging";
 
-export abstract class Service implements IService {
+export abstract class Service<TConfig extends ServiceConfig = ServiceConfig>
+  implements IService<TConfig> {
   id: string;
   name: string;
   description?: string;
@@ -37,7 +39,7 @@ export abstract class Service implements IService {
   }
 
   abstract authenticateRequest(
-    serviceConfig: ServiceConfig,
+    serviceConfig: TConfig,
     requestConfig: AxiosRequestConfig
   ): AxiosRequestConfig;
 }
@@ -51,6 +53,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   protected readonly extensions: IExtension<TConfig>[] = [];
   protected readonly template?: string;
   public abstract readonly inputSchema: Schema;
+  protected readonly logger: Logger;
 
   /**
    * Permissions required to use this extensions
@@ -72,6 +75,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
     this.name = name;
     this.description = description;
     this.icon = icon;
+    this.logger = new BackgroundLogger({ extensionPointId: this.id });
   }
 
   addExtension(extension: IExtension<TConfig>): void {
@@ -86,7 +90,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
 
   abstract async install(): Promise<boolean>;
 
-  abstract async run(locator: ServiceLocator): Promise<void>;
+  abstract async run(): Promise<void>;
 }
 
 export abstract class Block implements IBlock {
@@ -128,8 +132,8 @@ export abstract class Effect extends Block {
 
   abstract async effect(inputs: BlockArg, env?: BlockOptions): Promise<void>;
 
-  async run(value: BlockArg, options: BlockOptions) {
-    return this.effect(value);
+  async run(value: BlockArg, options: BlockOptions): Promise<void> {
+    return this.effect(value, options);
   }
 }
 

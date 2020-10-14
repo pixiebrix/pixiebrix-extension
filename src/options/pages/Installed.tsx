@@ -9,7 +9,7 @@ import Button from "react-bootstrap/Button";
 import { useToasts } from "react-toast-notifications";
 import { PageTitle } from "@/layout/Page";
 import { useExtensionPermissions } from "@/permissions";
-import { BeatLoader, GridLoader } from "react-spinners";
+import { BeatLoader } from "react-spinners";
 import Card from "react-bootstrap/Card";
 import {
   faCheck,
@@ -24,10 +24,7 @@ import {
   ExtensionValidationResult,
   useExtensionValidator,
 } from "@/validators/generic";
-import { IExtension, ServiceLocator } from "@/core";
-import useExtensionStore from "../extensionStore";
-import { bindActionCreators } from "redux";
-import LazyLocatorFactory from "@/services/locator";
+import { IExtension } from "@/core";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -44,11 +41,9 @@ function validationMessage(validation: ExtensionValidationResult) {
   if (validation.notConfigured.length) {
     const services = validation.notConfigured.map((x) => x.serviceId);
     if (services.length > 1) {
-      message = `The following services have no configurations: ${services.join(
-        ", "
-      )}`;
+      message = `You need to select configurations for ${services.join(", ")}`;
     } else {
-      message = `You need to add a configuration for ${services[0]}`;
+      message = `You need to select a configuration for ${services[0]}`;
     }
   } else if (validation.missingConfiguration.length) {
     const services = validation.missingConfiguration.map((x) => x.serviceId);
@@ -56,11 +51,6 @@ function validationMessage(validation: ExtensionValidationResult) {
       The following services use configurations that no longer exist: ${services.join(
         ", "
       )}`;
-  } else if (validation.multipleAuths.length) {
-    const services = validation.multipleAuths.map((x) => x.serviceId);
-    message = `Multiple configurations exist for these services, you must select which one to use: ${services.join(
-      ", "
-    )}`;
   } else {
     console.debug("Validation result", validation);
   }
@@ -70,14 +60,13 @@ function validationMessage(validation: ExtensionValidationResult) {
 const ExtensionRow: React.FunctionComponent<{
   extension: IExtension;
   onRemove: RemoveAction;
-  locator: ServiceLocator;
-}> = ({ extension, onRemove, locator }) => {
+}> = ({ extension, onRemove }) => {
   const { id, label, extensionPointId } = extension;
   const { addToast } = useToasts();
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extension
   );
-  const [validation] = useExtensionValidator(locator, extension);
+  const [validation] = useExtensionValidator(extension);
 
   const statusElt = useMemo(() => {
     if (hasPermissions == null || validation == null) {
@@ -134,11 +123,6 @@ const Installed: React.FunctionComponent<{
   extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const locator = useMemo(() => {
-    const locatorFactory = new LazyLocatorFactory();
-    return locatorFactory.getLocator();
-  }, []);
-
   return (
     <div>
       <PageTitle icon={faCubes} title="Active Bricks" />
@@ -147,8 +131,8 @@ const Installed: React.FunctionComponent<{
         <Col>
           <div className="pb-4">
             <p>
-              Here's a list of bricks you currently have installed. You can find
-              more to install in the{" "}
+              Here&apos;s a list of bricks you currently have activated. You can
+              find more to activate in the{" "}
               <Link to={"/marketplace"}>Marketplace</Link>
             </p>
           </div>
@@ -172,7 +156,6 @@ const Installed: React.FunctionComponent<{
                   <ExtensionRow
                     key={extension.id}
                     extension={extension}
-                    locator={locator}
                     onRemove={onRemove}
                   />
                 ))}
@@ -210,27 +193,6 @@ function selectExtensions(state: { options: OptionsState }) {
       }))
   );
 }
-
-export const WebInstalledContainer: React.FunctionComponent = () => {
-  const [state, dispatch] = useExtensionStore();
-  const extensions = useMemo(
-    () => (state ? selectExtensions(state) : undefined),
-    [state]
-  );
-
-  // @ts-ignore: YOLO
-  const { onRemove } = useMemo(
-    // @ts-ignore: YOLO
-    () => bindActionCreators({ onRemove: removeExtension }, dispatch),
-    [dispatch]
-  );
-
-  if (extensions == null) {
-    return <GridLoader />;
-  }
-
-  return <Installed extensions={extensions} onRemove={onRemove} />;
-};
 
 export default connect(
   (state: { options: OptionsState }) => ({

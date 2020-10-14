@@ -7,7 +7,7 @@ metadata:
   description: A Pipedrive deal panel
 definition:
   type: panel
-  reader: com.pipedrive.deal.reader
+  reader: pipedrive/deal
   isAvailable:
     matchPatterns: https://*.pipedrive.com/deal/*
   containerSelector: ".sidebar"

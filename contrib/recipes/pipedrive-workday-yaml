@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: pipedrive/calendar-workday
+  version: 0.0.1
+  name: Pipedrive Calendar Workday
+  description: Highlight your workday on the Pipedrive activity calendar
+extensionPoints:
+  - id: "pipedrive/calendar-range"
+    label: Pipedrive Workday
+    config:
+      ranges:
+        id: "@pixiebrix/jq"
+        config:
+          filter: '[{color: "#F1ADFF", days: ["Mon", "Tue", "Wed", "Thu", "Fri"], startTime: "9 AM", endTime: "5 PM"}]'

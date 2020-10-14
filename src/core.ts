@@ -1,6 +1,8 @@
 import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { JSONSchema7, JSONSchema7Definition } from "json-schema";
 import { AxiosRequestConfig } from "axios";
+import { Primitive } from "type-fest";
+import { ErrorObject } from "serialize-error";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
 
@@ -15,14 +17,43 @@ export interface Message {
   payload?: unknown;
 }
 
-export interface BlockOptions {
-  ctxt: { [key: string]: unknown };
+export interface MessageContext {
+  readonly extensionPointId?: string;
+  readonly blockId?: string;
+  readonly extensionId?: string;
+  readonly serviceId?: string;
+  readonly authId?: string;
 }
 
+export type SerializedError = Primitive | ErrorObject;
+
+export interface Logger {
+  childLogger: (context: MessageContext) => Logger;
+  warn: (msg: string, data?: Record<string, unknown>) => void;
+  debug: (msg: string, data?: Record<string, unknown>) => void;
+  log: (msg: string, data?: Record<string, unknown>) => void;
+  info: (msg: string, data?: Record<string, unknown>) => void;
+  error: (
+    error: SerializedError | Error,
+    data?: Record<string, unknown>
+  ) => void;
+}
+
+export interface BlockOptions {
+  // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
+  // the inputs using yup/jsonschema, so the types should match what's expected.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ctxt: { [key: string]: any };
+  logger: Logger;
+}
+
+// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
+// the inputs using jsonschema, so the types should match what's expected.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BlockArg = { [key: string]: any };
 
 export interface IOption {
-  value: any;
+  value: string | number | boolean;
   label: string;
 }
 
@@ -45,7 +76,10 @@ export interface Metadata {
   author?: string;
 }
 
-export type BaseExtensionConfig = {};
+// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
+// the inputs using jsonschema, so the types should match what's expected.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type BaseExtensionConfig = Record<string, any>;
 
 export interface ServiceDependency {
   id: string;
@@ -55,8 +89,8 @@ export interface ServiceDependency {
 
 export type ServiceLocator = (
   serviceId: string,
-  id?: string | null
-) => Promise<ConfiguredService>;
+  id?: string
+) => Promise<SanitizedServiceConfiguration>;
 
 export interface IExtension<
   T extends BaseExtensionConfig = BaseExtensionConfig
@@ -84,7 +118,7 @@ export interface IExtensionPoint extends Metadata {
 
   addExtension(extension: IExtension): void;
 
-  run(locator: ServiceLocator): Promise<void>;
+  run(): Promise<void>;
 
   /**
    * Returns any blocks configured in extension.
@@ -99,7 +133,7 @@ export interface IBlock extends Metadata {
   /** An optional a JSON schema for the output of the block */
   outputSchema?: Schema;
 
-  defaultOptions: { [key: string]: any };
+  defaultOptions: { [key: string]: unknown };
 
   /**
    * Returns the optional permissions required to run this block
@@ -126,31 +160,59 @@ export interface IReader extends IBlock {
 
 type ServiceId = string;
 
-export type ServiceConfig = { [key: string]: string | null | undefined };
+export interface SanitizedConfig {
+  // nominal typing to distinguish from ServiceConfig
+  _sanitizedConfigBrand: null;
+  [key: string]: string | null;
+}
+
+export interface ServiceConfig {
+  // nominal typing to distinguish from SanitizedConfig
+  _serviceConfigBrand: null;
+  [key: string]: string | null;
+}
 
 /** Service configuration provided by a user. */
 export interface RawServiceConfiguration {
+  // nominal typing to distinguish from SanitizedServiceConfiguration
+  _rawServiceConfigurationBrand: null;
+
+  /**
+   * UUID of the service configuration
+   */
   id: string | undefined;
+
   serviceId: ServiceId;
+
   label: string | undefined;
+
+  /**
+   * Configuration including all data
+   */
   config: ServiceConfig;
 }
 
-export type Authenticator = (
-  requestConfig: AxiosRequestConfig
-) => AxiosRequestConfig;
-
-export interface ConfiguredService {
-  serviceId: ServiceId;
-  config: ServiceConfig;
+export interface SanitizedServiceConfiguration {
+  // nominal typing to distinguish from RawServiceConfiguration
+  _sanitizedServiceConfigurationBrand: null;
 
   /**
-   * true if the service must be proxied for remote configs, i.e., because it has a secret it needs
+   * UUID of the service configuration
+   */
+  id?: string;
+
+  serviceId: ServiceId;
+
+  /**
+   * Sanitized configuration, i.e., excluding secrets and keys.
+   */
+  config: SanitizedConfig;
+
+  /**
+   * true if the service must be proxied for remote configs, e.g., because it has a secret it needs
    * to use to authenticate.
    */
   proxy: boolean;
-
-  authenticateRequest: Authenticator;
 }
 
 /**
@@ -158,11 +220,12 @@ export interface ConfiguredService {
  *
  * The input/output schema is the same since it's directly user configured.
  */
-export interface IService extends Metadata {
+export interface IService<TConfig extends ServiceConfig = ServiceConfig>
+  extends Metadata {
   schema: Schema;
 
   authenticateRequest: (
-    serviceConfig: ServiceConfig,
+    serviceConfig: TConfig,
     requestConfig: AxiosRequestConfig
   ) => AxiosRequestConfig;
 }

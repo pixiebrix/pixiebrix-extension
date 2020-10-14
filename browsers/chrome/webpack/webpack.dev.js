@@ -38,15 +38,24 @@ module.exports = merge.strategy({ plugins: "prepend" })(common, {
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(chromeRoot, "manifests", "manifest.dev.json"),
+          from: path.resolve(chromeRoot, "manifests", "manifest.template.json"),
           to: "manifest.json",
           transform(content) {
-            return content
-              .toString()
-              .replace(
-                "__NPM_PACKAGE_VERSION__",
-                process.env.npm_package_version
-              );
+            const manifest = JSON.parse(content.toString());
+            manifest.version = process.env.npm_package_version;
+            manifest.externally_connectable.matches.push(
+              "http://127.0.0.1/*",
+              "http://localhost/*"
+            );
+            if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
+              manifest.oauth2 = {
+                client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,
+                // don't ask for any scopes up front, instead ask when they're required, e.g., when the user
+                // installs a brick for google sheets
+                scopes: [""],
+              };
+            }
+            return JSON.stringify(manifest);
           },
         },
       ],
@@ -60,8 +69,11 @@ module.exports = merge.strategy({ plugins: "prepend" })(common, {
         MIXPANEL_BROWSER_TOKEN: JSON.stringify(
           process.env.MIXPANEL_BROWSER_TOKEN
         ),
+        CHROME_EXTENSION_ID: JSON.stringify(process.env.CHROME_EXTENSION_ID),
         GOOGLE_API_KEY: JSON.stringify(process.env.GOOGLE_API_KEY),
-        SERVICE_URL: JSON.stringify("http://127.0.0.1:8000"),
+        SERVICE_URL: JSON.stringify(
+          process.env.SERVICE_URL ?? "http://127.0.0.1:8000"
+        ),
         SOURCE_VERSION: JSON.stringify(process.env.SOURCE_VERSION),
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
       },

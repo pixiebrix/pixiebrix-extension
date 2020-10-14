@@ -12,7 +12,7 @@ const source_version = process.env.SOURCE_VERSION;
 const classMap: { [key: string]: string } = {
   "": "development",
   development: "development",
-  staging: "development",
+  staging: "staging",
 };
 
 function useSyncedHostname() {
@@ -47,7 +47,8 @@ const Banner: React.FunctionComponent = () => {
         [classMap[environment] ?? "unknown"]: true,
       })}
     >
-      You are using {environment ?? "unknown"} build {version} (
+      You are using {extension ? "extension" : "server"}{" "}
+      {environment ?? "unknown"} build {version} (
       {source_version.substring(0, 8)}) {extension && syncText}
     </div>
   );
