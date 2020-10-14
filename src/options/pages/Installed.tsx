@@ -24,8 +24,7 @@ import {
   ExtensionValidationResult,
   useExtensionValidator,
 } from "@/validators/generic";
-import { IExtension, ServiceLocator } from "@/core";
-import LazyLocatorFactory from "@/services/locator";
+import { IExtension } from "@/core";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -61,14 +60,13 @@ function validationMessage(validation: ExtensionValidationResult) {
 const ExtensionRow: React.FunctionComponent<{
   extension: IExtension;
   onRemove: RemoveAction;
-  locator: ServiceLocator;
-}> = ({ extension, onRemove, locator }) => {
+}> = ({ extension, onRemove }) => {
   const { id, label, extensionPointId } = extension;
   const { addToast } = useToasts();
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extension
   );
-  const [validation] = useExtensionValidator(locator, extension);
+  const [validation] = useExtensionValidator(extension);
 
   const statusElt = useMemo(() => {
     if (hasPermissions == null || validation == null) {
@@ -125,11 +123,6 @@ const Installed: React.FunctionComponent<{
   extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const locator = useMemo(() => {
-    const locatorFactory = new LazyLocatorFactory();
-    return locatorFactory.getLocator();
-  }, []);
-
   return (
     <div>
       <PageTitle icon={faCubes} title="Active Bricks" />
@@ -138,8 +131,8 @@ const Installed: React.FunctionComponent<{
         <Col>
           <div className="pb-4">
             <p>
-              Here&apos;s a list of bricks you currently have installed. You can
-              find more to install in the{" "}
+              Here&apos;s a list of bricks you currently have activated. You can
+              find more to activate in the{" "}
               <Link to={"/marketplace"}>Marketplace</Link>
             </p>
           </div>
@@ -163,7 +156,6 @@ const Installed: React.FunctionComponent<{
                   <ExtensionRow
                     key={extension.id}
                     extension={extension}
-                    locator={locator}
                     onRemove={onRemove}
                   />
                 ))}

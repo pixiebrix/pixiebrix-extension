@@ -14,7 +14,6 @@ import { IExtensionPoint, ServiceDependency } from "@/core";
 import DataSourceCard from "@/options/pages/extensionEditor/DataSourceCard";
 import { Formik, FormikProps, getIn, useFormikContext } from "formik";
 import TextField from "@/components/fields/TextField";
-import LazyLocatorFactory from "@/services/locator";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { extensionValidatorFactory } from "@/validators/validation";
 import { SCHEMA_TYPE_TO_BLOCK_PROPERTY } from "@/components/fields/BlockField";
@@ -221,8 +220,6 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
   },
   saveCaption,
 }) => {
-  const locatorFactory = useMemo(() => new LazyLocatorFactory(), []);
-
   const initialValues = useMemo(
     () => ({
       label: initialLabel,
@@ -233,11 +230,8 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
   );
 
   const validationSchema = useMemo(() => {
-    return extensionValidatorFactory(
-      locatorFactory.getLocator(),
-      extensionPoint.inputSchema
-    );
-  }, [extensionPoint, locatorFactory]);
+    return extensionValidatorFactory(extensionPoint.inputSchema);
+  }, [extensionPoint]);
 
   return (
     <Formik

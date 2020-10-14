@@ -52,12 +52,21 @@ function initListener(messageEvent: chrome.runtime.ExtensionMessageEvent) {
     const { handler, options: { asyncResponse } = { asyncResponse: true } } =
       handlers[request.type] ?? {};
     if (handler) {
+      console.debug(`Handling background action ${request.type}`);
       const handlerPromise = new Promise((resolve) =>
         resolve(handler(...request.payload))
       );
       handlerPromise
-        .then((x) => sendResponse(x))
-        .catch(partial(toErrorResponse, request.type));
+        .then((x) => {
+          console.debug(
+            `Handler returning success response for ${request.type}`
+          );
+          sendResponse(x);
+        })
+        .catch((x) => {
+          console.debug(`Handler returning error response for ${request.type}`);
+          sendResponse(toErrorResponse(request.type, x));
+        });
       return asyncResponse;
     } else if (request.type.startsWith(MESSAGE_PREFIX)) {
       console.warn(`No handler installed for message ${request.type}`);
@@ -125,6 +134,8 @@ export function liftBackground<R extends SerializableResponse>(
     if (isBackgroundPage()) {
       return Promise.resolve(method(...args));
     }
+
+    console.debug(`Sending background action ${fullType}`);
 
     const sendMessage: any =
       isContentScript() || isOptionsPage()

@@ -1,10 +1,12 @@
 import axios, { AxiosRequestConfig, Method } from "axios";
 import { liftBackground } from "@/background/protocol";
-import { ConfiguredService } from "@/core";
+import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { RemoteServiceError } from "@/services/errors";
-import serviceRegistry from "@/services/registry";
+import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import { getExtensionToken } from "@/auth/token";
+import { locator } from "@/background/locator";
 
 export interface RemoteResponse<T> {
   data: T;
@@ -31,20 +33,32 @@ export const request = liftBackground(
   (config: AxiosRequestConfig) => axios(config)
 );
 
-function authenticate(
-  config: ConfiguredService,
+async function authenticate(
+  config: SanitizedServiceConfiguration,
   request: AxiosRequestConfig
-): AxiosRequestConfig {
+): Promise<AxiosRequestConfig> {
   const service = serviceRegistry.lookup(config.serviceId);
-  return service.authenticateRequest(config.config, request);
+  if (service.id === PIXIEBRIX_SERVICE_ID) {
+    const apiKey = await getExtensionToken();
+    if (!apiKey) {
+      throw new Error("Extension not authenticated with PixieBrix web service");
+    }
+    return service.authenticateRequest(
+      ({ apiKey } as unknown) as ServiceConfig,
+      request
+    );
+  } else {
+    const localConfig = await locator.getLocalConfig(config.id);
+    return service.authenticateRequest(localConfig.config, request);
+  }
 }
 
 async function proxyRequest<T>(
-  service: ConfiguredService,
+  service: SanitizedServiceConfiguration,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse<T>> {
   const proxyResponse = await request(
-    authenticate(await pixieServiceFactory(), {
+    await authenticate(await pixieServiceFactory(), {
       url: `${await getBaseURL()}/api/proxy/`,
       method: "post" as Method,
       data: {
@@ -69,7 +83,7 @@ async function proxyRequest<T>(
 }
 
 export async function proxyService<T>(
-  serviceConfig: ConfiguredService | null,
+  serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse<T>> {
   if (typeof serviceConfig !== "object") {
@@ -79,6 +93,6 @@ export async function proxyService<T>(
   } else if (serviceConfig.proxy) {
     return await proxyRequest<T>(serviceConfig, requestConfig);
   } else {
-    return await request(authenticate(serviceConfig, requestConfig));
+    return await request(await authenticate(serviceConfig, requestConfig));
   }
 }

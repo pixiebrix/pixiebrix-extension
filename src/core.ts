@@ -90,7 +90,7 @@ export interface ServiceDependency {
 export type ServiceLocator = (
   serviceId: string,
   id?: string
-) => Promise<ConfiguredService>;
+) => Promise<SanitizedServiceConfiguration>;
 
 export interface IExtension<
   T extends BaseExtensionConfig = BaseExtensionConfig
@@ -160,17 +160,42 @@ export interface IReader extends IBlock {
 
 type ServiceId = string;
 
-export type ServiceConfig = Record<string, string | null>;
+export interface SanitizedConfig {
+  // nominal typing to distinguish from ServiceConfig
+  _sanitizedConfigBrand: null;
+  [key: string]: string | null;
+}
+
+export interface ServiceConfig {
+  // nominal typing to distinguish from SanitizedConfig
+  _serviceConfigBrand: null;
+  [key: string]: string | null;
+}
 
 /** Service configuration provided by a user. */
 export interface RawServiceConfiguration {
+  // nominal typing to distinguish from SanitizedServiceConfiguration
+  _rawServiceConfigurationBrand: null;
+
+  /**
+   * UUID of the service configuration
+   */
   id: string | undefined;
+
   serviceId: ServiceId;
+
   label: string | undefined;
+
+  /**
+   * Configuration including all data
+   */
   config: ServiceConfig;
 }
 
-export interface ConfiguredService {
+export interface SanitizedServiceConfiguration {
+  // nominal typing to distinguish from RawServiceConfiguration
+  _sanitizedServiceConfigurationBrand: null;
+
   /**
    * UUID of the service configuration
    */
@@ -181,7 +206,7 @@ export interface ConfiguredService {
   /**
    * Sanitized configuration, i.e., excluding secrets and keys.
    */
-  config: ServiceConfig;
+  config: SanitizedConfig;
 
   /**
    * true if the service must be proxied for remote configs, e.g., because it has a secret it needs

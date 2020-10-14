@@ -23,6 +23,7 @@ export const servicesSlice = createSlice({
     },
     updateServiceConfig(state, { payload: { id, serviceId, label, config } }) {
       state.configured[id] = {
+        _rawServiceConfigurationBrand: undefined,
         id,
         serviceId,
         label,

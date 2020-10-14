@@ -5,6 +5,7 @@ import blockRegistry from "@/blocks/registry";
 import { IBlock, IExtension, IReader, ReaderOutput } from "@/core";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import extensionPointRegistry from "@/extensionPoints/registry";
+import hexRgb from "hex-rgb";
 import {
   BlockConfig,
   BlockPipeline,
@@ -29,8 +30,8 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
   constructor() {
     super(
       `pipedrive/calendar-range`,
-      `Pipedrive Calendar Range`,
-      `Add ranges to the Pipedrive activity calendar`
+      `Pipedrive Calendar Highlight Range`,
+      `Add one or more highlighted ranges to the Pipedrive activity calendar`
     );
   }
 
@@ -62,7 +63,7 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
   }
 
   defaultReader() {
-    return blockRegistry.lookup(`@pixiebrix/document-context`) as IReader;
+    return blockRegistry.lookup(`@pixiebrix/blank`) as IReader;
   }
 
   async install(): Promise<boolean> {
@@ -108,7 +109,7 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
     for (const { days, color, startTime, endTime } of rangeConfigs) {
       const startTop = getTop(startTime) + 12;
       const endTop = getTop(endTime) + 12;
-      const colorString = `#${color}30`;
+      const { red, green, blue, alpha } = hexRgb(color ?? "#F1ADFF");
       $gridDays
         .filter(function (index) {
           return days.some((x) => $($dayHeaders.get(index)).text().includes(x));
@@ -116,7 +117,10 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
         .prepend(
           `<div style='top: ${startTop}px; position: absolute; display: block; height: ${
             endTop - startTop
-          }px; background-color: ${colorString}; width: 100%'></div>`
+          }px; background-color: rgba(${red},${green},${blue},${Math.min(
+            alpha,
+            0.2
+          )}); width: 100%'></div>`
         );
     }
   }

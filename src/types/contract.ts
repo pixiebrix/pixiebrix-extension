@@ -77,7 +77,7 @@ export interface SanitizedAuth {
   /**
    * Configuration excluding any secrets/keys.
    */
-  config: ServiceConfig;
+  config: SanitizedAuth;
 
   /**
    * Service definition.

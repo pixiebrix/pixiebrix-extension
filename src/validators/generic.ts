@@ -1,12 +1,13 @@
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
+import { locate } from "@/background/locator";
 import {
   Validator,
   Schema as ValidatorSchema,
   ValidationResult,
 } from "@cfworker/json-schema";
-import { IExtension, SchemaProperties, Schema, ServiceLocator } from "@/core";
+import { IExtension, SchemaProperties, Schema } from "@/core";
 import serviceRegistry from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import pickBy from "lodash/pickBy";
@@ -125,7 +126,6 @@ export interface ExtensionValidationResult {
 }
 
 async function validateExtension(
-  locator: ServiceLocator,
   extension: IExtension
 ): Promise<ExtensionValidationResult> {
   console.debug(`Validating ${extension.id}`);
@@ -135,7 +135,6 @@ async function validateExtension(
   );
 
   const extensionValidator = extensionValidatorFactory(
-    locator,
     extensionPoint.inputSchema
   );
 
@@ -155,7 +154,7 @@ async function validateExtension(
     for (const service of extension.services) {
       console.debug(`Validating ${extension.id} service ${service.id}`);
       try {
-        await locator(service.id, service.config);
+        await locate(service.id, service.config);
       } catch (ex) {
         if (ex instanceof MissingConfigurationError) {
           missingConfiguration.push(ex);
@@ -177,13 +176,11 @@ async function validateExtension(
 }
 
 export function useExtensionValidator(
-  locator: ServiceLocator,
   extension: IExtension
 ): [ExtensionValidationResult | undefined, boolean] {
-  const validationPromise = useMemo(
-    () => validateExtension(locator, extension),
-    [extension, locator]
-  );
+  const validationPromise = useMemo(() => validateExtension(extension), [
+    extension,
+  ]);
   return useAsyncState(validationPromise);
 }
 

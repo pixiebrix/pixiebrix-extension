@@ -149,7 +149,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     const blocks = castArray(actionConfig);
     const lastBlockId = blocks[blocks.length - 1].id;
 
-    $menuItem.on("click", async () => {
+    $menuItem.on("click", async (e) => {
+      e.preventDefault();
+
       safeTrack("MenuItemExtensionPoint:click", {
         actionId: lastBlockId,
         domain: (psl.parse(window.location.hostname) as ParsedDomain).domain,

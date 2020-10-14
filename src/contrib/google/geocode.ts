@@ -2,7 +2,7 @@ import isEmpty from "lodash/isEmpty";
 import { proxyService } from "@/background/requests";
 import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
-import { BlockArg, ConfiguredService, Schema } from "@/core";
+import { BlockArg, SanitizedServiceConfiguration, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 interface GeocodedAddress {
@@ -12,7 +12,7 @@ interface GeocodedAddress {
 }
 
 async function geocodeAddress(
-  service: ConfiguredService,
+  service: SanitizedServiceConfiguration,
   address: string
 ): Promise<GeocodedAddress> {
   if (isEmpty(address)) {

@@ -1,7 +1,8 @@
-import { IBlock, Schema, ServiceLocator } from "@/core";
+import { IBlock, Schema } from "@/core";
 import * as Yup from "yup";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
+import { locate } from "@/background/locator";
 import { DoesNotExistError } from "@/baseRegistry";
 import { MissingConfigurationError } from "@/services/errors";
 import uniq from "lodash/uniq";
@@ -116,7 +117,7 @@ export function configSchemaFactory(
   }
 }
 
-function serviceSchemaFactory(locator: ServiceLocator): Yup.Schema<unknown> {
+function serviceSchemaFactory(): Yup.Schema<unknown> {
   return Yup.array()
     .of(
       Yup.object().shape({
@@ -140,7 +141,7 @@ function serviceSchemaFactory(locator: ServiceLocator): Yup.Schema<unknown> {
             value
           ) {
             try {
-              await locator(this.parent.id, value);
+              await locate(this.parent.id, value);
             } catch (ex) {
               if (ex instanceof MissingConfigurationError) {
                 return this.createError({
@@ -161,13 +162,10 @@ function serviceSchemaFactory(locator: ServiceLocator): Yup.Schema<unknown> {
     });
 }
 
-export function extensionValidatorFactory(
-  locator: ServiceLocator,
-  schema: Schema
-): Yup.Schema<unknown> {
+export function extensionValidatorFactory(schema: Schema): Yup.Schema<unknown> {
   return Yup.object().shape({
     label: Yup.string(),
-    services: serviceSchemaFactory(locator),
+    services: serviceSchemaFactory(),
     config: configSchemaFactory(schema),
   });
 }

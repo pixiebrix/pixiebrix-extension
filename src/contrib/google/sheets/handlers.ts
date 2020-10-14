@@ -5,6 +5,12 @@ import { liftBackground } from "@/background/protocol";
 
 const GOOGLE_SHEETS_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 
+export const DISCOVERY_DOCS = [
+  "https://sheets.googleapis.com/$discovery/rest?version=v4",
+];
+
+const actionId = (x: string) => `GOOGLE_SHEETS_${x}`;
+
 function ensureAuth(
   { interactive }: { interactive: boolean } = { interactive: true }
 ): Promise<string> {
@@ -13,8 +19,14 @@ function ensureAuth(
       { interactive, scopes: GOOGLE_SHEETS_SCOPES },
       (token: string) => {
         if (chrome.runtime.lastError != null) {
-          reject(chrome.runtime.lastError.message);
+          reject(
+            new Error(
+              `Cannot get Chrome OAuth token: ${chrome.runtime.lastError.message}`
+            )
+          );
         } else if (token) {
+          // https://bumbu.me/gapi-in-chrome-extension
+          gapi.auth.setToken({ access_token: token } as any);
           resolve(token);
         } else {
           reject("Could not get Chrome OAuth token");
@@ -27,102 +39,104 @@ function ensureAuth(
   });
 }
 
-const actionId = (x: string) => `GOOGLE_SHEETS_${x}`;
+async function handleRejection(token: string, err: any): Promise<Error> {
+  if (err.result.error.code === 404) {
+    throw new Error(
+      "Cannot locate the Google drive resource. Have you been granted access?"
+    );
+  } else if ([403, 401].includes(err.result.error.code)) {
+    await new Promise<void>((resolve) => {
+      chrome.identity.removeCachedAuthToken({ token }, () => {
+        resolve();
+      });
+    });
+    console.debug(
+      "Bad Google OAuth token. Removed the auth token from the cache so the user can re-authenticate"
+    );
+    throw new Error(
+      `Internal error connecting to Google Sheets. Details: ${err.result.error?.message}`
+    );
+  } else {
+    throw new Error(err.result.error?.message ?? "Unknown error");
+  }
+}
 
 export const createTab = liftBackground(
   actionId("CREATE_TAB"),
   async (spreadsheetId: string, tabName: string) => {
-    await ensureAuth();
-    return (await gapi.client.sheets.spreadsheets.batchUpdate({
-      spreadsheetId: spreadsheetId,
-      resource: {
-        requests: [
-          {
-            addSheet: {
-              properties: {
-                title: tabName,
+    const token = await ensureAuth();
+    try {
+      return (await gapi.client.sheets.spreadsheets.batchUpdate({
+        spreadsheetId: spreadsheetId,
+        resource: {
+          requests: [
+            {
+              addSheet: {
+                properties: {
+                  title: tabName,
+                },
               },
             },
-          },
-        ],
-      },
-    })) as BatchUpdateSpreadsheetResponse;
+          ],
+        },
+      })) as BatchUpdateSpreadsheetResponse;
+    } catch (ex) {
+      throw await handleRejection(token, ex);
+    }
   }
 );
 
 export const appendRows = liftBackground(
   actionId("APPEND_ROWS"),
   async (spreadsheetId: string, tabName: string, values: any[]) => {
-    await ensureAuth();
-    return (await gapi.client.sheets.spreadsheets.values.append({
-      spreadsheetId: spreadsheetId,
-      range: tabName,
-      valueInputOption: "USER_ENTERED",
-      resource: {
-        majorDimension: "ROWS",
-        values,
-      },
-    })) as AppendValuesResponse;
+    const token = await ensureAuth();
+    try {
+      return (await gapi.client.sheets.spreadsheets.values.append({
+        spreadsheetId: spreadsheetId,
+        range: tabName,
+        valueInputOption: "USER_ENTERED",
+        resource: {
+          majorDimension: "ROWS",
+          values,
+        },
+      })) as AppendValuesResponse;
+    } catch (ex) {
+      throw await handleRejection(token, ex);
+    }
   }
 );
 
 export const batchUpdate = liftBackground(
   actionId("BATCH_UPDATE"),
   async (spreadsheetId: string, requests: any[]) => {
-    await ensureAuth();
-    return (await gapi.client.sheets.spreadsheets.batchUpdate({
-      spreadsheetId: spreadsheetId,
-      resource: {
-        requests,
-      },
-    })) as BatchUpdateSpreadsheetResponse;
+    const token = await ensureAuth();
+    try {
+      return (await gapi.client.sheets.spreadsheets.batchUpdate({
+        spreadsheetId: spreadsheetId,
+        resource: {
+          requests,
+        },
+      })) as BatchUpdateSpreadsheetResponse;
+    } catch (ex) {
+      throw await handleRejection(token, ex);
+    }
   }
 );
 
 export const batchGet = liftBackground(
   actionId("BATCH_GET"),
   async (spreadsheetId: string, ranges: string | string[]) => {
-    await ensureAuth();
-    const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
-      spreadsheetId: spreadsheetId,
-      ranges,
-    });
-    return await new Promise<BatchGetValuesResponse>((resolve) =>
-      sheetRequest.execute((r) => resolve(r.result))
-    );
+    const token = await ensureAuth();
+    try {
+      const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
+        spreadsheetId: spreadsheetId,
+        ranges,
+      });
+      return await new Promise<BatchGetValuesResponse>((resolve) =>
+        sheetRequest.execute((r) => resolve(r.result))
+      );
+    } catch (ex) {
+      throw await handleRejection(token, ex);
+    }
   }
 );
-
-// export function sheetsHandler(
-//   request: SheetsRequest,
-//   sender: MessageSender,
-//   sendResponse: (response: SheetResponse) => void
-// ): boolean {
-//   if (MESSAGE_TYPES.includes(request.type)) {
-//     console.log(`sheetsHandler ${request.type}`, { request });
-//     handler(request)
-//       .then((response) => {
-//         sendResponse({ success: true, response });
-//       })
-//       .catch((err) => {
-//         console.debug(`sheetsHandler ${request.type} error`, { request, err });
-//         if (err.result.error.code === 404) {
-//           sendResponse({
-//             error:
-//               "Cannot locate the Google sheet. Have you been granted access?",
-//           });
-//         } else if (err.result.error.code === 403) {
-//           reportError(err);
-//           sendResponse({
-//             error: "Internal error: cannot connect to Google Sheets",
-//           });
-//         } else {
-//           sendResponse({ error: err.result.error?.message ?? "Unknown error" });
-//         }
-//       });
-//     return true;
-//   } else if (request.type) {
-//     console.debug(`sheetsHandler ignoring request with type ${request.type}`);
-//   }
-//   return false;
-// }

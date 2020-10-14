@@ -1,10 +1,11 @@
 import { ConfigurableAuth } from "@/types/contract";
 import {
-  ConfiguredService,
+  SanitizedServiceConfiguration,
   IService,
   RawServiceConfiguration,
   ServiceConfig,
   ServiceLocator,
+  SanitizedConfig,
 } from "@/core";
 import sortBy from "lodash/sortBy";
 import registry, {
@@ -34,8 +35,8 @@ enum ServiceLevel {
 export function excludeSecrets(
   service: IService,
   config: ServiceConfig
-): ServiceConfig {
-  const result: ServiceConfig = {};
+): SanitizedConfig {
+  const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
     // @ts-ignore: ts doesn't think $ref can be on SchemaDefinition
     if (!REF_SECRETS.includes(type["$ref"])) {
@@ -45,12 +46,16 @@ export function excludeSecrets(
   return result;
 }
 
-export async function pixieServiceFactory(): Promise<ConfiguredService> {
+export async function pixieServiceFactory(): Promise<
+  SanitizedServiceConfiguration
+> {
   return {
+    _sanitizedServiceConfigurationBrand: undefined,
     id: undefined,
     serviceId: PIXIEBRIX_SERVICE_ID,
+    // don't need to proxy requests to our own service
     proxy: false,
-    config: {},
+    config: {} as SanitizedConfig,
   };
 }
 
@@ -132,7 +137,17 @@ class LazyLocatorFactory {
     return this.locate.bind(this);
   }
 
-  async locate(serviceId: string, authId: string): Promise<ConfiguredService> {
+  async getLocalConfig(authId: string): Promise<RawServiceConfiguration> {
+    if (!this.initialized) {
+      await this.refresh();
+    }
+    return this.local.find((x) => x.id === authId);
+  }
+
+  async locate(
+    serviceId: string,
+    authId: string
+  ): Promise<SanitizedServiceConfiguration> {
     if (!this.initialized) {
       await this.refresh();
     }
@@ -162,6 +177,7 @@ class LazyLocatorFactory {
     }
 
     return {
+      _sanitizedServiceConfigurationBrand: undefined,
       id: authId,
       serviceId: serviceId,
       proxy: service.hasAuth && !match.local,

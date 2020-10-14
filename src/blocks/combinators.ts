@@ -7,7 +7,7 @@ import CompositeReader from "@/blocks/readers/CompositeReader";
 import { locate } from "@/background/locator";
 import mapValues from "lodash/mapValues";
 import {
-  ConfiguredService,
+  SanitizedServiceConfiguration,
   IBlock,
   IReader,
   Logger,
@@ -203,8 +203,8 @@ export function mergeReaders(readerConfig: ReaderConfig): IReader {
 
 type ServiceContext = {
   [outputKey: string]: {
-    __service: ConfiguredService;
-    [prop: string]: string | ConfiguredService | null;
+    __service: SanitizedServiceConfiguration;
+    [prop: string]: string | SanitizedServiceConfiguration | null;
   };
 };
 

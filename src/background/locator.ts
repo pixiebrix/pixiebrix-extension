@@ -3,7 +3,7 @@ import serviceRegistry from "@/services/registry";
 import { liftBackground } from "@/background/protocol";
 import { isBackgroundPage } from "webext-detect-page";
 
-const locator = new LazyLocatorFactory();
+export const locator = new LazyLocatorFactory();
 
 async function initLocator() {
   // Need the service blocks first because it contains the pixiebrix service definition. If we wanted to avoid
