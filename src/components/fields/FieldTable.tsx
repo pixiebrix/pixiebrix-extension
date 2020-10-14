@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Schema } from "@/core";
@@ -10,6 +10,7 @@ import { useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import produce from "immer";
 
 interface PropertyRow {
   name: string;
@@ -17,6 +18,7 @@ interface PropertyRow {
   readOnly: boolean;
   schema: Schema;
   onDelete: () => void;
+  onRename: (newName: string) => void;
 }
 
 const CompositePropertyRow: React.FunctionComponent<PropertyRow> = ({
@@ -37,10 +39,18 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRow> = ({
 const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   readOnly,
   onDelete,
+  onRename,
   showActions,
   ...props
 }) => {
-  const [field, meta, helpers] = useField(props);
+  const [field, meta] = useField(props);
+
+  const updateName = useCallback(
+    (e: React.FocusEvent<HTMLInputElement>) => {
+      onRename(e.target.value);
+    },
+    [onRename]
+  );
 
   const parts = field.name.split(".");
   const currentProperty = parts[parts.length - 1];
@@ -52,15 +62,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
           type="text"
           readOnly={readOnly}
           defaultValue={currentProperty}
-          onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
-            const newProp = e.target.value;
-            const newObj = {
-              ...field.value,
-              [newProp]: field.value[currentProperty],
-            };
-            delete newObj[currentProperty];
-            helpers.setValue(newObj);
-          }}
+          onBlur={updateName}
         />
         {/* This screws up the column width */}
         {/*{schema.description && (*/}
@@ -70,8 +72,9 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
       <td>
         <Form.Control
           type="text"
-          defaultValue={meta.initialValue}
-          onChange={field.onChange}
+          value={field.value ?? ""}
+          {...field}
+          isInvalid={!!meta.error}
         />
       </td>
       {showActions && (
@@ -89,11 +92,61 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
 
 function newPropertyName(obj: { [key: string]: unknown }) {
   let x = 1;
-  while (obj.hasOwnProperty(`property${x}`)) {
+  while (Object.prototype.hasOwnProperty.call(obj, `property${x}`)) {
     x++;
   }
   return `property${x}`;
 }
+
+interface RowProps {
+  parentSchema: Schema;
+  name: string;
+  property: string;
+  defined: boolean;
+  onDelete: (prop: string) => void;
+  onRename: (oldProp: string, newProp: string) => void;
+}
+
+const PropertyRow: React.FunctionComponent<RowProps> = ({
+  parentSchema,
+  defined,
+  name,
+  property,
+  onDelete,
+  onRename,
+}) => {
+  const propertySchema = defined
+    ? parentSchema.properties[property]
+    : parentSchema.additionalProperties;
+
+  if (typeof propertySchema === "boolean") {
+    throw new Error("Expected schema not boolean");
+  }
+
+  const PropertyRow = useMemo(() => getPropertyRow(propertySchema), [
+    propertySchema,
+  ]);
+  const deleteProp = useCallback(() => onDelete(property), [
+    property,
+    onDelete,
+  ]);
+  const renameProp = useCallback(
+    (newProp: string) => onRename(property, newProp),
+    [property, onRename]
+  );
+
+  return (
+    <PropertyRow
+      key={property}
+      name={name}
+      readOnly={!!defined}
+      schema={propertySchema}
+      showActions={!!parentSchema.additionalProperties}
+      onDelete={!defined ? deleteProp : undefined}
+      onRename={!defined ? renameProp : undefined}
+    />
+  );
+};
 
 export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
   label,
@@ -102,13 +155,42 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 }) => {
   const [field, , helpers] = useField(props);
 
-  const properties = useMemo(() => {
-    const builtin = schema.properties ?? {};
+  const [properties, declaredProperties] = useMemo(() => {
+    const declared = schema.properties ?? {};
     const additional = fromPairs(
-      Object.entries(field.value ?? {}).filter(([x]) => !builtin[x])
+      Object.entries(field.value ?? {}).filter(([x]) => !declared[x])
     );
-    return [...Object.keys(builtin), ...Object.keys(additional)];
+    return [[...Object.keys(declared), ...Object.keys(additional)], declared];
   }, [field.value, schema.properties]);
+
+  const onDelete = useCallback(
+    (property: string) => {
+      helpers.setValue(
+        produce(field.value, (draft: any) => {
+          delete draft[property];
+        })
+      );
+    },
+    [helpers, field.value]
+  );
+
+  const onRename = useCallback(
+    (oldProp: string, newProp: string) => {
+      if (oldProp !== newProp) {
+        helpers.setValue(
+          produce(field.value, (draft: any) => {
+            console.debug("rename", {
+              object: field.value,
+              value: draft[oldProp],
+            });
+            draft[newProp] = draft[oldProp];
+            delete draft[oldProp];
+          })
+        );
+      }
+    },
+    [helpers, field.value]
+  );
 
   return (
     <Form.Group controlId={field.name}>
@@ -122,42 +204,34 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
           </tr>
         </thead>
         <tbody>
-          {properties.map((property) => {
-            const definedProperties = schema.properties ?? {};
-            const defined = definedProperties.hasOwnProperty(property);
-            const propertySchema = defined
-              ? schema.properties[property]
-              : schema.additionalProperties;
-            if (typeof propertySchema === "boolean") {
-              throw new Error("Expected schema not boolean");
-            }
-            const PropertyRow = getPropertyRow(propertySchema);
-            return (
-              <PropertyRow
-                key={property}
-                name={`${field.name}.${property}`}
-                readOnly={!!defined}
-                schema={propertySchema}
-                onDelete={
-                  !defined
-                    ? () => {
-                        const newObj = { ...field.value };
-                        delete newObj[property];
-                        helpers.setValue(newObj);
-                      }
-                    : undefined
-                }
-                showActions={!!schema.additionalProperties}
-              />
-            );
-          })}
+          {properties.map((property) => (
+            <PropertyRow
+              key={property}
+              parentSchema={schema}
+              name={`${field.name}.${property}`}
+              property={property}
+              defined={Object.prototype.hasOwnProperty.call(
+                declaredProperties,
+                property
+              )}
+              onDelete={onDelete}
+              onRename={onRename}
+            />
+          ))}
         </tbody>
       </Table>
       {schema.additionalProperties && (
         <Button
           onClick={() => {
-            const current = field.value ?? {};
-            helpers.setValue({ ...current, [newPropertyName(current)]: null });
+            if (field.value) {
+              helpers.setValue(
+                produce(field.value, (draft: any) => {
+                  draft[newPropertyName(draft)] = "";
+                })
+              );
+            } else {
+              helpers.setValue({ [newPropertyName({})]: "" });
+            }
           }}
         >
           Add Property
