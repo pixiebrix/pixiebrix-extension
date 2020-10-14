@@ -69,7 +69,8 @@ module.exports = () => {
     plugins: [
       ...rollbarPlugin,
       new webpack.EnvironmentPlugin({
-        NODE_ENV: "production", // use 'production' unless process.env.NODE_ENV is defined
+        // use 'production' unless process.env.NODE_ENV is defined
+        NODE_ENV: "production",
         DEBUG: false,
       }),
       new CopyPlugin({
@@ -84,9 +85,11 @@ module.exports = () => {
             transform(content) {
               const manifest = JSON.parse(content.toString());
               manifest.version = process.env.npm_package_version;
-              manifest.externally_connectable.matches.push(
-                ...process.env.EXTERNALLY_CONNECTABLE.split(",")
-              );
+              if (process.env.EXTERNALLY_CONNECTABLE) {
+                manifest.externally_connectable.matches.push(
+                  ...process.env.EXTERNALLY_CONNECTABLE.split(",")
+                );
+              }
               if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
                 manifest.oauth2 = {
                   client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,
