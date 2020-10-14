@@ -1,3 +1,5 @@
+import { MessageContext } from "@/core";
+
 export class ValidationError extends Error {
   errors: unknown;
 
@@ -19,5 +21,20 @@ export class PropError extends Error {
     this.blockId = blockId;
     this.prop = prop;
     this.value = value;
+  }
+}
+
+/**
+ * Wrap an error with some additional context about where the error originated.
+ */
+export class ContextError extends Error {
+  public readonly cause?: Error;
+  public readonly context?: MessageContext;
+
+  constructor(cause: Error, context?: MessageContext, message?: string) {
+    super(cause.message ?? message);
+    this.name = "ContextError";
+    this.cause = cause;
+    this.context = context;
   }
 }

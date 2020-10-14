@@ -18,6 +18,7 @@ import {
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
 import pickBy from "lodash/pickBy";
+import { ContextError } from "@/errors";
 
 export type ReaderConfig =
   | string
@@ -109,6 +110,43 @@ function excludeUndefined(obj: unknown): unknown {
   }
 }
 
+async function runStage(
+  stage: BlockConfig,
+  args: RenderedArgs,
+  {
+    context,
+    validate,
+    logger,
+  }: { context: RenderedArgs; validate: boolean; logger: Logger }
+): Promise<unknown> {
+  const block = blockRegistry.lookup(stage.id);
+
+  const argContext = { ...context, ...args };
+  const stageConfig = stage.config ?? {};
+
+  // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
+  const blockArgs = isPlainObject(args)
+    ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
+    : stageConfig;
+
+  if (validate) {
+    const validationResult = validateInput(
+      castSchema(block.inputSchema),
+      excludeUndefined(blockArgs)
+    );
+    if (!validationResult.valid) {
+      throw new InputValidationError(
+        "Invalid inputs for block",
+        block.inputSchema,
+        blockArgs,
+        validationResult.errors
+      );
+    }
+  }
+
+  return (await block.run(blockArgs, { ctxt: args, logger })) ?? {};
+}
+
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
   config: BlockConfig | BlockPipeline,
@@ -121,70 +159,36 @@ export async function reducePipeline(
     ...options.serviceArgs,
   };
 
-  let ctxt: RenderedArgs = renderedArgs;
+  let currentArgs: RenderedArgs = renderedArgs;
 
   for (const [index, stage] of castArray(config).entries()) {
-    const block = blockRegistry.lookup(stage.id);
     const blockLogger = logger.childLogger({ blockId: stage.id });
 
-    const argContext = { ...extraContext, ...ctxt };
-    const stageConfig = stage.config ?? {};
-
-    let blockArgs;
-
     try {
-      // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
-      blockArgs = isPlainObject(ctxt)
-        ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
-        : stageConfig;
-    } catch (ex) {
-      throw new Error(
-        `An error occurred rendering inputs for ${stage.id} (block #${
-          index + 1
-        })`
-      );
-    }
-
-    if (options.validate) {
-      const validationResult = validateInput(
-        castSchema(block.inputSchema),
-        excludeUndefined(blockArgs)
-      );
-      if (!validationResult.valid) {
-        throw new InputValidationError(
-          `Invalid inputs for block ${stage.id} (block #${index + 1})`,
-          block.inputSchema,
-          blockArgs,
-          validationResult.errors
-        );
-      }
-    }
-
-    let output;
-
-    try {
-      output =
-        (await block.run(blockArgs, { ctxt, logger: blockLogger })) ?? {};
-    } catch (ex) {
-      blockLogger.error(ex);
-      throw new Error(ex);
-    }
-
-    if (stage.outputKey) {
-      // if output key is defined, store to a variable instead of passing to the next stage
-      extraContext[`@${stage.outputKey}`] = output;
-      logger.debug(`Storing ${stage.id} -> @${stage.outputKey}`, {
-        value: output,
+      const output = await runStage(stage, currentArgs, {
+        context: extraContext,
+        validate: options.validate,
+        logger: blockLogger,
       });
-    } else if (isPlainObject(output)) {
-      ctxt = output as RenderedArgs;
-    } else {
-      // FIXME: need to rationalize how list outputs are passed along
-      ctxt = output as any;
+      if (stage.outputKey) {
+        extraContext[`@${stage.outputKey}`] = output;
+        logger.debug(`Storing ${stage.id} -> @${stage.outputKey}`, {
+          value: output,
+        });
+      } else {
+        // FIXME: need to rationalize how list outputs are passed along
+        currentArgs = output as any;
+      }
+    } catch (ex) {
+      throw new ContextError(
+        ex,
+        { blockId: stage.id },
+        `An error occurred running pipeline stage #${index + 1}: ${stage.id}`
+      );
     }
   }
 
-  return ctxt;
+  return currentArgs;
 }
 
 /** Instantiate a reader from a reader configuration. */
