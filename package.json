@@ -149,7 +149,7 @@
     "sass-loader": "^10.0.2",
     "schema-to-yup": "1.9.16",
     "serialize-error": "^7.0.1",
-    "simple-icons": "^3.7.0",
+    "simple-icons": "^3.11.0",
     "svg-inline-loader": "^0.8.2",
     "terser-webpack-plugin": "^4.2.2",
     "to-json-schema": "^0.2.5",
