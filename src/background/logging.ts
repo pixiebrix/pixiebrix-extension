@@ -7,10 +7,19 @@ import { JsonObject } from "type-fest";
 import { serializeError } from "serialize-error";
 import debounce from "lodash/debounce";
 import compact from "lodash/compact";
+import negate from "lodash/negate";
 
 const STORAGE_KEY = "LOG";
 
-type MessageLevel = "debug" | "info" | "warn" | "error" | "trace";
+export type MessageLevel = "trace" | "debug" | "info" | "warn" | "error";
+
+export const LOG_LEVELS: { [key in MessageLevel]: number } = {
+  trace: 0,
+  debug: 1,
+  info: 2,
+  warn: 3,
+  error: 4,
+};
 
 const LOG_APPEND_DEBOUNCE_MILLIS = 150;
 
@@ -44,22 +53,50 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
   debouncedAppend();
 }
 
+function makeMatchEntry(context: MessageContext): (entry: LogEntry) => boolean {
+  return (entry: LogEntry) =>
+    Object.entries(context ?? {}).every(
+      ([key, value]) =>
+        (entry.context ?? {})[key as keyof MessageContext] === value
+    );
+}
+
+export async function clearLog(context: MessageContext = {}): Promise<void> {
+  const allErrors = JSON.parse(
+    (await readStorage<string>(STORAGE_KEY)) ?? "[]"
+  ) as LogEntry[];
+
+  await setStorage(
+    STORAGE_KEY,
+    JSON.stringify(allErrors.filter(negate(makeMatchEntry(context))))
+  );
+}
+
 export async function getLog(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
   const allErrors = JSON.parse(
-    (await readStorage(STORAGE_KEY)) ?? "[]"
+    (await readStorage<string>(STORAGE_KEY)) ?? "[]"
   ) as LogEntry[];
-  return allErrors.filter((entry) =>
-    Object.entries(context ?? {}).every(
-      ([key, value]) =>
-        (entry.context ?? {})[key as keyof MessageContext] === value
-    )
-  );
+  return allErrors.filter(makeMatchEntry(context));
 }
 
 function errorMessage(err: SerializedError): string {
   return typeof err === "object" ? err.message : String(err);
+}
+
+function buildContext(
+  error: SerializedError,
+  context: MessageContext
+): MessageContext {
+  if (typeof error === "object" && error && error.name === "ContextError") {
+    const currentContext =
+      typeof error.context === "object" ? error.context : {};
+    const innerContext = buildContext(error.cause as SerializedError, context);
+    // prefer the inner context
+    return { ...context, ...innerContext, ...currentContext };
+  }
+  return context;
 }
 
 export const recordError = liftBackground(
@@ -75,7 +112,7 @@ export const recordError = liftBackground(
         uuid: uuidv4(),
         timestamp: Date.now().toString(),
         level: "error",
-        context,
+        context: buildContext(error, context),
         message: errorMessage(error),
         error,
         data,
