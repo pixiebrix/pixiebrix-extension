@@ -7,7 +7,7 @@ import { GridLoader } from "react-spinners";
 import Table from "react-bootstrap/Table";
 import { useTabInfo, useSearchWindow } from "@/extensionPoints/hooks";
 
-const Locator = ({}) => {
+const Locator = () => {
   const [query, setQuery] = useState("");
   const [frameworks] = useTabInfo(DETECT_FRAMEWORK_VERSIONS);
   const [debouncedQuery] = useDebounce(query, 200);

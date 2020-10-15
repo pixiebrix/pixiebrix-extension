@@ -9,7 +9,7 @@ import {
 } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { isEmpty, partial } from "lodash";
-import MessageSender = chrome.runtime.MessageSender;
+
 import {
   HandlerEntry,
   SerializableResponse,
@@ -17,6 +17,8 @@ import {
   toErrorResponse,
   isErrorResponse,
 } from "@/messaging/protocol";
+
+type MessageSender = chrome.runtime.MessageSender;
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/";
 
