@@ -29,6 +29,7 @@ import { useAsyncState } from "@/hooks/common";
 import urljoin from "url-join";
 import { getBaseURL } from "@/services/baseService";
 import Banner from "@/layout/Banner";
+import { refresh as refreshLocator } from "@/background/locator";
 
 // import the built-in bricks
 import "@/blocks";
@@ -44,6 +45,7 @@ const Layout = () => {
         extensionPointRegistry.fetch(),
         blockRegistry.fetch(),
         serviceRegistry.fetch(),
+        refreshLocator(),
       ]);
     } catch (exc) {
       console.exception(exc);

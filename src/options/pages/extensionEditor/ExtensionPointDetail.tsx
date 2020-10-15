@@ -37,7 +37,10 @@ interface OwnProps {
   extensionPoint: IExtensionPoint;
   extensionId: string | null;
   initialValue: Config;
-  onSave: (update: Config) => void;
+  onSave: (
+    update: Config,
+    helpers: { setSubmitting: (submitting: boolean) => void }
+  ) => void;
 }
 
 const labelSchema = {

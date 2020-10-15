@@ -62,14 +62,25 @@ function initListener(messageEvent: chrome.runtime.ExtensionMessageEvent) {
       );
       handlerPromise
         .then((x) => {
-          console.debug(
-            `Handler returning success response for ${request.type}`
-          );
-          sendResponse(x);
+          if (asyncResponse) {
+            console.debug(
+              `Handler returning success response for ${request.type}`
+            );
+            sendResponse(x);
+          }
         })
-        .catch((x) => {
-          console.debug(`Handler returning error response for ${request.type}`);
-          sendResponse(toErrorResponse(request.type, x));
+        .catch((reason) => {
+          if (asyncResponse) {
+            console.debug(
+              `Handler returning error response for ${request.type}`
+            );
+            sendResponse(toErrorResponse(request.type, reason));
+          } else {
+            console.warn(
+              `An error occurred while handling a notification ${request.type}`,
+              reason
+            );
+          }
         });
       return asyncResponse;
     } else if (request.type.startsWith(MESSAGE_PREFIX)) {
@@ -162,6 +173,8 @@ export function liftBackground<R extends SerializableResponse>(
       });
       if (chrome.runtime.lastError != null) {
         reject(new BackgroundActionError(chrome.runtime.lastError.message));
+      } else if (!(options?.asyncResponse ?? true)) {
+        resolve();
       }
     });
   };

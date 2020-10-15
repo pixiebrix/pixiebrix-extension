@@ -8,6 +8,7 @@ import { useParams } from "react-router";
 import { useExtension } from "@/selectors";
 import ExtensionPointDetail, { Config } from "./ExtensionPointDetail";
 import WorkshopPage from "@/options/pages/extensionEditor/WorkshopPage";
+import { reactivate } from "@/background/navigation";
 
 const { saveExtension } = optionsSlice.actions;
 
@@ -35,23 +36,30 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   );
 
   const save = useCallback(
-    ({ config, label, services }) => {
-      if (!extensionPoint) return;
-      const extensionId = extensionConfig?.id ?? uuidv4();
-      saveExtension({
-        extensionPointId: extensionPoint.id,
-        extensionId,
-        config,
-        services,
-        label,
-      });
-      const toastMsg = extensionConfig?.id
-        ? "Updated block"
-        : "Installed block";
-      addToast(toastMsg, {
-        appearance: "success",
-        autoDismiss: true,
-      });
+    ({ config, label, services }, { setSubmitting }) => {
+      if (!extensionPoint) {
+        return;
+      }
+      try {
+        const extensionId = extensionConfig?.id ?? uuidv4();
+        saveExtension({
+          extensionPointId: extensionPoint.id,
+          extensionId,
+          config,
+          services,
+          label,
+        });
+        const toastMsg = extensionConfig?.id
+          ? "Updated block"
+          : "Installed block";
+        addToast(toastMsg, {
+          appearance: "success",
+          autoDismiss: true,
+        });
+        reactivate();
+      } finally {
+        setSubmitting(false);
+      }
     },
     [extensionPoint, extensionConfig, saveExtension, addToast]
   );

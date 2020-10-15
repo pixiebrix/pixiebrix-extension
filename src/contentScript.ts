@@ -1,11 +1,13 @@
 import { CONNECT_EXTENSION } from "./messaging/constants";
-import { handleNavigate } from "@/lifecycle";
+import { handleNavigate } from "@/contentScript/lifecycle";
 import { reportError } from "@/telemetry/logging";
-import "@/contentScript/navigation";
 import "@/contentScript/script";
 import "notifyjs-browser";
 import "jquery.initialize";
 import "@/telemetry/mixpanel";
+
+// Import for the side effect of registering js defined blocks
+import "@/blocks";
 import "@/contrib";
 
 const _watchedReaders = {};

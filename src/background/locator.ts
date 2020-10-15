@@ -19,6 +19,14 @@ export const locate = liftBackground(
   }
 );
 
+export const refresh = liftBackground(
+  "REFRESH_SERVICES",
+  async () => {
+    return await locator.refresh();
+  },
+  { asyncResponse: false }
+);
+
 if (isBackgroundPage()) {
   initLocator().then(() => {
     console.debug("Eagerly initialized service locator");

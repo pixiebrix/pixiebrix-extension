@@ -1,6 +1,5 @@
 import { loadOptions } from "@/options/loader";
 import blockRegistry from "@/blocks/registry";
-import serviceRegistry from "@/services/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { IExtensionPoint, IReader, Message } from "@/core";
 import {
@@ -8,21 +7,27 @@ import {
   DEV_WATCH_READER_READ,
 } from "@/messaging/constants";
 
-// Import for the side effect of registering js defined blocks
-import "@/blocks";
-import "@/contrib";
+import serviceRegistry from "@/services/registry";
+import {
+  liftContentScript,
+  notifyContentScripts,
+} from "@/contentScript/protocol";
 
 let _loadedBlocks = false;
 let _extensionPoints: IExtensionPoint[] = undefined;
 let _navSequence = 1;
 
-async function loadBlocksOnce() {
+export async function loadBlocks(): Promise<void> {
+  await Promise.all([
+    blockRegistry.refresh({ allowFetch: false }),
+    extensionPointRegistry.refresh({ allowFetch: false }),
+    serviceRegistry.refresh({ allowFetch: false }),
+  ]);
+}
+
+async function loadBlocksOnce(): Promise<void> {
   if (!_loadedBlocks) {
-    await Promise.all([
-      blockRegistry.refresh({ allowFetch: false }),
-      extensionPointRegistry.refresh({ allowFetch: false }),
-      serviceRegistry.refresh({ allowFetch: false }),
-    ]);
+    await loadBlocks();
     _loadedBlocks = true;
   }
 }
@@ -30,7 +35,7 @@ async function loadBlocksOnce() {
 async function runExtensionPoint(
   extensionPoint: IExtensionPoint,
   isCancelled: () => boolean
-) {
+): Promise<void> {
   const installed = await extensionPoint.install(/* isCancelled */);
 
   if (!installed) {
@@ -48,32 +53,33 @@ async function runExtensionPoint(
   await extensionPoint.run();
 }
 
-async function loadExtensionsOnce() {
-  if (_extensionPoints == null) {
-    const { extensions: extensionPointConfigs } = await loadOptions();
+async function loadExtensions() {
+  _extensionPoints = [];
 
-    _extensionPoints = [];
+  const { extensions: extensionPointConfigs } = await loadOptions();
 
-    for (const [extensionPointId, extensions] of Object.entries(
-      extensionPointConfigs
-    )) {
-      const extensionPoint = extensionPointRegistry.lookup(extensionPointId);
-      const activeExtensions = Object.values(extensions).filter(
-        (x) => x.active
-      );
+  for (const [extensionPointId, extensions] of Object.entries(
+    extensionPointConfigs
+  )) {
+    const extensionPoint = extensionPointRegistry.lookup(extensionPointId);
+    const activeExtensions = Object.values(extensions).filter((x) => x.active);
 
-      let added = false;
-      for (const extension of activeExtensions) {
-        extensionPoint.addExtension(extension);
-        added = true;
-      }
+    let added = false;
+    for (const extension of activeExtensions) {
+      extensionPoint.addExtension(extension);
+      added = true;
+    }
 
-      if (added) {
-        _extensionPoints.push(extensionPoint);
-      }
+    if (added) {
+      _extensionPoints.push(extensionPoint);
     }
   }
+}
 
+async function loadExtensionsOnce() {
+  if (_extensionPoints == null) {
+    await loadExtensions();
+  }
   return _extensionPoints;
 }
 
@@ -124,3 +130,18 @@ export async function handleNavigate(
     }
   }
 }
+
+export const notifyNavigation = liftContentScript(
+  "NAVIGATE",
+  async () => {
+    // TODO: pass watched readers once we re-implement that functionality
+    await handleNavigate({});
+  },
+  { asyncResponse: false }
+);
+
+export const reactivate = notifyContentScripts("REACTIVATE", async () => {
+  await loadBlocks();
+  await loadExtensions();
+  await handleNavigate({});
+});
