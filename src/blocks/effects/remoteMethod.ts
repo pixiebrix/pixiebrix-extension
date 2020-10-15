@@ -6,7 +6,11 @@ import { propertiesToSchema } from "@/validators/generic";
 
 export class RemoteMethod extends Effect {
   constructor() {
-    super("@pixiebrix/http", "HTTP Request");
+    super(
+      "@pixiebrix/http",
+      "HTTP Request",
+      "Send an HTTP request, i.e., GET, PUT, POST, PATCH, DELETE"
+    );
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -42,7 +46,7 @@ export class RemoteMethod extends Effect {
         additionalProperties: true,
       },
     },
-    ["url", "data", "service"]
+    ["url", "data"]
   );
 
   async effect({ service, ...requestConfig }: BlockArg): Promise<void> {

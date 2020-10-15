@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: rapidapi/api
+  version: 0.0.1
+  name: RapidAPI
+  description: Find and Connect to Thousands of APIs
+  url: https://rapidapi.com/
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    host:
+      description: The host of the API you are accessing, x-rapidapi-host
+    key:
+      $ref: "https://app.pixiebrix.com/schemas/key#"
+      description: Your RapidAPI key, x-rapidapi-key
+  required:
+    - key
+    - host
+authentication:
+  headers:
+    x-rapidapi-key: "{{key}}"
+    x-rapidapi-host: "{{host}}"
+    useQueryString: "true"

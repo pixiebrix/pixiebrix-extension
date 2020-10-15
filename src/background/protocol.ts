@@ -1,12 +1,22 @@
 import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
+// @ts-ignore: types not defined for match-pattern
+import matchPattern from "match-pattern";
+
 import {
   isBackgroundPage,
   isContentScript,
   isOptionsPage,
 } from "webext-detect-page";
-import { serializeError, deserializeError } from "serialize-error";
+import { deserializeError } from "serialize-error";
 import { isEmpty, partial } from "lodash";
-import { SerializedError } from "@/core";
+import MessageSender = chrome.runtime.MessageSender;
+import {
+  HandlerEntry,
+  SerializableResponse,
+  HandlerOptions,
+  toErrorResponse,
+  isErrorResponse,
+} from "@/messaging/protocol";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/";
 
@@ -19,38 +29,32 @@ export class BackgroundActionError extends Error {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-type SerializableResponse = object;
-
-type HandlerOptions = {
-  asyncResponse?: boolean;
-};
-
-type Handler = (...args: unknown[]) => SerializableResponse;
-
-type HandlerEntry = {
-  handler: Handler;
-  options: HandlerOptions;
-};
-
 const handlers: { [key: string]: HandlerEntry } = {};
 
-interface ErrorResponse {
-  $$error: SerializedError;
-}
-
-function isErrorResponse(ex: unknown): ex is ErrorResponse {
-  return typeof ex === "object" && ex != null && "$$error" in ex;
-}
-
-function toErrorResponse(requestType: string, ex: unknown): ErrorResponse {
-  return { $$error: serializeError(ex) };
+/**
+ * Return true if a message sender is either the extension itself, or an externally connectable page
+ * https://developer.chrome.com/extensions/security#sanitize
+ */
+function allowSender(sender: MessageSender): boolean {
+  const { externally_connectable } = chrome.runtime.getManifest();
+  return (
+    sender.id === chrome.runtime.id ||
+    externally_connectable.matches.some((x) =>
+      matchPattern.parse(x).test(sender.origin)
+    )
+  );
 }
 
 function initListener(messageEvent: chrome.runtime.ExtensionMessageEvent) {
   messageEvent.addListener(function (request, sender, sendResponse) {
+    if (!allowSender(sender)) {
+      console.debug(`Ignoring message to background page`, sender);
+      return false;
+    }
+
     const { handler, options: { asyncResponse } = { asyncResponse: true } } =
       handlers[request.type] ?? {};
+
     if (handler) {
       console.debug(`Handling background action ${request.type}`);
       const handlerPromise = new Promise((resolve) =>

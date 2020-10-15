@@ -7,8 +7,6 @@ export const SCRIPT_LOADED = "@@pixiebrix/SCRIPT_LOADED";
 export const CONNECT_EXTENSION = "@@pixiebrix/CONNECT_EXTENSION";
 export const DETECT_FRAMEWORK_VERSIONS =
   "@@pixiebrix/DETECT_FRAMEWORK_VERSIONS";
-export const HISTORY_STATE_UPDATED = "@@pixiebrix/HISTORY_STATE_UPDATED";
-
 export const READ_REACT_COMPONENT = "@@pixiebrix/READ_REACT_COMPONENT";
 
 export const FORWARD_FRAME_DATA = "@@pixiebrix/FORWARD_FRAME_DATA";

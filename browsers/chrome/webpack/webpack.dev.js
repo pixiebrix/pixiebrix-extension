@@ -44,6 +44,7 @@ module.exports = merge.strategy({ plugins: "prepend" })(common, {
             const manifest = JSON.parse(content.toString());
             manifest.version = process.env.npm_package_version;
             manifest.externally_connectable.matches.push(
+              "http://127.0.0.1:8000/*",
               "http://127.0.0.1/*",
               "http://localhost/*"
             );

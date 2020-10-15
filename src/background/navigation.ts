@@ -1,10 +1,10 @@
-import { HISTORY_STATE_UPDATED } from "@/messaging/constants";
+import { notifyNavigation } from "@/contentScript/navigation";
 
 function initNavigation(): void {
   chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
     console.debug("onHistoryStateUpdated", details);
     const { tabId } = details;
-    chrome.tabs.sendMessage(tabId, { type: HISTORY_STATE_UPDATED });
+    notifyNavigation(tabId);
   });
 }
 
