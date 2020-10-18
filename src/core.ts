@@ -172,6 +172,18 @@ export interface ServiceConfig {
   [key: string]: string | null;
 }
 
+export interface OAuthData {
+  // nominal typing to distinguish from SanitizedConfig and ServiceConfig
+  _oauth: null;
+  [key: string]: string | null;
+}
+
+export interface OAuth2Context {
+  host: string;
+  client_id: string;
+  client_secret?: string;
+}
+
 /** Service configuration provided by a user. */
 export interface RawServiceConfiguration {
   // nominal typing to distinguish from SanitizedServiceConfiguration
@@ -220,12 +232,19 @@ export interface SanitizedServiceConfiguration {
  *
  * The input/output schema is the same since it's directly user configured.
  */
-export interface IService<TConfig extends ServiceConfig = ServiceConfig>
-  extends Metadata {
+export interface IService<
+  TConfig extends ServiceConfig = ServiceConfig,
+  TOAuth extends OAuthData = OAuthData
+> extends Metadata {
   schema: Schema;
+
+  isOAuth2: boolean;
+
+  getOAuth2Context: (serviceConfig: TConfig) => OAuth2Context;
 
   authenticateRequest: (
     serviceConfig: TConfig,
-    requestConfig: AxiosRequestConfig
+    requestConfig: AxiosRequestConfig,
+    oauthConfig?: TOAuth
   ) => AxiosRequestConfig;
 }

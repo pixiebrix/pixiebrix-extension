@@ -9,6 +9,7 @@ import "./background/external";
 import "./background/requests";
 import "./background/locator";
 import "./background/logging";
+import "./background/auth";
 
 import initGoogle from "@/contrib/google/background";
 import initFrames from "@/background/iframes";

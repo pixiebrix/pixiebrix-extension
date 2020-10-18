@@ -10,6 +10,8 @@ import {
   IReader,
   IService,
   Logger,
+  OAuth2Context,
+  OAuthData,
   RenderedHTML,
   Schema,
   ServiceConfig,
@@ -17,14 +19,17 @@ import {
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
 
-export abstract class Service<TConfig extends ServiceConfig = ServiceConfig>
-  implements IService<TConfig> {
+export abstract class Service<
+  TConfig extends ServiceConfig = ServiceConfig,
+  TOAuth extends OAuthData = OAuthData
+> implements IService<TConfig> {
   id: string;
   name: string;
   description?: string;
   icon?: BlockIcon;
   abstract schema: Schema;
   abstract hasAuth: boolean;
+  abstract isOAuth2: boolean;
 
   protected constructor(
     id: string,
@@ -38,9 +43,12 @@ export abstract class Service<TConfig extends ServiceConfig = ServiceConfig>
     this.icon = icon;
   }
 
+  abstract getOAuth2Context(serviceConfig: TConfig): OAuth2Context;
+
   abstract authenticateRequest(
     serviceConfig: TConfig,
-    requestConfig: AxiosRequestConfig
+    requestConfig: AxiosRequestConfig,
+    oauthConfig?: TOAuth
   ): AxiosRequestConfig;
 }
 

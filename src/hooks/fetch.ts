@@ -5,7 +5,7 @@ import { getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { useToasts } from "react-toast-notifications";
 
-function isAbsoluteURL(url: string): boolean {
+export function isAbsoluteURL(url: string): boolean {
   return url.indexOf("http://") === 0 || url.indexOf("https://") === 0;
 }
 
@@ -15,7 +15,7 @@ export async function makeURL(relativeOrAbsoluteUrl: string): Promise<string> {
     : joinURL(await getBaseURL(), relativeOrAbsoluteUrl);
 }
 
-function joinURL(host: string, relativeUrl: string): string {
+export function joinURL(host: string, relativeUrl: string): string {
   const cleanHost = host.replace(/\/$/, "");
   const cleanPath = relativeUrl.replace(/^\//, "");
   return `${cleanHost}/${cleanPath}`;

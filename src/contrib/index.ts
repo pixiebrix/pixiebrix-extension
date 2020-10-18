@@ -4,3 +4,4 @@ import "./linkedin";
 import "./pipedrive";
 import "./slack";
 import "./techcrunch";
+import "./salesforce";
