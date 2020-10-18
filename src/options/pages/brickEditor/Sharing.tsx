@@ -8,7 +8,7 @@ import React from "react";
 import { useField } from "formik";
 import { useOrganization } from "@/hooks/organization";
 
-const SharingTable: React.FunctionComponent = ({}) => {
+const SharingTable: React.FunctionComponent = () => {
   const { organizations = [] } = useOrganization();
   const [publicField, , { setValue: setPublic }] = useField("public");
   const [organizationsField, , { setValue: setOrganizations }] = useField(

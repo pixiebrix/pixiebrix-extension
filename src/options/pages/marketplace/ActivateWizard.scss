@@ -1,0 +1,25 @@
+#activate-wizard {
+  .nav-item {
+    text-align: center;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .nav-link {
+    font-weight: 400;
+    background-color: rgba(0, 0, 0, 0.03);
+    color: black;
+    padding: 1em;
+
+    &.active {
+      background: #b66dff;
+      color: #fff;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 0;
+  }
+}

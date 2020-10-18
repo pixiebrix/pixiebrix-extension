@@ -5,7 +5,10 @@ import { useAsyncEffect } from "use-async-effect";
 import { useState, useCallback } from "react";
 import every from "lodash/every";
 import { IExtension, IPermissions } from "@/core";
-import { RecipeDefinition } from "@/types/definitions";
+import {
+  ExtensionPointDefinition,
+  RecipeDefinition,
+} from "@/types/definitions";
 import Permissions = chrome.permissions.Permissions;
 
 /**
@@ -28,14 +31,23 @@ export async function ensureAllPermissions(
   return true;
 }
 
-export async function ensureRecipePermissions(
-  recipe: RecipeDefinition
-): Promise<boolean> {
-  const extensionPermissions = recipe.extensionPoints.map(({ id }) => {
+export function collectPermissions(recipe: RecipeDefinition): IPermissions[];
+export function collectPermissions(
+  extensionPoints: ExtensionPointDefinition[]
+): IPermissions[];
+export function collectPermissions(
+  recipeOrExtensionPoints: RecipeDefinition | ExtensionPointDefinition[]
+): IPermissions[] {
+  const forDefinition = ({ id }: ExtensionPointDefinition) => {
     const extensionPoint = extensionRegistry.lookup(id);
     return extensionPoint.permissions;
-  });
-  return await ensureAllPermissions(distinctPermissions(extensionPermissions));
+  };
+
+  const extensionPoints = Array.isArray(recipeOrExtensionPoints)
+    ? recipeOrExtensionPoints
+    : recipeOrExtensionPoints.extensionPoints;
+
+  return distinctPermissions(extensionPoints.map(forDefinition));
 }
 
 /**
@@ -43,7 +55,7 @@ export async function ensureRecipePermissions(
  * @param extension
  * @returns {*}
  */
-export function extensionPermissions(extension: IExtension) {
+export function extensionPermissions(extension: IExtension): IPermissions[] {
   const { extensionPointId } = extension;
   const extensionPoint = extensionRegistry.lookup(extensionPointId);
   const blockPermissions = extensionPoint
@@ -52,8 +64,14 @@ export function extensionPermissions(extension: IExtension) {
   return distinctPermissions([extensionPoint.permissions, ...blockPermissions]);
 }
 
-function checkPermission(permission: Permissions): Promise<boolean> {
-  return new Promise((resolve) => {
+export async function checkPermissions(
+  permissions: Permissions[]
+): Promise<boolean> {
+  return every(await Promise.all(permissions.map(checkPermission)));
+}
+
+async function checkPermission(permission: Permissions): Promise<boolean> {
+  return await new Promise((resolve) => {
     chrome.permissions.contains(permission, resolve);
   });
 }
@@ -61,8 +79,7 @@ function checkPermission(permission: Permissions): Promise<boolean> {
 export async function permissionsEnabled(
   extension: IExtension<object>
 ): Promise<boolean> {
-  const permissions = extensionPermissions(extension);
-  return every(await Promise.all(permissions.map(checkPermission)));
+  return await checkPermissions(extensionPermissions(extension));
 }
 
 export async function ensureExtensionPermissions(

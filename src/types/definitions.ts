@@ -3,6 +3,7 @@ import { Metadata, Schema } from "@/core";
 export interface ExtensionPointDefinition {
   id: string;
   label: string;
+  services?: { [key: string]: string };
 }
 
 export interface RecipeDefinition {
