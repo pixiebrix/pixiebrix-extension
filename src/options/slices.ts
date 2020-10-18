@@ -70,13 +70,13 @@ export const optionsSlice = createSlice({
       state.extensions[extensionPointId][extensionId].active = active;
     },
     installRecipe(state, { payload }) {
-      const { recipe } = payload;
+      const { recipe, services: auths, extensionPoints } = payload;
       for (const {
         id: extensionPointId,
         label,
         services,
         config,
-      } of recipe.extensionPoints) {
+      } of extensionPoints) {
         const extensionId = uuidv4();
         if (state.extensions[extensionPointId] == null) {
           state.extensions[extensionPointId] = {};
@@ -87,7 +87,7 @@ export const optionsSlice = createSlice({
           services: Object.entries(services ?? {}).map(
             ([outputKey, id]: [string, string]) => ({
               outputKey,
-              config: undefined,
+              config: auths[id],
               id,
             })
           ),

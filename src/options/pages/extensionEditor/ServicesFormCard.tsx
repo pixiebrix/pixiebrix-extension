@@ -1,115 +1,18 @@
-import React, { CSSProperties, useMemo, useState } from "react";
+import React, { useState } from "react";
 import Table from "react-bootstrap/Table";
-import Select, { StylesConfig } from "react-select";
 import Button from "react-bootstrap/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store";
-import { RawServiceConfiguration, ServiceDependency } from "@/core";
-import { useFetch } from "@/hooks/fetch";
-import { SanitizedAuth } from "@/types/contract";
+import { ServiceDependency } from "@/core";
 import ServiceSelector from "@/components/ServiceSelector";
 import { Field, FieldArray, FieldInputProps, useField } from "formik";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
 import "./ServicesFormCard.scss";
-
-interface AuthOption {
-  value: string;
-  label: string;
-  serviceId: string;
-}
-
-// customStyles.js
-const colors = {
-  error: "#dc3545",
-  divider: "#ebedf2",
-};
-
-export const customStyles: StylesConfig = {
-  // @ts-ignore: not sure how to pass the genetic argument to the react-select types
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: (base: CSSProperties, state: { selectProps: any }) => {
-    let statusColor = colors.divider;
-
-    if (state.selectProps.error) {
-      // "state.selectProps" references the component props
-      statusColor = colors.error;
-    }
-
-    return {
-      ...base,
-      borderColor: statusColor,
-    };
-  },
-};
-
-const ServiceAuthSelector: React.FunctionComponent<{
-  name: string;
-  serviceId: string;
-  authOptions: AuthOption[];
-}> = ({ authOptions, serviceId, ...props }) => {
-  const [field, meta, helpers] = useField(props);
-
-  const options = useMemo(
-    () => authOptions.filter((x) => x.serviceId === serviceId),
-    [authOptions, serviceId]
-  );
-
-  const value = useMemo(
-    () => authOptions.filter((x) => x.value === field.value),
-    [authOptions, serviceId]
-  );
-
-  return (
-    <Form.Group controlId={field.name}>
-      <Select
-        styles={customStyles}
-        name={field.name}
-        options={options}
-        value={value}
-        error={!!meta.error}
-        onChange={(x: AuthOption) => {
-          helpers.setValue(x.value);
-        }}
-      />
-      {meta.error && (
-        <Form.Control.Feedback type="invalid" style={{ display: "inline" }}>
-          {meta.error}
-        </Form.Control.Feedback>
-      )}
-    </Form.Group>
-  );
-};
-
-function useAuthOptions(): [AuthOption[]] {
-  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    ({ services }) => Object.values(services.configured)
-  );
-
-  const remoteAuths = useFetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
-
-  const authOptions = useMemo(() => {
-    const localOptions = (configuredServices ?? []).map((x) => ({
-      value: x.id,
-      label: `${x.label ?? "Default"} — Private`,
-      serviceId: x.serviceId,
-    }));
-
-    const sharedOptions = (remoteAuths ?? []).map((x) => ({
-      value: x.id,
-      label: `${x.label ?? "Default"} — ${
-        x.organization.name ?? "✨ Built-in"
-      }`,
-      serviceId: x.service.config.metadata.id,
-    }));
-
-    return [...localOptions, ...sharedOptions];
-  }, [remoteAuths, configuredServices]);
-
-  return [authOptions];
-}
+import ServiceAuthSelector, {
+  AuthOption,
+  useAuthOptions,
+} from "@/options/pages/extensionEditor/ServiceAuthSelector";
 
 const DependencyRow: React.FunctionComponent<{
   field: FieldInputProps<unknown>;

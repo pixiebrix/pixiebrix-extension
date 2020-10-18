@@ -29,6 +29,7 @@ import { useAsyncState } from "@/hooks/common";
 import urljoin from "url-join";
 import { getBaseURL } from "@/services/baseService";
 import Banner from "@/layout/Banner";
+import ActivatePage from "@/options/pages/marketplace/ActivatePage";
 import { refresh as refreshLocator } from "@/background/locator";
 
 // import the built-in bricks
@@ -79,6 +80,11 @@ const Layout = () => {
                     exact
                     path="/marketplace"
                     component={MarketplacePage}
+                  />
+                  <Route
+                    exact
+                    path="/marketplace/activate/:blueprintId"
+                    component={ActivatePage}
                   />
                   <Route exact path="/settings" component={Settings} />
                   <Route path="/services/:id?" component={ServicesEditor} />
