@@ -163,7 +163,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
             <Nav
               variant="pills"
               activeKey={stepKey}
-              onSelect={(step) => setStep(step)}
+              onSelect={(step: string) => setStep(step)}
             >
               {blueprintSteps.map((x, i) => (
                 <Nav.Item key={x.key} className="flex-grow-1">
