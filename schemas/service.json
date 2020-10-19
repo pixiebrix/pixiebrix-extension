@@ -42,20 +42,74 @@
     },
     "metadata": { "$ref": "https://app.pixiebrix.com/schemas/metadata#" },
     "inputSchema": { "$ref": "http://json-schema.org/draft-07/schema#" },
-    "authentication": {
+    "isAvailable": {
       "type": "object",
       "properties": {
-        "params": {
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "headers": {
-          "additionalProperties": {
-            "type": "string"
-          }
+        "matchPatterns": {
+          "oneOf": [
+            {"type":  "string"},
+            {"type":  "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          ]
         }
       }
+    },
+    "authentication": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "params": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "headers": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "oauth2": {
+              "type": "object",
+              "properties": {
+                "host": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "client_id": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "baseURL": {
+              "type":  "string",
+              "format": "uri"
+            },
+            "headers": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["oauth2"]
+        }
+      ]
     }
   },
   "additionalProperties": false,

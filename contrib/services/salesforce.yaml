@@ -1,0 +1,32 @@
+# https://developer.salesforce.com/docs/atlas.en-us.api_rest.meta/api_rest/quickstart_oauth.htm
+apiVersion: v1
+kind: service
+metadata:
+  id: salesforce/oauth2
+  version: 1.0.0
+  name: Salesforce
+  description: Salesforce OAuth2 authentication
+  url: https://www.salesforce.com/
+isAvailable:
+  matchPatterns: https://*.salesforce.com/*
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    host:
+      type: string
+      description: The Salesforce base URL
+      default: https://login.salesforce.com/
+    consumerKey:
+      type: string
+      description: Consumer Key of the Connected App
+  required:
+    - host
+    - consumerKey
+authentication:
+  baseURL: "{{&instance_url}}"
+  oauth2:
+    host: "{{&host}}"
+    client_id: "{{consumerKey}}"
+  headers:
+    Authorization: "{{token_type}} {{access_token}}"

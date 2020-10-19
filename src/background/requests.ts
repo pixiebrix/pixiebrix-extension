@@ -8,8 +8,10 @@ import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import { ContextError } from "@/errors";
+import { isBackgroundPage } from "webext-detect-page";
+import { getCachedOAuth2, launchOAuth2Flow } from "@/background/auth";
 
-export interface RemoteResponse<T> {
+export interface RemoteResponse<T extends {} = {}> {
   data: T;
   status: number;
   statusText: string;
@@ -40,7 +42,12 @@ async function authenticate(
   config: SanitizedServiceConfiguration,
   request: AxiosRequestConfig
 ): Promise<AxiosRequestConfig> {
+  if (!isBackgroundPage()) {
+    throw new Error("authenticate can only be called from the background page");
+  }
+
   const service = serviceRegistry.lookup(config.serviceId);
+
   if (service.id === PIXIEBRIX_SERVICE_ID) {
     const apiKey = await getExtensionToken();
     if (!apiKey) {
@@ -50,6 +57,13 @@ async function authenticate(
       ({ apiKey } as unknown) as ServiceConfig,
       request
     );
+  } else if (service.isOAuth2) {
+    const localConfig = await locator.getLocalConfig(config.id);
+    let data = await getCachedOAuth2(config.id);
+    if (!data) {
+      data = await launchOAuth2Flow(service, localConfig);
+    }
+    return service.authenticateRequest(localConfig.config, request, data);
   } else {
     const localConfig = await locator.getLocalConfig(config.id);
     return service.authenticateRequest(localConfig.config, request);
@@ -85,6 +99,27 @@ async function proxyRequest<T>(
   }
 }
 
+const _proxyService = liftBackground(
+  "PROXY",
+  async (
+    serviceConfig: SanitizedServiceConfiguration | null,
+    requestConfig: AxiosRequestConfig
+  ): Promise<RemoteResponse> => {
+    try {
+      if (serviceConfig.proxy) {
+        return await proxyRequest(serviceConfig, requestConfig);
+      } else {
+        return await request(await authenticate(serviceConfig, requestConfig));
+      }
+    } catch (ex) {
+      throw new ContextError(ex, {
+        serviceId: serviceConfig.id,
+        authId: serviceConfig.id,
+      });
+    }
+  }
+);
+
 export async function proxyService<T>(
   serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig
@@ -94,16 +129,7 @@ export async function proxyService<T>(
   } else if (!serviceConfig) {
     return await request(requestConfig);
   }
-  try {
-    if (serviceConfig.proxy) {
-      return await proxyRequest<T>(serviceConfig, requestConfig);
-    } else {
-      return await request(await authenticate(serviceConfig, requestConfig));
-    }
-  } catch (ex) {
-    throw new ContextError(ex, {
-      serviceId: serviceConfig.id,
-      authId: serviceConfig.id,
-    });
-  }
+  return (await _proxyService(serviceConfig, requestConfig)) as RemoteResponse<
+    T
+  >;
 }
