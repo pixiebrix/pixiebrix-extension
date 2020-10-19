@@ -1,5 +1,11 @@
 # Contributing to PixieBrix
 
+## Contributor license agreement
+
+By contributing to this repository in any form, including creating issues and/or sending a pull request via GitHub,
+you agree to individual contributor license agreement. By contributing to this repository in any form as an entity,
+you agree to the corporate contributor license agreement.
+
 ## Did you find a bug?
 
 *If you are reporting a security bug, please contact the maintainers privately
@@ -31,9 +37,3 @@ hooks, and submit the PR.
 Whenever possible, implement new entities via YAML files instead of
 Javascript / Typescript classes. We can publish these independent of browser
 extension releases.
-
-## License
-
-By contributing to this repository in any form, including creating issues and/or sending
-a pull request via GitHub, you agree to release your contribution under the terms of the
-[BSD 3-Clause License](https://github.com/pixiebrix/pixiebrix-browser/blob/master/LICENSE).

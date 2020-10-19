@@ -69,4 +69,3 @@ misbehaving.
 
 We're avid users of browser extensions, bookmarklets, and userscripts. They'll always each have their place.
 We're building PixieBrix to bring their power to a broader audience. See our Wiki for [a full comparison](https://github.com/pixiebrix/pixiebrix-extension/wiki/Why-not-X%3F)
-
