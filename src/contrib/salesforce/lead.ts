@@ -35,6 +35,18 @@ export class AddLead extends Effect {
         type: "string",
         description: "The lead’s email address.",
       },
+      MobilePhone: {
+        type: "string",
+        description: "The lead’s mobile phone number.",
+      },
+      Title: {
+        type: "string",
+        description: "The lead’s description.",
+      },
+      Description: {
+        type: "string",
+        description: "The lead’s description.",
+      },
     },
     ["salesforce", "LastName", "Company"]
   );
