@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: linkedin/hunter-salesforce
+  version: 0.0.1
+  name: LinkedIn Salesforce with email search
+  description: Create Salesforce leads with email addresses via Hunter
+extensionPoints:
+  - id: "linkedin/person-menu"
+    label: Create in Salesforce
+    services:
+      geocode: google/geocode-api
+      crunchbase: rapidapi/api
+      hunter: hunter/api
+      salesforce: salesforce/oauth2
+    config:
+      caption: Create Lead
+      icon:
+        id: salesforce
+        library: simple-icons
+        size: 10
+      action:
+        - id: google/geocode
+          outputKey: location
+          config:
+            service: "@geocode"
+            address: locationName
+        - id: "@pixiebrix/get"
+          outputKey: organization
+          config:
+            service: "@crunchbase"
+            url: https://rapidapi.p.rapidapi.com/odm-organizations
+            params:
+              query: currentCompanyName
+        - id: "@pixiebrix/get"
+          outputKey: contact
+          config:
+            service: "@hunter"
+            url: https://api.hunter.io/v2/email-finder
+            params:
+              first_name: firstName
+              last_name: lastName
+              domain: "@organization.data.items.0?.properties.domain"
+              company: currentCompanyName
+        - id: salesforce/leads-create
+          config:
+            salesforce: "@salesforce"
+            FirstName: firstName
+            LastName: lastName
+            Company: currentCompanyName
+            Email: "@contact.data.email"
+            City: "@location.city"
+            State: "@location.state"
+            Country: "@location.country"
+            Title: headline
+            MobilePhone: "@contact.data.phone_number"

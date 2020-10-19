@@ -148,9 +148,9 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
                   message: "Configuration no longer available",
                 });
               } else {
-                return this.createError({
-                  message: `An error occurred validating the service: ${ex}`,
-                });
+                console.exception(
+                  `An error occurred validating service: ${this.parent.id}`
+                );
               }
             }
             return true;

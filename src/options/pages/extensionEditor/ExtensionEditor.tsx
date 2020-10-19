@@ -41,6 +41,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
         return;
       }
       try {
+        const isNew = !extensionConfig?.id;
         const extensionId = extensionConfig?.id ?? uuidv4();
         saveExtension({
           extensionPointId: extensionPoint.id,
@@ -49,13 +50,20 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
           services,
           label,
         });
+
         const toastMsg = extensionConfig?.id
-          ? "Updated block"
-          : "Installed block";
+          ? "Updated brick"
+          : "Activated brick";
+
         addToast(toastMsg, {
           appearance: "success",
           autoDismiss: true,
         });
+
+        if (isNew) {
+          navigate(`/workshop/extensions/${extensionId}`);
+        }
+
         reactivate();
       } finally {
         setSubmitting(false);
@@ -69,7 +77,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   } else {
     return (
       <ExtensionPointDetail
-        saveCaption={extensionConfig ? "Update Brick" : "Attach Brick"}
+        saveCaption={extensionConfig ? "Update Brick" : "Activate Brick"}
         initialValue={{
           label: extensionConfig?.label,
           config: extensionConfig?.config,

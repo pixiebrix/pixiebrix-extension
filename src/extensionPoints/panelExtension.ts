@@ -4,7 +4,7 @@ import { faColumns, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
-import castArray from "lodash/castArray";
+import { isEmpty, castArray } from "lodash";
 import {
   reducePipeline,
   mergeReaders,
@@ -198,13 +198,34 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         ) as Promise<string>;
 
         errorBoundary(rendererPromise, extensionLogger).then((bodyHTML) => {
+          let componentHTML;
+          let data: any = {};
+
+          if (typeof bodyHTML === "string") {
+            componentHTML = bodyHTML;
+          } else {
+            componentHTML = (bodyHTML as any).component;
+            data = (bodyHTML as any).data;
+          }
+
           if (boolean(shadowDOM)) {
             const shadowRoot = $bodyContainer
               .get(0)
               .attachShadow({ mode: "closed" });
-            shadowRoot.innerHTML = bodyHTML;
+            shadowRoot.innerHTML = componentHTML;
           } else {
-            $bodyContainer.html(bodyHTML);
+            const $component = $(componentHTML);
+
+            if (!isEmpty(data)) {
+              const elt = $component.get(0);
+              console.log(elt);
+              for (const [prop, value] of Object.entries(data)) {
+                // @ts-ignore: testing
+                elt[prop] = value;
+              }
+            }
+
+            $bodyContainer.html($component.get(0));
           }
           extensionLogger.debug("Successfully installed panel");
         });

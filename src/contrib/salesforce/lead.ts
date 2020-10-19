@@ -1,21 +1,21 @@
 import { Effect } from "@/types";
-import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg } from "@/core";
+import { BlockArg, Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
 import { proxyService } from "@/background/requests";
 
 export class AddLead extends Effect {
   constructor() {
     super(
-      "salesforce/deals-create",
+      "salesforce/leads-create",
       "Create Lead in Salesforce",
       "Create a lead in Salesforce if they do not already exist"
     );
   }
 
-  inputSchema = propertiesToSchema(
+  inputSchema: Schema = {
     // https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_lead.htm
-    {
+    type: "object",
+    properties: {
       salesforce: {
         $ref: "https://app.pixiebrix.com/schemas/services/salesforce/oauth2",
       },
@@ -48,8 +48,9 @@ export class AddLead extends Effect {
         description: "The lead’s description.",
       },
     },
-    ["salesforce", "LastName", "Company"]
-  );
+    additionalProperties: { type: "string" },
+    required: ["salesforce", "LastName", "Company"],
+  };
 
   async effect({ salesforce, ...data }: BlockArg): Promise<void> {
     await proxyService(salesforce, {

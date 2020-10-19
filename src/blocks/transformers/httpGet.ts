@@ -47,7 +47,16 @@ export class GetAPITransformer extends Transformer {
         service
       );
     }
-    return await proxyService(service, { ...requestProps, method: "get" });
+    const { data, status, statusText } = await proxyService(service, {
+      ...requestProps,
+      method: "get",
+    });
+
+    if (status >= 400) {
+      throw new Error(`Request error: ${statusText}`);
+    }
+
+    return data;
   }
 }
 

@@ -9,7 +9,11 @@ import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import { ContextError } from "@/errors";
 import { isBackgroundPage } from "webext-detect-page";
-import { getCachedOAuth2, launchOAuth2Flow } from "@/background/auth";
+import {
+  deleteCachedOAuth2,
+  getCachedOAuth2,
+  launchOAuth2Flow,
+} from "@/background/auth";
 
 export interface RemoteResponse<T extends {} = {}> {
   data: T;
@@ -85,6 +89,7 @@ async function proxyRequest<T>(
     })
   );
   console.debug(`Proxy response for ${service.serviceId}:`, proxyResponse);
+
   if (proxyResponse.data.status_code >= 400) {
     throw new RemoteServiceError(
       proxyResponse.data.message ?? proxyResponse.data.reason,
@@ -107,9 +112,27 @@ const _proxyService = liftBackground(
   ): Promise<RemoteResponse> => {
     try {
       if (serviceConfig.proxy) {
+        console.debug(
+          `proxy request for ${serviceConfig.id} to ${serviceConfig.serviceId}`
+        );
         return await proxyRequest(serviceConfig, requestConfig);
       } else {
-        return await request(await authenticate(serviceConfig, requestConfig));
+        try {
+          return await request(
+            await authenticate(serviceConfig, requestConfig)
+          );
+        } catch (ex) {
+          if (ex.response.status === 401) {
+            console.debug(
+              `deleting cached oauth2 data for ${serviceConfig.id} for ${serviceConfig.serviceId}`
+            );
+            await deleteCachedOAuth2(serviceConfig.id);
+            throw new Error(
+              "Authentication error: login to the service again or double-check your API key"
+            );
+          }
+          throw ex;
+        }
       }
     } catch (ex) {
       throw new ContextError(ex, {
@@ -120,16 +143,18 @@ const _proxyService = liftBackground(
   }
 );
 
-export async function proxyService<T>(
+export async function proxyService<TData>(
   serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig
-): Promise<RemoteResponse<T>> {
+): Promise<RemoteResponse<TData>> {
   if (typeof serviceConfig !== "object") {
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
     return await request(requestConfig);
+  } else {
+    return (await _proxyService(
+      serviceConfig,
+      requestConfig
+    )) as RemoteResponse<TData>;
   }
-  return (await _proxyService(serviceConfig, requestConfig)) as RemoteResponse<
-    T
-  >;
 }
