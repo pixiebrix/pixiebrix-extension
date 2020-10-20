@@ -30,7 +30,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@hot-loader/react-dom": "^16.13.0",
     "@reduxjs/toolkit": "^1.4.0",
-    "@types/chrome": "0.0.124",
+    "@types/chrome": "0.0.125",
     "@types/classnames": "^2.2.10",
     "@types/deep-equal": "^1.0.1",
     "@types/dompurify": "^2.0.4",
