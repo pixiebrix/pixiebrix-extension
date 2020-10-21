@@ -165,7 +165,7 @@
     "webext-detect-page": "^2.0.5",
     "webpack": "^4.44.1",
     "webpack-bundle-tracker": "^0.4.3",
-    "webpack-cli": "^3.3.12",
+    "webpack-cli": "^4.1.0",
     "webpack-dev-server": "^3.11.0",
     "webpack-extension-reloader": "^1.1.4",
     "webpack-merge": "^4.2.2",
