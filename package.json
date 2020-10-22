@@ -109,7 +109,7 @@
     "json-schema-ref-parser": "^9.0.6",
     "jsonpath": "^1.0.2",
     "jsonpath-plus": "^4.0.0",
-    "jsonschema": "^1.2.6",
+    "jsonschema": "^1.4.0",
     "lodash": "^4.17.20",
     "marked": "^1.1.0",
     "match-pattern": "0.0.2",
