@@ -88,7 +88,7 @@
     "dotenv-webpack": "^3.0.0",
     "eslint": "^7.11.0",
     "eslint-plugin-react": "^7.21.3",
-    "file-loader": "^6.1.0",
+    "file-loader": "^6.1.1",
     "formik": "^2.1.6",
     "generate-schema": "^2.6.0",
     "handlebars": "^4.7.6",
