@@ -78,7 +78,7 @@
     "compass-mixins": "^0.12.10",
     "connected-react-router": "^6.8.0",
     "copy-to-clipboard": "^3.3.1",
-    "copy-webpack-plugin": "^6.0.2",
+    "copy-webpack-plugin": "^6.2.1",
     "core-js": "^3.6.5",
     "css-loader": "^3.6.0",
     "deep-equal": "^2.0.4",
