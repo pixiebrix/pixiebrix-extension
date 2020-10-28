@@ -45,7 +45,6 @@
     "@types/json-schema": "^7.0.5",
     "@types/lodash": "^4.14.162",
     "@types/marked": "^1.1.0",
-    "@types/mixpanel-browser": "^2.35.3",
     "@types/mustache": "^4.0.1",
     "@types/notifyjs": "^3.0.2",
     "@types/notifyjs-browser": "0.0.0",
@@ -114,7 +113,6 @@
     "marked": "^1.1.0",
     "match-pattern": "0.0.2",
     "mini-css-extract-plugin": "^0.12.0",
-    "mixpanel-browser": "^2.38.0",
     "moment": "^2.29.1",
     "mustache": "^4.0.1",
     "node-sass": "^4.14.1",
@@ -212,5 +210,8 @@
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
+  },
+  "devDependencies": {
+    "jest-mock-axios": "^4.2.1"
   }
 }

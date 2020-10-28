@@ -84,9 +84,6 @@ module.exports = merge.strategy({ plugins: "prepend" })(common, {
         ROLLBAR_ACCESS_TOKEN: JSON.stringify(
           process.env.ROLLBAR_CHROME_ACCESS_TOKEN
         ),
-        MIXPANEL_BROWSER_TOKEN: JSON.stringify(
-          process.env.MIXPANEL_BROWSER_TOKEN
-        ),
         CHROME_EXTENSION_ID: JSON.stringify(process.env.CHROME_EXTENSION_ID),
         GOOGLE_API_KEY: JSON.stringify(process.env.GOOGLE_API_KEY),
         SERVICE_URL: JSON.stringify(

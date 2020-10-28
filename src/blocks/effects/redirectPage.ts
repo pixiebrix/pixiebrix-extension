@@ -27,6 +27,7 @@ const URL_INPUT_SPEC: Schema = {
     url: {
       type: "string",
       description: "The URL to redirect to",
+      format: "uri",
     },
     params: {
       type: "object",
@@ -60,7 +61,7 @@ export class NavigateURLEffect extends Effect {
 
   inputSchema = URL_INPUT_SPEC;
 
-  async effect({ url, params }: BlockArg) {
+  async effect({ url, params }: BlockArg): Promise<void> {
     document.location.href = makeURL(url, params);
   }
 }
@@ -77,8 +78,13 @@ export class OpenURLEffect extends Effect {
 
   inputSchema = URL_INPUT_SPEC;
 
-  async effect({ url, params }: BlockArg) {
-    const newWindow = window.open(makeURL(url, params), "_blank");
+  async effect({ url, params }: BlockArg): Promise<void> {
+    const newWindow = window.open(
+      makeURL(url, params),
+      "_blank",
+      "noopener,noreferrer"
+    );
+    newWindow.opener = null;
     newWindow.focus();
   }
 }

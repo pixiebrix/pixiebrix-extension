@@ -28,6 +28,31 @@ interface GeocodedAddress {
   city?: string;
 }
 
+type AddressComponentType =
+  | "administrative_area_level_1"
+  | "country"
+  | "locality";
+
+interface AddressComponent {
+  long_name: string;
+  types: AddressComponentType[];
+}
+
+interface GeocodeData {
+  results: {
+    address_components: AddressComponent[];
+  }[];
+  // https://developers.google.com/maps/documentation/geocoding/overview
+  status:
+    | "OK"
+    | "ZERO_RESULTS"
+    | "OVER_DAILY_LIMIT"
+    | "OVER_QUERY_LIMIT"
+    | "REQUEST_DENIED"
+    | "INVALID_REQUEST"
+    | "UNKNOWN_ERROR";
+}
+
 async function geocodeAddress(
   service: SanitizedServiceConfiguration,
   address: string
@@ -36,19 +61,21 @@ async function geocodeAddress(
     return {};
   }
 
-  // @ts-ignore: come back an write the type signature
-  const { results } = await proxyService(service, {
+  const { data } = await proxyService<GeocodeData>(service, {
     url: "https://maps.googleapis.com/maps/api/geocode/json",
     params: { address },
   });
+
+  const { results } = data;
 
   if (results.length === 0) {
     return {};
   }
 
-  const findComponent = (type: any) =>
-    results[0].address_components.find((x: any) => x.types.includes(type))
-      ?.long_name;
+  const findComponent = (type: AddressComponentType) =>
+    results[0].address_components.find((x: AddressComponent) =>
+      x.types.includes(type)
+    )?.long_name;
 
   return {
     state: findComponent("administrative_area_level_1"),

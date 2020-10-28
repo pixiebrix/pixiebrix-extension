@@ -36,6 +36,7 @@ import useServiceDefinitions from "./useServiceDefinitions";
 import { RootState } from "../../store";
 import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
+import { refresh as refreshServices } from "@/background/locator";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -68,6 +69,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const handleSave = useCallback(
     async (config) => {
       updateServiceConfig(config);
+      await refreshServices();
       addToast(`Updated your private configuration for ${activeService.name}`, {
         appearance: "success",
         autoDismiss: true,
@@ -78,8 +80,9 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   );
 
   const handleDelete = useCallback(
-    (id) => {
+    async (id) => {
       deleteServiceConfig({ id });
+      await refreshServices();
       navigate("/services");
       addToast(`Deleted private configuration for ${activeService.name}`, {
         appearance: "success",

@@ -25,7 +25,7 @@ import urljoin from "url-join";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 
-const ConnectExtensionCard: React.FunctionComponent = ({}) => {
+const ConnectExtensionCard: React.FunctionComponent = () => {
   const [hasExtensionKey, setHasExtensionKey] = useState(true);
   const [serviceURL] = useAsyncState(getBaseURL);
 
@@ -47,13 +47,14 @@ const ConnectExtensionCard: React.FunctionComponent = ({}) => {
       <Card.Header>Connect to PixieBrix</Card.Header>
       <Card.Body>
         <p>
-          By linking your browser extension with PixieBrix, you'll get access to
-          team features and public services.
+          By linking your browser extension with PixieBrix, you&apos;ll get
+          access to team features and public services.
         </p>
         {serviceURL && (
           <a
             href={urljoin(serviceURL, "extension")}
             className="btn btn-primary"
+            rel="noreferrer"
             target="_blank"
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} /> Open PixieBrix Website

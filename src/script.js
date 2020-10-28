@@ -168,7 +168,7 @@ attachListener(
         console.debug("Read React component props", props);
         return props;
       } catch (ex) {
-        if (!ex instanceof ComponentNotFoundError) {
+        if (!(ex instanceof ComponentNotFoundError)) {
           throw ex;
         }
       }

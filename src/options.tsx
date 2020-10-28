@@ -23,7 +23,6 @@ import App from "@/options/App";
 import { initRollbar } from "@/telemetry/rollbar";
 
 // import for side effects
-import "@/telemetry/mixpanel";
 import "@/base.scss";
 
 initRollbar();

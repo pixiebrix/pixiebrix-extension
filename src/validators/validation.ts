@@ -47,7 +47,7 @@ type Options = {
   required: boolean;
 };
 
-function blockSchemaFactory(val: unknown): Yup.Schema<object> {
+function blockSchemaFactory(val: unknown): Yup.Schema<Record<string, unknown>> {
   if (typeof val === "object" && val != null && "id" in val) {
     let block: IBlock;
     try {
@@ -58,8 +58,14 @@ function blockSchemaFactory(val: unknown): Yup.Schema<object> {
         return Yup.object().shape({
           id: Yup.string().test("is-block", "Unknown block", () => true),
         });
+      } else {
+        console.exception(ex);
+        return Yup.object().shape({
+          id: Yup.string(),
+          outputKey: Yup.string().matches(IDENTIFIER_REGEX).notRequired(),
+          config: Yup.object(),
+        });
       }
-      throw ex;
     }
     return Yup.object().shape({
       id: Yup.string(),
@@ -76,17 +82,37 @@ function blockSchemaFactory(val: unknown): Yup.Schema<object> {
   }
 }
 
+function isBrickSchema(schema: Schema): boolean {
+  // HACK: right now the extension point schema for blocks has the structure. Need to rationalize how to encode
+  // properties taking a simple or composite block.
+  // oneOf: [
+  //   { $ref: "https://app.pixiebrix.com/schemas/effect#" },
+  //   {
+  //     type: "array",
+  //     items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
+  //   },
+  // ],
+  return (
+    !!BRICK_RUN_METHODS[schema.$ref] ||
+    (schema.oneOf ?? []).some(
+      (x) => typeof x === "object" && BRICK_RUN_METHODS[x.$ref]
+    )
+  );
+}
+
 export function configSchemaFactory(
   schema: Schema,
   options: Options = { required: false }
 ): Yup.Schema<unknown> {
   const wrapRequired = (x: any) => (options.required ? x.required() : x);
 
-  if (BRICK_RUN_METHODS[schema.$ref]) {
+  if (isBrickSchema(schema)) {
     return Yup.lazy((val) => {
       if (isPlainObject(val)) {
+        console.debug("config is a single block");
         return Yup.lazy(blockSchemaFactory);
       } else {
+        console.debug("config is array of blocks");
         return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
       }
     });

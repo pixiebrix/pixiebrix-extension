@@ -15,24 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { CONNECT_EXTENSION } from "./messaging/constants";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { reportError } from "@/telemetry/logging";
+import { refresh as refreshServices } from "@/background/locator";
 import "@/contentScript/script";
 import "notifyjs-browser";
 import "jquery.initialize";
-import "@/telemetry/mixpanel";
 
 // Import for the side effect of registering js defined blocks
 import "@/blocks";
 import "@/contrib";
-
-const _watchedReaders = {};
-
-document.addEventListener(CONNECT_EXTENSION, function () {
-  // eslint-disable-next-line require-await
-  handleNavigate(_watchedReaders);
-});
 
 window.addEventListener("error", function (e) {
   // eslint-disable-next-line require-await
@@ -45,11 +37,7 @@ window.addEventListener("unhandledrejection", function (e) {
   reportError(e);
 });
 
-// https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script/9517879#9517879
-// https://stackoverflow.com/questions/9602022/chrome-extension-retrieving-global-variable-from-webpage
-const script = document.createElement("script");
-script.src = chrome.extension.getURL("script.js");
-(document.head || document.documentElement).appendChild(script);
-script.onload = function () {
-  script.remove();
-};
+// Reload services on background page for each new page. This is inefficient right now, but will
+// avoid confusion when service configurations are updated remotely
+refreshServices();
+handleNavigate();

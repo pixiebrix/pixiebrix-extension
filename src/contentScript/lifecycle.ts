@@ -18,11 +18,7 @@
 import { loadOptions } from "@/options/loader";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { IExtensionPoint, IReader, Message } from "@/core";
-import {
-  DEV_WATCH_READER_NOT_AVAILABLE,
-  DEV_WATCH_READER_READ,
-} from "@/messaging/constants";
+import { IExtensionPoint } from "@/core";
 
 import serviceRegistry from "@/services/registry";
 import {
@@ -31,6 +27,7 @@ import {
 } from "@/contentScript/protocol";
 
 let _loadedBlocks = false;
+let _scriptPromise: Promise<void>;
 let _extensionPoints: IExtensionPoint[] = undefined;
 let _navSequence = 1;
 
@@ -47,6 +44,23 @@ async function loadBlocksOnce(): Promise<void> {
     await loadBlocks();
     _loadedBlocks = true;
   }
+}
+
+async function installScriptOnce(): Promise<void> {
+  // https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script/9517879#9517879
+  // https://stackoverflow.com/questions/9602022/chrome-extension-retrieving-global-variable-from-webpage
+  if (!_scriptPromise) {
+    _scriptPromise = new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = chrome.extension.getURL("script.js");
+      (document.head || document.documentElement).appendChild(script);
+      script.onload = function () {
+        script.remove();
+        resolve();
+      };
+    });
+  }
+  return _scriptPromise;
 }
 
 async function runExtensionPoint(
@@ -104,20 +118,12 @@ function getNavSequence() {
   return _navSequence;
 }
 
-interface ReaderPorts {
-  [key: string]: {
-    postMessage: (message: Message) => void;
-  };
-}
-
 /**
  * Handle a website navigation, e.g., page load or a URL change in an SPA.
- * @param watchedReaders optional mapping from reader id to devtools port.
  * @returns {Promise<void>}
  */
-export async function handleNavigate(
-  watchedReaders: ReaderPorts
-): Promise<void> {
+export async function handleNavigate(): Promise<void> {
+  await installScriptOnce();
   await loadBlocksOnce();
   const extensionPoints = await loadExtensionsOnce();
 
@@ -133,26 +139,12 @@ export async function handleNavigate(
       runExtensionPoint(extensionPoint, cancel);
     }
   }
-
-  for (const [readerId, port] of Object.entries(watchedReaders)) {
-    const reader = blockRegistry.lookup(readerId) as IReader;
-    if (await reader.isAvailable()) {
-      const value = await reader.read();
-      port.postMessage({
-        type: DEV_WATCH_READER_READ,
-        payload: { id: readerId, value },
-      });
-    } else {
-      port.postMessage({ type: DEV_WATCH_READER_NOT_AVAILABLE });
-    }
-  }
 }
 
 export const notifyNavigation = liftContentScript(
   "NAVIGATE",
   async () => {
-    // TODO: pass watched readers once we re-implement that functionality
-    await handleNavigate({});
+    await handleNavigate();
   },
   { asyncResponse: false }
 );
@@ -160,5 +152,5 @@ export const notifyNavigation = liftContentScript(
 export const reactivate = notifyContentScripts("REACTIVATE", async () => {
   await loadBlocks();
   await loadExtensions();
-  await handleNavigate({});
+  await handleNavigate();
 });

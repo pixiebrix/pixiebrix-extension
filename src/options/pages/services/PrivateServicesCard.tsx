@@ -82,7 +82,9 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                 );
               }
               return (
-                <tr key={service.id}>
+                <tr
+                  key={`${configuredService.serviceId}-${configuredService.id}`}
+                >
                   <td>{service.name}</td>
                   <td>
                     <code>{service.id}</code>

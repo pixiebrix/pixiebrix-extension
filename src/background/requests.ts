@@ -15,7 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios, { AxiosRequestConfig, Method } from "axios";
+import axios, {
+  AxiosPromise,
+  AxiosRequestConfig,
+  AxiosResponse,
+  Method,
+} from "axios";
 import { liftBackground } from "@/background/protocol";
 import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
@@ -32,32 +37,38 @@ import {
   launchOAuth2Flow,
 } from "@/background/auth";
 
-export interface RemoteResponse<T extends {} = {}> {
+interface ProxyResponseSuccessData {
+  json: unknown;
+  status_code: number;
+}
+
+interface ProxyResponseErrorData {
+  json: unknown;
+  status_code: number;
+  message?: string;
+  reason?: string;
+}
+
+type ProxyResponseData = ProxyResponseSuccessData | ProxyResponseErrorData;
+
+// Partial view of an AxiosResponse for providing common interface for proxied requests
+export interface RemoteResponse<T = unknown> {
   data: T;
   status: number;
-  statusText: string;
+  statusText?: string;
   $$proxied?: boolean;
 }
 
-/**
- * @deprecated use proxyService instead
- */
-export const post = liftBackground(
-  "HTTP_POST",
-  async (
-    url: string,
-    // Types we want to pass in might not have an index signature, and we want to provide a default
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    data: object,
-    config?: { [key: string]: string | string[] }
-  ) => {
-    return await axios.post(url, data, config);
-  }
-);
+function isErrorResponse(
+  data: ProxyResponseData
+): data is ProxyResponseErrorData {
+  return data.status_code >= 400;
+}
 
-const request = liftBackground("HTTP_REQUEST", (config: AxiosRequestConfig) =>
-  axios(config)
-);
+const backgroundRequest = liftBackground<
+  AxiosRequestConfig,
+  AxiosPromise<unknown>
+>("HTTP_REQUEST", (config: AxiosRequestConfig) => axios(config));
 
 async function authenticate(
   config: SanitizedServiceConfiguration,
@@ -95,7 +106,7 @@ async function proxyRequest<T>(
   service: SanitizedServiceConfiguration,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse<T>> {
-  const proxyResponse = await request(
+  const proxyResponse = (await backgroundRequest(
     await authenticate(await pixieServiceFactory(), {
       url: `${await getBaseURL()}/api/proxy/`,
       method: "post" as Method,
@@ -104,18 +115,20 @@ async function proxyRequest<T>(
         service_id: service.serviceId,
       },
     })
-  );
+  )) as AxiosResponse<ProxyResponseData>;
+  const { data: remoteResponse } = proxyResponse;
   console.debug(`Proxy response for ${service.serviceId}:`, proxyResponse);
 
-  if (proxyResponse.data.status_code >= 400) {
+  if (isErrorResponse(remoteResponse)) {
     throw new RemoteServiceError(
-      proxyResponse.data.message ?? proxyResponse.data.reason,
+      remoteResponse.message ?? remoteResponse.reason,
       proxyResponse
     );
   } else {
     // The json payload from the proxy is the response from the remote server
     return {
-      ...proxyResponse.data.json,
+      data: remoteResponse.json as T,
+      status: remoteResponse.status_code,
       $$proxied: true,
     };
   }
@@ -135,7 +148,7 @@ const _proxyService = liftBackground(
         return await proxyRequest(serviceConfig, requestConfig);
       } else {
         try {
-          return await request(
+          return await backgroundRequest(
             await authenticate(serviceConfig, requestConfig)
           );
         } catch (ex) {
@@ -144,10 +157,14 @@ const _proxyService = liftBackground(
               `deleting cached oauth2 data for ${serviceConfig.id} for ${serviceConfig.serviceId}`
             );
             await deleteCachedOAuth2(serviceConfig.id);
+            // Caught and re-thrown to add context
+            // noinspection ExceptionCaughtLocallyJS
             throw new Error(
               "Authentication error: login to the service again or double-check your API key"
             );
           }
+          // Caught and re-thrown to add context
+          // noinspection ExceptionCaughtLocallyJS
           throw ex;
         }
       }
@@ -167,7 +184,7 @@ export async function proxyService<TData>(
   if (typeof serviceConfig !== "object") {
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
-    return await request(requestConfig);
+    return (await backgroundRequest(requestConfig)) as AxiosResponse<TData>;
   } else {
     return (await _proxyService(
       serviceConfig,

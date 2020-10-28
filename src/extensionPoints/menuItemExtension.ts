@@ -49,8 +49,6 @@ import {
   ReaderOutput,
   Schema,
 } from "@/core";
-import psl, { ParsedDomain } from "psl";
-import { safeTrack } from "@/telemetry/mixpanel";
 import { propertiesToSchema } from "@/validators/generic";
 
 interface MenuItemExtensionConfig {
@@ -163,16 +161,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
 
     $menuItem.attr("data-pixiebrix-uuid", extension.id);
 
-    const blocks = castArray(actionConfig);
-    const lastBlockId = blocks[blocks.length - 1].id;
-
     $menuItem.on("click", async (e) => {
       e.preventDefault();
 
-      safeTrack("MenuItemExtensionPoint:click", {
-        actionId: lastBlockId,
-        domain: (psl.parse(window.location.hostname) as ParsedDomain).domain,
-      });
       try {
         await reducePipeline(actionConfig, ctxt, extensionLogger, {
           validate: true,

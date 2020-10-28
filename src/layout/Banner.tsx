@@ -66,7 +66,7 @@ const Banner: React.FunctionComponent = () => {
     >
       You are using {extension ? "extension" : "server"}{" "}
       {environment ?? "unknown"} build {version} (
-      {source_version.substring(0, 8)}) {extension && syncText}
+      {source_version.substring(0, 8).trim()}) {extension && syncText}
     </div>
   );
 };

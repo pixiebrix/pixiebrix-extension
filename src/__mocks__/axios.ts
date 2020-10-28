@@ -15,33 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import mixpanel from "mixpanel-browser";
-
-if (process.env.MIXPANEL_BROWSER_TOKEN) {
-  mixpanel.init(process.env.MIXPANEL_BROWSER_TOKEN);
-
-  const container = document.getElementById("container");
-  const { user } = container?.dataset ?? {};
-  if (user) {
-    mixpanel.identify(user);
-  }
-
-  mixpanel.track("Page View", { location: document.location.href });
-} else {
-  console.debug("Mixpanel not configured");
-}
-
-export function safeTrack(
-  event_name: string,
-  props: Record<string, unknown>
-): void {
-  if (process.env.MIXPANEL_BROWSER_TOKEN) {
-    try {
-      mixpanel.track(event_name, props);
-    } catch (exc) {
-      // pass
-    }
-  } else {
-    // pass
-  }
-}
+// ./__mocks__/axios.js
+import mockAxios from "jest-mock-axios";
+export default mockAxios;

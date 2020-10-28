@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { post } from "@/background/requests";
+import { proxyService } from "@/background/requests";
 import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
@@ -70,12 +70,16 @@ export class SendSimpleSlackMessage extends Effect {
     botName,
     unfurlLinks,
   }: BlockArg): Promise<void> {
-    await post(hookUrl, {
-      text,
-      icon_emoji: iconEmoji,
-      channel,
-      username: botName,
-      unfurl_links: unfurlLinks,
+    await proxyService(null, {
+      url: hookUrl,
+      method: "post",
+      data: {
+        text,
+        icon_emoji: iconEmoji,
+        channel,
+        username: botName,
+        unfurl_links: unfurlLinks,
+      },
     });
   }
 }
@@ -184,13 +188,18 @@ export class SendAdvancedSlackMessage extends Effect {
     if (!hookUrl) {
       throw new Error("hookUrl not configured");
     }
-    await post(hookUrl, {
-      text,
-      icon_emoji: iconEmoji,
-      channel,
-      username: botName,
-      unfurl_links: unfurlLinks,
-      attachments,
+
+    await proxyService(null, {
+      url: hookUrl,
+      method: "post",
+      data: {
+        text,
+        icon_emoji: iconEmoji,
+        channel,
+        username: botName,
+        unfurl_links: unfurlLinks,
+        attachments,
+      },
     });
   }
 }
