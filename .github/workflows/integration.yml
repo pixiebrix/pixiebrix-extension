@@ -30,7 +30,7 @@ jobs:
         with:
           node-version: '14.x'
       - run: npm install
-      - run: npm run staging:chrome
+      - run: npm run stage:chrome
         env:
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
@@ -48,19 +48,20 @@ jobs:
           path: pixiebrix-chrome.zip
           retention-days: 5
 
-  headers-chrome:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '14.x'
-      - run: npm install
-      - run: npm run build:scripts
-      - run: node scripts/bin/headers.js --stack-size=1024
-      - uses: actions/upload-artifact@v2
-        with:
-          name: brick-headers
-          path: headers.json
-          retention-days: 5
+#  Currently broken because of @webcomponents/custom-elements import
+#  headers-chrome:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/setup-node@v1
+#        with:
+#          node-version: '14.x'
+#      - run: npm install
+#      - run: npm run build:scripts
+#      - run: node scripts/bin/headers.js --stack-size=1024
+#      - uses: actions/upload-artifact@v2
+#        with:
+#          name: brick-headers
+#          path: headers.json
+#          retention-days: 5
