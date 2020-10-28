@@ -1,0 +1,34 @@
+name: Release Build
+
+on:
+  push:
+    branches:
+      - 'releases/**'
+
+jobs:
+  build-chrome:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - run: npm install
+      - run: npm run build:chrome
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          SERVICE_URL: https://app.pixiebrix.com
+          EXTERNALLY_CONNECTABLE: https://app.pixiebrix.com
+          ROLLBAR_CHROME_ACCESS_TOKEN: ${{ secrets.ROLLBAR_CHROME_ACCESS_TOKEN }}
+          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
+      - uses: montudor/action-zip@v0.1.0
+        with:
+          args: (cd browsers/chrome/bundles/ && zip -r - *) > pixiebrix-chrome.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chrome-production
+          path: pixiebrix-chrome.zip
+          retention-days: 5

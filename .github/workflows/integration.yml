@@ -1,0 +1,66 @@
+name: Continuous Integration
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm test
+        env:
+          CI: true
+
+  stage-chrome:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - run: npm install
+      - run: npm run staging:chrome
+        env:
+          GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
+          EXTERNALLY_CONNECTABLE: "https://pixiebrix-staging.herokuapp.com/*,http://127.0.0.1/*"
+          SERVICE_URL: https://pixiebrix-staging.herokuapp.com
+          ROLLBAR_CHROME_ACCESS_TOKEN: ${{ secrets.ROLLBAR_CHROME_ACCESS_TOKEN }}
+          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
+      - uses: montudor/action-zip@v0.1.0
+        with:
+          args: (cd browsers/chrome/bundles/ && zip -r - *) > pixiebrix-chrome.zip
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chrome-staging
+          path: pixiebrix-chrome.zip
+          retention-days: 5
+
+  headers-chrome:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - run: npm install
+      - run: npm run build:scripts
+      - run: node scripts/bin/headers.js --stack-size=1024
+      - uses: actions/upload-artifact@v2
+        with:
+          name: brick-headers
+          path: headers.json
+          retention-days: 5
