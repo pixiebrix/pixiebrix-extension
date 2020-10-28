@@ -39,13 +39,14 @@ jobs:
           ROLLBAR_CHROME_ACCESS_TOKEN: ${{ secrets.ROLLBAR_CHROME_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
-      - uses: montudor/action-zip@v0.1.0
-        with:
-          args: (cd browsers/chrome/bundles/ && zip -r - *) > pixiebrix-chrome.zip
+# cd not available, also https://github.com/actions/upload-artifact#zipped-artifact-downloads
+#      - uses: montudor/action-zip@v0.1.0
+#        with:
+#          args: (cd browsers/chrome/bundles/ && zip -r - *) > pixiebrix-chrome.zip
       - uses: actions/upload-artifact@v2
         with:
           name: chrome-staging
-          path: pixiebrix-chrome.zip
+          path: browsers/chrome/bundles
           retention-days: 5
 
 #  Currently broken because of @webcomponents/custom-elements import
