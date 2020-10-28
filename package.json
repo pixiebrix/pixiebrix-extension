@@ -1,6 +1,6 @@
 {
   "name": "@pixiebrix/extension",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "PixieBrix Browser Extension",
   "main": "index.js",
   "scripts": {
