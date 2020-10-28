@@ -1,6 +1,6 @@
-# PixieBrix Browser Extension
+<img src="https://raw.githubusercontent.com/pixiebrix/pixiebrix-extension/main/img/logo.svg" height="50" alt="PixieBrix logo">
 
-PixieBrix is a platform for safely extending your favorite websites and SaaS applications
+PixieBrix is a browser extension and platform for safely extending your favorite websites and SaaS applications
 with low/no-code.
 
 This repository is for our open-source browser extension. Currently, it only supports
@@ -19,6 +19,8 @@ a great time to use PixieBrix:
 * Show Google Scholar results on a person's LinkedIn profile
 * Embed a [YouTube video](https://www.youtube.com/watch?v=dQw4w9WgXcQ) in your
 employee training site
+
+<img src="https://raw.githubusercontent.com/pixiebrix/pixiebrix-extension/main/img/demo.gif" alt="PixieBrix demo GIF">
 
 ## Key Concepts
 
