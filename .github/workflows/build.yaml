@@ -3,7 +3,7 @@ name: Release Build
 on:
   push:
     branches:
-      - 'releases/**'
+      - 'release/**'
 
 jobs:
   build-chrome:
