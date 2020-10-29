@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npx jest",
+    "test:watch": "npx jest --watchAll",
     "lint": "npx eslint src/**",
     "watch:chrome": "NODE_ENV='development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
     "stage:chrome": "NODE_ENV='staging' SERVICE_URL='https://pixiebrix-staging.herokuapp.com' npx webpack --config browsers/chrome/webpack/webpack.prod.js",
@@ -68,6 +69,7 @@
     "@xops.net/json-schema-to-react-tree": "^1.0.2",
     "ace-builds": "^1.4.12",
     "axios": "^0.20.0",
+    "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^26.5.2",
     "babel-loader": "^8.1.0",
     "bootstrap": "^4.5.0",
@@ -98,6 +100,7 @@
     "is-promise": "^4.0.0",
     "jest": "^26.5.2",
     "jest-raw-loader": "^1.0.1",
+    "jest-webextension-mock": "^3.7.0",
     "jest-yaml-transform": "^0.2.0",
     "jq-web": "^0.5.1",
     "jquery": "^3.5.1",
@@ -200,7 +203,8 @@
       "<rootDir>/browsers/chrome/bundles/"
     ],
     "setupFiles": [
-      "<rootDir>/src/test-env.js"
+      "<rootDir>/src/test-env.js",
+      "jest-webextension-mock"
     ],
     "moduleNameMapper": {
       "^@/icons/svgIcons$": "<rootDir>/src/__mocks__/iconsMock",
@@ -210,8 +214,5 @@
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
-  },
-  "devDependencies": {
-    "jest-mock-axios": "^4.2.1"
   }
 }

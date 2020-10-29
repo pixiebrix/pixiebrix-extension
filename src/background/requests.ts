@@ -59,6 +59,21 @@ export interface RemoteResponse<T = unknown> {
   $$proxied?: boolean;
 }
 
+function proxyResponseToAxiosResponse(data: ProxyResponseData) {
+  if (isErrorResponse(data)) {
+    return {
+      data: data.json,
+      status: data.status_code,
+      statusText: data.reason ?? data.message,
+    } as AxiosResponse;
+  } else {
+    return {
+      data: data.json,
+      status: data.status_code,
+    } as AxiosResponse;
+  }
+}
+
 function isErrorResponse(
   data: ProxyResponseData
 ): data is ProxyResponseErrorData {
@@ -68,7 +83,10 @@ function isErrorResponse(
 const backgroundRequest = liftBackground<
   AxiosRequestConfig,
   AxiosPromise<unknown>
->("HTTP_REQUEST", (config: AxiosRequestConfig) => axios(config));
+>("HTTP_REQUEST", (config: AxiosRequestConfig) => {
+  // console.debug("axios", config);
+  return axios(config);
+});
 
 async function authenticate(
   config: SanitizedServiceConfiguration,
@@ -106,23 +124,32 @@ async function proxyRequest<T>(
   service: SanitizedServiceConfiguration,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse<T>> {
-  const proxyResponse = (await backgroundRequest(
-    await authenticate(await pixieServiceFactory(), {
-      url: `${await getBaseURL()}/api/proxy/`,
-      method: "post" as Method,
-      data: {
-        ...requestConfig,
-        service_id: service.serviceId,
-      },
-    })
-  )) as AxiosResponse<ProxyResponseData>;
+  let proxyResponse;
+
+  try {
+    proxyResponse = (await backgroundRequest(
+      await authenticate(await pixieServiceFactory(), {
+        url: `${await getBaseURL()}/api/proxy/`,
+        method: "post" as Method,
+        data: {
+          ...requestConfig,
+          service_id: service.serviceId,
+        },
+      })
+    )) as AxiosResponse<ProxyResponseData>;
+  } catch (err) {
+    throw Error("An error occurred when proxying the service request");
+  }
+
   const { data: remoteResponse } = proxyResponse;
   console.debug(`Proxy response for ${service.serviceId}:`, proxyResponse);
 
   if (isErrorResponse(remoteResponse)) {
     throw new RemoteServiceError(
       remoteResponse.message ?? remoteResponse.reason,
-      proxyResponse
+      // FIXME: should fix the type of RemoteServiceError to support incomplete responses, e.g., because
+      //  the proxy doesn't return header information from the remote service
+      proxyResponseToAxiosResponse(remoteResponse) as AxiosResponse
     );
   } else {
     // The json payload from the proxy is the response from the remote server
@@ -137,42 +164,34 @@ async function proxyRequest<T>(
 const _proxyService = liftBackground(
   "PROXY",
   async (
-    serviceConfig: SanitizedServiceConfiguration | null,
+    serviceConfig: SanitizedServiceConfiguration,
     requestConfig: AxiosRequestConfig
   ): Promise<RemoteResponse> => {
-    try {
-      if (serviceConfig.proxy) {
-        console.debug(
-          `proxy request for ${serviceConfig.id} to ${serviceConfig.serviceId}`
+    if (serviceConfig.proxy) {
+      console.debug(
+        `proxy request for ${serviceConfig.id} to ${serviceConfig.serviceId}`
+      );
+      return await proxyRequest(serviceConfig, requestConfig);
+    } else {
+      try {
+        return await backgroundRequest(
+          await authenticate(serviceConfig, requestConfig)
         );
-        return await proxyRequest(serviceConfig, requestConfig);
-      } else {
-        try {
-          return await backgroundRequest(
-            await authenticate(serviceConfig, requestConfig)
-          );
-        } catch (ex) {
-          if (ex.response.status === 401) {
-            console.debug(
-              `deleting cached oauth2 data for ${serviceConfig.id} for ${serviceConfig.serviceId}`
-            );
+      } catch (ex) {
+        if ([401, 403].includes(ex.response?.status)) {
+          // have the user login again
+          const service = serviceRegistry.lookup(serviceConfig.serviceId);
+          if (service.isOAuth2) {
             await deleteCachedOAuth2(serviceConfig.id);
-            // Caught and re-thrown to add context
-            // noinspection ExceptionCaughtLocallyJS
-            throw new Error(
-              "Authentication error: login to the service again or double-check your API key"
+            return await backgroundRequest(
+              await authenticate(serviceConfig, requestConfig)
             );
           }
-          // Caught and re-thrown to add context
-          // noinspection ExceptionCaughtLocallyJS
-          throw ex;
         }
+        // caught outside to add additional context to the exception
+        // noinspection ExceptionCaughtLocallyJS
+        throw ex;
       }
-    } catch (ex) {
-      throw new ContextError(ex, {
-        serviceId: serviceConfig.id,
-        authId: serviceConfig.id,
-      });
     }
   }
 );
@@ -184,11 +203,22 @@ export async function proxyService<TData>(
   if (typeof serviceConfig !== "object") {
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
-    return (await backgroundRequest(requestConfig)) as AxiosResponse<TData>;
-  } else {
+    try {
+      return (await backgroundRequest(requestConfig)) as AxiosResponse<TData>;
+    } catch (reason) {
+      throw new RemoteServiceError(reason.response.statusText, reason.response);
+    }
+  }
+
+  try {
     return (await _proxyService(
       serviceConfig,
       requestConfig
     )) as RemoteResponse<TData>;
+  } catch (ex) {
+    throw new ContextError(ex, {
+      serviceId: serviceConfig.id,
+      authId: serviceConfig.id,
+    });
   }
 }

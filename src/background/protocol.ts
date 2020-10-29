@@ -33,6 +33,7 @@ import {
   HandlerOptions,
   toErrorResponse,
   isErrorResponse,
+  RemoteProcedureCallRequest,
 } from "@/messaging/protocol";
 
 type MessageSender = chrome.runtime.MessageSender;
@@ -64,49 +65,52 @@ function allowSender(sender: MessageSender): boolean {
   );
 }
 
-function initListener(messageEvent: chrome.runtime.ExtensionMessageEvent) {
-  messageEvent.addListener(function (request, sender, sendResponse) {
-    if (!allowSender(sender)) {
-      console.debug(`Ignoring message to background page`, sender);
-      return false;
-    }
-
-    const { handler, options: { asyncResponse } = { asyncResponse: true } } =
-      handlers[request.type] ?? {};
-
-    if (handler) {
-      console.debug(`Handling background action ${request.type}`);
-      const handlerPromise = new Promise((resolve) =>
-        resolve(handler(...request.payload))
-      );
-      handlerPromise
-        .then((x) => {
-          if (asyncResponse) {
-            console.debug(
-              `Handler returning success response for ${request.type}`
-            );
-            sendResponse(x);
-          }
-        })
-        .catch((reason) => {
-          if (asyncResponse) {
-            console.debug(
-              `Handler returning error response for ${request.type}`
-            );
-            sendResponse(toErrorResponse(request.type, reason));
-          } else {
-            console.warn(
-              `An error occurred while handling a notification ${request.type}`,
-              reason
-            );
-          }
-        });
-      return asyncResponse;
-    } else if (request.type.startsWith(MESSAGE_PREFIX)) {
-      console.warn(`No handler installed for message ${request.type}`);
-    }
+function handleRequest(
+  request: RemoteProcedureCallRequest,
+  sender: MessageSender,
+  sendResponse: (response: unknown) => void
+): boolean {
+  if (!allowSender(sender)) {
+    console.debug(
+      `Ignoring message to background page from unknown sender`,
+      sender
+    );
     return false;
-  });
+  }
+
+  const { handler, options: { asyncResponse } = { asyncResponse: true } } =
+    handlers[request.type] ?? {};
+
+  if (handler) {
+    console.debug(`Handling background action ${request.type}`);
+    const handlerPromise = new Promise((resolve) =>
+      resolve(handler(...request.payload))
+    );
+    handlerPromise
+      .then((x) => {
+        if (asyncResponse) {
+          console.debug(
+            `Handler returning success response for ${request.type}`
+          );
+          sendResponse(x);
+        }
+      })
+      .catch((reason) => {
+        if (asyncResponse) {
+          console.debug(`Handler returning error response for ${request.type}`);
+          sendResponse(toErrorResponse(request.type, reason));
+        } else {
+          console.warn(
+            `An error occurred while handling a notification ${request.type}`,
+            reason
+          );
+        }
+      });
+    return asyncResponse;
+  } else if (request.type.startsWith(MESSAGE_PREFIX)) {
+    console.warn(`No handler installed for message ${request.type}`);
+  }
+  return false;
 }
 
 function getExternalSendMessage() {
@@ -119,6 +123,42 @@ function getExternalSendMessage() {
     throw new Error("Could not find chrome extension id");
   }
   return partial(chrome.runtime.sendMessage, extensionId);
+}
+
+export function getSendMessage(): (
+  request: RemoteProcedureCallRequest,
+  callback: (response: unknown) => void
+) => void {
+  // type signatures for sendMessage are wrong w.r.t. the message options param
+  return (isContentScript() || isOptionsPage()
+    ? chrome.runtime.sendMessage
+    : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      getExternalSendMessage()) as any;
+}
+
+export function send(
+  type: string,
+  args: unknown[],
+  options: HandlerOptions
+): Promise<unknown> {
+  const sendMessage = getSendMessage();
+
+  return new Promise((resolve, reject) => {
+    sendMessage({ type, payload: args }, function (response: unknown) {
+      if (chrome.runtime.lastError != null) {
+        reject(new BackgroundActionError(chrome.runtime.lastError.message));
+      } else if (isErrorResponse(response)) {
+        reject(deserializeError(response.$$error));
+      } else {
+        resolve(response as unknown);
+      }
+    });
+    if (chrome.runtime.lastError != null) {
+      reject(new BackgroundActionError(chrome.runtime.lastError.message));
+    } else if (!(options?.asyncResponse ?? true)) {
+      resolve();
+    }
+  });
 }
 
 /**
@@ -162,44 +202,20 @@ export function liftBackground<R extends SerializableResponse>(
   if (isBackgroundPage()) {
     console.debug(`Installed background page handler for ${type}`);
     handlers[fullType] = { handler: method, options };
+  } else {
+    console.debug(`Not the background page (context: ${type})`);
   }
 
-  return (...args: unknown[]) => {
+  return async (...args: unknown[]) => {
     if (isBackgroundPage()) {
       return Promise.resolve(method(...args));
     }
-
     console.debug(`Sending background action ${fullType}`);
-
-    const sendMessage: any =
-      isContentScript() || isOptionsPage()
-        ? chrome.runtime.sendMessage
-        : getExternalSendMessage();
-
-    return new Promise((resolve, reject) => {
-      sendMessage({ type: fullType, payload: args }, function (
-        response: unknown
-      ) {
-        if (chrome.runtime.lastError != null) {
-          reject(new BackgroundActionError(chrome.runtime.lastError.message));
-        } else if (isErrorResponse(response)) {
-          reject(deserializeError(response.$$error));
-        } else {
-          // Must have the expected type given liftBackground's type signature
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          resolve(response as any);
-        }
-      });
-      if (chrome.runtime.lastError != null) {
-        reject(new BackgroundActionError(chrome.runtime.lastError.message));
-      } else if (!(options?.asyncResponse ?? true)) {
-        resolve();
-      }
-    });
+    return (await send(fullType, args, options)) as any;
   };
 }
 
 if (isBackgroundPage()) {
-  initListener(chrome.runtime.onMessage);
-  initListener(chrome.runtime.onMessageExternal);
+  chrome.runtime.onMessage.addListener(handleRequest);
+  chrome.runtime.onMessageExternal.addListener(handleRequest);
 }

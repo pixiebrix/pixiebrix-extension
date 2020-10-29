@@ -20,3 +20,5 @@ import "core-js/stable";
 import $ from "jquery";
 
 global.$ = global.jQuery = $;
+
+process.env.SERVICE_URL = "https://app.pixiebrix.com";

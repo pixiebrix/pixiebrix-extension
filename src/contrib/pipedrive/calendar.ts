@@ -120,6 +120,9 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
       const $label = $hourLabels.filter(function () {
         return $(this).text().trim() === time;
       });
+      if ($label.length === 0) {
+        throw new Error(`Cannot find time ${time} in the calendar`);
+      }
       return Number.parseInt($label.css("top"), 10);
     };
 
