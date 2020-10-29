@@ -103,11 +103,6 @@ class LocalDefinedService extends Service {
     requestConfig: AxiosRequestConfig,
     oauthData: OAuthData
   ): AxiosRequestConfig {
-    // console.debug('authenticateRequestOAuth2', {
-    //   definition: this._definition.authentication,
-    //   context: {...serviceConfig, ...oauthData},
-    // });
-
     const { baseURL, headers = {} } = mapArgs(
       this._definition.authentication as OAuth2AuthenticationDefinition,
       { ...serviceConfig, ...oauthData }

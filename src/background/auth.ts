@@ -110,8 +110,6 @@ export async function launchOAuth2Flow(
     throw new Error("Authentication cancelled");
   }
 
-  console.debug("auth responseUrl", responseUrl);
-
   const authResponse = new URL(responseUrl);
 
   const error = authResponse.searchParams.get("error");
@@ -138,8 +136,6 @@ export async function launchOAuth2Flow(
   if (status >= 400) {
     throw new Error(statusText);
   }
-
-  console.debug("token response data", data);
 
   await setCachedOAuth2(auth.id, data);
 

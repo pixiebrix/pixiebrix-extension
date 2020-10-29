@@ -36,9 +36,9 @@ export function readAuthFromWebsite(): AuthData {
   return { token, email, user, hostname: location.hostname };
 }
 
-export async function getExtensionToken(): Promise<string> {
+export async function getExtensionToken(): Promise<string | null> {
   const valueJSON = await readStorage(STORAGE_EXTENSION_KEY);
-  return JSON.parse(valueJSON as string).token;
+  return valueJSON ? JSON.parse(valueJSON as string).token : undefined;
 }
 
 export async function getExtensionAuth(): Promise<UserData> {

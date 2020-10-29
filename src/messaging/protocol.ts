@@ -21,6 +21,11 @@ import { serializeError } from "serialize-error";
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type SerializableResponse = object;
 
+export interface RemoteProcedureCallRequest {
+  type: string;
+  payload: unknown[];
+}
+
 export type HandlerOptions = {
   asyncResponse?: boolean;
 };
