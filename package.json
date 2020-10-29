@@ -70,7 +70,7 @@
     "ace-builds": "^1.4.12",
     "axios": "^0.21.0",
     "axios-mock-adapter": "^1.19.0",
-    "babel-jest": "^26.5.2",
+    "babel-jest": "^26.6.1",
     "babel-loader": "^8.1.0",
     "bootstrap": "^4.5.0",
     "bootstrap-icons": "^1.0.0",
