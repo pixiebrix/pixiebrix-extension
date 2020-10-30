@@ -42,7 +42,7 @@
     "@types/jquery": "^3.5.1",
     "@types/js-cookie": "^2.2.6",
     "@types/js-yaml": "^3.12.5",
-    "@types/jsdom": "^16.2.4",
+    "@types/jsdom": "^16.2.5",
     "@types/json-schema": "^7.0.5",
     "@types/lodash": "^4.14.162",
     "@types/marked": "^1.1.0",
