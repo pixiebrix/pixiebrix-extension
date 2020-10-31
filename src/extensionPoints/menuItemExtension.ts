@@ -170,7 +170,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
           serviceArgs: serviceContext,
         });
 
-        extensionLogger.debug("Successfully ran menu action");
+        extensionLogger.info("Successfully ran menu action");
 
         $.notify(`Successfully ran menu action`, { className: "success" });
       } catch (ex) {

@@ -121,7 +121,7 @@ const Layout = () => {
                     component={BrickEditPage}
                   />
                   <Route
-                    path="/workshop/extensions/:extensionId"
+                    path="/workshop/extensions/:extensionId/:tab?"
                     component={ExtensionEditor}
                   />
                   <Route component={InstalledExtensions} />

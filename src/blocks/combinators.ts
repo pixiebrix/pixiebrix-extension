@@ -146,6 +146,14 @@ async function runStage(
     ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
     : stageConfig;
 
+  logger.debug(`Input for block ${stage.id}`, {
+    id: stage.id,
+    template: stageConfig,
+    templateContext: argContext,
+    renderedArgs: blockArgs,
+    blockContext: args,
+  });
+
   if (validate) {
     const validationResult = validateInput(
       castSchema(block.inputSchema),
@@ -179,27 +187,30 @@ export async function reducePipeline(
   let currentArgs: RenderedArgs = renderedArgs;
 
   for (const [index, stage] of castArray(config).entries()) {
-    const blockLogger = logger.childLogger({ blockId: stage.id });
+    const stageContext = { blockId: stage.id };
+    const stageLogger = logger.childLogger(stageContext);
 
     try {
       const output = await runStage(stage, currentArgs, {
         context: extraContext,
         validate: options.validate,
-        logger: blockLogger,
+        logger: stageLogger,
       });
+
+      logger.debug(`Output for block #${index + 1}: ${stage.id}`, {
+        output,
+        outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
+      });
+
       if (stage.outputKey) {
         extraContext[`@${stage.outputKey}`] = output;
-        logger.debug(`Storing ${stage.id} -> @${stage.outputKey}`, {
-          value: output,
-        });
       } else {
-        // FIXME: need to rationalize how list outputs are passed along
         currentArgs = output as any;
       }
     } catch (ex) {
       throw new ContextError(
         ex,
-        { blockId: stage.id },
+        stageContext,
         `An error occurred running pipeline stage #${index + 1}: ${stage.id}`
       );
     }

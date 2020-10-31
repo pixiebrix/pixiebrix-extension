@@ -18,15 +18,14 @@
 import { v4 as uuidv4 } from "uuid";
 import { liftBackground } from "@/background/protocol";
 import Rollbar from "rollbar";
-import { readStorage, setStorage } from "@/chrome";
 import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { JsonObject } from "type-fest";
 import { serializeError } from "serialize-error";
-import debounce from "lodash/debounce";
-import compact from "lodash/compact";
-import negate from "lodash/negate";
+import { DBSchema, openDB } from "idb/with-async-ittr";
+import { reverse, sortBy } from "lodash";
 
 const STORAGE_KEY = "LOG";
+const ENTRY_OBJECT_STORE = "entries";
 
 export type MessageLevel = "trace" | "debug" | "info" | "warn" | "error";
 
@@ -38,8 +37,6 @@ export const LOG_LEVELS: { [key in MessageLevel]: number } = {
   error: 4,
 };
 
-const LOG_APPEND_DEBOUNCE_MILLIS = 150;
-
 export interface LogEntry {
   uuid: string;
   timestamp: string;
@@ -50,24 +47,57 @@ export interface LogEntry {
   error?: SerializedError;
 }
 
-const _logQueue: LogEntry[] = [];
-
-async function _append() {
-  const current = JSON.parse(
-    (await readStorage(STORAGE_KEY)) ?? "[]"
-  ) as LogEntry[];
-  await setStorage(
-    STORAGE_KEY,
-    JSON.stringify(compact([..._logQueue, ...current]))
-  );
-  _logQueue.length = 0;
+interface LogDB extends DBSchema {
+  [ENTRY_OBJECT_STORE]: {
+    value: LogEntry;
+    key: string;
+    indexes: {
+      extensionPointId: string;
+      extensionId: string;
+      blockId: string;
+      serviceId: string;
+      authId: string;
+      context: [string, string, string, string, string];
+    };
+  };
 }
 
-const debouncedAppend = debounce(_append, LOG_APPEND_DEBOUNCE_MILLIS);
+const indexKeys = [
+  "extensionPointId",
+  "extensionId",
+  "blockId",
+  "serviceId",
+  "authId",
+];
+
+async function getDB() {
+  return await openDB<LogDB>(STORAGE_KEY, 1, {
+    upgrade(db) {
+      // Create a store of objects
+      const store = db.createObjectStore(ENTRY_OBJECT_STORE, {
+        keyPath: "uuid",
+      });
+      store.createIndex("extensionPointId", "context.extensionPointId", {
+        unique: false,
+      });
+      store.createIndex("extensionId", "context.extensionId", {
+        unique: false,
+      });
+      store.createIndex("blockId", "context.blockId", { unique: false });
+      store.createIndex("serviceId", "context.serviceId", { unique: false });
+      store.createIndex("authId", "context.authId", { unique: false });
+      store.createIndex(
+        "context",
+        indexKeys.map((x) => `context.${x}`),
+        { unique: false }
+      );
+    },
+  });
+}
 
 export async function appendEntry(entry: LogEntry): Promise<void> {
-  _logQueue.push(entry);
-  debouncedAppend();
+  const db = await getDB();
+  await db.add("entries", entry);
 }
 
 function makeMatchEntry(context: MessageContext): (entry: LogEntry) => boolean {
@@ -79,23 +109,32 @@ function makeMatchEntry(context: MessageContext): (entry: LogEntry) => boolean {
 }
 
 export async function clearLog(context: MessageContext = {}): Promise<void> {
-  const allErrors = JSON.parse(
-    (await readStorage<string>(STORAGE_KEY)) ?? "[]"
-  ) as LogEntry[];
+  const db = await getDB();
 
-  await setStorage(
-    STORAGE_KEY,
-    JSON.stringify(allErrors.filter(negate(makeMatchEntry(context))))
-  );
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  const match = makeMatchEntry(context);
+
+  for await (const cursor of tx.store) {
+    if (match(cursor.value)) {
+      await cursor.delete();
+    }
+  }
 }
 
 export async function getLog(
   context: MessageContext = {}
 ): Promise<LogEntry[]> {
-  const allErrors = JSON.parse(
-    (await readStorage<string>(STORAGE_KEY)) ?? "[]"
-  ) as LogEntry[];
-  return allErrors.filter(makeMatchEntry(context));
+  const db = await getDB();
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
+  const match = makeMatchEntry(context);
+
+  const entries = [];
+  for await (const cursor of tx.store) {
+    if (match(cursor.value)) {
+      entries.push(cursor.value);
+    }
+  }
+  return sortBy(reverse(entries), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
 function errorMessage(err: SerializedError): string {
@@ -173,6 +212,11 @@ export class BackgroundLogger implements ILogger {
 
   childLogger(context: MessageContext): ILogger {
     return new BackgroundLogger({ ...this.context, ...context });
+  }
+
+  async trace(message: string, data: JsonObject): Promise<void> {
+    console.trace(message, { data, context: this.context });
+    await recordLog(this.context, "trace", message, data);
   }
 
   async debug(message: string, data: JsonObject): Promise<void> {

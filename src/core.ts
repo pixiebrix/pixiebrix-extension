@@ -45,7 +45,11 @@ export interface MessageContext {
 export type SerializedError = Primitive | ErrorObject;
 
 export interface Logger {
-  childLogger: (context: MessageContext) => Logger;
+  /**
+   * Return a child logger with additional message context
+   */
+  childLogger: (additionalContext: MessageContext) => Logger;
+  trace: (msg: string, data?: Record<string, unknown>) => void;
   warn: (msg: string, data?: Record<string, unknown>) => void;
   debug: (msg: string, data?: Record<string, unknown>) => void;
   log: (msg: string, data?: Record<string, unknown>) => void;

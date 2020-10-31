@@ -38,7 +38,7 @@ export class LogEffect extends Effect {
     },
   });
 
-  async effect({ message }: BlockArg, { ctxt }: BlockOptions) {
+  async effect({ message }: BlockArg, { ctxt }: BlockOptions): Promise<void> {
     console.log(message, ctxt);
   }
 }

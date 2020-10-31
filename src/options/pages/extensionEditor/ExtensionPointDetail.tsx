@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import blockRegistry from "@/blocks/registry";
 import { PageTitle } from "@/layout/Page";
 import cx from "classnames";
@@ -40,6 +40,9 @@ import isEmpty from "lodash/isEmpty";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "react-bootstrap/Button";
 import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
+import { useParams } from "react-router";
+import { useDispatch } from "react-redux";
+import { push as navigate } from "connected-react-router";
 
 type TopConfig = { [prop: string]: unknown };
 
@@ -130,7 +133,8 @@ const ExtensionForm: React.FunctionComponent<{
 }) => {
   const blocks = useMemo(() => blockRegistry.all(), []);
 
-  const [activeTab, setTab] = useState("details");
+  const { tab: activeTab = "details" } = useParams<{ tab?: string }>();
+  const dispatch = useDispatch();
 
   useAsyncEffect(async () => {
     await validateForm();
@@ -163,8 +167,12 @@ const ExtensionForm: React.FunctionComponent<{
             <Card.Header>
               <Nav
                 variant="tabs"
-                defaultActiveKey="details"
-                onSelect={(x: string) => setTab(x)}
+                defaultActiveKey={activeTab}
+                onSelect={(tab: string) => {
+                  dispatch(
+                    navigate(`/workshop/extensions/${extensionId}/${tab}`)
+                  );
+                }}
               >
                 <NavItem
                   caption="Details"
@@ -182,7 +190,7 @@ const ExtensionForm: React.FunctionComponent<{
                   eventKey="configuration"
                   fieldName="config"
                 />
-                <NavItem caption="Log Stream" eventKey="runLog" />
+                <NavItem caption="Log Stream" eventKey="log" />
               </Nav>
             </Card.Header>
 
@@ -216,7 +224,7 @@ const ExtensionForm: React.FunctionComponent<{
                 blocks={blocks}
               />
             )}
-            {activeTab === "runLog" && (
+            {activeTab === "log" && (
               <RunLogCard
                 extensionPoint={extensionPoint}
                 extensionId={extensionId}

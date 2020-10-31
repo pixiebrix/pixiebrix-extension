@@ -84,8 +84,10 @@ export class OpenURLEffect extends Effect {
       "_blank",
       "noopener,noreferrer"
     );
-    newWindow.opener = null;
-    newWindow.focus();
+    if (newWindow) {
+      newWindow.opener = null;
+      newWindow.focus();
+    }
   }
 }
 
