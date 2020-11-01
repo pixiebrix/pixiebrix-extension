@@ -18,5 +18,6 @@
 export * from "./html";
 export * from "./iframe";
 export * from "./markdown";
-export * from "./propertyTable";
+// FIXME: propertyTable fails silently on Firefox
+// export * from "./propertyTable";
 export * from "./table";

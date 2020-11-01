@@ -15,10 +15,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./google";
-export * from "./hubspot";
-export * from "./linkedin";
-export * from "./pipedrive";
-export * from "./slack";
-export * from "./techcrunch";
-export * from "./salesforce";
+html {
+    display: flex;
+}
+body {
+    margin: 0;
+    padding: 0;
+    flex: 1;
+    display: flex;
+}
+#container {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+}
+#container .options-loader {
+    width: 100%;
+    margin-top: 60px;
+    display: flex;
+    justify-content: center;
+}

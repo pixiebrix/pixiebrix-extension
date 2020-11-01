@@ -23,34 +23,9 @@ import {
 import blockRegistry from "@/blocks/registry";
 import { Block, Reader } from "@/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { BlockArg, Logger } from "@/core";
+import { BlockArg } from "@/core";
+import ConsoleLogger from "@/tests/ConsoleLogger";
 import { JQTransformer } from "@/blocks/transformers";
-
-class ConsoleLogger implements Logger {
-  childLogger(): Logger {
-    return undefined;
-  }
-
-  debug(msg: string, data: Record<string, unknown>): void {
-    console.debug(msg, data);
-  }
-
-  error(error: unknown, data: Record<string, unknown>): void {
-    console.error(error.toString(), { error, data });
-  }
-
-  info(msg: string, data: Record<string, unknown>): void {
-    console.info(msg, data);
-  }
-
-  log(msg: string, data: Record<string, unknown>): void {
-    console.log(msg, data);
-  }
-
-  warn(msg: string, data: Record<string, unknown>): void {
-    console.warn(msg, data);
-  }
-}
 
 const logger = new ConsoleLogger();
 

@@ -203,7 +203,7 @@ export function liftBackground<R extends SerializableResponse>(
     console.debug(`Installed background page handler for ${type}`);
     handlers[fullType] = { handler: method, options };
   } else {
-    console.debug(`Not the background page (context: ${type})`);
+    // console.debug(`Not the background page (context: ${type})`);
   }
 
   return async (...args: unknown[]) => {

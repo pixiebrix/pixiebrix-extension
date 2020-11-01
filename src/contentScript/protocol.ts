@@ -49,24 +49,24 @@ function initListener(messageEvent: chrome.runtime.ExtensionMessageEvent) {
         resolve(handler(...request.payload))
       );
       handlerPromise
-        .then((x) => {
+        .then((response) => {
           if (asyncResponse) {
             console.debug(
               `Handler returning success response for ${request.type}`
             );
-            sendResponse(x);
+            sendResponse(response);
           }
         })
-        .catch((x) => {
+        .catch((err) => {
           if (asyncResponse) {
             console.debug(
               `Handler returning error response for ${request.type}`
             );
-            sendResponse(toErrorResponse(request.type, x));
+            sendResponse(toErrorResponse(request.type, err));
           } else {
             console.warn(
               `An error occurred while processing a notification ${request.type}`,
-              x
+              err
             );
           }
         });

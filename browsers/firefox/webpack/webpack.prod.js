@@ -19,13 +19,10 @@ const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { mergeWithCustomize, customizeArray } = require("webpack-merge");
 const commonFactory = require("../../webpack/webpack.prod.js");
-const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
 const { uniq } = require("lodash");
 
-const chromeRoot = path.resolve(__dirname, "../");
-
-console.log("CHROME_EXTENSION_ID", process.env.CHROME_EXTENSION_ID);
+const firefoxRoot = path.resolve(__dirname, "../");
 
 module.exports = () =>
   mergeWithCustomize({
@@ -34,21 +31,14 @@ module.exports = () =>
     }),
   })(commonFactory(), {
     output: {
-      path: path.resolve(chromeRoot, "bundles"),
+      path: path.resolve(firefoxRoot, "bundles"),
     },
     plugins: [
-      new webpack.DefinePlugin({
-        "process.env": {
-          CHROME: JSON.stringify(true),
-          CHROME_EXTENSION_ID: JSON.stringify(process.env.CHROME_EXTENSION_ID),
-          GOOGLE_API_KEY: JSON.stringify(process.env.GOOGLE_API_KEY),
-        },
-      }),
       new CopyPlugin({
         patterns: [
           {
             from: path.resolve(
-              chromeRoot,
+              firefoxRoot,
               "manifests",
               "manifest.template.json"
             ),
@@ -56,31 +46,24 @@ module.exports = () =>
             transform(content) {
               const manifest = JSON.parse(content.toString());
               manifest.version = process.env.npm_package_version;
-              if (process.env.EXTERNALLY_CONNECTABLE) {
-                manifest.externally_connectable.matches = uniq([
-                  ...manifest.externally_connectable.matches,
-                  ...process.env.EXTERNALLY_CONNECTABLE.split(","),
-                ]);
-              }
-              if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
-                manifest.oauth2 = {
-                  client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,
-                  scopes: [""],
-                };
-              }
+              const services = uniq([
+                "https://app.pixiebrix.com",
+                process.env.SERVICE_URL ?? "https://app.pixiebrix.com",
+              ]).join(" ");
+              manifest.content_security_policy = `default-src 'self'; connect-src 'self' ${services}; script-src 'self'; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`;
               return JSON.stringify(manifest);
             },
           },
           {
-            from: path.resolve(chromeRoot, "src"),
+            from: path.resolve(firefoxRoot, "src"),
           },
           {
-            from: path.resolve(chromeRoot, "..", "src"),
+            from: path.resolve(firefoxRoot, "..", "src"),
           },
         ],
       }),
       new MiniCssExtractPlugin({
-        path: path.resolve(chromeRoot, "bundles", "css"),
+        path: path.resolve(firefoxRoot, "bundles", "css"),
         filename: "css/[name].css",
         chunkFilename: "css/[id].css",
         ignoreOrder: false, // Enable to remove warnings about conflicting order

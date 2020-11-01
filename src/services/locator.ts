@@ -36,6 +36,7 @@ import {
   MissingConfigurationError,
   NotConfiguredError,
 } from "@/services/errors";
+import { getExtensionToken } from "@/auth/token";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -103,6 +104,10 @@ class LazyLocatorFactory {
 
   async refreshRemote(): Promise<void> {
     const baseURL = this.baseURL ?? (await getBaseURL());
+    if (!(await getExtensionToken())) {
+      console.info("Extension not connected to the web service");
+      return;
+    }
     const { data } = (await proxyService(await pixieServiceFactory(), {
       url: `${baseURL}/api/services/shared/?meta=1`,
     })) as RemoteResponse<ConfigurableAuth[]>;

@@ -23,6 +23,8 @@
     }]
   },
   "ignorePatterns": [
-    "browsers/chrome/webpack/**"
+    "browsers/chrome/webpack/**",
+    "browsers/firefox/webpack/**",
+    "browsers/webpack/**"
   ]
 }

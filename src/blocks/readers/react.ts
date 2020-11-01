@@ -28,7 +28,9 @@ export interface ReactConfig {
   waitMillis?: number;
 }
 
-export const withReactComponent = createSendScriptMessage(READ_REACT_COMPONENT);
+export const withReactComponent = createSendScriptMessage<ReaderOutput>(
+  READ_REACT_COMPONENT
+);
 
 async function doRead(reader: ReactConfig): Promise<ReaderOutput> {
   const { selector, traverseUp = 0, waitMillis = 1000, rootProp } = reader;

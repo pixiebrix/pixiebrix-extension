@@ -57,11 +57,12 @@ class PipedriveReader extends Reader {
   }
 
   async read() {
+    // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31265
     return await withReadWindow({
       pathSpec: mapValues(
         this.pathSpec,
         (x: string) => `${this.ROOT_PATH}.${x}`
-      ),
+      ) as any,
     });
   }
 }

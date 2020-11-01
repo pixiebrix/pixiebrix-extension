@@ -5,6 +5,7 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/artifacts" />
       <excludeFolder url="file://$MODULE_DIR$/browsers/chrome/bundles" />
+      <excludeFolder url="file://$MODULE_DIR$/browsers/firefox/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/scripts/bin" />
       <excludeFolder url="file://$MODULE_DIR$/src/vendors" />
     </content>

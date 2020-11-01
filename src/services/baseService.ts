@@ -30,7 +30,7 @@ function withoutTrailingSlash(url: string): string {
 }
 
 export async function getBaseURL(): Promise<string> {
-  if (chrome.storage) {
+  if (window.chrome?.storage) {
     const configured = (await readStorage(
       SERVICE_STORAGE_KEY
     )) as ConfiguredHost;

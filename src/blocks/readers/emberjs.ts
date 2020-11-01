@@ -30,11 +30,11 @@ export interface EmberConfig {
   attrs: string | string[];
 }
 
-export const withEmberComponentProps = createSendScriptMessage(
+export const withEmberComponentProps = createSendScriptMessage<ReaderOutput>(
   READ_EMBER_COMPONENT
 );
 
-export const withEmberViewAttrs = createSendScriptMessage(
+export const withEmberViewAttrs = createSendScriptMessage<ReaderOutput>(
   READ_EMBER_VIEW_ATTRS
 );
 
@@ -42,7 +42,7 @@ async function doRead(reader: EmberConfig): Promise<ReaderOutput> {
   const { attrs: rawAttrs, selector } = reader;
   const attrs = castArray(rawAttrs ?? []);
   const values = await withEmberViewAttrs({ selector, attrs });
-  return attrs.length === 1 ? values[attrs[0]] : values;
+  return attrs.length === 1 ? (values[attrs[0]] as ReaderOutput) : values;
 }
 
 registerFactory("emberjs", doRead);

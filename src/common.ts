@@ -24,7 +24,14 @@ import {
   SEARCH_WINDOW,
 } from "./messaging/constants";
 
-export const withReadWindow = createSendScriptMessage(READ_WINDOW);
+type ReadSpec = <T extends Record<string, string>>(arg: {
+  pathSpec: T;
+  waitMillis?: number;
+}) => Promise<Record<keyof T, unknown>>;
+
+export const withReadWindow = (createSendScriptMessage(
+  READ_WINDOW
+) as unknown) as ReadSpec;
 export const withSearchWindow = createSendScriptMessage(SEARCH_WINDOW);
 export const withDetectFrameworkVersions = createSendScriptMessage(
   DETECT_FRAMEWORK_VERSIONS

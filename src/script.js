@@ -46,44 +46,65 @@ import { globalSearch } from "@/vendors/globalSearch";
 import pickBy from "lodash/pickBy";
 import identity from "lodash/identity";
 
-const attachListener = (messageType, handler) => {
-  document.addEventListener(messageType, function (e) {
-    console.debug(`RECEIVE ${messageType}`, e.detail);
+const handlers = {};
 
-    const reject = (error) => {
+window.addEventListener("message", function (event) {
+  const handler = handlers[event.data?.type];
+
+  if (!handler) {
+    console.debug(`Ignoring message with unknown type`, event);
+    return;
+  }
+
+  const { meta, type, payload } = event.data;
+
+  console.debug(`RECEIVE ${type}`, event.data);
+
+  const reject = (error) => {
+    try {
+      console.warn(error);
       document.dispatchEvent(
-        new CustomEvent(`${messageType}_REJECTED`, {
+        new CustomEvent(`${type}_REJECTED`, {
           detail: {
-            id: e.detail.id,
+            id: meta.id,
             error,
           },
         })
       );
-    };
-
-    const fulfill = (result) => {
-      document.dispatchEvent(
-        new CustomEvent(`${messageType}_FULFILLED`, {
-          detail: {
-            id: e.detail.id,
-            result,
-          },
-        })
+    } catch (err) {
+      console.error(
+        `An error occurred while dispatching an error for ${type}`,
+        { error: err, originalError: error }
       );
-    };
-
-    let resultPromise;
-
-    try {
-      resultPromise = handler(e.detail);
-    } catch (error) {
-      // handler is a function that immediately generated an error -- bail early.
-      reject(error);
-      return;
     }
+  };
 
-    Promise.resolve(resultPromise).then(fulfill).catch(reject);
-  });
+  const fulfill = (result) => {
+    document.dispatchEvent(
+      new CustomEvent(`${type}_FULFILLED`, {
+        detail: {
+          id: meta.id,
+          result,
+        },
+      })
+    );
+  };
+
+  let resultPromise;
+
+  try {
+    resultPromise = handler(payload);
+  } catch (error) {
+    // handler is a function that immediately generated an error -- bail early.
+    reject(error);
+    return;
+  }
+
+  Promise.resolve(resultPromise).then(fulfill).catch(reject);
+});
+
+const attachListener = (messageType, handler) => {
+  handlers[messageType] = handler;
 };
 
 attachListener(SEARCH_WINDOW, ({ query }) => ({

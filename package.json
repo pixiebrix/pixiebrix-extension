@@ -7,9 +7,10 @@
     "test": "npx jest",
     "test:watch": "npx jest --watchAll",
     "lint": "npx eslint src/**",
-    "watch:chrome": "NODE_ENV='development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
-    "stage:chrome": "NODE_ENV='staging' SERVICE_URL='https://pixiebrix-staging.herokuapp.com' npx webpack --config browsers/chrome/webpack/webpack.prod.js",
+    "watch:chrome": "NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
+    "watch:firefox": "NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/firefox/webpack/webpack.dev.js --watch",
     "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js",
+    "build:firefox": "npx webpack --config browsers/firefox/webpack/webpack.prod.js",
     "build:scripts": "npx webpack --config scripts/webpack.scripts.js",
     "generate:headers": "node scripts/bin/headers.js --stack-size=1024"
   },
@@ -72,13 +73,14 @@
     "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^26.6.1",
     "babel-loader": "^8.1.0",
-    "bootstrap": "^4.5.0",
+    "bootstrap": "^4.5.3",
     "bootstrap-icons": "^1.0.0",
     "bootstrap-switch-button-react": "^1.2.0",
     "canvas": "^2.6.1",
     "classnames": "^2.2.6",
     "compass-mixins": "^0.12.10",
     "connected-react-router": "^6.8.0",
+    "content-scripts-register-polyfill": "^1.0.5",
     "copy-to-clipboard": "^3.3.1",
     "copy-webpack-plugin": "^6.2.1",
     "core-js": "^3.6.5",
@@ -171,9 +173,10 @@
     "webpack-cli": "^4.1.0",
     "webpack-dev-server": "^3.11.0",
     "webpack-extension-reloader": "^1.1.4",
-    "webpack-merge": "^4.2.2",
+    "webpack-merge": "^5.3.0",
     "yaml-jest": "^1.0.5",
-    "yaml-loader": "^0.6.0"
+    "yaml-loader": "^0.6.0",
+    "fake-indexeddb": "^3.1.2"
   },
   "jest": {
     "modulePaths": [
@@ -198,7 +201,7 @@
       "^.+\\.txt$": "jest-raw-loader"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!@cfworker|webext-detect-page)"
+      "node_modules/(?!@cfworker|webext-detect-page|idb)"
     ],
     "testPathIgnorePatterns": [
       "<rootDir>/node_modules/",
@@ -206,7 +209,8 @@
     ],
     "setupFiles": [
       "<rootDir>/src/test-env.js",
-      "jest-webextension-mock"
+      "jest-webextension-mock",
+      "fake-indexeddb/auto"
     ],
     "moduleNameMapper": {
       "^@/icons/svgIcons$": "<rootDir>/src/__mocks__/iconsMock",
@@ -216,6 +220,5 @@
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
-  },
-  "devDependencies": {}
+  }
 }

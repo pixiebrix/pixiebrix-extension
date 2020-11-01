@@ -43,8 +43,12 @@ export async function getExtensionToken(): Promise<string | null> {
 
 export async function getExtensionAuth(): Promise<UserData> {
   const valueJSON = await readStorage(STORAGE_EXTENSION_KEY);
-  const { user, email, hostname } = JSON.parse(valueJSON as string);
-  return { user, email, hostname };
+  if (valueJSON) {
+    const { user, email, hostname } = JSON.parse(valueJSON as string);
+    return { user, email, hostname };
+  } else {
+    return {};
+  }
 }
 
 /**
