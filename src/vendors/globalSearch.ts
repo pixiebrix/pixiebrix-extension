@@ -1,11 +1,15 @@
-export function globalSearch(startObject, value, returnFirstResult = false) {
+export function globalSearch(
+  startObject: object,
+  value: unknown,
+  returnFirstResult = false
+): unknown[] {
   // adapted from: https://stackoverflow.com/a/12103127/402560
   if (startObject == null) {
     throw Error("startObject cannot be null");
   }
 
   const stack = [[startObject, ""]];
-  const searched = [];
+  const searched: unknown[] = [];
   const found = [];
 
   while (stack.length) {
@@ -35,8 +39,9 @@ export function globalSearch(startObject, value, returnFirstResult = false) {
         postfix = "";
       }
 
-      for (const i of Object.keys(obj)) {
-        stack.push([obj[i], address + prefix + i + postfix]);
+      for (const key of Object.keys(obj)) {
+        // @ts-ignore: typing is tricky since it can be an array or object
+        stack.push([obj[key], address + prefix + key + postfix]);
       }
 
       searched.push(obj);

@@ -5,7 +5,7 @@
     "@typescript-eslint"
   ],
   "env": {
-    "browser": true
+    "browser": true,
   },
   "extends": [
     "eslint:recommended",
@@ -25,6 +25,7 @@
   "ignorePatterns": [
     "browsers/chrome/webpack/**",
     "browsers/firefox/webpack/**",
-    "browsers/webpack/**"
+    "browsers/webpack/**",
+    "scripts/webpack.scripts.js"
   ]
 }

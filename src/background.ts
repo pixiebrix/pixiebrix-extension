@@ -22,7 +22,7 @@ import { initRollbar } from "@/telemetry/rollbar";
 // init first so we get error reporting on the other initialization
 initRollbar();
 
-import "./background/external";
+import "./messaging/external";
 import "./background/requests";
 import "./background/locator";
 import "./background/logging";

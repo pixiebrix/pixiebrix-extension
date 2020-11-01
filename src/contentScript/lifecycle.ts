@@ -24,7 +24,7 @@ import serviceRegistry from "@/services/registry";
 import {
   liftContentScript,
   notifyContentScripts,
-} from "@/contentScript/protocol";
+} from "@/contentScript/backgroundProtocol";
 
 let _loadedBlocks = false;
 let _scriptPromise: Promise<void>;

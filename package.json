@@ -36,6 +36,7 @@
     "@types/classnames": "^2.2.10",
     "@types/deep-equal": "^1.0.1",
     "@types/dompurify": "^2.0.4",
+    "@types/firefox-webext-browser": "^78.0.1",
     "@types/gapi": "0.0.39",
     "@types/gapi.client.oauth2": "^2.0.1",
     "@types/gapi.client.sheets": "^4.0.11",
@@ -86,11 +87,13 @@
     "core-js": "^3.6.5",
     "css-loader": "^3.6.0",
     "deep-equal": "^2.0.4",
+    "detect-browser": "^5.2.0",
     "dompurify": "^2.0.12",
     "dotenv": "^8.2.0",
     "dotenv-webpack": "^3.0.0",
     "eslint": "^7.11.0",
     "eslint-plugin-react": "^7.21.5",
+    "fake-indexeddb": "^3.1.2",
     "file-loader": "^6.1.1",
     "formik": "^2.2.1",
     "generate-schema": "^2.6.0",
@@ -175,8 +178,7 @@
     "webpack-extension-reloader": "^1.1.4",
     "webpack-merge": "^5.3.0",
     "yaml-jest": "^1.0.5",
-    "yaml-loader": "^0.6.0",
-    "fake-indexeddb": "^3.1.2"
+    "yaml-loader": "^0.6.0"
   },
   "jest": {
     "modulePaths": [

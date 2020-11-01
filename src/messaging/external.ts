@@ -21,19 +21,49 @@
 import { AuthData, updateExtensionAuth } from "@/auth/token";
 import { openOptions } from "@/chrome";
 import { liftBackground } from "@/background/protocol";
+import { detect } from "detect-browser";
+import { liftExternal } from "@/contentScript/externalProtocol";
 
-export const connectPage = liftBackground("CONNECT_PAGE", async () => {
+const browser = detect();
+
+function lift<R>(
+  type: string,
+  method: (...args: unknown[]) => Promise<R>
+): (...args: unknown[]) => Promise<R> {
+  const chromeMethod = liftBackground(type, method);
+  const browserMethod = liftExternal(type, method);
+
+  return async (...args: unknown[]) => {
+    switch (browser.name) {
+      case "chrome": {
+        // @ts-ignore: liftBackground is being inferred as signature with no arguments
+        return await chromeMethod(...args);
+      }
+      default: {
+        // @ts-ignore: liftExternal is being inferred as signature with no arguments
+        return await browserMethod(...args);
+      }
+    }
+  };
+}
+
+export const connectPage = lift("CONNECT_PAGE", async () => {
   return chrome.runtime.getManifest();
 });
 
-export const setExtensionAuth = liftBackground(
+export const setExtensionAuth = lift(
   "SET_EXTENSION_AUTH",
   async (auth: AuthData) => {
     return await updateExtensionAuth(auth);
   }
 );
 
-export const openExtensionOptions = liftBackground("OPEN_OPTIONS", async () => {
+// chrome.runtime.openOptionsPage only available from the background page
+const _openOptions = liftBackground("OPEN_OPTIONS", async () => {
   await openOptions();
   return true;
+});
+
+export const openExtensionOptions = lift("OPEN_OPTIONS", async () => {
+  return await _openOptions();
 });

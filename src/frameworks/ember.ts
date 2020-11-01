@@ -17,25 +17,48 @@
 
 import mapValues from "lodash/mapValues";
 
-export function getVersion() {
+interface EmberComponent {
+  attrs: Record<string, unknown>;
+}
+
+interface EmberApplication {
+  __container__: {
+    lookup: (container: string) => { [componentId: string]: EmberComponent };
+  };
+}
+
+declare global {
+  interface Window {
+    Ember?: {
+      VERSION: string;
+      Application: EmberApplication;
+      Namespace: {
+        NAMESPACES: any;
+      };
+      A: (namespaces: any) => unknown[];
+    };
+  }
+}
+
+export function getVersion(): string | null {
   return window.Ember?.VERSION;
 }
 
-export function getEmberApplication() {
+export function getEmberApplication(): EmberApplication {
   // https://stackoverflow.com/questions/32971707/how-to-access-the-ember-data-store-from-the-console
   if (window.Ember) {
     const Ember = window.Ember;
     // https://github.com/emberjs/ember-inspector/blob/2237dc1b4818e31a856f3348f35305b10f42f60a/ember_debug/vendor/startup-wrapper.js#L201
     const namespaces = Ember.A(Ember.Namespace.NAMESPACES);
     return namespaces.filter(
-      (namespace) => namespace instanceof Ember.Application
-    )[0];
+      (namespace) => namespace instanceof (Ember.Application as any)
+    )[0] as EmberApplication;
   } else {
     return undefined;
   }
 }
 
-export function getEmberComponentById(componentId) {
+export function getEmberComponentById(componentId: string): EmberComponent {
   const app = getEmberApplication();
   if (!app) {
     throw new Error("No Ember application found");
@@ -43,7 +66,7 @@ export function getEmberComponentById(componentId) {
   return app.__container__.lookup("-view-registry:main")[componentId];
 }
 
-export function readEmberValueFromCache(value) {
+export function readEmberValueFromCache(value: any): unknown {
   if (value == null) {
     return value;
   } else if (typeof value === "object") {

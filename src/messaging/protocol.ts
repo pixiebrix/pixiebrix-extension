@@ -19,7 +19,7 @@ import { SerializedError } from "@/core";
 import { serializeError } from "serialize-error";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type SerializableResponse = object;
+export type SerializableResponse = boolean | string | number | object;
 
 export interface RemoteProcedureCallRequest {
   type: string;

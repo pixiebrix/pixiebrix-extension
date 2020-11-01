@@ -15,6 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The script that get injected into the page
+ */
 import "regenerator-runtime/runtime";
 import "core-js/stable";
 import { clone, getPropByPath } from "./utils";
@@ -46,13 +49,39 @@ import { globalSearch } from "@/vendors/globalSearch";
 import pickBy from "lodash/pickBy";
 import identity from "lodash/identity";
 
-const handlers = {};
+type Handler = (payload: unknown) => unknown;
+const handlers: { [type: string]: Handler } = {};
+
+declare global {
+  interface Window {
+    angular?: {
+      version: {
+        full: string;
+      };
+      element: (
+        element: HTMLElement
+      ) => {
+        scope: () => Record<string, unknown>;
+      };
+    };
+    jQuery?: {
+      fn: {
+        jquery: string;
+      };
+    };
+    Backbone?: {
+      VERSION: string;
+    };
+    Vue?: {
+      version: string;
+    };
+  }
+}
 
 window.addEventListener("message", function (event) {
   const handler = handlers[event.data?.type];
 
   if (!handler) {
-    console.debug(`Ignoring message with unknown type`, event);
     return;
   }
 
@@ -60,7 +89,7 @@ window.addEventListener("message", function (event) {
 
   console.debug(`RECEIVE ${type}`, event.data);
 
-  const reject = (error) => {
+  const reject = (error: unknown) => {
     try {
       console.warn(error);
       document.dispatchEvent(
@@ -79,7 +108,7 @@ window.addEventListener("message", function (event) {
     }
   };
 
-  const fulfill = (result) => {
+  const fulfill = (result: unknown) => {
     document.dispatchEvent(
       new CustomEvent(`${type}_FULFILLED`, {
         detail: {
@@ -103,7 +132,7 @@ window.addEventListener("message", function (event) {
   Promise.resolve(resultPromise).then(fulfill).catch(reject);
 });
 
-const attachListener = (messageType, handler) => {
+const attachListener = (messageType: string, handler: Handler) => {
   handlers[messageType] = handler;
 };
 
@@ -122,8 +151,12 @@ attachListener(DETECT_FRAMEWORK_VERSIONS, () => ({
   redux: undefined,
 }));
 
-function readPathSpec(object, pathSpec) {
-  const values = {};
+type PathSpec = Record<string, string | { path: string; args: unknown }>;
+
+// needs to be object because we want window to be a valid argument
+// eslint-disable-next-line @typescript-eslint/ban-types
+function readPathSpec(object: object, pathSpec: PathSpec) {
+  const values: Record<string, unknown> = {};
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
@@ -135,11 +168,14 @@ function readPathSpec(object, pathSpec) {
   return values;
 }
 
-const sleep = (milliseconds) => {
+const sleep = (milliseconds: number) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
-async function awaitNonEmpty(valueFactory, { waitMillis, retryMillis = 50 }) {
+async function awaitNonEmpty(
+  valueFactory: () => unknown,
+  { waitMillis, retryMillis = 50 }: { waitMillis: number; retryMillis?: number }
+) {
   const start = new Date().getTime();
   let elapsed = 0;
   let value = {};
@@ -222,7 +258,10 @@ attachListener(READ_EMBER_VIEW_ATTRS, ({ selector, attrs: rawAttrs }) => {
 
   if (!isEmpty(attrs)) {
     return fromPairs(
-      attrs.map((attr) => [attr, readEmberValueFromCache(view.attrs[attr])])
+      attrs.map((attr: string) => [
+        attr,
+        readEmberValueFromCache(view.attrs[attr]),
+      ])
     );
   } else {
     return pickBy(

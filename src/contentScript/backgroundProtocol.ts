@@ -43,7 +43,7 @@ function initListener(messageEvent: chrome.runtime.ExtensionMessageEvent) {
   messageEvent.addListener(function (request, sender, sendResponse) {
     const { handler, options: { asyncResponse } = { asyncResponse: true } } =
       handlers[request.type] ?? {};
-    if (handler) {
+    if (sender.id === chrome.runtime.id && handler) {
       console.debug(`Handling contentScript action ${request.type}`);
       const handlerPromise = new Promise((resolve) =>
         resolve(handler(...request.payload))
@@ -150,10 +150,10 @@ export function notifyContentScripts(
 }
 
 /**
- * Lift a method to be run on the background page
- * @param type a unique name for the background action
+ * Lift a method to be run in the contentScript
+ * @param type a unique name for the contentScript action
  * @param method the method to lift
- * @param options background action handler options
+ * @param options contentScript action handler options
  */
 export function liftContentScript<R extends SerializableResponse>(
   type: string,

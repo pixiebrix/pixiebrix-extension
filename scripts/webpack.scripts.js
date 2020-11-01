@@ -16,7 +16,6 @@
  */
 
 const path = require("path");
-const webpack = require("webpack");
 const rootDir = path.resolve(__dirname, "../");
 
 // https://github.com/TypeStrong/ts-loader/blob/master/examples/react-babel-karma-gulp/webpack.config.base.js#L10

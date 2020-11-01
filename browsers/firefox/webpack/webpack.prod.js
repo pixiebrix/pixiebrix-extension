@@ -51,7 +51,7 @@ module.exports = () =>
                 process.env.SERVICE_URL ?? "https://app.pixiebrix.com",
               ]).join(" ");
               manifest.content_security_policy = `default-src 'self'; connect-src 'self' ${services}; script-src 'self'; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`;
-              return JSON.stringify(manifest);
+              return JSON.stringify(manifest, null, 4);
             },
           },
           {

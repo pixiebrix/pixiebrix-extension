@@ -41,7 +41,7 @@ export class Registry<TItem extends RegistryItem> {
   private data: { [key: string]: TItem };
   private readonly resourcePath: string;
   private readonly storageKey: string;
-  private readonly deserialize: (raw: any) => TItem;
+  private readonly deserialize: (raw: unknown) => TItem;
   private refreshed: boolean;
 
   constructor(
@@ -90,12 +90,12 @@ export class Registry<TItem extends RegistryItem> {
         console.warn(`Skipping item with no id`, item);
         continue;
       }
-      console.debug(`Registered ${item.id}`);
+      // console.debug(`Registered ${item.id}`);
       this.data[item.id] = item;
     }
   }
 
-  _parse(raw: any): TItem | undefined {
+  _parse(raw: unknown): TItem | undefined {
     let obj;
     try {
       if (typeof raw === "string") {

@@ -34,6 +34,8 @@ window.addEventListener("unhandledrejection", function (e) {
 // Import for the side effect of registering js defined blocks
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { refresh as refreshServices } from "@/background/locator";
+import "@/contentScript/externalProtocol";
+import "@/messaging/external";
 import "@/contentScript/script";
 import "notifyjs-browser";
 import "jquery.initialize";
