@@ -101,7 +101,7 @@
     "is-promise": "^4.0.0",
     "jest": "^26.5.2",
     "jest-raw-loader": "^1.0.1",
-    "jest-webextension-mock": "^3.7.0",
+    "jest-webextension-mock": "^3.7.3",
     "jest-yaml-transform": "^0.2.0",
     "jq-web": "^0.5.1",
     "jquery": "^3.5.1",
