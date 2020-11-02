@@ -23,6 +23,7 @@ export type SerializableResponse = boolean | string | number | object;
 
 export interface RemoteProcedureCallRequest {
   type: string;
+  meta?: { nonce?: string };
   payload: unknown[];
 }
 

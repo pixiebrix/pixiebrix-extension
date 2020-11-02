@@ -107,7 +107,11 @@ const Layout = () => {
                   <Route path="/services/:id?" component={ServicesEditor} />
                   <Route exact path="/workshop" component={ExtensionEditor} />
                   <Route
-                    path="/workshop/install/:extensionPointId"
+                    path="/workshop/install/:extensionPointId/:tab?"
+                    component={ExtensionEditor}
+                  />
+                  <Route
+                    path="/workshop/extensions/:extensionId/:tab?"
                     component={ExtensionEditor}
                   />
                   <Route
@@ -119,10 +123,6 @@ const Layout = () => {
                     exact
                     path="/workshop/bricks/:id/"
                     component={BrickEditPage}
-                  />
-                  <Route
-                    path="/workshop/extensions/:extensionId/:tab?"
-                    component={ExtensionEditor}
                   />
                   <Route component={InstalledExtensions} />
                 </Switch>

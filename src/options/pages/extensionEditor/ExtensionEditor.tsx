@@ -36,10 +36,19 @@ interface OwnProps {
   ) => void;
 }
 
-interface RouteParams {
-  extensionPointId: string | null;
-  extensionId: string;
+interface InstallRouteParams {
+  extensionId: null;
+  extensionPointId: string;
+  tab?: string;
 }
+
+interface EditRouteParams {
+  extensionPointId: null;
+  extensionId: string;
+  tab?: string;
+}
+
+type RouteParams = InstallRouteParams | EditRouteParams;
 
 const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   saveExtension,
@@ -49,7 +58,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   const { extensionPointId, extensionId } = useParams<RouteParams>();
   const { extensionPoint, extensionConfig } = useExtension(
     extensionPointId ? decodeURIComponent(extensionPointId) : undefined,
-    extensionId
+    extensionId ? decodeURIComponent(extensionId) : undefined
   );
 
   const save = useCallback(
@@ -94,7 +103,6 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   } else {
     return (
       <ExtensionPointDetail
-        saveCaption={extensionConfig ? "Update Brick" : "Activate Brick"}
         initialValue={{
           label: extensionConfig?.label,
           config: extensionConfig?.config,

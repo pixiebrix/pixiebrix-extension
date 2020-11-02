@@ -43,8 +43,11 @@ module.exports = mergeWithCustomize({
           transform(content) {
             const manifest = JSON.parse(content.toString());
             manifest.version = process.env.npm_package_version;
+            // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/content_security_policy
+            // https: has to be in connect-src because Firefox uses this to determine what packes the backround page
+            // can access
             manifest.content_security_policy =
-              "default-src 'self'; connect-src 'self' http://127.0.0.1:8000 http://localhost:8000 ws://localhost:9090; script-src 'self'; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com";
+              "default-src 'self'; connect-src 'self' http://127.0.0.1:8000 http://localhost:8000 ws://localhost:9090 https:; script-src 'self'; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com";
             return JSON.stringify(manifest, null, 4);
           },
         },

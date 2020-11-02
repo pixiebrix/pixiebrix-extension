@@ -84,7 +84,6 @@ const backgroundRequest = liftBackground<
   AxiosRequestConfig,
   AxiosPromise<unknown>
 >("HTTP_REQUEST", (config: AxiosRequestConfig) => {
-  // console.debug("axios", config);
   return axios(config);
 });
 
