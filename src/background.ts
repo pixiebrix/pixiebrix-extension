@@ -14,9 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
 import "regenerator-runtime/runtime";
 import "core-js/stable";
+
+import "@/extensionContext";
 import { initRollbar } from "@/telemetry/rollbar";
 
 // init first so we get error reporting on the other initialization

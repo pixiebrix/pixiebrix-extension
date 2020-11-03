@@ -36,10 +36,10 @@
     ]
   },
   "web_accessible_resources": [
-    "options.html",
-    "options.css",
-    "background.html",
-    "background.js",
+    "icons.bundle.js",
+    "jq-web.bundle.js",
+    "widgets.bundle.js",
+    "icons.bundle.js",
     "frame.html",
     "frame.css",
     "script.js"

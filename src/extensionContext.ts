@@ -15,19 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "regenerator-runtime/runtime";
-import "core-js/stable";
-import "@/extensionContext";
+import { browser } from "webextension-polyfill-ts";
 
-import ReactDOM from "react-dom";
-import React from "react";
-import App from "@/options/App";
-import { initRollbar } from "@/telemetry/rollbar";
-
-// import for side effects
-// import "bootstrap/dist/css/bootstrap.min.css";
-import "@/base.scss";
-
-initRollbar();
-
-ReactDOM.render(<App />, document.getElementById("container"));
+// https://webpack.js.org/guides/public-path/#on-the-fly
+__webpack_public_path__ = browser.runtime.getURL("/");
