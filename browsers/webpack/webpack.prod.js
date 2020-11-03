@@ -24,20 +24,20 @@ const webpack = require("webpack");
 
 function rollbarPlugins() {
   console.log(
-    "ROLLBAR_CHROME_ACCESS_TOKEN: ",
+    "ROLLBAR_BROWSER_ACCESS_TOKEN: ",
     process.env.ROLLBAR_CHROME_ACCESS_TOKEN
   );
   if (
     process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN &&
-    process.env.ROLLBAR_CHROME_ACCESS_TOKEN &&
-    process.env.ROLLBAR_CHROME_ACCESS_TOKEN !== "undefined"
+    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN &&
+    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN !== "undefined"
   ) {
     return [
       new RollbarSourceMapPlugin({
         accessToken: process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN,
         // https://stackoverflow.com/a/43661131
         version: process.env.SOURCE_VERSION,
-        publicPath: "chrome-extension://dynamichost/",
+        publicPath: process.env.ROLLBAR_PUBLIC_PATH,
       }),
     ];
   } else {
@@ -46,7 +46,7 @@ function rollbarPlugins() {
   }
 }
 
-module.exports = () => {
+module.exports = (rollbarPublicPath) => {
   console.log("SOURCE_VERSION: ", process.env.SOURCE_VERSION);
   console.log("SERVICE_URL: ", process.env.SERVICE_URL);
 
@@ -72,7 +72,7 @@ module.exports = () => {
       chunkFilename: "[name].bundle.js",
     },
     plugins: [
-      ...rollbarPlugins(),
+      ...rollbarPlugins(rollbarPublicPath),
       new webpack.EnvironmentPlugin({
         // use 'production' unless process.env.NODE_ENV is defined
         NODE_ENV: "production",

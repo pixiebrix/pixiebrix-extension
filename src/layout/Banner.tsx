@@ -22,7 +22,7 @@ import { getExtensionAuth } from "@/auth/token";
 import useAsyncEffect from "use-async-effect";
 import AuthContext from "@/auth/context";
 
-const environment = process.env.NODE_ENV;
+const environment = process.env.ENVIRONMENT;
 const version = process.env.NPM_PACKAGE_VERSION;
 const source_version = process.env.SOURCE_VERSION;
 

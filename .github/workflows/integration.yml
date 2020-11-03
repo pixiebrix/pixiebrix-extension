@@ -30,15 +30,17 @@ jobs:
         with:
           node-version: '14.x'
       - run: npm install
-      - run: npm run stage:chrome
+      - run: npm run build:chrome
         env:
-          ROLLBAR_PUBLIC_HOST: chrome
+          NODE_ENV: production
+          ENVIRONMENT: staging
+          ROLLBAR_PUBLIC_PATH: chrome-extension://staging/
           CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
-          EXTERNALLY_CONNECTABLE: "https://pixiebrix-staging.herokuapp.com/*,http://127.0.0.1/*"
-          SERVICE_URL: https://pixiebrix-staging.herokuapp.com
-          ROLLBAR_CHROME_ACCESS_TOKEN: ${{ secrets.ROLLBAR_CHROME_ACCESS_TOKEN }}
+          EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}/*,http://127.0.0.1/*
+          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
       - uses: actions/upload-artifact@v2
         with:
@@ -55,11 +57,13 @@ jobs:
         with:
           node-version: '14.x'
       - run: npm install
-      - run: npm run stage:chrome
+      - run: npm run build:firefox
         env:
-          ROLLBAR_PUBLIC_HOST: firefox
-          SERVICE_URL: https://pixiebrix-staging.herokuapp.com
-          ROLLBAR_CHROME_ACCESS_TOKEN: ${{ secrets.ROLLBAR_CHROME_ACCESS_TOKEN }}
+          NODE_ENV: production
+          ENVIRONMENT: staging
+          ROLLBAR_PUBLIC_PATH: moz-extension://staging/
+          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
       - uses: actions/upload-artifact@v2
         with:

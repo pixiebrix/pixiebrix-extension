@@ -26,8 +26,9 @@ export function initRollbar(): void {
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
       captureUncaught: true,
       captureUnhandledRejections: true,
+      codeVersion: process.env.SOURCE_VERSION,
       payload: {
-        environment: process.env.NODE_ENV,
+        environment: process.env.ENVIRONMENT,
       },
       transform: function (payload: Record<string, unknown>) {
         // @ts-ignore: copied this example from Rollbar's documentation, so should presumably always be available
@@ -38,10 +39,10 @@ export function initRollbar(): void {
             const filename = trace.frames[i].filename;
             if (filename) {
               const m = filename.match(locRegex);
-              // Be sure that the minified_url when uploading includes the ROLLBAR_PUBLIC_HOST
+              // Be sure that the minified_url when uploading includes the build type
               trace.frames[
                 i
-              ].filename = `${m[1]}://${process.env.ROLLBAR_PUBLIC_HOST}/${m[3]}`;
+              ].filename = `${m[1]}://${process.env.ENVIRONMENT}/${m[3]}`;
             }
           }
         }

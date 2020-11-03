@@ -27,8 +27,6 @@ dotenv.config({
   path: path.resolve(rootDir, "browsers", process.env.ENV_FILE ?? ".env"),
 });
 
-const ROLLBAR_PUBLIC_HOST = process.env.ROLLBAR_PUBLIC_HOST ?? "dynamichost";
-
 if (!process.env.SOURCE_VERSION) {
   process.env.SOURCE_VERSION = require("child_process")
     .execSync("git rev-parse --short HEAD")
@@ -80,10 +78,6 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       "process.env": {
-        ROLLBAR_PUBLIC_HOST: JSON.stringify(ROLLBAR_PUBLIC_HOST),
-        ROLLBAR_PUBLIC_PATH: JSON.stringify(
-          `https://${ROLLBAR_PUBLIC_HOST}/static`
-        ),
         ROLLBAR_ACCESS_TOKEN: JSON.stringify(
           process.env.ROLLBAR_CHROME_ACCESS_TOKEN
         ),
@@ -91,6 +85,7 @@ module.exports = {
         SOURCE_VERSION: JSON.stringify(process.env.SOURCE_VERSION),
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        ENVIRONMENT: JSON.stringify(process.env.ENVIRONMENT),
       },
     }),
     new MiniCssExtractPlugin(),
