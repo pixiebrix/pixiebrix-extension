@@ -38,3 +38,4 @@ browsers/**/bundles/**
 artifacts
 /scripts/bin/
 headers.json
+report.html

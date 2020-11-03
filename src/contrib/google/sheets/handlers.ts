@@ -15,6 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/// <reference types="gapi.client.sheets" />
+
 import { liftBackground } from "@/background/protocol";
 type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
 type BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
