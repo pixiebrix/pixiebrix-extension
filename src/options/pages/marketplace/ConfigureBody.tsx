@@ -23,7 +23,8 @@ import {
   ExtensionPointDefinition,
   RecipeDefinition,
 } from "@/types/definitions";
-import { pickBy, identity } from "lodash";
+import pickBy from "lodash/pickBy";
+import identity from "lodash/identity";
 import { WizardValues } from "@/options/pages/marketplace/wizard";
 
 export function selectedExtensions(

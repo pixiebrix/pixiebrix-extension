@@ -19,7 +19,7 @@ import { withReadWindow } from "@/common";
 import { ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
 
-type PathSpecObj = { [key: string]: string };
+type PathSpecObj = Record<string, string>;
 export type PathSpec = string | PathSpecObj;
 
 export interface WindowConfig {

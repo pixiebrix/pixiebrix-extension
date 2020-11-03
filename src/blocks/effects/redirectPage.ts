@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 
@@ -55,7 +54,7 @@ export class NavigateURLEffect extends Effect {
       "@pixiebrix/browser/location",
       "Redirect Page",
       "Navigate the current page to a URL",
-      faWindowMaximize
+      "faWindowMaximize"
     );
   }
 
@@ -72,7 +71,7 @@ export class OpenURLEffect extends Effect {
       "@pixiebrix/browser/open-tab",
       "Open a Tab/Window",
       "Open a URL in a new tab/window",
-      faWindowMaximize
+      "faWindowMaximize"
     );
   }
 

@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
@@ -27,7 +26,7 @@ export class RegexTransformer extends Transformer {
       "@pixiebrix/regex",
       "Regex Extractor",
       "Extract data using a Regex (regular expression)",
-      faCode
+      "faCode"
     );
   }
 

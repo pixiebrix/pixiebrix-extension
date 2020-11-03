@@ -21,8 +21,8 @@ import castArray from "lodash/castArray";
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
-import { IPermissions } from "@/core";
 import { Availability } from "@/blocks/types";
+import { Permissions } from "webextension-polyfill-ts";
 
 export function testMatchPattern(pattern: string, url?: string): boolean {
   const re = matchPattern.parse(pattern);
@@ -64,27 +64,12 @@ export async function checkAvailable({
 }
 
 export function distinctPermissions(
-  permissions: IPermissions[]
-): IPermissions[] {
+  permissions: Permissions.Permissions[]
+): Permissions.Permissions[] {
   return Object.values(
     groupBy(permissions, (x) => JSON.stringify(sortBy(x.origins)))
   ).map((perms) => ({
     permissions: uniq(perms.flatMap((x) => x.permissions || [])),
     origins: perms[0].origins,
   }));
-}
-
-export function makePermissions({
-  matchPatterns: rawPatterns = [],
-}: {
-  matchPatterns: string | string[];
-}): IPermissions {
-  const matchPatterns = castArray(rawPatterns);
-  const origins = matchPatterns.length
-    ? matchPatterns
-    : ["http://*/", "https://*/"];
-  return {
-    permissions: ["tabs", "webNavigation"],
-    origins,
-  };
 }

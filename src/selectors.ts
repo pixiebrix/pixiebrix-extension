@@ -37,6 +37,7 @@ export function useExtension(
 
   const extensionConfig = useMemo(() => {
     let config;
+
     if (!extensionId) {
       return null;
     } else if (extensionPointId) {

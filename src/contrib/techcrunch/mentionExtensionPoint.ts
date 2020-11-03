@@ -19,7 +19,6 @@ import { ExtensionPoint } from "@/types";
 import { isHost } from "@/extensionPoints/helpers";
 import startCase from "lodash/startCase";
 import Mustache from "mustache";
-import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import {
   BlockConfig,
   blockList,
@@ -30,6 +29,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { IExtension, IReader } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
+import { Permissions } from "webextension-polyfill-ts";
 
 interface MentionConfig {
   caption: string;
@@ -52,7 +52,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
       `techcrunch/${entityType}-mention-action`,
       `TechCrunch ${startCase(entityType)} Link Action`,
       `Add a button next to each ${entityType} mention in an article`,
-      faMousePointer
+      "faMousePointer"
     );
     this.entityType = entityType;
     this.$links = undefined;
@@ -73,7 +73,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
     return blockList(extension.config.action);
   }
 
-  permissions = {
+  permissions: Permissions.Permissions = {
     permissions: ["tabs", "webNavigation"],
     origins: ["https://*.techcrunch.com/*"],
   };

@@ -15,23 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// @ts-ignore: babel/plugin-transform-typescript doesn't support the import = syntax
-import chromeNamespace from "chrome";
-type MessageSendOptions = chromeNamespace.tabs.MessageSendOptions;
+type MessageSendOptions = chrome.tabs.MessageSendOptions;
+
+type SendScriptMessage<T> = (payload: unknown) => Promise<T>;
+
+type CallbackMap = { [key: string]: (result: unknown) => void };
 
 interface Message {
   type: string;
 }
 
-export function sendTabMessage(
+export function sendTabMessage<T = unknown>(
   tabId: number,
   message: Message,
   options: MessageSendOptions
-): Promise<unknown> {
+): Promise<T> {
   // https://developer.chrome.com/extensions/tabs#method-sendMessage
   return new Promise((resolve, reject) => {
     chrome.tabs.sendMessage(tabId, message, options, (response) => {
-      if (response === undefined) {
+      if (chrome.runtime.lastError) {
         const error = chrome.runtime.lastError;
         console.error("Tab message error", error);
         reject(new Error(error.message));
@@ -42,60 +44,35 @@ export function sendTabMessage(
   });
 }
 
-export function sendTabNotification(
-  tabId: number,
-  notification: Message,
-  options: MessageSendOptions
-): void {
-  // https://developer.chrome.com/extensions/tabs#method-sendMessage
-  chrome.tabs.sendMessage(tabId, notification, options);
-}
-
-type SendScriptMessage = (payload: any) => Promise<any>;
-
-export function createSendScriptMessage(
+export function createSendScriptMessage<T>(
   messageType: string
-): SendScriptMessage {
+): SendScriptMessage<T> {
   if (typeof document === "undefined") {
-    return () =>
-      new Promise<any>((resolve, reject) =>
-        reject("Not running in a browser context")
-      );
+    return () => Promise.reject("Not running in a browser context");
   }
 
   let messageSeq = 0;
-  const fulfillmentCallbacks: { [key: string]: (result: any) => void } = {};
-  const rejectionCallbacks: { [key: string]: (result: any) => void } = {};
+  const targetOrigin = document.defaultView.origin;
+  const fulfillmentCallbacks: CallbackMap = {};
+  const rejectionCallbacks: CallbackMap = {};
 
-  document.addEventListener(`${messageType}_FULFILLED`, function (
-    e: CustomEvent
-  ) {
-    console.debug(`RECEIVED: ${messageType}_FULFILLED`, e.detail);
-    const { id, result } = e.detail;
-    if (fulfillmentCallbacks.hasOwnProperty(id)) {
-      try {
-        fulfillmentCallbacks[id](result);
-      } finally {
-        delete fulfillmentCallbacks[id];
-        delete rejectionCallbacks[id];
+  const listen = (type: string, callbacks: CallbackMap) => {
+    document.addEventListener(type, function (event: CustomEvent) {
+      console.debug(`RECEIVED: ${type}`, event.detail);
+      const { id, result } = event.detail;
+      if (Object.prototype.hasOwnProperty.call(callbacks, id)) {
+        try {
+          callbacks[id](result);
+        } finally {
+          delete fulfillmentCallbacks[id];
+          delete rejectionCallbacks[id];
+        }
       }
-    }
-  });
+    });
+  };
 
-  document.addEventListener(`${messageType}_REJECTED`, function (
-    e: CustomEvent
-  ) {
-    console.debug(`RECEIVED: ${messageType}_REJECTED`, e.detail);
-    const { id, error } = e.detail;
-    if (rejectionCallbacks.hasOwnProperty(id)) {
-      try {
-        rejectionCallbacks[id](error);
-      } finally {
-        delete fulfillmentCallbacks[id];
-        delete rejectionCallbacks[id];
-      }
-    }
-  });
+  listen(`${messageType}_FULFILLED`, fulfillmentCallbacks);
+  listen(`${messageType}_REJECTED`, rejectionCallbacks);
 
   return (payload) => {
     const id = messageSeq++;
@@ -104,14 +81,18 @@ export function createSendScriptMessage(
       rejectionCallbacks[id] = reject;
     });
     console.debug(`SEND: ${messageType}`, payload);
-    document.dispatchEvent(
-      new CustomEvent(messageType, {
-        detail: {
-          id,
-          ...payload,
-        },
-      })
+
+    // As an alternative to postMessage, could potentially use cloneInto and CustomEvent's but that
+    // appears to be deprecated: https://bugzilla.mozilla.org/show_bug.cgi?id=1294935
+    document.defaultView.postMessage(
+      {
+        type: messageType,
+        meta: { id },
+        payload,
+      },
+      targetOrigin
     );
-    return promise;
+
+    return promise as Promise<T>;
   };
 }

@@ -17,16 +17,16 @@
 
 import extensionRegistry from "@/extensionPoints/registry";
 import { distinctPermissions } from "@/blocks/available";
-import { requestPermissions } from "@/chrome";
 import { useAsyncEffect } from "use-async-effect";
 import { useState, useCallback } from "react";
 import every from "lodash/every";
-import { IExtension, IPermissions } from "@/core";
+import { IExtension } from "@/core";
 import {
   ExtensionPointDefinition,
   RecipeDefinition,
 } from "@/types/definitions";
-import Permissions = chrome.permissions.Permissions;
+import { Permissions, browser } from "webextension-polyfill-ts";
+import sortBy from "lodash/sortBy";
 
 /**
  * Request any permissions the user has not already granted
@@ -34,12 +34,11 @@ import Permissions = chrome.permissions.Permissions;
  * @returns {Promise<boolean>}
  */
 export async function ensureAllPermissions(
-  permissionsList: IPermissions[]
+  permissionsList: Permissions.Permissions[]
 ): Promise<boolean> {
-  for (const permission of permissionsList) {
-    if (!(await checkPermission(permission))) {
-      const { permissions = [], origins = [] } = permission;
-      const granted = await requestPermissions(permissions, origins);
+  for (const permissions of permissionsList) {
+    if (!(await browser.permissions.contains(permissions))) {
+      const granted = await browser.permissions.request(permissions);
       if (!granted) {
         return false;
       }
@@ -48,13 +47,15 @@ export async function ensureAllPermissions(
   return true;
 }
 
-export function collectPermissions(recipe: RecipeDefinition): IPermissions[];
+export function collectPermissions(
+  recipe: RecipeDefinition
+): Permissions.Permissions[];
 export function collectPermissions(
   extensionPoints: ExtensionPointDefinition[]
-): IPermissions[];
+): Permissions.Permissions[];
 export function collectPermissions(
   recipeOrExtensionPoints: RecipeDefinition | ExtensionPointDefinition[]
-): IPermissions[] {
+): Permissions.Permissions[] {
   const forDefinition = ({ id }: ExtensionPointDefinition) => {
     const extensionPoint = extensionRegistry.lookup(id);
     return extensionPoint.permissions;
@@ -72,7 +73,9 @@ export function collectPermissions(
  * @param extension
  * @returns {*}
  */
-export function extensionPermissions(extension: IExtension): IPermissions[] {
+export function extensionPermissions(
+  extension: IExtension
+): Permissions.Permissions[] {
   const { extensionPointId } = extension;
   const extensionPoint = extensionRegistry.lookup(extensionPointId);
   const blockPermissions = extensionPoint
@@ -82,32 +85,47 @@ export function extensionPermissions(extension: IExtension): IPermissions[] {
 }
 
 export async function checkPermissions(
-  permissions: Permissions[]
+  permissionsList: Permissions.Permissions[]
 ): Promise<boolean> {
-  return every(await Promise.all(permissions.map(checkPermission)));
-}
-
-async function checkPermission(permission: Permissions): Promise<boolean> {
-  return await new Promise((resolve) => {
-    chrome.permissions.contains(permission, resolve);
-  });
+  console.debug("checking permissions", permissionsList);
+  return every(
+    await Promise.all(
+      permissionsList.map((permissions) =>
+        browser.permissions.contains(permissions)
+      )
+    )
+  );
 }
 
 export async function permissionsEnabled(
-  extension: IExtension<object>
+  extension: IExtension
 ): Promise<boolean> {
   return await checkPermissions(extensionPermissions(extension));
 }
 
 export async function ensureExtensionPermissions(
-  extension: IExtension<object>
-) {
+  extension: IExtension
+): Promise<boolean> {
   const permissions = extensionPermissions(extension);
   return await ensureAllPermissions(permissions);
 }
 
+export function originPermissions(
+  permissions: Permissions.Permissions[]
+): Permissions.Permissions[] {
+  return sortBy(
+    permissions.flatMap((perm) =>
+      perm.origins.map((origin) => ({
+        origins: [origin],
+        permissions: perm.permissions,
+      }))
+    ),
+    (x) => x.origins[0]
+  );
+}
+
 export function useExtensionPermissions(
-  extension: IExtension<object>
+  extension: IExtension
 ): [boolean | undefined, () => Promise<void>] {
   const [enabled, setEnabled] = useState(undefined);
 

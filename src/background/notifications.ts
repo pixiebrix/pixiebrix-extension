@@ -16,21 +16,12 @@
  */
 
 import { liftBackground } from "@/background/protocol";
+import { browser, Notifications } from "webextension-polyfill-ts";
 
 export const createNotification = liftBackground(
   "CREATE_NOTIFICATION",
-  async (options: chrome.notifications.NotificationOptions) => {
-    return await new Promise((resolve, reject) => {
-      chrome.notifications.create(
-        undefined, // generate id automatically
-        options,
-        (notificationId) => {
-          if (chrome.runtime.lastError != null) {
-            reject(chrome.runtime.lastError.message);
-          }
-          resolve(notificationId);
-        }
-      );
-    });
+  async (options: Notifications.CreateNotificationOptions) => {
+    // generate id automatically
+    return await browser.notifications.create(undefined, options);
   }
 );

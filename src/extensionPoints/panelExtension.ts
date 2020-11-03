@@ -17,11 +17,10 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { ExtensionPoint } from "@/types";
-import { faColumns, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
-import { isEmpty, castArray } from "lodash";
+import castArray from "lodash/castArray";
 import {
   reducePipeline,
   mergeReaders,
@@ -36,7 +35,6 @@ import {
   IBlock,
   IExtension,
   IExtensionPoint,
-  IPermissions,
   IReader,
   ReaderOutput,
   Schema,
@@ -46,6 +44,8 @@ import {
   ExtensionPointConfig,
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
+import { render } from "@/extensionPoints/dom";
+import { Permissions } from "webextension-polyfill-ts";
 
 interface PanelConfig {
   heading?: string;
@@ -70,7 +70,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     id: string,
     name: string,
     description?: string,
-    icon: IconDefinition = faColumns
+    icon = "faColumns"
   ) {
     super(id, name, description, icon);
     this.$container = null;
@@ -214,38 +214,14 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           }
         ) as Promise<string>;
 
-        errorBoundary(rendererPromise, extensionLogger).then((bodyHTML) => {
-          let componentHTML;
-          let data: any = {};
-
-          if (typeof bodyHTML === "string") {
-            componentHTML = bodyHTML;
-          } else {
-            componentHTML = (bodyHTML as any).component;
-            data = (bodyHTML as any).data;
+        errorBoundary(rendererPromise, extensionLogger).then(
+          (bodyOrComponent) => {
+            render($bodyContainer.get(0), bodyOrComponent, {
+              shadowDOM: boolean(shadowDOM),
+            });
+            extensionLogger.debug("Successfully installed panel");
           }
-
-          if (boolean(shadowDOM)) {
-            const shadowRoot = $bodyContainer
-              .get(0)
-              .attachShadow({ mode: "closed" });
-            shadowRoot.innerHTML = componentHTML;
-          } else {
-            const $component = $(componentHTML);
-
-            if (!isEmpty(data)) {
-              const elt = $component.get(0);
-              console.log(elt);
-              for (const [prop, value] of Object.entries(data)) {
-                // @ts-ignore: testing
-                elt[prop] = value;
-              }
-            }
-
-            $bodyContainer.html($component.get(0));
-          }
-          extensionLogger.debug("Successfully installed panel");
-        });
+        );
       }
     };
 
@@ -323,7 +299,7 @@ interface PanelDefinition extends ExtensionPointDefinition {
 
 class RemotePanelExtensionPoint extends PanelExtensionPoint {
   private readonly _definition: PanelDefinition;
-  public readonly permissions: IPermissions;
+  public readonly permissions: Permissions.Permissions;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
     const { id, name, description } = config.metadata;

@@ -15,7 +15,7 @@
       "matches": ["<all_urls>"],
       "js": ["contentScript.js"],
       "css": ["styles.css"],
-      "run_at": "document_end"
+      "run_at": "document_idle"
     }
   ],
   "optional_permissions": [
@@ -37,10 +37,12 @@
   },
   "web_accessible_resources": [
     "options.html",
+    "options.css",
     "background.html",
+    "background.js",
     "frame.html",
-    "script.js",
-    "background.js"
+    "frame.css",
+    "script.js"
   ],
   "background": {
     "page": "background.html"

@@ -31,16 +31,12 @@ async function initLocator() {
 
 export const locate = liftBackground(
   "LOCATE_SERVICE",
-  async (serviceId: string, id: string | null) => {
-    return await locator.locate(serviceId, id);
-  }
+  (serviceId: string, id: string | null) => locator.locate(serviceId, id)
 );
 
 export const refresh = liftBackground(
   "REFRESH_SERVICES",
-  async () => {
-    return await locator.refresh();
-  },
+  () => locator.refresh(),
   { asyncResponse: false }
 );
 

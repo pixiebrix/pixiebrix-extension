@@ -53,7 +53,6 @@ export interface Config {
 }
 
 interface OwnProps {
-  saveCaption: string;
   extensionPoint: IExtensionPoint;
   extensionId: string | null;
   initialValue: Config;
@@ -124,12 +123,10 @@ const ExtensionForm: React.FunctionComponent<{
   formikProps: FormikProps<unknown>;
   extensionPoint: IExtensionPoint;
   extensionId: string | null;
-  saveCaption: string;
 }> = ({
   formikProps: { handleSubmit, isSubmitting, isValid, validateForm },
   extensionPoint,
   extensionId,
-  saveCaption,
 }) => {
   const blocks = useMemo(() => blockRegistry.all(), []);
 
@@ -148,7 +145,7 @@ const ExtensionForm: React.FunctionComponent<{
         </Col>
         <Col className="text-right">
           <Button type="submit" disabled={isSubmitting || !isValid}>
-            {saveCaption}
+            {extensionId ? "Update Brick" : "Activate Brick"}
           </Button>
         </Col>
       </Row>
@@ -169,9 +166,14 @@ const ExtensionForm: React.FunctionComponent<{
                 variant="tabs"
                 defaultActiveKey={activeTab}
                 onSelect={(tab: string) => {
-                  dispatch(
-                    navigate(`/workshop/extensions/${extensionId}/${tab}`)
-                  );
+                  const path = extensionId
+                    ? `/workshop/extensions/${encodeURIComponent(
+                        extensionId
+                      )}/${tab}`
+                    : `/workshop/install/${encodeURIComponent(
+                        extensionPoint.id
+                      )}/${tab}`;
+                  dispatch(navigate(path));
                 }}
               >
                 <NavItem
@@ -190,7 +192,7 @@ const ExtensionForm: React.FunctionComponent<{
                   eventKey="configuration"
                   fieldName="config"
                 />
-                <NavItem caption="Log Stream" eventKey="log" />
+                {extensionId && <NavItem caption="Log Stream" eventKey="log" />}
               </Nav>
             </Card.Header>
 
@@ -224,7 +226,7 @@ const ExtensionForm: React.FunctionComponent<{
                 blocks={blocks}
               />
             )}
-            {activeTab === "log" && (
+            {extensionId && activeTab === "log" && (
               <RunLogCard
                 extensionPoint={extensionPoint}
                 extensionId={extensionId}
@@ -246,7 +248,6 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
     label: initialLabel,
     services: initialServices,
   },
-  saveCaption,
 }) => {
   const initialValues = useMemo(
     () => ({
@@ -272,7 +273,6 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
           formikProps={formikProps}
           extensionPoint={extensionPoint}
           extensionId={extensionId}
-          saveCaption={saveCaption}
         />
       )}
     </Formik>

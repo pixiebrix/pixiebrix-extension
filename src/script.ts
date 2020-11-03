@@ -15,6 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * The script that get injected into the page
+ */
 import "regenerator-runtime/runtime";
 import "core-js/stable";
 import { clone, getPropByPath } from "./utils";
@@ -46,44 +49,91 @@ import { globalSearch } from "@/vendors/globalSearch";
 import pickBy from "lodash/pickBy";
 import identity from "lodash/identity";
 
-const attachListener = (messageType, handler) => {
-  document.addEventListener(messageType, function (e) {
-    console.debug(`RECEIVE ${messageType}`, e.detail);
+type Handler = (payload: unknown) => unknown;
+const handlers: { [type: string]: Handler } = {};
 
-    const reject = (error) => {
+declare global {
+  interface Window {
+    angular?: {
+      version: {
+        full: string;
+      };
+      element: (
+        element: HTMLElement
+      ) => {
+        scope: () => Record<string, unknown>;
+      };
+    };
+    jQuery?: {
+      fn: {
+        jquery: string;
+      };
+    };
+    Backbone?: {
+      VERSION: string;
+    };
+    Vue?: {
+      version: string;
+    };
+  }
+}
+
+window.addEventListener("message", function (event) {
+  const handler = handlers[event.data?.type];
+
+  if (!handler) {
+    return;
+  }
+
+  const { meta, type, payload } = event.data;
+
+  console.debug(`RECEIVE ${type}`, event.data);
+
+  const reject = (error: unknown) => {
+    try {
+      console.warn(error);
       document.dispatchEvent(
-        new CustomEvent(`${messageType}_REJECTED`, {
+        new CustomEvent(`${type}_REJECTED`, {
           detail: {
-            id: e.detail.id,
+            id: meta.id,
             error,
           },
         })
       );
-    };
-
-    const fulfill = (result) => {
-      document.dispatchEvent(
-        new CustomEvent(`${messageType}_FULFILLED`, {
-          detail: {
-            id: e.detail.id,
-            result,
-          },
-        })
+    } catch (err) {
+      console.error(
+        `An error occurred while dispatching an error for ${type}`,
+        { error: err, originalError: error }
       );
-    };
-
-    let resultPromise;
-
-    try {
-      resultPromise = handler(e.detail);
-    } catch (error) {
-      // handler is a function that immediately generated an error -- bail early.
-      reject(error);
-      return;
     }
+  };
 
-    Promise.resolve(resultPromise).then(fulfill).catch(reject);
-  });
+  const fulfill = (result: unknown) => {
+    document.dispatchEvent(
+      new CustomEvent(`${type}_FULFILLED`, {
+        detail: {
+          id: meta.id,
+          result,
+        },
+      })
+    );
+  };
+
+  let resultPromise;
+
+  try {
+    resultPromise = handler(payload);
+  } catch (error) {
+    // handler is a function that immediately generated an error -- bail early.
+    reject(error);
+    return;
+  }
+
+  Promise.resolve(resultPromise).then(fulfill).catch(reject);
+});
+
+const attachListener = (messageType: string, handler: Handler) => {
+  handlers[messageType] = handler;
 };
 
 attachListener(SEARCH_WINDOW, ({ query }) => ({
@@ -101,8 +151,12 @@ attachListener(DETECT_FRAMEWORK_VERSIONS, () => ({
   redux: undefined,
 }));
 
-function readPathSpec(object, pathSpec) {
-  const values = {};
+type PathSpec = Record<string, string | { path: string; args: unknown }>;
+
+// needs to be object because we want window to be a valid argument
+// eslint-disable-next-line @typescript-eslint/ban-types
+function readPathSpec(object: object, pathSpec: PathSpec) {
+  const values: Record<string, unknown> = {};
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
@@ -114,11 +168,14 @@ function readPathSpec(object, pathSpec) {
   return values;
 }
 
-const sleep = (milliseconds) => {
+const sleep = (milliseconds: number) => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
 
-async function awaitNonEmpty(valueFactory, { waitMillis, retryMillis = 50 }) {
+async function awaitNonEmpty(
+  valueFactory: () => unknown,
+  { waitMillis, retryMillis = 50 }: { waitMillis: number; retryMillis?: number }
+) {
   const start = new Date().getTime();
   let elapsed = 0;
   let value = {};
@@ -201,7 +258,10 @@ attachListener(READ_EMBER_VIEW_ATTRS, ({ selector, attrs: rawAttrs }) => {
 
   if (!isEmpty(attrs)) {
     return fromPairs(
-      attrs.map((attr) => [attr, readEmberValueFromCache(view.attrs[attr])])
+      attrs.map((attr: string) => [
+        attr,
+        readEmberValueFromCache(view.attrs[attr]),
+      ])
     );
   } else {
     return pickBy(

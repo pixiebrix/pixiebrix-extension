@@ -15,9 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// @ts-ignore: no existing definitions exist
-import jq from "jq-web";
-import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
@@ -29,7 +26,7 @@ export class JQTransformer extends Transformer {
       "@pixiebrix/jq",
       "jq - JSON processor",
       "Apply a jq expression: https://stedolan.github.io/jq/",
-      faCode
+      "faCode"
     );
   }
 
@@ -47,9 +44,21 @@ export class JQTransformer extends Transformer {
     ["filter"]
   );
 
-  async transform({ filter, data }: BlockArg, { ctxt }: BlockOptions) {
+  async transform(
+    { filter, data }: BlockArg,
+    { ctxt, logger }: BlockOptions
+  ): Promise<unknown> {
     const input = (data ?? "").trim() !== "" ? data : ctxt;
-    console.debug("@pixiebrix/jq", { filter, data, ctxt, input });
+
+    logger.debug("Running jq transform", { filter, data, ctxt, input });
+
+    const jq = (
+      await import(
+        /* webpackChunkName: "jq-web" */
+        // @ts-ignore: no existing definitions exist
+        "jq-web"
+      )
+    ).default;
     return await jq.promised.json(input, filter);
   }
 }

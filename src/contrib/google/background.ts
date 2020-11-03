@@ -16,6 +16,7 @@
  */
 
 const API_KEY = process.env.GOOGLE_API_KEY;
+const CHROME = process.env.CHROME;
 
 import { DISCOVERY_DOCS } from "./sheets/handlers";
 
@@ -26,7 +27,10 @@ declare global {
 }
 
 function initGoogle(): void {
-  if (!API_KEY || API_KEY === "undefined") {
+  if (!CHROME) {
+    console.info("gapi only available in Chrome");
+    return;
+  } else if (!API_KEY || API_KEY === "undefined") {
     throw new Error("Google API_KEY not set");
   }
 

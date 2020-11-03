@@ -16,9 +16,7 @@
  */
 
 import { ExtensionPoint } from "@/types";
-import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import Mustache from "mustache";
-import iconAsSVG, { IconConfig } from "@/icons/svgIcons";
 import { checkAvailable } from "@/blocks/available";
 import castArray from "lodash/castArray";
 import { engineRenderer } from "@/helpers";
@@ -41,15 +39,15 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import {
-  BlockIcon,
   IBlock,
   IExtension,
   IExtensionPoint,
-  IPermissions,
   ReaderOutput,
   Schema,
+  IconConfig,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { Permissions } from "webextension-polyfill-ts";
 
 interface MenuItemExtensionConfig {
   caption: string;
@@ -69,7 +67,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     id: string,
     name: string,
     description?: string,
-    icon: BlockIcon = faMousePointer
+    icon = "faMousePointer"
   ) {
     super(id, name, description, icon);
     this.$menu = undefined;
@@ -149,6 +147,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     const serviceContext = await makeServiceContext(extension.services);
     const renderTemplate = engineRenderer(extension.templateEngine);
     const extensionContext = { ...ctxt, ...serviceContext };
+
+    const iconAsSVG = (
+      await import(
+        /* webpackChunkName: "icons" */
+        "@/icons/svgIcons"
+      )
+    ).default;
 
     console.debug("Extension context", { serviceContext, ctxt });
 
@@ -244,7 +249,7 @@ interface MenuDefinition extends ExtensionPointDefinition {
 
 class HydratedMenuItemExtensionPoint extends MenuItemExtensionPoint {
   private readonly _definition: MenuDefinition;
-  public readonly permissions: IPermissions;
+  public readonly permissions: Permissions.Permissions;
 
   public get defaultOptions(): {
     caption: string;

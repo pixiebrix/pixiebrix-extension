@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
 import { proxyService } from "@/background/requests";
 import { Schema, BlockArg } from "@/core";
@@ -25,7 +24,7 @@ import { PropError } from "@/errors";
 
 export class GetAPITransformer extends Transformer {
   constructor() {
-    super("@pixiebrix/get", "HTTP GET", "Fetch data from an API", faCloud);
+    super("@pixiebrix/get", "HTTP GET", "Fetch data from an API", "faCloud");
   }
 
   inputSchema: Schema = propertiesToSchema(

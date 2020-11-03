@@ -16,16 +16,18 @@
  */
 
 import sortBy from "lodash/sortBy";
-const filenameRegex = /^\.\/(?<fileName>.*?)\.svg$/i;
+import { IconOption } from "@/icons/types";
+type RequireContext = __WebpackModuleApi.RequireContext;
+import { IconLibrary, IconConfig } from "@/core";
 
-export type IconLibrary = "bootstrap" | "simple-icons";
+const filenameRegex = /^\.\/(?<fileName>.*?)\.svg$/i;
 
 const iconCache: { [libraryKey in IconLibrary]: { [key: string]: string } } = {
   bootstrap: {},
   "simple-icons": {},
 };
 
-function importAll(library: IconLibrary, r: any): void {
+function importAll(library: IconLibrary, r: RequireContext): void {
   return r.keys().forEach((key: string) => {
     const match = filenameRegex.exec(key);
     iconCache[library][match.groups.fileName] = r(key);
@@ -41,17 +43,6 @@ importAll(
   "simple-icons",
   require.context("simple-icons/icons/", false, /\.svg$/)
 );
-
-export interface IconConfig {
-  id: string;
-  library?: IconLibrary;
-  size?: number;
-}
-
-export interface IconOption {
-  value: { id: string; library: IconLibrary };
-  label: string;
-}
 
 export const iconOptions: IconOption[] = sortBy(
   Object.entries(iconCache).flatMap(([library, libraryCache]) =>

@@ -30,39 +30,70 @@ jobs:
         with:
           node-version: '14.x'
       - run: npm install
-      - run: npm run stage:chrome
+      - run: npm run build:chrome
         env:
+          NODE_ENV: production
+          ENVIRONMENT: staging
+          ROLLBAR_PUBLIC_PATH: chrome-extension://staging/
+          CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
-          EXTERNALLY_CONNECTABLE: "https://pixiebrix-staging.herokuapp.com/*,http://127.0.0.1/*"
-          SERVICE_URL: https://pixiebrix-staging.herokuapp.com
-          ROLLBAR_CHROME_ACCESS_TOKEN: ${{ secrets.ROLLBAR_CHROME_ACCESS_TOKEN }}
+          EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}/*,http://127.0.0.1/*
+          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
-          CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
-# cd not available, also https://github.com/actions/upload-artifact#zipped-artifact-downloads
-#      - uses: montudor/action-zip@v0.1.0
-#        with:
-#          args: (cd browsers/chrome/bundles/ && zip -r - *) > pixiebrix-chrome.zip
       - uses: actions/upload-artifact@v2
         with:
           name: chrome-staging
           path: browsers/chrome/bundles
           retention-days: 5
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chrome-bundle-size
+          path: report.html
+          retention-days: 5
 
-#  Currently broken because of @webcomponents/custom-elements import
-#  headers-chrome:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: actions/setup-node@v1
-#        with:
-#          node-version: '14.x'
-#      - run: npm install
-#      - run: npm run build:scripts
-#      - run: node scripts/bin/headers.js --stack-size=1024
-#      - uses: actions/upload-artifact@v2
-#        with:
-#          name: brick-headers
-#          path: headers.json
-#          retention-days: 5
+  stage-firefox:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - run: npm install
+      - run: npm run build:firefox
+        env:
+          NODE_ENV: production
+          ENVIRONMENT: staging
+          ROLLBAR_PUBLIC_PATH: moz-extension://staging/
+          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
+          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: firefox-staging
+          path: browsers/firefox/bundles
+          retention-days: 5
+      - uses: actions/upload-artifact@v2
+        with:
+          name: firefox-bundle-size
+          path: report.html
+          retention-days: 5
+
+  generate-headers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - run: npm install
+      - run: npm run build:scripts
+      - run: node scripts/bin/headers.js
+      - uses: actions/upload-artifact@v2
+        with:
+          name: brick-headers
+          path: headers.json
+          retention-days: 5

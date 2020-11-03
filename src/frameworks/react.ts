@@ -36,14 +36,15 @@ export class ComponentNotFoundError extends Error {
   }
 }
 
-export function readReactProps(fiber: ComponentFiber, rootProp?: string) {
+export function readReactProps(
+  fiber: ComponentFiber,
+  rootProp?: string
+): Record<string, unknown> {
   // getComponentFiber is already returning the "return" for the component
   const memoizedProps = fiber.memoizedProps;
   console.debug("Memoized props", memoizedProps);
   const props = rootProp ? memoizedProps[rootProp] : memoizedProps;
-  return fromPairs(
-    Object.entries(props).filter(([key, _]) => key !== "children")
-  );
+  return fromPairs(Object.entries(props).filter(([key]) => key !== "children"));
 }
 
 export function findReactComponent(

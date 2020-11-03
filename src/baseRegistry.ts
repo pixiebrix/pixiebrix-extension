@@ -30,7 +30,7 @@ interface RegistryItem {
   id: string;
 }
 
-export class DoesNotExistError<TItem extends RegistryItem> extends Error {
+export class DoesNotExistError extends Error {
   constructor(id: string) {
     super(`${id} does not exist`);
     this.name = "DoesNotExistError";
@@ -41,7 +41,7 @@ export class Registry<TItem extends RegistryItem> {
   private data: { [key: string]: TItem };
   private readonly resourcePath: string;
   private readonly storageKey: string;
-  private readonly deserialize: (raw: any) => TItem;
+  private readonly deserialize: (raw: unknown) => TItem;
   private refreshed: boolean;
 
   constructor(
@@ -62,7 +62,10 @@ export class Registry<TItem extends RegistryItem> {
     }
     const result = this.data[id];
     if (!result) {
-      console.debug("Installed blocks", this.data);
+      console.debug(
+        `Cannot find ${id} for in registry ${this.resourcePath}`,
+        this.data
+      );
       throw new DoesNotExistError(id);
     }
     return result;
@@ -83,16 +86,16 @@ export class Registry<TItem extends RegistryItem> {
       if (!item) {
         console.warn("Register received a null/undefined item");
         continue;
-      }
-      if (item.id == null) {
+      } else if (item.id == null) {
         console.warn(`Skipping item with no id`, item);
         continue;
       }
+      // console.debug(`Registered ${item.id}`);
       this.data[item.id] = item;
     }
   }
 
-  _parse(raw: any): TItem | undefined {
+  _parse(raw: unknown): TItem | undefined {
     let obj;
     try {
       if (typeof raw === "string") {
@@ -132,13 +135,11 @@ export class Registry<TItem extends RegistryItem> {
     this.register(...parsed);
   }
 
-  async refresh({ allowFetch } = { allowFetch: true }) {
+  async refresh({ allowFetch } = { allowFetch: true }): Promise<void> {
     if (this.refreshed) {
       return;
     } else if (!chrome?.storage) {
-      throw new Error(
-        "Cannot refresh when not running in an extension context"
-      );
+      throw new Error("Can only refresh when running in an extension context");
     }
 
     const raw = await readStorage(this.storageKey);
@@ -160,7 +161,7 @@ export class Registry<TItem extends RegistryItem> {
     if (allowFetch) {
       await this.fetch();
     } else if (!data?.length) {
-      throw new Error("No items stored locally and fetch is not allowed");
+      console.warn("No items stored locally and fetch is not allowed");
     }
 
     this.refreshed = true;

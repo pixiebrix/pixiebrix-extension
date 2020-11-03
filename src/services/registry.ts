@@ -31,6 +31,10 @@ export async function readRawConfigurations(): Promise<
 > {
   const rawConfigs = await readStorage(storageKey);
 
+  if (!rawConfigs) {
+    return [];
+  }
+
   // Not really sure why the next level down is escaped JSON?
   const base = JSON.parse(rawConfigs as string);
   const configured = JSON.parse(base.configured);

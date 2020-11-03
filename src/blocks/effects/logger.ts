@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
@@ -27,7 +26,7 @@ export class LogEffect extends Effect {
       "@pixiebrix/browser/log",
       "Log To Console",
       "Log a message to the Browser's console",
-      faSearch
+      "faSearch"
     );
   }
 

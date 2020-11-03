@@ -16,7 +16,6 @@
  */
 
 import { ExtensionPoint } from "@/types";
-import { faBolt, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import {
   reducePipeline,
   blockList,
@@ -38,7 +37,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     id: string,
     name: string,
     description?: string,
-    icon: string | IconDefinition = faBolt
+    icon = "faBolt"
   ) {
     super(id, name, description, icon);
   }

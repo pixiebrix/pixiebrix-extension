@@ -20,10 +20,11 @@ import {
   reactivate as reactivateExtensions,
 } from "@/contentScript/lifecycle";
 import { liftBackground } from "@/background/protocol";
+import { browser } from "webextension-polyfill-ts";
 
 function initNavigation(): void {
-  chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-    console.debug("onHistoryStateUpdated", details);
+  browser.webNavigation.onHistoryStateUpdated.addListener(function (details) {
+    // console.debug("onHistoryStateUpdated", details);
     const { tabId } = details;
     notifyNavigation(tabId);
   });

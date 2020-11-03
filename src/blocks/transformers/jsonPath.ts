@@ -17,7 +17,6 @@
 
 import { JSONPath } from "jsonpath-plus";
 import { Transformer } from "@/types";
-import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 
@@ -27,7 +26,7 @@ export class JSONPathTransformer extends Transformer {
       "@pixiebrix/jsonpath",
       "JSONPath",
       "Apply a JSONPath expression: https://github.com/s3u/JSONPath",
-      faCode
+      "faCode"
     );
   }
 

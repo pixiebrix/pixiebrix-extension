@@ -16,7 +16,6 @@
  */
 
 import { Renderer } from "@/types";
-import { faTable } from "@fortawesome/free-solid-svg-icons";
 import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
 import { registerBlock } from "@/blocks/registry";
 import Mustache from "mustache";
@@ -29,7 +28,7 @@ export class Table extends Renderer {
       "@pixiebrix/table",
       "A customizable table",
       "A customizable table that displays a list of values",
-      faTable
+      "faTable"
     );
   }
 

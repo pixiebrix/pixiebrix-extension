@@ -15,14 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { handleNavigate } from "@/contentScript/lifecycle";
 import { reportError } from "@/telemetry/logging";
-import { refresh as refreshServices } from "@/background/locator";
-import "@/contentScript/script";
-import "notifyjs-browser";
-import "jquery.initialize";
 
-// Import for the side effect of registering js defined blocks
 import "@/blocks";
 import "@/contrib";
 
@@ -36,6 +30,15 @@ window.addEventListener("unhandledrejection", function (e) {
   // eslint-disable-next-line require-await
   reportError(e);
 });
+
+// Import for the side effect of registering js defined blocks
+import { handleNavigate } from "@/contentScript/lifecycle";
+import { refresh as refreshServices } from "@/background/locator";
+import "@/contentScript/externalProtocol";
+import "@/messaging/external";
+import "@/contentScript/script";
+import "notifyjs-browser";
+import "jquery.initialize";
 
 // Reload services on background page for each new page. This is inefficient right now, but will
 // avoid confusion when service configurations are updated remotely

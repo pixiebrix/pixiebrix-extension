@@ -15,6 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export const PERMISSIONS_NOTIFICATIONS = {
+import { Permissions } from "webextension-polyfill-ts";
+
+export const PERMISSIONS_NOTIFICATIONS: Permissions.Permissions = {
   permissions: ["notifications"],
 };

@@ -24,7 +24,7 @@ import serviceRegistry from "@/services/registry";
 import {
   liftContentScript,
   notifyContentScripts,
-} from "@/contentScript/protocol";
+} from "@/contentScript/backgroundProtocol";
 
 let _loadedBlocks = false;
 let _scriptPromise: Promise<void>;
@@ -50,12 +50,14 @@ async function installScriptOnce(): Promise<void> {
   // https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script/9517879#9517879
   // https://stackoverflow.com/questions/9602022/chrome-extension-retrieving-global-variable-from-webpage
   if (!_scriptPromise) {
+    console.debug("Installing page script");
     _scriptPromise = new Promise((resolve) => {
       const script = document.createElement("script");
       script.src = chrome.extension.getURL("script.js");
       (document.head || document.documentElement).appendChild(script);
       script.onload = function () {
         script.remove();
+        console.debug("Installed page script");
         resolve();
       };
     });
@@ -92,17 +94,23 @@ async function loadExtensions() {
   for (const [extensionPointId, extensions] of Object.entries(
     extensionPointConfigs
   )) {
-    const extensionPoint = extensionPointRegistry.lookup(extensionPointId);
-    const activeExtensions = Object.values(extensions).filter((x) => x.active);
+    try {
+      const extensionPoint = extensionPointRegistry.lookup(extensionPointId);
+      const activeExtensions = Object.values(extensions).filter(
+        (x) => x.active
+      );
 
-    let added = false;
-    for (const extension of activeExtensions) {
-      extensionPoint.addExtension(extension);
-      added = true;
-    }
+      let added = false;
+      for (const extension of activeExtensions) {
+        extensionPoint.addExtension(extension);
+        added = true;
+      }
 
-    if (added) {
-      _extensionPoints.push(extensionPoint);
+      if (added) {
+        _extensionPoints.push(extensionPoint);
+      }
+    } catch (err) {
+      console.warn(`Error adding extension point ${extensionPointId}`);
     }
   }
 }
@@ -123,6 +131,7 @@ function getNavSequence() {
  * @returns {Promise<void>}
  */
 export async function handleNavigate(): Promise<void> {
+  console.debug("Handling navigation");
   await installScriptOnce();
   await loadBlocksOnce();
   const extensionPoints = await loadExtensionsOnce();
@@ -143,9 +152,7 @@ export async function handleNavigate(): Promise<void> {
 
 export const notifyNavigation = liftContentScript(
   "NAVIGATE",
-  async () => {
-    await handleNavigate();
-  },
+  () => handleNavigate(),
   { asyncResponse: false }
 );
 

@@ -26,20 +26,23 @@ export function initRollbar(): void {
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
       captureUncaught: true,
       captureUnhandledRejections: true,
+      codeVersion: process.env.SOURCE_VERSION,
       payload: {
-        environment: process.env.NODE_ENV,
+        environment: process.env.ENVIRONMENT,
       },
       transform: function (payload: Record<string, unknown>) {
         // @ts-ignore: copied this example from Rollbar's documentation, so should presumably always be available
         const trace = payload.body.trace;
-        const locRegex = /^(chrome-extension):\/\/(.*?)\/(.*)/;
+        const locRegex = /^(chrome-extension|moz-extension):\/\/(.*?)\/(.*)/;
         if (trace && trace.frames) {
           for (let i = 0; i < trace.frames.length; i++) {
             const filename = trace.frames[i].filename;
             if (filename) {
               const m = filename.match(locRegex);
-              // Be sure that the minified_url when uploading includes 'dynamichost'
-              trace.frames[i].filename = m[1] + "://dynamichost/" + m[3];
+              // Be sure that the minified_url when uploading includes the build type
+              trace.frames[
+                i
+              ].filename = `${m[1]}://${process.env.ENVIRONMENT}/${m[3]}`;
             }
           }
         }

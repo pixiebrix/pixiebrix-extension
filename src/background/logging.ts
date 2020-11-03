@@ -22,7 +22,8 @@ import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { JsonObject } from "type-fest";
 import { serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import { reverse, sortBy } from "lodash";
+import reverse from "lodash/reverse";
+import sortBy from "lodash/sortBy";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";

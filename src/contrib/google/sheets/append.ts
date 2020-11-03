@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { faTable } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
 import {
   appendRows,
@@ -97,7 +96,7 @@ export class GoogleSheetsAppend extends Effect {
       "@pixiebrix/google/sheets-append",
       "Add Google sheet row",
       "Record data to Google sheets",
-      faTable
+      "faTable"
     );
   }
 

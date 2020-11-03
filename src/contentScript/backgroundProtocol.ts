@@ -19,12 +19,14 @@ import {
   HandlerEntry,
   HandlerOptions,
   isErrorResponse,
+  isNotification,
+  RemoteProcedureCallRequest,
   SerializableResponse,
   toErrorResponse,
 } from "@/messaging/protocol";
 import { isBackgroundPage, isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
-import { BackgroundActionError } from "@/background/protocol";
+import { browser, Runtime } from "webextension-polyfill-ts";
 
 const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
 
@@ -39,51 +41,37 @@ export class ContentScriptActionError extends Error {
 
 const handlers: { [key: string]: HandlerEntry } = {};
 
-function initListener(messageEvent: chrome.runtime.ExtensionMessageEvent) {
-  messageEvent.addListener(function (request, sender, sendResponse) {
-    const { handler, options: { asyncResponse } = { asyncResponse: true } } =
-      handlers[request.type] ?? {};
-    if (handler) {
-      console.debug(`Handling contentScript action ${request.type}`);
-      const handlerPromise = new Promise((resolve) =>
-        resolve(handler(...request.payload))
-      );
-      handlerPromise
-        .then((x) => {
-          if (asyncResponse) {
-            console.debug(
-              `Handler returning success response for ${request.type}`
-            );
-            sendResponse(x);
-          }
-        })
-        .catch((x) => {
-          if (asyncResponse) {
-            console.debug(
-              `Handler returning error response for ${request.type}`
-            );
-            sendResponse(toErrorResponse(request.type, x));
-          } else {
-            console.warn(
-              `An error occurred while processing a notification ${request.type}`,
-              x
-            );
-          }
-        });
-      return asyncResponse;
-    } else if (request.type.startsWith(MESSAGE_PREFIX)) {
-      console.warn(`No handler installed for message ${request.type}`);
+function allowSender(sender: Runtime.MessageSender): boolean {
+  return sender.id === browser.runtime.id;
+}
+
+function contentListener(
+  request: RemoteProcedureCallRequest,
+  sender: Runtime.MessageSender
+): Promise<unknown> | undefined {
+  const { type, payload } = request;
+  const { handler, options } = handlers[type] ?? {};
+
+  if (allowSender(sender) && handler) {
+    console.debug(`Handling contentScript action ${type}`);
+
+    const handlerPromise = new Promise((resolve) =>
+      resolve(handler(...payload))
+    );
+
+    if (isNotification(options)) {
+      return;
+    } else {
+      return handlerPromise.catch((reason) => {
+        console.debug(`Handler returning error response for ${type}`);
+        return toErrorResponse(type, reason);
+      });
     }
-    return false;
-  });
+  }
 }
 
 async function getTabIds(): Promise<number[]> {
-  return new Promise<number[]>((resolve) => {
-    chrome.tabs.query({}, function (tabs) {
-      resolve(tabs.map((x) => x.id));
-    });
-  });
+  return (await browser.tabs.query({})).map((x) => x.id);
 }
 
 export function notifyContentScripts(
@@ -112,48 +100,31 @@ export function notifyContentScripts(
     };
   }
 
-  return (tabId: number | null, ...args: unknown[]) => {
+  return async (tabId: number | null, ...args: unknown[]) => {
     if (!isBackgroundPage()) {
-      return Promise.reject(
-        new ContentScriptActionError(
-          "This method can only be called from the background page"
-        )
+      throw new ContentScriptActionError(
+        "This method can only be called from the background page"
       );
     }
-
     console.debug(
       `Broadcasting content script notification ${fullType} to tab: ${
         tabId ?? "<all>"
       }`
     );
-
     const messageOne = (tabId: number) =>
-      new Promise<void>((resolve) => {
-        chrome.tabs.sendMessage(
-          tabId,
-          { type: fullType, payload: args },
-          () => {
-            if (chrome.runtime.lastError != null) {
-              console.warn(
-                `An error occurred when processing a notification: ${chrome.runtime.lastError.message}`
-              );
-            }
-            resolve();
-          }
-        );
-      });
-
-    return Promise.resolve(tabId ? [tabId] : getTabIds())
-      .then((tabIds) => Promise.all(tabIds.map(messageOne)))
-      .then(() => undefined);
+      browser.tabs.sendMessage(tabId, { type: fullType, payload: args });
+    const tabIds = tabId ? [tabId] : await getTabIds();
+    // don't need to await the promises, because we don't care about the results
+    Promise.all(tabIds.map(messageOne));
+    return;
   };
 }
 
 /**
- * Lift a method to be run on the background page
- * @param type a unique name for the background action
+ * Lift a method to be run in the contentScript
+ * @param type a unique name for the contentScript action
  * @param method the method to lift
- * @param options background action handler options
+ * @param options contentScript action handler options
  */
 export function liftContentScript<R extends SerializableResponse>(
   type: string,
@@ -198,15 +169,13 @@ export function liftContentScript<R extends SerializableResponse>(
     handlers[fullType] = { handler: method, options };
   }
 
-  return (tabId: number, ...args: unknown[]) => {
+  return async (tabId: number, ...args: unknown[]) => {
     if (isContentScript()) {
       console.debug("Resolving call from the contentScript immediately");
-      return Promise.resolve(method(...args));
+      return method(...args);
     } else if (!isBackgroundPage()) {
-      return Promise.reject(
-        new ContentScriptActionError(
-          "Unexpected call from origin other than the background page"
-        )
+      throw new ContentScriptActionError(
+        "Unexpected call from origin other than the background page"
       );
     }
 
@@ -214,34 +183,17 @@ export function liftContentScript<R extends SerializableResponse>(
       `Sending content script action ${fullType} to tab: ${tabId ?? "<all>"}`
     );
 
-    return new Promise((resolve, reject) => {
-      chrome.tabs.sendMessage(
-        tabId,
-        { type: fullType, payload: args },
-        function (response: unknown) {
-          if (chrome.runtime.lastError != null) {
-            reject(new BackgroundActionError(chrome.runtime.lastError.message));
-          } else if (isErrorResponse(response)) {
-            reject(deserializeError(response.$$error));
-          } else {
-            // Must have the expected type given liftBackground's type signature
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            resolve(response as any);
-          }
-        }
-      );
-      if (chrome.runtime.lastError != null) {
-        reject(new BackgroundActionError(chrome.runtime.lastError.message));
-      } else if (!(options?.asyncResponse ?? true)) {
-        console.debug("Resolving notification promise immediately");
-        resolve();
-      } else {
-        console.debug("Awaiting async response");
-      }
+    const response = await browser.tabs.sendMessage(tabId, {
+      type: fullType,
+      payload: args,
     });
+    if (isErrorResponse(response)) {
+      throw deserializeError(response.$$error);
+    }
+    return response;
   };
 }
 
 if (isContentScript()) {
-  initListener(chrome.runtime.onMessage);
+  browser.runtime.onMessage.addListener(contentListener);
 }

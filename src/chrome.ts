@@ -16,6 +16,12 @@
  */
 
 import isEmpty from "lodash/isEmpty";
+import { browser } from "webextension-polyfill-ts";
+import {
+  isBackgroundPage,
+  isContentScript,
+  isOptionsPage,
+} from "webext-detect-page";
 
 type RequestUpdateCheckStatus = chrome.runtime.RequestUpdateCheckStatus;
 
@@ -23,13 +29,6 @@ export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
 
 type StorageLocation = "local" | "sync";
-
-export class AuthenticationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "AuthenticationError";
-  }
-}
 
 export class RequestError extends Error {
   readonly response: unknown;
@@ -41,11 +40,8 @@ export class RequestError extends Error {
   }
 }
 
-export class NotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "NotFoundError";
-  }
+export function isExtensionContext(): boolean {
+  return isContentScript() || isOptionsPage() || isBackgroundPage();
 }
 
 export function setChromeExtensionId(extensionId: string): void {
@@ -74,50 +70,21 @@ export class RuntimeNotFoundError extends Error {
   }
 }
 
-export async function getAuthToken(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    chrome.identity.getAuthToken({ interactive: true }, function (
-      token: string
-    ) {
-      if (chrome.runtime.lastError == null) {
-        resolve(token);
-      } else {
-        reject(chrome.runtime.lastError.message);
-      }
-    });
-  });
-}
-
-export function readStorage<T>(
+/**
+ * @deprecated use browser.storage directly
+ */
+export async function readStorage<T>(
   storageKey: string,
   storageType: StorageLocation = "local"
 ): Promise<T> {
-  return new Promise((resolve, reject) => {
-    chrome.storage[storageType].get(storageKey, function (result) {
-      if (chrome.runtime.lastError == null) {
-        resolve(result[storageKey]);
-      } else {
-        reject(chrome.runtime.lastError.message);
-      }
-    });
-  });
+  const result = await browser.storage[storageType].get(storageKey);
+  return result[storageKey];
 }
 
-export function readAllStorage(
-  storageType: StorageLocation = "local"
-): Promise<Record<string, unknown>> {
-  return new Promise((resolve, reject) => {
-    chrome.storage[storageType].get(null, function (result) {
-      if (chrome.runtime.lastError == null) {
-        resolve(result);
-      } else {
-        reject(chrome.runtime.lastError.message);
-      }
-    });
-  });
-}
-
-export function setStorage(
+/**
+ * @deprecated use browser.storage directly
+ */
+export async function setStorage(
   storageKey: string,
   value: string,
   storageType: StorageLocation = "local"
@@ -125,28 +92,7 @@ export function setStorage(
   if (typeof value !== "string") {
     throw new Error("Expected string value");
   }
-  return new Promise((resolve, reject) => {
-    chrome.storage[storageType].set({ [storageKey]: value }, function () {
-      if (chrome.runtime.lastError != null) {
-        reject(chrome.runtime.lastError.message);
-      } else {
-        // console.trace(`Stored ${storageKey}`, value);
-        resolve();
-      }
-    });
-  });
-}
-
-export function openOptions(): Promise<void> {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.openOptionsPage(function () {
-      if (chrome.runtime.lastError == null) {
-        resolve();
-      } else {
-        reject(chrome.runtime.lastError.message);
-      }
-    });
-  });
+  await browser.storage[storageType].set({ [storageKey]: value });
 }
 
 // https://developer.chrome.com/extensions/runtime#method-requestUpdateCheck
@@ -161,47 +107,5 @@ export function requestUpdateCheck(): Promise<RequestUpdateCheckStatus> {
         reject(chrome.runtime.lastError.message);
       }
     });
-  });
-}
-
-export function containsPermissions(
-  permissions?: string[],
-  origins?: string[]
-): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    chrome.permissions.contains(
-      {
-        permissions,
-        origins,
-      },
-      (result) => {
-        if (chrome.runtime.lastError != null) {
-          reject(chrome.runtime.lastError.message);
-        } else {
-          resolve(result);
-        }
-      }
-    );
-  });
-}
-
-export function requestPermissions(
-  permissions?: string[],
-  origins?: string[]
-): Promise<boolean> {
-  return new Promise((resolve, reject) => {
-    chrome.permissions.request(
-      {
-        permissions,
-        origins,
-      },
-      (granted) => {
-        if (chrome.runtime.lastError != null) {
-          reject(chrome.runtime.lastError.message);
-        } else {
-          resolve(granted);
-        }
-      }
-    );
   });
 }

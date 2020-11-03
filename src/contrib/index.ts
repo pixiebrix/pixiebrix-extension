@@ -15,10 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "./google";
-import "./hubspot";
-import "./linkedin";
-import "./pipedrive";
-import "./slack";
-import "./techcrunch";
-import "./salesforce";
+export * from "./google";
+export * from "./hubspot";
+export * from "./linkedin";
+export * from "./pipedrive";
+export * from "./slack";
+export * from "./techcrunch";
+export * from "./salesforce";

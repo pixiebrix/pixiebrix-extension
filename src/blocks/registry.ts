@@ -21,7 +21,7 @@ import { IBlock } from "@/core";
 
 const registry = new BaseRegistry<IBlock>("registry:blocks", "blocks", fromJS);
 
-export function registerBlock(block: IBlock) {
+export function registerBlock(block: IBlock): void {
   registry.register(block);
 }
 

@@ -20,8 +20,8 @@ import {
   checkPermissions,
   collectPermissions,
   ensureAllPermissions,
+  originPermissions,
 } from "@/permissions";
-import { sortBy } from "lodash";
 import { Button, Card, Table } from "react-bootstrap";
 import useAsyncEffect from "use-async-effect";
 import {
@@ -29,7 +29,6 @@ import {
   RecipeDefinition,
 } from "@/types/definitions";
 import { useSelectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
-import { IPermissions } from "@/core";
 
 function useEnsurePermissions(extensions: ExtensionPointDefinition[]) {
   const [accepted, setAccepted] = useState<boolean>(false);
@@ -58,18 +57,6 @@ function useEnsurePermissions(extensions: ExtensionPointDefinition[]) {
 
 interface OwnProps {
   blueprint: RecipeDefinition;
-}
-
-function originPermissions(permissions: IPermissions[]): IPermissions[] {
-  return sortBy(
-    permissions.flatMap((perm) =>
-      perm.origins.map((origin) => ({
-        origins: [origin],
-        permissions: perm.permissions,
-      }))
-    ),
-    (x) => x.origins[0]
-  );
 }
 
 const PermissionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {

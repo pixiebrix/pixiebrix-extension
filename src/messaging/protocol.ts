@@ -19,10 +19,11 @@ import { SerializedError } from "@/core";
 import { serializeError } from "serialize-error";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-export type SerializableResponse = object;
+export type SerializableResponse = boolean | string | number | object;
 
 export interface RemoteProcedureCallRequest {
   type: string;
+  meta?: { nonce?: string };
   payload: unknown[];
 }
 
@@ -39,6 +40,12 @@ export type HandlerEntry = {
 
 interface ErrorResponse {
   $$error: SerializedError;
+}
+
+export function isNotification(
+  options: HandlerOptions = { asyncResponse: true }
+): boolean {
+  return !(options?.asyncResponse ?? true);
 }
 
 export function isErrorResponse(ex: unknown): ex is ErrorResponse {

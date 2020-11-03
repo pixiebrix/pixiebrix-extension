@@ -18,10 +18,21 @@
 const path = require("path");
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyPlugin = require("copy-webpack-plugin");
 
-const rootDir = path.resolve(__dirname, "../../../");
-const chromeRoot = path.resolve(__dirname, "../");
+const rootDir = path.resolve(__dirname, "../../");
+
+const dotenv = require("dotenv");
+
+dotenv.config({
+  path: path.resolve(rootDir, "browsers", process.env.ENV_FILE ?? ".env"),
+});
+
+if (!process.env.SOURCE_VERSION) {
+  process.env.SOURCE_VERSION = require("child_process")
+    .execSync("git rev-parse --short HEAD")
+    .toString()
+    .trim();
+}
 
 // https://github.com/TypeStrong/ts-loader/blob/master/examples/react-babel-karma-gulp/webpack.config.base.js#L10
 const babelLoader = {
@@ -46,9 +57,6 @@ module.exports = {
     frame: path.resolve(rootDir, "src/frame"),
     options: path.resolve(rootDir, "src/options"),
   },
-  output: {
-    path: path.resolve(chromeRoot, "bundles"),
-  },
   node: {
     fs: "empty",
   },
@@ -68,8 +76,17 @@ module.exports = {
       $: "jquery",
       jQuery: "jquery",
     }),
-    new CopyPlugin({
-      patterns: [{ from: path.resolve(chromeRoot, "src") }],
+    new webpack.DefinePlugin({
+      "process.env": {
+        ROLLBAR_ACCESS_TOKEN: JSON.stringify(
+          process.env.ROLLBAR_CHROME_ACCESS_TOKEN
+        ),
+        SERVICE_URL: JSON.stringify(process.env.SERVICE_URL),
+        SOURCE_VERSION: JSON.stringify(process.env.SOURCE_VERSION),
+        NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        ENVIRONMENT: JSON.stringify(process.env.ENVIRONMENT),
+      },
     }),
     new MiniCssExtractPlugin(),
   ],
