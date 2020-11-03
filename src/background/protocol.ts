@@ -16,7 +16,11 @@
  */
 
 import { v4 as uuidv4 } from "uuid";
-import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
+import {
+  getChromeExtensionId,
+  isExtensionContext,
+  RuntimeNotFoundError,
+} from "@/chrome";
 import { browser, Runtime } from "webextension-polyfill-ts";
 // @ts-ignore: types not defined for match-pattern
 import matchPattern from "match-pattern";
@@ -59,10 +63,13 @@ function allowBackgroundSender(
   );
 }
 
-async function backgroundListener(
+function backgroundListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
-): Promise<unknown> {
+): Promise<unknown> | undefined {
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage
+
   if (!allowBackgroundSender(sender)) {
     console.debug(
       `Ignoring message to background page from unknown sender`,
@@ -80,8 +87,7 @@ async function backgroundListener(
     console.debug(
       `Handling background ${
         notification ? "notification" : "action"
-      } ${type} (nonce: ${meta?.nonce})`,
-      { sender }
+      } ${type} (nonce: ${meta?.nonce})`
     );
 
     const handlerPromise = new Promise((resolve) =>
@@ -89,18 +95,30 @@ async function backgroundListener(
     );
 
     if (notification) {
+      handlerPromise.catch((reason) => {
+        console.warn(
+          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce})`,
+          reason
+        );
+      });
       return;
     }
 
-    try {
-      const response = await handlerPromise;
-      console.debug(`Handler fulfilled action ${type} (nonce: ${meta?.nonce})`);
-      return response;
-    } catch (ex) {
-      console.debug(`Handler rejected action ${type} (nonce: ${meta?.nonce})`);
-      return toErrorResponse(type, ex);
-    }
-  } else if (request.type.startsWith(MESSAGE_PREFIX)) {
+    return handlerPromise.then(
+      (value) => {
+        console.debug(
+          `Handler fulfilled action ${type} (nonce: ${meta?.nonce})`
+        );
+        return value;
+      },
+      (reason) => {
+        console.debug(
+          `Handler rejected action ${type} (nonce: ${meta?.nonce})`
+        );
+        return toErrorResponse(type, reason);
+      }
+    );
+  } else if (type?.startsWith(MESSAGE_PREFIX)) {
     console.warn(`No handler installed for message ${type}`);
   }
 
@@ -125,6 +143,7 @@ function externalSendMessage(
   message: unknown,
   options?: Runtime.SendMessageOptionsType
 ): Promise<unknown> {
+  console.debug("Using chrome.runtime.sendMessage");
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(extensionId, message, options, (response) => {
       if (chrome.runtime.lastError) {
@@ -141,21 +160,41 @@ export async function callBackground(
   args: unknown[],
   options: HandlerOptions
 ): Promise<unknown> {
-  const message = { type, payload: args, meta: { nonce: uuidv4() } };
+  const nonce = uuidv4();
+  const message = { type, payload: args, meta: { nonce } };
 
   // When accessing from an external site via chrome, browser.runtime won't be available.
-  const sendMessage = browser.runtime?.sendMessage ?? externalSendMessage;
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#Communicating_with_background_scripts
+  const sendMessage = isExtensionContext()
+    ? browser.runtime.sendMessage
+    : externalSendMessage;
+  const extensionId = isExtensionContext() ? null : getExtensionId();
 
   if (isNotification(options)) {
-    console.debug(`Sending background notification ${type}`, message);
-    await sendMessage(getExtensionId(), message, {});
+    console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
+      extensionId,
+    });
+    await sendMessage(extensionId, message, {});
   } else {
-    console.debug(`Sending background action ${type}`, message);
-    const response = await sendMessage(getExtensionId(), message, {});
+    console.debug(`Sending background action ${type} (nonce: ${nonce})`, {
+      extensionId,
+    });
+    let response;
+    try {
+      response = await sendMessage(extensionId, message, {});
+    } catch (err) {
+      console.debug(
+        `Error sending background action ${type} (nonce: ${nonce})`,
+        { extensionId, err }
+      );
+      throw err;
+    }
+
     console.debug(
-      `Content script received response for ${type} (nonce: ${message.meta.nonce})`,
+      `Content script received response for ${type} (nonce: ${nonce})`,
       response
     );
+
     if (isErrorResponse(response)) {
       throw deserializeError(response.$$error);
     }
@@ -176,7 +215,7 @@ export function liftBackground<R extends SerializableResponse>(
 ): () => Promise<R>;
 export function liftBackground<T, R extends SerializableResponse>(
   type: string,
-  method: (a0: T) => R,
+  method: (a0: T) => R | Promise<R>,
   options?: HandlerOptions
 ): (a0: T) => Promise<R>;
 export function liftBackground<T0, T1, R extends SerializableResponse>(

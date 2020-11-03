@@ -15,12 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios, {
-  AxiosPromise,
-  AxiosRequestConfig,
-  AxiosResponse,
-  Method,
-} from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import { liftBackground } from "@/background/protocol";
 import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
@@ -80,12 +75,31 @@ function isErrorResponse(
   return data.status_code >= 400;
 }
 
-const backgroundRequest = liftBackground<
-  AxiosRequestConfig,
-  AxiosPromise<unknown>
->("HTTP_REQUEST", (config: AxiosRequestConfig) => {
-  return axios(config);
-});
+interface SanitizedResponse<T = unknown> {
+  _sanitizedResponseBrand: null;
+  data: T;
+  status: number;
+  statusText: string;
+}
+
+function cleanResponse<T>(response: AxiosResponse<T>): SanitizedResponse<T> {
+  // Firefox won't send response objects from the background page to the content script. So strip out the
+  // potentially sensitive parts of the response (the request, headers, etc.)
+  return JSON.parse(
+    JSON.stringify({
+      data: response.data,
+      status: response.status,
+      statusText: response.statusText,
+    })
+  );
+}
+
+const backgroundRequest = liftBackground<AxiosRequestConfig, SanitizedResponse>(
+  "HTTP_REQUEST",
+  async (config: AxiosRequestConfig) => {
+    return cleanResponse(await axios(config));
+  }
+);
 
 async function authenticate(
   config: SanitizedServiceConfiguration,
@@ -123,8 +137,8 @@ async function proxyRequest<T>(
   service: SanitizedServiceConfiguration,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse<T>> {
+  console.debug(`Proxying request for ${service.id}`);
   let proxyResponse;
-
   try {
     proxyResponse = (await backgroundRequest(
       await authenticate(await pixieServiceFactory(), {
@@ -135,7 +149,7 @@ async function proxyRequest<T>(
           service_id: service.serviceId,
         },
       })
-    )) as AxiosResponse<ProxyResponseData>;
+    )) as SanitizedResponse<ProxyResponseData>;
   } catch (err) {
     throw Error("An error occurred when proxying the service request");
   }
@@ -167,9 +181,6 @@ const _proxyService = liftBackground(
     requestConfig: AxiosRequestConfig
   ): Promise<RemoteResponse> => {
     if (serviceConfig.proxy) {
-      console.debug(
-        `proxy request for ${serviceConfig.id} to ${serviceConfig.serviceId}`
-      );
       return await proxyRequest(serviceConfig, requestConfig);
     } else {
       try {
@@ -177,6 +188,10 @@ const _proxyService = liftBackground(
           await authenticate(serviceConfig, requestConfig)
         );
       } catch (ex) {
+        console.debug(
+          "An error occurred when making a request from the background page",
+          ex
+        );
         if ([401, 403].includes(ex.response?.status)) {
           // have the user login again
           const service = serviceRegistry.lookup(serviceConfig.serviceId);
@@ -203,7 +218,9 @@ export async function proxyService<TData>(
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
     try {
-      return (await backgroundRequest(requestConfig)) as AxiosResponse<TData>;
+      return (await backgroundRequest(requestConfig)) as SanitizedResponse<
+        TData
+      >;
     } catch (reason) {
       throw new RemoteServiceError(reason.response.statusText, reason.response);
     }

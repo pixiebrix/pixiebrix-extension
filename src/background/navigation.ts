@@ -24,7 +24,7 @@ import { browser } from "webextension-polyfill-ts";
 
 function initNavigation(): void {
   browser.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-    console.debug("onHistoryStateUpdated", details);
+    // console.debug("onHistoryStateUpdated", details);
     const { tabId } = details;
     notifyNavigation(tabId);
   });

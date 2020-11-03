@@ -41,28 +41,31 @@ export class ContentScriptActionError extends Error {
 
 const handlers: { [key: string]: HandlerEntry } = {};
 
-async function contentListener(
+function allowSender(sender: Runtime.MessageSender): boolean {
+  return sender.id === browser.runtime.id;
+}
+
+function contentListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
-) {
-  const { handler, options } = handlers[request.type] ?? {};
+): Promise<unknown> | undefined {
+  const { type, payload } = request;
+  const { handler, options } = handlers[type] ?? {};
 
-  if (sender.id === browser.runtime.id && handler) {
-    console.debug(`Handling contentScript action ${request.type}`);
+  if (allowSender(sender) && handler) {
+    console.debug(`Handling contentScript action ${type}`);
 
     const handlerPromise = new Promise((resolve) =>
-      resolve(handler(...request.payload))
+      resolve(handler(...payload))
     );
 
     if (isNotification(options)) {
       return;
-    }
-
-    try {
-      return await handlerPromise;
-    } catch (err) {
-      console.debug(`Handler returning error response for ${request.type}`);
-      return toErrorResponse(request.type, err);
+    } else {
+      return handlerPromise.catch((reason) => {
+        console.debug(`Handler returning error response for ${type}`);
+        return toErrorResponse(type, reason);
+      });
     }
   }
 }
