@@ -36,10 +36,8 @@
     ]
   },
   "web_accessible_resources": [
-    "icons.bundle.js",
-    "jq-web.bundle.js",
-    "widgets.bundle.js",
-    "icons.bundle.js",
+    "css/*",
+    "bundles/*",
     "frame.html",
     "frame.css",
     "script.js"

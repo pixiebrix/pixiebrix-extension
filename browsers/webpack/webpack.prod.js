@@ -81,7 +81,7 @@ module.exports = (rollbarPublicPath) => {
     },
     output: {
       filename: "[name].js",
-      chunkFilename: "[name].bundle.js",
+      chunkFilename: "bundles/[name].bundle.js",
     },
     plugins: [
       // https://www.npmjs.com/package/webpack-bundle-analyzer
