@@ -45,7 +45,7 @@
     "@types/js-yaml": "^3.12.5",
     "@types/jsdom": "^16.2.5",
     "@types/json-schema": "^7.0.5",
-    "@types/lodash": "^4.14.162",
+    "@types/lodash": "^4.14.164",
     "@types/marked": "^1.1.0",
     "@types/mustache": "^4.0.1",
     "@types/notifyjs": "^3.0.2",
