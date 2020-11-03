@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { proxyService } from "@/background/requests";
 import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
@@ -30,7 +29,7 @@ export class AddOrganization extends Effect {
       "pipedrive/organizations-add",
       "Add Organization in Pipedrive",
       "Add an organization in Pipedrive CRM if it does not already exist",
-      faUserPlus
+      "faUserPlus"
     );
   }
 
@@ -88,7 +87,7 @@ export class AddPerson extends Effect {
       "pipedrive/persons-add",
       "Add Person in Pipedrive",
       "Add a person in Pipedrive CRM if they do not already exist",
-      faUserPlus
+      "faUserPlus"
     );
   }
 

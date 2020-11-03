@@ -62,6 +62,11 @@ module.exports = (rollbarPublicPath) => {
     optimization: {
       minimize: true,
       usedExports: true,
+      splitChunks: {
+        cacheGroups: {
+          vendors: false,
+        },
+      },
       minimizer: [
         new TerserJSPlugin({
           terserOptions: {
@@ -76,7 +81,8 @@ module.exports = (rollbarPublicPath) => {
       chunkFilename: "[name].bundle.js",
     },
     plugins: [
-      new BundleAnalyzerPlugin(),
+      // https://www.npmjs.com/package/webpack-bundle-analyzer
+      new BundleAnalyzerPlugin({ analyzerMode: "static" }),
       ...rollbarPlugins(rollbarPublicPath),
       new webpack.EnvironmentPlugin({
         // use 'production' unless process.env.NODE_ENV is defined

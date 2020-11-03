@@ -47,6 +47,11 @@ jobs:
           name: chrome-staging
           path: browsers/chrome/bundles
           retention-days: 5
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chrome-bundle-size
+          path: report.html
+          retention-days: 5
 
   stage-firefox:
     runs-on: ubuntu-latest
@@ -70,8 +75,13 @@ jobs:
           name: firefox-staging
           path: browsers/firefox/bundles
           retention-days: 5
+      - uses: actions/upload-artifact@v2
+        with:
+          name: firefox-bundle-size
+          path: report.html
+          retention-days: 5
 
-  headers-chrome:
+  generate-headers:
     runs-on: ubuntu-latest
 
     steps:

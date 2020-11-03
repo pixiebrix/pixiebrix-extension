@@ -19,7 +19,6 @@ import { ExtensionPoint } from "@/types";
 import { isHost } from "@/extensionPoints/helpers";
 import startCase from "lodash/startCase";
 import Mustache from "mustache";
-import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import {
   BlockConfig,
   blockList,
@@ -53,7 +52,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
       `techcrunch/${entityType}-mention-action`,
       `TechCrunch ${startCase(entityType)} Link Action`,
       `Add a button next to each ${entityType} mention in an article`,
-      faMousePointer
+      "faMousePointer"
     );
     this.entityType = entityType;
     this.$links = undefined;
