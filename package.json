@@ -12,7 +12,7 @@
     "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js",
     "build:firefox": "npx webpack --config browsers/firefox/webpack/webpack.prod.js",
     "build:scripts": "npx webpack --config scripts/webpack.scripts.js",
-    "generate:headers": "node scripts/bin/headers.js --stack-size=1024"
+    "generate:headers": "node scripts/bin/headers.js"
   },
   "author": "Todd Schiller",
   "license": "GPL-3.0",

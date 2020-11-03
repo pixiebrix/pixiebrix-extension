@@ -32,14 +32,16 @@ export function initRollbar(): void {
       transform: function (payload: Record<string, unknown>) {
         // @ts-ignore: copied this example from Rollbar's documentation, so should presumably always be available
         const trace = payload.body.trace;
-        const locRegex = /^(chrome-extension):\/\/(.*?)\/(.*)/;
+        const locRegex = /^(chrome-extension|moz-extension):\/\/(.*?)\/(.*)/;
         if (trace && trace.frames) {
           for (let i = 0; i < trace.frames.length; i++) {
             const filename = trace.frames[i].filename;
             if (filename) {
               const m = filename.match(locRegex);
-              // Be sure that the minified_url when uploading includes 'dynamichost'
-              trace.frames[i].filename = m[1] + "://dynamichost/" + m[3];
+              // Be sure that the minified_url when uploading includes the ROLLBAR_PUBLIC_HOST
+              trace.frames[
+                i
+              ].filename = `${m[1]}://${process.env.ROLLBAR_PUBLIC_HOST}/${m[3]}`;
             }
           }
         }
