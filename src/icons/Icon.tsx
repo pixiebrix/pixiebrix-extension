@@ -15,31 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
-import { BlockArg, BlockOptions, Schema } from "@/core";
-import { propertiesToSchema } from "@/validators/generic";
+import React from "react";
+import { IconLibrary } from "@/core";
+import iconAsSVG from "@/icons/svgIcons";
 
-export class LogEffect extends Effect {
-  constructor() {
-    super(
-      "@pixiebrix/browser/log",
-      "Log To Console",
-      "Log a message to the Browser's console",
-      "faSearch"
-    );
-  }
+const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
+  icon,
+  library,
+}) => (
+  <span
+    dangerouslySetInnerHTML={{
+      __html: iconAsSVG({ id: icon, library, size: 16 }),
+    }}
+  />
+);
 
-  inputSchema: Schema = propertiesToSchema({
-    message: {
-      type: "string",
-      description: "The message to log",
-    },
-  });
-
-  async effect({ message }: BlockArg, { ctxt }: BlockOptions): Promise<void> {
-    console.log(message, ctxt);
-  }
-}
-
-registerBlock(new LogEffect());
+export default Icon;

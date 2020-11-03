@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { faStickyNote } from "@fortawesome/free-solid-svg-icons";
 import { registerBlock } from "@/blocks/registry";
 import { PERMISSIONS_NOTIFICATIONS } from "@/permissions/optional";
 import { createNotification } from "@/background/notifications";
@@ -29,7 +28,7 @@ export class ShowNotificationEffect extends Effect {
       "@pixiebrix/system/notification",
       "System Notification",
       "Show a system notification",
-      faStickyNote
+      "faStickyNote"
     );
   }
 

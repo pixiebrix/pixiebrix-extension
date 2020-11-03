@@ -16,7 +16,7 @@
  */
 
 import { FORWARD_FRAME_DATA, REQUEST_FRAME_DATA } from "@/messaging/constants";
-import MessageSender = chrome.runtime.MessageSender;
+type MessageSender = chrome.runtime.MessageSender;
 
 const _frameData: { [key: string]: string } = {};
 

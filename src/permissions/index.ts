@@ -26,7 +26,7 @@ import {
   RecipeDefinition,
 } from "@/types/definitions";
 import { Permissions, browser } from "webextension-polyfill-ts";
-import { sortBy } from "lodash";
+import sortBy from "lodash/sortBy";
 
 /**
  * Request any permissions the user has not already granted

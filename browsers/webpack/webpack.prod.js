@@ -21,11 +21,13 @@ const TerserJSPlugin = require("terser-webpack-plugin");
 const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const RollbarSourceMapPlugin = require("rollbar-sourcemap-webpack-plugin");
 const webpack = require("webpack");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
+  .BundleAnalyzerPlugin;
 
 function rollbarPlugins() {
   console.log(
     "ROLLBAR_BROWSER_ACCESS_TOKEN: ",
-    process.env.ROLLBAR_CHROME_ACCESS_TOKEN
+    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
   );
   if (
     process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN &&
@@ -58,6 +60,8 @@ module.exports = (rollbarPublicPath) => {
     mode: "production",
     devtool: "nosources-source-map",
     optimization: {
+      minimize: true,
+      usedExports: true,
       minimizer: [
         new TerserJSPlugin({
           terserOptions: {
@@ -72,6 +76,7 @@ module.exports = (rollbarPublicPath) => {
       chunkFilename: "[name].bundle.js",
     },
     plugins: [
+      new BundleAnalyzerPlugin(),
       ...rollbarPlugins(rollbarPublicPath),
       new webpack.EnvironmentPlugin({
         // use 'production' unless process.env.NODE_ENV is defined

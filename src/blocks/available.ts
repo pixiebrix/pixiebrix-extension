@@ -17,7 +17,10 @@
 
 // @ts-ignore: types not defined for match-pattern
 import matchPattern from "match-pattern";
-import { castArray, groupBy, sortBy, uniq } from "lodash";
+import castArray from "lodash/castArray";
+import groupBy from "lodash/groupBy";
+import sortBy from "lodash/sortBy";
+import uniq from "lodash/uniq";
 import { Availability } from "@/blocks/types";
 import { Permissions } from "webextension-polyfill-ts";
 

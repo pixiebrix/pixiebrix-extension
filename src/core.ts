@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { JSONSchema7, JSONSchema7Definition } from "json-schema";
 import { AxiosRequestConfig } from "axios";
 import { Primitive } from "type-fest";
@@ -78,7 +77,7 @@ export interface IOption {
   label: string;
 }
 
-export type BlockIcon = string | IconDefinition;
+export type BlockIcon = string;
 
 /**
  * Metadata about a block, extension point, or service
@@ -262,4 +261,12 @@ export interface IService<
     requestConfig: AxiosRequestConfig,
     oauthConfig?: TOAuth
   ) => AxiosRequestConfig;
+}
+
+export type IconLibrary = "bootstrap" | "simple-icons";
+
+export interface IconConfig {
+  id: string;
+  library?: IconLibrary;
+  size?: number;
 }

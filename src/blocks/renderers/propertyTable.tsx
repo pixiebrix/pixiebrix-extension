@@ -20,22 +20,8 @@ import { Renderer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions, RenderedHTML } from "@/core";
-import { isPlainObject, sortBy } from "lodash";
-import { TreeTable } from "primereact/treetable";
-import { Column } from "primereact/column";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const theme = require("!!raw-loader!primereact/resources/themes/saga-blue/theme.css?esModule=false")
-  .default;
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const primereact = require("!!raw-loader!primereact/resources/primereact.min.css?esModule=false")
-  .default;
-
-// FIXME: figure out how to load the fonts
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const primeicons = require("!!raw-loader!primeicons/primeicons.css?esModule=false")
-  .default;
+import isPlainObject from "lodash/isPlainObject";
+import sortBy from "lodash/sortBy";
 
 interface Item {
   key: string;
@@ -117,20 +103,6 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
   }
 }
 
-const PropertyTree: React.FunctionComponent<{ value: any }> = ({ value }) => {
-  return (
-    <React.Fragment>
-      <style type="text/css">
-        {theme.toString() + primereact.toString() + primeicons.toString()}
-      </style>
-      <TreeTable value={value}>
-        <Column field="name" header="Property" expander />
-        <Column field="value" header="Value" />
-      </TreeTable>
-    </React.Fragment>
-  );
-};
-
 export class PropertyTableRenderer extends Renderer {
   constructor() {
     super(
@@ -146,6 +118,11 @@ export class PropertyTableRenderer extends Renderer {
     inputs: BlockArg,
     { ctxt }: BlockOptions
   ): Promise<RenderedHTML> {
+    const PropertyTree = await import(
+      /* webpackChunkName: "widgets" */
+      "./PropertyTree"
+    );
+
     return {
       Component: PropertyTree,
       props: {

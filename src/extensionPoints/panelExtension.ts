@@ -17,11 +17,10 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { ExtensionPoint } from "@/types";
-import { faColumns, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
-import { castArray } from "lodash";
+import castArray from "lodash/castArray";
 import {
   reducePipeline,
   mergeReaders,
@@ -71,7 +70,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     id: string,
     name: string,
     description?: string,
-    icon: IconDefinition = faColumns
+    icon = "faColumns"
   ) {
     super(id, name, description, icon);
     this.$container = null;
