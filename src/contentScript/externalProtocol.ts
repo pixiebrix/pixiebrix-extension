@@ -15,6 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { isExtensionContext } from "@/chrome";
+
 const MESSAGE_PREFIX = "@@pixiebrix/external/";
 
 import { v4 as uuidv4 } from "uuid";
@@ -25,11 +27,7 @@ import {
   SerializableResponse,
   toErrorResponse,
 } from "@/messaging/protocol";
-import {
-  isBackgroundPage,
-  isContentScript,
-  isOptionsPage,
-} from "webext-detect-page";
+import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
 
@@ -108,8 +106,8 @@ function initContentScriptListener() {
 function initExternalPageListener() {
   window.addEventListener("message", function (event: MessageEvent) {
     const { type, meta, error, payload } = event.data;
-    // check isResponseType to make sure we're not handling our own messages
     if (
+      // check isResponseType to make sure we're not handling the messages from the content script
       event.source === document.defaultView &&
       isResponseType(type) &&
       meta?.nonce
@@ -130,6 +128,8 @@ function initExternalPageListener() {
         delete pageFulfilledCallbacks[meta.nonce];
         delete pageRejectedCallbacks[meta.nonce];
       }
+    } else if (type) {
+      console.debug(`Ignoring message: ${type}`, event);
     }
   });
 }
@@ -173,14 +173,12 @@ export function liftExternal<R extends SerializableResponse>(
 
   const targetOrigin = document.defaultView.origin;
 
-  return (...args: unknown[]) => {
+  return async (...args: unknown[]) => {
     if (isContentScript()) {
       console.debug("Resolving call from the contentScript immediately");
-      return Promise.resolve(method(...args));
-    } else if (isBackgroundPage() || isOptionsPage()) {
-      return Promise.reject(
-        new ContentScriptActionError("Expected call from external page")
-      );
+      return method(...args);
+    } else if (isExtensionContext()) {
+      throw new ContentScriptActionError("Expected call from external page");
     }
     return new Promise((resolve, reject) => {
       const nonce = uuidv4();
@@ -200,6 +198,6 @@ export function liftExternal<R extends SerializableResponse>(
 
 if (isContentScript()) {
   initContentScriptListener();
-} else if (!isContentScript() && !isOptionsPage() && !isBackgroundPage()) {
+} else if (!isExtensionContext()) {
   initExternalPageListener();
 }

@@ -19,6 +19,7 @@ import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import copy from "copy-to-clipboard";
 import { BlockArg, Schema } from "@/core";
+import { Permissions } from "webextension-polyfill-ts";
 
 export class CopyToClipboard extends Effect {
   constructor() {
@@ -29,7 +30,7 @@ export class CopyToClipboard extends Effect {
     );
   }
 
-  permissions = {
+  permissions: Permissions.Permissions = {
     permissions: ["clipboardWrite"],
   };
 

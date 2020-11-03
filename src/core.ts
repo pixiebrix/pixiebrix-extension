@@ -20,9 +20,9 @@ import { JSONSchema7, JSONSchema7Definition } from "json-schema";
 import { AxiosRequestConfig } from "axios";
 import { Primitive } from "type-fest";
 import { ErrorObject } from "serialize-error";
+import { Permissions } from "webextension-polyfill-ts";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
-
 export type Schema = JSONSchema7;
 export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = { [key: string]: SchemaDefinition };
@@ -78,12 +78,6 @@ export interface IOption {
   label: string;
 }
 
-export interface IPermissions {
-  // Same structure as Permissions from Chrome
-  permissions?: string[];
-  origins?: string[];
-}
-
 export type BlockIcon = string | IconDefinition;
 
 /**
@@ -127,7 +121,7 @@ export interface IExtension<
 export interface IExtensionPoint extends Metadata {
   inputSchema: Schema;
 
-  permissions: IPermissions;
+  permissions: Permissions.Permissions;
 
   defaultOptions: { [key: string]: unknown };
 
@@ -160,7 +154,7 @@ export interface IBlock extends Metadata {
    * Returns the optional permissions required to run this block
    * https://developer.chrome.com/extensions/permission_warnings
    */
-  permissions: IPermissions;
+  permissions: Permissions.Permissions;
 
   run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
 }

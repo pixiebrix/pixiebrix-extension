@@ -15,7 +15,7 @@
     "generate:headers": "node scripts/bin/headers.js --stack-size=1024"
   },
   "author": "Todd Schiller",
-  "license": "BSD-3-Clause",
+  "license": "GPL-3.0",
   "repository": "https://github.com/pixiebrix/pixiebrix-extension",
   "dependencies": {
     "@babel/core": "^7.12.3",
@@ -36,7 +36,6 @@
     "@types/classnames": "^2.2.10",
     "@types/deep-equal": "^1.0.1",
     "@types/dompurify": "^2.0.4",
-    "@types/firefox-webext-browser": "^78.0.1",
     "@types/gapi": "0.0.39",
     "@types/gapi.client.oauth2": "^2.0.1",
     "@types/gapi.client.sheets": "^4.0.11",
@@ -171,6 +170,7 @@
     "use-debounce": "^5.0.1",
     "uuid": "^8.3.1",
     "webext-detect-page": "^2.0.5",
+    "webextension-polyfill-ts": "^0.21.0",
     "webpack": "^4.44.1",
     "webpack-bundle-tracker": "^0.4.3",
     "webpack-cli": "^4.1.0",
@@ -222,5 +222,6 @@
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
-  }
+  },
+  "devDependencies": {}
 }

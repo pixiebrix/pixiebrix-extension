@@ -36,7 +36,6 @@ import {
   IBlock,
   IExtension,
   IExtensionPoint,
-  IPermissions,
   IReader,
   ReaderOutput,
   Schema,
@@ -47,6 +46,7 @@ import {
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
+import { Permissions } from "webextension-polyfill-ts";
 
 interface PanelConfig {
   heading?: string;
@@ -300,7 +300,7 @@ interface PanelDefinition extends ExtensionPointDefinition {
 
 class RemotePanelExtensionPoint extends PanelExtensionPoint {
   private readonly _definition: PanelDefinition;
-  public readonly permissions: IPermissions;
+  public readonly permissions: Permissions.Permissions;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
     const { id, name, description } = config.metadata;

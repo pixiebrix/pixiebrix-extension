@@ -50,14 +50,14 @@ async function installScriptOnce(): Promise<void> {
   // https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script/9517879#9517879
   // https://stackoverflow.com/questions/9602022/chrome-extension-retrieving-global-variable-from-webpage
   if (!_scriptPromise) {
-    console.debug("Installing agent");
+    console.debug("Installing page script");
     _scriptPromise = new Promise((resolve) => {
       const script = document.createElement("script");
       script.src = chrome.extension.getURL("script.js");
       (document.head || document.documentElement).appendChild(script);
       script.onload = function () {
         script.remove();
-        console.debug("Installed agent");
+        console.debug("Installed page script");
         resolve();
       };
     });
@@ -152,9 +152,7 @@ export async function handleNavigate(): Promise<void> {
 
 export const notifyNavigation = liftContentScript(
   "NAVIGATE",
-  async () => {
-    await handleNavigate();
-  },
+  () => handleNavigate(),
   { asyncResponse: false }
 );
 

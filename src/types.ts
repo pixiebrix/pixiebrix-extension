@@ -23,7 +23,6 @@ import {
   IBlock,
   IExtension,
   IExtensionPoint,
-  IPermissions,
   IReader,
   IService,
   Logger,
@@ -35,6 +34,7 @@ import {
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
+import { Permissions } from "webextension-polyfill-ts";
 
 export abstract class Service<
   TConfig extends ServiceConfig = ServiceConfig,
@@ -84,7 +84,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
    * Permissions required to use this extensions
    * https://developer.chrome.com/extensions/permission_warnings
    */
-  public abstract readonly permissions: IPermissions = {};
+  public abstract readonly permissions: Permissions.Permissions = {};
 
   public get defaultOptions(): { [key: string]: unknown } {
     return {};

@@ -19,36 +19,37 @@
  * API for PixieBrix app to talk to the browser extension.
  */
 import { AuthData, updateExtensionAuth } from "@/auth/token";
-import { openOptions } from "@/chrome";
 import { liftBackground } from "@/background/protocol";
 import { detect } from "detect-browser";
 import { liftExternal } from "@/contentScript/externalProtocol";
 
-const browser = detect();
+import { browser } from "webextension-polyfill-ts";
+
+const detectedBrowser = detect();
 
 function lift<R>(
   type: string,
   method: (...args: unknown[]) => Promise<R>
 ): (...args: unknown[]) => Promise<R> {
-  const chromeMethod = liftBackground(type, method);
-  const browserMethod = liftExternal(type, method);
+  const backgroundMethod = liftBackground(type, method);
+  const contentScriptMethod = liftExternal(type, method);
 
   return async (...args: unknown[]) => {
-    switch (browser.name) {
+    switch (detectedBrowser.name) {
       case "chrome": {
         // @ts-ignore: liftBackground is being inferred as signature with no arguments
-        return await chromeMethod(...args);
+        return await backgroundMethod(...args);
       }
       default: {
         // @ts-ignore: liftExternal is being inferred as signature with no arguments
-        return await browserMethod(...args);
+        return await contentScriptMethod(...args);
       }
     }
   };
 }
 
 export const connectPage = lift("CONNECT_PAGE", async () => {
-  return chrome.runtime.getManifest();
+  return browser.runtime.getManifest();
 });
 
 export const setExtensionAuth = lift(
@@ -59,8 +60,8 @@ export const setExtensionAuth = lift(
 );
 
 // chrome.runtime.openOptionsPage only available from the background page
-const _openOptions = liftBackground("OPEN_OPTIONS", async () => {
-  await openOptions();
+const _openOptions = liftBackground("BACKGROUND_OPEN_OPTIONS", async () => {
+  await browser.runtime.openOptionsPage();
   return true;
 });
 

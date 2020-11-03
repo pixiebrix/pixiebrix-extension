@@ -20,6 +20,7 @@ import { readStorage, setStorage } from "@/chrome";
 import { isBackgroundPage } from "webext-detect-page";
 import { IService, OAuthData, RawServiceConfiguration } from "@/core";
 import urljoin from "url-join";
+import { browser } from "webextension-polyfill-ts";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 
@@ -59,26 +60,6 @@ export async function deleteCachedOAuth2(key: string): Promise<void> {
   await setStorage(OAUTH2_STORAGE_KEY, JSON.stringify(current));
 }
 
-async function launchWebAuthFlow(url: string): Promise<string> {
-  console.debug("launchWebAuthFlow", { url });
-  return new Promise((resolve, reject) => {
-    chrome.identity.launchWebAuthFlow(
-      { url, interactive: true },
-      (responseUrl) => {
-        if (chrome.runtime.lastError != null) {
-          reject(
-            new Error(
-              `Unable to launch web auth flow: ${chrome.runtime.lastError.message}`
-            )
-          );
-        } else {
-          resolve(responseUrl);
-        }
-      }
-    );
-  });
-}
-
 export async function launchOAuth2Flow(
   service: IService,
   auth: RawServiceConfiguration
@@ -92,7 +73,7 @@ export async function launchOAuth2Flow(
   console.debug("OAuth2 context", oauth2);
   const { host, ...params } = oauth2;
 
-  const redirect_uri = chrome.identity.getRedirectURL("oauth2");
+  const redirect_uri = browser.identity.getRedirectURL("oauth2");
 
   const authorizeURL = new URL(urljoin(host, "/services/oauth2/authorize"));
   for (const [key, value] of Object.entries({
@@ -104,7 +85,10 @@ export async function launchOAuth2Flow(
     authorizeURL.searchParams.set(key, value);
   }
 
-  const responseUrl = await launchWebAuthFlow(authorizeURL.toString());
+  const responseUrl = await browser.identity.launchWebAuthFlow({
+    url: authorizeURL.toString(),
+    interactive: true,
+  });
 
   if (!responseUrl) {
     throw new Error("Authentication cancelled");

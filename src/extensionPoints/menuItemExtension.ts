@@ -45,11 +45,11 @@ import {
   IBlock,
   IExtension,
   IExtensionPoint,
-  IPermissions,
   ReaderOutput,
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { Permissions } from "webextension-polyfill-ts";
 
 interface MenuItemExtensionConfig {
   caption: string;
@@ -244,7 +244,7 @@ interface MenuDefinition extends ExtensionPointDefinition {
 
 class HydratedMenuItemExtensionPoint extends MenuItemExtensionPoint {
   private readonly _definition: MenuDefinition;
-  public readonly permissions: IPermissions;
+  public readonly permissions: Permissions.Permissions;
 
   public get defaultOptions(): {
     caption: string;

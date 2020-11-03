@@ -29,6 +29,7 @@ import {
   makeServiceContext,
   reducePipeline,
 } from "@/blocks/combinators";
+import { Permissions } from "webextension-polyfill-ts";
 
 interface CalendarConfig {
   ranges: BlockConfig | BlockPipeline;
@@ -68,7 +69,7 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
     },
   });
 
-  permissions = {
+  permissions: Permissions.Permissions = {
     permissions: ["tabs", "webNavigation"],
     origins: ["https://*.pipedrive.com/activities/calendar/*"],
   };

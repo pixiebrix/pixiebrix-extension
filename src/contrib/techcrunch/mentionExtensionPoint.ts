@@ -30,6 +30,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { IExtension, IReader } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
+import { Permissions } from "webextension-polyfill-ts";
 
 interface MentionConfig {
   caption: string;
@@ -73,7 +74,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
     return blockList(extension.config.action);
   }
 
-  permissions = {
+  permissions: Permissions.Permissions = {
     permissions: ["tabs", "webNavigation"],
     origins: ["https://*.techcrunch.com/*"],
   };
