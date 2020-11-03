@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const path = require("path");
 const { mergeWithCustomize, customizeArray } = require("webpack-merge");
 const common = require("./webpack.base.js");
 const TerserJSPlugin = require("terser-webpack-plugin");
@@ -23,6 +24,8 @@ const RollbarSourceMapPlugin = require("rollbar-sourcemap-webpack-plugin");
 const webpack = require("webpack");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
   .BundleAnalyzerPlugin;
+
+const rootDir = path.resolve(__dirname, "../../");
 
 function rollbarPlugins() {
   console.log(
@@ -82,7 +85,10 @@ module.exports = (rollbarPublicPath) => {
     },
     plugins: [
       // https://www.npmjs.com/package/webpack-bundle-analyzer
-      new BundleAnalyzerPlugin({ analyzerMode: "static" }),
+      new BundleAnalyzerPlugin({
+        analyzerMode: "static",
+        reportFilename: path.join(rootDir, "report.html"),
+      }),
       ...rollbarPlugins(rollbarPublicPath),
       new webpack.EnvironmentPlugin({
         // use 'production' unless process.env.NODE_ENV is defined
