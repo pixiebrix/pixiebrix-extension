@@ -15,10 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
-import BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
-import BatchUpdateSpreadsheetResponse = gapi.client.sheets.BatchUpdateSpreadsheetResponse;
 import { liftBackground } from "@/background/protocol";
+type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
+type BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
+type BatchUpdateSpreadsheetResponse = gapi.client.sheets.BatchUpdateSpreadsheetResponse;
 
 const GOOGLE_SHEETS_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
 

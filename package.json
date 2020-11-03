@@ -38,7 +38,7 @@
     "@types/dompurify": "^2.0.4",
     "@types/gapi": "0.0.39",
     "@types/gapi.client.oauth2": "^2.0.1",
-    "@types/gapi.client.sheets": "^4.0.11",
+    "@types/gapi.client.sheets": "^4.0.20201027",
     "@types/jest": "^26.0.15",
     "@types/jquery": "^3.5.1",
     "@types/js-cookie": "^2.2.6",
