@@ -18,6 +18,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const WebExtensionTarget = require("webpack-target-webextension");
 
 const rootDir = path.resolve(__dirname, "../../");
 
@@ -47,11 +48,23 @@ const babelLoader = {
   },
 };
 
+const nodeConfig = {
+  global: true,
+  process: true,
+  Buffer: true,
+  console: true,
+  fs: "empty",
+};
+
 module.exports = {
   context: rootDir,
+  node: nodeConfig,
+  target: WebExtensionTarget(nodeConfig),
   output: {
+    // https://github.com/crimx/webpack-target-webextension#usage
+    globalObject: "window",
     filename: "[name].js",
-    chunkFilename: "[name].bundle.js",
+    chunkFilename: "bundles/[name].bundle.js",
   },
   entry: {
     background: path.resolve(rootDir, "src/background"),
@@ -61,10 +74,11 @@ module.exports = {
     frame: path.resolve(rootDir, "src/frame"),
     options: path.resolve(rootDir, "src/options"),
   },
-  node: {
-    fs: "empty",
-  },
   resolve: {
+    // Need to set these fields manually as their default values rely on `web` target.
+    // See https://v4.webpack.js.org/configuration/resolve/#resolvemainfields
+    mainFields: ["browser", "module", "main"],
+    aliasFields: ["browser"],
     alias: {
       "@": path.resolve(rootDir, "src"),
       "@img": path.resolve(rootDir, "img"),
@@ -74,8 +88,12 @@ module.exports = {
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
   },
+  optimization: {
+    // Chrome bug https://bugs.chromium.org/p/chromium/issues/detail?id=1108199
+    splitChunks: { automaticNameDelimiter: "-" },
+  },
   plugins: [
-    // https://webpack.github.io/docs/list-of-plugins.html#provideplugin
+    // https://webpack.js.org/plugins/provide-plugin/
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",

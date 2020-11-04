@@ -25,7 +25,14 @@ import { IconOption } from "@/icons/types";
 import { useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { IconConfig } from "@/core";
-import IconSelector from "@/icons/IconSelector";
+
+const IconSelector = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "icons" */
+      "@/icons/IconSelector"
+    )
+);
 
 const IconField: React.FunctionComponent<FieldProps<IconConfig>> = ({
   label,

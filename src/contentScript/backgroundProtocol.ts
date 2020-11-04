@@ -187,10 +187,26 @@ export function liftContentScript<R extends SerializableResponse>(
       `Sending content script action ${fullType} to tab: ${tabId ?? "<all>"}`
     );
 
-    const response = await browser.tabs.sendMessage(tabId, {
-      type: fullType,
-      payload: args,
-    });
+    let response;
+
+    try {
+      response = await browser.tabs.sendMessage(tabId, {
+        type: fullType,
+        payload: args,
+      });
+    } catch (err) {
+      console.debug(`Error sending content script action ${type}`, {
+        tabId,
+        err,
+      });
+
+      if (isNotification(options)) {
+        return;
+      } else {
+        throw err;
+      }
+    }
+
     if (isErrorResponse(response)) {
       throw deserializeError(response.$$error);
     }
