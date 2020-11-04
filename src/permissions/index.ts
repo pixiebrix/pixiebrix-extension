@@ -87,7 +87,6 @@ export function extensionPermissions(
 export async function checkPermissions(
   permissionsList: Permissions.Permissions[]
 ): Promise<boolean> {
-  console.debug("checking permissions", permissionsList);
   return every(
     await Promise.all(
       permissionsList.map((permissions) =>

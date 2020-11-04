@@ -23,6 +23,7 @@ import compact from "lodash/compact";
 import urljoin from "url-join";
 import isPlainObject from "lodash/isPlainObject";
 import pickBy from "lodash/pickBy";
+import isEmpty from "lodash/isEmpty";
 
 const LOCAL_SCOPE = "@local";
 
@@ -135,6 +136,25 @@ export class Registry<TItem extends RegistryItem> {
     this.register(...parsed);
   }
 
+  async loadLocal(): Promise<void> {
+    const raw = await readStorage(this.storageKey);
+
+    let data;
+    try {
+      data = raw ? JSON.parse(raw as string) : [];
+    } catch (err) {
+      console.error("Raw storage", { raw, err });
+      throw new Error(`Error refreshing configuration from storage: ${err}`);
+    }
+
+    if (!Array.isArray(data)) {
+      throw new Error("Invalid storage contents");
+    }
+
+    const parsed: TItem[] = compact(data.map((x: unknown) => this._parse(x)));
+    this.register(...flatten(parsed));
+  }
+
   async refresh({ allowFetch } = { allowFetch: true }): Promise<void> {
     if (this.refreshed) {
       return;
@@ -142,25 +162,11 @@ export class Registry<TItem extends RegistryItem> {
       throw new Error("Can only refresh when running in an extension context");
     }
 
-    const raw = await readStorage(this.storageKey);
-
-    let data;
-    try {
-      data = raw ? JSON.parse(raw as string) : [];
-    } catch {
-      console.error("Raw storage", raw);
-      throw new Error("Error refreshing configuration from storage");
-    }
-
-    // Load local first
-    if (data?.length) {
-      const parsed: TItem[] = compact(data.map((x: unknown) => this._parse(x)));
-      this.register(...flatten(parsed));
-    }
+    await this.loadLocal();
 
     if (allowFetch) {
       await this.fetch();
-    } else if (!data?.length) {
+    } else if (isEmpty(this.data)) {
       console.warn("No items stored locally and fetch is not allowed");
     }
 

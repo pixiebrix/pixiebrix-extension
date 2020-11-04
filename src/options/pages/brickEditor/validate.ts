@@ -19,6 +19,10 @@ import yaml from "js-yaml";
 import { KIND_SCHEMAS, validateKind } from "@/validators/generic";
 import { ValidationResult } from "@cfworker/json-schema";
 
+interface PartialSchema {
+  kind?: string;
+}
+
 export async function validateSchema(value: string): Promise<any> {
   if (!value) {
     return {
@@ -26,16 +30,17 @@ export async function validateSchema(value: string): Promise<any> {
     };
   }
 
-  let json: any;
+  let json: PartialSchema;
+
   try {
-    json = yaml.safeLoad(value);
+    json = yaml.safeLoad(value) as PartialSchema;
   } catch (ex) {
     return {
       config: [`Invalid YAML: ${ex}`],
     };
   }
 
-  if (!KIND_SCHEMAS.hasOwnProperty(json.kind)) {
+  if (!Object.prototype.hasOwnProperty.call(KIND_SCHEMAS, json.kind)) {
     return {
       config: [
         `Expected a value for "kind": ${Object.keys(KIND_SCHEMAS).join(", ")}`,
@@ -46,9 +51,12 @@ export async function validateSchema(value: string): Promise<any> {
   let validation: ValidationResult;
 
   try {
-    validation = await validateKind(json, json.kind);
+    validation = await validateKind(
+      json,
+      json.kind as keyof typeof KIND_SCHEMAS
+    );
   } catch (ex) {
-    console.error(ex);
+    console.error("An error occurred when validating the schema", ex);
     return { config: ["An error occurred when validating the schema"] };
   }
 

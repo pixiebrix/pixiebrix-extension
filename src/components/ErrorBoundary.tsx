@@ -15,8 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { ErrorInfo } from "react";
+import React from "react";
 import Rollbar from "rollbar";
+import { Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRedo } from "@fortawesome/free-solid-svg-icons";
 
 interface State {
   hasError: boolean;
@@ -39,7 +42,7 @@ class ErrorBoundary extends React.Component<{}, State> {
     };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error): void {
     // @ts-ignore: not sure what's going on with the rollbar type
     Rollbar.error(error);
   }
@@ -52,7 +55,12 @@ class ErrorBoundary extends React.Component<{}, State> {
           <div>
             <p>{this.state.errorMessage}</p>
           </div>
-          <div>{this.state.stack}</div>
+          <div>
+            <Button onClick={() => location.reload()}>
+              <FontAwesomeIcon icon={faRedo} /> Reload the Page
+            </Button>
+          </div>
+          <div className="mt-2">{this.state.stack}</div>
         </>
       );
     }

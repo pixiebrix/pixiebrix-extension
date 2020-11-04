@@ -24,8 +24,10 @@ import { useHistory } from "react-router";
 import { useToasts } from "react-toast-notifications";
 import { EditorValues } from "./Editor";
 import { validateSchema } from "./validate";
-import { proxyService } from "@/background/requests";
-import { pixieServiceFactory } from "@/services/locator";
+import axios from "axios";
+import { getExtensionToken } from "@/auth/token";
+import { useRefresh } from "@/hooks/refresh";
+import { reactivate } from "@/background/navigation";
 
 interface SubmitOptions {
   create: boolean;
@@ -44,6 +46,8 @@ function useSubmitBrick({
   create = false,
   url,
 }: SubmitOptions): SubmitCallbacks {
+  const [, refresh] = useRefresh(false);
+
   const history = useHistory();
   const { addToast } = useToasts();
 
@@ -56,19 +60,34 @@ function useSubmitBrick({
     async (values, { setErrors }) => {
       const { kind, metadata } = yaml.safeLoad(values.config) as any;
       try {
-        const { data } = (await proxyService(await pixieServiceFactory(), {
+        const response = await axios({
           url: await makeURL(url),
           method: create ? "post" : "put",
           data: { ...values, kind },
-        })) as any;
+          headers: { Authorization: `Token ${await getExtensionToken()}` },
+        });
+
+        const { data } = response;
+
+        refresh()
+          .then(() => reactivate())
+          .catch((reason) => {
+            console.warn(
+              "An error occurred when re-activating the active bricks",
+              reason
+            );
+          });
+
         addToast(`${create ? "Created" : "Updated"} ${metadata.name}`, {
           appearance: "success",
           autoDismiss: true,
         });
+
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);
         }
       } catch (ex) {
+        console.debug("Got validation error", ex);
         if (isPlainObject(ex.response?.data)) {
           castArray(ex.response.data.__all__ ?? []).map((message) => {
             addToast(`Error: ${message} `, {
@@ -85,7 +104,7 @@ function useSubmitBrick({
         }
       }
     },
-    [url, create]
+    [url, create, addToast]
   );
 
   return { submit, validate };

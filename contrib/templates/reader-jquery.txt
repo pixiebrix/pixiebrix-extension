@@ -6,6 +6,9 @@ metadata:
   name: Apartments.com Property Info
   description: Read property information from Apartments.com
 definition:
+  isAvailable:
+    matchPatterns: "https://www.apartments.com/*"
+    selectors: "#profileHeaderWrapper"
   reader:
     type: jquery
     selectors:
@@ -44,9 +47,6 @@ definition:
         find:
           name: .agentFullName
           phone: .phoneNumber
-  isAvailable:
-    matchPatterns: "https://www.apartments.com/*"
-    selectors: "#profileHeaderWrapper"
 outputSchema:
   type: object
   properties:

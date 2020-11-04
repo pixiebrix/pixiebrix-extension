@@ -136,7 +136,7 @@ const ExtensionRow: React.FunctionComponent<{
   );
 };
 
-const Installed: React.FunctionComponent<{
+const InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
@@ -196,7 +196,7 @@ const Installed: React.FunctionComponent<{
   );
 };
 
-Installed.propTypes = {
+InstalledPage.propTypes = {
   extensions: PropTypes.array,
 };
 
@@ -216,4 +216,4 @@ export default connect(
     extensions: selectExtensions(state),
   }),
   { onRemove: removeExtension }
-)(Installed);
+)(InstalledPage);

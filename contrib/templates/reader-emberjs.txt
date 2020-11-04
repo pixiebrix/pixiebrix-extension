@@ -6,13 +6,13 @@ metadata:
   name: LinkedIn Contact Info
   description: Read contact info from the LinkedIn contact info pane
 definition:
+  isAvailable:
+    matchPatterns: "https://*.linkedin.com/*"
+    selectors: "#profile-content"
   reader:
     type: emberjs
     selector: ".pv-contact-info"
     attrs: contactInfo
-  isAvailable:
-    matchPatterns: "https://*.linkedin.com/*"
-    selectors: "#profile-content"
 outputSchema:
   type: object
   properties:

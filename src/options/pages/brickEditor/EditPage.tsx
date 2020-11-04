@@ -36,7 +36,7 @@ interface BrickData {
   public: boolean;
 }
 
-const EditPage: React.FunctionComponent = ({}) => {
+const EditPage: React.FunctionComponent = () => {
   const { id } = useParams<{ id: string }>();
 
   const url = `api/bricks/${id}/`;
@@ -65,14 +65,14 @@ const EditPage: React.FunctionComponent = ({}) => {
 
   return (
     <Formik onSubmit={submit} validate={validate} initialValues={data}>
-      {({ values, isValid, handleSubmit }) => (
+      {({ values, isValid, handleSubmit, isSubmitting }) => (
         <Form noValidate onSubmit={handleSubmit} autoComplete="off">
           <div className="d-flex">
             <div className="flex-grow-1">
               <PageTitle icon={faHammer} title="Edit Brick" />
             </div>
             <div className="flex-grow-1 text-right">
-              <Button disabled={!isValid} type="submit">
+              <Button disabled={!isValid || isSubmitting} type="submit">
                 {values.public ? "Publish Brick" : "Update Brick"}
               </Button>
             </div>

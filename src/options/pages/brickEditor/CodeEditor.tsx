@@ -32,6 +32,12 @@ const jqueryTemplate = require("raw-loader!@contrib/templates/reader-jquery.txt?
   .default;
 const reactTemplate = require("raw-loader!@contrib/templates/reader-react.txt?esModule=false")
   .default;
+const menuTemplate = require("raw-loader!@contrib/templates/foundation-menu-item.txt?esModule=false")
+  .default;
+const panelTemplate = require("raw-loader!@contrib/templates/foundation-panel.txt?esModule=false")
+  .default;
+const blueprintTemplate = require("raw-loader!@contrib/templates/blueprint-menu.txt?esModule=false")
+  .default;
 
 interface TemplateOption {
   value: string;
@@ -40,6 +46,16 @@ interface TemplateOption {
 }
 
 const templateOptions: TemplateOption[] = [
+  {
+    value: "foundation-menu-item",
+    label: "Foundation - Menu Item",
+    template: menuTemplate,
+  },
+  {
+    value: "foundation-panel",
+    label: "Foundation - Panel",
+    template: panelTemplate,
+  },
   { value: "service", label: "Service", template: serviceTemplate },
   {
     value: "reader-emberjs",
@@ -52,6 +68,11 @@ const templateOptions: TemplateOption[] = [
     template: jqueryTemplate,
   },
   { value: "reader-react", label: "Reader - React", template: reactTemplate },
+  {
+    value: "blueprint-menu",
+    label: "Blueprint - Menu Item",
+    template: blueprintTemplate,
+  },
 ];
 
 interface OwnProps {

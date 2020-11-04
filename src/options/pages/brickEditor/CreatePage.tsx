@@ -26,15 +26,13 @@ import Form from "react-bootstrap/Form";
 import Editor, { EditorValues } from "./Editor";
 import useSubmitBrick from "./useSubmitBrick";
 
-interface OwnProps {}
-
 const initialValue: EditorValues = {
   config: "",
   public: false,
   organizations: [],
 };
 
-const CreatePage: React.FunctionComponent<OwnProps> = ({}) => {
+const CreatePage: React.FunctionComponent = () => {
   const { submit, validate } = useSubmitBrick({
     url: "api/bricks/",
     create: true,

@@ -15,15 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import store, { hashHistory, persistor } from "./store";
-import useAsyncEffect from "use-async-effect";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { GridLoader } from "react-spinners";
 import Container from "react-bootstrap/Container";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import InstalledExtensions from "@/options/pages/Installed";
+import InstalledPage from "@/options/pages/InstalledPage";
 import ExtensionEditor from "@/options/pages/extensionEditor/ExtensionEditor";
 import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
@@ -35,52 +34,21 @@ import Footer from "@/layout/Footer";
 import Sidebar from "@/layout/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
-import { ToastProvider, useToasts } from "react-toast-notifications";
-import extensionPointRegistry from "@/extensionPoints/registry";
-import blockRegistry from "@/blocks/registry";
-import serviceRegistry from "@/services/registry";
+import { ToastProvider } from "react-toast-notifications";
 import "vendors/theme/app/app.scss";
 import { AuthContext } from "@/auth/context";
-import axios from "axios";
 import { useAsyncState } from "@/hooks/common";
-import urljoin from "url-join";
-import { getBaseURL } from "@/services/baseService";
 import Banner from "@/layout/Banner";
 import ActivatePage from "@/options/pages/marketplace/ActivatePage";
-import { refresh as refreshLocator } from "@/background/locator";
+import { getAuth } from "@/hooks/auth";
+import { useRefresh } from "@/hooks/refresh";
 
 // import the built-in bricks
 import "@/blocks";
 import "@/contrib";
 
 const Layout = () => {
-  const [loaded, setLoaded] = useState(false);
-  const { addToast } = useToasts();
-
-  useAsyncEffect(async (isMounted) => {
-    try {
-      await Promise.all([
-        extensionPointRegistry.fetch(),
-        blockRegistry.fetch(),
-        serviceRegistry.fetch(),
-        refreshLocator(),
-      ]);
-    } catch (exc) {
-      console.exception(exc);
-      if (!isMounted()) return;
-      addToast("Error refreshing blocks from server", {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    } finally {
-      if (isMounted()) {
-        setLoaded(true);
-      }
-    }
-  }, []);
-
-  // FIXME: figure out correct scrolling with fixed navbar
-  // <div className="container-scroller">
+  const [loaded] = useRefresh();
 
   return (
     <div className="w-100">
@@ -90,8 +58,9 @@ const Layout = () => {
         <div className="main-panel">
           <Banner />
           <div className="content-wrapper">
-            {loaded ? (
-              <ErrorBoundary>
+            <ErrorBoundary>
+              {/* FIXME: not all the routes need the registries to be loaded before rendering */}
+              {loaded ? (
                 <Switch>
                   <Route
                     exact
@@ -124,12 +93,12 @@ const Layout = () => {
                     path="/workshop/bricks/:id/"
                     component={BrickEditPage}
                   />
-                  <Route component={InstalledExtensions} />
+                  <Route component={InstalledPage} />
                 </Switch>
-              </ErrorBoundary>
-            ) : (
-              <GridLoader />
-            )}
+              ) : (
+                <GridLoader />
+              )}
+            </ErrorBoundary>
           </div>
           <Footer />
         </div>
@@ -137,27 +106,6 @@ const Layout = () => {
     </div>
   );
 };
-
-async function getAuth() {
-  const serviceUrl = await getBaseURL();
-  const { data } = await axios.get(urljoin(serviceUrl, "api", "me", "/"));
-  const { id, email } = data;
-  if (id) {
-    return {
-      userId: id,
-      email: email,
-      isLoggedIn: true,
-      extension: true,
-    };
-  } else {
-    return {
-      userId: undefined,
-      email: undefined,
-      isLoggedIn: false,
-      extension: true,
-    };
-  }
-}
 
 const App: React.FunctionComponent = () => {
   const [authState] = useAsyncState(getAuth);

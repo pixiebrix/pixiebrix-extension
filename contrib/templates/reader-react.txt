@@ -6,12 +6,12 @@ metadata:
   name: Redfin Property Info
   description: Read property information from Redfin
 definition:
-  reader:
-    type: react
-    selector: "#overview-scroll"
   isAvailable:
     matchPatterns: "https://www.redfin.com/*"
     selectors: "body.HomeDetailsPage #overview-scroll"
+  reader:
+    type: react
+    selector: "#overview-scroll"
 outputSchema:
   type: object
   properties:

@@ -190,10 +190,7 @@ export async function callBackground(
       throw err;
     }
 
-    console.debug(
-      `Content script received response for ${type} (nonce: ${nonce})`,
-      response
-    );
+    console.debug(`Received response for ${type} (nonce: ${nonce})`, response);
 
     if (isErrorResponse(response)) {
       throw deserializeError(response.$$error);
