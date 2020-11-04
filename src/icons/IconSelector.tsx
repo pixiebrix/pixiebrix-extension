@@ -23,6 +23,7 @@ import { IconOption } from "@/icons/types";
 import Icon from "./Icon";
 import { IconLibrary } from "@/core";
 
+// https://github.com/JedWatson/react-select/issues/3480#issuecomment-481566579
 function customSingleValue({ data }: { data: IconOption }): JSX.Element {
   return (
     <div className="input-select">

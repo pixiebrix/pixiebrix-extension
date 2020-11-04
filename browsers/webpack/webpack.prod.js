@@ -79,10 +79,6 @@ module.exports = (rollbarPublicPath) => {
         new OptimizeCSSAssetsPlugin({}),
       ],
     },
-    output: {
-      filename: "[name].js",
-      chunkFilename: "bundles/[name].bundle.js",
-    },
     plugins: [
       // https://www.npmjs.com/package/webpack-bundle-analyzer
       new BundleAnalyzerPlugin({

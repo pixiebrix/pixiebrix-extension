@@ -49,6 +49,10 @@ const babelLoader = {
 
 module.exports = {
   context: rootDir,
+  output: {
+    filename: "[name].js",
+    chunkFilename: "[name].bundle.js",
+  },
   entry: {
     background: path.resolve(rootDir, "src/background"),
     contentScript: path.resolve(rootDir, "src/contentScript"),
@@ -88,7 +92,10 @@ module.exports = {
         ENVIRONMENT: JSON.stringify(process.env.ENVIRONMENT),
       },
     }),
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "[name].css",
+      chunkFilename: "bundles/[name].bundle.css",
+    }),
   ],
   module: {
     rules: [

@@ -22,6 +22,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions, RenderedHTML } from "@/core";
 import isPlainObject from "lodash/isPlainObject";
 import sortBy from "lodash/sortBy";
+import PropertyTree from "./PropertyTree";
 
 interface Item {
   key: string;
@@ -118,11 +119,6 @@ export class PropertyTableRenderer extends Renderer {
     inputs: BlockArg,
     { ctxt }: BlockOptions
   ): Promise<RenderedHTML> {
-    const PropertyTree = await import(
-      /* webpackChunkName: "widgets" */
-      "./PropertyTree"
-    );
-
     return {
       Component: PropertyTree,
       props: {

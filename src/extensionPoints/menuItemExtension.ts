@@ -48,6 +48,7 @@ import {
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
+import iconAsSVG from "@/icons/svgIcons";
 
 interface MenuItemExtensionConfig {
   caption: string;
@@ -147,13 +148,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     const serviceContext = await makeServiceContext(extension.services);
     const renderTemplate = engineRenderer(extension.templateEngine);
     const extensionContext = { ...ctxt, ...serviceContext };
-
-    const iconAsSVG = (
-      await import(
-        /* webpackChunkName: "icons" */
-        "@/icons/svgIcons"
-      )
-    ).default;
 
     console.debug("Extension context", { serviceContext, ctxt });
 

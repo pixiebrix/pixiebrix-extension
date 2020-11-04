@@ -24,9 +24,8 @@ import React from "react";
 import App from "@/options/App";
 import { initRollbar } from "@/telemetry/rollbar";
 
-// import for side effects
-// import "bootstrap/dist/css/bootstrap.min.css";
-import "@/base.scss";
+import "@/options.scss";
+import "@/vendors/overrides.scss";
 
 initRollbar();
 

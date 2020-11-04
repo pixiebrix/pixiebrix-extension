@@ -19,6 +19,8 @@ import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+// @ts-ignore: no existing definitions exist
+import jq from "jq-web";
 
 export class JQTransformer extends Transformer {
   constructor() {
@@ -49,16 +51,7 @@ export class JQTransformer extends Transformer {
     { ctxt, logger }: BlockOptions
   ): Promise<unknown> {
     const input = (data ?? "").trim() !== "" ? data : ctxt;
-
     logger.debug("Running jq transform", { filter, data, ctxt, input });
-
-    const jq = (
-      await import(
-        /* webpackChunkName: "jq-web" */
-        // @ts-ignore: no existing definitions exist
-        "jq-web"
-      )
-    ).default;
     return await jq.promised.json(input, filter);
   }
 }

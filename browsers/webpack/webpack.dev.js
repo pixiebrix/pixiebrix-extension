@@ -28,10 +28,6 @@ const devConfig = {
   watchOptions: {
     ignored: /node_modules/,
   },
-  output: {
-    filename: "[name].js",
-    chunkFilename: "[name].bundle.js",
-  },
   plugins: [
     new webpack.EnvironmentPlugin({
       NODE_ENV: "development", // use 'development' unless process.env.NODE_ENV is defined
