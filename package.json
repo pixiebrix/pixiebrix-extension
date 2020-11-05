@@ -101,7 +101,7 @@
     "idb": "^5.0.7",
     "immer": "^7.0.5",
     "is-promise": "^4.0.0",
-    "jest": "^26.5.2",
+    "jest": "^26.6.3",
     "jest-raw-loader": "^1.0.1",
     "jest-webextension-mock": "^3.7.3",
     "jest-yaml-transform": "^0.2.0",
