@@ -126,7 +126,7 @@
     "nunjucks": "^3.2.2",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "page-metadata-parser": "^1.1.4",
-    "prettier": "2.0.5",
+    "prettier": "2.1.2",
     "primeicons": "^4.0.0",
     "primereact": "^5.0.1",
     "prop-types": "^15.7.2",
