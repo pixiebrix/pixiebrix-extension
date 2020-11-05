@@ -86,7 +86,7 @@
     "detect-browser": "^5.2.0",
     "dompurify": "^2.2.0",
     "dotenv": "^8.2.0",
-    "dotenv-webpack": "^3.0.0",
+    "dotenv-webpack": "^5.0.1",
     "eslint": "^7.11.0",
     "eslint-plugin-react": "^7.21.5",
     "fake-indexeddb": "^3.1.2",
