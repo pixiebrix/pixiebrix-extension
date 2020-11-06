@@ -31,6 +31,9 @@ let _scriptPromise: Promise<void>;
 let _extensionPoints: IExtensionPoint[] = undefined;
 let _navSequence = 1;
 
+// @ts-ignore: may use in the future to determine which extension points to install
+let _openerTabId: number = undefined;
+
 export async function loadBlocks(): Promise<void> {
   await Promise.all([
     blockRegistry.refresh({ allowFetch: false }),
@@ -69,7 +72,7 @@ async function runExtensionPoint(
   extensionPoint: IExtensionPoint,
   isCancelled: () => boolean
 ): Promise<void> {
-  const installed = await extensionPoint.install(/* isCancelled */);
+  const installed = await extensionPoint.install();
 
   if (!installed) {
     console.debug(
@@ -130,11 +133,16 @@ function getNavSequence() {
  * Handle a website navigation, e.g., page load or a URL change in an SPA.
  * @returns {Promise<void>}
  */
-export async function handleNavigate(): Promise<void> {
-  console.debug("Handling navigation");
+export async function handleNavigate(openerTabId?: number): Promise<void> {
+  console.debug(`Handling navigation to ${location.href}`);
   await installScriptOnce();
   await loadBlocksOnce();
   const extensionPoints = await loadExtensionsOnce();
+
+  if (openerTabId) {
+    console.debug(`Setting opener tabId: ${openerTabId}`);
+    _openerTabId = openerTabId;
+  }
 
   if (extensionPoints.length) {
     _navSequence++;
@@ -152,7 +160,7 @@ export async function handleNavigate(): Promise<void> {
 
 export const notifyNavigation = liftContentScript(
   "NAVIGATE",
-  () => handleNavigate(),
+  (openerTabId?: number) => handleNavigate(openerTabId),
   { asyncResponse: false }
 );
 

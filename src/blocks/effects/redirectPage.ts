@@ -69,8 +69,8 @@ export class OpenURLEffect extends Effect {
   constructor() {
     super(
       "@pixiebrix/browser/open-tab",
-      "Open a Tab/Window",
-      "Open a URL in a new tab/window",
+      "Open a Tab",
+      "Open a URL in a new tab",
       "faWindowMaximize"
     );
   }
@@ -83,6 +83,7 @@ export class OpenURLEffect extends Effect {
       "_blank",
       "noopener,noreferrer"
     );
+    // since we're the content script, we shouldn't actually get a window handle back
     if (newWindow) {
       newWindow.opener = null;
       newWindow.focus();

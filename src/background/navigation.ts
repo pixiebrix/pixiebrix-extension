@@ -19,6 +19,7 @@ import {
   notifyNavigation,
   reactivate as reactivateExtensions,
 } from "@/contentScript/lifecycle";
+
 import { liftBackground } from "@/background/protocol";
 import { browser } from "webextension-polyfill-ts";
 

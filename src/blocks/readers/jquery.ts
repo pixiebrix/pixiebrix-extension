@@ -108,6 +108,8 @@ function processElement($elt: JQuery, selector: SingleSelector) {
     );
   } else if (selector.data) {
     value = $elt.data(selector.data);
+  } else if ($elt.is("input,select,textarea")) {
+    value = $elt.val();
   } else {
     value = cleanValue($elt.text());
   }

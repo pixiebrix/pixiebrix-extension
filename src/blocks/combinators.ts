@@ -31,11 +31,13 @@ import {
   Schema,
   ServiceDependency,
   TemplateEngine,
+  RenderedArgs,
 } from "@/core";
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
 import pickBy from "lodash/pickBy";
 import { ContextError } from "@/errors";
+import { executeInParent } from "@/background/executor";
 
 export type ReaderConfig =
   | string
@@ -44,6 +46,7 @@ export type ReaderConfig =
 
 export interface BlockConfig {
   id: string;
+  window?: "self" | "opener";
   outputKey?: string;
   config: Record<string, unknown>;
   templateEngine?: TemplateEngine;
@@ -114,8 +117,6 @@ function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
   }
 }
 
-type RenderedArgs = { [key: string]: unknown };
-
 function excludeUndefined(obj: unknown): unknown {
   if (isPlainObject(obj) && typeof obj === "object") {
     return mapValues(
@@ -146,13 +147,16 @@ async function runStage(
     ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
     : stageConfig;
 
-  logger.debug(`Input for block ${stage.id}`, {
-    id: stage.id,
-    template: stageConfig,
-    templateContext: argContext,
-    renderedArgs: blockArgs,
-    blockContext: args,
-  });
+  logger.debug(
+    `Input for block ${stage.id} (window=${stage.window ?? "self"})`,
+    {
+      id: stage.id,
+      template: stageConfig,
+      templateContext: argContext,
+      renderedArgs: blockArgs,
+      blockContext: args,
+    }
+  );
 
   if (validate) {
     const validationResult = validateInput(
@@ -169,7 +173,14 @@ async function runStage(
     }
   }
 
-  return (await block.run(blockArgs, { ctxt: args, logger })) ?? {};
+  if (stage.window === "opener") {
+    return await executeInParent(stage.id, blockArgs, {
+      ctxt: args,
+      messageContext: logger.context,
+    });
+  } else {
+    return (await block.run(blockArgs, { ctxt: args, logger })) ?? {};
+  }
 }
 
 /** Execute a pipeline of blocks and return the result. */
@@ -177,7 +188,7 @@ export async function reducePipeline(
   config: BlockConfig | BlockPipeline,
   renderedArgs: RenderedArgs,
   logger: Logger,
-  options: ReduceOptions = { validate: true, serviceArgs: {} }
+  options: ReduceOptions = { validate: true, serviceArgs: {} as RenderedArgs }
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
     "@input": renderedArgs,

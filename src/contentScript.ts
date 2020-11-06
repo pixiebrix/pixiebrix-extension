@@ -35,6 +35,7 @@ window.addEventListener("unhandledrejection", function (e) {
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { refresh as refreshServices } from "@/background/locator";
 import "@/contentScript/externalProtocol";
+import "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "notifyjs-browser";

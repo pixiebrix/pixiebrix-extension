@@ -17,6 +17,6 @@ inputSchema:
 pipeline:
   - id: "@pixiebrix/browser/open-tab"
     config:
-      url: https://www.google.com/search
+      url: http://example.com/
       params:
-        q: query
+        q: plate

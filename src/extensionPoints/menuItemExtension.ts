@@ -105,6 +105,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     );
   }
 
+  addMenuItem($menuItem: JQuery): void {
+    this.$menu.append($menuItem);
+  }
+
   getBlocks(extension: IExtension<MenuItemExtensionConfig>): IBlock[] {
     return blockList(extension.config.action);
   }
@@ -164,6 +168,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       e.preventDefault();
 
       try {
+        // read latest state at the time of the action
+        const reader = this.defaultReader();
+        const ctxt = await reader.read();
+
         await reducePipeline(actionConfig, ctxt, extensionLogger, {
           validate: true,
           serviceArgs: serviceContext,
@@ -184,8 +192,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       console.debug(`Replacing existing menu item for ${extension.id}`);
       $existingItem.replaceWith($menuItem);
     } else {
-      console.debug(`Appending new menu item ${extension.id}`);
-      this.$menu.append($menuItem);
+      console.debug(`Adding new menu item ${extension.id}`);
+      this.addMenuItem($menuItem);
     }
 
     onNodeRemoved($menuItem.get(0), () => {
@@ -237,11 +245,12 @@ interface MenuDefaultOptions {
 
 interface MenuDefinition extends ExtensionPointDefinition {
   template: string;
+  position?: "append" | "prepend";
   containerSelector: string;
   defaultOptions: MenuDefaultOptions;
 }
 
-class HydratedMenuItemExtensionPoint extends MenuItemExtensionPoint {
+class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   private readonly _definition: MenuDefinition;
   public readonly permissions: Permissions.Permissions;
 
@@ -265,6 +274,20 @@ class HydratedMenuItemExtensionPoint extends MenuItemExtensionPoint {
       permissions: ["tabs", "webNavigation"],
       origins: castArray(isAvailable.matchPatterns),
     };
+  }
+
+  addMenuItem($menuItem: JQuery): void {
+    const { position = "append" } = this._definition;
+    switch (position) {
+      case "prepend":
+      case "append": {
+        this.$menu[position]($menuItem);
+        break;
+      }
+      default: {
+        throw new Error(`Unexpected position ${position}`);
+      }
+    }
   }
 
   defaultReader() {
@@ -291,5 +314,5 @@ export function fromJS(
   if (type !== "menuItem") {
     throw new Error(`Expected type=menuItem, got ${type}`);
   }
-  return new HydratedMenuItemExtensionPoint(config);
+  return new RemoteMenuItemExtensionPoint(config);
 }

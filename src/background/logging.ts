@@ -205,7 +205,7 @@ export const recordLog = liftBackground(
 );
 
 export class BackgroundLogger implements ILogger {
-  private readonly context: MessageContext;
+  readonly context: MessageContext;
 
   constructor(context: MessageContext) {
     this.context = context;

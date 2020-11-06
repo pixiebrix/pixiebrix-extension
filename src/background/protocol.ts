@@ -42,7 +42,7 @@ import {
 } from "@/messaging/protocol";
 type ChromeMessageSender = chrome.runtime.MessageSender;
 
-const MESSAGE_PREFIX = "@@pixiebrix/background/";
+export const MESSAGE_PREFIX = "@@pixiebrix/background/";
 
 const handlers: { [key: string]: HandlerEntry } = {};
 
@@ -84,11 +84,11 @@ function backgroundListener(
   if (handler) {
     const notification = isNotification(options);
 
-    console.debug(
-      `Handling background ${
-        notification ? "notification" : "action"
-      } ${type} (nonce: ${meta?.nonce})`
-    );
+    // console.debug(
+    //   `Handling background ${
+    //     notification ? "notification" : "action"
+    //   } ${type} (nonce: ${meta?.nonce})`
+    // );
 
     const handlerPromise = new Promise((resolve) =>
       resolve(handler(...payload))
@@ -118,11 +118,7 @@ function backgroundListener(
         return toErrorResponse(type, reason);
       }
     );
-  } else if (type?.startsWith(MESSAGE_PREFIX)) {
-    console.warn(`No handler installed for message ${type}`);
   }
-
-  return;
 }
 
 export function getExtensionId(): string {
@@ -241,7 +237,7 @@ export function liftBackground<R extends SerializableResponse>(
     if (handlers[fullType]) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
-      console.debug(`Installed background page handler for ${type}`);
+      // console.debug(`Installed background page handler for ${type}`);
       handlers[fullType] = { handler: method, options };
     }
   }

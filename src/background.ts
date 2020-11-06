@@ -32,7 +32,9 @@ import "./background/auth";
 import initGoogle from "@/contrib/google/background";
 import initFrames from "@/background/iframes";
 import initNavigation from "@/background/navigation";
+import initExecutor from "@/background/executor";
 
 initNavigation();
+initExecutor();
 initGoogle();
 initFrames();

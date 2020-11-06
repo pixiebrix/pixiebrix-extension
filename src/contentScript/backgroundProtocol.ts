@@ -28,7 +28,7 @@ import { isBackgroundPage, isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
 
-const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
+export const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
 
 export class ContentScriptActionError extends Error {
   errors: unknown;
@@ -41,11 +41,11 @@ export class ContentScriptActionError extends Error {
 
 const handlers: { [key: string]: HandlerEntry } = {};
 
-function allowSender(sender: Runtime.MessageSender): boolean {
+export function allowSender(sender: Runtime.MessageSender): boolean {
   return sender.id === browser.runtime.id;
 }
 
-function contentListener(
+function contentScriptListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
 ): Promise<unknown> | undefined {
@@ -195,5 +195,5 @@ export function liftContentScript<R extends SerializableResponse>(
 }
 
 if (isContentScript()) {
-  browser.runtime.onMessage.addListener(contentListener);
+  browser.runtime.onMessage.addListener(contentScriptListener);
 }

@@ -44,6 +44,7 @@ export interface MessageContext {
 export type SerializedError = Primitive | ErrorObject;
 
 export interface Logger {
+  readonly context: MessageContext;
   /**
    * Return a child logger with additional message context
    */
@@ -269,4 +270,10 @@ export interface IconConfig {
   id: string;
   library?: IconLibrary;
   size?: number;
+}
+
+export interface RenderedArgs {
+  // FIXME: enforcing nominal typing will require helper methods to product the RenderedArgs
+  // _renderedArgsBrand: null;
+  [prop: string]: unknown;
 }
