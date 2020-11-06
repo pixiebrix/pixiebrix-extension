@@ -114,8 +114,12 @@ export function notifyContentScripts(
     const messageOne = (tabId: number) =>
       browser.tabs.sendMessage(tabId, { type: fullType, payload: args });
     const tabIds = tabId ? [tabId] : await getTabIds();
-    // don't need to await the promises, because we don't care about the results
-    Promise.all(tabIds.map(messageOne));
+    Promise.all(tabIds.map(messageOne)).catch((reason) => {
+      console.warn(
+        `An error occurred when broadcasting content script notification ${fullType}`,
+        reason
+      );
+    });
     return;
   };
 }

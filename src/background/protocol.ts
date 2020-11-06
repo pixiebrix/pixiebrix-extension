@@ -107,13 +107,13 @@ function backgroundListener(
     return handlerPromise.then(
       (value) => {
         console.debug(
-          `Handler fulfilled action ${type} (nonce: ${meta?.nonce})`
+          `Handler FULFILLED action ${type} (nonce: ${meta?.nonce})`
         );
         return value;
       },
       (reason) => {
         console.debug(
-          `Handler rejected action ${type} (nonce: ${meta?.nonce})`
+          `Handler REJECTED action ${type} (nonce: ${meta?.nonce})`
         );
         return toErrorResponse(type, reason);
       }
@@ -139,7 +139,6 @@ function externalSendMessage(
   message: unknown,
   options?: Runtime.SendMessageOptionsType
 ): Promise<unknown> {
-  console.debug("Using chrome.runtime.sendMessage");
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage(extensionId, message, options, (response) => {
       if (chrome.runtime.lastError) {
@@ -170,7 +169,13 @@ export async function callBackground(
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
       extensionId,
     });
-    await sendMessage(extensionId, message, {});
+    sendMessage(extensionId, message, {}).catch((reason) => {
+      console.warn(
+        `An error occurred processing background notification ${type} (nonce: ${nonce})`,
+        reason
+      );
+    });
+    return;
   } else {
     console.debug(`Sending background action ${type} (nonce: ${nonce})`, {
       extensionId,
