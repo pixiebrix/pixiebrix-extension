@@ -15,9 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Logger } from "@/core";
+import { Logger, MessageContext } from "@/core";
 
 class ConsoleLogger implements Logger {
+  readonly context: MessageContext = {};
+
   childLogger(): Logger {
     return new ConsoleLogger();
   }

@@ -48,6 +48,12 @@ export class FormFill extends Effect {
   }: BlockArg): Promise<void> {
     const $form = $(formSelector);
 
+    if ($form.length === 0) {
+      throw new Error("Form not found");
+    } else if ($form.length > 1) {
+      throw new Error(`Selector ${formSelector} found ${$form.length} forms`);
+    }
+
     for (const [name, value] of Object.entries(fieldNames)) {
       $form.find(`[name="${name}"]`).val(String(value));
     }
