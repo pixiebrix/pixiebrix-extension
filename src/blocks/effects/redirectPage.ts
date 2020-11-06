@@ -69,7 +69,7 @@ export class OpenURLEffect extends Effect {
   constructor() {
     super(
       "@pixiebrix/browser/open-tab",
-      "Open a Tab",
+      "Open a Tab/Window",
       "Open a URL in a new tab",
       "faWindowMaximize"
     );
