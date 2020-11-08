@@ -35,7 +35,7 @@ window.addEventListener("unhandledrejection", function (e) {
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { refresh as refreshServices } from "@/background/locator";
 import "@/contentScript/externalProtocol";
-import "@/contentScript/executor";
+import { notifyReady } from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "notifyjs-browser";
@@ -43,5 +43,14 @@ import "jquery.initialize";
 
 // Reload services on background page for each new page. This is inefficient right now, but will
 // avoid confusion when service configurations are updated remotely
-refreshServices();
-handleNavigate();
+refreshServices().catch((reason) => {
+  console.warn("Error refreshing service configurations", reason);
+});
+
+handleNavigate().catch((reason) => {
+  console.warn("Error initializing content script", reason);
+});
+
+notifyReady().catch((reason) => {
+  console.warn("Error pinging the background script", reason);
+});

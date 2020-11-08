@@ -27,6 +27,7 @@ import {
 import { isContentScript } from "webext-detect-page";
 
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
+export const MESSAGE_CONTENT_SCRIPT_READY = `${MESSAGE_PREFIX}SCRIPT_READY`;
 
 export interface RemoteBlockOptions {
   ctxt: unknown;
@@ -52,11 +53,11 @@ function runBlockAction(
   const { type, payload } = request;
 
   if (allowSender(sender) && type === MESSAGE_RUN_BLOCK) {
-    const { sourceTabId, blockId, blockArgs, options } = payload;
+    const { blockId, blockArgs, options } = payload;
 
-    if (!childTabs.has(sourceTabId)) {
-      return Promise.reject("Unknown source tab id");
-    }
+    // if (!childTabs.has(sourceTabId)) {
+    //   return Promise.reject("Unknown source tab id");
+    // }
 
     return new Promise<unknown>((resolve) => {
       const block = blockRegistry.lookup(blockId);
@@ -76,4 +77,11 @@ export const linkChildTab = liftContentScript(
 
 if (isContentScript()) {
   browser.runtime.onMessage.addListener(runBlockAction);
+}
+
+export async function notifyReady(): Promise<void> {
+  await browser.runtime.sendMessage({
+    type: MESSAGE_CONTENT_SCRIPT_READY,
+    payload: {},
+  });
 }

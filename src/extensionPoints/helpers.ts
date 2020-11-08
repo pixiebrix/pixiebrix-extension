@@ -26,7 +26,7 @@ export function isHost(hostname: string): boolean {
   );
 }
 
-export function onNodeRemoved(element: Node, callback: () => void) {
+export function onNodeRemoved(element: Node, callback: () => void): void {
   // https://stackoverflow.com/a/50397148/
   const parent = element.parentNode;
   const parentObserver = new MutationObserver((mutations, observer) => {
@@ -45,11 +45,10 @@ export function onNodeRemoved(element: Node, callback: () => void) {
   parentObserver.observe(parent, { childList: true });
 }
 
-export async function _initialize(
+async function _initialize(
   selector: string,
-  $target: JQuery
-): Promise<JQuery> {
-  console.debug(`Awaiting selector ${selector}`);
+  $target: JQuery<HTMLElement | Document>
+): Promise<JQuery<HTMLElement | Document>> {
   return new Promise((resolve) => {
     // @ts-ignore: no typescript definitions for https://www.npmjs.com/package/jquery.initialize
     $.initialize(
@@ -69,28 +68,33 @@ export async function _initialize(
  */
 export async function awaitElementOnce(
   selector: string | string[],
-  rootElement: JQuery = undefined
-): Promise<JQuery> {
+  rootElement: JQuery<HTMLElement | Document> = undefined
+): Promise<JQuery<HTMLElement | Document>> {
   if (selector == null) {
     throw new Error("Expected selector");
   }
 
   const selectors = castArray(selector);
-
-  console.debug(`Awaiting selector ${selectors}`);
-
-  const $root: JQuery<any> = rootElement ? $(rootElement) : $(document);
+  const $root = rootElement ? $(rootElement) : $(document);
 
   if (!selectors.length) {
     return $root;
   }
 
+  console.debug("Awaiting selectors", selectors);
+
   const [nextSelector, ...rest] = selectors;
 
   // find immediately, or wait for it to be initialized
-  let $nextElement = $root.find(nextSelector);
+  let $nextElement: JQuery<HTMLElement | Document> = $root.find(nextSelector);
+
   if (!$nextElement.length) {
+    console.debug(
+      `Selector ${nextSelector} not immediately found. Awaiting element`
+    );
     $nextElement = await _initialize(nextSelector, $root);
+  } else if (rest.length === 0) {
+    return $nextElement;
   }
 
   return await awaitElementOnce(rest, $nextElement);
@@ -111,7 +115,7 @@ export function acquireElement(
     console.debug(`acquireElement: no elements found for ${extensionPointId}`);
     return false;
   } else if ($element.length > 1) {
-    console.debug(
+    console.warn(
       `acquireElement: multiple elements found for ${extensionPointId}`
     );
     return false;

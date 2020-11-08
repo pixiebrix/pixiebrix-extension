@@ -28,6 +28,7 @@ import { IExtension, SchemaProperties, Schema } from "@/core";
 import serviceRegistry from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import pickBy from "lodash/pickBy";
+import isEmpty from "lodash/isEmpty";
 import urljoin from "url-join";
 import $RefParser, {
   FileInfo,
@@ -131,7 +132,9 @@ export function propertiesToSchema(
     type: "object",
     properties: properties,
     required:
-      required === undefined ? Array.from(Object.keys(properties)) : required,
+      required === undefined && !isEmpty(properties)
+        ? Array.from(Object.keys(properties))
+        : required,
   };
 }
 

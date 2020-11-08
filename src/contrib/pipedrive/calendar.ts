@@ -88,7 +88,9 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
     if (!(await this.isAvailable())) {
       return false;
     }
-    this.$container = await awaitElementOnce('[class^="_calendar__grid"]');
+    this.$container = (await awaitElementOnce(
+      '[class^="_calendar__grid"]'
+    )) as JQuery<HTMLElement>;
     return true;
   }
 

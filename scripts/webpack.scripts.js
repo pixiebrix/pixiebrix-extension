@@ -17,6 +17,7 @@
 
 const path = require("path");
 const rootDir = path.resolve(__dirname, "../");
+const webpack = require("webpack");
 
 // https://github.com/TypeStrong/ts-loader/blob/master/examples/react-babel-karma-gulp/webpack.config.base.js#L10
 const babelLoader = {
@@ -59,6 +60,13 @@ module.exports = {
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      "process.env": {
+        NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
+      },
+    }),
+  ],
   module: {
     rules: [
       {

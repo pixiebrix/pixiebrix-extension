@@ -37,7 +37,7 @@ import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
 import pickBy from "lodash/pickBy";
 import { ContextError } from "@/errors";
-import { executeInParent } from "@/background/executor";
+import { executeInOpener, executeInTarget } from "@/background/executor";
 
 export type ReaderConfig =
   | string
@@ -46,7 +46,7 @@ export type ReaderConfig =
 
 export interface BlockConfig {
   id: string;
-  window?: "self" | "opener";
+  window?: "self" | "opener" | "target";
   outputKey?: string;
   config: Record<string, unknown>;
   templateEngine?: TemplateEngine;
@@ -174,7 +174,12 @@ async function runStage(
   }
 
   if (stage.window === "opener") {
-    return await executeInParent(stage.id, blockArgs, {
+    return await executeInOpener(stage.id, blockArgs, {
+      ctxt: args,
+      messageContext: logger.context,
+    });
+  } else if (stage.window === "target") {
+    return await executeInTarget(stage.id, blockArgs, {
       ctxt: args,
       messageContext: logger.context,
     });

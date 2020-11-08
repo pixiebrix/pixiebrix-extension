@@ -26,12 +26,21 @@ interface GeocodedAddress {
   state?: string;
   country?: string;
   city?: string;
+  postalCode?: string;
+  streetNumber?: string;
+  route?: string;
+  county?: string;
 }
 
+// https://developers.google.com/maps/documentation/geocoding/overview
 type AddressComponentType =
   | "administrative_area_level_1"
+  | "administrative_area_level_2"
   | "country"
-  | "locality";
+  | "locality"
+  | "postal_code"
+  | "street_number"
+  | "route";
 
 interface AddressComponent {
   long_name: string;
@@ -78,9 +87,13 @@ async function geocodeAddress(
     )?.long_name;
 
   return {
-    state: findComponent("administrative_area_level_1"),
     country: findComponent("country"),
+    state: findComponent("administrative_area_level_1"),
+    county: findComponent("administrative_area_level_2"),
     city: findComponent("locality"),
+    postalCode: findComponent("postal_code"),
+    streetNumber: findComponent("street_number"),
+    route: findComponent("route"),
   };
 }
 

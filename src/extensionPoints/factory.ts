@@ -17,12 +17,14 @@
 
 import { fromJS as deserializePanel } from "@/extensionPoints/panelExtension";
 import { fromJS as deserializeMenuItem } from "@/extensionPoints/menuItemExtension";
+import { fromJS as deserializeTrigger } from "@/extensionPoints/triggerExtension";
 import { IExtensionPoint } from "@/core";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 
 const TYPE_MAP = {
   panel: deserializePanel,
   menuItem: deserializeMenuItem,
+  trigger: deserializeTrigger,
 };
 
 export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
@@ -30,12 +32,9 @@ export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
     throw new Error(`Expected kind extensionPoint, got ${config.kind}`);
   }
 
-  if (
-    config.definition.type !== "panel" &&
-    config.definition.type !== "menuItem"
-  ) {
+  if (!Object.prototype.hasOwnProperty.call(config.definition.type)) {
     throw new Error(
-      `Expected panel or menuItem, got ${config.definition.type}`
+      `Unexpected extension point type  ${config.definition.type}`
     );
   }
 

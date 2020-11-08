@@ -122,7 +122,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
 
     console.debug(`Awaiting menu container for ${this.id}: ${selector}`);
 
-    this.$menu = await awaitElementOnce(selector);
+    this.$menu = (await awaitElementOnce(selector)) as JQuery<HTMLElement>;
 
     return acquireElement(this.$menu, this.id, () => {
       console.debug(`Menu removed from DOM for ${this.id}: ${selector}`);

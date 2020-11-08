@@ -21,13 +21,15 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import "@/blocks";
 import "@/contrib";
 
+console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
+
 const blockDefinitions = blockRegistry.all().map((block) => ({
   apiVersion: "v1",
   header: true,
   kind: (block as any).read ? "reader" : "component",
   metadata: {
     id: block.id,
-    version: process.env.npm_package_version,
+    version: process.env.NPM_PACKAGE_VERSION,
     name: block.name,
     description: block.description,
     author: block.author,
@@ -42,7 +44,7 @@ const extensionPointDefinitions = extensionPointRegistry.all().map((block) => ({
   kind: "extensionPoint",
   metadata: {
     id: block.id,
-    version: process.env.npm_package_version,
+    version: process.env.NPM_PACKAGE_VERSION,
     name: block.name,
     description: block.description,
     author: block.author,
