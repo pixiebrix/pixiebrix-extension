@@ -32,9 +32,9 @@ export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
     throw new Error(`Expected kind extensionPoint, got ${config.kind}`);
   }
 
-  if (!Object.prototype.hasOwnProperty.call(config.definition.type)) {
+  if (!Object.prototype.hasOwnProperty.call(TYPE_MAP, config.definition.type)) {
     throw new Error(
-      `Unexpected extension point type  ${config.definition.type}`
+      `Unexpected extension point type ${config.definition.type}`
     );
   }
 
