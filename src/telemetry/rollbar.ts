@@ -19,12 +19,15 @@ import Rollbar from "rollbar";
 
 export function initRollbar(): void {
   if (
-    process.env.ROLLBAR_ACCESS_TOKEN &&
-    process.env.ROLLBAR_ACCESS_TOKEN !== "undefined"
+    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN &&
+    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN !== "undefined"
   ) {
+    // https://docs.rollbar.com/docs/javascript
+    // https://docs.rollbar.com/docs/rollbarjs-configuration-reference
     Rollbar.init({
-      accessToken: process.env.ROLLBAR_ACCESS_TOKEN,
+      accessToken: process.env.ROLLBAR_BROWSER_ACCESS_TOKEN,
       captureUncaught: true,
+      captureIp: "anonymize",
       captureUnhandledRejections: true,
       codeVersion: process.env.SOURCE_VERSION,
       payload: {

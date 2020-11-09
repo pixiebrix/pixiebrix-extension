@@ -17,7 +17,7 @@
 
 import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 
 export class FormFill extends Effect {
   constructor() {
@@ -39,8 +39,7 @@ export class FormFill extends Effect {
         additionalProperties: { type: "string" },
       },
       submit: {
-        description:
-          "true to submit the form, or a JQuery selector for the submit button to click",
+        description: "true to submit the form, or a JQuery selector to click",
         default: false,
         oneOf: [{ type: "string" }, { type: "boolean" }],
       },
@@ -48,12 +47,15 @@ export class FormFill extends Effect {
     required: ["formSelector"],
   };
 
-  async effect({
-    formSelector,
-    fieldNames = {},
-    fieldSelectors = {},
-    submit = false,
-  }: BlockArg): Promise<void> {
+  async effect(
+    {
+      formSelector,
+      fieldNames = {},
+      fieldSelectors = {},
+      submit = false,
+    }: BlockArg,
+    { logger }: BlockOptions
+  ): Promise<void> {
     const $form = $(formSelector);
 
     if ($form.length === 0) {
@@ -63,11 +65,21 @@ export class FormFill extends Effect {
     }
 
     for (const [name, value] of Object.entries(fieldNames)) {
-      $form.find(`[name="${name}"]`).val(String(value));
+      const $input = $form.find(`[name="${name}"]`);
+      if ($input.length === 0) {
+        logger.warn(`Could not find input ${name} on the form`);
+      }
+      $input.val(String(value));
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
-      $form.find(selector).val(String(value));
+      const $input = $form.find(selector);
+      if ($input.length === 0) {
+        logger.warn(
+          `Could not find input with selector ${selector} on the form`
+        );
+      }
+      $input.val(String(value));
     }
 
     if (typeof submit === "boolean") {
@@ -81,6 +93,13 @@ export class FormFill extends Effect {
       }
     } else if (typeof submit === "string") {
       const $submit = $form.find(submit);
+      if ($submit.length === 0) {
+        throw new Error(`Did not find selector ${submit} in the form`);
+      } else if ($submit.length > 1) {
+        throw new Error(
+          `Found multiple elements for the submit selector ${submit} in the form`
+        );
+      }
       $submit.trigger("click");
     } else {
       throw new Error("Unexpected argument for property submit");

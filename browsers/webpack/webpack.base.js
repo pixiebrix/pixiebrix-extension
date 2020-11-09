@@ -100,8 +100,8 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       "process.env": {
-        ROLLBAR_ACCESS_TOKEN: JSON.stringify(
-          process.env.ROLLBAR_CHROME_ACCESS_TOKEN
+        ROLLBAR_BROWSER_ACCESS_TOKEN: JSON.stringify(
+          process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
         ),
         SERVICE_URL: JSON.stringify(process.env.SERVICE_URL),
         SOURCE_VERSION: JSON.stringify(process.env.SOURCE_VERSION),
