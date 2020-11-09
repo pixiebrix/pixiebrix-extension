@@ -38,13 +38,21 @@ export class FormFill extends Effect {
         type: "object",
         additionalProperties: { type: "string" },
       },
+      submit: {
+        description:
+          "true to submit the form, or a JQuery selector for the submit button to click",
+        default: false,
+        oneOf: [{ type: "string" }, { type: "boolean" }],
+      },
     },
+    required: ["formSelector"],
   };
 
   async effect({
     formSelector,
     fieldNames = {},
     fieldSelectors = {},
+    submit = false,
   }: BlockArg): Promise<void> {
     const $form = $(formSelector);
 
@@ -60,6 +68,22 @@ export class FormFill extends Effect {
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
       $form.find(selector).val(String(value));
+    }
+
+    if (typeof submit === "boolean") {
+      if (submit) {
+        if (!$form.is("form")) {
+          throw new Error(
+            `Can only submit a form element, got tag ${$form.get(0).tagName}`
+          );
+        }
+        $form.trigger("submit");
+      }
+    } else if (typeof submit === "string") {
+      const $submit = $form.find(submit);
+      $submit.trigger("click");
+    } else {
+      throw new Error("Unexpected argument for property submit");
     }
   }
 }
