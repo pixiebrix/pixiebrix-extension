@@ -27,6 +27,7 @@ import {
 } from "@/types/definitions";
 import { Permissions, browser } from "webextension-polyfill-ts";
 import sortBy from "lodash/sortBy";
+import castArray from "lodash/castArray";
 
 const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
 
@@ -63,23 +64,30 @@ export function collectPermissions(
 export function collectPermissions(
   recipeOrExtensionPoints: RecipeDefinition | ExtensionPointDefinition[]
 ): Permissions.Permissions[] {
-  const forDefinition = ({ id }: ExtensionPointDefinition) => {
-    const extensionPoint = extensionRegistry.lookup(id);
-    return {
-      origins: extensionPoint.permissions.origins,
-      // Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request
-      // a permission that's in the permissions, but not the optional_permissions
-      permissions: (extensionPoint.permissions.permissions ?? []).filter(
-        (permission) => !MANDATORY_PERMISSIONS.includes(permission)
-      ),
-    };
-  };
+  const normalize = (x: Permissions.Permissions) => ({
+    origins: castArray(x.origins ?? []),
+    // Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request
+    // a permission that's in the permissions, but not the optional_permissions
+    permissions: castArray(x.permissions ?? []).filter(
+      (permission) => !MANDATORY_PERMISSIONS.includes(permission)
+    ),
+  });
 
   const extensionPoints = Array.isArray(recipeOrExtensionPoints)
     ? recipeOrExtensionPoints
     : recipeOrExtensionPoints.extensionPoints;
 
-  return distinctPermissions(extensionPoints.map(forDefinition));
+  return distinctPermissions(
+    extensionPoints.map(
+      ({ id, permissions = {} }: ExtensionPointDefinition) => {
+        // console.debug(`Extra permissions for ${id}`, permissions);
+        const extensionPoint = extensionRegistry.lookup(id);
+        return mergePermissions(
+          [extensionPoint.permissions, permissions].map(normalize)
+        );
+      }
+    )
+  );
 }
 
 /**

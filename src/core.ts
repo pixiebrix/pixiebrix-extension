@@ -111,10 +111,20 @@ export interface IExtension<
   T extends BaseExtensionConfig = BaseExtensionConfig
 > {
   id: string;
+
   extensionPointId: string;
+
   label?: string;
+
   templateEngine?: TemplateEngine;
+
+  /**
+   * Additional permissions, e.g., origins to perform effects on after opening a tab.
+   */
+  permissions: Permissions.Permissions;
+
   services: ServiceDependency[];
+
   config: T;
 }
 
