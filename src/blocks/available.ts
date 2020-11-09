@@ -61,6 +61,19 @@ export async function checkAvailable({
   return true;
 }
 
+/**
+ * Merge a list of permissions into a single permissions object.
+ * @param permissions
+ */
+export function mergePermissions(
+  permissions: Permissions.Permissions[]
+): Permissions.Permissions {
+  return {
+    origins: uniq(permissions.flatMap((x) => x.origins ?? [])),
+    permissions: uniq(permissions.flatMap((x) => x.permissions ?? [])),
+  };
+}
+
 export function distinctPermissions(
   permissions: Permissions.Permissions[]
 ): Permissions.Permissions[] {

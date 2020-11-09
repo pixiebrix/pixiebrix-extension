@@ -16,7 +16,7 @@
  */
 
 import extensionRegistry from "@/extensionPoints/registry";
-import { distinctPermissions } from "@/blocks/available";
+import { distinctPermissions, mergePermissions } from "@/blocks/available";
 import { useAsyncEffect } from "use-async-effect";
 import { useState, useCallback } from "react";
 import every from "lodash/every";
@@ -27,6 +27,9 @@ import {
 } from "@/types/definitions";
 import { Permissions, browser } from "webextension-polyfill-ts";
 import sortBy from "lodash/sortBy";
+import castArray from "lodash/castArray";
+
+const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
 
 /**
  * Request any permissions the user has not already granted
@@ -36,15 +39,20 @@ import sortBy from "lodash/sortBy";
 export async function ensureAllPermissions(
   permissionsList: Permissions.Permissions[]
 ): Promise<boolean> {
-  for (const permissions of permissionsList) {
-    if (!(await browser.permissions.contains(permissions))) {
-      const granted = await browser.permissions.request(permissions);
-      if (!granted) {
-        return false;
-      }
-    }
-  }
-  return true;
+  return await browser.permissions.request(mergePermissions(permissionsList));
+  // On FF can't check if we already have the permission because promise chains break it's detection of
+  // whether or not we're in a user-triggered event. That also prevents making multiple permissions requests
+  // for a single button click
+  // https://stackoverflow.com/a/47729896/402560
+  // for (const permissions of permissionsList) {
+  //   if (!(await browser.permissions.contains(permissions))) {
+  //     const granted = await browser.permissions.request(permissions);
+  //     if (!granted) {
+  //       return false;
+  //     }
+  //   }
+  // }
+  // return true;
 }
 
 export function collectPermissions(
@@ -56,16 +64,30 @@ export function collectPermissions(
 export function collectPermissions(
   recipeOrExtensionPoints: RecipeDefinition | ExtensionPointDefinition[]
 ): Permissions.Permissions[] {
-  const forDefinition = ({ id }: ExtensionPointDefinition) => {
-    const extensionPoint = extensionRegistry.lookup(id);
-    return extensionPoint.permissions;
-  };
+  const normalize = (x: Permissions.Permissions) => ({
+    origins: castArray(x.origins ?? []),
+    // Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request
+    // a permission that's in the permissions, but not the optional_permissions
+    permissions: castArray(x.permissions ?? []).filter(
+      (permission) => !MANDATORY_PERMISSIONS.includes(permission)
+    ),
+  });
 
   const extensionPoints = Array.isArray(recipeOrExtensionPoints)
     ? recipeOrExtensionPoints
     : recipeOrExtensionPoints.extensionPoints;
 
-  return distinctPermissions(extensionPoints.map(forDefinition));
+  return distinctPermissions(
+    extensionPoints.map(
+      ({ id, permissions = {} }: ExtensionPointDefinition) => {
+        // console.debug(`Extra permissions for ${id}`, permissions);
+        const extensionPoint = extensionRegistry.lookup(id);
+        return mergePermissions(
+          [extensionPoint.permissions, permissions].map(normalize)
+        );
+      }
+    )
+  );
 }
 
 /**

@@ -16,10 +16,12 @@
  */
 
 import { Metadata, Schema } from "@/core";
+import { Permissions } from "webextension-polyfill-ts";
 
 export interface ExtensionPointDefinition {
   id: string;
   label: string;
+  permissions?: Permissions.Permissions;
   services?: { [key: string]: string };
 }
 

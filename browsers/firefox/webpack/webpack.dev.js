@@ -19,6 +19,7 @@ const path = require("path");
 const { mergeWithCustomize, customizeArray } = require("webpack-merge");
 const common = require("../../webpack/webpack.dev.js");
 const CopyPlugin = require("copy-webpack-plugin");
+const uniq = require("lodash/uniq");
 
 const firefoxRoot = path.resolve(__dirname, "../");
 
@@ -42,6 +43,18 @@ module.exports = mergeWithCustomize({
           to: "manifest.json",
           transform(content) {
             const manifest = JSON.parse(content.toString());
+
+            const internal = [
+              "http://127.0.0.1:8000/*",
+              "http://127.0.0.1/*",
+              "http://localhost/*",
+            ];
+
+            manifest.content_scripts[0].matches = uniq([
+              ...manifest.content_scripts[0].matches,
+              ...internal,
+            ]);
+
             manifest.name = "PixieBrix - Development";
             manifest.version = process.env.npm_package_version;
             // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/content_security_policy

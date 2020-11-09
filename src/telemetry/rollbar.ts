@@ -30,6 +30,9 @@ export function initRollbar(): void {
       captureIp: "anonymize",
       captureUnhandledRejections: true,
       codeVersion: process.env.SOURCE_VERSION,
+      // https://docs.rollbar.com/docs/rollbarjs-telemetry
+      // disable autoInstrument until we can set up scrubbing rules
+      autoInstrument: false,
       payload: {
         environment: process.env.ENVIRONMENT,
       },

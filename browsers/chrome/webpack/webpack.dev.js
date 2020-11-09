@@ -49,12 +49,23 @@ module.exports = mergeWithCustomize({
             const manifest = JSON.parse(content.toString());
             manifest.name = "PixieBrix - Development";
             manifest.version = process.env.npm_package_version;
-            manifest.externally_connectable.matches = uniq([
-              ...manifest.externally_connectable.matches,
+
+            const internal = [
               "http://127.0.0.1:8000/*",
               "http://127.0.0.1/*",
               "http://localhost/*",
+            ];
+
+            manifest.content_scripts[0].matches = uniq([
+              ...manifest.content_scripts[0].matches,
+              ...internal,
             ]);
+
+            manifest.externally_connectable.matches = uniq([
+              ...manifest.externally_connectable.matches,
+              ...internal,
+            ]);
+
             if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
               manifest.oauth2 = {
                 client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,

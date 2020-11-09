@@ -18,6 +18,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { createSlice } from "@reduxjs/toolkit";
 import { RawServiceConfiguration, ServiceDependency } from "@/core";
+import { Permissions } from "webextension-polyfill-ts";
 
 export interface ServicesState {
   configured: { [id: string]: RawServiceConfiguration };
@@ -59,6 +60,7 @@ export interface ExtensionOptions {
   extensionPointId: string;
   active: boolean;
   label: string;
+  permissions?: Permissions.Permissions;
   services: ServiceDependency[];
   config: { [prop: string]: unknown };
 }

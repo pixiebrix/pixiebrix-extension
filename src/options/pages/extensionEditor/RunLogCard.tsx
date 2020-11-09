@@ -85,20 +85,21 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   ) : (
     <>
       <div className="px-3 pt-2">
-        <Form inline>
+        <div className="form-inline">
           <Form.Group>
             <Form.Label srOnly>Filter</Form.Label>
             <Form.Control
               size="sm"
               as="select"
               style={{ minWidth: 150 }}
+              value={level}
               onChange={(x) => {
                 setPage(0);
                 setLevel(x.target.value as MessageLevel);
               }}
             >
               {["trace", "debug", "info", "warn", "error"].map((x) => (
-                <option key={x} value={x} selected={level === x}>
+                <option key={x} value={x}>
                   {x.toUpperCase()}
                 </option>
               ))}
@@ -156,7 +157,7 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
               <FontAwesomeIcon icon={faTrash} /> Clear
             </Button>
           </Form.Group>
-        </Form>
+        </div>
       </div>
       <Table responsive>
         <thead>
