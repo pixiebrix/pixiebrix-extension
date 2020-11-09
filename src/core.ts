@@ -121,7 +121,7 @@ export interface IExtension<
   /**
    * Additional permissions, e.g., origins to perform effects on after opening a tab.
    */
-  permissions: Permissions.Permissions;
+  permissions?: Permissions.Permissions;
 
   services: ServiceDependency[];
 
