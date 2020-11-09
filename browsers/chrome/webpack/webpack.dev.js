@@ -47,6 +47,7 @@ module.exports = mergeWithCustomize({
           to: "manifest.json",
           transform(content) {
             const manifest = JSON.parse(content.toString());
+            manifest.name = "PixieBrix - Development";
             manifest.version = process.env.npm_package_version;
             manifest.externally_connectable.matches = uniq([
               ...manifest.externally_connectable.matches,

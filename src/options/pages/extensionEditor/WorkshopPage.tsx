@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 import Row from "react-bootstrap/Row";
@@ -88,6 +88,16 @@ const CustomBricksCard: React.FunctionComponent<OwnProps> = ({ navigate }) => {
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
   const { isLoggedIn } = useContext(AuthContext);
 
+  const optionsPromise = useMemo(getExtensionPointOptions, []);
+
+  const loadOptions = useCallback(async (query) => {
+    const allOptions = await optionsPromise;
+    const clean = (query ?? "").trim().toLowerCase();
+    return clean === ""
+      ? allOptions
+      : allOptions.filter((x) => x.label.toLowerCase().includes(clean));
+  }, []);
+
   return (
     <div>
       <PageTitle icon={faHammer} title="Workshop" />
@@ -105,7 +115,7 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
               <AsyncSelect
                 defaultOptions
                 placeholder="Select a foundation"
-                loadOptions={getExtensionPointOptions}
+                loadOptions={loadOptions}
                 onChange={(option: ExtensionPointOption) =>
                   navigate(
                     `/workshop/install/${encodeURIComponent(option.value)}`
