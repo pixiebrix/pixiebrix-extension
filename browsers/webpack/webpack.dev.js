@@ -22,7 +22,11 @@ const webpack = require("webpack");
 
 const devConfig = {
   mode: "development",
+  // https://stackoverflow.com/a/57460886/402560
   devtool: "inline-source-map",
+  devServer: {
+    writeToDisk: true,
+  },
   // https://webpack.js.org/configuration/watch/
   // https://webpack.js.org/configuration/watch/#saving-in-webstorm
   watchOptions: {
@@ -31,6 +35,7 @@ const devConfig = {
   plugins: [
     new webpack.EnvironmentPlugin({
       NODE_ENV: "development", // use 'development' unless process.env.NODE_ENV is defined
+      ENVIRONMENT: "development",
       DEBUG: true,
     }),
     new webpack.DefinePlugin({
@@ -52,6 +57,11 @@ const devConfig = {
   ],
   optimization: {
     minimize: false,
+    splitChunks: {
+      cacheGroups: {
+        vendors: false,
+      },
+    },
   },
 };
 

@@ -21,7 +21,6 @@ import Card from "react-bootstrap/Card";
 import Select from "react-select";
 import React, { useState, Suspense } from "react";
 import { useField } from "formik";
-import AceEditor from "@/vendors/AceEditor";
 
 // https://webpack.js.org/loaders/raw-loader/#examples
 const serviceTemplate = require("raw-loader!@contrib/templates/service.txt?esModule=false")
@@ -38,6 +37,14 @@ const panelTemplate = require("raw-loader!@contrib/templates/foundation-panel.tx
   .default;
 const blueprintTemplate = require("raw-loader!@contrib/templates/blueprint-menu.txt?esModule=false")
   .default;
+
+const AceEditor = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "ace-editor" */
+      "@/vendors/AceEditor"
+    )
+);
 
 interface TemplateOption {
   value: string;

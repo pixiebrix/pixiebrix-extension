@@ -63,6 +63,7 @@ export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
     } catch {
       // pass
     }
+    console.debug("Setting extension auth", auth);
     await setStorage(STORAGE_EXTENSION_KEY, JSON.stringify(auth));
     return !equal(auth, previous);
   }

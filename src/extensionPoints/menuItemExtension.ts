@@ -48,7 +48,6 @@ import {
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
-import iconAsSVG from "@/icons/svgIcons";
 
 interface MenuItemExtensionConfig {
   caption: string;
@@ -154,6 +153,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     const extensionContext = { ...ctxt, ...serviceContext };
 
     console.debug("Extension context", { serviceContext, ctxt });
+
+    const iconAsSVG = (
+      await import(
+        /* webpackChunkName: "icons" */
+        "@/icons/svgIcons"
+      )
+    ).default;
 
     const $menuItem = $(
       Mustache.render(this.getTemplate(), {

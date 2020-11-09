@@ -20,6 +20,9 @@ import "core-js/stable";
 import "@/extensionContext";
 import { initRollbar } from "@/telemetry/rollbar";
 
+import "webpack-target-webextension/lib/background";
+// import "@/webpack/background";
+
 // init first so we get error reporting on the other initialization
 initRollbar();
 

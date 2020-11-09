@@ -130,11 +130,13 @@ function backgroundListener(
 }
 
 function linkTabListener(tab: Tabs.Tab): void {
-  tabToOpener.set(tab.id, tab.openerTabId);
-  tabToTarget.set(tab.openerTabId, tab.id);
-  linkChildTab(tab.openerTabId, tab.id).catch((reason) => {
-    console.warn("Error linking child tab", reason);
-  });
+  if (tab.openerTabId) {
+    tabToOpener.set(tab.id, tab.openerTabId);
+    tabToTarget.set(tab.openerTabId, tab.id);
+    linkChildTab(tab.openerTabId, tab.id).catch((reason) => {
+      console.warn("Error linking child tab", reason);
+    });
+  }
 }
 
 function initExecutor(): void {
