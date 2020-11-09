@@ -15,7 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { useToasts } from "react-toast-notifications";
 import {
   checkPermissions,
   collectPermissions,
@@ -31,6 +32,7 @@ import {
 import { useSelectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 
 function useEnsurePermissions(extensions: ExtensionPointDefinition[]) {
+  const { addToast } = useToasts();
   const [accepted, setAccepted] = useState<boolean>(false);
   const [enabled, setEnabled] = useState<boolean>(undefined);
 
@@ -43,14 +45,23 @@ function useEnsurePermissions(extensions: ExtensionPointDefinition[]) {
     [extensions]
   );
 
-  useEffect(() => {
-    setAccepted(false);
-  }, [accepted]);
-
   const request = useCallback(async () => {
-    const accepted = await ensureAllPermissions(collectPermissions(extensions));
-    setAccepted(accepted);
-  }, [extensions]);
+    try {
+      const accepted = await ensureAllPermissions(
+        collectPermissions(extensions)
+      );
+      setAccepted(accepted);
+      if (accepted) {
+        setEnabled(true);
+      }
+    } catch (err) {
+      console.error(err);
+      addToast(`Error granting permissions: ${err}`, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  }, [extensions, setAccepted, setEnabled]);
 
   return { enabled, accepted, request };
 }
@@ -61,11 +72,13 @@ interface OwnProps {
 
 const PermissionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const selected = useSelectedExtensions(blueprint.extensionPoints);
+
   const {
     enabled,
     accepted,
     request: requestPermissions,
   } = useEnsurePermissions(selected);
+
   const permissions = useMemo(
     () => originPermissions(collectPermissions(selected)),
     [selected]
@@ -76,7 +89,9 @@ const PermissionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
       return (
         <div>
           <p>The required browser permissions are already enabled</p>
-          <Button disabled>Grant Permissions</Button>
+          <Button variant="info" disabled>
+            Grant Permissions
+          </Button>
         </div>
       );
     } else if (accepted) {
@@ -86,7 +101,9 @@ const PermissionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
             You&apos;ve granted the browser permissions required for this
             blueprint
           </p>
-          <Button disabled>Grant Permissions</Button>
+          <Button variant="info" disabled>
+            Grant Permissions
+          </Button>
         </div>
       );
     } else {
@@ -96,7 +113,9 @@ const PermissionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
             When you click the button, your browser will prompt you to grant
             permissions for the bricks in this blueprint
           </p>
-          <Button onClick={requestPermissions}>Grant Permissions</Button>
+          <Button variant="info" onClick={requestPermissions}>
+            Grant Permissions
+          </Button>
         </div>
       );
     }
@@ -123,7 +142,7 @@ const PermissionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                   <td>{x.origins.length ? x.origins.join(", ") : "Any URL"}</td>
                   <td>
                     <ul className="mb-0">
-                      <li>Read information and detect page navigation</li>
+                      <li>Read/write information and detect page navigation</li>
                       {additional.map((x) => (
                         <li key={x}>{x}</li>
                       ))}
