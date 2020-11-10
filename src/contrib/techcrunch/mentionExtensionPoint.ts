@@ -99,7 +99,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
 
   async runOne($link: JQuery) {
     const reader = this.defaultReader();
-    const ctxt = await reader.read($link);
+    const ctxt = await reader.read($link.get(0));
 
     for (const extension of this.extensions) {
       const { caption, action } = extension.config;

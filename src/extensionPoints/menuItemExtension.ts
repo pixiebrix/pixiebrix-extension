@@ -15,10 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { v4 as uuidv4 } from "uuid";
 import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
 import castArray from "lodash/castArray";
+import identity from "lodash/identity";
 import { engineRenderer } from "@/helpers";
 import {
   reducePipeline,
@@ -58,7 +60,7 @@ interface MenuItemExtensionConfig {
 export abstract class MenuItemExtensionPoint extends ExtensionPoint<
   MenuItemExtensionConfig
 > {
-  protected $menu?: JQuery;
+  protected readonly menus: Map<string, HTMLElement>;
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
   }
@@ -70,7 +72,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     icon = "faMousePointer"
   ) {
     super(id, name, description, icon);
-    this.$menu = undefined;
+    this.menus = new Map<string, HTMLElement>();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -93,6 +95,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     ["caption", "action"]
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  getReaderRoot($containerElement: JQuery): HTMLElement | Document {
+    return document;
+  }
+
   getTemplate(): string {
     if (this.template) return this.template;
     throw new Error("MenuItemExtensionPoint.getTemplate not implemented");
@@ -104,8 +111,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     );
   }
 
-  addMenuItem($menuItem: JQuery): void {
-    this.$menu.append($menuItem);
+  addMenuItem($menu: JQuery, $menuItem: JQuery): void {
+    $menu.append($menuItem);
   }
 
   getBlocks(extension: IExtension<MenuItemExtensionConfig>): IBlock[] {
@@ -121,15 +128,26 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
 
     console.debug(`Awaiting menu container for ${this.id}: ${selector}`);
 
-    this.$menu = (await awaitElementOnce(selector)) as JQuery<HTMLElement>;
+    const $menu = (await awaitElementOnce(selector)) as JQuery<HTMLElement>;
 
-    return acquireElement(this.$menu, this.id, () => {
-      console.debug(`Menu removed from DOM for ${this.id}: ${selector}`);
-      this.$menu = undefined;
-    });
+    const acquired = $menu
+      .map((index, element) => {
+        const uuid = uuidv4();
+        this.menus.set(uuid, element);
+        return acquireElement($(element), this.id, () => {
+          console.debug(
+            `Menu ${uuid} removed from DOM for ${this.id}: ${selector}`
+          );
+          this.menus.delete(uuid);
+        });
+      })
+      .get();
+
+    return acquired.some(identity);
   }
 
   private async runExtension(
+    menu: HTMLElement,
     ctxt: ReaderOutput,
     extension: IExtension<MenuItemExtensionConfig>
   ) {
@@ -138,15 +156,15 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     });
     console.debug(`Running extension ${extension.id}`);
 
+    const $menu = $(menu);
+
     const {
       caption,
       action: actionConfig,
       icon = { id: "box", size: 18 },
     } = extension.config;
 
-    const $existingItem = this.$menu.find(
-      `[data-pixiebrix-uuid="${extension.id}"]`
-    );
+    const $existingItem = $menu.find(`[data-pixiebrix-uuid="${extension.id}"]`);
 
     const serviceContext = await makeServiceContext(extension.services);
     const renderTemplate = engineRenderer(extension.templateEngine);
@@ -176,7 +194,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       try {
         // read latest state at the time of the action
         const reader = this.defaultReader();
-        const ctxt = await reader.read();
+        const ctxt = await reader.read(this.getReaderRoot($menu));
 
         await reducePipeline(actionConfig, ctxt, extensionLogger, {
           validate: true,
@@ -199,7 +217,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       $existingItem.replaceWith($menuItem);
     } else {
       console.debug(`Adding new menu item ${extension.id}`);
-      this.addMenuItem($menuItem);
+      this.addMenuItem($menu, $menuItem);
     }
 
     onNodeRemoved($menuItem.get(0), () => {
@@ -208,38 +226,40 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
   }
 
   async run(): Promise<void> {
-    if (!this.$menu || !this.extensions.length) {
+    if (!this.menus.size || !this.extensions.length) {
       return;
     }
 
-    const reader = this.defaultReader();
-    const ctxt = await reader.read();
+    for (const menu of this.menus.values()) {
+      const reader = this.defaultReader();
+      const ctxt = await reader.read(this.getReaderRoot($(menu)));
 
-    if (ctxt == null) {
-      throw new Error(`Reader ${reader.id} returned null/undefined`);
-    }
-
-    const errors = [];
-
-    for (const extension of this.extensions) {
-      // Run in order so that the order stays the same for where they get rendered. The service
-      // context is the only thing that's async as part of the initial configuration right now
-      try {
-        await this.runExtension(ctxt, extension);
-      } catch (ex) {
-        // eslint-disable-next-line require-await
-        reportError(ex, {
-          extensionPointId: extension.extensionPointId,
-          extensionId: extension.id,
-        });
-        errors.push(ex);
+      if (ctxt == null) {
+        throw new Error(`Reader ${reader.id} returned null/undefined`);
       }
-    }
 
-    if (errors.length) {
-      $.notify(`An error occurred adding ${errors.length} menu item(s)`, {
-        className: "error",
-      });
+      const errors = [];
+
+      for (const extension of this.extensions) {
+        // Run in order so that the order stays the same for where they get rendered. The service
+        // context is the only thing that's async as part of the initial configuration right now
+        try {
+          await this.runExtension(menu, ctxt, extension);
+        } catch (ex) {
+          // eslint-disable-next-line require-await
+          reportError(ex, {
+            extensionPointId: extension.extensionPointId,
+            extensionId: extension.id,
+          });
+          errors.push(ex);
+        }
+      }
+
+      if (errors.length) {
+        $.notify(`An error occurred adding ${errors.length} menu item(s)`, {
+          className: "error",
+        });
+      }
     }
   }
 }
@@ -253,6 +273,7 @@ interface MenuDefinition extends ExtensionPointDefinition {
   template: string;
   position?: "append" | "prepend";
   containerSelector: string;
+  readerSelector: string;
   defaultOptions: MenuDefaultOptions;
 }
 
@@ -282,17 +303,34 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     };
   }
 
-  addMenuItem($menuItem: JQuery): void {
+  addMenuItem($menu: JQuery, $menuItem: JQuery): void {
     const { position = "append" } = this._definition;
     switch (position) {
       case "prepend":
       case "append": {
-        this.$menu[position]($menuItem);
+        $menu[position]($menuItem);
         break;
       }
       default: {
         throw new Error(`Unexpected position ${position}`);
       }
+    }
+  }
+
+  getReaderRoot($containerElement: JQuery): HTMLElement | Document {
+    const selector = this._definition.readerSelector;
+    if (selector) {
+      const $elt = $($containerElement).parents(selector);
+      if ($elt.length > 1) {
+        throw new Error(
+          `Found multiple elements for reader selector: ${selector}`
+        );
+      } else if ($elt.length === 0) {
+        throw new Error(`Found no elements for  reader selector: ${selector}`);
+      }
+      return $elt.get(0);
+    } else {
+      return document;
     }
   }
 
