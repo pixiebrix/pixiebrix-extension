@@ -48,8 +48,10 @@ module.exports = mergeWithCustomize({
           transform(content) {
             const manifest = JSON.parse(content.toString());
             manifest.name = "PixieBrix - Development";
+            if (process.env.CHROME_MANIFEST_KEY) {
+              manifest.key = process.env.CHROME_MANIFEST_KEY;
+            }
             manifest.version = process.env.npm_package_version;
-
             const internal = [
               "http://127.0.0.1:8000/*",
               "http://127.0.0.1/*",
