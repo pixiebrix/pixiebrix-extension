@@ -55,6 +55,9 @@ module.exports = () =>
             to: "manifest.json",
             transform(content) {
               const manifest = JSON.parse(content.toString());
+              if (process.env.CHROME_MANIFEST_KEY) {
+                manifest.key = process.env.CHROME_MANIFEST_KEY;
+              }
               manifest.version = process.env.npm_package_version;
               if (process.env.EXTERNALLY_CONNECTABLE) {
                 manifest.externally_connectable.matches = uniq([
@@ -68,7 +71,7 @@ module.exports = () =>
                   scopes: [""],
                 };
               }
-              return JSON.stringify(manifest);
+              return JSON.stringify(manifest, null, 4);
             },
           },
           {
