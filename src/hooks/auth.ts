@@ -15,9 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getBaseURL } from "@/services/baseService";
-import axios from "axios";
-import urljoin from "url-join";
+import { fetch } from "@/hooks/fetch";
 
 interface AuthState {
   userId: string;
@@ -26,10 +24,13 @@ interface AuthState {
   extension: boolean;
 }
 
+interface ProfileResponse {
+  id: string;
+  email: string;
+}
+
 export async function getAuth(): Promise<AuthState> {
-  const serviceUrl = await getBaseURL();
-  const { data } = await axios.get(urljoin(serviceUrl, "api", "me", "/"));
-  const { id, email } = data;
+  const { id, email } = await fetch<ProfileResponse>("/api/me/");
   if (id) {
     return {
       userId: id,

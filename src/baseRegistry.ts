@@ -16,11 +16,9 @@
  */
 
 import { readStorage, setStorage } from "@/chrome";
-import axios from "axios";
 import flatten from "lodash/flatten";
-import { getBaseURL } from "@/services/baseService";
+import { fetch } from "@/hooks/fetch";
 import compact from "lodash/compact";
-import urljoin from "url-join";
 import isPlainObject from "lodash/isPlainObject";
 import pickBy from "lodash/pickBy";
 import isEmpty from "lodash/isEmpty";
@@ -117,11 +115,10 @@ export class Registry<TItem extends RegistryItem> {
   }
 
   async fetch(): Promise<void> {
-    const serviceUrl = await getBaseURL();
-    const url = urljoin(serviceUrl, "api", this.resourcePath, "/");
-    const { data } = await axios.get(url);
+    const data = await fetch(`/api/${this.resourcePath}/`);
 
     if (!Array.isArray(data)) {
+      console.error(`Expected array from ${this.resourcePath}`, data);
       throw new Error(`Expected array from ${this.resourcePath}`);
     }
 
@@ -130,8 +127,6 @@ export class Registry<TItem extends RegistryItem> {
     }
 
     const parsed = compact(flatten(data.map((x) => this._parse(x))));
-
-    console.debug(`Fetched ${parsed.length} items from ${url}`);
 
     this.register(...parsed);
   }

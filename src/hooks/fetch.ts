@@ -21,6 +21,8 @@ import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { useToasts } from "react-toast-notifications";
+import { isExtensionContext } from "@/chrome";
+import { getExtensionToken } from "@/auth/token";
 
 export function isAbsoluteURL(url: string): boolean {
   return url.indexOf("http://") === 0 || url.indexOf("https://") === 0;
@@ -41,13 +43,31 @@ export function joinURL(host: string, relativeUrl: string): string {
 export async function fetch<TData>(
   relativeOrAbsoluteUrl: string
 ): Promise<TData> {
-  const url = isAbsoluteURL(relativeOrAbsoluteUrl)
+  const absolute = isAbsoluteURL(relativeOrAbsoluteUrl);
+
+  const url = absolute
     ? relativeOrAbsoluteUrl
     : joinURL(await getBaseURL(), relativeOrAbsoluteUrl);
 
-  const { data } = await axios.get<TData>(url);
-
-  return data;
+  if (!absolute && isExtensionContext()) {
+    const token = await getExtensionToken();
+    const { data, status, statusText } = await axios.get(url, {
+      headers: {
+        Authorization: token ? `Token ${token}` : undefined,
+      },
+    });
+    if (status === 401) {
+      throw new Error("Authentication required");
+    } else if (status === 403) {
+      throw new Error("Invalid key for service endpoint");
+    } else if (status >= 300) {
+      throw new Error(`Request error: ${statusText}`);
+    }
+    return data;
+  } else {
+    const { data } = await axios.get<TData>(url);
+    return data;
+  }
 }
 
 /**
@@ -64,13 +84,9 @@ export function useFetch<TData>(
   useAsyncEffect(
     async (isMounted) => {
       if (host) {
-        const url = isAbsoluteURL(relativeOrAbsoluteUrl)
-          ? relativeOrAbsoluteUrl
-          : joinURL(host, relativeOrAbsoluteUrl);
-
         setData(undefined);
         try {
-          const { data } = await axios.get<TData>(url);
+          const data = (await fetch(relativeOrAbsoluteUrl)) as TData;
           if (!isMounted()) return;
           setData(data);
         } catch (ex) {

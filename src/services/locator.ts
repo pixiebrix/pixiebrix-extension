@@ -30,13 +30,11 @@ import registry, {
   readRawConfigurations,
 } from "@/services/registry";
 import { inputProperties } from "@/helpers";
-import { proxyService, RemoteResponse } from "@/background/requests";
-import { getBaseURL } from "@/services/baseService";
 import {
   MissingConfigurationError,
   NotConfiguredError,
 } from "@/services/errors";
-import { getExtensionToken } from "@/auth/token";
+import { fetch } from "@/hooks/fetch";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -86,32 +84,18 @@ type Option = {
 };
 
 class LazyLocatorFactory {
-  private readonly baseURL: string | undefined;
-
   private remote: ConfigurableAuth[] = [];
   private local: RawServiceConfiguration[] = [];
   private options: Option[];
   private _initialized = false;
   private _refreshPromise: Promise<void>;
 
-  constructor(baseURL?: string) {
-    this.baseURL = baseURL;
-  }
-
   get initialized(): boolean {
     return this._initialized;
   }
 
   async refreshRemote(): Promise<void> {
-    const baseURL = this.baseURL ?? (await getBaseURL());
-    if (!(await getExtensionToken())) {
-      console.info("Extension not connected to the web service");
-      return;
-    }
-    const { data } = (await proxyService(await pixieServiceFactory(), {
-      url: `${baseURL}/api/services/shared/?meta=1`,
-    })) as RemoteResponse<ConfigurableAuth[]>;
-    this.remote = data;
+    this.remote = await fetch("/api/services/shared/?meta=1");
     console.debug(`Fetched ${this.remote.length} remote auths`);
     this.makeOptions();
   }

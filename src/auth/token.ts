@@ -17,6 +17,8 @@
 
 import { readStorage, setStorage } from "@/chrome";
 import equal from "deep-equal";
+import { browser } from "webextension-polyfill-ts";
+import Cookies from "js-cookie";
 
 const STORAGE_EXTENSION_KEY = "extensionKey";
 
@@ -51,6 +53,12 @@ export async function getExtensionAuth(): Promise<UserData> {
   }
 }
 
+export async function clearExtensionAuth(): Promise<void> {
+  await browser.storage.local.remove(STORAGE_EXTENSION_KEY);
+  Cookies.remove("csrftoken");
+  Cookies.remove("sessionid");
+}
+
 /**
  * Refresh the Chrome extensions auth (user, email, token, hostname), and return true iff it was updated.
  */
@@ -63,7 +71,7 @@ export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
     } catch {
       // pass
     }
-    console.debug("Setting extension auth", auth);
+    console.debug(`Setting extension auth for ${auth.email}`, auth);
     await setStorage(STORAGE_EXTENSION_KEY, JSON.stringify(auth));
     return !equal(auth, previous);
   }

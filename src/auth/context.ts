@@ -18,8 +18,12 @@
 import React from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { isExtensionContext } from "@/chrome";
 
-axios.defaults.headers.post["X-CSRFToken"] = Cookies.get("csrftoken");
+if (!isExtensionContext()) {
+  console.debug("Setting axios web app authentication context");
+  axios.defaults.headers.post["X-CSRFToken"] = Cookies.get("csrftoken");
+}
 
 export interface Profile {
   userId?: string;

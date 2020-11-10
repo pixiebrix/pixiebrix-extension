@@ -28,6 +28,7 @@ import Form from "react-bootstrap/Form";
 import { useConfiguredHost, DEFAULT_SERVICE_URL } from "@/services/baseService";
 import isEmpty from "lodash/isEmpty";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
+import { clearExtensionAuth } from "@/auth/token";
 
 const { resetOptions } = optionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
@@ -40,6 +41,14 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
   const { addToast } = useToasts();
 
   const [serviceURL, setServiceURL] = useConfiguredHost();
+
+  const clear = useCallback(async () => {
+    await clearExtensionAuth();
+    addToast("Cleared the extension token. Visit the web app to set it again", {
+      appearance: "success",
+      autoDismiss: true,
+    });
+  }, []);
 
   const handleUpdate = useCallback(
     async (event) => {
@@ -76,7 +85,7 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
             <Card.Body className="text-danger">
               <p className="card-text">
                 Click here to reset all the options.{" "}
-                <b>This will delete any bricks you've installed.</b>
+                <b>This will delete any bricks you&apos;ve installed.</b>
               </p>
               <Button
                 variant="danger"
@@ -101,7 +110,7 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
             <Card.Header>Advanced Settings</Card.Header>
             <Card.Body>
               <p className="card-text">
-                Only change these settings if you know what you're doing!{" "}
+                Only change these settings if you know what you&apos;re doing!{" "}
                 <b>After making changes, reload the extension.</b>
               </p>
               <Form>
@@ -119,6 +128,11 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
                 </Form.Group>
               </Form>
             </Card.Body>
+            <Card.Footer>
+              <Button variant="warning" onClick={clear}>
+                Clear Token
+              </Button>
+            </Card.Footer>
           </Card>
         </Col>
       </Row>

@@ -16,7 +16,7 @@
  */
 
 import isEmpty from "lodash/isEmpty";
-import { readStorage, setStorage } from "@/chrome";
+import { isExtensionContext, readStorage, setStorage } from "@/chrome";
 import useAsyncEffect from "use-async-effect";
 import { useState, useCallback } from "react";
 
@@ -30,7 +30,7 @@ function withoutTrailingSlash(url: string): string {
 }
 
 export async function getBaseURL(): Promise<string> {
-  if (window.chrome?.storage) {
+  if (isExtensionContext()) {
     const configured = (await readStorage(
       SERVICE_STORAGE_KEY
     )) as ConfiguredHost;

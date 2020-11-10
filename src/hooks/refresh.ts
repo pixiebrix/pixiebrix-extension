@@ -42,7 +42,7 @@ export function useRefresh(
         if (!isMounted()) {
           return;
         }
-        addToast("Error refreshing blocks from server", {
+        addToast(`Error refreshing blocks from server: ${exc}`, {
           appearance: "error",
           autoDismiss: true,
         });
