@@ -17,7 +17,7 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { createSlice } from "@reduxjs/toolkit";
-import { RawServiceConfiguration, ServiceDependency } from "@/core";
+import { Metadata, RawServiceConfiguration, ServiceDependency } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 
 export interface ServicesState {
@@ -57,6 +57,7 @@ export const servicesSlice = createSlice({
 export interface ExtensionOptions {
   id: string;
   _recipeId?: string;
+  _recipe: Metadata | null;
   extensionPointId: string;
   active: boolean;
   label: string;
@@ -103,6 +104,7 @@ export const optionsSlice = createSlice({
         state.extensions[extensionPointId][extensionId] = {
           id: extensionId,
           _recipeId: recipe.metadata.id,
+          _recipe: recipe.metadata,
           services: Object.entries(services ?? {}).map(
             ([outputKey, id]: [string, string]) => ({
               outputKey,
@@ -130,6 +132,7 @@ export const optionsSlice = createSlice({
       }
       state.extensions[extensionPointId][extensionId] = {
         id: extensionId,
+        _recipe: null,
         label,
         services,
         extensionPointId,

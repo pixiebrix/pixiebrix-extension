@@ -43,6 +43,7 @@ const SharingIcon: React.FunctionComponent<{
 };
 
 export interface EditorValues {
+  reactivate?: boolean;
   public: boolean;
   config: string;
   organizations: string[];

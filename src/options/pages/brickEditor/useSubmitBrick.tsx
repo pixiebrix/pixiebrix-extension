@@ -28,6 +28,7 @@ import axios from "axios";
 import { getExtensionToken } from "@/auth/token";
 import { useRefresh } from "@/hooks/refresh";
 import { reactivate } from "@/background/navigation";
+import { useReinstall } from "@/options/pages/marketplace/ActivateWizard";
 
 interface SubmitOptions {
   create: boolean;
@@ -47,7 +48,7 @@ function useSubmitBrick({
   url,
 }: SubmitOptions): SubmitCallbacks {
   const [, refresh] = useRefresh(false);
-
+  const reinstall = useReinstall();
   const history = useHistory();
   const { addToast } = useToasts();
 
@@ -58,7 +59,11 @@ function useSubmitBrick({
 
   const submit = useCallback(
     async (values, { setErrors }) => {
-      const { kind, metadata } = yaml.safeLoad(values.config) as any;
+      const { config, reactivate: reinstallBlueprint } = values;
+
+      const json = yaml.safeLoad(config) as any;
+      const { kind, metadata } = json;
+
       try {
         const response = await axios({
           url: await makeURL(url),
@@ -69,19 +74,23 @@ function useSubmitBrick({
 
         const { data } = response;
 
-        refresh()
-          .then(() => reactivate())
-          .catch((reason) => {
-            console.warn(
-              "An error occurred when re-activating the active bricks",
-              reason
-            );
-          });
+        const refreshPromise =
+          kind === "recipe" && reinstallBlueprint ? reinstall(json) : refresh();
 
         addToast(`${create ? "Created" : "Updated"} ${metadata.name}`, {
           appearance: "success",
           autoDismiss: true,
         });
+
+        refreshPromise
+          .then(() => reactivate())
+          .catch((reason) => {
+            console.warn("An error occurred when re-activating bricks", reason);
+            addToast(`Error re-activating bricks: ${reason}`, {
+              appearance: "warning",
+              autoDismiss: true,
+            });
+          });
 
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);

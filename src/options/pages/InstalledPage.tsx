@@ -20,6 +20,8 @@ import isEmpty from "lodash/isEmpty";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import React, { useMemo } from "react";
+import groupBy from "lodash/groupBy";
+import sortBy from "lodash/sortBy";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { optionsSlice, OptionsState } from "../slices";
 import Button from "react-bootstrap/Button";
@@ -42,6 +44,7 @@ import {
   useExtensionValidator,
 } from "@/validators/generic";
 import { IExtension } from "@/core";
+import "./InstalledPage.scss";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -136,10 +139,24 @@ const ExtensionRow: React.FunctionComponent<{
   );
 };
 
+interface InstalledExtension extends IExtension {
+  _recipe: {
+    id: string;
+    name: string;
+  } | null;
+}
+
 const InstalledPage: React.FunctionComponent<{
-  extensions: IExtension[];
+  extensions: InstalledExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
+  const recipeExtensions = useMemo(() => {
+    return sortBy(
+      Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
+      (x) => (x[0] === "" ? 0 : 1)
+    );
+  }, [extensions]);
+
   return (
     <div>
       <PageTitle icon={faCubes} title="Active Bricks" />
@@ -157,7 +174,7 @@ const InstalledPage: React.FunctionComponent<{
       </Row>
       <Row>
         <Col xl={9} lg={10} md={12}>
-          <Card>
+          <Card className="ActiveBricksCard">
             <Card.Header>Active Bricks</Card.Header>
             <Table>
               <thead>
@@ -168,15 +185,26 @@ const InstalledPage: React.FunctionComponent<{
                   <th>Uninstall</th>
                 </tr>
               </thead>
-              <tbody>
-                {extensions.map((extension) => (
-                  <ExtensionRow
-                    key={extension.id}
-                    extension={extension}
-                    onRemove={onRemove}
-                  />
-                ))}
-                {isEmpty(extensions) && (
+              {recipeExtensions.map(([recipeId, xs]) => (
+                <tbody key={recipeId}>
+                  {recipeId !== "" && (
+                    <tr className="ActiveBricksCard__blueprint">
+                      <th colSpan={4} className="py-2">
+                        {xs[0]._recipe?.name ?? recipeId}
+                      </th>
+                    </tr>
+                  )}
+                  {xs.map((extension) => (
+                    <ExtensionRow
+                      key={extension.id}
+                      extension={extension}
+                      onRemove={onRemove}
+                    />
+                  ))}
+                </tbody>
+              ))}
+              {isEmpty(extensions) && (
+                <tbody>
                   <tr>
                     <td colSpan={4}>
                       No bricks installed yet. Find some in the{" "}
@@ -186,8 +214,8 @@ const InstalledPage: React.FunctionComponent<{
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                   </tr>
-                )}
-              </tbody>
+                </tbody>
+              )}
             </Table>
           </Card>
         </Col>
@@ -200,7 +228,9 @@ InstalledPage.propTypes = {
   extensions: PropTypes.array,
 };
 
-function selectExtensions(state: { options: OptionsState }) {
+function selectExtensions(state: {
+  options: OptionsState;
+}): InstalledExtension[] {
   return Object.entries(state.options.extensions).flatMap(
     ([extensionPointId, pointExtensions]) =>
       Object.entries(pointExtensions).map(([extensionId, extension]) => ({
