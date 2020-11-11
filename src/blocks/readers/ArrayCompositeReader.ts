@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { IReader, Schema } from "@/core";
+import { IReader, ReaderOutput, Schema } from "@/core";
 import identity from "lodash/identity";
 import zip from "lodash/zip";
 
@@ -43,15 +43,17 @@ class ArrayCompositeReader extends Reader {
     };
   }
 
-  async isAvailable() {
+  async isAvailable(): Promise<boolean> {
     return (await Promise.all(this._readers.map((x) => x.isAvailable()))).every(
       identity
     );
   }
 
-  async read() {
+  async read(root: HTMLElement | Document): Promise<ReaderOutput> {
     let result = {};
-    const readResults = await Promise.all(this._readers.map((x) => x.read()));
+    const readResults = await Promise.all(
+      this._readers.map((x) => x.read(root))
+    );
     for (const [reader, readerResult] of zip(this._readers, readResults)) {
       console.debug(`ArrayCompositeReader:${reader.name}`, readerResult);
       result = { ...result, ...readerResult };

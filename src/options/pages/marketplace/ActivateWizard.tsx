@@ -18,11 +18,12 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
-import { optionsSlice } from "@/options/slices";
+import { ExtensionOptions, optionsSlice, OptionsState } from "@/options/slices";
 import { useToasts } from "react-toast-notifications";
 import Rollbar from "rollbar";
+import groupBy from "lodash/groupBy";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import uniq from "lodash/uniq";
 import pickBy from "lodash/pickBy";
 import { push } from "connected-react-router";
@@ -34,12 +35,73 @@ import ServicesBody from "./ServicesBody";
 import { WizardValues } from "./wizard";
 import { checkPermissions, collectPermissions } from "@/permissions";
 
-const { installRecipe } = optionsSlice.actions;
+const { installRecipe, removeExtension } = optionsSlice.actions;
 
 type InstallRecipe = (
   values: WizardValues,
   helpers: FormikHelpers<WizardValues>
 ) => Promise<void>;
+
+function selectAuths(
+  extensions: ExtensionOptions[]
+): { [serviceId: string]: string } {
+  const serviceAuths = groupBy(
+    extensions.flatMap((x) => x.services),
+    (x) => x.id
+  );
+  const result: { [serviceId: string]: string } = {};
+  for (const [id, auths] of Object.entries(serviceAuths)) {
+    const configs = uniq(auths.map(({ config }) => config));
+    if (configs.length === 0) {
+      throw new Error(`Service ${id} is not configured`);
+    } else if (configs.length > 1) {
+      throw new Error(`Service ${id} has multiple configurations`);
+    }
+    result[id] = configs[0];
+  }
+  return result;
+}
+
+export function useReinstall(): (recipe: RecipeDefinition) => Promise<void> {
+  const dispatch = useDispatch();
+
+  const extensions = useSelector<{ options: OptionsState }, ExtensionOptions[]>(
+    ({ options }) => {
+      return Object.values(
+        options.extensions
+      ).flatMap((extensionPointOptions) =>
+        Object.values(extensionPointOptions)
+      );
+    }
+  );
+
+  return useCallback(async (recipe: RecipeDefinition) => {
+    const recipeExtensions = extensions.filter(
+      (x) => x._recipeId === recipe.metadata.id
+    );
+
+    if (recipeExtensions.length === 0) {
+      throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
+    }
+
+    const currentAuths = selectAuths(recipeExtensions);
+    dispatch(
+      installRecipe({
+        recipe,
+        extensionPoints: recipe.extensionPoints,
+        services: currentAuths,
+      })
+    );
+    for (const extension of extensions) {
+      dispatch(
+        removeExtension({
+          extensionPointId: extension.extensionPointId,
+          extensionId: extension.id,
+        })
+      );
+    }
+  }, []);
+}
 
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const dispatch = useDispatch();

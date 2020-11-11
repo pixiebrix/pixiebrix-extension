@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { IReader, Schema } from "@/core";
+import { IReader, ReaderOutput, Schema } from "@/core";
 import mapValues from "lodash/mapValues";
 import identity from "lodash/identity";
 import fromPairs from "lodash/fromPairs";
@@ -44,10 +44,10 @@ class CompositeReader extends Reader {
     );
   }
 
-  async read() {
+  async read(root: HTMLElement | Document): Promise<ReaderOutput> {
     const readOne = async (key: string, reader: IReader) => [
       key,
-      await reader.read(),
+      await reader.read(root),
     ];
     const resultPairs = await Promise.all(
       Object.entries(this._readers).map(([key, reader]) => readOne(key, reader))

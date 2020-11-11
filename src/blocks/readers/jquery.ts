@@ -76,13 +76,13 @@ function castValue(value: string, type?: CastType): Result {
 }
 
 function processFind(
-  $elt: JQuery,
+  $elt: JQuery<HTMLElement | Document>,
   selector: ChildrenSelector
 ): { [key: string]: Result } {
   return mapValues(selector.find, (selector) => select(selector, $elt));
 }
 
-function processElement($elt: JQuery, selector: SingleSelector) {
+function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
   const CONTENT_TYPES: { [key: string]: number | undefined } = {
     text: Node.TEXT_NODE,
     comment: Node.COMMENT_NODE,
@@ -116,7 +116,10 @@ function processElement($elt: JQuery, selector: SingleSelector) {
   return castValue(value, selector.type);
 }
 
-function select(selector: string | Selector, $root?: JQuery): Result {
+function select(
+  selector: string | Selector,
+  $root?: JQuery<HTMLElement | Document>
+): Result {
   const commonSelector: Selector =
     typeof selector === "string" ? { selector } : selector;
 
@@ -140,20 +143,32 @@ function select(selector: string | Selector, $root?: JQuery): Result {
     throw new Error(
       `Multiple elements found for ${commonSelector.selector}. To return a list of values, supply multi=true`
     );
-  } else {
-    const processor = "find" in commonSelector ? processFind : processElement;
+  } else if ("find" in commonSelector) {
     const values = $elt
       .map(function () {
-        return processor($(this), commonSelector);
+        return processFind($(this), commonSelector);
+      })
+      .toArray();
+    return commonSelector.multi ? values : values[0];
+  } else {
+    if ($elt === $(document)) {
+      throw new Error("Cannot process document as element");
+    }
+    const values = $elt
+      .map(function () {
+        return processElement($(this) as JQuery<HTMLElement>, commonSelector);
       })
       .toArray();
     return commonSelector.multi ? values : values[0];
   }
 }
 
-async function read(reader: JQueryConfig): Promise<ReaderOutput> {
+async function read(
+  reader: JQueryConfig,
+  root: HTMLElement | Document
+): Promise<ReaderOutput> {
   const { selectors } = reader;
-  return mapValues(selectors, (x) => select(x));
+  return mapValues(selectors, (x) => select(x, $(root)));
 }
 
 registerFactory("jquery", read);

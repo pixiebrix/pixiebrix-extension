@@ -81,16 +81,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
 
     const { action: actionConfig } = extension.config;
 
-    console.debug(`Running extension ${extension.id}`);
+    console.debug(`Running trigger extension ${extension.id}`);
 
     const serviceContext = await makeServiceContext(extension.services);
 
-    console.debug("Extension context", { serviceContext, ctxt });
-
     try {
-      // read latest state at the time of the trigger
-      const reader = this.defaultReader();
-      const ctxt = await reader.read();
       await reducePipeline(actionConfig, ctxt, extensionLogger, {
         validate: true,
         serviceArgs: serviceContext,
@@ -103,7 +98,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
 
   async run(): Promise<void> {
     const reader = this.defaultReader();
-    const readerContext = await reader.read();
+    const readerContext = await reader.read(document);
 
     const errors = [];
 
@@ -123,7 +118,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     );
 
     if (errors.length) {
-      $.notify(`An error occurred adding ${errors.length} menu item(s)`, {
+      $.notify(`An error occurred running ${errors.length} triggers(s)`, {
         className: "error",
       });
     }

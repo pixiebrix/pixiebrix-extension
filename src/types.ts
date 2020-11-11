@@ -28,6 +28,7 @@ import {
   Logger,
   OAuth2Context,
   OAuthData,
+  ReaderOutput,
   RenderedHTML,
   Schema,
   ServiceConfig,
@@ -218,9 +219,9 @@ export abstract class Reader extends Block implements IReader {
 
   abstract async isAvailable($elt?: JQuery): Promise<boolean>;
 
-  abstract async read($elt?: JQuery): Promise<{ [key: string]: unknown }>;
+  abstract async read(root: HTMLElement | Document): Promise<ReaderOutput>;
 
-  async run(): Promise<unknown> {
-    return this.read();
+  async run(root: HTMLElement | Document): Promise<unknown> {
+    return this.read(root);
   }
 }

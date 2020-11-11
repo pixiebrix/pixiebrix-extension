@@ -19,7 +19,7 @@ import { Reader } from "@/types";
 import startCase from "lodash/startCase";
 import { registerBlock } from "@/blocks/registry";
 import trim from "lodash/trim";
-import { Schema } from "@/core";
+import { ReaderOutput, Schema } from "@/core";
 
 type EntityType = "person" | "organization";
 
@@ -70,7 +70,8 @@ class MentionReader extends Reader {
     return $elt.data("type") === this.entityType;
   }
 
-  async read($elt: JQuery) {
+  async read(elt: HTMLElement): Promise<ReaderOutput> {
+    const $elt = $(elt);
     return {
       articleUrl: window.location.href,
       crunchbaseUrl: $elt.attr("href"),

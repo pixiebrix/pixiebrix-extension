@@ -180,7 +180,7 @@ export interface IReader extends IBlock {
   /** Return true if the Reader is for a page/element. */
   isAvailable: ($elt?: JQuery) => Promise<boolean>;
 
-  read: ($elt?: JQuery) => Promise<ReaderOutput>;
+  read: (root: HTMLElement | Document) => Promise<ReaderOutput>;
 }
 
 type ServiceId = string;

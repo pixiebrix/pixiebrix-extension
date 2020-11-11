@@ -53,14 +53,16 @@ function validateReaderDefinition(
   }
 }
 
+type Read = (
+  config: any,
+  root: HTMLElement | Document
+) => Promise<ReaderOutput>;
+
 const _readerFactories: {
-  [key: string]: (config: any) => Promise<ReaderOutput>;
+  [type: string]: Read;
 } = {};
 
-export function registerFactory(
-  key: string,
-  read: (config: any) => Promise<ReaderOutput>
-) {
+export function registerFactory(key: string, read: Read): void {
   _readerFactories[key] = read;
 }
 
@@ -91,10 +93,10 @@ export function readerFactory(component: unknown): IReader {
       return await checkAvailable(isAvailable);
     }
 
-    async read() {
+    async read(root: HTMLElement | Document): Promise<ReaderOutput> {
       const doRead = _readerFactories[reader.type];
       if (doRead) {
-        return doRead(definition.reader as any);
+        return doRead(definition.reader as any, root);
       } else {
         throw new Error(`Reader type ${reader.type} not implemented`);
       }
