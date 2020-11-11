@@ -74,7 +74,7 @@ function useDetectBlueprint(
 }
 
 const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
-  const [field] = useField(name);
+  const [field, , helpers] = useField(name);
   return (
     <BootstrapSwitchButton
       onstyle="info"
@@ -82,7 +82,7 @@ const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
       onlabel=" "
       offlabel=" "
       checked={field.value}
-      onChange={(value) => field.onChange(value)}
+      onChange={(value) => helpers.setValue(value)}
     />
   );
 };
