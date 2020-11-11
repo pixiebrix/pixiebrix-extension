@@ -40,14 +40,15 @@ import {
   readEmberValueFromCache,
 } from "./frameworks/ember";
 import {
+  ComponentNotFoundError,
   findReactComponent,
   readReactProps,
-  ComponentNotFoundError,
 } from "@/frameworks/react";
 import fromPairs from "lodash/fromPairs";
 import { globalSearch } from "@/vendors/globalSearch";
 import pickBy from "lodash/pickBy";
 import identity from "lodash/identity";
+import { scan as scanVue } from "@/frameworks/vue";
 
 type Handler = (payload: unknown) => unknown;
 const handlers: { [type: string]: Handler } = {};
@@ -290,3 +291,5 @@ document.dispatchEvent(new CustomEvent(SCRIPT_LOADED));
 setTimeout(function () {
   document.dispatchEvent(new CustomEvent(CONNECT_EXTENSION, {}));
 }, 0);
+
+console.log("Vue scan", scanVue());
