@@ -71,6 +71,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     return blockList(extension.config.action);
   }
 
+  getTriggerRoot(): JQuery<HTMLElement | Document> {
+    return $(document);
+  }
+
   private async runExtension(
     ctxt: ReaderOutput,
     extension: IExtension<TriggerConfig>
@@ -97,24 +101,27 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
   }
 
   async run(): Promise<void> {
-    const reader = this.defaultReader();
-    const readerContext = await reader.read(document);
-
     const errors = [];
 
     await Promise.allSettled(
-      this.extensions.map(async (extension) => {
-        try {
-          await this.runExtension(readerContext, extension);
-        } catch (ex) {
-          // eslint-disable-next-line require-await
-          reportError(ex, {
-            extensionPointId: extension.extensionPointId,
-            extensionId: extension.id,
+      this.getTriggerRoot()
+        .toArray()
+        .flatMap(async (root) => {
+          const reader = this.defaultReader();
+          const readerContext = await reader.read(root);
+          return this.extensions.map(async (extension) => {
+            try {
+              await this.runExtension(readerContext, extension);
+            } catch (ex) {
+              // eslint-disable-next-line require-await
+              reportError(ex, {
+                extensionPointId: extension.extensionPointId,
+                extensionId: extension.id,
+              });
+              errors.push(ex);
+            }
           });
-          errors.push(ex);
-        }
-      })
+        })
     );
 
     if (errors.length) {
@@ -131,6 +138,7 @@ interface TriggerDefinitionOptions {
 
 interface TriggerDefinition extends ExtensionPointDefinition {
   defaultOptions: TriggerDefinitionOptions;
+  rootSelector?: string;
 }
 
 class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
@@ -152,6 +160,12 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
       permissions: ["tabs", "webNavigation"],
       origins: castArray(isAvailable.matchPatterns),
     };
+  }
+
+  getTriggerRoot(): JQuery<HTMLElement | Document> {
+    return this._definition.rootSelector
+      ? $(this._definition.rootSelector)
+      : $(document);
   }
 
   defaultReader() {

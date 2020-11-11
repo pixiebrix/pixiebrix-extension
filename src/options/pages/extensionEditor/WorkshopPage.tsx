@@ -31,6 +31,7 @@ import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import { useFetch } from "@/hooks/fetch";
 import { AuthContext } from "@/auth/context";
+import sortBy from "lodash/sortBy";
 
 interface OwnProps {
   navigate: (url: string) => void;
@@ -45,6 +46,10 @@ interface Brick {
 
 const CustomBricksCard: React.FunctionComponent<OwnProps> = ({ navigate }) => {
   const remoteBricks = useFetch<Brick[]>("/api/bricks/");
+  const sortedBricks = useMemo(
+    () => sortBy(remoteBricks ?? [], (x) => x.name),
+    [remoteBricks]
+  );
 
   return (
     <Card>
@@ -59,7 +64,7 @@ const CustomBricksCard: React.FunctionComponent<OwnProps> = ({ navigate }) => {
           </tr>
         </thead>
         <tbody>
-          {(remoteBricks ?? []).map((x) => (
+          {sortedBricks.map((x) => (
             <tr key={x.id}>
               <td>{x.name}</td>
               <td>{x.kind}</td>

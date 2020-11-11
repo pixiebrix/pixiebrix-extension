@@ -18,6 +18,7 @@
 import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
+import { openTab } from "@/background/executor";
 
 const URL_INPUT_SPEC: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -69,7 +70,7 @@ export class OpenURLEffect extends Effect {
   constructor() {
     super(
       "@pixiebrix/browser/open-tab",
-      "Open a Tab/Window",
+      "Open a tab",
       "Open a URL in a new tab",
       "faWindowMaximize"
     );
@@ -78,16 +79,10 @@ export class OpenURLEffect extends Effect {
   inputSchema = URL_INPUT_SPEC;
 
   async effect({ url, params }: BlockArg): Promise<void> {
-    const newWindow = window.open(
-      makeURL(url, params),
-      "_blank",
-      "noopener,noreferrer"
-    );
-    // since we're the content script, we shouldn't actually get a window handle back
-    if (newWindow) {
-      newWindow.opener = null;
-      newWindow.focus();
-    }
+    await openTab({
+      url: makeURL(url, params),
+      active: true,
+    });
   }
 }
 

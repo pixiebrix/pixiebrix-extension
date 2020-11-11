@@ -32,21 +32,41 @@ export class MappingTransformer extends Transformer {
   inputSchema: Schema = {
     type: "object",
     properties: {
-      value: {
+      key: {
         type: "string",
         description: "The value to look up",
+      },
+      missing: {
+        type: "string",
+        default: "null",
+        enum: ["null", "ignore", "error"],
       },
       mapping: {
         type: "object",
         description: "The lookup table",
         additionalProperties: { type: "string" },
+        minProperties: 1,
       },
     },
-    required: ["value", "mapping"],
+    required: ["key", "mapping"],
   };
 
-  async transform({ value, mapping }: BlockArg): Promise<string> {
-    return mapping[value] ?? value;
+  async transform({
+    key,
+    missing = "null",
+    mapping,
+  }: BlockArg): Promise<unknown> {
+    if (key == null) {
+      return null;
+    } else if (Object.prototype.hasOwnProperty.call(mapping, key)) {
+      return mapping[key];
+    } else if (missing === "null" || missing === null) {
+      return null;
+    } else if (missing === "ignore") {
+      return key;
+    } else if (missing === "error") {
+      throw new Error(`Key ${key} not found in the mapping`);
+    }
   }
 }
 

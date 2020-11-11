@@ -75,32 +75,35 @@ export function useReinstall(): (recipe: RecipeDefinition) => Promise<void> {
     }
   );
 
-  return useCallback(async (recipe: RecipeDefinition) => {
-    const recipeExtensions = extensions.filter(
-      (x) => x._recipeId === recipe.metadata.id
-    );
+  return useCallback(
+    async (recipe: RecipeDefinition) => {
+      const recipeExtensions = extensions.filter(
+        (x) => x._recipeId === recipe.metadata.id
+      );
 
-    if (recipeExtensions.length === 0) {
-      throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
-    }
+      if (recipeExtensions.length === 0) {
+        throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
+      }
 
-    const currentAuths = selectAuths(recipeExtensions);
-    dispatch(
-      installRecipe({
-        recipe,
-        extensionPoints: recipe.extensionPoints,
-        services: currentAuths,
-      })
-    );
-    for (const extension of extensions) {
-      dispatch(
-        removeExtension({
-          extensionPointId: extension.extensionPointId,
-          extensionId: extension.id,
+      const currentAuths = selectAuths(recipeExtensions);
+      await dispatch(
+        installRecipe({
+          recipe,
+          extensionPoints: recipe.extensionPoints,
+          services: currentAuths,
         })
       );
-    }
-  }, []);
+      for (const extension of extensions) {
+        await dispatch(
+          removeExtension({
+            extensionPointId: extension.extensionPointId,
+            extensionId: extension.id,
+          })
+        );
+      }
+    },
+    [dispatch, extensions]
+  );
 }
 
 function useInstall(recipe: RecipeDefinition): InstallRecipe {

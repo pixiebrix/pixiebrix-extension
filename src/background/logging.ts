@@ -164,6 +164,7 @@ export const recordError = liftBackground(
     data: JsonObject | undefined
   ): Promise<void> => {
     try {
+      console.error(errorMessage(error), error);
       (Rollbar as any).error(errorMessage(error), error);
       await appendEntry({
         uuid: uuidv4(),

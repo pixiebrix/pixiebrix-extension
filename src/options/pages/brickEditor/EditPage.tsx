@@ -120,7 +120,7 @@ const EditPage: React.FunctionComponent = () => {
     <Formik
       onSubmit={submit}
       validate={validate}
-      initialValues={{ ...data, reactivate: isBlueprint }}
+      initialValues={{ ...data, reactivate: isBlueprint && isInstalled }}
     >
       {({ values, isValid, handleSubmit, isSubmitting }) => (
         <Form noValidate onSubmit={handleSubmit} autoComplete="off">

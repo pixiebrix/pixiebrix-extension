@@ -55,14 +55,18 @@ function runBlockAction(
   if (allowSender(sender) && type === MESSAGE_RUN_BLOCK) {
     const { blockId, blockArgs, options } = payload;
 
+    // TODO: validate sourceTabId here
     // if (!childTabs.has(sourceTabId)) {
     //   return Promise.reject("Unknown source tab id");
     // }
 
-    return new Promise<unknown>((resolve) => {
+    return new Promise<unknown>((resolve, reject) => {
       const block = blockRegistry.lookup(blockId);
       const logger = new BackgroundLogger(options.messageContext);
-      block.run(blockArgs, { ctxt: options.ctxt, logger }).then(resolve);
+      block
+        .run(blockArgs, { ctxt: options.ctxt, logger })
+        .then(resolve)
+        .catch(reject);
     });
   }
 }

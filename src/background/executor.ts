@@ -31,6 +31,7 @@ const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
 const MESSAGE_ACTIVATE_TAB = `${MESSAGE_PREFIX}MESSAGE_ACTIVATE_TAB`;
 const MESSAGE_CLOSE_TAB = `${MESSAGE_PREFIX}MESSAGE_CLOSE_TAB`;
+const MESSAGE_OPEN_TAB = `${MESSAGE_PREFIX}MESSAGE_OPEN_TAB`;
 
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
@@ -44,22 +45,27 @@ interface WaitOptions {
   maxWaitMillis: number;
 }
 
+type OpenTabAction = {
+  type: typeof MESSAGE_OPEN_TAB;
+  payload: Tabs.CreateCreatePropertiesType;
+};
+
 async function waitReady(
   tabId: number,
-  { maxWaitMillis }: WaitOptions = { maxWaitMillis: 5000 }
+  { maxWaitMillis }: WaitOptions = { maxWaitMillis: 10000 }
 ): Promise<boolean> {
   const startTime = Date.now();
   while (!tabReady.get(tabId)) {
     if (Date.now() - startTime > maxWaitMillis) {
       throw new Error(`Tab ${tabId} was not ready after ${maxWaitMillis}ms`);
     }
-    await sleep(30);
+    await sleep(50);
   }
   return tabReady.get(tabId);
 }
 
 function backgroundListener(
-  request: RunBlockAction,
+  request: RunBlockAction | OpenTabAction,
   sender: Runtime.MessageSender
 ): Promise<unknown> | undefined {
   if (sender.id !== browser.runtime.id) {
@@ -71,7 +77,7 @@ function backgroundListener(
       const opener = tabToOpener.get(sender.tab.id);
 
       if (!opener) {
-        return Promise.reject("Sender tab has no opener");
+        return Promise.reject(new Error("Sender tab has no opener"));
       }
 
       return new Promise((resolve) => {
@@ -90,10 +96,14 @@ function backgroundListener(
       const target = tabToTarget.get(sender.tab.id);
 
       if (!target) {
-        return Promise.reject("Sender tab has no target");
+        return Promise.reject(new Error("Sender tab has no target"));
       }
 
+      console.debug(`Waiting for target tab ${target} to be ready`);
       return waitReady(target).then(() => {
+        console.debug(
+          `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
+        );
         return browser.tabs.sendMessage(target, {
           type: CONTENT_MESSAGE_RUN_BLOCK,
           payload: {
@@ -116,6 +126,18 @@ function backgroundListener(
     case MESSAGE_CLOSE_TAB: {
       return new Promise<unknown>((resolve) => {
         browser.tabs.remove(sender.tab.id).then(resolve);
+      });
+    }
+    case MESSAGE_OPEN_TAB: {
+      return new Promise<unknown>((resolve, reject) => {
+        browser.tabs
+          .create(request.payload as Tabs.CreateCreatePropertiesType)
+          .then((tab) => {
+            tabToTarget.set(sender.tab.id, tab.id);
+            tabToOpener.set(tab.id, sender.tab.id);
+            resolve();
+          })
+          .catch(reject);
       });
     }
     case MESSAGE_CONTENT_SCRIPT_READY: {
@@ -166,6 +188,15 @@ export async function closeTab(): Promise<void> {
   return await browser.runtime.sendMessage({
     type: MESSAGE_CLOSE_TAB,
     payload: {},
+  });
+}
+
+export async function openTab(
+  options: Tabs.CreateCreatePropertiesType
+): Promise<void> {
+  return await browser.runtime.sendMessage({
+    type: MESSAGE_OPEN_TAB,
+    payload: options,
   });
 }
 

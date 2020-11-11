@@ -22,6 +22,8 @@ import { registerBlock } from "@/blocks/registry";
 
 type ColorRule = string | { selector: string; backgroundColor?: string };
 
+const HEX_PATTERN = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
+
 export class HighlightEffect extends Effect {
   constructor() {
     super(
@@ -36,7 +38,12 @@ export class HighlightEffect extends Effect {
       backgroundColor: {
         type: "string",
         default: "#FFFF00",
-        pattern: "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+        description: "Default color hex code",
+        pattern: HEX_PATTERN,
+      },
+      rootSelector: {
+        type: "string",
+        description: "Optional root selector to find the elements within",
       },
       elements: {
         type: "array",
@@ -52,8 +59,8 @@ export class HighlightEffect extends Effect {
                 },
                 backgroundColor: {
                   type: "string",
-                  description: "Color Hex code",
-                  pattern: "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+                  description: "Color hex code",
+                  pattern: HEX_PATTERN,
                 },
               },
               required: ["selector"],
@@ -67,19 +74,25 @@ export class HighlightEffect extends Effect {
 
   async effect({
     backgroundColor = "#FFFF00",
+    rootSelector,
     elements,
   }: {
     backgroundColor: string;
+    rootSelector: string | undefined;
     elements: ColorRule[];
   }): Promise<void> {
-    for (const element of elements) {
-      if (typeof element === "string") {
-        $(element).css({ backgroundColor });
-      } else {
-        const { selector, backgroundColor: elementColor } = element;
-        $(selector).css({ backgroundColor: elementColor });
+    const $roots = rootSelector ? $(rootSelector) : $(document);
+
+    $roots.each(function () {
+      for (const element of elements) {
+        if (typeof element === "string") {
+          $(this).find(element).css({ backgroundColor });
+        } else {
+          const { selector, backgroundColor: elementColor } = element;
+          $(this).find(selector).css({ backgroundColor: elementColor });
+        }
       }
-    }
+    });
   }
 }
 
