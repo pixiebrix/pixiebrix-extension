@@ -33,6 +33,8 @@ import {
   READ_WINDOW,
   SCRIPT_LOADED,
   SEARCH_WINDOW,
+  READ_VUE_VALUES,
+  SET_VUE_VALUES,
 } from "./messaging/constants";
 import {
   getEmberComponentById,
@@ -40,14 +42,15 @@ import {
   readEmberValueFromCache,
 } from "./frameworks/ember";
 import {
+  ComponentNotFoundError,
   findReactComponent,
   readReactProps,
-  ComponentNotFoundError,
 } from "@/frameworks/react";
 import fromPairs from "lodash/fromPairs";
 import { globalSearch } from "@/vendors/globalSearch";
 import pickBy from "lodash/pickBy";
 import identity from "lodash/identity";
+import { findRelatedComponent as findVueComponent } from "@/frameworks/vue";
 
 type Handler = (payload: unknown) => unknown;
 const handlers: { [type: string]: Handler } = {};
@@ -282,6 +285,20 @@ attachListener(READ_ANGULAR_SCOPE, ({ selector, pathSpec }) => {
   const element = document.querySelector(selector);
   const scope = clone(window.angular.element(element).scope());
   return readPathSpec(scope, pathSpec);
+});
+
+attachListener(READ_VUE_VALUES, ({ selector, pathSpec }) => {
+  const element = document.querySelector(selector);
+  const component = findVueComponent(element);
+  return readPathSpec(component, pathSpec);
+});
+
+attachListener(SET_VUE_VALUES, ({ selector, valueMap }) => {
+  const element = document.querySelector(selector);
+  const component = findVueComponent(element);
+  for (const [key, value] of Object.entries(valueMap)) {
+    (component as any)[key] = value;
+  }
 });
 
 console.debug(`DISPATCH: ${SCRIPT_LOADED} (Injected Script Run)`);

@@ -23,3 +23,4 @@ export * from "./clipboard";
 export * from "./forms";
 export * from "./tabs";
 export * from "./highlight";
+export * from "./vue";

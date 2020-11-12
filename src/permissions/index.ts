@@ -28,6 +28,8 @@ import {
 import { Permissions, browser } from "webextension-polyfill-ts";
 import sortBy from "lodash/sortBy";
 import castArray from "lodash/castArray";
+import groupBy from "lodash/groupBy";
+import uniq from "lodash/uniq";
 
 const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
 
@@ -134,15 +136,21 @@ export async function ensureExtensionPermissions(
 export function originPermissions(
   permissions: Permissions.Permissions[]
 ): Permissions.Permissions[] {
-  return sortBy(
-    permissions.flatMap((perm) =>
-      perm.origins.map((origin) => ({
-        origins: [origin],
-        permissions: perm.permissions,
-      }))
-    ),
-    (x) => x.origins[0]
+  const perms = permissions.flatMap((perm) =>
+    perm.origins.map((origin) => ({
+      origins: [origin],
+      permissions: perm.permissions,
+    }))
   );
+
+  const grouped = Object.entries(groupBy(perms, (x) => x.origins[0])).map(
+    ([origin, xs]) => ({
+      origins: [origin],
+      permissions: uniq(xs.flatMap((x) => x.permissions)),
+    })
+  );
+
+  return sortBy(grouped, (x) => x.origins[0]);
 }
 
 export function useExtensionPermissions(

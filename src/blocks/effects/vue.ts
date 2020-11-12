@@ -15,58 +15,47 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
+import { createSendScriptMessage } from "@/messaging/chrome";
+import { SET_VUE_VALUES } from "@/messaging/constants";
+
+export const withSetVueValues = createSendScriptMessage<unknown>(
+  SET_VUE_VALUES
+);
+
+import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 
-export class MappingTransformer extends Transformer {
+export class SetVueValues extends Effect {
   constructor() {
     super(
-      "@pixiebrix/mapping",
-      "Mapping",
-      "Apply a mapping/lookup table",
-      "faCode"
+      "@pixiebrix/vue/set-values",
+      "Set Vue.js values",
+      "Set values on a Vue.js component"
     );
   }
 
   inputSchema: Schema = {
     type: "object",
     properties: {
-      key: {
+      component: {
         type: "string",
-        description: "The value to look up",
       },
-      missing: {
-        type: "string",
-        default: "null",
-        enum: ["null", "ignore", "error"],
-      },
-      mapping: {
+      values: {
         type: "object",
-        description: "The lookup table",
-        additionalProperties: { type: "string" },
         minProperties: 1,
+        additionalProperties: true,
       },
     },
-    required: ["key", "mapping"],
+    required: ["component", "values"],
   };
 
-  async transform({
-    key,
-    missing = "null",
-    mapping,
-  }: BlockArg): Promise<unknown> {
-    if (key == null || key === "") {
-      return null;
-    } else if (Object.prototype.hasOwnProperty.call(mapping, key)) {
-      return mapping[key];
-    } else if (missing === "null" || missing === null) {
-      return null;
-    } else if (missing === "ignore") {
-      return key;
-    }
-    throw new Error(`Key ${key} not found in the mapping`);
+  async effect({
+    component: selector,
+    values: valueMap,
+  }: BlockArg): Promise<void> {
+    await withSetVueValues({ selector, valueMap });
   }
 }
 
-registerBlock(new MappingTransformer());
+registerBlock(new SetVueValues());
