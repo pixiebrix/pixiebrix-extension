@@ -26,6 +26,8 @@ interface SingleSelector {
   attr?: string;
   data?: string;
   contents?: string;
+  // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText
+  renderedText?: boolean;
   type?: CastType;
 }
 
@@ -98,6 +100,7 @@ function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
         "Invalid contents argument, must be either 'text' or 'comment'"
       );
     }
+    // https://stackoverflow.com/questions/14248519/jquery-text-equivalent-that-converts-br-tags-to-whitespace
     value = cleanValue(
       $elt
         .contents()
@@ -110,6 +113,10 @@ function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
     value = $elt.data(selector.data);
   } else if ($elt.is("input,select,textarea")) {
     value = $elt.val();
+  } else if (selector.renderedText) {
+    const $clone = $elt.clone();
+    $clone.find("br").replaceWith("\n");
+    value = $clone.get(0).innerText;
   } else {
     value = cleanValue($elt.text());
   }

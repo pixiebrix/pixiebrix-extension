@@ -26,6 +26,9 @@ export const DETECT_FRAMEWORK_VERSIONS =
   "@@pixiebrix/DETECT_FRAMEWORK_VERSIONS";
 export const READ_REACT_COMPONENT = "@@pixiebrix/READ_REACT_COMPONENT";
 
+export const SET_VUE_VALUES = "@@pixiebrix/SET_VUE_PROPS";
+export const READ_VUE_VALUES = "@@pixiebrix/READ_VUE_PROPS";
+
 export const FORWARD_FRAME_DATA = "@@pixiebrix/FORWARD_FRAME_DATA";
 export const REQUEST_FRAME_DATA = "@@pixiebrix/REQUEST_FRAME_DATA";
 

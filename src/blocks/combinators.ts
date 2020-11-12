@@ -129,6 +129,7 @@ function excludeUndefined(obj: unknown): unknown {
 }
 
 async function runStage(
+  block: IBlock,
   stage: BlockConfig,
   args: RenderedArgs,
   {
@@ -137,8 +138,6 @@ async function runStage(
     logger,
   }: { context: RenderedArgs; validate: boolean; logger: Logger }
 ): Promise<unknown> {
-  const block = blockRegistry.lookup(stage.id);
-
   const argContext = { ...context, ...args };
   const stageConfig = stage.config ?? {};
 
@@ -184,8 +183,13 @@ async function runStage(
       messageContext: logger.context,
     });
   } else {
-    return (await block.run(blockArgs, { ctxt: args, logger })) ?? {};
+    return await block.run(blockArgs, { ctxt: args, logger });
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
+  return typeof block.effect === "function";
 }
 
 /** Execute a pipeline of blocks and return the result. */
@@ -207,7 +211,9 @@ export async function reducePipeline(
     const stageLogger = logger.childLogger(stageContext);
 
     try {
-      const output = await runStage(stage, currentArgs, {
+      const block = blockRegistry.lookup(stage.id);
+
+      const output = await runStage(block, stage, currentArgs, {
         context: extraContext,
         validate: options.validate,
         logger: stageLogger,
@@ -218,10 +224,20 @@ export async function reducePipeline(
         outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
       });
 
-      if (stage.outputKey) {
-        extraContext[`@${stage.outputKey}`] = output;
+      if (isEffectBlock(block)) {
+        if (stage.outputKey) {
+          logger.warn(`Ignoring output key for effect ${block.id}`);
+        }
+        if (output != null) {
+          console.warn(`Effect ${block.id} produced an output`, { output });
+          logger.warn(`Ignoring output produced by effect ${block.id}`);
+        }
       } else {
-        currentArgs = output as any;
+        if (stage.outputKey) {
+          extraContext[`@${stage.outputKey}`] = output;
+        } else {
+          currentArgs = output as any;
+        }
       }
     } catch (ex) {
       throw new ContextError(

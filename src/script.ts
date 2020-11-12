@@ -33,6 +33,8 @@ import {
   READ_WINDOW,
   SCRIPT_LOADED,
   SEARCH_WINDOW,
+  READ_VUE_VALUES,
+  SET_VUE_VALUES,
 } from "./messaging/constants";
 import {
   getEmberComponentById,
@@ -48,7 +50,7 @@ import fromPairs from "lodash/fromPairs";
 import { globalSearch } from "@/vendors/globalSearch";
 import pickBy from "lodash/pickBy";
 import identity from "lodash/identity";
-import { scan as scanVue } from "@/frameworks/vue";
+import { findRelatedComponent as findVueComponent } from "@/frameworks/vue";
 
 type Handler = (payload: unknown) => unknown;
 const handlers: { [type: string]: Handler } = {};
@@ -285,11 +287,23 @@ attachListener(READ_ANGULAR_SCOPE, ({ selector, pathSpec }) => {
   return readPathSpec(scope, pathSpec);
 });
 
+attachListener(READ_VUE_VALUES, ({ selector, pathSpec }) => {
+  const element = document.querySelector(selector);
+  const component = findVueComponent(element);
+  return readPathSpec(component, pathSpec);
+});
+
+attachListener(SET_VUE_VALUES, ({ selector, valueMap }) => {
+  const element = document.querySelector(selector);
+  const component = findVueComponent(element);
+  for (const [key, value] of Object.entries(valueMap)) {
+    (component as any)[key] = value;
+  }
+});
+
 console.debug(`DISPATCH: ${SCRIPT_LOADED} (Injected Script Run)`);
 document.dispatchEvent(new CustomEvent(SCRIPT_LOADED));
 
 setTimeout(function () {
   document.dispatchEvent(new CustomEvent(CONNECT_EXTENSION, {}));
 }, 0);
-
-console.log("Vue scan", scanVue());
