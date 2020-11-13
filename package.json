@@ -90,7 +90,7 @@
     "eslint": "^7.13.0",
     "eslint-plugin-react": "^7.21.5",
     "fake-indexeddb": "^3.1.2",
-    "file-loader": "^6.1.1",
+    "file-loader": "^6.2.0",
     "formik": "^2.2.3",
     "gapi.client.sheets": "^4.0.20201102",
     "generate-schema": "^2.6.0",
