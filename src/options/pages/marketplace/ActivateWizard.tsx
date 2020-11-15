@@ -122,7 +122,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           (v, k) => requiredServices.includes(k) && v == null
         )
       );
-      const enabled = await checkPermissions(collectPermissions(selected));
+      const enabled = await checkPermissions(
+        await collectPermissions(selected)
+      );
 
       if (!selected.length) {
         addToast(`Select at least one brick to activate`, {

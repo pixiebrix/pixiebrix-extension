@@ -26,6 +26,7 @@ import { useExtension } from "@/selectors";
 import ExtensionPointDetail, { Config } from "./ExtensionPointDetail";
 import WorkshopPage from "@/options/pages/extensionEditor/WorkshopPage";
 import { reactivate } from "@/background/navigation";
+import { GridLoader } from "react-spinners";
 
 const { saveExtension } = optionsSlice.actions;
 
@@ -56,7 +57,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
 }) => {
   const { addToast } = useToasts();
   const { extensionPointId, extensionId } = useParams<RouteParams>();
-  const { extensionPoint, extensionConfig } = useExtension(
+  const { extensionPoint, extensionConfig, isPending } = useExtension(
     extensionPointId ? decodeURIComponent(extensionPointId) : undefined,
     extensionId ? decodeURIComponent(extensionId) : undefined
   );
@@ -98,7 +99,9 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
     [extensionPoint, extensionConfig, saveExtension, addToast]
   );
 
-  if (!extensionPoint) {
+  if (isPending) {
+    return <GridLoader />;
+  } else if (!extensionPoint) {
     return <WorkshopPage navigate={navigate} />;
   } else {
     return (

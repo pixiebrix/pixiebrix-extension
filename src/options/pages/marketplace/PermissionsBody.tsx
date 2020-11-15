@@ -30,6 +30,8 @@ import {
   RecipeDefinition,
 } from "@/types/definitions";
 import { useSelectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
+import { useAsyncState } from "@/hooks/common";
+import { GridLoader } from "react-spinners";
 
 function useEnsurePermissions(extensions: ExtensionPointDefinition[]) {
   const { addToast } = useToasts();
@@ -38,7 +40,9 @@ function useEnsurePermissions(extensions: ExtensionPointDefinition[]) {
 
   useAsyncEffect(
     async (isMounted) => {
-      const enabled = await checkPermissions(collectPermissions(extensions));
+      const enabled = await checkPermissions(
+        await collectPermissions(extensions)
+      );
       if (!isMounted()) return;
       setEnabled(enabled);
     },
@@ -48,7 +52,7 @@ function useEnsurePermissions(extensions: ExtensionPointDefinition[]) {
   const request = useCallback(async () => {
     try {
       const accepted = await ensureAllPermissions(
-        collectPermissions(extensions)
+        await collectPermissions(extensions)
       );
       setAccepted(accepted);
       if (accepted) {
@@ -79,8 +83,8 @@ const PermissionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     request: requestPermissions,
   } = useEnsurePermissions(selected);
 
-  const permissions = useMemo(
-    () => originPermissions(collectPermissions(selected)),
+  const [permissions, isPending] = useAsyncState(
+    async () => originPermissions(await collectPermissions(selected)),
     [selected]
   );
 
@@ -132,7 +136,8 @@ const PermissionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           </tr>
         </thead>
         <tbody>
-          {permissions.length > 0 &&
+          {isPending && <GridLoader />}
+          {permissions?.length > 0 &&
             permissions.map((x, i) => {
               const additional = x.permissions.filter(
                 (x) => !["tabs", "webNavigation"].includes(x)
@@ -151,7 +156,7 @@ const PermissionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                 </tr>
               );
             })}
-          {permissions.length === 0 && (
+          {permissions?.length === 0 && (
             <tr>
               <td colSpan={2}>No permissions required</td>
             </tr>

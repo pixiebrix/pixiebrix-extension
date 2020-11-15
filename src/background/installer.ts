@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2020 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-.BlockCard {
-  &.invalid {
-    border: 1px solid #fe7c96;
-  }
+import { browser, Runtime } from "webextension-polyfill-ts";
+import { reportError } from "@/telemetry/logging";
 
-  &.card {
-    border-radius: 0;
+async function openInstallPage() {
+  await browser.runtime.openOptionsPage();
+}
 
-    .card-body {
-      padding: 1rem;
-    }
+function install({ reason }: Runtime.OnInstalledDetailsType) {
+  if (reason === "install") {
+    openInstallPage().catch((reason) => {
+      return reportError(reason);
+    });
   }
 }
+
+browser.runtime.onInstalled.addListener(install);

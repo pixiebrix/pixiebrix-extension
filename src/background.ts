@@ -26,6 +26,7 @@ import "webext-dynamic-content-scripts";
 // init first so we get error reporting on the other initialization
 initRollbar();
 
+import "./background/installer";
 import "./messaging/external";
 import "./background/requests";
 import "./background/locator";

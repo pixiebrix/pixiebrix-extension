@@ -43,6 +43,7 @@ import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import { push as navigate } from "connected-react-router";
+import { useAsyncState } from "@/hooks/common";
 
 type TopConfig = { [prop: string]: unknown };
 
@@ -128,9 +129,10 @@ const ExtensionForm: React.FunctionComponent<{
   extensionPoint,
   extensionId,
 }) => {
-  const blocks = useMemo(() => blockRegistry.all(), []);
+  const [blocks] = useAsyncState(blockRegistry.all(), []);
 
   const { tab: activeTab = "details" } = useParams<{ tab?: string }>();
+
   const dispatch = useDispatch();
 
   useAsyncEffect(async () => {

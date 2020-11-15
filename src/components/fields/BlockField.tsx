@@ -38,6 +38,8 @@ import BlockSelector from "@/components/fields/BlockSelector";
 
 import "./BlockField.scss";
 import Button from "react-bootstrap/Button";
+import useAsyncEffect from "use-async-effect";
+import { GridLoader } from "react-spinners";
 
 export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
   "#/definitions/renderer": "render",
@@ -56,6 +58,27 @@ export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
 
 type ConfigValue = { [key: string]: string };
 
+function useBlockOptions(id: string) {
+  const [block, setBlock] = useState(null);
+
+  useAsyncEffect(
+    async (isMounted) => {
+      const block = await blockRegistry.lookup(id);
+      if (!isMounted()) return;
+      setBlock(block);
+    },
+    [id, setBlock]
+  );
+
+  const BlockOptions = useMemo(() => {
+    return block
+      ? genericOptionsFactory(inputProperties(block.inputSchema))
+      : null;
+  }, [block]);
+
+  return [block, BlockOptions];
+}
+
 const BlockCard: React.FunctionComponent<{
   name: string;
   config: BlockConfig;
@@ -64,14 +87,11 @@ const BlockCard: React.FunctionComponent<{
 }> = ({ config, name, showOutputKey, onRemove }) => {
   const context = useFormikContext();
 
-  const isValid = isEmpty(getIn(context.errors, name));
-
+  const errors = getIn(context.errors, name);
+  const isValid = isEmpty(errors);
   const [collapsed, setCollapsed] = useState(true);
 
-  const [block, BlockOptions] = useMemo(() => {
-    const block = blockRegistry.lookup(config.id);
-    return [block, genericOptionsFactory(inputProperties(block.inputSchema))];
-  }, [config.id]);
+  const [, BlockOptions] = useBlockOptions(config.id);
 
   return (
     <Card className={cx("BlockCard", { invalid: !isValid })}>
@@ -83,7 +103,7 @@ const BlockCard: React.FunctionComponent<{
         >
           <div>
             <FontAwesomeIcon icon={collapsed ? faCaretRight : faCaretDown} />{" "}
-            {block.id}
+            {config.id}
           </div>
           <div className="ml-auto">
             {config.outputKey && (
@@ -96,11 +116,20 @@ const BlockCard: React.FunctionComponent<{
       </Card.Header>
       {!collapsed && (
         <Card.Body>
-          <BlockOptions
-            name={name}
-            configKey="config"
-            showOutputKey={showOutputKey}
-          />
+          {errors?.id && (
+            <div className="invalid-feedback d-block mb-4">
+              Unknown block {config.id}
+            </div>
+          )}
+          {BlockOptions ? (
+            <BlockOptions
+              name={name}
+              configKey="config"
+              showOutputKey={showOutputKey}
+            />
+          ) : (
+            <GridLoader />
+          )}
           <Button variant="danger" onClick={onRemove}>
             Remove Block
           </Button>

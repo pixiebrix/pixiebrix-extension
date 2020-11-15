@@ -19,7 +19,7 @@ import Table from "react-bootstrap/Table";
 import isEmpty from "lodash/isEmpty";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import extensionPointRegistry from "@/extensionPoints/registry";
@@ -28,6 +28,7 @@ import Button from "react-bootstrap/Button";
 import { useToasts } from "react-toast-notifications";
 import { PageTitle } from "@/layout/Page";
 import { useExtensionPermissions } from "@/permissions";
+import { useAsyncEffect } from "use-async-effect";
 import { BeatLoader } from "react-spinners";
 import Card from "react-bootstrap/Card";
 import {
@@ -45,6 +46,7 @@ import {
 } from "@/validators/generic";
 import { IExtension } from "@/core";
 import "./InstalledPage.scss";
+import Registry, { RegistryItem } from "@/baseRegistry";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -77,15 +79,37 @@ function validationMessage(validation: ExtensionValidationResult) {
   return message;
 }
 
+function useRegistry<T extends RegistryItem>(
+  registry: Registry<T>,
+  id: string
+) {
+  const [result, setResult] = useState<T>();
+  useAsyncEffect(
+    async (isMounted) => {
+      const result = await registry.lookup(id);
+      if (!isMounted) {
+        return;
+      }
+      setResult(result);
+    },
+    [registry, id]
+  );
+  return result;
+}
+
 const ExtensionRow: React.FunctionComponent<{
   extension: IExtension;
   onRemove: RemoveAction;
 }> = ({ extension, onRemove }) => {
   const { id, label, extensionPointId } = extension;
   const { addToast } = useToasts();
+
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extension
   );
+
+  const extensionPoint = useRegistry(extensionPointRegistry, extensionPointId);
+
   const [validation] = useExtensionValidator(extension);
 
   const statusElt = useMemo(() => {
@@ -115,7 +139,7 @@ const ExtensionRow: React.FunctionComponent<{
 
   return (
     <tr>
-      <td>{extensionPointRegistry.lookup(extensionPointId).name}</td>
+      <td>{extensionPoint?.name}</td>
       <td>
         <Link to={`/workshop/extensions/${extension.id}`}>{label ?? id}</Link>
       </td>

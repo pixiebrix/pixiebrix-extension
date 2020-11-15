@@ -106,11 +106,11 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     ["heading", "body"]
   );
 
-  getBlocks(extension: IExtension<PanelConfig>): IBlock[] {
+  async getBlocks(extension: IExtension<PanelConfig>): Promise<IBlock[]> {
     return blockList(extension.config.body);
   }
 
-  defaultReader(): IReader {
+  async defaultReader(): Promise<IReader> {
     throw new Error("PanelExtensionPoint.defaultReader not implemented");
   }
 
@@ -259,7 +259,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       return;
     }
 
-    const reader = this.defaultReader();
+    const reader = await this.defaultReader();
     const readerContext = await reader.read(document);
 
     if (readerContext == null) {
@@ -323,8 +323,8 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
     };
   }
 
-  defaultReader(): IReader {
-    return mergeReaders(this._definition.reader);
+  async defaultReader(): Promise<IReader> {
+    return await mergeReaders(this._definition.reader);
   }
 
   addPanel($panel: JQuery): void {

@@ -21,10 +21,12 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/options/store";
 import { IExtensionPoint } from "@/core";
 import { ExtensionOptions } from "@/options/slices";
+import { useAsyncState } from "@/hooks/common";
 
 interface ExtensionResult {
   extensionPoint: IExtensionPoint | null;
   extensionConfig: ExtensionOptions;
+  isPending: boolean;
 }
 
 export function useExtension(
@@ -59,14 +61,16 @@ export function useExtension(
     return config;
   }, [options, extensionId, extensionPointId]);
 
-  const extensionPoint = useMemo(() => {
+  const [extensionPoint, isPending] = useAsyncState(async () => {
     if (extensionConfig) {
-      return extensionPointRegistry.lookup(extensionConfig.extensionPointId);
+      return await extensionPointRegistry.lookup(
+        extensionConfig.extensionPointId
+      );
     } else if (extensionPointId) {
-      return extensionPointRegistry.lookup(extensionPointId);
+      return await extensionPointRegistry.lookup(extensionPointId);
     }
     return null;
-  }, [extensionPointRegistry, extensionPointId]);
+  }, [extensionPointRegistry, extensionConfig, extensionPointId]);
 
-  return { extensionPoint, extensionConfig };
+  return { extensionPoint, extensionConfig, isPending };
 }

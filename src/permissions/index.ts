@@ -57,15 +57,15 @@ export async function ensureAllPermissions(
   // return true;
 }
 
-export function collectPermissions(
+export async function collectPermissions(
   recipe: RecipeDefinition
-): Permissions.Permissions[];
-export function collectPermissions(
+): Promise<Permissions.Permissions[]>;
+export async function collectPermissions(
   extensionPoints: ExtensionPointDefinition[]
-): Permissions.Permissions[];
-export function collectPermissions(
+): Promise<Permissions.Permissions[]>;
+export async function collectPermissions(
   recipeOrExtensionPoints: RecipeDefinition | ExtensionPointDefinition[]
-): Permissions.Permissions[] {
+): Promise<Permissions.Permissions[]> {
   const normalize = (x: Permissions.Permissions) => ({
     origins: castArray(x.origins ?? []),
     // Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request
@@ -79,17 +79,19 @@ export function collectPermissions(
     ? recipeOrExtensionPoints
     : recipeOrExtensionPoints.extensionPoints;
 
-  return distinctPermissions(
+  const permissions = await Promise.all(
     extensionPoints.map(
-      ({ id, permissions = {} }: ExtensionPointDefinition) => {
+      async ({ id, permissions = {} }: ExtensionPointDefinition) => {
         // console.debug(`Extra permissions for ${id}`, permissions);
-        const extensionPoint = extensionRegistry.lookup(id);
+        const extensionPoint = await extensionRegistry.lookup(id);
         return mergePermissions(
           [extensionPoint.permissions, permissions].map(normalize)
         );
       }
     )
   );
+
+  return distinctPermissions(permissions);
 }
 
 /**
@@ -97,14 +99,14 @@ export function collectPermissions(
  * @param extension
  * @returns {*}
  */
-export function extensionPermissions(
+export async function extensionPermissions(
   extension: IExtension
-): Permissions.Permissions[] {
+): Promise<Permissions.Permissions[]> {
   const { extensionPointId } = extension;
-  const extensionPoint = extensionRegistry.lookup(extensionPointId);
-  const blockPermissions = extensionPoint
-    .getBlocks(extension)
-    .map((x) => x.permissions);
+  const extensionPoint = await extensionRegistry.lookup(extensionPointId);
+  const blockPermissions = (await extensionPoint.getBlocks(extension)).map(
+    (x) => x.permissions
+  );
   return distinctPermissions([extensionPoint.permissions, ...blockPermissions]);
 }
 
@@ -123,13 +125,13 @@ export async function checkPermissions(
 export async function permissionsEnabled(
   extension: IExtension
 ): Promise<boolean> {
-  return await checkPermissions(extensionPermissions(extension));
+  return await checkPermissions(await extensionPermissions(extension));
 }
 
 export async function ensureExtensionPermissions(
   extension: IExtension
 ): Promise<boolean> {
-  const permissions = extensionPermissions(extension);
+  const permissions = await extensionPermissions(extension);
   return await ensureAllPermissions(permissions);
 }
 
@@ -159,10 +161,10 @@ export function useExtensionPermissions(
   const [enabled, setEnabled] = useState(undefined);
 
   useAsyncEffect(
-    async (mounted) => {
+    async (isMounted) => {
       try {
         const result = await permissionsEnabled(extension);
-        if (!mounted()) return;
+        if (!isMounted()) return;
         setEnabled(result);
       } catch (ex) {
         // If there's an error checking permissions, just assume they're OK. The use will

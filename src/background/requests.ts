@@ -109,7 +109,7 @@ async function authenticate(
     throw new Error("authenticate can only be called from the background page");
   }
 
-  const service = serviceRegistry.lookup(config.serviceId);
+  const service = await serviceRegistry.lookup(config.serviceId);
 
   if (service.id === PIXIEBRIX_SERVICE_ID) {
     const apiKey = await getExtensionToken();
@@ -194,7 +194,7 @@ const _proxyService = liftBackground(
         );
         if ([401, 403].includes(ex.response?.status)) {
           // have the user login again
-          const service = serviceRegistry.lookup(serviceConfig.serviceId);
+          const service = await serviceRegistry.lookup(serviceConfig.serviceId);
           if (service.isOAuth2) {
             await deleteCachedOAuth2(serviceConfig.id);
             return await backgroundRequest(

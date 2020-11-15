@@ -48,14 +48,14 @@ export async function checkAvailable({
 
   // check matchPatterns first b/c they'll be faster
   if (matchPatterns.length && !matchPatterns.some((x) => testMatchPattern(x))) {
-    console.debug(
-      `Location doesn't match any pattern: ${document.location.href}`,
-      matchPatterns
-    );
+    // console.debug(
+    //   `Location doesn't match any pattern: ${document.location.href}`,
+    //   matchPatterns
+    // );
     return false;
   }
   if (selectors.length && !selectors.some(testSelector)) {
-    console.debug("Page doesn't match any selectors", selectors);
+    // console.debug("Page doesn't match any selectors", selectors);
     return false;
   }
   return true;

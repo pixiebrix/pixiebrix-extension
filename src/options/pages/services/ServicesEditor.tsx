@@ -37,6 +37,7 @@ import { RootState } from "../../store";
 import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
 import { refresh as refreshServices } from "@/background/locator";
+import { GridLoader } from "react-spinners";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -60,11 +61,20 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const [activeTab, setTab] = useState("private");
 
   const { addToast } = useToasts();
+
   const {
-    serviceDefinitions,
     activeConfiguration,
+    serviceDefinitions,
     activeService,
+    isPending: servicesPending,
   } = useServiceDefinitions();
+
+  console.log("service state", {
+    activeConfiguration,
+    servicesPending,
+    activeService,
+    serviceDefinitions,
+  });
 
   const handleSave = useCallback(
     async (config) => {
@@ -92,6 +102,25 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     [deleteServiceConfig, navigate, addToast, activeService]
   );
 
+  if (servicesPending) {
+    return (
+      <div>
+        <PageTitle icon={faCloud} title="Configure Services" />
+        <div className="pb-4">
+          <p>
+            Services are external accounts and resources that you configure and
+            re-use across bricks
+          </p>
+        </div>
+        <Row>
+          <Col>
+            <GridLoader />
+          </Col>
+        </Row>
+      </div>
+    );
+  }
+
   return (
     <div>
       <PageTitle icon={faCloud} title="Configure Services" />
@@ -101,7 +130,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
           re-use across bricks
         </p>
       </div>
-      {activeConfiguration && (
+      {activeConfiguration && activeService && (
         <ServiceEditorModal
           configuration={activeConfiguration}
           service={activeService}

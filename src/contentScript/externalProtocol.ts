@@ -167,7 +167,7 @@ export function liftExternal<R extends SerializableResponse>(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
-    console.debug(`Installed content script handler for ${type}`);
+    // console.debug(`Installed content script handler for ${type}`);
     contentScriptHandlers[fullType] = { handler: method, options };
   }
 

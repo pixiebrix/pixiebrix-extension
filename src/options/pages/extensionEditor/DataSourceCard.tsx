@@ -25,6 +25,8 @@ import sortBy from "lodash/sortBy";
 import isEmpty from "lodash/isEmpty";
 
 import "./DataSourceCard.scss";
+import { useAsyncState } from "@/hooks/common";
+import { GridLoader } from "react-spinners";
 
 const ObjectEntry: React.FunctionComponent<{
   prop: string;
@@ -147,22 +149,21 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
 const DataSourceCard: React.FunctionComponent<{
   extensionPoint: IExtensionPoint;
 }> = ({ extensionPoint }) => {
-  const outputSchema = useMemo(
-    () => extensionPoint.defaultReader().outputSchema,
-    [extensionPoint]
+  const [reader, isPending] = useAsyncState(() =>
+    extensionPoint.defaultReader()
   );
 
-  return (
-    <div className="DataSourceCard">
-      {isEmpty(outputSchema) ? (
-        <Card.Body>No schema available</Card.Body>
-      ) : (
-        <>
-          <SchemaTree schema={outputSchema} />
-        </>
-      )}
-    </div>
-  );
+  const body = useMemo(() => {
+    if (isPending) {
+      return <GridLoader />;
+    } else if (isEmpty(reader.outputSchema)) {
+      return <Card.Body>No schema available</Card.Body>;
+    } else {
+      return <SchemaTree schema={reader.outputSchema} />;
+    }
+  }, [reader, isPending]);
+
+  return <div className="DataSourceCard">{body}</div>;
 };
 
 export default DataSourceCard;

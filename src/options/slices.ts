@@ -20,6 +20,26 @@ import { createSlice } from "@reduxjs/toolkit";
 import { Metadata, RawServiceConfiguration, ServiceDependency } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 
+type InstallMode = "local" | "remote";
+
+export interface SettingsState {
+  mode: InstallMode;
+}
+
+const initialSettingsState = {
+  mode: "remote",
+};
+
+export const settingsSlice = createSlice({
+  name: "settings",
+  initialState: initialSettingsState,
+  reducers: {
+    setMode(state, { payload: { mode } }) {
+      state.mode = mode;
+    },
+  },
+});
+
 export interface ServicesState {
   configured: { [id: string]: RawServiceConfiguration };
 }

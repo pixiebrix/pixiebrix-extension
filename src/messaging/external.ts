@@ -55,7 +55,11 @@ export const connectPage = lift("CONNECT_PAGE", async () => {
 export const setExtensionAuth = lift(
   "SET_EXTENSION_AUTH",
   async (auth: AuthData) => {
-    return await updateExtensionAuth(auth);
+    const updated = await updateExtensionAuth(auth);
+    if (updated) {
+      browser.runtime.reload();
+    }
+    return updated;
   }
 );
 

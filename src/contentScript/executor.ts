@@ -60,13 +60,9 @@ function runBlockAction(
     //   return Promise.reject("Unknown source tab id");
     // }
 
-    return new Promise<unknown>((resolve, reject) => {
-      const block = blockRegistry.lookup(blockId);
+    return blockRegistry.lookup(blockId).then((block) => {
       const logger = new BackgroundLogger(options.messageContext);
-      block
-        .run(blockArgs, { ctxt: options.ctxt, logger })
-        .then(resolve)
-        .catch(reject);
+      return block.run(blockArgs, { ctxt: options.ctxt, logger });
     });
   }
 }

@@ -108,9 +108,9 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
     this.extensions.push(extension);
   }
 
-  abstract defaultReader(): IReader;
+  abstract async defaultReader(): Promise<IReader>;
 
-  abstract getBlocks(extension: IExtension<TConfig>): IBlock[];
+  abstract async getBlocks(extension: IExtension<TConfig>): Promise<IBlock[]>;
 
   abstract async isAvailable(): Promise<boolean>;
 

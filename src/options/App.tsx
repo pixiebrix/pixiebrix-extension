@@ -17,7 +17,7 @@
 
 import React from "react";
 import store, { hashHistory, persistor } from "./store";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { GridLoader } from "react-spinners";
 import Container from "react-bootstrap/Container";
@@ -46,9 +46,28 @@ import { useRefresh } from "@/hooks/refresh";
 // import the built-in bricks
 import "@/blocks";
 import "@/contrib";
+import { SettingsState } from "@/options/slices";
+import { getExtensionToken } from "@/auth/token";
+import SetupPage from "@/options/pages/SetupPage";
+
+const RequireInstall: React.FunctionComponent = ({ children }) => {
+  const mode = useSelector<{ settings: SettingsState }, string>(
+    ({ settings }) => settings.mode
+  );
+  const [token, isPending] = useAsyncState(getExtensionToken);
+
+  if (isPending && mode === "remote") {
+    return null;
+  }
+  if (mode === "remote" && !token) {
+    return <SetupPage />;
+  } else {
+    return <>{children}</>;
+  }
+};
 
 const Layout = () => {
-  const [loaded] = useRefresh();
+  useRefresh();
 
   return (
     <div className="w-100">
@@ -58,9 +77,8 @@ const Layout = () => {
         <div className="main-panel">
           <Banner />
           <div className="content-wrapper">
-            <ErrorBoundary>
-              {/* FIXME: not all the routes need the registries to be loaded before rendering */}
-              {loaded ? (
+            <RequireInstall>
+              <ErrorBoundary>
                 <Switch>
                   <Route
                     exact
@@ -95,10 +113,8 @@ const Layout = () => {
                   />
                   <Route component={InstalledPage} />
                 </Switch>
-              ) : (
-                <GridLoader />
-              )}
-            </ErrorBoundary>
+              </ErrorBoundary>
+            </RequireInstall>
           </div>
           <Footer />
         </div>

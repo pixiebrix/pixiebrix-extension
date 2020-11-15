@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { IBlock, Schema } from "@/core";
+import { Schema } from "@/core";
 import * as Yup from "yup";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
@@ -47,44 +47,24 @@ type Options = {
   required: boolean;
 };
 
-function blockSchemaFactory(val: unknown): Yup.Schema<Record<string, unknown>> {
-  if (typeof val === "object" && val != null && "id" in val) {
-    let block: IBlock;
-    try {
-      // @ts-ignore: checked for id above
-      block = blockRegistry.lookup(val.id);
-    } catch (ex) {
-      if (ex instanceof DoesNotExistError) {
-        return Yup.object().shape({
-          id: Yup.string().test("is-block", "Unknown block", () => true),
-        });
-      } else {
-        console.exception(ex);
-        return Yup.object().shape({
-          id: Yup.string(),
-          outputKey: Yup.string().matches(IDENTIFIER_REGEX).notRequired(),
-          config: Yup.object(),
-        });
-      }
-    }
-    return Yup.object().shape({
-      id: Yup.string(),
-      templateEngine: Yup.string()
-        .oneOf(["nunjucks", "mustache", "handlebars"])
-        .notRequired(),
-      outputKey: Yup.string().matches(IDENTIFIER_REGEX).notRequired(),
-      config: configSchemaFactory(block.inputSchema),
-    });
-  } else {
-    return Yup.object().shape({
-      id: Yup.string().required(),
-    });
-  }
+function blockSchemaFactory(): Yup.Schema<Record<string, unknown>> {
+  return Yup.object().shape({
+    id: Yup.string().test("is-block", "Block not found", (id: string) =>
+      blockRegistry.exists(id)
+    ),
+    templateEngine: Yup.string()
+      .oneOf(["nunjucks", "mustache", "handlebars"])
+      .notRequired(),
+    outputKey: Yup.string().matches(IDENTIFIER_REGEX).notRequired(),
+    // FIXME: check the config shape asynchronously
+    // config: configSchemaFactory(block.inputSchema)
+    config: Yup.object(),
+  });
 }
 
 function isBrickSchema(schema: Schema): boolean {
-  // HACK: right now the extension point schema for blocks has the structure. Need to rationalize how to encode
-  // properties taking a simple or composite block.
+  // FIXME: right now the extension point schema for blocks has the structure. Need to rationalize how to encode
+  //   properties taking a simple or composite block.
   // oneOf: [
   //   { $ref: "https://app.pixiebrix.com/schemas/effect#" },
   //   {
@@ -109,10 +89,10 @@ export function configSchemaFactory(
   if (isBrickSchema(schema)) {
     return Yup.lazy((val) => {
       if (isPlainObject(val)) {
-        console.debug("config is a single block");
+        // console.debug("config is a single block");
         return Yup.lazy(blockSchemaFactory);
       } else {
-        console.debug("config is array of blocks");
+        // console.debug("config is array of blocks");
         return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
       }
     });
@@ -164,16 +144,20 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
   return Yup.array()
     .of(
       Yup.object().shape({
-        id: Yup.string().test("is-service", "Unknown service", (value) => {
-          try {
-            serviceRegistry.lookup(value);
-          } catch (ex) {
-            if (ex instanceof DoesNotExistError) {
-              return false;
+        id: Yup.string().test(
+          "is-service",
+          "Unknown service",
+          async (value) => {
+            try {
+              await serviceRegistry.lookup(value);
+            } catch (ex) {
+              if (ex instanceof DoesNotExistError) {
+                return false;
+              }
             }
+            return true;
           }
-          return true;
-        }),
+        ),
         outputKey: Yup.string()
           .required()
           .matches(IDENTIFIER_REGEX, "Not a valid identifier"),

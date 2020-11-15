@@ -91,10 +91,10 @@ export async function validateKind(
   return validator.validate(instance);
 }
 
-export function validateInput(
+export async function validateInput(
   schema: Schema,
   instance: unknown
-): ValidationResult {
+): Promise<ValidationResult> {
   const validator = new Validator({
     $id: urljoin(BASE_SCHEMA_URI, "block"),
     ...schema,
@@ -103,7 +103,7 @@ export function validateInput(
   // @ts-ignore: loading statically
   validator.addSchema(serviceSchema);
 
-  for (const service of serviceRegistry.all()) {
+  for (const service of await serviceRegistry.all()) {
     validator.addSchema({
       $id: `${BASE_SCHEMA_URI}services/${service.id}`,
       type: "object",
@@ -150,7 +150,7 @@ async function validateExtension(
 ): Promise<ExtensionValidationResult> {
   console.debug(`Validating ${extension.id}`);
 
-  const extensionPoint = extensionPointRegistry.lookup(
+  const extensionPoint = await extensionPointRegistry.lookup(
     extension.extensionPointId
   );
 
@@ -197,7 +197,7 @@ async function validateExtension(
 
 export function useExtensionValidator(
   extension: IExtension
-): [ExtensionValidationResult | undefined, boolean] {
+): [ExtensionValidationResult | undefined, boolean, unknown] {
   const validationPromise = useMemo(() => validateExtension(extension), [
     extension,
   ]);

@@ -152,18 +152,18 @@ test("reducePipeline can pipeline outputs", async () => {
 test("merge single reader", async () => {
   const block = new EchoBlock();
   blockRegistry.register(block);
-  const merged = mergeReaders(reader.id);
-  expect(await merged.read()).toStrictEqual({ value: 42 });
+  const merged = await mergeReaders(reader.id);
+  expect(await merged.read(document)).toStrictEqual({ value: 42 });
 });
 
 test("merge keyed readers", async () => {
   const block = new EchoBlock();
   blockRegistry.register(block);
-  const merged = mergeReaders({
+  const merged = await mergeReaders({
     key1: reader.id,
     key2: reader.id,
   });
-  expect(await merged.read()).toStrictEqual({
+  expect(await merged.read(document)).toStrictEqual({
     key1: { value: 42 },
     key2: { value: 42 },
   });
@@ -172,8 +172,8 @@ test("merge keyed readers", async () => {
 test("merge array of readers", async () => {
   const block = new EchoBlock();
   blockRegistry.register(block);
-  const merged = mergeReaders([reader.id, reader.id]);
-  expect(await merged.read()).toStrictEqual({ value: 42 });
+  const merged = await mergeReaders([reader.id, reader.id]);
+  expect(await merged.read(document)).toStrictEqual({ value: 42 });
 });
 
 test("outputKey preserves context", async () => {

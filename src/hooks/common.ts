@@ -15,36 +15,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import useAsyncEffect from "use-async-effect";
-import isPromise from "is-promise";
 
 type StateFactory<T> = Promise<T> | (() => Promise<T>);
 
 export function useAsyncState<T>(
-  promiseFactory: StateFactory<T>
-): [T | undefined, boolean] {
-  const promise = useMemo(() => {
-    const maybePromise =
-      typeof promiseFactory === "function" ? promiseFactory() : promiseFactory;
-    if (!isPromise(maybePromise)) {
-      throw new Error("useAsyncState expects a promise of promise factory");
-    }
-    return maybePromise;
-  }, [promiseFactory]);
+  promiseFactory: StateFactory<T>,
+  dependencies: unknown[] = []
+): [T | undefined, boolean, unknown] {
   const [result, setResult] = useState(undefined);
   const [isPending, setPending] = useState(true);
+  const [error, setError] = useState(undefined);
+
   useAsyncEffect(async (isMounted) => {
     setPending(true);
+    setError(undefined);
     try {
-      const promiseResult = await promise;
+      const promiseResult = await (typeof promiseFactory === "function"
+        ? promiseFactory()
+        : promiseFactory);
       if (!isMounted()) return;
       setResult(promiseResult);
+    } catch (ex) {
+      setError(ex ?? "Error calculating data");
     } finally {
       if (isMounted()) {
         setPending(false);
       }
     }
-  }, []);
-  return [result, isPending];
+  }, dependencies);
+
+  return [result, isPending, error];
 }

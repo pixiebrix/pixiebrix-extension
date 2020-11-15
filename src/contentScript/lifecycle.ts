@@ -16,38 +16,20 @@
  */
 
 import { loadOptions } from "@/options/loader";
-import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { IExtensionPoint } from "@/core";
 
-import serviceRegistry from "@/services/registry";
 import {
   liftContentScript,
   notifyContentScripts,
 } from "@/contentScript/backgroundProtocol";
 
-let _loadedBlocks = false;
 let _scriptPromise: Promise<void>;
 let _extensionPoints: IExtensionPoint[] = undefined;
 let _navSequence = 1;
 
 // @ts-ignore: may use in the future to determine which extension points to install
 let _openerTabId: number = undefined;
-
-export async function loadBlocks(): Promise<void> {
-  await Promise.all([
-    blockRegistry.refresh({ allowFetch: false }),
-    extensionPointRegistry.refresh({ allowFetch: false }),
-    serviceRegistry.refresh({ allowFetch: false }),
-  ]);
-}
-
-async function loadBlocksOnce(): Promise<void> {
-  if (!_loadedBlocks) {
-    await loadBlocks();
-    _loadedBlocks = true;
-  }
-}
 
 async function installScriptOnce(): Promise<void> {
   // https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script/9517879#9517879
@@ -98,7 +80,9 @@ async function loadExtensions() {
     extensionPointConfigs
   )) {
     try {
-      const extensionPoint = extensionPointRegistry.lookup(extensionPointId);
+      const extensionPoint = await extensionPointRegistry.lookup(
+        extensionPointId
+      );
       const activeExtensions = Object.values(extensions).filter(
         (x) => x.active
       );
@@ -136,7 +120,7 @@ function getNavSequence() {
 export async function handleNavigate(openerTabId?: number): Promise<void> {
   console.debug(`Handling navigation to ${location.href}`);
   await installScriptOnce();
-  await loadBlocksOnce();
+
   const extensionPoints = await loadExtensionsOnce();
 
   if (openerTabId) {
@@ -165,7 +149,6 @@ export const notifyNavigation = liftContentScript(
 );
 
 export const reactivate = notifyContentScripts("REACTIVATE", async () => {
-  await loadBlocks();
   await loadExtensions();
   await handleNavigate();
 });

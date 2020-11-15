@@ -15,17 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { readStorage, setStorage } from "@/chrome";
-import flatten from "lodash/flatten";
 import { fetch } from "@/hooks/fetch";
-import compact from "lodash/compact";
-import isPlainObject from "lodash/isPlainObject";
-import pickBy from "lodash/pickBy";
-import isEmpty from "lodash/isEmpty";
+import {
+  add,
+  find,
+  getKind,
+  PACKAGE_NAME_REGEX,
+  Kind,
+} from "@/registry/localRegistry";
+import { RegistryPackage } from "@/types/contract";
 
-const LOCAL_SCOPE = "@local";
-
-interface RegistryItem {
+export interface RegistryItem {
   id: string;
 }
 
@@ -37,77 +37,88 @@ export class DoesNotExistError extends Error {
 }
 
 export class Registry<TItem extends RegistryItem> {
-  private data: { [key: string]: TItem };
-  private readonly resourcePath: string;
-  private readonly storageKey: string;
+  private cache: { [key: string]: TItem };
+  private remote: Set<string>;
+  private readonly remoteResourcePath: string;
+  public readonly kinds: Set<Kind>;
   private readonly deserialize: (raw: unknown) => TItem;
-  private refreshed: boolean;
 
   constructor(
-    storageKey: string,
-    resourcePath: string,
+    kinds: Kind[],
+    remoteResourcePath: string,
     deserialize: (raw: unknown) => TItem
   ) {
-    this.data = {};
-    this.resourcePath = resourcePath;
-    this.refreshed = false;
-    this.storageKey = storageKey;
+    this.cache = {};
+    this.remote = new Set<string>();
+    this.kinds = new Set(kinds);
+    this.remoteResourcePath = remoteResourcePath;
     this.deserialize = deserialize;
   }
 
-  lookup(id: string): TItem {
-    if (!id) {
-      throw new Error("id is required");
-    }
-    const result = this.data[id];
-    if (!result) {
-      console.debug(
-        `Cannot find ${id} for in registry ${this.resourcePath}`,
-        this.data
-      );
-      throw new DoesNotExistError(id);
-    }
-    return result;
-  }
-
-  all(): TItem[] {
-    return Object.values(this.data);
-  }
-
-  local(): TItem[] {
-    return Object.values(
-      pickBy(this.data, (value, key) => key.startsWith(`${LOCAL_SCOPE}/`))
+  async exists(id: string): Promise<boolean> {
+    return (
+      Object.prototype.hasOwnProperty.call(this.cache, id) ||
+      (await find(id)) != null
     );
   }
 
+  async lookup(id: string): Promise<TItem> {
+    if (!id) {
+      throw new Error("id is required");
+    }
+
+    const cached = this.cache[id];
+
+    if (cached) {
+      return cached;
+    }
+
+    const raw = await find(id);
+
+    if (!raw) {
+      console.debug(`Cannot find ${id} in registry ${this.remoteResourcePath}`);
+      throw new DoesNotExistError(id);
+    }
+
+    const item = this.parse(raw.config);
+
+    if (!item) {
+      throw new Error(`Unable to parse block ${item}`);
+    }
+
+    this.register(item);
+
+    return item;
+  }
+
+  /**
+   * @deprecated requires all data to be parsed
+   */
+  async all(): Promise<TItem[]> {
+    for (const kind of this.kinds.values()) {
+      for (const raw of await getKind(kind)) {
+        const parsed = this.parse(raw.config);
+        if (parsed) {
+          this.register(parsed);
+        }
+      }
+    }
+    return Object.values(this.cache);
+  }
+
   register(...items: TItem[]): void {
-    for (const item of flatten(items)) {
-      if (!item) {
-        console.warn("Register received a null/undefined item");
-        continue;
-      } else if (item.id == null) {
+    for (const item of items) {
+      if (item.id == null) {
         console.warn(`Skipping item with no id`, item);
         continue;
       }
-      // console.debug(`Registered ${item.id}`);
-      this.data[item.id] = item;
+      this.cache[item.id] = item;
     }
   }
 
-  _parse(raw: unknown): TItem | undefined {
-    let obj;
+  private parse(raw: unknown): TItem | undefined {
     try {
-      if (typeof raw === "string") {
-        obj = JSON.parse(raw);
-      } else if (isPlainObject(raw)) {
-        obj = raw;
-      } else {
-        console.warn(
-          `Error de-serializing item, got unexpected type ${typeof obj}`
-        );
-        return;
-      }
-      return this.deserialize(obj);
+      return this.deserialize(raw);
     } catch (e) {
       console.warn(`Error de-serializing item: ${e}`, raw);
       return undefined;
@@ -115,61 +126,48 @@ export class Registry<TItem extends RegistryItem> {
   }
 
   async fetch(): Promise<void> {
-    const data = await fetch(`/api/${this.resourcePath}/`);
+    const timestamp = new Date();
+    const data = await fetch<RegistryPackage[]>(
+      `/api/${this.remoteResourcePath}/`
+    );
 
     if (!Array.isArray(data)) {
-      console.error(`Expected array from ${this.resourcePath}`, data);
-      throw new Error(`Expected array from ${this.resourcePath}`);
+      console.error(`Expected array from ${this.remoteResourcePath}`, data);
+      throw new Error(`Expected array from ${this.remoteResourcePath}`);
     }
 
-    if (chrome?.storage) {
-      await setStorage(this.storageKey, JSON.stringify(data));
+    for (const item of data) {
+      const [major, minor, patch] = item.metadata.version
+        .split(".")
+        .map((x) => Number.parseInt(x, 10));
+      const match = item.metadata.id.match(PACKAGE_NAME_REGEX);
+
+      if (!this.kinds.has(item.kind)) {
+        console.warn(
+          `Item ${item.metadata?.id ?? "<unknown>"} has kind ${
+            item.kind
+          }; expected: ${Array.from(this.kinds.values()).join(", ")}`
+        );
+      }
+
+      delete this.cache[item.metadata.id];
+
+      this.remote.add(item.metadata.id);
+
+      await add({
+        id: item.metadata.id,
+        version: { major, minor, patch },
+        scope: match.groups.scope,
+        kind: item.kind,
+        config: item,
+        rawConfig: undefined,
+        timestamp,
+      });
     }
-
-    const parsed = compact(flatten(data.map((x) => this._parse(x))));
-
-    this.register(...parsed);
-  }
-
-  async loadLocal(): Promise<void> {
-    const raw = await readStorage(this.storageKey);
-
-    let data;
-    try {
-      data = raw ? JSON.parse(raw as string) : [];
-    } catch (err) {
-      console.error("Raw storage", { raw, err });
-      throw new Error(`Error refreshing configuration from storage: ${err}`);
-    }
-
-    if (!Array.isArray(data)) {
-      throw new Error("Invalid storage contents");
-    }
-
-    const parsed: TItem[] = compact(data.map((x: unknown) => this._parse(x)));
-    this.register(...flatten(parsed));
-  }
-
-  async refresh({ allowFetch } = { allowFetch: true }): Promise<void> {
-    if (this.refreshed) {
-      return;
-    } else if (!chrome?.storage) {
-      throw new Error("Can only refresh when running in an extension context");
-    }
-
-    await this.loadLocal();
-
-    if (allowFetch) {
-      await this.fetch();
-    } else if (isEmpty(this.data)) {
-      console.warn("No items stored locally and fetch is not allowed");
-    }
-
-    this.refreshed = true;
   }
 
   clear(): void {
-    this.data = {};
+    this.cache = {};
   }
 }
 

@@ -19,7 +19,7 @@
  * Type contract between the backend and front-end.
  */
 import { ServiceDefinition } from "@/types/definitions";
-import { ServiceConfig } from "@/core";
+import { ServiceConfig, Metadata } from "@/core";
 
 export enum MemberRole {
   Member = 1,
@@ -49,6 +49,7 @@ export interface Organization {
   name: string;
   members: Member[];
   invitations: Invitation[];
+  scope: string | null;
 }
 
 export interface PendingInvitation {
@@ -115,4 +116,11 @@ export interface ReadOnlyAuth {
   id: string;
   organization?: string;
   service: RemoteService;
+}
+
+type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
+
+export interface RegistryPackage extends Record<string, unknown> {
+  kind: Kind;
+  metadata: Metadata;
 }

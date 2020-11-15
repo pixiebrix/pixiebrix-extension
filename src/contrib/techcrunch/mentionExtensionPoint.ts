@@ -82,10 +82,10 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
     return isHost("techcrunch.com");
   }
 
-  defaultReader() {
-    return blockRegistry.lookup(
+  async defaultReader() {
+    return (await blockRegistry.lookup(
       `techcrunch/${this.entityType}-mention`
-    ) as IReader;
+    )) as IReader;
   }
 
   async install() {
@@ -98,7 +98,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
   }
 
   async runOne($link: JQuery) {
-    const reader = this.defaultReader();
+    const reader = await this.defaultReader();
     const ctxt = await reader.read($link.get(0));
 
     for (const extension of this.extensions) {

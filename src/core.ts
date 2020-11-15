@@ -86,6 +86,7 @@ export type BlockIcon = string;
 export interface Metadata {
   id: string;
   name: string;
+  version?: string;
   description?: string;
   icon?: BlockIcon;
   author?: string;
@@ -135,7 +136,7 @@ export interface IExtensionPoint extends Metadata {
 
   defaultOptions: { [key: string]: unknown };
 
-  defaultReader: () => IReader;
+  defaultReader: () => Promise<IReader>;
 
   isAvailable: () => Promise<boolean>;
 
@@ -148,7 +149,7 @@ export interface IExtensionPoint extends Metadata {
   /**
    * Returns any blocks configured in extension.
    */
-  getBlocks: (extension: IExtension) => IBlock[];
+  getBlocks: (extension: IExtension) => Promise<IBlock[]>;
 }
 
 export interface IBlock extends Metadata {

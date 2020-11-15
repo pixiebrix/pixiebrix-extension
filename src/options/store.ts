@@ -24,6 +24,8 @@ import {
   OptionsState,
   servicesSlice,
   ServicesState,
+  settingsSlice,
+  SettingsState,
 } from "./slices";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
@@ -41,9 +43,15 @@ const persistServicesConfig = {
   storage: localStorage,
 };
 
+const persistSettingsConfig = {
+  key: "settings",
+  storage: localStorage,
+};
+
 export interface RootState {
   options: OptionsState;
   services: ServicesState;
+  settings: SettingsState;
 }
 
 const store = configureStore({
@@ -51,6 +59,7 @@ const store = configureStore({
     router: connectRouter(hashHistory),
     options: persistReducer(persistOptionsConfig, optionsSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
   },
   middleware: [routerMiddleware(hashHistory), createLogger()],
   devTools: true,

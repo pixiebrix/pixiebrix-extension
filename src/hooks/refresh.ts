@@ -31,6 +31,7 @@ export function useRefresh(
   const refresh = useCallback(
     async (isMounted: () => boolean = () => true) => {
       try {
+        console.debug("Fetching bricks from the server");
         await Promise.all([
           extensionPointRegistry.fetch(),
           blockRegistry.fetch(),

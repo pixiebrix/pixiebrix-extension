@@ -19,7 +19,11 @@ import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import { IBlock } from "@/core";
 
-const registry = new BaseRegistry<IBlock>("registry:blocks", "blocks", fromJS);
+const registry = new BaseRegistry<IBlock>(
+  ["block", "component", "effect", "reader"],
+  "blocks",
+  fromJS
+);
 
 export function registerBlock(block: IBlock): void {
   registry.register(block);

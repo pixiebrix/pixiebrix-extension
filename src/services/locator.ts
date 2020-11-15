@@ -168,7 +168,7 @@ class LazyLocatorFactory {
       );
     }
 
-    const service = registry.lookup(serviceId);
+    const service = await registry.lookup(serviceId);
 
     const match = this.options.find(
       (x) => x.serviceId === serviceId && x.id === authId

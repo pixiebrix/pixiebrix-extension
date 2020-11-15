@@ -115,7 +115,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     $menu.append($menuItem);
   }
 
-  getBlocks(extension: IExtension<MenuItemExtensionConfig>): IBlock[] {
+  async getBlocks(
+    extension: IExtension<MenuItemExtensionConfig>
+  ): Promise<IBlock[]> {
     return blockList(extension.config.action);
   }
 
@@ -193,7 +195,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
 
       try {
         // read latest state at the time of the action
-        const reader = this.defaultReader();
+        const reader = await this.defaultReader();
         const ctxt = await reader.read(this.getReaderRoot($menu));
 
         await reducePipeline(actionConfig, ctxt, extensionLogger, {
@@ -231,7 +233,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     }
 
     for (const menu of this.menus.values()) {
-      const reader = this.defaultReader();
+      const reader = await this.defaultReader();
       const ctxt = await reader.read(this.getReaderRoot($(menu)));
 
       if (ctxt == null) {

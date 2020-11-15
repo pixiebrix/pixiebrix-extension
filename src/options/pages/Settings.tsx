@@ -44,6 +44,7 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
 
   const clear = useCallback(async () => {
     await clearExtensionAuth();
+    location.reload();
     addToast("Cleared the extension token. Visit the web app to set it again", {
       appearance: "success",
       autoDismiss: true,

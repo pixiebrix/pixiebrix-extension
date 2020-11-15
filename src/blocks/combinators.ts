@@ -87,16 +87,20 @@ export class InputValidationError extends Error {
 }
 
 /** Return block definitions for all blocks referenced in a pipeline */
-export function blockList(config: BlockConfig | BlockPipeline): IBlock[] {
-  return castArray(config).map(({ id }) => {
-    if (id == null) {
-      throw new PipelineConfigurationError(
-        "Pipeline stage is missing a block id",
-        config
-      );
-    }
-    return blockRegistry.lookup(id);
-  });
+export async function blockList(
+  config: BlockConfig | BlockPipeline
+): Promise<IBlock[]> {
+  return Promise.all(
+    castArray(config).map(async ({ id }) => {
+      if (id == null) {
+        throw new PipelineConfigurationError(
+          "Pipeline stage is missing a block id",
+          config
+        );
+      }
+      return await blockRegistry.lookup(id);
+    })
+  );
 }
 
 interface ReduceOptions {
@@ -158,7 +162,7 @@ async function runStage(
   );
 
   if (validate) {
-    const validationResult = validateInput(
+    const validationResult = await validateInput(
       castSchema(block.inputSchema),
       excludeUndefined(blockArgs)
     );
@@ -211,7 +215,7 @@ export async function reducePipeline(
     const stageLogger = logger.childLogger(stageContext);
 
     try {
-      const block = blockRegistry.lookup(stage.id);
+      const block = await blockRegistry.lookup(stage.id);
 
       const output = await runStage(block, stage, currentArgs, {
         context: extraContext,
@@ -251,15 +255,30 @@ export async function reducePipeline(
   return currentArgs;
 }
 
+async function resolveObj<T>(
+  obj: Record<string, Promise<T>>
+): Promise<Record<string, T>> {
+  const result: Record<string, T> = {};
+  for (const [key, promise] of Object.entries(obj)) {
+    result[key] = await promise;
+  }
+  return result;
+}
+
 /** Instantiate a reader from a reader configuration. */
-export function mergeReaders(readerConfig: ReaderConfig): IReader {
+export async function mergeReaders(
+  readerConfig: ReaderConfig
+): Promise<IReader> {
   if (typeof readerConfig === "string") {
-    // FIXME: enforce the type of block returned by this lookup
-    return blockRegistry.lookup(readerConfig) as any;
+    return (await blockRegistry.lookup(readerConfig)) as IReader;
   } else if (Array.isArray(readerConfig)) {
-    return new ArrayCompositeReader(readerConfig.map(mergeReaders));
+    return new ArrayCompositeReader(
+      await Promise.all(readerConfig.map(mergeReaders))
+    );
   } else if (isPlainObject(readerConfig)) {
-    return new CompositeReader(mapValues(readerConfig, mergeReaders));
+    return new CompositeReader(
+      await resolveObj(mapValues(readerConfig, mergeReaders))
+    );
   } else {
     throw new Error("Unexpected value for readerConfig");
   }

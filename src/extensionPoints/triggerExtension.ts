@@ -67,7 +67,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     },
   });
 
-  getBlocks(extension: IExtension<TriggerConfig>): IBlock[] {
+  async getBlocks(extension: IExtension<TriggerConfig>): Promise<IBlock[]> {
     return blockList(extension.config.action);
   }
 
@@ -107,7 +107,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
       this.getTriggerRoot()
         .toArray()
         .flatMap(async (root) => {
-          const reader = this.defaultReader();
+          const reader = await this.defaultReader();
           const readerContext = await reader.read(root);
           return this.extensions.map(async (extension) => {
             try {
