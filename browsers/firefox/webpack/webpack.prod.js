@@ -53,6 +53,10 @@ module.exports = () =>
               // https: has to be in connect-src because Firefox uses this to determine what pages the background
               // page can access
               manifest.content_security_policy = `default-src 'self'; connect-src 'self' ${services} https:; script-src 'self'; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`;
+              manifest.content_scripts[0].matches = uniq([
+                ...manifest.content_scripts[0].matches,
+                `${process.env.SERVICE_URL ?? "https://app.pixiebrix.com/"}*`,
+              ]);
               return JSON.stringify(manifest, null, 4);
             },
           },
