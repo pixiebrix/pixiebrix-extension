@@ -19,10 +19,10 @@ import React, { useCallback } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { Col, Row, Card, Button } from "react-bootstrap";
-
 import { settingsSlice } from "@/options/slices";
 import { useDispatch } from "react-redux";
 import { getBaseURL } from "@/services/baseService";
+import { browser } from "webextension-polyfill-ts";
 
 const { setMode } = settingsSlice.actions;
 
