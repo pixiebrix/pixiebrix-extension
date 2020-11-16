@@ -34,6 +34,12 @@ export function initRollbar(): void {
       // disable autoInstrument until we can set up scrubbing rules
       autoInstrument: false,
       payload: {
+        client: {
+          javascript: {
+            code_version: process.env.SOURCE_VERSION,
+            source_map_enabled: true,
+          },
+        },
         environment: process.env.ENVIRONMENT,
       },
       transform: function (payload: Record<string, unknown>) {
