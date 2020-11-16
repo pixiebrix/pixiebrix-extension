@@ -36,7 +36,12 @@ const SetupPage: React.FunctionComponent = () => {
   const connectApp = useCallback(async () => {
     const url = new URL(await getBaseURL());
     url.searchParams.set("install", "1");
-    window.open(url.toString());
+
+    await browser.tabs.create({
+      url: url.toString(),
+      active: true,
+    });
+
     window.close();
   }, []);
 

@@ -52,12 +52,16 @@ export const connectPage = lift("CONNECT_PAGE", async () => {
   return browser.runtime.getManifest();
 });
 
+const _reload = liftBackground("BACKGROUND_RELOAD", async () => {
+  browser.runtime.reload();
+});
+
 export const setExtensionAuth = lift(
   "SET_EXTENSION_AUTH",
   async (auth: AuthData) => {
     const updated = await updateExtensionAuth(auth);
     if (updated) {
-      browser.runtime.reload();
+      await _reload();
     }
     return updated;
   }
