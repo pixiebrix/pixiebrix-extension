@@ -92,6 +92,13 @@ export class Registry<TItem extends RegistryItem> {
   }
 
   /**
+   * @deprecated needed for header generation; will be removed in future versions
+   */
+  cached(): TItem[] {
+    return Object.values(this.cache);
+  }
+
+  /**
    * @deprecated requires all data to be parsed
    */
   async all(): Promise<TItem[]> {

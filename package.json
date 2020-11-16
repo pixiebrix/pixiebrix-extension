@@ -220,6 +220,7 @@
       "^@/(.*)$": "<rootDir>/src/$1",
       "^@contrib/(.*)$": "<rootDir>/contrib/$1",
       "^@schemas/(.*)$": "<rootDir>/schemas/$1",
+      "^@/chrome$": "<rootDir>/src/__mocks__/chromeMock.ts",
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }

@@ -85,8 +85,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
 
     const { action: actionConfig } = extension.config;
 
-    console.debug(`Running trigger extension ${extension.id}`);
-
     const serviceContext = await makeServiceContext(extension.services);
 
     try {
@@ -103,25 +101,36 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
   async run(): Promise<void> {
     const errors = [];
 
+    const $root = this.getTriggerRoot();
+
+    if ($root.length === 0) {
+      this.logger.warn("No root elements found");
+    }
+
     await Promise.allSettled(
-      this.getTriggerRoot()
-        .toArray()
-        .flatMap(async (root) => {
-          const reader = await this.defaultReader();
-          const readerContext = await reader.read(root);
-          return this.extensions.map(async (extension) => {
-            try {
-              await this.runExtension(readerContext, extension);
-            } catch (ex) {
-              // eslint-disable-next-line require-await
-              reportError(ex, {
-                extensionPointId: extension.extensionPointId,
-                extensionId: extension.id,
-              });
-              errors.push(ex);
-            }
-          });
-        })
+      $root.toArray().flatMap(async (root, index) => {
+        console.debug(`Finding reader for root ${index + 1}/${$root.length}`);
+        const reader = await this.defaultReader();
+
+        const readerContext = await reader.read(root);
+
+        console.debug(
+          `Running trigger extension for root ${index + 1}/${$root.length}`
+        );
+
+        return this.extensions.map(async (extension) => {
+          try {
+            await this.runExtension(readerContext, extension);
+          } catch (ex) {
+            // eslint-disable-next-line require-await
+            reportError(ex, {
+              extensionPointId: extension.extensionPointId,
+              extensionId: extension.id,
+            });
+            errors.push(ex);
+          }
+        });
+      })
     );
 
     if (errors.length) {

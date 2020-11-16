@@ -23,25 +23,24 @@ import "@/contrib";
 
 console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
 
-const blockDefinitions = blockRegistry.all().then((blocks) =>
-  blocks.map((block) => ({
-    apiVersion: "v1",
-    header: true,
-    kind: (block as any).read ? "reader" : "component",
-    metadata: {
-      id: block.id,
-      version: process.env.NPM_PACKAGE_VERSION,
-      name: block.name,
-      description: block.description,
-      author: block.author,
-    },
-    inputSchema: block.inputSchema,
-    outputSchema: block.outputSchema,
-  }))
-);
+const blockDefinitions = blockRegistry.cached().map((block) => ({
+  apiVersion: "v1",
+  header: true,
+  kind: (block as any).read ? "reader" : "component",
+  metadata: {
+    id: block.id,
+    version: process.env.NPM_PACKAGE_VERSION,
+    name: block.name,
+    description: block.description,
+    author: block.author,
+  },
+  inputSchema: block.inputSchema,
+  outputSchema: block.outputSchema,
+}));
 
-const extensionPointDefinitions = extensionPointRegistry.all().then((blocks) =>
-  blocks.map((block) => ({
+const extensionPointDefinitions = extensionPointRegistry
+  .cached()
+  .map((block) => ({
     apiVersion: "v1",
     header: true,
     kind: "extensionPoint",
@@ -53,14 +52,9 @@ const extensionPointDefinitions = extensionPointRegistry.all().then((blocks) =>
       author: block.author,
     },
     inputSchema: block.inputSchema,
-  }))
-);
+  }));
 
-Promise.all([blockDefinitions, extensionPointDefinitions]).then(
-  ([blockDefinitions, extensionPointDefinitions]) => {
-    fs.writeFileSync(
-      "headers.json",
-      JSON.stringify([...blockDefinitions, ...extensionPointDefinitions])
-    );
-  }
+fs.writeFileSync(
+  "headers.json",
+  JSON.stringify([...blockDefinitions, ...extensionPointDefinitions])
 );

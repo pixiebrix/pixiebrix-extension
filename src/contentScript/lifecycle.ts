@@ -66,6 +66,8 @@ async function runExtensionPoint(
       `Skipping ${extensionPoint.id} because user navigated away from the page`
     );
     return;
+  } else {
+    console.debug(`Installed extension ${extensionPoint.id}`);
   }
 
   await extensionPoint.run();

@@ -15,9 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./jq";
-export * from "./jsonPath";
-export * from "./httpGet";
-export * from "./regex";
-export * from "./mapping";
-export * from "./FormData";
+export function getChromeExtensionId(): string {
+  return "abc123";
+}

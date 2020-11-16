@@ -19,8 +19,15 @@ import { Effect } from "@/types";
 import { Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { registerBlock } from "@/blocks/registry";
+import { boolean } from "@/utils";
 
-type ColorRule = string | { selector: string; backgroundColor?: string };
+type ColorRule =
+  | string
+  | {
+      selector: string;
+      backgroundColor?: string;
+      condition: string | boolean | number;
+    };
 
 const HEX_PATTERN = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
 
@@ -45,6 +52,10 @@ export class HighlightEffect extends Effect {
         type: "string",
         description: "Optional root selector to find the elements within",
       },
+      condition: {
+        anyOf: [{ type: "string" }, { type: "boolean" }, { type: "number" }],
+        description: "Whether or not to apply the highlighting rule",
+      },
       elements: {
         type: "array",
         items: {
@@ -56,6 +67,14 @@ export class HighlightEffect extends Effect {
                 selector: {
                   type: "string",
                   description: "JQuery selector",
+                },
+                condition: {
+                  anyOf: [
+                    { type: "string" },
+                    { type: "boolean" },
+                    { type: "number" },
+                  ],
+                  description: "Whether or not to apply the highlighting rule",
                 },
                 backgroundColor: {
                   type: "string",
@@ -69,28 +88,43 @@ export class HighlightEffect extends Effect {
         },
       },
     },
-    ["elements"]
+    []
   );
 
   async effect({
+    condition,
     backgroundColor = "#FFFF00",
     rootSelector,
     elements,
   }: {
+    condition: string | number | boolean;
     backgroundColor: string;
     rootSelector: string | undefined;
     elements: ColorRule[];
   }): Promise<void> {
     const $roots = rootSelector ? $(rootSelector) : $(document);
 
+    if (condition !== undefined && !boolean(condition)) {
+      return;
+    }
+
     $roots.each(function () {
-      for (const element of elements) {
-        if (typeof element === "string") {
-          $(this).find(element).css({ backgroundColor });
-        } else {
-          const { selector, backgroundColor: elementColor } = element;
-          $(this).find(selector).css({ backgroundColor: elementColor });
+      if (elements != null) {
+        for (const element of elements) {
+          if (typeof element === "string") {
+            $(this).find(element).css({ backgroundColor });
+          } else {
+            if (element.condition && boolean(condition)) {
+              const {
+                selector,
+                backgroundColor: elementColor = backgroundColor,
+              } = element;
+              $(this).find(selector).css({ backgroundColor: elementColor });
+            }
+          }
         }
+      } else {
+        $(this).css({ backgroundColor });
       }
     });
   }
