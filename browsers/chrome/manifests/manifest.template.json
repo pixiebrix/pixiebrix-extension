@@ -29,7 +29,8 @@
     "storage",
     "identity",
     "tabs",
-    "webNavigation"
+    "webNavigation",
+    "contextMenus"
   ],
   "externally_connectable":  {
     "matches": [

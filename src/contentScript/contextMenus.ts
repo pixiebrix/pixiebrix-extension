@@ -15,22 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "@/core";
-import { ReaderConfig } from "@/blocks/combinators";
-import { Availability } from "@/blocks/types";
+import { liftContentScript } from "@/contentScript/backgroundProtocol";
 
-type ExtensionPointType = "panel" | "menuItem" | "trigger" | "selectionAction";
-
-export interface ExtensionPointDefinition {
-  type: ExtensionPointType;
-  isAvailable: Availability;
-  reader: ReaderConfig;
+interface ActionArgs {
+  selectionText: string;
 }
 
-export interface ExtensionPointConfig<
-  T extends ExtensionPointDefinition = ExtensionPointDefinition
-> {
-  metadata: Metadata;
-  definition: T;
-  kind: "extensionPoint";
+type Handler = (args: ActionArgs) => Promise<void>;
+
+const handlers: { [extensionId: string]: Handler } = {};
+
+export function registerHandler(extensionId: string, handler: Handler): void {
+  handlers[extensionId] = handler;
 }
+
+export const handleMenuAction = liftContentScript(
+  "HANDLE_MENU_ACTION",
+  async (extensionId: string, args: ActionArgs) => {
+    await handlers[extensionId](args);
+  }
+);

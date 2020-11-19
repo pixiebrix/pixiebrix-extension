@@ -45,7 +45,7 @@
       "properties": {
         "type": {
           "type": "string",
-          "enum": ["menuItem", "panel", "trigger"]
+          "enum": ["menuItem", "panel", "trigger", "selectionAction"]
         },
         "reader": {
           "$ref": "#/definitions/readerDefinition"

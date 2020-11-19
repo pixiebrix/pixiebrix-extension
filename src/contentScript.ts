@@ -20,6 +20,7 @@ import { reportError } from "@/telemetry/logging";
 
 import "@/blocks";
 import "@/contrib";
+import "@/contentScript/contextMenus";
 
 window.addEventListener("error", function (e) {
   // eslint-disable-next-line require-await
