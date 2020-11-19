@@ -53,7 +53,7 @@ export function useAuthOptions(): [AuthOption[]] {
     const sharedOptions = (remoteAuths ?? []).map((x) => ({
       value: x.id,
       label: `${defaultLabel(x.label)} — ${
-        x.organization.name ?? "✨ Built-in"
+        x.organization?.name ?? "✨ Built-in"
       }`,
       serviceId: x.service.config.metadata.id,
     }));
