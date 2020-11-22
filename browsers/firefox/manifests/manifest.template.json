@@ -28,7 +28,8 @@
     "storage",
     "identity",
     "tabs",
-    "webNavigation"
+    "webNavigation",
+    "contextMenus"
   ],
   "web_accessible_resources": [
     "css/*",

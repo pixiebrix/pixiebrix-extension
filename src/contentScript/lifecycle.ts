@@ -139,7 +139,9 @@ export async function handleNavigate(openerTabId?: number): Promise<void> {
       // Don't await each extension point since the extension point may never appear. For example, an
       // extension point that runs on the contact information page on LinkedIn
       // eslint-disable-next-line require-await
-      runExtensionPoint(extensionPoint, cancel);
+      runExtensionPoint(extensionPoint, cancel).catch((reason) => {
+        console.error(`Error running: ${extensionPoint.id}`, { reason });
+      });
     }
   }
 }
