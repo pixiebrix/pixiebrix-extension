@@ -61,7 +61,11 @@ export const setExtensionAuth = lift(
   async (auth: AuthData) => {
     const updated = await updateExtensionAuth(auth);
     if (updated) {
-      await _reload();
+      // A hack to ensure the SET_EXTENSION_AUTH response flows to the front-end before the backend
+      // page is reloaded, causing the message port to close.
+      setTimeout(async () => {
+        await _reload();
+      }, 100);
     }
     return updated;
   }

@@ -33,11 +33,22 @@ class ArrayCompositeReader extends Reader {
 
     this._readers = readers;
 
+    if (this._readers.some((x) => !x.outputSchema)) {
+      console.error(
+        "One or more readers are missing an outputSchema",
+        this._readers
+      );
+      throw new Error("One or more readers are missing an outputSchema");
+    }
+
     this.outputSchema = {
       $schema: "https://json-schema.org/draft/2019-09/schema#",
       type: "object",
       properties: this._readers.reduce(
-        (acc, reader) => ({ ...acc, ...reader.outputSchema.properties }),
+        (acc, reader) => ({
+          ...acc,
+          ...(reader.outputSchema.properties ?? {}),
+        }),
         {}
       ),
     };

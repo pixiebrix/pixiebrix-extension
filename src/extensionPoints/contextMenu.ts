@@ -43,6 +43,7 @@ import castArray from "lodash/castArray";
 import { checkAvailable } from "@/blocks/available";
 import { ensureContextMenu } from "@/background/contextMenus";
 import { registerHandler } from "@/contentScript/contextMenus";
+import { reportError } from "@/telemetry/logging";
 
 interface SelectionContextMenuConfig {
   title: string;
@@ -62,14 +63,19 @@ class SelectionTextReader extends Reader {
   }
 
   async read(): Promise<ReaderOutput> {
+    // The actual field is set by the extension point, not the reader, because it's made available
+    // by the browser API in the menu handler
     throw new Error("Not implemented");
   }
 
-  outputSchema: {
-    type: "object";
+  outputSchema: Schema = {
+    type: "object",
     properties: {
-      selectionText: { type: "string" };
-    };
+      selectionText: {
+        type: "string",
+        description: "The text the user has selected",
+      },
+    },
   };
 }
 
@@ -85,7 +91,7 @@ export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
     super(id, name, description, icon);
   }
 
-  abstract get baseReader(): Promise<IReader>;
+  abstract async getBaseReader(): Promise<IReader>;
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -118,9 +124,43 @@ export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
 
   async defaultReader(): Promise<IReader> {
     return new ArrayCompositeReader([
-      await this.baseReader,
+      await this.getBaseReader(),
       new SelectionTextReader(),
     ]);
+  }
+
+  async runExtension(
+    extension: IExtension<SelectionContextMenuConfig>
+  ): Promise<void> {
+    const { title, action: actionConfig } = extension.config;
+
+    const serviceContext = await makeServiceContext(extension.services);
+
+    const extensionLogger = this.logger.childLogger({
+      extensionId: extension.id,
+    });
+
+    await ensureContextMenu({
+      extensionId: extension.id,
+      title,
+      documentUrlPatterns: this.permissions.origins,
+    });
+
+    registerHandler(extension.id, async ({ selectionText }) => {
+      const ctxt = {
+        ...(await (await this.getBaseReader()).read(document)),
+        selectionText,
+      };
+      await reducePipeline(actionConfig, ctxt, extensionLogger, {
+        validate: true,
+        serviceArgs: serviceContext,
+      });
+    });
+
+    console.debug(`Added context menu ${title}`, {
+      title,
+      documentUrlPatterns: this.permissions.origins,
+    });
   }
 
   async run(): Promise<void> {
@@ -128,36 +168,28 @@ export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
       return;
     }
 
+    const errors = [];
+
     for (const extension of this.extensions) {
-      const { title, action: actionConfig } = extension.config;
-
-      const serviceContext = await makeServiceContext(extension.services);
-
-      const extensionLogger = this.logger.childLogger({
-        extensionId: extension.id,
-      });
-
-      await ensureContextMenu({
-        extensionId: extension.id,
-        title,
-        documentUrlPatterns: this.permissions.origins,
-      });
-
-      registerHandler(extension.id, async ({ selectionText }) => {
-        const ctxt = {
-          ...(await (await this.baseReader).read(document)),
-          selectionText,
-        };
-        await reducePipeline(actionConfig, ctxt, extensionLogger, {
-          validate: true,
-          serviceArgs: serviceContext,
+      try {
+        await this.runExtension(extension);
+      } catch (ex) {
+        // eslint-disable-next-line require-await
+        reportError(ex, {
+          extensionPointId: extension.extensionPointId,
+          extensionId: extension.id,
         });
-      });
+        errors.push(ex);
+      }
+    }
 
-      console.debug(`Adding context menu ${title}`, {
-        title,
-        documentUrlPatterns: this.permissions.origins,
-      });
+    if (errors.length) {
+      $.notify(
+        `An error occurred adding ${errors.length} context menu item(s)`,
+        {
+          className: "error",
+        }
+      );
     }
   }
 }
@@ -189,8 +221,8 @@ class RemoteSelectionContextMenuExtensionPoint extends SelectionContextMenuExten
     return await checkAvailable(this._definition.isAvailable);
   }
 
-  get baseReader() {
-    return mergeReaders(this._definition.reader);
+  async getBaseReader() {
+    return await mergeReaders(this._definition.reader);
   }
 
   public get defaultOptions(): {

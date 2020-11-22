@@ -149,19 +149,22 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
 const DataSourceCard: React.FunctionComponent<{
   extensionPoint: IExtensionPoint;
 }> = ({ extensionPoint }) => {
-  const [reader, isPending] = useAsyncState(() =>
-    extensionPoint.defaultReader()
-  );
+  const [outputSchema, isPending, error] = useAsyncState(async () => {
+    const reader = await extensionPoint.defaultReader();
+    return reader.outputSchema;
+  }, [extensionPoint]);
 
   const body = useMemo(() => {
     if (isPending) {
       return <GridLoader />;
-    } else if (isEmpty(reader.outputSchema)) {
+    } else if (error) {
+      return <Card.Body>{error.toString()}</Card.Body>;
+    } else if (isEmpty(outputSchema)) {
       return <Card.Body>No schema available</Card.Body>;
     } else {
-      return <SchemaTree schema={reader.outputSchema} />;
+      return <SchemaTree schema={outputSchema} />;
     }
-  }, [reader, isPending]);
+  }, [outputSchema, isPending]);
 
   return <div className="DataSourceCard">{body}</div>;
 };
