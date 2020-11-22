@@ -3,12 +3,13 @@
 PixieBrix is a browser extension and platform for safely extending your favorite websites and SaaS applications
 with low/no-code.
 
-This repository is for our open-source browser extension. Currently, it only supports
-Chrome. We'll be adding support for Firefox, Edge, et al. soon.
-
 In addition to the extension, we maintain [pixiebrix.com](https://www.pixiebrix.com/), a
 registry of bricks and pre-made blueprints. You can create a PixieBrix account to enable
 support for team features, such as shared service configurations and team bricks.
+
+| [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Chrome |
+| --------- | --------- |
+| last 2 versions| last 2 versions
 
 ## Example Uses
 
@@ -22,52 +23,30 @@ employee training site
 
 <img src="https://raw.githubusercontent.com/pixiebrix/pixiebrix-extension/main/img/demo.gif" alt="PixieBrix demo GIF">
 
-## Key Concepts
+## Our Principles
 
-### Kinds of Bricks
+We're building PixieBrix because we believe three things:
 
-The PixieBrix ecosystem is composed of combinable components that we call "bricks":
+1. There is no such thing as an "average user"
+2. Everyone should be empowered to customize their software to give them superpowers
+3. Computing should be delightful
 
-* **Foundations (aka Extension Points):** points where users can attach functionality. Current support: information panels,
-menu items/buttons.
-* **Blocks:** blocks are functions that you can wire together and attach to an extension point. You can also create
-composite blocks that behave as a single brick.
-    * **Readers:** read information from a document. Current Support: HTML via JQuery, EmberJS, React,
-    window variables. Each Extension Point has a default reader it provides.
-    * **Effects:** take an input and perform a side effect. Examples: append a row to spreadsheet,
-    send a message to Slack, open a new tab with a Google search.
-    * **Transforms:** take an input and produce an output. Example: call an API,
-    run a [jq transform](https://github.com/stedolan/jq), extract data using a regular expression
-    * **Renderers:** a transform that returns HTML, e.g., to render in a panel extension point. Examples:
-    renderer markdown, a data table.
-* **Services:** re-usable resources and configuration that can also be used to authenticate
-requests to APIs. By creating a [PixieBrix](https://www.pixiebrix.com/) account, you can
-share service configurations with your team. Examples: an API credential, a Google Sheet.
-* **Blueprints (aka Recipes):** collections of extension point + block combinations that a user can install
-together. Example: Hubspot actions and panels for LinkedIn
+To this end, we’ve set out to create low/no-code tools for customizing the behavior of software,
+web pages, and SaaS. But, we won’t be able to do it alone. That’s why we’re also working
+hard to build a diverse and vibrant community of makers.
 
-### Data Flow
+## Documentation
 
-PixieBrix supports acyclic data flow between named inputs/outputs. By default, data flows
-from one block to the next. However, a block may instead store its outputs to a variable
-that subsequent blocks can then reference.
+For documentation, [see our Wiki](https://github.com/pixiebrix/pixiebrix-extension/wiki).
 
-To attach a block to an extension point, you wire the output of the Extension Point's default Reader
-to the block. To define a composite block, you define an input schema, and wire the inputs to the
-component blocks.
+## Contributing
 
-PixieBrix currently supports the following approaches to wiring inputs:
-* Object paths with [optional chaining](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Optional_chaining)
-* [Mustache templates](https://mustache.github.io/)
-* [Nunjucks templates](https://mozilla.github.io/nunjucks/) (similar to Jinja2)
-
-### Input/Output Schemas
-
-PixieBrix uses [JSON Schema](http://json-schema.org/) for specifying the shapes of inputs and outputs.
-In addition to serving as documentation, having a schema facilitates detecting which bricks are
-misbehaving.
+PixieBrix is an open source project, and we're delighted by community contributions. Please refer to
+the [Contributing file](https://github.com/pixiebrix/pixiebrix-extension/blob/main/CONTRIBUTING.md) for
+more information.
 
 ## Why not _X_?
 
-We're avid users of browser extensions, bookmarklets, and userscripts. They'll always each have their place.
-We're building PixieBrix to bring their power to a broader audience. See our Wiki for [a full comparison](https://github.com/pixiebrix/pixiebrix-extension/wiki/Why-not-X%3F)
+We're avid users of browser extensions, bookmarklets, and userscripts. They'll always each have
+their place. We're building PixieBrix to bring their power to a broader audience. See our Wiki for
+[a full comparison](https://github.com/pixiebrix/pixiebrix-extension/wiki/Why-not-X%3F).

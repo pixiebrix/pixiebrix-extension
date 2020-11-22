@@ -3,7 +3,7 @@
 ## Contributor license agreement
 
 By contributing to this repository in any form, including creating issues and/or sending a pull request via GitHub,
-you agree to individual contributor license agreement. By contributing to this repository in any form as an entity,
+you agree to our individual contributor license agreement. By contributing to this repository in any form as an entity,
 you agree to the corporate contributor license agreement.
 
 ## Did you find a bug?
@@ -20,12 +20,6 @@ When possible, add a comment with any additional context that's not already cove
 Provide information about the what you were trying to do, the expected behavior, and the actual behavior.
 
 
-## Adding Extension Points, Bricks, Services, and Recipes
-
-To contribute new entities, create a pull request with the YAML files. See the
-[contrib](https://github.com/pixiebrix/pixiebrix-extension/tree/master/contrib) folder
-for examples.
-
 ## Feature Pull Requests
 
 * If it's a major new feature, first create a new issue detailing what you're trying
@@ -34,6 +28,11 @@ to accomplish and why.
 create a branch with the issue # in the name, run the [pre-commit](https://pre-commit.com/)
 hooks, and submit the PR.
 
-Whenever possible, implement new entities via YAML files instead of
-Javascript / Typescript classes. We can publish these independent of browser
-extension releases.
+
+## Adding Bricks, Foundations, and Services
+
+To contribute bricks that don't require code changes, create and publish them using the PixieBrix
+extension or webapp.
+
+See the [contrib folder](https://github.com/pixiebrix/pixiebrix-extension/tree/master/contrib) for
+examples.
