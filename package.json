@@ -24,7 +24,7 @@
     "@babel/plugin-transform-runtime": "^7.12.1",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "^7.12.5",
-    "@babel/preset-typescript": "^7.10.4",
+    "@babel/preset-typescript": "^7.12.7",
     "@cfworker/json-schema": "^1.6.0",
     "@fortawesome/fontawesome-svg-core": "1.2.29",
     "@fortawesome/free-brands-svg-icons": "^5.15.1",
