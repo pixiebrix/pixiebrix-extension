@@ -166,7 +166,7 @@
     "typescript": "^4.0.5",
     "url-join": "^4.0.1",
     "use-async-effect": "^2.2.2",
-    "use-debounce": "^5.0.1",
+    "use-debounce": "^5.1.0",
     "uuid": "^8.3.1",
     "webext-detect-page": "^2.0.5",
     "webext-dynamic-content-scripts": "^7.0.0",
