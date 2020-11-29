@@ -21,9 +21,13 @@ import { serializeError } from "serialize-error";
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type SerializableResponse = boolean | string | number | object;
 
-export interface RemoteProcedureCallRequest {
+interface Meta {
+  nonce?: string;
+}
+
+export interface RemoteProcedureCallRequest<TMeta extends Meta = Meta> {
   type: string;
-  meta?: { nonce?: string };
+  meta?: TMeta;
   payload: unknown[];
 }
 

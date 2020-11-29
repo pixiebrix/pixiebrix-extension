@@ -15,12 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 import "@/extensionContext";
-// import "@/webpack/customLoader";
 import { reportError } from "@/telemetry/logging";
 
 import "@/blocks";
 import "@/contrib";
 import "@/contentScript/contextMenus";
+import "@/contentScript/devTools";
 
 window.addEventListener("error", function (e) {
   // eslint-disable-next-line require-await

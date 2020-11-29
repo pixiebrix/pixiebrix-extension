@@ -32,7 +32,11 @@ type ReadSpec = <T extends Record<string, string>>(arg: {
 export const withReadWindow = (createSendScriptMessage(
   READ_WINDOW
 ) as unknown) as ReadSpec;
-export const withSearchWindow = createSendScriptMessage(SEARCH_WINDOW);
+
+export const withSearchWindow = createSendScriptMessage<{ results: unknown[] }>(
+  SEARCH_WINDOW
+);
+
 export const withDetectFrameworkVersions = createSendScriptMessage(
   DETECT_FRAMEWORK_VERSIONS
 );

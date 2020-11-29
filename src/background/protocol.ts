@@ -50,9 +50,12 @@ const handlers: { [key: string]: HandlerEntry } = {};
  * Return true if a message sender is either the extension itself, or an externally connectable page
  * https://developer.chrome.com/extensions/security#sanitize
  */
-function allowBackgroundSender(
+export function allowBackgroundSender(
   sender: ChromeMessageSender | Runtime.MessageSender
 ): boolean {
+  if (!sender) {
+    return false;
+  }
   const { externally_connectable } = chrome.runtime.getManifest();
   return (
     sender.id === browser.runtime.id ||

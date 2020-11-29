@@ -15,14 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./meta";
-export * from "./PageMetadataReader";
-export * from "./BlankReader";
+import React from "react";
+import { Runtime } from "webextension-polyfill-ts";
 
-// generic readers
-export * from "./emberjs";
-export * from "./jquery";
-export * from "./window";
-export * from "./react";
-export * from "./angular";
-export * from "./vuejs";
+interface Context {
+  port: Runtime.Port | null;
+}
+
+const initialValue: Context = {
+  port: null,
+};
+
+export const DevToolsContext = React.createContext(initialValue);

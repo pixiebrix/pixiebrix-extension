@@ -15,14 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./meta";
-export * from "./PageMetadataReader";
-export * from "./BlankReader";
+import { createSendScriptMessage } from "@/messaging/chrome";
+import { READ_ANGULAR_SCOPE } from "@/messaging/constants";
+import { ReaderOutput } from "@/core";
+import { registerFactory } from "@/blocks/readers/factory";
 
-// generic readers
-export * from "./emberjs";
-export * from "./jquery";
-export * from "./window";
-export * from "./react";
-export * from "./angular";
-export * from "./vuejs";
+export interface AngularConfig {
+  type: "angular";
+  selector: string;
+}
+
+export const withAngularScope = createSendScriptMessage<ReaderOutput>(
+  READ_ANGULAR_SCOPE
+);
+
+async function doRead(reader: AngularConfig): Promise<ReaderOutput> {
+  const { selector } = reader;
+  return await withAngularScope({
+    selector,
+  });
+}
+
+registerFactory("angular", doRead);

@@ -48,9 +48,9 @@ import {
 } from "@/frameworks/react";
 import fromPairs from "lodash/fromPairs";
 import { globalSearch } from "@/vendors/globalSearch";
-import pickBy from "lodash/pickBy";
-import identity from "lodash/identity";
+import { pickBy, identity } from "lodash";
 import { findRelatedComponent as findVueComponent } from "@/frameworks/vue";
+import { cleanValue } from "./utils";
 
 type Handler = (payload: unknown) => unknown;
 const handlers: { [type: string]: Handler } = {};
@@ -94,13 +94,14 @@ window.addEventListener("message", function (event) {
 
   const reject = (error: unknown) => {
     try {
-      console.warn(error);
+      const detail = {
+        id: meta.id,
+        error,
+      };
+      console.warn(`pageScript responding ${type}_REJECTED`, detail);
       document.dispatchEvent(
         new CustomEvent(`${type}_REJECTED`, {
-          detail: {
-            id: meta.id,
-            error,
-          },
+          detail,
         })
       );
     } catch (err) {
@@ -112,12 +113,23 @@ window.addEventListener("message", function (event) {
   };
 
   const fulfill = (result: unknown) => {
+    let cleanResult;
+    try {
+      // Chrome will drop the whole detail if it contains non-serializable values, e.g., methods
+      cleanResult = cleanValue(result ?? null);
+    } catch (err) {
+      console.error("Cannot serialize result", { result, err });
+      throw new Error(`Cannot serialize result for result ${type}`);
+    }
+
+    const detail = {
+      id: meta.id,
+      result: cleanResult,
+    };
+    console.debug(`pageScript responding ${type}_FULFILLED`, detail);
     document.dispatchEvent(
       new CustomEvent(`${type}_FULFILLED`, {
-        detail: {
-          id: meta.id,
-          result,
-        },
+        detail,
       })
     );
   };
@@ -139,9 +151,12 @@ const attachListener = (messageType: string, handler: Handler) => {
   handlers[messageType] = handler;
 };
 
-attachListener(SEARCH_WINDOW, ({ query }) => ({
-  results: globalSearch(window, query),
-}));
+attachListener(SEARCH_WINDOW, ({ query }) => {
+  console.debug(`Searching window for query: ${query}`);
+  return {
+    results: globalSearch(window, query),
+  };
+});
 
 attachListener(DETECT_FRAMEWORK_VERSIONS, () => ({
   emberjs: getEmberVersion(),
@@ -158,7 +173,11 @@ type PathSpec = Record<string, string | { path: string; args: unknown }>;
 
 // needs to be object because we want window to be a valid argument
 // eslint-disable-next-line @typescript-eslint/ban-types
-function readPathSpec(object: object, pathSpec: PathSpec) {
+function readPathSpec(object: object, pathSpec?: PathSpec) {
+  if (!pathSpec) {
+    return object;
+  }
+
   const values: Record<string, unknown> = {};
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
@@ -242,54 +261,95 @@ attachListener(
   }
 );
 
-attachListener(READ_EMBER_VIEW_ATTRS, ({ selector, attrs: rawAttrs }) => {
-  const element = document.querySelector(selector);
+attachListener(
+  READ_EMBER_VIEW_ATTRS,
+  ({
+    selector,
+    attrs: rawAttrs = [],
+  }: {
+    selector: string;
+    attrs: string[];
+  }) => {
+    const element = document.querySelector(selector);
 
-  if (!element) {
-    throw new Error(`Could not find element for ${selector}`);
+    if (!element) {
+      throw new Error(`Could not find element for ${selector}`);
+    } else if (element.id == null) {
+      throw new Error(`Element does not have an id`);
+    }
+
+    const view = getEmberComponentById(element.id);
+
+    if (!view) {
+      throw new ComponentNotFoundError(
+        `Could not find ember component for id ${element.id}`
+      );
+    }
+
+    console.debug(`Found ember view ${selector}`, view);
+
+    const attrs = rawAttrs.filter(identity);
+
+    if (!isEmpty(attrs)) {
+      return fromPairs(
+        attrs.map((attr: string) => [
+          attr,
+          readEmberValueFromCache(view.attrs[attr]),
+        ])
+      );
+    } else {
+      return pickBy(
+        mapValues(view.attrs, (x) => readEmberValueFromCache(x)),
+        (value) => value !== undefined
+      );
+    }
   }
-
-  const view = getEmberComponentById(element.id);
-
-  if (!view) {
-    throw new Error(`Could not find ember component ${element.id}`);
-  }
-
-  console.debug(`Found ember view ${selector}`, view);
-
-  const attrs = rawAttrs.filter(identity);
-
-  if (!isEmpty(attrs)) {
-    return fromPairs(
-      attrs.map((attr: string) => [
-        attr,
-        readEmberValueFromCache(view.attrs[attr]),
-      ])
-    );
-  } else {
-    return pickBy(
-      mapValues(view.attrs, readEmberValueFromCache),
-      (value) => value !== undefined
-    );
-  }
-});
+);
 
 attachListener(READ_EMBER_COMPONENT, ({ selector, pathSpec }) => {
   const element = document.querySelector(selector);
   const component = getEmberComponentById(element.id);
+
+  if (!component) {
+    throw new ComponentNotFoundError(
+      `Could not find Ember component at selector ${selector}`
+    );
+  }
+
   console.debug(`Found ember component ${selector}`, component);
   return readPathSpec(component, pathSpec);
 });
 
 attachListener(READ_ANGULAR_SCOPE, ({ selector, pathSpec }) => {
   const element = document.querySelector(selector);
-  const scope = clone(window.angular.element(element).scope());
+
+  if (!window.angular) {
+    throw new Error("Angular not found");
+  }
+
+  const component = window.angular.element(element);
+
+  if (!component) {
+    throw new ComponentNotFoundError(
+      `Could not find Angular component for selector ${selector}`
+    );
+  }
+
+  const scope = clone(component.scope());
+
   return readPathSpec(scope, pathSpec);
 });
 
 attachListener(READ_VUE_VALUES, ({ selector, pathSpec }) => {
   const element = document.querySelector(selector);
   const component = findVueComponent(element);
+
+  if (!component) {
+    throw new ComponentNotFoundError(
+      `Could not find Vue component for selector ${selector}`
+    );
+  }
+
   return readPathSpec(component, pathSpec);
 });
 

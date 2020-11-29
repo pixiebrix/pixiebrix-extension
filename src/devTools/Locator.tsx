@@ -15,25 +15,61 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { useAsyncState } from "@/hooks/common";
 import InputGroup from "react-bootstrap/InputGroup";
 import Form from "react-bootstrap/Form";
 import { useDebounce } from "use-debounce";
-import { DETECT_FRAMEWORK_VERSIONS } from "@/messaging/constants";
 import { GridLoader } from "react-spinners";
 import Table from "react-bootstrap/Table";
-import { useTabInfo, useSearchWindow } from "@/extensionPoints/hooks";
+import { searchWindow, detectFrameworks } from "@/background/devtools";
+import { browser } from "webextension-polyfill-ts";
+import { DevToolsContext } from "@/devTools/context";
+import useAsyncEffect from "use-async-effect";
+import { isEmpty } from "lodash";
 
-const Locator = () => {
+function useSearchWindow(query: string) {
+  const { port } = useContext(DevToolsContext);
+  const tabId = browser.devtools.inspectedWindow.tabId;
+  const [results, setResults] = useState([]);
+  const [error, setError] = useState();
+
+  useAsyncEffect(
+    async (isMounted) => {
+      if (!query) return;
+      setError(undefined);
+      setResults(undefined);
+      try {
+        const { results } = await searchWindow(port, query);
+        if (!isMounted()) return;
+        setResults(results as any);
+      } catch (err) {
+        if (!isMounted()) return;
+        setError(err);
+      }
+    },
+    [query, tabId]
+  );
+
+  return [results, error];
+}
+
+const Locator: React.FunctionComponent = () => {
+  const tabId = browser.devtools.inspectedWindow.tabId;
+  const { port } = useContext(DevToolsContext);
+
   const [query, setQuery] = useState("");
-  const [frameworks] = useTabInfo(DETECT_FRAMEWORK_VERSIONS);
+  const [frameworks] = useAsyncState(() => detectFrameworks(port), [
+    port,
+    tabId,
+  ]);
   const [debouncedQuery] = useDebounce(query, 200);
   const [searchResults, searchError] = useSearchWindow(debouncedQuery);
 
   return (
     <div>
       <div>Welcome to the future of reverse engineering!</div>
-      {frameworks && (
+      {!isEmpty(frameworks) ? (
         <>
           Frameworks Detected
           <ul>
@@ -44,6 +80,8 @@ const Locator = () => {
             ))}
           </ul>
         </>
+      ) : (
+        <span>No front-end frameworks detected</span>
       )}
       <InputGroup className="mb-3">
         <InputGroup.Prepend>
@@ -58,7 +96,7 @@ const Locator = () => {
         />
       </InputGroup>
 
-      {searchError}
+      {searchError?.toString()}
 
       {searchResults != null ? (
         <Table>

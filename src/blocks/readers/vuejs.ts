@@ -15,14 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./meta";
-export * from "./PageMetadataReader";
-export * from "./BlankReader";
+import { createSendScriptMessage } from "@/messaging/chrome";
+import { READ_VUE_VALUES } from "@/messaging/constants";
+import { ReaderOutput } from "@/core";
+import { registerFactory } from "@/blocks/readers/factory";
 
-// generic readers
-export * from "./emberjs";
-export * from "./jquery";
-export * from "./window";
-export * from "./react";
-export * from "./angular";
-export * from "./vuejs";
+export interface VueConfig {
+  type: "vuejs";
+  selector: string;
+}
+
+export const withVueValues = createSendScriptMessage<ReaderOutput>(
+  READ_VUE_VALUES
+);
+
+async function doRead(reader: VueConfig): Promise<ReaderOutput> {
+  const { selector } = reader;
+  return await withVueValues({
+    selector,
+  });
+}
+
+registerFactory("vuejs", doRead);

@@ -15,34 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-type MessageSendOptions = chrome.tabs.MessageSendOptions;
-
 type SendScriptMessage<T> = (payload: unknown) => Promise<T>;
 
 type CallbackMap = { [key: string]: (result: unknown) => void };
-
-interface Message {
-  type: string;
-}
-
-export function sendTabMessage<T = unknown>(
-  tabId: number,
-  message: Message,
-  options: MessageSendOptions
-): Promise<T> {
-  // https://developer.chrome.com/extensions/tabs#method-sendMessage
-  return new Promise((resolve, reject) => {
-    chrome.tabs.sendMessage(tabId, message, options, (response) => {
-      if (chrome.runtime.lastError) {
-        const error = chrome.runtime.lastError;
-        console.error("Tab message error", error);
-        reject(new Error(error.message));
-      }
-      console.debug(`RECEIVE: ${message.type}`, response);
-      resolve(response);
-    });
-  });
-}
 
 export function createSendScriptMessage<T>(
   messageType: string
@@ -59,6 +34,9 @@ export function createSendScriptMessage<T>(
   const listen = (type: string, callbacks: CallbackMap) => {
     document.addEventListener(type, function (event: CustomEvent) {
       console.debug(`RECEIVED: ${type}`, event.detail);
+      if (!event.detail) {
+        throw new Error(`Handler for ${type} did not provide event detail`);
+      }
       const { id, result } = event.detail;
       if (Object.prototype.hasOwnProperty.call(callbacks, id)) {
         try {

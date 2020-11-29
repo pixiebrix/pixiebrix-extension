@@ -132,22 +132,22 @@ export function notifyContentScripts(
  */
 export function liftContentScript<R extends SerializableResponse>(
   type: string,
-  method: () => R,
+  method: () => R | Promise<R>,
   options?: HandlerOptions
 ): (tabId: number) => Promise<R>;
 export function liftContentScript<T, R extends SerializableResponse>(
   type: string,
-  method: (a0: T) => R,
+  method: (a0: T) => R | Promise<R>,
   options?: HandlerOptions
 ): (tabId: number, a0: T) => Promise<R>;
 export function liftContentScript<T0, T1, R extends SerializableResponse>(
   type: string,
-  method: (a0: T0, a1: T1) => R,
+  method: (a0: T0, a1: T1) => R | Promise<R>,
   options?: HandlerOptions
 ): (tabId: number, a0: T0, a1: T1) => Promise<R>;
 export function liftContentScript<T0, T1, T2, R extends SerializableResponse>(
   type: string,
-  method: (a0: T0, a1: T1, a2: T2) => R,
+  method: (a0: T0, a1: T1, a2: T2) => R | Promise<R>,
   options?: HandlerOptions
 ): (tabId: number, a0: T0, a1: T1, a2: T2) => Promise<R>;
 export function liftContentScript<
