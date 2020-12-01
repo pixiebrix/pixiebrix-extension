@@ -18,6 +18,7 @@
 import { Reader } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { getExtensionAuth } from "@/auth/token";
+import * as session from "@/contentScript/context";
 
 // @ts-ignore: babel/plugin-transform-typescript doesn't support the import = syntax
 import chromeNamespace from "chrome";
@@ -62,6 +63,98 @@ class ChromeProfileReader extends Reader {
 
   async isAvailable(): Promise<boolean> {
     return !!chrome?.identity;
+  }
+}
+
+class TimestampReader extends Reader {
+  constructor() {
+    super(
+      "@pixiebrix/timestamp",
+      "Generate a timestamp",
+      "Get the current date-time in ISO format"
+    );
+  }
+
+  async read() {
+    return {
+      timestamp: new Date().toISOString(),
+    };
+  }
+
+  outputSchema: Schema = {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {
+      timestamp: {
+        type: "string",
+        description: "Current ISO date-time",
+        format: "date-time",
+      },
+    },
+  };
+
+  async isAvailable() {
+    return true;
+  }
+}
+
+class PixieBrixSessionReader extends Reader {
+  constructor() {
+    super(
+      "@pixiebrix/session",
+      "PixieBrix session reader",
+      "Read information about the current tab session"
+    );
+  }
+
+  async read(): Promise<ReaderOutput> {
+    return {
+      sessionId: session.sessionId,
+      navigationId: session.navigationId,
+      sessionTimestamp: session.sessionTimestamp.toISOString(),
+      navigationTimestamp: session.navigationTimestamp.toISOString(),
+      ...(await getExtensionAuth()),
+    };
+  }
+
+  outputSchema: Schema = {
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    type: "object",
+    properties: {
+      sessionId: {
+        type: "string",
+        description: "A unique website session id",
+        format: "uuid",
+      },
+      sessionTimestamp: {
+        type: "string",
+        description: "Timestamp when the session started",
+        format: "date-time",
+      },
+      navigationId: {
+        type: "string",
+        description: "A unique navigation id",
+        format: "uuid",
+      },
+      navigationTimestamp: {
+        type: "string",
+        description: "Timestamp when the last navigation occurred",
+        format: "date-time",
+      },
+      user: {
+        type: "string",
+        description: "The username for the account",
+      },
+      email: {
+        type: "string",
+        format: "email",
+        description: "The email address for the account",
+      },
+    },
+  };
+
+  async isAvailable() {
+    return true;
   }
 }
 
@@ -186,3 +279,5 @@ registerBlock(new DocumentReader());
 registerBlock(new ManifestReader());
 registerBlock(new ChromeProfileReader());
 registerBlock(new PixieBrixProfileReader());
+registerBlock(new PixieBrixSessionReader());
+registerBlock(new TimestampReader());

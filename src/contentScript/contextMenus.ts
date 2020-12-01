@@ -16,12 +16,9 @@
  */
 
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
+import { Menus } from "webextension-polyfill-ts";
 
-interface ActionArgs {
-  selectionText: string;
-}
-
-type Handler = (args: ActionArgs) => Promise<void>;
+type Handler = (args: Menus.OnClickData) => Promise<void>;
 
 const handlers: { [extensionId: string]: Handler } = {};
 
@@ -31,7 +28,7 @@ export function registerHandler(extensionId: string, handler: Handler): void {
 
 export const handleMenuAction = liftContentScript(
   "HANDLE_MENU_ACTION",
-  async (extensionId: string, args: ActionArgs) => {
+  async (extensionId: string, args: Menus.OnClickData) => {
     await handlers[extensionId](args);
   }
 );

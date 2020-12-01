@@ -115,7 +115,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
       $button.attr("data-pixiebrix-uuid", extension.id);
 
       $button.on("click", () => {
-        reducePipeline(action, ctxt, extensionLogger);
+        reducePipeline(action, ctxt, extensionLogger, document);
       });
 
       const $existingButton = $link

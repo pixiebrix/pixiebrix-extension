@@ -17,8 +17,7 @@
 
 import { Reader } from "@/types";
 import { IReader, ReaderOutput, Schema } from "@/core";
-import identity from "lodash/identity";
-import zip from "lodash/zip";
+import { identity, zip } from "lodash";
 
 class ArrayCompositeReader extends Reader {
   public readonly outputSchema: Schema;

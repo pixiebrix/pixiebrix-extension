@@ -15,22 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "@/core";
-import { ReaderConfig } from "@/blocks/combinators";
-import { Availability } from "@/blocks/types";
+import { v4 as uuidv4 } from "uuid";
 
-type ExtensionPointType = "panel" | "menuItem" | "trigger" | "contextMenu";
+export const sessionId = uuidv4();
+export const sessionTimestamp = new Date();
 
-export interface ExtensionPointDefinition {
-  type: ExtensionPointType;
-  isAvailable: Availability;
-  reader: ReaderConfig;
-}
+export let navigationId = uuidv4();
+export let navigationTimestamp = new Date();
 
-export interface ExtensionPointConfig<
-  T extends ExtensionPointDefinition = ExtensionPointDefinition
-> {
-  metadata: Metadata;
-  definition: T;
-  kind: "extensionPoint";
+export function updateNavigationId(): void {
+  navigationId = uuidv4();
+  navigationTimestamp = new Date();
 }

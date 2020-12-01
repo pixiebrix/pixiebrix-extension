@@ -32,12 +32,15 @@ import {
   ServiceDependency,
   TemplateEngine,
   RenderedArgs,
+  BlockArg,
+  ReaderRoot,
 } from "@/core";
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
 import pickBy from "lodash/pickBy";
 import { ContextError } from "@/errors";
 import { executeInOpener, executeInTarget } from "@/background/executor";
+import { boolean } from "@/utils";
 
 export type ReaderConfig =
   | string
@@ -48,8 +51,18 @@ export interface BlockConfig {
   id: string;
   window?: "self" | "opener" | "target";
   outputKey?: string;
-  config: Record<string, unknown>;
+
+  // (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
+  // provided, the step is run unconditionally.
+  if?: string | boolean | number;
+
+  // (Optional) root selector for reader
+  root?: string;
+
+  // (Optional) template language to use for rendering the if and config properties. Default is mustache
   templateEngine?: TemplateEngine;
+
+  config: Record<string, unknown>;
 }
 
 export type BlockPipeline = BlockConfig[];
@@ -132,34 +145,59 @@ function excludeUndefined(obj: unknown): unknown {
   }
 }
 
+function isReader(block: IBlock): block is IReader {
+  return "read" in block;
+}
+
 async function runStage(
   block: IBlock,
   stage: BlockConfig,
   args: RenderedArgs,
   {
+    root,
     context,
     validate,
     logger,
-  }: { context: RenderedArgs; validate: boolean; logger: Logger }
+  }: {
+    context: RenderedArgs;
+    validate: boolean;
+    logger: Logger;
+    root: ReaderRoot;
+  }
 ): Promise<unknown> {
   const argContext = { ...context, ...args };
   const stageConfig = stage.config ?? {};
 
-  // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
-  const blockArgs = isPlainObject(args)
-    ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
-    : stageConfig;
+  let blockArgs: BlockArg;
 
-  logger.debug(
-    `Input for block ${stage.id} (window=${stage.window ?? "self"})`,
-    {
-      id: stage.id,
-      template: stageConfig,
-      templateContext: argContext,
-      renderedArgs: blockArgs,
-      blockContext: args,
+  if (isReader(block)) {
+    // TODO: allow the stage to define a different root within the extension root
+    blockArgs = { root };
+    if (stage.window ?? "self" !== "self") {
+      throw new Error(
+        `Support for readers in other windows not implemented, got ${stage.window}`
+      );
     }
-  );
+    logger.debug(
+      `Passed document to reader ${stage.id} (window=${stage.window ?? "self"})`
+    );
+  } else {
+    // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
+    blockArgs = isPlainObject(args)
+      ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
+      : stageConfig;
+
+    logger.debug(
+      `Input for block ${stage.id} (window=${stage.window ?? "self"})`,
+      {
+        id: stage.id,
+        template: stageConfig,
+        templateContext: argContext,
+        renderedArgs: blockArgs,
+        blockContext: args,
+      }
+    );
+  }
 
   if (validate) {
     const validationResult = await validateInput(
@@ -186,8 +224,10 @@ async function runStage(
       ctxt: args,
       messageContext: logger.context,
     });
+  } else if (stage.window ?? "self" === "self") {
+    return await block.run(blockArgs, { ctxt: args, logger, root });
   } else {
-    return await block.run(blockArgs, { ctxt: args, logger });
+    throw new Error(`Unexpected stage window ${stage.window}`);
   }
 }
 
@@ -201,6 +241,7 @@ export async function reducePipeline(
   config: BlockConfig | BlockPipeline,
   renderedArgs: RenderedArgs,
   logger: Logger,
+  root: HTMLElement | Document = null,
   options: ReduceOptions = { validate: true, serviceArgs: {} as RenderedArgs }
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
@@ -215,9 +256,40 @@ export async function reducePipeline(
     const stageLogger = logger.childLogger(stageContext);
 
     try {
+      const $stageRoot = stage.root
+        ? $(root ?? document).find(stage.root)
+        : $(root ?? document);
+
+      if ($stageRoot.length > 1) {
+        throw new Error(`Multiple roots found for ${stage.root}`);
+      } else if ($stageRoot.length === 0) {
+        throw new Error(
+          `No roots found for ${stage.root} (root=${
+            (root as HTMLElement).tagName ?? "document"
+          })`
+        );
+      }
+
+      const stageRoot = $stageRoot.get(0);
+
+      if ("if" in stage) {
+        const { if: condition } = mapArgs(
+          { if: stage.if },
+          { ...extraContext, ...currentArgs },
+          engineRenderer(stage.templateEngine)
+        );
+        if (!boolean(condition)) {
+          logger.debug(
+            `Skipping stage #${index + 1} ${stage.id} because condition not met`
+          );
+          continue;
+        }
+      }
+
       const block = await blockRegistry.lookup(stage.id);
 
       const output = await runStage(block, stage, currentArgs, {
+        root: stageRoot,
         context: extraContext,
         validate: options.validate,
         logger: stageLogger,

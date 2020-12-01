@@ -62,7 +62,11 @@ function runBlockAction(
 
     return blockRegistry.lookup(blockId).then((block) => {
       const logger = new BackgroundLogger(options.messageContext);
-      return block.run(blockArgs, { ctxt: options.ctxt, logger });
+      return block.run(blockArgs, {
+        ctxt: options.ctxt,
+        logger,
+        root: document,
+      });
     });
   }
 }

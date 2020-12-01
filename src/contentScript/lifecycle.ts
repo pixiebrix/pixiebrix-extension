@@ -18,11 +18,11 @@
 import { loadOptions } from "@/options/loader";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { IExtensionPoint } from "@/core";
-
 import {
   liftContentScript,
   notifyContentScripts,
 } from "@/contentScript/backgroundProtocol";
+import { updateNavigationId } from "@/contentScript/context";
 
 let _scriptPromise: Promise<void>;
 let _extensionPoints: IExtensionPoint[] = undefined;
@@ -122,6 +122,8 @@ function getNavSequence() {
 export async function handleNavigate(openerTabId?: number): Promise<void> {
   console.debug(`Handling navigation to ${location.href}`);
   await installScriptOnce();
+
+  updateNavigationId();
 
   const extensionPoints = await loadExtensionsOnce();
 

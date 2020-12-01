@@ -26,7 +26,7 @@ const TYPE_MAP = {
   panel: deserializePanel,
   menuItem: deserializeMenuItem,
   trigger: deserializeTrigger,
-  selectionAction: deserializeSelectionAction,
+  contextMenu: deserializeSelectionAction,
 };
 
 export function fromJS(config: ExtensionPointConfig): IExtensionPoint {

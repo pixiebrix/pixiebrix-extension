@@ -175,7 +175,11 @@ async function read(
   root: HTMLElement | Document
 ): Promise<ReaderOutput> {
   const { selectors } = reader;
-  return mapValues(selectors, (x) => select(x, $(root)));
+  const $root = $(root);
+  if (!$root.length) {
+    throw new Error("JQuery reader requires the document or element(s)");
+  }
+  return mapValues(selectors, (x) => select(x, $root));
 }
 
 registerFactory("jquery", read);
