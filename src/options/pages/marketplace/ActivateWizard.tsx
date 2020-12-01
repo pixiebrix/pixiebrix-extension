@@ -112,6 +112,8 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
   return useCallback(
     async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
+      console.debug("Wizard form values", values);
+
       const selected = selectedExtensions(values, recipe.extensionPoints);
       const requiredServices = uniq(
         selected.flatMap((x) => Object.values(x.services ?? {}))

@@ -198,7 +198,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
         const reader = await this.defaultReader();
         const ctxt = await reader.read(this.getReaderRoot($menu));
 
-        await reducePipeline(actionConfig, ctxt, extensionLogger, {
+        await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
           validate: true,
           serviceArgs: serviceContext,
         });

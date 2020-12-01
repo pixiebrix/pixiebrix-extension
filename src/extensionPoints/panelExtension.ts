@@ -208,6 +208,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           body,
           readerContext,
           extensionLogger,
+          document,
           {
             validate: true,
             serviceArgs: serviceContext,

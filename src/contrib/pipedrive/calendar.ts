@@ -109,6 +109,7 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
       ranges,
       readerContext,
       extensionLogger,
+      document,
       {
         validate: true,
         serviceArgs: serviceContext,

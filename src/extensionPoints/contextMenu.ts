@@ -151,7 +151,7 @@ export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
         ...(await (await this.getBaseReader()).read(document)),
         selectionText,
       };
-      await reducePipeline(actionConfig, ctxt, extensionLogger, {
+      await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
         validate: true,
         serviceArgs: serviceContext,
       });

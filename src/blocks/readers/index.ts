@@ -18,6 +18,7 @@
 export * from "./meta";
 export * from "./PageMetadataReader";
 export * from "./BlankReader";
+export * from "./ImageReader";
 
 // generic readers
 export * from "./emberjs";

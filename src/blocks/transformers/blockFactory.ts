@@ -88,7 +88,8 @@ class ExternalBlock extends Block {
     return await reducePipeline(
       this.component.pipeline,
       renderedInputs,
-      options.logger
+      options.logger,
+      options.root
     );
   }
 }

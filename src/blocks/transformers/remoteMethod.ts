@@ -15,13 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
+import { Transformer } from "@/types";
 import { proxyService } from "@/background/requests";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { PropError } from "@/errors";
 
-export class RemoteMethod extends Effect {
+export class RemoteMethod extends Transformer {
   constructor() {
     super(
       "@pixiebrix/http",
@@ -66,8 +67,17 @@ export class RemoteMethod extends Effect {
     ["url", "data"]
   );
 
-  async effect({ service, ...requestConfig }: BlockArg): Promise<void> {
-    await proxyService(service, requestConfig);
+  async transform({ service, ...requestConfig }: BlockArg): Promise<unknown> {
+    if (service && typeof service !== "object") {
+      throw new PropError(
+        "Expected configured service",
+        this.id,
+        "service",
+        service
+      );
+    }
+    const { data } = await proxyService(service, requestConfig);
+    return data;
   }
 }
 

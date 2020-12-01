@@ -15,11 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./logger";
-export * from "./notification";
-export * from "./redirectPage";
-export * from "./clipboard";
-export * from "./forms";
-export * from "./tabs";
-export * from "./highlight";
-export * from "./vue";
+import { v4 as uuidv4 } from "uuid";
+
+export const sessionId = uuidv4();
+export const sessionTimestamp = new Date();
+
+export let navigationId = uuidv4();
+export let navigationTimestamp = new Date();
+
+export function updateNavigationId(): void {
+  navigationId = uuidv4();
+  navigationTimestamp = new Date();
+}

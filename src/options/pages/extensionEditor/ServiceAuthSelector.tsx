@@ -114,6 +114,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
         value={value}
         error={!!meta.error}
         onChange={(x: AuthOption) => {
+          console.debug(`Selected option ${x.value} (${x.label})`);
           helpers.setValue(x.value);
         }}
       />

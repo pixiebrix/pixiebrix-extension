@@ -60,12 +60,15 @@ export interface Logger {
   ) => void;
 }
 
+export type ReaderRoot = HTMLElement | Document;
+
 export interface BlockOptions {
   // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
   // the inputs using yup/jsonschema, so the types should match what's expected.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ctxt: { [key: string]: any };
   logger: Logger;
+  root: ReaderRoot;
 }
 
 // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
@@ -181,7 +184,7 @@ export interface IReader extends IBlock {
   /** Return true if the Reader is for a page/element. */
   isAvailable: ($elt?: JQuery) => Promise<boolean>;
 
-  read: (root: HTMLElement | Document) => Promise<ReaderOutput>;
+  read: (root: ReaderRoot) => Promise<ReaderOutput>;
 }
 
 type ServiceId = string;

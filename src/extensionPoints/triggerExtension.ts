@@ -29,6 +29,7 @@ import {
   IExtension,
   IExtensionPoint,
   ReaderOutput,
+  ReaderRoot,
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
@@ -37,7 +38,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { Permissions } from "webextension-polyfill-ts";
-import castArray from "lodash/castArray";
+import { compact, castArray } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 
@@ -45,9 +46,13 @@ interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
 }
 
+type Trigger = "load" | "click" | "dblclick" | "hover";
+
 export abstract class TriggerExtensionPoint extends ExtensionPoint<
   TriggerConfig
 > {
+  abstract get trigger(): Trigger;
+
   protected constructor(
     id: string,
     name: string,
@@ -77,7 +82,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
 
   private async runExtension(
     ctxt: ReaderOutput,
-    extension: IExtension<TriggerConfig>
+    extension: IExtension<TriggerConfig>,
+    root: ReaderRoot
   ) {
     const extensionLogger = this.logger.childLogger({
       extensionId: extension.id,
@@ -88,7 +94,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     const serviceContext = await makeServiceContext(extension.services);
 
     try {
-      await reducePipeline(actionConfig, ctxt, extensionLogger, {
+      await reducePipeline(actionConfig, ctxt, extensionLogger, root, {
         validate: true,
         serviceArgs: serviceContext,
       });
@@ -98,44 +104,56 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     }
   }
 
-  async run(): Promise<void> {
-    const errors = [];
+  private async runTrigger(root: ReaderRoot): Promise<unknown[]> {
+    const reader = await this.defaultReader();
+    const readerContext = await reader.read(root);
+    const errors = await Promise.all(
+      this.extensions.map(async (extension) => {
+        try {
+          await this.runExtension(readerContext, extension, root);
+        } catch (ex) {
+          // eslint-disable-next-line require-await
+          reportError(ex, {
+            extensionPointId: extension.extensionPointId,
+            extensionId: extension.id,
+          });
+          return ex;
+        }
+      })
+    );
+    return compact(errors);
+  }
 
+  static notifyErrors(results: PromiseSettledResult<unknown[]>[]): void {
+    const errors = compact(
+      results.flatMap((x) => (x.status === "fulfilled" ? x.value : [x.reason]))
+    );
+    if (errors.length) {
+      console.debug("Trigger errors", errors);
+      $.notify(`An error occurred running ${errors.length} triggers(s)`, {
+        className: "error",
+      });
+    }
+  }
+
+  async run(): Promise<void> {
     const $root = this.getTriggerRoot();
 
     if ($root.length === 0) {
       this.logger.warn("No root elements found");
     }
 
-    await Promise.allSettled(
-      $root.toArray().flatMap(async (root, index) => {
-        console.debug(`Finding reader for root ${index + 1}/${$root.length}`);
-        const reader = await this.defaultReader();
-
-        const readerContext = await reader.read(root);
-
-        console.debug(
-          `Running trigger extension for root ${index + 1}/${$root.length}`
-        );
-
-        return this.extensions.map(async (extension) => {
-          try {
-            await this.runExtension(readerContext, extension);
-          } catch (ex) {
-            // eslint-disable-next-line require-await
-            reportError(ex, {
-              extensionPointId: extension.extensionPointId,
-              extensionId: extension.id,
-            });
-            errors.push(ex);
-          }
-        });
-      })
-    );
-
-    if (errors.length) {
-      $.notify(`An error occurred running ${errors.length} triggers(s)`, {
-        className: "error",
+    if (this.trigger === "load") {
+      const promises = await Promise.allSettled(
+        $root.toArray().flatMap((root) => this.runTrigger(root))
+      );
+      TriggerExtensionPoint.notifyErrors(promises);
+    } else if (this.trigger) {
+      $root.on(this.trigger, async (event) => {
+        const promises = await Promise.allSettled([
+          this.runTrigger(event.target),
+        ]);
+        TriggerExtensionPoint.notifyErrors(compact(promises));
       });
     }
   }
@@ -148,6 +166,7 @@ interface TriggerDefinitionOptions {
 interface TriggerDefinition extends ExtensionPointDefinition {
   defaultOptions: TriggerDefinitionOptions;
   rootSelector?: string;
+  trigger?: Trigger;
 }
 
 class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
@@ -169,6 +188,10 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
       permissions: ["tabs", "webNavigation"],
       origins: castArray(isAvailable.matchPatterns),
     };
+  }
+
+  get trigger(): Trigger {
+    return this._definition.trigger ?? "load";
   }
 
   getTriggerRoot(): JQuery<HTMLElement | Document> {
