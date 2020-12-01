@@ -33,7 +33,7 @@ import {
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { Permissions } from "webextension-polyfill-ts";
+import { ContextMenus, Permissions } from "webextension-polyfill-ts";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   ExtensionPointConfig,
@@ -45,16 +45,18 @@ import { ensureContextMenu } from "@/background/contextMenus";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
 
-interface SelectionContextMenuConfig {
+interface ContextMenuConfig {
   title: string;
+  contexts: ContextMenus.ContextType | ContextMenus.ContextType[];
   action: BlockConfig | BlockPipeline;
 }
 
-class SelectionTextReader extends Reader {
+class ContextMenuReader extends Reader {
   constructor() {
     super(
-      "@pixiebrix/context-menu/selection-text",
-      "Selection text from a context menu event"
+      "@pixiebrix/context-menu-data",
+      "Context menu reader",
+      "Data from a context menu event"
     );
   }
 
@@ -71,16 +73,39 @@ class SelectionTextReader extends Reader {
   outputSchema: Schema = {
     type: "object",
     properties: {
+      mediaType: {
+        type: "string",
+        description:
+          "One of 'image', 'video', or 'audio' if the context menu was activated on one of these types of elements.",
+        enum: ["image", "video", "audio"],
+      },
+      linkText: {
+        type: "string",
+        description: "If the element is a link, the text of that link.",
+      },
+      linkUrl: {
+        type: "string",
+        description: "If the element is a link, the URL it points to.",
+        format: "uri",
+      },
+      srcUrl: {
+        type: "string",
+        description: "Will be present for elements with a 'src' URL.",
+        format: "uri",
+      },
       selectionText: {
         type: "string",
-        description: "The text the user has selected",
+        description: "The text for the context selection, if any.",
       },
     },
   };
 }
 
-export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
-  SelectionContextMenuConfig
+/**
+ * See also: https://developer.chrome.com/extensions/contextMenus
+ */
+export abstract class ContextMenuExtensionPoint extends ExtensionPoint<
+  ContextMenuConfig
 > {
   protected constructor(
     id: string,
@@ -97,7 +122,48 @@ export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
     {
       title: {
         type: "string",
-        description: "The caption for the context menu item.",
+        description:
+          "The text to display in the item. When the context is selection, use %s within the string to show the selected text.",
+      },
+      contexts: {
+        description: "The different contexts a menu can appear in.",
+        default: ["page"],
+        oneOf: [
+          {
+            type: "string",
+            enum: [
+              "all",
+              "page",
+              "frame",
+              "selection",
+              "link",
+              "editable",
+              "image",
+              "video",
+              "audio",
+              "page",
+            ],
+          },
+          {
+            type: "array",
+            items: {
+              type: "string",
+              enum: [
+                "all",
+                "page",
+                "frame",
+                "selection",
+                "link",
+                "editable",
+                "image",
+                "video",
+                "audio",
+                "page",
+              ],
+            },
+            minProperties: 1,
+          },
+        ],
       },
       action: {
         oneOf: [
@@ -112,9 +178,7 @@ export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
     ["title", "action"]
   );
 
-  async getBlocks(
-    extension: IExtension<SelectionContextMenuConfig>
-  ): Promise<IBlock[]> {
+  async getBlocks(extension: IExtension<ContextMenuConfig>): Promise<IBlock[]> {
     return blockList(extension.config.action);
   }
 
@@ -125,14 +189,12 @@ export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
   async defaultReader(): Promise<IReader> {
     return new ArrayCompositeReader([
       await this.getBaseReader(),
-      new SelectionTextReader(),
+      new ContextMenuReader(),
     ]);
   }
 
-  async runExtension(
-    extension: IExtension<SelectionContextMenuConfig>
-  ): Promise<void> {
-    const { title, action: actionConfig } = extension.config;
+  async runExtension(extension: IExtension<ContextMenuConfig>): Promise<void> {
+    const { title, contexts, action: actionConfig } = extension.config;
 
     const serviceContext = await makeServiceContext(extension.services);
 
@@ -142,14 +204,15 @@ export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
 
     await ensureContextMenu({
       extensionId: extension.id,
+      contexts: castArray(contexts),
       title,
       documentUrlPatterns: this.permissions.origins,
     });
 
-    registerHandler(extension.id, async ({ selectionText }) => {
+    registerHandler(extension.id, async (clickData) => {
       const ctxt = {
         ...(await (await this.getBaseReader()).read(document)),
-        selectionText,
+        ...clickData,
       };
       await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
         validate: true,
@@ -194,20 +257,21 @@ export abstract class SelectionContextMenuExtensionPoint extends ExtensionPoint<
   }
 }
 
-interface ActionDefaultOptions {
+interface MenuDefaultOptions {
   title?: string;
-  [key: string]: string;
+  contexts?: ContextMenus.ContextType | ContextMenus.ContextType[];
+  [key: string]: string | string[];
 }
 
-interface ActionDefinition extends ExtensionPointDefinition {
-  defaultOptions: ActionDefaultOptions;
+interface MenuDefinition extends ExtensionPointDefinition {
+  defaultOptions: MenuDefaultOptions;
 }
 
-class RemoteSelectionContextMenuExtensionPoint extends SelectionContextMenuExtensionPoint {
-  private readonly _definition: ActionDefinition;
+class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
+  private readonly _definition: MenuDefinition;
   public readonly permissions: Permissions.Permissions;
 
-  constructor(config: ExtensionPointConfig<ActionDefinition>) {
+  constructor(config: ExtensionPointConfig<MenuDefinition>) {
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
     this._definition = config.definition;
@@ -227,21 +291,24 @@ class RemoteSelectionContextMenuExtensionPoint extends SelectionContextMenuExten
 
   public get defaultOptions(): {
     title: string;
-    [key: string]: string;
+    contexts: ContextMenus.ContextType[];
+    [key: string]: string | string[];
   } {
+    const { contexts = ["page"], ...other } = this._definition.defaultOptions;
     return {
       title: "PixieBrix",
-      ...this._definition.defaultOptions,
+      contexts: castArray(contexts),
+      ...other,
     };
   }
 }
 
 export function fromJS(
-  config: ExtensionPointConfig<ActionDefinition>
+  config: ExtensionPointConfig<MenuDefinition>
 ): IExtensionPoint {
   const { type } = config.definition;
-  if (type !== "selectionAction") {
-    throw new Error(`Expected type=selectionAction, got ${type}`);
+  if (type !== "contextMenu") {
+    throw new Error(`Expected type=contextMenu, got ${type}`);
   }
-  return new RemoteSelectionContextMenuExtensionPoint(config);
+  return new RemoteContextMenuExtensionPoint(config);
 }

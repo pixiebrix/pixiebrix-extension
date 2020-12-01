@@ -16,42 +16,62 @@
  */
 
 import { liftBackground } from "@/background/protocol";
-import { browser, Menus, Tabs } from "webextension-polyfill-ts";
+import { browser, ContextMenus, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 
-const registered: { [extensionId: string]: boolean } = {};
+type MenuItemId = number | string;
+
+const registered: { [extensionId: string]: MenuItemId } = {};
 
 interface SelectionMenuOptions {
   extensionId: string;
   title: string;
+  contexts: ContextMenus.ContextType[];
   documentUrlPatterns: string[];
 }
 
 function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
-  if (registered[info.menuItemId]) {
-    handleMenuAction(tab.id, info.menuItemId as string, {
-      selectionText: info.selectionText,
-    }).catch((reason) => {
-      return reportError(`Error processing context menu action: ${reason}`);
-    });
+  if (registered[info.menuItemId] != null) {
+    handleMenuAction(tab.id, info.menuItemId as string, info).catch(
+      (reason) => {
+        return reportError(`Error processing context menu action: ${reason}`);
+      }
+    );
   }
 }
 
 export const ensureContextMenu = liftBackground(
   "ENSURE_CONTEXT_MENU",
-  async ({ extensionId, title, documentUrlPatterns }: SelectionMenuOptions) => {
+  async ({
+    extensionId,
+    contexts,
+    title,
+    documentUrlPatterns,
+  }: SelectionMenuOptions) => {
     console.debug(`Registering context menu ${extensionId}`);
+
+    const createProperties: Menus.CreateCreatePropertiesType = {
+      type: "normal",
+      title,
+      contexts,
+      documentUrlPatterns,
+    };
+
     try {
-      await browser.contextMenus.create({
-        type: "normal",
-        title,
-        contexts: ["selection"],
-        id: extensionId,
-        documentUrlPatterns,
-      });
-      registered[extensionId] = true;
+      // https://developer.chrome.com/extensions/contextMenus#method-create
+      if (registered[extensionId] != null) {
+        await browser.contextMenus.update(
+          registered[extensionId],
+          createProperties
+        );
+      } else {
+        registered[extensionId] = await browser.contextMenus.create({
+          ...createProperties,
+          id: extensionId,
+        });
+      }
     } catch (reason) {
       console.error(`Error registering context menu item: ${reason}`);
       throw reason;

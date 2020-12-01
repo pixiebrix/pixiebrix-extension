@@ -19,7 +19,7 @@ import { Metadata } from "@/core";
 import { ReaderConfig } from "@/blocks/combinators";
 import { Availability } from "@/blocks/types";
 
-type ExtensionPointType = "panel" | "menuItem" | "trigger" | "selectionAction";
+type ExtensionPointType = "panel" | "menuItem" | "trigger" | "contextMenu";
 
 export interface ExtensionPointDefinition {
   type: ExtensionPointType;
