@@ -14,6 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+
+declare global {
+  interface Window {
+    CONTENT_SCRIPT: boolean;
+  }
+}
+
+if (window.CONTENT_SCRIPT) {
+  throw new Error("Content script already loaded for page");
+}
+
+window.CONTENT_SCRIPT = true;
+
 import "@/extensionContext";
 import { reportError } from "@/telemetry/logging";
 

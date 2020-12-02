@@ -27,6 +27,7 @@ import {
 } from "@/blocks";
 import { deserializeError } from "serialize-error";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
+import "@/nativeEditor/insertButton";
 
 let selectedElement: HTMLElement = undefined;
 

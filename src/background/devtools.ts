@@ -29,6 +29,7 @@ import { v4 as uuidv4 } from "uuid";
 import { deserializeError } from "serialize-error";
 import { allowBackgroundSender } from "@/background/protocol";
 import * as contentScriptProtocol from "@/contentScript/devTools";
+import * as nativeEditorProtocol from "@/nativeEditor/insertButton";
 
 interface HandlerEntry {
   handler: (
@@ -284,6 +285,40 @@ export const detectFrameworks = liftBackground(
   "DETECT_FRAMEWORKS",
   (tabId: number) => async () => {
     return await contentScriptProtocol.detectFrameworks(tabId);
+  }
+);
+
+export const insertButton = liftBackground(
+  "INSERT_BUTTON",
+  (tabId: number) => async () => {
+    return await nativeEditorProtocol.insertButton(tabId);
+  }
+);
+
+export const updateButton = liftBackground(
+  "UPDATE_BUTTON",
+  (tabId: number) => async (element: nativeEditorProtocol.InsertResult) => {
+    return await nativeEditorProtocol.updateButton(tabId, element);
+  }
+);
+
+export const removeElement = liftBackground(
+  "REMOVE_ELEMENT",
+  (tabId: number) => async ({ uuid }: { uuid: string }) => {
+    return await nativeEditorProtocol.removeElement(tabId, { uuid });
+  }
+);
+
+export const toggleElement = liftBackground(
+  "TOGGLE_ELEMENT",
+  (tabId: number) => async ({
+    uuid,
+    on = true,
+  }: {
+    uuid: string;
+    on: boolean;
+  }) => {
+    return await nativeEditorProtocol.toggleOverlay(tabId, { uuid, on });
   }
 );
 

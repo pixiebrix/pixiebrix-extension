@@ -17,17 +17,18 @@
 
 import "regenerator-runtime/runtime";
 import "core-js/stable";
-import React, { useState, useMemo } from "react";
-import Locator from "./Locator";
-import { Nav, Row, Col, Container } from "react-bootstrap";
-import { IndexLinkContainer } from "react-router-bootstrap";
+import React, { useMemo, useState } from "react";
+import { Col, Container, Row } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
-import { Route, Switch } from "react-router";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { connectDevtools } from "@/devTools/protocol";
 import { DevToolsContext } from "@/devTools/context";
 import { GridLoader } from "react-spinners";
 import useAsyncEffect from "use-async-effect";
+import Editor from "@/devTools/Editor";
+
+import "@/vendors/theme/app/app.scss";
+import "@/vendors/overrides.scss";
 
 const Panel: React.FunctionComponent = () => {
   const [port, setPort] = useState(null);
@@ -50,28 +51,36 @@ const Panel: React.FunctionComponent = () => {
         <Router>
           <Container fluid>
             <Row>
-              <Col lg="1">
-                <Nav id="sidebar" className="flex-column">
-                  <IndexLinkContainer to="locator">
-                    <Nav.Link href="#/locator">Locate</Nav.Link>
-                  </IndexLinkContainer>
-                  {/*<IndexLinkContainer to="reader">*/}
-                  {/*  <Nav.Link href="#/reader">Read</Nav.Link>*/}
-                  {/*</IndexLinkContainer>*/}
-                </Nav>
-              </Col>
               <Col>
-                <Switch>
-                  <Route exact path="/locator">
-                    <Locator />
-                  </Route>
-                  {/*<Route exact path="/reader">*/}
-                  {/*  <Reader />*/}
-                  {/*</Route>*/}
-                  <Route>
-                    <Locator />
-                  </Route>
-                </Switch>
+                <Editor />
+                {/*<Col lg="1">*/}
+                {/*  <Nav id="sidebar" className="flex-column">*/}
+                {/*    <IndexLinkContainer to="editor">*/}
+                {/*      <Nav.Link href="#/editor">Edit</Nav.Link>*/}
+                {/*    </IndexLinkContainer>*/}
+                {/*    <IndexLinkContainer to="locator">*/}
+                {/*      <Nav.Link href="#/locator">Locate</Nav.Link>*/}
+                {/*    </IndexLinkContainer>*/}
+                {/*    /!*<IndexLinkContainer to="reader">*!/*/}
+                {/*    /!*  <Nav.Link href="#/reader">Read</Nav.Link>*!/*/}
+                {/*    /!*</IndexLinkContainer>*!/*/}
+                {/*  </Nav>*/}
+                {/*</Col>*/}
+                {/*<Col>*/}
+                {/*  <Switch>*/}
+                {/*    <Route exact path="/editor">*/}
+                {/*      <Editor />*/}
+                {/*    </Route>*/}
+                {/*    <Route exact path="/locator">*/}
+                {/*      <Locator />*/}
+                {/*    </Route>*/}
+                {/*    /!*<Route exact path="/reader">*!/*/}
+                {/*    /!*  <Reader />*!/*/}
+                {/*    /!*</Route>*!/*/}
+                {/*    <Route>*/}
+                {/*      <Locator />*/}
+                {/*    </Route>*/}
+                {/*  </Switch>*/}
               </Col>
             </Row>
           </Container>
