@@ -55,6 +55,7 @@ class ImageReader extends Reader {
 
     if (element?.tagName == "IMG") {
       return {
+        src: element.src,
         img: getBase64Image(element as HTMLImageElement),
       };
     } else {
@@ -68,6 +69,9 @@ class ImageReader extends Reader {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
     properties: {
+      src: {
+        type: "string",
+      },
       img: {
         type: "string",
         // https://stackoverflow.com/questions/475074/regex-to-parse-or-validate-base64-data

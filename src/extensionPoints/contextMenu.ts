@@ -51,6 +51,16 @@ interface ContextMenuConfig {
   action: BlockConfig | BlockPipeline;
 }
 
+let clickedElement: HTMLElement = null;
+
+function setActiveElement(event: MouseEvent) {
+  clickedElement = event.target as HTMLElement;
+}
+
+function installMouseHandler() {
+  document.addEventListener("mousedown", setActiveElement, true);
+}
+
 class ContextMenuReader extends Reader {
   constructor() {
     super(
@@ -183,7 +193,11 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<
   }
 
   async install(): Promise<boolean> {
-    return await this.isAvailable();
+    const available = await this.isAvailable();
+    if (available) {
+      installMouseHandler();
+    }
+    return available;
   }
 
   async defaultReader(): Promise<IReader> {
@@ -211,7 +225,9 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<
 
     registerHandler(extension.id, async (clickData) => {
       const ctxt = {
-        ...(await (await this.getBaseReader()).read(document)),
+        ...(await (await this.getBaseReader()).read(
+          clickedElement ?? document
+        )),
         ...clickData,
       };
       await reducePipeline(actionConfig, ctxt, extensionLogger, document, {

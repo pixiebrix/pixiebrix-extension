@@ -89,6 +89,7 @@
     "dotenv-webpack": "^5.0.1",
     "eslint": "^7.14.0",
     "eslint-plugin-react": "^7.21.5",
+    "exifreader": "^3.12.6",
     "fake-indexeddb": "^3.1.2",
     "file-loader": "^6.2.0",
     "formik": "^2.2.3",
