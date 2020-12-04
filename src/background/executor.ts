@@ -21,6 +21,7 @@ import {
   RunBlockAction,
   MESSAGE_RUN_BLOCK as CONTENT_MESSAGE_RUN_BLOCK,
   MESSAGE_CONTENT_SCRIPT_READY,
+  MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
 } from "@/contentScript/executor";
 import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
 import { MESSAGE_PREFIX } from "@/background/protocol";
@@ -33,9 +34,14 @@ const MESSAGE_ACTIVATE_TAB = `${MESSAGE_PREFIX}MESSAGE_ACTIVATE_TAB`;
 const MESSAGE_CLOSE_TAB = `${MESSAGE_PREFIX}MESSAGE_CLOSE_TAB`;
 const MESSAGE_OPEN_TAB = `${MESSAGE_PREFIX}MESSAGE_OPEN_TAB`;
 
+interface Target {
+  tabId: number;
+  frameId: number;
+}
+
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
-const tabReady = new Map<number, boolean>();
+const tabReady: { [tabId: string]: { [frameId: string]: boolean } } = {};
 
 async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -51,17 +57,17 @@ type OpenTabAction = {
 };
 
 async function waitReady(
-  tabId: number,
+  { tabId, frameId }: Target,
   { maxWaitMillis }: WaitOptions = { maxWaitMillis: 10000 }
 ): Promise<boolean> {
   const startTime = Date.now();
-  while (!tabReady.get(tabId)) {
+  while (!tabReady[tabId]?.[frameId]) {
     if (Date.now() - startTime > maxWaitMillis) {
       throw new Error(`Tab ${tabId} was not ready after ${maxWaitMillis}ms`);
     }
     await sleep(50);
   }
-  return tabReady.get(tabId);
+  return true;
 }
 
 function backgroundListener(
@@ -82,13 +88,18 @@ function backgroundListener(
 
       return new Promise((resolve) => {
         browser.tabs
-          .sendMessage(opener, {
-            type: CONTENT_MESSAGE_RUN_BLOCK,
-            payload: {
-              sourceTabId: sender.tab.id,
-              ...request.payload,
+          .sendMessage(
+            opener,
+            {
+              type: CONTENT_MESSAGE_RUN_BLOCK,
+              payload: {
+                sourceTabId: sender.tab.id,
+                ...request.payload,
+              },
             },
-          })
+            // for now, only support top-level frame as opener
+            { frameId: 0 }
+          )
           .then(resolve);
       });
     }
@@ -100,17 +111,22 @@ function backgroundListener(
       }
 
       console.debug(`Waiting for target tab ${target} to be ready`);
-      return waitReady(target).then(() => {
+      // for now, only support top-level frame as target
+      return waitReady({ tabId: target, frameId: 0 }).then(() => {
         console.debug(
           `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
         );
-        return browser.tabs.sendMessage(target, {
-          type: CONTENT_MESSAGE_RUN_BLOCK,
-          payload: {
-            sourceTabId: sender.tab.id,
-            ...request.payload,
+        return browser.tabs.sendMessage(
+          target,
+          {
+            type: CONTENT_MESSAGE_RUN_BLOCK,
+            payload: {
+              sourceTabId: sender.tab.id,
+              ...request.payload,
+            },
           },
-        });
+          { frameId: 0 }
+        );
       });
     }
     case MESSAGE_ACTIVATE_TAB: {
@@ -133,6 +149,7 @@ function backgroundListener(
         browser.tabs
           .create(request.payload as Tabs.CreateCreatePropertiesType)
           .then((tab) => {
+            // FIXME: include frame information here
             tabToTarget.set(sender.tab.id, tab.id);
             tabToOpener.set(tab.id, sender.tab.id);
             resolve();
@@ -141,9 +158,18 @@ function backgroundListener(
       });
     }
     case MESSAGE_CONTENT_SCRIPT_READY: {
-      console.debug(`Marked tab ${sender.tab.id} as ready`);
-      tabReady.set(sender.tab.id, true);
+      console.debug(
+        `Marked tab ${sender.tab.id} (frame: ${sender.frameId}) as ready`,
+        { sender }
+      );
+      if (!tabReady[sender.tab.id]) {
+        tabReady[sender.tab.id] = {};
+      }
+      tabReady[sender.tab.id][sender.frameId] = true;
       return Promise.resolve();
+    }
+    case MESSAGE_CONTENT_SCRIPT_ECHO_SENDER: {
+      return Promise.resolve(sender);
     }
     default: {
       return;

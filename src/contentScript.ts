@@ -14,13 +14,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import "@/extensionContext";
-// import "@/webpack/customLoader";
-import { reportError } from "@/telemetry/logging";
 
-import "@/blocks";
-import "@/contrib";
-import "@/contentScript/contextMenus";
+import { v4 as uuidv4 } from "uuid";
+
+declare global {
+  interface Window {
+    pixiebrix?: string;
+  }
+}
+
+if (!window.pixiebrix) {
+  window.pixiebrix = uuidv4();
+} else {
+  throw Error(`Content script ${window.pixiebrix} already installed`);
+}
+
+import "@/extensionContext";
+import { reportError } from "@/telemetry/logging";
 
 window.addEventListener("error", function (e) {
   // eslint-disable-next-line require-await
@@ -33,26 +43,52 @@ window.addEventListener("unhandledrejection", function (e) {
   reportError(e);
 });
 
+import "@/blocks";
+import "@/contrib";
+import "@/contentScript/contextMenus";
+
 // Import for the side effect of registering js defined blocks
 import { handleNavigate } from "@/contentScript/lifecycle";
 import { refresh as refreshServices } from "@/background/locator";
 import "@/contentScript/externalProtocol";
-import { notifyReady } from "@/contentScript/executor";
+import { notifyReady, whoAmI } from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "notifyjs-browser";
 import "jquery.initialize";
+import { updateTabInfo } from "@/contentScript/context";
 
-// Reload services on background page for each new page. This is inefficient right now, but will
-// avoid confusion when service configurations are updated remotely
-refreshServices().catch((reason) => {
-  console.warn("Error refreshing service configurations", reason);
-});
+const contextPromise = whoAmI()
+  .then((sender) => {
+    updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
+    console.debug(
+      `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}`
+    );
+  })
+  .catch((reason) => {
+    console.warn("Error getting tabId/frameId", reason);
+    throw reason;
+  });
 
-handleNavigate().catch((reason) => {
-  console.warn("Error initializing content script", reason);
-});
-
-notifyReady().catch((reason) => {
-  console.warn("Error pinging the background script", reason);
-});
+contextPromise
+  .then(() => {
+    // Reload services on background page for each new page. This is inefficient right now, but will
+    // avoid confusion if service configurations are updated remotely
+    return refreshServices().catch((reason) => {
+      console.warn("Error refreshing service configurations", reason);
+      throw reason;
+    });
+  })
+  .then(() => {
+    return handleNavigate().catch((reason) => {
+      console.warn("Error initializing content script", reason);
+      throw reason;
+    });
+  })
+  .then(() => {
+    // Let the background script know we're ready to execute remote actions
+    return notifyReady().catch((reason) => {
+      console.warn("Error pinging the background script", reason);
+      throw reason;
+    });
+  });

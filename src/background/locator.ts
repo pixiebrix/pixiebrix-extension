@@ -30,10 +30,12 @@ export const locate = liftBackground(
   (serviceId: string, id: string | null) => locator.locate(serviceId, id)
 );
 
-export const refresh = liftBackground(
+export const refresh: () => Promise<unknown> = liftBackground(
   "REFRESH_SERVICES",
   () => locator.refresh(),
-  { asyncResponse: false }
+  {
+    asyncResponse: false,
+  }
 );
 
 if (isBackgroundPage()) {

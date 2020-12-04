@@ -26,23 +26,43 @@ export function isHost(hostname: string): boolean {
   );
 }
 
+function getAncestors(element: Node): Node[] {
+  const ancestors = [element];
+  let currentElement: Node = element;
+  while (currentElement != document) {
+    ancestors.push(currentElement);
+    currentElement = currentElement.parentNode;
+  }
+  return ancestors;
+}
+
 export function onNodeRemoved(element: Node, callback: () => void): void {
-  // https://stackoverflow.com/a/50397148/
-  const parent = element.parentNode;
-  const parentObserver = new MutationObserver((mutations, observer) => {
-    for (const mutation of mutations) {
-      // @ts-ignore: thought this would be fixed by changing the target to es6?
-      // https://stackoverflow.com/questions/51723962/typescript-nodelistofelement-is-not-an-array-type-or-a-string-type
-      for (const removedNode of mutation.removedNodes) {
-        if (element === removedNode) {
-          observer.disconnect();
-          callback();
-          break;
+  const ancestors = getAncestors(element);
+
+  const nodes = new WeakSet<Node>(ancestors);
+  const observers = new Set<MutationObserver>();
+
+  // Observe the whole path to the node. A node is removed if any of its ancestors are removed. Observe individual
+  // nodes instead of the subtree on the document for efficiency on wide trees
+  for (const ancestor of ancestors) {
+    // https://stackoverflow.com/a/50397148/
+    const removalObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        // @ts-ignore: thought this would be fixed by changing the target to es6?
+        // https://stackoverflow.com/questions/51723962/typescript-nodelistofelement-is-not-an-array-type-or-a-string-type
+        for (const removedNode of mutation.removedNodes) {
+          if (nodes.has(removedNode)) {
+            for (const observer of observers) {
+              observer.disconnect();
+            }
+            callback();
+            break;
+          }
         }
       }
-    }
-  });
-  parentObserver.observe(parent, { childList: true });
+    });
+    removalObserver.observe(ancestor.parentNode, { childList: true });
+  }
 }
 
 async function _initialize(

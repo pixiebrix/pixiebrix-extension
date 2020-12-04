@@ -195,10 +195,23 @@ export function liftContentScript<R extends SerializableResponse>(
         payload: args,
       });
     } catch (err) {
-      console.debug(`Error sending content script action ${type}`, {
-        tabId,
-        err,
-      });
+      if (
+        isNotification(options) &&
+        err?.message.includes("Receiving end does not exist")
+      ) {
+        // Ignore the content script not being loaded
+        return;
+      }
+
+      console.debug(
+        `Error sending content script ${
+          isNotification(options) ? "notification" : "action"
+        } ${type}`,
+        {
+          tabId,
+          err,
+        }
+      );
 
       if (isNotification(options)) {
         return;

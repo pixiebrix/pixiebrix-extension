@@ -121,11 +121,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     return blockList(extension.config.action);
   }
 
-  async install(): Promise<boolean> {
-    if (!(await this.isAvailable())) {
-      return false;
-    }
-
+  private async installMenus(): Promise<boolean> {
     const selector = this.getContainerSelector();
 
     console.debug(`Awaiting menu container for ${this.id}: ${selector}`);
@@ -136,16 +132,27 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       .map((index, element) => {
         const uuid = uuidv4();
         this.menus.set(uuid, element);
-        return acquireElement($(element), this.id, () => {
+        return acquireElement($(element), this.id, async () => {
           console.debug(
             `Menu ${uuid} removed from DOM for ${this.id}: ${selector}`
           );
           this.menus.delete(uuid);
+
+          // Re-install the menus (will wait for the menu selector to re-appear)
+          await this.installMenus();
+          await this.run();
         });
       })
       .get();
 
     return acquired.some(identity);
+  }
+
+  async install(): Promise<boolean> {
+    if (!(await this.isAvailable())) {
+      return false;
+    }
+    return this.installMenus();
   }
 
   private async runExtension(
@@ -156,7 +163,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     const extensionLogger = this.logger.childLogger({
       extensionId: extension.id,
     });
-    console.debug(`Running extension ${extension.id}`);
+    console.debug(`Running menuItem extension ${extension.id}`);
 
     const $menu = $(menu);
 

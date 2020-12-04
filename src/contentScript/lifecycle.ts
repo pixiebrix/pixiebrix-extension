@@ -22,7 +22,8 @@ import {
   liftContentScript,
   notifyContentScripts,
 } from "@/contentScript/backgroundProtocol";
-import { updateNavigationId } from "@/contentScript/context";
+import * as context from "@/contentScript/context";
+import { frameId } from "@/contentScript/context";
 
 let _scriptPromise: Promise<void>;
 let _extensionPoints: IExtensionPoint[] = undefined;
@@ -120,10 +121,12 @@ function getNavSequence() {
  * @returns {Promise<void>}
  */
 export async function handleNavigate(openerTabId?: number): Promise<void> {
-  console.debug(`Handling navigation to ${location.href}`);
+  console.debug(
+    `Handling navigation to ${location.href} (tabId=${context.tabId}, frameId=${frameId})`
+  );
   await installScriptOnce();
 
-  updateNavigationId();
+  context.updateNavigationId();
 
   const extensionPoints = await loadExtensionsOnce();
 

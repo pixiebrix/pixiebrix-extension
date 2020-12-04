@@ -28,6 +28,7 @@ import { isContentScript } from "webext-detect-page";
 
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
 export const MESSAGE_CONTENT_SCRIPT_READY = `${MESSAGE_PREFIX}SCRIPT_READY`;
+export const MESSAGE_CONTENT_SCRIPT_ECHO_SENDER = `${MESSAGE_PREFIX}ECHO_SENDER`;
 
 export interface RemoteBlockOptions {
   ctxt: unknown;
@@ -44,6 +45,7 @@ export interface RunBlockAction {
   };
 }
 
+let sender: Runtime.MessageSender = null;
 const childTabs = new Set<number>();
 
 function runBlockAction(
@@ -79,8 +81,15 @@ export const linkChildTab = liftContentScript(
   { asyncResponse: false }
 );
 
-if (isContentScript()) {
-  browser.runtime.onMessage.addListener(runBlockAction);
+export async function whoAmI(): Promise<Runtime.MessageSender> {
+  if (sender) {
+    return sender;
+  }
+  sender = await browser.runtime.sendMessage({
+    type: MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
+    payload: {},
+  });
+  return sender;
 }
 
 export async function notifyReady(): Promise<void> {
@@ -88,4 +97,8 @@ export async function notifyReady(): Promise<void> {
     type: MESSAGE_CONTENT_SCRIPT_READY,
     payload: {},
   });
+}
+
+if (isContentScript()) {
+  browser.runtime.onMessage.addListener(runBlockAction);
 }
