@@ -21,6 +21,8 @@ import "@/extensionContext";
 import { initRollbar } from "@/telemetry/rollbar";
 
 import "webpack-target-webextension/lib/background";
+
+import "@/polyfills/registerPolyfill";
 import "webext-dynamic-content-scripts";
 
 // init first so we get error reporting on the other initialization

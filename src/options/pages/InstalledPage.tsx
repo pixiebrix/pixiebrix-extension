@@ -47,16 +47,13 @@ import {
 import { IExtension } from "@/core";
 import "./InstalledPage.scss";
 import Registry, { RegistryItem } from "@/baseRegistry";
+import { uninstallContextMenu } from "@/background/contextMenus";
 
 const { removeExtension } = optionsSlice.actions;
 
-type RemoveAction = ({
-  extensionId,
-  extensionPointId,
-}: {
-  extensionId: string;
-  extensionPointId: string;
-}) => void;
+type ExtensionIdentifier = { extensionId: string; extensionPointId: string };
+
+type RemoveAction = (identifier: ExtensionIdentifier) => void;
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
@@ -269,5 +266,11 @@ export default connect(
   (state: { options: OptionsState }) => ({
     extensions: selectExtensions(state),
   }),
-  { onRemove: removeExtension }
+  (dispatch) => ({
+    onRemove: (identifier: ExtensionIdentifier) => {
+      uninstallContextMenu(identifier).then(() => {
+        dispatch(removeExtension(identifier));
+      });
+    },
+  })
 )(InstalledPage);

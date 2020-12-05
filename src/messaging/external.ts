@@ -24,24 +24,29 @@ import { detect } from "detect-browser";
 import { liftExternal } from "@/contentScript/externalProtocol";
 
 import { browser } from "webextension-polyfill-ts";
+import { SerializableResponse } from "@/messaging/protocol";
 
 const detectedBrowser = detect();
 
-function lift<R>(
+function lift<R extends SerializableResponse = SerializableResponse>(
   type: string,
   method: (...args: unknown[]) => Promise<R>
 ): (...args: unknown[]) => Promise<R> {
-  const backgroundMethod = liftBackground(type, method);
-  const contentScriptMethod = liftExternal(type, method);
+  const backgroundMethod: (...args: unknown[]) => Promise<R> = liftBackground(
+    type,
+    method
+  );
+  const contentScriptMethod: (...args: unknown[]) => Promise<R> = liftExternal(
+    type,
+    method
+  );
 
   return async (...args: unknown[]) => {
     switch (detectedBrowser.name) {
       case "chrome": {
-        // @ts-ignore: liftBackground is being inferred as signature with no arguments
         return await backgroundMethod(...args);
       }
       default: {
-        // @ts-ignore: liftExternal is being inferred as signature with no arguments
         return await contentScriptMethod(...args);
       }
     }

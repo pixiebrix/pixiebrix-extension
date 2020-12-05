@@ -214,7 +214,7 @@ export async function callBackground(
  */
 export function liftBackground<R extends SerializableResponse>(
   type: string,
-  method: () => R,
+  method: () => R | Promise<R>,
   options?: HandlerOptions
 ): () => Promise<R>;
 export function liftBackground<T, R extends SerializableResponse>(
@@ -224,22 +224,22 @@ export function liftBackground<T, R extends SerializableResponse>(
 ): (a0: T) => Promise<R>;
 export function liftBackground<T0, T1, R extends SerializableResponse>(
   type: string,
-  method: (a0: T0, a1: T1) => R,
+  method: (a0: T0, a1: T1) => R | Promise<R>,
   options?: HandlerOptions
 ): (a0: T0, a1: T1) => Promise<R>;
 export function liftBackground<T0, T1, T2, R extends SerializableResponse>(
   type: string,
-  method: (a0: T0, a1: T1, a2: T2) => R,
+  method: (a0: T0, a1: T1, a2: T2) => R | Promise<R>,
   options?: HandlerOptions
 ): (a0: T0, a1: T1, a2: T2) => Promise<R>;
 export function liftBackground<T0, T1, T2, T3, R extends SerializableResponse>(
   type: string,
-  method: (a0: T0, a1: T1, a2: T2, a3: T3) => R,
+  method: (a0: T0, a1: T1, a2: T2, a3: T3) => R | Promise<R>,
   options?: HandlerOptions
 ): (a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>;
 export function liftBackground<R extends SerializableResponse>(
   type: string,
-  method: (...args: unknown[]) => R,
+  method: (...args: unknown[]) => R | Promise<R>,
   options?: HandlerOptions
 ): (...args: unknown[]) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;

@@ -34,6 +34,7 @@ import PermissionsBody from "./PermissionsBody";
 import ServicesBody from "./ServicesBody";
 import { WizardValues } from "./wizard";
 import { checkPermissions, collectPermissions } from "@/permissions";
+import { uninstallContextMenu } from "@/background/contextMenus";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -81,26 +82,30 @@ export function useReinstall(): (recipe: RecipeDefinition) => Promise<void> {
         (x) => x._recipeId === recipe.metadata.id
       );
 
-      if (recipeExtensions.length === 0) {
+      if (!recipeExtensions.length) {
         throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
       }
 
       const currentAuths = selectAuths(recipeExtensions);
-      await dispatch(
-        installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
-          services: currentAuths,
-        })
-      );
-      for (const extension of extensions) {
-        await dispatch(
+
+      // Uninstall first to avoid duplicates
+      for (const extension of recipeExtensions) {
+        await uninstallContextMenu({ extensionId: extension.id });
+        dispatch(
           removeExtension({
             extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
           })
         );
       }
+
+      dispatch(
+        installRecipe({
+          recipe,
+          extensionPoints: recipe.extensionPoints,
+          services: currentAuths,
+        })
+      );
     },
     [dispatch, extensions]
   );
