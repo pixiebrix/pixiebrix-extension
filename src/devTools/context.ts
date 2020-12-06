@@ -15,15 +15,87 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { Runtime } from "webextension-polyfill-ts";
+import { FrameworkVersions } from "@/messaging/constants";
+import { connectDevtools } from "@/devTools/protocol";
+import {
+  detectFrameworks,
+  getTabInfo,
+  injectScript,
+} from "@/background/devtools";
+import useAsyncEffect from "use-async-effect";
 
 interface Context {
+  /**
+   * The background page port.
+   */
   port: Runtime.Port | null;
+
+  /**
+   * True if the devtools have permission to access the current tab
+   */
+  hasTabPermissions: boolean;
+
+  /**
+   * Frameworks detected on the tab.
+   */
+  frameworks: FrameworkVersions;
+
+  /**
+   * Error message if an error occurred when connecting to the page.
+   */
+  error?: string;
 }
 
 const initialValue: Context = {
   port: null,
+  hasTabPermissions: false,
+  frameworks: {},
+  error: null,
 };
 
 export const DevToolsContext = React.createContext(initialValue);
+
+export function useMakeContext(): [Context, () => Promise<void>] {
+  const [context, setContext] = useState(initialValue);
+
+  const connect = useCallback(async () => {
+    const backgroundPort = await connectDevtools();
+    const { hasPermissions } = await getTabInfo(backgroundPort);
+
+    if (!hasPermissions) {
+      setContext({
+        port: backgroundPort,
+        frameworks: {},
+        hasTabPermissions: false,
+      });
+      return;
+    }
+
+    await injectScript(backgroundPort, { file: "contentScript.js" });
+    try {
+      const frameworks = await detectFrameworks(backgroundPort);
+      setContext({ port: backgroundPort, frameworks, hasTabPermissions: true });
+    } catch (reason) {
+      if (reason.message?.includes("Receiving end does not exist")) {
+        setContext({
+          port: backgroundPort,
+          frameworks: {},
+          hasTabPermissions: false,
+        });
+      } else {
+        setContext({
+          port: backgroundPort,
+          frameworks: {},
+          hasTabPermissions: false,
+          error: reason,
+        });
+      }
+    }
+  }, [setContext]);
+
+  useAsyncEffect(async () => await connect(), []);
+
+  return [context, connect];
+}

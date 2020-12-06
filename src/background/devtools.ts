@@ -30,6 +30,8 @@ import { deserializeError } from "serialize-error";
 import { allowBackgroundSender } from "@/background/protocol";
 import * as contentScriptProtocol from "@/contentScript/devTools";
 import * as nativeEditorProtocol from "@/nativeEditor/insertButton";
+import { FrameworkVersions } from "@/messaging/constants";
+import { ReaderTypeConfig } from "@/blocks/readers/factory";
 
 interface HandlerEntry {
   handler: (
@@ -265,13 +267,42 @@ export const connect = liftBackground(
   }
 );
 
+export const getTabInfo = liftBackground(
+  "CURRENT_URL",
+  (tabId: number) => async () => {
+    // can't use browser.permissions.contains for permissions because it doesn't seem to work with activeTab
+    let hasPermissions = false;
+    try {
+      await browser.tabs.executeScript({
+        code: "true;",
+        runAt: "document_start",
+      });
+      hasPermissions = true;
+    } catch (reason) {
+      // no permissions
+    }
+    const { url } = await browser.tabs.get(tabId);
+    return {
+      url,
+      hasPermissions,
+    };
+  }
+);
+
 export const injectScript = liftBackground(
   "INJECT_SCRIPT",
   (tabId: number) => async ({ file }: { file: string }) => {
-    console.debug(`Injecting devtools contentScript for tab ${tabId}: ${file}`);
-    await browser.tabs.executeScript(tabId, { file });
-  },
-  { asyncResponse: false }
+    if (!(await contentScriptProtocol.isInstalled(tabId))) {
+      console.debug(
+        `Injecting devtools contentScript for tab ${tabId}: ${file}`
+      );
+      await browser.tabs.executeScript(tabId, { file });
+      return true;
+    } else {
+      console.debug(`contentScript already installed`);
+      return false;
+    }
+  }
 );
 
 export const readSelectedElement = liftBackground(
@@ -281,10 +312,14 @@ export const readSelectedElement = liftBackground(
   }
 );
 
-export const detectFrameworks = liftBackground(
+export const detectFrameworks: (
+  port: Runtime.Port
+) => Promise<FrameworkVersions> = liftBackground(
   "DETECT_FRAMEWORKS",
   (tabId: number) => async () => {
-    return await contentScriptProtocol.detectFrameworks(tabId);
+    return (await contentScriptProtocol.detectFrameworks(
+      tabId
+    )) as FrameworkVersions;
   }
 );
 
@@ -329,6 +364,22 @@ export const searchWindow: (
   "SEARCH_WINDOW",
   (tabId: number) => async (query: string) => {
     return await contentScriptProtocol.searchWindow(tabId, query);
+  }
+);
+
+export const runReader = liftBackground(
+  "RUN_READER",
+  (tabId: number) => async ({
+    config,
+    rootSelector,
+  }: {
+    config: ReaderTypeConfig;
+    rootSelector?: string;
+  }) => {
+    return await contentScriptProtocol.runReader(tabId, {
+      config,
+      rootSelector,
+    });
   }
 );
 

@@ -21,8 +21,8 @@
 import "regenerator-runtime/runtime";
 import "core-js/stable";
 import { clone, getPropByPath } from "./utils";
-import isEmpty from "lodash/isEmpty";
-import mapValues from "lodash/mapValues";
+import jQuery from "jquery";
+import { isEmpty, mapValues, pickBy, identity, fromPairs } from "lodash";
 import {
   CONNECT_EXTENSION,
   DETECT_FRAMEWORK_VERSIONS,
@@ -46,9 +46,7 @@ import {
   findReactComponent,
   readReactProps,
 } from "@/frameworks/react";
-import fromPairs from "lodash/fromPairs";
 import { globalSearch } from "@/vendors/globalSearch";
-import { pickBy, identity } from "lodash";
 import { findRelatedComponent as findVueComponent } from "@/frameworks/vue";
 import { cleanValue } from "./utils";
 
@@ -79,6 +77,16 @@ declare global {
       version: string;
     };
   }
+}
+
+function selectSingleElement(selector: string): HTMLElement {
+  const $elt = jQuery(document).find(selector);
+  if (!$elt.length) {
+    throw new Error(`No elements found for selector: ${selector}`);
+  } else if ($elt.length > 1) {
+    throw new Error(`Multiple elements found for selector: ${selector}`);
+  }
+  return $elt.get(0);
 }
 
 window.addEventListener("message", function (event) {
@@ -235,11 +243,7 @@ attachListener(
     let elapsed = 0;
 
     do {
-      const element = document.querySelector(selector);
-
-      if (!element) {
-        throw new Error(`Could not find element for ${selector}`);
-      }
+      const element = selectSingleElement(selector);
 
       try {
         const component = findReactComponent(element, traverseUp);
@@ -270,11 +274,9 @@ attachListener(
     selector: string;
     attrs: string[];
   }) => {
-    const element = document.querySelector(selector);
+    const element = selectSingleElement(selector);
 
-    if (!element) {
-      throw new Error(`Could not find element for ${selector}`);
-    } else if (element.id == null) {
+    if (element.id == null) {
       throw new Error(`Element does not have an id`);
     }
 
@@ -307,7 +309,7 @@ attachListener(
 );
 
 attachListener(READ_EMBER_COMPONENT, ({ selector, pathSpec }) => {
-  const element = document.querySelector(selector);
+  const element = selectSingleElement(selector);
   const component = getEmberComponentById(element.id);
 
   if (!component) {
@@ -321,7 +323,7 @@ attachListener(READ_EMBER_COMPONENT, ({ selector, pathSpec }) => {
 });
 
 attachListener(READ_ANGULAR_SCOPE, ({ selector, pathSpec }) => {
-  const element = document.querySelector(selector);
+  const element = selectSingleElement(selector);
 
   if (!window.angular) {
     throw new Error("Angular not found");
@@ -341,7 +343,7 @@ attachListener(READ_ANGULAR_SCOPE, ({ selector, pathSpec }) => {
 });
 
 attachListener(READ_VUE_VALUES, ({ selector, pathSpec }) => {
-  const element = document.querySelector(selector);
+  const element = selectSingleElement(selector);
   const component = findVueComponent(element);
 
   if (!component) {
@@ -354,7 +356,7 @@ attachListener(READ_VUE_VALUES, ({ selector, pathSpec }) => {
 });
 
 attachListener(SET_VUE_VALUES, ({ selector, valueMap }) => {
-  const element = document.querySelector(selector);
+  const element = selectSingleElement(selector);
   const component = findVueComponent(element);
   for (const [key, value] of Object.entries(valueMap)) {
     (component as any)[key] = value;

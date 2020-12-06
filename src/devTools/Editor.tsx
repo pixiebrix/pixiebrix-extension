@@ -14,245 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React, {
-  useCallback,
-  useContext,
-  useMemo,
-  useReducer,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useMemo, useReducer } from "react";
 import { DevToolsContext } from "@/devTools/context";
-import {
-  Button,
-  Container,
-  Row,
-  Col,
-  ListGroup,
-  Badge,
-  Form,
-  Tab,
-  Nav,
-} from "react-bootstrap";
+import { Badge, Button, Col, Container, ListGroup, Row } from "react-bootstrap";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as nativeOperations from "@/background/devtools";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { noop, uniq, compact } from "lodash";
+import { noop } from "lodash";
+import { Formik } from "formik";
+import ElementWizard from "@/devTools/editor/ElementWizard";
+
 import {
-  Field,
-  FieldInputProps,
-  Formik,
-  useField,
-  useFormikContext,
-} from "formik";
-import useAsyncEffect from "use-async-effect";
-import { useDebounce } from "use-debounce";
-import Creatable from "react-select/creatable";
-import { OptionsType } from "react-select";
-
-interface ButtonState {
-  readonly uuid: string;
-  containerSelector: string;
-  containerSelectorOptions: string[];
-  template: string;
-  caption: string;
-  position: "append" | "prepend";
-}
-
-interface EditorState {
-  inserting: boolean;
-  activeElement: string | null;
-  readonly elements: ButtonState[];
-}
-
-const initialState: EditorState = {
-  activeElement: null,
-  elements: [],
-  inserting: false,
-};
-
-const editorSlice = createSlice({
-  name: "editor",
+  actions,
+  editorSlice,
   initialState,
-  reducers: {
-    toggleInsert: (state, action: PayloadAction<boolean>) => {
-      state.inserting = action.payload;
-    },
-    addElement: (state, action: PayloadAction<ButtonState>) => {
-      const element = action.payload;
-      state.activeElement = element.uuid;
-      state.elements.push(element);
-    },
-    selectElement: (state, action: PayloadAction<string>) => {
-      state.activeElement = action.payload;
-    },
-    removeElement: (state, action: PayloadAction<string>) => {
-      const uuid = action.payload;
-      if (state.activeElement === uuid) {
-        state.activeElement = null;
-      }
-      state.elements.splice(
-        state.elements.findIndex((x) => x.uuid === uuid),
-        1
-      );
-    },
-  },
-});
-
-const actions = editorSlice.actions;
-
-const SelectorSelector: React.FunctionComponent<{
-  name: string;
-  containerSelectorOptions: string[];
-}> = ({ name, containerSelectorOptions }) => {
-  const [field, , helpers] = useField(name);
-
-  const [created, setCreated] = useState([]);
-
-  const options: OptionsType<{ value: string }> = useMemo(() => {
-    const all = uniq(
-      compact([...containerSelectorOptions, ...created, field.value])
-    );
-    return all.map((x) => ({ value: x, label: x }));
-  }, [created, containerSelectorOptions]);
-
-  return (
-    <Creatable
-      options={options}
-      onCreateOption={(inputValue) => {
-        setCreated([...created, inputValue]);
-        helpers.setValue(inputValue);
-      }}
-      value={options.find((x) => x.value === field.value)}
-      onChange={(option) => helpers.setValue((option as any).value)}
-    />
-  );
-};
-
-const FoundationTab: React.FunctionComponent<{
-  selectedElement: ButtonState;
-  dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ selectedElement, dispatch }) => {
-  const { port } = useContext(DevToolsContext);
-  const { isSubmitting, isValid } = useFormikContext();
-
-  return (
-    <Tab.Pane key="foundation" eventKey="foundation">
-      <Form.Group as={Row} controlId="formContainerSelector">
-        <Form.Label column sm={2}>
-          Container Selector
-        </Form.Label>
-        <Col sm={10}>
-          <SelectorSelector
-            name="containerSelector"
-            containerSelectorOptions={selectedElement.containerSelectorOptions}
-          />
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="formPosition">
-        <Form.Label column sm={2}>
-          Position
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="position">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="select" {...field}>
-                <option value="append">Append</option>
-                <option value="prepend">Prepend</option>
-              </Form.Control>
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Caption
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="caption">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Template
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="template">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="textarea" rows={4} {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-
-      <Form.Group as={Row}>
-        <Col>
-          <Button
-            variant="danger"
-            className="mr-2"
-            onClick={async () => {
-              await nativeOperations.removeElement(port, {
-                uuid: selectedElement.uuid,
-              });
-              dispatch(actions.removeElement(selectedElement.uuid));
-            }}
-          >
-            Remove
-          </Button>
-
-          <Button
-            className="mx-2"
-            disabled={isSubmitting || !isValid}
-            type="submit"
-            variant="primary"
-          >
-            Save Button
-          </Button>
-        </Col>
-      </Form.Group>
-    </Tab.Pane>
-  );
-};
-
-const ElementForm: React.FunctionComponent<{
-  selectedElement: ButtonState;
-  dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ selectedElement, dispatch }) => {
-  const { port } = useContext(DevToolsContext);
-  const [step, setStep] = useState("foundation");
-
-  const { submitForm } = useFormikContext();
-  const [debounced] = useDebounce(selectedElement, 100);
-
-  useAsyncEffect(async () => {
-    await nativeOperations.updateButton(port, debounced);
-  }, [debounced]);
-
-  return (
-    <Form autoComplete="off" noValidate onSubmit={submitForm}>
-      <Tab.Container activeKey={step}>
-        <Nav
-          variant="pills"
-          activeKey={step}
-          onSelect={(step: string) => setStep(step)}
-        >
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="foundation">1. Foundation</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="reader">2. Reader</Nav.Link>
-          </Nav.Item>
-        </Nav>
-        <FoundationTab selectedElement={selectedElement} dispatch={dispatch} />
-      </Tab.Container>
-    </Form>
-  );
-};
+} from "@/devTools/editor/editorSlice";
 
 const Editor: React.FunctionComponent = () => {
   const [{ inserting, elements, activeElement }, dispatch] = useReducer(
@@ -272,7 +48,15 @@ const Editor: React.FunctionComponent = () => {
     dispatch(actions.toggleInsert(true));
     try {
       const button = await nativeOperations.insertButton(port);
-      dispatch(actions.addElement(button));
+      dispatch(
+        actions.addElement({
+          ...button,
+          reader: {
+            type: "react",
+            selector: button.containerSelector,
+          },
+        })
+      );
     } finally {
       dispatch(actions.toggleInsert(false));
     }
@@ -327,10 +111,7 @@ const Editor: React.FunctionComponent = () => {
                     onSubmit={noop}
                   >
                     {({ values }) => (
-                      <ElementForm
-                        dispatch={dispatch}
-                        selectedElement={values}
-                      />
+                      <ElementWizard dispatch={dispatch} element={values} />
                     )}
                   </Formik>
                 </Col>

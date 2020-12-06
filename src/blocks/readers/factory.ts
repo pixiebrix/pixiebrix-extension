@@ -18,19 +18,21 @@
 import { Reader } from "@/types";
 import { checkAvailable } from "@/blocks/available";
 import { ValidationError } from "@/errors";
-import { Metadata, IReader, Schema, ReaderOutput } from "@/core";
+import { Metadata, IReader, Schema, ReaderOutput, ReaderRoot } from "@/core";
 import { Availability } from "@/blocks/types";
 import { Validator } from "@cfworker/json-schema";
 import { dereference } from "@/validators/generic";
 import readerSchema from "@schemas/reader.json";
 import { Schema as ValidatorSchema } from "@cfworker/json-schema/dist/types";
 
+export interface ReaderTypeConfig {
+  type: string;
+  [key: string]: unknown;
+}
+
 interface ReaderDefinition {
   isAvailable: Availability;
-  reader: {
-    type: string;
-    [key: string]: unknown;
-  };
+  reader: ReaderTypeConfig;
 }
 
 interface ReaderConfig<TDefinition extends ReaderDefinition> {
@@ -53,10 +55,7 @@ function validateReaderDefinition(
   }
 }
 
-type Read = (
-  config: any,
-  root: HTMLElement | Document
-) => Promise<ReaderOutput>;
+type Read = (config: any, root: ReaderRoot) => Promise<ReaderOutput>;
 
 const _readerFactories: {
   [type: string]: Read;
@@ -64,6 +63,16 @@ const _readerFactories: {
 
 export function registerFactory(key: string, read: Read): void {
   _readerFactories[key] = read;
+}
+
+export function makeRead(
+  config: ReaderTypeConfig
+): (root: ReaderRoot) => Promise<ReaderOutput> {
+  const doRead = _readerFactories[config.type];
+  if (!doRead) {
+    throw new Error(`Reader type ${config.type} not implemented`);
+  }
+  return (root: ReaderRoot) => doRead(config, root);
 }
 
 export function readerFactory(component: unknown): IReader {

@@ -28,6 +28,7 @@ import {
 import { deserializeError } from "serialize-error";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import "@/nativeEditor/insertButton";
+import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 
 let selectedElement: HTMLElement = undefined;
 
@@ -48,6 +49,21 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
   }
 }
 
+export const _ping = liftContentScript("PING", async () => {
+  return true;
+});
+
+export async function isInstalled(tabId: number): Promise<boolean> {
+  try {
+    return await _ping(tabId);
+  } catch (reason) {
+    if (reason.message?.includes("Receiving end does not exist")) {
+      return false;
+    }
+    throw reason;
+  }
+}
+
 export const detectFrameworks = liftContentScript(
   "DETECT_FRAMEWORKS",
   async () => {
@@ -62,6 +78,20 @@ export const searchWindow: (
   "SEARCH_WINDOW",
   async (query: string) => {
     return await withSearchWindow({ query });
+  }
+);
+
+export const runReader = liftContentScript(
+  "RUN_READER",
+  async ({
+    config,
+    rootSelector,
+  }: {
+    config: ReaderTypeConfig;
+    rootSelector?: string;
+  }) => {
+    const root = rootSelector ? $(rootSelector).get(0) : document;
+    return await makeRead(config)(root);
   }
 );
 

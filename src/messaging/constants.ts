@@ -36,3 +36,15 @@ export const DEV_WATCH_READER = "@@pixiebrix/DEV_WATCH_READER";
 export const DEV_WATCH_READER_READ = "@@pixiebrix/DEV_WATCH_READER_READ";
 export const DEV_WATCH_READER_NOT_AVAILABLE =
   "@@pixiebrix/DEV_WATCH_READER_NOT_AVAILABLE";
+
+export interface FrameworkVersions {
+  readonly react?: string;
+  readonly emberjs?: string;
+  readonly angular?: string;
+  readonly jQuery?: string;
+  // https://github.com/Maluen/Backbone-Debugger#backbone-detection
+  readonly backbone?: string;
+  readonly vuejs?: string;
+  // https://stackoverflow.com/a/44318447/402560
+  readonly redux?: string;
+}

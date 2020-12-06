@@ -31,9 +31,7 @@
     "tabs",
     "webNavigation",
     "contextMenus",
-    "activeTab",
-    "https://*/",
-    "http://*/"
+    "activeTab"
   ],
   "devtools_page": "devtools.html",
   "externally_connectable":  {

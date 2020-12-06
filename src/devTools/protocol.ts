@@ -32,13 +32,12 @@ export async function connectDevtools(): Promise<Runtime.Port> {
     console.error("Cannot connect to background page", {
       error: browser.runtime.lastError,
     });
-    return;
-  } else if (!port) {
-    console.error("Could not get connection port to background page");
-    return;
+    throw new Error(browser.runtime.lastError.message);
   }
 
-  console.debug("Injecting contentScript for devtools");
+  if (!port) {
+    throw new Error("Could not get connection port to background page");
+  }
 
   await connect(port);
 

@@ -17,32 +17,41 @@
 
 import "regenerator-runtime/runtime";
 import "core-js/stable";
-import React, { useMemo, useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
+import React, { useCallback } from "react";
+import { Button, Col, Container, Row } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { connectDevtools } from "@/devTools/protocol";
-import { DevToolsContext } from "@/devTools/context";
+import { DevToolsContext, useMakeContext } from "@/devTools/context";
 import { GridLoader } from "react-spinners";
-import useAsyncEffect from "use-async-effect";
 import Editor from "@/devTools/Editor";
-
 import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
+import { browser } from "webextension-polyfill-ts";
+import { getTabInfo } from "@/background/devtools";
 
 const Panel: React.FunctionComponent = () => {
-  const [port, setPort] = useState(null);
+  const [context, connect] = useMakeContext();
 
-  useAsyncEffect(async (isMounted) => {
-    const port = await connectDevtools();
-    if (!isMounted) return;
-    setPort(port);
-  }, []);
+  const request = useCallback(async () => {
+    // FIXME: will this work on Firefox? Might need to do as then() b/c it gets confused by await before
+    //   the permissions request.
+    const { url } = await getTabInfo(context.port);
+    if (await browser.permissions.request({ origins: [url] })) {
+      location.reload();
+    }
+  }, [connect, context.port]);
 
-  const context = useMemo(() => ({ port }), [port]);
-
-  if (!context.port) {
+  if (context.error) {
+    return <div>An error occurred: {context.error.toString()}</div>;
+  } else if (!context.port) {
     return <GridLoader />;
+  } else if (!context.hasTabPermissions) {
+    return (
+      <div>
+        <p>PixieBrix does not have access to the page.</p>
+        <Button onClick={request}>Request Permanent Access</Button>
+      </div>
+    );
   }
 
   return (

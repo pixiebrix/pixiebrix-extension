@@ -82,15 +82,19 @@ function installPanel() {
   );
 }
 
+async function initialize(port: Runtime.Port) {
+  try {
+    await injectScript(port, { file: "contentScript.js" });
+  } catch (reason) {
+    // Can install without having content script on the page; they just won't do much
+    console.debug("Could not inject contextScript for devtools", { reason });
+  }
+  installSidebarPane(port);
+  installPanel();
+}
+
 if (browser.devtools.inspectedWindow.tabId) {
   connectDevtools()
-    .then((port) => {
-      return injectScript(port, { file: "contentScript.js" }).then(() => {
-        installSidebarPane(port);
-        installPanel();
-      });
-    })
-    .catch((reason) => {
-      reportError(reason);
-    });
+    .then((port) => initialize(port))
+    .catch((reason) => reportError(reason));
 }
