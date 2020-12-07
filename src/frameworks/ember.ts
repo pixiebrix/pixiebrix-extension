@@ -16,6 +16,7 @@
  */
 
 import mapValues from "lodash/mapValues";
+import partial from "lodash/partial";
 
 interface EmberComponent {
   attrs: Record<string, unknown>;
@@ -66,24 +67,43 @@ export function getEmberComponentById(componentId: string): EmberComponent {
   return app.__container__.lookup("-view-registry:main")[componentId];
 }
 
-export function readEmberValueFromCache(value: any): unknown {
-  if (value == null) {
+function isPrimitive(val: unknown): boolean {
+  if (typeof val === "object") {
+    return val === null;
+  }
+  return typeof val !== "function";
+}
+
+export function readEmberValueFromCache(
+  value: any,
+  maxDepth = 5,
+  depth = 0
+): unknown {
+  const recurse = partial(
+    readEmberValueFromCache,
+    partial.placeholder,
+    maxDepth,
+    depth + 1
+  );
+
+  if (depth >= maxDepth) {
+    return undefined;
+  } else if (isPrimitive(value)) {
     return value;
   } else if (typeof value === "object") {
     if (Object.prototype.hasOwnProperty.call(value, "value")) {
-      return readEmberValueFromCache(value.value);
+      return recurse(value.value);
     } else if (Object.prototype.hasOwnProperty.call(value, "_cache")) {
-      return readEmberValueFromCache(value._cache);
+      return recurse(value._cache);
     } else if (Array.isArray(value.content)) {
-      return value.content.map(readEmberValueFromCache);
+      return value.content.map(recurse);
     } else {
-      return mapValues(value, readEmberValueFromCache);
+      return mapValues(value, recurse);
     }
   } else if (Array.isArray(value)) {
-    return value.map(readEmberValueFromCache);
-  } else if (typeof value === "function") {
-    return undefined;
+    return value.map(recurse);
   } else {
-    return value;
+    console.error("Unexpected value", value);
+    throw new Error("Unexpected value");
   }
 }

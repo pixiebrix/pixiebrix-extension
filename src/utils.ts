@@ -16,6 +16,7 @@
  */
 
 import mapValues from "lodash/mapValues";
+import partial from "lodash/partial";
 
 export function boolean(value: unknown): boolean {
   if (typeof value === "string") {
@@ -53,15 +54,32 @@ export function castFunction(valueOrFunction: any): () => any {
  * Set values to undefined that can't be sent across the boundary between the host site context and the
  * content script context
  */
-function cleanValue(value: unknown[]): unknown[];
-function cleanValue(value: {
-  [key: string]: unknown;
-}): { [key: string]: unknown };
-function cleanValue(value: unknown): unknown {
-  if (Array.isArray(value)) {
-    return value.map(cleanValue);
-  } else if (typeof value === "object") {
-    return mapValues(value, cleanValue);
+export function cleanValue(
+  value: unknown[],
+  maxDepth?: number,
+  depth?: number
+): unknown[];
+export function cleanValue(
+  value: {
+    [key: string]: unknown;
+  },
+  maxDepth?: number,
+  depth?: number
+): { [key: string]: unknown };
+export function cleanValue(
+  value: unknown,
+  maxDepth?: number,
+  depth?: number
+): unknown;
+export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
+  const recurse = partial(cleanValue, partial.placeholder, maxDepth, depth + 1);
+
+  if (depth > maxDepth) {
+    return undefined;
+  } else if (Array.isArray(value)) {
+    return value.map(recurse);
+  } else if (typeof value === "object" && value != null) {
+    return mapValues(value, recurse);
   } else if (typeof value === "function" || typeof value === "symbol") {
     return undefined;
   } else {
