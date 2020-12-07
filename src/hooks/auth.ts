@@ -16,34 +16,33 @@
  */
 
 import { fetch } from "@/hooks/fetch";
-
-interface AuthState {
-  userId: string;
-  email: string;
-  isLoggedIn: boolean;
-  extension: boolean;
-}
+import { AuthState } from "@/core";
 
 interface ProfileResponse {
-  id: string;
-  email: string;
+  readonly id: string;
+  readonly email: string;
+  readonly scope: string | null;
 }
 
+export const anonAuth: AuthState = {
+  userId: undefined,
+  email: undefined,
+  isLoggedIn: false,
+  extension: true,
+  scope: null,
+};
+
 export async function getAuth(): Promise<AuthState> {
-  const { id, email } = await fetch<ProfileResponse>("/api/me/");
+  const { id, email, scope } = await fetch<ProfileResponse>("/api/me/");
   if (id) {
     return {
       userId: id,
-      email: email,
+      email,
+      scope,
       isLoggedIn: true,
       extension: true,
     };
   } else {
-    return {
-      userId: undefined,
-      email: undefined,
-      isLoggedIn: false,
-      extension: true,
-    };
+    return anonAuth;
   }
 }

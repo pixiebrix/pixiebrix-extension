@@ -33,23 +33,53 @@ import { jsonTreeTheme as theme } from "@/themes/light";
 // @ts-ignore: no type definitions?
 import GenerateSchema from "generate-schema";
 import JSONTree from "react-json-tree";
+import { ReaderTypeConfig } from "@/blocks/readers/factory";
 
-type FrameworkOption = { value: keyof FrameworkVersions; label: string };
+type FrameworkOption = {
+  value: string;
+  label: string;
+  version?: string;
+  makeConfig?: (type: string, selector: string) => ReaderTypeConfig;
+};
 
-const readerOptions: FrameworkOption[] = [
+export function defaultConfig(
+  type: string,
+  selector: string
+): ReaderTypeConfig {
+  return { type, selector };
+}
+
+export const readerOptions: FrameworkOption[] = [
   { value: "react", label: "React - Props" },
   { value: "angular", label: "Angular - Scope" },
   { value: "emberjs", label: "Ember.js" },
   { value: "vuejs", label: "Vue.js" },
+  {
+    value: "jquery",
+    label: "jQuery",
+    makeConfig: (type: string, selector) => ({
+      type: "jquery",
+      selectors: [selector],
+    }),
+  },
+  { value: "backbone", label: "Backbone.js" },
+  { value: "redux", label: "Redux" },
 ];
 
 const FrameworkSelector: React.FunctionComponent<{
   name: string;
   frameworks: FrameworkVersions;
 }> = ({ name, frameworks }) => {
-  const frameworkOptions = useMemo(() => {
-    return readerOptions;
-    // return readerOptions.filter(x => frameworks[x.value]);
+  const frameworkOptions: FrameworkOption[] = useMemo(() => {
+    return readerOptions.map((option) => {
+      const version = Object.entries(frameworks).find(
+        ([framework]) => framework.toLowerCase() === option.value
+      )?.[1];
+      return {
+        ...option,
+        label: `${option.label} - ${version ?? "Not detected"}`,
+      };
+    });
   }, [frameworks]);
   const [field, , helpers] = useField(name);
   return (
@@ -64,23 +94,42 @@ const FrameworkSelector: React.FunctionComponent<{
 const ReaderTab: React.FunctionComponent<{
   element: ButtonState;
   dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ element, dispatch }) => {
+}> = ({ element }) => {
   const { port, frameworks } = useContext(DevToolsContext);
-  const { values } = useFormikContext<ButtonState>();
-  const [{ output, schema }, setSchema] = useState({
+  const { values, setFieldValue } = useFormikContext<ButtonState>();
+  const [{ output, schema, error }, setSchema] = useState({
     output: undefined,
     schema: undefined,
+    error: undefined,
   });
 
   useAsyncEffect(
     async (isMounted) => {
-      setSchema({ output: undefined, schema: undefined });
-      const output = await runReader(port, {
-        config: { type: values.reader.type, selector: values.reader.selector },
-      });
-      const schema = GenerateSchema.json("Inferred Schema", output);
+      setSchema({ output: undefined, schema: undefined, error: undefined });
+      const option = readerOptions.find((x) => x.value === values.reader.type);
+      let output;
+      let schema;
+      try {
+        output = await runReader(port, {
+          config: (option.makeConfig ?? defaultConfig)(
+            values.reader.type,
+            values.reader.selector
+          ),
+        });
+        schema = GenerateSchema.json("Inferred Schema", output);
+      } catch (exc) {
+        if (!isMounted()) return;
+        setSchema({
+          output: undefined,
+          schema: undefined,
+          error: exc.toString(),
+        });
+        return;
+      }
+
       if (!isMounted()) return;
-      setSchema({ output, schema });
+      setFieldValue("reader.outputSchema", schema);
+      setSchema({ output, schema, error: undefined });
     },
     [values.reader?.type, values.reader?.selector]
   );
@@ -102,27 +151,33 @@ const ReaderTab: React.FunctionComponent<{
         <Col sm={10}>
           <SelectorSelectorField
             name="reader.selector"
-            suggestions={[element.containerSelector]}
+            initialSuggestions={[element.containerSelector]}
           />
         </Col>
       </Form.Group>
       <Row>
-        <Col>
-          <span>Raw Data</span>
-          {output !== undefined ? (
-            <JSONTree data={output} theme={theme} invertTheme hideRoot />
-          ) : (
-            <GridLoader />
-          )}
-        </Col>
-        <Col>
-          <span>Inferred Schema</span>
-          {schema !== undefined ? (
-            <SchemaTree schema={schema} />
-          ) : (
-            <GridLoader />
-          )}
-        </Col>
+        {error ? (
+          <Col>{error}</Col>
+        ) : (
+          <>
+            <Col>
+              <span>Raw Data</span>
+              {output !== undefined ? (
+                <JSONTree data={output} theme={theme} invertTheme hideRoot />
+              ) : (
+                <GridLoader />
+              )}
+            </Col>
+            <Col>
+              <span>Inferred Schema</span>
+              {schema !== undefined ? (
+                <SchemaTree schema={schema} />
+              ) : (
+                <GridLoader />
+              )}
+            </Col>
+          </>
+        )}
       </Row>
     </Tab.Pane>
   );

@@ -17,24 +17,18 @@
 
 // https://github.com/facebook/react/blob/7559722a865e89992f75ff38c1015a865660c3cd/packages/react-devtools-shared/src/backend/views/Highlighter/index.js
 
+import { v4 as uuidv4 } from "uuid";
 import Mustache from "mustache";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import Overlay from "./Overlay";
+import { userSelectElement } from "@/nativeEditor/selector";
 import {
   DEFAULT_ACTION_CAPTION,
   findContainer,
   inferButtonHTML,
 } from "@/nativeEditor/infer";
-import { v4 as uuidv4 } from "uuid";
 
 let overlay: Overlay | null = null;
-
-export function hideOverlay(): void {
-  if (overlay != null) {
-    overlay.remove();
-    overlay = null;
-  }
-}
 
 export interface InsertResult {
   uuid: string;
@@ -43,84 +37,6 @@ export interface InsertResult {
   template: string;
   caption: string;
   position: "append" | "prepend";
-}
-
-function setupInserter(): Promise<InsertResult> {
-  return new Promise<InsertResult>((resolve) => {
-    function stopInspectingNative() {
-      hideOverlay();
-      removeListenersOnWindow(window);
-    }
-
-    function noopMouseHandler(event: MouseEvent) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-
-    function onClick(event: MouseEvent) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      try {
-        if (event.target) {
-          const { container, selectors } = findContainer(
-            event.target as HTMLElement
-          );
-
-          resolve({
-            uuid: uuidv4(),
-            caption: DEFAULT_ACTION_CAPTION,
-            containerSelector: selectors[0],
-            containerSelectorOptions: selectors,
-            template: inferButtonHTML(container),
-            position: "append",
-          });
-        }
-      } finally {
-        stopInspectingNative();
-      }
-    }
-
-    function onPointerDown(event: MouseEvent) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      console.log("Pointer down: ", event.target);
-    }
-
-    function onPointerOver(event: MouseEvent) {
-      event.preventDefault();
-      event.stopPropagation();
-
-      if (overlay == null) {
-        overlay = new Overlay();
-      }
-
-      overlay.inspect([event.target as HTMLElement], null);
-    }
-
-    function registerListenersOnWindow(window: Window) {
-      window.addEventListener("click", onClick, true);
-      window.addEventListener("mousedown", noopMouseHandler, true);
-      window.addEventListener("mouseover", noopMouseHandler, true);
-      window.addEventListener("mouseup", noopMouseHandler, true);
-      window.addEventListener("pointerdown", onPointerDown, true);
-      window.addEventListener("pointerover", onPointerOver, true);
-      window.addEventListener("pointerup", noopMouseHandler, true);
-    }
-
-    function removeListenersOnWindow(window: Window) {
-      window.removeEventListener("click", onClick, true);
-      window.removeEventListener("mousedown", noopMouseHandler, true);
-      window.removeEventListener("mouseover", noopMouseHandler, true);
-      window.removeEventListener("mouseup", noopMouseHandler, true);
-      window.removeEventListener("pointerdown", onPointerDown, true);
-      window.removeEventListener("pointerover", onPointerOver, true);
-      window.removeEventListener("pointerup", noopMouseHandler, true);
-    }
-
-    registerListenersOnWindow(window);
-  });
 }
 
 function makeElement(element: InsertResult) {
@@ -163,7 +79,18 @@ export const removeElement = liftContentScript(
 );
 
 export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
-  const element = await setupInserter();
+  const selected = await userSelectElement();
+  const { container, selectors } = findContainer(selected);
+
+  const element: InsertResult = {
+    uuid: uuidv4(),
+    caption: DEFAULT_ACTION_CAPTION,
+    containerSelector: selectors[0],
+    containerSelectorOptions: selectors,
+    template: inferButtonHTML(container),
+    position: "append",
+  };
+
   $(element.containerSelector).append(makeElement(element));
   return element;
 });
@@ -177,8 +104,9 @@ export const toggleOverlay = liftContentScript(
       }
       const $elt = $(`[data-uuid="${uuid}"]`);
       overlay.inspect($elt.toArray(), null);
-    } else {
-      hideOverlay();
+    } else if (overlay != null) {
+      overlay.remove();
+      overlay = null;
     }
   }
 );

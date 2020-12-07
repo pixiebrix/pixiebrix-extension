@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useField } from "formik";
 import { OptionsType } from "react-select";
 import { compact, uniq } from "lodash";
@@ -23,28 +23,53 @@ import Creatable from "react-select/creatable";
 import { Button } from "react-bootstrap";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { selectElement } from "@/background/devtools";
+import { DevToolsContext } from "@/devTools/context";
+import { SelectMode } from "@/nativeEditor/selector";
 
 const SelectorSelectorField: React.FunctionComponent<{
   name: string;
-  suggestions: string[];
-}> = ({ name, suggestions }) => {
+  initialSuggestions: string[];
+  selectMode?: SelectMode;
+}> = ({ name, initialSuggestions, selectMode = "element" }) => {
+  const { port } = useContext(DevToolsContext);
+
   const [field, , helpers] = useField(name);
+  const [suggestions, setSuggestions] = useState(initialSuggestions);
   const [created, setCreated] = useState([]);
+  const [isSelecting, setSelecting] = useState(false);
 
   const options: OptionsType<{ value: string }> = useMemo(() => {
     const all = uniq(compact([...suggestions, ...created, field.value]));
     return all.map((x) => ({ value: x, label: x }));
   }, [created, suggestions]);
 
+  const select = useCallback(async () => {
+    setSelecting(true);
+    try {
+      const selectors = await selectElement(port, { mode: selectMode });
+      setSuggestions(selectors);
+      helpers.setValue(selectors[0]);
+    } finally {
+      setSelecting(false);
+    }
+  }, [setSelecting]);
+
   return (
     <div className="d-flex">
       <div>
-        <Button variant="info" aria-label="Select element">
+        <Button
+          onClick={select}
+          disabled={isSelecting}
+          variant="info"
+          aria-label="Select element"
+        >
           <FontAwesomeIcon icon={faMousePointer} />
         </Button>
       </div>
       <div className="flex-grow-1">
         <Creatable
+          isDisabled={isSelecting}
           options={options}
           onCreateOption={(inputValue) => {
             setCreated([...created, inputValue]);

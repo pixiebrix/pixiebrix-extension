@@ -19,26 +19,21 @@ import React from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { isExtensionContext } from "@/chrome";
+import { AuthState } from "@/core";
 
 if (!isExtensionContext()) {
   console.debug("Setting axios web app authentication context");
   axios.defaults.headers.post["X-CSRFToken"] = Cookies.get("csrftoken");
 }
 
-export interface Profile {
-  userId?: string;
-  email?: string;
-  isLoggedIn: boolean;
-  extension: boolean;
-}
-
-const initialState: Profile = {
+const anonAuthState: AuthState = {
   userId: undefined,
   email: undefined,
   isLoggedIn: false,
   extension: false,
+  scope: null,
 };
 
-export const AuthContext = React.createContext(initialState);
+export const AuthContext = React.createContext(anonAuthState);
 
 export default AuthContext;

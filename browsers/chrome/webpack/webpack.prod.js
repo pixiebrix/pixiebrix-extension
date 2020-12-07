@@ -71,6 +71,9 @@ module.exports = () =>
                   scopes: [""],
                 };
               }
+              if (process.env.ENABLE_DEVTOOLS) {
+                manifest.devtools_page = "devtools.html";
+              }
               return JSON.stringify(manifest, null, 4);
             },
           },

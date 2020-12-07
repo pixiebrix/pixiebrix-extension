@@ -123,15 +123,15 @@ const Layout = () => {
   );
 };
 
+const defaultState = { isLoggedIn: false, extension: true };
+
 const App: React.FunctionComponent = () => {
   const [authState] = useAsyncState(getAuth);
 
   return (
     <Provider store={store}>
       <PersistGate loading={<GridLoader />} persistor={persistor}>
-        <AuthContext.Provider
-          value={authState ?? { isLoggedIn: false, extension: true }}
-        >
+        <AuthContext.Provider value={authState ?? defaultState}>
           <ConnectedRouter history={hashHistory}>
             <ToastProvider>
               <Layout />

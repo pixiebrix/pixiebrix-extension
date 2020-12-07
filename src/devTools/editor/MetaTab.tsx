@@ -16,66 +16,49 @@
  */
 
 import React from "react";
-import { PayloadAction } from "@reduxjs/toolkit";
-import { Field, FieldInputProps } from "formik";
-import { Col, Form, Row, Tab } from "react-bootstrap";
 import { ButtonState } from "@/devTools/editor/editorSlice";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { Col, Form, Row, Tab } from "react-bootstrap";
+import { Field, FieldInputProps } from "formik";
 
-const FoundationTab: React.FunctionComponent<{
+const MetaTab: React.FunctionComponent<{
   element: ButtonState;
   dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ element }) => {
+}> = () => {
   return (
-    <Tab.Pane eventKey="foundation">
-      <Form.Group as={Row} controlId="formContainerSelector">
+    <Tab.Pane eventKey="metadata">
+      <Form.Group as={Row} controlId="formExtensionPointId">
         <Form.Label column sm={2}>
-          Container Selector
+          Foundation Id
         </Form.Label>
         <Col sm={10}>
-          <SelectorSelectorField
-            name="containerSelector"
-            initialSuggestions={element.containerSelectorOptions}
-            selectMode="container"
-          />
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="formPosition">
-        <Form.Label column sm={2}>
-          Position
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="position">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="select" {...field}>
-                <option value="append">Append</option>
-                <option value="prepend">Prepend</option>
-              </Form.Control>
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Caption
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="caption">
+          <Field name="extensionPoint.id">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}
           </Field>
         </Col>
       </Form.Group>
-
-      <Form.Group as={Row} controlId="formCaption">
+      <Form.Group as={Row} controlId="formFoundationName">
         <Form.Label column sm={2}>
-          Template
+          Foundation Name
         </Form.Label>
         <Col sm={10}>
-          <Field name="template">
+          <Field name="extensionPoint.name">
             {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="textarea" rows={4} {...field} />
+              <Form.Control type="text" {...field} />
+            )}
+          </Field>
+        </Col>
+      </Form.Group>
+      <Form.Group as={Row} controlId="formReaderId">
+        <Form.Label column sm={2}>
+          Reader Id
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="reader.id">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control type="text" {...field} />
             )}
           </Field>
         </Col>
@@ -84,4 +67,4 @@ const FoundationTab: React.FunctionComponent<{
   );
 };
 
-export default FoundationTab;
+export default MetaTab;

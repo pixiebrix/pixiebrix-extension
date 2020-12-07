@@ -14,21 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React, { useCallback, useContext, useMemo, useReducer } from "react";
-import { DevToolsContext } from "@/devTools/context";
-import { Badge, Button, Col, Container, ListGroup, Row } from "react-bootstrap";
-import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as nativeOperations from "@/background/devtools";
-import { noop } from "lodash";
+import React, { useMemo, useReducer } from "react";
+import { Col, Container, Row } from "react-bootstrap";
 import { Formik } from "formik";
 import ElementWizard from "@/devTools/editor/ElementWizard";
-
-import {
-  actions,
-  editorSlice,
-  initialState,
-} from "@/devTools/editor/editorSlice";
+import { editorSlice, initialState } from "@/devTools/editor/editorSlice";
+import { useCreate } from "@/devTools/editor/useCreate";
+import Sidebar from "@/devTools/editor/Sidebar";
 
 const Editor: React.FunctionComponent = () => {
   const [{ inserting, elements, activeElement }, dispatch] = useReducer(
@@ -36,90 +28,49 @@ const Editor: React.FunctionComponent = () => {
     initialState
   );
 
-  const { port } = useContext(DevToolsContext);
-
   const selectedElement = useMemo(() => {
     return activeElement
       ? elements.find((x) => x.uuid === activeElement)
       : null;
   }, [elements, activeElement]);
 
-  const addButton = useCallback(async () => {
-    dispatch(actions.toggleInsert(true));
-    try {
-      const button = await nativeOperations.insertButton(port);
-      dispatch(
-        actions.addElement({
-          ...button,
-          reader: {
-            type: "react",
-            selector: button.containerSelector,
-          },
-        })
-      );
-    } finally {
-      dispatch(actions.toggleInsert(false));
-    }
-  }, [port]);
-
-  const toggle = useCallback(
-    async (uuid: string, on: boolean) => {
-      await nativeOperations.toggleElement(port, { uuid, on });
-    },
-    [port]
-  );
+  const create = useCreate();
 
   return (
     <Container fluid>
       <Row>
-        <Col className="d-flex">
-          <div className="mr-3">
-            <h3>Page Editor</h3>
-          </div>
-          <div className="mx-3">
-            <Button disabled={inserting} onClick={addButton}>
-              Add Button <FontAwesomeIcon icon={faMousePointer} />
-            </Button>
-          </div>
-        </Col>
-      </Row>
-      <Row>
         <Col md={2}>
-          <ListGroup>
-            {elements.map((x) => (
-              <ListGroup.Item
-                active={x.uuid == activeElement}
-                key={x.uuid}
-                onMouseEnter={() => toggle(x.uuid, true)}
-                onMouseLeave={() => toggle(x.uuid, false)}
-                onClick={() => dispatch(actions.selectElement(x.uuid))}
-                style={{ cursor: "pointer" }}
-              >
-                <Badge variant="info">Action</Badge> {x.caption}
-              </ListGroup.Item>
-            ))}
-          </ListGroup>
+          <Sidebar
+            dispatch={dispatch}
+            elements={elements}
+            activeElement={activeElement}
+            inserting={inserting}
+          />
         </Col>
-        <Col md={10}>
-          {selectedElement ? (
-            <Container fluid>
-              <Row>
-                <Col>
-                  <Formik
-                    key={selectedElement.uuid}
-                    initialValues={selectedElement}
-                    onSubmit={noop}
-                  >
-                    {({ values }) => (
-                      <ElementWizard dispatch={dispatch} element={values} />
-                    )}
-                  </Formik>
-                </Col>
-              </Row>
-            </Container>
-          ) : (
-            <span>No element selected</span>
-          )}
+        <Col>
+          <Col md={10}>
+            {selectedElement ? (
+              <Container fluid>
+                <Row>
+                  <Col>
+                    <Formik
+                      key={selectedElement.uuid}
+                      initialValues={selectedElement}
+                      onSubmit={create}
+                    >
+                      {({ values }) => (
+                        <ElementWizard dispatch={dispatch} element={values} />
+                      )}
+                    </Formik>
+                  </Col>
+                </Row>
+              </Container>
+            ) : elements.length ? (
+              <span>No element selected</span>
+            ) : (
+              <span>No elements added to page yet</span>
+            )}
+          </Col>
         </Col>
       </Row>
     </Container>

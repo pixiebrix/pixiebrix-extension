@@ -16,7 +16,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { FrameworkVersions } from "@/messaging/constants";
+import { Schema } from "@/core";
 
 export interface ButtonState {
   readonly uuid: string;
@@ -26,8 +26,21 @@ export interface ButtonState {
   caption: string;
   position: "append" | "prepend";
   reader: {
-    type: keyof FrameworkVersions | null;
+    id: string;
+    outputSchema: Schema;
+    /**
+     * Reader type corresponding to built-in reader factory, e.g., jquery, react.
+     */
+    type: string | null;
     selector: string | null;
+  };
+  isAvailable: {
+    matchPatterns: string;
+    selectors: string;
+  };
+  extensionPoint: {
+    id: string;
+    name: string;
   };
 }
 

@@ -291,3 +291,11 @@ export interface RenderedArgs {
   // _renderedArgsBrand: null;
   [prop: string]: unknown;
 }
+
+export interface AuthState {
+  readonly userId?: string | null;
+  readonly email?: string | null;
+  readonly scope?: string | null;
+  readonly isLoggedIn: boolean;
+  readonly extension: boolean;
+}

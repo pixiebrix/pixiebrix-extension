@@ -30,6 +30,7 @@ import { deserializeError } from "serialize-error";
 import { allowBackgroundSender } from "@/background/protocol";
 import * as contentScriptProtocol from "@/contentScript/devTools";
 import * as nativeEditorProtocol from "@/nativeEditor/insertButton";
+import * as nativeSelectionProtocol from "@/nativeEditor/selector";
 import { FrameworkVersions } from "@/messaging/constants";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 
@@ -320,6 +321,17 @@ export const detectFrameworks: (
     return (await contentScriptProtocol.detectFrameworks(
       tabId
     )) as FrameworkVersions;
+  }
+);
+
+export const selectElement = liftBackground(
+  "SELECT_ELEMENT",
+  (tabId: number) => async ({
+    mode = "element",
+  }: {
+    mode: nativeSelectionProtocol.SelectMode;
+  }) => {
+    return await nativeSelectionProtocol.selectElement(tabId, { mode });
   }
 );
 

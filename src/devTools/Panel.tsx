@@ -28,8 +28,18 @@ import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
 import { browser } from "webextension-polyfill-ts";
 import { getTabInfo } from "@/background/devtools";
+import optionsStore, { persistor } from "@/options/store";
+import { PersistGate } from "redux-persist/integration/react";
+import { Provider } from "react-redux";
+import { useAsyncState } from "@/hooks/common";
+import { getAuth } from "@/hooks/auth";
+import { AuthContext } from "@/auth/context";
+import { ToastProvider } from "react-toast-notifications";
+
+const defaultState = { isLoggedIn: false, extension: true };
 
 const Panel: React.FunctionComponent = () => {
+  const [authState, , authError] = useAsyncState(getAuth);
   const [context, connect] = useMakeContext();
 
   const request = useCallback(async () => {
@@ -41,61 +51,47 @@ const Panel: React.FunctionComponent = () => {
     }
   }, [connect, context.port]);
 
-  if (context.error) {
+  if (authError) {
+    return <div>Error authenticating account: {authError.toString()}</div>;
+  } else if (context.error) {
     return <div>An error occurred: {context.error.toString()}</div>;
   } else if (!context.port) {
     return <GridLoader />;
   } else if (!context.hasTabPermissions) {
     return (
-      <div>
-        <p>PixieBrix does not have access to the page.</p>
-        <Button onClick={request}>Request Permanent Access</Button>
-      </div>
+      <Container fluid>
+        <Row>
+          <Col className="mx-auto mt-4 text-center" md={4} sm={10}>
+            <p>PixieBrix does not have access to the page.</p>
+            <Button onClick={request}>Grant Permanent Access</Button>
+          </Col>
+        </Row>
+      </Container>
     );
   }
 
   return (
-    <DevToolsContext.Provider value={context}>
-      <ErrorBoundary>
-        <Router>
-          <Container fluid>
-            <Row>
-              <Col>
-                <Editor />
-                {/*<Col lg="1">*/}
-                {/*  <Nav id="sidebar" className="flex-column">*/}
-                {/*    <IndexLinkContainer to="editor">*/}
-                {/*      <Nav.Link href="#/editor">Edit</Nav.Link>*/}
-                {/*    </IndexLinkContainer>*/}
-                {/*    <IndexLinkContainer to="locator">*/}
-                {/*      <Nav.Link href="#/locator">Locate</Nav.Link>*/}
-                {/*    </IndexLinkContainer>*/}
-                {/*    /!*<IndexLinkContainer to="reader">*!/*/}
-                {/*    /!*  <Nav.Link href="#/reader">Read</Nav.Link>*!/*/}
-                {/*    /!*</IndexLinkContainer>*!/*/}
-                {/*  </Nav>*/}
-                {/*</Col>*/}
-                {/*<Col>*/}
-                {/*  <Switch>*/}
-                {/*    <Route exact path="/editor">*/}
-                {/*      <Editor />*/}
-                {/*    </Route>*/}
-                {/*    <Route exact path="/locator">*/}
-                {/*      <Locator />*/}
-                {/*    </Route>*/}
-                {/*    /!*<Route exact path="/reader">*!/*/}
-                {/*    /!*  <Reader />*!/*/}
-                {/*    /!*</Route>*!/*/}
-                {/*    <Route>*/}
-                {/*      <Locator />*/}
-                {/*    </Route>*/}
-                {/*  </Switch>*/}
-              </Col>
-            </Row>
-          </Container>
-        </Router>
-      </ErrorBoundary>
-    </DevToolsContext.Provider>
+    <Provider store={optionsStore}>
+      <PersistGate loading={<GridLoader />} persistor={persistor}>
+        <AuthContext.Provider value={authState ?? defaultState}>
+          <DevToolsContext.Provider value={context}>
+            <ToastProvider>
+              <ErrorBoundary>
+                <Router>
+                  <Container fluid>
+                    <Row>
+                      <Col>
+                        <Editor />
+                      </Col>
+                    </Row>
+                  </Container>
+                </Router>
+              </ErrorBoundary>
+            </ToastProvider>
+          </DevToolsContext.Provider>
+        </AuthContext.Provider>
+      </PersistGate>
+    </Provider>
   );
 };
 

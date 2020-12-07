@@ -33,7 +33,6 @@
     "contextMenus",
     "activeTab"
   ],
-  "devtools_page": "devtools.html",
   "externally_connectable":  {
     "matches": [
       "https://app.pixiebrix.com/*"
