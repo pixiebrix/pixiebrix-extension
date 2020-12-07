@@ -26,7 +26,9 @@ declare global {
 if (!window.pixiebrix) {
   window.pixiebrix = uuidv4();
 } else {
-  throw Error(`Content script ${window.pixiebrix} already installed`);
+  throw Error(
+    `PixieBrix content script already installed: ${window.pixiebrix}`
+  );
 }
 
 import "@/extensionContext";
@@ -45,6 +47,7 @@ window.addEventListener("unhandledrejection", function (e) {
 
 import "@/blocks";
 import "@/contrib";
+import "@/contentScript/devTools";
 import "@/contentScript/contextMenus";
 
 // Import for the side effect of registering js defined blocks

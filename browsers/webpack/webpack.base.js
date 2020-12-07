@@ -69,6 +69,8 @@ module.exports = {
   entry: {
     background: path.resolve(rootDir, "src/background"),
     contentScript: path.resolve(rootDir, "src/contentScript"),
+    devtools: path.resolve(rootDir, "src/devtools"),
+    devtoolsPanel: path.resolve(rootDir, "src/devtoolsPanel"),
     // the script that gets injected into the host page
     script: path.resolve(rootDir, "src/script"),
     frame: path.resolve(rootDir, "src/frame"),

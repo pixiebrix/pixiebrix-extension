@@ -15,22 +15,86 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-const tabId = chrome.devtools.inspectedWindow.tabId;
-console.log(`Start initializing devtools for tab ${tabId}`);
+// https://developer.chrome.com/extensions/devtools
 
-// https://developer.chrome.com/extensions/devtools_panels#method-create
-// https://github.com/facebook/react/blob/master/packages/react-devtools-extensions/src/main.js#L298
-chrome.devtools.panels.create(
-  "PixieBrix Inspector",
-  "",
-  "panel.html",
-  (extensionPanel) => {
-    console.log("Devtools panel created");
+import "regenerator-runtime/runtime";
+import "core-js/stable";
+import { browser, Runtime } from "webextension-polyfill-ts";
+import { connectDevtools } from "@/devTools/protocol";
+
+import { injectScript, readSelectedElement } from "@/background/devtools";
+import { reportError } from "@/telemetry/logging";
+
+function installSidebarPane(port: Runtime.Port) {
+  // The following wasn't returning a value
+  // const sidebar = await browser.devtools.panels.elements.createSidebarPane("Data Viewer");
+  chrome.devtools.panels.elements.createSidebarPane(
+    "PixieBrix Data Viewer",
+    function (sidebar) {
+      function updateElementProperties() {
+        if (sidebar) {
+          // https://developer.chrome.com/extensions/devtools#selected-element
+          chrome.devtools.inspectedWindow.eval("setSelectedElement($0)", {
+            useContentScriptContext: true,
+          });
+
+          sidebar.setObject({ state: "loading..." });
+
+          readSelectedElement(port)
+            .then((obj) => {
+              sidebar.setObject(obj);
+            })
+            .catch((reason) => {
+              sidebar.setObject({ error: reason ?? "Unknown error" });
+            });
+        }
+      }
+      updateElementProperties();
+      chrome.devtools.panels.elements.onSelectionChanged.addListener(
+        updateElementProperties
+      );
+    }
+  );
+
+  if (browser.runtime.lastError) {
+    console.error("Error adding data viewer elements pane", {
+      error: browser.runtime.lastError,
+    });
   }
-);
+}
 
-// Create a connection to the background page
-// https://developer.chrome.com/extensions/devtools#detecting-open-close
-const backgroundPageConnection = chrome.runtime.connect({
-  name: "devtools-page",
-});
+function installPanel() {
+  // https://developer.chrome.com/extensions/devtools_panels#method-create
+  // https://github.com/facebook/react/blob/master/packages/react-devtools-extensions/src/main.js#L298
+
+  let currentPanel = null;
+
+  chrome.devtools.panels.create(
+    "PixieBrix",
+    "",
+    "devtoolsPanel.html",
+    (panel) => {
+      currentPanel = panel;
+      if (currentPanel === panel) {
+        return;
+      }
+    }
+  );
+}
+
+async function initialize(port: Runtime.Port) {
+  try {
+    await injectScript(port, { file: "contentScript.js" });
+  } catch (reason) {
+    // Can install without having content script on the page; they just won't do much
+    console.debug("Could not inject contextScript for devtools", { reason });
+  }
+  installSidebarPane(port);
+  installPanel();
+}
+
+if (browser.devtools.inspectedWindow.tabId) {
+  connectDevtools()
+    .then((port) => initialize(port))
+    .catch((reason) => reportError(reason));
+}

@@ -15,25 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { isExtensionContext } from "@/chrome";
-import { AuthState } from "@/core";
+import { createSendScriptMessage } from "@/messaging/chrome";
+import { READ_ANGULAR_SCOPE } from "@/messaging/constants";
+import { ReaderOutput } from "@/core";
+import { registerFactory } from "@/blocks/readers/factory";
 
-if (!isExtensionContext()) {
-  console.debug("Setting axios web app authentication context");
-  axios.defaults.headers.post["X-CSRFToken"] = Cookies.get("csrftoken");
+export interface AngularConfig {
+  type: "angular";
+  selector: string;
 }
 
-const anonAuthState: AuthState = {
-  userId: undefined,
-  email: undefined,
-  isLoggedIn: false,
-  extension: false,
-  scope: null,
-};
+export const withAngularScope = createSendScriptMessage<ReaderOutput>(
+  READ_ANGULAR_SCOPE
+);
 
-export const AuthContext = React.createContext(anonAuthState);
+async function doRead(reader: AngularConfig): Promise<ReaderOutput> {
+  const { selector } = reader;
+  return await withAngularScope({
+    selector,
+  });
+}
 
-export default AuthContext;
+registerFactory("angular", doRead);

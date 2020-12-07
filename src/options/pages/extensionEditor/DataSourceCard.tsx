@@ -83,7 +83,7 @@ const ArrayEntry: React.FunctionComponent<{
     return (
       <ListGroup.Item>
         <span>{prop}</span>
-        <span className="type">: array of {itemType}</span>
+        <span className="type">: array of {itemType ?? "unknown"}</span>
       </ListGroup.Item>
     );
   }
@@ -102,7 +102,7 @@ const PrimitiveEntry: React.FunctionComponent<{
   );
 };
 
-const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
+export const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
 }) => {
   return (

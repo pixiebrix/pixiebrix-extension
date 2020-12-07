@@ -58,6 +58,10 @@ module.exports = mergeWithCustomize({
               "http://localhost/*",
             ];
 
+            if (process.env.ENABLE_DEVTOOLS) {
+              manifest.devtools_page = "devtools.html";
+            }
+
             manifest.content_scripts[0].matches = uniq([
               ...manifest.content_scripts[0].matches,
               ...internal,

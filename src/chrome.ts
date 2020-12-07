@@ -40,8 +40,34 @@ export class RequestError extends Error {
   }
 }
 
+export function isDevtoolsPage(): boolean {
+  const isExtensionContext =
+    typeof chrome === "object" &&
+    chrome &&
+    typeof chrome.extension === "object";
+
+  if (!isExtensionContext || !chrome?.runtime?.getManifest) {
+    return false;
+  }
+
+  // make sure dev tools are installed
+  const { devtools_page } = chrome.runtime.getManifest();
+  if (typeof devtools_page !== "string") {
+    return false;
+  }
+
+  const url = new URL("devtoolsPanel.html", location.origin);
+
+  return url.pathname === location.pathname && url.origin === location.origin;
+}
+
 export function isExtensionContext(): boolean {
-  return isContentScript() || isOptionsPage() || isBackgroundPage();
+  return (
+    isContentScript() ||
+    isOptionsPage() ||
+    isBackgroundPage() ||
+    isDevtoolsPage()
+  );
 }
 
 export function setChromeExtensionId(extensionId: string): void {

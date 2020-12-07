@@ -27,3 +27,5 @@ export * from "./emberjs";
 export * from "./jquery";
 export * from "./window";
 export * from "./react";
+export * from "./angular";
+export * from "./vuejs";
