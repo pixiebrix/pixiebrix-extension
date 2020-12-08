@@ -30,8 +30,7 @@
     "identity",
     "tabs",
     "webNavigation",
-    "contextMenus",
-    "activeTab"
+    "contextMenus"
   ],
   "externally_connectable":  {
     "matches": [

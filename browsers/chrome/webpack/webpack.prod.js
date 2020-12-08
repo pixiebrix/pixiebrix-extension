@@ -72,6 +72,10 @@ module.exports = () =>
                 };
               }
               if (process.env.ENABLE_DEVTOOLS) {
+                manifest.permissions = uniq([
+                  ...manifest.permissions,
+                  "activeTab",
+                ]);
                 manifest.devtools_page = "devtools.html";
               }
               return JSON.stringify(manifest, null, 4);
