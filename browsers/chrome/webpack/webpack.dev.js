@@ -59,6 +59,10 @@ module.exports = mergeWithCustomize({
             ];
 
             if (process.env.ENABLE_DEVTOOLS) {
+              manifest.permissions = uniq([
+                ...manifest.permissions,
+                "activeTab",
+              ]);
               manifest.devtools_page = "devtools.html";
             }
 
