@@ -37,7 +37,7 @@
     "@types/deep-equal": "^1.0.1",
     "@types/dompurify": "^2.0.4",
     "@types/gapi": "0.0.39",
-    "@types/gapi.client.oauth2": "^2.0.1",
+    "@types/gapi.client.oauth2": "^2.0.2",
     "@types/gapi.client.sheets": "^4.0.20201029",
     "@types/jest": "^26.0.15",
     "@types/jquery": "^3.5.4",
