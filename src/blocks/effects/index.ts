@@ -23,3 +23,5 @@ export * from "./forms";
 export * from "./tabs";
 export * from "./highlight";
 export * from "./vue";
+export * from "./event";
+export * from "./wait";

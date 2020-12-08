@@ -18,6 +18,15 @@
 import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
+import { boolean } from "@/utils";
+
+function setValue($input: JQuery<HTMLElement>, value: unknown) {
+  if ($input.is(":radio") || $input.is(":checkbox")) {
+    $input.prop("checked", boolean(value));
+  } else {
+    $input.val(String(value));
+  }
+}
 
 export class FormFill extends Effect {
   constructor() {
@@ -32,11 +41,15 @@ export class FormFill extends Effect {
       },
       fieldNames: {
         type: "object",
-        additionalProperties: { type: "string" },
+        additionalProperties: {
+          oneOf: [{ type: "string" }, { type: "boolean" }, { type: "number" }],
+        },
       },
       fieldSelectors: {
         type: "object",
-        additionalProperties: { type: "string" },
+        additionalProperties: {
+          oneOf: [{ type: "string" }, { type: "boolean" }, { type: "number" }],
+        },
       },
       submit: {
         description: "true to submit the form, or a JQuery selector to click",
@@ -69,7 +82,7 @@ export class FormFill extends Effect {
       if ($input.length === 0) {
         logger.warn(`Could not find input ${name} on the form`);
       }
-      $input.val(String(value));
+      setValue($input, value);
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
@@ -79,7 +92,7 @@ export class FormFill extends Effect {
           `Could not find input with selector ${selector} on the form`
         );
       }
-      $input.val(String(value));
+      setValue($input, value);
     }
 
     if (typeof submit === "boolean") {

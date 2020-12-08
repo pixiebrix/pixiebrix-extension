@@ -226,20 +226,44 @@ export async function openTab(
   });
 }
 
+const DEFAULT_MAX_RETRIES = 5;
+
 export async function executeInTarget(
   blockId: string,
   blockArgs: RenderedArgs,
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in the target tab`);
-  return await browser.runtime.sendMessage({
-    type: MESSAGE_RUN_BLOCK_TARGET,
-    payload: {
-      blockId,
-      blockArgs,
-      options,
-    },
-  });
+
+  const { maxRetries = DEFAULT_MAX_RETRIES } = options;
+  let retries = 0;
+
+  while (retries < maxRetries) {
+    try {
+      return await browser.runtime.sendMessage({
+        type: MESSAGE_RUN_BLOCK_TARGET,
+        payload: {
+          blockId,
+          blockArgs,
+          options,
+        },
+      });
+    } catch (err) {
+      if (err?.message?.includes("Could not establish connection")) {
+        console.debug(
+          `Target not ready for ${blockId}. Retrying in ${
+            100 * (retries + 1)
+          }ms`
+        );
+        await sleep(250 * (retries + 1));
+      } else {
+        throw err;
+      }
+    }
+    retries++;
+  }
+
+  throw new Error(`Unable to run ${blockId} after ${maxRetries} retries`);
 }
 
 export async function executeInOpener(

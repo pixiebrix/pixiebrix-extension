@@ -33,6 +33,7 @@ export const MESSAGE_CONTENT_SCRIPT_ECHO_SENDER = `${MESSAGE_PREFIX}ECHO_SENDER`
 export interface RemoteBlockOptions {
   ctxt: unknown;
   messageContext: MessageContext;
+  maxRetries?: number;
 }
 
 export interface RunBlockAction {
