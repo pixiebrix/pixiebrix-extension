@@ -17,7 +17,7 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Schema } from "@/core";
-import { ElementInfo } from "@/nativeEditor/selector";
+import { ElementInfo } from "@/nativeEditor/frameworks";
 
 export interface ButtonState {
   readonly uuid: string;

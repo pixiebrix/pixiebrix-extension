@@ -21,11 +21,13 @@
 import "regenerator-runtime/runtime";
 import "core-js/stable";
 import jQuery from "jquery";
-import { isEmpty, identity } from "lodash";
+import { isEmpty, identity, castArray } from "lodash";
 import {
   CONNECT_EXTENSION,
   DETECT_FRAMEWORK_VERSIONS,
+  Framework,
   GET_COMPONENT_DATA,
+  GET_COMPONENT_INFO,
   READ_WINDOW,
   SCRIPT_LOADED,
   SEARCH_WINDOW,
@@ -39,102 +41,27 @@ import {
   PathSpec,
   ReadOptions,
   WritePayload,
+  initialize,
 } from "@/pageScript/protocol";
-import {
-  cleanValue,
-  awaitValue,
-  clone,
-  getPropByPath,
-  TimeoutError,
-} from "./utils";
+import { awaitValue, clone, getPropByPath, TimeoutError } from "./utils";
 import { ComponentNotFoundError } from "@/frameworks/errors";
 import {
   ReadableComponentAdapter,
   WriteableComponentAdapter,
 } from "@/frameworks/component";
-
-type Handler = (payload: unknown) => unknown | Promise<unknown>;
-const handlers: { [type: string]: Handler } = {};
+import { elementInfo } from "@/nativeEditor/frameworks";
 
 function requireSingleElement(selector: string): HTMLElement {
   const $elt = jQuery(document).find(selector);
   if (!$elt.length) {
-    throw new Error(`No elements found for selector: ${selector}`);
+    throw new Error(`No elements found for selector: '${selector}'`);
   } else if ($elt.length > 1) {
-    throw new Error(`Multiple elements found for selector: ${selector}`);
+    throw new Error(`Multiple elements found for selector: '${selector}'`);
   }
   return $elt.get(0);
 }
 
-window.addEventListener("message", function (event) {
-  const handler = handlers[event.data?.type];
-
-  if (!handler) {
-    return;
-  }
-
-  const { meta, type, payload } = event.data;
-
-  console.debug(`RECEIVE ${type}`, event.data);
-
-  const reject = (error: unknown) => {
-    try {
-      const detail = {
-        id: meta.id,
-        error,
-      };
-      console.warn(`pageScript responding ${type}_REJECTED`, detail);
-      document.dispatchEvent(
-        new CustomEvent(`${type}_REJECTED`, {
-          detail,
-        })
-      );
-    } catch (err) {
-      console.error(
-        `An error occurred while dispatching an error for ${type}`,
-        { error: err, originalError: error }
-      );
-    }
-  };
-
-  const fulfill = (result: unknown) => {
-    let cleanResult;
-    try {
-      // Chrome will drop the whole detail if it contains non-serializable values, e.g., methods
-      cleanResult = cleanValue(result ?? null);
-    } catch (err) {
-      console.error("Cannot serialize result", { result, err });
-      throw new Error(`Cannot serialize result for result ${type}`);
-    }
-
-    const detail = {
-      id: meta.id,
-      result: cleanResult,
-    };
-    console.debug(`pageScript responding ${type}_FULFILLED`, detail);
-    document.dispatchEvent(
-      new CustomEvent(`${type}_FULFILLED`, {
-        detail,
-      })
-    );
-  };
-
-  let resultPromise;
-
-  try {
-    resultPromise = handler(payload);
-  } catch (error) {
-    // handler is a function that immediately generated an error -- bail early.
-    reject(error);
-    return;
-  }
-
-  Promise.resolve(resultPromise).then(fulfill).catch(reject);
-});
-
-const attachListener = (messageType: string, handler: Handler) => {
-  handlers[messageType] = handler;
-};
+const attachListener = initialize();
 
 attachListener(SEARCH_WINDOW, ({ query }) => {
   console.debug(`Searching window for query: ${query}`);
@@ -149,18 +76,26 @@ attachListener(DETECT_FRAMEWORK_VERSIONS, async () => {
 
 // needs to be object because we want window to be a valid argument
 // eslint-disable-next-line @typescript-eslint/ban-types
-function readPathSpec(object: object, pathSpec?: PathSpec) {
+function readPathSpec(obj: object, pathSpec?: PathSpec) {
   if (!pathSpec) {
-    return object;
+    return obj;
   }
 
   const values: Record<string, unknown> = {};
+
+  if (Array.isArray(pathSpec) || typeof pathSpec === "string") {
+    for (const key of castArray(pathSpec)) {
+      values[key] = (obj as any)[key];
+    }
+    return values;
+  }
+
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
-      values[key] = getPropByPath(object, path, args);
+      values[key] = getPropByPath(obj, path, args);
     } else {
-      values[key] = getPropByPath(object, pathOrObj);
+      values[key] = getPropByPath(obj, pathOrObj);
     }
   }
   return values;
@@ -243,6 +178,22 @@ attachListener(
       [key: string]: unknown;
     };
     adapter.setData(component, valueMap);
+  }
+);
+
+attachListener(
+  GET_COMPONENT_INFO,
+  async ({
+    selector,
+    framework,
+    traverseUp = 0,
+  }: {
+    selector: string;
+    framework?: Framework;
+    traverseUp: number;
+  }) => {
+    const element = requireSingleElement(selector);
+    return await elementInfo(element, framework, [selector], traverseUp);
   }
 );
 

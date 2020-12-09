@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import castArray from "lodash/castArray";
 import { ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
 import { getComponentData } from "@/pageScript/protocol";
@@ -28,13 +27,11 @@ export interface EmberConfig {
 
 async function doRead(reader: EmberConfig): Promise<ReaderOutput> {
   const { attrs: rawAttrs, selector } = reader;
-  const attrs = castArray(rawAttrs ?? []);
-  const values = await getComponentData({
+  return await getComponentData({
     framework: "emberjs",
     selector,
-    pathSpec: attrs,
+    pathSpec: rawAttrs,
   });
-  return attrs.length === 1 ? (values[attrs[0]] as ReaderOutput) : values;
 }
 
 registerFactory("emberjs", doRead);

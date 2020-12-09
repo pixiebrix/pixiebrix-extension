@@ -61,7 +61,14 @@ export const readerOptions: FrameworkOption[] = [
     }),
   },
   { value: "emberjs", label: "Ember.js" },
-  { value: "vue", label: "Vue.js" },
+  {
+    value: "vue",
+    label: "Vue.js",
+    makeConfig: (type: string, selector) => ({
+      type: "vuejs",
+      selector,
+    }),
+  },
   {
     value: "jquery",
     label: "jQuery",
@@ -161,6 +168,7 @@ const ReaderTab: React.FunctionComponent<{
           <SelectorSelectorField
             name="reader.selector"
             initialElement={element.containerInfo}
+            traverseUp={5}
           />
         </Col>
       </Form.Group>

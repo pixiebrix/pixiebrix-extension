@@ -19,6 +19,10 @@ export interface GetOwnerOptions {
   maxTraverseUp?: number;
 }
 
+type ComponentData = object;
+
+// object required for WeakSet
+// eslint-disable-next-line @typescript-eslint/ban-types
 export function traverse<T extends object>(
   src: T,
   match: (element: T) => boolean,
@@ -26,21 +30,21 @@ export function traverse<T extends object>(
   maxTraverse?: number
 ): T | null {
   let current = src;
-  // prevent infinite loops when maxTraverse isn't set
-  const seen = new WeakSet<T>([current]);
+  // detect cycles
+  const visited = new WeakSet<T>();
   let cnt = 0;
-  while (current != null && !match(current) && !seen.has(current)) {
-    if (maxTraverse != null && cnt >= maxTraverse) {
-      return undefined;
-    }
+  while (
+    current != null &&
+    !match(current) &&
+    !visited.has(current) &&
+    (maxTraverse == null || cnt <= maxTraverse)
+  ) {
+    visited.add(current);
     current = next(current);
-    seen.add(current);
     cnt++;
   }
   return current;
 }
-
-type ComponentData = object;
 
 export interface ComponentAdapter<TComponent = unknown> {
   /**
@@ -67,7 +71,7 @@ export interface ReadAdapter<
   TData extends ComponentData = ComponentData
 > {
   /**
-   * Read data from a component in the framework
+   * Returns the data defined for the component
    */
   getData: (component: TComponent) => TData;
 }

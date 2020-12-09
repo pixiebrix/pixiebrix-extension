@@ -21,11 +21,9 @@ import { v4 as uuidv4 } from "uuid";
 import Mustache from "mustache";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import Overlay from "./Overlay";
-import {
-  ElementInfo,
-  userSelectElement,
-  elementInfo,
-} from "@/nativeEditor/selector";
+import { ElementInfo } from "@/nativeEditor/frameworks";
+import { userSelectElement } from "@/nativeEditor/selector";
+import * as pageScript from "@/pageScript/protocol";
 import {
   DEFAULT_ACTION_CAPTION,
   findContainer,
@@ -92,7 +90,7 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
     containerSelector: selectors[0],
     template: inferButtonHTML(container),
     position: "append",
-    containerInfo: await elementInfo(container, null, selectors),
+    containerInfo: await pageScript.getElementInfo({ selector: selectors[0] }),
   };
 
   $(element.containerSelector).append(makeElement(element));

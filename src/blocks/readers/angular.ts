@@ -32,4 +32,5 @@ async function doRead(reader: AngularConfig): Promise<ReaderOutput> {
   });
 }
 
+registerFactory("angularjs", doRead);
 registerFactory("angular", doRead);

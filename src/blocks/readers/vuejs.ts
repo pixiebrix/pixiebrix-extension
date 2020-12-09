@@ -32,4 +32,5 @@ async function doRead(reader: VueConfig): Promise<ReaderOutput> {
   });
 }
 
+registerFactory("vue", doRead);
 registerFactory("vuejs", doRead);

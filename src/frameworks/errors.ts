@@ -39,5 +39,6 @@ export function ignoreNotFound<T>(factory: () => T): T | null {
     ) {
       return null;
     }
+    throw err;
   }
 }

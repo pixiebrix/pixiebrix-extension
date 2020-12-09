@@ -342,13 +342,16 @@ export const selectElement = liftBackground(
   (tabId: number) => async ({
     mode = "element",
     framework,
+    traverseUp = 0,
   }: {
     framework?: Framework;
     mode: nativeSelectionProtocol.SelectMode;
+    traverseUp?: number;
   }) => {
     return await nativeSelectionProtocol.selectElement(tabId, {
       framework,
       mode,
+      traverseUp,
     });
   }
 );

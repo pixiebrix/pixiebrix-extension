@@ -19,6 +19,7 @@
 // https://github.com/vuejs/vue-devtools/blob/6d8fee4d058716fe72825c9ae22cf831ef8f5172/packages/app-backend/src/index.js#L185
 // https://github.com/vuejs/vue-devtools/blob/dev/packages/app-backend/src/utils.js
 
+import { pickBy } from "lodash";
 import { RootInstanceVisitor } from "@/frameworks/scanner";
 import { traverse, WriteableComponentAdapter } from "@/frameworks/component";
 
@@ -111,7 +112,16 @@ const adapter: WriteableComponentAdapter<Instance> = {
       (x) => x.parentElement,
       options?.maxTraverseUp
     ),
-  getData: (instance: Instance) => instance,
+  getData: (instance: Instance) => {
+    // TODO: might want to read from $data here also
+    return pickBy(
+      instance,
+      (value, key) =>
+        typeof value !== "function" &&
+        !key.startsWith("$") &&
+        !key.startsWith("_")
+    );
+  },
   setData: (instance: Instance, data) => {
     for (const [key, value] of Object.entries(data)) {
       (instance as any)[key] = value;

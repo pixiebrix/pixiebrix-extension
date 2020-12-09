@@ -41,7 +41,6 @@ export async function awaitValue<T>(
   }
 ): Promise<T> {
   const start = new Date().getTime();
-  let elapsed = 0;
   let value: T;
   do {
     value = valueFactory();
@@ -49,8 +48,7 @@ export async function awaitValue<T>(
       return value;
     }
     await sleep(retryMillis);
-    elapsed = new Date().getTime() - start;
-  } while (elapsed < waitMillis);
+  } while (new Date().getTime() - start < waitMillis);
 
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }

@@ -24,7 +24,7 @@ import React, {
 } from "react";
 import { useField } from "formik";
 import { OptionsType } from "react-select";
-import { uniq } from "lodash";
+import { uniqBy } from "lodash";
 import Creatable from "react-select/creatable";
 import { components } from "react-select";
 import { Badge, Button } from "react-bootstrap";
@@ -32,7 +32,8 @@ import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectElement } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
-import { ElementInfo, SelectMode } from "@/nativeEditor/selector";
+import { SelectMode } from "@/nativeEditor/selector";
+import { ElementInfo } from "@/nativeEditor/frameworks";
 import { OptionProps } from "react-select/src/components/Option";
 import * as nativeOperations from "@/background/devtools";
 import { Framework } from "@/messaging/constants";
@@ -59,47 +60,40 @@ const CustomOption: ComponentType<OptionProps<OptionValue>> = ({
   return (
     <components.Option {...props}>
       <div onMouseEnter={() => toggle(true)} onMouseLeave={() => toggle(false)}>
-        {props.data.elementInfo && (
-          <Badge variant="info">{props.data.elementInfo.tagName}</Badge>
+        {props.data.elementInfo?.tagName && (
+          <Badge variant="dark">{props.data.elementInfo.tagName}</Badge>
         )}
-        {props.data.framework && (
-          <Badge variant="info">{props.data.framework}</Badge>
-        )}
+        {props.data.elementInfo?.hasData && <Badge variant="info">Data</Badge>}
+        {/*{props.data.elementInfo?.framework && (*/}
+        {/*  <Badge variant="dark">{props.data.elementInfo.framework}</Badge>*/}
+        {/*)}*/}
         {children}
       </div>
     </components.Option>
   );
 };
 
+function unrollValues(elementInfo: ElementInfo): OptionValue[] {
+  if (!elementInfo) {
+    return [];
+  }
+  return [
+    ...(elementInfo.selectors ?? []).map((value) => ({ value, elementInfo })),
+    ...[elementInfo.owner, elementInfo.parent].flatMap(unrollValues),
+  ].filter((x) => x.value && x.value.trim() !== "");
+}
+
 function makeOptions(
   elementInfo: ElementInfo | null,
-  extra: string[]
+  extra: string[] = []
 ): SelectorOptions {
-  if (!elementInfo) {
-    return uniq(extra).map((x) => ({ value: x, label: x }));
-  }
-  const options = elementInfo.selectors.map((x) => ({
-    value: x,
-    label: x,
-    elementInfo,
+  return uniqBy(
+    [...unrollValues(elementInfo), ...extra.map((value) => ({ value }))],
+    (x) => x.value
+  ).map((option) => ({
+    ...option,
+    label: option.value,
   }));
-  const ownerOptions = (elementInfo.owner?.selectors ?? []).map((x) => ({
-    value: x,
-    label: x,
-    elementInfo: elementInfo.owner,
-  }));
-  const known = new Set([
-    ...elementInfo.selectors,
-    ...(elementInfo.owner?.selectors ?? []),
-  ]);
-  return [
-    ...options,
-    ...ownerOptions,
-    ...uniq(extra.filter((x) => !known.has(x))).map((x) => ({
-      value: x,
-      label: x,
-    })),
-  ];
 }
 
 const SelectorSelectorField: React.FunctionComponent<{
@@ -107,7 +101,14 @@ const SelectorSelectorField: React.FunctionComponent<{
   framework?: Framework;
   initialElement?: ElementInfo;
   selectMode?: SelectMode;
-}> = ({ name, initialElement, framework, selectMode = "element" }) => {
+  traverseUp?: number;
+}> = ({
+  name,
+  initialElement,
+  framework,
+  selectMode = "element",
+  traverseUp = 0,
+}) => {
   const { port } = useContext(DevToolsContext);
 
   const [field, , helpers] = useField(name);
@@ -126,13 +127,14 @@ const SelectorSelectorField: React.FunctionComponent<{
       const selected = await selectElement(port, {
         framework,
         mode: selectMode,
+        traverseUp,
       });
       setElement(selected);
       helpers.setValue(selected.selectors[0]);
     } finally {
       setSelecting(false);
     }
-  }, [framework, setSelecting]);
+  }, [framework, setSelecting, traverseUp, selectMode, helpers]);
 
   return (
     <div className="d-flex">

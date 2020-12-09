@@ -119,8 +119,10 @@ const adapter: ReadableComponentAdapter<EmberComponent> = {
       (x) => x.parentElement,
       options?.maxTraverseUp
     ),
-  getData: (component) =>
-    mapValues(component.attrs, unary(readEmberValueFromCache)),
+  getData: (component) => {
+    console.debug("component", { component, attrs: component.attrs });
+    return mapValues(component.attrs, unary(readEmberValueFromCache));
+  },
 };
 
 export default adapter;

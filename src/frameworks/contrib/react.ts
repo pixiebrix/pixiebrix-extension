@@ -16,7 +16,7 @@
  */
 
 import { pickBy } from "lodash";
-import { ComponentNotFoundError } from "@/frameworks/errors";
+import { ComponentNotFoundError, ignoreNotFound } from "@/frameworks/errors";
 import { RootInstanceVisitor } from "@/frameworks/scanner";
 import { ReadableComponentAdapter } from "@/frameworks/component";
 
@@ -37,8 +37,8 @@ interface ComponentFiber {
   stateNode: HTMLElement;
 }
 
-export function isComponent(dom: HTMLElement): boolean {
-  return !!Object.keys(dom).find((key) =>
+export function isComponent(element: HTMLElement): boolean {
+  return Object.keys(element).some((key) =>
     key.startsWith("__reactInternalInstance$")
   );
 }
@@ -57,8 +57,8 @@ export function readReactProps(
   );
 }
 
-// react 16+
 function getComponentFiber(fiber: any): ComponentFiber {
+  // react 16+
   // return fiber._debugOwner; // this also works, but is __DEV__ only
   let parentFiber = fiber.return;
   while (typeof parentFiber.type == "string") {
@@ -112,20 +112,10 @@ export class ReactRootVisitor implements RootInstanceVisitor<RootInstance> {
   }
 }
 
-export function elementComponent(element: HTMLElement): ComponentFiber | null {
-  try {
-    return findReactComponent(element, 0);
-  } catch (err) {
-    if (err instanceof ComponentNotFoundError) {
-      return null;
-    }
-    throw err;
-  }
-}
-
 export const adapter: ReadableComponentAdapter<ComponentFiber> = {
   isComponent,
-  elementComponent,
+  elementComponent: (element) =>
+    ignoreNotFound(() => findReactComponent(element, 0)),
   getOwner: (element) => findReactComponent(element).stateNode,
   getData: (component) => readReactProps(component),
 };

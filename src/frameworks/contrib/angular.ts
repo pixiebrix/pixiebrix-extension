@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { pickBy } from "lodash";
 import { ReadableComponentAdapter, traverse } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 
@@ -64,7 +65,15 @@ const adapter: ReadableComponentAdapter<AngularElement, Scope> = {
       (x) => x.parentElement,
       options?.maxTraverseUp
     ),
-  getData: (instance) => instance.scope(),
+  getData: (instance) => {
+    return pickBy(
+      instance.scope(),
+      (value, key) =>
+        typeof value !== "function" &&
+        !key.startsWith("$$") &&
+        !key.startsWith("$")
+    );
+  },
 };
 
 export default adapter;
