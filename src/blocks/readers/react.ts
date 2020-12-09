@@ -15,10 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "@/messaging/chrome";
-import { READ_REACT_COMPONENT } from "@/messaging/constants";
 import { ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
+import { getComponentData } from "@/pageScript/protocol";
 
 export interface ReactConfig {
   type: "react";
@@ -28,13 +27,10 @@ export interface ReactConfig {
   waitMillis?: number;
 }
 
-export const withReactComponent = createSendScriptMessage<ReaderOutput>(
-  READ_REACT_COMPONENT
-);
-
 async function doRead(reader: ReactConfig): Promise<ReaderOutput> {
   const { selector, traverseUp = 0, waitMillis = 1000, rootProp } = reader;
-  return await withReactComponent({
+  return await getComponentData({
+    framework: "react",
     selector,
     traverseUp,
     waitMillis,

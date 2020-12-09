@@ -16,7 +16,11 @@
  */
 import Overlay from "@/nativeEditor/Overlay";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
-import { findContainer, generateSelectors } from "@/nativeEditor/infer";
+import { findContainer, inferSelectors } from "@/nativeEditor/infer";
+import { uniq } from "lodash";
+import { Framework } from "@/messaging/constants";
+import adapters from "@/frameworks/adapters";
+import { ComponentNotFoundError } from "@/frameworks/errors";
 
 let overlay: Overlay | null = null;
 
@@ -96,15 +100,85 @@ export function userSelectElement(): Promise<HTMLElement> {
 
 export type SelectMode = "element" | "container";
 
+export interface ElementInfo {
+  selectors: string[];
+  framework: Framework;
+  tagName: string;
+  owner: ElementInfo | undefined;
+}
+
+export async function elementInfo(
+  element: HTMLElement,
+  framework?: Framework,
+  selectors: string[] = []
+): Promise<ElementInfo> {
+  for (const [adapterFramework, adapter] of Object.entries(adapters)) {
+    if (framework && framework !== adapterFramework) {
+      continue;
+    }
+    if (adapter.elementComponent(element)) {
+      return {
+        selectors: uniq([...selectors, ...inferSelectors(element)]),
+        framework: adapterFramework as Framework,
+        tagName: element.tagName,
+        owner: null,
+      };
+    }
+
+    let ownerElement;
+
+    try {
+      ownerElement = adapter.getOwner(element);
+    } catch (err) {
+      if (err instanceof ComponentNotFoundError) {
+        continue;
+      }
+      throw err;
+    }
+
+    if (ownerElement && ownerElement !== element) {
+      return {
+        selectors: uniq([...selectors, ...inferSelectors(element)]),
+        framework: adapterFramework as Framework,
+        tagName: element.tagName,
+        owner: {
+          selectors: inferSelectors(ownerElement),
+          framework: adapterFramework as Framework,
+          tagName: ownerElement.tagName,
+          owner: null,
+        },
+      };
+    }
+  }
+
+  return {
+    selectors: uniq([...selectors, ...inferSelectors(element)]),
+    framework: null,
+    tagName: element.tagName,
+    owner: null,
+  };
+}
+
+// export const findComponent = liftContentScript(
+//     "SELECT_COMPONENT",
+//     async ({ selector, framework }: { selector: string, framework: Framework }) => {
+//     }
+// )
+
 export const selectElement = liftContentScript(
   "SELECT_ELEMENT",
-  async ({ mode = "element" }: { mode: SelectMode }) => {
+  async ({
+    mode = "element",
+    framework,
+  }: {
+    framework?: Framework;
+    mode: SelectMode;
+  }) => {
     const element = await userSelectElement();
     if (mode === "container") {
-      const { selectors } = findContainer(element);
-      return selectors;
-    } else {
-      return generateSelectors(element);
+      const { container, selectors } = findContainer(element);
+      return await elementInfo(container, framework, selectors);
     }
+    return await elementInfo(element, framework);
   }
 );

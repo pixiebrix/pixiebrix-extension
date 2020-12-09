@@ -15,8 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import mapValues from "lodash/mapValues";
-import partial from "lodash/partial";
+import { mapValues, partial, unary } from "lodash";
+import { isPrimitive } from "@/utils";
+import { ReadableComponentAdapter, traverse } from "@/frameworks/component";
+import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 
 interface EmberComponent {
   attrs: Record<string, unknown>;
@@ -51,6 +53,7 @@ export function getEmberApplication(): EmberApplication {
     const Ember = window.Ember;
     // https://github.com/emberjs/ember-inspector/blob/2237dc1b4818e31a856f3348f35305b10f42f60a/ember_debug/vendor/startup-wrapper.js#L201
     const namespaces = Ember.A(Ember.Namespace.NAMESPACES);
+    // TODO: support multiple Ember applications on the page
     return namespaces.filter(
       (namespace) => namespace instanceof (Ember.Application as any)
     )[0] as EmberApplication;
@@ -62,16 +65,9 @@ export function getEmberApplication(): EmberApplication {
 export function getEmberComponentById(componentId: string): EmberComponent {
   const app = getEmberApplication();
   if (!app) {
-    throw new Error("No Ember application found");
+    throw new FrameworkNotFound("Ember application not found");
   }
   return app.__container__.lookup("-view-registry:main")[componentId];
-}
-
-function isPrimitive(val: unknown): boolean {
-  if (typeof val === "object") {
-    return val === null;
-  }
-  return typeof val !== "function";
 }
 
 export function readEmberValueFromCache(
@@ -103,7 +99,28 @@ export function readEmberValueFromCache(
   } else if (Array.isArray(value)) {
     return value.map(recurse);
   } else {
-    console.error("Unexpected value", value);
-    throw new Error("Unexpected value");
+    // ignore functions and symbols
+    return undefined;
   }
 }
+
+function isComponent(element: HTMLElement): boolean {
+  return !!ignoreNotFound(() => getEmberComponentById(element.id));
+}
+
+const adapter: ReadableComponentAdapter<EmberComponent> = {
+  isComponent,
+  elementComponent: (element) =>
+    ignoreNotFound(() => getEmberComponentById(element.id)),
+  getOwner: (element, options?) =>
+    traverse(
+      element,
+      isComponent,
+      (x) => x.parentElement,
+      options?.maxTraverseUp
+    ),
+  getData: (component) =>
+    mapValues(component.attrs, unary(readEmberValueFromCache)),
+};
+
+export default adapter;

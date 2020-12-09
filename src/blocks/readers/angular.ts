@@ -15,23 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "@/messaging/chrome";
-import { READ_ANGULAR_SCOPE } from "@/messaging/constants";
 import { ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
+import { getComponentData } from "@/pageScript/protocol";
 
 export interface AngularConfig {
   type: "angular";
   selector: string;
 }
 
-export const withAngularScope = createSendScriptMessage<ReaderOutput>(
-  READ_ANGULAR_SCOPE
-);
-
 async function doRead(reader: AngularConfig): Promise<ReaderOutput> {
   const { selector } = reader;
-  return await withAngularScope({
+  return await getComponentData({
+    framework: "angular",
     selector,
   });
 }

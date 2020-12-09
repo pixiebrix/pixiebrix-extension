@@ -15,26 +15,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import castArray from "lodash/castArray";
-import { ReaderOutput } from "@/core";
-import { registerFactory } from "@/blocks/readers/factory";
-import { getComponentData } from "@/pageScript/protocol";
+import emberAdapter from "./contrib/ember";
+import angularAdapter from "./contrib/angular";
+import reactAdapter from "./contrib/react";
+import vueAdapter from "./contrib/vue";
+import { Framework } from "@/messaging/constants";
+import {
+  ReadableComponentAdapter,
+  WriteableComponentAdapter,
+} from "@/frameworks/component";
 
-export interface EmberConfig {
-  type: "emberjs";
-  selector: string;
-  attrs: string | string[];
-}
+export const FRAMEWORK_ADAPTERS: Partial<
+  {
+    [framework in Framework]:
+      | ReadableComponentAdapter
+      | WriteableComponentAdapter;
+  }
+> = {
+  react: reactAdapter,
+  emberjs: emberAdapter,
+  vue: vueAdapter,
+  angular: angularAdapter,
+  angularjs: angularAdapter,
+};
 
-async function doRead(reader: EmberConfig): Promise<ReaderOutput> {
-  const { attrs: rawAttrs, selector } = reader;
-  const attrs = castArray(rawAttrs ?? []);
-  const values = await getComponentData({
-    framework: "emberjs",
-    selector,
-    pathSpec: attrs,
-  });
-  return attrs.length === 1 ? (values[attrs[0]] as ReaderOutput) : values;
-}
-
-registerFactory("emberjs", doRead);
+export default FRAMEWORK_ADAPTERS;

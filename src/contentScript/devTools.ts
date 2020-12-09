@@ -19,16 +19,13 @@ import { liftContentScript } from "@/contentScript/backgroundProtocol";
 
 // @ts-ignore: no typescript definitions
 import getCssSelector from "css-selector-generator";
-import {
-  withReactComponent,
-  withEmberViewAttrs,
-  withVueValues,
-  withAngularScope,
-} from "@/blocks";
 import { deserializeError } from "serialize-error";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import "@/nativeEditor/insertButton";
 import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
+import adapters from "@/frameworks/adapters";
+import { getComponentData } from "@/pageScript/protocol";
+import { Framework } from "@/messaging/constants";
 
 let selectedElement: HTMLElement = undefined;
 
@@ -99,14 +96,17 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
   if (selectedElement) {
     const selector = getCssSelector(selectedElement);
     console.debug(`Generated selector: ${selector}`);
-    return {
+
+    const base: { [key: string]: unknown } = {
       selector,
       htmlData: $(selectedElement).data(),
-      react: await read(() => withReactComponent({ selector, waitMillis: 0 })),
-      vuejs: await read(() => withVueValues({ selector })),
-      angular: await read(() => withAngularScope({ selector })),
-      emberjs: await read(() => withEmberViewAttrs({ selector })),
     };
+    for (const framework of Object.keys(adapters)) {
+      base[framework] = await read(() =>
+        getComponentData({ framework: framework as Framework, selector })
+      );
+    }
+    return base;
   } else {
     return {
       error: "No element selected",

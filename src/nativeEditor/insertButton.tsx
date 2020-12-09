@@ -21,7 +21,11 @@ import { v4 as uuidv4 } from "uuid";
 import Mustache from "mustache";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import Overlay from "./Overlay";
-import { userSelectElement } from "@/nativeEditor/selector";
+import {
+  ElementInfo,
+  userSelectElement,
+  elementInfo,
+} from "@/nativeEditor/selector";
 import {
   DEFAULT_ACTION_CAPTION,
   findContainer,
@@ -33,10 +37,10 @@ let overlay: Overlay | null = null;
 export interface InsertResult {
   uuid: string;
   containerSelector: string;
-  containerSelectorOptions: string[];
   template: string;
   caption: string;
   position: "append" | "prepend";
+  containerInfo: ElementInfo;
 }
 
 function makeElement(element: InsertResult) {
@@ -86,9 +90,9 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
     uuid: uuidv4(),
     caption: DEFAULT_ACTION_CAPTION,
     containerSelector: selectors[0],
-    containerSelectorOptions: selectors,
     template: inferButtonHTML(container),
     position: "append",
+    containerInfo: await elementInfo(container, null, selectors),
   };
 
   $(element.containerSelector).append(makeElement(element));
@@ -97,12 +101,12 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
 
 export const toggleOverlay = liftContentScript(
   "TOGGLE_OVERLAY",
-  async ({ uuid, on = true }: { uuid: string; on: boolean }) => {
+  async ({ selector, on = true }: { selector: string; on: boolean }) => {
     if (on) {
       if (overlay == null) {
         overlay = new Overlay();
       }
-      const $elt = $(`[data-uuid="${uuid}"]`);
+      const $elt = $(document).find(selector);
       overlay.inspect($elt.toArray(), null);
     } else if (overlay != null) {
       overlay.remove();

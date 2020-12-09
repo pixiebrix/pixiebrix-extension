@@ -111,7 +111,7 @@ function escapeDoubleQuotes(str: string): string {
 /**
  * Generate some candidate CSS selectors for an element.
  */
-export function generateSelectors(element: HTMLElement): string[] {
+export function inferSelectors(element: HTMLElement): string[] {
   return [
     getCssSelector(element, { blacklist: ["#ember*"] }),
     getCssSelector(element, { blacklist: ["#ember*"], selectors: ["tag"] }),
@@ -167,7 +167,7 @@ export function findContainer(
 
   return {
     container,
-    selectors: uniq([...extra, ...generateSelectors(container)]),
+    selectors: uniq([...extra, ...inferSelectors(container)]),
   };
 }
 

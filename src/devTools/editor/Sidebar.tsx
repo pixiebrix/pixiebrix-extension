@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { FrameworkVersions } from "@/messaging/constants";
-import { identity, pickBy } from "lodash";
+import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import React, { useCallback, useContext } from "react";
 import { actions, EditorState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
@@ -32,11 +31,11 @@ import brickRegistry from "@/blocks/registry";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 
-function defaultReader(frameworks: FrameworkVersions): string {
-  const active = Object.keys(
-    pickBy(frameworks, identity)
-  ) as (keyof FrameworkVersions)[];
-  return active.length ? active[0].toLowerCase() : "jquery";
+function defaultReader(frameworks: FrameworkMeta[]): Framework {
+  const knownFrameworks = frameworks.filter((x) =>
+    KNOWN_READERS.includes(x.id)
+  );
+  return knownFrameworks.length ? knownFrameworks[0].id : "jquery";
 }
 
 async function generateExtensionPointMetadata(scope: string, url: string) {

@@ -16,12 +16,11 @@
  */
 
 import { Reader } from "@/types";
-import { withEmberComponentProps } from "@/blocks/readers/emberjs";
-import mapValues from "lodash/mapValues";
+import { mapValues, fromPairs } from "lodash";
 import { isHost } from "@/extensionPoints/helpers";
 import { registerBlock } from "@/blocks/registry";
-import fromPairs from "lodash/fromPairs";
 import { Schema } from "@/core";
+import { getComponentData } from "@/pageScript/protocol";
 
 export function getProfileContext(): JQuery | null {
   if (isHost("linkedin.com")) {
@@ -68,7 +67,8 @@ class LinkedInProfileReader extends Reader {
   }
 
   async read() {
-    const profile = await withEmberComponentProps({
+    const profile = await getComponentData({
+      framework: "emberjs",
       selector: ".pv-top-card",
       pathSpec: mapValues(this.PATH_SPEC, (x) => `${this.ROOT_PATH}?.${x}`),
     });

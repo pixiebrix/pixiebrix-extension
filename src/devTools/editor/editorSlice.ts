@@ -17,11 +17,12 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Schema } from "@/core";
+import { ElementInfo } from "@/nativeEditor/selector";
 
 export interface ButtonState {
   readonly uuid: string;
   containerSelector: string;
-  containerSelectorOptions: string[];
+  containerInfo: ElementInfo;
   template: string;
   caption: string;
   position: "append" | "prepend";

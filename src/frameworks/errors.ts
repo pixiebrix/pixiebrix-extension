@@ -15,26 +15,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import castArray from "lodash/castArray";
-import { ReaderOutput } from "@/core";
-import { registerFactory } from "@/blocks/readers/factory";
-import { getComponentData } from "@/pageScript/protocol";
-
-export interface EmberConfig {
-  type: "emberjs";
-  selector: string;
-  attrs: string | string[];
+export class ComponentNotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ComponentNotFoundError";
+  }
 }
 
-async function doRead(reader: EmberConfig): Promise<ReaderOutput> {
-  const { attrs: rawAttrs, selector } = reader;
-  const attrs = castArray(rawAttrs ?? []);
-  const values = await getComponentData({
-    framework: "emberjs",
-    selector,
-    pathSpec: attrs,
-  });
-  return attrs.length === 1 ? (values[attrs[0]] as ReaderOutput) : values;
+export class FrameworkNotFound extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "FrameworkNotFound";
+  }
 }
 
-registerFactory("emberjs", doRead);
+export function ignoreNotFound<T>(factory: () => T): T | null {
+  try {
+    return factory();
+  } catch (err) {
+    if (
+      err instanceof ComponentNotFoundError ||
+      err instanceof FrameworkNotFound
+    ) {
+      return null;
+    }
+  }
+}

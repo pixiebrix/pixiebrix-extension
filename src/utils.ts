@@ -15,8 +15,52 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import mapValues from "lodash/mapValues";
-import partial from "lodash/partial";
+import { isEmpty, mapValues, partial, negate } from "lodash";
+
+export const sleep = (milliseconds: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+};
+
+export class TimeoutError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "TimeoutError";
+  }
+}
+
+export async function awaitValue<T>(
+  valueFactory: () => T,
+  {
+    waitMillis,
+    retryMillis = 50,
+    predicate = negate(isEmpty),
+  }: {
+    waitMillis: number;
+    retryMillis?: number;
+    predicate?: (value: T) => boolean;
+  }
+): Promise<T> {
+  const start = new Date().getTime();
+  let elapsed = 0;
+  let value: T;
+  do {
+    value = valueFactory();
+    if (predicate(value)) {
+      return value;
+    }
+    await sleep(retryMillis);
+    elapsed = new Date().getTime() - start;
+  } while (elapsed < waitMillis);
+
+  throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
+}
+
+export function isPrimitive(val: unknown): boolean {
+  if (typeof val === "object") {
+    return val === null;
+  }
+  return typeof val !== "function";
+}
 
 export function boolean(value: unknown): boolean {
   if (typeof value === "string") {

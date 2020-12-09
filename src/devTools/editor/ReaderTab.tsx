@@ -22,23 +22,23 @@ import { DevToolsContext } from "@/devTools/context";
 import { useField, useFormikContext } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 import Select from "react-select";
-import { FrameworkVersions } from "@/messaging/constants";
+import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import useAsyncEffect from "use-async-effect";
 import { GridLoader } from "react-spinners";
 import { runReader } from "@/background/devtools";
 import { jsonTreeTheme as theme } from "@/themes/light";
-
-// @ts-ignore: no type definitions?
-import GenerateSchema from "generate-schema";
 import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 
+// @ts-ignore: no type definitions?
+import GenerateSchema from "generate-schema";
+
 type FrameworkOption = {
-  value: string;
+  value: Framework;
   label: string;
-  version?: string;
+  detected?: FrameworkMeta;
   makeConfig?: (type: string, selector: string) => ReaderTypeConfig;
 };
 
@@ -50,10 +50,18 @@ export function defaultConfig(
 }
 
 export const readerOptions: FrameworkOption[] = [
-  { value: "react", label: "React - Props" },
-  { value: "angular", label: "Angular - Scope" },
+  { value: "react", label: "React" },
+  { value: "angular", label: "Angular" },
+  {
+    value: "angularjs",
+    label: "AngularJS",
+    makeConfig: (type: string, selector) => ({
+      type: "angular",
+      selector: selector,
+    }),
+  },
   { value: "emberjs", label: "Ember.js" },
-  { value: "vuejs", label: "Vue.js" },
+  { value: "vue", label: "Vue.js" },
   {
     value: "jquery",
     label: "jQuery",
@@ -62,25 +70,26 @@ export const readerOptions: FrameworkOption[] = [
       selectors: [selector],
     }),
   },
-  { value: "backbone", label: "Backbone.js" },
-  { value: "redux", label: "Redux" },
 ];
 
 const FrameworkSelector: React.FunctionComponent<{
   name: string;
-  frameworks: FrameworkVersions;
+  frameworks: FrameworkMeta[];
 }> = ({ name, frameworks }) => {
-  const frameworkOptions: FrameworkOption[] = useMemo(() => {
-    return readerOptions.map((option) => {
-      const version = Object.entries(frameworks).find(
-        ([framework]) => framework.toLowerCase() === option.value
-      )?.[1];
-      return {
-        ...option,
-        label: `${option.label} - ${version ?? "Not detected"}`,
-      };
-    });
-  }, [frameworks]);
+  const frameworkOptions: FrameworkOption[] = useMemo(
+    () =>
+      readerOptions.map((option) => {
+        const detected = frameworks.find(({ id }) => option.value === id);
+        return {
+          ...option,
+          detected,
+          label: `${option.label} - ${
+            detected ? detected.version ?? "Unknown Version" : "Not detected"
+          }`,
+        };
+      }),
+    [frameworks]
+  );
   const [field, , helpers] = useField(name);
   return (
     <Select
@@ -151,7 +160,7 @@ const ReaderTab: React.FunctionComponent<{
         <Col sm={10}>
           <SelectorSelectorField
             name="reader.selector"
-            initialSuggestions={[element.containerSelector]}
+            initialElement={element.containerInfo}
           />
         </Col>
       </Form.Group>
@@ -160,21 +169,25 @@ const ReaderTab: React.FunctionComponent<{
           <Col>{error}</Col>
         ) : (
           <>
-            <Col>
+            <Col className="h-100">
               <span>Raw Data</span>
-              {output !== undefined ? (
-                <JSONTree data={output} theme={theme} invertTheme hideRoot />
-              ) : (
-                <GridLoader />
-              )}
+              <div className="overflow-auto h-100">
+                {output !== undefined ? (
+                  <JSONTree data={output} theme={theme} invertTheme hideRoot />
+                ) : (
+                  <GridLoader />
+                )}
+              </div>
             </Col>
-            <Col>
+            <Col className="h-100">
               <span>Inferred Schema</span>
-              {schema !== undefined ? (
-                <SchemaTree schema={schema} />
-              ) : (
-                <GridLoader />
-              )}
+              <div className="overflow-auto h-100">
+                {schema !== undefined ? (
+                  <SchemaTree schema={schema} />
+                ) : (
+                  <GridLoader />
+                )}
+              </div>
             </Col>
           </>
         )}

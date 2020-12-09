@@ -15,12 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "@/messaging/chrome";
-import { SET_VUE_VALUES } from "@/messaging/constants";
-
-export const withSetVueValues = createSendScriptMessage<unknown>(
-  SET_VUE_VALUES
-);
+import { setComponentData } from "@/pageScript/protocol";
 
 import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
@@ -54,7 +49,7 @@ export class SetVueValues extends Effect {
     component: selector,
     values: valueMap,
   }: BlockArg): Promise<void> {
-    await withSetVueValues({ selector, valueMap });
+    await setComponentData({ framework: "vue", selector, valueMap });
   }
 }
 
