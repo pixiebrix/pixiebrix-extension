@@ -26,18 +26,18 @@ export function isHost(hostname: string): boolean {
   );
 }
 
-function getAncestors(element: Node): Node[] {
-  const ancestors = [element];
-  let currentElement: Node = element;
-  while (currentElement && currentElement != document) {
-    ancestors.push(currentElement);
-    currentElement = currentElement.parentNode;
+function getAncestors(node: Node): Node[] {
+  const ancestors = [node];
+  let currentNode: Node = node;
+  while (currentNode && currentNode != document) {
+    ancestors.push(currentNode);
+    currentNode = currentNode.parentNode;
   }
   return ancestors;
 }
 
-export function onNodeRemoved(element: Node, callback: () => void): void {
-  const ancestors = getAncestors(element);
+export function onNodeRemoved(node: Node, callback: () => void): void {
+  const ancestors = getAncestors(node);
 
   const nodes = new WeakSet<Node>(ancestors);
   const observers = new Set<MutationObserver>();
@@ -45,18 +45,20 @@ export function onNodeRemoved(element: Node, callback: () => void): void {
   // Observe the whole path to the node. A node is removed if any of its ancestors are removed. Observe individual
   // nodes instead of the subtree on the document for efficiency on wide trees
   for (const ancestor of ancestors) {
-    if (ancestor) {
+    if (ancestor && ancestor.parentNode) {
       // https://stackoverflow.com/a/50397148/
       const removalObserver = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
-          // @ts-ignore: thought this would be fixed by changing the target to es6?
           // https://stackoverflow.com/questions/51723962/typescript-nodelistofelement-is-not-an-array-type-or-a-string-type
-          for (const removedNode of mutation.removedNodes) {
+          for (const removedNode of (mutation.removedNodes as any) as Iterable<Node>) {
             if (nodes.has(removedNode)) {
-              for (const observer of observers) {
-                observer.disconnect();
+              try {
+                for (const observer of observers) {
+                  observer.disconnect();
+                }
+              } finally {
+                callback();
               }
-              callback();
               break;
             }
           }
