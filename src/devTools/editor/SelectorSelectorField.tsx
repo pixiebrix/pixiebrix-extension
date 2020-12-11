@@ -24,7 +24,7 @@ import React, {
 } from "react";
 import { useField } from "formik";
 import { OptionsType } from "react-select";
-import { uniqBy } from "lodash";
+import { uniqBy, compact } from "lodash";
 import Creatable from "react-select/creatable";
 import { components } from "react-select";
 import { Badge, Button } from "react-bootstrap";
@@ -79,7 +79,7 @@ function unrollValues(elementInfo: ElementInfo): OptionValue[] {
   }
   return [
     ...(elementInfo.selectors ?? []).map((value) => ({ value, elementInfo })),
-    ...[elementInfo.owner, elementInfo.parent].flatMap(unrollValues),
+    ...compact([elementInfo.parent]).flatMap(unrollValues),
   ].filter((x) => x.value && x.value.trim() !== "");
 }
 
@@ -102,12 +102,14 @@ const SelectorSelectorField: React.FunctionComponent<{
   initialElement?: ElementInfo;
   selectMode?: SelectMode;
   traverseUp?: number;
+  isClearable?: boolean;
 }> = ({
   name,
   initialElement,
   framework,
   selectMode = "element",
   traverseUp = 0,
+  isClearable = false,
 }) => {
   const { port } = useContext(DevToolsContext);
 
@@ -117,7 +119,7 @@ const SelectorSelectorField: React.FunctionComponent<{
   const [isSelecting, setSelecting] = useState(false);
 
   const options: SelectorOptions = useMemo(
-    () => makeOptions(element, [...created, field.value]),
+    () => makeOptions(element, compact([...created, field.value])),
     [created, element, field.value]
   );
 
@@ -130,7 +132,7 @@ const SelectorSelectorField: React.FunctionComponent<{
         traverseUp,
       });
       setElement(selected);
-      helpers.setValue(selected.selectors[0]);
+      helpers.setValue(selected.selectors?.[0]);
     } finally {
       setSelecting(false);
     }
@@ -150,6 +152,7 @@ const SelectorSelectorField: React.FunctionComponent<{
       </div>
       <div className="flex-grow-1">
         <Creatable
+          isClearable={isClearable}
           createOptionPosition="first"
           isDisabled={isSelecting}
           options={options}
@@ -159,7 +162,9 @@ const SelectorSelectorField: React.FunctionComponent<{
             helpers.setValue(inputValue);
           }}
           value={options.find((x) => x.value === field.value)}
-          onChange={(option) => helpers.setValue((option as any).value)}
+          onChange={(option) =>
+            helpers.setValue(option ? (option as OptionValue).value : null)
+          }
         />
       </div>
     </div>

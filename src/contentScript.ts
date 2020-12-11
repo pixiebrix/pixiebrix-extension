@@ -19,15 +19,15 @@ import { v4 as uuidv4 } from "uuid";
 
 declare global {
   interface Window {
-    pixiebrix?: string;
+    __pixiebrix__?: string;
   }
 }
 
-if (!window.pixiebrix) {
-  window.pixiebrix = uuidv4();
+if (!window.__pixiebrix__) {
+  window.__pixiebrix__ = uuidv4();
 } else {
   throw Error(
-    `PixieBrix content script already installed: ${window.pixiebrix}`
+    `PixieBrix contentScript already installed: ${window.__pixiebrix__}`
   );
 }
 
@@ -58,7 +58,6 @@ import { notifyReady, whoAmI } from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "notifyjs-browser";
-import "jquery.initialize";
 import { updateTabInfo } from "@/contentScript/context";
 
 const contextPromise = whoAmI()

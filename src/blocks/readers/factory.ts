@@ -61,8 +61,8 @@ const _readerFactories: {
   [type: string]: Read;
 } = {};
 
-export function registerFactory(key: string, read: Read): void {
-  _readerFactories[key] = read;
+export function registerFactory(readerType: string, read: Read): void {
+  _readerFactories[readerType] = read;
 }
 
 export function makeRead(

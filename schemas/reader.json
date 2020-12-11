@@ -19,17 +19,19 @@
         }
       ]
     },
-    "emberjsReader": {
+    "frameworkReader": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
-          "const": "emberjs"
+          "enum": ["react", "angularjs", "vue", "emberjs"]
         },
         "selector": {
           "type": "string"
         },
         "attrs": {
+          "deprecationMessage": "Deprecated in a favor of pathSpec",
+          "description": "The attribute or attributes to read from the framework instance",
           "oneOf": [
             {
               "type": "string"
@@ -48,28 +50,33 @@
               "minItems": 1
             }
           ]
-        }
-      },
-      "required": [
-        "type",
-        "selector"
-      ]
-    },
-    "reactReader": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "const": "react"
         },
-        "selector": {
-          "type": "string"
+        "pathSpec": {
+          "oneOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          ]
         },
         "traverseUp": {
           "type": "number"
         },
         "waitMillis": {
-          "type": "number"
+          "type": "number",
+          "description": "Time to wait for the instance to become available, in milliseconds"
         },
         "rootProp": {
           "type": "string"
@@ -173,16 +180,13 @@
         "reader": {
           "oneOf": [
             {
-              "$ref": "#/definitions/emberjsReader"
+              "$ref": "#/definitions/frameworkReader"
             },
             {
               "$ref": "#/definitions/windowReader"
             },
             {
               "$ref": "#/definitions/jqueryReader"
-            },
-            {
-              "$ref": "#/definitions/reactReader"
             }
           ]
         },
@@ -199,7 +203,6 @@
         }
       },
       "required": [
-        "isAvailable",
         "reader"
       ]
     }

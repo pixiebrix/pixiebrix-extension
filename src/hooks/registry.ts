@@ -15,23 +15,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ReaderOutput } from "@/core";
-import { registerFactory } from "@/blocks/readers/factory";
-import { getComponentData } from "@/pageScript/protocol";
+import Registry, { RegistryItem } from "@/baseRegistry";
+import { useState } from "react";
+import { useAsyncEffect } from "use-async-effect";
 
-export interface EmberConfig {
-  type: "emberjs";
-  selector: string;
-  attrs: string | string[];
+export function useRegistry<T extends RegistryItem>(
+  registry: Registry<T>,
+  id: string
+): T {
+  const [result, setResult] = useState<T>();
+  useAsyncEffect(
+    async (isMounted) => {
+      const result = await registry.lookup(id);
+      if (!isMounted) {
+        return;
+      }
+      setResult(result);
+    },
+    [registry, id]
+  );
+  return result;
 }
-
-async function doRead(reader: EmberConfig): Promise<ReaderOutput> {
-  const { attrs: rawAttrs, selector } = reader;
-  return await getComponentData({
-    framework: "emberjs",
-    selector,
-    pathSpec: rawAttrs,
-  });
-}
-
-registerFactory("emberjs", doRead);

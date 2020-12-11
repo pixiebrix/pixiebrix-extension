@@ -15,15 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export interface GetOwnerOptions {
-  maxTraverseUp?: number;
-}
-
 type ComponentData = object;
+
+export function traverse<T = unknown>(
+  next: (current: T) => T | null,
+  src: T,
+  count: number
+): T | null {
+  let current = src;
+  for (let i = 0; i < count && current; i++) {
+    current = next(current);
+  }
+  return current;
+}
 
 // object required for WeakSet
 // eslint-disable-next-line @typescript-eslint/ban-types
-export function traverse<T extends object>(
+export function traverseUntil<T extends object>(
   src: T,
   match: (element: T) => boolean,
   next: (current: T) => T | null,
@@ -46,24 +54,28 @@ export function traverse<T extends object>(
   return current;
 }
 
+export interface TreeAdapter<TComponent = unknown> {
+  /**
+   * Return the parent instance, or null for root components.
+   */
+  getParent: (instance: TComponent) => TComponent | null;
+}
+
 export interface ComponentAdapter<TComponent = unknown> {
   /**
-   * true if the the element is managed by the framework
+   * Returns true if the DOM node is managed by the framework.
    */
-  isComponent: (element: HTMLElement) => boolean;
+  isManaged: (node: Node) => boolean;
 
   /**
-   * Return the component directly associated with the element
+   * Returns the component that manages the DOM node, or null.
    */
-  elementComponent: (element: HTMLElement) => TComponent | null;
+  getComponent: (node: Node) => TComponent | null;
 
   /**
-   * Get the HTML element that manages the component
+   * Returns the DOM node for the component, or null if it does not correspond to a node.
    */
-  getOwner: (
-    element: HTMLElement,
-    options?: GetOwnerOptions
-  ) => HTMLElement | null;
+  getNode: (instance: TComponent) => Node | null;
 }
 
 export interface ReadAdapter<
@@ -71,7 +83,7 @@ export interface ReadAdapter<
   TData extends ComponentData = ComponentData
 > {
   /**
-   * Returns the data defined for the component
+   * Returns the data defined for the component.
    */
   getData: (component: TComponent) => TData;
 }
@@ -89,7 +101,9 @@ export interface WriteAdapter<
 export type ReadableComponentAdapter<
   TComponent = unknown,
   TData extends ComponentData = ComponentData
-> = ComponentAdapter<TComponent> & ReadAdapter<TComponent, TData>;
+> = TreeAdapter<TComponent> &
+  ComponentAdapter<TComponent> &
+  ReadAdapter<TComponent, TData>;
 
 export type WriteableComponentAdapter<
   TComponent = unknown,

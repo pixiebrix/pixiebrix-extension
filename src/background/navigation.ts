@@ -15,10 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import {
-  notifyNavigation,
-  reactivate as reactivateExtensions,
-} from "@/contentScript/lifecycle";
+import * as contentScript from "@/contentScript/lifecycle";
 
 import { liftBackground } from "@/background/protocol";
 import { browser } from "webextension-polyfill-ts";
@@ -27,14 +24,14 @@ function initNavigation(): void {
   browser.webNavigation.onHistoryStateUpdated.addListener(function (details) {
     // console.debug(`onHistoryStateUpdated (tab=${details.tabId}, frame=${details.frameId})` , details);
     const { tabId } = details;
-    notifyNavigation(tabId);
+    contentScript.notifyNavigation(tabId);
   });
 }
 
 export const reactivate = liftBackground(
   "REACTIVATE",
   async () => {
-    await reactivateExtensions(null);
+    await contentScript.reactivate(null);
   },
   { asyncResponse: false }
 );

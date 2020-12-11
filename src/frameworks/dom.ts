@@ -15,22 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ReaderOutput } from "@/core";
-import { registerFactory } from "@/blocks/readers/factory";
-import { getComponentData } from "@/pageScript/protocol";
-
-export interface AngularConfig {
-  type: "angular";
-  selector: string;
+export function isNode(x: unknown): x is Node {
+  return typeof x === "object" && "nodeType" in x;
 }
 
-async function doRead(reader: AngularConfig): Promise<ReaderOutput> {
-  const { selector } = reader;
-  return await getComponentData({
-    framework: "angular",
-    selector,
-  });
+export function findElement(node: Node): Element | null {
+  let current = node;
+  while (current && !(current instanceof Element)) {
+    current = current.parentNode;
+  }
+  if (current instanceof Element) {
+    return current;
+  }
+  return null;
 }
-
-registerFactory("angularjs", doRead);
-registerFactory("angular", doRead);

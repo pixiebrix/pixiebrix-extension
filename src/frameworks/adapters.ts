@@ -16,7 +16,7 @@
  */
 
 import emberAdapter from "./contrib/ember";
-import angularAdapter from "./contrib/angular";
+import angularjsAdapter from "@/frameworks/contrib/angularjs";
 import reactAdapter from "./contrib/react";
 import vueAdapter from "./contrib/vue";
 import { Framework } from "@/messaging/constants";
@@ -35,8 +35,7 @@ export const FRAMEWORK_ADAPTERS: Partial<
   react: reactAdapter,
   emberjs: emberAdapter,
   vue: vueAdapter,
-  angular: angularAdapter,
-  angularjs: angularAdapter,
+  angularjs: angularjsAdapter,
 };
 
 export default FRAMEWORK_ADAPTERS;

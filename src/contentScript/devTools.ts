@@ -87,7 +87,9 @@ export const runReader = liftContentScript(
     config: ReaderTypeConfig;
     rootSelector?: string;
   }) => {
-    const root = rootSelector ? $(rootSelector).get(0) : document;
+    const root = rootSelector
+      ? $(document).find(rootSelector).get(0)
+      : document;
     return await makeRead(config)(root);
   }
 );

@@ -21,6 +21,7 @@ import { liftBackground } from "@/background/protocol";
 
 const STORAGE_KEY = "BRICK_REGISTRY";
 const BRICK_STORE = "bricks";
+const VERSION = 1;
 
 export const LOCAL_SCOPE = "@local";
 
@@ -66,8 +67,12 @@ interface LogDB extends DBSchema {
   };
 }
 
+function getKey(obj: Package): [string, number, number, number] {
+  return [obj.id, obj.version.major, obj.version.minor, obj.version.patch];
+}
+
 async function getBrickDB() {
-  return await openDB<LogDB>(STORAGE_KEY, 1, {
+  return await openDB<LogDB>(STORAGE_KEY, VERSION, {
     upgrade(db) {
       // Create a store of objects
       const store = db.createObjectStore(BRICK_STORE, {
@@ -114,6 +119,32 @@ export const add = liftBackground("REGISTRY_PUT", async (obj: Package) => {
   const db = await getBrickDB();
   await db.put(BRICK_STORE, obj);
 });
+
+export const syncRemote = liftBackground(
+  "REGISTRY_SYNC",
+  async (kind: Kind, objs: Package[]) => {
+    const db = await getBrickDB();
+    const tx = db.transaction(BRICK_STORE, "readwrite");
+
+    const current = await tx.store.getAll();
+
+    let deleteCnt = 0;
+    for (const obj of current) {
+      if (obj.kind === kind && obj.scope !== LOCAL_SCOPE) {
+        tx.store.delete(getKey(obj));
+        deleteCnt++;
+      }
+    }
+
+    console.debug(`Removed ${deleteCnt} ${kind} entries`);
+
+    for (const obj of objs) {
+      tx.store.put(obj);
+    }
+
+    await tx.done;
+  }
+);
 
 export const find = liftBackground("REGISTRY_FIND", async (id: string) => {
   const db = await getBrickDB();

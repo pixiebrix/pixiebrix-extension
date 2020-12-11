@@ -47,6 +47,7 @@ import { awaitValue, clone, getPropByPath, TimeoutError } from "./utils";
 import { ComponentNotFoundError } from "@/frameworks/errors";
 import {
   ReadableComponentAdapter,
+  traverse,
   WriteableComponentAdapter,
 } from "@/frameworks/component";
 import { elementInfo } from "@/nativeEditor/frameworks";
@@ -114,55 +115,48 @@ async function read<TComponent>(
   selector: string,
   options: ReadOptions
 ) {
-  const { pathSpec, waitMillis = 0, retryMillis = 1000, rootProp } = options;
+  const {
+    pathSpec,
+    waitMillis = 0,
+    retryMillis = 1000,
+    rootProp,
+    traverseUp = 0,
+  } = options;
 
   const element = requireSingleElement(selector);
-  let component;
+  let component: TComponent;
 
   try {
-    component = await awaitValue(() => adapter.elementComponent(element), {
+    component = await awaitValue(() => adapter.getComponent(element), {
       waitMillis,
       retryMillis,
       predicate: identity,
     });
   } catch (err) {
     if (err instanceof TimeoutError) {
-      component = null;
+      throw new ComponentNotFoundError(
+        `Could not find framework component for selector ${selector} in ${waitMillis}ms`
+      );
     }
     throw err;
   }
 
-  if (!component) {
-    throw new ComponentNotFoundError(
-      `Could not find framework component for selector ${selector} in ${waitMillis}ms`
-    );
-  }
+  component = traverse(adapter.getParent, component, traverseUp);
+  const data = clone(adapter.getData(component));
 
-  const props = clone(adapter.getData(component));
+  console.debug(`Reading ${selector} with options`, { options, rawData: data });
 
-  return readPathSpec(rootProp ? (props as any)[rootProp] : props, pathSpec);
+  return readPathSpec(rootProp ? (data as any)[rootProp] : data, pathSpec);
 }
 
 attachListener(
   GET_COMPONENT_DATA,
-  async ({
-    framework,
-    selector,
-    traverseUp = 0,
-    waitMillis = 1000,
-    retryMillis = 10,
-    rootProp,
-  }: ReadPayload) => {
+  async ({ framework, selector, ...options }: ReadPayload) => {
     const adapter = adapters[framework] as ReadableComponentAdapter;
     if (!adapter) {
       throw new Error(`No read adapter available for ${framework}`);
     }
-    return await read(adapter, selector, {
-      waitMillis,
-      retryMillis,
-      rootProp,
-      traverseUp,
-    });
+    return await read(adapter, selector, options);
   }
 );
 
@@ -174,9 +168,7 @@ attachListener(
       throw new Error(`No write adapter available for ${framework}`);
     }
     const element = requireSingleElement(selector);
-    const component = (adapter.getOwner(element) as unknown) as {
-      [key: string]: unknown;
-    };
+    const component = adapter.getComponent(element);
     adapter.setData(component, valueMap);
   }
 );

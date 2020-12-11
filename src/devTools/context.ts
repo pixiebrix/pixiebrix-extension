@@ -61,8 +61,20 @@ export function useMakeContext(): [Context, () => Promise<void>] {
   const [context, setContext] = useState(initialValue);
 
   const connect = useCallback(async () => {
-    const backgroundPort = await connectDevtools();
-    const { hasPermissions } = await getTabInfo(backgroundPort);
+    let hasPermissions: boolean;
+    let backgroundPort: Runtime.Port;
+
+    try {
+      backgroundPort = await connectDevtools();
+      hasPermissions = (await getTabInfo(backgroundPort)).hasPermissions;
+    } catch (err) {
+      setContext({
+        port: backgroundPort,
+        frameworks: [],
+        hasTabPermissions: false,
+        error: err.toString(),
+      });
+    }
 
     if (!hasPermissions) {
       setContext({

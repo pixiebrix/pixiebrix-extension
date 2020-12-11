@@ -19,14 +19,12 @@ import { Framework } from "@/messaging/constants";
 import adapters from "@/frameworks/adapters";
 import { uniq, isEmpty } from "lodash";
 import { inferSelectors } from "@/nativeEditor/infer";
-import { ignoreNotFound } from "@/frameworks/errors";
 
 export interface ElementInfo {
   selectors: string[];
   framework: Framework;
   tagName: string;
   hasData: boolean;
-  owner: ElementInfo | undefined;
   parent?: ElementInfo;
 }
 
@@ -40,6 +38,11 @@ export async function elementInfo(
     return undefined;
   }
 
+  const inferredSelectors = uniq([
+    ...(selectors ?? []),
+    ...inferSelectors(element),
+  ]);
+
   console.debug(`Creating element info for ${element.tagName} element`, {
     element,
   });
@@ -52,15 +55,14 @@ export async function elementInfo(
       continue;
     }
 
-    const component = adapter.elementComponent(element);
+    const component = adapter.getComponent(element);
 
     if (component) {
       return {
-        selectors: uniq([...(selectors ?? []), ...inferSelectors(element)]),
+        selectors: inferredSelectors,
         framework: framework as Framework,
         tagName: element.tagName,
         hasData: !isEmpty(adapter.getData(component)),
-        owner: null,
         parent: await elementInfo(
           element.parentElement,
           framework as Framework,
@@ -71,48 +73,13 @@ export async function elementInfo(
     } else {
       console.debug(`No component found for ${framework}`);
     }
-
-    const ownerElement = ignoreNotFound(() => adapter.getOwner(element));
-
-    if (ownerElement && ownerElement !== element) {
-      const ownerComponent = adapter.elementComponent(ownerElement);
-
-      return {
-        selectors: uniq([...(selectors ?? []), ...inferSelectors(element)]),
-        framework: framework as Framework,
-        tagName: element.tagName,
-        hasData: component ? !isEmpty(adapter.getData(component)) : false,
-        parent: await elementInfo(
-          element.parentElement,
-          framework as Framework,
-          [],
-          traverseUp - 1
-        ),
-        owner: {
-          selectors: inferSelectors(ownerElement),
-          hasData: ownerComponent
-            ? !isEmpty(adapter.getData(ownerComponent))
-            : false,
-          framework: framework as Framework,
-          tagName: ownerElement.tagName,
-          parent: await elementInfo(
-            ownerElement.parentElement,
-            framework as Framework,
-            [],
-            traverseUp - 1
-          ),
-          owner: null,
-        },
-      };
-    }
   }
 
   return {
-    selectors: uniq([...(selectors ?? []), ...inferSelectors(element)]),
+    selectors: inferredSelectors,
     framework: null,
     hasData: false,
     tagName: element.tagName,
-    owner: null,
     parent: await elementInfo(element.parentElement, null, [], traverseUp - 1),
   };
 }

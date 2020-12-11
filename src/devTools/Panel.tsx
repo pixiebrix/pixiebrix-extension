@@ -38,6 +38,18 @@ import { ToastProvider } from "react-toast-notifications";
 
 const defaultState = { isLoggedIn: false, extension: true };
 
+const Centered: React.FunctionComponent = ({ children }) => {
+  return (
+    <Container fluid>
+      <Row>
+        <Col className="mx-auto mt-4 text-center" md={4} sm={10}>
+          {children}
+        </Col>
+      </Row>
+    </Container>
+  );
+};
+
 const Panel: React.FunctionComponent = () => {
   const [authState, , authError] = useAsyncState(getAuth);
   const [context, connect] = useMakeContext();
@@ -52,21 +64,29 @@ const Panel: React.FunctionComponent = () => {
   }, [connect, context.port]);
 
   if (authError) {
-    return <div>Error authenticating account: {authError.toString()}</div>;
+    return (
+      <Centered>
+        <div>Error authenticating account: {authError.toString()}</div>;
+      </Centered>
+    );
   } else if (context.error) {
-    return <div>An error occurred: {context.error.toString()}</div>;
+    return (
+      <Centered>
+        <div>An error occurred: {context.error.toString()}</div>;
+      </Centered>
+    );
   } else if (!context.port) {
-    return <GridLoader />;
+    return (
+      <Centered>
+        <GridLoader />
+      </Centered>
+    );
   } else if (!context.hasTabPermissions) {
     return (
-      <Container fluid>
-        <Row>
-          <Col className="mx-auto mt-4 text-center" md={4} sm={10}>
-            <p>PixieBrix does not have access to the page.</p>
-            <Button onClick={request}>Grant Permanent Access</Button>
-          </Col>
-        </Row>
-      </Container>
+      <Centered>
+        <p>PixieBrix does not have access to the page.</p>
+        <Button onClick={request}>Grant Permanent Access</Button>
+      </Centered>
     );
   }
 

@@ -17,16 +17,20 @@
 
 import { mapValues, partial, unary } from "lodash";
 import { isPrimitive } from "@/utils";
-import { ReadableComponentAdapter, traverse } from "@/frameworks/component";
+import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
+import { findElement } from "@/frameworks/dom";
 
-interface EmberComponent {
+interface EmberObject {
+  // https://api.emberjs.com/ember/release/classes/EmberObject/methods?anchor=get
   attrs: Record<string, unknown>;
+  parentView: EmberObject | null;
+  element: Node;
 }
 
 interface EmberApplication {
   __container__: {
-    lookup: (container: string) => { [componentId: string]: EmberComponent };
+    lookup: (container: string) => { [componentId: string]: EmberObject };
   };
 }
 
@@ -62,7 +66,7 @@ export function getEmberApplication(): EmberApplication {
   }
 }
 
-export function getEmberComponentById(componentId: string): EmberComponent {
+export function getEmberComponentById(componentId: string): EmberObject {
   const app = getEmberApplication();
   if (!app) {
     throw new FrameworkNotFound("Ember application not found");
@@ -104,25 +108,18 @@ export function readEmberValueFromCache(
   }
 }
 
-function isComponent(element: HTMLElement): boolean {
-  return !!ignoreNotFound(() => getEmberComponentById(element.id));
+function isManaged(node: Node): boolean {
+  return !!ignoreNotFound(() => getEmberComponentById(findElement(node).id));
 }
 
-const adapter: ReadableComponentAdapter<EmberComponent> = {
-  isComponent,
-  elementComponent: (element) =>
-    ignoreNotFound(() => getEmberComponentById(element.id)),
-  getOwner: (element, options?) =>
-    traverse(
-      element,
-      isComponent,
-      (x) => x.parentElement,
-      options?.maxTraverseUp
-    ),
-  getData: (component) => {
-    console.debug("component", { component, attrs: component.attrs });
-    return mapValues(component.attrs, unary(readEmberValueFromCache));
-  },
+const adapter: ReadableComponentAdapter<EmberObject> = {
+  isManaged,
+  getComponent: (node) =>
+    ignoreNotFound(() => getEmberComponentById(findElement(node).id)),
+  getParent: (instance) => instance.parentView,
+  getNode: (instance) => instance.element,
+  getData: (component) =>
+    mapValues(component.attrs, unary(readEmberValueFromCache)),
 };
 
 export default adapter;

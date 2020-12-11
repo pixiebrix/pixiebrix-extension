@@ -15,8 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// Resources:
+// angularjs: https://docs.angularjs.org/api/ng/function/angular.element
+
 import { pickBy } from "lodash";
-import { ReadableComponentAdapter, traverse } from "@/frameworks/component";
+import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 
 declare global {
@@ -25,55 +28,56 @@ declare global {
       version: {
         full: string;
       };
-      element: (
-        element: HTMLElement
-      ) => {
-        scope: () => Scope;
-      };
+      element: (element: Node) => AngularElement | null;
     };
   }
 }
 
 type Scope = Record<string, unknown>;
 
+/**
+ * See: https://docs.angularjs.org/api/ng/function/angular.element
+ */
 interface AngularElement {
+  /**
+   * Retrieves the scope of the current element or its parent. Requires Debug Data to be enabled.
+   * https://docs.angularjs.org/api/ng/type/$rootScope.Scope
+   */
   scope: () => Scope;
+  parent: () => AngularElement;
+
+  // It's actually jqLite instance, so we can grab it
+  0: Node;
 }
 
 export function getVersion(): string | null {
   return window.angular?.version?.full;
 }
 
-export function getComponent(element: HTMLElement): AngularElement | null {
+export function getComponent(node: Node): AngularElement | null {
   if (!window.angular) {
     throw new FrameworkNotFound("Angular not found");
   }
-  return (window.angular.element(element) as any) as AngularElement;
+  return window.angular.element(node);
 }
 
-export function isComponent(element: HTMLElement): boolean {
+export function isManaged(element: HTMLElement): boolean {
   return !!ignoreNotFound(() => getComponent(element));
 }
 
 const adapter: ReadableComponentAdapter<AngularElement, Scope> = {
-  isComponent,
-  elementComponent: (element) => ignoreNotFound(() => getComponent(element)),
-  getOwner: (element, options) =>
-    traverse(
-      element,
-      isComponent,
-      (x) => x.parentElement,
-      options?.maxTraverseUp
-    ),
-  getData: (instance) => {
-    return pickBy(
+  isManaged,
+  getComponent: (node) => ignoreNotFound(() => getComponent(node)),
+  getParent: (instance) => instance.parent(),
+  getNode: (instance) => instance[0],
+  getData: (instance) =>
+    pickBy(
       instance.scope(),
       (value, key) =>
         typeof value !== "function" &&
         !key.startsWith("$$") &&
         !key.startsWith("$")
-    );
-  },
+    ),
 };
 
 export default adapter;

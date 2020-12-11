@@ -28,6 +28,8 @@ import { FormikHelpers } from "formik";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { defaultConfig, readerOptions } from "@/devTools/editor/ReaderTab";
+import blockRegistry from "@/blocks/registry";
+import extensionPointRegistry from "@/extensionPoints/registry";
 
 const { saveExtension } = optionsSlice.actions;
 
@@ -189,6 +191,11 @@ export function useCreate(): (
       } finally {
         setSubmitting(false);
       }
+
+      await Promise.all([
+        blockRegistry.fetch(),
+        extensionPointRegistry.fetch(),
+      ]);
     },
     [dispatch, addToast, saved]
   );

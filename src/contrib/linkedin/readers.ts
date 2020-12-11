@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { mapValues, fromPairs } from "lodash";
+import { fromPairs } from "lodash";
 import { isHost } from "@/extensionPoints/helpers";
 import { registerBlock } from "@/blocks/registry";
 import { Schema } from "@/core";
@@ -31,8 +31,6 @@ export function getProfileContext(): JQuery | null {
 }
 
 class LinkedInProfileReader extends Reader {
-  ROOT_PATH = "parentView";
-
   PATH_SPEC = {
     firstName: "memberName?.firstName",
     lastName: "memberName?.lastName",
@@ -70,7 +68,9 @@ class LinkedInProfileReader extends Reader {
     const profile = await getComponentData({
       framework: "emberjs",
       selector: ".pv-top-card",
-      pathSpec: mapValues(this.PATH_SPEC, (x) => `${this.ROOT_PATH}?.${x}`),
+      pathSpec: this.PATH_SPEC,
+      // use the parentView
+      traverseUp: 1,
     });
     return {
       ...profile,

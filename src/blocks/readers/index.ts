@@ -23,9 +23,6 @@ export * from "./ImageEXIFReader";
 export * from "./ElementReader";
 
 // generic readers
-export * from "./emberjs";
+export * from "./frameworkReader";
 export * from "./jquery";
 export * from "./window";
-export * from "./react";
-export * from "./angular";
-export * from "./vuejs";

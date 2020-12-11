@@ -16,7 +16,8 @@
  */
 
 import { uniq, compact } from "lodash";
-const BUTTON_TAGS = ["li", "button", "a", "span", "input"];
+const BUTTON_TAGS = ["li", "button", "a", "span", "input", "svg"];
+const ICON_TAGS = ["svg"];
 const MENU_TAGS = ["ul", "tbody"];
 const CAPTION_TAGS = ["td", "a", "li", "span"];
 const MULTI_ATTRS = ["class", "rel"];
@@ -52,6 +53,10 @@ function commonStructure(
   captioned = false
 ): JQuery<HTMLElement> {
   const proto = $items.get(0);
+
+  if (ICON_TAGS.includes(proto.tagName.toLowerCase())) {
+    return $(`<span>{{{icon}}}</span>`);
+  }
 
   const $common = $(`<${proto.tagName.toLowerCase()}>`);
 

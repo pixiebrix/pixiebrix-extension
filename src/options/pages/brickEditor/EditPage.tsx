@@ -96,7 +96,7 @@ const EditPage: React.FunctionComponent = () => {
 
   const { isBlueprint, isInstalled } = useDetectBlueprint(data?.config);
 
-  const { submit, validate } = useSubmitBrick({ url, create: false });
+  const { submit, validate, remove } = useSubmitBrick({ url, create: false });
 
   if (!data) {
     return (
@@ -139,6 +139,15 @@ const EditPage: React.FunctionComponent = () => {
                 <div>
                   <Button disabled={!isValid || isSubmitting} type="submit">
                     {values.public ? "Publish Brick" : "Update Brick"}
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    disabled={isSubmitting}
+                    variant="danger"
+                    onClick={remove}
+                  >
+                    Delete Brick
                   </Button>
                 </div>
               </div>

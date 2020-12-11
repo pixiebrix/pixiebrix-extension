@@ -15,12 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
+import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
 import AsyncSelect from "react-select/async";
 import {
   ExtensionPointOption,
@@ -31,7 +29,7 @@ import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import { useFetch } from "@/hooks/fetch";
 import { AuthContext } from "@/auth/context";
-import sortBy from "lodash/sortBy";
+import { sortBy } from "lodash";
 
 interface OwnProps {
   navigate: (url: string) => void;
@@ -44,11 +42,17 @@ interface Brick {
   kind: string;
 }
 
-const CustomBricksCard: React.FunctionComponent<OwnProps> = ({ navigate }) => {
+const CustomBricksCard: React.FunctionComponent<
+  OwnProps & { query: string }
+> = ({ navigate, query }) => {
   const remoteBricks = useFetch<Brick[]>("/api/bricks/");
+
   const sortedBricks = useMemo(
-    () => sortBy(remoteBricks ?? [], (x) => x.name),
-    [remoteBricks]
+    () =>
+      sortBy(remoteBricks ?? [], (x) => x.name).filter(
+        (x) => query === "" || x.name.includes(query)
+      ),
+    [remoteBricks, query]
   );
 
   return (
@@ -92,7 +96,7 @@ const CustomBricksCard: React.FunctionComponent<OwnProps> = ({ navigate }) => {
 
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
   const { isLoggedIn } = useContext(AuthContext);
-
+  const [query, setQuery] = useState("");
   const optionsPromise = useMemo(getExtensionPointOptions, []);
 
   const loadOptions = useCallback(async (query) => {
@@ -133,11 +137,30 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
       </Row>
 
       {isLoggedIn && (
-        <Row>
-          <Col className="mt-4" md="12" lg="8">
-            <CustomBricksCard navigate={navigate} />
-          </Col>
-        </Row>
+        <>
+          <Row className="mt-4">
+            <Col md="12" lg="8">
+              <Form>
+                <InputGroup className="mb-2 mr-sm-2">
+                  <InputGroup.Prepend>
+                    <InputGroup.Text>Search</InputGroup.Text>
+                  </InputGroup.Prepend>
+                  <Form.Control
+                    id="query"
+                    placeholder="Start typing to find results"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </InputGroup>
+              </Form>
+            </Col>
+          </Row>
+          <Row>
+            <Col className="mt-4" md="12" lg="8">
+              <CustomBricksCard navigate={navigate} query={query} />
+            </Col>
+          </Row>
+        </>
       )}
     </div>
   );

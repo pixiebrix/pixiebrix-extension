@@ -19,85 +19,102 @@ import { pickBy } from "lodash";
 import { ComponentNotFoundError, ignoreNotFound } from "@/frameworks/errors";
 import { RootInstanceVisitor } from "@/frameworks/scanner";
 import { ReadableComponentAdapter } from "@/frameworks/component";
+import { traverse } from "@/frameworks/component";
+import { isNode } from "@/frameworks/dom";
+
+// React architecture references:
+// https://github.com/acdlite/react-fiber-architecture
+// https://indepth.dev/posts/1008/inside-fiber-in-depth-overview-of-the-new-reconciliation-algorithm-in-react#memoizedprops
+// https://github.com/Venryx/mobx-devtools-advanced/blob/master/Docs/TreeTraversal.md
+// https://stackoverflow.com/questions/29321742/react-getting-a-component-from-a-dom-element-for-debugging
 
 interface RootInstance {
   _reactRootContainer: unknown;
 }
 
-interface DOMFiber {
-  _instance: any;
+/**
+ * Structure from:
+ * - https://github.com/facebook/react/blob/50d9451f320a9aaf94304209193562cc385567d8/packages/react-devtools-shared/src/backend/legacy/renderer.js#L739
+ * - https://github.com/facebook/react/blob/v15.0.0/src/renderers/shared/reconciler/ReactReconciler.js
+ */
+interface LegacyInstance {
+  /**
+   * Public instance
+   */
+  _instance: unknown;
+
   _currentElement: {
-    _owner: DOMFiber;
+    _owner: LegacyInstance;
   };
 }
 
-interface ComponentFiber {
-  return: ComponentFiber;
-  memoizedProps: { [key: string]: unknown };
-  stateNode: HTMLElement;
+/**
+ * Type definition from: https://github.com/facebook/react/blob/4c6470cb3b821f3664955290cd4c4c7ac0de733a/packages/react-reconciler/src/ReactInternalTypes.js#L62
+ */
+interface Fiber {
+  /**
+   * The Fiber to return to after finishing processing this one.
+   * This is effectively the parent, but there can be multiple parents (two)
+   * so this is only the parent of the thing we're currently processing.
+   * It is conceptually the same as the return address of a stack frame.
+   */
+  return: Fiber | null;
+
+  /**
+   * The props used to create the output.
+   */
+  memoizedProps: { [prop: string]: unknown };
+
+  /**
+   * The resolved function/class associated with this fiber.
+   */
+  type: string | object;
+
+  /**
+   * The local state associated with this fiber.
+   */
+  stateNode: Node | object;
 }
 
-export function isComponent(element: HTMLElement): boolean {
-  return Object.keys(element).some((key) =>
+export function isManaged(node: Node): boolean {
+  return Object.keys(node).some((key) =>
     key.startsWith("__reactInternalInstance$")
   );
 }
 
-export function readReactProps(
-  fiber: ComponentFiber,
-  rootProp?: string
-): Record<string, unknown> {
-  // getComponentFiber is already returning the "return" for the component
-  const memoizedProps = fiber.memoizedProps;
-  console.debug("Memoized props", memoizedProps);
-  const props = rootProp ? memoizedProps[rootProp] : memoizedProps;
-  return pickBy(
-    props as Record<string, unknown>,
-    (value, key) => key !== "children"
-  );
+export function readReactProps(fiber: Fiber): Record<string, unknown> {
+  return pickBy(fiber.memoizedProps, (value, key) => key !== "children");
 }
 
-function getComponentFiber(fiber: any): ComponentFiber {
-  // react 16+
+function getComponentFiber(fiber: Fiber): Fiber {
   // return fiber._debugOwner; // this also works, but is __DEV__ only
   let parentFiber = fiber.return;
-  while (typeof parentFiber.type == "string") {
+  while (typeof parentFiber.type === "string") {
+    // string for HTML nodes, so traverse
     parentFiber = parentFiber.return;
   }
   return parentFiber;
 }
 
-export function findReactComponent(
-  element: HTMLElement,
-  traverseUp = 0
-): ComponentFiber {
-  // https://stackoverflow.com/questions/29321742/react-getting-a-component-from-a-dom-element-for-debugging
+export function findReactComponent(node: Node, traverseUp = 0): Fiber {
   // https://stackoverflow.com/a/39165137/402560
-
-  const key = Object.keys(element).find((key) =>
+  const key = Object.keys(node).find((key) =>
     key.startsWith("__reactInternalInstance$")
   );
 
-  // @ts-ignore: types match based on the check above
-  const domFiber: DOMFiber | null = element[key];
+  const domFiber: Fiber | LegacyInstance | null = (node as any)[key];
 
   if (domFiber == null) {
     throw new ComponentNotFoundError("React fiber not found for element");
   }
 
-  if (domFiber._currentElement) {
-    // react <16
-    let componentFiber = domFiber._currentElement._owner;
-    for (let i = 0; i < traverseUp; i++) {
-      componentFiber = componentFiber._currentElement._owner;
-    }
-    return componentFiber._instance;
+  if ("_currentElement" in domFiber) {
+    // FIXME: test this for React <16
+    const owner = (x: LegacyInstance) => x._currentElement._owner;
+    const fiber = traverse(owner, owner(domFiber), traverseUp);
+    return fiber._instance as Fiber;
   } else {
-    let componentFiber = getComponentFiber(domFiber);
-    for (let i = 0; i < traverseUp; i++) {
-      componentFiber = getComponentFiber(componentFiber);
-    }
-    return componentFiber;
+    return traverse(getComponentFiber, getComponentFiber(domFiber), traverseUp);
   }
 }
 
@@ -112,12 +129,13 @@ export class ReactRootVisitor implements RootInstanceVisitor<RootInstance> {
   }
 }
 
-export const adapter: ReadableComponentAdapter<ComponentFiber> = {
-  isComponent,
-  elementComponent: (element) =>
-    ignoreNotFound(() => findReactComponent(element, 0)),
-  getOwner: (element) => findReactComponent(element).stateNode,
-  getData: (component) => readReactProps(component),
+export const adapter: ReadableComponentAdapter<Fiber> = {
+  isManaged,
+  getComponent: (node) => ignoreNotFound(() => findReactComponent(node, 0)),
+  getParent: getComponentFiber,
+  getNode: (instance) =>
+    isNode(instance.stateNode) ? instance.stateNode : null,
+  getData: readReactProps,
 };
 
 export default adapter;

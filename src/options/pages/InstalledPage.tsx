@@ -15,39 +15,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Table from "react-bootstrap/Table";
-import isEmpty from "lodash/isEmpty";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import React, { useMemo, useState } from "react";
-import groupBy from "lodash/groupBy";
-import sortBy from "lodash/sortBy";
+import React, { useMemo } from "react";
+import { groupBy, sortBy, isEmpty } from "lodash";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { optionsSlice, OptionsState } from "../slices";
 import Button from "react-bootstrap/Button";
 import { useToasts } from "react-toast-notifications";
 import { PageTitle } from "@/layout/Page";
 import { useExtensionPermissions } from "@/permissions";
-import { useAsyncEffect } from "use-async-effect";
 import { BeatLoader } from "react-spinners";
-import Card from "react-bootstrap/Card";
 import {
   faCheck,
-  faExclamation,
   faCubes,
+  faExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { Row, Col, Card, Table } from "react-bootstrap";
 import {
   ExtensionValidationResult,
   useExtensionValidator,
 } from "@/validators/generic";
 import { IExtension } from "@/core";
 import "./InstalledPage.scss";
-import Registry, { RegistryItem } from "@/baseRegistry";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import { useRegistry } from "@/hooks/registry";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -74,24 +68,6 @@ function validationMessage(validation: ExtensionValidationResult) {
     console.debug("Validation result", validation);
   }
   return message;
-}
-
-function useRegistry<T extends RegistryItem>(
-  registry: Registry<T>,
-  id: string
-) {
-  const [result, setResult] = useState<T>();
-  useAsyncEffect(
-    async (isMounted) => {
-      const result = await registry.lookup(id);
-      if (!isMounted) {
-        return;
-      }
-      setResult(result);
-    },
-    [registry, id]
-  );
-  return result;
 }
 
 const ExtensionRow: React.FunctionComponent<{

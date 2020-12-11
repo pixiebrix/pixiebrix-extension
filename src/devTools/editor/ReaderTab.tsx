@@ -51,14 +51,9 @@ export function defaultConfig(
 
 export const readerOptions: FrameworkOption[] = [
   { value: "react", label: "React" },
-  { value: "angular", label: "Angular" },
   {
     value: "angularjs",
     label: "AngularJS",
-    makeConfig: (type: string, selector) => ({
-      type: "angular",
-      selector: selector,
-    }),
   },
   { value: "emberjs", label: "Ember.js" },
   {
@@ -122,6 +117,9 @@ const ReaderTab: React.FunctionComponent<{
   useAsyncEffect(
     async (isMounted) => {
       setSchema({ output: undefined, schema: undefined, error: undefined });
+      if (!values.reader?.selector) {
+        return;
+      }
       const option = readerOptions.find((x) => x.value === values.reader.type);
       let output;
       let schema;
@@ -166,6 +164,7 @@ const ReaderTab: React.FunctionComponent<{
         </Form.Label>
         <Col sm={10}>
           <SelectorSelectorField
+            isClearable
             name="reader.selector"
             initialElement={element.containerInfo}
             traverseUp={5}
@@ -173,11 +172,11 @@ const ReaderTab: React.FunctionComponent<{
         </Col>
       </Form.Group>
       <Row>
-        {error ? (
-          <Col>{error}</Col>
+        {error || !values.reader?.selector ? (
+          <Col>{error ?? "No reader/selector selected"}</Col>
         ) : (
           <>
-            <Col className="h-100">
+            <Col>
               <span>Raw Data</span>
               <div className="overflow-auto h-100">
                 {output !== undefined ? (
@@ -187,7 +186,7 @@ const ReaderTab: React.FunctionComponent<{
                 )}
               </div>
             </Col>
-            <Col className="h-100">
+            <Col>
               <span>Inferred Schema</span>
               <div className="overflow-auto h-100">
                 {schema !== undefined ? (

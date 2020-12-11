@@ -34,7 +34,6 @@ type UNKNOWN_VERSION = null;
 export const KNOWN_READERS = <const>[
   "react",
   "emberjs",
-  "angular",
   "angularjs",
   "vue",
   "jquery",

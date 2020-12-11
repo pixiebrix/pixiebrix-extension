@@ -21,7 +21,7 @@
 
 import { pickBy } from "lodash";
 import { RootInstanceVisitor } from "@/frameworks/scanner";
-import { traverse, WriteableComponentAdapter } from "@/frameworks/component";
+import { WriteableComponentAdapter } from "@/frameworks/component";
 
 declare global {
   interface Window {
@@ -37,7 +37,31 @@ interface BaseVue {
 }
 
 interface Instance {
-  $root?: Instance;
+  /**
+   * The root component instance of the current component tree. If the current instance has no parents this
+   * value will be itself.
+   */
+  $root: Instance;
+
+  /**
+   * The root DOM element that the component instance is managing.
+   * https://v3.vuejs.org/api/instance-properties.html#el
+   */
+  $el: Element;
+
+  /**
+   * The data object that the component instance is observing. The component instance proxies access
+   * to the properties on its data object.
+   * https://v3.vuejs.org/api/instance-properties.html#data
+   */
+  $data: object;
+
+  /**
+   * The parent instance, if the current instance has one.
+   * https://v3.vuejs.org/api/instance-properties.html#parent
+   */
+  $parent: Instance | null;
+
   _isFragment: boolean;
   constructor: BaseVue;
   _fragmentEnd?: unknown;
@@ -95,23 +119,25 @@ export function getVersion(): string | null {
   return window.Vue?.version;
 }
 
-export function isComponent(
+export function isManaged(
   element: HTMLElement
 ): element is HTMLElement & VueHTMLElement {
   return "__vue__" in element;
 }
 
+// https://github.com/vuejs/vue-devtools/blob/ccf6808e78a25ecaef2577d25b1d3643f524b240/packages/app-backend/src/utils.js
+export function findRelatedComponent(el: HTMLElement): Instance | null {
+  while (!isManaged(el) && el.parentElement) {
+    el = el.parentElement;
+  }
+  return isManaged(el) ? el.__vue__ : null;
+}
+
 const adapter: WriteableComponentAdapter<Instance> = {
-  isComponent,
-  elementComponent: (element: HTMLElement) =>
-    isComponent(element) ? element.__vue__ : undefined,
-  getOwner: (element: HTMLElement, options) =>
-    traverse(
-      element,
-      isComponent,
-      (x) => x.parentElement,
-      options?.maxTraverseUp
-    ),
+  isManaged,
+  getComponent: findRelatedComponent,
+  getNode: (instance: Instance) => instance.$el,
+  getParent: (instance: Instance) => instance.$parent,
   getData: (instance: Instance) => {
     // TODO: might want to read from $data here also
     return pickBy(
