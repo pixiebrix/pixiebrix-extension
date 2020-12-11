@@ -15,7 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { isEmpty, mapValues, partial, negate } from "lodash";
+import { isEmpty, mapValues, partial, negate, identity } from "lodash";
+
+export function isGetter(obj: object, prop: string): boolean {
+  return !!Object.getOwnPropertyDescriptor(obj, prop)?.["get"];
+}
 
 export const sleep = (milliseconds: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -79,7 +83,7 @@ export function clone<T extends {}>(object: T): T {
 
 export function clearObject(obj: { [key: string]: unknown }): void {
   for (const member in obj) {
-    if (obj.hasOwnProperty(member)) {
+    if (Object.prototype.hasOwnProperty.call(obj, member)) {
       delete obj[member];
     }
   }
@@ -143,14 +147,29 @@ export class InvalidPathError extends Error {
   }
 }
 
+export interface ReadProxy {
+  toJS: (value: unknown) => unknown;
+  get: (value: unknown, prop: number | string) => unknown;
+}
+
+export const noopProxy: ReadProxy = {
+  toJS: identity,
+  get: (value, prop) => (value as any)[prop],
+};
+
 export function getPropByPath(
-  obj: { [key: string]: any },
+  obj: { [prop: string]: unknown },
   path: string,
-  { args = {} }: { args?: object } | undefined = {}
+  {
+    args = {},
+    proxy = noopProxy,
+  }: { args?: object; proxy?: ReadProxy } | undefined = {}
 ): unknown {
   // consider using jsonpath syntax https://www.npmjs.com/package/jsonpath
 
-  let value: any = obj;
+  const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
+
+  let value: unknown = obj;
   const rawParts = path.trim().split(".");
 
   for (const [index, rawPart] of rawParts.entries()) {
@@ -175,9 +194,7 @@ export function getPropByPath(
       throw new InvalidPathError(`Invalid path ${path}`, path);
     }
 
-    value = value[part];
-
-    // console.debug('getPropByPath:part', value);
+    value = get(value, part);
 
     if (value == null) {
       if (coalesce || index === rawParts.length - 1) {
@@ -196,5 +213,5 @@ export function getPropByPath(
     }
   }
 
-  return cleanValue(value);
+  return cleanValue(toJS(value));
 }

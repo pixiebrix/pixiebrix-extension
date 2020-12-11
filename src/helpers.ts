@@ -100,14 +100,14 @@ export function mapArgs(
     return config.map((x) => mapArgs(x, ctxt, render));
   } else if (isPlainObject(config)) {
     return pickBy(
-      mapValues(<object>config, (subConfig) =>
+      mapValues(config as object, (subConfig) =>
         mapArgs(subConfig, ctxt, render)
       ),
       (x) => x != null
     );
   } else if (typeof config === "string") {
     if (isSimplePath(config, ctxt)) {
-      const prop = getPropByPath(ctxt, config);
+      const prop = getPropByPath(ctxt as { [prop: string]: unknown }, config);
       if (prop && typeof prop === "object" && "__service" in prop) {
         // if we're returning the root service context, return the service itself
         // @ts-ignore: not sure why the "in" check isn't working

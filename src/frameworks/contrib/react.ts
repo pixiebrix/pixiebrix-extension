@@ -82,7 +82,7 @@ export function isManaged(node: Node): boolean {
   );
 }
 
-export function readReactProps(fiber: Fiber): Record<string, unknown> {
+export function readReactProps(fiber: Fiber): { [prop: string]: unknown } {
   return pickBy(fiber.memoizedProps, (value, key) => key !== "children");
 }
 

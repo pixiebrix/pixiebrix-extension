@@ -67,6 +67,7 @@
     "@typescript-eslint/parser": "^4.9.0",
     "@xops.net/json-schema-to-react-tree": "^1.0.2",
     "ace-builds": "^1.4.12",
+    "all-keys": "^3.1.1",
     "axios": "^0.21.0",
     "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^26.6.3",

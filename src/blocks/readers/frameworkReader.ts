@@ -18,6 +18,7 @@
 import { registerFactory } from "@/blocks/readers/factory";
 import { Framework } from "@/messaging/constants";
 import { ReaderOutput } from "@/core";
+import { castArray, fromPairs } from "lodash";
 import { getComponentData, ReadPayload } from "@/pageScript/protocol";
 
 type FrameworkConfig = ReadPayload & {
@@ -35,13 +36,16 @@ function makeRead(framework: Framework) {
       attrs,
       pathSpec,
     } = reader;
+
     return await getComponentData({
       framework,
       selector,
       rootProp,
       waitMillis,
       traverseUp,
-      pathSpec: attrs ?? pathSpec,
+      pathSpec: attrs
+        ? fromPairs(castArray(attrs).map((attr) => [attr, `attrs.${attr}`]))
+        : pathSpec,
     });
   }
   return read;

@@ -21,7 +21,7 @@
 import "regenerator-runtime/runtime";
 import "core-js/stable";
 import jQuery from "jquery";
-import { isEmpty, identity, castArray } from "lodash";
+import { isEmpty, identity, castArray, fromPairs } from "lodash";
 import {
   CONNECT_EXTENSION,
   DETECT_FRAMEWORK_VERSIONS,
@@ -43,7 +43,13 @@ import {
   WritePayload,
   initialize,
 } from "@/pageScript/protocol";
-import { awaitValue, clone, getPropByPath, TimeoutError } from "./utils";
+import {
+  awaitValue,
+  getPropByPath,
+  noopProxy,
+  ReadProxy,
+  TimeoutError,
+} from "./utils";
 import { ComponentNotFoundError } from "@/frameworks/errors";
 import {
   ReadableComponentAdapter,
@@ -77,26 +83,37 @@ attachListener(DETECT_FRAMEWORK_VERSIONS, async () => {
 
 // needs to be object because we want window to be a valid argument
 // eslint-disable-next-line @typescript-eslint/ban-types
-function readPathSpec(obj: object, pathSpec?: PathSpec) {
+function readPathSpec(
+  obj: object,
+  pathSpec?: PathSpec,
+  proxy: ReadProxy = noopProxy
+) {
+  const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
+
   if (!pathSpec) {
-    return obj;
+    return toJS(obj);
+  }
+
+  if (Array.isArray(pathSpec) || typeof pathSpec === "string") {
+    return fromPairs(
+      castArray(pathSpec).map((prop) => [prop, toJS(get(obj, prop))])
+    );
   }
 
   const values: Record<string, unknown> = {};
-
-  if (Array.isArray(pathSpec) || typeof pathSpec === "string") {
-    for (const key of castArray(pathSpec)) {
-      values[key] = (obj as any)[key];
-    }
-    return values;
-  }
-
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
-      values[key] = getPropByPath(obj, path, args);
+      values[key] = getPropByPath(obj as { [prop: string]: unknown }, path, {
+        args: args as object,
+        proxy,
+      });
     } else {
-      values[key] = getPropByPath(obj, pathOrObj);
+      values[key] = getPropByPath(
+        obj as { [prop: string]: unknown },
+        pathOrObj,
+        { proxy }
+      );
     }
   }
   return values;
@@ -141,12 +158,13 @@ async function read<TComponent>(
     throw err;
   }
 
-  component = traverse(adapter.getParent, component, traverseUp);
-  const data = clone(adapter.getData(component));
-
-  console.debug(`Reading ${selector} with options`, { options, rawData: data });
-
-  return readPathSpec(rootProp ? (data as any)[rootProp] : data, pathSpec);
+  const target = traverse(adapter.getParent, component, traverseUp);
+  const data = adapter.getData(target);
+  return readPathSpec(
+    rootProp ? (data as any)[rootProp] : data,
+    pathSpec,
+    adapter.proxy
+  );
 }
 
 attachListener(

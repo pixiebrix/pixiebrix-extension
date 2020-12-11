@@ -15,6 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { ReadProxy } from "@/utils";
+
 type ComponentData = object;
 
 export function traverse<T = unknown>(
@@ -68,7 +70,7 @@ export interface ComponentAdapter<TComponent = unknown> {
   isManaged: (node: Node) => boolean;
 
   /**
-   * Returns the component that manages the DOM node, or null.
+   * Returns the component that manages the DOM node, or null if the node is unmanaged.
    */
   getComponent: (node: Node) => TComponent | null;
 
@@ -86,6 +88,11 @@ export interface ReadAdapter<
    * Returns the data defined for the component.
    */
   getData: (component: TComponent) => TData;
+
+  /**
+   * Proxy for reading/traversing objects in the data
+   */
+  proxy?: ReadProxy;
 }
 
 export interface WriteAdapter<

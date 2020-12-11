@@ -15,8 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { mapValues, partial, unary } from "lodash";
-import { isPrimitive } from "@/utils";
+import { mapValues, partial, unary, identity } from "lodash";
+import { isGetter, isPrimitive } from "@/utils";
 import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 import { findElement } from "@/frameworks/dom";
@@ -32,6 +32,11 @@ interface EmberApplication {
   __container__: {
     lookup: (container: string) => { [componentId: string]: EmberObject };
   };
+}
+
+interface MutableCell {
+  value: unknown;
+  items: unknown[];
 }
 
 declare global {
@@ -74,6 +79,38 @@ export function getEmberComponentById(componentId: string): EmberObject {
   return app.__container__.lookup("-view-registry:main")[componentId];
 }
 
+function isMutableCell(cell: unknown): cell is MutableCell {
+  // https://github.com/emberjs/ember.js/blob/f73d8440d19cf86a10c61ddb89d45881acfcf974/packages/%40ember/-internals/views/lib/compat/attrs.js
+  // FIXME: field is actually a symbol and isn't enumerable, so this is probably wrong
+  return Object.keys(cell).some((key) => key.startsWith("__MUTABLE_CELL__"));
+}
+
+export function getProp(value: any, prop: string | number): unknown {
+  if (isPrimitive(value)) {
+    return undefined;
+  } else if (typeof value === "object") {
+    if (isMutableCell(value) && "value" in value) {
+      return getProp(value.value, prop);
+    } else if ("_cache" in value) {
+      return getProp(value._cache, prop);
+    } else if (Array.isArray(value.content)) {
+      return getProp(value.content, prop);
+    } else if (typeof prop === "string" && isGetter(value, prop)) {
+      return value[prop]();
+    } else {
+      return value[prop];
+    }
+  } else if (Array.isArray(value)) {
+    if (typeof prop !== "number") {
+      throw new Error("Expected number for prop because value is an array");
+    }
+    return value[prop];
+  } else {
+    // ignore functions and symbols
+    return undefined;
+  }
+}
+
 export function readEmberValueFromCache(
   value: any,
   maxDepth = 5,
@@ -91,9 +128,9 @@ export function readEmberValueFromCache(
   } else if (isPrimitive(value)) {
     return value;
   } else if (typeof value === "object") {
-    if (Object.prototype.hasOwnProperty.call(value, "value")) {
+    if (isMutableCell(value) && "value" in value) {
       return recurse(value.value);
-    } else if (Object.prototype.hasOwnProperty.call(value, "_cache")) {
+    } else if ("_cache" in value) {
       return recurse(value._cache);
     } else if (Array.isArray(value.content)) {
       return value.content.map(recurse);
@@ -118,8 +155,11 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
     ignoreNotFound(() => getEmberComponentById(findElement(node).id)),
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,
-  getData: (component) =>
-    mapValues(component.attrs, unary(readEmberValueFromCache)),
+  getData: identity,
+  proxy: {
+    toJS: unary(readEmberValueFromCache),
+    get: getProp,
+  },
 };
 
 export default adapter;
