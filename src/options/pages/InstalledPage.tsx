@@ -17,7 +17,7 @@
 
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { groupBy, sortBy, isEmpty } from "lodash";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { optionsSlice, OptionsState } from "../slices";
@@ -42,6 +42,7 @@ import { IExtension } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { useRegistry } from "@/hooks/registry";
+import { reportError } from "@/telemetry/logging";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -147,12 +148,31 @@ const InstalledPage: React.FunctionComponent<{
   extensions: InstalledExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
+  const { addToast } = useToasts();
+
   const recipeExtensions = useMemo(() => {
     return sortBy(
       Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
       (x) => (x[0] === "" ? 0 : 1)
     );
   }, [extensions]);
+
+  const removeMany = useCallback(
+    async (extensions: InstalledExtension[], name: string) => {
+      try {
+        for (const { id: extensionId, extensionPointId } of extensions) {
+          onRemove({ extensionId, extensionPointId });
+        }
+        addToast(`Uninstalled ${name}`, {
+          appearance: "success",
+          autoDismiss: true,
+        });
+      } catch (err) {
+        reportError(err);
+      }
+    },
+    [onRemove]
+  );
 
   return (
     <div>
@@ -186,8 +206,17 @@ const InstalledPage: React.FunctionComponent<{
                 <tbody key={recipeId}>
                   {recipeId !== "" && (
                     <tr className="ActiveBricksCard__blueprint">
-                      <th colSpan={4} className="py-2">
+                      <th colSpan={3} className="py-2">
                         {xs[0]._recipe?.name ?? recipeId}
+                      </th>
+                      <th>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => removeMany(xs, xs[0]._recipe?.name)}
+                        >
+                          Uninstall
+                        </Button>
                       </th>
                     </tr>
                   )}

@@ -15,8 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import castArray from "lodash/castArray";
-import "jquery.initialize";
+import { castArray } from "lodash";
+
+// @ts-ignore: no type definitions
+import initialize from "vendors/initialize";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pixiebrix-extension-point";
 
@@ -106,7 +108,7 @@ function mutationSelector(
 ): Promise<JQuery<HTMLElement>> {
   return new Promise((resolve) => {
     // @ts-ignore: no type signatures
-    $.initialize(
+    initialize(
       selector,
       function () {
         resolve($(this));

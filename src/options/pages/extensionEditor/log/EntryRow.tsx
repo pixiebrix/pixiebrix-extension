@@ -86,9 +86,9 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
   const Detail = useMemo(() => {
     if (typeof entry.error === "object" && entry.error) {
       return ErrorDetail;
-    } else if (entry.data?.renderedArgs) {
+    } else if (entry.data?.renderedArgs != null) {
       return InputDetail;
-    } else if (entry.data?.output) {
+    } else if (entry.data?.output != null) {
       return OutputDetail;
     } else {
       return null;

@@ -17,11 +17,19 @@
 
 import { fetch } from "@/hooks/fetch";
 import { AuthState } from "@/core";
+import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
+
+interface OrganizationResponse {
+  readonly id: string;
+  readonly name: string;
+  readonly scope: string;
+}
 
 interface ProfileResponse {
   readonly id: string;
   readonly email: string;
   readonly scope: string | null;
+  readonly organization: OrganizationResponse | null;
 }
 
 export const anonAuth: AuthState = {
@@ -33,12 +41,16 @@ export const anonAuth: AuthState = {
 };
 
 export async function getAuth(): Promise<AuthState> {
-  const { id, email, scope } = await fetch<ProfileResponse>("/api/me/");
+  const { id, email, scope, organization } = await fetch<ProfileResponse>(
+    "/api/me/"
+  );
   if (id) {
+    updateRollbarAuth({ userId: id, organizationId: organization?.id });
     return {
       userId: id,
       email,
       scope,
+      organization,
       isLoggedIn: true,
       extension: true,
     };
