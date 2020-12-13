@@ -17,12 +17,13 @@
 
 import { fetch } from "@/hooks/fetch";
 import {
-  add,
   find,
   getKind,
   PACKAGE_NAME_REGEX,
   Kind,
+  syncRemote,
 } from "@/registry/localRegistry";
+import { groupBy } from "lodash";
 import { RegistryPackage } from "@/types/contract";
 
 export interface RegistryItem {
@@ -134,6 +135,9 @@ export class Registry<TItem extends RegistryItem> {
 
   async fetch(): Promise<void> {
     const timestamp = new Date();
+
+    this.remote.clear();
+
     const data = await fetch<RegistryPackage[]>(
       `/api/${this.remoteResourcePath}/`
     );
@@ -143,10 +147,13 @@ export class Registry<TItem extends RegistryItem> {
       throw new Error(`Expected array from ${this.remoteResourcePath}`);
     }
 
+    const packages = [];
+
     for (const item of data) {
       const [major, minor, patch] = item.metadata.version
         .split(".")
         .map((x) => Number.parseInt(x, 10));
+
       const match = item.metadata.id.match(PACKAGE_NAME_REGEX);
 
       if (!this.kinds.has(item.kind)) {
@@ -159,9 +166,7 @@ export class Registry<TItem extends RegistryItem> {
 
       delete this.cache[item.metadata.id];
 
-      this.remote.add(item.metadata.id);
-
-      await add({
+      packages.push({
         id: item.metadata.id,
         version: { major, minor, patch },
         scope: match.groups.scope,
@@ -170,6 +175,14 @@ export class Registry<TItem extends RegistryItem> {
         rawConfig: undefined,
         timestamp,
       });
+
+      this.remote.add(item.metadata.id);
+    }
+
+    for (const [kind, kindPackages] of Object.entries(
+      groupBy(packages, (x) => x.kind)
+    )) {
+      await syncRemote(kind as Kind, kindPackages);
     }
   }
 

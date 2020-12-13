@@ -292,10 +292,17 @@ export interface RenderedArgs {
   [prop: string]: unknown;
 }
 
+export interface OrganizationAuthState {
+  readonly id: string;
+  readonly name: string;
+  readonly scope: string;
+}
+
 export interface AuthState {
   readonly userId?: string | null;
   readonly email?: string | null;
   readonly scope?: string | null;
   readonly isLoggedIn: boolean;
   readonly extension: boolean;
+  readonly organization?: OrganizationAuthState | null;
 }

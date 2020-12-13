@@ -15,25 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "@/messaging/chrome";
-import { READ_ANGULAR_SCOPE } from "@/messaging/constants";
-import { ReaderOutput } from "@/core";
-import { registerFactory } from "@/blocks/readers/factory";
+import emberAdapter from "./contrib/ember";
+import angularjsAdapter from "@/frameworks/contrib/angularjs";
+import reactAdapter from "./contrib/react";
+import vueAdapter from "./contrib/vue";
+import { Framework } from "@/messaging/constants";
+import {
+  ReadableComponentAdapter,
+  WriteableComponentAdapter,
+} from "@/frameworks/component";
 
-export interface AngularConfig {
-  type: "angular";
-  selector: string;
-}
+export const FRAMEWORK_ADAPTERS: Partial<
+  {
+    [framework in Framework]:
+      | ReadableComponentAdapter
+      | WriteableComponentAdapter;
+  }
+> = {
+  react: reactAdapter,
+  emberjs: emberAdapter,
+  vue: vueAdapter,
+  angularjs: angularjsAdapter,
+};
 
-export const withAngularScope = createSendScriptMessage<ReaderOutput>(
-  READ_ANGULAR_SCOPE
-);
-
-async function doRead(reader: AngularConfig): Promise<ReaderOutput> {
-  const { selector } = reader;
-  return await withAngularScope({
-    selector,
-  });
-}
-
-registerFactory("angular", doRead);
+export default FRAMEWORK_ADAPTERS;

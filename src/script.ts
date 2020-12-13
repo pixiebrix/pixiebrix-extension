@@ -20,144 +20,55 @@
  */
 import "regenerator-runtime/runtime";
 import "core-js/stable";
-import { clone, getPropByPath } from "./utils";
 import jQuery from "jquery";
-import { isEmpty, mapValues, pickBy, identity, fromPairs } from "lodash";
+import { isEmpty, identity, castArray, fromPairs } from "lodash";
 import {
   CONNECT_EXTENSION,
   DETECT_FRAMEWORK_VERSIONS,
-  READ_ANGULAR_SCOPE,
-  READ_EMBER_COMPONENT,
-  READ_EMBER_VIEW_ATTRS,
-  READ_REACT_COMPONENT,
+  Framework,
+  GET_COMPONENT_DATA,
+  GET_COMPONENT_INFO,
   READ_WINDOW,
   SCRIPT_LOADED,
   SEARCH_WINDOW,
-  READ_VUE_VALUES,
-  SET_VUE_VALUES,
+  SET_COMPONENT_DATA,
 } from "./messaging/constants";
-import {
-  getEmberComponentById,
-  getVersion as getEmberVersion,
-  readEmberValueFromCache,
-} from "./frameworks/ember";
-import {
-  ComponentNotFoundError,
-  findReactComponent,
-  readReactProps,
-} from "@/frameworks/react";
+import detectLibraries from "@/vendors/libraryDetector/detect";
+import adapters from "@/frameworks/adapters";
 import { globalSearch } from "@/vendors/globalSearch";
-import { findRelatedComponent as findVueComponent } from "@/frameworks/vue";
-import { cleanValue } from "./utils";
+import {
+  ReadPayload,
+  PathSpec,
+  ReadOptions,
+  WritePayload,
+  initialize,
+} from "@/pageScript/protocol";
+import {
+  awaitValue,
+  getPropByPath,
+  noopProxy,
+  ReadProxy,
+  TimeoutError,
+} from "./utils";
+import { ComponentNotFoundError } from "@/frameworks/errors";
+import {
+  ReadableComponentAdapter,
+  traverse,
+  WriteableComponentAdapter,
+} from "@/frameworks/component";
+import { elementInfo } from "@/nativeEditor/frameworks";
 
-type Handler = (payload: unknown) => unknown;
-const handlers: { [type: string]: Handler } = {};
-
-declare global {
-  interface Window {
-    angular?: {
-      version: {
-        full: string;
-      };
-      element: (
-        element: HTMLElement
-      ) => {
-        scope: () => Record<string, unknown>;
-      };
-    };
-    jQuery?: {
-      fn: {
-        jquery: string;
-      };
-    };
-    Backbone?: {
-      VERSION: string;
-    };
-    Vue?: {
-      version: string;
-    };
-  }
-}
-
-function selectSingleElement(selector: string): HTMLElement {
+function requireSingleElement(selector: string): HTMLElement {
   const $elt = jQuery(document).find(selector);
   if (!$elt.length) {
-    throw new Error(`No elements found for selector: ${selector}`);
+    throw new Error(`No elements found for selector: '${selector}'`);
   } else if ($elt.length > 1) {
-    throw new Error(`Multiple elements found for selector: ${selector}`);
+    throw new Error(`Multiple elements found for selector: '${selector}'`);
   }
   return $elt.get(0);
 }
 
-window.addEventListener("message", function (event) {
-  const handler = handlers[event.data?.type];
-
-  if (!handler) {
-    return;
-  }
-
-  const { meta, type, payload } = event.data;
-
-  console.debug(`RECEIVE ${type}`, event.data);
-
-  const reject = (error: unknown) => {
-    try {
-      const detail = {
-        id: meta.id,
-        error,
-      };
-      console.warn(`pageScript responding ${type}_REJECTED`, detail);
-      document.dispatchEvent(
-        new CustomEvent(`${type}_REJECTED`, {
-          detail,
-        })
-      );
-    } catch (err) {
-      console.error(
-        `An error occurred while dispatching an error for ${type}`,
-        { error: err, originalError: error }
-      );
-    }
-  };
-
-  const fulfill = (result: unknown) => {
-    let cleanResult;
-    try {
-      // Chrome will drop the whole detail if it contains non-serializable values, e.g., methods
-      cleanResult = cleanValue(result ?? null);
-    } catch (err) {
-      console.error("Cannot serialize result", { result, err });
-      throw new Error(`Cannot serialize result for result ${type}`);
-    }
-
-    const detail = {
-      id: meta.id,
-      result: cleanResult,
-    };
-    console.debug(`pageScript responding ${type}_FULFILLED`, detail);
-    document.dispatchEvent(
-      new CustomEvent(`${type}_FULFILLED`, {
-        detail,
-      })
-    );
-  };
-
-  let resultPromise;
-
-  try {
-    resultPromise = handler(payload);
-  } catch (error) {
-    // handler is a function that immediately generated an error -- bail early.
-    reject(error);
-    return;
-  }
-
-  Promise.resolve(resultPromise).then(fulfill).catch(reject);
-});
-
-const attachListener = (messageType: string, handler: Handler) => {
-  handlers[messageType] = handler;
-};
+const attachListener = initialize();
 
 attachListener(SEARCH_WINDOW, ({ query }) => {
   console.debug(`Searching window for query: ${query}`);
@@ -166,60 +77,46 @@ attachListener(SEARCH_WINDOW, ({ query }) => {
   };
 });
 
-attachListener(DETECT_FRAMEWORK_VERSIONS, () => ({
-  emberjs: getEmberVersion(),
-  angular: window.angular?.version?.full,
-  jQuery: window.jQuery?.fn?.jquery,
-  // https://github.com/Maluen/Backbone-Debugger#backbone-detection
-  backbone: window.Backbone?.VERSION,
-  vuejs: window.Vue?.version,
-  // https://stackoverflow.com/a/44318447/402560
-  redux: undefined,
-}));
-
-type PathSpec = Record<string, string | { path: string; args: unknown }>;
+attachListener(DETECT_FRAMEWORK_VERSIONS, async () => {
+  return await detectLibraries();
+});
 
 // needs to be object because we want window to be a valid argument
 // eslint-disable-next-line @typescript-eslint/ban-types
-function readPathSpec(object: object, pathSpec?: PathSpec) {
+function readPathSpec(
+  obj: object,
+  pathSpec?: PathSpec,
+  proxy: ReadProxy = noopProxy
+) {
+  const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
+
   if (!pathSpec) {
-    return object;
+    return toJS(obj);
+  }
+
+  if (Array.isArray(pathSpec) || typeof pathSpec === "string") {
+    return fromPairs(
+      castArray(pathSpec).map((prop) => [prop, toJS(get(obj, prop))])
+    );
   }
 
   const values: Record<string, unknown> = {};
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
-      values[key] = getPropByPath(object, path, args);
+      values[key] = getPropByPath(obj as { [prop: string]: unknown }, path, {
+        args: args as object,
+        proxy,
+      });
     } else {
-      values[key] = getPropByPath(object, pathOrObj);
+      values[key] = getPropByPath(
+        obj as { [prop: string]: unknown },
+        pathOrObj,
+        { proxy }
+      );
     }
   }
   return values;
-}
-
-const sleep = (milliseconds: number) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
-
-async function awaitNonEmpty(
-  valueFactory: () => unknown,
-  { waitMillis, retryMillis = 50 }: { waitMillis: number; retryMillis?: number }
-) {
-  const start = new Date().getTime();
-  let elapsed = 0;
-  let value = {};
-
-  do {
-    value = valueFactory();
-    if (!isEmpty(value)) {
-      return value;
-    }
-    await sleep(retryMillis);
-    elapsed = new Date().getTime() - start;
-  } while (elapsed < waitMillis);
-
-  throw new Error(`Value not found after ${waitMillis} milliseconds`);
 }
 
 attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
@@ -227,141 +124,88 @@ attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
     const values = readPathSpec(window, pathSpec);
     return Object.values(values).every(isEmpty) ? undefined : values;
   };
-  return awaitNonEmpty(factory, { waitMillis });
+  return awaitValue(factory, { waitMillis });
 });
 
+async function read<TComponent>(
+  adapter: ReadableComponentAdapter<TComponent>,
+  selector: string,
+  options: ReadOptions
+) {
+  const {
+    pathSpec,
+    waitMillis = 0,
+    retryMillis = 1000,
+    rootProp,
+    traverseUp = 0,
+  } = options;
+
+  const element = requireSingleElement(selector);
+  let component: TComponent;
+
+  try {
+    component = await awaitValue(() => adapter.getComponent(element), {
+      waitMillis,
+      retryMillis,
+      predicate: identity,
+    });
+  } catch (err) {
+    if (err instanceof TimeoutError) {
+      throw new ComponentNotFoundError(
+        `Could not find framework component for selector ${selector} in ${waitMillis}ms`
+      );
+    }
+    throw err;
+  }
+
+  const target = traverse(adapter.getParent, component, traverseUp);
+  const data = adapter.getData(target);
+  return readPathSpec(
+    rootProp ? (data as any)[rootProp] : data,
+    pathSpec,
+    adapter.proxy
+  );
+}
+
 attachListener(
-  READ_REACT_COMPONENT,
+  GET_COMPONENT_DATA,
+  async ({ framework, selector, ...options }: ReadPayload) => {
+    const adapter = adapters[framework] as ReadableComponentAdapter;
+    if (!adapter) {
+      throw new Error(`No read adapter available for ${framework}`);
+    }
+    return await read(adapter, selector, options);
+  }
+);
+
+attachListener(
+  SET_COMPONENT_DATA,
+  ({ framework, selector, valueMap }: WritePayload) => {
+    const adapter = adapters[framework] as WriteableComponentAdapter;
+    if (!adapter?.setData) {
+      throw new Error(`No write adapter available for ${framework}`);
+    }
+    const element = requireSingleElement(selector);
+    const component = adapter.getComponent(element);
+    adapter.setData(component, valueMap);
+  }
+);
+
+attachListener(
+  GET_COMPONENT_INFO,
   async ({
     selector,
+    framework,
     traverseUp = 0,
-    waitMillis = 1000,
-    retryMillis = 10,
-    rootProp,
-  }) => {
-    const start = new Date().getTime();
-    let elapsed = 0;
-
-    do {
-      const element = selectSingleElement(selector);
-
-      try {
-        const component = findReactComponent(element, traverseUp);
-        const props = readReactProps(component, rootProp);
-        console.debug("Read React component props", props);
-        return props;
-      } catch (ex) {
-        if (!(ex instanceof ComponentNotFoundError)) {
-          throw ex;
-        }
-      }
-      await sleep(retryMillis);
-      elapsed = new Date().getTime() - start;
-    } while (elapsed < waitMillis);
-
-    throw new ComponentNotFoundError(
-      `React fiber not found at selector after ${waitMillis}ms`
-    );
-  }
-);
-
-attachListener(
-  READ_EMBER_VIEW_ATTRS,
-  ({
-    selector,
-    attrs: rawAttrs = [],
   }: {
     selector: string;
-    attrs: string[];
+    framework?: Framework;
+    traverseUp: number;
   }) => {
-    const element = selectSingleElement(selector);
-
-    if (element.id == null) {
-      throw new Error(`Element does not have an id`);
-    }
-
-    const view = getEmberComponentById(element.id);
-
-    if (!view) {
-      throw new ComponentNotFoundError(
-        `Could not find ember component for id ${element.id}`
-      );
-    }
-
-    console.debug(`Found ember view ${selector}`, view);
-
-    const attrs = rawAttrs.filter(identity);
-
-    if (!isEmpty(attrs)) {
-      return fromPairs(
-        attrs.map((attr: string) => [
-          attr,
-          readEmberValueFromCache(view.attrs[attr]),
-        ])
-      );
-    } else {
-      return pickBy(
-        mapValues(view.attrs, (x) => readEmberValueFromCache(x)),
-        (value) => value !== undefined
-      );
-    }
+    const element = requireSingleElement(selector);
+    return await elementInfo(element, framework, [selector], traverseUp);
   }
 );
-
-attachListener(READ_EMBER_COMPONENT, ({ selector, pathSpec }) => {
-  const element = selectSingleElement(selector);
-  const component = getEmberComponentById(element.id);
-
-  if (!component) {
-    throw new ComponentNotFoundError(
-      `Could not find Ember component at selector ${selector}`
-    );
-  }
-
-  console.debug(`Found ember component ${selector}`, component);
-  return readPathSpec(component, pathSpec);
-});
-
-attachListener(READ_ANGULAR_SCOPE, ({ selector, pathSpec }) => {
-  const element = selectSingleElement(selector);
-
-  if (!window.angular) {
-    throw new Error("Angular not found");
-  }
-
-  const component = window.angular.element(element);
-
-  if (!component) {
-    throw new ComponentNotFoundError(
-      `Could not find Angular component for selector ${selector}`
-    );
-  }
-
-  const scope = clone(component.scope());
-
-  return readPathSpec(scope, pathSpec);
-});
-
-attachListener(READ_VUE_VALUES, ({ selector, pathSpec }) => {
-  const element = selectSingleElement(selector);
-  const component = findVueComponent(element);
-
-  if (!component) {
-    throw new ComponentNotFoundError(
-      `Could not find Vue component for selector ${selector}`
-    );
-  }
-
-  return readPathSpec(component, pathSpec);
-});
-
-attachListener(SET_VUE_VALUES, ({ selector, valueMap }) => {
-  const element = selectSingleElement(selector);
-  const component = findVueComponent(element);
-  for (const [key, value] of Object.entries(valueMap)) {
-    (component as any)[key] = value;
-  }
-});
 
 console.debug(`DISPATCH: ${SCRIPT_LOADED} (Injected Script Run)`);
 document.dispatchEvent(new CustomEvent(SCRIPT_LOADED));

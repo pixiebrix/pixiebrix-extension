@@ -31,7 +31,7 @@ import { allowBackgroundSender } from "@/background/protocol";
 import * as contentScriptProtocol from "@/contentScript/devTools";
 import * as nativeEditorProtocol from "@/nativeEditor/insertButton";
 import * as nativeSelectionProtocol from "@/nativeEditor/selector";
-import { FrameworkVersions } from "@/messaging/constants";
+import { Framework, FrameworkMeta } from "@/messaging/constants";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 
 interface HandlerEntry {
@@ -315,23 +315,44 @@ export const readSelectedElement = liftBackground(
 
 export const detectFrameworks: (
   port: Runtime.Port
-) => Promise<FrameworkVersions> = liftBackground(
+) => Promise<FrameworkMeta[]> = liftBackground(
   "DETECT_FRAMEWORKS",
   (tabId: number) => async () => {
     return (await contentScriptProtocol.detectFrameworks(
       tabId
-    )) as FrameworkVersions;
+    )) as FrameworkMeta[];
   }
 );
+
+// export const findComponent = liftBackground(
+//     "FIND_COMPONENT",
+//     (tabId: number) => async ({
+//         selector,
+//         framework
+//       }: {
+//       selector: string
+//       framework: Framework
+//     }) => {
+//       return await nativeSelectionProtocol.findComponent(tabId, { selector, framework });
+//     }
+// )
 
 export const selectElement = liftBackground(
   "SELECT_ELEMENT",
   (tabId: number) => async ({
     mode = "element",
+    framework,
+    traverseUp = 0,
   }: {
+    framework?: Framework;
     mode: nativeSelectionProtocol.SelectMode;
+    traverseUp?: number;
   }) => {
-    return await nativeSelectionProtocol.selectElement(tabId, { mode });
+    return await nativeSelectionProtocol.selectElement(tabId, {
+      framework,
+      mode,
+      traverseUp,
+    });
   }
 );
 
@@ -365,7 +386,23 @@ export const toggleElement = liftBackground(
     uuid: string;
     on: boolean;
   }) => {
-    return await nativeEditorProtocol.toggleOverlay(tabId, { uuid, on });
+    return await nativeEditorProtocol.toggleOverlay(tabId, {
+      selector: `[data-uuid="${uuid}"]`,
+      on,
+    });
+  }
+);
+
+export const toggleSelector = liftBackground(
+  "TOGGLE_SELECTOR",
+  (tabId: number) => async ({
+    selector,
+    on = true,
+  }: {
+    selector: string;
+    on: boolean;
+  }) => {
+    return await nativeEditorProtocol.toggleOverlay(tabId, { selector, on });
   }
 );
 

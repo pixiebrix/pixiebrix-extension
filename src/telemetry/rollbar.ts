@@ -17,6 +17,22 @@
 
 import Rollbar from "rollbar";
 
+export let rollbar: Rollbar;
+
+export function updateAuth({
+  userId,
+  organizationId,
+}: {
+  userId: string;
+  organizationId: string;
+}): void {
+  if (rollbar) {
+    rollbar.configure({
+      payload: { person: { id: userId, organizationId: organizationId } },
+    });
+  }
+}
+
 export function initRollbar(): void {
   if (
     process.env.ROLLBAR_BROWSER_ACCESS_TOKEN &&
@@ -24,7 +40,7 @@ export function initRollbar(): void {
   ) {
     // https://docs.rollbar.com/docs/javascript
     // https://docs.rollbar.com/docs/rollbarjs-configuration-reference
-    Rollbar.init({
+    rollbar = Rollbar.init({
       accessToken: process.env.ROLLBAR_BROWSER_ACCESS_TOKEN,
       captureUncaught: true,
       captureIp: "anonymize",

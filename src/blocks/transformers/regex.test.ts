@@ -15,14 +15,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./meta";
-export * from "./PageMetadataReader";
-export * from "./BlankReader";
-export * from "./ImageReader";
-export * from "./ImageEXIFReader";
-export * from "./ElementReader";
+import { RegexTransformer } from "./regex";
 
-// generic readers
-export * from "./frameworkReader";
-export * from "./jquery";
-export * from "./window";
+const transformer = new RegexTransformer();
+
+test("unmatched returns empty dict", async () => {
+  const result = await transformer.transform({
+    regex: "(?<name>ABC)",
+    input: "XYZ",
+  });
+  expect(result).toEqual({});
+});
+
+test("matches name", async () => {
+  const result = await transformer.transform({
+    regex: "(?<name>ABC)",
+    input: "ABC",
+  });
+  expect(result).toEqual({ name: "ABC" });
+});
+
+test("handle multiple", async () => {
+  const result = await transformer.transform({
+    regex: "(?<name>ABC)",
+    input: ["ABC", "XYZ"],
+  });
+  expect(result).toEqual([{ name: "ABC" }, {}]);
+});

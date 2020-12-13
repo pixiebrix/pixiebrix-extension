@@ -15,10 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// https://web.hypothes.is/blog/fuzzy-anchoring/
-
-import { uniq } from "lodash";
-const BUTTON_TAGS = ["li", "button", "a", "span", "input"];
+import { uniq, compact } from "lodash";
+const BUTTON_TAGS = ["li", "button", "a", "span", "input", "svg"];
+const ICON_TAGS = ["svg"];
 const MENU_TAGS = ["ul", "tbody"];
 const CAPTION_TAGS = ["td", "a", "li", "span"];
 const MULTI_ATTRS = ["class", "rel"];
@@ -54,6 +53,10 @@ function commonStructure(
   captioned = false
 ): JQuery<HTMLElement> {
   const proto = $items.get(0);
+
+  if (ICON_TAGS.includes(proto.tagName.toLowerCase())) {
+    return $(`<span>{{{icon}}}</span>`);
+  }
 
   const $common = $(`<${proto.tagName.toLowerCase()}>`);
 
@@ -108,22 +111,35 @@ function escapeDoubleQuotes(str: string): string {
   return str.replace(/\\([\s\S])|(")/g, "\\$1$2"); // thanks @slevithan!
 }
 
+export function safeCssSelector(
+  element: HTMLElement,
+  selectors: string[] = []
+): string {
+  return getCssSelector(element, {
+    blacklist: ["#ember*"],
+    selectors: selectors,
+  });
+}
+
 /**
- * Generate some candidate CSS selectors for an element.
+ * Generate some CSS selector variants for an element.
  */
-export function generateSelectors(element: HTMLElement): string[] {
-  return [
-    getCssSelector(element, { blacklist: ["#ember*"] }),
-    getCssSelector(element, { blacklist: ["#ember*"], selectors: ["tag"] }),
-    getCssSelector(element, {
-      blacklist: ["#ember*"],
-      selectors: ["class", "tag"],
-    }),
-    getCssSelector(element, {
-      blacklist: ["#ember*"],
-      selectors: ["tag", "class"],
-    }),
-  ];
+export function inferSelectors(element: HTMLElement): string[] {
+  return uniq(
+    compact([
+      safeCssSelector(element),
+      safeCssSelector(element, ["tag"]),
+      safeCssSelector(element, ["class", "tag"]),
+      safeCssSelector(element, ["tag", "class"]),
+    ])
+  ).filter((x) => x.trim() !== "");
+}
+
+/**
+ * Returns true if selector uniquely identifies an element on the page
+ */
+function isUniqueSelector(selector: string): boolean {
+  return $(document).find(selector).length === 1;
 }
 
 export function findContainer(
@@ -167,7 +183,10 @@ export function findContainer(
 
   return {
     container,
-    selectors: uniq([...extra, ...generateSelectors(container)]),
+    selectors: uniq([
+      ...extra.filter(isUniqueSelector),
+      ...inferSelectors(container),
+    ]),
   };
 }
 

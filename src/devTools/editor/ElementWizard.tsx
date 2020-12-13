@@ -35,9 +35,13 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, dispatch }) => {
   const { port } = useContext(DevToolsContext);
   const [step, setStep] = useState("foundation");
-  const { isSubmitting, isValid, status } = useFormikContext();
-
-  const { handleSubmit, handleReset } = useFormikContext();
+  const {
+    isSubmitting,
+    isValid,
+    status,
+    handleSubmit,
+    handleReset,
+  } = useFormikContext();
   const [debounced] = useDebounce(element, 100);
 
   useAsyncEffect(async () => {

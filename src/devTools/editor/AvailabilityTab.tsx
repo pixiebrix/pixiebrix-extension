@@ -45,10 +45,7 @@ const AvailabilityTab: React.FunctionComponent<{
           Selector
         </Form.Label>
         <Col sm={10}>
-          <SelectorSelectorField
-            name="isAvailable.selectors"
-            initialSuggestions={[]}
-          />
+          <SelectorSelectorField name="isAvailable.selectors" isClearable />
         </Col>
       </Form.Group>
     </Tab.Pane>

@@ -16,7 +16,9 @@
  */
 import Overlay from "@/nativeEditor/Overlay";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
-import { findContainer, generateSelectors } from "@/nativeEditor/infer";
+import { findContainer, safeCssSelector } from "@/nativeEditor/infer";
+import { Framework } from "@/messaging/constants";
+import * as pageScript from "@/pageScript/protocol";
 
 let overlay: Overlay | null = null;
 
@@ -96,15 +98,36 @@ export function userSelectElement(): Promise<HTMLElement> {
 
 export type SelectMode = "element" | "container";
 
+// export const findComponent = liftContentScript(
+//     "SELECT_COMPONENT",
+//     async ({ selector, framework }: { selector: string, framework: Framework }) => {
+//     }
+// )
+
 export const selectElement = liftContentScript(
   "SELECT_ELEMENT",
-  async ({ mode = "element" }: { mode: SelectMode }) => {
+  async ({
+    traverseUp = 0,
+    mode = "element",
+    framework,
+  }: {
+    traverseUp: number;
+    framework?: Framework;
+    mode: SelectMode;
+  }) => {
     const element = await userSelectElement();
     if (mode === "container") {
       const { selectors } = findContainer(element);
-      return selectors;
-    } else {
-      return generateSelectors(element);
+      return await pageScript.getElementInfo({
+        selector: selectors[0],
+        framework,
+        traverseUp,
+      });
     }
+    return await pageScript.getElementInfo({
+      selector: safeCssSelector(element),
+      framework,
+      traverseUp,
+    });
   }
 );

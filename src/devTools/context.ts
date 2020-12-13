@@ -17,7 +17,7 @@
 
 import React, { useState, useCallback } from "react";
 import { Runtime } from "webextension-polyfill-ts";
-import { FrameworkVersions } from "@/messaging/constants";
+import { FrameworkMeta } from "@/messaging/constants";
 import { connectDevtools } from "@/devTools/protocol";
 import {
   detectFrameworks,
@@ -40,7 +40,7 @@ interface Context {
   /**
    * Frameworks detected on the tab.
    */
-  frameworks: FrameworkVersions;
+  frameworks: FrameworkMeta[];
 
   /**
    * Error message if an error occurred when connecting to the page.
@@ -51,7 +51,7 @@ interface Context {
 const initialValue: Context = {
   port: null,
   hasTabPermissions: false,
-  frameworks: {},
+  frameworks: [],
   error: null,
 };
 
@@ -61,13 +61,25 @@ export function useMakeContext(): [Context, () => Promise<void>] {
   const [context, setContext] = useState(initialValue);
 
   const connect = useCallback(async () => {
-    const backgroundPort = await connectDevtools();
-    const { hasPermissions } = await getTabInfo(backgroundPort);
+    let hasPermissions: boolean;
+    let backgroundPort: Runtime.Port;
+
+    try {
+      backgroundPort = await connectDevtools();
+      hasPermissions = (await getTabInfo(backgroundPort)).hasPermissions;
+    } catch (err) {
+      setContext({
+        port: backgroundPort,
+        frameworks: [],
+        hasTabPermissions: false,
+        error: err.toString(),
+      });
+    }
 
     if (!hasPermissions) {
       setContext({
         port: backgroundPort,
-        frameworks: {},
+        frameworks: [],
         hasTabPermissions: false,
       });
       return;
@@ -81,13 +93,13 @@ export function useMakeContext(): [Context, () => Promise<void>] {
       if (reason.message?.includes("Receiving end does not exist")) {
         setContext({
           port: backgroundPort,
-          frameworks: {},
+          frameworks: [],
           hasTabPermissions: false,
         });
       } else {
         setContext({
           port: backgroundPort,
-          frameworks: {},
+          frameworks: [],
           hasTabPermissions: false,
           error: reason,
         });

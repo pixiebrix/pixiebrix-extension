@@ -93,7 +93,7 @@ export function notifyContentScripts(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
-    console.debug(`Installed content script handler for ${type}`);
+    // console.debug(`Installed content script handler for ${type}`);
     handlers[fullType] = {
       handler: method as any,
       options: { asyncResponse: false },
@@ -169,7 +169,7 @@ export function liftContentScript<R extends SerializableResponse>(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
-    console.debug(`Installed content script handler for ${type}`);
+    // console.debug(`Installed content script handler for ${type}`);
     handlers[fullType] = { handler: method, options };
   }
 

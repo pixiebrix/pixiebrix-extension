@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { FrameworkVersions } from "@/messaging/constants";
-import { identity, pickBy } from "lodash";
+import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import React, { useCallback, useContext } from "react";
 import { actions, EditorState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
@@ -25,45 +24,54 @@ import { AuthContext } from "@/auth/context";
 import * as nativeOperations from "@/background/devtools";
 import { getTabInfo } from "@/background/devtools";
 import psl, { ParsedDomain } from "psl";
-import { Badge, Button, Col, ListGroup } from "react-bootstrap";
+import { Button, Col, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import brickRegistry from "@/blocks/registry";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 
-function defaultReader(frameworks: FrameworkVersions): string {
-  const active = Object.keys(
-    pickBy(frameworks, identity)
-  ) as (keyof FrameworkVersions)[];
-  return active.length ? active[0].toLowerCase() : "jquery";
+function defaultReader(frameworks: FrameworkMeta[]): Framework {
+  const knownFrameworks = frameworks.filter((x) =>
+    KNOWN_READERS.includes(x.id)
+  );
+  return knownFrameworks.length ? knownFrameworks[0].id : "jquery";
 }
 
-async function generateExtensionPointMetadata(scope: string, url: string) {
+async function generateExtensionPointMetadata(
+  scope: string,
+  url: string,
+  reservedNames: string[]
+) {
   const urlClass = new URL(url);
   const { domain } = psl.parse(urlClass.host.split(":")[0]) as ParsedDomain;
 
   await brickRegistry.fetch();
 
-  let index = 1;
-
-  while (index < 1000) {
+  for (let index = 1; index < 1000; index++) {
     const id =
       index === 1
         ? `${scope ?? "@local"}/${domain}/action`
         : `${scope ?? "@local"}/${domain}/action-${index}`;
-    try {
-      await brickRegistry.lookup(id);
-    } catch (err) {
-      return {
-        id,
-        name: `${domain} Action`,
-      };
-    }
-    index++;
-  }
 
+    if (!reservedNames.includes(id)) {
+      try {
+        await brickRegistry.lookup(id);
+      } catch (err) {
+        return {
+          id,
+          name: `${domain} Action`,
+        };
+      }
+    }
+  }
   throw new Error("Could not find available id");
+}
+
+function defaultMatchPattern(url: string) {
+  const obj = new URL(url);
+  obj.pathname = "*";
+  return obj.href;
 }
 
 const Sidebar: React.FunctionComponent<
@@ -86,7 +94,11 @@ const Sidebar: React.FunctionComponent<
     try {
       const button = await nativeOperations.insertButton(port);
       const { url } = await getTabInfo(port);
-      const extensionPoint = await generateExtensionPointMetadata(scope, url);
+      const extensionPoint = await generateExtensionPointMetadata(
+        scope,
+        url,
+        elements.flatMap((x) => [x.extensionPoint.id, x.reader.id])
+      );
       dispatch(
         actions.addElement({
           ...button,
@@ -97,7 +109,7 @@ const Sidebar: React.FunctionComponent<
             outputSchema: {},
           },
           isAvailable: {
-            matchPatterns: url,
+            matchPatterns: defaultMatchPattern(url),
             selectors: null,
           },
           extensionPoint,
@@ -112,7 +124,7 @@ const Sidebar: React.FunctionComponent<
     } finally {
       dispatch(actions.toggleInsert(false));
     }
-  }, [port, frameworks, scope]);
+  }, [port, frameworks, elements, scope]);
 
   return (
     <Col>
@@ -134,7 +146,7 @@ const Sidebar: React.FunctionComponent<
             onClick={() => dispatch(actions.selectElement(x.uuid))}
             style={{ cursor: "pointer" }}
           >
-            <Badge variant="info">Action</Badge> {x.caption}
+            {x.caption}
           </ListGroup.Item>
         ))}
       </ListGroup>

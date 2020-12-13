@@ -18,8 +18,8 @@
 import { ButtonState } from "@/devTools/editor/editorSlice";
 import { identity, pickBy } from "lodash";
 import { useDispatch } from "react-redux";
-import { useCallback } from "react";
-import axios, { AxiosError } from "axios";
+import { useCallback, useState } from "react";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { makeURL } from "@/hooks/fetch";
 import { safeDump } from "js-yaml";
 import { getExtensionToken } from "@/auth/token";
@@ -28,6 +28,8 @@ import { FormikHelpers } from "formik";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { defaultConfig, readerOptions } from "@/devTools/editor/ReaderTab";
+import blockRegistry from "@/blocks/registry";
+import extensionPointRegistry from "@/extensionPoints/registry";
 
 const { saveExtension } = optionsSlice.actions;
 
@@ -96,11 +98,31 @@ function makeExtensionDefinition(button: ButtonState) {
   };
 }
 
+async function makeRequestConfig(
+  saved: { [id: string]: string },
+  id: string
+): Promise<AxiosRequestConfig> {
+  if (saved[id]) {
+    return {
+      url: await makeURL(`api/bricks/${saved[id]}/`),
+      method: "put",
+      headers: { Authorization: `Token ${await getExtensionToken()}` },
+    };
+  } else {
+    return {
+      url: await makeURL("api/bricks/"),
+      method: "post",
+      headers: { Authorization: `Token ${await getExtensionToken()}` },
+    };
+  }
+}
+
 export function useCreate(): (
   button: ButtonState,
   helpers: FormikHelpers<ButtonState>
 ) => Promise<void> {
   const dispatch = useDispatch();
+  const [saved, setSaved] = useState<{ [id: string]: string }>({});
   const { addToast } = useToasts();
 
   return useCallback(
@@ -109,12 +131,12 @@ export function useCreate(): (
       { setSubmitting, setStatus }: FormikHelpers<ButtonState>
     ) => {
       try {
-        await axios({
-          url: await makeURL("api/bricks/"),
-          method: "post",
-          data: { config: safeDump(makeMenuReader(button)), kind: "reader" },
-          headers: { Authorization: `Token ${await getExtensionToken()}` },
-        });
+        const readerConfig = makeMenuReader(button);
+        const { data: readerData } = await axios({
+          ...(await makeRequestConfig(saved, readerConfig.metadata.id)),
+          data: { config: safeDump(readerConfig), kind: "reader" },
+        } as AxiosRequestConfig);
+        setSaved((x) => ({ ...x, [readerConfig.metadata.id]: readerData.id }));
       } catch (ex) {
         const err = ex as AxiosError;
         const msg =
@@ -129,15 +151,18 @@ export function useCreate(): (
       }
 
       try {
-        await axios({
-          url: await makeURL("api/bricks/"),
-          method: "post",
+        const extensionPointConfig = makeMenuExtensionPoint(button);
+        const { data: extensionPointData } = await axios({
+          ...(await makeRequestConfig(saved, extensionPointConfig.metadata.id)),
           data: {
-            config: safeDump(makeMenuExtensionPoint(button)),
+            config: safeDump(extensionPointConfig),
             kind: "extensionPoint",
           },
-          headers: { Authorization: `Token ${await getExtensionToken()}` },
-        });
+        } as AxiosRequestConfig);
+        setSaved((x) => ({
+          ...x,
+          [extensionPointConfig.metadata.id]: extensionPointData.id,
+        }));
       } catch (ex) {
         const err = ex as AxiosError;
         const msg =
@@ -166,7 +191,12 @@ export function useCreate(): (
       } finally {
         setSubmitting(false);
       }
+
+      await Promise.all([
+        blockRegistry.fetch(),
+        extensionPointRegistry.fetch(),
+      ]);
     },
-    [dispatch, addToast]
+    [dispatch, addToast, saved]
   );
 }

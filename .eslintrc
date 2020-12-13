@@ -5,7 +5,7 @@
     "@typescript-eslint"
   ],
   "env": {
-    "browser": true,
+    "browser": true
   },
   "extends": [
     "eslint:recommended",

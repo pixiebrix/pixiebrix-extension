@@ -17,7 +17,8 @@
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
       "@contrib/*": ["contrib/*"],
-      "@schemas/*": ["schemas/*"]
+      "@schemas/*": ["schemas/*"],
+      "vendors/*": ["src/vendors/*"]
     },
     "lib": [
       "dom",

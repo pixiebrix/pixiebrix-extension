@@ -29,6 +29,7 @@ import { useConfiguredHost, DEFAULT_SERVICE_URL } from "@/services/baseService";
 import isEmpty from "lodash/isEmpty";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
 import { clearExtensionAuth } from "@/auth/token";
+import { browser } from "webextension-polyfill-ts";
 
 const { resetOptions } = optionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
@@ -49,6 +50,10 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
       appearance: "success",
       autoDismiss: true,
     });
+  }, []);
+
+  const reload = useCallback(() => {
+    browser.runtime.reload();
   }, []);
 
   const handleUpdate = useCallback(
@@ -130,6 +135,9 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
               </Form>
             </Card.Body>
             <Card.Footer>
+              <Button variant="info" onClick={reload}>
+                Reload Extension
+              </Button>
               <Button variant="warning" onClick={clear}>
                 Clear Token
               </Button>

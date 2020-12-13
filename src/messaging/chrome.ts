@@ -15,13 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-type SendScriptMessage<T> = (payload: unknown) => Promise<T>;
+type SendScriptMessage<TReturn = unknown, TPayload = unknown> = (
+  payload: TPayload
+) => Promise<TReturn>;
 
 type CallbackMap = { [key: string]: (result: unknown) => void };
 
-export function createSendScriptMessage<T>(
+export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   messageType: string
-): SendScriptMessage<T> {
+): SendScriptMessage<TReturn, TPayload> {
   if (typeof document === "undefined") {
     return () => Promise.reject("Not running in a browser context");
   }
@@ -52,7 +54,7 @@ export function createSendScriptMessage<T>(
   listen(`${messageType}_FULFILLED`, fulfillmentCallbacks);
   listen(`${messageType}_REJECTED`, rejectionCallbacks);
 
-  return (payload) => {
+  return (payload: TPayload) => {
     const id = messageSeq++;
     const promise = new Promise((resolve, reject) => {
       fulfillmentCallbacks[id] = resolve;
@@ -71,6 +73,6 @@ export function createSendScriptMessage<T>(
       targetOrigin
     );
 
-    return promise as Promise<T>;
+    return promise as Promise<TReturn>;
   };
 }

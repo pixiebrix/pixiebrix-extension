@@ -21,6 +21,8 @@ import isPlainObject from "lodash/isPlainObject";
 import castArray from "lodash/castArray";
 import { useCallback } from "react";
 import { useHistory } from "react-router";
+import { push } from "connected-react-router";
+import { useDispatch } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { EditorValues } from "./Editor";
 import { validateSchema } from "./validate";
@@ -37,6 +39,7 @@ interface SubmitOptions {
 
 interface SubmitCallbacks {
   validate: (values: EditorValues) => Promise<any>;
+  remove: () => Promise<void>;
   submit: (
     values: EditorValues,
     helpers: { setErrors: (errors: any) => void }
@@ -51,11 +54,33 @@ function useSubmitBrick({
   const reinstall = useReinstall();
   const history = useHistory();
   const { addToast } = useToasts();
+  const dispatch = useDispatch();
 
   const validate = useCallback(
     async (values: EditorValues) => await validateSchema(values.config),
     []
   );
+
+  const remove = useCallback(async () => {
+    try {
+      await axios({
+        url: await makeURL(url),
+        method: "delete",
+        headers: { Authorization: `Token ${await getExtensionToken()}` },
+      });
+    } catch (err) {
+      addToast("Error deleting brick", {
+        appearance: "success",
+        autoDismiss: true,
+      });
+      return;
+    }
+    addToast("Deleted brick", {
+      appearance: "success",
+      autoDismiss: true,
+    });
+    dispatch(push("/workshop"));
+  }, [url, dispatch]);
 
   const submit = useCallback(
     async (values, { setErrors }) => {
@@ -116,7 +141,7 @@ function useSubmitBrick({
     [url, create, addToast]
   );
 
-  return { submit, validate };
+  return { submit, validate, remove: !create ? remove : null };
 }
 
 export default useSubmitBrick;

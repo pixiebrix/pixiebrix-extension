@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import sortBy from "lodash/sortBy";
+import { sortBy } from "lodash";
 import { fromJS } from "@/extensionPoints/factory";
 import BaseRegistry from "@/baseRegistry";
 import { IExtensionPoint, IOption } from "@/core";

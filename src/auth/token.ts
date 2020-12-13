@@ -19,6 +19,7 @@ import { readStorage, setStorage } from "@/chrome";
 import equal from "deep-equal";
 import { browser } from "webextension-polyfill-ts";
 import Cookies from "js-cookie";
+import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
 
 const STORAGE_EXTENSION_KEY = "extensionKey";
 
@@ -26,6 +27,7 @@ interface UserData {
   email?: string;
   user?: string;
   hostname?: string;
+  organizationId?: string;
 }
 
 export interface AuthData extends UserData {
@@ -34,8 +36,14 @@ export interface AuthData extends UserData {
 
 export function readAuthFromWebsite(): AuthData {
   const container = document.getElementById("container");
-  const { token, email, user } = container.dataset;
-  return { token, email, user, hostname: location.hostname };
+  const { token, email, user, organization } = container.dataset;
+  return {
+    token,
+    email,
+    user,
+    organizationId: organization,
+    hostname: location.hostname,
+  };
 }
 
 export async function getExtensionToken(): Promise<string | null> {
@@ -72,6 +80,10 @@ export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
       // pass
     }
     console.debug(`Setting extension auth for ${auth.email}`, auth);
+    updateRollbarAuth({
+      userId: auth.user,
+      organizationId: auth.organizationId,
+    });
     await setStorage(STORAGE_EXTENSION_KEY, JSON.stringify(auth));
     return !equal(auth, previous);
   }

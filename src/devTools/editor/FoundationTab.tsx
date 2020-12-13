@@ -35,7 +35,7 @@ const FoundationTab: React.FunctionComponent<{
         <Col sm={10}>
           <SelectorSelectorField
             name="containerSelector"
-            initialSuggestions={element.containerSelectorOptions}
+            initialElement={element.containerInfo}
             selectMode="container"
           />
         </Col>

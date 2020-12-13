@@ -17,7 +17,7 @@
 
 import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class RegexTransformer extends Transformer {
@@ -48,14 +48,19 @@ export class RegexTransformer extends Transformer {
     ["regex", "input"]
   );
 
-  async transform({ regex, input }: BlockArg, { ctxt }: BlockOptions) {
+  async transform({
+    regex,
+    input,
+  }: BlockArg): Promise<Record<string, string> | Record<string, string>[]> {
     const compiled = RegExp(regex);
 
     const extract = (x: string | null) => {
-      if (x == null) return null;
+      if (x == null) {
+        return null;
+      }
       const match = compiled.exec(x);
-      console.debug(`Search for ${regex} in ${x}`, match);
-      return match?.groups;
+      // console.debug(`Search for ${regex} in ${x}`, match);
+      return match?.groups ?? {};
     };
 
     return Array.isArray(input) ? input.map(extract) : extract(input);

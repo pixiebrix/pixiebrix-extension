@@ -15,25 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { createSendScriptMessage } from "@/messaging/chrome";
-import { READ_VUE_VALUES } from "@/messaging/constants";
-import { ReaderOutput } from "@/core";
-import { registerFactory } from "@/blocks/readers/factory";
-
-export interface VueConfig {
-  type: "vuejs";
-  selector: string;
+export function isNode(x: unknown): x is Node {
+  return typeof x === "object" && "nodeType" in x;
 }
 
-export const withVueValues = createSendScriptMessage<ReaderOutput>(
-  READ_VUE_VALUES
-);
-
-async function doRead(reader: VueConfig): Promise<ReaderOutput> {
-  const { selector } = reader;
-  return await withVueValues({
-    selector,
-  });
+export function findElement(node: Node): Element | null {
+  let current = node;
+  while (current && !(current instanceof Element)) {
+    current = current.parentNode;
+  }
+  if (current instanceof Element) {
+    return current;
+  }
+  return null;
 }
-
-registerFactory("vuejs", doRead);

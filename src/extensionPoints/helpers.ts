@@ -15,7 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import castArray from "lodash/castArray";
+import { castArray } from "lodash";
+
+// @ts-ignore: no type definitions
+import initialize from "vendors/initialize";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pixiebrix-extension-point";
 
@@ -69,20 +72,61 @@ export function onNodeRemoved(node: Node, callback: () => void): void {
   }
 }
 
-async function _initialize(
+/**
+ * Returns true if the browser natively supports the CSS selector
+ */
+function isNativeCssSelector(selector: string): boolean {
+  try {
+    document.querySelector(selector);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+function pollSelector(
   selector: string,
-  $target: JQuery<HTMLElement | Document>
-): Promise<JQuery<HTMLElement | Document>> {
+  target: HTMLElement | Document
+): Promise<JQuery<HTMLElement>> {
+  console.debug(`Polling for selector ${selector}`);
+  const $target = $(target);
   return new Promise((resolve) => {
-    // @ts-ignore: no typescript definitions for https://www.npmjs.com/package/jquery.initialize
-    $.initialize(
+    function check() {
+      const $result = $target.find(selector);
+      if ($result.length) {
+        resolve($result);
+      }
+      window.requestAnimationFrame(check);
+    }
+    check();
+  });
+}
+
+function mutationSelector(
+  selector: string,
+  target?: HTMLElement | Document
+): Promise<JQuery<HTMLElement>> {
+  return new Promise((resolve) => {
+    // @ts-ignore: no type signatures
+    initialize(
       selector,
       function () {
         resolve($(this));
       },
-      { target: $target.get(0) }
+      { target: target ?? document }
     );
   });
+}
+
+async function _initialize(
+  selector: string,
+  target: HTMLElement | Document
+): Promise<JQuery<HTMLElement | Document>> {
+  if (isNativeCssSelector(selector)) {
+    return await mutationSelector(selector, target);
+  } else {
+    return await pollSelector(selector, target);
+  }
 }
 
 /**
@@ -116,7 +160,7 @@ export async function awaitElementOnce(
     console.debug(
       `Selector ${nextSelector} not immediately found. Awaiting element`
     );
-    $nextElement = await _initialize(nextSelector, $root);
+    $nextElement = await _initialize(nextSelector, $root.get(0));
   } else if (rest.length === 0) {
     return $nextElement;
   }

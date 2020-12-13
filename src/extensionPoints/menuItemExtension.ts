@@ -57,9 +57,7 @@ interface MenuItemExtensionConfig {
   icon?: IconConfig;
 }
 
-export abstract class MenuItemExtensionPoint extends ExtensionPoint<
-  MenuItemExtensionConfig
-> {
+export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
   protected readonly menus: Map<string, HTMLElement>;
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
@@ -179,7 +177,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
     const renderTemplate = engineRenderer(extension.templateEngine);
     const extensionContext = { ...ctxt, ...serviceContext };
 
-    console.debug("Extension context", { serviceContext, ctxt });
+    // console.debug("Extension context", { serviceContext, ctxt });
 
     const iconAsSVG = (
       await import(
@@ -239,6 +237,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
       return;
     }
 
+    const errors = [];
+
     for (const menu of this.menus.values()) {
       const reader = await this.defaultReader();
       const ctxt = await reader.read(this.getReaderRoot($(menu)));
@@ -247,28 +247,29 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<
         throw new Error(`Reader ${reader.id} returned null/undefined`);
       }
 
-      const errors = [];
-
       for (const extension of this.extensions) {
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
         try {
           await this.runExtension(menu, ctxt, extension);
         } catch (ex) {
+          errors.push(ex);
           // eslint-disable-next-line require-await
           reportError(ex, {
             extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
           });
-          errors.push(ex);
         }
       }
+    }
 
-      if (errors.length) {
-        $.notify(`An error occurred adding ${errors.length} menu item(s)`, {
-          className: "error",
-        });
-      }
+    if (errors.length) {
+      console.warn(`An error occurred adding ${errors.length} menu item(s)`, {
+        errors,
+      });
+      $.notify(`An error occurred adding ${errors.length} menu item(s)`, {
+        className: "error",
+      });
     }
   }
 }

@@ -15,14 +15,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./meta";
-export * from "./PageMetadataReader";
-export * from "./BlankReader";
-export * from "./ImageReader";
-export * from "./ImageEXIFReader";
-export * from "./ElementReader";
+export class ComponentNotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ComponentNotFoundError";
+  }
+}
 
-// generic readers
-export * from "./frameworkReader";
-export * from "./jquery";
-export * from "./window";
+export class FrameworkNotFound extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "FrameworkNotFound";
+  }
+}
+
+export function ignoreNotFound<T>(factory: () => T): T | null {
+  try {
+    return factory();
+  } catch (err) {
+    if (
+      err instanceof ComponentNotFoundError ||
+      err instanceof FrameworkNotFound
+    ) {
+      return null;
+    }
+    throw err;
+  }
+}

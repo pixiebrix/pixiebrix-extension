@@ -60,7 +60,7 @@ const SidebarLink: React.FunctionComponent<LinkProps> = ({
   );
 };
 
-const Sidebar = () => (
+const Sidebar: React.FunctionComponent = () => (
   <nav className="sidebar sidebar-offcanvas" id="sidebar">
     <ul className="nav">
       <SidebarLink

@@ -82,12 +82,17 @@ async function loadExtensions() {
   for (const [extensionPointId, extensions] of Object.entries(
     extensionPointConfigs
   )) {
+    const activeExtensions = Object.values(extensions).filter((x) => x.active);
+
+    if (!activeExtensions.length) {
+      // Avoid the case where we uninstalled the last extension and then the extension point was
+      // deleted from the registry.
+      continue;
+    }
+
     try {
       const extensionPoint = await extensionPointRegistry.lookup(
         extensionPointId
-      );
-      const activeExtensions = Object.values(extensions).filter(
-        (x) => x.active
       );
 
       let added = false;
@@ -100,7 +105,7 @@ async function loadExtensions() {
         _extensionPoints.push(extensionPoint);
       }
     } catch (err) {
-      console.warn(`Error adding extension point ${extensionPointId}`);
+      console.warn(`Error adding extension point ${extensionPointId}`, { err });
     }
   }
 }

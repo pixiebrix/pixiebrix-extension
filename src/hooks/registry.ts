@@ -15,14 +15,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./meta";
-export * from "./PageMetadataReader";
-export * from "./BlankReader";
-export * from "./ImageReader";
-export * from "./ImageEXIFReader";
-export * from "./ElementReader";
+import Registry, { RegistryItem } from "@/baseRegistry";
+import { useState } from "react";
+import { useAsyncEffect } from "use-async-effect";
 
-// generic readers
-export * from "./frameworkReader";
-export * from "./jquery";
-export * from "./window";
+export function useRegistry<T extends RegistryItem>(
+  registry: Registry<T>,
+  id: string
+): T {
+  const [result, setResult] = useState<T>();
+  useAsyncEffect(
+    async (isMounted) => {
+      const result = await registry.lookup(id);
+      if (!isMounted) {
+        return;
+      }
+      setResult(result);
+    },
+    [registry, id]
+  );
+  return result;
+}
