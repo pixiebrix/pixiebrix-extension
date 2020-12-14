@@ -95,7 +95,7 @@
     "exifreader": "^3.12.6",
     "fake-indexeddb": "^3.1.2",
     "file-loader": "^6.2.0",
-    "formik": "^2.2.3",
+    "formik": "^2.2.6",
     "generate-schema": "^2.6.0",
     "handlebars": "^4.7.6",
     "hex-rgb": "^4.2.0",
