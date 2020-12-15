@@ -145,6 +145,14 @@ export interface IExtensionPoint extends Metadata {
 
   install(): Promise<boolean>;
 
+  /**
+   * Remove the extension point and installed extensions from the page.
+   */
+  uninstall(): void;
+
+  /**
+   * Register an extension with the extension point. Does not actually install/run the extension.
+   */
   addExtension(extension: IExtension): void;
 
   run(): Promise<void>;

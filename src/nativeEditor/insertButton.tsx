@@ -18,7 +18,6 @@
 // https://github.com/facebook/react/blob/7559722a865e89992f75ff38c1015a865660c3cd/packages/react-devtools-shared/src/backend/views/Highlighter/index.js
 
 import { v4 as uuidv4 } from "uuid";
-import Mustache from "mustache";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import Overlay from "./Overlay";
 import { ElementInfo } from "@/nativeEditor/frameworks";
@@ -29,47 +28,57 @@ import {
   findContainer,
   inferButtonHTML,
 } from "@/nativeEditor/infer";
+import {
+  fromJS as extensionPointFactory,
+  MenuDefinition,
+  MenuItemExtensionConfig,
+} from "@/extensionPoints/menuItemExtension";
+import { runDynamic } from "@/contentScript/lifecycle";
+import { IExtension, IExtensionPoint } from "@/core";
+import {
+  ReaderConfig,
+  ReaderDefinition,
+  readerFactory,
+} from "@/blocks/readers/factory";
+import { ExtensionPointConfig } from "@/extensionPoints/types";
 
 let overlay: Overlay | null = null;
 
+export interface ButtonDefinition {
+  uuid: string;
+  extensionPoint: ExtensionPointConfig<MenuDefinition>;
+  extension: IExtension<MenuItemExtensionConfig>;
+  reader: ReaderConfig<ReaderDefinition>;
+}
+
 export interface InsertResult {
   uuid: string;
-  containerSelector: string;
-  template: string;
-  caption: string;
-  position: "append" | "prepend";
+  menu: Omit<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
+  item: Pick<MenuItemExtensionConfig, "caption">;
   containerInfo: ElementInfo;
 }
 
-function makeElement(element: InsertResult) {
-  const { uuid, template, caption } = element;
-  console.log("template", { template, caption });
-  const html = Mustache.render(template, { caption });
-  return $(html).attr("data-uuid", uuid).data(element);
-}
+const _temporaryExtensions: Map<string, IExtensionPoint> = new Map();
 
 export const updateButton = liftContentScript(
   "UPDATE_BUTTON",
-  async (element: InsertResult) => {
-    const $elt = $(`[data-uuid="${element.uuid}"]`);
+  async ({
+    uuid,
+    extensionPoint: extensionPointConfig,
+    extension: extensionConfig,
+    reader: readerConfig,
+  }: ButtonDefinition) => {
+    const extensionPoint = extensionPointFactory(extensionPointConfig);
 
-    const $newElt = makeElement(element);
+    // the reader won't be in the registry, so override the method
+    const reader = readerFactory(readerConfig);
+    extensionPoint.defaultReader = async () => reader;
 
-    if (
-      $elt.data("containerSelector") !== element.containerSelector ||
-      $elt.data("position") !== element.position
-    ) {
-      $elt.remove();
-      $(element.containerSelector)[element.position]($newElt);
-    } else {
-      $elt.replaceWith($newElt);
-    }
+    _temporaryExtensions.set(uuid, extensionPoint);
 
-    $newElt.on("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      alert("No action implemented");
-    });
+    extensionPoint.addExtension(extensionConfig);
+
+    await runDynamic(uuid, extensionPoint);
   }
 );
 
@@ -86,14 +95,19 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
 
   const element: InsertResult = {
     uuid: uuidv4(),
-    caption: DEFAULT_ACTION_CAPTION,
-    containerSelector: selectors[0],
-    template: inferButtonHTML(container),
-    position: "append",
+    item: {
+      caption: DEFAULT_ACTION_CAPTION,
+    },
+    menu: {
+      type: "menuItem",
+      containerSelector: selectors[0],
+      template: inferButtonHTML(container, selected),
+      shadowDOM: null,
+      position: "append",
+    },
     containerInfo: await pageScript.getElementInfo({ selector: selectors[0] }),
   };
 
-  $(element.containerSelector).append(makeElement(element));
   return element;
 });
 

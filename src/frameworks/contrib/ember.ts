@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { mapValues, partial, unary, identity } from "lodash";
+import { mapValues, partial, unary, pickBy } from "lodash";
 import { isGetter, isPrimitive } from "@/utils";
 import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
@@ -149,13 +149,19 @@ function isManaged(node: Node): boolean {
   return !!ignoreNotFound(() => getEmberComponentById(findElement(node).id));
 }
 
+const EMBER_INTERNAL_PROPS = new Set(["renderer", "parentView", "store"]);
+
 const adapter: ReadableComponentAdapter<EmberObject> = {
   isManaged,
   getComponent: (node) =>
     ignoreNotFound(() => getEmberComponentById(findElement(node).id)),
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,
-  getData: identity,
+  getData: (instance) =>
+    pickBy(
+      instance,
+      (value, key) => !key.startsWith("_") && !EMBER_INTERNAL_PROPS.has(key)
+    ),
   proxy: {
     toJS: unary(readEmberValueFromCache),
     get: getProp,

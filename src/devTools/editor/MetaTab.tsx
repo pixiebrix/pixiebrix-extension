@@ -16,23 +16,23 @@
  */
 
 import React from "react";
-import { ButtonState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 import { Field, FieldInputProps } from "formik";
 
 const MetaTab: React.FunctionComponent<{
-  element: ButtonState;
+  element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
 }> = () => {
   return (
-    <Tab.Pane eventKey="metadata">
+    <Tab.Pane eventKey="metadata" className="h-100">
       <Form.Group as={Row} controlId="formExtensionPointId">
         <Form.Label column sm={2}>
           Foundation Id
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.id">
+          <Field name="extensionPoint.metadata.id">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}
@@ -44,19 +44,19 @@ const MetaTab: React.FunctionComponent<{
           Foundation Name
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.name">
+          <Field name="extensionPoint.metadata.name">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}
           </Field>
         </Col>
       </Form.Group>
-      <Form.Group as={Row} controlId="formReaderId">
+      <Form.Group as={Row} controlId="formReaderId" className="pb-4">
         <Form.Label column sm={2}>
           Reader Id
         </Form.Label>
         <Col sm={10}>
-          <Field name="reader.id">
+          <Field name="reader.metadata.id">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}

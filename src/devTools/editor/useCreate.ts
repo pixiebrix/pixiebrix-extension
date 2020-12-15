@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ButtonState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { identity, pickBy } from "lodash";
 import { useDispatch } from "react-redux";
 import { useCallback, useState } from "react";
@@ -30,62 +30,84 @@ import { reportError } from "@/telemetry/logging";
 import { defaultConfig, readerOptions } from "@/devTools/editor/ReaderTab";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
+import { ReaderConfig, ReaderDefinition } from "@/blocks/readers/factory";
+import { ExtensionPointConfig } from "@/extensionPoints/types";
+import {
+  MenuDefinition,
+  MenuItemExtensionConfig,
+} from "@/extensionPoints/menuItemExtension";
+import { IExtension, ServiceDependency } from "@/core";
 
 const { saveExtension } = optionsSlice.actions;
 
-function makeMenuReader(button: ButtonState) {
-  const readerOption = readerOptions.find(
-    (x) => x.value === button.reader.type
-  );
+export function makeMenuReader({
+  reader,
+}: FormState): ReaderConfig<ReaderDefinition> {
+  const { metadata, definition, outputSchema = {} } = reader;
+
+  const readerOption = readerOptions.find((x) => x.value === definition.type);
+
   return {
     apiVersion: "v1",
     kind: "reader",
     metadata: {
-      id: button.reader.id,
+      id: metadata.id,
+      name: metadata.name,
       version: "1.0.0",
-      name: `Reader for ${button.extensionPoint.name}`,
       description: "Reader created with the devtools",
     },
     definition: {
       reader: (readerOption?.makeConfig ?? defaultConfig)(
-        button.reader.type,
-        button.reader.selector
+        definition.type,
+        definition.selector
       ),
     },
-    outputSchema: button.reader.outputSchema ?? {},
+    outputSchema,
   };
 }
 
-function makeMenuExtensionPoint(button: ButtonState) {
+export function makeMenuExtensionPoint({
+  extensionPoint,
+  reader,
+}: FormState): ExtensionPointConfig<MenuDefinition> {
+  const {
+    metadata,
+    definition: { isAvailable, position, template, containerSelector },
+  } = extensionPoint;
+
   return {
     apiVersion: "v1",
     kind: "extensionPoint",
     metadata: {
-      id: button.extensionPoint.id,
+      id: metadata.id,
       version: "1.0.0",
-      name: button.extensionPoint.name,
+      name: metadata.name,
       description: "Action created with the devtools",
     },
     definition: {
       type: "menuItem",
-      isAvailable: pickBy(button.isAvailable, identity),
-      reader: button.reader.id,
-      containerSelector: [button.containerSelector],
-      position: button.position,
-      template: button.template,
+      reader: reader.metadata.id,
+      isAvailable: pickBy(isAvailable, identity),
+      containerSelector: containerSelector,
+      position,
+      template,
     },
   };
 }
 
-function makeExtensionDefinition(button: ButtonState) {
+export function makeExtensionDefinition({
+  uuid,
+  extensionPoint,
+  extension,
+}: FormState): IExtension<MenuItemExtensionConfig> {
   return {
-    extensionPointId: button.extensionPoint.id,
-    extensionId: button.uuid,
+    id: uuid,
+    extensionPointId: extensionPoint.metadata.id,
     label: "Custom Action",
     // services here refers to the service auth
-    services: [] as unknown[],
+    services: [] as ServiceDependency[],
     config: {
-      caption: button.caption,
+      caption: extension.caption,
       action: [
         {
           id: "@pixiebrix/browser/log",
@@ -118,8 +140,8 @@ async function makeRequestConfig(
 }
 
 export function useCreate(): (
-  button: ButtonState,
-  helpers: FormikHelpers<ButtonState>
+  button: FormState,
+  helpers: FormikHelpers<FormState>
 ) => Promise<void> {
   const dispatch = useDispatch();
   const [saved, setSaved] = useState<{ [id: string]: string }>({});
@@ -127,8 +149,8 @@ export function useCreate(): (
 
   return useCallback(
     async (
-      button: ButtonState,
-      { setSubmitting, setStatus }: FormikHelpers<ButtonState>
+      button: FormState,
+      { setSubmitting, setStatus }: FormikHelpers<FormState>
     ) => {
       try {
         const readerConfig = makeMenuReader(button);

@@ -365,7 +365,7 @@ export const insertButton = liftBackground(
 
 export const updateButton = liftBackground(
   "UPDATE_BUTTON",
-  (tabId: number) => async (element: nativeEditorProtocol.InsertResult) => {
+  (tabId: number) => async (element: nativeEditorProtocol.ButtonDefinition) => {
     return await nativeEditorProtocol.updateButton(tabId, element);
   }
 );

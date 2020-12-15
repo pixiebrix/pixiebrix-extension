@@ -142,7 +142,26 @@ function isUniqueSelector(selector: string): boolean {
   return $(document).find(selector).length === 1;
 }
 
-export function findContainer(
+export function getCommonAncestor(...args: Node[]): Node {
+  if (args.length === 1) {
+    return args[0].parentNode;
+  }
+
+  const [node, ...otherNodes] = args;
+
+  let currentNode: Node | null = node;
+
+  while (currentNode) {
+    if (otherNodes.every((x) => currentNode.contains(x))) {
+      return currentNode;
+    }
+    currentNode = currentNode?.parentNode;
+  }
+
+  return null;
+}
+
+export function findContainerForElement(
   element: HTMLElement
 ): { container: HTMLElement; selectors: string[] } {
   let container = element;
@@ -190,8 +209,35 @@ export function findContainer(
   };
 }
 
-export function inferButtonHTML(container: HTMLElement): string {
+export function findContainer(
+  elements: HTMLElement[]
+): { container: HTMLElement; selectors: string[] } {
+  if (elements.length > 1) {
+    const container = getCommonAncestor(...elements) as HTMLElement | null;
+    if (!container) {
+      throw new Error("Selected elements have no common ancestors");
+    }
+    return {
+      container,
+      selectors: inferSelectors(container),
+    };
+  } else {
+    return findContainerForElement(elements[0]);
+  }
+}
+
+export function inferButtonHTML(
+  container: HTMLElement,
+  selected: HTMLElement[]
+): string {
   const $container = $(container);
+
+  if (selected.length > 1) {
+    const children = selected.map((x) =>
+      $container.children().has(x).first().get(0)
+    );
+    return commonHTML(selected[0].tagName, $(children));
+  }
 
   for (const tag of BUTTON_TAGS) {
     const $items = $container.children(tag);

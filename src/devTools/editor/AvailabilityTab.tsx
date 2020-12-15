@@ -16,36 +16,39 @@
  */
 
 import React from "react";
-import { ButtonState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 import { Field, FieldInputProps } from "formik";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 
 const AvailabilityTab: React.FunctionComponent<{
-  element: ButtonState;
+  element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
 }> = () => {
   return (
-    <Tab.Pane eventKey="availability">
+    <Tab.Pane eventKey="availability" className="h-100">
       <Form.Group as={Row} controlId="formMatchPatterns">
         <Form.Label column sm={2}>
           Match Patterns
         </Form.Label>
         <Col sm={10}>
-          <Field name="isAvailable.matchPatterns">
+          <Field name="extensionPoint.definition.isAvailable.matchPatterns">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}
           </Field>
         </Col>
       </Form.Group>
-      <Form.Group as={Row} controlId="formAvailableSelectors">
+      <Form.Group as={Row} controlId="formAvailableSelectors" className="pb-4">
         <Form.Label column sm={2}>
           Selector
         </Form.Label>
         <Col sm={10}>
-          <SelectorSelectorField name="isAvailable.selectors" isClearable />
+          <SelectorSelectorField
+            name="extensionPoint.definition.isAvailable.selectors"
+            isClearable
+          />
         </Col>
       </Form.Group>
     </Tab.Pane>

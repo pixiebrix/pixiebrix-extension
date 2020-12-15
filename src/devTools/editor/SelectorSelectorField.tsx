@@ -61,9 +61,15 @@ const CustomOption: ComponentType<OptionProps<OptionValue>> = ({
     <components.Option {...props}>
       <div onMouseEnter={() => toggle(true)} onMouseLeave={() => toggle(false)}>
         {props.data.elementInfo?.tagName && (
-          <Badge variant="dark">{props.data.elementInfo.tagName}</Badge>
+          <Badge variant="dark" className="mr-1 pb-1">
+            {props.data.elementInfo.tagName}
+          </Badge>
         )}
-        {props.data.elementInfo?.hasData && <Badge variant="info">Data</Badge>}
+        {props.data.elementInfo?.hasData && (
+          <Badge variant="info" className="mx-1 pb-1">
+            Data
+          </Badge>
+        )}
         {/*{props.data.elementInfo?.framework && (*/}
         {/*  <Badge variant="dark">{props.data.elementInfo.framework}</Badge>*/}
         {/*)}*/}

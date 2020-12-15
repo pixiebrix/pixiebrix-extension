@@ -24,8 +24,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useMakeContext } from "@/devTools/context";
 import { GridLoader } from "react-spinners";
 import Editor from "@/devTools/Editor";
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
 import { browser } from "webextension-polyfill-ts";
 import { getTabInfo } from "@/background/devtools";
 import optionsStore, { persistor } from "@/options/store";
@@ -37,6 +35,10 @@ import { AuthContext } from "@/auth/context";
 import { ToastProvider } from "react-toast-notifications";
 
 const defaultState = { isLoggedIn: false, extension: true };
+
+import "vendors/theme/app/app.scss";
+import "vendors/overrides.scss";
+import "./Panel.scss";
 
 const Centered: React.FunctionComponent = ({ children }) => {
   return (
@@ -98,12 +100,8 @@ const Panel: React.FunctionComponent = () => {
             <ToastProvider>
               <ErrorBoundary>
                 <Router>
-                  <Container fluid>
-                    <Row>
-                      <Col>
-                        <Editor />
-                      </Col>
-                    </Row>
+                  <Container fluid className="DevToolsContainer">
+                    <Editor />
                   </Container>
                 </Router>
               </ErrorBoundary>

@@ -51,7 +51,12 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
 
-interface MenuItemExtensionConfig {
+interface ShadowDOM {
+  mode?: "open" | "closed";
+  tag?: string;
+}
+
+export interface MenuItemExtensionConfig {
   caption: string;
   action: BlockConfig | BlockPipeline;
   icon?: IconConfig;
@@ -59,6 +64,7 @@ interface MenuItemExtensionConfig {
 
 export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
   protected readonly menus: Map<string, HTMLElement>;
+
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
   }
@@ -89,9 +95,36 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         ],
       },
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
+      shadowDOM: {
+        type: "object",
+        description:
+          "When provided, renders the menu item as using the shadowDOM",
+        properties: {
+          tag: {
+            type: "string",
+          },
+          mode: {
+            type: "string",
+            enum: ["open", "closed"],
+            default: "closed",
+          },
+        },
+        required: ["tag"],
+      },
     },
     ["caption", "action"]
   );
+
+  public uninstall(): void {
+    for (const element of this.menus.values()) {
+      try {
+        element.remove();
+      } catch (exc) {
+        this.logger.error(exc);
+      }
+    }
+    this.menus.clear();
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getReaderRoot($containerElement: JQuery): HTMLElement | Document {
@@ -153,6 +186,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     return this.installMenus();
   }
 
+  protected abstract makeItem(
+    html: string,
+    extension: IExtension<MenuItemExtensionConfig>
+  ): JQuery<HTMLElement>;
+
   private async runExtension(
     menu: HTMLElement,
     ctxt: ReaderOutput,
@@ -171,29 +209,25 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       icon = { id: "box", size: 18 },
     } = extension.config;
 
-    const $existingItem = $menu.find(`[data-pixiebrix-uuid="${extension.id}"]`);
-
     const serviceContext = await makeServiceContext(extension.services);
     const renderTemplate = engineRenderer(extension.templateEngine);
     const extensionContext = { ...ctxt, ...serviceContext };
 
-    // console.debug("Extension context", { serviceContext, ctxt });
+    const iconAsSVG = icon
+      ? (
+          await import(
+            /* webpackChunkName: "icons" */
+            "@/icons/svgIcons"
+          )
+        ).default
+      : null;
 
-    const iconAsSVG = (
-      await import(
-        /* webpackChunkName: "icons" */
-        "@/icons/svgIcons"
-      )
-    ).default;
+    const html = Mustache.render(this.getTemplate(), {
+      caption: renderTemplate(caption, extensionContext),
+      icon: iconAsSVG?.(icon),
+    });
 
-    const $menuItem = $(
-      Mustache.render(this.getTemplate(), {
-        caption: renderTemplate(caption, extensionContext),
-        icon: iconAsSVG(icon),
-      })
-    );
-
-    $menuItem.attr("data-pixiebrix-uuid", extension.id);
+    const $menuItem = this.makeItem(html, extension);
 
     $menuItem.on("click", async (e) => {
       e.preventDefault();
@@ -217,6 +251,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         $.notify(`Error running menu action: ${ex}`, { className: "error" });
       }
     });
+
+    const $existingItem = $menu.find(`[data-pixiebrix-uuid="${extension.id}"]`);
 
     if ($existingItem.length) {
       // shouldn't need to unbind click handlers because we'll replace it outright
@@ -279,12 +315,15 @@ interface MenuDefaultOptions {
   [key: string]: string;
 }
 
-interface MenuDefinition extends ExtensionPointDefinition {
+export type MenuPosition = "append" | "prepend";
+
+export interface MenuDefinition extends ExtensionPointDefinition {
   template: string;
-  position?: "append" | "prepend";
+  position?: MenuPosition;
   containerSelector: string;
-  readerSelector: string;
-  defaultOptions: MenuDefaultOptions;
+  readerSelector?: string;
+  defaultOptions?: MenuDefaultOptions;
+  shadowDOM?: ShadowDOM;
 }
 
 class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
@@ -354,6 +393,26 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   getTemplate(): string {
     return this._definition.template;
+  }
+
+  protected makeItem(
+    html: string,
+    extension: IExtension<MenuItemExtensionConfig>
+  ): JQuery<HTMLElement> {
+    let $root: JQuery<HTMLElement>;
+
+    if (this._definition.shadowDOM) {
+      const root = document.createElement(this._definition.shadowDOM.tag);
+      const shadowRoot = root.attachShadow({ mode: "closed" });
+      shadowRoot.innerHTML = html;
+      $root = $(root);
+    } else {
+      $root = $(html);
+    }
+
+    $root.attr("data-pixiebrix-uuid", extension.id);
+
+    return $root;
   }
 
   async isAvailable(): Promise<boolean> {

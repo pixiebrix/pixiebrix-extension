@@ -17,19 +17,25 @@
 
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import React, { useCallback, useContext } from "react";
-import { actions, EditorState } from "@/devTools/editor/editorSlice";
+import { actions, EditorState, FormState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
 import { AuthContext } from "@/auth/context";
 import * as nativeOperations from "@/background/devtools";
 import { getTabInfo } from "@/background/devtools";
 import psl, { ParsedDomain } from "psl";
-import { Button, Col, ListGroup } from "react-bootstrap";
+import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBolt,
+  faColumns,
+  faMousePointer,
+} from "@fortawesome/free-solid-svg-icons";
 import brickRegistry from "@/blocks/registry";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
+import { InsertResult } from "@/nativeEditor/insertButton";
+import { Metadata } from "@/core";
 
 function defaultReader(frameworks: FrameworkMeta[]): Framework {
   const knownFrameworks = frameworks.filter((x) =>
@@ -42,7 +48,7 @@ async function generateExtensionPointMetadata(
   scope: string,
   url: string,
   reservedNames: string[]
-) {
+): Promise<Metadata> {
   const urlClass = new URL(url);
   const { domain } = psl.parse(urlClass.host.split(":")[0]) as ParsedDomain;
 
@@ -74,6 +80,46 @@ function defaultMatchPattern(url: string) {
   return obj.href;
 }
 
+function makeFormState(
+  metadata: Metadata,
+  button: InsertResult,
+  frameworks: FrameworkMeta[]
+): FormState {
+  return {
+    uuid: button.uuid,
+    containerInfo: button.containerInfo,
+    extensionPoint: {
+      metadata,
+      definition: {
+        ...button.menu,
+        isAvailable: {
+          matchPatterns: defaultMatchPattern(url),
+          selectors: null,
+        },
+      },
+      traits: {
+        style: {
+          mode: "inherit",
+        },
+      },
+    },
+    extension: {
+      caption: button.item.caption,
+    },
+    reader: {
+      metadata: {
+        id: `${metadata.id}-reader`,
+        name: `Default reader for ${metadata.id}`,
+      },
+      outputSchema: {},
+      definition: {
+        type: defaultReader(frameworks),
+        selector: button.menu.containerSelector,
+      },
+    },
+  };
+}
+
 const Sidebar: React.FunctionComponent<
   EditorState & { dispatch: (action: PayloadAction<unknown>) => void }
 > = ({ inserting, activeElement, elements, dispatch }) => {
@@ -94,27 +140,15 @@ const Sidebar: React.FunctionComponent<
     try {
       const button = await nativeOperations.insertButton(port);
       const { url } = await getTabInfo(port);
-      const extensionPoint = await generateExtensionPointMetadata(
+      const metadata = await generateExtensionPointMetadata(
         scope,
         url,
-        elements.flatMap((x) => [x.extensionPoint.id, x.reader.id])
+        elements.flatMap((x) => [
+          x.extensionPoint.metadata.id,
+          x.reader.metadata.id,
+        ])
       );
-      dispatch(
-        actions.addElement({
-          ...button,
-          reader: {
-            id: `${extensionPoint.id}-reader`,
-            type: defaultReader(frameworks),
-            selector: button.containerSelector,
-            outputSchema: {},
-          },
-          isAvailable: {
-            matchPatterns: defaultMatchPattern(url),
-            selectors: null,
-          },
-          extensionPoint,
-        })
-      );
+      dispatch(actions.addElement(makeFormState(metadata, button, frameworks)));
     } catch (exc) {
       reportError(exc);
       addToast(`Error adding button: ${exc.toString()}`, {
@@ -127,31 +161,46 @@ const Sidebar: React.FunctionComponent<
   }, [port, frameworks, elements, scope]);
 
   return (
-    <Col>
-      <div>
-        <Button className="mr-2" disabled={inserting} onClick={addButton}>
-          Add Button <FontAwesomeIcon icon={faMousePointer} />
+    <div className="Sidebar d-flex flex-column">
+      <div className="Sidebar__actions d-inline-flex flex-wrap">
+        <Button
+          className="flex-grow-1"
+          size="sm"
+          variant="info"
+          disabled={inserting}
+          onClick={addButton}
+        >
+          Button <FontAwesomeIcon icon={faMousePointer} />
         </Button>
-        {/*<Button disabled={inserting} onClick={addButton}>*/}
-        {/*    Add Panel <FontAwesomeIcon icon={faColumns} />*/}
-        {/*</Button>*/}
+        <Button className="flex-grow-1" size="sm" disabled variant="info">
+          Panel <FontAwesomeIcon icon={faColumns} />
+        </Button>
+        <Button className="flex-grow-1" size="sm" disabled variant="info">
+          Trigger <FontAwesomeIcon icon={faBolt} />
+        </Button>
       </div>
-      <ListGroup>
-        {elements.map((x) => (
-          <ListGroup.Item
-            active={x.uuid == activeElement}
-            key={x.uuid}
-            onMouseEnter={() => toggle(x.uuid, true)}
-            onMouseLeave={() => toggle(x.uuid, false)}
-            onClick={() => dispatch(actions.selectElement(x.uuid))}
-            style={{ cursor: "pointer" }}
-          >
-            {x.caption}
-          </ListGroup.Item>
-        ))}
-      </ListGroup>
-      <div>Scope: {scope}</div>
-    </Col>
+      <div className="flex-grow-1 overflow-y-auto">
+        <ListGroup>
+          {elements.map((x) => (
+            <ListGroup.Item
+              active={x.uuid == activeElement}
+              key={x.uuid}
+              onMouseEnter={() => toggle(x.uuid, true)}
+              onMouseLeave={() => toggle(x.uuid, false)}
+              onClick={() => dispatch(actions.selectElement(x.uuid))}
+              style={{ cursor: "pointer" }}
+            >
+              {x.extension.caption}
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </div>
+      <div className="Sidebar__footer">
+        <span>
+          Scope: <code>{scope}</code>
+        </span>
+      </div>
+    </div>
   );
 };
 

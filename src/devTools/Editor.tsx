@@ -37,9 +37,9 @@ const Editor: React.FunctionComponent = () => {
   const create = useCreate();
 
   return (
-    <Container fluid>
-      <Row>
-        <Col md={2}>
+    <Container fluid className="h-100">
+      <Row className="h-100">
+        <Col md={2} className="h-100 pr-0">
           <Sidebar
             dispatch={dispatch}
             elements={elements}
@@ -47,30 +47,22 @@ const Editor: React.FunctionComponent = () => {
             inserting={inserting}
           />
         </Col>
-        <Col>
-          <Col md={10}>
-            {selectedElement ? (
-              <Container fluid>
-                <Row>
-                  <Col>
-                    <Formik
-                      key={selectedElement.uuid}
-                      initialValues={selectedElement}
-                      onSubmit={create}
-                    >
-                      {({ values }) => (
-                        <ElementWizard dispatch={dispatch} element={values} />
-                      )}
-                    </Formik>
-                  </Col>
-                </Row>
-              </Container>
-            ) : elements.length ? (
-              <span>No element selected</span>
-            ) : (
-              <span>No elements added to page yet</span>
-            )}
-          </Col>
+        <Col md={10} className="pl-2 h-100">
+          {selectedElement ? (
+            <Formik
+              key={selectedElement.uuid}
+              initialValues={selectedElement}
+              onSubmit={create}
+            >
+              {({ values }) => (
+                <ElementWizard dispatch={dispatch} element={values} />
+              )}
+            </Formik>
+          ) : elements.length ? (
+            <span>No element selected</span>
+          ) : (
+            <span>No elements added to page yet</span>
+          )}
         </Col>
       </Row>
     </Container>

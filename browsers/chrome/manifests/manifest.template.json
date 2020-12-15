@@ -42,6 +42,7 @@
     "bundles/*",
     "frame.html",
     "frame.css",
+    "devtoolsPanel.css",
     "script.js"
   ],
   "background": {

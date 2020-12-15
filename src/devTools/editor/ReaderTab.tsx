@@ -16,9 +16,10 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import { ButtonState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
+import { pickBy, compact, partial, mapValues, isEmpty } from "lodash";
 import { useField, useFormikContext } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 import Select from "react-select";
@@ -31,6 +32,7 @@ import { runReader } from "@/background/devtools";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
+import { useDebounce } from "use-debounce";
 
 // @ts-ignore: no type definitions?
 import GenerateSchema from "generate-schema";
@@ -102,12 +104,39 @@ const FrameworkSelector: React.FunctionComponent<{
   );
 };
 
+function normalize(value: unknown): string {
+  return value.toString().toLowerCase();
+}
+
+function searchData(query: string, data: unknown): unknown {
+  const normalized = normalize(query);
+  if (data == null) {
+    return null;
+  } else if (typeof data === "object") {
+    const values = mapValues(data, (value, key) =>
+      normalize(key).includes(query) ? value : searchData(query, value)
+    );
+    return pickBy(values, (value, key) => {
+      const keyMatch = normalize(key).includes(query);
+      const valueMatch =
+        typeof value === "object" || Array.isArray(value)
+          ? !isEmpty(value)
+          : value != null;
+      return keyMatch || valueMatch;
+    });
+  } else if (Array.isArray(data)) {
+    return compact(data.map(partial(searchData, query)));
+  }
+  return normalize(data).includes(normalized) ? data : undefined;
+}
+
 const ReaderTab: React.FunctionComponent<{
-  element: ButtonState;
+  element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
 }> = ({ element }) => {
   const { port, frameworks } = useContext(DevToolsContext);
-  const { values, setFieldValue } = useFormikContext<ButtonState>();
+  const [query, setQuery] = useState("");
+  const { values, setFieldValue } = useFormikContext<FormState>();
   const [{ output, schema, error }, setSchema] = useState({
     output: undefined,
     schema: undefined,
@@ -117,18 +146,18 @@ const ReaderTab: React.FunctionComponent<{
   useAsyncEffect(
     async (isMounted) => {
       setSchema({ output: undefined, schema: undefined, error: undefined });
-      if (!values.reader?.selector) {
+      if (!values.reader?.definition?.selector) {
         return;
       }
-      const option = readerOptions.find((x) => x.value === values.reader.type);
+
+      const { type, selector } = values.reader.definition;
+
+      const option = readerOptions.find((x) => x.value === type);
       let output;
       let schema;
       try {
         output = await runReader(port, {
-          config: (option.makeConfig ?? defaultConfig)(
-            values.reader.type,
-            values.reader.selector
-          ),
+          config: (option.makeConfig ?? defaultConfig)(type, selector),
         });
         schema = GenerateSchema.json("Inferred Schema", output);
       } catch (exc) {
@@ -145,17 +174,30 @@ const ReaderTab: React.FunctionComponent<{
       setFieldValue("reader.outputSchema", schema);
       setSchema({ output, schema, error: undefined });
     },
-    [values.reader?.type, values.reader?.selector]
+    [values.reader?.definition?.type, values.reader?.definition?.selector]
   );
 
+  const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
+
+  const searchResults = useMemo(() => {
+    if (debouncedQuery === "" || output == null) {
+      return output;
+    } else {
+      return searchData(query, output);
+    }
+  }, [debouncedQuery, output]);
+
   return (
-    <Tab.Pane eventKey="reader">
+    <Tab.Pane eventKey="reader" className="h-100">
       <Form.Group as={Row} controlId="readerType">
         <Form.Label column sm={2}>
           Framework
         </Form.Label>
         <Col sm={10}>
-          <FrameworkSelector name="reader.type" frameworks={frameworks} />
+          <FrameworkSelector
+            name="reader.definition.type"
+            frameworks={frameworks}
+          />
         </Col>
       </Form.Group>
       <Form.Group as={Row} controlId="readerSelector">
@@ -165,40 +207,60 @@ const ReaderTab: React.FunctionComponent<{
         <Col sm={10}>
           <SelectorSelectorField
             isClearable
-            name="reader.selector"
+            name="reader.definition.selector"
             initialElement={element.containerInfo}
             traverseUp={5}
           />
         </Col>
       </Form.Group>
-      <Row>
-        {error || !values.reader?.selector ? (
+      <Form.Group as={Row} controlId="readerSearch">
+        <Form.Label column sm={2}>
+          Search
+        </Form.Label>
+        <Col sm={10}>
+          <Form.Control
+            type="text"
+            placeholder="Search for a property or value"
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </Col>
+      </Form.Group>
+      {error || !values.reader?.definition?.selector ? (
+        <Row className="h-100">
           <Col>{error ?? "No reader/selector selected"}</Col>
-        ) : (
-          <>
-            <Col>
-              <span>Raw Data</span>
-              <div className="overflow-auto h-100">
-                {output !== undefined ? (
-                  <JSONTree data={output} theme={theme} invertTheme hideRoot />
-                ) : (
-                  <GridLoader />
-                )}
-              </div>
-            </Col>
-            <Col>
-              <span>Inferred Schema</span>
-              <div className="overflow-auto h-100">
-                {schema !== undefined ? (
-                  <SchemaTree schema={schema} />
-                ) : (
-                  <GridLoader />
-                )}
-              </div>
-            </Col>
-          </>
-        )}
-      </Row>
+        </Row>
+      ) : (
+        <Row className="h-100">
+          <Col md={6} className="ReaderData">
+            <span>
+              {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
+            </span>
+            <div className="overflow-auto h-100 w-100">
+              {searchResults !== undefined ? (
+                <JSONTree
+                  data={searchResults}
+                  theme={theme}
+                  invertTheme
+                  hideRoot
+                  sortObjectKeys
+                />
+              ) : (
+                <GridLoader />
+              )}
+            </div>
+          </Col>
+          <Col md={6} className="ReaderData">
+            <span>Inferred Schema</span>
+            <div className="overflow-auto h-100 w-100">
+              {schema !== undefined ? (
+                <SchemaTree schema={schema} />
+              ) : (
+                <GridLoader />
+              )}
+            </div>
+          </Col>
+        </Row>
+      )}
     </Tab.Pane>
   );
 };

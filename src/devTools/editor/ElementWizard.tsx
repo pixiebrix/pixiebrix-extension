@@ -22,15 +22,15 @@ import { useFormikContext } from "formik";
 import { useDebounce } from "use-debounce";
 import useAsyncEffect from "use-async-effect";
 import * as nativeOperations from "@/background/devtools";
-import { Button, Col, Form, Nav, Row, Tab } from "react-bootstrap";
-import { actions, ButtonState } from "@/devTools/editor/editorSlice";
+import { Button, Form, Nav, Tab } from "react-bootstrap";
+import { actions, FormState } from "@/devTools/editor/editorSlice";
 import FoundationTab from "@/devTools/editor/FoundationTab";
 import ReaderTab from "@/devTools/editor/ReaderTab";
 import AvailabilityTab from "@/devTools/editor/AvailabilityTab";
 import MetaTab from "@/devTools/editor/MetaTab";
 
 const ElementWizard: React.FunctionComponent<{
-  element: ButtonState;
+  element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
 }> = ({ element, dispatch }) => {
   const { port } = useContext(DevToolsContext);
@@ -45,65 +45,70 @@ const ElementWizard: React.FunctionComponent<{
   const [debounced] = useDebounce(element, 100);
 
   useAsyncEffect(async () => {
-    await nativeOperations.updateButton(port, debounced);
+    await nativeOperations.updateButton(port, toButtonDefinition(debounced));
   }, [debounced]);
 
   return (
-    <Form
-      autoComplete="off"
-      noValidate
-      onSubmit={handleSubmit}
-      onReset={handleReset}
-    >
-      <Form.Group as={Row}>
-        <Col>
-          <Button
-            variant="danger"
-            className="mr-2"
-            onClick={async () => {
-              try {
-                await nativeOperations.removeElement(port, {
-                  uuid: element.uuid,
-                });
-              } catch (reason) {
-                // element might not be on the page anymore
-              }
-              dispatch(actions.removeElement(element.uuid));
-            }}
-          >
-            Remove
-          </Button>
-
-          <Button
-            className="mx-2"
-            disabled={isSubmitting || !isValid}
-            type="submit"
-            variant="primary"
-          >
-            Save
-          </Button>
-          {status}
-        </Col>
-      </Form.Group>
-      <Tab.Container activeKey={step}>
-        <Nav
-          variant="pills"
-          activeKey={step}
-          onSelect={(step: string) => setStep(step)}
+    <Tab.Container activeKey={step}>
+      <Nav
+        variant="pills"
+        activeKey={step}
+        onSelect={(step: string) => setStep(step)}
+      >
+        <Nav.Item>
+          <Nav.Link eventKey="foundation">Foundation</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="reader">Reader</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="action" disabled>
+            Action
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="availability">Availability</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="metadata">Metadata</Nav.Link>
+        </Nav.Item>
+        <div className="flex-grow-1" />
+        <Button
+          className="mx-2"
+          disabled={isSubmitting || !isValid}
+          type="submit"
+          size="sm"
+          variant="primary"
         >
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="foundation">1. Foundation</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="reader">2. Reader</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="availability">3. Availability</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="metadata">4. Metadata</Nav.Link>
-          </Nav.Item>
-        </Nav>
+          Save Action
+        </Button>
+
+        <Button
+          variant="danger"
+          className="mr-2"
+          size="sm"
+          onClick={async () => {
+            try {
+              await nativeOperations.removeElement(port, {
+                uuid: element.uuid,
+              });
+            } catch (reason) {
+              // element might not be on the page anymore
+            }
+            dispatch(actions.removeElement(element.uuid));
+          }}
+        >
+          Remove
+        </Button>
+      </Nav>
+      {status && <div>{status}</div>}
+      <Form
+        autoComplete="off"
+        noValidate
+        onSubmit={handleSubmit}
+        onReset={handleReset}
+        className="h-100"
+      >
         {step === "foundation" && (
           <FoundationTab element={element} dispatch={dispatch} />
         )}
@@ -116,8 +121,8 @@ const ElementWizard: React.FunctionComponent<{
         {step === "metadata" && (
           <MetaTab element={element} dispatch={dispatch} />
         )}
-      </Tab.Container>
-    </Form>
+      </Form>
+    </Tab.Container>
   );
 };
 
