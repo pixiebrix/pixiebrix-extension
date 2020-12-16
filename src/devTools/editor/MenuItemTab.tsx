@@ -16,55 +16,34 @@
  */
 
 import React from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { Col, Form, Row, Tab } from "react-bootstrap";
 import { Field, FieldInputProps } from "formik";
+import { Col, Form, Row, Tab } from "react-bootstrap";
+import { FormState } from "@/devTools/editor/editorSlice";
+import IconField, { iconSchema } from "@/components/fields/IconField";
 
-const MetaTab: React.FunctionComponent<{
+const MenuItemTab: React.FunctionComponent<{
   element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
-}> = () => {
+}> = ({ element }) => {
   return (
-    <Tab.Pane eventKey="metadata" className="h-100">
-      <Form.Group as={Row} controlId="formExtensionPointId">
+    <Tab.Pane eventKey="menuItem" className="h-100">
+      <Form.Group as={Row} controlId="formCaption">
         <Form.Label column sm={2}>
-          Foundation Id
+          Caption
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.metadata.id">
+          <Field name="extension.caption">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}
           </Field>
         </Col>
       </Form.Group>
-      <Form.Group as={Row} controlId="formFoundationName">
-        <Form.Label column sm={2}>
-          Foundation Name
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="extensionPoint.metadata.name">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="formReaderId" className="pb-4">
-        <Form.Label column sm={2}>
-          Reader Id
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="reader.metadata.id">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
+
+      <IconField label="Icon" name="extension.icon" schema={iconSchema} />
     </Tab.Pane>
   );
 };
 
-export default MetaTab;
+export default MenuItemTab;

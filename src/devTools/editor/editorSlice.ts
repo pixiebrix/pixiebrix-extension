@@ -16,9 +16,10 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Metadata, Schema } from "@/core";
+import { IconConfig, Metadata, Schema } from "@/core";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
+import { BlockPipeline } from "@/blocks/combinators";
 
 export interface FormState {
   readonly uuid: string;
@@ -44,6 +45,8 @@ export interface FormState {
 
   extension: {
     caption: string;
+    icon?: IconConfig;
+    action: BlockPipeline;
   };
 
   reader: {

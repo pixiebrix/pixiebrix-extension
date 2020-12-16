@@ -20,7 +20,7 @@ import { FormState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
 import { pickBy, compact, partial, mapValues, isEmpty } from "lodash";
-import { useField, useFormikContext } from "formik";
+import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 import Select from "react-select";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
@@ -189,6 +189,19 @@ const ReaderTab: React.FunctionComponent<{
 
   return (
     <Tab.Pane eventKey="reader" className="h-100">
+      <Form.Group as={Row} controlId="formReaderId">
+        <Form.Label column sm={2}>
+          Reader Id
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="reader.metadata.id">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control type="text" {...field} />
+            )}
+          </Field>
+        </Col>
+      </Form.Group>
+
       <Form.Group as={Row} controlId="readerType">
         <Form.Label column sm={2}>
           Framework

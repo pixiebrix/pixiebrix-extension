@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { uniq, compact } from "lodash";
+import { uniq, compact, sortBy } from "lodash";
 const BUTTON_TAGS = ["li", "button", "a", "span", "input", "svg"];
 const ICON_TAGS = ["svg"];
 const MENU_TAGS = ["ul", "tbody"];
@@ -115,9 +115,11 @@ export function safeCssSelector(
   element: HTMLElement,
   selectors: string[] = []
 ): string {
+  // https://github.com/fczbkk/css-selector-generator
   return getCssSelector(element, {
     blacklist: ["#ember*"],
     selectors: selectors,
+    combineWithinSelector: true,
   });
 }
 
@@ -125,14 +127,24 @@ export function safeCssSelector(
  * Generate some CSS selector variants for an element.
  */
 export function inferSelectors(element: HTMLElement): string[] {
-  return uniq(
-    compact([
-      safeCssSelector(element),
-      safeCssSelector(element, ["tag"]),
-      safeCssSelector(element, ["class", "tag"]),
-      safeCssSelector(element, ["tag", "class"]),
-    ])
-  ).filter((x) => x.trim() !== "");
+  return sortBy(
+    uniq(
+      compact([
+        safeCssSelector(element, [
+          "id",
+          "class",
+          "tag",
+          "attribute",
+          "nthchild",
+        ]),
+        safeCssSelector(element, ["tag", "class", "attribute", "nthchild"]),
+        safeCssSelector(element, ["id", "tag", "attribute", "nthchild"]),
+        safeCssSelector(element, ["id", "tag", "attribute"]),
+        safeCssSelector(element),
+      ])
+    ).filter((x) => x.trim() !== ""),
+    (x) => x.length
+  );
 }
 
 /**

@@ -15,32 +15,73 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import React, { FunctionComponent } from "react";
+import { Form, Row, Col } from "react-bootstrap";
+import React, { FunctionComponent, useMemo, useState } from "react";
+import { uniq } from "lodash";
 import { FieldProps } from "@/components/fields/propTypes";
 import { useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
+import Creatable from "react-select/creatable";
+import Select, { OptionsType } from "react-select";
 
 const TextField: FunctionComponent<FieldProps<string>> = ({
   label,
   schema,
   ...props
 }) => {
-  const [{ value, ...field }, meta] = useField(props);
+  const [created, setCreated] = useState([]);
+  const [{ value, ...field }, meta, helpers] = useField(props);
+
+  const [creatable, options]: [
+    boolean,
+    OptionsType<{ value: string }>
+  ] = useMemo(() => {
+    const values = schema?.examples ?? schema?.enum;
+    const options = Array.isArray(values)
+      ? uniq([...created, ...values]).map((x) => ({ value: x, label: x }))
+      : [];
+    return [schema?.enum == null, options];
+  }, [schema?.examples, schema?.enum]);
+
+  let control;
+
+  if (options.length && creatable) {
+    control = (
+      <Creatable
+        isClearable
+        options={options}
+        onCreateOption={(value) => setCreated(uniq([...created, value]))}
+        value={options.find((x) => x.value === value)}
+        onChange={(option) => helpers.setValue((option as any)?.value)}
+      />
+    );
+  } else if (options.length && !creatable) {
+    control = (
+      <Select
+        isClearable
+        options={options}
+        value={options.find((x) => x.value === value)}
+        onChange={(option) => helpers.setValue((option as any)?.value)}
+      />
+    );
+  } else {
+    control = (
+      <Form.Control
+        type="text"
+        value={value ?? ""}
+        {...field}
+        isInvalid={!!meta.error}
+      />
+    );
+  }
+
   return (
     <Form.Group as={Row} controlId={field.name}>
       <Form.Label column sm="2">
         {label ?? fieldLabel(field.name)}
       </Form.Label>
       <Col sm="10">
-        <Form.Control
-          type="text"
-          value={value ?? ""}
-          {...field}
-          isInvalid={!!meta.error}
-        />
+        {control}
         {schema.description && (
           <Form.Text className="text-muted">{schema.description}</Form.Text>
         )}

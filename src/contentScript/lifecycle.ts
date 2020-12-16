@@ -75,6 +75,18 @@ async function runExtensionPoint(
   await extensionPoint.run();
 }
 
+export function clearDynamic(uuid?: string): void {
+  if (uuid) {
+    _dynamic.get(uuid).uninstall();
+    _dynamic.delete(uuid);
+  } else {
+    for (const extensionPoint of _dynamic.values()) {
+      extensionPoint.uninstall();
+    }
+    _dynamic.clear();
+  }
+}
+
 export async function runDynamic(
   uuid: string,
   extensionPoint: IExtensionPoint
@@ -83,7 +95,6 @@ export async function runDynamic(
     _dynamic.get(uuid).uninstall();
   }
   _dynamic.set(uuid, extensionPoint);
-
   const currentNavSequence = _navSequence;
   const cancel = () => getNavSequence() > currentNavSequence;
   await runExtensionPoint(extensionPoint, cancel);

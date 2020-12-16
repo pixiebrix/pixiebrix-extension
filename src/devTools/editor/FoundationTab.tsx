@@ -28,6 +28,31 @@ const FoundationTab: React.FunctionComponent<{
 }> = ({ element }) => {
   return (
     <Tab.Pane eventKey="foundation" className="h-100">
+      <Form.Group as={Row} controlId="formExtensionPointId">
+        <Form.Label column sm={2}>
+          Foundation Id
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="extensionPoint.metadata.id">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control type="text" {...field} />
+            )}
+          </Field>
+        </Col>
+      </Form.Group>
+      <Form.Group as={Row} controlId="formFoundationName">
+        <Form.Label column sm={2}>
+          Foundation Name
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="extensionPoint.metadata.name">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control type="text" {...field} />
+            )}
+          </Field>
+        </Col>
+      </Form.Group>
+
       <Form.Group as={Row} controlId="formContainerSelector">
         <Form.Label column sm={2}>
           Container Selector
@@ -73,25 +98,12 @@ const FoundationTab: React.FunctionComponent<{
         </Col>
       </Form.Group>
 
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Caption
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="extension.caption">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-
       <Form.Group as={Row} controlId="formTemplate" className="pb-4">
         <Form.Label column sm={2}>
           Template
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.definition.templatge">
+          <Field name="extensionPoint.definition.template">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control as="textarea" rows={4} {...field} />
             )}

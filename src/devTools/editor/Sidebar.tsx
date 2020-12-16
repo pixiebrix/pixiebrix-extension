@@ -36,6 +36,7 @@ import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { InsertResult } from "@/nativeEditor/insertButton";
 import { Metadata } from "@/core";
+import { makeButtonConfig } from "@/devTools/editor/useCreate";
 
 function defaultReader(frameworks: FrameworkMeta[]): Framework {
   const knownFrameworks = frameworks.filter((x) =>
@@ -74,13 +75,14 @@ async function generateExtensionPointMetadata(
   throw new Error("Could not find available id");
 }
 
-function defaultMatchPattern(url: string) {
+function defaultMatchPattern(url: string): string {
   const obj = new URL(url);
   obj.pathname = "*";
   return obj.href;
 }
 
 function makeFormState(
+  url: string,
   metadata: Metadata,
   button: InsertResult,
   frameworks: FrameworkMeta[]
@@ -105,6 +107,14 @@ function makeFormState(
     },
     extension: {
       caption: button.item.caption,
+      action: [
+        {
+          id: "@pixiebrix/browser/log",
+          config: {
+            message: "Triggered custom action",
+          },
+        },
+      ],
     },
     reader: {
       metadata: {
@@ -148,7 +158,9 @@ const Sidebar: React.FunctionComponent<
           x.reader.metadata.id,
         ])
       );
-      dispatch(actions.addElement(makeFormState(metadata, button, frameworks)));
+      const initialState = makeFormState(url, metadata, button, frameworks);
+      await nativeOperations.updateButton(port, makeButtonConfig(initialState));
+      dispatch(actions.addElement(initialState));
     } catch (exc) {
       reportError(exc);
       addToast(`Error adding button: ${exc.toString()}`, {

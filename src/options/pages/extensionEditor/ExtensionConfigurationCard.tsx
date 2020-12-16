@@ -16,38 +16,10 @@
  */
 
 import React from "react";
-import { SCHEMA_TYPE_TO_BLOCK_PROPERTY } from "@/components/fields/BlockField";
-import BlockField from "@/components/fields/BlockField";
-import TextField from "@/components/fields/TextField";
-import IconField from "@/components/fields/IconField";
 import { inputProperties } from "@/helpers";
 import { IBlock, IExtensionPoint, Schema } from "@/core";
-import { FieldProps } from "@/components/fields/propTypes";
 import Card from "react-bootstrap/Card";
-
-function defaultFieldRenderer(
-  schema: Schema
-): React.FunctionComponent<FieldProps<unknown>> {
-  if (schema.type === "string" || schema.type === "boolean") {
-    return TextField;
-  } else if (SCHEMA_TYPE_TO_BLOCK_PROPERTY[schema["$ref"]]) {
-    return BlockField;
-  } else if (schema["$ref"] === "https://app.pixiebrix.com/schemas/icon#") {
-    return IconField;
-  } else if (
-    (schema["oneOf"] ?? []).some(
-      (x) => SCHEMA_TYPE_TO_BLOCK_PROPERTY[(x as any)["$ref"]]
-    )
-  ) {
-    return BlockField;
-  } else if (schema["$ref"] && !schema.type) {
-    throw new Error(`Unexpected $ref ${schema["$ref"]}`);
-  } else {
-    const msg = `Unsupported field type: ${schema.type ?? "<No type found>"}`;
-    console.error(msg, schema);
-    throw new Error(msg);
-  }
-}
+import { defaultFieldRenderer } from "@/options/pages/extensionEditor/fieldRenderer";
 
 interface OwnProps {
   extensionPoint: IExtensionPoint;

@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo, useState } from "react";
-import genericOptionsFactory from "./blockOptions";
+import genericOptionsFactory, { BlockOptionProps } from "./blockOptions";
 import cx from "classnames";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
@@ -40,6 +40,7 @@ import "./BlockField.scss";
 import Button from "react-bootstrap/Button";
 import useAsyncEffect from "use-async-effect";
 import { GridLoader } from "react-spinners";
+import { reportError } from "@/telemetry/logging";
 
 export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
   "#/definitions/renderer": "render",
@@ -58,25 +59,42 @@ export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
 
 type ConfigValue = { [key: string]: string };
 
-function useBlockOptions(id: string) {
-  const [block, setBlock] = useState(null);
+interface BlockState {
+  block?: IBlock | null;
+  error?: string | null;
+}
+
+function useBlockOptions(
+  id: string
+): [BlockState, React.FunctionComponent<BlockOptionProps>] {
+  const [{ block, error }, setBlock] = useState<BlockState>({
+    block: null,
+    error: null,
+  });
 
   useAsyncEffect(
     async (isMounted) => {
-      const block = await blockRegistry.lookup(id);
-      if (!isMounted()) return;
-      setBlock(block);
+      setBlock({ block: null, error: null });
+      try {
+        const block = await blockRegistry.lookup(id);
+        if (!isMounted()) return;
+        setBlock({ block });
+      } catch (exc) {
+        reportError(exc);
+        if (!isMounted()) return;
+        setBlock({ error: exc.toString() });
+      }
     },
     [id, setBlock]
   );
 
-  const BlockOptions = useMemo(() => {
-    return block
-      ? genericOptionsFactory(inputProperties(block.inputSchema))
-      : null;
-  }, [block]);
+  const BlockOptions = useMemo(
+    () =>
+      block ? genericOptionsFactory(inputProperties(block.inputSchema)) : null,
+    [block]
+  );
 
-  return [block, BlockOptions];
+  return [{ block, error }, BlockOptions];
 }
 
 const BlockCard: React.FunctionComponent<{
@@ -91,7 +109,7 @@ const BlockCard: React.FunctionComponent<{
   const isValid = isEmpty(errors);
   const [collapsed, setCollapsed] = useState(true);
 
-  const [, BlockOptions] = useBlockOptions(config.id);
+  const [{ error }, BlockOptions] = useBlockOptions(config.id);
 
   return (
     <Card className={cx("BlockCard", { invalid: !isValid })}>
@@ -127,6 +145,8 @@ const BlockCard: React.FunctionComponent<{
               configKey="config"
               showOutputKey={showOutputKey}
             />
+          ) : error ? (
+            <div className="invalid-feedback d-block mb-4">{error}</div>
           ) : (
             <GridLoader />
           )}

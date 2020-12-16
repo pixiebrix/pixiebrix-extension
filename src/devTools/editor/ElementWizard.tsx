@@ -27,7 +27,9 @@ import { actions, FormState } from "@/devTools/editor/editorSlice";
 import FoundationTab from "@/devTools/editor/FoundationTab";
 import ReaderTab from "@/devTools/editor/ReaderTab";
 import AvailabilityTab from "@/devTools/editor/AvailabilityTab";
-import MetaTab from "@/devTools/editor/MetaTab";
+import { makeButtonConfig } from "@/devTools/editor/useCreate";
+import EffectTab from "@/devTools/editor/EffectTab";
+import MenuItemTab from "@/devTools/editor/MenuItemTab";
 
 const ElementWizard: React.FunctionComponent<{
   element: FormState;
@@ -45,7 +47,7 @@ const ElementWizard: React.FunctionComponent<{
   const [debounced] = useDebounce(element, 100);
 
   useAsyncEffect(async () => {
-    await nativeOperations.updateButton(port, toButtonDefinition(debounced));
+    await nativeOperations.updateButton(port, makeButtonConfig(element));
   }, [debounced]);
 
   return (
@@ -62,16 +64,15 @@ const ElementWizard: React.FunctionComponent<{
           <Nav.Link eventKey="reader">Reader</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="action" disabled>
-            Action
-          </Nav.Link>
+          <Nav.Link eventKey="menuItem">Menu Item</Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link eventKey="effect">Effect</Nav.Link>
         </Nav.Item>
         <Nav.Item>
           <Nav.Link eventKey="availability">Availability</Nav.Link>
         </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="metadata">Metadata</Nav.Link>
-        </Nav.Item>
+
         <div className="flex-grow-1" />
         <Button
           className="mx-2"
@@ -89,7 +90,7 @@ const ElementWizard: React.FunctionComponent<{
           size="sm"
           onClick={async () => {
             try {
-              await nativeOperations.removeElement(port, {
+              await nativeOperations.clear(port, {
                 uuid: element.uuid,
               });
             } catch (reason) {
@@ -115,11 +116,14 @@ const ElementWizard: React.FunctionComponent<{
         {step === "reader" && (
           <ReaderTab element={element} dispatch={dispatch} />
         )}
+        {step === "menuItem" && (
+          <MenuItemTab element={element} dispatch={dispatch} />
+        )}
+        {step === "effect" && (
+          <EffectTab element={element} eventKey="effect" dispatch={dispatch} />
+        )}
         {step === "availability" && (
           <AvailabilityTab element={element} dispatch={dispatch} />
-        )}
-        {step === "metadata" && (
-          <MetaTab element={element} dispatch={dispatch} />
         )}
       </Form>
     </Tab.Container>

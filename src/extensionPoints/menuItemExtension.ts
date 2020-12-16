@@ -35,6 +35,7 @@ import {
   awaitElementOnce,
   acquireElement,
   onNodeRemoved,
+  EXTENSION_POINT_DATA_ATTR,
 } from "@/extensionPoints/helpers";
 import {
   ExtensionPointConfig,
@@ -56,11 +57,23 @@ interface ShadowDOM {
   tag?: string;
 }
 
+const DATA_ATTR = "data-pb-uuid";
+
 export interface MenuItemExtensionConfig {
   caption: string;
   action: BlockConfig | BlockPipeline;
   icon?: IconConfig;
 }
+
+export const actionSchema: Schema = {
+  oneOf: [
+    { $ref: "https://app.pixiebrix.com/schemas/effect#" },
+    {
+      type: "array",
+      items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
+    },
+  ],
+};
 
 export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
   protected readonly menus: Map<string, HTMLElement>;
@@ -85,15 +98,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         type: "string",
         description: "The caption for the menu item.",
       },
-      action: {
-        oneOf: [
-          { $ref: "https://app.pixiebrix.com/schemas/effect#" },
-          {
-            type: "array",
-            items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
-          },
-        ],
-      },
+      action: actionSchema,
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
       shadowDOM: {
         type: "object",
@@ -116,14 +121,32 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   );
 
   public uninstall(): void {
-    for (const element of this.menus.values()) {
+    const menus = Array.from(this.menus.values());
+    const extensions = Array.from(this.extensions);
+
+    // clear first so they don't get re-added by the onNodeRemoved mechanism
+    this.extensions.splice(0, this.extensions.length);
+    this.menus.clear();
+
+    console.debug(
+      `Uninstalling ${menus.length} menus for ${extensions.length} extensions`
+    );
+
+    for (const element of menus) {
       try {
-        element.remove();
+        for (const extension of extensions) {
+          const $item = $(element).find(`[${DATA_ATTR}="${extension.id}"]`);
+          if (!$item.length) {
+            console.debug(`Item for ${extension.id} was not in the menu`);
+          }
+          $item.remove();
+        }
+        // release the menu element
+        element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
       } catch (exc) {
         this.logger.error(exc);
       }
     }
-    this.menus.clear();
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -252,7 +275,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       }
     });
 
-    const $existingItem = $menu.find(`[data-pixiebrix-uuid="${extension.id}"]`);
+    const $existingItem = $menu.find(`[${DATA_ATTR}="${extension.id}"]`);
 
     if ($existingItem.length) {
       // shouldn't need to unbind click handlers because we'll replace it outright
@@ -410,7 +433,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
       $root = $(html);
     }
 
-    $root.attr("data-pixiebrix-uuid", extension.id);
+    $root.attr(DATA_ATTR, extension.id);
 
     return $root;
   }

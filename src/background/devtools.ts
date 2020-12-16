@@ -370,10 +370,10 @@ export const updateButton = liftBackground(
   }
 );
 
-export const removeElement = liftBackground(
-  "REMOVE_ELEMENT",
-  (tabId: number) => async ({ uuid }: { uuid: string }) => {
-    return await nativeEditorProtocol.removeElement(tabId, { uuid });
+export const clear = liftBackground(
+  "CLEAR_DYNAMIC",
+  (tabId: number) => async ({ uuid }: { uuid?: string }) => {
+    return await nativeEditorProtocol.clear(tabId, { uuid });
   }
 );
 

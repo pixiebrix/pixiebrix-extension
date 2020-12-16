@@ -67,6 +67,7 @@ export class HighlightEffect extends Effect {
                 selector: {
                   type: "string",
                   description: "JQuery selector",
+                  format: "selector",
                 },
                 condition: {
                   anyOf: [

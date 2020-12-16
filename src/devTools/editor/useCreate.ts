@@ -37,6 +37,7 @@ import {
   MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { IExtension, ServiceDependency } from "@/core";
+import { ButtonDefinition } from "@/nativeEditor/insertButton";
 
 const { saveExtension } = optionsSlice.actions;
 
@@ -106,17 +107,15 @@ export function makeExtensionDefinition({
     label: "Custom Action",
     // services here refers to the service auth
     services: [] as ServiceDependency[],
-    config: {
-      caption: extension.caption,
-      action: [
-        {
-          id: "@pixiebrix/browser/log",
-          config: {
-            message: "Custom action",
-          },
-        },
-      ],
-    },
+    config: extension,
+  };
+}
+
+export function makeButtonConfig(element: FormState): ButtonDefinition {
+  return {
+    extension: makeExtensionDefinition(element),
+    extensionPoint: makeMenuExtensionPoint(element),
+    reader: makeMenuReader(element),
   };
 }
 

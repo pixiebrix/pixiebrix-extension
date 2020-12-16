@@ -33,7 +33,7 @@ import {
   MenuDefinition,
   MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
-import { runDynamic } from "@/contentScript/lifecycle";
+import { runDynamic, clearDynamic } from "@/contentScript/lifecycle";
 import { IExtension, IExtensionPoint } from "@/core";
 import {
   ReaderConfig,
@@ -41,11 +41,11 @@ import {
   readerFactory,
 } from "@/blocks/readers/factory";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { html as beautifyHTML } from "js-beautify";
 
 let overlay: Overlay | null = null;
 
 export interface ButtonDefinition {
-  uuid: string;
   extensionPoint: ExtensionPointConfig<MenuDefinition>;
   extension: IExtension<MenuItemExtensionConfig>;
   reader: ReaderConfig<ReaderDefinition>;
@@ -60,10 +60,21 @@ export interface InsertResult {
 
 const _temporaryExtensions: Map<string, IExtensionPoint> = new Map();
 
+export const clear = liftContentScript(
+  "CLEAR_DYNAMIC",
+  async ({ uuid }: { uuid?: string }) => {
+    clearDynamic(uuid);
+    if (uuid) {
+      _temporaryExtensions.delete(uuid);
+    } else {
+      _temporaryExtensions.clear();
+    }
+  }
+);
+
 export const updateButton = liftContentScript(
   "UPDATE_BUTTON",
   async ({
-    uuid,
     extensionPoint: extensionPointConfig,
     extension: extensionConfig,
     reader: readerConfig,
@@ -74,18 +85,11 @@ export const updateButton = liftContentScript(
     const reader = readerFactory(readerConfig);
     extensionPoint.defaultReader = async () => reader;
 
-    _temporaryExtensions.set(uuid, extensionPoint);
+    _temporaryExtensions.set(extensionConfig.id, extensionPoint);
 
     extensionPoint.addExtension(extensionConfig);
 
-    await runDynamic(uuid, extensionPoint);
-  }
-);
-
-export const removeElement = liftContentScript(
-  "REMOVE_ELEMENT",
-  async ({ uuid }: { uuid: string }) => {
-    $(`[data-uuid="${uuid}"]`).remove();
+    await runDynamic(extensionConfig.id, extensionPoint);
   }
 );
 
@@ -101,7 +105,11 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
     menu: {
       type: "menuItem",
       containerSelector: selectors[0],
-      template: inferButtonHTML(container, selected),
+      template: beautifyHTML(inferButtonHTML(container, selected), {
+        indent_handlebars: true,
+        wrap_line_length: 80,
+        wrap_attributes: "force",
+      }),
       shadowDOM: null,
       position: "append",
     },
