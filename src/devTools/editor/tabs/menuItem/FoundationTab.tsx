@@ -19,15 +19,16 @@ import React from "react";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Field, FieldInputProps } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { ActionFormState } from "@/devTools/editor/editorSlice";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 
 const FoundationTab: React.FunctionComponent<{
-  element: FormState;
+  eventKey?: string;
+  element: ActionFormState;
   dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ element }) => {
+}> = ({ eventKey = "foundation", element }) => {
   return (
-    <Tab.Pane eventKey="foundation" className="h-100">
+    <Tab.Pane eventKey={eventKey} className="h-100">
       <Form.Group as={Row} controlId="formExtensionPointId">
         <Form.Label column sm={2}>
           Foundation Id
@@ -82,21 +83,21 @@ const FoundationTab: React.FunctionComponent<{
         </Col>
       </Form.Group>
 
-      <Form.Group as={Row} controlId="formStyle">
-        <Form.Label column sm={2}>
-          Style
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="extensionPoint.traits.style.mode">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="select" {...field}>
-                <option value="inherit">Inherit</option>
-                <option value="default">Default</option>
-              </Form.Control>
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
+      {/*<Form.Group as={Row} controlId="formStyle">*/}
+      {/*  <Form.Label column sm={2}>*/}
+      {/*    Style*/}
+      {/*  </Form.Label>*/}
+      {/*  <Col sm={10}>*/}
+      {/*    <Field name="extensionPoint.traits.style.mode">*/}
+      {/*      {({ field }: { field: FieldInputProps<string> }) => (*/}
+      {/*        <Form.Control as="select" {...field}>*/}
+      {/*          <option value="inherit">Inherit</option>*/}
+      {/*          <option value="default">Default</option>*/}
+      {/*        </Form.Control>*/}
+      {/*      )}*/}
+      {/*    </Field>*/}
+      {/*  </Col>*/}
+      {/*</Form.Group>*/}
 
       <Form.Group as={Row} controlId="formTemplate" className="pb-4">
         <Form.Label column sm={2}>

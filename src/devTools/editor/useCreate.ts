@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { FormState } from "@/devTools/editor/editorSlice";
-import { identity, pickBy } from "lodash";
+import { ActionFormState } from "@/devTools/editor/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback, useState } from "react";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -27,94 +26,22 @@ import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
-import { defaultSelector, readerOptions } from "@/devTools/editor/ReaderTab";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { ReaderConfig, ReaderDefinition } from "@/blocks/readers/factory";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { makeExtensionReader } from "@/devTools/editor/extensionPoints/base";
 import {
-  MenuDefinition,
-  MenuItemExtensionConfig,
-} from "@/extensionPoints/menuItemExtension";
-import { IExtension } from "@/core";
-import { ButtonDefinition } from "@/nativeEditor/insertButton";
+  makeActionConfig,
+  makeActionExtension,
+  makeMenuExtensionPoint,
+} from "@/devTools/editor/extensionPoints/menuItem";
+import { makeTriggerConfig } from "@/devTools/editor/extensionPoints/trigger";
 
 const { saveExtension } = optionsSlice.actions;
 
-export function makeMenuReader({
-  reader,
-}: FormState): ReaderConfig<ReaderDefinition> {
-  const { metadata, definition, outputSchema = {} } = reader;
-
-  const readerOption = readerOptions.find((x) => x.value === definition.type);
-
-  return {
-    apiVersion: "v1",
-    kind: "reader",
-    metadata: {
-      id: metadata.id,
-      name: metadata.name,
-      version: "1.0.0",
-      description: "Reader created with the devtools",
-    },
-    definition: {
-      reader: (readerOption?.makeConfig ?? defaultSelector)(definition),
-    },
-    outputSchema,
-  };
-}
-
-export function makeMenuExtensionPoint({
-  extensionPoint,
-  reader,
-}: FormState): ExtensionPointConfig<MenuDefinition> {
-  const {
-    metadata,
-    definition: { isAvailable, position, template, containerSelector },
-  } = extensionPoint;
-
-  return {
-    apiVersion: "v1",
-    kind: "extensionPoint",
-    metadata: {
-      id: metadata.id,
-      version: "1.0.0",
-      name: metadata.name,
-      description: "Action created with the devtools",
-    },
-    definition: {
-      type: "menuItem",
-      reader: reader.metadata.id,
-      isAvailable: pickBy(isAvailable, identity),
-      containerSelector: containerSelector,
-      position,
-      template,
-    },
-  };
-}
-
-export function makeExtensionDefinition({
-  uuid,
-  extensionPoint,
-  extension,
-  services,
-}: FormState): IExtension<MenuItemExtensionConfig> {
-  return {
-    id: uuid,
-    extensionPointId: extensionPoint.metadata.id,
-    label: "Custom Action",
-    services,
-    config: extension,
-  };
-}
-
-export function makeButtonConfig(element: FormState): ButtonDefinition {
-  return {
-    extension: makeExtensionDefinition(element),
-    extensionPoint: makeMenuExtensionPoint(element),
-    reader: makeMenuReader(element),
-  };
-}
+export const CONFIG_MAP = {
+  menuItem: makeActionConfig,
+  trigger: makeTriggerConfig,
+};
 
 async function makeRequestConfig(
   saved: { [id: string]: string },
@@ -136,8 +63,8 @@ async function makeRequestConfig(
 }
 
 export function useCreate(): (
-  button: FormState,
-  helpers: FormikHelpers<FormState>
+  button: ActionFormState,
+  helpers: FormikHelpers<ActionFormState>
 ) => Promise<void> {
   const dispatch = useDispatch();
   const [saved, setSaved] = useState<{ [id: string]: string }>({});
@@ -145,13 +72,13 @@ export function useCreate(): (
 
   return useCallback(
     async (
-      button: FormState,
-      { setSubmitting, setStatus }: FormikHelpers<FormState>
+      button: ActionFormState,
+      { setSubmitting, setStatus }: FormikHelpers<ActionFormState>
     ) => {
       console.debug("Updating/creating action", { button });
 
       try {
-        const readerConfig = makeMenuReader(button);
+        const readerConfig = makeExtensionReader(button);
         const { data: readerData } = await axios({
           ...(await makeRequestConfig(saved, readerConfig.metadata.id)),
           data: { config: safeDump(readerConfig), kind: "reader" },
@@ -197,7 +124,7 @@ export function useCreate(): (
       }
 
       try {
-        dispatch(saveExtension(makeExtensionDefinition(button)));
+        dispatch(saveExtension(makeActionExtension(button)));
         addToast("Saved button definition", {
           appearance: "success",
           autoDismiss: true,

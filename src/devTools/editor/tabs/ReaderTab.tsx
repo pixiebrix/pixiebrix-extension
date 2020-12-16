@@ -34,14 +34,14 @@ import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import { useDebounce } from "use-debounce";
 import { Schema } from "@/core";
-
-// @ts-ignore: no type definitions?
-import GenerateSchema from "generate-schema";
 import {
   getDefaultField,
   RendererContext,
 } from "@/components/fields/blockOptions";
 import devtoolFields from "@/devTools/editor/Fields";
+
+// @ts-ignore: no type definitions?
+import GenerateSchema from "generate-schema";
 
 type ReaderSelector = (options: {
   type: string;
@@ -157,7 +157,9 @@ const FrameworkFields: React.FunctionComponent<{
         <SelectorSelectorField
           isClearable
           name="reader.definition.selector"
-          initialElement={element.containerInfo}
+          initialElement={
+            "containerInfo" in element ? element.containerInfo : null
+          }
           traverseUp={5}
         />
       </Col>
@@ -191,9 +193,10 @@ const JQueryFields: React.FunctionComponent<{
 };
 
 const ReaderTab: React.FunctionComponent<{
+  eventKey?: string;
   element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ element }) => {
+}> = ({ eventKey = "reader", element }) => {
   const { port, frameworks } = useContext(DevToolsContext);
   const [query, setQuery] = useState("");
   const { values, setFieldValue } = useFormikContext<FormState>();
@@ -249,7 +252,7 @@ const ReaderTab: React.FunctionComponent<{
   }, [debouncedQuery, output]);
 
   return (
-    <Tab.Pane eventKey="reader" className="h-100">
+    <Tab.Pane eventKey={eventKey} className="h-100">
       <RendererContext.Provider value={devtoolFields}>
         <Form.Group as={Row} controlId="formReaderId">
           <Form.Label column sm={2}>

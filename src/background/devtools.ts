@@ -363,10 +363,12 @@ export const insertButton = liftBackground(
   }
 );
 
-export const updateButton = liftBackground(
-  "UPDATE_BUTTON",
-  (tabId: number) => async (element: nativeEditorProtocol.ButtonDefinition) => {
-    return await nativeEditorProtocol.updateButton(tabId, element);
+export const updateDynamicElement = liftBackground(
+  "UPDATE_DYNAMIC_ELEMENT",
+  (tabId: number) => async (
+    element: nativeEditorProtocol.DynamicDefinition
+  ) => {
+    return await nativeEditorProtocol.updateDynamicElement(tabId, element);
   }
 );
 
@@ -377,7 +379,7 @@ export const clear = liftBackground(
   }
 );
 
-export const toggleElement = liftBackground(
+export const toggleOverlay = liftBackground(
   "TOGGLE_ELEMENT",
   (tabId: number) => async ({
     uuid,

@@ -29,7 +29,6 @@ import {
   inferButtonHTML,
 } from "@/nativeEditor/infer";
 import {
-  fromJS as extensionPointFactory,
   MenuDefinition,
   MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
@@ -40,18 +39,31 @@ import {
   ReaderDefinition,
   readerFactory,
 } from "@/blocks/readers/factory";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import {
+  ExtensionPointConfig,
+  ExtensionPointDefinition,
+} from "@/extensionPoints/types";
 import { html as beautifyHTML } from "js-beautify";
+import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 
 let overlay: Overlay | null = null;
 
-export interface ButtonDefinition {
-  extensionPoint: ExtensionPointConfig<MenuDefinition>;
-  extension: IExtension<MenuItemExtensionConfig>;
-  reader: ReaderConfig<ReaderDefinition>;
+export interface DynamicDefinition<
+  TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
+  TExtension = unknown,
+  TReader extends ReaderDefinition = ReaderDefinition
+> {
+  extensionPoint: ExtensionPointConfig<TExtensionPoint>;
+  extension: IExtension<TExtension>;
+  reader: ReaderConfig<TReader>;
 }
 
-export interface InsertResult {
+export type ButtonDefinition = DynamicDefinition<
+  MenuDefinition,
+  MenuItemExtensionConfig
+>;
+
+export interface ButtonSelectionResult {
   uuid: string;
   menu: Omit<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
   item: Pick<MenuItemExtensionConfig, "caption">;
@@ -72,13 +84,13 @@ export const clear = liftContentScript(
   }
 );
 
-export const updateButton = liftContentScript(
-  "UPDATE_BUTTON",
+export const updateDynamicElement = liftContentScript(
+  "UPDATE_DYNAMIC_ELEMENT",
   async ({
     extensionPoint: extensionPointConfig,
     extension: extensionConfig,
     reader: readerConfig,
-  }: ButtonDefinition) => {
+  }: DynamicDefinition) => {
     const extensionPoint = extensionPointFactory(extensionPointConfig);
 
     // the reader won't be in the registry, so override the method
@@ -97,7 +109,7 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
   const selected = await userSelectElement();
   const { container, selectors } = findContainer(selected);
 
-  const element: InsertResult = {
+  const element: ButtonSelectionResult = {
     uuid: uuidv4(),
     item: {
       caption: DEFAULT_ACTION_CAPTION,

@@ -16,34 +16,24 @@
  */
 
 import React from "react";
-import { PayloadAction } from "@reduxjs/toolkit";
-import { Field, FieldInputProps } from "formik";
-import { Col, Form, Row, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/editorSlice";
-import IconField, { iconSchema } from "@/components/fields/IconField";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { Tab } from "react-bootstrap";
+import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
 
-const MenuItemTab: React.FunctionComponent<{
+const LogsTab: React.FunctionComponent<{
+  eventKey: string;
   element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ element }) => {
+}> = ({ eventKey = "logs", element }) => {
   return (
-    <Tab.Pane eventKey="menuItem" className="h-100">
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Caption
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="extension.caption">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-
-      <IconField label="Icon" name="extension.icon" schema={iconSchema} />
+    <Tab.Pane eventKey={eventKey} className="h-100">
+      <RunLogCard
+        extensionPointId={element.extensionPoint.metadata.id}
+        extensionId={element.uuid}
+      />
     </Tab.Pane>
   );
 };
 
-export default MenuItemTab;
+export default LogsTab;

@@ -20,9 +20,51 @@ import { IconConfig, Metadata, Schema, ServiceDependency } from "@/core";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { BlockPipeline } from "@/blocks/combinators";
+import { Trigger } from "@/extensionPoints/triggerExtension";
 
-export interface FormState {
+export interface BaseFormState {
   readonly uuid: string;
+  readonly type: "menuItem" | "trigger";
+
+  services: ServiceDependency[];
+
+  reader: {
+    metadata: Metadata;
+    outputSchema: Schema;
+    definition: {
+      /**
+       * Reader type corresponding to built-in reader factory, e.g., jquery, react.
+       */
+      type: string | null;
+      selector: string | null;
+      selectors: { [field: string]: string };
+    };
+  };
+
+  extensionPoint: unknown;
+
+  extension: unknown;
+}
+
+export interface TriggerFormState extends BaseFormState {
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      rootSelector: string | null;
+      trigger: Trigger;
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+  };
+
+  extension: {
+    action: BlockPipeline;
+  };
+}
+
+export interface ActionFormState extends BaseFormState {
   containerInfo: ElementInfo;
 
   extensionPoint: {
@@ -48,22 +90,9 @@ export interface FormState {
     icon?: IconConfig;
     action: BlockPipeline;
   };
-
-  services: ServiceDependency[];
-
-  reader: {
-    metadata: Metadata;
-    outputSchema: Schema;
-    definition: {
-      /**
-       * Reader type corresponding to built-in reader factory, e.g., jquery, react.
-       */
-      type: string | null;
-      selector: string | null;
-      selectors: { [field: string]: string };
-    };
-  };
 }
+
+export type FormState = ActionFormState | TriggerFormState;
 
 export interface EditorState {
   inserting: boolean;
@@ -86,8 +115,8 @@ export const editorSlice = createSlice({
     },
     addElement: (state, action: PayloadAction<FormState>) => {
       const element = action.payload;
-      state.activeElement = element.uuid;
       state.elements.push(element);
+      state.activeElement = element.uuid;
     },
     selectElement: (state, action: PayloadAction<string>) => {
       state.activeElement = action.payload;

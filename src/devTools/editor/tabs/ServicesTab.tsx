@@ -27,15 +27,16 @@ import ServiceSelector from "@/components/ServiceSelector";
 
 const ServicesTab: React.FunctionComponent<{
   name?: string;
+  eventKey?: string;
   element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ name = "services" }) => {
+}> = ({ name = "services", eventKey = "services" }) => {
   const [field, meta] = useField(name);
   const [selectKey, setKey] = useState(0);
   const [authOptions] = useAuthOptions();
 
   return (
-    <Tab.Pane eventKey="services" className="h-100">
+    <Tab.Pane eventKey={eventKey} className="h-100">
       <p>
         Add services to re-use external accounts and resources that you or your
         team have configured.

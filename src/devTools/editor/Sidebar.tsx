@@ -15,15 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import React, { useCallback, useContext } from "react";
-import { actions, EditorState, FormState } from "@/devTools/editor/editorSlice";
+import { actions, EditorState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
 import { AuthContext } from "@/auth/context";
 import * as nativeOperations from "@/background/devtools";
 import { getTabInfo } from "@/background/devtools";
-import psl, { ParsedDomain } from "psl";
 import { Button, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,106 +29,17 @@ import {
   faColumns,
   faMousePointer,
 } from "@fortawesome/free-solid-svg-icons";
-import brickRegistry from "@/blocks/registry";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
-import { InsertResult } from "@/nativeEditor/insertButton";
-import { Metadata } from "@/core";
-import { makeButtonConfig } from "@/devTools/editor/useCreate";
-
-function defaultReader(frameworks: FrameworkMeta[]): Framework {
-  const knownFrameworks = frameworks.filter((x) =>
-    KNOWN_READERS.includes(x.id)
-  );
-  return knownFrameworks.length ? knownFrameworks[0].id : "jquery";
-}
-
-async function generateExtensionPointMetadata(
-  scope: string,
-  url: string,
-  reservedNames: string[]
-): Promise<Metadata> {
-  const urlClass = new URL(url);
-  const { domain } = psl.parse(urlClass.host.split(":")[0]) as ParsedDomain;
-
-  await brickRegistry.fetch();
-
-  for (let index = 1; index < 1000; index++) {
-    const id =
-      index === 1
-        ? `${scope ?? "@local"}/${domain}/action`
-        : `${scope ?? "@local"}/${domain}/action-${index}`;
-
-    if (!reservedNames.includes(id)) {
-      try {
-        await brickRegistry.lookup(id);
-      } catch (err) {
-        return {
-          id,
-          name: `${domain} Action`,
-        };
-      }
-    }
-  }
-  throw new Error("Could not find available id");
-}
-
-function defaultMatchPattern(url: string): string {
-  const obj = new URL(url);
-  obj.pathname = "*";
-  return obj.href;
-}
-
-function makeFormState(
-  url: string,
-  metadata: Metadata,
-  button: InsertResult,
-  frameworks: FrameworkMeta[]
-): FormState {
-  return {
-    uuid: button.uuid,
-    containerInfo: button.containerInfo,
-    extensionPoint: {
-      metadata,
-      definition: {
-        ...button.menu,
-        isAvailable: {
-          matchPatterns: defaultMatchPattern(url),
-          selectors: null,
-        },
-      },
-      traits: {
-        style: {
-          mode: "inherit",
-        },
-      },
-    },
-    services: [],
-    extension: {
-      caption: button.item.caption,
-      action: [
-        {
-          id: "@pixiebrix/browser/log",
-          config: {
-            message: "Triggered custom action",
-          },
-        },
-      ],
-    },
-    reader: {
-      metadata: {
-        id: `${metadata.id}-reader`,
-        name: `Default reader for ${metadata.id}`,
-      },
-      outputSchema: {},
-      definition: {
-        type: defaultReader(frameworks),
-        selector: button.menu.containerSelector,
-        selectors: {},
-      },
-    },
-  };
-}
+import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
+import {
+  makeActionConfig,
+  makeActionState,
+} from "@/devTools/editor/extensionPoints/menuItem";
+import {
+  makeTriggerConfig,
+  makeTriggerState,
+} from "@/devTools/editor/extensionPoints/trigger";
 
 const Sidebar: React.FunctionComponent<
   EditorState & { dispatch: (action: PayloadAction<unknown>) => void }
@@ -141,7 +50,7 @@ const Sidebar: React.FunctionComponent<
 
   const toggle = useCallback(
     async (uuid: string, on: boolean) => {
-      await nativeOperations.toggleElement(port, { uuid, on });
+      await nativeOperations.toggleOverlay(port, { uuid, on });
     },
     [port]
   );
@@ -153,6 +62,7 @@ const Sidebar: React.FunctionComponent<
       const button = await nativeOperations.insertButton(port);
       const { url } = await getTabInfo(port);
       const metadata = await generateExtensionPointMetadata(
+        "Action",
         scope,
         url,
         elements.flatMap((x) => [
@@ -160,8 +70,11 @@ const Sidebar: React.FunctionComponent<
           x.reader.metadata.id,
         ])
       );
-      const initialState = makeFormState(url, metadata, button, frameworks);
-      await nativeOperations.updateButton(port, makeButtonConfig(initialState));
+      const initialState = makeActionState(url, metadata, button, frameworks);
+      await nativeOperations.updateDynamicElement(
+        port,
+        makeActionConfig(initialState)
+      );
       dispatch(actions.addElement(initialState));
     } catch (exc) {
       reportError(exc);
@@ -172,7 +85,37 @@ const Sidebar: React.FunctionComponent<
     } finally {
       dispatch(actions.toggleInsert(false));
     }
-  }, [port, frameworks, elements, scope]);
+  }, [port, frameworks, elements, scope, addToast]);
+
+  const addTrigger = useCallback(async () => {
+    dispatch(actions.toggleInsert(true));
+    try {
+      const { url } = await getTabInfo(port);
+      const metadata = await generateExtensionPointMetadata(
+        "Trigger",
+        scope,
+        url,
+        elements.flatMap((x) => [
+          x.extensionPoint.metadata.id,
+          x.reader.metadata.id,
+        ])
+      );
+      const initialState = makeTriggerState(url, metadata, frameworks);
+      await nativeOperations.updateDynamicElement(
+        port,
+        makeTriggerConfig(initialState)
+      );
+      dispatch(actions.addElement(initialState));
+    } catch (exc) {
+      reportError(exc);
+      addToast(`Error adding trigger: ${exc.toString()}`, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    } finally {
+      dispatch(actions.toggleInsert(false));
+    }
+  }, [port, frameworks, elements, scope, addToast]);
 
   return (
     <div className="Sidebar d-flex flex-column">
@@ -189,7 +132,13 @@ const Sidebar: React.FunctionComponent<
         <Button className="flex-grow-1" size="sm" disabled variant="info">
           Panel <FontAwesomeIcon icon={faColumns} />
         </Button>
-        <Button className="flex-grow-1" size="sm" disabled variant="info">
+        <Button
+          className="flex-grow-1"
+          size="sm"
+          disabled={inserting}
+          onClick={addTrigger}
+          variant="info"
+        >
           Trigger <FontAwesomeIcon icon={faBolt} />
         </Button>
       </div>
@@ -204,7 +153,7 @@ const Sidebar: React.FunctionComponent<
               onClick={() => dispatch(actions.selectElement(x.uuid))}
               style={{ cursor: "pointer" }}
             >
-              {x.extension.caption}
+              {x.extensionPoint.metadata.name}
             </ListGroup.Item>
           ))}
         </ListGroup>

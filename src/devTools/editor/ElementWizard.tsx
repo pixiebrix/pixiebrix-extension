@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
@@ -24,22 +24,37 @@ import { useDebounce } from "use-debounce";
 import useAsyncEffect from "use-async-effect";
 import * as nativeOperations from "@/background/devtools";
 import { Button, Form, Nav, Tab } from "react-bootstrap";
-import { actions, FormState } from "@/devTools/editor/editorSlice";
-import FoundationTab from "@/devTools/editor/FoundationTab";
-import ReaderTab from "@/devTools/editor/ReaderTab";
-import AvailabilityTab from "@/devTools/editor/AvailabilityTab";
-import { makeButtonConfig } from "@/devTools/editor/useCreate";
-import EffectTab from "@/devTools/editor/EffectTab";
-import MenuItemTab from "@/devTools/editor/MenuItemTab";
-import ServicesTab from "@/devTools/editor/ServicesTab";
-import LogsTab from "@/devTools/editor/LogsTab";
+import {
+  actions,
+  FormState,
+  TriggerFormState,
+} from "@/devTools/editor/editorSlice";
+import { CONFIG_MAP } from "@/devTools/editor/useCreate";
+
+import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
+import { wizard as triggerWizard } from "./extensionPoints/trigger";
+
+const wizardMap = {
+  menuItem: menuItemWizard,
+  trigger: triggerWizard,
+};
 
 const ElementWizard: React.FunctionComponent<{
   element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ element, dispatch }) => {
+  refreshMillis?: number;
+}> = ({ element, dispatch, refreshMillis = 150 }) => {
   const { port } = useContext(DevToolsContext);
-  const [step, setStep] = useState("foundation");
+
+  const wizard = useMemo(() => wizardMap[element.type], [element.type]);
+
+  const [step, setStep] = useState(wizard[0].step);
+
+  const TabPane = useMemo(
+    () => wizard.find((x) => x.step === step)?.Component,
+    [wizard, step]
+  );
+
   const {
     errors,
     isSubmitting,
@@ -48,10 +63,19 @@ const ElementWizard: React.FunctionComponent<{
     handleSubmit,
     handleReset,
   } = useFormikContext();
-  const [debounced] = useDebounce(element, 100);
+
+  const [debounced] = useDebounce(element, refreshMillis);
 
   useAsyncEffect(async () => {
-    await nativeOperations.updateButton(port, makeButtonConfig(element));
+    const factory = CONFIG_MAP[element.type];
+    if (
+      element.type === "trigger" &&
+      (element as TriggerFormState).extensionPoint.definition.trigger == "load"
+    ) {
+      // by default, don't automatically trigger it
+      return;
+    }
+    await nativeOperations.updateDynamicElement(port, factory(element as any));
   }, [debounced]);
 
   if (!isEmpty(errors)) {
@@ -72,27 +96,11 @@ const ElementWizard: React.FunctionComponent<{
           activeKey={step}
           onSelect={(step: string) => setStep(step)}
         >
-          <Nav.Item>
-            <Nav.Link eventKey="foundation">Foundation</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="reader">Reader</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="menuItem">Menu Item</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="services">Services</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="effect">Effect</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="availability">Availability</Nav.Link>
-          </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="logs">Logs</Nav.Link>
-          </Nav.Item>
+          {wizard.map((x) => (
+            <Nav.Item key={x.step}>
+              <Nav.Link eventKey={x.step}>{x.step}</Nav.Link>
+            </Nav.Item>
+          ))}
 
           <div className="flex-grow-1" />
           <Button
@@ -125,25 +133,9 @@ const ElementWizard: React.FunctionComponent<{
         </Nav>
         {status && <div className="text-danger">{status}</div>}
 
-        {step === "foundation" && (
-          <FoundationTab element={element} dispatch={dispatch} />
+        {TabPane && (
+          <TabPane eventKey={step} element={element} dispatch={dispatch} />
         )}
-        {step === "reader" && (
-          <ReaderTab element={element} dispatch={dispatch} />
-        )}
-        {step === "menuItem" && (
-          <MenuItemTab element={element} dispatch={dispatch} />
-        )}
-        {step === "services" && (
-          <ServicesTab element={element} dispatch={dispatch} />
-        )}
-        {step === "effect" && (
-          <EffectTab element={element} eventKey="effect" dispatch={dispatch} />
-        )}
-        {step === "availability" && (
-          <AvailabilityTab element={element} dispatch={dispatch} />
-        )}
-        {step === "logs" && <LogsTab element={element} dispatch={dispatch} />}
       </Form>
     </Tab.Container>
   );
