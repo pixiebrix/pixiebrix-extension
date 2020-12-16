@@ -16,7 +16,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IconConfig, Metadata, Schema } from "@/core";
+import { IconConfig, Metadata, Schema, ServiceDependency } from "@/core";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { BlockPipeline } from "@/blocks/combinators";
@@ -49,6 +49,8 @@ export interface FormState {
     action: BlockPipeline;
   };
 
+  services: ServiceDependency[];
+
   reader: {
     metadata: Metadata;
     outputSchema: Schema;
@@ -58,6 +60,7 @@ export interface FormState {
        */
       type: string | null;
       selector: string | null;
+      selectors: { [field: string]: string };
     };
   };
 }

@@ -52,7 +52,6 @@ export const iconSchema: Schema = {
 
 const IconField: React.FunctionComponent<FieldProps<IconConfig>> = ({
   label,
-  schema,
   ...props
 }) => {
   const [field, meta, helpers] = useField(props);

@@ -51,6 +51,7 @@ export class HighlightEffect extends Effect {
       rootSelector: {
         type: "string",
         description: "Optional root selector to find the elements within",
+        format: "selector",
       },
       condition: {
         anyOf: [{ type: "string" }, { type: "boolean" }, { type: "number" }],
@@ -60,7 +61,11 @@ export class HighlightEffect extends Effect {
         type: "array",
         items: {
           oneOf: [
-            { type: "string", description: "JQuery selector" },
+            {
+              type: "string",
+              description: "JQuery selector",
+              format: "selector",
+            },
             {
               type: "object",
               properties: {

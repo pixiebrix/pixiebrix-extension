@@ -105,6 +105,7 @@ function makeFormState(
         },
       },
     },
+    services: [],
     extension: {
       caption: button.item.caption,
       action: [
@@ -125,6 +126,7 @@ function makeFormState(
       definition: {
         type: defaultReader(frameworks),
         selector: button.menu.containerSelector,
+        selectors: {},
       },
     },
   };

@@ -200,12 +200,19 @@ type CustomRenderer = {
   Component: FieldComponent;
 };
 
+type CustomControl = {
+  match: (fieldSchema: Schema) => boolean;
+  Component: FieldComponent;
+};
+
 export interface IRenderContext {
   customRenderers: CustomRenderer[];
+  customControls: CustomControl[];
 }
 
 export const RendererContext = React.createContext<IRenderContext>({
   customRenderers: [],
+  customControls: [],
 });
 
 const FieldRenderer: React.FunctionComponent<FieldProps<unknown>> = ({

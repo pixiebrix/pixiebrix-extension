@@ -27,7 +27,7 @@ import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
-import { defaultConfig, readerOptions } from "@/devTools/editor/ReaderTab";
+import { defaultSelector, readerOptions } from "@/devTools/editor/ReaderTab";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ReaderConfig, ReaderDefinition } from "@/blocks/readers/factory";
@@ -36,7 +36,7 @@ import {
   MenuDefinition,
   MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
-import { IExtension, ServiceDependency } from "@/core";
+import { IExtension } from "@/core";
 import { ButtonDefinition } from "@/nativeEditor/insertButton";
 
 const { saveExtension } = optionsSlice.actions;
@@ -58,10 +58,7 @@ export function makeMenuReader({
       description: "Reader created with the devtools",
     },
     definition: {
-      reader: (readerOption?.makeConfig ?? defaultConfig)(
-        definition.type,
-        definition.selector
-      ),
+      reader: (readerOption?.makeConfig ?? defaultSelector)(definition),
     },
     outputSchema,
   };
@@ -100,13 +97,13 @@ export function makeExtensionDefinition({
   uuid,
   extensionPoint,
   extension,
+  services,
 }: FormState): IExtension<MenuItemExtensionConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     label: "Custom Action",
-    // services here refers to the service auth
-    services: [] as ServiceDependency[],
+    services,
     config: extension,
   };
 }
@@ -151,6 +148,8 @@ export function useCreate(): (
       button: FormState,
       { setSubmitting, setStatus }: FormikHelpers<FormState>
     ) => {
+      console.debug("Updating/creating action", { button });
+
       try {
         const readerConfig = makeMenuReader(button);
         const { data: readerData } = await axios({
@@ -209,6 +208,7 @@ export function useCreate(): (
           appearance: "success",
           autoDismiss: true,
         });
+        return;
       } finally {
         setSubmitting(false);
       }

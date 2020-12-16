@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Tab } from "react-bootstrap";
@@ -23,74 +23,22 @@ import { actionSchema } from "@/extensionPoints/menuItemExtension";
 import { defaultFieldRenderer } from "@/options/pages/extensionEditor/fieldRenderer";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import useAsyncEffect from "use-async-effect";
 import { GridLoader } from "react-spinners";
-
-import "@/blocks/effects";
-import "@/blocks/readers";
-import "@/blocks/renderers";
-import {
-  IRenderContext,
-  RendererContext,
-} from "@/components/fields/blockOptions";
-import { Schema } from "@/core";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
-import { FieldProps } from "@/components/fields/propTypes";
-import { useField } from "formik";
-import Form from "react-bootstrap/Form";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-
-const SelectorWrapper: React.FunctionComponent<FieldProps<string>> = ({
-  label,
-  schema,
-  ...props
-}) => {
-  const [field, meta] = useField(props);
-  return (
-    <Form.Group>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
-      <SelectorSelectorField isClearable sort name={field.name} />
-      {schema.description && (
-        <Form.Text className="text-muted">{schema.description}</Form.Text>
-      )}
-      {meta.touched && meta.error && (
-        <Form.Control.Feedback type="invalid">
-          {meta.error}
-        </Form.Control.Feedback>
-      )}
-    </Form.Group>
-  );
-};
-
-const devtoolFields: IRenderContext = {
-  customRenderers: [
-    {
-      match: (fieldSchema: Schema) =>
-        fieldSchema.type === "string" && fieldSchema.format === "selector",
-      Component: SelectorWrapper,
-    },
-  ],
-};
+import { RendererContext } from "@/components/fields/blockOptions";
+import devtoolFields from "@/devTools/editor/Fields";
 
 const EffectTab: React.FunctionComponent<{
   eventKey?: string;
   element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
 }> = ({ eventKey }) => {
-  const [loaded, setLoaded] = useState(false);
-
-  useAsyncEffect(async () => {
-    await blockRegistry.fetch();
-    setLoaded(true);
-  }, []);
-
-  const [blocks] = useAsyncState(blockRegistry.all(), [loaded]);
+  const [blocks] = useAsyncState(blockRegistry.all(), []);
   const Field = useMemo(() => defaultFieldRenderer(actionSchema), [blocks]);
 
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <RendererContext.Provider value={devtoolFields}>
-        {loaded && blocks?.length ? (
+        {blocks?.length ? (
           <Field
             name="extension.action"
             schema={actionSchema}

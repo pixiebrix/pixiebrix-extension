@@ -127,46 +127,54 @@ function select(
   selector: string | Selector,
   $root?: JQuery<HTMLElement | Document>
 ): Result {
-  const commonSelector: Selector =
+  const normalizedSelector: Selector =
     typeof selector === "string" ? { selector } : selector;
+
+  if ((normalizedSelector.selector ?? "").trim() === "") {
+    return normalizedSelector.multi ? [] : undefined;
+  }
 
   let $elt;
   if ($root) {
-    $elt = commonSelector.selector
-      ? $($root).find(commonSelector.selector)
-      : $($root);
+    $elt = normalizedSelector.selector
+      ? $root.find(normalizedSelector.selector)
+      : $root;
   } else {
-    if (!commonSelector.selector) {
+    if (!normalizedSelector.selector) {
       throw new Error(
         "'selector' required if not nested within a 'find' block"
       );
     }
-    $elt = $(commonSelector.selector);
+    $elt = $(document).find(normalizedSelector.selector);
   }
 
   if ($elt.length === 0) {
-    return commonSelector.multi ? [] : undefined;
-  } else if ($elt.length > 1 && !commonSelector.multi) {
+    console.debug(`Did not find any elements for selector: ${selector}`);
+    return normalizedSelector.multi ? [] : undefined;
+  } else if ($elt.length > 1 && !normalizedSelector.multi) {
     throw new Error(
-      `Multiple elements found for ${commonSelector.selector}. To return a list of values, supply multi=true`
+      `Multiple elements found for ${normalizedSelector.selector}. To return a list of values, supply multi=true`
     );
-  } else if ("find" in commonSelector) {
+  } else if ("find" in normalizedSelector) {
     const values = $elt
       .map(function () {
-        return processFind($(this), commonSelector);
+        return processFind($(this), normalizedSelector);
       })
       .toArray();
-    return commonSelector.multi ? values : values[0];
+    return normalizedSelector.multi ? values : values[0];
   } else {
     if ($elt === $(document)) {
-      throw new Error("Cannot process document as element");
+      throw new Error("Cannot process document as an element");
     }
     const values = $elt
       .map(function () {
-        return processElement($(this) as JQuery<HTMLElement>, commonSelector);
+        return processElement(
+          $(this) as JQuery<HTMLElement>,
+          normalizedSelector
+        );
       })
       .toArray();
-    return commonSelector.multi ? values : values[0];
+    return normalizedSelector.multi ? values : values[0];
   }
 }
 
@@ -175,11 +183,11 @@ async function read(
   root: HTMLElement | Document
 ): Promise<ReaderOutput> {
   const { selectors } = reader;
-  const $root = $(root);
+  const $root = $(root ?? document);
   if (!$root.length) {
     throw new Error("JQuery reader requires the document or element(s)");
   }
-  return mapValues(selectors, (x) => select(x, $root));
+  return mapValues(selectors, (selector) => select(selector, $root));
 }
 
 registerFactory("jquery", read);

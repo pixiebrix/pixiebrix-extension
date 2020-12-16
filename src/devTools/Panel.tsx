@@ -33,12 +33,21 @@ import { useAsyncState } from "@/hooks/common";
 import { getAuth } from "@/hooks/auth";
 import { AuthContext } from "@/auth/context";
 import { ToastProvider } from "react-toast-notifications";
+import useAsyncEffect from "use-async-effect";
+import blockRegistry from "@/blocks/registry";
 
-const defaultState = { isLoggedIn: false, extension: true };
+// Import bricks for the registry
+import "@/blocks/effects";
+import "@/blocks/readers";
+import "@/blocks/renderers";
+import "@/contrib/index";
 
+// CSS
 import "vendors/theme/app/app.scss";
 import "vendors/overrides.scss";
 import "./Panel.scss";
+
+const defaultState = { isLoggedIn: false, extension: true };
 
 const Centered: React.FunctionComponent = ({ children }) => {
   return (
@@ -55,6 +64,10 @@ const Centered: React.FunctionComponent = ({ children }) => {
 const Panel: React.FunctionComponent = () => {
   const [authState, , authError] = useAsyncState(getAuth);
   const [context, connect] = useMakeContext();
+
+  useAsyncEffect(async () => {
+    await blockRegistry.fetch();
+  }, []);
 
   const request = useCallback(async () => {
     // FIXME: will this work on Firefox? Might need to do as then() b/c it gets confused by await before

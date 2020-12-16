@@ -19,7 +19,7 @@ import React, { useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
-import { pickBy, compact, partial, mapValues, isEmpty } from "lodash";
+import { compact, isEmpty, mapValues, partial, pick, pickBy } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 import Select from "react-select";
@@ -33,23 +33,33 @@ import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import { useDebounce } from "use-debounce";
+import { Schema } from "@/core";
 
 // @ts-ignore: no type definitions?
 import GenerateSchema from "generate-schema";
+import {
+  getDefaultField,
+  RendererContext,
+} from "@/components/fields/blockOptions";
+import devtoolFields from "@/devTools/editor/Fields";
+
+type ReaderSelector = (options: {
+  type: string;
+  [prop: string]: unknown;
+}) => ReaderTypeConfig;
 
 type FrameworkOption = {
   value: Framework;
   label: string;
   detected?: FrameworkMeta;
-  makeConfig?: (type: string, selector: string) => ReaderTypeConfig;
+  makeConfig?: ReaderSelector;
 };
 
-export function defaultConfig(
-  type: string,
-  selector: string
-): ReaderTypeConfig {
-  return { type, selector };
-}
+export const defaultSelector: ReaderSelector = partial(
+  pick,
+  partial.placeholder,
+  ["type", "selector"]
+) as ReaderSelector;
 
 export const readerOptions: FrameworkOption[] = [
   { value: "react", label: "React" },
@@ -61,7 +71,7 @@ export const readerOptions: FrameworkOption[] = [
   {
     value: "vue",
     label: "Vue.js",
-    makeConfig: (type: string, selector) => ({
+    makeConfig: ({ selector }) => ({
       type: "vuejs",
       selector,
     }),
@@ -69,9 +79,9 @@ export const readerOptions: FrameworkOption[] = [
   {
     value: "jquery",
     label: "jQuery",
-    makeConfig: (type: string, selector) => ({
-      type: "jquery",
-      selectors: [selector],
+    makeConfig: ({ type, selectors }) => ({
+      type,
+      selectors,
     }),
   },
 ];
@@ -87,9 +97,14 @@ const FrameworkSelector: React.FunctionComponent<{
         return {
           ...option,
           detected,
-          label: `${option.label} - ${
-            detected ? detected.version ?? "Unknown Version" : "Not detected"
-          }`,
+          label:
+            option.value === "jquery"
+              ? option.label
+              : `${option.label} - ${
+                  detected
+                    ? detected.version ?? "Unknown Version"
+                    : "Not detected"
+                }`,
         };
       }),
     [frameworks]
@@ -130,6 +145,51 @@ function searchData(query: string, data: unknown): unknown {
   return normalize(data).includes(normalized) ? data : undefined;
 }
 
+const FrameworkFields: React.FunctionComponent<{
+  element: FormState;
+}> = ({ element }) => {
+  return (
+    <Form.Group as={Row} controlId="readerSelector">
+      <Form.Label column sm={2}>
+        Selector
+      </Form.Label>
+      <Col sm={10}>
+        <SelectorSelectorField
+          isClearable
+          name="reader.definition.selector"
+          initialElement={element.containerInfo}
+          traverseUp={5}
+        />
+      </Col>
+    </Form.Group>
+  );
+};
+
+const JQueryFields: React.FunctionComponent<{
+  element: FormState;
+}> = () => {
+  const schema: Schema = {
+    type: "object",
+    additionalProperties: {
+      type: "string",
+      format: "selector",
+    },
+  };
+
+  const Field = useMemo(() => getDefaultField(schema), []);
+
+  return (
+    <Form.Group as={Row} controlId="readerSelector">
+      <Form.Label column sm={2}>
+        Selectors
+      </Form.Label>
+      <Col sm={10}>
+        <Field name="reader.definition.selectors" schema={schema} />
+      </Col>
+    </Form.Group>
+  );
+};
+
 const ReaderTab: React.FunctionComponent<{
   element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
@@ -146,19 +206,20 @@ const ReaderTab: React.FunctionComponent<{
   useAsyncEffect(
     async (isMounted) => {
       setSchema({ output: undefined, schema: undefined, error: undefined });
-      if (!values.reader?.definition?.selector) {
+      const { type, selector } = values.reader?.definition ?? {};
+      if (type !== "jquery" && !selector) {
         return;
       }
-
-      const { type, selector } = values.reader.definition;
-
       const option = readerOptions.find((x) => x.value === type);
       let output;
       let schema;
       try {
         output = await runReader(port, {
-          config: (option.makeConfig ?? defaultConfig)(type, selector),
+          config: (option.makeConfig ?? defaultSelector)(
+            values.reader.definition
+          ),
         });
+        console.debug("Reader output", output);
         schema = GenerateSchema.json("Inferred Schema", output);
       } catch (exc) {
         if (!isMounted()) return;
@@ -174,7 +235,7 @@ const ReaderTab: React.FunctionComponent<{
       setFieldValue("reader.outputSchema", schema);
       setSchema({ output, schema, error: undefined });
     },
-    [values.reader?.definition?.type, values.reader?.definition?.selector]
+    [values.reader?.definition]
   );
 
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
@@ -189,91 +250,87 @@ const ReaderTab: React.FunctionComponent<{
 
   return (
     <Tab.Pane eventKey="reader" className="h-100">
-      <Form.Group as={Row} controlId="formReaderId">
-        <Form.Label column sm={2}>
-          Reader Id
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="reader.metadata.id">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
+      <RendererContext.Provider value={devtoolFields}>
+        <Form.Group as={Row} controlId="formReaderId">
+          <Form.Label column sm={2}>
+            Reader Id
+          </Form.Label>
+          <Col sm={10}>
+            <Field name="reader.metadata.id">
+              {({ field }: { field: FieldInputProps<string> }) => (
+                <Form.Control type="text" {...field} />
+              )}
+            </Field>
+          </Col>
+        </Form.Group>
 
-      <Form.Group as={Row} controlId="readerType">
-        <Form.Label column sm={2}>
-          Framework
-        </Form.Label>
-        <Col sm={10}>
-          <FrameworkSelector
-            name="reader.definition.type"
-            frameworks={frameworks}
-          />
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="readerSelector">
-        <Form.Label column sm={2}>
-          Selector
-        </Form.Label>
-        <Col sm={10}>
-          <SelectorSelectorField
-            isClearable
-            name="reader.definition.selector"
-            initialElement={element.containerInfo}
-            traverseUp={5}
-          />
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="readerSearch">
-        <Form.Label column sm={2}>
-          Search
-        </Form.Label>
-        <Col sm={10}>
-          <Form.Control
-            type="text"
-            placeholder="Search for a property or value"
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </Col>
-      </Form.Group>
-      {error || !values.reader?.definition?.selector ? (
-        <Row className="h-100">
-          <Col>{error ?? "No reader/selector selected"}</Col>
-        </Row>
-      ) : (
-        <Row className="h-100">
-          <Col md={6} className="ReaderData">
-            <span>
-              {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
-            </span>
-            <div className="overflow-auto h-100 w-100">
-              {searchResults !== undefined ? (
-                <JSONTree
-                  data={searchResults}
-                  theme={theme}
-                  invertTheme
-                  hideRoot
-                  sortObjectKeys
-                />
-              ) : (
-                <GridLoader />
-              )}
-            </div>
+        <Form.Group as={Row} controlId="readerType">
+          <Form.Label column sm={2}>
+            Framework
+          </Form.Label>
+          <Col sm={10}>
+            <FrameworkSelector
+              name="reader.definition.type"
+              frameworks={frameworks}
+            />
           </Col>
-          <Col md={6} className="ReaderData">
-            <span>Inferred Schema</span>
-            <div className="overflow-auto h-100 w-100">
-              {schema !== undefined ? (
-                <SchemaTree schema={schema} />
-              ) : (
-                <GridLoader />
-              )}
-            </div>
+        </Form.Group>
+
+        {values.reader.definition.type === "jquery" ? (
+          <JQueryFields element={element} />
+        ) : (
+          <FrameworkFields element={element} />
+        )}
+
+        <Form.Group as={Row} controlId="readerSearch">
+          <Form.Label column sm={2}>
+            Search
+          </Form.Label>
+          <Col sm={10}>
+            <Form.Control
+              type="text"
+              placeholder="Search for a property or value"
+              onChange={(e) => setQuery(e.target.value)}
+            />
           </Col>
-        </Row>
-      )}
+        </Form.Group>
+        {error || !values.reader?.definition?.selector ? (
+          <Row className="h-100">
+            <Col>{error ?? "No reader/selector selected"}</Col>
+          </Row>
+        ) : (
+          <Row className="h-100">
+            <Col md={6} className="ReaderData">
+              <span>
+                {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
+              </span>
+              <div className="overflow-auto h-100 w-100">
+                {searchResults !== undefined ? (
+                  <JSONTree
+                    data={searchResults}
+                    theme={theme}
+                    invertTheme
+                    hideRoot
+                    sortObjectKeys
+                  />
+                ) : (
+                  <GridLoader />
+                )}
+              </div>
+            </Col>
+            <Col md={6} className="ReaderData">
+              <span>Inferred Schema</span>
+              <div className="overflow-auto h-100 w-100">
+                {schema !== undefined ? (
+                  <SchemaTree schema={schema} />
+                ) : (
+                  <GridLoader />
+                )}
+              </div>
+            </Col>
+          </Row>
+        )}
+      </RendererContext.Provider>
     </Tab.Pane>
   );
 };

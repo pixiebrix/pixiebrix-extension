@@ -31,7 +31,7 @@ import ServiceAuthSelector, {
   useAuthOptions,
 } from "@/options/pages/extensionEditor/ServiceAuthSelector";
 
-const DependencyRow: React.FunctionComponent<{
+export const DependencyRow: React.FunctionComponent<{
   field: FieldInputProps<unknown>;
   authOptions: AuthOption[];
   dependency: ServiceDependency;
