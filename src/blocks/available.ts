@@ -25,7 +25,16 @@ import { Availability } from "@/blocks/types";
 import { Permissions } from "webextension-polyfill-ts";
 
 export function testMatchPattern(pattern: string, url?: string): boolean {
-  const re = matchPattern.parse(pattern);
+  let re;
+
+  try {
+    re = matchPattern.parse(pattern);
+  } catch (ex) {
+    throw new Error(
+      `Pattern not recognized as valid match pattern: ${pattern}`
+    );
+  }
+
   if (!re) {
     throw new Error(
       `Pattern not recognized as valid match pattern: ${pattern}`

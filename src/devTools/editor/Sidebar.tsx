@@ -33,6 +33,10 @@ import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
 import {
+  makePanelConfig,
+  makePanelState,
+} from "@/devTools/editor/extensionPoints/panel";
+import {
   makeActionConfig,
   makeActionState,
 } from "@/devTools/editor/extensionPoints/menuItem";
@@ -87,6 +91,37 @@ const Sidebar: React.FunctionComponent<
     }
   }, [port, frameworks, elements, scope, addToast]);
 
+  const addPanel = useCallback(async () => {
+    dispatch(actions.toggleInsert(true));
+    try {
+      const panel = await nativeOperations.insertPanel(port);
+      const { url } = await getTabInfo(port);
+      const metadata = await generateExtensionPointMetadata(
+        "Panel",
+        scope,
+        url,
+        elements.flatMap((x) => [
+          x.extensionPoint.metadata.id,
+          x.reader.metadata.id,
+        ])
+      );
+      const initialState = makePanelState(url, metadata, panel, frameworks);
+      await nativeOperations.updateDynamicElement(
+        port,
+        makePanelConfig(initialState)
+      );
+      dispatch(actions.addElement(initialState));
+    } catch (exc) {
+      reportError(exc);
+      addToast(`Error adding panel: ${exc.toString()}`, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    } finally {
+      dispatch(actions.toggleInsert(false));
+    }
+  }, [port, frameworks, elements, scope, addToast]);
+
   const addTrigger = useCallback(async () => {
     dispatch(actions.toggleInsert(true));
     try {
@@ -129,7 +164,13 @@ const Sidebar: React.FunctionComponent<
         >
           Button <FontAwesomeIcon icon={faMousePointer} />
         </Button>
-        <Button className="flex-grow-1" size="sm" disabled variant="info">
+        <Button
+          className="flex-grow-1"
+          size="sm"
+          disabled={inserting}
+          variant="info"
+          onClick={addPanel}
+        >
           Panel <FontAwesomeIcon icon={faColumns} />
         </Button>
         <Button

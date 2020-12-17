@@ -26,9 +26,20 @@ import {
   readerOptions,
 } from "@/devTools/editor/tabs/ReaderTab";
 
+function getPathFromUrl(url: string): string {
+  return url.split("?")[0];
+}
+
 function defaultMatchPattern(url: string): string {
-  const obj = new URL(url);
+  const cleanURL = getPathFromUrl(url);
+  console.debug(`Clean URL: ${cleanURL}`);
+  const obj = new URL(cleanURL);
+  for (const [name] of (obj.searchParams as any).entries()) {
+    console.debug(`Deleting param ${name}`);
+    obj.searchParams.delete(name);
+  }
   obj.pathname = "*";
+  console.debug(`Generate match pattern`, { href: obj.href });
   return obj.href;
 }
 

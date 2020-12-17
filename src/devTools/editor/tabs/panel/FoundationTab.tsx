@@ -19,12 +19,12 @@ import React from "react";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Field, FieldInputProps } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import { TriggerFormState } from "@/devTools/editor/editorSlice";
+import { ActionFormState } from "@/devTools/editor/editorSlice";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
-  element: TriggerFormState;
+  element: ActionFormState;
   dispatch: (action: PayloadAction<unknown>) => void;
 }> = ({ eventKey = "foundation", element }) => {
   return (
@@ -56,11 +56,12 @@ const FoundationTab: React.FunctionComponent<{
 
       <Form.Group as={Row} controlId="formContainerSelector">
         <Form.Label column sm={2}>
-          Root Selector
+          Container Selector
         </Form.Label>
         <Col sm={10}>
           <SelectorSelectorField
-            name="extensionPoint.definition.rootSelector"
+            name="extensionPoint.definition.containerSelector"
+            initialElement={element.containerInfo}
             selectMode="container"
           />
         </Col>
@@ -68,17 +69,28 @@ const FoundationTab: React.FunctionComponent<{
 
       <Form.Group as={Row} controlId="formPosition">
         <Form.Label column sm={2}>
-          Trigger
+          Position
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.definition.trigger">
+          <Field name="extensionPoint.definition.position">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control as="select" {...field}>
-                <option value="load">Load</option>
-                <option value="click">Click</option>
-                <option value="dblclick">Double Click</option>
-                <option value="hover">Hover</option>
+                <option value="append">Append</option>
+                <option value="prepend">Prepend</option>
               </Form.Control>
+            )}
+          </Field>
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} controlId="formTemplate" className="pb-4">
+        <Form.Label column sm={2}>
+          Template
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="extensionPoint.definition.template">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control as="textarea" rows={4} {...field} />
             )}
           </Field>
         </Col>

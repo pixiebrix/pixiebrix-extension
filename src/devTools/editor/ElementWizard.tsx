@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
@@ -29,14 +29,17 @@ import {
   FormState,
   TriggerFormState,
 } from "@/devTools/editor/editorSlice";
+import ToggleField from "@/devTools/editor/components/ToggleField";
 import { CONFIG_MAP } from "@/devTools/editor/useCreate";
 
 import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
 import { wizard as triggerWizard } from "./extensionPoints/trigger";
+import { wizard as panelWizard } from "./extensionPoints/panel";
 
 const wizardMap = {
   menuItem: menuItemWizard,
   trigger: triggerWizard,
+  panel: panelWizard,
 };
 
 const ElementWizard: React.FunctionComponent<{
@@ -66,20 +69,38 @@ const ElementWizard: React.FunctionComponent<{
 
   const [debounced] = useDebounce(element, refreshMillis);
 
+  const run = useCallback(async () => {
+    const factory = CONFIG_MAP[debounced.type];
+    await nativeOperations.updateDynamicElement(
+      port,
+      factory(debounced as any)
+    );
+  }, [debounced, port]);
+
+  const showReloadControls =
+    debounced?.type === "trigger" &&
+    (debounced as TriggerFormState)?.extensionPoint.definition.trigger ===
+      "load";
+
   useAsyncEffect(async () => {
-    const factory = CONFIG_MAP[element.type];
-    if (
-      element.type === "trigger" &&
-      (element as TriggerFormState).extensionPoint.definition.trigger == "load"
-    ) {
+    const factory = CONFIG_MAP[debounced.type];
+    console.debug("Updating element", {
+      debounced,
+      showReloadControls,
+      element: factory(debounced as any),
+    });
+    if (showReloadControls && !(debounced as TriggerFormState).autoReload) {
       // by default, don't automatically trigger it
       return;
     }
-    await nativeOperations.updateDynamicElement(port, factory(element as any));
-  }, [debounced]);
+    await nativeOperations.updateDynamicElement(
+      port,
+      factory(debounced as any)
+    );
+  }, [debounced, port, showReloadControls]);
 
   if (!isEmpty(errors)) {
-    console.debug("Form errors", { errors });
+    console.warn("Form errors", { errors });
   }
 
   return (
@@ -103,6 +124,23 @@ const ElementWizard: React.FunctionComponent<{
           ))}
 
           <div className="flex-grow-1" />
+
+          {showReloadControls && (
+            <>
+              <label className="AutoRun my-auto mr-1">Auto-Run</label>
+              <ToggleField name="autoReload" />
+              <Button
+                className="mx-2"
+                disabled={isSubmitting || !isValid}
+                size="sm"
+                variant="info"
+                onClick={run}
+              >
+                Run Trigger
+              </Button>
+            </>
+          )}
+
           <Button
             className="mx-2"
             disabled={isSubmitting || !isValid}

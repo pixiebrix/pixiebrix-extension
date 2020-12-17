@@ -260,7 +260,7 @@ function genericOptionsFactory(
           }}
         />
       )}
-      {isEmpty(schema) && <span>No options available</span>}
+      {isEmpty(schema) && <div>No options available</div>}
     </>
   );
 

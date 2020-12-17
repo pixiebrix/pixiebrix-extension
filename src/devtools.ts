@@ -22,9 +22,12 @@ import "core-js/stable";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 
-import { injectScript, readSelectedElement } from "@/background/devtools";
+import {
+  injectScript,
+  readSelectedElement,
+  clear,
+} from "@/background/devtools";
 import { reportError } from "@/telemetry/logging";
-import { clear } from "@/background/devtools";
 
 function installSidebarPane(port: Runtime.Port) {
   // The following wasn't returning a value

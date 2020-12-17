@@ -25,8 +25,6 @@ const MULTI_ATTRS = ["class", "rel"];
 // @ts-ignore: no types available
 import getCssSelector from "css-selector-generator";
 
-export const DEFAULT_ACTION_CAPTION = "Action";
-
 function commonAttr($items: JQuery<HTMLElement>, attr: string) {
   const values = $items
     .toArray()
@@ -236,6 +234,13 @@ export function findContainer(
   } else {
     return findContainerForElement(elements[0]);
   }
+}
+
+export function inferPanelHTML(
+  container: HTMLElement,
+  selected: HTMLElement[]
+): string {
+  return "<div><h1>{{heading}}</h1><div>{{{body}}}</div></div>";
 }
 
 export function inferButtonHTML(

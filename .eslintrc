@@ -7,11 +7,21 @@
   "env": {
     "browser": true
   },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "./browsers/webpack/webpack.base.js"
+      }
+    }
+  },
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
   ],
   "rules": {
     "react/prop-types": "off",

@@ -22,46 +22,41 @@ import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { ElementInfo } from "./frameworks";
 import { userSelectElement } from "./selector";
 import * as pageScript from "@/pageScript/protocol";
-import { findContainer, inferButtonHTML } from "./infer";
-import {
-  MenuDefinition,
-  MenuItemExtensionConfig,
-} from "@/extensionPoints/menuItemExtension";
+import { findContainer, inferPanelHTML } from "./infer";
 import { html as beautifyHTML } from "js-beautify";
-import { DynamicDefinition } from "./dynamic";
+import { PanelConfig, PanelDefinition } from "@/extensionPoints/panelExtension";
 
-export const DEFAULT_ACTION_CAPTION = "Action";
+const DEFAULT_PANEL_HEADING = "PixieBrix Panel";
 
-export type ButtonDefinition = DynamicDefinition<
-  MenuDefinition,
-  MenuItemExtensionConfig
->;
-
-export interface ButtonSelectionResult {
+export interface PanelSelectionResult {
   uuid: string;
-  menu: Omit<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
-  item: Pick<MenuItemExtensionConfig, "caption">;
+  foundation: Omit<
+    PanelDefinition,
+    "defaultOptions" | "isAvailable" | "reader"
+  >;
+  panel: Omit<PanelConfig, "body">;
   containerInfo: ElementInfo;
 }
 
-export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
+export const insertPanel = liftContentScript("INSERT_PANEL", async () => {
   const selected = await userSelectElement();
+
   const { container, selectors } = findContainer(selected);
 
-  const element: ButtonSelectionResult = {
+  const element: PanelSelectionResult = {
     uuid: uuidv4(),
-    item: {
-      caption: DEFAULT_ACTION_CAPTION,
+    panel: {
+      heading: DEFAULT_PANEL_HEADING,
+      shadowDOM: true,
     },
-    menu: {
-      type: "menuItem",
+    foundation: {
+      type: "panel",
       containerSelector: selectors[0],
-      template: beautifyHTML(inferButtonHTML(container, selected), {
+      template: beautifyHTML(inferPanelHTML(container, selected), {
         indent_handlebars: true,
         wrap_line_length: 80,
         wrap_attributes: "force",
       }),
-      shadowDOM: null,
       position: "append",
     },
     containerInfo: await pageScript.getElementInfo({ selector: selectors[0] }),

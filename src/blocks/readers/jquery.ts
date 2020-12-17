@@ -149,7 +149,10 @@ function select(
   }
 
   if ($elt.length === 0) {
-    console.debug(`Did not find any elements for selector: ${selector}`);
+    console.debug(
+      `Did not find any elements for selector: ${normalizedSelector.selector}`,
+      { $root, normalizedSelector }
+    );
     return normalizedSelector.multi ? [] : undefined;
   } else if ($elt.length > 1 && !normalizedSelector.multi) {
     throw new Error(

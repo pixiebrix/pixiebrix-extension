@@ -17,65 +17,83 @@
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { TriggerFormState } from "@/devTools/editor/editorSlice";
+import { PanelFormState } from "@/devTools/editor/editorSlice";
 import {
   makeBaseState,
   makeExtensionReader,
   makeIsAvailable,
 } from "@/devTools/editor/extensionPoints/base";
-import { v4 as uuidv4 } from "uuid";
-import {
-  TriggerConfig,
-  TriggerDefinition,
-} from "@/extensionPoints/triggerExtension";
-import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
+import { PanelConfig, PanelDefinition } from "@/extensionPoints/panelExtension";
+import FoundationTab from "@/devTools/editor/tabs/panel/FoundationTab";
 import ReaderTab from "@/devTools/editor/tabs/ReaderTab";
+import PanelTab from "@/devTools/editor/tabs/panel/PanelTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import EffectTab from "@/devTools/editor/tabs/EffectTab";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
-import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
+import LogsTab from "@/devTools/editor/tabs/LogsTab";
+import { DynamicDefinition } from "@/nativeEditor";
+import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
+import RendererTab from "@/devTools/editor/tabs/RendererTab";
 
 export const wizard = [
   { step: "Foundation", Component: FoundationTab },
   { step: "Reader", Component: ReaderTab },
+  { step: "Panel", Component: PanelTab },
   { step: "Services", Component: ServicesTab },
-  { step: "Effect", Component: EffectTab },
+  { step: "Renderer", Component: RendererTab },
   { step: "Availability", Component: AvailabilityTab },
   { step: "Logs", Component: LogsTab },
 ];
 
-export function makeTriggerState(
+export function makePanelState(
   url: string,
   metadata: Metadata,
+  panel: PanelSelectionResult,
   frameworks: FrameworkMeta[]
-): TriggerFormState {
+): PanelFormState {
   return {
-    type: "trigger",
-    ...makeBaseState(uuidv4(), null, metadata, frameworks),
+    type: "panel",
+    ...makeBaseState(
+      panel.uuid,
+      panel.foundation.containerSelector,
+      metadata,
+      frameworks
+    ),
+    containerInfo: panel.containerInfo,
     extensionPoint: {
       metadata,
       definition: {
-        rootSelector: null,
-        trigger: "load",
+        ...panel.foundation,
         isAvailable: makeIsAvailable(url),
+      },
+      traits: {
+        style: {
+          mode: "inherit",
+        },
       },
     },
     extension: {
-      action: [],
+      heading: panel.panel.heading,
+      collapsible: panel.panel.collapsible ?? false,
+      shadowDOM: panel.panel.shadowDOM ?? true,
+      body: [
+        {
+          id: "@pixiebrix/property-table",
+          config: {},
+        },
+      ],
     },
   };
 }
 
-export function makeTriggerExtensionPoint({
+export function makePanelExtensionPoint({
   extensionPoint,
   reader,
-}: TriggerFormState): ExtensionPointConfig<TriggerDefinition> {
+}: PanelFormState): ExtensionPointConfig<PanelDefinition> {
   const {
     metadata,
-    definition: { isAvailable, rootSelector, trigger },
+    definition: { isAvailable, position, template, containerSelector },
   } = extensionPoint;
 
   return {
@@ -85,39 +103,38 @@ export function makeTriggerExtensionPoint({
       id: metadata.id,
       version: "1.0.0",
       name: metadata.name,
-      description: "Trigger created with the devtools",
+      description: "Panel created with the devtools",
     },
     definition: {
-      type: "trigger",
+      type: "panel",
       reader: reader.metadata.id,
       isAvailable: pickBy(isAvailable, identity),
-      trigger,
-      rootSelector,
+      containerSelector: containerSelector,
+      position,
+      template,
     },
   };
 }
 
-export function makeTriggerExtension({
+export function makePanelExtension({
   uuid,
   extensionPoint,
   extension,
   services,
-}: TriggerFormState): IExtension<TriggerConfig> {
+}: PanelFormState): IExtension<PanelConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
-    label: "Custom Trigger",
+    label: "Custom Panel",
     services,
     config: extension,
   };
 }
 
-export function makeTriggerConfig(
-  element: TriggerFormState
-): DynamicDefinition {
+export function makePanelConfig(element: PanelFormState): DynamicDefinition {
   return {
-    extension: makeTriggerExtension(element),
-    extensionPoint: makeTriggerExtensionPoint(element),
+    extension: makePanelExtension(element),
+    extensionPoint: makePanelExtensionPoint(element),
     reader: makeExtensionReader(element),
   };
 }

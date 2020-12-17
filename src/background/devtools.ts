@@ -29,10 +29,11 @@ import { v4 as uuidv4 } from "uuid";
 import { deserializeError } from "serialize-error";
 import { allowBackgroundSender } from "@/background/protocol";
 import * as contentScriptProtocol from "@/contentScript/devTools";
-import * as nativeEditorProtocol from "@/nativeEditor/insertButton";
+import * as nativeEditorProtocol from "@/nativeEditor";
 import * as nativeSelectionProtocol from "@/nativeEditor/selector";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
+import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 
 interface HandlerEntry {
   handler: (
@@ -360,6 +361,15 @@ export const insertButton = liftBackground(
   "INSERT_BUTTON",
   (tabId: number) => async () => {
     return await nativeEditorProtocol.insertButton(tabId);
+  }
+);
+
+export const insertPanel: (
+  port: Runtime.Port
+) => Promise<PanelSelectionResult> = liftBackground(
+  "INSERT_PANEL",
+  (tabId: number) => async () => {
+    return await nativeEditorProtocol.insertPanel(tabId);
   }
 );
 

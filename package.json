@@ -234,6 +234,8 @@
     }
   },
   "devDependencies": {
+    "eslint-import-resolver-webpack": "^0.13.0",
+    "eslint-plugin-import": "^2.22.1",
     "webpack-bundle-analyzer": "^4.1.0"
   }
 }

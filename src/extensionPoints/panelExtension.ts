@@ -20,7 +20,7 @@ import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
-import castArray from "lodash/castArray";
+import { castArray } from "lodash";
 import {
   reducePipeline,
   mergeReaders,
@@ -47,7 +47,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
 
-interface PanelConfig {
+export interface PanelConfig {
   heading?: string;
   body: BlockConfig | BlockPipeline;
   collapsible?: boolean;
@@ -291,11 +291,11 @@ interface PanelDefaultOptions {
   [key: string]: string;
 }
 
-interface PanelDefinition extends ExtensionPointDefinition {
+export interface PanelDefinition extends ExtensionPointDefinition {
   template: string;
   position?: "append" | "prepend";
   containerSelector: string;
-  defaultOptions: PanelDefaultOptions;
+  defaultOptions?: PanelDefaultOptions;
 }
 
 class RemotePanelExtensionPoint extends PanelExtensionPoint {

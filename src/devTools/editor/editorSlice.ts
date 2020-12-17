@@ -24,7 +24,8 @@ import { Trigger } from "@/extensionPoints/triggerExtension";
 
 export interface BaseFormState {
   readonly uuid: string;
-  readonly type: "menuItem" | "trigger";
+  readonly type: "menuItem" | "trigger" | "panel";
+  autoReload?: boolean;
 
   services: ServiceDependency[];
 
@@ -64,6 +65,35 @@ export interface TriggerFormState extends BaseFormState {
   };
 }
 
+export interface PanelFormState extends BaseFormState {
+  containerInfo: ElementInfo;
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      containerSelector: string;
+      position?: MenuPosition;
+      template: string;
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+    traits: {
+      style: {
+        mode: "default" | "inherit";
+      };
+    };
+  };
+
+  extension: {
+    heading: string;
+    body: BlockPipeline;
+    collapsible?: boolean;
+    shadowDOM?: boolean;
+  };
+}
+
 export interface ActionFormState extends BaseFormState {
   containerInfo: ElementInfo;
 
@@ -92,7 +122,7 @@ export interface ActionFormState extends BaseFormState {
   };
 }
 
-export type FormState = ActionFormState | TriggerFormState;
+export type FormState = ActionFormState | TriggerFormState | PanelFormState;
 
 export interface EditorState {
   inserting: boolean;

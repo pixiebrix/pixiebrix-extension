@@ -35,12 +35,14 @@ import {
   makeMenuExtensionPoint,
 } from "@/devTools/editor/extensionPoints/menuItem";
 import { makeTriggerConfig } from "@/devTools/editor/extensionPoints/trigger";
+import { makePanelConfig } from "@/devTools/editor/extensionPoints/panel";
 
 const { saveExtension } = optionsSlice.actions;
 
 export const CONFIG_MAP = {
   menuItem: makeActionConfig,
   trigger: makeTriggerConfig,
+  panel: makePanelConfig,
 };
 
 async function makeRequestConfig(
