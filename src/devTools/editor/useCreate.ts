@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ButtonState } from "@/devTools/editor/editorSlice";
-import { identity, pickBy } from "lodash";
+import { ActionFormState } from "@/devTools/editor/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback, useState } from "react";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -27,76 +26,24 @@ import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
-import { defaultConfig, readerOptions } from "@/devTools/editor/ReaderTab";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
+import { makeExtensionReader } from "@/devTools/editor/extensionPoints/base";
+import {
+  makeActionConfig,
+  makeActionExtension,
+  makeMenuExtensionPoint,
+} from "@/devTools/editor/extensionPoints/menuItem";
+import { makeTriggerConfig } from "@/devTools/editor/extensionPoints/trigger";
+import { makePanelConfig } from "@/devTools/editor/extensionPoints/panel";
 
 const { saveExtension } = optionsSlice.actions;
 
-function makeMenuReader(button: ButtonState) {
-  const readerOption = readerOptions.find(
-    (x) => x.value === button.reader.type
-  );
-  return {
-    apiVersion: "v1",
-    kind: "reader",
-    metadata: {
-      id: button.reader.id,
-      version: "1.0.0",
-      name: `Reader for ${button.extensionPoint.name}`,
-      description: "Reader created with the devtools",
-    },
-    definition: {
-      reader: (readerOption?.makeConfig ?? defaultConfig)(
-        button.reader.type,
-        button.reader.selector
-      ),
-    },
-    outputSchema: button.reader.outputSchema ?? {},
-  };
-}
-
-function makeMenuExtensionPoint(button: ButtonState) {
-  return {
-    apiVersion: "v1",
-    kind: "extensionPoint",
-    metadata: {
-      id: button.extensionPoint.id,
-      version: "1.0.0",
-      name: button.extensionPoint.name,
-      description: "Action created with the devtools",
-    },
-    definition: {
-      type: "menuItem",
-      isAvailable: pickBy(button.isAvailable, identity),
-      reader: button.reader.id,
-      containerSelector: [button.containerSelector],
-      position: button.position,
-      template: button.template,
-    },
-  };
-}
-
-function makeExtensionDefinition(button: ButtonState) {
-  return {
-    extensionPointId: button.extensionPoint.id,
-    extensionId: button.uuid,
-    label: "Custom Action",
-    // services here refers to the service auth
-    services: [] as unknown[],
-    config: {
-      caption: button.caption,
-      action: [
-        {
-          id: "@pixiebrix/browser/log",
-          config: {
-            message: "Custom action",
-          },
-        },
-      ],
-    },
-  };
-}
+export const CONFIG_MAP = {
+  menuItem: makeActionConfig,
+  trigger: makeTriggerConfig,
+  panel: makePanelConfig,
+};
 
 async function makeRequestConfig(
   saved: { [id: string]: string },
@@ -118,8 +65,8 @@ async function makeRequestConfig(
 }
 
 export function useCreate(): (
-  button: ButtonState,
-  helpers: FormikHelpers<ButtonState>
+  button: ActionFormState,
+  helpers: FormikHelpers<ActionFormState>
 ) => Promise<void> {
   const dispatch = useDispatch();
   const [saved, setSaved] = useState<{ [id: string]: string }>({});
@@ -127,11 +74,13 @@ export function useCreate(): (
 
   return useCallback(
     async (
-      button: ButtonState,
-      { setSubmitting, setStatus }: FormikHelpers<ButtonState>
+      button: ActionFormState,
+      { setSubmitting, setStatus }: FormikHelpers<ActionFormState>
     ) => {
+      console.debug("Updating/creating action", { button });
+
       try {
-        const readerConfig = makeMenuReader(button);
+        const readerConfig = makeExtensionReader(button);
         const { data: readerData } = await axios({
           ...(await makeRequestConfig(saved, readerConfig.metadata.id)),
           data: { config: safeDump(readerConfig), kind: "reader" },
@@ -177,7 +126,7 @@ export function useCreate(): (
       }
 
       try {
-        dispatch(saveExtension(makeExtensionDefinition(button)));
+        dispatch(saveExtension(makeActionExtension(button)));
         addToast("Saved button definition", {
           appearance: "success",
           autoDismiss: true,
@@ -188,6 +137,7 @@ export function useCreate(): (
           appearance: "success",
           autoDismiss: true,
         });
+        return;
       } finally {
         setSubmitting(false);
       }

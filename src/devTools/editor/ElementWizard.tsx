@@ -15,109 +15,165 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
+import { isEmpty } from "lodash";
 import { useDebounce } from "use-debounce";
 import useAsyncEffect from "use-async-effect";
 import * as nativeOperations from "@/background/devtools";
-import { Button, Col, Form, Nav, Row, Tab } from "react-bootstrap";
-import { actions, ButtonState } from "@/devTools/editor/editorSlice";
-import FoundationTab from "@/devTools/editor/FoundationTab";
-import ReaderTab from "@/devTools/editor/ReaderTab";
-import AvailabilityTab from "@/devTools/editor/AvailabilityTab";
-import MetaTab from "@/devTools/editor/MetaTab";
+import { Button, Form, Nav, Tab } from "react-bootstrap";
+import {
+  actions,
+  FormState,
+  TriggerFormState,
+} from "@/devTools/editor/editorSlice";
+import ToggleField from "@/devTools/editor/components/ToggleField";
+import { CONFIG_MAP } from "@/devTools/editor/useCreate";
+
+import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
+import { wizard as triggerWizard } from "./extensionPoints/trigger";
+import { wizard as panelWizard } from "./extensionPoints/panel";
+
+const wizardMap = {
+  menuItem: menuItemWizard,
+  trigger: triggerWizard,
+  panel: panelWizard,
+};
 
 const ElementWizard: React.FunctionComponent<{
-  element: ButtonState;
+  element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ element, dispatch }) => {
+  refreshMillis?: number;
+}> = ({ element, dispatch, refreshMillis = 250 }) => {
   const { port } = useContext(DevToolsContext);
-  const [step, setStep] = useState("foundation");
+
+  const wizard = useMemo(() => wizardMap[element.type], [element.type]);
+
+  const [step, setStep] = useState(wizard[0].step);
+
+  const TabPane = useMemo(
+    () => wizard.find((x) => x.step === step)?.Component,
+    [wizard, step]
+  );
+
   const {
+    errors,
     isSubmitting,
     isValid,
     status,
     handleSubmit,
     handleReset,
   } = useFormikContext();
-  const [debounced] = useDebounce(element, 100);
+
+  const [debounced] = useDebounce(element, refreshMillis, {
+    leading: false,
+    trailing: true,
+  });
+
+  const run = useCallback(async () => {
+    const factory = CONFIG_MAP[debounced.type];
+    await nativeOperations.updateDynamicElement(
+      port,
+      factory(debounced as any)
+    );
+  }, [debounced, port]);
+
+  const showReloadControls =
+    debounced?.type === "trigger" &&
+    (debounced as TriggerFormState)?.extensionPoint.definition.trigger ===
+      "load";
 
   useAsyncEffect(async () => {
-    await nativeOperations.updateButton(port, debounced);
-  }, [debounced]);
+    if (showReloadControls && !(debounced as TriggerFormState).autoReload) {
+      // by default, don't automatically trigger it
+      return;
+    }
+    const factory = CONFIG_MAP[debounced.type];
+    console.debug("Updating dynamic element", {
+      debounced,
+      showReloadControls,
+      element: factory(debounced as any),
+    });
+    await nativeOperations.updateDynamicElement(
+      port,
+      factory(debounced as any)
+    );
+  }, [debounced, port, showReloadControls]);
+
+  const remove = useCallback(async () => {
+    try {
+      await nativeOperations.clear(port, {
+        uuid: element.uuid,
+      });
+    } catch (reason) {
+      // element might not be on the page anymore
+    }
+    dispatch(actions.removeElement(element.uuid));
+  }, [element, dispatch]);
+
+  if (!isEmpty(errors)) {
+    console.warn("Form errors", { errors });
+  }
 
   return (
-    <Form
-      autoComplete="off"
-      noValidate
-      onSubmit={handleSubmit}
-      onReset={handleReset}
-    >
-      <Form.Group as={Row}>
-        <Col>
-          <Button
-            variant="danger"
-            className="mr-2"
-            onClick={async () => {
-              try {
-                await nativeOperations.removeElement(port, {
-                  uuid: element.uuid,
-                });
-              } catch (reason) {
-                // element might not be on the page anymore
-              }
-              dispatch(actions.removeElement(element.uuid));
-            }}
-          >
-            Remove
-          </Button>
-
-          <Button
-            className="mx-2"
-            disabled={isSubmitting || !isValid}
-            type="submit"
-            variant="primary"
-          >
-            Save
-          </Button>
-          {status}
-        </Col>
-      </Form.Group>
-      <Tab.Container activeKey={step}>
+    <Tab.Container activeKey={step}>
+      <Form
+        autoComplete="off"
+        noValidate
+        onSubmit={handleSubmit}
+        onReset={handleReset}
+        className="h-100"
+      >
         <Nav
           variant="pills"
           activeKey={step}
           onSelect={(step: string) => setStep(step)}
         >
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="foundation">1. Foundation</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="reader">2. Reader</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="availability">3. Availability</Nav.Link>
-          </Nav.Item>
-          <Nav.Item className="flex-grow-1">
-            <Nav.Link eventKey="metadata">4. Metadata</Nav.Link>
-          </Nav.Item>
+          {wizard.map((x) => (
+            <Nav.Item key={x.step}>
+              <Nav.Link eventKey={x.step}>{x.step}</Nav.Link>
+            </Nav.Item>
+          ))}
+
+          <div className="flex-grow-1" />
+
+          {showReloadControls && (
+            <>
+              <label className="AutoRun my-auto mr-1">Auto-Run</label>
+              <ToggleField name="autoReload" />
+              <Button
+                className="mx-2"
+                disabled={isSubmitting || !isValid}
+                size="sm"
+                variant="info"
+                onClick={run}
+              >
+                Run Trigger
+              </Button>
+            </>
+          )}
+
+          <Button
+            className="mx-2"
+            disabled={isSubmitting || !isValid}
+            type="submit"
+            size="sm"
+            variant="primary"
+          >
+            Save Action
+          </Button>
+
+          <Button variant="danger" className="mr-2" size="sm" onClick={remove}>
+            Remove
+          </Button>
         </Nav>
-        {step === "foundation" && (
-          <FoundationTab element={element} dispatch={dispatch} />
-        )}
-        {step === "reader" && (
-          <ReaderTab element={element} dispatch={dispatch} />
-        )}
-        {step === "availability" && (
-          <AvailabilityTab element={element} dispatch={dispatch} />
-        )}
-        {step === "metadata" && (
-          <MetaTab element={element} dispatch={dispatch} />
-        )}
-      </Tab.Container>
-    </Form>
+        {status && <div className="text-danger">{status}</div>}
+
+        {TabPane && <TabPane eventKey={step} />}
+      </Form>
+    </Tab.Container>
   );
 };
 

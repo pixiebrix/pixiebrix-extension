@@ -230,7 +230,7 @@ const ExtensionForm: React.FunctionComponent<{
             )}
             {extensionId && activeTab === "log" && (
               <RunLogCard
-                extensionPoint={extensionPoint}
+                extensionPointId={extensionPoint.id}
                 extensionId={extensionId}
               />
             )}

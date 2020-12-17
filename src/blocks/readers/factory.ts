@@ -30,12 +30,13 @@ export interface ReaderTypeConfig {
   [key: string]: unknown;
 }
 
-interface ReaderDefinition {
-  isAvailable: Availability;
+export interface ReaderDefinition {
+  isAvailable?: Availability;
   reader: ReaderTypeConfig;
 }
 
-interface ReaderConfig<TDefinition extends ReaderDefinition> {
+export interface ReaderConfig<TDefinition extends ReaderDefinition> {
+  apiVersion?: "v1";
   metadata: Metadata;
   outputSchema: Schema;
   kind: "reader";

@@ -15,14 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Schema } from "@/core";
 import { FieldProps } from "@/components/fields/propTypes";
 import fromPairs from "lodash/fromPairs";
 import Table from "react-bootstrap/Table";
-import { getDefaultField } from "@/components/fields/blockOptions";
+import {
+  getDefaultField,
+  RendererContext,
+} from "@/components/fields/blockOptions";
 import { useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -58,9 +61,26 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   onDelete,
   onRename,
   showActions,
+  schema,
   ...props
 }) => {
   const [field, meta] = useField(props);
+
+  const { customControls } = useContext(RendererContext);
+
+  const valueComponent = useMemo(() => {
+    const { Component } = customControls.find((x) => x.match(schema)) ?? {};
+    return Component ? (
+      <Component schema={schema} {...field} />
+    ) : (
+      <Form.Control
+        type="text"
+        {...field}
+        value={field.value ?? ""}
+        isInvalid={!!meta.error}
+      />
+    );
+  }, [customControls, schema, field]);
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -86,14 +106,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
         {/*    <Form.Text className="text-muted">{schema.description}</Form.Text>*/}
         {/*)}*/}
       </td>
-      <td>
-        <Form.Control
-          type="text"
-          value={field.value ?? ""}
-          {...field}
-          isInvalid={!!meta.error}
-        />
-      </td>
+      <td>{valueComponent}</td>
       {showActions && (
         <td>
           {onDelete && (

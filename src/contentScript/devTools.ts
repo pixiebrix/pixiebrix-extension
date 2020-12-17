@@ -16,16 +16,20 @@
  */
 
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
-
-// @ts-ignore: no typescript definitions
-import getCssSelector from "css-selector-generator";
 import { deserializeError } from "serialize-error";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
-import "@/nativeEditor/insertButton";
 import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 import adapters from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
 import { Framework } from "@/messaging/constants";
+
+// install handlers
+import "@/nativeEditor/insertButton";
+import "@/nativeEditor/insertPanel";
+import "@/nativeEditor/dynamic";
+
+// @ts-ignore: no typescript definitions
+import getCssSelector from "css-selector-generator";
 
 let selectedElement: HTMLElement = undefined;
 

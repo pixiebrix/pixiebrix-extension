@@ -28,6 +28,53 @@ function setValue($input: JQuery<HTMLElement>, value: unknown) {
   }
 }
 
+export class SetInputValue extends Effect {
+  constructor() {
+    super(
+      "@pixiebrix/forms/set",
+      "Set Input Value",
+      "Set the value of an input field"
+    );
+  }
+
+  inputSchema: Schema = {
+    type: "object",
+    properties: {
+      inputs: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            selector: {
+              type: "string",
+              format: "selector",
+            },
+            value: {
+              oneOf: [
+                { type: "string" },
+                { type: "boolean" },
+                { type: "number" },
+              ],
+            },
+          },
+        },
+        minItems: 1,
+      },
+    },
+    required: ["inputs"],
+  };
+
+  async effect({ inputs }: BlockArg, { logger }: BlockOptions): Promise<void> {
+    for (const { selector, value } of inputs) {
+      const $input = $(document).find(selector);
+      if ($input.length === 0) {
+        logger.info(`Could not find input for selector: ${selector}`);
+      }
+      setValue($input, value);
+    }
+  }
+}
+
 export class FormFill extends Effect {
   constructor() {
     super("@pixiebrix/form-fill", "Form Fill", "Fill out fields in a form");
@@ -38,6 +85,7 @@ export class FormFill extends Effect {
     properties: {
       formSelector: {
         type: "string",
+        format: "selector",
       },
       fieldNames: {
         type: "object",
@@ -121,3 +169,4 @@ export class FormFill extends Effect {
 }
 
 registerBlock(new FormFill());
+registerBlock(new SetInputValue());

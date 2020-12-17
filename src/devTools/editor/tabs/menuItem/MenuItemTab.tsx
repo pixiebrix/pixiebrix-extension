@@ -16,40 +16,31 @@
  */
 
 import React from "react";
-import { ButtonState } from "@/devTools/editor/editorSlice";
-import { PayloadAction } from "@reduxjs/toolkit";
-import { Col, Form, Row, Tab } from "react-bootstrap";
 import { Field, FieldInputProps } from "formik";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import { Col, Form, Row, Tab } from "react-bootstrap";
+import IconField, { iconSchema } from "@/components/fields/IconField";
 
-const AvailabilityTab: React.FunctionComponent<{
-  element: ButtonState;
-  dispatch: (action: PayloadAction<unknown>) => void;
-}> = () => {
+const MenuItemTab: React.FunctionComponent<{
+  eventKey?: string;
+}> = ({ eventKey = "menuItem" }) => {
   return (
-    <Tab.Pane eventKey="availability">
-      <Form.Group as={Row} controlId="formMatchPatterns">
+    <Tab.Pane eventKey={eventKey} className="h-100">
+      <Form.Group as={Row} controlId="formCaption">
         <Form.Label column sm={2}>
-          Match Patterns
+          Caption
         </Form.Label>
         <Col sm={10}>
-          <Field name="isAvailable.matchPatterns">
+          <Field name="extension.caption">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}
           </Field>
         </Col>
       </Form.Group>
-      <Form.Group as={Row} controlId="formAvailableSelectors">
-        <Form.Label column sm={2}>
-          Selector
-        </Form.Label>
-        <Col sm={10}>
-          <SelectorSelectorField name="isAvailable.selectors" isClearable />
-        </Col>
-      </Form.Group>
+
+      <IconField label="Icon" name="extension.icon" schema={iconSchema} />
     </Tab.Pane>
   );
 };
 
-export default AvailabilityTab;
+export default MenuItemTab;

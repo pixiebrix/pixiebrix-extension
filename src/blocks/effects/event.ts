@@ -19,6 +19,34 @@ import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
 
+// https://developer.mozilla.org/en-US/docs/Web/Events
+const DOM_EVENTS = [
+  "auxclick",
+  "click",
+  "contextmenu",
+  "dblclick",
+  "mousedown",
+  "mouseenter",
+  "mouseleave",
+  "mousemove",
+  "mouseover",
+  "mouseout",
+  "mouseup",
+  "pointer-lockchange",
+  "pointerlockerror",
+  "select",
+  "wheel",
+  "error",
+  "abort",
+  "load",
+  "beforeunload",
+  "unload",
+  "focus",
+  "blur",
+  "focusin",
+  "focusout",
+];
+
 export class ElementEvent extends Effect {
   constructor() {
     super(
@@ -33,10 +61,11 @@ export class ElementEvent extends Effect {
     properties: {
       selector: {
         type: "string",
+        format: "selector",
       },
       event: {
         type: "string",
-        examples: ["click"],
+        examples: DOM_EVENTS,
       },
     },
     required: ["selector"],

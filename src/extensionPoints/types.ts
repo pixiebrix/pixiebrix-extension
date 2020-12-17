@@ -30,6 +30,7 @@ export interface ExtensionPointDefinition {
 export interface ExtensionPointConfig<
   T extends ExtensionPointDefinition = ExtensionPointDefinition
 > {
+  apiVersion?: "v1";
   metadata: Metadata;
   definition: T;
   kind: "extensionPoint";

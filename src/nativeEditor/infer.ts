@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { uniq, compact } from "lodash";
+import { uniq, compact, sortBy } from "lodash";
 const BUTTON_TAGS = ["li", "button", "a", "span", "input", "svg"];
 const ICON_TAGS = ["svg"];
 const MENU_TAGS = ["ul", "tbody"];
@@ -24,8 +24,6 @@ const MULTI_ATTRS = ["class", "rel"];
 
 // @ts-ignore: no types available
 import getCssSelector from "css-selector-generator";
-
-export const DEFAULT_ACTION_CAPTION = "Action";
 
 function commonAttr($items: JQuery<HTMLElement>, attr: string) {
   const values = $items
@@ -115,9 +113,11 @@ export function safeCssSelector(
   element: HTMLElement,
   selectors: string[] = []
 ): string {
+  // https://github.com/fczbkk/css-selector-generator
   return getCssSelector(element, {
     blacklist: ["#ember*"],
     selectors: selectors,
+    combineWithinSelector: true,
   });
 }
 
@@ -125,14 +125,24 @@ export function safeCssSelector(
  * Generate some CSS selector variants for an element.
  */
 export function inferSelectors(element: HTMLElement): string[] {
-  return uniq(
-    compact([
-      safeCssSelector(element),
-      safeCssSelector(element, ["tag"]),
-      safeCssSelector(element, ["class", "tag"]),
-      safeCssSelector(element, ["tag", "class"]),
-    ])
-  ).filter((x) => x.trim() !== "");
+  return sortBy(
+    uniq(
+      compact([
+        safeCssSelector(element, [
+          "id",
+          "class",
+          "tag",
+          "attribute",
+          "nthchild",
+        ]),
+        safeCssSelector(element, ["tag", "class", "attribute", "nthchild"]),
+        safeCssSelector(element, ["id", "tag", "attribute", "nthchild"]),
+        safeCssSelector(element, ["id", "tag", "attribute"]),
+        safeCssSelector(element),
+      ])
+    ).filter((x) => x.trim() !== ""),
+    (x) => x.length
+  );
 }
 
 /**
@@ -142,7 +152,26 @@ function isUniqueSelector(selector: string): boolean {
   return $(document).find(selector).length === 1;
 }
 
-export function findContainer(
+export function getCommonAncestor(...args: Node[]): Node {
+  if (args.length === 1) {
+    return args[0].parentNode;
+  }
+
+  const [node, ...otherNodes] = args;
+
+  let currentNode: Node | null = node;
+
+  while (currentNode) {
+    if (otherNodes.every((x) => currentNode.contains(x))) {
+      return currentNode;
+    }
+    currentNode = currentNode?.parentNode;
+  }
+
+  return null;
+}
+
+export function findContainerForElement(
   element: HTMLElement
 ): { container: HTMLElement; selectors: string[] } {
   let container = element;
@@ -190,8 +219,42 @@ export function findContainer(
   };
 }
 
-export function inferButtonHTML(container: HTMLElement): string {
+export function findContainer(
+  elements: HTMLElement[]
+): { container: HTMLElement; selectors: string[] } {
+  if (elements.length > 1) {
+    const container = getCommonAncestor(...elements) as HTMLElement | null;
+    if (!container) {
+      throw new Error("Selected elements have no common ancestors");
+    }
+    return {
+      container,
+      selectors: inferSelectors(container),
+    };
+  } else {
+    return findContainerForElement(elements[0]);
+  }
+}
+
+export function inferPanelHTML(
+  container: HTMLElement,
+  selected: HTMLElement[]
+): string {
+  return "<div><h1>{{heading}}</h1><div>{{{body}}}</div></div>";
+}
+
+export function inferButtonHTML(
+  container: HTMLElement,
+  selected: HTMLElement[]
+): string {
   const $container = $(container);
+
+  if (selected.length > 1) {
+    const children = selected.map((x) =>
+      $container.children().has(x).first().get(0)
+    );
+    return commonHTML(selected[0].tagName, $(children));
+  }
 
   for (const tag of BUTTON_TAGS) {
     const $items = $container.children(tag);

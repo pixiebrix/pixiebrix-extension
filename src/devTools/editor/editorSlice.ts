@@ -16,39 +16,118 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Schema } from "@/core";
+import { IconConfig, Metadata, Schema, ServiceDependency } from "@/core";
 import { ElementInfo } from "@/nativeEditor/frameworks";
+import { MenuPosition } from "@/extensionPoints/menuItemExtension";
+import { BlockPipeline } from "@/blocks/combinators";
+import { Trigger } from "@/extensionPoints/triggerExtension";
 
-export interface ButtonState {
+export interface BaseFormState {
   readonly uuid: string;
-  containerSelector: string;
-  containerInfo: ElementInfo;
-  template: string;
-  caption: string;
-  position: "append" | "prepend";
+  readonly type: "menuItem" | "trigger" | "panel";
+  autoReload?: boolean;
+
+  services: ServiceDependency[];
+
   reader: {
-    id: string;
+    metadata: Metadata;
     outputSchema: Schema;
-    /**
-     * Reader type corresponding to built-in reader factory, e.g., jquery, react.
-     */
-    type: string | null;
-    selector: string | null;
+    definition: {
+      /**
+       * Reader type corresponding to built-in reader factory, e.g., jquery, react.
+       */
+      type: string | null;
+      selector: string | null;
+      selectors: { [field: string]: string };
+    };
   };
-  isAvailable: {
-    matchPatterns: string;
-    selectors: string;
-  };
+
+  extensionPoint: unknown;
+
+  extension: unknown;
+}
+
+export interface TriggerFormState extends BaseFormState {
   extensionPoint: {
-    id: string;
-    name: string;
+    metadata: Metadata;
+    definition: {
+      rootSelector: string | null;
+      trigger: Trigger;
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+  };
+
+  extension: {
+    action: BlockPipeline;
   };
 }
+
+export interface PanelFormState extends BaseFormState {
+  containerInfo: ElementInfo;
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      containerSelector: string;
+      position?: MenuPosition;
+      template: string;
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+    traits: {
+      style: {
+        mode: "default" | "inherit";
+      };
+    };
+  };
+
+  extension: {
+    heading: string;
+    body: BlockPipeline;
+    collapsible?: boolean;
+    shadowDOM?: boolean;
+  };
+}
+
+export interface ActionFormState extends BaseFormState {
+  containerInfo: ElementInfo;
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      containerSelector: string;
+      position?: MenuPosition;
+      template: string;
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+    traits: {
+      style: {
+        mode: "default" | "inherit";
+      };
+    };
+  };
+
+  extension: {
+    caption: string;
+    icon?: IconConfig;
+    action: BlockPipeline;
+  };
+}
+
+export type FormState = ActionFormState | TriggerFormState | PanelFormState;
 
 export interface EditorState {
   inserting: boolean;
   activeElement: string | null;
-  readonly elements: ButtonState[];
+  readonly elements: FormState[];
 }
 
 export const initialState: EditorState = {
@@ -64,10 +143,10 @@ export const editorSlice = createSlice({
     toggleInsert: (state, action: PayloadAction<boolean>) => {
       state.inserting = action.payload;
     },
-    addElement: (state, action: PayloadAction<ButtonState>) => {
+    addElement: (state, action: PayloadAction<FormState>) => {
       const element = action.payload;
-      state.activeElement = element.uuid;
       state.elements.push(element);
+      state.activeElement = element.uuid;
     },
     selectElement: (state, action: PayloadAction<string>) => {
       state.activeElement = action.payload;

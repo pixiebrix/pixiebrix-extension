@@ -16,36 +16,61 @@
  */
 
 import React from "react";
-import { PayloadAction } from "@reduxjs/toolkit";
-import { Field, FieldInputProps } from "formik";
+import { Field, FieldInputProps, useField } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import { ButtonState } from "@/devTools/editor/editorSlice";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 
 const FoundationTab: React.FunctionComponent<{
-  element: ButtonState;
-  dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ element }) => {
+  eventKey?: string;
+}> = ({ eventKey = "foundation" }) => {
+  const [field] = useField("containerInfo");
+
   return (
-    <Tab.Pane eventKey="foundation">
+    <Tab.Pane eventKey={eventKey} className="h-100">
+      <Form.Group as={Row} controlId="formExtensionPointId">
+        <Form.Label column sm={2}>
+          Foundation Id
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="extensionPoint.metadata.id">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control type="text" {...field} />
+            )}
+          </Field>
+        </Col>
+      </Form.Group>
+      <Form.Group as={Row} controlId="formFoundationName">
+        <Form.Label column sm={2}>
+          Foundation Name
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="extensionPoint.metadata.name">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control type="text" {...field} />
+            )}
+          </Field>
+        </Col>
+      </Form.Group>
+
       <Form.Group as={Row} controlId="formContainerSelector">
         <Form.Label column sm={2}>
           Container Selector
         </Form.Label>
         <Col sm={10}>
           <SelectorSelectorField
-            name="containerSelector"
-            initialElement={element.containerInfo}
+            name="extensionPoint.definition.containerSelector"
+            initialElement={field.value}
             selectMode="container"
           />
         </Col>
       </Form.Group>
+
       <Form.Group as={Row} controlId="formPosition">
         <Form.Label column sm={2}>
           Position
         </Form.Label>
         <Col sm={10}>
-          <Field name="position">
+          <Field name="extensionPoint.definition.position">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control as="select" {...field}>
                 <option value="append">Append</option>
@@ -55,25 +80,29 @@ const FoundationTab: React.FunctionComponent<{
           </Field>
         </Col>
       </Form.Group>
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Caption
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="caption">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
 
-      <Form.Group as={Row} controlId="formCaption">
+      {/*<Form.Group as={Row} controlId="formStyle">*/}
+      {/*  <Form.Label column sm={2}>*/}
+      {/*    Style*/}
+      {/*  </Form.Label>*/}
+      {/*  <Col sm={10}>*/}
+      {/*    <Field name="extensionPoint.traits.style.mode">*/}
+      {/*      {({ field }: { field: FieldInputProps<string> }) => (*/}
+      {/*        <Form.Control as="select" {...field}>*/}
+      {/*          <option value="inherit">Inherit</option>*/}
+      {/*          <option value="default">Default</option>*/}
+      {/*        </Form.Control>*/}
+      {/*      )}*/}
+      {/*    </Field>*/}
+      {/*  </Col>*/}
+      {/*</Form.Group>*/}
+
+      <Form.Group as={Row} controlId="formTemplate" className="pb-4">
         <Form.Label column sm={2}>
           Template
         </Form.Label>
         <Col sm={10}>
-          <Field name="template">
+          <Field name="extensionPoint.definition.template">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control as="textarea" rows={4} {...field} />
             )}

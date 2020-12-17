@@ -16,23 +16,21 @@
  */
 
 import React from "react";
-import { ButtonState } from "@/devTools/editor/editorSlice";
-import { PayloadAction } from "@reduxjs/toolkit";
-import { Col, Form, Row, Tab } from "react-bootstrap";
 import { Field, FieldInputProps } from "formik";
+import { Col, Form, Row, Tab } from "react-bootstrap";
+import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 
-const MetaTab: React.FunctionComponent<{
-  element: ButtonState;
-  dispatch: (action: PayloadAction<unknown>) => void;
-}> = () => {
+const FoundationTab: React.FunctionComponent<{
+  eventKey?: string;
+}> = ({ eventKey = "foundation" }) => {
   return (
-    <Tab.Pane eventKey="metadata">
+    <Tab.Pane eventKey={eventKey} className="h-100">
       <Form.Group as={Row} controlId="formExtensionPointId">
         <Form.Label column sm={2}>
           Foundation Id
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.id">
+          <Field name="extensionPoint.metadata.id">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}
@@ -44,21 +42,39 @@ const MetaTab: React.FunctionComponent<{
           Foundation Name
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.name">
+          <Field name="extensionPoint.metadata.name">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}
           </Field>
         </Col>
       </Form.Group>
-      <Form.Group as={Row} controlId="formReaderId">
+
+      <Form.Group as={Row} controlId="formContainerSelector">
         <Form.Label column sm={2}>
-          Reader Id
+          Root Selector
         </Form.Label>
         <Col sm={10}>
-          <Field name="reader.id">
+          <SelectorSelectorField
+            name="extensionPoint.definition.rootSelector"
+            selectMode="container"
+          />
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} controlId="formPosition">
+        <Form.Label column sm={2}>
+          Trigger
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="extensionPoint.definition.trigger">
             {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
+              <Form.Control as="select" {...field}>
+                <option value="load">Load</option>
+                <option value="click">Click</option>
+                <option value="dblclick">Double Click</option>
+                <option value="mouseover">Mouseover</option>
+              </Form.Control>
             )}
           </Field>
         </Col>
@@ -67,4 +83,4 @@ const MetaTab: React.FunctionComponent<{
   );
 };
 
-export default MetaTab;
+export default FoundationTab;

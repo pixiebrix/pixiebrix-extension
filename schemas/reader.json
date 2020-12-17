@@ -114,13 +114,15 @@
           "additionalProperties": {
             "oneOf": [
               {
-                "type": "string"
+                "type": "string",
+                "format": "selector"
               },
               {
                 "type": "object",
                 "properties": {
                   "selector": {
-                    "type": "string"
+                    "type": "string",
+                    "format": "selector"
                   },
                   "multi": {
                     "type": "boolean"

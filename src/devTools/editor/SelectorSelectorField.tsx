@@ -24,7 +24,7 @@ import React, {
 } from "react";
 import { useField } from "formik";
 import { OptionsType } from "react-select";
-import { uniqBy, compact } from "lodash";
+import { uniqBy, compact, sortBy } from "lodash";
 import Creatable from "react-select/creatable";
 import { components } from "react-select";
 import { Badge, Button } from "react-bootstrap";
@@ -61,9 +61,15 @@ const CustomOption: ComponentType<OptionProps<OptionValue>> = ({
     <components.Option {...props}>
       <div onMouseEnter={() => toggle(true)} onMouseLeave={() => toggle(false)}>
         {props.data.elementInfo?.tagName && (
-          <Badge variant="dark">{props.data.elementInfo.tagName}</Badge>
+          <Badge variant="dark" className="mr-1 pb-1">
+            {props.data.elementInfo.tagName}
+          </Badge>
         )}
-        {props.data.elementInfo?.hasData && <Badge variant="info">Data</Badge>}
+        {props.data.elementInfo?.hasData && (
+          <Badge variant="info" className="mx-1 pb-1">
+            Data
+          </Badge>
+        )}
         {/*{props.data.elementInfo?.framework && (*/}
         {/*  <Badge variant="dark">{props.data.elementInfo.framework}</Badge>*/}
         {/*)}*/}
@@ -103,6 +109,7 @@ const SelectorSelectorField: React.FunctionComponent<{
   selectMode?: SelectMode;
   traverseUp?: number;
   isClearable?: boolean;
+  sort?: boolean;
 }> = ({
   name,
   initialElement,
@@ -110,6 +117,7 @@ const SelectorSelectorField: React.FunctionComponent<{
   selectMode = "element",
   traverseUp = 0,
   isClearable = false,
+  sort = false,
 }) => {
   const { port } = useContext(DevToolsContext);
 
@@ -118,10 +126,10 @@ const SelectorSelectorField: React.FunctionComponent<{
   const [created, setCreated] = useState([]);
   const [isSelecting, setSelecting] = useState(false);
 
-  const options: SelectorOptions = useMemo(
-    () => makeOptions(element, compact([...created, field.value])),
-    [created, element, field.value]
-  );
+  const options: SelectorOptions = useMemo(() => {
+    const raw = makeOptions(element, compact([...created, field.value]));
+    return sort ? sortBy(raw, (x) => x.value.length) : raw;
+  }, [created, element, field.value, sort]);
 
   const select = useCallback(async () => {
     setSelecting(true);
@@ -132,7 +140,10 @@ const SelectorSelectorField: React.FunctionComponent<{
         traverseUp,
       });
       setElement(selected);
-      helpers.setValue(selected.selectors?.[0]);
+      const selectors = selected.selectors ?? [];
+      helpers.setValue(
+        (sort ? sortBy(selectors, (x) => x.length) : selectors)[0]
+      );
     } finally {
       setSelecting(false);
     }

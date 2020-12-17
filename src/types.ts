@@ -105,7 +105,15 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   }
 
   addExtension(extension: IExtension<TConfig>): void {
-    this.extensions.push(extension);
+    const index = this.extensions.findIndex((x) => x.id === extension.id);
+    if (index >= 0) {
+      console.warn(
+        `Extension ${extension.id} already registered with the extension point`
+      );
+      this.extensions[index] = extension;
+    } else {
+      this.extensions.push(extension);
+    }
   }
 
   abstract async defaultReader(): Promise<IReader>;
@@ -115,6 +123,10 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   abstract async isAvailable(): Promise<boolean>;
 
   abstract async install(): Promise<boolean>;
+
+  uninstall(): void {
+    console.warn("Uninstall not implemented for this extension point");
+  }
 
   abstract async run(): Promise<void>;
 }
