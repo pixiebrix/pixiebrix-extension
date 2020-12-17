@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { castArray } from "lodash";
+import { castArray, noop } from "lodash";
 
 // @ts-ignore: no type definitions
 import initialize from "vendors/initialize";
@@ -97,34 +97,64 @@ function isNativeCssSelector(selector: string): boolean {
   }
 }
 
-async function pollSelector(
-  selector: string,
-  target: HTMLElement | Document,
-  waitMillis?: number
-): Promise<JQuery<HTMLElement>> {
-  console.debug(`Polling for selector ${selector}`);
-  const $target = $(target);
+export class PromiseCancelled extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PromiseCancelled";
+  }
+}
 
-  let $result = $target.find(selector);
-
-  while ($result.length === 0) {
+async function _wait<T>(
+  factory: () => T,
+  isCancelled: () => boolean,
+  waitMillis = 100
+): Promise<T> {
+  let value = factory();
+  while (value == null) {
+    if (isCancelled()) {
+      throw new PromiseCancelled("Cancelled waiting for element");
+    }
     if (waitMillis != null) {
       await sleep(waitMillis);
     }
     await waitAnimationFrame();
-    $result = $target.find(selector);
+    value = factory();
   }
+  return value;
+}
 
-  return $result;
+function pollSelector(
+  selector: string,
+  target: HTMLElement | Document,
+  waitMillis = 100
+): [Promise<JQuery<HTMLElement>>, () => void] {
+  console.debug(`Polling for selector ${selector}`);
+  let cancelled = false;
+  const $target = $(target);
+  const promise = _wait<JQuery<HTMLElement>>(
+    () => {
+      const $elt = $target.find(selector);
+      return $elt.length ? $elt : null;
+    },
+    () => cancelled,
+    waitMillis
+  );
+  return [
+    promise,
+    () => {
+      cancelled = true;
+    },
+  ];
 }
 
 function mutationSelector(
   selector: string,
   target?: HTMLElement | Document
-): Promise<JQuery<HTMLElement>> {
-  return new Promise((resolve) => {
+): [Promise<JQuery<HTMLElement>>, () => void] {
+  let observer: MutationObserver;
+  const promise = new Promise<JQuery<HTMLElement>>((resolve) => {
     // @ts-ignore: no type signatures
-    initialize(
+    observer = initialize(
       selector,
       function () {
         resolve($(this));
@@ -132,16 +162,18 @@ function mutationSelector(
       { target: target ?? document }
     );
   });
+  return [promise, () => observer?.disconnect()];
 }
 
-async function _initialize(
+function _initialize(
   selector: string,
-  target: HTMLElement | Document
-): Promise<JQuery<HTMLElement | Document>> {
+  target: HTMLElement | Document,
+  waitMillis = 100
+): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (isNativeCssSelector(selector)) {
-    return await mutationSelector(selector, target);
+    return mutationSelector(selector, target);
   } else {
-    return await pollSelector(selector, target, 100);
+    return pollSelector(selector, target, waitMillis);
   }
 }
 
@@ -150,10 +182,10 @@ async function _initialize(
  * @param selector
  * @param rootElement
  */
-export async function awaitElementOnce(
+export function awaitElementOnce(
   selector: string | string[],
   rootElement: JQuery<HTMLElement | Document> = undefined
-): Promise<JQuery<HTMLElement | Document>> {
+): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (selector == null) {
     throw new Error("Expected selector");
   }
@@ -162,7 +194,7 @@ export async function awaitElementOnce(
   const $root = rootElement ? $(rootElement) : $(document);
 
   if (!selectors.length) {
-    return $root;
+    return [Promise.resolve($root), noop];
   }
 
   console.debug("Awaiting selectors", selectors);
@@ -170,41 +202,47 @@ export async function awaitElementOnce(
   const [nextSelector, ...rest] = selectors;
 
   // find immediately, or wait for it to be initialized
-  let $nextElement: JQuery<HTMLElement | Document> = $root.find(nextSelector);
+  const $element: JQuery<HTMLElement | Document> = $root.find(nextSelector);
 
-  if (!$nextElement.length) {
+  if (!$element.length) {
     console.debug(
       `Selector ${nextSelector} not immediately found. Awaiting element`
     );
-    $nextElement = await _initialize(nextSelector, $root.get(0));
-  } else if (rest.length === 0) {
-    return $nextElement;
-  }
 
-  return await awaitElementOnce(rest, $nextElement);
+    const [nextElementPromise, cancel] = _initialize(
+      nextSelector,
+      $root.get(0)
+    );
+    let innerCancel = noop;
+    return [
+      nextElementPromise.then(($nextElement) => {
+        const [innerPromise, inner] = awaitElementOnce(rest, $nextElement);
+        innerCancel = inner;
+        return innerPromise;
+      }),
+      () => {
+        cancel();
+        innerCancel();
+      },
+    ];
+  } else if (rest.length === 0) {
+    return [Promise.resolve($element), noop];
+  }
 }
 
 /**
  * Marks extensionPointId as owning a DOM element.
- * @param $element the JQuery selector
+ * @param element the element to acquire
  * @param extensionPointId the owner extension ID
  * @param onRemove callback to call when the element is removed from the DOM
  */
 export function acquireElement(
-  $element: JQuery,
+  element: HTMLElement,
   extensionPointId: string,
   onRemove: () => void
 ): () => void | null {
-  if ($element.length === 0) {
-    console.debug(`acquireElement: no elements found for ${extensionPointId}`);
-    return null;
-  } else if ($element.length > 1) {
-    console.warn(
-      `acquireElement: multiple elements found for ${extensionPointId}`
-    );
-    return null;
-  } else if ($element.attr(EXTENSION_POINT_DATA_ATTR)) {
-    const existing = $element.attr(EXTENSION_POINT_DATA_ATTR);
+  const existing = element.getAttribute(EXTENSION_POINT_DATA_ATTR);
+  if (existing) {
     if (extensionPointId !== existing) {
       console.warn(
         `acquireElement: cannot acquire for ${extensionPointId} because it has extension point ${existing} attached to it`
@@ -215,6 +253,6 @@ export function acquireElement(
       `acquireElement: re-acquiring element for ${extensionPointId}`
     );
   }
-  $element.attr(EXTENSION_POINT_DATA_ATTR, extensionPointId);
-  return onNodeRemoved($element.get(0), onRemove);
+  element.setAttribute(EXTENSION_POINT_DATA_ATTR, extensionPointId);
+  return onNodeRemoved(element, onRemove);
 }

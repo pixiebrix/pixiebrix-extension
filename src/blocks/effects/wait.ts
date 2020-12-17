@@ -43,7 +43,8 @@ export class WaitElementEffect extends Effect {
   };
 
   async effect({ selector }: BlockArg): Promise<void> {
-    await awaitElementOnce(selector);
+    const [promise] = awaitElementOnce(selector);
+    await promise;
   }
 }
 

@@ -49,7 +49,7 @@ export interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
 }
 
-export type Trigger = "load" | "click" | "dblclick" | "hover";
+export type Trigger = "load" | "click" | "dblclick" | "mouseover";
 
 export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
   abstract get trigger(): Trigger;
@@ -128,14 +128,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     const readerContext = await reader.read(root);
     const errors = await Promise.all(
       this.extensions.map(async (extension) => {
+        const extensionLogger = this.logger.childLogger({
+          extensionId: extension.id,
+        });
         try {
           await this.runExtension(readerContext, extension, root);
         } catch (ex) {
           // eslint-disable-next-line require-await
-          reportError(ex, {
-            extensionPointId: extension.extensionPointId,
-            extensionId: extension.id,
-          });
+          reportError(ex, extensionLogger.context);
           return ex;
         }
       })

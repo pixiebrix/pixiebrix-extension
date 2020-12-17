@@ -16,8 +16,6 @@
  */
 
 import React, { useState } from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
-import { PayloadAction } from "@reduxjs/toolkit";
 import { Tab, Table } from "react-bootstrap";
 import { FieldArray, useField } from "formik";
 import { ServiceDependency } from "@/core";
@@ -28,8 +26,6 @@ import ServiceSelector from "@/components/ServiceSelector";
 const ServicesTab: React.FunctionComponent<{
   name?: string;
   eventKey?: string;
-  element: FormState;
-  dispatch: (action: PayloadAction<unknown>) => void;
 }> = ({ name = "services", eventKey = "services" }) => {
   const [field, meta] = useField(name);
   const [selectKey, setKey] = useState(0);

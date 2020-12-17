@@ -16,17 +16,15 @@
  */
 
 import React from "react";
-import { PayloadAction } from "@reduxjs/toolkit";
-import { Field, FieldInputProps } from "formik";
+import { Field, FieldInputProps, useField } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import { ActionFormState } from "@/devTools/editor/editorSlice";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
-  element: ActionFormState;
-  dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ eventKey = "foundation", element }) => {
+}> = ({ eventKey = "foundation" }) => {
+  const [field] = useField("containerInfo");
+
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <Form.Group as={Row} controlId="formExtensionPointId">
@@ -61,7 +59,7 @@ const FoundationTab: React.FunctionComponent<{
         <Col sm={10}>
           <SelectorSelectorField
             name="extensionPoint.definition.containerSelector"
-            initialElement={element.containerInfo}
+            initialElement={field.value}
             selectMode="container"
           />
         </Col>

@@ -17,7 +17,6 @@
 
 import React, { useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/editorSlice";
-import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
 import { compact, isEmpty, mapValues, partial, pick, pickBy } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
@@ -194,9 +193,7 @@ const JQueryFields: React.FunctionComponent<{
 
 const ReaderTab: React.FunctionComponent<{
   eventKey?: string;
-  element: FormState;
-  dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ eventKey = "reader", element }) => {
+}> = ({ eventKey = "reader" }) => {
   const { port, frameworks } = useContext(DevToolsContext);
   const [query, setQuery] = useState("");
   const { values, setFieldValue } = useFormikContext<FormState>();
@@ -280,9 +277,9 @@ const ReaderTab: React.FunctionComponent<{
         </Form.Group>
 
         {values.reader.definition.type === "jquery" ? (
-          <JQueryFields element={element} />
+          <JQueryFields element={values} />
         ) : (
-          <FrameworkFields element={element} />
+          <FrameworkFields element={values} />
         )}
 
         <Form.Group as={Row} controlId="readerSearch">

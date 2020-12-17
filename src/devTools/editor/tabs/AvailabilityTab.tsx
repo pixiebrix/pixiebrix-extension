@@ -16,16 +16,12 @@
  */
 
 import React from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
-import { PayloadAction } from "@reduxjs/toolkit";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 import { Field, FieldInputProps } from "formik";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 
 const AvailabilityTab: React.FunctionComponent<{
   eventKey?: string;
-  element: FormState;
-  dispatch: (action: PayloadAction<unknown>) => void;
 }> = ({ eventKey = "availability" }) => {
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">

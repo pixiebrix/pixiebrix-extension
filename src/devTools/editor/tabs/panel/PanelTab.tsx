@@ -16,16 +16,12 @@
  */
 
 import React from "react";
-import { PayloadAction } from "@reduxjs/toolkit";
 import { Field, FieldInputProps } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import { FormState } from "@/devTools/editor/editorSlice";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 
 const MenuItemTab: React.FunctionComponent<{
   eventKey?: string;
-  element: FormState;
-  dispatch: (action: PayloadAction<unknown>) => void;
 }> = ({ eventKey = "panelBody" }) => {
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">

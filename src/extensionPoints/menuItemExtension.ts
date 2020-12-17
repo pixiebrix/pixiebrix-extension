@@ -19,8 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
-import castArray from "lodash/castArray";
-import identity from "lodash/identity";
+import { castArray, compact } from "lodash";
 import { engineRenderer } from "@/helpers";
 import {
   reducePipeline,
@@ -77,8 +76,10 @@ export const actionSchema: Schema = {
 
 export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
   protected readonly menus: Map<string, HTMLElement>;
+  private readonly instanceId: string;
   private readonly removed: Set<string>;
-  private readonly cancelObservers: Set<() => void>;
+  private readonly cancelPending: Set<() => void>;
+  private uninstalled = false;
 
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
@@ -91,9 +92,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     icon = "faMousePointer"
   ) {
     super(id, name, description, icon);
+    this.instanceId = uuidv4();
     this.menus = new Map<string, HTMLElement>();
     this.removed = new Set<string>();
-    this.cancelObservers = new Set<() => void>();
+    this.cancelPending = new Set();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -124,14 +126,23 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     ["caption", "action"]
   );
 
-  private cancelAllObservers(): void {
-    for (const cancelObserver of this.cancelObservers) {
-      cancelObserver();
+  private cancelAllPending(): void {
+    console.debug(
+      `Cancelling ${this.cancelPending.size} menuItemExtension observers`
+    );
+    for (const cancelObserver of this.cancelPending) {
+      try {
+        cancelObserver?.();
+      } catch (err) {
+        reportError(err, this.logger.context);
+      }
     }
-    this.cancelObservers.clear();
+    this.cancelPending.clear();
   }
 
   public uninstall(): void {
+    this.uninstalled = true;
+
     const menus = Array.from(this.menus.values());
     const extensions = Array.from(this.extensions);
 
@@ -143,7 +154,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       `Uninstalling ${menus.length} menus for ${extensions.length} extensions`
     );
 
-    this.cancelAllObservers();
+    this.cancelAllPending();
+
     for (const element of menus) {
       try {
         for (const extension of extensions) {
@@ -187,49 +199,62 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     return blockList(extension.config.action);
   }
 
-  private async reaquire(uuid: string): Promise<void> {
-    this.menus.delete(uuid);
-
-    // Re-install the menus (will wait for the menu selector to re-appear)
-    await this.installMenus();
-    await this.run();
+  private async reacquire(uuid: string): Promise<void> {
+    if (this.uninstalled) {
+      console.warn(
+        `${this.instanceId}: cannot reacquire because extension ${this.id} is destroyed`
+      );
+    }
+    const alreadyRemoved = this.removed.has(uuid);
+    this.removed.add(uuid);
+    if (!alreadyRemoved) {
+      console.debug(
+        `${this.instanceId}: menu ${uuid} removed from DOM for ${this.id}`
+      );
+      this.menus.delete(uuid);
+      // Re-install the menus (will wait for the menu selector to re-appear)
+      await this.installMenus();
+      await this.run();
+    } else {
+      console.warn(
+        `${this.instanceId}: menu ${uuid} removed from DOM multiple times for ${this.id}`
+      );
+    }
   }
 
   private async installMenus(): Promise<boolean> {
-    const selector = this.getContainerSelector();
-
-    console.debug(`Awaiting menu container for ${this.id}: ${selector}`);
-
-    const $menu = (await awaitElementOnce(selector)) as JQuery<HTMLElement>;
-
-    const acquired = $menu
-      .map((index, element) => {
-        const uuid = uuidv4();
-        this.menus.set(uuid, element);
-        return acquireElement($(element), this.id, async () => {
-          const alreadyRemoved = this.removed.has(uuid);
-          this.removed.add(uuid);
-          if (!alreadyRemoved) {
-            console.debug(
-              `Menu ${uuid} removed from DOM for ${this.id}: ${selector}`
-            );
-            await this.reaquire(uuid);
-          } else {
-            console.warn(
-              `Menu ${uuid} removed from DOM multiple times for ${this.id}`
-            );
-          }
-        });
-      })
-      .get();
-
-    for (const cancelObserver of acquired) {
-      if (cancelObserver) {
-        this.cancelObservers.add(cancelObserver);
-      }
+    if (this.uninstalled) {
+      throw new Error(
+        `Extension ${this.id} (${this.instanceId}) is uninstalled`
+      );
     }
 
-    return acquired.some(identity);
+    const selector = this.getContainerSelector();
+
+    console.debug(
+      `${this.instanceId}: awaiting menu container for ${this.id}: ${selector}`
+    );
+
+    const [menuPromise, cancelWait] = await awaitElementOnce(selector);
+    this.cancelPending.add(cancelWait);
+
+    const $menu = (await menuPromise) as JQuery<HTMLElement>;
+
+    const acquired = compact(
+      $menu
+        .map((index, element) => {
+          const uuid = uuidv4();
+          this.menus.set(uuid, element);
+          return acquireElement(element, this.id, () => this.reacquire(uuid));
+        })
+        .get()
+    );
+
+    for (const cancelObserver of acquired) {
+      this.cancelPending.add(cancelObserver);
+    }
+
+    return acquired.length > 0;
   }
 
   async install(): Promise<boolean> {
@@ -257,7 +282,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const extensionLogger = this.logger.childLogger({
       extensionId: extension.id,
     });
-    console.debug(`Running menuItem extension ${extension.id}`);
+    console.debug(
+      `${this.instanceId}: running menuItem extension ${extension.id}`
+    );
 
     const $menu = $(menu);
 
@@ -326,7 +353,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         // Don't re-install here. We're reinstalling the entire menu
         console.debug(`Menu item for ${extension.id} was removed from the DOM`);
       });
-      this.cancelObservers.add(cancelObserver);
+      this.cancelPending.add(cancelObserver);
     }
   }
 

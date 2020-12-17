@@ -18,22 +18,25 @@
 import React, { useMemo, useState } from "react";
 import genericOptionsFactory, { BlockOptionProps } from "./blockOptions";
 import cx from "classnames";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { Form, Row, Col } from "react-bootstrap";
+import { castArray, isEmpty } from "lodash";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
 import { IBlock } from "@/core";
-import castArray from "lodash/castArray";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { FieldArray, useField, useFormikContext } from "formik";
+import {
+  FieldArray,
+  useField,
+  useFormikContext,
+  getIn,
+  Field,
+  FieldInputProps,
+} from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import blockRegistry from "@/blocks/registry";
 import Card from "react-bootstrap/Card";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getIn } from "formik";
-import isEmpty from "lodash/isEmpty";
 import BlockSelector from "@/components/fields/BlockSelector";
 
 import "./BlockField.scss";
@@ -150,9 +153,28 @@ const BlockCard: React.FunctionComponent<{
           ) : (
             <GridLoader />
           )}
-          <Button variant="danger" onClick={onRemove}>
-            Remove Block
-          </Button>
+
+          <div className="d-flex">
+            <div>
+              <Button variant="danger" onClick={onRemove}>
+                Remove Block
+              </Button>
+            </div>
+            <div className="mx-3 my-auto">
+              <span className="my-auto">Template Engine</span>
+            </div>
+            <div>
+              <Field name={`${name}.templateEngine`}>
+                {({ field }: { field: FieldInputProps<string> }) => (
+                  <Form.Control as="select" {...field}>
+                    <option value="mustache">Mustache</option>
+                    <option value="handlebars">Handlebars</option>
+                    <option value="nunjucks">Nunjucks</option>
+                  </Form.Control>
+                )}
+              </Field>
+            </div>
+          </div>
         </Card.Body>
       )}
     </Card>
@@ -164,6 +186,7 @@ interface BlockConfig {
   // optionally, a name to store the output to
   outputKey?: string;
   config: ConfigValue;
+  templateEngine?: "mustache" | "handlebars" | "nunjucks";
 }
 
 interface ExtraProps {

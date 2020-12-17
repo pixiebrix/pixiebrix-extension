@@ -54,6 +54,8 @@ export interface PanelConfig {
   shadowDOM?: boolean;
 }
 
+const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
+
 /**
  * Extension point that adds a panel to a web page.
  */
@@ -61,6 +63,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   protected template?: string;
   protected $container: JQuery;
   private readonly collapsedExtensions: { [key: string]: boolean };
+  private readonly cancelPending: Set<() => void>;
+  private uninstalled = false;
 
   public get defaultOptions(): { heading: string } {
     return { heading: "Custom Panel" };
@@ -75,6 +79,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     super(id, name, description, icon);
     this.$container = null;
     this.collapsedExtensions = {};
+    this.cancelPending = new Set();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -127,6 +132,28 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     throw new Error("PanelExtensionPoint.isAvailable not implemented");
   }
 
+  uninstall(): void {
+    this.uninstalled = true;
+
+    for (const extension of this.extensions) {
+      const $item = this.$container.find(
+        `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
+      );
+      if (!$item.length) {
+        console.debug(`Panel for ${extension.id} was not in the menu`);
+      }
+      $item.remove();
+    }
+
+    this.$container = null;
+
+    for (const cancel of this.cancelPending) {
+      cancel();
+    }
+
+    this.cancelPending.clear();
+  }
+
   async install(): Promise<boolean> {
     if (!(await this.isAvailable())) {
       console.debug(
@@ -139,12 +166,32 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     console.debug(`Awaiting panel container for ${this.id}: ${selector}`);
 
-    this.$container = (await awaitElementOnce(selector)) as JQuery<HTMLElement>;
+    const [containerPromise, cancelInstall] = awaitElementOnce(selector);
+    this.cancelPending.add(cancelInstall);
 
-    return !!acquireElement(this.$container, this.id, () => {
-      console.debug(`Container removed from DOM for ${this.id}: ${selector}`);
-      this.$container = undefined;
-    });
+    this.$container = (await containerPromise) as JQuery<HTMLElement>;
+
+    if (this.$container.length == 0) {
+      return false;
+    } else if (this.$container.length > 1) {
+      this.logger.error(`Multiple containers found: ${this.$container.length}`);
+      return false;
+    }
+
+    const cancelWatchRemote = acquireElement(
+      this.$container.get(0),
+      this.id,
+      () => {
+        console.debug(`Container removed from DOM for ${this.id}: ${selector}`);
+        this.$container = undefined;
+      }
+    );
+
+    if (cancelWatchRemote) {
+      this.cancelPending.add(cancelWatchRemote);
+    }
+
+    return !!cancelWatchRemote;
   }
 
   addPanel($panel: JQuery): void {
@@ -155,6 +202,10 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     readerContext: ReaderOutput,
     extension: IExtension<PanelConfig>
   ) {
+    if (this.uninstalled) {
+      throw new Error("panelExtension has already been destroyed");
+    }
+
     const bodyUUID = uuidv4();
     const extensionLogger = this.logger.childLogger({
       extensionId: extension.id,
@@ -182,10 +233,10 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       })
     );
 
-    $panel.attr("data-pixiebrix-uuid", extension.id);
+    $panel.attr(PIXIEBRIX_DATA_ATTR, extension.id);
 
     const $existingPanel = this.$container.find(
-      `[data-pixiebrix-uuid="${extension.id}"]`
+      `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
     );
 
     if ($existingPanel.length) {

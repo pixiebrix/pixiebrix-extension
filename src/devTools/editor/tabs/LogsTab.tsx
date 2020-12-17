@@ -17,20 +17,20 @@
 
 import React from "react";
 import { FormState } from "@/devTools/editor/editorSlice";
-import { PayloadAction } from "@reduxjs/toolkit";
 import { Tab } from "react-bootstrap";
 import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
+import { useFormikContext } from "formik";
 
 const LogsTab: React.FunctionComponent<{
   eventKey: string;
-  element: FormState;
-  dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ eventKey = "logs", element }) => {
+}> = ({ eventKey = "logs" }) => {
+  const { values } = useFormikContext<FormState>();
+
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <RunLogCard
-        extensionPointId={element.extensionPoint.metadata.id}
-        extensionId={element.uuid}
+        extensionPointId={values.extensionPoint.metadata.id}
+        extensionId={values.uuid}
       />
     </Tab.Pane>
   );

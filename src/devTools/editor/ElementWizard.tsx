@@ -46,7 +46,7 @@ const ElementWizard: React.FunctionComponent<{
   element: FormState;
   dispatch: (action: PayloadAction<unknown>) => void;
   refreshMillis?: number;
-}> = ({ element, dispatch, refreshMillis = 150 }) => {
+}> = ({ element, dispatch, refreshMillis = 250 }) => {
   const { port } = useContext(DevToolsContext);
 
   const wizard = useMemo(() => wizardMap[element.type], [element.type]);
@@ -67,7 +67,10 @@ const ElementWizard: React.FunctionComponent<{
     handleReset,
   } = useFormikContext();
 
-  const [debounced] = useDebounce(element, refreshMillis);
+  const [debounced] = useDebounce(element, refreshMillis, {
+    leading: false,
+    trailing: true,
+  });
 
   const run = useCallback(async () => {
     const factory = CONFIG_MAP[debounced.type];
@@ -83,21 +86,32 @@ const ElementWizard: React.FunctionComponent<{
       "load";
 
   useAsyncEffect(async () => {
-    const factory = CONFIG_MAP[debounced.type];
-    console.debug("Updating element", {
-      debounced,
-      showReloadControls,
-      element: factory(debounced as any),
-    });
     if (showReloadControls && !(debounced as TriggerFormState).autoReload) {
       // by default, don't automatically trigger it
       return;
     }
+    const factory = CONFIG_MAP[debounced.type];
+    console.debug("Updating dynamic element", {
+      debounced,
+      showReloadControls,
+      element: factory(debounced as any),
+    });
     await nativeOperations.updateDynamicElement(
       port,
       factory(debounced as any)
     );
   }, [debounced, port, showReloadControls]);
+
+  const remove = useCallback(async () => {
+    try {
+      await nativeOperations.clear(port, {
+        uuid: element.uuid,
+      });
+    } catch (reason) {
+      // element might not be on the page anymore
+    }
+    dispatch(actions.removeElement(element.uuid));
+  }, [element, dispatch]);
 
   if (!isEmpty(errors)) {
     console.warn("Form errors", { errors });
@@ -151,29 +165,13 @@ const ElementWizard: React.FunctionComponent<{
             Save Action
           </Button>
 
-          <Button
-            variant="danger"
-            className="mr-2"
-            size="sm"
-            onClick={async () => {
-              try {
-                await nativeOperations.clear(port, {
-                  uuid: element.uuid,
-                });
-              } catch (reason) {
-                // element might not be on the page anymore
-              }
-              dispatch(actions.removeElement(element.uuid));
-            }}
-          >
+          <Button variant="danger" className="mr-2" size="sm" onClick={remove}>
             Remove
           </Button>
         </Nav>
         {status && <div className="text-danger">{status}</div>}
 
-        {TabPane && (
-          <TabPane eventKey={step} element={element} dispatch={dispatch} />
-        )}
+        {TabPane && <TabPane eventKey={step} />}
       </Form>
     </Tab.Container>
   );

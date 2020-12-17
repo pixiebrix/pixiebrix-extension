@@ -16,17 +16,13 @@
  */
 
 import React from "react";
-import { PayloadAction } from "@reduxjs/toolkit";
 import { Field, FieldInputProps } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import { TriggerFormState } from "@/devTools/editor/editorSlice";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
-  element: TriggerFormState;
-  dispatch: (action: PayloadAction<unknown>) => void;
-}> = ({ eventKey = "foundation", element }) => {
+}> = ({ eventKey = "foundation" }) => {
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <Form.Group as={Row} controlId="formExtensionPointId">
@@ -77,7 +73,7 @@ const FoundationTab: React.FunctionComponent<{
                 <option value="load">Load</option>
                 <option value="click">Click</option>
                 <option value="dblclick">Double Click</option>
-                <option value="hover">Hover</option>
+                <option value="mouseover">Mouseover</option>
               </Form.Control>
             )}
           </Field>

@@ -16,11 +16,6 @@
  */
 
 import React, { useMemo } from "react";
-import {
-  ActionFormState,
-  TriggerFormState,
-} from "@/devTools/editor/editorSlice";
-import { PayloadAction } from "@reduxjs/toolkit";
 import { Tab } from "react-bootstrap";
 import { actionSchema } from "@/extensionPoints/menuItemExtension";
 import { defaultFieldRenderer } from "@/options/pages/extensionEditor/fieldRenderer";
@@ -32,8 +27,6 @@ import devtoolFields from "@/devTools/editor/Fields";
 
 const EffectTab: React.FunctionComponent<{
   eventKey?: string;
-  element: ActionFormState | TriggerFormState;
-  dispatch: (action: PayloadAction<unknown>) => void;
 }> = ({ eventKey = "effect" }) => {
   const [blocks] = useAsyncState(blockRegistry.all(), []);
   const Field = useMemo(() => defaultFieldRenderer(actionSchema), [blocks]);
