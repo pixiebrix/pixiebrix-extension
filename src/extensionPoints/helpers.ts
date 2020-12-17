@@ -19,8 +19,9 @@ import { castArray } from "lodash";
 
 // @ts-ignore: no type definitions
 import initialize from "vendors/initialize";
+import { sleep, waitAnimationFrame } from "@/utils";
 
-export const EXTENSION_POINT_DATA_ATTR = "data-pixiebrix-extension-point";
+export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
 export function isHost(hostname: string): boolean {
   return (
@@ -39,7 +40,7 @@ function getAncestors(node: Node): Node[] {
   return ancestors;
 }
 
-export function onNodeRemoved(node: Node, callback: () => void): void {
+export function onNodeRemoved(node: Node, callback: () => void): () => void {
   const ancestors = getAncestors(node);
 
   const nodes = new WeakSet<Node>(ancestors);
@@ -55,13 +56,14 @@ export function onNodeRemoved(node: Node, callback: () => void): void {
           // https://stackoverflow.com/questions/51723962/typescript-nodelistofelement-is-not-an-array-type-or-a-string-type
           for (const removedNode of (mutation.removedNodes as any) as Iterable<Node>) {
             if (nodes.has(removedNode)) {
-              try {
-                for (const observer of observers) {
+              for (const observer of observers) {
+                try {
                   observer.disconnect();
+                } catch (err) {
+                  console.warn("Error disconnecting mutation observer", err);
                 }
-              } finally {
-                callback();
               }
+              callback();
               break;
             }
           }
@@ -70,6 +72,17 @@ export function onNodeRemoved(node: Node, callback: () => void): void {
       removalObserver.observe(ancestor.parentNode, { childList: true });
     }
   }
+
+  return () => {
+    for (const observer of observers) {
+      try {
+        observer.disconnect();
+      } catch (err) {
+        console.warn("Error disconnecting mutation observer", err);
+      }
+    }
+    observers.clear();
+  };
 }
 
 /**
@@ -84,22 +97,25 @@ function isNativeCssSelector(selector: string): boolean {
   }
 }
 
-function pollSelector(
+async function pollSelector(
   selector: string,
-  target: HTMLElement | Document
+  target: HTMLElement | Document,
+  waitMillis?: number
 ): Promise<JQuery<HTMLElement>> {
   console.debug(`Polling for selector ${selector}`);
   const $target = $(target);
-  return new Promise((resolve) => {
-    function check() {
-      const $result = $target.find(selector);
-      if ($result.length) {
-        resolve($result);
-      }
-      window.requestAnimationFrame(check);
+
+  let $result = $target.find(selector);
+
+  while ($result.length === 0) {
+    if (waitMillis != null) {
+      await sleep(waitMillis);
     }
-    check();
-  });
+    await waitAnimationFrame();
+    $result = $target.find(selector);
+  }
+
+  return $result;
 }
 
 function mutationSelector(
@@ -125,7 +141,7 @@ async function _initialize(
   if (isNativeCssSelector(selector)) {
     return await mutationSelector(selector, target);
   } else {
-    return await pollSelector(selector, target);
+    return await pollSelector(selector, target, 100);
   }
 }
 
@@ -178,28 +194,27 @@ export function acquireElement(
   $element: JQuery,
   extensionPointId: string,
   onRemove: () => void
-): boolean {
+): () => void | null {
   if ($element.length === 0) {
     console.debug(`acquireElement: no elements found for ${extensionPointId}`);
-    return false;
+    return null;
   } else if ($element.length > 1) {
     console.warn(
       `acquireElement: multiple elements found for ${extensionPointId}`
     );
-    return false;
+    return null;
   } else if ($element.attr(EXTENSION_POINT_DATA_ATTR)) {
     const existing = $element.attr(EXTENSION_POINT_DATA_ATTR);
     if (extensionPointId !== existing) {
       console.warn(
-        `acquireElement: cannot acquire for ${extensionPointId} because has extension point ${existing} attached to it`
+        `acquireElement: cannot acquire for ${extensionPointId} because it has extension point ${existing} attached to it`
       );
-      return false;
+      return null;
     }
     console.debug(
       `acquireElement: re-acquiring element for ${extensionPointId}`
     );
   }
   $element.attr(EXTENSION_POINT_DATA_ATTR, extensionPointId);
-  onNodeRemoved($element.get(0), onRemove);
-  return true;
+  return onNodeRemoved($element.get(0), onRemove);
 }

@@ -141,7 +141,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     this.$container = (await awaitElementOnce(selector)) as JQuery<HTMLElement>;
 
-    return acquireElement(this.$container, this.id, () => {
+    return !!acquireElement(this.$container, this.id, () => {
       console.debug(`Container removed from DOM for ${this.id}: ${selector}`);
       this.$container = undefined;
     });

@@ -39,6 +39,7 @@ import blockRegistry from "@/blocks/registry";
 // Import bricks for the registry
 import "@/blocks/effects";
 import "@/blocks/readers";
+import "@/blocks/transformers";
 import "@/blocks/renderers";
 import "@/contrib/index";
 

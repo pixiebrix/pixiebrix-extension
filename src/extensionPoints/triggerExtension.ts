@@ -41,7 +41,9 @@ import { Permissions } from "webextension-polyfill-ts";
 import { compact, castArray } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
-import EventHandler = JQuery.EventHandler;
+
+// @ts-ignore: using for the EventHandler type below
+import JQuery from "jquery";
 
 export interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
@@ -52,7 +54,7 @@ export type Trigger = "load" | "click" | "dblclick" | "hover";
 export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
   abstract get trigger(): Trigger;
 
-  private handler: EventHandler<unknown> | undefined;
+  private handler: JQuery.EventHandler<unknown> | undefined;
   private $installedRoot: JQuery<HTMLElement | Document> | undefined;
   private installedEvents: Set<string> = new Set();
 

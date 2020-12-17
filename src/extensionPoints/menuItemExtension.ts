@@ -77,6 +77,8 @@ export const actionSchema: Schema = {
 
 export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
   protected readonly menus: Map<string, HTMLElement>;
+  private readonly removed: Set<string>;
+  private readonly cancelObservers: Set<() => void>;
 
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
@@ -90,6 +92,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   ) {
     super(id, name, description, icon);
     this.menus = new Map<string, HTMLElement>();
+    this.removed = new Set<string>();
+    this.cancelObservers = new Set<() => void>();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -120,11 +124,18 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     ["caption", "action"]
   );
 
+  private cancelAllObservers(): void {
+    for (const cancelObserver of this.cancelObservers) {
+      cancelObserver();
+    }
+    this.cancelObservers.clear();
+  }
+
   public uninstall(): void {
     const menus = Array.from(this.menus.values());
     const extensions = Array.from(this.extensions);
 
-    // clear first so they don't get re-added by the onNodeRemoved mechanism
+    // clear so they don't get re-added by the onNodeRemoved mechanism
     this.extensions.splice(0, this.extensions.length);
     this.menus.clear();
 
@@ -132,6 +143,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       `Uninstalling ${menus.length} menus for ${extensions.length} extensions`
     );
 
+    this.cancelAllObservers();
     for (const element of menus) {
       try {
         for (const extension of extensions) {
@@ -175,6 +187,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     return blockList(extension.config.action);
   }
 
+  private async reaquire(uuid: string): Promise<void> {
+    this.menus.delete(uuid);
+
+    // Re-install the menus (will wait for the menu selector to re-appear)
+    await this.installMenus();
+    await this.run();
+  }
+
   private async installMenus(): Promise<boolean> {
     const selector = this.getContainerSelector();
 
@@ -187,17 +207,27 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         const uuid = uuidv4();
         this.menus.set(uuid, element);
         return acquireElement($(element), this.id, async () => {
-          console.debug(
-            `Menu ${uuid} removed from DOM for ${this.id}: ${selector}`
-          );
-          this.menus.delete(uuid);
-
-          // Re-install the menus (will wait for the menu selector to re-appear)
-          await this.installMenus();
-          await this.run();
+          const alreadyRemoved = this.removed.has(uuid);
+          this.removed.add(uuid);
+          if (!alreadyRemoved) {
+            console.debug(
+              `Menu ${uuid} removed from DOM for ${this.id}: ${selector}`
+            );
+            await this.reaquire(uuid);
+          } else {
+            console.warn(
+              `Menu ${uuid} removed from DOM multiple times for ${this.id}`
+            );
+          }
         });
       })
       .get();
+
+    for (const cancelObserver of acquired) {
+      if (cancelObserver) {
+        this.cancelObservers.add(cancelObserver);
+      }
+    }
 
     return acquired.some(identity);
   }
@@ -219,6 +249,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     ctxt: ReaderOutput,
     extension: IExtension<MenuItemExtensionConfig>
   ) {
+    if (!extension.id) {
+      this.logger.error(`Refusing to run extension without id for ${this.id}`);
+      return;
+    }
+
     const extensionLogger = this.logger.childLogger({
       extensionId: extension.id,
     });
@@ -286,9 +321,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.addMenuItem($menu, $menuItem);
     }
 
-    onNodeRemoved($menuItem.get(0), () => {
-      console.debug(`Menu item for ${extension.id} was removed from the DOM`);
-    });
+    if (process.env.DEBUG) {
+      const cancelObserver = onNodeRemoved($menuItem.get(0), () => {
+        // Don't re-install here. We're reinstalling the entire menu
+        console.debug(`Menu item for ${extension.id} was removed from the DOM`);
+      });
+      this.cancelObservers.add(cancelObserver);
+    }
   }
 
   async run(): Promise<void> {

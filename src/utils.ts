@@ -21,6 +21,12 @@ export function isGetter(obj: object, prop: string): boolean {
   return !!Object.getOwnPropertyDescriptor(obj, prop)?.["get"];
 }
 
+export async function waitAnimationFrame(): Promise<void> {
+  return new Promise((resolve) => {
+    window.requestAnimationFrame(() => resolve());
+  });
+}
+
 export const sleep = (milliseconds: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 };
