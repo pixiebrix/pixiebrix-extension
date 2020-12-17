@@ -33,6 +33,8 @@ const sprite: { [key: string]: [number, number] } = {
   squit: [19000, 19300],
 };
 
+let _howl: any;
+
 export class SoundEffect extends Effect {
   constructor() {
     super(
@@ -46,20 +48,27 @@ export class SoundEffect extends Effect {
   inputSchema: Schema = propertiesToSchema({
     sound: {
       type: "string",
-      description: "The sound to play",
+      description: "The sound effect to play",
       enum: Array.from(Object.keys(sprite)),
       default: "ping",
     },
   });
 
   async effect({ sound = "ping" }: BlockArg): Promise<void> {
-    const { Howl } = await import("howler");
-    const url = await browser.runtime.getURL("audio/sprite.mp3");
-    const howl = new Howl({
-      src: [url],
-      sprite,
-    });
-    howl.play(sound);
+    const { Howl } = await import(
+      /* webpackChunkName: "howler" */
+      "howler"
+    );
+
+    if (!_howl) {
+      const url = await browser.runtime.getURL("audio/sprite.mp3");
+      _howl = new Howl({
+        src: [url],
+        sprite,
+      });
+    }
+
+    _howl.play(sound as string);
   }
 }
 
