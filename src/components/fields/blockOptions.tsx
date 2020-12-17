@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import Form from "react-bootstrap/Form";
 import isEmpty from "lodash/isEmpty";
 import Button from "react-bootstrap/Button";
@@ -26,23 +26,72 @@ import { ObjectField } from "@/components/fields/FieldTable";
 import { FieldArray, useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import identity from "lodash/identity";
+import Select, { OptionsType } from "react-select";
+import { uniq, compact, sortBy } from "lodash";
+import Creatable from "react-select/creatable";
 
 const TextField: React.FunctionComponent<FieldProps<string>> = ({
   schema,
   label,
   ...props
 }) => {
-  const [{ value, ...field }, meta] = useField(props);
+  const [created, setCreated] = useState([]);
+  const [{ value, ...field }, meta, helpers] = useField(props);
 
-  return (
-    <Form.Group>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
+  const [creatable, options]: [
+    boolean,
+    OptionsType<{ value: string }>
+  ] = useMemo(() => {
+    const values = schema.examples ?? schema.enum;
+    const options =
+      schema.type === "string" && Array.isArray(values)
+        ? sortBy(uniq(compact([...created, ...values, value]))).map((x) => ({
+            value: x,
+            label: x,
+          }))
+        : [];
+    return [schema?.enum == null, options];
+  }, [schema.examples, schema.enum, created, value, schema.type]);
+
+  let control;
+
+  if (options.length && creatable) {
+    control = (
+      <Creatable
+        isClearable
+        options={options}
+        onCreateOption={(value) => {
+          helpers.setValue(value);
+          setCreated(uniq([...created, value]));
+        }}
+        value={options.find((x) => x.value === value)}
+        onChange={(option) => helpers.setValue((option as any)?.value)}
+      />
+    );
+  } else if (options.length && !creatable) {
+    control = (
+      <Select
+        isClearable
+        options={options}
+        value={options.find((x) => x.value === value)}
+        onChange={(option) => helpers.setValue((option as any)?.value)}
+      />
+    );
+  } else {
+    control = (
       <Form.Control
         type="text"
         value={value ?? ""}
         {...field}
         isInvalid={!!meta.error}
       />
+    );
+  }
+
+  return (
+    <Form.Group>
+      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
+      {control}
       {schema.description && (
         <Form.Text className="text-muted">{schema.description}</Form.Text>
       )}
@@ -100,7 +149,7 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
         {({ remove, push }) => (
           <>
             <ul className="list-group">
-              {field.value.map((item: unknown, index: number) => {
+              {(field.value ?? []).map((item: unknown, index: number) => {
                 const Renderer = getDefaultField(schemaItems);
                 return (
                   <li className="list-group-item" key={index}>
@@ -129,9 +178,9 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
   );
 };
 
-export function getDefaultField(
-  fieldSchema: Schema
-): React.FunctionComponent<FieldProps<unknown>> {
+type FieldComponent<T = unknown> = React.FunctionComponent<FieldProps<T>>;
+
+export function getDefaultField(fieldSchema: Schema): FieldComponent {
   switch (fieldSchema.type) {
     case "boolean":
       return BooleanField;
@@ -146,22 +195,48 @@ export function getDefaultField(
   }
 }
 
+type CustomRenderer = {
+  match: (fieldSchema: Schema) => boolean;
+  Component: FieldComponent;
+};
+
+type CustomControl = {
+  match: (fieldSchema: Schema) => boolean;
+  Component: FieldComponent;
+};
+
+export interface IRenderContext {
+  customRenderers: CustomRenderer[];
+  customControls: CustomControl[];
+}
+
+export const RendererContext = React.createContext<IRenderContext>({
+  customRenderers: [],
+  customControls: [],
+});
+
 const FieldRenderer: React.FunctionComponent<FieldProps<unknown>> = ({
   schema,
   ...props
 }) => {
-  const Renderer = useMemo(() => getDefaultField(schema), [schema]);
+  const { customRenderers } = useContext(RendererContext);
+  const Renderer = useMemo(() => {
+    const match = customRenderers.find((x) => x.match(schema));
+    return match ? match.Component : getDefaultField(schema);
+  }, [schema, customRenderers]);
   return <Renderer schema={schema} {...props} />;
 };
 
-function genericOptionsFactory(
-  schema: Schema
-): React.FunctionComponent<{
+export interface BlockOptionProps {
   name: string;
   configKey?: string;
   showOutputKey?: boolean;
-}> {
-  return ({ name, configKey, showOutputKey }) => (
+}
+
+function genericOptionsFactory(
+  schema: Schema
+): React.FunctionComponent<BlockOptionProps> {
+  const element = ({ name, configKey, showOutputKey }: BlockOptionProps) => (
     <>
       {Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
         if (typeof fieldSchema === "boolean") {
@@ -185,9 +260,12 @@ function genericOptionsFactory(
           }}
         />
       )}
-      {isEmpty(schema) && <span>No options available</span>}
+      {isEmpty(schema) && <div>No options available</div>}
     </>
   );
+
+  element.displayName = `Options Field`;
+  return element;
 }
 
 export default genericOptionsFactory;

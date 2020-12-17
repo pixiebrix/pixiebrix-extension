@@ -24,8 +24,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useMakeContext } from "@/devTools/context";
 import { GridLoader } from "react-spinners";
 import Editor from "@/devTools/Editor";
-import "@/vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
 import { browser } from "webextension-polyfill-ts";
 import { getTabInfo } from "@/background/devtools";
 import optionsStore, { persistor } from "@/options/store";
@@ -35,6 +33,20 @@ import { useAsyncState } from "@/hooks/common";
 import { getAuth } from "@/hooks/auth";
 import { AuthContext } from "@/auth/context";
 import { ToastProvider } from "react-toast-notifications";
+import useAsyncEffect from "use-async-effect";
+import blockRegistry from "@/blocks/registry";
+
+// Import bricks for the registry
+import "@/blocks/effects";
+import "@/blocks/readers";
+import "@/blocks/transformers";
+import "@/blocks/renderers";
+import "@/contrib/index";
+
+// CSS
+import "vendors/theme/app/app.scss";
+import "vendors/overrides.scss";
+import "./Panel.scss";
 
 const defaultState = { isLoggedIn: false, extension: true };
 
@@ -53,6 +65,10 @@ const Centered: React.FunctionComponent = ({ children }) => {
 const Panel: React.FunctionComponent = () => {
   const [authState, , authError] = useAsyncState(getAuth);
   const [context, connect] = useMakeContext();
+
+  useAsyncEffect(async () => {
+    await blockRegistry.fetch();
+  }, []);
 
   const request = useCallback(async () => {
     // FIXME: will this work on Firefox? Might need to do as then() b/c it gets confused by await before
@@ -98,12 +114,8 @@ const Panel: React.FunctionComponent = () => {
             <ToastProvider>
               <ErrorBoundary>
                 <Router>
-                  <Container fluid>
-                    <Row>
-                      <Col>
-                        <Editor />
-                      </Col>
-                    </Row>
+                  <Container fluid className="DevToolsContainer">
+                    <Editor />
                   </Container>
                 </Router>
               </ErrorBoundary>

@@ -42,16 +42,21 @@ import { compact, castArray } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 
-interface TriggerConfig {
+// @ts-ignore: using for the EventHandler type below
+import JQuery from "jquery";
+
+export interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
 }
 
-type Trigger = "load" | "click" | "dblclick" | "hover";
+export type Trigger = "load" | "click" | "dblclick" | "mouseover";
 
-export abstract class TriggerExtensionPoint extends ExtensionPoint<
-  TriggerConfig
-> {
+export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
   abstract get trigger(): Trigger;
+
+  private handler: JQuery.EventHandler<unknown> | undefined;
+  private $installedRoot: JQuery<HTMLElement | Document> | undefined;
+  private installedEvents: Set<string> = new Set();
 
   protected constructor(
     id: string,
@@ -64,6 +69,20 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
 
   async install(): Promise<boolean> {
     return await this.isAvailable();
+  }
+
+  uninstall(): void {
+    try {
+      if (this.$installedRoot) {
+        for (const event of this.installedEvents) {
+          this.$installedRoot.off(event, this.handler);
+        }
+      }
+    } finally {
+      this.$installedRoot = null;
+      this.installedEvents.clear();
+      this.handler = null;
+    }
   }
 
   inputSchema: Schema = propertiesToSchema({
@@ -109,14 +128,14 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
     const readerContext = await reader.read(root);
     const errors = await Promise.all(
       this.extensions.map(async (extension) => {
+        const extensionLogger = this.logger.childLogger({
+          extensionId: extension.id,
+        });
         try {
           await this.runExtension(readerContext, extension, root);
         } catch (ex) {
           // eslint-disable-next-line require-await
-          reportError(ex, {
-            extensionPointId: extension.extensionPointId,
-            extensionId: extension.id,
-          });
+          reportError(ex, extensionLogger.context);
           return ex;
         }
       })
@@ -149,12 +168,16 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<
       );
       TriggerExtensionPoint.notifyErrors(promises);
     } else if (this.trigger) {
-      $root.on(this.trigger, async (event) => {
+      this.handler = async (event) => {
         const promises = await Promise.allSettled([
           this.runTrigger(event.target),
         ]);
         TriggerExtensionPoint.notifyErrors(compact(promises));
-      });
+      };
+
+      this.$installedRoot = $root;
+      this.installedEvents.add(this.trigger);
+      $root.on(this.trigger, this.handler);
     }
   }
 }
@@ -163,8 +186,8 @@ interface TriggerDefinitionOptions {
   [option: string]: string;
 }
 
-interface TriggerDefinition extends ExtensionPointDefinition {
-  defaultOptions: TriggerDefinitionOptions;
+export interface TriggerDefinition extends ExtensionPointDefinition {
+  defaultOptions?: TriggerDefinitionOptions;
   rootSelector?: string;
   trigger?: Trigger;
 }

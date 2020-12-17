@@ -36,7 +36,8 @@
     "bundles/*",
     "frame.html",
     "frame.css",
-    "script.js"
+    "script.js",
+    "audio/*"
   ],
   "background": {
     "page": "background.html"

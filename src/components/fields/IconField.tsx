@@ -24,7 +24,7 @@ import Col from "react-bootstrap/Col";
 import { IconOption } from "@/icons/types";
 import { useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import { IconConfig } from "@/core";
+import { IconConfig, Schema } from "@/core";
 
 const IconSelector = React.lazy(
   () =>
@@ -33,6 +33,22 @@ const IconSelector = React.lazy(
       "@/icons/IconSelector"
     )
 );
+
+export const iconSchema: Schema = {
+  properties: {
+    id: {
+      type: "string",
+    },
+    library: {
+      type: "string",
+      enum: ["bootstrap", "simple-icons"],
+    },
+    size: {
+      type: "number",
+    },
+  },
+  required: ["id", "library"],
+};
 
 const IconField: React.FunctionComponent<FieldProps<IconConfig>> = ({
   label,

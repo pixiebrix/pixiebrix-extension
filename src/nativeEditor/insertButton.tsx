@@ -18,97 +18,54 @@
 // https://github.com/facebook/react/blob/7559722a865e89992f75ff38c1015a865660c3cd/packages/react-devtools-shared/src/backend/views/Highlighter/index.js
 
 import { v4 as uuidv4 } from "uuid";
-import Mustache from "mustache";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
-import Overlay from "./Overlay";
-import { ElementInfo } from "@/nativeEditor/frameworks";
-import { userSelectElement } from "@/nativeEditor/selector";
+import { ElementInfo } from "./frameworks";
+import { userSelectElement } from "./selector";
 import * as pageScript from "@/pageScript/protocol";
+import { findContainer, inferButtonHTML } from "./infer";
 import {
-  DEFAULT_ACTION_CAPTION,
-  findContainer,
-  inferButtonHTML,
-} from "@/nativeEditor/infer";
+  MenuDefinition,
+  MenuItemExtensionConfig,
+} from "@/extensionPoints/menuItemExtension";
+import { html as beautifyHTML } from "js-beautify";
+import { DynamicDefinition } from "./dynamic";
 
-let overlay: Overlay | null = null;
+export const DEFAULT_ACTION_CAPTION = "Action";
 
-export interface InsertResult {
+export type ButtonDefinition = DynamicDefinition<
+  MenuDefinition,
+  MenuItemExtensionConfig
+>;
+
+export interface ButtonSelectionResult {
   uuid: string;
-  containerSelector: string;
-  template: string;
-  caption: string;
-  position: "append" | "prepend";
+  menu: Omit<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
+  item: Pick<MenuItemExtensionConfig, "caption">;
   containerInfo: ElementInfo;
 }
-
-function makeElement(element: InsertResult) {
-  const { uuid, template, caption } = element;
-  console.log("template", { template, caption });
-  const html = Mustache.render(template, { caption });
-  return $(html).attr("data-uuid", uuid).data(element);
-}
-
-export const updateButton = liftContentScript(
-  "UPDATE_BUTTON",
-  async (element: InsertResult) => {
-    const $elt = $(`[data-uuid="${element.uuid}"]`);
-
-    const $newElt = makeElement(element);
-
-    if (
-      $elt.data("containerSelector") !== element.containerSelector ||
-      $elt.data("position") !== element.position
-    ) {
-      $elt.remove();
-      $(element.containerSelector)[element.position]($newElt);
-    } else {
-      $elt.replaceWith($newElt);
-    }
-
-    $newElt.on("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      alert("No action implemented");
-    });
-  }
-);
-
-export const removeElement = liftContentScript(
-  "REMOVE_ELEMENT",
-  async ({ uuid }: { uuid: string }) => {
-    $(`[data-uuid="${uuid}"]`).remove();
-  }
-);
 
 export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
   const selected = await userSelectElement();
   const { container, selectors } = findContainer(selected);
 
-  const element: InsertResult = {
+  const element: ButtonSelectionResult = {
     uuid: uuidv4(),
-    caption: DEFAULT_ACTION_CAPTION,
-    containerSelector: selectors[0],
-    template: inferButtonHTML(container),
-    position: "append",
+    item: {
+      caption: DEFAULT_ACTION_CAPTION,
+    },
+    menu: {
+      type: "menuItem",
+      containerSelector: selectors[0],
+      template: beautifyHTML(inferButtonHTML(container, selected), {
+        indent_handlebars: true,
+        wrap_line_length: 80,
+        wrap_attributes: "force",
+      }),
+      shadowDOM: null,
+      position: "append",
+    },
     containerInfo: await pageScript.getElementInfo({ selector: selectors[0] }),
   };
 
-  $(element.containerSelector).append(makeElement(element));
   return element;
 });
-
-export const toggleOverlay = liftContentScript(
-  "TOGGLE_OVERLAY",
-  async ({ selector, on = true }: { selector: string; on: boolean }) => {
-    if (on) {
-      if (overlay == null) {
-        overlay = new Overlay();
-      }
-      const $elt = $(document).find(selector);
-      overlay.inspect($elt.toArray(), null);
-    } else if (overlay != null) {
-      overlay.remove();
-      overlay = null;
-    }
-  }
-);

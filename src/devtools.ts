@@ -22,7 +22,11 @@ import "core-js/stable";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 
-import { injectScript, readSelectedElement } from "@/background/devtools";
+import {
+  injectScript,
+  readSelectedElement,
+  clear,
+} from "@/background/devtools";
 import { reportError } from "@/telemetry/logging";
 
 function installSidebarPane(port: Runtime.Port) {
@@ -83,12 +87,21 @@ function installPanel() {
 }
 
 async function initialize(port: Runtime.Port) {
+  let injected = false;
+
   try {
     await injectScript(port, { file: "contentScript.js" });
+    injected = true;
   } catch (reason) {
     // Can install without having content script on the page; they just won't do much
     console.debug("Could not inject contextScript for devtools", { reason });
   }
+
+  if (injected) {
+    // clear out any dynamic stuff from the previous devtools session
+    await clear(port, {});
+  }
+
   installSidebarPane(port);
   installPanel();
 }

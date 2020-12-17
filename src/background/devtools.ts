@@ -29,10 +29,11 @@ import { v4 as uuidv4 } from "uuid";
 import { deserializeError } from "serialize-error";
 import { allowBackgroundSender } from "@/background/protocol";
 import * as contentScriptProtocol from "@/contentScript/devTools";
-import * as nativeEditorProtocol from "@/nativeEditor/insertButton";
+import * as nativeEditorProtocol from "@/nativeEditor";
 import * as nativeSelectionProtocol from "@/nativeEditor/selector";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
+import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 
 interface HandlerEntry {
   handler: (
@@ -363,21 +364,32 @@ export const insertButton = liftBackground(
   }
 );
 
-export const updateButton = liftBackground(
-  "UPDATE_BUTTON",
-  (tabId: number) => async (element: nativeEditorProtocol.InsertResult) => {
-    return await nativeEditorProtocol.updateButton(tabId, element);
+export const insertPanel: (
+  port: Runtime.Port
+) => Promise<PanelSelectionResult> = liftBackground(
+  "INSERT_PANEL",
+  (tabId: number) => async () => {
+    return await nativeEditorProtocol.insertPanel(tabId);
   }
 );
 
-export const removeElement = liftBackground(
-  "REMOVE_ELEMENT",
-  (tabId: number) => async ({ uuid }: { uuid: string }) => {
-    return await nativeEditorProtocol.removeElement(tabId, { uuid });
+export const updateDynamicElement = liftBackground(
+  "UPDATE_DYNAMIC_ELEMENT",
+  (tabId: number) => async (
+    element: nativeEditorProtocol.DynamicDefinition
+  ) => {
+    return await nativeEditorProtocol.updateDynamicElement(tabId, element);
   }
 );
 
-export const toggleElement = liftBackground(
+export const clear = liftBackground(
+  "CLEAR_DYNAMIC",
+  (tabId: number) => async ({ uuid }: { uuid?: string }) => {
+    return await nativeEditorProtocol.clear(tabId, { uuid });
+  }
+);
+
+export const toggleOverlay = liftBackground(
   "TOGGLE_ELEMENT",
   (tabId: number) => async ({
     uuid,

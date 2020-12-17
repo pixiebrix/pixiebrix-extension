@@ -25,3 +25,4 @@ export * from "./highlight";
 export * from "./vue";
 export * from "./event";
 export * from "./wait";
+export * from "./sound";

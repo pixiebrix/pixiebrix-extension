@@ -24,7 +24,6 @@ import {
 } from "@/background/logging";
 import { GridLoader } from "react-spinners";
 import { Table, Form, Pagination, Card, Button } from "react-bootstrap";
-import { IExtensionPoint } from "@/core";
 import { LogEntry } from "@/background/logging";
 import range from "lodash/range";
 import { useToasts } from "react-toast-notifications";
@@ -34,22 +33,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 interface OwnProps {
-  extensionPoint: IExtensionPoint;
+  extensionPointId: string;
   extensionId: string;
   perPage?: number;
 }
 
 const RunLogCard: React.FunctionComponent<OwnProps> = ({
-  extensionPoint,
+  extensionPointId,
   extensionId,
   perPage = 10,
 }) => {
   const { addToast } = useToasts();
 
-  const context = useMemo(
-    () => ({ extensionPointId: extensionPoint.id, extensionId }),
-    [extensionPoint.id, extensionId]
-  );
+  const context = useMemo(() => ({ extensionPointId, extensionId }), [
+    extensionPointId,
+    extensionId,
+  ]);
 
   const [{ entries, isLoading }, setLogState] = useState<{
     entries: LogEntry[];

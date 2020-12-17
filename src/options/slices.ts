@@ -141,17 +141,24 @@ export const optionsSlice = createSlice({
     },
     saveExtension(state, { payload }) {
       const {
-        extensionPointId,
+        id,
         extensionId,
+        extensionPointId,
         config,
         label,
         services,
       } = payload;
+      // support both extensionId and id to keep the API consistent with the shape of the stored extension
+      if (extensionId == null && id == null) {
+        throw new Error("extensionId is required");
+      } else if (extensionPointId == null) {
+        throw new Error("extensionPointId is required");
+      }
       if (state.extensions[extensionPointId] == null) {
         state.extensions[extensionPointId] = {};
       }
       state.extensions[extensionPointId][extensionId] = {
-        id: extensionId,
+        id: extensionId ?? id,
         _recipe: null,
         label,
         services,

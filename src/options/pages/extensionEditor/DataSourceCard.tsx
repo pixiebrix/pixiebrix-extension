@@ -34,6 +34,15 @@ const ObjectEntry: React.FunctionComponent<{
 }> = ({ prop, definition }) => {
   const [collapsed, setCollapsed] = useState(true);
 
+  if (isEmpty(definition.properties)) {
+    return (
+      <ListGroup.Item key={prop}>
+        <span>{prop}</span>
+        <span className="type">: object</span>
+      </ListGroup.Item>
+    );
+  }
+
   return (
     <ListGroup.Item key={prop}>
       <div
@@ -106,9 +115,9 @@ export const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
 }) => {
   return (
-    <ListGroup variant="flush">
+    <ListGroup variant="flush" className="SchemaTree">
       {isEmpty(schema.properties) && (
-        <ListGroup.Item>Reader provides no data</ListGroup.Item>
+        <ListGroup.Item>No properties</ListGroup.Item>
       )}
       {sortBy(Object.entries(schema.properties ?? {}), (x) => x[0])
         .filter((x) => typeof x[1] !== "boolean")

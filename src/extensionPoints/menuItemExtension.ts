@@ -19,8 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
-import castArray from "lodash/castArray";
-import identity from "lodash/identity";
+import { castArray, compact } from "lodash";
 import { engineRenderer } from "@/helpers";
 import {
   reducePipeline,
@@ -35,6 +34,7 @@ import {
   awaitElementOnce,
   acquireElement,
   onNodeRemoved,
+  EXTENSION_POINT_DATA_ATTR,
 } from "@/extensionPoints/helpers";
 import {
   ExtensionPointConfig,
@@ -51,14 +51,36 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
 
-interface MenuItemExtensionConfig {
+interface ShadowDOM {
+  mode?: "open" | "closed";
+  tag?: string;
+}
+
+const DATA_ATTR = "data-pb-uuid";
+
+export interface MenuItemExtensionConfig {
   caption: string;
   action: BlockConfig | BlockPipeline;
   icon?: IconConfig;
 }
 
+export const actionSchema: Schema = {
+  oneOf: [
+    { $ref: "https://app.pixiebrix.com/schemas/effect#" },
+    {
+      type: "array",
+      items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
+    },
+  ],
+};
+
 export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
   protected readonly menus: Map<string, HTMLElement>;
+  private readonly instanceId: string;
+  private readonly removed: Set<string>;
+  private readonly cancelPending: Set<() => void>;
+  private uninstalled = false;
+
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
   }
@@ -70,7 +92,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     icon = "faMousePointer"
   ) {
     super(id, name, description, icon);
+    this.instanceId = uuidv4();
     this.menus = new Map<string, HTMLElement>();
+    this.removed = new Set<string>();
+    this.cancelPending = new Set();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -79,19 +104,74 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         type: "string",
         description: "The caption for the menu item.",
       },
-      action: {
-        oneOf: [
-          { $ref: "https://app.pixiebrix.com/schemas/effect#" },
-          {
-            type: "array",
-            items: { $ref: "https://app.pixiebrix.com/schemas/block#" },
-          },
-        ],
-      },
+      action: actionSchema,
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
+      shadowDOM: {
+        type: "object",
+        description:
+          "When provided, renders the menu item as using the shadowDOM",
+        properties: {
+          tag: {
+            type: "string",
+          },
+          mode: {
+            type: "string",
+            enum: ["open", "closed"],
+            default: "closed",
+          },
+        },
+        required: ["tag"],
+      },
     },
     ["caption", "action"]
   );
+
+  private cancelAllPending(): void {
+    console.debug(
+      `Cancelling ${this.cancelPending.size} menuItemExtension observers`
+    );
+    for (const cancelObserver of this.cancelPending) {
+      try {
+        cancelObserver?.();
+      } catch (err) {
+        reportError(err, this.logger.context);
+      }
+    }
+    this.cancelPending.clear();
+  }
+
+  public uninstall(): void {
+    this.uninstalled = true;
+
+    const menus = Array.from(this.menus.values());
+    const extensions = Array.from(this.extensions);
+
+    // clear so they don't get re-added by the onNodeRemoved mechanism
+    this.extensions.splice(0, this.extensions.length);
+    this.menus.clear();
+
+    console.debug(
+      `Uninstalling ${menus.length} menus for ${extensions.length} extensions`
+    );
+
+    this.cancelAllPending();
+
+    for (const element of menus) {
+      try {
+        for (const extension of extensions) {
+          const $item = $(element).find(`[${DATA_ATTR}="${extension.id}"]`);
+          if (!$item.length) {
+            console.debug(`Item for ${extension.id} was not in the menu`);
+          }
+          $item.remove();
+        }
+        // release the menu element
+        element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
+      } catch (exc) {
+        this.logger.error(exc);
+      }
+    }
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   getReaderRoot($containerElement: JQuery): HTMLElement | Document {
@@ -119,31 +199,62 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     return blockList(extension.config.action);
   }
 
+  private async reacquire(uuid: string): Promise<void> {
+    if (this.uninstalled) {
+      console.warn(
+        `${this.instanceId}: cannot reacquire because extension ${this.id} is destroyed`
+      );
+    }
+    const alreadyRemoved = this.removed.has(uuid);
+    this.removed.add(uuid);
+    if (!alreadyRemoved) {
+      console.debug(
+        `${this.instanceId}: menu ${uuid} removed from DOM for ${this.id}`
+      );
+      this.menus.delete(uuid);
+      // Re-install the menus (will wait for the menu selector to re-appear)
+      await this.installMenus();
+      await this.run();
+    } else {
+      console.warn(
+        `${this.instanceId}: menu ${uuid} removed from DOM multiple times for ${this.id}`
+      );
+    }
+  }
+
   private async installMenus(): Promise<boolean> {
+    if (this.uninstalled) {
+      throw new Error(
+        `Extension ${this.id} (${this.instanceId}) is uninstalled`
+      );
+    }
+
     const selector = this.getContainerSelector();
 
-    console.debug(`Awaiting menu container for ${this.id}: ${selector}`);
+    console.debug(
+      `${this.instanceId}: awaiting menu container for ${this.id}: ${selector}`
+    );
 
-    const $menu = (await awaitElementOnce(selector)) as JQuery<HTMLElement>;
+    const [menuPromise, cancelWait] = await awaitElementOnce(selector);
+    this.cancelPending.add(cancelWait);
 
-    const acquired = $menu
-      .map((index, element) => {
-        const uuid = uuidv4();
-        this.menus.set(uuid, element);
-        return acquireElement($(element), this.id, async () => {
-          console.debug(
-            `Menu ${uuid} removed from DOM for ${this.id}: ${selector}`
-          );
-          this.menus.delete(uuid);
+    const $menu = (await menuPromise) as JQuery<HTMLElement>;
 
-          // Re-install the menus (will wait for the menu selector to re-appear)
-          await this.installMenus();
-          await this.run();
-        });
-      })
-      .get();
+    const acquired = compact(
+      $menu
+        .map((index, element) => {
+          const uuid = uuidv4();
+          this.menus.set(uuid, element);
+          return acquireElement(element, this.id, () => this.reacquire(uuid));
+        })
+        .get()
+    );
 
-    return acquired.some(identity);
+    for (const cancelObserver of acquired) {
+      this.cancelPending.add(cancelObserver);
+    }
+
+    return acquired.length > 0;
   }
 
   async install(): Promise<boolean> {
@@ -153,15 +264,27 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     return this.installMenus();
   }
 
+  protected abstract makeItem(
+    html: string,
+    extension: IExtension<MenuItemExtensionConfig>
+  ): JQuery<HTMLElement>;
+
   private async runExtension(
     menu: HTMLElement,
     ctxt: ReaderOutput,
     extension: IExtension<MenuItemExtensionConfig>
   ) {
+    if (!extension.id) {
+      this.logger.error(`Refusing to run extension without id for ${this.id}`);
+      return;
+    }
+
     const extensionLogger = this.logger.childLogger({
       extensionId: extension.id,
     });
-    console.debug(`Running menuItem extension ${extension.id}`);
+    console.debug(
+      `${this.instanceId}: running menuItem extension ${extension.id}`
+    );
 
     const $menu = $(menu);
 
@@ -171,29 +294,25 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       icon = { id: "box", size: 18 },
     } = extension.config;
 
-    const $existingItem = $menu.find(`[data-pixiebrix-uuid="${extension.id}"]`);
-
     const serviceContext = await makeServiceContext(extension.services);
     const renderTemplate = engineRenderer(extension.templateEngine);
     const extensionContext = { ...ctxt, ...serviceContext };
 
-    // console.debug("Extension context", { serviceContext, ctxt });
+    const iconAsSVG = icon
+      ? (
+          await import(
+            /* webpackChunkName: "icons" */
+            "@/icons/svgIcons"
+          )
+        ).default
+      : null;
 
-    const iconAsSVG = (
-      await import(
-        /* webpackChunkName: "icons" */
-        "@/icons/svgIcons"
-      )
-    ).default;
+    const html = Mustache.render(this.getTemplate(), {
+      caption: renderTemplate(caption, extensionContext),
+      icon: iconAsSVG?.(icon),
+    });
 
-    const $menuItem = $(
-      Mustache.render(this.getTemplate(), {
-        caption: renderTemplate(caption, extensionContext),
-        icon: iconAsSVG(icon),
-      })
-    );
-
-    $menuItem.attr("data-pixiebrix-uuid", extension.id);
+    const $menuItem = this.makeItem(html, extension);
 
     $menuItem.on("click", async (e) => {
       e.preventDefault();
@@ -218,6 +337,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       }
     });
 
+    const $existingItem = $menu.find(`[${DATA_ATTR}="${extension.id}"]`);
+
     if ($existingItem.length) {
       // shouldn't need to unbind click handlers because we'll replace it outright
       console.debug(`Replacing existing menu item for ${extension.id}`);
@@ -227,9 +348,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.addMenuItem($menu, $menuItem);
     }
 
-    onNodeRemoved($menuItem.get(0), () => {
-      console.debug(`Menu item for ${extension.id} was removed from the DOM`);
-    });
+    if (process.env.DEBUG) {
+      const cancelObserver = onNodeRemoved($menuItem.get(0), () => {
+        // Don't re-install here. We're reinstalling the entire menu
+        console.debug(`Menu item for ${extension.id} was removed from the DOM`);
+      });
+      this.cancelPending.add(cancelObserver);
+    }
   }
 
   async run(): Promise<void> {
@@ -279,12 +404,15 @@ interface MenuDefaultOptions {
   [key: string]: string;
 }
 
-interface MenuDefinition extends ExtensionPointDefinition {
+export type MenuPosition = "append" | "prepend";
+
+export interface MenuDefinition extends ExtensionPointDefinition {
   template: string;
-  position?: "append" | "prepend";
+  position?: MenuPosition;
   containerSelector: string;
-  readerSelector: string;
-  defaultOptions: MenuDefaultOptions;
+  readerSelector?: string;
+  defaultOptions?: MenuDefaultOptions;
+  shadowDOM?: ShadowDOM;
 }
 
 class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
@@ -354,6 +482,26 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   getTemplate(): string {
     return this._definition.template;
+  }
+
+  protected makeItem(
+    html: string,
+    extension: IExtension<MenuItemExtensionConfig>
+  ): JQuery<HTMLElement> {
+    let $root: JQuery<HTMLElement>;
+
+    if (this._definition.shadowDOM) {
+      const root = document.createElement(this._definition.shadowDOM.tag);
+      const shadowRoot = root.attachShadow({ mode: "closed" });
+      shadowRoot.innerHTML = html;
+      $root = $(root);
+    } else {
+      $root = $(html);
+    }
+
+    $root.attr(DATA_ATTR, extension.id);
+
+    return $root;
   }
 
   async isAvailable(): Promise<boolean> {

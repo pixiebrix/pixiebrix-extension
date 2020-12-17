@@ -42,7 +42,9 @@
     "bundles/*",
     "frame.html",
     "frame.css",
-    "script.js"
+    "devtoolsPanel.css",
+    "script.js",
+    "audio/*"
   ],
   "background": {
     "page": "background.html"

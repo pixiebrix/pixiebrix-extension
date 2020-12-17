@@ -16,30 +16,34 @@
  */
 
 import React, { useMemo, useState } from "react";
-import genericOptionsFactory from "./blockOptions";
+import genericOptionsFactory, { BlockOptionProps } from "./blockOptions";
 import cx from "classnames";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { Form, Row, Col } from "react-bootstrap";
+import { castArray, isEmpty } from "lodash";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
 import { IBlock } from "@/core";
-import castArray from "lodash/castArray";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { FieldArray, useField, useFormikContext } from "formik";
+import {
+  FieldArray,
+  useField,
+  useFormikContext,
+  getIn,
+  Field,
+  FieldInputProps,
+} from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import blockRegistry from "@/blocks/registry";
 import Card from "react-bootstrap/Card";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getIn } from "formik";
-import isEmpty from "lodash/isEmpty";
 import BlockSelector from "@/components/fields/BlockSelector";
 
 import "./BlockField.scss";
 import Button from "react-bootstrap/Button";
 import useAsyncEffect from "use-async-effect";
 import { GridLoader } from "react-spinners";
+import { reportError } from "@/telemetry/logging";
 
 export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
   "#/definitions/renderer": "render",
@@ -58,25 +62,42 @@ export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
 
 type ConfigValue = { [key: string]: string };
 
-function useBlockOptions(id: string) {
-  const [block, setBlock] = useState(null);
+interface BlockState {
+  block?: IBlock | null;
+  error?: string | null;
+}
+
+function useBlockOptions(
+  id: string
+): [BlockState, React.FunctionComponent<BlockOptionProps>] {
+  const [{ block, error }, setBlock] = useState<BlockState>({
+    block: null,
+    error: null,
+  });
 
   useAsyncEffect(
     async (isMounted) => {
-      const block = await blockRegistry.lookup(id);
-      if (!isMounted()) return;
-      setBlock(block);
+      setBlock({ block: null, error: null });
+      try {
+        const block = await blockRegistry.lookup(id);
+        if (!isMounted()) return;
+        setBlock({ block });
+      } catch (exc) {
+        reportError(exc);
+        if (!isMounted()) return;
+        setBlock({ error: exc.toString() });
+      }
     },
     [id, setBlock]
   );
 
-  const BlockOptions = useMemo(() => {
-    return block
-      ? genericOptionsFactory(inputProperties(block.inputSchema))
-      : null;
-  }, [block]);
+  const BlockOptions = useMemo(
+    () =>
+      block ? genericOptionsFactory(inputProperties(block.inputSchema)) : null,
+    [block]
+  );
 
-  return [block, BlockOptions];
+  return [{ block, error }, BlockOptions];
 }
 
 const BlockCard: React.FunctionComponent<{
@@ -91,7 +112,7 @@ const BlockCard: React.FunctionComponent<{
   const isValid = isEmpty(errors);
   const [collapsed, setCollapsed] = useState(true);
 
-  const [, BlockOptions] = useBlockOptions(config.id);
+  const [{ error }, BlockOptions] = useBlockOptions(config.id);
 
   return (
     <Card className={cx("BlockCard", { invalid: !isValid })}>
@@ -127,12 +148,33 @@ const BlockCard: React.FunctionComponent<{
               configKey="config"
               showOutputKey={showOutputKey}
             />
+          ) : error ? (
+            <div className="invalid-feedback d-block mb-4">{error}</div>
           ) : (
             <GridLoader />
           )}
-          <Button variant="danger" onClick={onRemove}>
-            Remove Block
-          </Button>
+
+          <div className="d-flex">
+            <div>
+              <Button variant="danger" onClick={onRemove}>
+                Remove Block
+              </Button>
+            </div>
+            <div className="mx-3 my-auto">
+              <span className="my-auto">Template Engine</span>
+            </div>
+            <div>
+              <Field name={`${name}.templateEngine`}>
+                {({ field }: { field: FieldInputProps<string> }) => (
+                  <Form.Control as="select" {...field}>
+                    <option value="mustache">Mustache</option>
+                    <option value="handlebars">Handlebars</option>
+                    <option value="nunjucks">Nunjucks</option>
+                  </Form.Control>
+                )}
+              </Field>
+            </div>
+          </div>
         </Card.Body>
       )}
     </Card>
@@ -144,6 +186,7 @@ interface BlockConfig {
   // optionally, a name to store the output to
   outputKey?: string;
   config: ConfigValue;
+  templateEngine?: "mustache" | "handlebars" | "nunjucks";
 }
 
 interface ExtraProps {

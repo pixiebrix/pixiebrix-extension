@@ -18,6 +18,7 @@ import Overlay from "@/nativeEditor/Overlay";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { findContainer, safeCssSelector } from "@/nativeEditor/infer";
 import { Framework } from "@/messaging/constants";
+import { uniq } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
 
 let overlay: Overlay | null = null;
@@ -29,8 +30,10 @@ export function hideOverlay(): void {
   }
 }
 
-export function userSelectElement(): Promise<HTMLElement> {
-  return new Promise<HTMLElement>((resolve) => {
+export function userSelectElement(): Promise<HTMLElement[]> {
+  return new Promise<HTMLElement[]>((resolve) => {
+    const targets: HTMLElement[] = [];
+
     function stopInspectingNative() {
       hideOverlay();
       removeListenersOnWindow(window);
@@ -45,12 +48,23 @@ export function userSelectElement(): Promise<HTMLElement> {
       event.preventDefault();
       event.stopPropagation();
 
-      try {
+      if (event.shiftKey) {
         if (event.target) {
-          resolve(event.target as HTMLElement);
+          const index = targets.indexOf(event.target as HTMLElement);
+          if (index >= 0) {
+            targets.splice(index, 1);
+          } else {
+            targets.push(event.target as HTMLElement);
+          }
         }
-      } finally {
-        stopInspectingNative();
+      } else {
+        try {
+          if (event.target) {
+            resolve(uniq([...targets, event.target as HTMLElement]));
+          }
+        } finally {
+          stopInspectingNative();
+        }
       }
     }
 
@@ -114,10 +128,11 @@ export const selectElement = liftContentScript(
     traverseUp: number;
     framework?: Framework;
     mode: SelectMode;
+    isMulti?: boolean;
   }) => {
-    const element = await userSelectElement();
+    const elements = await userSelectElement();
     if (mode === "container") {
-      const { selectors } = findContainer(element);
+      const { selectors } = findContainer(elements);
       return await pageScript.getElementInfo({
         selector: selectors[0],
         framework,
@@ -125,7 +140,7 @@ export const selectElement = liftContentScript(
       });
     }
     return await pageScript.getElementInfo({
-      selector: safeCssSelector(element),
+      selector: safeCssSelector(elements[0]),
       framework,
       traverseUp,
     });
