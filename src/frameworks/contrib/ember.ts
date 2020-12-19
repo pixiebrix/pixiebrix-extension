@@ -15,8 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { mapValues, partial, unary, pickBy } from "lodash";
-import { isGetter, isPrimitive } from "@/utils";
+// Resources:
+// https://github.com/emberjs/ember-inspector/blob/d4f1fbb1ee30d178f81ce03bf8f037722bd4b166/ember_debug/object-inspector.js
+
+import { mapValues, partial, unary, fromPairs } from "lodash";
+import { getAllPropertyNames, isGetter, isPrimitive } from "@/utils";
 import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 import { findElement } from "@/frameworks/dom";
@@ -134,9 +137,8 @@ export function readEmberValueFromCache(
       return recurse(value._cache);
     } else if (Array.isArray(value.content)) {
       return value.content.map(recurse);
-    } else {
-      return mapValues(value, recurse);
     }
+    return mapValues(value, recurse);
   } else if (Array.isArray(value)) {
     return value.map(recurse);
   } else {
@@ -146,22 +148,47 @@ export function readEmberValueFromCache(
 }
 
 function isManaged(node: Node): boolean {
-  return !!ignoreNotFound(() => getEmberComponentById(findElement(node).id));
+  const elt = findElement(node);
+  if (!elt) {
+    throw new Error("Could not get DOM HTMLElement for node");
+  }
+  return !!ignoreNotFound(() => getEmberComponentById(elt.id));
 }
 
-const EMBER_INTERNAL_PROPS = new Set(["renderer", "parentView", "store"]);
+const EMBER_INTERNAL_PROPS = new Set([
+  "renderer",
+  "parentView",
+  "store",
+  "localStorage",
+  "args",
+]);
+
+/**
+ * Returns the "target" of a (classic) component.
+ * See: https://github.com/emberjs/ember-inspector/blob/d4f1fbb1ee30d178f81ce03bf8f037722bd4b166/ember_debug/libs/capture-render-tree.js
+ */
+function targetForComponent(component: any): object {
+  return component._target || component._targetObject;
+}
 
 const adapter: ReadableComponentAdapter<EmberObject> = {
   isManaged,
-  getComponent: (node) =>
-    ignoreNotFound(() => getEmberComponentById(findElement(node).id)),
+  getComponent: (node) => {
+    const elt = findElement(node);
+    if (!elt) {
+      throw new Error("Could not get DOM HTMLElement for node");
+    }
+    return ignoreNotFound(() => getEmberComponentById(elt.id));
+  },
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,
-  getData: (instance) =>
-    pickBy(
-      instance,
-      (value, key) => !key.startsWith("_") && !EMBER_INTERNAL_PROPS.has(key)
-    ),
+  getData: (instance) => {
+    const target = targetForComponent(instance) as { [prop: string]: unknown };
+    const props = getAllPropertyNames(target).filter(
+      (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
+    );
+    return fromPairs(props.map((x) => [x, target[x]]));
+  },
   proxy: {
     toJS: unary(readEmberValueFromCache),
     get: getProp,

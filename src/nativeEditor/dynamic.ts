@@ -70,8 +70,9 @@ export const updateDynamicElement = liftContentScript(
 
     _temporaryExtensions.set(extensionConfig.id, extensionPoint);
 
-    extensionPoint.addExtension(extensionConfig);
+    clearDynamic(extensionConfig.id);
 
+    extensionPoint.addExtension(extensionConfig);
     await runDynamic(extensionConfig.id, extensionPoint);
   }
 );

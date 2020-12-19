@@ -87,12 +87,6 @@ function backgroundListener(
   if (handler) {
     const notification = isNotification(options);
 
-    // console.debug(
-    //   `Handling background ${
-    //     notification ? "notification" : "action"
-    //   } ${type} (nonce: ${meta?.nonce})`
-    // );
-
     const handlerPromise = new Promise((resolve) =>
       resolve(handler(...payload))
     );
@@ -100,7 +94,7 @@ function backgroundListener(
     if (notification) {
       handlerPromise.catch((reason) => {
         console.warn(
-          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce})`,
+          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
           reason
         );
       });
@@ -110,13 +104,13 @@ function backgroundListener(
     return handlerPromise.then(
       (value) => {
         console.debug(
-          `Handler FULFILLED action ${type} (nonce: ${meta?.nonce})`
+          `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
         );
         return value;
       },
       (reason) => {
         console.debug(
-          `Handler REJECTED action ${type} (nonce: ${meta?.nonce})`
+          `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
         );
         return toErrorResponse(type, reason);
       }

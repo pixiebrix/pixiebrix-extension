@@ -77,8 +77,12 @@ async function runExtensionPoint(
 
 export function clearDynamic(uuid?: string): void {
   if (uuid) {
-    _dynamic.get(uuid).uninstall();
-    _dynamic.delete(uuid);
+    if (_dynamic.has(uuid)) {
+      _dynamic.get(uuid).uninstall();
+      _dynamic.delete(uuid);
+    } else {
+      console.debug(`No dynamic extension exists for uuid: ${uuid}`);
+    }
   } else {
     for (const extensionPoint of _dynamic.values()) {
       extensionPoint.uninstall();

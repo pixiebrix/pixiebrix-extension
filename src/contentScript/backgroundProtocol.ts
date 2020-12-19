@@ -29,6 +29,7 @@ import { deserializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
+export const ROOT_FRAME_ID = 0;
 
 export class ContentScriptActionError extends Error {
   errors: unknown;
@@ -112,7 +113,11 @@ export function notifyContentScripts(
       }`
     );
     const messageOne = (tabId: number) =>
-      browser.tabs.sendMessage(tabId, { type: fullType, payload: args });
+      browser.tabs.sendMessage(
+        tabId,
+        { type: fullType, payload: args },
+        { frameId: ROOT_FRAME_ID }
+      );
     const tabIds = tabId ? [tabId] : await getTabIds();
     Promise.all(tabIds.map(messageOne)).catch((reason) => {
       console.warn(
@@ -190,10 +195,14 @@ export function liftContentScript<R extends SerializableResponse>(
     let response;
 
     try {
-      response = await browser.tabs.sendMessage(tabId, {
-        type: fullType,
-        payload: args,
-      });
+      response = await browser.tabs.sendMessage(
+        tabId,
+        {
+          type: fullType,
+          payload: args,
+        },
+        { frameId: ROOT_FRAME_ID }
+      );
     } catch (err) {
       if (
         isNotification(options) &&

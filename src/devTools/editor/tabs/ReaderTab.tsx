@@ -57,7 +57,7 @@ type FrameworkOption = {
 export const defaultSelector: ReaderSelector = partial(
   pick,
   partial.placeholder,
-  ["type", "selector"]
+  ["type", "selector", "traverseUp"]
 ) as ReaderSelector;
 
 export const readerOptions: FrameworkOption[] = [
@@ -70,9 +70,9 @@ export const readerOptions: FrameworkOption[] = [
   {
     value: "vue",
     label: "Vue.js",
-    makeConfig: ({ selector }) => ({
+    makeConfig: (options) => ({
+      ...options,
       type: "vuejs",
-      selector,
     }),
   },
   {
@@ -148,21 +148,38 @@ const FrameworkFields: React.FunctionComponent<{
   element: FormState;
 }> = ({ element }) => {
   return (
-    <Form.Group as={Row} controlId="readerSelector">
-      <Form.Label column sm={2}>
-        Selector
-      </Form.Label>
-      <Col sm={10}>
-        <SelectorSelectorField
-          isClearable
-          name="reader.definition.selector"
-          initialElement={
-            "containerInfo" in element ? element.containerInfo : null
-          }
-          traverseUp={5}
-        />
-      </Col>
-    </Form.Group>
+    <>
+      <Form.Group as={Row} controlId="readerSelector">
+        <Form.Label column sm={2}>
+          Selector
+        </Form.Label>
+        <Col sm={10}>
+          <SelectorSelectorField
+            isClearable
+            name="reader.definition.selector"
+            initialElement={
+              "containerInfo" in element ? element.containerInfo : null
+            }
+            traverseUp={5}
+          />
+        </Col>
+      </Form.Group>
+      <Form.Group as={Row} controlId="readerTraverseUp">
+        <Form.Label column sm={2}>
+          Traverse Up
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="reader.definition.traverseUp">
+            {({ field }: { field: FieldInputProps<number> }) => (
+              <Form.Control type="number" {...field} min={0} max={10} />
+            )}
+          </Field>
+          <Form.Text className="text-muted">
+            Traverse non-visible framework elements
+          </Form.Text>
+        </Col>
+      </Form.Group>
+    </>
   );
 };
 
@@ -214,12 +231,10 @@ const ReaderTab: React.FunctionComponent<{
       let output;
       let schema;
       try {
-        output = await runReader(port, {
-          config: (option.makeConfig ?? defaultSelector)(
-            values.reader.definition
-          ),
-        });
-        console.debug("Reader output", output);
+        const config = (option.makeConfig ?? defaultSelector)(
+          values.reader.definition
+        );
+        output = await runReader(port, { config });
         schema = GenerateSchema.json("Inferred Schema", output);
       } catch (exc) {
         if (!isMounted()) return;

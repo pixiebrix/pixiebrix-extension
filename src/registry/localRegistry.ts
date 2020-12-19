@@ -136,13 +136,15 @@ export const syncRemote = liftBackground(
       }
     }
 
-    console.debug(`Removed ${deleteCnt} ${kind} entries`);
-
     for (const obj of objs) {
       tx.store.put(obj);
     }
 
     await tx.done;
+
+    console.debug(
+      `Replaced ${deleteCnt} ${kind} entries with ${objs.length} entries`
+    );
   }
 );
 

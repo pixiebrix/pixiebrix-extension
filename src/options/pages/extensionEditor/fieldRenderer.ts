@@ -23,6 +23,8 @@ import BlockField, {
   SCHEMA_TYPE_TO_BLOCK_PROPERTY,
 } from "@/components/fields/BlockField";
 import IconField from "@/components/fields/IconField";
+import UnsupportedField from "@/components/fields/UnknownField";
+import { reportError } from "@/telemetry/logging";
 
 export function defaultFieldRenderer(
   schema: Schema
@@ -42,8 +44,7 @@ export function defaultFieldRenderer(
   } else if (schema["$ref"] && !schema.type) {
     throw new Error(`Unexpected $ref ${schema["$ref"]}`);
   } else {
-    const msg = `Unsupported field type: ${schema.type ?? "<No type found>"}`;
-    console.error(msg, schema);
-    throw new Error(msg);
+    reportError(`Unsupported field type: ${schema.type ?? "<No type found>"}`);
+    return UnsupportedField;
   }
 }

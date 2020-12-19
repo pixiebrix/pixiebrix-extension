@@ -2,14 +2,14 @@ apiVersion: v1
 kind: reader
 metadata:
   id: linkedin/contact-info
-  version: 0.0.1
+  version: 0.2.0
   name: LinkedIn Contact Info
   description: Read contact info from the LinkedIn contact info pane
 definition:
   reader:
     type: emberjs
     selector: ".pv-contact-info"
-    attrs: contactInfo
+    rootProp: contactInfo
   isAvailable:
     matchPatterns: "https://*.linkedin.com/*"
     selectors: "#profile-content"

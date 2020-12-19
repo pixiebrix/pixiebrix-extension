@@ -17,7 +17,6 @@
 
 export * from "./google";
 export * from "./hubspot";
-export * from "./linkedin";
 export * from "./pipedrive";
 export * from "./slack";
 export * from "./techcrunch";

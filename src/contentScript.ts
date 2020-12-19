@@ -17,17 +17,19 @@
 
 import { v4 as uuidv4 } from "uuid";
 
+const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
+
 declare global {
   interface Window {
-    __pixiebrix__?: string;
+    [PIXIEBRIX_SYMBOL]?: string;
   }
 }
 
-if (!window.__pixiebrix__) {
-  window.__pixiebrix__ = uuidv4();
+if (!window[PIXIEBRIX_SYMBOL]) {
+  window[PIXIEBRIX_SYMBOL] = uuidv4();
 } else {
   throw Error(
-    `PixieBrix contentScript already installed: ${window.__pixiebrix__}`
+    `PixieBrix contentScript already installed: ${window[PIXIEBRIX_SYMBOL]}`
   );
 }
 
@@ -64,7 +66,7 @@ const contextPromise = whoAmI()
   .then((sender) => {
     updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
     console.debug(
-      `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}`
+      `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}: ${window[PIXIEBRIX_SYMBOL]}`
     );
   })
   .catch((reason) => {

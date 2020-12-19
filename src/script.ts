@@ -20,8 +20,27 @@
  */
 import "regenerator-runtime/runtime";
 import "core-js/stable";
+
+import { v4 as uuidv4 } from "uuid";
+
+const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
+
+declare global {
+  interface Window {
+    [PAGESCRIPT_SYMBOL]?: string;
+  }
+}
+
+if (!window[PAGESCRIPT_SYMBOL]) {
+  window[PAGESCRIPT_SYMBOL] = uuidv4();
+} else {
+  throw Error(
+    `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`
+  );
+}
+
 import jQuery from "jquery";
-import { isEmpty, identity, castArray, fromPairs } from "lodash";
+import { isEmpty, identity, castArray, fromPairs, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
   DETECT_FRAMEWORK_VERSIONS,
@@ -159,12 +178,27 @@ async function read<TComponent>(
   }
 
   const target = traverse(adapter.getParent, component, traverseUp);
-  const data = adapter.getData(target);
-  return readPathSpec(
-    rootProp ? (data as any)[rootProp] : data,
+  const rawData = adapter.getData(target);
+  const readData = readPathSpec(
+    rootProp ? (rawData as any)[rootProp] : rawData,
     pathSpec,
     adapter.proxy
   );
+  const clonedData = cloneDeep(readData);
+
+  if (process.env.DEBUG) {
+    console.debug(`Read ${selector}`, {
+      target,
+      rawData,
+      component,
+      clonedData,
+      readData,
+      options,
+      selector,
+    });
+  }
+
+  return cloneDeep(readData);
 }
 
 attachListener(

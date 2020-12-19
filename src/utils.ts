@@ -21,6 +21,21 @@ export function isGetter(obj: object, prop: string): boolean {
   return !!Object.getOwnPropertyDescriptor(obj, prop)?.["get"];
 }
 
+/**
+ * Return all property names (including non-enumerable) in the prototype hierarchy.
+ */
+export function getAllPropertyNames(obj: object): string[] {
+  const props = new Set<string>();
+  let current = obj;
+  while (current) {
+    for (const name of Object.getOwnPropertyNames(current)) {
+      props.add(name);
+    }
+    current = Object.getPrototypeOf(current);
+  }
+  return Array.from(props.values());
+}
+
 export async function waitAnimationFrame(): Promise<void> {
   return new Promise((resolve) => {
     window.requestAnimationFrame(() => resolve());

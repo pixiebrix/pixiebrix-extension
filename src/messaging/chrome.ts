@@ -35,11 +35,12 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
 
   const listen = (type: string, callbacks: CallbackMap) => {
     document.addEventListener(type, function (event: CustomEvent) {
-      console.debug(`RECEIVED: ${type}`, event.detail);
       if (!event.detail) {
         throw new Error(`Handler for ${type} did not provide event detail`);
       }
       const { id, result } = event.detail;
+      // This listener also receives it's own FULFILLED/REJECTED messages it sends back to the content
+      // script. So if you add any logging outside of the if, the logs are confusing.
       if (Object.prototype.hasOwnProperty.call(callbacks, id)) {
         try {
           callbacks[id](result);
@@ -60,7 +61,10 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
       fulfillmentCallbacks[id] = resolve;
       rejectionCallbacks[id] = reject;
     });
-    console.debug(`SEND: ${messageType}`, payload);
+    console.debug(
+      `Messaging pageScript (origin: ${targetOrigin}): ${messageType}`,
+      payload
+    );
 
     // As an alternative to postMessage, could potentially use cloneInto and CustomEvent's but that
     // appears to be deprecated: https://bugzilla.mozilla.org/show_bug.cgi?id=1294935
@@ -70,6 +74,8 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
         meta: { id },
         payload,
       },
+      // https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage#Security_concerns
+      // Security: always specify an exact target origin, not *, when you use postMessage to send data to other windows.
       targetOrigin
     );
 

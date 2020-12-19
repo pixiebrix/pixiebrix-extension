@@ -197,16 +197,16 @@ export function awaitElementOnce(
     return [Promise.resolve($root), noop];
   }
 
-  console.debug("Awaiting selectors", selectors);
+  // console.debug("Awaiting selectors", selectors);
 
   const [nextSelector, ...rest] = selectors;
 
   // find immediately, or wait for it to be initialized
   const $element: JQuery<HTMLElement | Document> = $root.find(nextSelector);
 
-  if (!$element.length) {
+  if ($element.length === 0) {
     console.debug(
-      `Selector ${nextSelector} not immediately found. Awaiting element`
+      `Selector not immediately found; awaiting selector: ${nextSelector}`
     );
 
     const [nextElementPromise, cancel] = _initialize(
@@ -227,6 +227,8 @@ export function awaitElementOnce(
     ];
   } else if (rest.length === 0) {
     return [Promise.resolve($element), noop];
+  } else {
+    return awaitElementOnce(rest, $element);
   }
 }
 
