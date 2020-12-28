@@ -55,7 +55,9 @@ export function useExtension(
     }
     if (!config) {
       throw new Error(
-        `Could not locate configuration for extension ${extensionId}`
+        `Could not locate configuration for extension ${extensionId} (extension point: ${
+          extensionPointId ?? "<unknown>"
+        })`
       );
     }
     return config;

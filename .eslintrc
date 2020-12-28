@@ -2,7 +2,8 @@
   "root": true,
   "parser": "@typescript-eslint/parser",
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "security"
   ],
   "env": {
     "browser": true
@@ -21,7 +22,8 @@
     "plugin:react/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
-    "plugin:import/typescript"
+    "plugin:import/typescript",
+    "plugin:security/recommended"
   ],
   "rules": {
     "react/prop-types": "off",
@@ -36,6 +38,9 @@
     "browsers/chrome/webpack/**",
     "browsers/firefox/webpack/**",
     "browsers/webpack/**",
-    "scripts/webpack.scripts.js"
+    "scripts/webpack.scripts.js",
+    "src/vendors/libraryDetector/**",
+    "src/**/*.test.ts",
+    "src/**/*.test.js"
   ]
 }

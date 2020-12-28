@@ -18,7 +18,8 @@
 const API_KEY = process.env.GOOGLE_API_KEY;
 const CHROME = process.env.CHROME;
 
-import { DISCOVERY_DOCS } from "./sheets/handlers";
+import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
+import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
 
 declare global {
   interface Window {
@@ -41,7 +42,7 @@ function initGoogle(): void {
         // Don't pass client nor scope as these will init auth2, which we don't want
         // until the user actually uses a brick
         apiKey: API_KEY,
-        discoveryDocs: [...DISCOVERY_DOCS],
+        discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
       })
       .then(
         () => {

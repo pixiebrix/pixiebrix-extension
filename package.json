@@ -236,8 +236,10 @@
     }
   },
   "devDependencies": {
+    "@maxim_mazurok/gapi.client.bigquery": "^2.0.20201103",
     "eslint-import-resolver-webpack": "^0.13.0",
     "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-security": "^1.4.0",
     "webpack-bundle-analyzer": "^4.1.0"
   }
 }

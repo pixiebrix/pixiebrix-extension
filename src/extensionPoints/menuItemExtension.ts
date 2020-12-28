@@ -317,6 +317,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     $menuItem.on("click", async (e) => {
       e.preventDefault();
 
+      console.debug(`Run menu item`, this.logger.context);
+
       try {
         // read latest state at the time of the action
         const reader = await this.defaultReader();

@@ -145,13 +145,12 @@ const PropertyRow: React.FunctionComponent<RowProps> = ({
   onDelete,
   onRename,
 }) => {
-  const propertySchema = defined
+  const rawSchema = defined
     ? parentSchema.properties[property]
     : parentSchema.additionalProperties;
 
-  if (typeof propertySchema === "boolean") {
-    throw new Error("Expected schema not boolean");
-  }
+  const propertySchema: Schema =
+    typeof rawSchema === "boolean" ? { type: "string" } : rawSchema;
 
   const PropertyRow = useMemo(() => getPropertyRow(propertySchema), [
     propertySchema,
