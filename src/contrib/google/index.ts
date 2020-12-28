@@ -17,3 +17,4 @@
 
 import "./geocode";
 import "./sheets/append";
+import "./bigquery/query";

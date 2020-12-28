@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: google/bigquery-dataset
+  version: 0.0.1
+  name: Google BigQuery dataset
+  description: A Google BigQuery dataset
+  url: https://cloud.google.com/bigquery/docs/datasets-intro
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    projectId:
+      type: string
+      description: The project id
+    datasetId:
+      type: string
+      description: The dataset id
+  required:
+    - projectId
+    - datasetId
