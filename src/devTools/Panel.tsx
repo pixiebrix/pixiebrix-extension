@@ -43,11 +43,6 @@ import "@/blocks/transformers";
 import "@/blocks/renderers";
 import "@/contrib/index";
 
-// CSS
-import "vendors/theme/app/app.scss";
-import "vendors/overrides.scss";
-import "./Panel.scss";
-
 const defaultState = { isLoggedIn: false, extension: true };
 
 const Centered: React.FunctionComponent = ({ children }) => {
@@ -59,6 +54,16 @@ const Centered: React.FunctionComponent = ({ children }) => {
         </Col>
       </Row>
     </Container>
+  );
+};
+
+const PersistLoader: React.FunctionComponent = () => {
+  return (
+    <Centered>
+      <div className="d-flex justify-content-center">
+        <GridLoader />
+      </div>
+    </Centered>
   );
 };
 
@@ -94,13 +99,24 @@ const Panel: React.FunctionComponent = () => {
   } else if (!context.port) {
     return (
       <Centered>
-        <GridLoader />
+        <div className="d-flex justify-content-center">
+          <GridLoader />
+        </div>
       </Centered>
     );
   } else if (!context.hasTabPermissions) {
     return (
       <Centered>
-        <p>PixieBrix does not have access to the page.</p>
+        <p>
+          <b>PixieBrix does not have access to the page.</b>
+        </p>
+
+        <p>
+          Grant permanent access to this domain by clicking the button below.
+          Or, grant temporary access by clicking on the PixieBrix extension in
+          the extensions dropdown.
+        </p>
+
         <Button onClick={request}>Grant Permanent Access</Button>
       </Centered>
     );
@@ -108,7 +124,7 @@ const Panel: React.FunctionComponent = () => {
 
   return (
     <Provider store={optionsStore}>
-      <PersistGate loading={<GridLoader />} persistor={persistor}>
+      <PersistGate loading={PersistLoader} persistor={persistor}>
         <AuthContext.Provider value={authState ?? defaultState}>
           <DevToolsContext.Provider value={context}>
             <ToastProvider>

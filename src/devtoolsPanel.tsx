@@ -23,5 +23,8 @@ import React from "react";
 import Panel from "@/devTools/Panel";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+// import "vendors/bootstrap.min.css";
+import "vendors/overrides.scss";
+import "@/devTools/Panel.scss";
 
 ReactDOM.render(<Panel />, document.getElementById("container"));

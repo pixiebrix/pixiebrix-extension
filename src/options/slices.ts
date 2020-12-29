@@ -117,6 +117,9 @@ export const optionsSlice = createSlice({
         services,
         config,
       } of extensionPoints) {
+        if (extensionPointId == null) {
+          throw new Error("extensionPointId is required");
+        }
         const extensionId = uuidv4();
         if (state.extensions[extensionPointId] == null) {
           state.extensions[extensionPointId] = {};
@@ -157,12 +160,12 @@ export const optionsSlice = createSlice({
       if (state.extensions[extensionPointId] == null) {
         state.extensions[extensionPointId] = {};
       }
-      state.extensions[extensionPointId][extensionId] = {
+      state.extensions[extensionPointId][extensionId ?? id] = {
         id: extensionId ?? id,
+        extensionPointId,
         _recipe: null,
         label,
         services,
-        extensionPointId,
         active: true,
         config,
       };
