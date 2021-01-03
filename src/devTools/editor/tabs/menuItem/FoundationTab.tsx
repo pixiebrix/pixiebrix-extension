@@ -15,15 +15,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Field, FieldInputProps, useField } from "formik";
-import { Col, Form, Row, Tab } from "react-bootstrap";
+import React, { useCallback, useContext, useState } from "react";
+import { Field, FieldInputProps, useField, useFormikContext } from "formik";
+import { Button, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import * as nativeOperations from "@/background/devtools";
+import { FormState } from "@/devTools/editor/editorSlice";
+import { DevToolsContext } from "@/devTools/context";
+import { reportError } from "@/telemetry/logging";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
 }> = ({ eventKey = "foundation" }) => {
   const [field] = useField("containerInfo");
+
+  const [dragging, setDragging] = useState(false);
+
+  const { port } = useContext(DevToolsContext);
+  const { values } = useFormikContext<FormState>();
+
+  const toggle = useCallback(async () => {
+    setDragging(true);
+    try {
+      await nativeOperations.dragButton(port, { uuid: values.uuid });
+    } catch (err) {
+      reportError(err);
+    } finally {
+      setDragging(false);
+    }
+  }, [values.uuid, port, setDragging]);
 
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
@@ -49,6 +69,17 @@ const FoundationTab: React.FunctionComponent<{
               <Form.Control type="text" {...field} />
             )}
           </Field>
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} controlId="formContainerSelector">
+        <Form.Label column sm={2}>
+          Drag and Drop
+        </Form.Label>
+        <Col sm={10}>
+          <Button variant="info" disabled={dragging} onClick={toggle}>
+            Drag and Drop
+          </Button>
         </Col>
       </Form.Group>
 

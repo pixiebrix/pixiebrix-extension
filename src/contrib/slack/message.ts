@@ -73,6 +73,10 @@ export class SendSimpleSlackMessage extends Effect {
     await proxyService(null, {
       url: hookUrl,
       method: "post",
+      // https://stackoverflow.com/questions/45752537/slack-incoming-webhook-request-header-field-content-type-is-not-allowed-by-acce
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       data: {
         text,
         icon_emoji: iconEmoji,
@@ -192,6 +196,10 @@ export class SendAdvancedSlackMessage extends Effect {
     await proxyService(null, {
       url: hookUrl,
       method: "post",
+      // https://stackoverflow.com/questions/45752537/slack-incoming-webhook-request-header-field-content-type-is-not-allowed-by-acce
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       data: {
         text,
         icon_emoji: iconEmoji,

@@ -24,11 +24,13 @@ import { userSelectElement } from "./selector";
 import * as pageScript from "@/pageScript/protocol";
 import { findContainer, inferButtonHTML } from "./infer";
 import {
+  DATA_ATTR,
   MenuDefinition,
   MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { html as beautifyHTML } from "js-beautify";
 import { DynamicDefinition } from "./dynamic";
+import dragula from "dragula";
 
 export const DEFAULT_ACTION_CAPTION = "Action";
 
@@ -43,6 +45,33 @@ export interface ButtonSelectionResult {
   item: Pick<MenuItemExtensionConfig, "caption">;
   containerInfo: ElementInfo;
 }
+
+// let drake = null;
+
+function dragPromise(uuid: string): Promise<void> {
+  const drake = dragula({
+    isContainer: (el?: Element) => {
+      return ["DIV", "SECTION"].includes(el.tagName);
+    },
+    moves: (el?: Element) => {
+      return el.getAttribute(DATA_ATTR) === uuid;
+    },
+  });
+
+  return new Promise((resolve) => {
+    drake.on("dragend", () => {
+      resolve();
+      drake.destroy();
+    });
+  });
+}
+
+export const dragButton = liftContentScript(
+  "DRAG_BUTTON",
+  async ({ uuid }: { uuid: string }) => {
+    await dragPromise(uuid);
+  }
+);
 
 export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
   const selected = await userSelectElement();

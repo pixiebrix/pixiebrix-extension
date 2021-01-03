@@ -16,11 +16,18 @@
  */
 
 import { uniq, compact, sortBy } from "lodash";
-const BUTTON_TAGS = ["li", "button", "a", "span", "input", "svg"];
+const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
+const BUTTON_SELECTORS: string[] = ["[role='button']"];
 const ICON_TAGS = ["svg"];
 const MENU_TAGS = ["ul", "tbody"];
 const CAPTION_TAGS = ["td", "a", "li", "span"];
 const MULTI_ATTRS = ["class", "rel"];
+
+const ATTR_EXCLUDE_PATTERNS = [
+  /^data([\w-]*)-test([\w-]*)$/,
+  /^data-cy$/,
+  /^tabindex$/,
+];
 
 // @ts-ignore: no types available
 import getCssSelector from "css-selector-generator";
@@ -62,7 +69,14 @@ function commonStructure(
 
   // Find the common attributes between the elements
   for (const attrIndex in Object.keys(attributes)) {
+    // safe because we're getting from Object.keys
+    // eslint-disable-next-line security/detect-object-injection
     const attrName = attributes[attrIndex].name;
+
+    if (ATTR_EXCLUDE_PATTERNS.some((x) => x.test(attrName))) {
+      continue;
+    }
+
     const value = commonAttr($items, attrName);
     if (value != null) {
       $common.attr(attrName, value);
@@ -256,7 +270,7 @@ export function inferButtonHTML(
     return commonHTML(selected[0].tagName, $(children));
   }
 
-  for (const tag of BUTTON_TAGS) {
+  for (const tag of [...BUTTON_SELECTORS, ...BUTTON_TAGS]) {
     const $items = $container.children(tag);
 
     if ($items.length) {

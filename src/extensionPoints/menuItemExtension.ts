@@ -56,7 +56,7 @@ interface ShadowDOM {
   tag?: string;
 }
 
-const DATA_ATTR = "data-pb-uuid";
+export const DATA_ATTR = "data-pb-uuid";
 
 export interface MenuItemExtensionConfig {
   caption: string;
@@ -316,6 +316,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     $menuItem.on("click", async (e) => {
       e.preventDefault();
+      e.stopPropagation();
 
       console.debug(`Run menu item`, this.logger.context);
 

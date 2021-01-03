@@ -357,6 +357,13 @@ export const selectElement = liftBackground(
   }
 );
 
+export const dragButton = liftBackground(
+  "DRAG_BUTTON",
+  (tabId: number) => async ({ uuid }: { uuid: string }) => {
+    return await nativeEditorProtocol.dragButton(tabId, { uuid });
+  }
+);
+
 export const insertButton = liftBackground(
   "INSERT_BUTTON",
   (tabId: number) => async () => {

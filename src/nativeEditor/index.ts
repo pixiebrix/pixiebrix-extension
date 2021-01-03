@@ -21,5 +21,5 @@ export {
   updateDynamicElement,
   DynamicDefinition,
 } from "./dynamic";
-export { insertButton } from "./insertButton";
+export { insertButton, dragButton } from "./insertButton";
 export { insertPanel } from "./insertPanel";
