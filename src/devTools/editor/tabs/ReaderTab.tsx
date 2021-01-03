@@ -15,10 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
-import { compact, isEmpty, mapValues, partial, pick, pickBy } from "lodash";
+import {
+  compact,
+  isEmpty,
+  mapValues,
+  partial,
+  pick,
+  pickBy,
+  reverse,
+} from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 import Select from "react-select";
@@ -32,6 +40,8 @@ import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import { useDebounce } from "use-debounce";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import copy from "copy-to-clipboard";
 import { Schema } from "@/core";
 import {
   getDefaultField,
@@ -41,6 +51,8 @@ import devtoolFields from "@/devTools/editor/Fields";
 
 // @ts-ignore: no type definitions?
 import GenerateSchema from "generate-schema";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { useToasts } from "react-toast-notifications";
 
 type ReaderSelector = (options: {
   type: string;
@@ -131,7 +143,7 @@ function searchData(query: string, data: unknown): unknown {
       normalize(key).includes(query) ? value : searchData(query, value)
     );
     return pickBy(values, (value, key) => {
-      const keyMatch = normalize(key).includes(query);
+      const keyMatch = normalize(key).includes(normalized);
       const valueMatch =
         typeof value === "object" || Array.isArray(value)
           ? !isEmpty(value)
@@ -212,6 +224,7 @@ const ReaderTab: React.FunctionComponent<{
   eventKey?: string;
 }> = ({ eventKey = "reader" }) => {
   const { port, frameworks } = useContext(DevToolsContext);
+  const { addToast } = useToasts();
   const [query, setQuery] = useState("");
   const { values, setFieldValue } = useFormikContext<FormState>();
   const [{ output, schema, error }, setSchema] = useState({
@@ -219,6 +232,36 @@ const ReaderTab: React.FunctionComponent<{
     schema: undefined,
     error: undefined,
   });
+
+  // https://github.com/reduxjs/redux-devtools/blob/85b4b0fb04b1d6d95054d5073fa17fa61efc0df3/packages/redux-devtools-inspector-monitor/src/ActionPreview.tsx
+  const labelRenderer = useCallback(
+    (
+      [key, ...rest]: (string | number)[],
+      nodeType: string,
+      expanded: boolean
+    ) => {
+      return (
+        <span>
+          <span>{key}</span>
+          {!expanded && ": "}
+          <span
+            className="ReaderTree__copy-path"
+            aria-label="copy path"
+            onClick={() => {
+              copy(reverse([key, ...rest]).join("."));
+              addToast("Copied property path to the clipboard", {
+                appearance: "info",
+                autoDismiss: true,
+              });
+            }}
+          >
+            <FontAwesomeIcon icon={faCopy} aria-hidden />
+          </span>
+        </span>
+      );
+    },
+    [addToast]
+  );
 
   useAsyncEffect(
     async (isMounted) => {
@@ -323,6 +366,7 @@ const ReaderTab: React.FunctionComponent<{
                 {searchResults !== undefined ? (
                   <JSONTree
                     data={searchResults}
+                    labelRenderer={labelRenderer}
                     theme={theme}
                     invertTheme
                     hideRoot

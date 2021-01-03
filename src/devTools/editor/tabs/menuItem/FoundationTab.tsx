@@ -20,25 +20,45 @@ import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Button, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 import * as nativeOperations from "@/background/devtools";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { ActionFormState, FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { reportError } from "@/telemetry/logging";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
 }> = ({ eventKey = "foundation" }) => {
-  const [field] = useField("containerInfo");
-
+  const [containerInfoField, , containerInfoHelpers] = useField(
+    "containerInfo"
+  );
   const [dragging, setDragging] = useState(false);
-
   const { port } = useContext(DevToolsContext);
-  const { values } = useFormikContext<FormState>();
+  const { values, setFieldValue } = useFormikContext<FormState>();
 
   const toggle = useCallback(async () => {
     setDragging(true);
     try {
-      await nativeOperations.dragButton(port, { uuid: values.uuid });
+      const dragResult = await nativeOperations.dragButton(port, {
+        uuid: values.uuid,
+      });
+      if (dragResult) {
+        const { target, sibling } = dragResult;
+        containerInfoHelpers.setValue(target);
+        setFieldValue(
+          "extensionPoint.definition.containerSelector",
+          target.selectors[0],
+          false
+        );
+        setFieldValue(
+          "extensionPoint.definition.position",
+          {
+            sibling: sibling?.[0],
+          },
+          true
+        );
+      }
     } catch (err) {
+      // can continue, because it won't have any effect on the form values, so the user can just try again
+      // noinspection ES6MissingAwait
       reportError(err);
     } finally {
       setDragging(false);
@@ -90,7 +110,7 @@ const FoundationTab: React.FunctionComponent<{
         <Col sm={10}>
           <SelectorSelectorField
             name="extensionPoint.definition.containerSelector"
-            initialElement={field.value}
+            initialElement={containerInfoField.value}
             selectMode="container"
           />
         </Col>
@@ -101,14 +121,34 @@ const FoundationTab: React.FunctionComponent<{
           Position
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.definition.position">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="select" {...field}>
-                <option value="append">Append</option>
-                <option value="prepend">Prepend</option>
-              </Form.Control>
-            )}
-          </Field>
+          {typeof (values as ActionFormState).extensionPoint.definition
+            .position === "string" ? (
+            <Field name="extensionPoint.definition.position">
+              {({ field }: { field: FieldInputProps<string> }) => (
+                <Form.Control as="select" {...field}>
+                  <option value="append">Append</option>
+                  <option value="prepend">Prepend</option>
+                </Form.Control>
+              )}
+            </Field>
+          ) : (
+            <>
+              <SelectorSelectorField
+                isClearable
+                sort
+                name="extensionPoint.definition.position.sibling"
+                selectMode="element"
+                root={
+                  (values as ActionFormState).extensionPoint.definition
+                    .containerSelector
+                }
+              />
+              <Form.Text className="text-muted">
+                Select an element in the container to position the menu item
+                before. Or, leave blank to append the element to the container.
+              </Form.Text>
+            </>
+          )}
         </Col>
       </Form.Group>
 

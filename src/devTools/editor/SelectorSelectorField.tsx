@@ -23,10 +23,10 @@ import React, {
   useState,
 } from "react";
 import { useField } from "formik";
-import { OptionsType } from "react-select";
+import { OptionsType, components } from "react-select";
 import { uniqBy, compact, sortBy } from "lodash";
 import Creatable from "react-select/creatable";
-import { components } from "react-select";
+
 import { Badge, Button } from "react-bootstrap";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,9 +34,13 @@ import { selectElement } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { SelectMode } from "@/nativeEditor/selector";
 import { ElementInfo } from "@/nativeEditor/frameworks";
-import { OptionProps } from "react-select/src/components/Option";
 import * as nativeOperations from "@/background/devtools";
 import { Framework } from "@/messaging/constants";
+import { reportError } from "@/telemetry/logging";
+
+// eslint is complaining that it can't parse the Option file
+// eslint-disable-next-line import/namespace
+import { OptionProps } from "react-select/src/components/Option";
 
 type OptionValue = { value: string; elementInfo?: ElementInfo };
 type SelectorOptions = OptionsType<OptionValue>;
@@ -110,6 +114,7 @@ const SelectorSelectorField: React.FunctionComponent<{
   traverseUp?: number;
   isClearable?: boolean;
   sort?: boolean;
+  root?: string;
 }> = ({
   name,
   initialElement,
@@ -118,6 +123,7 @@ const SelectorSelectorField: React.FunctionComponent<{
   traverseUp = 0,
   isClearable = false,
   sort = false,
+  root = undefined,
 }) => {
   const { port } = useContext(DevToolsContext);
 
@@ -138,6 +144,7 @@ const SelectorSelectorField: React.FunctionComponent<{
         framework,
         mode: selectMode,
         traverseUp,
+        root,
       });
       setElement(selected);
       const selectors = selected.selectors ?? [];
@@ -147,7 +154,7 @@ const SelectorSelectorField: React.FunctionComponent<{
     } finally {
       setSelecting(false);
     }
-  }, [framework, setSelecting, traverseUp, selectMode, helpers]);
+  }, [framework, setSelecting, traverseUp, selectMode, helpers, root]);
 
   return (
     <div className="d-flex">
@@ -173,9 +180,23 @@ const SelectorSelectorField: React.FunctionComponent<{
             helpers.setValue(inputValue);
           }}
           value={options.find((x) => x.value === field.value)}
-          onChange={(option) =>
-            helpers.setValue(option ? (option as OptionValue).value : null)
-          }
+          onMenuClose={() => {
+            nativeOperations
+              .toggleSelector(port, {
+                selector: null,
+                on: false,
+              })
+              .catch((reason) => reportError(reason));
+          }}
+          onChange={async (option) => {
+            helpers.setValue(option ? (option as OptionValue).value : null);
+            nativeOperations
+              .toggleSelector(port, {
+                selector: null,
+                on: false,
+              })
+              .catch((reason) => reportError(reason));
+          }}
         />
       </div>
     </div>

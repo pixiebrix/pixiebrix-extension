@@ -99,4 +99,15 @@
   //  padding-left: 0;
   //  padding-right: 0;
   //}
+
+  .ReaderTree {
+    &__copy-path {
+      cursor: pointer;
+      color: lightgray;
+      margin-left: 5px;
+      &:hover {
+        color: #007bff;
+      }
+    }
+  }
 }

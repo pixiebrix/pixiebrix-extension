@@ -57,14 +57,19 @@ const IconField: React.FunctionComponent<FieldProps<IconConfig>> = ({
   const [field, meta, helpers] = useField(props);
 
   const setFieldProps = useCallback(
-    ({ value }: IconOption) => {
-      helpers.setValue({
-        id: value.id,
-        library: value.library,
-        size: meta.value?.size ?? 16,
-      });
-      helpers.setTouched(true);
+    (option: IconOption | null) => {
+      if (option) {
+        const { value } = option;
+        helpers.setValue({
+          id: value.id,
+          library: value.library,
+          size: meta.value?.size ?? 16,
+        });
+      } else {
+        helpers.setValue(null);
+      }
       helpers.setError(undefined);
+      helpers.setTouched(true);
     },
     [helpers]
   );

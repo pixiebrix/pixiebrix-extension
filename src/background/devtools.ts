@@ -46,9 +46,13 @@ interface HandlerEntry {
 type PromiseHandler = [(value: unknown) => void, (value: unknown) => void];
 
 let openCount = 0;
-const backgroundHandlers: { [key: string]: HandlerEntry } = {};
-const devtoolsHandlers: { [nonce: string]: PromiseHandler } = {};
-const connections: { [tabId: string]: Runtime.Port } = {};
+
+type TabId = number;
+type Nonce = string;
+
+const backgroundHandlers = new Map<string, HandlerEntry>();
+const devtoolsHandlers = new Map<Nonce, PromiseHandler>();
+const connections = new Map<TabId, Runtime.Port>();
 
 export const PORT_NAME = "devtools-page";
 export const MESSAGE_PREFIX = "@@pixiebrix/devtools/";
@@ -69,7 +73,7 @@ function backgroundListener(
   port: Runtime.Port
 ) {
   const { type, payload, meta } = request;
-  const { handler, options } = backgroundHandlers[type] ?? {};
+  const { handler, options } = backgroundHandlers.get(type) ?? {};
 
   if (!allowBackgroundSender(port.sender)) {
     console.debug(
@@ -124,10 +128,10 @@ function devtoolsListener(response: BackgroundResponse) {
     payload,
   } = response;
 
-  if (devtoolsHandlers[nonce]) {
+  if (devtoolsHandlers.has(nonce)) {
     console.debug(`Handling background response: ${type} (nonce: ${nonce}`);
-    const [resolve, reject] = devtoolsHandlers[nonce];
-    delete devtoolsHandlers[nonce];
+    const [resolve, reject] = devtoolsHandlers.get(nonce);
+    devtoolsHandlers.delete(nonce);
     if (isErrorResponse(payload)) {
       reject(deserializeError(payload.$$error));
     }
@@ -151,10 +155,10 @@ function connectDevtools(port: Runtime.Port) {
     port.onDisconnect.addListener(() => {
       port.onMessage.removeListener(backgroundListener);
 
-      const tabIds = Object.keys(connections);
+      const tabIds = Array.from(connections.keys());
       for (const tabId of tabIds) {
-        if (connections[tabId] === port) {
-          delete connections[tabId];
+        if (connections.get(tabId) === port) {
+          connections.delete(tabId);
           break;
         }
       }
@@ -204,7 +208,7 @@ export function callBackground(
       port.onMessage.addListener(devtoolsListener);
     }
     return new Promise((resolve, reject) => {
-      devtoolsHandlers[nonce] = [resolve, reject];
+      devtoolsHandlers.set(nonce, [resolve, reject]);
       port.postMessage(message);
       if (browser.runtime.lastError) {
         reject(
@@ -242,11 +246,11 @@ export function liftBackground<R extends SerializableResponse>(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isBackgroundPage()) {
-    if (backgroundHandlers[fullType]) {
+    if (backgroundHandlers.has(fullType)) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
       // console.debug(`Installed background page handler for ${type}`);
-      backgroundHandlers[fullType] = { handler: method, options };
+      backgroundHandlers.set(fullType, { handler: method, options });
     }
   }
 
@@ -258,14 +262,14 @@ export function liftBackground<R extends SerializableResponse>(
     } else if (!port) {
       throw new Error("Devtools port is required");
     }
-    return (await callBackground(port, fullType, args, options)) as any;
+    return (await callBackground(port, fullType, args, options)) as R;
   };
 }
 
 export const connect = liftBackground(
   "CONNECT",
   (tabId: number, port: Runtime.Port) => async () => {
-    connections[tabId] = port;
+    connections.set(tabId, port);
   }
 );
 
@@ -344,15 +348,18 @@ export const selectElement = liftBackground(
     mode = "element",
     framework,
     traverseUp = 0,
+    root = undefined,
   }: {
     framework?: Framework;
     mode: nativeSelectionProtocol.SelectMode;
     traverseUp?: number;
+    root?: string;
   }) => {
     return await nativeSelectionProtocol.selectElement(tabId, {
       framework,
       mode,
       traverseUp,
+      root,
     });
   }
 );

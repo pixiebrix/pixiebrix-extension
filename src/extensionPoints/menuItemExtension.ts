@@ -134,6 +134,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       try {
         cancelObserver?.();
       } catch (err) {
+        // try to proceed as normal
+        // noinspection JSIgnoredPromiseFromCall
         reportError(err, this.logger.context);
       }
     }
@@ -382,7 +384,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           await this.runExtension(menu, ctxt, extension);
         } catch (ex) {
           errors.push(ex);
-          // eslint-disable-next-line require-await
+          // noinspection ES6MissingAwait
           reportError(ex, {
             extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
@@ -395,9 +397,19 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       console.warn(`An error occurred adding ${errors.length} menu item(s)`, {
         errors,
       });
-      $.notify(`An error occurred adding ${errors.length} menu item(s)`, {
-        className: "error",
-      });
+
+      if (errors.length === 1) {
+        $.notify(
+          `An error occurred adding ${errors.length} menu item(s): ${errors[0]}`,
+          {
+            className: "error",
+          }
+        );
+      } else {
+        $.notify(`An error occurred adding ${errors.length} menu item(s)`, {
+          className: "error",
+        });
+      }
     }
   }
 }
@@ -407,7 +419,13 @@ interface MenuDefaultOptions {
   [key: string]: string;
 }
 
-export type MenuPosition = "append" | "prepend";
+export type MenuPosition =
+  | "append"
+  | "prepend"
+  | {
+      // element to insert the menu item before, selector is relative to the container
+      sibling: string | null;
+    };
 
 export interface MenuDefinition extends ExtensionPointDefinition {
   template: string;
@@ -446,14 +464,36 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   addMenuItem($menu: JQuery, $menuItem: JQuery): void {
     const { position = "append" } = this._definition;
-    switch (position) {
-      case "prepend":
-      case "append": {
-        $menu[position]($menuItem);
-        break;
+
+    if (typeof position === "object") {
+      if (position.sibling) {
+        const $sibling = $menu.find(position.sibling);
+        if ($sibling.length > 1) {
+          throw new Error(
+            `Multiple sibling elements for selector: ${position.sibling}`
+          );
+        } else if ($sibling.length === 1) {
+          $sibling.before($menuItem);
+        } else {
+          // didn't find the sibling, so just try inserting it at the end
+          $menu.append($menuItem);
+        }
+      } else {
+        // no element to insert the item before, so insert it at the end.
+        $menu.append($menuItem);
       }
-      default: {
-        throw new Error(`Unexpected position ${position}`);
+    } else {
+      switch (position) {
+        case "prepend":
+        case "append": {
+          // safe because we're checking the value in the case statements
+          // eslint-disable-next-line security/detect-object-injection
+          $menu[position]($menuItem);
+          break;
+        }
+        default: {
+          throw new Error(`Unexpected position ${position}`);
+        }
       }
     }
   }

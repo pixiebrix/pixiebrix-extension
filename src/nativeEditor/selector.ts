@@ -20,6 +20,7 @@ import { findContainer, safeCssSelector } from "@/nativeEditor/infer";
 import { Framework } from "@/messaging/constants";
 import { uniq } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
+import { requireSingleElement } from "@/nativeEditor/utils";
 
 let overlay: Overlay | null = null;
 
@@ -30,7 +31,7 @@ export function hideOverlay(): void {
   }
 }
 
-export function userSelectElement(): Promise<HTMLElement[]> {
+export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
   return new Promise<HTMLElement[]>((resolve) => {
     const targets: HTMLElement[] = [];
 
@@ -60,7 +61,13 @@ export function userSelectElement(): Promise<HTMLElement[]> {
       } else {
         try {
           if (event.target) {
-            resolve(uniq([...targets, event.target as HTMLElement]));
+            const result = uniq([...targets, event.target as HTMLElement]);
+            if (root && result.some((x) => !root.contains(x))) {
+              throw new Error(
+                "One or more selected elements are not contained with the root container"
+              );
+            }
+            resolve(result);
           }
         } finally {
           stopInspectingNative();
@@ -124,25 +131,39 @@ export const selectElement = liftContentScript(
     traverseUp = 0,
     mode = "element",
     framework,
+    root = undefined,
   }: {
     traverseUp: number;
     framework?: Framework;
     mode: SelectMode;
     isMulti?: boolean;
+    root?: string;
   }) => {
-    const elements = await userSelectElement();
-    if (mode === "container") {
-      const { selectors } = findContainer(elements);
-      return await pageScript.getElementInfo({
-        selector: selectors[0],
-        framework,
-        traverseUp,
-      });
+    const rootElement = root ? requireSingleElement(root) : undefined;
+    const elements = await userSelectElement(rootElement);
+
+    switch (mode) {
+      case "container": {
+        if (root) {
+          throw new Error(`root selector not implemented for mode: ${mode}`);
+        }
+        const { selectors } = findContainer(elements);
+        return await pageScript.getElementInfo({
+          selector: selectors[0],
+          framework,
+          traverseUp,
+        });
+      }
+      case "element": {
+        return await pageScript.getElementInfo({
+          selector: safeCssSelector(elements[0], [], rootElement),
+          framework,
+          traverseUp,
+        });
+      }
+      default: {
+        throw new Error(`Unexpected mode: ${mode}`);
+      }
     }
-    return await pageScript.getElementInfo({
-      selector: safeCssSelector(elements[0]),
-      framework,
-      traverseUp,
-    });
   }
 );

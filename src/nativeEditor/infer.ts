@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { uniq, compact, sortBy } from "lodash";
+import { uniq, compact, sortBy, partial } from "lodash";
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
 const ICON_TAGS = ["svg"];
@@ -120,39 +120,46 @@ function commonHTML(tag: string, $items: JQuery<HTMLElement>): string {
 
 // https://gist.github.com/getify/3667624
 function escapeDoubleQuotes(str: string): string {
-  return str.replace(/\\([\s\S])|(")/g, "\\$1$2"); // thanks @slevithan!
+  return str.replace(/\\([\s\S])|(")/g, "\\$1$2");
 }
 
 export function safeCssSelector(
   element: HTMLElement,
-  selectors: string[] = []
+  selectors: string[] = [],
+  root: Element = undefined
 ): string {
   // https://github.com/fczbkk/css-selector-generator
   return getCssSelector(element, {
     blacklist: ["#ember*"],
     selectors: selectors,
     combineWithinSelector: true,
+    combineBetweenSelectors: true,
+    // convert null to undefined, because getCssSelector bails otherwise
+    root: root ?? undefined,
   });
 }
 
 /**
  * Generate some CSS selector variants for an element.
  */
-export function inferSelectors(element: HTMLElement): string[] {
+export function inferSelectors(
+  element: HTMLElement,
+  root: Element = undefined
+): string[] {
+  const makeSelector = partial(
+    safeCssSelector,
+    element,
+    partial.placeholder,
+    root
+  );
   return sortBy(
     uniq(
       compact([
-        safeCssSelector(element, [
-          "id",
-          "class",
-          "tag",
-          "attribute",
-          "nthchild",
-        ]),
-        safeCssSelector(element, ["tag", "class", "attribute", "nthchild"]),
-        safeCssSelector(element, ["id", "tag", "attribute", "nthchild"]),
-        safeCssSelector(element, ["id", "tag", "attribute"]),
-        safeCssSelector(element),
+        makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
+        makeSelector(["tag", "class", "attribute", "nthchild"]),
+        makeSelector(["id", "tag", "attribute", "nthchild"]),
+        makeSelector(["id", "tag", "attribute"]),
+        makeSelector(undefined),
       ])
     ).filter((x) => x.trim() !== ""),
     (x) => x.length
