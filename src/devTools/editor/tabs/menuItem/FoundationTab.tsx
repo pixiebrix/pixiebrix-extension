@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Button, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
@@ -33,6 +33,7 @@ const FoundationTab: React.FunctionComponent<{
   const [dragging, setDragging] = useState(false);
   const { port } = useContext(DevToolsContext);
   const { values, setFieldValue } = useFormikContext<FormState>();
+  const templateInput = useRef<HTMLTextAreaElement>(null);
 
   const toggle = useCallback(async () => {
     setDragging(true);
@@ -64,6 +65,20 @@ const FoundationTab: React.FunctionComponent<{
       setDragging(false);
     }
   }, [values.uuid, port, setDragging]);
+
+  const insertSnippet = useCallback(
+    (snippet) => {
+      const { current } = templateInput;
+      const pos = current.selectionStart;
+      current.setRangeText(snippet, pos, pos);
+      current.focus();
+
+      // Trigger a DOM 'input' event
+      const event = new Event("input", { bubbles: true });
+      current.dispatchEvent(event);
+    },
+    [templateInput.current]
+  );
 
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
@@ -173,9 +188,39 @@ const FoundationTab: React.FunctionComponent<{
           Template
         </Form.Label>
         <Col sm={10}>
+          <div>
+            <span>Insert at cursor:</span>
+            <a
+              href="#"
+              className="mx-2"
+              role="button"
+              onClick={(e) => {
+                insertSnippet("{{{ caption }}}");
+                e.preventDefault();
+              }}
+            >
+              Caption
+            </a>
+            <a
+              href="#"
+              className="mx-2"
+              role="button"
+              onClick={(e) => {
+                insertSnippet("{{{ icon }}}");
+                e.preventDefault();
+              }}
+            >
+              Icon
+            </a>
+          </div>
           <Field name="extensionPoint.definition.template">
             {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="textarea" rows={4} {...field} />
+              <Form.Control
+                as="textarea"
+                rows={4}
+                {...field}
+                ref={templateInput}
+              />
             )}
           </Field>
         </Col>
