@@ -56,20 +56,21 @@ function validateReaderDefinition(
   }
 }
 
-type Read = (config: any, root: ReaderRoot) => Promise<ReaderOutput>;
+export type Read<TConfig = unknown> = (
+  config: TConfig,
+  root: ReaderRoot
+) => Promise<ReaderOutput>;
 
-const _readerFactories: {
-  [type: string]: Read;
-} = {};
+const _readerFactories = new Map<string, Read>();
 
 export function registerFactory(readerType: string, read: Read): void {
-  _readerFactories[readerType] = read;
+  _readerFactories.set(readerType, read);
 }
 
 export function makeRead(
   config: ReaderTypeConfig
 ): (root: ReaderRoot) => Promise<ReaderOutput> {
-  const doRead = _readerFactories[config.type];
+  const doRead = _readerFactories.get(config.type);
   if (!doRead) {
     throw new Error(`Reader type ${config.type} not implemented`);
   }
@@ -103,8 +104,8 @@ export function readerFactory(component: unknown): IReader {
       return await checkAvailable(isAvailable);
     }
 
-    async read(root: HTMLElement | Document): Promise<ReaderOutput> {
-      const doRead = _readerFactories[reader.type];
+    async read(root: ReaderRoot): Promise<ReaderOutput> {
+      const doRead = _readerFactories.get(reader.type);
       if (doRead) {
         return doRead(definition.reader as any, root);
       } else {

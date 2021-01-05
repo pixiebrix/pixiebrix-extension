@@ -501,7 +501,10 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   getReaderRoot($containerElement: JQuery): HTMLElement | Document {
     const selector = this._definition.readerSelector;
     if (selector) {
-      const $elt = $($containerElement).parents(selector);
+      if ($containerElement.length > 1) {
+        console.warn("getReaderRoot called with multiple containerElements");
+      }
+      const $elt = $containerElement.parents(selector);
       if ($elt.length > 1) {
         throw new Error(
           `Found multiple elements for reader selector: ${selector}`

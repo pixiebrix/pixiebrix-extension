@@ -15,19 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { registerFactory } from "@/blocks/readers/factory";
+import { Read, registerFactory } from "@/blocks/readers/factory";
 import { Framework } from "@/messaging/constants";
-import { ReaderOutput } from "@/core";
-import { castArray, fromPairs } from "lodash";
+import { ReaderOutput, ReaderRoot } from "@/core";
+import { castArray, fromPairs, compact } from "lodash";
 import { getComponentData, ReadPayload } from "@/pageScript/protocol";
+import { safeCssSelector } from "@/nativeEditor/infer";
 
 type FrameworkConfig = ReadPayload & {
   // Legacy emberjs reader config; now handled via pathSpec
   attrs: string | string[];
 };
 
-function makeRead(framework: Framework) {
-  async function read(reader: FrameworkConfig): Promise<ReaderOutput> {
+function isHTMLElement(root: ReaderRoot): root is HTMLElement {
+  return root !== document;
+}
+
+function makeRead(framework: Framework): Read<FrameworkConfig> {
+  async function read(
+    reader: FrameworkConfig,
+    root: ReaderRoot
+  ): Promise<ReaderOutput> {
     const {
       selector,
       rootProp,
@@ -37,9 +45,13 @@ function makeRead(framework: Framework) {
       pathSpec,
     } = reader;
 
+    const rootSelector = isHTMLElement(root)
+      ? safeCssSelector(root as HTMLElement)
+      : null;
+
     return await getComponentData({
       framework,
-      selector,
+      selector: compact([rootSelector, selector]).join(" "),
       rootProp,
       waitMillis,
       traverseUp,
