@@ -99,7 +99,7 @@ const ElementWizard: React.FunctionComponent<{
 
   const remove = useCallback(async () => {
     try {
-      await nativeOperations.clear(port, {
+      await nativeOperations.clearDynamicElements(port, {
         uuid: element.uuid,
       });
     } catch (reason) {

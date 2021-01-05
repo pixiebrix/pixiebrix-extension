@@ -90,6 +90,12 @@ if (typeof chrome === "object" && !chrome.contentScripts) {
         }
 
         for (const file of js) {
+          console.debug("registerPolyfill:executeScript", {
+            tabId,
+            frameId,
+            url,
+          });
+
           chrome.tabs.executeScript(tabId, {
             ...file,
             matchAboutBlank,

@@ -23,6 +23,7 @@ import {
   detectFrameworks,
   getTabInfo,
   injectScript,
+  awaitPermissions,
 } from "@/background/devtools";
 import useAsyncEffect from "use-async-effect";
 
@@ -59,55 +60,91 @@ export const DevToolsContext = React.createContext(initialValue);
 
 export function useMakeContext(): [Context, () => Promise<void>] {
   const [context, setContext] = useState(initialValue);
+  const [connectSequence, setConnectSequence] = useState(0);
 
   const connect = useCallback(async () => {
-    let hasPermissions: boolean;
-    let backgroundPort: Runtime.Port;
+    let hasTabPermissions: boolean;
+    let port: Runtime.Port;
+    let error: unknown;
 
     try {
-      backgroundPort = await connectDevtools();
-      hasPermissions = (await getTabInfo(backgroundPort)).hasPermissions;
+      console.debug("useMakeContext:connectDevtools");
+      port = await connectDevtools();
     } catch (err) {
       setContext({
-        port: backgroundPort,
+        port: null,
         frameworks: [],
-        hasTabPermissions: false,
+        hasTabPermissions: null,
         error: err.toString(),
-      });
-    }
-
-    if (!hasPermissions) {
-      setContext({
-        port: backgroundPort,
-        frameworks: [],
-        hasTabPermissions: false,
       });
       return;
     }
 
-    await injectScript(backgroundPort, { file: "contentScript.js" });
     try {
-      const frameworks = await detectFrameworks(backgroundPort);
-      setContext({ port: backgroundPort, frameworks, hasTabPermissions: true });
+      console.debug("useMakeContext:getTabInfo");
+      hasTabPermissions = (await getTabInfo(port)).hasPermissions;
     } catch (reason) {
-      if (reason.message?.includes("Receiving end does not exist")) {
+      error = reason;
+    }
+
+    if (!hasTabPermissions) {
+      setContext({
+        port,
+        frameworks: [],
+        hasTabPermissions,
+        error: error?.toString(),
+      });
+
+      awaitPermissions(port).then(() => {
+        setConnectSequence((prev) => prev + 1);
+      });
+
+      return;
+    }
+
+    try {
+      console.debug("useMakeContext:injectScript");
+      await injectScript(port, { file: "contentScript.js" });
+    } catch (reason) {
+      setContext({
+        port,
+        frameworks: [],
+        hasTabPermissions,
+        error: reason.toString(),
+      });
+      return;
+    }
+
+    // ok so far
+    setContext({ port, frameworks: [], hasTabPermissions, error: null });
+
+    try {
+      console.debug("useMakeContext:detectFrameworks");
+      const frameworks = await detectFrameworks(port);
+      setContext({ port, frameworks, hasTabPermissions, error: null });
+    } catch (reason) {
+      if (reason?.message?.includes("Receiving end does not exist")) {
         setContext({
-          port: backgroundPort,
+          port,
           frameworks: [],
-          hasTabPermissions: false,
+          hasTabPermissions,
+          error: "Content script not initialized",
         });
       } else {
         setContext({
-          port: backgroundPort,
+          port,
           frameworks: [],
-          hasTabPermissions: false,
-          error: reason,
+          hasTabPermissions,
+          error:
+            reason?.message?.toString() ??
+            reason.toString() ??
+            "Unknown error detecting front-end frameworks",
         });
       }
     }
   }, [setContext]);
 
-  useAsyncEffect(async () => await connect(), []);
+  useAsyncEffect(connect, [connectSequence]);
 
   return [context, connect];
 }

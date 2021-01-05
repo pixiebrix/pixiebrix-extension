@@ -18,9 +18,17 @@
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { connect, PORT_NAME } from "@/background/devtools";
 
+let _cachedPort: Runtime.Port | null = null;
+
 export async function connectDevtools(): Promise<Runtime.Port> {
   const tabId = browser.devtools.inspectedWindow.tabId;
-  console.log(`Installing devtools for tab ${tabId}`);
+
+  if (_cachedPort) {
+    console.debug("Devtools already connected to the background page");
+    return _cachedPort;
+  }
+
+  console.debug(`Connecting devtools to background page for tab: ${tabId}`);
 
   // Create a connection to the background page
   // https://developer.chrome.com/extensions/devtools#detecting-open-close
@@ -29,7 +37,8 @@ export async function connectDevtools(): Promise<Runtime.Port> {
   });
 
   if (browser.runtime.lastError) {
-    console.error("Cannot connect to background page", {
+    // Not helpful to use recordError here because it can't connect to the background page anyway.
+    console.error("Devtools cannot connect to the background page", {
       error: browser.runtime.lastError,
     });
     throw new Error(browser.runtime.lastError.message);
@@ -39,7 +48,14 @@ export async function connectDevtools(): Promise<Runtime.Port> {
     throw new Error("Could not get connection port to background page");
   }
 
+  port.onDisconnect.addListener(() => {
+    if (_cachedPort === port) {
+      _cachedPort = null;
+    }
+  });
+
   await connect(port);
 
+  _cachedPort = port;
   return port;
 }
