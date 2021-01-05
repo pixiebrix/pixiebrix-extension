@@ -20,7 +20,6 @@ import { Framework } from "@/messaging/constants";
 import { ReaderOutput, ReaderRoot } from "@/core";
 import { castArray, fromPairs, compact } from "lodash";
 import { getComponentData, ReadPayload } from "@/pageScript/protocol";
-import { safeCssSelector } from "@/nativeEditor/infer";
 
 type FrameworkConfig = ReadPayload & {
   // Legacy emberjs reader config; now handled via pathSpec
@@ -29,6 +28,18 @@ type FrameworkConfig = ReadPayload & {
 
 function isHTMLElement(root: ReaderRoot): root is HTMLElement {
   return root !== document;
+}
+
+async function asyncFastCssSelector(element: HTMLElement): Promise<string> {
+  // Load async because css-selector-generator references the window variable which fails when
+  // generating headers
+  // @ts-ignore: no types available
+  const getCssSelector = (await import("css-selector-generator")).default;
+  return getCssSelector(element, {
+    // prefer speed over robust/readable selectors
+    combineWithinSelector: false,
+    combineBetweenSelectors: false,
+  });
 }
 
 function makeRead(framework: Framework): Read<FrameworkConfig> {
@@ -46,7 +57,7 @@ function makeRead(framework: Framework): Read<FrameworkConfig> {
     } = reader;
 
     const rootSelector = isHTMLElement(root)
-      ? safeCssSelector(root as HTMLElement)
+      ? await asyncFastCssSelector(root as HTMLElement)
       : null;
 
     return await getComponentData({
