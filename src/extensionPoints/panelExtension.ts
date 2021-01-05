@@ -342,9 +342,17 @@ interface PanelDefaultOptions {
   [key: string]: string;
 }
 
+type PanelPosition =
+  | "append"
+  | "prepend"
+  | {
+      // element to insert the menu item before, selector is relative to the container
+      sibling: string | null;
+    };
+
 export interface PanelDefinition extends ExtensionPointDefinition {
   template: string;
-  position?: "append" | "prepend";
+  position?: PanelPosition;
   containerSelector: string;
   defaultOptions?: PanelDefaultOptions;
 }
@@ -381,14 +389,21 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
 
   addPanel($panel: JQuery): void {
     const { position = "append" } = this._definition;
+
+    if (typeof position !== "string") {
+      throw new Error(`Expected string for panel position`);
+    }
+
     switch (position) {
       case "prepend":
       case "append": {
+        // safe because we're casing the method name
+        // eslint-disable-next-line security/detect-object-injection
         this.$container[position]($panel);
         break;
       }
       default: {
-        throw new Error(`Unexpected position ${position}`);
+        throw new Error(`Unexpected position: ${position}`);
       }
     }
   }

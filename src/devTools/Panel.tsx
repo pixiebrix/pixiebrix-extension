@@ -42,6 +42,7 @@ import "@/blocks/readers";
 import "@/blocks/transformers";
 import "@/blocks/renderers";
 import "@/contrib/index";
+import { sleep } from "@/utils";
 
 const defaultState = { isLoggedIn: false, extension: true };
 
@@ -75,11 +76,12 @@ const Panel: React.FunctionComponent = () => {
     await blockRegistry.fetch();
   }, []);
 
-  const request = useCallback(async () => {
+  const requestPermissions = useCallback(async () => {
     // FIXME: will this work on Firefox? Might need to do as then() b/c it gets confused by await before
     //   the permissions request.
     const { url } = await getTabInfo(context.port);
     if (await browser.permissions.request({ origins: [url] })) {
+      await sleep(500);
       location.reload();
     }
   }, [connect, context.port]);
@@ -93,18 +95,19 @@ const Panel: React.FunctionComponent = () => {
   } else if (context.error) {
     return (
       <Centered>
-        <div>An error occurred: {context.error.toString()}</div>;
+        <div>An error occurred: {context.error}</div>;
       </Centered>
     );
   } else if (!context.port) {
     return (
       <Centered>
+        <p>Initializing connection...</p>
         <div className="d-flex justify-content-center">
           <GridLoader />
         </div>
       </Centered>
     );
-  } else if (!context.hasTabPermissions) {
+  } else if (context.hasTabPermissions === false) {
     return (
       <Centered>
         <p>
@@ -114,10 +117,10 @@ const Panel: React.FunctionComponent = () => {
         <p>
           Grant permanent access to this domain by clicking the button below.
           Or, grant temporary access by clicking on the PixieBrix extension in
-          the extensions dropdown.
+          the extensions dropdown and then refreshing the page.
         </p>
 
-        <Button onClick={request}>Grant Permanent Access</Button>
+        <Button onClick={requestPermissions}>Grant Permanent Access</Button>
       </Centered>
     );
   }

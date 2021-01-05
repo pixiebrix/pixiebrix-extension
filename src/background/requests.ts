@@ -218,11 +218,20 @@ export async function proxyService<TData>(
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
     try {
-      return (await backgroundRequest(requestConfig)) as SanitizedResponse<
-        TData
-      >;
+      return (await backgroundRequest(
+        requestConfig
+      )) as SanitizedResponse<TData>;
     } catch (reason) {
-      throw new RemoteServiceError(reason.response.statusText, reason.response);
+      if (reason.response) {
+        throw new RemoteServiceError(
+          reason.response.statusText,
+          reason.response
+        );
+      } else {
+        const msg = "No response received; see browser network log for error.";
+        console.exception(msg);
+        throw new RemoteServiceError(msg, null);
+      }
     }
   }
 

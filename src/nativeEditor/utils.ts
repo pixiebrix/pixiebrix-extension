@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,11 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export {
-  clear,
-  toggleOverlay,
-  updateDynamicElement,
-  DynamicDefinition,
-} from "./dynamic";
-export { insertButton, dragButton } from "./insertButton";
-export { insertPanel } from "./insertPanel";
+import jQuery from "jquery";
+
+export function requireSingleElement(selector: string): HTMLElement {
+  const $elt = jQuery(document).find(selector);
+  if (!$elt.length) {
+    throw new Error(`No elements found for selector: '${selector}'`);
+  } else if ($elt.length > 1) {
+    throw new Error(`Multiple elements found for selector: '${selector}'`);
+  }
+  return $elt.get(0);
+}

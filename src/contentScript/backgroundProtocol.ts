@@ -40,7 +40,7 @@ export class ContentScriptActionError extends Error {
   }
 }
 
-const handlers: { [key: string]: HandlerEntry } = {};
+const handlers = new Map<string, HandlerEntry>();
 
 export function allowSender(sender: Runtime.MessageSender): boolean {
   return sender.id === browser.runtime.id;
@@ -51,7 +51,7 @@ function contentScriptListener(
   sender: Runtime.MessageSender
 ): Promise<unknown> | undefined {
   const { type, payload } = request;
-  const { handler, options } = handlers[type] ?? {};
+  const { handler, options } = handlers.get(type) ?? {};
 
   if (allowSender(sender) && handler) {
     console.debug(`Handling contentScript action ${type}`);
@@ -64,7 +64,9 @@ function contentScriptListener(
       return;
     } else {
       return handlerPromise.catch((reason) => {
-        console.debug(`Handler returning error response for ${type}`);
+        console.debug(`Handler returning error response for ${type}`, {
+          reason,
+        });
         return toErrorResponse(type, reason);
       });
     }
@@ -95,10 +97,11 @@ export function notifyContentScripts(
 
   if (isContentScript()) {
     console.debug(`Installed content script handler for notification ${type}`);
-    handlers[fullType] = {
-      handler: method as any,
+    handlers.set(fullType, {
+      // HandlerEntry's Handler field has a return value, not void
+      handler: method as (...args: unknown[]) => null,
       options: { asyncResponse: false },
-    };
+    });
   }
 
   return async (tabId: number | null, ...args: unknown[]) => {
@@ -175,7 +178,7 @@ export function liftContentScript<R extends SerializableResponse>(
 
   if (isContentScript()) {
     console.debug(`Installed content script handler for action ${type}`);
-    handlers[fullType] = { handler: method, options };
+    handlers.set(fullType, { handler: method, options });
   }
 
   return async (tabId: number, ...args: unknown[]) => {

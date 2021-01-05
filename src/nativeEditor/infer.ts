@@ -15,12 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { uniq, compact, sortBy } from "lodash";
-const BUTTON_TAGS = ["li", "button", "a", "span", "input", "svg"];
+import { uniq, compact, sortBy, partial } from "lodash";
+const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
+const BUTTON_SELECTORS: string[] = ["[role='button']"];
 const ICON_TAGS = ["svg"];
 const MENU_TAGS = ["ul", "tbody"];
 const CAPTION_TAGS = ["td", "a", "li", "span"];
 const MULTI_ATTRS = ["class", "rel"];
+
+const ATTR_EXCLUDE_PATTERNS = [
+  /^data([\w-]*)-test([\w-]*)$/,
+  /^data-cy$/,
+  /^tabindex$/,
+];
 
 // @ts-ignore: no types available
 import getCssSelector from "css-selector-generator";
@@ -62,7 +69,14 @@ function commonStructure(
 
   // Find the common attributes between the elements
   for (const attrIndex in Object.keys(attributes)) {
+    // safe because we're getting from Object.keys
+    // eslint-disable-next-line security/detect-object-injection
     const attrName = attributes[attrIndex].name;
+
+    if (ATTR_EXCLUDE_PATTERNS.some((x) => x.test(attrName))) {
+      continue;
+    }
+
     const value = commonAttr($items, attrName);
     if (value != null) {
       $common.attr(attrName, value);
@@ -106,39 +120,46 @@ function commonHTML(tag: string, $items: JQuery<HTMLElement>): string {
 
 // https://gist.github.com/getify/3667624
 function escapeDoubleQuotes(str: string): string {
-  return str.replace(/\\([\s\S])|(")/g, "\\$1$2"); // thanks @slevithan!
+  return str.replace(/\\([\s\S])|(")/g, "\\$1$2");
 }
 
 export function safeCssSelector(
   element: HTMLElement,
-  selectors: string[] = []
+  selectors: string[] = [],
+  root: Element = undefined
 ): string {
   // https://github.com/fczbkk/css-selector-generator
   return getCssSelector(element, {
     blacklist: ["#ember*"],
     selectors: selectors,
     combineWithinSelector: true,
+    combineBetweenSelectors: true,
+    // convert null to undefined, because getCssSelector bails otherwise
+    root: root ?? undefined,
   });
 }
 
 /**
  * Generate some CSS selector variants for an element.
  */
-export function inferSelectors(element: HTMLElement): string[] {
+export function inferSelectors(
+  element: HTMLElement,
+  root: Element = undefined
+): string[] {
+  const makeSelector = partial(
+    safeCssSelector,
+    element,
+    partial.placeholder,
+    root
+  );
   return sortBy(
     uniq(
       compact([
-        safeCssSelector(element, [
-          "id",
-          "class",
-          "tag",
-          "attribute",
-          "nthchild",
-        ]),
-        safeCssSelector(element, ["tag", "class", "attribute", "nthchild"]),
-        safeCssSelector(element, ["id", "tag", "attribute", "nthchild"]),
-        safeCssSelector(element, ["id", "tag", "attribute"]),
-        safeCssSelector(element),
+        makeSelector(["id", "class", "tag", "attribute", "nthchild"]),
+        makeSelector(["tag", "class", "attribute", "nthchild"]),
+        makeSelector(["id", "tag", "attribute", "nthchild"]),
+        makeSelector(["id", "tag", "attribute"]),
+        makeSelector(undefined),
       ])
     ).filter((x) => x.trim() !== ""),
     (x) => x.length
@@ -256,7 +277,7 @@ export function inferButtonHTML(
     return commonHTML(selected[0].tagName, $(children));
   }
 
-  for (const tag of BUTTON_TAGS) {
+  for (const tag of [...BUTTON_SELECTORS, ...BUTTON_TAGS]) {
     const $items = $container.children(tag);
 
     if ($items.length) {

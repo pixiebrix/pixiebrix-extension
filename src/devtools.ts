@@ -19,13 +19,14 @@
 
 import "regenerator-runtime/runtime";
 import "core-js/stable";
+import { unary } from "lodash";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 
 import {
   injectScript,
   readSelectedElement,
-  clear,
+  clearDynamicElements,
 } from "@/background/devtools";
 import { reportError } from "@/telemetry/logging";
 
@@ -99,7 +100,7 @@ async function initialize(port: Runtime.Port) {
 
   if (injected) {
     // clear out any dynamic stuff from the previous devtools session
-    await clear(port, {});
+    await clearDynamicElements(port, {});
   }
 
   installSidebarPane(port);
@@ -107,7 +108,5 @@ async function initialize(port: Runtime.Port) {
 }
 
 if (browser.devtools.inspectedWindow.tabId) {
-  connectDevtools()
-    .then((port) => initialize(port))
-    .catch((reason) => reportError(reason));
+  connectDevtools().then(initialize).catch(unary(reportError));
 }

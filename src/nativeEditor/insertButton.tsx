@@ -22,13 +22,15 @@ import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { ElementInfo } from "./frameworks";
 import { userSelectElement } from "./selector";
 import * as pageScript from "@/pageScript/protocol";
-import { findContainer, inferButtonHTML } from "./infer";
+import { findContainer, inferButtonHTML, inferSelectors } from "./infer";
 import {
+  DATA_ATTR,
   MenuDefinition,
   MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { html as beautifyHTML } from "js-beautify";
 import { DynamicDefinition } from "./dynamic";
+import dragula from "dragula";
 
 export const DEFAULT_ACTION_CAPTION = "Action";
 
@@ -43,6 +45,71 @@ export interface ButtonSelectionResult {
   item: Pick<MenuItemExtensionConfig, "caption">;
   containerInfo: ElementInfo;
 }
+
+export interface DragResult {
+  target: ElementInfo;
+  // element to place the button before
+  sibling: string[] | null;
+}
+
+function dragPromise(uuid: string): Promise<DragResult | null> {
+  const drake = dragula({
+    isContainer: (el?: Element) => {
+      return ["DIV", "SECTION"].includes(el.tagName);
+    },
+    moves: (el?: Element) => {
+      return el.getAttribute(DATA_ATTR) === uuid;
+    },
+  });
+
+  let resolved = false;
+
+  return new Promise((resolve) => {
+    drake.on("dragend", () => {
+      if (!resolved) {
+        resolve(null);
+      }
+      drake.destroy();
+    });
+
+    drake.on(
+      "drop",
+      async (
+        el: Element,
+        target: Element,
+        source: Element,
+        sibling: Element
+      ) => {
+        resolved = true;
+
+        console.debug("Drop element", {
+          el,
+          target,
+          source,
+          sibling,
+        });
+
+        const selectors = inferSelectors(target as HTMLElement);
+        const targetInfo = await pageScript.getElementInfo({
+          selector: selectors[0],
+        });
+        resolve({
+          target: targetInfo,
+          sibling: sibling
+            ? inferSelectors(sibling as HTMLElement, target)
+            : null,
+        });
+      }
+    );
+  });
+}
+
+export const dragButton = liftContentScript(
+  "DRAG_BUTTON",
+  async ({ uuid }: { uuid: string }) => {
+    return await dragPromise(uuid);
+  }
+);
 
 export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
   const selected = await userSelectElement();

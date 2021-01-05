@@ -53,11 +53,6 @@ const ElementWizard: React.FunctionComponent<{
 
   const [step, setStep] = useState(wizard[0].step);
 
-  const TabPane = useMemo(
-    () => wizard.find((x) => x.step === step)?.Component,
-    [wizard, step]
-  );
-
   const {
     errors,
     isSubmitting,
@@ -104,7 +99,7 @@ const ElementWizard: React.FunctionComponent<{
 
   const remove = useCallback(async () => {
     try {
-      await nativeOperations.clear(port, {
+      await nativeOperations.clearDynamicElements(port, {
         uuid: element.uuid,
       });
     } catch (reason) {
@@ -118,7 +113,7 @@ const ElementWizard: React.FunctionComponent<{
   }
 
   return (
-    <Tab.Container activeKey={step}>
+    <Tab.Container activeKey={step} key={element.uuid}>
       <Form
         autoComplete="off"
         noValidate
@@ -170,8 +165,11 @@ const ElementWizard: React.FunctionComponent<{
           </Button>
         </Nav>
         {status && <div className="text-danger">{status}</div>}
-
-        {TabPane && <TabPane eventKey={step} />}
+        <Tab.Content className="h-100">
+          {wizard.map(({ Component, step }) => (
+            <Component key={step} eventKey={step} />
+          ))}
+        </Tab.Content>
       </Form>
     </Tab.Container>
   );

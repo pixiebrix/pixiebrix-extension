@@ -63,9 +63,9 @@ export class UnknownServiceError extends Error {
 }
 
 export class RemoteServiceError extends Error {
-  response: AxiosResponse;
+  response: AxiosResponse | null;
 
-  constructor(message: string, response: AxiosResponse) {
+  constructor(message: string, response: AxiosResponse | null) {
     super(message);
     this.name = "RemoteServiceError";
     this.response = response;

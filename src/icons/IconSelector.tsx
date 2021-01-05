@@ -39,26 +39,33 @@ function customSingleValue({ data }: { data: IconOption }): JSX.Element {
 
 interface OwnProps {
   value: { id: string; library: IconLibrary };
-  onChange: (option: IconOption) => void;
+  isClearable?: boolean;
+  onChange: (option: IconOption | null) => void;
 }
 
 const IconSelector: React.FunctionComponent<OwnProps> = ({
   value,
+  isClearable = true,
   onChange,
 }) => {
-  const defaultValue = useMemo(() => {
+  const selectedOption = useMemo(() => {
     if (value) {
       return iconOptions.find(
         (x) => x.value.library === value.library && x.value.id === value.id
       );
+    } else {
+      return null;
     }
   }, [value]);
 
   return (
     <Select
-      value={defaultValue}
+      isClearable={isClearable}
+      value={selectedOption}
       options={iconOptions}
       onChange={onChange}
+      // react-select-virtualized doesn't support styling the elements in the dropdown, so can't show
+      // the icons in the actual dropdown
       components={{ SingleValue: customSingleValue }}
     />
   );
