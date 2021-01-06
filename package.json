@@ -84,7 +84,7 @@
     "content-scripts-register-polyfill": "^1.0.5",
     "copy-to-clipboard": "^3.3.1",
     "copy-webpack-plugin": "^6.3.2",
-    "core-js": "^3.8.1",
+    "core-js": "^3.8.2",
     "css-loader": "^5.0.0",
     "css-selector-generator": "^2.1.2",
     "deep-equal": "^2.0.5",
