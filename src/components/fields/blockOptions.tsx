@@ -16,19 +16,17 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import Form from "react-bootstrap/Form";
-import isEmpty from "lodash/isEmpty";
-import Button from "react-bootstrap/Button";
+import { Button, Form } from "react-bootstrap";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
 import { Schema } from "@/core";
 import { ObjectField } from "@/components/fields/FieldTable";
 import { FieldArray, useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import identity from "lodash/identity";
 import Select, { OptionsType } from "react-select";
-import { uniq, compact, sortBy } from "lodash";
+import { uniq, compact, sortBy, isEmpty, identity } from "lodash";
 import Creatable from "react-select/creatable";
+import BootstrapSwitchButton from "bootstrap-switch-button-react";
 
 const TextField: React.FunctionComponent<FieldProps<string>> = ({
   schema,
@@ -77,6 +75,9 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         onChange={(option) => helpers.setValue((option as any)?.value)}
       />
     );
+  } else if (typeof value === "object") {
+    console.warn("Cannot edit object as text", { schema, value });
+    control = <div>Cannot edit object value as text</div>;
   } else {
     control = (
       <Form.Control
@@ -109,14 +110,23 @@ const BooleanField: React.FunctionComponent<FieldProps<boolean>> = ({
   schema,
   ...props
 }) => {
-  const [field] = useField(props);
+  const [field, , helpers] = useField(props);
 
   return (
     <Form.Group>
-      <Form.Check
-        type="checkbox"
-        label={label ?? fieldLabel(field.name)}
-        {...field}
+      <div>
+        <Form.Label className="mr-2">
+          {label ?? fieldLabel(field.name)}
+        </Form.Label>
+      </div>
+      <BootstrapSwitchButton
+        size="sm"
+        onstyle="info"
+        offstyle="light"
+        onlabel="On"
+        offlabel="Off"
+        checked={field.value ?? false}
+        onChange={(value) => helpers.setValue(value)}
       />
       {schema.description && (
         <Form.Text className="text-muted">{schema.description}</Form.Text>
@@ -125,6 +135,8 @@ const BooleanField: React.FunctionComponent<FieldProps<boolean>> = ({
   );
 };
 
+// ok to use object here since we don't have any key-specific logic
+// eslint-disable-next-line @typescript-eslint/ban-types
 const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
   schema,
   label,
@@ -170,7 +182,9 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
                 );
               })}
             </ul>
-            <Button onClick={() => push({})}>Add Item</Button>
+            <Button onClick={() => push(getDefaultArrayItem(schemaItems))}>
+              Add Item
+            </Button>
           </>
         )}
       </FieldArray>
@@ -180,18 +194,59 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
 
 type FieldComponent<T = unknown> = React.FunctionComponent<FieldProps<T>>;
 
+function makeOneOfField(oneOf: Schema): FieldComponent {
+  const Renderer = getDefaultField(oneOf);
+  const Component = (props: FieldProps<unknown>) => (
+    <Renderer {...props} schema={oneOf} />
+  );
+  Component.displayName = Renderer.displayName;
+  return Component;
+}
+
+type TypePredicate = (schema: Schema) => boolean;
+
+const textPredicate = (schema: Schema) => schema.type === "string";
+const booleanPredicate = (schema: Schema) => schema.type === "boolean";
+
+function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
+  return schema.oneOf?.find(
+    (x) => typeof x === "object" && predicate(x)
+  ) as Schema;
+}
+
+function getDefaultArrayItem(schema: Schema): unknown {
+  if (schema.default) {
+    return schema.default;
+  } else if (textPredicate(schema)) {
+    return "";
+  } else if (schema.type === "object") {
+    return {};
+  } else if (findOneOf(schema, booleanPredicate)) {
+    return false;
+  } else if (findOneOf(schema, textPredicate)) {
+    return "";
+  } else {
+    return null;
+  }
+}
+
 export function getDefaultField(fieldSchema: Schema): FieldComponent {
-  switch (fieldSchema.type) {
-    case "boolean":
-      return BooleanField;
-    case "array":
-      return ArrayField;
-    case "object":
-      return ObjectField;
-    case "integer":
-    case "string":
-    default:
-      return TextField;
+  if (fieldSchema.type === "array") {
+    return ArrayField;
+  } else if (fieldSchema.type === "object") {
+    return ObjectField;
+  } else if (booleanPredicate(fieldSchema)) {
+    // should this be a TextField so it can be dynamically determined?
+    return BooleanField;
+  } else if (textPredicate(fieldSchema)) {
+    return TextField;
+  } else if (findOneOf(fieldSchema, booleanPredicate)) {
+    return makeOneOfField(findOneOf(fieldSchema, booleanPredicate));
+  } else if (findOneOf(fieldSchema, textPredicate)) {
+    return makeOneOfField(findOneOf(fieldSchema, textPredicate));
+  } else {
+    // number, string, other primitives, etc.
+    return TextField;
   }
 }
 

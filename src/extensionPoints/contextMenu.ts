@@ -39,7 +39,7 @@ import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import castArray from "lodash/castArray";
+import { castArray } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { ensureContextMenu } from "@/background/contextMenus";
 import { registerHandler } from "@/contentScript/contextMenus";
@@ -52,13 +52,34 @@ interface ContextMenuConfig {
 }
 
 let clickedElement: HTMLElement = null;
+let installedHandler = false;
 
-function setActiveElement(event: MouseEvent) {
-  clickedElement = event.target as HTMLElement;
+const BUTTON_SECONDARY = 2;
+
+function setActiveElement(event: MouseEvent): void {
+  // This method can't throw, otherwise I think it breaks event dispatching because we're passing
+  // useCapture: true to the event listener
+  clickedElement = null;
+  try {
+    if (event?.button === BUTTON_SECONDARY) {
+      clickedElement = event?.target as HTMLElement;
+    }
+  } catch (err) {
+    reportError(err);
+  }
 }
 
-function installMouseHandler() {
-  document.addEventListener("mousedown", setActiveElement, true);
+function installMouseHandlerOnce(): void {
+  if (!installedHandler) {
+    installedHandler = true;
+    // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
+    document.addEventListener("mousedown", setActiveElement, {
+      // handle it first in case a target beneath it cancels the event
+      capture: true,
+      // for performance, indicate we won't call preventDefault
+      passive: true,
+    });
+  }
 }
 
 class ContextMenuReader extends Reader {
@@ -114,9 +135,7 @@ class ContextMenuReader extends Reader {
 /**
  * See also: https://developer.chrome.com/extensions/contextMenus
  */
-export abstract class ContextMenuExtensionPoint extends ExtensionPoint<
-  ContextMenuConfig
-> {
+export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMenuConfig> {
   protected constructor(
     id: string,
     name: string,
@@ -136,11 +155,11 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<
           "The text to display in the item. When the context is selection, use %s within the string to show the selected text.",
       },
       contexts: {
-        description: "The different contexts a menu can appear in.",
         default: ["page"],
         oneOf: [
           {
             type: "string",
+            description: "The context the menu will appear in",
             enum: [
               "all",
               "page",
@@ -153,9 +172,11 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<
               "audio",
               "page",
             ],
+            default: "page",
           },
           {
             type: "array",
+            description: "One or more contexts for the menu to appear in",
             items: {
               type: "string",
               enum: [
@@ -192,10 +213,16 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<
     return blockList(extension.config.action);
   }
 
+  uninstall(): void {
+    clickedElement = null;
+    this.extensions.splice(0, this.extensions.length);
+    document.removeEventListener("mousedown", setActiveElement);
+  }
+
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
     if (available) {
-      installMouseHandler();
+      installMouseHandlerOnce();
     }
     return available;
   }
@@ -224,10 +251,10 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<
     });
 
     registerHandler(extension.id, async (clickData) => {
+      const reader = await this.getBaseReader();
       const ctxt = {
-        ...(await (await this.getBaseReader()).read(
-          clickedElement ?? document
-        )),
+        ...(await reader.read(clickedElement ?? document)),
+        // clickData provides the data from schema defined above in ContextMenuReader
         ...clickData,
       };
       await reducePipeline(actionConfig, ctxt, extensionLogger, document, {

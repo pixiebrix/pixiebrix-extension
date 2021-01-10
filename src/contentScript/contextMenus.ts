@@ -20,15 +20,18 @@ import { Menus } from "webextension-polyfill-ts";
 
 type Handler = (args: Menus.OnClickData) => Promise<void>;
 
-const handlers: { [extensionId: string]: Handler } = {};
+const handlers = new Map<string, Handler>();
 
 export function registerHandler(extensionId: string, handler: Handler): void {
-  handlers[extensionId] = handler;
+  if (handlers.has(extensionId)) {
+    console.warn(`Handler already installed for extension: ${extensionId}`);
+  }
+  handlers.set(extensionId, handler);
 }
 
 export const handleMenuAction = liftContentScript(
   "HANDLE_MENU_ACTION",
   async (extensionId: string, args: Menus.OnClickData) => {
-    await handlers[extensionId](args);
+    await handlers.get(extensionId)(args);
   }
 );

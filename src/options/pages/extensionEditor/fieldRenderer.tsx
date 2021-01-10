@@ -25,22 +25,49 @@ import BlockField, {
 import IconField from "@/components/fields/IconField";
 import UnsupportedField from "@/components/fields/UnknownField";
 import { reportError } from "@/telemetry/logging";
+import BooleanField from "@/components/fields/BooleanField";
+
+function makeOneOfField(
+  oneOf: Schema
+): React.FunctionComponent<FieldProps<unknown>> {
+  const Renderer = defaultFieldRenderer(oneOf);
+  const Component = (props: FieldProps<unknown>) => (
+    <Renderer {...props} schema={oneOf} />
+  );
+  Component.displayName = Renderer.displayName;
+  return Component;
+}
+
+type TypePredicate = (schema: Schema) => boolean;
+
+const textPredicate = (schema: Schema) => schema.type === "string";
+const booleanPredicate = (schema: Schema) => schema.type === "boolean";
+const blockPredicate = (schema: Schema) =>
+  !!SCHEMA_TYPE_TO_BLOCK_PROPERTY[schema["$ref"]];
+
+function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
+  return schema.oneOf?.find(
+    (x) => typeof x === "object" && predicate(x)
+  ) as Schema;
+}
 
 export function defaultFieldRenderer(
   schema: Schema
 ): React.FunctionComponent<FieldProps<unknown>> {
-  if (schema.type === "string" || schema.type === "boolean") {
+  if (booleanPredicate(schema)) {
+    return BooleanField;
+  } else if (textPredicate(schema)) {
     return TextField;
-  } else if (SCHEMA_TYPE_TO_BLOCK_PROPERTY[schema["$ref"]]) {
+  } else if (blockPredicate(schema)) {
     return BlockField;
   } else if (schema["$ref"] === "https://app.pixiebrix.com/schemas/icon#") {
     return IconField;
-  } else if (
-    (schema["oneOf"] ?? []).some(
-      (x) => SCHEMA_TYPE_TO_BLOCK_PROPERTY[(x as any)["$ref"]]
-    )
-  ) {
+  } else if (findOneOf(schema, blockPredicate)) {
     return BlockField;
+  } else if (findOneOf(schema, textPredicate)) {
+    return makeOneOfField(findOneOf(schema, textPredicate));
+  } else if (findOneOf(schema, booleanPredicate)) {
+    return makeOneOfField(findOneOf(schema, booleanPredicate));
   } else if (schema["$ref"] && !schema.type) {
     throw new Error(`Unexpected $ref ${schema["$ref"]}`);
   } else {

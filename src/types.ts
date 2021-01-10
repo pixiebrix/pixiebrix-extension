@@ -110,6 +110,8 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
       console.warn(
         `Extension ${extension.id} already registered with the extension point`
       );
+      // index is guaranteed to be a number, and this.extensions is an array
+      // eslint-disable-next-line security/detect-object-injection
       this.extensions[index] = extension;
     } else {
       this.extensions.push(extension);
@@ -125,7 +127,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   abstract async install(): Promise<boolean>;
 
   uninstall(): void {
-    console.warn("Uninstall not implemented for this extension point");
+    console.warn(`Uninstall not implemented for extension point: ${this.id}`);
   }
 
   abstract async run(): Promise<void>;

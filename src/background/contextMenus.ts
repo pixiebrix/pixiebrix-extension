@@ -23,7 +23,7 @@ import { handleMenuAction } from "@/contentScript/contextMenus";
 
 type MenuItemId = number | string;
 
-const registered: { [extensionId: string]: MenuItemId } = {};
+const extensionMenuItems = new Map<string, MenuItemId>();
 
 interface SelectionMenuOptions {
   extensionId: string;
@@ -33,12 +33,13 @@ interface SelectionMenuOptions {
 }
 
 function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
-  if (registered[info.menuItemId] != null) {
-    handleMenuAction(tab.id, info.menuItemId as string, info).catch(
-      (reason) => {
-        return reportError(`Error processing context menu action: ${reason}`);
-      }
-    );
+  if (
+    typeof info.menuItemId === "string" &&
+    extensionMenuItems.has(info.menuItemId)
+  ) {
+    handleMenuAction(tab.id, info.menuItemId, info).catch((reason) => {
+      reportError(`Error processing context menu action: ${reason}`);
+    });
   }
 }
 
@@ -49,9 +50,11 @@ export const uninstallContextMenu = liftBackground(
       await browser.contextMenus.remove(extensionId);
       console.debug(`Uninstalled context menu ${extensionId}`);
     } catch (reason) {
-      // ignore: might not exists
+      console.debug(
+        `Could not uninstall context menu ${extensionId}: ${reason}`
+      );
     }
-    delete registered[extensionId];
+    extensionMenuItems.delete(extensionId);
   }
 );
 
@@ -74,16 +77,17 @@ export const ensureContextMenu = liftBackground(
 
     try {
       // https://developer.chrome.com/extensions/contextMenus#method-create
-      if (registered[extensionId] != null) {
+      if (extensionMenuItems.has(extensionId)) {
         await browser.contextMenus.update(
-          registered[extensionId],
+          extensionMenuItems.get(extensionId),
           createProperties
         );
       } else {
-        registered[extensionId] = await browser.contextMenus.create({
+        const menuId = await browser.contextMenus.create({
           ...createProperties,
           id: extensionId,
         });
+        extensionMenuItems.set(extensionId, menuId);
       }
     } catch (reason) {
       console.error(`Error registering context menu item: ${reason}`);

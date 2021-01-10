@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,26 +15,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Col, Form, Row } from "react-bootstrap";
+import { Form, Row, Col } from "react-bootstrap";
 import React, { FunctionComponent } from "react";
 import { FieldProps } from "@/components/fields/propTypes";
 import { useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
+import BootstrapSwitchButton from "bootstrap-switch-button-react";
 
-const UnsupportedField: FunctionComponent<FieldProps<unknown>> = ({
+const BooleanField: FunctionComponent<FieldProps<string>> = ({
   label,
   schema,
   ...props
 }) => {
-  const [{ ...field }, meta] = useField(props);
-
+  const [{ value, ...field }, meta, helpers] = useField(props);
   return (
     <Form.Group as={Row} controlId={field.name}>
       <Form.Label column sm="2">
         {label ?? fieldLabel(field.name)}
       </Form.Label>
       <Col sm="10">
-        <div>Unsupported field type: {schema.type ?? "<No type found>"}</div>
+        <BootstrapSwitchButton
+          size="sm"
+          onstyle="info"
+          offstyle="light"
+          onlabel="On"
+          offlabel="Off"
+          checked={value ?? false}
+          onChange={(value) => helpers.setValue(value)}
+        />
         {schema.description && (
           <Form.Text className="text-muted">{schema.description}</Form.Text>
         )}
@@ -48,4 +56,4 @@ const UnsupportedField: FunctionComponent<FieldProps<unknown>> = ({
   );
 };
 
-export default UnsupportedField;
+export default BooleanField;

@@ -25,10 +25,14 @@ declare global {
   }
 }
 
+// Usages below are safe because we're using our own symbol defined above
+// eslint-disable-next-line security/detect-object-injection
 if (!window[PIXIEBRIX_SYMBOL]) {
+  // eslint-disable-next-line security/detect-object-injection
   window[PIXIEBRIX_SYMBOL] = uuidv4();
 } else {
   throw Error(
+    // eslint-disable-next-line security/detect-object-injection
     `PixieBrix contentScript already installed: ${window[PIXIEBRIX_SYMBOL]}`
   );
 }
@@ -66,6 +70,8 @@ const contextPromise = whoAmI()
   .then((sender) => {
     updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
     console.debug(
+      // Safe because we're using our own symbol defined above
+      // eslint-disable-next-line security/detect-object-injection
       `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}: ${window[PIXIEBRIX_SYMBOL]}`
     );
   })
