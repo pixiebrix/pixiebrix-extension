@@ -119,6 +119,9 @@ module.exports = {
   ],
   module: {
     rules: [
+      // https://github.com/webpack/webpack/issues/3017#issuecomment-285954512
+      // prevent lodash from overriding window._
+      { parser: { amd: false } },
       {
         test: /\.s?css$/,
         use: [

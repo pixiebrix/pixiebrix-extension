@@ -38,66 +38,63 @@ function isResponseType(type = ""): boolean {
   return type.endsWith(fulfilledSuffix) || type.endsWith(rejectedSuffix);
 }
 
-const contentScriptHandlers: { [key: string]: HandlerEntry } = {};
-const pageFulfilledCallbacks: {
-  [nonce: string]: (response: unknown) => void;
-} = {};
-const pageRejectedCallbacks: {
-  [nonce: string]: (response: unknown) => void;
-} = {};
+const contentScriptHandlers = new Map<string, HandlerEntry>();
+const pageFulfilledCallbacks = new Map<string, (response: unknown) => void>();
+const pageRejectedCallbacks = new Map<string, (response: unknown) => void>();
 
 function initContentScriptListener() {
   const targetOrigin = document.defaultView.origin;
 
-  document.defaultView.addEventListener("message", function (
-    event: MessageEvent
-  ) {
-    const { type, meta, payload } = event.data;
-    const { handler, options: { asyncResponse } = { asyncResponse: true } } =
-      contentScriptHandlers[type] ?? {};
+  document.defaultView.addEventListener(
+    "message",
+    function (event: MessageEvent) {
+      const { type, meta, payload } = event.data;
+      const { handler, options: { asyncResponse } = { asyncResponse: true } } =
+        contentScriptHandlers.get(type) ?? {};
 
-    if (event.source === document.defaultView && handler) {
-      const handlerPromise = new Promise((resolve) =>
-        resolve(handler(...payload))
-      );
-
-      const send = (data: unknown, error = false) => {
-        document.defaultView.postMessage(
-          {
-            type: `${type}${error ? rejectedSuffix : fulfilledSuffix}`,
-            error,
-            meta: { nonce: meta.nonce },
-            payload: data,
-          },
-          targetOrigin
+      if (event.source === document.defaultView && handler) {
+        const handlerPromise = new Promise((resolve) =>
+          resolve(handler(...payload))
         );
-      };
 
-      handlerPromise
-        .then((response) => {
-          if (asyncResponse) {
-            console.debug(
-              `Handler returning success response for ${type} with nonce ${meta.nonce}`
-            );
-            send(response);
-          }
-        })
-        .catch((reason) => {
-          if (asyncResponse) {
-            console.debug(
-              `Handler returning error response for ${type} with nonce ${meta.nonce}`
-            );
-            send(toErrorResponse(type, reason), true);
-          } else {
-            console.warn(
-              `An error occurred while processing notification ${type}`,
-              reason
-            );
-          }
-        });
-      return asyncResponse;
+        const send = (data: unknown, error = false) => {
+          document.defaultView.postMessage(
+            {
+              type: `${type}${error ? rejectedSuffix : fulfilledSuffix}`,
+              error,
+              meta: { nonce: meta.nonce },
+              payload: data,
+            },
+            targetOrigin
+          );
+        };
+
+        handlerPromise
+          .then((response) => {
+            if (asyncResponse) {
+              console.debug(
+                `Handler returning success response for ${type} with nonce ${meta.nonce}`
+              );
+              send(response);
+            }
+          })
+          .catch((reason) => {
+            if (asyncResponse) {
+              console.debug(
+                `Handler returning error response for ${type} with nonce ${meta.nonce}`
+              );
+              send(toErrorResponse(type, reason), true);
+            } else {
+              console.warn(
+                `An error occurred while processing notification ${type}`,
+                reason
+              );
+            }
+          });
+        return asyncResponse;
+      }
     }
-  });
+  );
 }
 
 /**
@@ -112,9 +109,10 @@ function initExternalPageListener() {
       isResponseType(type) &&
       meta?.nonce
     ) {
-      const callback = (error ? pageRejectedCallbacks : pageFulfilledCallbacks)[
-        meta.nonce
-      ];
+      const callback = (error
+        ? pageRejectedCallbacks
+        : pageFulfilledCallbacks
+      ).get(meta.nonce);
       if (!callback) {
         console.warn(`Ignoring message with unknown nonce: ${meta.nonce}`);
         return;
@@ -125,8 +123,8 @@ function initExternalPageListener() {
           : payload;
         callback(response);
       } finally {
-        delete pageFulfilledCallbacks[meta.nonce];
-        delete pageRejectedCallbacks[meta.nonce];
+        pageFulfilledCallbacks.delete(meta.nonce);
+        pageRejectedCallbacks.delete(meta.nonce);
       }
     } else if (type) {
       console.debug(`Ignoring message: ${type}`, event);
@@ -168,7 +166,7 @@ export function liftExternal<R extends SerializableResponse>(
 
   if (isContentScript()) {
     // console.debug(`Installed content script handler for ${type}`);
-    contentScriptHandlers[fullType] = { handler: method, options };
+    contentScriptHandlers.set(fullType, { handler: method, options });
   }
 
   const targetOrigin = document.defaultView.origin;
@@ -182,8 +180,8 @@ export function liftExternal<R extends SerializableResponse>(
     }
     return new Promise((resolve, reject) => {
       const nonce = uuidv4();
-      pageFulfilledCallbacks[nonce] = resolve;
-      pageRejectedCallbacks[nonce] = reject;
+      pageFulfilledCallbacks.set(nonce, resolve);
+      pageRejectedCallbacks.set(nonce, reject);
       const message = {
         type: fullType,
         payload: args,
