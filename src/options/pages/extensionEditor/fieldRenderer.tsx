@@ -24,7 +24,6 @@ import BlockField, {
 } from "@/components/fields/BlockField";
 import IconField from "@/components/fields/IconField";
 import UnsupportedField from "@/components/fields/UnknownField";
-import { reportError } from "@/telemetry/logging";
 import BooleanField from "@/components/fields/BooleanField";
 
 function makeOneOfField(
