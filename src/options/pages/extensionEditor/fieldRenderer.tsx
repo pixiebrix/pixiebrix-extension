@@ -71,7 +71,8 @@ export function defaultFieldRenderer(
   } else if (schema["$ref"] && !schema.type) {
     throw new Error(`Unexpected $ref ${schema["$ref"]}`);
   } else {
-    reportError(`Unsupported field type: ${schema.type ?? "<No type found>"}`);
+    // Not using reportError here because we generally know about this, and it generates an error every render
+    // reportError(`Unsupported field type: ${schema.type ?? "<No type found>"}`);
     return UnsupportedField;
   }
 }
