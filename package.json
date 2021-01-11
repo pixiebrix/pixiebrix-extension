@@ -64,7 +64,7 @@
     "@types/url-join": "^4.0.0",
     "@types/webpack": "^4.41.25",
     "@types/webpack-env": "^1.16.0",
-    "@types/yup": "^0.29.10",
+    "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
     "@typescript-eslint/parser": "^4.12.0",
     "@xops.net/json-schema-to-react-tree": "^1.0.2",
