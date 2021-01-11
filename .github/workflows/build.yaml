@@ -6,7 +6,7 @@ on:
       - 'release/**'
 
 jobs:
-  build-chrome:
+  build-chrome-web-store:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,6 +21,35 @@ jobs:
           ENVIRONMENT: production
           ROLLBAR_PUBLIC_PATH: chrome-extension://production/
           CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          SERVICE_URL: https://app.pixiebrix.com
+          EXTERNALLY_CONNECTABLE: https://app.pixiebrix.com/*
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
+          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          ENABLE_DEVTOOLS: true
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chrome-web-store
+          path: browsers/chrome/bundles
+          retention-days: 5
+
+  build-chrome-with-key:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - run: npm install
+      - run: npm run build:chrome
+        env:
+          NODE_ENV: production
+          ENVIRONMENT: production
+          ROLLBAR_PUBLIC_PATH: chrome-extension://production/
+          CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
+          CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
           SERVICE_URL: https://app.pixiebrix.com
