@@ -180,7 +180,7 @@
     "webext-detect-page": "^2.0.5",
     "webext-dynamic-content-scripts": "^7.0.0",
     "webextension-polyfill-ts": "^0.22.0",
-    "webpack": "^4.44.2",
+    "webpack": "^4.46.0",
     "webpack-bundle-tracker": "^0.4.3",
     "webpack-cli": "^4.2.0",
     "webpack-dev-server": "^3.11.0",
