@@ -52,8 +52,8 @@ export async function checkAvailable({
   matchPatterns: rawPatterns = [],
   selectors: rawSelectors = [],
 }: Availability): Promise<boolean> {
-  const matchPatterns = castArray(rawPatterns);
-  const selectors = castArray(rawSelectors);
+  const matchPatterns = rawPatterns ? castArray(rawPatterns) : [];
+  const selectors = rawSelectors ? castArray(rawSelectors) : [];
 
   // check matchPatterns first b/c they'll be faster
   if (matchPatterns.length && !matchPatterns.some((x) => testMatchPattern(x))) {

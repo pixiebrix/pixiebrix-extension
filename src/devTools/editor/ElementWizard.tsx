@@ -16,25 +16,29 @@
  */
 
 import React, { useCallback, useContext, useMemo, useState } from "react";
-import { PayloadAction } from "@reduxjs/toolkit";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
 import { isEmpty } from "lodash";
 import { useDebounce } from "use-debounce";
 import useAsyncEffect from "use-async-effect";
 import * as nativeOperations from "@/background/devtools";
+import { checkAvailable } from "@/background/devtools";
 import { Button, Form, Nav, Tab } from "react-bootstrap";
 import {
   actions,
   FormState,
   TriggerFormState,
 } from "@/devTools/editor/editorSlice";
+import { optionsSlice } from "@/options/slices";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { CONFIG_MAP } from "@/devTools/editor/useCreate";
-
 import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
 import { wizard as triggerWizard } from "./extensionPoints/trigger";
 import { wizard as panelWizard } from "./extensionPoints/panel";
+import { useDispatch } from "react-redux";
+import { useAsyncState } from "@/hooks/common";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLock } from "@fortawesome/free-solid-svg-icons";
 
 const wizardMap = {
   menuItem: menuItemWizard,
@@ -44,23 +48,31 @@ const wizardMap = {
 
 const ElementWizard: React.FunctionComponent<{
   element: FormState;
-  dispatch: (action: PayloadAction<unknown>) => void;
   refreshMillis?: number;
-}> = ({ element, dispatch, refreshMillis = 250 }) => {
+  editable: Set<string>;
+}> = ({ element, refreshMillis = 250, editable }) => {
+  const dispatch = useDispatch();
   const { port } = useContext(DevToolsContext);
 
   const wizard = useMemo(() => wizardMap[element.type], [element.type]);
 
   const [step, setStep] = useState(wizard[0].step);
 
+  const [available] = useAsyncState(
+    async () =>
+      await checkAvailable(port, element.extensionPoint.definition.isAvailable),
+    [port, element.extensionPoint.definition.isAvailable]
+  );
+
   const {
+    values,
     errors,
     isSubmitting,
     isValid,
     status,
     handleSubmit,
     handleReset,
-  } = useFormikContext();
+  } = useFormikContext<FormState>();
 
   const [debounced] = useDebounce(element, refreshMillis, {
     leading: false,
@@ -102,6 +114,14 @@ const ElementWizard: React.FunctionComponent<{
       await nativeOperations.clearDynamicElements(port, {
         uuid: element.uuid,
       });
+      if (values.installed) {
+        dispatch(
+          optionsSlice.actions.removeExtension({
+            extensionPointId: values.extensionPoint.metadata.id,
+            extensionId: values.uuid,
+          })
+        );
+      }
     } catch (reason) {
       // element might not be on the page anymore
     }
@@ -128,7 +148,27 @@ const ElementWizard: React.FunctionComponent<{
         >
           {wizard.map((x) => (
             <Nav.Item key={x.step}>
-              <Nav.Link eventKey={x.step}>{x.step}</Nav.Link>
+              <Nav.Link eventKey={x.step}>
+                {x.step}
+                {x.step === "Foundation" &&
+                  element.installed &&
+                  editable &&
+                  !editable.has(element.extensionPoint.metadata.id) && (
+                    <FontAwesomeIcon className="ml-2" icon={faLock} />
+                  )}
+                {x.step === "Availability" &&
+                  element.installed &&
+                  editable &&
+                  !editable.has(element.extensionPoint.metadata.id) && (
+                    <FontAwesomeIcon className="ml-2" icon={faLock} />
+                  )}
+                {x.step === "Reader" &&
+                  element.installed &&
+                  editable &&
+                  !editable.has(element.reader.metadata.id) && (
+                    <FontAwesomeIcon className="ml-2" icon={faLock} />
+                  )}
+              </Nav.Link>
             </Nav.Item>
           ))}
 
@@ -157,7 +197,7 @@ const ElementWizard: React.FunctionComponent<{
             size="sm"
             variant="primary"
           >
-            Save Action
+            {values.installed ? "Save" : "Create"}
           </Button>
 
           <Button variant="danger" className="mr-2" size="sm" onClick={remove}>
@@ -167,7 +207,12 @@ const ElementWizard: React.FunctionComponent<{
         {status && <div className="text-danger">{status}</div>}
         <Tab.Content className="h-100">
           {wizard.map(({ Component, step }) => (
-            <Component key={step} eventKey={step} />
+            <Component
+              key={step}
+              eventKey={step}
+              editable={editable}
+              available={available}
+            />
           ))}
         </Tab.Content>
       </Form>

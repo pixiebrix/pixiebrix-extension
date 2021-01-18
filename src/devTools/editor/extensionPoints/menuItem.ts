@@ -26,13 +26,15 @@ import {
   makeBaseState,
   makeExtensionReader,
   makeIsAvailable,
+  makeReaderFormState,
+  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import {
   MenuDefinition,
   MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { identity, pickBy } from "lodash";
+import { castArray, identity, pickBy } from "lodash";
 import FoundationTab from "@/devTools/editor/tabs/menuItem/FoundationTab";
 import MenuItemTab from "@/devTools/editor/tabs/menuItem/MenuItemTab";
 import ReaderTab from "@/devTools/editor/tabs/ReaderTab";
@@ -40,8 +42,11 @@ import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
+import MetaTab from "@/devTools/editor/tabs/MetaTab";
+import { find as findBrick } from "@/registry/localRegistry";
 
-export const wizard = [
+export const wizard: WizardStep[] = [
+  { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
   { step: "Reader", Component: ReaderTab },
   { step: "Menu Item", Component: MenuItemTab },
@@ -59,6 +64,7 @@ export function makeActionState(
 ): ActionFormState {
   return {
     type: "menuItem",
+    label: "My custom action",
     ...makeBaseState(
       button.uuid,
       button.menu.containerSelector,
@@ -116,6 +122,7 @@ export function makeMenuExtensionPoint({
 
 export function makeActionExtension({
   uuid,
+  label,
   extensionPoint,
   extension,
   services,
@@ -123,7 +130,7 @@ export function makeActionExtension({
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
-    label: "Custom Action",
+    label,
     services,
     config: extension,
   };
@@ -134,5 +141,58 @@ export function makeActionConfig(element: ActionFormState): ButtonDefinition {
     extension: makeActionExtension(element),
     extensionPoint: makeMenuExtensionPoint(element),
     reader: makeExtensionReader(element),
+  };
+}
+
+export async function makeActionFormState(
+  config: IExtension<MenuItemExtensionConfig>
+): Promise<ActionFormState> {
+  const extensionPoint = ((await findBrick(config.extensionPointId))
+    .config as unknown) as ExtensionPointConfig<MenuDefinition>;
+
+  const isAvailable = extensionPoint.definition.isAvailable;
+  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
+  const selectors = castArray(isAvailable.selectors ?? []);
+
+  if (matchPatterns.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability match patterns not implemented"
+    );
+  }
+
+  if (selectors.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability selectors not implemented"
+    );
+  }
+
+  const reader = await makeReaderFormState(extensionPoint);
+
+  return {
+    uuid: config.id,
+    installed: true,
+    type: extensionPoint.definition.type,
+    label: config.label,
+
+    reader,
+    services: config.services,
+
+    extension: {
+      ...config.config,
+      action: castArray(config.config.action),
+    },
+
+    containerInfo: null,
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      definition: {
+        ...extensionPoint.definition,
+        isAvailable: {
+          matchPatterns: matchPatterns[0],
+          selectors: selectors[0],
+        },
+      },
+    },
   };
 }

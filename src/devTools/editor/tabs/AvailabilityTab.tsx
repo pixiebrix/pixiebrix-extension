@@ -15,26 +15,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Col, Form, Row, Tab } from "react-bootstrap";
-import { Field, FieldInputProps } from "formik";
+import React, { useMemo } from "react";
+import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
+import { FastField, FieldInputProps, useFormikContext } from "formik";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import { FormState } from "@/devTools/editor/editorSlice";
 
 const AvailabilityTab: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey = "availability" }) => {
+  editable: Set<string>;
+}> = ({ eventKey = "availability", editable }) => {
+  const { values } = useFormikContext<FormState>();
+  const locked = useMemo(
+    () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
+    [editable, values.installed, values.extensionPoint.metadata.id]
+  );
+
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
+      {locked && (
+        <Alert variant="info">
+          You do not have edit permissions for this foundation
+        </Alert>
+      )}
       <Form.Group as={Row} controlId="formMatchPatterns">
         <Form.Label column sm={2}>
           Match Patterns
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.definition.isAvailable.matchPatterns">
+          <FastField name="extensionPoint.definition.isAvailable.matchPatterns">
             {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
+              <Form.Control type="text" {...field} disabled={locked} />
             )}
-          </Field>
+          </FastField>
+          <Form.Text className="text-muted">
+            URL match pattern for which pages to run the extension on
+          </Form.Text>
         </Col>
       </Form.Group>
       <Form.Group as={Row} controlId="formAvailableSelectors" className="pb-4">
@@ -45,7 +61,12 @@ const AvailabilityTab: React.FunctionComponent<{
           <SelectorSelectorField
             name="extensionPoint.definition.isAvailable.selectors"
             isClearable
+            disabled={locked}
           />
+          <Form.Text className="text-muted">
+            (Optional) Element that must be found on page for extension point to
+            be available
+          </Form.Text>
         </Col>
       </Form.Group>
     </Tab.Pane>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,34 +16,46 @@
  */
 
 import React from "react";
-import { FastField, FieldInputProps } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import IconField, { iconSchema } from "@/components/fields/IconField";
+import { Field, FieldInputProps } from "formik";
 
-const MenuItemTab: React.FunctionComponent<{
+const MetaTab: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey = "menuItem" }) => {
+}> = ({ eventKey = "meta" }) => {
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
-      <Form.Group as={Row} controlId="formCaption">
+      <Form.Group as={Row} controlId="extensionId">
         <Form.Label column sm={2}>
-          Caption
+          UUID
         </Form.Label>
         <Col sm={10}>
-          <FastField name="extension.caption">
+          <Field name="uuid">
             {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
+              <Form.Control type="text" {...field} disabled />
             )}
-          </FastField>
+          </Field>
           <Form.Text className="text-muted">
-            The button caption, which can use data from the reader
+            An automatically generated unique identifier for this extension
           </Form.Text>
         </Col>
       </Form.Group>
-
-      <IconField label="Icon" name="extension.icon" schema={iconSchema} />
+      <Form.Group as={Row} controlId="extensionName">
+        <Form.Label column sm={2}>
+          Name
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="label">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control type="text" {...field} />
+            )}
+          </Field>
+          <Form.Text className="text-muted">
+            A name for this extension so that you can find it later
+          </Form.Text>
+        </Col>
+      </Form.Group>
     </Tab.Pane>
   );
 };
 
-export default MenuItemTab;
+export default MetaTab;

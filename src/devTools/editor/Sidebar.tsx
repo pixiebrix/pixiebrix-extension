@@ -15,19 +15,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext } from "react";
-import { actions, EditorState } from "@/devTools/editor/editorSlice";
-import { PayloadAction } from "@reduxjs/toolkit";
+import React, {
+  FormEvent,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
+import { actions, EditorState, FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { AuthContext } from "@/auth/context";
+import { sortBy, zip, uniq } from "lodash";
 import * as nativeOperations from "@/background/devtools";
-import { getTabInfo } from "@/background/devtools";
-import { Button, ListGroup } from "react-bootstrap";
+import {
+  checkAvailable,
+  getInstalledExtensionPointIds,
+  getTabInfo,
+} from "@/background/devtools";
+import { Dropdown, DropdownButton, Form, ListGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBolt,
   faColumns,
+  faEyeSlash,
   faMousePointer,
+  faPuzzlePiece,
+  faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
@@ -44,13 +57,170 @@ import {
   makeTriggerConfig,
   makeTriggerState,
 } from "@/devTools/editor/extensionPoints/trigger";
+import { Runtime } from "webextension-polyfill-ts";
+import { IExtension, Metadata } from "@/core";
+import { FrameworkMeta } from "@/messaging/constants";
+import { DynamicDefinition } from "@/nativeEditor";
+import { useAsyncState } from "@/hooks/common";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  extensionToFormState,
+  getType,
+} from "@/devTools/editor/extensionPoints/adapter";
+import { RootState } from "@/devTools/store";
+import hash from "object-hash";
 
-const Sidebar: React.FunctionComponent<
-  EditorState & { dispatch: (action: PayloadAction<unknown>) => void }
-> = ({ inserting, activeElement, elements, dispatch }) => {
+interface ElementConfig<
+  TResult = unknown,
+  TState extends FormState = FormState
+> {
+  label: string;
+  insert: (port: Runtime.Port) => Promise<TResult>;
+  makeState: (
+    url: string,
+    metadata: Metadata,
+    element: TResult,
+    frameworks: FrameworkMeta[]
+  ) => TState;
+  makeConfig: (state: TState) => DynamicDefinition;
+}
+
+const addElementDefinitions: Record<string, ElementConfig> = {
+  button: {
+    label: "Action",
+    insert: nativeOperations.insertButton,
+    makeState: makeActionState,
+    makeConfig: makeActionConfig,
+  },
+  panel: {
+    label: "Panel",
+    insert: nativeOperations.insertPanel,
+    makeState: makePanelState,
+    makeConfig: makePanelConfig,
+  },
+  trigger: {
+    label: "Trigger",
+    insert: undefined,
+    makeState: (
+      url: string,
+      metadata: Metadata,
+      element: unknown,
+      frameworks: FrameworkMeta[]
+    ) => makeTriggerState(url, metadata, frameworks),
+    makeConfig: makeTriggerConfig,
+  },
+};
+
+function useAddElement(config: ElementConfig, reservedNames: string[]) {
+  const dispatch = useDispatch();
   const { port, frameworks } = useContext(DevToolsContext);
   const { scope } = useContext(AuthContext);
   const { addToast } = useToasts();
+
+  return useCallback(async () => {
+    dispatch(actions.toggleInsert(true));
+
+    try {
+      const element = config.insert ? await config.insert(port) : null;
+      const { url } = await getTabInfo(port);
+      const metadata = await generateExtensionPointMetadata(
+        config.label,
+        scope,
+        url,
+        reservedNames
+      );
+      const initialState = config.makeState(url, metadata, element, frameworks);
+      await nativeOperations.updateDynamicElement(
+        port,
+        config.makeConfig(initialState)
+      );
+      dispatch(actions.addElement(initialState));
+    } catch (exc) {
+      reportError(exc);
+      addToast(
+        `Error adding ${config.label.toLowerCase()}: ${exc.toString()}`,
+        {
+          appearance: "error",
+          autoDismiss: true,
+        }
+      );
+    } finally {
+      dispatch(actions.toggleInsert(false));
+    }
+  }, [port, frameworks, reservedNames, scope, addToast]);
+}
+
+function getLabel(extension: FormState): string {
+  return extension.label ?? extension.extensionPoint.metadata.name;
+}
+
+type SidebarItem = IExtension | FormState;
+
+function isExtension(value: SidebarItem): value is IExtension {
+  return "extensionPointId" in value;
+}
+
+const ICON_MAP = new Map([
+  ["menuItem", faMousePointer],
+  ["panel", faColumns],
+  ["trigger", faBolt],
+]);
+
+const ExtensionIcon: React.FunctionComponent<{ type: string }> = ({ type }) => {
+  return <FontAwesomeIcon icon={ICON_MAP.get(type) ?? faPuzzlePiece} />;
+};
+
+const InstalledEntry: React.FunctionComponent<{
+  extension: IExtension;
+  installedIds: string[];
+  activeElement: string | null;
+}> = ({ extension, installedIds, activeElement }) => {
+  const dispatch = useDispatch();
+  const [type] = useAsyncState(() => getType(extension), [
+    extension.extensionPointId,
+  ]);
+  const available = installedIds?.includes(extension.extensionPointId);
+
+  const selectInstalled = useCallback(
+    async (extension: IExtension) => {
+      try {
+        const state = await extensionToFormState(extension);
+        dispatch(actions.selectInstalled(state));
+      } catch (error) {
+        dispatch(actions.adapterError({ uuid: extension.id, error }));
+      }
+    },
+    [dispatch]
+  );
+
+  return (
+    <ListGroup.Item
+      active={extension.id == activeElement}
+      key={`installed-${extension.id}`}
+      onClick={() => selectInstalled(extension)}
+      style={{ cursor: "pointer" }}
+    >
+      <ExtensionIcon type={type} /> {extension.label ?? extension.id}
+      {!available && (
+        <span className="ml-2">
+          <FontAwesomeIcon icon={faEyeSlash} title="Not available on page" />
+        </span>
+      )}
+    </ListGroup.Item>
+  );
+};
+
+const DynamicEntry: React.FunctionComponent<{
+  item: FormState;
+  port: Runtime.Port;
+  available: boolean;
+  activeElement: string | null;
+}> = ({ port, item, available, activeElement }) => {
+  const dispatch = useDispatch();
+
+  const dirty = useSelector<RootState>(
+    (x) => x.editor.dirty[item.uuid] ?? false
+  );
 
   const toggle = useCallback(
     async (uuid: string, on: boolean) => {
@@ -59,144 +229,182 @@ const Sidebar: React.FunctionComponent<
     [port]
   );
 
-  const addButton = useCallback(async () => {
-    dispatch(actions.toggleInsert(true));
+  return (
+    <ListGroup.Item
+      active={item.uuid == activeElement}
+      key={`dynamic-${item.uuid}`}
+      onMouseEnter={() => toggle(item.uuid, true)}
+      onMouseLeave={() => toggle(item.uuid, false)}
+      onClick={() => dispatch(actions.selectElement(item.uuid))}
+      style={{ cursor: "pointer" }}
+    >
+      <ExtensionIcon type={item.type} /> {getLabel(item)}
+      {!available && (
+        <span className="ml-2">
+          <FontAwesomeIcon icon={faEyeSlash} title="Not available on page" />
+        </span>
+      )}
+      {dirty && (
+        <span className="text-danger ml-2">
+          <FontAwesomeIcon icon={faSave} title="Has unsaved changes" />
+        </span>
+      )}
+    </ListGroup.Item>
+  );
+};
 
-    try {
-      const button = await nativeOperations.insertButton(port);
-      const { url } = await getTabInfo(port);
-      const metadata = await generateExtensionPointMetadata(
-        "Action",
-        scope,
-        url,
-        elements.flatMap((x) => [
-          x.extensionPoint.metadata.id,
-          x.reader.metadata.id,
-        ])
-      );
-      const initialState = makeActionState(url, metadata, button, frameworks);
-      await nativeOperations.updateDynamicElement(
-        port,
-        makeActionConfig(initialState)
-      );
-      dispatch(actions.addElement(initialState));
-    } catch (exc) {
-      reportError(exc);
-      addToast(`Error adding button: ${exc.toString()}`, {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    } finally {
-      dispatch(actions.toggleInsert(false));
-    }
-  }, [port, frameworks, elements, scope, addToast]);
+function mapReservedNames(elements: FormState[]): string[] {
+  return sortBy(
+    uniq(
+      elements.flatMap((x) => [
+        x.extensionPoint.metadata.id,
+        x.reader.metadata.id,
+      ])
+    )
+  );
+}
 
-  const addPanel = useCallback(async () => {
-    dispatch(actions.toggleInsert(true));
-    try {
-      const panel = await nativeOperations.insertPanel(port);
-      const { url } = await getTabInfo(port);
-      const metadata = await generateExtensionPointMetadata(
-        "Panel",
-        scope,
-        url,
-        elements.flatMap((x) => [
-          x.extensionPoint.metadata.id,
-          x.reader.metadata.id,
-        ])
-      );
-      const initialState = makePanelState(url, metadata, panel, frameworks);
-      await nativeOperations.updateDynamicElement(
-        port,
-        makePanelConfig(initialState)
-      );
-      dispatch(actions.addElement(initialState));
-    } catch (exc) {
-      reportError(exc);
-      addToast(`Error adding panel: ${exc.toString()}`, {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    } finally {
-      dispatch(actions.toggleInsert(false));
-    }
-  }, [port, frameworks, elements, scope, addToast]);
+const Sidebar: React.FunctionComponent<
+  Omit<EditorState, "error" | "dirty" | "knownEditable"> & {
+    installed: IExtension[];
+  }
+> = ({ inserting, activeElement, installed, elements }) => {
+  const { port } = useContext(DevToolsContext);
+  const { scope } = useContext(AuthContext);
+  const [showAll, setShowAll] = useState(false);
 
-  const addTrigger = useCallback(async () => {
-    dispatch(actions.toggleInsert(true));
-    try {
-      const { url } = await getTabInfo(port);
-      const metadata = await generateExtensionPointMetadata(
-        "Trigger",
-        scope,
-        url,
-        elements.flatMap((x) => [
-          x.extensionPoint.metadata.id,
-          x.reader.metadata.id,
-        ])
-      );
-      const initialState = makeTriggerState(url, metadata, frameworks);
-      await nativeOperations.updateDynamicElement(
-        port,
-        makeTriggerConfig(initialState)
-      );
-      dispatch(actions.addElement(initialState));
-    } catch (exc) {
-      reportError(exc);
-      addToast(`Error adding trigger: ${exc.toString()}`, {
-        appearance: "error",
-        autoDismiss: true,
-      });
-    } finally {
-      dispatch(actions.toggleInsert(false));
+  const [installedIds] = useAsyncState(
+    async () => getInstalledExtensionPointIds(port),
+    [port]
+  );
+
+  const [availableDynamicIds] = useAsyncState(async () => {
+    const availability = await Promise.all(
+      elements.map((element) =>
+        checkAvailable(port, element.extensionPoint.definition.isAvailable)
+      )
+    );
+    console.debug("Available", { available: zip(elements, availability) });
+    return new Set<string>(
+      zip(elements, availability)
+        .filter(([, available]) => available)
+        .map(([extension]) => extension.uuid)
+    );
+  }, [
+    port,
+    hash(
+      elements.map((x) => ({
+        uuid: x.uuid,
+        isAvailable: x.extensionPoint.definition.isAvailable,
+      }))
+    ),
+  ]);
+
+  const entries = useMemo(() => {
+    const elementIds = new Set(elements.map((x) => x.uuid));
+    const entries = [
+      ...elements.filter(
+        (x) =>
+          showAll ||
+          availableDynamicIds?.has(x.uuid) ||
+          activeElement === x.uuid
+      ),
+      ...installed.filter(
+        (x) =>
+          !elementIds.has(x.id) &&
+          (showAll || installedIds?.includes(x.extensionPointId))
+      ),
+    ];
+    return sortBy(entries, (x) => x.label);
+  }, [
+    installed,
+    hash(sortBy(elements.map((x) => x.uuid))),
+    availableDynamicIds,
+    showAll,
+    installedIds,
+    activeElement,
+  ]);
+
+  const unavailableCount = useMemo(() => {
+    if (installed && installedIds) {
+      return installed.filter((x) => !installedIds.includes(x.extensionPointId))
+        .length;
+    } else {
+      return null;
     }
-  }, [port, frameworks, elements, scope, addToast]);
+  }, [installed, installedIds]);
+
+  const reservedNames = useMemo(() => mapReservedNames(elements), [
+    hash(mapReservedNames(elements)),
+  ]);
+  const addButton = useAddElement(addElementDefinitions.button, reservedNames);
+  const addPanel = useAddElement(addElementDefinitions.panel, reservedNames);
+  const addTrigger = useAddElement(
+    addElementDefinitions.trigger,
+    reservedNames
+  );
 
   return (
     <div className="Sidebar d-flex flex-column">
       <div className="Sidebar__actions d-inline-flex flex-wrap">
-        <Button
-          className="flex-grow-1"
-          size="sm"
-          variant="info"
-          disabled={inserting}
-          onClick={addButton}
-        >
-          Button <FontAwesomeIcon icon={faMousePointer} />
-        </Button>
-        <Button
-          className="flex-grow-1"
-          size="sm"
+        <DropdownButton
           disabled={inserting}
           variant="info"
-          onClick={addPanel}
-        >
-          Panel <FontAwesomeIcon icon={faColumns} />
-        </Button>
-        <Button
-          className="flex-grow-1"
           size="sm"
-          disabled={inserting}
-          onClick={addTrigger}
-          variant="info"
+          title="Add"
+          id="add-extension-point"
+          className="mr-2"
         >
-          Trigger <FontAwesomeIcon icon={faBolt} />
-        </Button>
+          <Dropdown.Item onClick={addButton}>
+            <FontAwesomeIcon icon={faMousePointer} />
+            &nbsp;Button
+          </Dropdown.Item>
+          <Dropdown.Item onClick={addPanel}>
+            <FontAwesomeIcon icon={faColumns} />
+            &nbsp;Panel
+          </Dropdown.Item>
+          <Dropdown.Item onClick={addTrigger}>
+            <FontAwesomeIcon icon={faBolt} />
+            &nbsp;Trigger
+          </Dropdown.Item>
+        </DropdownButton>
+        <div className="my-auto">
+          <Form.Check
+            type="checkbox"
+            label={
+              unavailableCount != null
+                ? `Show ${unavailableCount} unavailable`
+                : `Show unavailable`
+            }
+            defaultChecked={showAll}
+            onChange={(e: FormEvent<HTMLInputElement>) => {
+              setShowAll(e.currentTarget.checked);
+            }}
+          />
+        </div>
       </div>
       <div className="flex-grow-1 overflow-y-auto">
         <ListGroup>
-          {elements.map((x) => (
-            <ListGroup.Item
-              active={x.uuid == activeElement}
-              key={x.uuid}
-              onMouseEnter={() => toggle(x.uuid, true)}
-              onMouseLeave={() => toggle(x.uuid, false)}
-              onClick={() => dispatch(actions.selectElement(x.uuid))}
-              style={{ cursor: "pointer" }}
-            >
-              {x.extensionPoint.metadata.name}
-            </ListGroup.Item>
-          ))}
+          {entries.map((entry) =>
+            isExtension(entry) ? (
+              <InstalledEntry
+                key={`installed-${entry.id}`}
+                extension={entry}
+                installedIds={installedIds}
+                activeElement={activeElement}
+              />
+            ) : (
+              <DynamicEntry
+                key={`dynamic-${entry.uuid}`}
+                item={entry}
+                port={port}
+                available={
+                  !availableDynamicIds || availableDynamicIds?.has(entry.uuid)
+                }
+                activeElement={activeElement}
+              />
+            )
+          )}
         </ListGroup>
       </div>
       <div className="Sidebar__footer">

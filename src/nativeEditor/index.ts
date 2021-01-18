@@ -19,6 +19,8 @@ export {
   clear,
   toggleOverlay,
   updateDynamicElement,
+  checkAvailable,
+  getInstalledExtensionPointIds,
   DynamicDefinition,
 } from "./dynamic";
 export { insertButton, dragButton } from "./insertButton";

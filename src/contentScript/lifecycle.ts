@@ -29,6 +29,7 @@ let _scriptPromise: Promise<void>;
 const _dynamic: Map<string, IExtensionPoint> = new Map();
 let _extensionPoints: IExtensionPoint[] = undefined;
 let _navSequence = 1;
+const _installedExtensionPoints: IExtensionPoint[] = [];
 
 // @ts-ignore: may use in the future to determine which extension points to install
 let _openerTabId: number = undefined;
@@ -70,9 +71,14 @@ async function runExtensionPoint(
     return;
   } else {
     console.debug(`Installed extension ${extensionPoint.id}`);
+    _installedExtensionPoints.push(extensionPoint);
   }
 
   await extensionPoint.run();
+}
+
+export function getInstalledIds(): string[] {
+  return _installedExtensionPoints.map((x) => x.id);
 }
 
 export function clearDynamic(uuid?: string): void {

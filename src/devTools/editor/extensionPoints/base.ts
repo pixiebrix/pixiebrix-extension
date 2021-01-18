@@ -17,7 +17,7 @@
 
 import { Metadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
-import { BaseFormState } from "@/devTools/editor/editorSlice";
+import { BaseFormState, ReaderFormState } from "@/devTools/editor/editorSlice";
 import psl, { ParsedDomain } from "psl";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderDefinition } from "@/blocks/readers/factory";
@@ -25,6 +25,18 @@ import {
   defaultSelector,
   readerOptions,
 } from "@/devTools/editor/tabs/ReaderTab";
+import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { find as findBrick } from "@/registry/localRegistry";
+import React from "react";
+
+export interface WizardStep {
+  step: string;
+  Component: React.FunctionComponent<{
+    eventKey: string;
+    editable?: Set<string>;
+    available?: boolean;
+  }>;
+}
 
 function getPathFromUrl(url: string): string {
   return url.split("?")[0];
@@ -64,7 +76,7 @@ export function makeBaseState(
   defaultSelector: string | null,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
-): Omit<BaseFormState, "type"> {
+): Omit<BaseFormState, "type" | "label"> {
   return {
     uuid,
     services: [],
@@ -136,5 +148,24 @@ export function makeExtensionReader({
       reader: (readerOption?.makeConfig ?? defaultSelector)(definition),
     },
     outputSchema,
+  };
+}
+
+export async function makeReaderFormState(
+  extensionPoint: ExtensionPointConfig
+): Promise<ReaderFormState> {
+  const readerId = extensionPoint.definition.reader;
+
+  if (typeof readerId !== "string") {
+    throw new Error("Composite readers not supported");
+  }
+
+  const reader = ((await findBrick(readerId))
+    .config as unknown) as ReaderConfig<ReaderDefinition>;
+
+  return {
+    metadata: reader.metadata,
+    outputSchema: reader.outputSchema,
+    definition: reader.definition.reader as any,
   };
 }

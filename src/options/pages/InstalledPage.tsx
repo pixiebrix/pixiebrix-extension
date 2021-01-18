@@ -254,7 +254,7 @@ InstalledPage.propTypes = {
   extensions: PropTypes.array,
 };
 
-function selectExtensions(state: {
+export function selectExtensions(state: {
   options: OptionsState;
 }): InstalledExtension[] {
   return Object.entries(state.options.extensions).flatMap(

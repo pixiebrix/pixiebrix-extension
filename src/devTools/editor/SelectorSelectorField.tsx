@@ -115,6 +115,7 @@ const SelectorSelectorField: React.FunctionComponent<{
   isClearable?: boolean;
   sort?: boolean;
   root?: string;
+  disabled?: boolean;
 }> = ({
   name,
   initialElement,
@@ -124,6 +125,7 @@ const SelectorSelectorField: React.FunctionComponent<{
   isClearable = false,
   sort = false,
   root = undefined,
+  disabled = false,
 }) => {
   const { port } = useContext(DevToolsContext);
 
@@ -161,7 +163,7 @@ const SelectorSelectorField: React.FunctionComponent<{
       <div>
         <Button
           onClick={select}
-          disabled={isSelecting}
+          disabled={isSelecting || disabled}
           variant="info"
           aria-label="Select element"
         >
@@ -172,7 +174,7 @@ const SelectorSelectorField: React.FunctionComponent<{
         <Creatable
           isClearable={isClearable}
           createOptionPosition="first"
-          isDisabled={isSelecting}
+          isDisabled={isSelecting || disabled}
           options={options}
           components={{ Option: CustomOption }}
           onCreateOption={(inputValue) => {

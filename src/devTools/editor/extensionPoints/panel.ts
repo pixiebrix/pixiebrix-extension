@@ -22,6 +22,7 @@ import {
   makeBaseState,
   makeExtensionReader,
   makeIsAvailable,
+  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
@@ -35,8 +36,10 @@ import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { DynamicDefinition } from "@/nativeEditor";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import RendererTab from "@/devTools/editor/tabs/RendererTab";
+import MetaTab from "@/devTools/editor/tabs/MetaTab";
 
-export const wizard = [
+export const wizard: WizardStep[] = [
+  { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
   { step: "Reader", Component: ReaderTab },
   { step: "Panel", Component: PanelTab },
@@ -54,6 +57,7 @@ export function makePanelState(
 ): PanelFormState {
   return {
     type: "panel",
+    label: "My custom panel",
     ...makeBaseState(
       panel.uuid,
       panel.foundation.containerSelector,
@@ -118,6 +122,7 @@ export function makePanelExtensionPoint({
 
 export function makePanelExtension({
   uuid,
+  label,
   extensionPoint,
   extension,
   services,
@@ -125,7 +130,7 @@ export function makePanelExtension({
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
-    label: "Custom Panel",
+    label,
     services,
     config: extension,
   };

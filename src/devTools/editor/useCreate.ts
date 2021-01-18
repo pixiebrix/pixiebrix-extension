@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ActionFormState } from "@/devTools/editor/editorSlice";
+import { ActionFormState, editorSlice } from "@/devTools/editor/editorSlice";
 import { useDispatch } from "react-redux";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { makeURL } from "@/hooks/fetch";
 import { safeDump } from "js-yaml";
@@ -38,6 +38,7 @@ import { makeTriggerConfig } from "@/devTools/editor/extensionPoints/trigger";
 import { makePanelConfig } from "@/devTools/editor/extensionPoints/panel";
 
 const { saveExtension } = optionsSlice.actions;
+const { markSaved } = editorSlice.actions;
 
 export const CONFIG_MAP = {
   menuItem: makeActionConfig,
@@ -45,13 +46,17 @@ export const CONFIG_MAP = {
   panel: makePanelConfig,
 };
 
+export interface EditablePackage {
+  id: string;
+  name: string;
+}
+
 async function makeRequestConfig(
-  saved: { [id: string]: string },
-  id: string
+  packageUUID: string
 ): Promise<AxiosRequestConfig> {
-  if (saved[id]) {
+  if (packageUUID) {
     return {
-      url: await makeURL(`api/bricks/${saved[id]}/`),
+      url: await makeURL(`api/bricks/${packageUUID}/`),
       method: "put",
       headers: { Authorization: `Token ${await getExtensionToken()}` },
     };
@@ -69,7 +74,6 @@ export function useCreate(): (
   helpers: FormikHelpers<ActionFormState>
 ) => Promise<void> {
   const dispatch = useDispatch();
-  const [saved, setSaved] = useState<{ [id: string]: string }>({});
   const { addToast } = useToasts();
 
   return useCallback(
@@ -79,19 +83,8 @@ export function useCreate(): (
     ) => {
       console.debug("Updating/creating action", { button });
 
-      try {
-        const readerConfig = makeExtensionReader(button);
-        const { data: readerData } = await axios({
-          ...(await makeRequestConfig(saved, readerConfig.metadata.id)),
-          data: { config: safeDump(readerConfig), kind: "reader" },
-        } as AxiosRequestConfig);
-        setSaved((x) => ({ ...x, [readerConfig.metadata.id]: readerData.id }));
-      } catch (ex) {
-        const err = ex as AxiosError;
-        const msg =
-          err.response.data["config"]?.toString() ?? err.response.statusText;
-        setStatus(msg);
-        addToast(`Error saving reader definition: ${msg}`, {
+      if (button.type !== "menuItem") {
+        addToast(`Saving for ${button.type} not implemented`, {
           appearance: "error",
           autoDismiss: true,
         });
@@ -99,41 +92,82 @@ export function useCreate(): (
         return;
       }
 
-      try {
-        const extensionPointConfig = makeMenuExtensionPoint(button);
-        const { data: extensionPointData } = await axios({
-          ...(await makeRequestConfig(saved, extensionPointConfig.metadata.id)),
-          data: {
-            config: safeDump(extensionPointConfig),
-            kind: "extensionPoint",
-          },
-        } as AxiosRequestConfig);
-        setSaved((x) => ({
-          ...x,
-          [extensionPointConfig.metadata.id]: extensionPointData.id,
-        }));
-      } catch (ex) {
-        const err = ex as AxiosError;
-        const msg =
-          err.response.data["config"]?.toString() ?? err.response.statusText;
-        setStatus(msg);
-        addToast(`Error saving foundation definition: ${msg}`, {
-          appearance: "error",
-          autoDismiss: true,
-        });
-        setSubmitting(false);
-        return;
+      // PERFORMANCE: inefficient, grabbing all visible bricks prior to save
+      const { data: editable } = await axios.get<EditablePackage[]>(
+        await makeURL("api/bricks/"),
+        {
+          headers: { Authorization: `Token ${await getExtensionToken()}` },
+        }
+      );
+
+      if (
+        !button.installed ||
+        editable.find((x) => x.name === button.reader.metadata.id)
+      ) {
+        try {
+          const readerConfig = makeExtensionReader(button);
+          const packageId = button.installed
+            ? editable.find((x) => x.name === readerConfig.metadata.id)?.id
+            : null;
+          await axios({
+            ...(await makeRequestConfig(packageId)),
+            data: { config: safeDump(readerConfig), kind: "reader" },
+          } as AxiosRequestConfig);
+        } catch (ex) {
+          const err = ex as AxiosError;
+          const msg =
+            err.response.data["config"]?.toString() ?? err.response.statusText;
+          setStatus(`Error saving reader: ${msg}`);
+          addToast(`Error saving reader definition: ${msg}`, {
+            appearance: "error",
+            autoDismiss: true,
+          });
+          setSubmitting(false);
+          return;
+        }
+      }
+
+      if (
+        !button.installed ||
+        editable.find((x) => x.name === button.extensionPoint.metadata.id)
+      ) {
+        try {
+          const extensionPointConfig = makeMenuExtensionPoint(button);
+          const packageId = button.installed
+            ? editable.find((x) => x.name === extensionPointConfig.metadata.id)
+                ?.id
+            : null;
+          await axios({
+            ...(await makeRequestConfig(packageId)),
+            data: {
+              config: safeDump(extensionPointConfig),
+              kind: "extensionPoint",
+            },
+          } as AxiosRequestConfig);
+        } catch (ex) {
+          const err = ex as AxiosError;
+          const msg =
+            err.response.data["config"]?.toString() ?? err.response.statusText;
+          setStatus(`Error saving foundation: ${msg}`);
+          addToast(`Error saving foundation definition: ${msg}`, {
+            appearance: "error",
+            autoDismiss: true,
+          });
+          setSubmitting(false);
+          return;
+        }
       }
 
       try {
         dispatch(saveExtension(makeActionExtension(button)));
-        addToast("Saved button definition", {
+        dispatch(markSaved(button.uuid));
+        addToast("Saved extension", {
           appearance: "success",
           autoDismiss: true,
         });
       } catch (exc) {
         reportError(exc);
-        addToast(`Error saving button definition: ${exc.toString()}`, {
+        addToast(`Error saving extension: ${exc.toString()}`, {
           appearance: "success",
           autoDismiss: true,
         });
@@ -147,6 +181,6 @@ export function useCreate(): (
         extensionPointRegistry.fetch(),
       ]);
     },
-    [dispatch, addToast, saved]
+    [dispatch, addToast]
   );
 }

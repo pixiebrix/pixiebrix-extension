@@ -15,9 +15,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useRef, useState } from "react";
-import { Field, FieldInputProps, useField, useFormikContext } from "formik";
-import { Button, Col, Form, Row, Tab } from "react-bootstrap";
+import React, {
+  useCallback,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  FastField,
+  Field,
+  FieldInputProps,
+  useField,
+  useFormikContext,
+} from "formik";
+import { Alert, Button, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 import * as nativeOperations from "@/background/devtools";
 import { ActionFormState, FormState } from "@/devTools/editor/editorSlice";
@@ -26,7 +38,8 @@ import { reportError } from "@/telemetry/logging";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey = "foundation" }) => {
+  editable: Set<string>;
+}> = ({ eventKey = "foundation", editable }) => {
   const [containerInfoField, , containerInfoHelpers] = useField(
     "containerInfo"
   );
@@ -80,6 +93,33 @@ const FoundationTab: React.FunctionComponent<{
     [templateInput.current]
   );
 
+  const locked = useMemo(
+    () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
+    [editable, values.installed, values.extensionPoint.metadata.id]
+  );
+
+  if (locked) {
+    return (
+      <Tab.Pane eventKey={eventKey} className="h-100">
+        <Alert variant="info">
+          You do not have edit permissions for this foundation
+        </Alert>
+        <Form.Group as={Row} controlId="formExtensionPointId">
+          <Form.Label column sm={2}>
+            Foundation Id
+          </Form.Label>
+          <Col sm={10}>
+            <FastField name="extensionPoint.metadata.id">
+              {({ field }: { field: FieldInputProps<string> }) => (
+                <Form.Control type="text" {...field} disabled />
+              )}
+            </FastField>
+          </Col>
+        </Form.Group>
+      </Tab.Pane>
+    );
+  }
+
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <Form.Group as={Row} controlId="formExtensionPointId">
@@ -87,11 +127,15 @@ const FoundationTab: React.FunctionComponent<{
           Foundation Id
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.metadata.id">
+          <FastField name="extensionPoint.metadata.id">
             {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
+              <Form.Control
+                type="text"
+                {...field}
+                disabled={values.installed}
+              />
             )}
-          </Field>
+          </FastField>
         </Col>
       </Form.Group>
       <Form.Group as={Row} controlId="formFoundationName">
@@ -99,11 +143,11 @@ const FoundationTab: React.FunctionComponent<{
           Foundation Name
         </Form.Label>
         <Col sm={10}>
-          <Field name="extensionPoint.metadata.name">
+          <FastField name="extensionPoint.metadata.name">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
             )}
-          </Field>
+          </FastField>
         </Col>
       </Form.Group>
 
@@ -199,7 +243,7 @@ const FoundationTab: React.FunctionComponent<{
                 e.preventDefault();
               }}
             >
-              Caption
+              caption
             </a>
             <a
               href="#"
@@ -210,10 +254,10 @@ const FoundationTab: React.FunctionComponent<{
                 e.preventDefault();
               }}
             >
-              Icon
+              icon
             </a>
           </div>
-          <Field name="extensionPoint.definition.template">
+          <FastField name="extensionPoint.definition.template">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control
                 as="textarea"
@@ -222,7 +266,7 @@ const FoundationTab: React.FunctionComponent<{
                 ref={templateInput}
               />
             )}
-          </Field>
+          </FastField>
         </Col>
       </Form.Group>
     </Tab.Pane>

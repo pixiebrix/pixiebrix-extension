@@ -428,6 +428,7 @@ export type MenuPosition =
     };
 
 export interface MenuDefinition extends ExtensionPointDefinition {
+  type: "menuItem";
   template: string;
   position?: MenuPosition;
   containerSelector: string;

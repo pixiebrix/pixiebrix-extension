@@ -58,7 +58,7 @@ const initialValue: Context = {
 
 export const DevToolsContext = React.createContext(initialValue);
 
-export function useMakeContext(): [Context, () => Promise<void>] {
+export function useDevConnection(): [Context, () => Promise<void>] {
   const [context, setContext] = useState(initialValue);
   const [connectSequence, setConnectSequence] = useState(0);
 

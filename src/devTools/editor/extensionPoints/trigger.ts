@@ -22,6 +22,7 @@ import {
   makeBaseState,
   makeExtensionReader,
   makeIsAvailable,
+  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -37,8 +38,10 @@ import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
+import MetaTab from "@/devTools/editor/tabs/MetaTab";
 
-export const wizard = [
+export const wizard: WizardStep[] = [
+  { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
   { step: "Reader", Component: ReaderTab },
   { step: "Services", Component: ServicesTab },
@@ -54,6 +57,7 @@ export function makeTriggerState(
 ): TriggerFormState {
   return {
     type: "trigger",
+    label: "My custom trigger",
     ...makeBaseState(uuidv4(), null, metadata, frameworks),
     extensionPoint: {
       metadata,
@@ -99,6 +103,7 @@ export function makeTriggerExtensionPoint({
 
 export function makeTriggerExtension({
   uuid,
+  label,
   extensionPoint,
   extension,
   services,
@@ -106,7 +111,7 @@ export function makeTriggerExtension({
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
-    label: "Custom Trigger",
+    label,
     services,
     config: extension,
   };

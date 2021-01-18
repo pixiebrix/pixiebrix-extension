@@ -35,6 +35,7 @@ import { Framework, FrameworkMeta } from "@/messaging/constants";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import OnDOMContentLoadedDetailsType = WebNavigation.OnDOMContentLoadedDetailsType;
+import { Availability } from "@/blocks/types";
 
 interface HandlerEntry {
   handler: (
@@ -498,6 +499,20 @@ export const toggleSelector = liftBackground(
     on: boolean;
   }) => {
     return await nativeEditorProtocol.toggleOverlay(tabId, { selector, on });
+  }
+);
+
+export const getInstalledExtensionPointIds = liftBackground(
+  "INSTALLED_EXTENSION_POINT_IDS",
+  (tabId: number) => async () => {
+    return await nativeEditorProtocol.getInstalledExtensionPointIds(tabId);
+  }
+);
+
+export const checkAvailable = liftBackground(
+  "CHECK_AVAILABLE",
+  (tabId: number) => async (availability: Availability) => {
+    return await nativeEditorProtocol.checkAvailable(tabId, availability);
   }
 );
 

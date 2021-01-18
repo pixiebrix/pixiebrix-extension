@@ -28,7 +28,7 @@ import devtoolFields from "@/devTools/editor/Fields";
 const EffectTab: React.FunctionComponent<{
   eventKey?: string;
 }> = ({ eventKey = "effect" }) => {
-  const [blocks] = useAsyncState(blockRegistry.all(), []);
+  const [blocks] = useAsyncState(() => blockRegistry.all(), []);
   const Field = useMemo(() => defaultFieldRenderer(actionSchema), [blocks]);
 
   return (

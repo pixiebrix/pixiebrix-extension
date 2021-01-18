@@ -21,12 +21,12 @@ import React, { useCallback } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { DevToolsContext, useMakeContext } from "@/devTools/context";
+import { DevToolsContext, useDevConnection } from "@/devTools/context";
 import { GridLoader } from "react-spinners";
 import Editor from "@/devTools/Editor";
 import { browser } from "webextension-polyfill-ts";
 import { getTabInfo } from "@/background/devtools";
-import optionsStore, { persistor } from "@/options/store";
+import store, { persistor } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
@@ -70,7 +70,7 @@ const PersistLoader: React.FunctionComponent = () => {
 
 const Panel: React.FunctionComponent = () => {
   const [authState, , authError] = useAsyncState(getAuth);
-  const [context, connect] = useMakeContext();
+  const [context, connect] = useDevConnection();
 
   useAsyncEffect(async () => {
     await blockRegistry.fetch();
@@ -89,13 +89,21 @@ const Panel: React.FunctionComponent = () => {
   if (authError) {
     return (
       <Centered>
-        <div>Error authenticating account: {authError.toString()}</div>;
+        <div className="mb-2">
+          <b>Error authenticating account</b>
+        </div>
+        <div>{authError.toString()}</div>
+        <Button onClick={() => location.reload()}>Reload Editor</Button>
       </Centered>
     );
   } else if (context.error) {
     return (
       <Centered>
-        <div>An error occurred: {context.error}</div>;
+        <div className="mb-2">
+          <b>An error occurred</b>
+        </div>
+        <div>{authError.toString()}</div>
+        <Button onClick={() => location.reload()}>Reload Editor</Button>
       </Centered>
     );
   } else if (!context.port) {
@@ -110,23 +118,26 @@ const Panel: React.FunctionComponent = () => {
   } else if (context.hasTabPermissions === false) {
     return (
       <Centered>
-        <p>
-          <b>PixieBrix does not have access to the page.</b>
-        </p>
+        <div className="mb-2">
+          <b>PixieBrix does not have access to the page</b>
+        </div>
+        <div className="mb-2 text-left">
+          <p>
+            Grant permanent access to this domain by clicking the button below.
+          </p>
 
-        <p>
-          Grant permanent access to this domain by clicking the button below.
-          Or, grant temporary access by clicking on the PixieBrix extension in
-          the extensions dropdown and then refreshing the page.
-        </p>
-
+          <p>
+            Or, grant temporary access by 1) clicking on the PixieBrix extension
+            in the extensions dropdown, and 2) then refreshing the page.
+          </p>
+        </div>
         <Button onClick={requestPermissions}>Grant Permanent Access</Button>
       </Centered>
     );
   }
 
   return (
-    <Provider store={optionsStore}>
+    <Provider store={store}>
       <PersistGate loading={PersistLoader} persistor={persistor}>
         <AuthContext.Provider value={authState ?? defaultState}>
           <DevToolsContext.Provider value={context}>

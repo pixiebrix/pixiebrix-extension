@@ -14,18 +14,68 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React, { useMemo, useReducer } from "react";
-import { Col, Container, Row } from "react-bootstrap";
-import { Formik } from "formik";
+import React, { useEffect, useMemo, useState } from "react";
+import { Container } from "react-bootstrap";
+import { Formik, FormikValues } from "formik";
 import ElementWizard from "@/devTools/editor/ElementWizard";
-import { editorSlice, initialState } from "@/devTools/editor/editorSlice";
-import { useCreate } from "@/devTools/editor/useCreate";
+import {
+  EditorState,
+  editorSlice,
+  FormState,
+} from "@/devTools/editor/editorSlice";
+import { EditablePackage, useCreate } from "@/devTools/editor/useCreate";
 import Sidebar from "@/devTools/editor/Sidebar";
+import { useDispatch, useSelector } from "react-redux";
+import { selectExtensions } from "@/options/pages/InstalledPage";
+import { RootState } from "@/devTools/store";
+import { useDebounce, useDebouncedCallback } from "use-debounce";
+import SplitPane from "react-split-pane";
+import { isEqual } from "lodash";
+import { useAsyncState } from "@/hooks/common";
+import axios from "axios";
+import { makeURL } from "@/hooks/fetch";
+import { getExtensionToken } from "@/auth/token";
+
+const { updateElement } = editorSlice.actions;
+
+const Effect: React.FunctionComponent<{
+  values: FormikValues;
+  onChange: (values: FormikValues) => void;
+}> = ({ values, onChange }) => {
+  const [prev, setPrev] = useState(values);
+  // debounce a bit, because isEqual is not inexpensive
+  const [debounced] = useDebounce(values, 25, {
+    leading: true,
+    trailing: true,
+  });
+  useEffect(() => {
+    // Formik changing the reference, so can't use reference equality here
+    if (!isEqual(prev, debounced)) {
+      onChange(debounced);
+      setPrev(debounced);
+    }
+  }, [prev, setPrev, debounced, onChange]);
+  return null;
+};
 
 const Editor: React.FunctionComponent = () => {
-  const [{ inserting, elements, activeElement }, dispatch] = useReducer(
-    editorSlice.reducer,
-    initialState
+  const dispatch = useDispatch();
+  const installed = useSelector(selectExtensions);
+
+  const {
+    inserting,
+    elements,
+    activeElement,
+    error,
+    knownEditable,
+  } = useSelector<RootState, EditorState>((x) => x.editor);
+
+  const updateHandler = useDebouncedCallback(
+    (values: FormState) => {
+      dispatch(updateElement(values));
+    },
+    100,
+    { trailing: true, leading: false }
   );
 
   const selectedElement = useMemo(() => {
@@ -36,35 +86,83 @@ const Editor: React.FunctionComponent = () => {
 
   const create = useCreate();
 
+  const [initialEditable] = useAsyncState(async () => {
+    const { data } = await axios.get<EditablePackage[]>(
+      await makeURL("api/bricks/"),
+      {
+        headers: { Authorization: `Token ${await getExtensionToken()}` },
+      }
+    );
+    console.debug("Fetch editable bricks", { editable: initialEditable });
+    return new Set(data.map((x) => x.name));
+  }, []);
+
+  const editable = useMemo<Set<string>>(() => {
+    const rv = new Set<string>(initialEditable ?? new Set());
+    for (const x of knownEditable) {
+      rv.add(x);
+    }
+    return rv;
+  }, [initialEditable, knownEditable]);
+
+  const body = useMemo(() => {
+    if (inserting) {
+      return (
+        <div className="p-2">
+          <h3>Select a position</h3>
+          <p>
+            Click on a web page element to select the position for the new
+            element.
+          </p>
+        </div>
+      );
+    } else if (error) {
+      return (
+        <div className="p-2">
+          <span className="text-danger">{error}</span>
+        </div>
+      );
+    } else if (selectedElement) {
+      return (
+        <Formik
+          key={`${selectedElement.uuid}-${selectedElement.installed}`}
+          initialValues={selectedElement}
+          onSubmit={create}
+        >
+          {({ values }) => (
+            <>
+              <Effect values={values} onChange={updateHandler.callback} />
+              <ElementWizard element={values} editable={editable} />
+            </>
+          )}
+        </Formik>
+      );
+    } else if (elements.length) {
+      return (
+        <div className="p-2">
+          <span>No element selected</span>
+        </div>
+      );
+    } else {
+      return (
+        <div className="p-2">
+          <span>No elements added to page yet</span>
+        </div>
+      );
+    }
+  }, [inserting, selectedElement, elements?.length, error, editable]);
+
   return (
     <Container fluid className="h-100">
-      <Row className="h-100">
-        <Col md={2} className="h-100 pr-0">
-          <Sidebar
-            dispatch={dispatch}
-            elements={elements}
-            activeElement={activeElement}
-            inserting={inserting}
-          />
-        </Col>
-        <Col md={10} className="pl-2 h-100">
-          {selectedElement ? (
-            <Formik
-              key={selectedElement.uuid}
-              initialValues={selectedElement}
-              onSubmit={create}
-            >
-              {({ values }) => (
-                <ElementWizard dispatch={dispatch} element={values} />
-              )}
-            </Formik>
-          ) : elements.length ? (
-            <span>No element selected</span>
-          ) : (
-            <span>No elements added to page yet</span>
-          )}
-        </Col>
-      </Row>
+      <SplitPane split="vertical" allowResize minSize={225} defaultSize={225}>
+        <Sidebar
+          installed={installed}
+          elements={elements}
+          activeElement={activeElement}
+          inserting={inserting}
+        />
+        {body}
+      </SplitPane>
     </Container>
   );
 };

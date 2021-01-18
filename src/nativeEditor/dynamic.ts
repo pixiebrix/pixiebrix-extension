@@ -17,7 +17,11 @@
 
 import { IExtension, IExtensionPoint } from "@/core";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
-import { clearDynamic, runDynamic } from "@/contentScript/lifecycle";
+import {
+  clearDynamic,
+  getInstalledIds,
+  runDynamic,
+} from "@/contentScript/lifecycle";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import {
   ReaderConfig,
@@ -29,6 +33,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import Overlay from "@/nativeEditor/Overlay";
+import { checkAvailable as checkAvailableUtil } from "@/blocks/available";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
@@ -52,6 +57,13 @@ export const clear = liftContentScript(
     } else {
       _temporaryExtensions.clear();
     }
+  }
+);
+
+export const getInstalledExtensionPointIds = liftContentScript(
+  "INSTALLED_EXTENSIONS",
+  async () => {
+    return getInstalledIds();
   }
 );
 
@@ -91,4 +103,9 @@ export const toggleOverlay = liftContentScript(
       _overlay = null;
     }
   }
+);
+
+export const checkAvailable = liftContentScript(
+  "CHECK_AVAILABLE",
+  checkAvailableUtil
 );

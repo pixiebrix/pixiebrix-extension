@@ -15,15 +15,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Field, FieldInputProps, useField } from "formik";
-import { Col, Form, Row, Tab } from "react-bootstrap";
+import React, { useMemo } from "react";
+import { Field, FieldInputProps, useField, useFormikContext } from "formik";
+import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import { FormState } from "@/devTools/editor/editorSlice";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey = "foundation" }) => {
+  editable: Set<string>;
+}> = ({ eventKey = "foundation", editable }) => {
   const [field] = useField("containerInfo");
+
+  const { values } = useFormikContext<FormState>();
+
+  const locked = useMemo(
+    () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
+    [editable, values.installed, values.extensionPoint.metadata.id]
+  );
+
+  if (locked) {
+    return (
+      <Tab.Pane eventKey={eventKey} className="h-100">
+        <Alert variant="info">
+          You do not have edit permissions for this foundation
+        </Alert>
+        <Form.Group as={Row} controlId="formExtensionPointId">
+          <Form.Label column sm={2}>
+            Foundation Id
+          </Form.Label>
+          <Col sm={10}>
+            <Field name="extensionPoint.metadata.id">
+              {({ field }: { field: FieldInputProps<string> }) => (
+                <Form.Control type="text" {...field} disabled />
+              )}
+            </Field>
+          </Col>
+        </Form.Group>
+      </Tab.Pane>
+    );
+  }
 
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
@@ -34,7 +65,11 @@ const FoundationTab: React.FunctionComponent<{
         <Col sm={10}>
           <Field name="extensionPoint.metadata.id">
             {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
+              <Form.Control
+                type="text"
+                {...field}
+                disabled={values.installed}
+              />
             )}
           </Field>
         </Col>

@@ -28,7 +28,7 @@ import {
   reverse,
 } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
-import { Col, Form, Row, Tab } from "react-bootstrap";
+import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import Select from "react-select";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
@@ -222,7 +222,9 @@ const JQueryFields: React.FunctionComponent<{
 
 const ReaderTab: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey = "reader" }) => {
+  editable: Set<string>;
+  available: boolean;
+}> = ({ eventKey = "reader", editable, available }) => {
   const { port, frameworks } = useContext(DevToolsContext);
   const { addToast } = useToasts();
   const [query, setQuery] = useState("");
@@ -232,6 +234,11 @@ const ReaderTab: React.FunctionComponent<{
     schema: undefined,
     error: undefined,
   });
+
+  const locked = useMemo(
+    () => values.installed && !editable?.has(values.reader.metadata.id),
+    [editable, values.installed, values.reader.metadata.id]
+  );
 
   // https://github.com/reduxjs/redux-devtools/blob/85b4b0fb04b1d6d95054d5073fa17fa61efc0df3/packages/redux-devtools-inspector-monitor/src/ActionPreview.tsx
   const labelRenderer = useCallback(
@@ -265,9 +272,23 @@ const ReaderTab: React.FunctionComponent<{
 
   useAsyncEffect(
     async (isMounted) => {
+      if (!available) {
+        setSchema({
+          output: {},
+          schema: undefined,
+          error: "Extension not available on page",
+        });
+        return;
+      }
+
       setSchema({ output: undefined, schema: undefined, error: undefined });
       const { type, selector } = values.reader?.definition ?? {};
       if (type !== "jquery" && !selector) {
+        setSchema({
+          output: {},
+          schema: undefined,
+          error: "No selector specified",
+        });
         return;
       }
       const option = readerOptions.find((x) => x.value === type);
@@ -289,11 +310,17 @@ const ReaderTab: React.FunctionComponent<{
         return;
       }
 
-      if (!isMounted()) return;
-      setFieldValue("reader.outputSchema", schema);
+      if (!isMounted()) {
+        return;
+      }
+
+      if (!locked) {
+        setFieldValue("reader.outputSchema", schema);
+      }
+
       setSchema({ output, schema, error: undefined });
     },
-    [values.reader?.definition]
+    [values.reader?.definition, available, locked]
   );
 
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
@@ -306,6 +333,78 @@ const ReaderTab: React.FunctionComponent<{
     }
   }, [debouncedQuery, output]);
 
+  if (locked) {
+    return (
+      <Tab.Pane eventKey={eventKey} className="h-100">
+        <Alert variant="info">
+          You do not have edit permissions for this reader
+        </Alert>
+        <Form.Group as={Row} controlId="formReaderId">
+          <Form.Label column sm={2}>
+            Reader Id
+          </Form.Label>
+          <Col sm={10}>
+            <Field name="reader.metadata.id">
+              {({ field }: { field: FieldInputProps<string> }) => (
+                <Form.Control
+                  type="text"
+                  {...field}
+                  disabled={values.installed}
+                />
+              )}
+            </Field>
+          </Col>
+        </Form.Group>
+
+        <Form.Group as={Row} controlId="readerSearch">
+          <Form.Label column sm={2}>
+            Search
+          </Form.Label>
+          <Col sm={10}>
+            <Form.Control
+              type="text"
+              placeholder="Search for a property or value"
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </Col>
+        </Form.Group>
+
+        <Row className="h-100">
+          <Col md={6} className="ReaderData">
+            <span>
+              {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
+            </span>
+            <div className="overflow-auto h-100 w-100">
+              {available === false && (
+                <span className="text-danger">
+                  Extension not available on page
+                </span>
+              )}
+              {searchResults !== undefined ? (
+                <JSONTree
+                  data={searchResults}
+                  labelRenderer={labelRenderer}
+                  theme={theme}
+                  invertTheme
+                  hideRoot
+                  sortObjectKeys
+                />
+              ) : (
+                <GridLoader />
+              )}
+            </div>
+          </Col>
+          <Col md={6} className="ReaderData">
+            <span>Schema</span>
+            <div className="overflow-auto h-100 w-100">
+              <SchemaTree schema={values.reader.outputSchema} />
+            </div>
+          </Col>
+        </Row>
+      </Tab.Pane>
+    );
+  }
+
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <RendererContext.Provider value={devtoolFields}>
@@ -316,7 +415,11 @@ const ReaderTab: React.FunctionComponent<{
           <Col sm={10}>
             <Field name="reader.metadata.id">
               {({ field }: { field: FieldInputProps<string> }) => (
-                <Form.Control type="text" {...field} />
+                <Form.Control
+                  type="text"
+                  {...field}
+                  disabled={values.installed}
+                />
               )}
             </Field>
           </Col>
@@ -352,9 +455,11 @@ const ReaderTab: React.FunctionComponent<{
             />
           </Col>
         </Form.Group>
-        {error || !values.reader?.definition?.selector ? (
+        {error ? (
           <Row className="h-100">
-            <Col>{error ?? "No reader/selector selected"}</Col>
+            <Col>
+              <span className="text-danger">{error}</span>
+            </Col>
           </Row>
         ) : (
           <Row className="h-100">
@@ -363,6 +468,11 @@ const ReaderTab: React.FunctionComponent<{
                 {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
               </span>
               <div className="overflow-auto h-100 w-100">
+                {available === false && (
+                  <span className="text-danger">
+                    Extension not available on page
+                  </span>
+                )}
                 {searchResults !== undefined ? (
                   <JSONTree
                     data={searchResults}

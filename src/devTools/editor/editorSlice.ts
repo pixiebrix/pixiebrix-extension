@@ -22,25 +22,31 @@ import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { BlockPipeline } from "@/blocks/combinators";
 import { Trigger } from "@/extensionPoints/triggerExtension";
 
+export interface ReaderFormState {
+  metadata: Metadata;
+  outputSchema: Schema;
+  definition: {
+    /**
+     * Reader type corresponding to built-in reader factory, e.g., jquery, react.
+     */
+    type: string | null;
+    selector: string | null;
+    selectors: { [field: string]: string };
+  };
+}
+
 export interface BaseFormState {
   readonly uuid: string;
   readonly type: "menuItem" | "trigger" | "panel";
+
+  installed?: boolean;
   autoReload?: boolean;
+
+  label: string;
 
   services: ServiceDependency[];
 
-  reader: {
-    metadata: Metadata;
-    outputSchema: Schema;
-    definition: {
-      /**
-       * Reader type corresponding to built-in reader factory, e.g., jquery, react.
-       */
-      type: string | null;
-      selector: string | null;
-      selectors: { [field: string]: string };
-    };
-  };
+  reader: ReaderFormState;
 
   extensionPoint: unknown;
 
@@ -108,7 +114,7 @@ export interface ActionFormState extends BaseFormState {
         selectors: string;
       };
     };
-    traits: {
+    traits?: {
       style: {
         mode: "default" | "inherit";
       };
@@ -127,12 +133,18 @@ export type FormState = ActionFormState | TriggerFormState | PanelFormState;
 export interface EditorState {
   inserting: boolean;
   activeElement: string | null;
+  error: string | null;
+  dirty: Record<string, boolean>;
+  knownEditable: string[];
   readonly elements: FormState[];
 }
 
 export const initialState: EditorState = {
   activeElement: null,
+  error: null,
   elements: [],
+  knownEditable: [],
+  dirty: {},
   inserting: false,
 };
 
@@ -146,10 +158,57 @@ export const editorSlice = createSlice({
     addElement: (state, action: PayloadAction<FormState>) => {
       const element = action.payload;
       state.elements.push(element);
+      state.error = null;
       state.activeElement = element.uuid;
     },
+    adapterError: (
+      state,
+      action: PayloadAction<{ uuid: string; error: unknown }>
+    ) => {
+      const { uuid, error } = action.payload;
+      if (error instanceof Error) {
+        state.error = error.message ?? "Unknown error";
+      } else {
+        state.error = error.toString() ?? "Unknown error";
+      }
+      state.activeElement = uuid;
+    },
+    selectInstalled: (state, actions: PayloadAction<FormState>) => {
+      state.elements.push(actions.payload);
+      state.error = null;
+      state.activeElement = actions.payload.uuid;
+    },
     selectElement: (state, action: PayloadAction<string>) => {
+      if (!state.elements.find((x) => action.payload === x.uuid)) {
+        throw new Error(`Unknown dynamic element: ${action.payload}`);
+      }
+      state.error = null;
       state.activeElement = action.payload;
+    },
+    markSaved: (state, action: PayloadAction<string>) => {
+      const element = state.elements.find((x) => action.payload === x.uuid);
+      if (!element) {
+        throw new Error(`Unknown dynamic element: ${action.payload}`);
+      }
+      if (!element.installed) {
+        state.knownEditable.push(
+          element.extensionPoint.metadata.id,
+          element.reader.metadata.id
+        );
+      }
+      element.installed = true;
+      state.dirty[element.uuid] = false;
+    },
+    updateElement: (state, action: PayloadAction<FormState>) => {
+      const { uuid } = action.payload;
+      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      if (index < 0) {
+        throw new Error(`Unknown dynamic element: ${uuid}`);
+      }
+      // safe b/c generated from findIndex
+      // eslint-disable-next-line security/detect-object-injection
+      state.elements[index] = action.payload;
+      state.dirty[uuid] = true;
     },
     removeElement: (state, action: PayloadAction<string>) => {
       const uuid = action.payload;
@@ -160,6 +219,7 @@ export const editorSlice = createSlice({
         state.elements.findIndex((x) => x.uuid === uuid),
         1
       );
+      delete state.dirty[uuid];
     },
   },
 });
