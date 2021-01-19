@@ -412,6 +412,13 @@ export const detectFrameworks: (
 //     }
 // )
 
+export const cancelSelectElement = liftBackground(
+  "CANCEL_SELECT_ELEMENT",
+  (tabId: number) => async () => {
+    return await nativeSelectionProtocol.cancelSelect(tabId);
+  }
+);
+
 export const selectElement = liftBackground(
   "SELECT_ELEMENT",
   (tabId: number) => async ({

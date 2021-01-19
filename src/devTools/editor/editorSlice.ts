@@ -35,9 +35,11 @@ export interface ReaderFormState {
   };
 }
 
+export type ElementType = "menuItem" | "trigger" | "panel";
+
 export interface BaseFormState {
   readonly uuid: string;
-  readonly type: "menuItem" | "trigger" | "panel";
+  readonly type: ElementType;
 
   installed?: boolean;
   autoReload?: boolean;
@@ -131,7 +133,7 @@ export interface ActionFormState extends BaseFormState {
 export type FormState = ActionFormState | TriggerFormState | PanelFormState;
 
 export interface EditorState {
-  inserting: boolean;
+  inserting: ElementType | null;
   activeElement: string | null;
   error: string | null;
   dirty: Record<string, boolean>;
@@ -145,14 +147,14 @@ export const initialState: EditorState = {
   elements: [],
   knownEditable: [],
   dirty: {},
-  inserting: false,
+  inserting: null,
 };
 
 export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    toggleInsert: (state, action: PayloadAction<boolean>) => {
+    toggleInsert: (state, action: PayloadAction<ElementType>) => {
       state.inserting = action.payload;
     },
     addElement: (state, action: PayloadAction<FormState>) => {

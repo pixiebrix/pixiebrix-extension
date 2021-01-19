@@ -31,12 +31,15 @@ export function hideOverlay(): void {
   }
 }
 
+let _cancelSelect: () => void = null;
+
 export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
-  return new Promise<HTMLElement[]>((resolve) => {
+  return new Promise<HTMLElement[]>((resolve, reject) => {
     const targets: HTMLElement[] = [];
 
     function stopInspectingNative() {
       hideOverlay();
+      _cancelSelect = null;
       removeListenersOnWindow(window);
     }
 
@@ -93,6 +96,11 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
       overlay.inspect([event.target as HTMLElement], null);
     }
 
+    function cancel() {
+      stopInspectingNative();
+      reject("Selection cancelled");
+    }
+
     function registerListenersOnWindow(window: Window) {
       window.addEventListener("click", onClick, true);
       window.addEventListener("mousedown", noopMouseHandler, true);
@@ -113,6 +121,7 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
       window.removeEventListener("pointerup", noopMouseHandler, true);
     }
 
+    _cancelSelect = cancel;
     registerListenersOnWindow(window);
   });
 }
@@ -124,6 +133,15 @@ export type SelectMode = "element" | "container";
 //     async ({ selector, framework }: { selector: string, framework: Framework }) => {
 //     }
 // )
+
+export const cancelSelect = liftContentScript(
+  "CANCEL_SELECT_ELEMENT",
+  async () => {
+    if (_cancelSelect) {
+      _cancelSelect();
+    }
+  }
+);
 
 export const selectElement = liftContentScript(
   "SELECT_ELEMENT",

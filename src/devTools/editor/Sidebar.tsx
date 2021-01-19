@@ -22,7 +22,12 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { actions, EditorState, FormState } from "@/devTools/editor/editorSlice";
+import {
+  actions,
+  EditorState,
+  ElementType,
+  FormState,
+} from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { AuthContext } from "@/auth/context";
 import { sortBy, zip, uniq } from "lodash";
@@ -74,6 +79,7 @@ interface ElementConfig<
   TResult = unknown,
   TState extends FormState = FormState
 > {
+  elementType: ElementType;
   label: string;
   insert: (port: Runtime.Port) => Promise<TResult>;
   makeState: (
@@ -87,18 +93,21 @@ interface ElementConfig<
 
 const addElementDefinitions: Record<string, ElementConfig> = {
   button: {
+    elementType: "menuItem",
     label: "Action",
     insert: nativeOperations.insertButton,
     makeState: makeActionState,
     makeConfig: makeActionConfig,
   },
   panel: {
+    elementType: "panel",
     label: "Panel",
     insert: nativeOperations.insertPanel,
     makeState: makePanelState,
     makeConfig: makePanelConfig,
   },
   trigger: {
+    elementType: "trigger",
     label: "Trigger",
     insert: undefined,
     makeState: (
@@ -118,7 +127,7 @@ function useAddElement(config: ElementConfig, reservedNames: string[]) {
   const { addToast } = useToasts();
 
   return useCallback(async () => {
-    dispatch(actions.toggleInsert(true));
+    dispatch(actions.toggleInsert(config.elementType));
 
     try {
       const element = config.insert ? await config.insert(port) : null;
@@ -136,16 +145,18 @@ function useAddElement(config: ElementConfig, reservedNames: string[]) {
       );
       dispatch(actions.addElement(initialState));
     } catch (exc) {
-      reportError(exc);
-      addToast(
-        `Error adding ${config.label.toLowerCase()}: ${exc.toString()}`,
-        {
-          appearance: "error",
-          autoDismiss: true,
-        }
-      );
+      if (!exc.toString().toLowerCase().includes("selection cancelled")) {
+        reportError(exc);
+        addToast(
+          `Error adding ${config.label.toLowerCase()}: ${exc.toString()}`,
+          {
+            appearance: "error",
+            autoDismiss: true,
+          }
+        );
+      }
     } finally {
-      dispatch(actions.toggleInsert(false));
+      dispatch(actions.toggleInsert(null));
     }
   }, [port, frameworks, reservedNames, scope, addToast]);
 }
@@ -348,7 +359,7 @@ const Sidebar: React.FunctionComponent<
     <div className="Sidebar d-flex flex-column">
       <div className="Sidebar__actions d-inline-flex flex-wrap">
         <DropdownButton
-          disabled={inserting}
+          disabled={!!inserting}
           variant="info"
           size="sm"
           title="Add"
