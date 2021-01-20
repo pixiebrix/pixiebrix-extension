@@ -35,9 +35,11 @@ export interface ReaderFormState {
   };
 }
 
+export type ElementType = "menuItem" | "trigger" | "panel";
+
 export interface BaseFormState {
   readonly uuid: string;
-  readonly type: "menuItem" | "trigger" | "panel";
+  readonly type: ElementType;
 
   installed?: boolean;
   autoReload?: boolean;
@@ -131,7 +133,8 @@ export interface ActionFormState extends BaseFormState {
 export type FormState = ActionFormState | TriggerFormState | PanelFormState;
 
 export interface EditorState {
-  inserting: boolean;
+  selectionSeq: number;
+  inserting: ElementType | null;
   activeElement: string | null;
   error: string | null;
   dirty: Record<string, boolean>;
@@ -140,19 +143,20 @@ export interface EditorState {
 }
 
 export const initialState: EditorState = {
+  selectionSeq: 0,
   activeElement: null,
   error: null,
   elements: [],
   knownEditable: [],
   dirty: {},
-  inserting: false,
+  inserting: null,
 };
 
 export const editorSlice = createSlice({
   name: "editor",
   initialState,
   reducers: {
-    toggleInsert: (state, action: PayloadAction<boolean>) => {
+    toggleInsert: (state, action: PayloadAction<ElementType>) => {
       state.inserting = action.payload;
     },
     addElement: (state, action: PayloadAction<FormState>) => {
@@ -160,6 +164,7 @@ export const editorSlice = createSlice({
       state.elements.push(element);
       state.error = null;
       state.activeElement = element.uuid;
+      state.selectionSeq++;
     },
     adapterError: (
       state,
@@ -172,11 +177,37 @@ export const editorSlice = createSlice({
         state.error = error.toString() ?? "Unknown error";
       }
       state.activeElement = uuid;
+      state.selectionSeq++;
     },
     selectInstalled: (state, actions: PayloadAction<FormState>) => {
-      state.elements.push(actions.payload);
+      const index = state.elements.findIndex(
+        (x) => x.uuid === actions.payload.uuid
+      );
+      if (index >= 0) {
+        // safe because we're getting it from findIndex
+        // eslint-disable-next-line security/detect-object-injection
+        state.elements[index] = actions.payload;
+      } else {
+        state.elements.push(actions.payload);
+      }
       state.error = null;
       state.activeElement = actions.payload.uuid;
+      state.selectionSeq++;
+    },
+    resetInstalled: (state, actions: PayloadAction<FormState>) => {
+      const { uuid } = actions.payload;
+      const index = state.elements.findIndex((x) => x.uuid === uuid);
+      if (index >= 0) {
+        // safe because we're getting it from findIndex
+        // eslint-disable-next-line security/detect-object-injection
+        state.elements[index] = actions.payload;
+      } else {
+        state.elements.push(actions.payload);
+      }
+      state.dirty[uuid] = false;
+      state.error = null;
+      state.activeElement = uuid;
+      state.selectionSeq++;
     },
     selectElement: (state, action: PayloadAction<string>) => {
       if (!state.elements.find((x) => action.payload === x.uuid)) {
@@ -184,6 +215,7 @@ export const editorSlice = createSlice({
       }
       state.error = null;
       state.activeElement = action.payload;
+      state.selectionSeq++;
     },
     markSaved: (state, action: PayloadAction<string>) => {
       const element = state.elements.find((x) => action.payload === x.uuid);

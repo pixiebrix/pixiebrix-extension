@@ -97,22 +97,27 @@ export function makeBaseState(
   };
 }
 
+export function getDomain(url: string): string {
+  const urlClass = new URL(url);
+  const { domain } = psl.parse(urlClass.host.split(":")[0]) as ParsedDomain;
+  return domain;
+}
+
 export async function generateExtensionPointMetadata(
   label: string,
   scope: string,
   url: string,
   reservedNames: string[]
 ): Promise<Metadata> {
-  const urlClass = new URL(url);
-  const { domain } = psl.parse(urlClass.host.split(":")[0]) as ParsedDomain;
+  const domain = getDomain(url);
 
   await brickRegistry.fetch();
 
   for (let index = 1; index < 1000; index++) {
     const id =
       index === 1
-        ? `${scope ?? "@local"}/${domain}/action`
-        : `${scope ?? "@local"}/${domain}/action-${index}`;
+        ? `${scope ?? "@local"}/${domain}/foundation`
+        : `${scope ?? "@local"}/${domain}/foundation-${index}`;
 
     if (!reservedNames.includes(id)) {
       try {

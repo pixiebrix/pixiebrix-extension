@@ -23,6 +23,7 @@ import {
 import { FrameworkMeta } from "@/messaging/constants";
 import { ActionFormState } from "@/devTools/editor/editorSlice";
 import {
+  getDomain,
   makeBaseState,
   makeExtensionReader,
   makeIsAvailable,
@@ -64,7 +65,7 @@ export function makeActionState(
 ): ActionFormState {
   return {
     type: "menuItem",
-    label: "My custom action",
+    label: `My ${getDomain(url)} button`,
     ...makeBaseState(
       button.uuid,
       button.menu.containerSelector,
@@ -107,7 +108,7 @@ export function makeMenuExtensionPoint({
       id: metadata.id,
       version: "1.0.0",
       name: metadata.name,
-      description: "Action created with the devtools",
+      description: "Button created with the devtools",
     },
     definition: {
       type: "menuItem",

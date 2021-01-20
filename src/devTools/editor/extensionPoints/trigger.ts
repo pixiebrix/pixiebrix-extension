@@ -19,6 +19,7 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { TriggerFormState } from "@/devTools/editor/editorSlice";
 import {
+  getDomain,
   makeBaseState,
   makeExtensionReader,
   makeIsAvailable,
@@ -57,7 +58,7 @@ export function makeTriggerState(
 ): TriggerFormState {
   return {
     type: "trigger",
-    label: "My custom trigger",
+    label: `My ${getDomain(url)} panel`,
     ...makeBaseState(uuidv4(), null, metadata, frameworks),
     extensionPoint: {
       metadata,

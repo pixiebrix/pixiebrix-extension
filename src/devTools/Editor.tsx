@@ -14,8 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import React, { useEffect, useMemo, useState } from "react";
-import { Container } from "react-bootstrap";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { Alert, Button, Container } from "react-bootstrap";
 import { Formik, FormikValues } from "formik";
 import ElementWizard from "@/devTools/editor/ElementWizard";
 import {
@@ -35,6 +41,10 @@ import { useAsyncState } from "@/hooks/common";
 import axios from "axios";
 import { makeURL } from "@/hooks/fetch";
 import { getExtensionToken } from "@/auth/token";
+import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { cancelSelectElement } from "@/background/devtools";
+import { DevToolsContext } from "@/devTools/context";
 
 const { updateElement } = editorSlice.actions;
 
@@ -59,10 +69,12 @@ const Effect: React.FunctionComponent<{
 };
 
 const Editor: React.FunctionComponent = () => {
+  const { port } = useContext(DevToolsContext);
   const dispatch = useDispatch();
   const installed = useSelector(selectExtensions);
 
   const {
+    selectionSeq,
     inserting,
     elements,
     activeElement,
@@ -105,15 +117,47 @@ const Editor: React.FunctionComponent = () => {
     return rv;
   }, [initialEditable, knownEditable]);
 
+  const cancelInsert = useCallback(async () => {
+    await cancelSelectElement(port);
+  }, [port]);
+
   const body = useMemo(() => {
-    if (inserting) {
+    if (inserting === "menuItem") {
       return (
         <div className="p-2">
-          <h3>Select a position</h3>
+          <h3>Inserting button</h3>
           <p>
-            Click on a web page element to select the position for the new
-            element.
+            Click on an existing <code>button</code> or button-like element to
+            add a button that that button group. You can also select a menu item
+            or nav link.
           </p>
+
+          <div>
+            <Alert variant="info">
+              <FontAwesomeIcon icon={faInfo} /> <b>Tip:</b> to increase the
+              accuracy of detection, you can Shift+Click one or more buttons in
+              the button group. Click a button without holding Shift to complete
+              placement.
+            </Alert>
+          </div>
+
+          <div>
+            <Button variant="danger" onClick={cancelInsert}>
+              Cancel Insert
+            </Button>
+          </div>
+        </div>
+      );
+    } else if (inserting === "panel") {
+      return (
+        <div className="p-2">
+          <h3>Inserting panel</h3>
+          <p>Click on a container to insert a panel in that container.</p>
+          <div>
+            <Button variant="danger" onClick={cancelInsert}>
+              Cancel Insert
+            </Button>
+          </div>
         </div>
       );
     } else if (error) {
@@ -125,14 +169,18 @@ const Editor: React.FunctionComponent = () => {
     } else if (selectedElement) {
       return (
         <Formik
-          key={`${selectedElement.uuid}-${selectedElement.installed}`}
+          key={`${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`}
           initialValues={selectedElement}
           onSubmit={create}
         >
           {({ values }) => (
             <>
               <Effect values={values} onChange={updateHandler.callback} />
-              <ElementWizard element={values} editable={editable} />
+              <ElementWizard
+                element={values}
+                editable={editable}
+                installed={installed}
+              />
             </>
           )}
         </Formik>
@@ -150,7 +198,15 @@ const Editor: React.FunctionComponent = () => {
         </div>
       );
     }
-  }, [inserting, selectedElement, elements?.length, error, editable]);
+  }, [
+    inserting,
+    selectedElement,
+    elements?.length,
+    error,
+    editable,
+    installed,
+    selectionSeq,
+  ]);
 
   return (
     <Container fluid className="h-100">

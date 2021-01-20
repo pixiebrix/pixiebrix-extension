@@ -59,7 +59,7 @@
   }
 
   .tab-content {
-    padding: 10px 5px 5px 5px;
+    padding: 10px 5px 45px 5px;
   }
 
   .ReaderData {
@@ -77,11 +77,19 @@
 
     border-right: 2px solid #c6bfdb;
 
-    .list-group-item {
-      padding-left: 12px;
-      padding-right: 12px;
+    &__extensions {
+      overflow-y: scroll;
+    }
+
+    .list-group {
       border-radius: 0;
-      font-size: 0.875rem;
+
+      .list-group-item {
+        padding-left: 12px;
+        padding-right: 12px;
+        border-radius: 0;
+        font-size: 0.875rem;
+      }
     }
 
     &__actions button {
