@@ -19,6 +19,7 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { PanelFormState } from "@/devTools/editor/editorSlice";
 import {
+  getDomain,
   makeBaseState,
   makeExtensionReader,
   makeIsAvailable,
@@ -57,7 +58,7 @@ export function makePanelState(
 ): PanelFormState {
   return {
     type: "panel",
-    label: "My custom panel",
+    label: `My ${getDomain(url)} panel`,
     ...makeBaseState(
       panel.uuid,
       panel.foundation.containerSelector,

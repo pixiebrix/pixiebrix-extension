@@ -74,6 +74,7 @@ const Editor: React.FunctionComponent = () => {
   const installed = useSelector(selectExtensions);
 
   const {
+    selectionSeq,
     inserting,
     elements,
     activeElement,
@@ -168,14 +169,18 @@ const Editor: React.FunctionComponent = () => {
     } else if (selectedElement) {
       return (
         <Formik
-          key={`${selectedElement.uuid}-${selectedElement.installed}`}
+          key={`${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`}
           initialValues={selectedElement}
           onSubmit={create}
         >
           {({ values }) => (
             <>
               <Effect values={values} onChange={updateHandler.callback} />
-              <ElementWizard element={values} editable={editable} />
+              <ElementWizard
+                element={values}
+                editable={editable}
+                installed={installed}
+              />
             </>
           )}
         </Formik>
@@ -193,7 +198,15 @@ const Editor: React.FunctionComponent = () => {
         </div>
       );
     }
-  }, [inserting, selectedElement, elements?.length, error, editable]);
+  }, [
+    inserting,
+    selectedElement,
+    elements?.length,
+    error,
+    editable,
+    installed,
+    selectionSeq,
+  ]);
 
   return (
     <Container fluid className="h-100">

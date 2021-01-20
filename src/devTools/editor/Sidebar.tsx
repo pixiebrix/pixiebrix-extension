@@ -94,7 +94,7 @@ interface ElementConfig<
 const addElementDefinitions: Record<string, ElementConfig> = {
   button: {
     elementType: "menuItem",
-    label: "Action",
+    label: "Button",
     insert: nativeOperations.insertButton,
     makeState: makeActionState,
     makeConfig: makeActionConfig,
@@ -276,7 +276,7 @@ function mapReservedNames(elements: FormState[]): string[] {
 }
 
 const Sidebar: React.FunctionComponent<
-  Omit<EditorState, "error" | "dirty" | "knownEditable"> & {
+  Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
     installed: IExtension[];
   }
 > = ({ inserting, activeElement, installed, elements }) => {
@@ -356,45 +356,47 @@ const Sidebar: React.FunctionComponent<
   );
 
   return (
-    <div className="Sidebar d-flex flex-column">
-      <div className="Sidebar__actions d-inline-flex flex-wrap">
-        <DropdownButton
-          disabled={!!inserting}
-          variant="info"
-          size="sm"
-          title="Add"
-          id="add-extension-point"
-          className="mr-2"
-        >
-          <Dropdown.Item onClick={addButton}>
-            <FontAwesomeIcon icon={faMousePointer} />
-            &nbsp;Button
-          </Dropdown.Item>
-          <Dropdown.Item onClick={addPanel}>
-            <FontAwesomeIcon icon={faColumns} />
-            &nbsp;Panel
-          </Dropdown.Item>
-          <Dropdown.Item onClick={addTrigger}>
-            <FontAwesomeIcon icon={faBolt} />
-            &nbsp;Trigger
-          </Dropdown.Item>
-        </DropdownButton>
-        <div className="my-auto">
-          <Form.Check
-            type="checkbox"
-            label={
-              unavailableCount != null
-                ? `Show ${unavailableCount} unavailable`
-                : `Show unavailable`
-            }
-            defaultChecked={showAll}
-            onChange={(e: FormEvent<HTMLInputElement>) => {
-              setShowAll(e.currentTarget.checked);
-            }}
-          />
+    <div className="Sidebar d-flex flex-column vh-100">
+      <div className="Sidebar__actions flex-grow-0">
+        <div className="d-inline-flex flex-wrap">
+          <DropdownButton
+            disabled={!!inserting}
+            variant="info"
+            size="sm"
+            title="Add"
+            id="add-extension-point"
+            className="mr-2"
+          >
+            <Dropdown.Item onClick={addButton}>
+              <FontAwesomeIcon icon={faMousePointer} />
+              &nbsp;Button
+            </Dropdown.Item>
+            <Dropdown.Item onClick={addPanel}>
+              <FontAwesomeIcon icon={faColumns} />
+              &nbsp;Panel
+            </Dropdown.Item>
+            <Dropdown.Item onClick={addTrigger}>
+              <FontAwesomeIcon icon={faBolt} />
+              &nbsp;Trigger
+            </Dropdown.Item>
+          </DropdownButton>
+          <div className="my-auto">
+            <Form.Check
+              type="checkbox"
+              label={
+                unavailableCount != null
+                  ? `Show ${unavailableCount} unavailable`
+                  : `Show unavailable`
+              }
+              defaultChecked={showAll}
+              onChange={(e: FormEvent<HTMLInputElement>) => {
+                setShowAll(e.currentTarget.checked);
+              }}
+            />
+          </div>
         </div>
       </div>
-      <div className="flex-grow-1 overflow-y-auto">
+      <div className="Sidebar__extensions flex-grow-1">
         <ListGroup>
           {entries.map((entry) =>
             isExtension(entry) ? (
@@ -418,7 +420,7 @@ const Sidebar: React.FunctionComponent<
           )}
         </ListGroup>
       </div>
-      <div className="Sidebar__footer">
+      <div className="Sidebar__footer flex-grow-0">
         <span>
           Scope: <code>{scope}</code>
         </span>

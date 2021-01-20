@@ -23,7 +23,7 @@ import { useDebounce } from "use-debounce";
 import useAsyncEffect from "use-async-effect";
 import * as nativeOperations from "@/background/devtools";
 import { checkAvailable } from "@/background/devtools";
-import { Button, Form, Nav, Tab } from "react-bootstrap";
+import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
 import {
   actions,
   FormState,
@@ -38,7 +38,14 @@ import { wizard as panelWizard } from "./extensionPoints/panel";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock } from "@fortawesome/free-solid-svg-icons";
+import {
+  faHistory,
+  faLock,
+  faSave,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
+import { IExtension } from "@/core";
+import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";
 
 const wizardMap = {
   menuItem: menuItemWizard,
@@ -47,10 +54,11 @@ const wizardMap = {
 };
 
 const ElementWizard: React.FunctionComponent<{
+  installed: IExtension[];
   element: FormState;
   refreshMillis?: number;
   editable: Set<string>;
-}> = ({ element, refreshMillis = 250, editable }) => {
+}> = ({ element, refreshMillis = 250, editable, installed }) => {
   const dispatch = useDispatch();
   const { port } = useContext(DevToolsContext);
 
@@ -108,6 +116,16 @@ const ElementWizard: React.FunctionComponent<{
       factory(debounced as any)
     );
   }, [debounced, port, showReloadControls]);
+
+  const reset = useCallback(async () => {
+    try {
+      const extension = installed.find((x) => x.id === element.uuid);
+      const state = await extensionToFormState(extension);
+      dispatch(actions.resetInstalled(state));
+    } catch (error) {
+      dispatch(actions.adapterError({ uuid: element.uuid, error }));
+    }
+  }, [dispatch, element.uuid, installed]);
 
   const remove = useCallback(async () => {
     try {
@@ -189,20 +207,29 @@ const ElementWizard: React.FunctionComponent<{
               </Button>
             </>
           )}
-
-          <Button
-            className="mx-2"
-            disabled={isSubmitting || !isValid}
-            type="submit"
-            size="sm"
-            variant="primary"
-          >
-            {values.installed ? "Save" : "Create"}
-          </Button>
-
-          <Button variant="danger" className="mr-2" size="sm" onClick={remove}>
-            Remove
-          </Button>
+          <ButtonGroup className="ml-2">
+            <Button
+              disabled={isSubmitting || !isValid}
+              type="submit"
+              size="sm"
+              variant="primary"
+            >
+              Save <FontAwesomeIcon icon={faSave} />
+            </Button>
+            {values.installed && (
+              <Button
+                disabled={isSubmitting || !isValid}
+                size="sm"
+                variant="warning"
+                onClick={reset}
+              >
+                Reset <FontAwesomeIcon icon={faHistory} />
+              </Button>
+            )}
+            <Button variant="danger" size="sm" onClick={remove}>
+              Remove <FontAwesomeIcon icon={faTrash} />
+            </Button>
+          </ButtonGroup>
         </Nav>
         {status && <div className="text-danger">{status}</div>}
         <Tab.Content className="h-100">
