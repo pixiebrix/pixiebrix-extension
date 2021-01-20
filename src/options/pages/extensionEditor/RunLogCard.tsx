@@ -15,16 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   clearLog,
   getLog,
   LOG_LEVELS,
   MessageLevel,
+  LogEntry,
 } from "@/background/logging";
 import { GridLoader } from "react-spinners";
 import { Table, Form, Pagination, Card, Button } from "react-bootstrap";
-import { LogEntry } from "@/background/logging";
+
 import range from "lodash/range";
 import { useToasts } from "react-toast-notifications";
 import EntryRow from "./log/EntryRow";
@@ -33,15 +34,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 interface OwnProps {
+  initialLevel?: MessageLevel;
   extensionPointId: string;
   extensionId: string;
   perPage?: number;
+  refreshInterval?: number;
 }
 
 const RunLogCard: React.FunctionComponent<OwnProps> = ({
   extensionPointId,
   extensionId,
+  initialLevel,
   perPage = 10,
+  refreshInterval = undefined,
 }) => {
   const { addToast } = useToasts();
 
@@ -49,6 +54,8 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
     extensionPointId,
     extensionId,
   ]);
+
+  const [hasNew, setHasNew] = useState<number>(0);
 
   const [{ entries, isLoading }, setLogState] = useState<{
     entries: LogEntry[];
@@ -59,6 +66,7 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
     setLogState({ entries: [], isLoading: true });
     const entries = await getLog(context);
     setLogState({ entries, isLoading: false });
+    setHasNew(0);
   }, [context]);
 
   useAsyncEffect(async () => {
@@ -66,16 +74,38 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   }, [refresh]);
 
   const [page, setPage] = useState(0);
-  const [level, setLevel] = useState<MessageLevel>("info");
+  const [level, setLevel] = useState<MessageLevel>(initialLevel);
+
+  const filteredEntries = useMemo(() => {
+    return (entries ?? []).filter(
+      // level is coming from the dropdown
+      // eslint-disable-next-line security/detect-object-injection
+      (x) => LOG_LEVELS[x.level] >= LOG_LEVELS[level]
+    );
+  }, [level, entries]);
 
   const [pageEntries, numPages] = useMemo(() => {
     const start = page * perPage;
-    const filteredEntries = (entries ?? []).filter(
-      (x) => LOG_LEVELS[x.level] >= LOG_LEVELS[level]
-    );
     const pageEntries = filteredEntries.slice(start, start + perPage);
     return [pageEntries, Math.ceil(filteredEntries.length / perPage)];
-  }, [level, page, entries]);
+  }, [level, page, filteredEntries]);
+
+  const check = useCallback(async () => {
+    const newEntries = await getLog(context);
+    const filteredNewEntries = (newEntries ?? []).filter(
+      // level is coming from the dropdown
+      // eslint-disable-next-line security/detect-object-injection
+      (x) => LOG_LEVELS[x.level] >= LOG_LEVELS[level]
+    );
+    setHasNew(Math.max(0, filteredNewEntries.length - filteredEntries.length));
+  }, [filteredEntries, level, setHasNew]);
+
+  useEffect(() => {
+    if (refreshInterval) {
+      const interval = setInterval(check, refreshInterval);
+      return () => clearInterval(interval);
+    }
+  }, [refreshInterval, entries, level]);
 
   return isLoading ? (
     <Card.Body>
@@ -97,7 +127,7 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
                 setLevel(x.target.value as MessageLevel);
               }}
             >
-              {["trace", "debug", "info", "warn", "error"].map((x) => (
+              {["debug", "info", "warn", "error"].map((x) => (
                 <option key={x} value={x}>
                   {x.toUpperCase()}
                 </option>
@@ -120,6 +150,11 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
             ) : null}
           </Form.Group>
           <Form.Group className="ml-auto">
+            {hasNew > 0 && (
+              <span className="text-info mr-2">
+                {hasNew} new {hasNew > 1 ? "entries" : "entry"}
+              </span>
+            )}
             <Button
               size="sm"
               variant="info"
