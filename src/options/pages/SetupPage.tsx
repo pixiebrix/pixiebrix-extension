@@ -120,7 +120,7 @@ const SetupPage: React.FunctionComponent = () => {
                     className="btn btn-primary mt-2"
                     onClick={connectApp}
                   >
-                    Link PixieBrix account <FontAwesomeIcon icon={faLink} />
+                    <FontAwesomeIcon icon={faLink} /> Link PixieBrix account
                   </Button>
                 </div>
               </Step>
@@ -133,8 +133,8 @@ const SetupPage: React.FunctionComponent = () => {
                     className="btn btn-primary mt-2"
                     onClick={connectApp}
                   >
-                    Create/link PixieBrix account{" "}
-                    <FontAwesomeIcon icon={faLink} />
+                    <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix
+                    account
                   </Button>
                 </div>
 
