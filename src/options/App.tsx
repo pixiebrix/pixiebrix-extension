@@ -73,11 +73,11 @@ const Layout = () => {
     <div className="w-100">
       <Navbar />
       <Container fluid className="page-body-wrapper">
-        <Sidebar />
-        <div className="main-panel">
-          <Banner />
-          <div className="content-wrapper">
-            <RequireInstall>
+        <RequireInstall>
+          <Sidebar />
+          <div className="main-panel">
+            <Banner />
+            <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
                   <Route
@@ -114,10 +114,10 @@ const Layout = () => {
                   <Route component={InstalledPage} />
                 </Switch>
               </ErrorBoundary>
-            </RequireInstall>
+            </div>
+            <Footer />
           </div>
-          <Footer />
-        </div>
+        </RequireInstall>
       </Container>
     </div>
   );

@@ -32,10 +32,12 @@ import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small.svg";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
+import { getExtensionToken } from "@/auth/token";
 
 const Navbar: React.FunctionComponent = () => {
   const { email, extension } = useContext(AuthContext);
   const [serviceURL] = useAsyncState<string>(getBaseURL);
+  const [token, tokenPending] = useAsyncState(getExtensionToken);
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -48,13 +50,15 @@ const Navbar: React.FunctionComponent = () => {
         </Link>
       </div>
       <div className="navbar-menu-wrapper d-flex align-items-stretch">
-        <button
-          className="navbar-toggler navbar-toggler align-self-center"
-          type="button"
-          onClick={() => document.body.classList.toggle("sidebar-icon-only")}
-        >
-          <FontAwesomeIcon icon={faBars} />
-        </button>
+        {(token != null || tokenPending) && (
+          <button
+            className="navbar-toggler navbar-toggler align-self-center"
+            type="button"
+            onClick={() => document.body.classList.toggle("sidebar-icon-only")}
+          >
+            <FontAwesomeIcon icon={faBars} />
+          </button>
+        )}
 
         <ul className="navbar-nav navbar-nav-right">
           {serviceURL && (

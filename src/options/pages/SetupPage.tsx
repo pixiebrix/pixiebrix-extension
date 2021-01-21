@@ -16,18 +16,47 @@
  */
 
 import React, { useCallback } from "react";
-import { PageTitle } from "@/layout/Page";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { Col, Row, Card, Button } from "react-bootstrap";
+import { faCheck, faLink } from "@fortawesome/free-solid-svg-icons";
+import { Col, Row, Card, Button, ListGroup } from "react-bootstrap";
 import { settingsSlice } from "@/options/slices";
 import { useDispatch } from "react-redux";
 import { getBaseURL } from "@/services/baseService";
 import { browser } from "webextension-polyfill-ts";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+import { useAsyncState } from "@/hooks/common";
+import { hasAppAccount } from "@/background/installer";
+import { GridLoader } from "react-spinners";
+
+import "./SetupPage.scss";
 
 const { setMode } = settingsSlice.actions;
 
+const Step: React.FunctionComponent<{
+  number: number;
+  completed?: boolean;
+  active?: boolean;
+}> = ({ number, completed, active, children }) => {
+  return (
+    <ListGroup.Item className={cx("OnboardingStep", { current: active })}>
+      <div className="d-flex">
+        <div className="OnboardingStep__status">
+          {completed && (
+            <span>
+              <FontAwesomeIcon icon={faCheck} />
+            </span>
+          )}
+        </div>
+        <div className="OnboardingStep__step">Step {number}</div>
+        <div className="OnboardingStep__content">{children}</div>
+      </div>
+    </ListGroup.Item>
+  );
+};
+
 const SetupPage: React.FunctionComponent = () => {
   const dispatch = useDispatch();
+  const [hasAccount, accountPending] = useAsyncState(() => hasAppAccount(), []);
 
   const setLocal = useCallback(() => {
     dispatch(setMode({ mode: "local" }));
@@ -45,42 +74,84 @@ const SetupPage: React.FunctionComponent = () => {
     window.close();
   }, []);
 
-  return (
-    <div>
-      <PageTitle icon={faStar} title="Welcome!" />
-      <div className="pb-4">
-        <p>
-          Connect a PixieBrix account to collaborate with your teams and the
-          PixieBrix community
-        </p>
-      </div>
-      <Row>
-        <Col xl={8} lg={10} md={12}>
-          <Card>
-            <Card.Header>Connect PixieBrix Account</Card.Header>
+  if (accountPending) {
+    return (
+      <Row className="w-100 mx-0">
+        <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
+          <Card className="OnboardingCard">
+            <Card.Header>PixieBrix Setup Steps</Card.Header>
             <Card.Body>
-              <p>
-                PixieBrix is more fun with friends! Connect a PixieBrix account
-                to collaborate with your teams and publish bricks.
-              </p>
-              <p>
-                Click Connect Account to open the PixieBrix webapp. When you
-                register/login, your account will be automatically linked to
-                your browser.
-              </p>
+              <GridLoader />
             </Card.Body>
-            <Card.Footer>
-              <Button variant="link" onClick={setLocal}>
-                Use Local-only Mode
-              </Button>
-              <Button variant="primary" onClick={connectApp}>
-                Connect Account
-              </Button>
-            </Card.Footer>
           </Card>
         </Col>
       </Row>
-    </div>
+    );
+  }
+
+  return (
+    <Row className="w-100 mx-0">
+      <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
+        <Card className="OnboardingCard">
+          <Card.Header>PixieBrix Setup Steps</Card.Header>
+          <ListGroup className="list-group-flush">
+            {hasAccount && (
+              <Step number={1} completed>
+                Create an account
+              </Step>
+            )}
+
+            <Step number={hasAccount ? 2 : 1} completed>
+              Install the PixieBrix browser extension
+              <div>
+                <span className="text-muted">
+                  You have version {browser.runtime.getManifest().version}{" "}
+                  installed
+                </span>
+              </div>
+            </Step>
+
+            {hasAccount ? (
+              <Step number={3} active>
+                <div>Link the extension to your account</div>
+                <div>
+                  <Button
+                    role="button"
+                    className="btn btn-primary mt-2"
+                    onClick={connectApp}
+                  >
+                    Link PixieBrix account <FontAwesomeIcon icon={faLink} />
+                  </Button>
+                </div>
+              </Step>
+            ) : (
+              <Step number={2} active>
+                <div>Link the extension to a PixieBrix account</div>
+                <div>
+                  <Button
+                    role="button"
+                    className="btn btn-primary mt-2"
+                    onClick={connectApp}
+                  >
+                    Create/link PixieBrix account{" "}
+                    <FontAwesomeIcon icon={faLink} />
+                  </Button>
+                </div>
+
+                <div className="mt-2">
+                  <span className="text-muted">
+                    Alternatively, you can use the extension in{" "}
+                    <a href="#" onClick={setLocal}>
+                      local-only mode
+                    </a>
+                  </span>
+                </div>
+              </Step>
+            )}
+          </ListGroup>
+        </Card>
+      </Col>
+    </Row>
   );
 };
 

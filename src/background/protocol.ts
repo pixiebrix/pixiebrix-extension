@@ -44,7 +44,7 @@ type ChromeMessageSender = chrome.runtime.MessageSender;
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/";
 
-const handlers: { [key: string]: HandlerEntry } = {};
+const handlers: Map<string, HandlerEntry> = new Map();
 
 /**
  * Return true if a message sender is either the extension itself, or an externally connectable page
@@ -82,7 +82,7 @@ function backgroundListener(
   }
 
   const { type, payload, meta } = request;
-  const { handler, options } = handlers[type] ?? {};
+  const { handler, options } = handlers.get(type) ?? {};
 
   if (handler) {
     const notification = isNotification(options);
@@ -239,11 +239,11 @@ export function liftBackground<R extends SerializableResponse>(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isBackgroundPage()) {
-    if (handlers[fullType]) {
+    if (handlers.has(fullType)) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
       // console.debug(`Installed background page handler for ${type}`);
-      handlers[fullType] = { handler: method, options };
+      handlers.set(fullType, { handler: method, options });
     }
   }
 
