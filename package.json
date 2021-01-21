@@ -144,7 +144,7 @@
     "raw-loader": "^4.0.1",
     "react": "^16.13.1",
     "react-ace": "^9.2.1",
-    "react-bootstrap": "^1.4.0",
+    "react-bootstrap": "^1.4.3",
     "react-dom": "^16.13.1",
     "react-hot-loader": "^4.12.21",
     "react-json-tree": "^0.13.0",
