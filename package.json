@@ -40,7 +40,7 @@
     "@types/gapi.client.oauth2": "^2.0.2",
     "@types/gapi.client.sheets": "^4.0.20201029",
     "@types/howler": "^2.2.1",
-    "@types/jest": "^26.0.15",
+    "@types/jest": "^26.0.20",
     "@types/jquery": "^3.5.5",
     "@types/js-beautify": "^1.13.1",
     "@types/js-cookie": "^2.2.6",
