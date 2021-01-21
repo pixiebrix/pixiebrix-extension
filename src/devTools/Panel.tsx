@@ -26,9 +26,9 @@ import { GridLoader } from "react-spinners";
 import Editor from "@/devTools/Editor";
 import { browser } from "webextension-polyfill-ts";
 import { getTabInfo } from "@/background/devtools";
-import store, { persistor } from "./store";
+import store, { persistor, RootState } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import { getAuth } from "@/hooks/auth";
 import { AuthContext } from "@/auth/context";
@@ -43,6 +43,7 @@ import "@/blocks/transformers";
 import "@/blocks/renderers";
 import "@/contrib/index";
 import { sleep } from "@/utils";
+import ScopeSettings from "@/devTools/ScopeSettings";
 
 const defaultState = { isLoggedIn: false, extension: true };
 
@@ -66,6 +67,19 @@ const PersistLoader: React.FunctionComponent = () => {
       </div>
     </Centered>
   );
+};
+
+const RequireScope: React.FunctionComponent<{ scope: string | null }> = ({
+  scope,
+  children,
+}) => {
+  const mode = useSelector<RootState, string>(({ settings }) => settings.mode);
+
+  if (mode !== "local" && (scope === "" || !scope)) {
+    return <ScopeSettings />;
+  } else {
+    return <>{children}</>;
+  }
 };
 
 const Panel: React.FunctionComponent = () => {
@@ -145,7 +159,9 @@ const Panel: React.FunctionComponent = () => {
               <ErrorBoundary>
                 <Router>
                   <Container fluid className="DevToolsContainer">
-                    <Editor />
+                    <RequireScope scope={authState?.scope}>
+                      <Editor />
+                    </RequireScope>
                   </Container>
                 </Router>
               </ErrorBoundary>

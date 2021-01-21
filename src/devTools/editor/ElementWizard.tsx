@@ -214,7 +214,7 @@ const ElementWizard: React.FunctionComponent<{
               size="sm"
               variant="primary"
             >
-              Save <FontAwesomeIcon icon={faSave} />
+              <FontAwesomeIcon icon={faSave} /> Save
             </Button>
             {values.installed && (
               <Button
@@ -223,11 +223,11 @@ const ElementWizard: React.FunctionComponent<{
                 variant="warning"
                 onClick={reset}
               >
-                Reset <FontAwesomeIcon icon={faHistory} />
+                <FontAwesomeIcon icon={faHistory} /> Reset
               </Button>
             )}
             <Button variant="danger" size="sm" onClick={remove}>
-              Remove <FontAwesomeIcon icon={faTrash} />
+              <FontAwesomeIcon icon={faTrash} /> Remove
             </Button>
           </ButtonGroup>
         </Nav>

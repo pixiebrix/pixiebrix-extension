@@ -17,6 +17,10 @@
 
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { reportError } from "@/telemetry/logging";
+import { liftBackground } from "@/background/protocol";
+import urljoin from "url-join";
+
+const SERVICE_URL = process.env.SERVICE_URL;
 
 async function openInstallPage() {
   await browser.runtime.openOptionsPage();
@@ -29,5 +33,10 @@ function install({ reason }: Runtime.OnInstalledDetailsType) {
     });
   }
 }
+
+export const hasAppAccount = liftBackground("CHECK_APP_ACCOUNT", async () => {
+  const tabs = await browser.tabs.query({ url: urljoin(SERVICE_URL, "setup") });
+  return tabs.length > 0;
+});
 
 browser.runtime.onInstalled.addListener(install);

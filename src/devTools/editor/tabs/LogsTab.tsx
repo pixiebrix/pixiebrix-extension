@@ -31,6 +31,8 @@ const LogsTab: React.FunctionComponent<{
       <RunLogCard
         extensionPointId={values.extensionPoint.metadata.id}
         extensionId={values.uuid}
+        initialLevel="debug"
+        refreshInterval={750}
       />
     </Tab.Pane>
   );

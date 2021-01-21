@@ -19,7 +19,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 // @ts-ignore: redux-persist-webextension-storage has no type definitions
 import { localStorage } from "redux-persist-webextension-storage";
-import { optionsSlice, OptionsState, servicesSlice } from "@/options/slices";
+import {
+  optionsSlice,
+  OptionsState,
+  servicesSlice,
+  settingsSlice,
+  SettingsState,
+} from "@/options/slices";
 
 import { editorSlice, EditorState } from "@/devTools/editor/editorSlice";
 
@@ -35,15 +41,22 @@ const persistServicesConfig = {
   storage: localStorage,
 };
 
+const persistSettingsConfig = {
+  key: "settings",
+  storage: localStorage,
+};
+
 export interface RootState {
   options: OptionsState;
   editor: EditorState;
+  settings: SettingsState;
 }
 
 const store = configureStore({
   reducer: {
     options: persistReducer(persistOptionsConfig, optionsSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: editorSlice.reducer,
   },
   middleware: [createLogger()],
