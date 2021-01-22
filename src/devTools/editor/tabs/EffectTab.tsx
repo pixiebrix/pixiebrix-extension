@@ -25,6 +25,8 @@ import { GridLoader } from "react-spinners";
 import { RendererContext } from "@/components/fields/blockOptions";
 import devtoolFields from "@/devTools/editor/Fields";
 
+import "./EffectTab.scss";
+
 const EffectTab: React.FunctionComponent<{
   eventKey?: string;
 }> = ({ eventKey = "effect" }) => {
@@ -32,7 +34,7 @@ const EffectTab: React.FunctionComponent<{
   const Field = useMemo(() => defaultFieldRenderer(actionSchema), [blocks]);
 
   return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
+    <Tab.Pane eventKey={eventKey} className="EffectTab h-100">
       <RendererContext.Provider value={devtoolFields}>
         {blocks?.length ? (
           <Field

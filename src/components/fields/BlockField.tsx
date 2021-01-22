@@ -37,13 +37,13 @@ import blockRegistry from "@/blocks/registry";
 import Card from "react-bootstrap/Card";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import BlockSelector from "@/components/fields/BlockSelector";
 
 import "./BlockField.scss";
 import Button from "react-bootstrap/Button";
 import useAsyncEffect from "use-async-effect";
 import { GridLoader } from "react-spinners";
 import { reportError } from "@/telemetry/logging";
+import BlockModal from "@/components/fields/BlockModal";
 
 export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
   "#/definitions/renderer": "render",
@@ -231,10 +231,10 @@ const BlockField: React.FunctionComponent<
               )}
 
               <div style={{ width: 300 }} className="">
-                <BlockSelector
+                <BlockModal
                   blocks={blocks}
                   onSelect={(x: IBlock) => push({ id: x.id, config: {} })}
-                  placeholder="Add a block"
+                  caption="Add a block"
                 />
                 {typeof meta.error === "string" && (
                   <div style={{ color: "#dc3545" }}>

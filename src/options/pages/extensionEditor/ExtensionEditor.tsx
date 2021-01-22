@@ -28,6 +28,8 @@ import WorkshopPage from "@/options/pages/extensionEditor/WorkshopPage";
 import { reactivate } from "@/background/navigation";
 import { GridLoader } from "react-spinners";
 
+import "./ExtensionEditor.scss";
+
 const { saveExtension } = optionsSlice.actions;
 
 interface OwnProps {
