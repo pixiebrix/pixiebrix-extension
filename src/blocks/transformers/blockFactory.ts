@@ -19,6 +19,7 @@ import { Block } from "@/types";
 import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
 import { ValidationError } from "@/errors";
+import { castArray } from "lodash";
 import {
   BlockConfig,
   BlockPipeline,
@@ -27,14 +28,21 @@ import {
 import { BlockArg, BlockOptions, IBlock, Metadata, Schema } from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
+import blockRegistry from "@/blocks/registry";
+import { getType } from "@/blocks/util";
 
-const KIND_MAP = {
-  component: "render",
-  effect: "effect",
-  transform: "transform",
-};
+type ComponentKind =
+  | "reader"
+  | "component"
+  | "effect"
+  | "transform"
+  | "renderer";
 
-type ComponentKind = "reader" | "component" | "effect" | "transform";
+const METHOD_MAP: Map<ComponentKind, string> = new Map([
+  ["reader", "read"],
+  ["effect", "effect"],
+  ["transform", "transform"],
+]);
 
 interface ComponentConfig {
   kind: ComponentKind;
@@ -80,8 +88,22 @@ class ExternalBlock extends Block {
 
     // @ts-ignore: we're being dynamic here to set the corresponding method for the kind since
     // we use that method to distinguish between block types in places
-    this[KIND_MAP[kind]] = (renderedInputs: BlockArg, options: BlockOptions) =>
-      this.run(renderedInputs, options);
+    this[METHOD_MAP.get(kind)] = (
+      renderedInputs: BlockArg,
+      options: BlockOptions
+    ) => this.run(renderedInputs, options);
+  }
+
+  async inferType(): Promise<ComponentKind | null> {
+    const pipeline = castArray(this.component.pipeline);
+    const last = pipeline[pipeline.length - 1];
+
+    try {
+      const block = await blockRegistry.lookup(last.id);
+      return await getType(block);
+    } catch {
+      return null;
+    }
   }
 
   async run(renderedInputs: BlockArg, options: BlockOptions): Promise<unknown> {
