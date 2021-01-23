@@ -20,11 +20,25 @@ import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { boolean } from "@/utils";
 
-function setValue($input: JQuery<HTMLElement>, value: unknown) {
+/**
+ * Set the value of an input, doing the right thing for check boxes, etc.
+ */
+function setValue(
+  $input: JQuery<HTMLElement>,
+  value: unknown,
+  { dispatchEvent = true }: { dispatchEvent?: boolean } = {}
+) {
   if ($input.is(":radio") || $input.is(":checkbox")) {
     $input.prop("checked", boolean(value));
   } else {
     $input.val(String(value));
+  }
+
+  if (dispatchEvent) {
+    $input.each(function () {
+      const event = new Event("change", { bubbles: true });
+      this.dispatchEvent(event);
+    });
   }
 }
 
@@ -70,7 +84,7 @@ export class SetInputValue extends Effect {
       if ($input.length === 0) {
         logger.info(`Could not find input for selector: ${selector}`);
       }
-      setValue($input, value);
+      setValue($input, value, { dispatchEvent: true });
     }
   }
 }
@@ -130,7 +144,7 @@ export class FormFill extends Effect {
       if ($input.length === 0) {
         logger.warn(`Could not find input ${name} on the form`);
       }
-      setValue($input, value);
+      setValue($input, value, { dispatchEvent: true });
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
@@ -140,7 +154,7 @@ export class FormFill extends Effect {
           `Could not find input with selector ${selector} on the form`
         );
       }
-      setValue($input, value);
+      setValue($input, value, { dispatchEvent: true });
     }
 
     if (typeof submit === "boolean") {

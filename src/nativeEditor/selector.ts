@@ -49,6 +49,10 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
     }
 
     function onClick(event: MouseEvent) {
+      if (event.altKey) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
 

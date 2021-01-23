@@ -51,7 +51,7 @@ const Centered: React.FunctionComponent = ({ children }) => {
   return (
     <Container fluid>
       <Row>
-        <Col className="mx-auto mt-4 text-center" md={4} sm={10}>
+        <Col className="mx-auto mt-4 text-center" md={8} lg={5} sm={11}>
           {children}
         </Col>
       </Row>

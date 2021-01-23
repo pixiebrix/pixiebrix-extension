@@ -62,13 +62,18 @@ export function engineRenderer(
 // first part of the path can be global context with a @
 const pathRegex = /^(@?[a-zA-Z0-9_\-]+\??)(\.[a-zA-Z0-9_\-]+\??)*$/;
 
+/**
+ * Return true if maybePath refers to a property in ctxt.
+ * @param maybePath
+ * @param ctxt
+ */
 export function isSimplePath(maybePath: string, ctxt: object): boolean {
   if (!pathRegex.test(maybePath)) {
     return false;
   }
   const [head] = maybePath.split(".");
   const path = head.endsWith("?") ? head.slice(0, -1) : head;
-  return ctxt.hasOwnProperty(path);
+  return ctxt ? Object.prototype.hasOwnProperty.call(ctxt, path) : false;
 }
 
 type Args = string | object | object[];
