@@ -27,40 +27,68 @@ const ATTR_EXCLUDE_PATTERNS = [
   /^data([\w-]*)-test([\w-]*)$/,
   /^data-cy$/,
   /^tabindex$/,
+  /^id$/,
 ];
+
+const VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
+  ["class", [/^ember-view$/]],
+]);
 
 // @ts-ignore: no types available
 import getCssSelector from "css-selector-generator";
 
-function commonAttr($items: JQuery<HTMLElement>, attr: string) {
-  const values = $items
-    .toArray()
-    .map((x) => x.attributes.getNamedItem(attr)?.value);
-  // For classes we take the common classes
-  if (MULTI_ATTRS.includes(attr)) {
-    const classNames = values.map((x) => new Set(x ? x.split(" ") : []));
-    const commonValues = classNames.reduce((acc, other) => {
-      return acc == null
-        ? other
-        : new Set([...acc].filter((x) => other.has(x)));
-    }, null);
-    return commonValues.size > 0
-      ? Array.from(commonValues.values()).join(" ")
-      : null;
-  } else if (uniq(values).length === 1) {
-    return values[0];
-  }
-  return null;
+function intersection<T>(sets: Set<T>[]): Set<T> {
+  return sets.reduce((acc, other) => {
+    return acc == null ? other : new Set([...acc].filter((x) => other.has(x)));
+  }, null);
 }
 
+function commonAttr($items: JQuery<HTMLElement>, attr: string) {
+  const attributeValues = $items
+    .toArray()
+    .map((x) => x.attributes.getNamedItem(attr)?.value);
+
+  let unfiltered: string[];
+
+  // For classes and rel we take the common values
+  if (MULTI_ATTRS.includes(attr)) {
+    const classNames = attributeValues.map(
+      (x) => new Set(x ? x.split(" ") : [])
+    );
+    const commonValues = intersection(classNames);
+    unfiltered = Array.from(commonValues.values());
+  } else if (uniq(attributeValues).length === 1) {
+    unfiltered = attributeValues[0].split(" ");
+  } else {
+    // Single attribute doesn't match
+    return null;
+  }
+
+  const exclude = VALUE_EXCLUDE_PATTERNS.get(attr) ?? [];
+
+  const filtered = unfiltered.filter(
+    (value) => !exclude.some((regex) => regex.test(value))
+  );
+
+  return filtered.length > 0 ? filtered.join(" ") : null;
+}
+
+/**
+ * Recursively extract common HTML template from one or more HTML items.
+ * @param $items JQuery of HTML elements
+ * @param captioned true, if the generated HTML template already includes a caption
+ * placeholder
+ */
 function commonStructure(
   $items: JQuery<HTMLElement>,
   captioned = false
-): JQuery<HTMLElement> {
+): JQuery<HTMLElement | Text> {
   const proto = $items.get(0);
 
   if (ICON_TAGS.includes(proto.tagName.toLowerCase())) {
-    return $(`<span>{{{icon}}}</span>`);
+    // TODO: need to provide a way of adding additional classes to the button. E.g. some classes
+    //  may provide for the margin, etc.
+    return $(document.createTextNode(`{{{ icon }}}`));
   }
 
   const $common = $(`<${proto.tagName.toLowerCase()}>`);
@@ -105,13 +133,25 @@ function commonStructure(
     !$common.children().length &&
     CAPTION_TAGS.includes(proto.tagName.toLowerCase())
   ) {
-    $common.text("{{{ caption }}}");
+    $common.append(document.createTextNode("{{{ caption }}}"));
+  } else if (
+    !captioned &&
+    $(proto)
+      .contents()
+      .get()
+      .some((x) => x.nodeType === Node.TEXT_NODE)
+  ) {
+    $common.append(document.createTextNode("{{{ caption }}}"));
   }
 
   return $common;
 }
 
 function commonHTML(tag: string, $items: JQuery<HTMLElement>): string {
+  if ($items.length === 0) {
+    throw new Error(`No items provided`);
+  }
+
   const $common = commonStructure($items);
 
   // Trick to get the HTML of the actual element
@@ -271,9 +311,23 @@ export function inferButtonHTML(
   const $container = $(container);
 
   if (selected.length > 1) {
-    const children = selected.map((x) =>
-      $container.children().has(x).first().get(0)
-    );
+    const children = selected.map((element) => {
+      const exactMatch = $container.children().filter(function () {
+        return this === element;
+      });
+
+      if (exactMatch.length) {
+        return exactMatch.get(0);
+      }
+
+      const match = $container.children().has(element);
+
+      if (!match.length) {
+        throw new Error("element not found in container");
+      }
+
+      return match.get(0);
+    });
     return commonHTML(selected[0].tagName, $(children));
   }
 
@@ -282,8 +336,11 @@ export function inferButtonHTML(
 
     if ($items.length) {
       if (tag === "input") {
-        const value = commonAttr($items, "type");
-        return `<input type="${value ?? "button"}" value="{{{ caption }}}" />`;
+        const commonType = commonAttr($items, "type") ?? "button";
+        const inputType = ["submit", "reset"].includes(commonType)
+          ? "button"
+          : commonType;
+        return `<input type="${inputType}" value="{{{ caption }}}" />`;
       }
       return commonHTML(tag, $items);
     }
