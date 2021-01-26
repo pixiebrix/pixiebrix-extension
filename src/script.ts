@@ -31,10 +31,16 @@ declare global {
   }
 }
 
+// false positive: using constant symbol defined above
+// eslint-disable-next-line security/detect-object-injection
 if (!window[PAGESCRIPT_SYMBOL]) {
+  // false positive: using constant symbol defined above
+  // eslint-disable-next-line security/detect-object-injection
   window[PAGESCRIPT_SYMBOL] = uuidv4();
 } else {
   throw Error(
+    // false positive: using constant symbol defined above
+    // eslint-disable-next-line security/detect-object-injection
     `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`
   );
 }
@@ -69,7 +75,6 @@ import {
   ReadProxy,
   TimeoutError,
 } from "./utils";
-import { ComponentNotFoundError } from "@/frameworks/errors";
 import {
   ReadableComponentAdapter,
   traverse,
@@ -170,9 +175,10 @@ async function read<TComponent>(
     });
   } catch (err) {
     if (err instanceof TimeoutError) {
-      throw new ComponentNotFoundError(
+      console.warn(
         `Could not find framework component for selector ${selector} in ${waitMillis}ms`
       );
+      return {};
     }
     throw err;
   }
@@ -204,7 +210,7 @@ async function read<TComponent>(
 attachListener(
   GET_COMPONENT_DATA,
   async ({ framework, selector, ...options }: ReadPayload) => {
-    const adapter = adapters[framework] as ReadableComponentAdapter;
+    const adapter = adapters.get(framework) as ReadableComponentAdapter;
     if (!adapter) {
       throw new Error(`No read adapter available for ${framework}`);
     }
@@ -215,7 +221,7 @@ attachListener(
 attachListener(
   SET_COMPONENT_DATA,
   ({ framework, selector, valueMap }: WritePayload) => {
-    const adapter = adapters[framework] as WriteableComponentAdapter;
+    const adapter = adapters.get(framework) as WriteableComponentAdapter;
     if (!adapter?.setData) {
       throw new Error(`No write adapter available for ${framework}`);
     }

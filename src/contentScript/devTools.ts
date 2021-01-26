@@ -107,7 +107,7 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
       selector,
       htmlData: $(selectedElement).data(),
     };
-    for (const framework of Object.keys(adapters)) {
+    for (const framework of adapters.keys()) {
       base[framework] = await read(() =>
         getComponentData({ framework: framework as Framework, selector })
       );

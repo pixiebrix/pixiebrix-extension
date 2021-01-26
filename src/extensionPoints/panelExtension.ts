@@ -312,8 +312,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
 
     const reader = await this.defaultReader();
-    const readerContext = await reader.read(document);
 
+    const readerContext = await reader.read(document);
     if (readerContext == null) {
       throw new Error("Reader returned null/undefined");
     }

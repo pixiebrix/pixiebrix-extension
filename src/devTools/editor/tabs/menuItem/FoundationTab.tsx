@@ -256,6 +256,17 @@ const FoundationTab: React.FunctionComponent<{
             >
               icon
             </a>
+            <a
+              href="#"
+              className="mx-2"
+              role="button"
+              onClick={(e) => {
+                insertSnippet("&nbsp;");
+                e.preventDefault();
+              }}
+            >
+              space
+            </a>
           </div>
           <FastField name="extensionPoint.definition.template">
             {({ field }: { field: FieldInputProps<string> }) => (

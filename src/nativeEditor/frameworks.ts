@@ -43,11 +43,11 @@ export async function elementInfo(
     ...inferSelectors(element),
   ]);
 
-  console.debug(`Creating element info for ${element.tagName} element`, {
+  console.debug(`Creating element info for ${element.tagName}`, {
     element,
   });
 
-  for (const [framework, adapter] of Object.entries(adapters)) {
+  for (const [framework, adapter] of adapters.entries()) {
     if (componentFramework && framework !== componentFramework) {
       console.debug(
         `Skipping other framework ${framework} (expected ${componentFramework})`
