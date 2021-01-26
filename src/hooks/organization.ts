@@ -19,7 +19,7 @@ import { MemberRole, Organization } from "@/types/contract";
 import { useFetch } from "@/hooks/fetch";
 import { useContext, useMemo } from "react";
 import { AuthContext } from "@/auth/context";
-import partial from "lodash/partial";
+import { partial } from "lodash";
 
 function isEditable(email: string, organization: Organization): boolean {
   return (organization.members ?? []).some(

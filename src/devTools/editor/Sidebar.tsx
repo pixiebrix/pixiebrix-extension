@@ -37,7 +37,13 @@ import {
   getInstalledExtensionPointIds,
   getTabInfo,
 } from "@/background/devtools";
-import { Dropdown, DropdownButton, Form, ListGroup } from "react-bootstrap";
+import {
+  Badge,
+  Dropdown,
+  DropdownButton,
+  Form,
+  ListGroup,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBolt,
@@ -80,6 +86,7 @@ interface ElementConfig<
   TState extends FormState = FormState
 > {
   elementType: ElementType;
+  preview?: boolean;
   label: string;
   insert: (port: Runtime.Port) => Promise<TResult>;
   makeState: (
@@ -105,11 +112,13 @@ const addElementDefinitions: Record<string, ElementConfig> = {
     insert: nativeOperations.insertPanel,
     makeState: makePanelState,
     makeConfig: makePanelConfig,
+    preview: true,
   },
   trigger: {
     elementType: "trigger",
     label: "Trigger",
     insert: undefined,
+    preview: true,
     makeState: (
       url: string,
       metadata: Metadata,
@@ -120,13 +129,22 @@ const addElementDefinitions: Record<string, ElementConfig> = {
   },
 };
 
-function useAddElement(config: ElementConfig, reservedNames: string[]) {
+function useAddElement(
+  config: ElementConfig,
+  reservedNames: string[],
+  flag: string = undefined
+) {
   const dispatch = useDispatch();
   const { port, frameworks } = useContext(DevToolsContext);
-  const { scope } = useContext(AuthContext);
+  const { scope, flags = [] } = useContext(AuthContext);
   const { addToast } = useToasts();
 
   return useCallback(async () => {
+    if (flag && !flags.includes(flag)) {
+      dispatch(actions.betaError({ error: "This feature is in private beta" }));
+      return;
+    }
+
     dispatch(actions.toggleInsert(config.elementType));
 
     try {
@@ -158,7 +176,7 @@ function useAddElement(config: ElementConfig, reservedNames: string[]) {
     } finally {
       dispatch(actions.toggleInsert(null));
     }
-  }, [port, frameworks, reservedNames, scope, addToast]);
+  }, [port, frameworks, reservedNames, scope, addToast, flag, flags]);
 }
 
 function getLabel(extension: FormState): string {
@@ -349,10 +367,15 @@ const Sidebar: React.FunctionComponent<
     hash(mapReservedNames(elements)),
   ]);
   const addButton = useAddElement(addElementDefinitions.button, reservedNames);
-  const addPanel = useAddElement(addElementDefinitions.panel, reservedNames);
+  const addPanel = useAddElement(
+    addElementDefinitions.panel,
+    reservedNames,
+    "pageeditor-panel"
+  );
   const addTrigger = useAddElement(
     addElementDefinitions.trigger,
-    reservedNames
+    reservedNames,
+    "pageeditor-trigger"
   );
 
   return (
@@ -365,7 +388,7 @@ const Sidebar: React.FunctionComponent<
             size="sm"
             title="Add"
             id="add-extension-point"
-            className="mr-2"
+            className="mr-2 Sidebar__actions__dropdown"
           >
             <Dropdown.Item onClick={addButton}>
               <FontAwesomeIcon icon={faMousePointer} />
@@ -373,11 +396,17 @@ const Sidebar: React.FunctionComponent<
             </Dropdown.Item>
             <Dropdown.Item onClick={addPanel}>
               <FontAwesomeIcon icon={faColumns} />
-              &nbsp;Panel
+              &nbsp;Panel{" "}
+              <Badge variant="success" pill>
+                Beta
+              </Badge>
             </Dropdown.Item>
             <Dropdown.Item onClick={addTrigger}>
               <FontAwesomeIcon icon={faBolt} />
-              &nbsp;Trigger
+              &nbsp;Trigger{" "}
+              <Badge variant="success" pill>
+                Beta
+              </Badge>
             </Dropdown.Item>
           </DropdownButton>
           <div className="my-auto">

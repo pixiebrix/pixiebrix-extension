@@ -140,12 +140,18 @@ export interface EditorState {
   dirty: Record<string, boolean>;
   knownEditable: string[];
   readonly elements: FormState[];
+
+  /**
+   * True if error is because user does not have access to beta features
+   */
+  beta?: boolean;
 }
 
 export const initialState: EditorState = {
   selectionSeq: 0,
   activeElement: null,
   error: null,
+  beta: false,
   elements: [],
   knownEditable: [],
   dirty: {},
@@ -163,8 +169,14 @@ export const editorSlice = createSlice({
       const element = action.payload;
       state.elements.push(element);
       state.error = null;
+      state.beta = false;
       state.activeElement = element.uuid;
       state.selectionSeq++;
+    },
+    betaError: (state, action: PayloadAction<{ error: string }>) => {
+      state.error = action.payload.error;
+      state.beta = true;
+      state.activeElement = null;
     },
     adapterError: (
       state,
@@ -176,6 +188,7 @@ export const editorSlice = createSlice({
       } else {
         state.error = error.toString() ?? "Unknown error";
       }
+      state.beta = false;
       state.activeElement = uuid;
       state.selectionSeq++;
     },
@@ -191,6 +204,7 @@ export const editorSlice = createSlice({
         state.elements.push(actions.payload);
       }
       state.error = null;
+      state.beta = null;
       state.activeElement = actions.payload.uuid;
       state.selectionSeq++;
     },
@@ -206,6 +220,7 @@ export const editorSlice = createSlice({
       }
       state.dirty[uuid] = false;
       state.error = null;
+      state.beta = null;
       state.activeElement = uuid;
       state.selectionSeq++;
     },
@@ -214,6 +229,7 @@ export const editorSlice = createSlice({
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
       state.error = null;
+      state.beta = null;
       state.activeElement = action.payload;
       state.selectionSeq++;
     },

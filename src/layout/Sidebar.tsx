@@ -23,6 +23,7 @@ import {
   faCogs,
   faCubes,
   faHammer,
+  faInfoCircle,
   faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
@@ -82,6 +83,17 @@ const Sidebar: React.FunctionComponent = () => (
         icon={faCloud}
       />
       <SidebarLink route="/settings" title="Settings" icon={faCogs} />
+      <li className={cx("nav-item")}>
+        <a
+          href="https://docs.pixiebrix.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="nav-link"
+        >
+          <span className="menu-title">Documentation</span>
+          <FontAwesomeIcon icon={faInfoCircle} className="menu-icon" />
+        </a>
+      </li>
     </ul>
   </nav>
 );

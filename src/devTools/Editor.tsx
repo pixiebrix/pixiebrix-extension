@@ -80,6 +80,7 @@ const Editor: React.FunctionComponent = () => {
     activeElement,
     error,
     knownEditable,
+    beta,
   } = useSelector<RootState, EditorState>((x) => x.editor);
 
   const updateHandler = useDebouncedCallback(
@@ -122,7 +123,25 @@ const Editor: React.FunctionComponent = () => {
   }, [port]);
 
   const body = useMemo(() => {
-    if (inserting === "menuItem") {
+    if (error && beta) {
+      return (
+        <div>
+          <div className="p-2">
+            <h3>This Page Editor feature is currently in private beta</h3>
+
+            <p>
+              To request access, contact{" "}
+              <a href="mailto:support@pixiebrix.com">support@pixiebrix.com</a>
+            </p>
+
+            <p>
+              In the meantime, you can create extensions that depend on this
+              feature in the Workshop.
+            </p>
+          </div>
+        </div>
+      );
+    } else if (inserting === "menuItem") {
       return (
         <div className="p-2">
           <h3>Inserting button</h3>
