@@ -44,8 +44,14 @@ import "@/blocks/renderers";
 import "@/contrib/index";
 import { sleep } from "@/utils";
 import ScopeSettings from "@/devTools/ScopeSettings";
+import { AuthState } from "@/core";
 
-const defaultState = { isLoggedIn: false, extension: true };
+const defaultState: AuthState = {
+  isLoggedIn: false,
+  extension: true,
+  isOnboarded: undefined,
+  flags: [],
+};
 
 const Centered: React.FunctionComponent = ({ children }) => {
   return (
@@ -105,6 +111,16 @@ const Panel: React.FunctionComponent = () => {
       <Centered>
         <div className="mb-2">
           <b>Error authenticating account</b>
+        </div>
+        <div>{authError.toString()}</div>
+        <Button onClick={() => location.reload()}>Reload Editor</Button>
+      </Centered>
+    );
+  } else if (context.error) {
+    return (
+      <Centered>
+        <div className="mb-2">
+          <b>An error occurred</b>
         </div>
         <div>{authError.toString()}</div>
         <Button onClick={() => location.reload()}>Reload Editor</Button>

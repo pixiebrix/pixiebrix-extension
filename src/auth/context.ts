@@ -30,8 +30,10 @@ const anonAuthState: AuthState = {
   userId: undefined,
   email: undefined,
   isLoggedIn: false,
+  isOnboarded: false,
   extension: false,
   scope: null,
+  flags: [],
 };
 
 export const AuthContext = React.createContext(anonAuthState);

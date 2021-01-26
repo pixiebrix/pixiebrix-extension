@@ -29,21 +29,30 @@ interface ProfileResponse {
   readonly id: string;
   readonly email: string;
   readonly scope: string | null;
+  readonly isOnboarded: boolean;
   readonly organization: OrganizationResponse | null;
+  readonly flags: string[];
 }
 
 export const anonAuth: AuthState = {
   userId: undefined,
   email: undefined,
   isLoggedIn: false,
+  isOnboarded: false,
   extension: true,
   scope: null,
+  flags: [],
 };
 
 export async function getAuth(): Promise<AuthState> {
-  const { id, email, scope, organization } = await fetch<ProfileResponse>(
-    "/api/me/"
-  );
+  const {
+    id,
+    email,
+    scope,
+    organization,
+    isOnboarded,
+    flags = [],
+  } = await fetch<ProfileResponse>("/api/me/");
   if (id) {
     updateRollbarAuth({ userId: id, organizationId: organization?.id });
     return {
@@ -51,8 +60,10 @@ export async function getAuth(): Promise<AuthState> {
       email,
       scope,
       organization,
+      isOnboarded,
       isLoggedIn: true,
       extension: true,
+      flags,
     };
   } else {
     return anonAuth;

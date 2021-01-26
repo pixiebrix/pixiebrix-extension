@@ -302,8 +302,8 @@ export interface RenderedArgs {
 
 export interface OrganizationAuthState {
   readonly id: string;
-  readonly name: string;
-  readonly scope: string;
+  readonly name?: string;
+  readonly scope?: string;
 }
 
 export interface AuthState {
@@ -311,6 +311,8 @@ export interface AuthState {
   readonly email?: string | null;
   readonly scope?: string | null;
   readonly isLoggedIn: boolean;
+  readonly isOnboarded: boolean;
   readonly extension: boolean;
   readonly organization?: OrganizationAuthState | null;
+  readonly flags: string[];
 }

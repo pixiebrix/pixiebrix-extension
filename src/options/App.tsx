@@ -49,6 +49,7 @@ import "@/contrib";
 import { SettingsState } from "@/options/slices";
 import { getExtensionToken } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
+import { AuthState } from "@/core";
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(
@@ -123,7 +124,12 @@ const Layout = () => {
   );
 };
 
-const defaultState = { isLoggedIn: false, extension: true };
+const defaultState: AuthState = {
+  isLoggedIn: false,
+  extension: true,
+  isOnboarded: undefined,
+  flags: [],
+};
 
 const App: React.FunctionComponent = () => {
   const [authState] = useAsyncState(getAuth);

@@ -82,6 +82,21 @@ const _openOptions = liftBackground("BACKGROUND_OPEN_OPTIONS", async () => {
   return true;
 });
 
+const _openMarketplace = liftBackground(
+  "BACKGROUND_OPEN_MARKETPLACE",
+  async () => {
+    const url = browser.runtime.getURL("options.html");
+    await browser.tabs.create({
+      url: `${url}#/marketplace`,
+    });
+    return true;
+  }
+);
+
 export const openExtensionOptions = lift("OPEN_OPTIONS", async () => {
   return await _openOptions();
+});
+
+export const openMarketplace = lift("OPEN_MARKETPLACE", async () => {
+  return await _openMarketplace();
 });

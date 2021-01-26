@@ -92,6 +92,12 @@
       }
     }
 
+    &__actions {
+      .badge {
+        margin-top: -5px;
+      }
+    }
+
     &__actions button {
       border-radius: 0;
       margin-right: 0;
