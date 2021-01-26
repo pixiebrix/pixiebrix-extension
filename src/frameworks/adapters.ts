@@ -25,17 +25,14 @@ import {
   WriteableComponentAdapter,
 } from "@/frameworks/component";
 
-export const FRAMEWORK_ADAPTERS: Partial<
-  {
-    [framework in Framework]:
-      | ReadableComponentAdapter
-      | WriteableComponentAdapter;
-  }
-> = {
-  react: reactAdapter,
-  emberjs: emberAdapter,
-  vue: vueAdapter,
-  angularjs: angularjsAdapter,
-};
+export const FRAMEWORK_ADAPTERS = new Map<
+  Framework,
+  ReadableComponentAdapter | WriteableComponentAdapter
+>([
+  ["react", reactAdapter],
+  ["emberjs", emberAdapter],
+  ["vue", vueAdapter],
+  ["angularjs", angularjsAdapter],
+]);
 
 export default FRAMEWORK_ADAPTERS;

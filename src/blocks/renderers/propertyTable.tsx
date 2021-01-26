@@ -20,8 +20,7 @@ import { Renderer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions, RenderedHTML } from "@/core";
-import isPlainObject from "lodash/isPlainObject";
-import sortBy from "lodash/sortBy";
+import { sortBy, isPlainObject } from "lodash";
 
 interface Item {
   key: string;

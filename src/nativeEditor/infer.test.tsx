@@ -1,4 +1,4 @@
-import { inferButtonHTML } from "@/nativeEditor/infer";
+import { inferButtonHTML, inferPanelHTML } from "@/nativeEditor/infer";
 
 test("infer basic button", () => {
   document.body.innerHTML = "<div><button>More</button></div>";
@@ -38,6 +38,33 @@ test("infer button", () => {
   expect(inferred).toBe('<input type="button" value="{{{ caption }}}" />');
 });
 
+test("infer bootstrap anchor button", () => {
+  document.body.innerHTML =
+    '<div><a href="/docs/5.0/getting-started/download/" class="btn btn-lg btn-outline-secondary mb-3">Download</a></div>';
+  const inferred = inferButtonHTML(
+    $(document).find("div").get(0),
+    $(document).find("a").get()
+  );
+  expect(inferred).toBe(
+    '<a href="#" class="btn btn-lg btn-outline-secondary mb-3">{{{ caption }}}</a>'
+  );
+});
+
+test("do not duplicate button caption", () => {
+  document.body.innerHTML =
+    '<div><button type="button"><!---->\n' +
+    '<span class="artdeco-button__text">\n' +
+    "    View in Sales Navigator\n" +
+    "</span></button></div>";
+  const inferred = inferButtonHTML(
+    $(document).find("div").get(0),
+    $(document).find("a").get()
+  );
+  expect(inferred).toBe(
+    '<button type="button"><span class="artdeco-button__text">{{{ caption }}}</span></button>'
+  );
+});
+
 test("infer ember button", () => {
   document.body.innerHTML =
     "<div>" +
@@ -51,7 +78,7 @@ test("infer ember button", () => {
   );
 
   expect(inferred).toBe(
-    '<button aria-expanded="false"' +
+    "<button" +
       ' class="artdeco-button"' +
       ' type="button">{{{ caption }}}</button>'
   );
@@ -97,4 +124,71 @@ test("infer list item from inside div", () => {
   );
 
   expect(inferred).toBe("<li><div>{{{ caption }}}</div></li>");
+});
+
+test("infer single panel", () => {
+  document.body.innerHTML =
+    "<div>" +
+    "<section><header><h2>Bar</h2></header><div><p>This is some other text</p></div></section>" +
+    "</div>";
+
+  const inferred = inferPanelHTML(
+    $(document).find("div").get(0),
+    $(document).find("section").get()
+  );
+
+  expect(inferred).toBe(
+    "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>"
+  );
+});
+
+test("infer basic panel structure with header", () => {
+  document.body.innerHTML =
+    "<div>" +
+    "<section><header><h2>Foo</h2></header><div><p>This is some text</p></div></section>" +
+    "<section><header><h2>Bar</h2></header><div><p>This is some other text</p></div></section>" +
+    "</div>";
+
+  const inferred = inferPanelHTML(
+    $(document).find("div").get(0),
+    $(document).find("section").get()
+  );
+
+  expect(inferred).toBe(
+    "<section><header><h2>{{{ heading }}}</h2></header><div>{{{ body }}}</div></section>"
+  );
+});
+
+test("infer basic panel structure with div header", () => {
+  document.body.innerHTML =
+    "<div>" +
+    "<section><div><h2>Foo</h2></div><div><p>This is some text</p></div></section>" +
+    "<section><div><h2>Bar</h2></div><div><p>This is some other text</p></div></section>" +
+    "</div>";
+
+  const inferred = inferPanelHTML(
+    $(document).find("div").get(0),
+    $(document).find("section").get()
+  );
+
+  expect(inferred).toBe(
+    "<section><div><h2>{{{ heading }}}</h2></div><div>{{{ body }}}</div></section>"
+  );
+});
+
+test("infer header structure mismatch", () => {
+  document.body.innerHTML =
+    "<div>" +
+    "<section><h2>Foo</h2><div><p>This is some text</p></div></section>" +
+    "<section><header><h2>Bar</h2></header><div><p>This is some other text</p></div></section>" +
+    "</div>";
+
+  const inferred = inferPanelHTML(
+    $(document).find("div").get(0),
+    $(document).find("section").get()
+  );
+
+  expect(inferred).toBe(
+    "<section><h2>{{{ heading }}}</h2><div>{{{ body }}}</div></section>"
+  );
 });

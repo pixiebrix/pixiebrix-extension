@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
@@ -27,11 +27,26 @@ const FoundationTab: React.FunctionComponent<{
 }> = ({ eventKey = "foundation", editable }) => {
   const [field] = useField("containerInfo");
 
+  const templateInput = useRef<HTMLTextAreaElement>(null);
   const { values } = useFormikContext<FormState>();
 
   const locked = useMemo(
     () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
     [editable, values.installed, values.extensionPoint.metadata.id]
+  );
+
+  const insertSnippet = useCallback(
+    (snippet) => {
+      const { current } = templateInput;
+      const pos = current.selectionStart;
+      current.setRangeText(snippet, pos, pos);
+      current.focus();
+
+      // Trigger a DOM 'input' event
+      const event = new Event("input", { bubbles: true });
+      current.dispatchEvent(event);
+    },
+    [templateInput.current]
   );
 
   if (locked) {
@@ -121,9 +136,39 @@ const FoundationTab: React.FunctionComponent<{
           Template
         </Form.Label>
         <Col sm={10}>
+          <div>
+            <span>Insert at cursor:</span>
+            <a
+              href="#"
+              className="mx-2"
+              role="button"
+              onClick={(e) => {
+                insertSnippet("{{{ heading }}}");
+                e.preventDefault();
+              }}
+            >
+              heading
+            </a>
+            <a
+              href="#"
+              className="mx-2"
+              role="button"
+              onClick={(e) => {
+                insertSnippet("{{{ body }}}");
+                e.preventDefault();
+              }}
+            >
+              body
+            </a>
+          </div>
           <Field name="extensionPoint.definition.template">
             {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="textarea" rows={4} {...field} />
+              <Form.Control
+                as="textarea"
+                rows={4}
+                {...field}
+                ref={templateInput}
+              />
             )}
           </Field>
         </Col>

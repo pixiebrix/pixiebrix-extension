@@ -27,7 +27,7 @@ const theme = require("!!raw-loader!primereact/resources/themes/saga-blue/theme.
 const primereact = require("!!raw-loader!primereact/resources/primereact.min.css?esModule=false")
   .default;
 
-// FIXME: figure out how to load the fonts
+// FIXME: figure out how to load the fonts, since the font URL in the file doesn't work with Chrome extensions
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const primeicons = require("!!raw-loader!primeicons/primeicons.css?esModule=false")
   .default;
@@ -35,9 +35,18 @@ const primeicons = require("!!raw-loader!primeicons/primeicons.css?esModule=fals
 const PropertyTree: React.FunctionComponent<{ value: any }> = ({ value }) => {
   return (
     <React.Fragment>
-      <style type="text/css">
-        {theme.toString() + primereact.toString() + primeicons.toString()}
-      </style>
+      <style
+        type="text/css"
+        dangerouslySetInnerHTML={{ __html: theme.toString() }}
+      />
+      <style
+        type="text/css"
+        dangerouslySetInnerHTML={{ __html: primereact.toString() }}
+      />
+      <style
+        type="text/css"
+        dangerouslySetInnerHTML={{ __html: primeicons.toString() }}
+      />
       <TreeTable value={value}>
         <Column field="name" header="Property" expander />
         <Column field="value" header="Value" />
