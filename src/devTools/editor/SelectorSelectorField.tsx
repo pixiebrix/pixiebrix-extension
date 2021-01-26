@@ -74,9 +74,6 @@ const CustomOption: ComponentType<OptionProps<OptionValue>> = ({
             Data
           </Badge>
         )}
-        {/*{props.data.elementInfo?.framework && (*/}
-        {/*  <Badge variant="dark">{props.data.elementInfo.framework}</Badge>*/}
-        {/*)}*/}
         {children}
       </div>
     </components.Option>

@@ -57,7 +57,7 @@ export const insertPanel = liftContentScript("INSERT_PANEL", async () => {
         wrap_line_length: 80,
         wrap_attributes: "force",
       }),
-      position: "append",
+      position: "prepend",
     },
     containerInfo: await pageScript.getElementInfo({ selector: selectors[0] }),
   };
