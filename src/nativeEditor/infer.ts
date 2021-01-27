@@ -16,8 +16,7 @@
  */
 
 import { uniq, compact, sortBy, partial } from "lodash";
-// @ts-ignore: no types available
-import getCssSelector from "css-selector-generator";
+import getCssSelector, { css_selector_type } from "css-selector-generator";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -387,7 +386,7 @@ function commonPanelHTML(tag: string, $items: JQuery<HTMLElement>): string {
 
 export function safeCssSelector(
   element: HTMLElement,
-  selectors: string[] = [],
+  selectors: css_selector_type[] = [],
   root: Element = undefined
 ): string {
   // https://github.com/fczbkk/css-selector-generator

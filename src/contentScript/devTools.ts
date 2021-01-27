@@ -28,7 +28,6 @@ import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
 
-// @ts-ignore: no typescript definitions
 import getCssSelector from "css-selector-generator";
 
 let selectedElement: HTMLElement = undefined;

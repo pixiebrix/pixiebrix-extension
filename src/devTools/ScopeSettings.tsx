@@ -24,7 +24,7 @@ import axios, { AxiosResponse } from "axios";
 import { mapValues, castArray } from "lodash";
 import { makeURL } from "@/hooks/fetch";
 import { getExtensionToken } from "@/auth/token";
-import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface Profile {
@@ -102,14 +102,14 @@ const ScopeSettings: React.FunctionComponent = () => {
           setErrors(mapValues(err.response.data, (xs) => castArray(xs)[0]));
         } else {
           console.error(response.data);
-          addToast("Error updating account scope", {
+          addToast("Error updating account alias", {
             appearance: "error",
             autoDismiss: true,
           });
         }
         return;
       }
-      addToast("Set account scope", {
+      addToast("Set account alias", {
         appearance: "success",
         autoDismiss: true,
       });
@@ -123,15 +123,24 @@ const ScopeSettings: React.FunctionComponent = () => {
       <Col md={8} lg={6} className="mx-auto">
         <div className="mt-2">
           <b>
-            To create extensions, you must first set a scope for your PixieBrix
-            account
+            To create extensions, you must first set an account alias for your
+            PixieBrix account
           </b>
         </div>
 
         <Alert variant="info" className="mt-2">
-          <FontAwesomeIcon icon={faInfo} /> Your scope is used to namespace
-          bricks you create, so their ids don&apos;t conflict with the ids of
-          public and team bricks.
+          <p>
+            <FontAwesomeIcon icon={faInfo} /> Your account alias is a unique
+            name used to prevent duplicate identifiers between the bricks you
+            create and public/team bricks.
+          </p>
+        </Alert>
+
+        <Alert variant="info" className="mt-2">
+          <p>
+            <FontAwesomeIcon icon={faEyeSlash} /> You account alias will not be
+            visible to anyone unless you choose to share a brick or extension.
+          </p>
         </Alert>
 
         <Formik
@@ -142,7 +151,7 @@ const ScopeSettings: React.FunctionComponent = () => {
             scope: Yup.string()
               .matches(
                 SCOPE_REGEX,
-                "Your scope must be @ followed by lowercase letters and numbers"
+                "Your account alias must start with @ followed by lowercase letters and numbers"
               )
               .required(),
           })}
@@ -150,13 +159,13 @@ const ScopeSettings: React.FunctionComponent = () => {
           {({ handleSubmit, isSubmitting, isValid }) => (
             <Form noValidate onSubmit={handleSubmit} className="mt-2">
               <TextField
-                placeholder="@username"
+                placeholder="@peter-parker"
                 name="scope"
-                description="Your @scope for publishing bricks."
+                description="Your @alias for publishing bricks, e.g., @peter-parker"
                 label="Scope"
               />
               <Button type="submit" disabled={isSubmitting || !isValid}>
-                Set My Scope
+                Set My Account Alias
               </Button>
             </Form>
           )}
