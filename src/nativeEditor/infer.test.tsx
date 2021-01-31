@@ -38,6 +38,49 @@ test("infer button", () => {
   expect(inferred).toBe('<input type="button" value="{{{ caption }}}" />');
 });
 
+test("ignore chevron down in key", () => {
+  document.body.innerHTML =
+    '<div><button>More <icon key="chevron-down"></icon></button></div>';
+  const inferred = inferButtonHTML(
+    $(document).find("div").get(0),
+    $(document).find("button").get()
+  );
+  expect(inferred).toBe("<button>{{{ caption }}}</button>");
+});
+
+test("ignore chevron down in class name", () => {
+  document.body.innerHTML =
+    '<div><button>More <i class="fas fa-chevron-down"></i></button></div>';
+  const inferred = inferButtonHTML(
+    $(document).find("div").get(0),
+    $(document).find("button").get()
+  );
+  expect(inferred).toBe("<button>{{{ caption }}}</button>");
+});
+
+test("infer anchor with button sibling", () => {
+  document.body.innerHTML =
+    "<div>" +
+    '      <button class="follow org-company-follow-button org-top-card-primary-actions__action artdeco-button ember-view"><li-icon><svg width="16" height="16"></svg></li-icon>' +
+    '  <span aria-hidden="true">Follow</span>' +
+    "</button>" +
+    '<a  href="#" class="ember-view org-top-card-primary-actions__action">' +
+    '    <span class="org-top-card-primary-actions__action-inner artdeco-button artdeco-button--secondary">' +
+    "            Visit website" +
+    '            <li-icon><svg width="16" height="16"></svg></li-icon>' +
+    "</span>" +
+    "</a>" +
+    "</div>";
+
+  const inferred = inferButtonHTML(
+    $(document).find("div").get(0),
+    $(document).find("a").get()
+  );
+  expect(inferred).toBe(
+    '<a href="#" class="org-top-card-primary-actions__action"><span class="org-top-card-primary-actions__action-inner artdeco-button artdeco-button--secondary">{{{ caption }}}<li-icon>{{{ icon }}}</li-icon></span></a>'
+  );
+});
+
 test("infer bootstrap anchor button", () => {
   document.body.innerHTML =
     '<div><a href="/docs/5.0/getting-started/download/" class="btn btn-lg btn-outline-secondary mb-3">Download</a></div>';
@@ -58,7 +101,7 @@ test("do not duplicate button caption", () => {
     "</span></button></div>";
   const inferred = inferButtonHTML(
     $(document).find("div").get(0),
-    $(document).find("a").get()
+    $(document).find("button").get()
   );
   expect(inferred).toBe(
     '<button type="button"><span class="artdeco-button__text">{{{ caption }}}</span></button>'
