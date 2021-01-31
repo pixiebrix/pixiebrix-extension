@@ -100,7 +100,7 @@ export const readerOptions: FrameworkOption[] = [
 const FrameworkSelector: React.FunctionComponent<{
   name: string;
   frameworks: FrameworkMeta[];
-}> = ({ name, frameworks }) => {
+}> = ({ name, frameworks = [] }) => {
   const frameworkOptions: FrameworkOption[] = useMemo(
     () =>
       readerOptions.map((option) => {
