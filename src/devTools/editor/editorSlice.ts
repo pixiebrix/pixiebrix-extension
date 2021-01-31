@@ -164,6 +164,8 @@ export const editorSlice = createSlice({
   reducers: {
     toggleInsert: (state, action: PayloadAction<ElementType>) => {
       state.inserting = action.payload;
+      state.beta = false;
+      state.error = null;
     },
     addElement: (state, action: PayloadAction<FormState>) => {
       const element = action.payload;
