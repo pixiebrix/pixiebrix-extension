@@ -15,7 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { isEmpty, mapValues, partial, negate, identity } from "lodash";
+import {
+  isEmpty,
+  mapValues,
+  partial,
+  partialRight,
+  negate,
+  identity,
+  countBy,
+  maxBy,
+  entries,
+  last,
+  flow,
+  head,
+} from "lodash";
+
+export function mostCommonElement<T>(items: T[]): T {
+  // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
+  return flow(countBy, entries, partialRight(maxBy, last), head)(items) as T;
+}
 
 export function isGetter(obj: object, prop: string): boolean {
   return !!Object.getOwnPropertyDescriptor(obj, prop)?.["get"];

@@ -19,6 +19,7 @@ import { Metadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import { BaseFormState, ReaderFormState } from "@/devTools/editor/editorSlice";
 import psl, { ParsedDomain } from "psl";
+import { identity } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderDefinition } from "@/blocks/readers/factory";
 import {
@@ -71,6 +72,10 @@ export function makeIsAvailable(
   };
 }
 
+export function makeReaderId(foundationId: string): string {
+  return `${foundationId}-reader`;
+}
+
 export function makeBaseState(
   uuid: string,
   defaultSelector: string | null,
@@ -82,7 +87,7 @@ export function makeBaseState(
     services: [],
     reader: {
       metadata: {
-        id: `${metadata.id}-reader`,
+        id: makeReaderId(metadata.id),
         name: `Default reader for ${metadata.id}`,
       },
       outputSchema: {},
@@ -113,21 +118,33 @@ export async function generateExtensionPointMetadata(
 
   await brickRegistry.fetch();
 
+  const allowId = async (id: string) => {
+    if (!reservedNames.includes(id)) {
+      try {
+        await brickRegistry.lookup(id);
+      } catch (err) {
+        // name doesn't exist yet
+        return true;
+      }
+    }
+    return false;
+  };
+
   for (let index = 1; index < 1000; index++) {
     const id =
       index === 1
         ? `${scope ?? "@local"}/${domain}/foundation`
         : `${scope ?? "@local"}/${domain}/foundation-${index}`;
 
-    if (!reservedNames.includes(id)) {
-      try {
-        await brickRegistry.lookup(id);
-      } catch (err) {
-        return {
-          id,
-          name: `${domain} ${label}`,
-        };
-      }
+    const ok = (
+      await Promise.all([allowId(id), allowId(makeReaderId(id))])
+    ).every(identity);
+
+    if (ok) {
+      return {
+        id,
+        name: `${domain} ${label}`,
+      };
     }
   }
   throw new Error("Could not find available id");

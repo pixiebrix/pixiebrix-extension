@@ -17,6 +17,7 @@
 
 import { uniq, compact, sortBy, partial } from "lodash";
 import getCssSelector, { css_selector_type } from "css-selector-generator";
+import { mostCommonElement } from "@/utils";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -29,6 +30,14 @@ const HEADER_TAGS = ["header", "h1", "h2", "h3", "h4", "h5", "h6"];
 const LAYOUT_TAGS = ["section", "header", "div", "article", "aside"];
 const TEXT_TAGS = ["span", "p", "b", "h1", "h2", "h3", "h4", "h5", "h6"];
 
+const ATTR_SKIP_ELEMENT_PATTERNS = [
+  /^chevron-down$/,
+  /^([a-zA-Z0-9]+)-chevron-down$/,
+];
+
+/**
+ * Attribute names to exclude
+ */
 const ATTR_EXCLUDE_PATTERNS = [
   /^id$/,
   /^name$/,
@@ -48,6 +57,12 @@ const ATTR_EXCLUDE_PATTERNS = [
 const VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
   ["class", [/^ember-view$/]],
 ]);
+
+class SkipElement extends Error {
+  constructor(msg: string) {
+    super(msg);
+  }
+}
 
 function intersection<T>(sets: Set<T>[]): Set<T> {
   return sets.reduce((acc, other) => {
@@ -126,6 +141,18 @@ function setCommonAttrs(
 
     const value = commonAttr($items, attrName);
     if (value != null) {
+      if (
+        value
+          .split(" ")
+          .some((value) =>
+            ATTR_SKIP_ELEMENT_PATTERNS.some((test) => test.test(value))
+          )
+      ) {
+        throw new SkipElement(
+          "Attribute value contains value in the skip list"
+        );
+      }
+
       $common.attr(attrName, value);
     }
   }
@@ -152,16 +179,41 @@ function commonButtonStructure(
 
   const $common = $(`<${proto.tagName.toLowerCase()}>`);
 
-  setCommonAttrs($common, $items);
+  try {
+    setCommonAttrs($common, $items);
+  } catch (err) {
+    if (err instanceof SkipElement) {
+      // Shouldn't happen at the top level
+      return [$(), currentCaptioned];
+    } else {
+      throw err;
+    }
+  }
 
-  // Heuristic that assumes tag matches from the beginning
-  for (let i = 0; i < proto.children.length; i++) {
+  // Heuristic that assumes elements match from the beginning
+  for (
+    let nodeIndex = 0, elementIndex = 0;
+    nodeIndex < proto.childNodes.length;
+    nodeIndex++
+  ) {
+    const protoChild = proto.childNodes.item(nodeIndex);
+
     if (
-      $items.toArray().every((x) => i < x.children.length) &&
-      uniq($items.toArray().map((x) => x.children.item(i).tagName)).length === 1
+      protoChild.nodeType === Node.TEXT_NODE &&
+      !currentCaptioned &&
+      protoChild.textContent &&
+      protoChild.textContent?.trim() !== ""
+    ) {
+      $common.append(document.createTextNode("{{{ caption }}}"));
+      currentCaptioned = true;
+    } else if (
+      protoChild.nodeType === Node.ELEMENT_NODE &&
+      $items.toArray().every((x) => elementIndex < x.children.length) &&
+      uniq($items.toArray().map((x) => x.children.item(elementIndex).tagName))
+        .length === 1
     ) {
       const $children = $items.map(function () {
-        return this.children.item(i) as HTMLElement;
+        return this.children.item(elementIndex) as HTMLElement;
       });
 
       const [child, childCaptioned] = commonButtonStructure(
@@ -170,6 +222,8 @@ function commonButtonStructure(
       );
       $common.append(child);
       currentCaptioned ||= childCaptioned;
+
+      elementIndex++;
     }
   }
 
@@ -182,9 +236,6 @@ function commonButtonStructure(
     !$common.children().length &&
     CAPTION_TAGS.includes(proto.tagName.toLowerCase())
   ) {
-    $common.append(document.createTextNode("{{{ caption }}}"));
-    currentCaptioned = true;
-  } else if (!currentCaptioned && hasTextNodeChild($(proto))) {
     $common.append(document.createTextNode("{{{ caption }}}"));
     currentCaptioned = true;
   }
@@ -570,27 +621,34 @@ export function inferButtonHTML(
 ): string {
   const $container = $(container);
 
-  if (selected.length > 1) {
+  if (selected.length === 0) {
+    throw new Error("one or more prototype button-like elements required");
+  } else if (selected.length > 1) {
     const children = containerChildren($container, selected);
-    return commonButtonHTML(selected[0].tagName, $(children));
-  }
-
-  for (const tag of [...BUTTON_SELECTORS, ...BUTTON_TAGS]) {
-    const $items = $container.children(tag);
-
-    if ($items.length) {
-      if (tag === "input") {
-        const commonType = commonAttr($items, "type") ?? "button";
-        const inputType = ["submit", "reset"].includes(commonType)
-          ? "button"
-          : commonType;
-        return `<input type="${inputType}" value="{{{ caption }}}" />`;
+    // vote on the root tag
+    const tag = mostCommonElement(selected.map((x) => x.tagName)).toLowerCase();
+    return commonButtonHTML(tag, $(children));
+  } else {
+    const element = selected[0];
+    for (const buttonTag of [...BUTTON_SELECTORS, ...BUTTON_TAGS]) {
+      const $items = $container.children(buttonTag);
+      if (
+        $items.length &&
+        ($items.is(element) || $items.has(element).length > 0)
+      ) {
+        if (buttonTag === "input") {
+          const commonType = commonAttr($items, "type") ?? "button";
+          const inputType = ["submit", "reset"].includes(commonType)
+            ? "button"
+            : commonType;
+          return `<input type="${inputType}" value="{{{ caption }}}" />`;
+        }
+        return commonButtonHTML(buttonTag, $items);
       }
-      return commonButtonHTML(tag, $items);
     }
-  }
 
-  throw new Error(
-    `Did not find any button-like tags in container ${container.tagName}`
-  );
+    throw new Error(
+      `Did not find any button-like tags in container ${container.tagName}`
+    );
+  }
 }
