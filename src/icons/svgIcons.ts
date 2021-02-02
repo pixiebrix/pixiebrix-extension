@@ -24,6 +24,7 @@ const filenameRegex = /^\.\/(?<fileName>.*?)\.svg$/i;
 
 const iconCache: { [libraryKey in IconLibrary]: { [key: string]: string } } = {
   bootstrap: {},
+  custom: {},
   "simple-icons": {},
 };
 
@@ -43,6 +44,8 @@ importAll(
   "simple-icons",
   require.context("simple-icons/icons/", false, /\.svg$/)
 );
+
+importAll("custom", require.context("@/icons/custom-icons/", false, /\.svg$/));
 
 export const iconOptions: IconOption[] = sortBy(
   Object.entries(iconCache).flatMap(([library, libraryCache]) =>

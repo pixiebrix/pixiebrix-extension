@@ -156,7 +156,7 @@ module.exports = {
       },
       {
         test: /\.(svg|png|jpg|gif)?$/,
-        exclude: /(bootstrap-icons|simple-icons)/,
+        exclude: /(bootstrap-icons|simple-icons|custom-icons)/,
         use: [
           {
             loader: "file-loader",
@@ -168,7 +168,7 @@ module.exports = {
         ],
       },
       {
-        test: /(bootstrap-icons|simple-icons).*\.svg$/,
+        test: /(bootstrap-icons|simple-icons|custom-icons).*\.svg$/,
         loader: "svg-inline-loader",
       },
       {

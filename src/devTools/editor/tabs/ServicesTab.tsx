@@ -22,6 +22,14 @@ import { ServiceDependency } from "@/core";
 import { DependencyRow } from "@/options/pages/extensionEditor/ServicesFormCard";
 import { useAuthOptions } from "@/options/pages/extensionEditor/ServiceAuthSelector";
 import ServiceSelector from "@/components/ServiceSelector";
+import { head } from "lodash";
+
+const PACKAGE_REGEX = /^((?<scope>@[a-z0-9-~][a-z0-9-._~]*)\/)?((?<collection>[a-z0-9-~][a-z0-9-._~]*)\/)?(?<name>[a-z0-9-~][a-z0-9-._~]*)$/;
+
+function defaultOutputKey(serviceId: string): string {
+  const match = PACKAGE_REGEX.exec(serviceId);
+  return match.groups.collection?.replace(".", "_") ?? "";
+}
 
 const ServicesTab: React.FunctionComponent<{
   name?: string;
@@ -46,11 +54,17 @@ const ServicesTab: React.FunctionComponent<{
                 key={selectKey}
                 placeholder="Pick a service to add"
                 onSelect={(x) => {
+                  // reset value in dropdown
                   setKey((k) => k + 1);
                   push({
                     id: x.metadata.id,
-                    outputKey: "",
-                    config: undefined,
+                    outputKey: defaultOutputKey(x.metadata.id),
+                    config: head(
+                      authOptions.filter(
+                        (option) =>
+                          option.local && option.serviceId === x.metadata.id
+                      )
+                    )?.value,
                   });
                 }}
               />

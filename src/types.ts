@@ -27,11 +27,12 @@ import {
   IService,
   Logger,
   OAuth2Context,
-  OAuthData,
+  AuthData,
   ReaderOutput,
   RenderedHTML,
   Schema,
   ServiceConfig,
+  TokenContext,
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
@@ -39,7 +40,7 @@ import { Permissions } from "webextension-polyfill-ts";
 
 export abstract class Service<
   TConfig extends ServiceConfig = ServiceConfig,
-  TOAuth extends OAuthData = OAuthData
+  TOAuth extends AuthData = AuthData
 > implements IService<TConfig> {
   id: string;
   name: string;
@@ -48,6 +49,7 @@ export abstract class Service<
   abstract schema: Schema;
   abstract hasAuth: boolean;
   abstract isOAuth2: boolean;
+  abstract isToken: boolean;
 
   protected constructor(
     id: string,
@@ -63,10 +65,12 @@ export abstract class Service<
 
   abstract getOAuth2Context(serviceConfig: TConfig): OAuth2Context;
 
+  abstract getTokenContext(serviceConfig: TConfig): TokenContext;
+
   abstract authenticateRequest(
     serviceConfig: TConfig,
     requestConfig: AxiosRequestConfig,
-    oauthConfig?: TOAuth
+    authConfig?: TOAuth
   ): AxiosRequestConfig;
 }
 

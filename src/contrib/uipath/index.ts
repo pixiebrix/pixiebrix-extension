@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,10 +15,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./google";
-export * from "./hubspot";
-export * from "./pipedrive";
-export * from "./slack";
-export * from "./techcrunch";
-export * from "./salesforce";
-export * from "./uipath";
+import "./process";

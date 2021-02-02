@@ -27,8 +27,9 @@ import { locator } from "@/background/locator";
 import { ContextError } from "@/errors";
 import { isBackgroundPage } from "webext-detect-page";
 import {
-  deleteCachedOAuth2,
-  getCachedOAuth2,
+  deleteCachedAuthData,
+  getCachedAuthData,
+  getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
 
@@ -122,9 +123,16 @@ async function authenticate(
     );
   } else if (service.isOAuth2) {
     const localConfig = await locator.getLocalConfig(config.id);
-    let data = await getCachedOAuth2(config.id);
+    let data = await getCachedAuthData(config.id);
     if (!data) {
       data = await launchOAuth2Flow(service, localConfig);
+    }
+    return service.authenticateRequest(localConfig.config, request, data);
+  } else if (service.isToken) {
+    const localConfig = await locator.getLocalConfig(config.id);
+    let data = await getCachedAuthData(config.id);
+    if (!data) {
+      data = await getToken(service, localConfig);
     }
     return service.authenticateRequest(localConfig.config, request, data);
   } else {
@@ -196,7 +204,7 @@ const _proxyService = liftBackground(
           // have the user login again
           const service = await serviceRegistry.lookup(serviceConfig.serviceId);
           if (service.isOAuth2) {
-            await deleteCachedOAuth2(serviceConfig.id);
+            await deleteCachedAuthData(serviceConfig.id);
             return await backgroundRequest(
               await authenticate(serviceConfig, requestConfig)
             );

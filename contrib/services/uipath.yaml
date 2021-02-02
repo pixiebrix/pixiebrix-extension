@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: uipath/cloud
+  version: 1.0.0
+  name: UIPath Cloud Orchestrator
+  description: UIPath Cloud Orchestrator API
+  url: https://postman.uipath.rocks/
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    accountName:
+      type: string
+      description: https://cloud.uipath.com/[Account Name]/[Tenant Logical Name]
+    tenantName:
+      type: string
+      description: https://cloud.uipath.com/[Account Name]/[Tenant Logical Name]
+    clientId:
+      type: string
+      description: your Client ID
+    userKey:
+      $ref: "https://app.pixiebrix.com/schemas/key#"
+      description: your User Key
+    folderId:
+      type: string
+      description: an optional folder/org unit ID. If none is provided, your first Folder/Organization Unit will be used. This is usually named Default.
+  required:
+    - accountName
+    - tenantName
+    - clientId
+    - userKey
+authentication:
+  baseURL: "https://cloud.uipath.com/{{{ accountName }}}/{{{ tenantName }}}"
+  token:
+    url: "https://account.uipath.com/oauth/token"
+    data:
+      grant_type: "refresh_token"
+      client_id: "{{{ clientId }}}"
+      refresh_token: "{{{ userKey }}}"
+  headers:
+    X-UIPATH-OrganizationUnitId: "{{{ folderId }}}"
+    X-UIPATH-TenantName: "{{{ tenantName }}}"
+    Authorization: "{{{ token_type }}} {{{ access_token }}}"

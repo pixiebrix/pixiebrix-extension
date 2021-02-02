@@ -8,7 +8,7 @@
     },
     "library": {
       "type": "string",
-      "enum": ["bootstrap", "simple-icons"]
+      "enum": ["bootstrap", "simple-icons", "custom"]
     },
     "size": {
       "type": "number",

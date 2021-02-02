@@ -19,14 +19,16 @@ import React, { useContext, useMemo, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
-import { Schema } from "@/core";
+import { Schema, ServiceDependency } from "@/core";
 import { ObjectField } from "@/components/fields/FieldTable";
-import { FieldArray, useField } from "formik";
+import { FieldArray, useField, useFormikContext } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select, { OptionsType } from "react-select";
 import { uniq, compact, sortBy, isEmpty, identity } from "lodash";
 import Creatable from "react-select/creatable";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
+
+const SERVICE_BASE_SCHEMA = "https://app.pixiebrix.com/schemas/services/";
 
 const TextField: React.FunctionComponent<FieldProps<string>> = ({
   schema,
@@ -95,6 +97,49 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
       {control}
       {schema.description && (
         <Form.Text className="text-muted">{schema.description}</Form.Text>
+      )}
+      {meta.touched && meta.error && (
+        <Form.Control.Feedback type="invalid">
+          {meta.error}
+        </Form.Control.Feedback>
+      )}
+    </Form.Group>
+  );
+};
+
+export const ServiceField: React.FunctionComponent<FieldProps<string>> = ({
+  label,
+  schema,
+  ...props
+}) => {
+  const [{ value, ...field }, meta, helpers] = useField(props);
+  const { values } = useFormikContext<{ services: ServiceDependency[] }>();
+
+  const { id, options } = useMemo(() => {
+    const id = schema.$ref.substring(SERVICE_BASE_SCHEMA.length);
+    return {
+      id,
+      options: values.services
+        .filter((service) => service.id === id)
+        .map((service) => ({
+          value: `@${service.outputKey}`,
+          label: `@${service.outputKey}`,
+        })),
+    };
+  }, [schema.$ref, values.services]);
+
+  return (
+    <Form.Group>
+      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
+      <Select
+        options={options}
+        value={options.find((x) => x.value === value)}
+        onChange={(option) => helpers.setValue((option as any)?.value)}
+      />
+      {schema.description && (
+        <Form.Text className="text-muted">
+          A service variable configured for {id}
+        </Form.Text>
       )}
       {meta.touched && meta.error && (
         <Form.Control.Feedback type="invalid">
@@ -231,7 +276,9 @@ function getDefaultArrayItem(schema: Schema): unknown {
 }
 
 export function getDefaultField(fieldSchema: Schema): FieldComponent {
-  if (fieldSchema.type === "array") {
+  if (fieldSchema.$ref?.startsWith(SERVICE_BASE_SCHEMA)) {
+    return ServiceField;
+  } else if (fieldSchema.type === "array") {
     return ArrayField;
   } else if (fieldSchema.type === "object") {
     return ObjectField;
@@ -270,7 +317,7 @@ export const RendererContext = React.createContext<IRenderContext>({
   customControls: [],
 });
 
-const FieldRenderer: React.FunctionComponent<FieldProps<unknown>> = ({
+export const FieldRenderer: React.FunctionComponent<FieldProps<unknown>> = ({
   schema,
   ...props
 }) => {
