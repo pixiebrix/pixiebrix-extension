@@ -27,7 +27,7 @@ import { Schema, SchemaProperties, ServiceDependency } from "@/core";
 import { useField, useFormikContext } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
-import { Form } from "react-bootstrap";
+import { Card, Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
@@ -306,21 +306,36 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         />
       )}
 
-      {schema &&
-        Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
-          if (typeof fieldSchema === "boolean") {
-            throw new Error("Expected schema for input property type");
-          }
-          return (
-            <FieldRenderer
-              key={prop}
-              name={[name, configKey, "inputArguments", prop]
-                .filter(identity)
-                .join(".")}
-              schema={fieldSchema}
-            />
-          );
-        })}
+      {releaseKey && (
+        <Form.Group>
+          <Form.Label>inputArguments</Form.Label>
+          <Card>
+            <Card.Header>{release.Name}</Card.Header>
+            <Card.Body>
+              {schema &&
+                Object.entries(inputProperties(schema)).map(
+                  ([prop, fieldSchema]) => {
+                    if (typeof fieldSchema === "boolean") {
+                      throw new Error(
+                        "Expected schema for input property type"
+                      );
+                    }
+                    return (
+                      <FieldRenderer
+                        key={prop}
+                        name={[name, configKey, "inputArguments", prop]
+                          .filter(identity)
+                          .join(".")}
+                        schema={fieldSchema}
+                      />
+                    );
+                  }
+                )}
+            </Card.Body>
+          </Card>
+        </Form.Group>
+      )}
+
       {showOutputKey && (
         <FieldRenderer
           name={`${name}.outputKey`}
