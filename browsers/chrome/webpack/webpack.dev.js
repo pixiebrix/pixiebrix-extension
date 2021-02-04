@@ -21,6 +21,7 @@ const common = require("../../webpack/webpack.dev.js");
 const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
 const { uniq } = require("lodash");
+const Policy = require("csp-parse");
 
 const chromeRoot = path.resolve(__dirname, "../");
 
@@ -57,6 +58,10 @@ module.exports = mergeWithCustomize({
               "http://127.0.0.1/*",
               "http://localhost/*",
             ];
+
+            // const policy = new Policy(manifest.content_security_policy);
+            // policy.add('connect-src', 'ws://localhost:9090/ http://127.0.0.1:8000')
+            // manifest.content_security_policy = policy.toString();
 
             if (process.env.ENABLE_DEVTOOLS) {
               manifest.permissions = uniq([

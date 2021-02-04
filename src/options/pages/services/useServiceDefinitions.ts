@@ -29,13 +29,18 @@ interface ServiceDefinitions {
   activeConfiguration: RawServiceConfiguration | null;
   activeService: IService | null;
   isPending: boolean;
+  showZapier: boolean;
 }
+
+const ZAPIER_SLUG = "zapier";
 
 function useServiceDefinitions(): ServiceDefinitions {
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     ({ services }) => Object.values(services.configured)
   );
   const { id: configurationId } = useParams<{ id: string }>();
+
+  const showZapier = configurationId === ZAPIER_SLUG;
 
   const [serviceDefinitions, isPending, error] = useAsyncState(async () => {
     return sortBy(
@@ -45,7 +50,7 @@ function useServiceDefinitions(): ServiceDefinitions {
   }, []);
 
   const activeConfiguration = useMemo(() => {
-    return configurationId
+    return configurationId && configurationId !== ZAPIER_SLUG
       ? configuredServices.find((x) => x.id === configurationId)
       : null;
   }, [configuredServices, configurationId]);
@@ -67,6 +72,7 @@ function useServiceDefinitions(): ServiceDefinitions {
     serviceDefinitions,
     activeService,
     isPending,
+    showZapier,
   };
 }
 

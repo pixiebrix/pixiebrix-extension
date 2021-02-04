@@ -18,13 +18,13 @@
 import axios from "axios";
 import { readStorage, setStorage } from "@/chrome";
 import { isBackgroundPage } from "webext-detect-page";
-import { IService, OAuthData, RawServiceConfiguration } from "@/core";
+import { IService, AuthData, RawServiceConfiguration } from "@/core";
 import urljoin from "url-join";
 import { browser } from "webextension-polyfill-ts";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 
-async function setCachedOAuth2(
+async function setCachedAuthData(
   key: string,
   data: Record<string, string>
 ): Promise<void> {
@@ -41,17 +41,19 @@ async function setCachedOAuth2(
   );
 }
 
-export async function getCachedOAuth2<T extends OAuthData>(
+export async function getCachedAuthData<T extends AuthData>(
   key: string
 ): Promise<T> {
   if (!isBackgroundPage()) {
     throw new Error("Only the background page can access oauth2 information");
   }
-  const current = JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}");
-  return current[key];
+  const current = new Map<string, T>(
+    Object.entries(JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}"))
+  );
+  return current.get(key);
 }
 
-export async function deleteCachedOAuth2(key: string): Promise<void> {
+export async function deleteCachedAuthData(key: string): Promise<void> {
   if (!isBackgroundPage()) {
     throw new Error("Only the background page can access oauth2 information");
   }
@@ -60,10 +62,34 @@ export async function deleteCachedOAuth2(key: string): Promise<void> {
   await setStorage(OAUTH2_STORAGE_KEY, JSON.stringify(current));
 }
 
+export async function getToken(
+  service: IService,
+  auth: RawServiceConfiguration
+): Promise<AuthData> {
+  if (!service.isToken) {
+    throw new Error(`Service ${service.id} does not use token authentication`);
+  }
+
+  const { url, data } = await service.getTokenContext(auth.config);
+
+  const { status, statusText, data: responseData } = await axios.post(
+    url,
+    data
+  );
+
+  if (status >= 400) {
+    throw new Error(statusText);
+  }
+
+  await setCachedAuthData(auth.id, responseData);
+
+  return data as AuthData;
+}
+
 export async function launchOAuth2Flow(
   service: IService,
   auth: RawServiceConfiguration
-): Promise<OAuthData> {
+): Promise<AuthData> {
   // reference: https://github.com/kylpo/salesforce-chrome-oauth/blob/master/index.js
   if (!service.isOAuth2) {
     throw new Error(`Service ${service.id} is not an OAuth2 service`);
@@ -121,7 +147,7 @@ export async function launchOAuth2Flow(
     throw new Error(statusText);
   }
 
-  await setCachedOAuth2(auth.id, data);
+  await setCachedAuthData(auth.id, data);
 
-  return data as OAuthData;
+  return data as AuthData;
 }

@@ -22,7 +22,13 @@ import {
   IncompatibleServiceError,
   NotConfiguredError,
 } from "@/services/errors";
-import { OAuth2Context, OAuthData, Schema, ServiceConfig } from "@/core";
+import {
+  OAuth2Context,
+  AuthData,
+  Schema,
+  ServiceConfig,
+  TokenContext,
+} from "@/core";
 import castArray from "lodash/castArray";
 import { testMatchPattern } from "@/blocks/available";
 import isEmpty from "lodash/isEmpty";
@@ -31,6 +37,7 @@ import {
   ServiceDefinition,
   KeyAuthenticationDefinition,
   OAuth2AuthenticationDefinition,
+  TokenAuthenticationDefinition,
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { isAbsoluteURL } from "@/hooks/fetch";
@@ -64,8 +71,29 @@ class LocalDefinedService extends Service {
     );
   }
 
+  /**
+   * Return true if service exchanges credentials for a bearer token
+   */
+  get isToken(): boolean {
+    return "token" in this._definition.authentication;
+  }
+
+  /**
+   * Return true if service uses OAuth2 authentication
+   */
   get isOAuth2(): boolean {
     return "oauth2" in this._definition.authentication;
+  }
+
+  getTokenContext(serviceConfig: ServiceConfig): TokenContext {
+    if (this.isToken) {
+      const definition: TokenContext = (this._definition
+        .authentication as TokenAuthenticationDefinition).token;
+      console.debug("token context", { definition, serviceConfig });
+      return mapArgs<TokenContext>(definition, serviceConfig);
+    } else {
+      return undefined;
+    }
   }
 
   getOAuth2Context(serviceConfig: ServiceConfig): OAuth2Context {
@@ -98,14 +126,16 @@ class LocalDefinedService extends Service {
     });
   }
 
-  private authenticateRequestOAuth2(
+  private authenticateRequestToken(
     serviceConfig: ServiceConfig,
     requestConfig: AxiosRequestConfig,
-    oauthData: OAuthData
+    tokenData: AuthData
   ): AxiosRequestConfig {
     const { baseURL, headers = {} } = mapArgs(
-      this._definition.authentication as OAuth2AuthenticationDefinition,
-      { ...serviceConfig, ...oauthData }
+      this._definition.authentication as
+        | OAuth2AuthenticationDefinition
+        | TokenAuthenticationDefinition,
+      { ...serviceConfig, ...tokenData }
     );
 
     if (!baseURL && !isAbsoluteURL(requestConfig.url)) {
@@ -136,7 +166,7 @@ class LocalDefinedService extends Service {
   authenticateRequest(
     serviceConfig: ServiceConfig,
     requestConfig: AxiosRequestConfig,
-    oauthData?: OAuthData
+    authData?: AuthData
   ): AxiosRequestConfig {
     const missing = missingProperties(this.schema, serviceConfig);
     if (missing.length) {
@@ -147,8 +177,8 @@ class LocalDefinedService extends Service {
       );
     }
 
-    return this.isOAuth2
-      ? this.authenticateRequestOAuth2(serviceConfig, requestConfig, oauthData)
+    return this.isOAuth2 || this.isToken
+      ? this.authenticateRequestToken(serviceConfig, requestConfig, authData)
       : this.authenticateRequestKey(serviceConfig, requestConfig);
   }
 }

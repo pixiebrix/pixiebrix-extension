@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,11 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./google";
-export * from "./hubspot";
-export * from "./pipedrive";
-export * from "./slack";
-export * from "./techcrunch";
-export * from "./salesforce";
-export * from "./uipath";
-export * from "./zapier";
+import optionsRegistry from "@/components/fields/optionsRegistry";
+import PushOptions from "@/contrib/zapier/pushOptions";
+import ProcessOptions from "@/contrib/uipath/processOptions";
+import { ZAPIER_ID } from "@/contrib/zapier/push";
+import { UIPATH_ID } from "@/contrib/uipath/process";
+
+optionsRegistry.set(ZAPIER_ID, PushOptions);
+optionsRegistry.set(UIPATH_ID, ProcessOptions);

@@ -38,6 +38,7 @@ import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
 import { refresh as refreshServices } from "@/background/locator";
 import { GridLoader } from "react-spinners";
+import ZapierModal from "@/options/pages/services/ZapierModal";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -66,15 +67,16 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     activeConfiguration,
     serviceDefinitions,
     activeService,
+    showZapier,
     isPending: servicesPending,
   } = useServiceDefinitions();
 
-  console.log("service state", {
-    activeConfiguration,
-    servicesPending,
-    activeService,
-    serviceDefinitions,
-  });
+  // console.log("service state", {
+  //   activeConfiguration,
+  //   servicesPending,
+  //   activeService,
+  //   serviceDefinitions,
+  // });
 
   const handleSave = useCallback(
     async (config) => {
@@ -127,9 +129,10 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       <div className="pb-4">
         <p>
           Services are external accounts and resources that you configure and
-          re-use across bricks
+          re-use across extensions
         </p>
       </div>
+      {showZapier && <ZapierModal onClose={() => navigate("/services")} />}
       {activeConfiguration && activeService && (
         <ServiceEditorModal
           configuration={activeConfiguration}

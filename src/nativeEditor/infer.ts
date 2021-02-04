@@ -250,7 +250,7 @@ type PanelStructureState = {
 };
 
 /**
- * Recursively extract common HTML template from one ore more panels.
+ * Recursively extract common HTML template from one or more panels.
  * @param $items JQuery of HTML elements
  * @param state current traversal/insertion state
  */
@@ -569,6 +569,11 @@ export function findContainer(
   }
 }
 
+/**
+ * Find direct children of the container that contain each selected descendent element
+ * @param $container the panel container
+ * @param selected the selected descendent elements
+ */
 function containerChildren(
   $container: JQuery<HTMLElement>,
   selected: HTMLElement[]
@@ -611,8 +616,9 @@ export function inferPanelHTML(
   if (selected.length > 1) {
     const children = containerChildren($container, selected);
     return commonPanelHTML(selected[0].tagName, $(children));
+  } else {
+    return inferSinglePanelHTML(container, selected[0]);
   }
-  return inferSinglePanelHTML(container, selected[0]);
 }
 
 export function inferButtonHTML(

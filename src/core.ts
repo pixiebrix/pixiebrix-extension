@@ -209,10 +209,15 @@ export interface ServiceConfig {
   [key: string]: string | null;
 }
 
-export interface OAuthData {
+export interface AuthData {
   // nominal typing to distinguish from SanitizedConfig and ServiceConfig
   _oauth: null;
   [key: string]: string | null;
+}
+
+export interface TokenContext {
+  url: string;
+  data: Record<string, unknown>;
 }
 
 export interface OAuth2Context {
@@ -271,13 +276,17 @@ export interface SanitizedServiceConfiguration {
  */
 export interface IService<
   TConfig extends ServiceConfig = ServiceConfig,
-  TOAuth extends OAuthData = OAuthData
+  TOAuth extends AuthData = AuthData
 > extends Metadata {
   schema: Schema;
 
   isOAuth2: boolean;
 
+  isToken: boolean;
+
   getOAuth2Context: (serviceConfig: TConfig) => OAuth2Context;
+
+  getTokenContext: (serviceConfig: TConfig) => TokenContext;
 
   authenticateRequest: (
     serviceConfig: TConfig,
@@ -286,7 +295,7 @@ export interface IService<
   ) => AxiosRequestConfig;
 }
 
-export type IconLibrary = "bootstrap" | "simple-icons";
+export type IconLibrary = "bootstrap" | "simple-icons" | "custom";
 
 export interface IconConfig {
   id: string;

@@ -29,6 +29,7 @@ export interface AuthOption {
   value: string;
   label: string;
   serviceId: string;
+  local: boolean;
 }
 
 function defaultLabel(label: string): string {
@@ -47,6 +48,7 @@ export function useAuthOptions(): [AuthOption[]] {
     const localOptions = (configuredServices ?? []).map((x) => ({
       value: x.id,
       label: `${defaultLabel(x.label)} — Private`,
+      local: true,
       serviceId: x.serviceId,
     }));
 
@@ -55,6 +57,7 @@ export function useAuthOptions(): [AuthOption[]] {
       label: `${defaultLabel(x.label)} — ${
         x.organization?.name ?? "✨ Built-in"
       }`,
+      local: false,
       serviceId: x.service.config.metadata.id,
     }));
 

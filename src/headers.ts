@@ -21,6 +21,8 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import "@/blocks";
 import "@/contrib";
 
+Error.stackTraceLimit = Infinity;
+
 console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
 
 const blockDefinitions = blockRegistry.cached().map((block) => ({

@@ -61,57 +61,67 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           transferred to the PixieBrix servers.
         </p>
       </Card.Body>
-      {configuredServices.length > 0 && (
-        <Table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Id</th>
-              <th>Label</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {configuredServices.map((configuredService) => {
-              const service = services.find(
-                (x) => x.id === configuredService.serviceId
-              );
-              if (!service) {
-                throw new Error(
-                  `Unknown service ${configuredService.serviceId}`
-                );
-              }
-              return (
-                <tr
-                  key={`${configuredService.serviceId}-${configuredService.id}`}
-                >
-                  <td>{service.name}</td>
-                  <td>
-                    <code>{service.id}</code>
-                  </td>
-                  <td>{configuredService.label}</td>
-                  <td>
-                    <Button
-                      style={{ width: 100 }}
-                      variant="info"
-                      size="sm"
-                      onClick={() =>
-                        navigate(
-                          `/services/${encodeURIComponent(
-                            configuredService.id
-                          )}`
-                        )
-                      }
-                    >
-                      Configure
-                    </Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </Table>
-      )}
+      <Table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Id</th>
+            <th>Label</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colSpan={3}>
+              Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
+            </td>
+            <td>
+              <Button
+                style={{ width: 100 }}
+                variant="info"
+                size="sm"
+                onClick={() => navigate(`/services/zapier/`)}
+              >
+                View Key
+              </Button>
+            </td>
+          </tr>
+
+          {configuredServices.map((configuredService) => {
+            const service = services.find(
+              (x) => x.id === configuredService.serviceId
+            );
+            if (!service) {
+              throw new Error(`Unknown service ${configuredService.serviceId}`);
+            }
+            return (
+              <tr
+                key={`${configuredService.serviceId}-${configuredService.id}`}
+              >
+                <td>{service.name}</td>
+                <td>
+                  <code>{service.id}</code>
+                </td>
+                <td>{configuredService.label}</td>
+                <td>
+                  <Button
+                    style={{ width: 100 }}
+                    variant="info"
+                    size="sm"
+                    onClick={() =>
+                      navigate(
+                        `/services/${encodeURIComponent(configuredService.id)}`
+                      )
+                    }
+                  >
+                    Configure
+                  </Button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
       <Card.Footer>
         <div style={{ width: 300 }}>
           <ServiceSelector onSelect={onSelect} />

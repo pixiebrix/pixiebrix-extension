@@ -61,9 +61,18 @@ module.exports = {
     extensions: [".ts", ".tsx", ".jsx", ".js"],
   },
   plugins: [
+    new webpack.ProvidePlugin({
+      window: "global/window",
+      document: "global/document",
+    }),
     new webpack.DefinePlugin({
       "process.env": {
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
+      },
+      chrome: {
+        runtime: {
+          id: 42,
+        },
       },
     }),
   ],
