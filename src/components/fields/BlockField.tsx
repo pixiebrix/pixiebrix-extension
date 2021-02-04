@@ -109,14 +109,15 @@ function useBlockOptions(
 const BlockCard: React.FunctionComponent<{
   name: string;
   config: BlockConfig;
+  initialCollapsed?: boolean;
   showOutputKey: boolean;
   onRemove: () => void;
-}> = ({ config, name, showOutputKey, onRemove }) => {
+}> = ({ config, name, initialCollapsed = true, showOutputKey, onRemove }) => {
   const context = useFormikContext();
 
   const errors = getIn(context.errors, name);
   const isValid = isEmpty(errors);
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(initialCollapsed);
 
   const [{ error }, BlockOptions] = useBlockOptions(config.id);
 
@@ -199,6 +200,10 @@ interface ExtraProps {
   blocks: IBlock[];
 }
 
+function makeKey(blockId: string, index: number): string {
+  return `${index}-${blockId}`;
+}
+
 const BlockField: React.FunctionComponent<
   FieldProps<BlockConfig | BlockConfig[]> & ExtraProps
 > = ({ label, blocks, ...props }) => {
@@ -207,6 +212,8 @@ const BlockField: React.FunctionComponent<
   const pipeline = useMemo(() => castArray(field.value ?? []), [field.value]);
 
   const numBlocks = pipeline.length;
+
+  const [added, setAdded] = useState(null);
 
   return (
     <Form.Group as={Row} controlId={field.name}>
@@ -220,12 +227,15 @@ const BlockField: React.FunctionComponent<
               {!!pipeline.length && (
                 <div className="mb-3">
                   {pipeline.map((blockConfig, index) => (
-                    <ErrorBoundary key={index}>
+                    <ErrorBoundary key={makeKey(blockConfig.id, index)}>
                       <BlockCard
                         name={
                           Array.isArray(field.value)
                             ? `${field.name}.${index}`
                             : field.name
+                        }
+                        initialCollapsed={
+                          added !== makeKey(blockConfig.id, index)
                         }
                         config={blockConfig}
                         showOutputKey={index < numBlocks - 1}
@@ -239,7 +249,10 @@ const BlockField: React.FunctionComponent<
               <div style={{ width: 300 }} className="">
                 <BlockModal
                   blocks={blocks}
-                  onSelect={(x: IBlock) => push({ id: x.id, config: {} })}
+                  onSelect={(x: IBlock) => {
+                    setAdded(makeKey(x.id, pipeline.length));
+                    push({ id: x.id, config: {} });
+                  }}
                   caption="Add a block"
                 />
                 {typeof meta.error === "string" && (
