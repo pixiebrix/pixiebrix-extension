@@ -42,14 +42,15 @@ import Banner from "@/layout/Banner";
 import ActivatePage from "@/options/pages/marketplace/ActivatePage";
 import { getAuth } from "@/hooks/auth";
 import { useRefresh } from "@/hooks/refresh";
-
-// import the built-in bricks
-import "@/blocks";
-import "@/contrib";
 import { SettingsState } from "@/options/slices";
 import { getExtensionToken } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { AuthState } from "@/core";
+
+// import the built-in bricks
+import "@/blocks";
+import "@/contrib";
+import "@/contrib/editors";
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(

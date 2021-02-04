@@ -21,10 +21,8 @@ import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema, SchemaProperties } from "@/core";
 import { partial } from "lodash";
 import { Permissions } from "webextension-polyfill-ts";
-import optionsRegistry from "@/components/fields/optionsRegistry";
-import ProcessOptions from "@/contrib/uipath/processOptions";
 
-const UIPATH_ID = "@pixiebrix/uipath/process";
+export const UIPATH_ID = "@pixiebrix/uipath/process";
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
   uipath: {
@@ -109,4 +107,3 @@ export class RunProcess extends Effect {
 }
 
 registerBlock(new RunProcess());
-optionsRegistry.set(UIPATH_ID, ProcessOptions);

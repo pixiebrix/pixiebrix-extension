@@ -23,12 +23,10 @@ import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
 import { Webhook } from "@/contrib/zapier/contract";
-import optionsRegistry from "@/components/fields/optionsRegistry";
 import { Permissions } from "webextension-polyfill-ts";
 import { v4 as uuidv4 } from "uuid";
-import PushOptions from "@/contrib/zapier/pushOptions";
 
-const ZAPIER_ID = "@pixiebrix/zapier/push-data";
+export const ZAPIER_ID = "@pixiebrix/zapier/push-data";
 
 export const ZAPIER_PROPERTIES: SchemaProperties = {
   pushKey: {
@@ -101,4 +99,3 @@ export class PushZap extends Effect {
 }
 
 registerBlock(new PushZap());
-optionsRegistry.set(ZAPIER_ID, PushOptions);

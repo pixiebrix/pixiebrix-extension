@@ -15,4 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "./process";
+import optionsRegistry from "@/components/fields/optionsRegistry";
+import PushOptions from "@/contrib/zapier/pushOptions";
+import ProcessOptions from "@/contrib/uipath/processOptions";
+import { ZAPIER_ID } from "@/contrib/zapier/push";
+import { UIPATH_ID } from "@/contrib/uipath/process";
+
+optionsRegistry.set(ZAPIER_ID, PushOptions);
+optionsRegistry.set(UIPATH_ID, ProcessOptions);

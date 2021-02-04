@@ -24,7 +24,7 @@ type CallbackMap = { [key: string]: (result: unknown) => void };
 export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   messageType: string
 ): SendScriptMessage<TReturn, TPayload> {
-  if (typeof document === "undefined") {
+  if (typeof document === "undefined" || document.defaultView == null) {
     return () => Promise.reject("Not running in a browser context");
   }
 

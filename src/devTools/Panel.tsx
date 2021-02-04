@@ -35,6 +35,9 @@ import { AuthContext } from "@/auth/context";
 import { ToastProvider } from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
+import { sleep } from "@/utils";
+import ScopeSettings from "@/devTools/ScopeSettings";
+import { AuthState } from "@/core";
 
 // Import bricks for the registry
 import "@/blocks/effects";
@@ -42,9 +45,7 @@ import "@/blocks/readers";
 import "@/blocks/transformers";
 import "@/blocks/renderers";
 import "@/contrib/index";
-import { sleep } from "@/utils";
-import ScopeSettings from "@/devTools/ScopeSettings";
-import { AuthState } from "@/core";
+import "@/contrib/editors";
 
 const defaultState: AuthState = {
   isLoggedIn: false,
