@@ -84,7 +84,7 @@
     "connected-react-router": "^6.8.0",
     "content-scripts-register-polyfill": "^1.0.5",
     "copy-to-clipboard": "^3.3.1",
-    "copy-webpack-plugin": "^6.3.2",
+    "copy-webpack-plugin": "^6.4.1",
     "core-js": "^3.8.2",
     "csharp-helpers": "^0.9.3",
     "csp-parse": "0.0.2",
