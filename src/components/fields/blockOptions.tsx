@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
@@ -107,11 +107,9 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
   );
 };
 
-export const ServiceField: React.FunctionComponent<FieldProps<string>> = ({
-  label,
-  schema,
-  ...props
-}) => {
+export const ServiceField: React.FunctionComponent<
+  FieldProps<string> & { detectDefault?: boolean }
+> = ({ label, detectDefault = true, schema, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
 
@@ -127,6 +125,16 @@ export const ServiceField: React.FunctionComponent<FieldProps<string>> = ({
         })),
     };
   }, [schema.$ref, values.services]);
+
+  useEffect(() => {
+    if (value == null && detectDefault && options.length) {
+      const id = schema.$ref.substring(SERVICE_BASE_SCHEMA.length);
+      const service = values.services.find((service) => service.id === id);
+      if (service?.outputKey) {
+        helpers.setValue(`@${service.outputKey}`);
+      }
+    }
+  }, [detectDefault, value, options, values.services, helpers.setValue]);
 
   return (
     <Form.Group>

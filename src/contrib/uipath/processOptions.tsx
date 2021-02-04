@@ -15,25 +15,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BlockOptionProps,
   FieldRenderer,
   ServiceField,
 } from "@/components/fields/blockOptions";
 import { identity, head, fromPairs } from "lodash";
-import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
+import {
+  UIPATH_PERMISSIONS,
+  UIPATH_PROPERTIES,
+} from "@/contrib/uipath/process";
 import { Schema, SchemaProperties, ServiceDependency } from "@/core";
 import { useField, useFormikContext } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
-import { Card, Form } from "react-bootstrap";
+import { Button, Card, Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
 import { locator } from "@/background/locator";
 import { parseAssemblyQualifiedName } from "csharp-helpers";
 import { inputProperties } from "@/helpers";
+import { checkPermissions } from "@/permissions";
+import { browser } from "webextension-polyfill-ts";
 
 interface Argument {
   name: string;
@@ -104,6 +109,8 @@ function useReleases(): {
     return response.data.value;
   }, [config]);
 
+  console.debug("releases", { releases, isPending, error });
+
   return { releases, isPending, error };
 }
 
@@ -161,22 +168,20 @@ const RobotsField: React.FunctionComponent<FieldProps<number[]>> = ({
         <Form.Text className="text-muted">The UIPath process to run</Form.Text>
       )}
       {error && (
-        <Form.Control.Feedback type="invalid">
+        <span className="text-danger small">
           Error fetching robots: {error.toString()}
-        </Form.Control.Feedback>
+        </span>
       )}
       {meta.touched && meta.error && (
-        <Form.Control.Feedback type="invalid">
-          {meta.error}
-        </Form.Control.Feedback>
+        <span className="text-danger small">{meta.error}</span>
       )}
     </Form.Group>
   );
 };
 
 export const ReleaseField: React.FunctionComponent<
-  FieldProps<string> & { releases: Release[]; error: unknown }
-> = ({ label, schema, releases, error, ...props }) => {
+  FieldProps<string> & { releases: Release[]; fetchError: unknown }
+> = ({ label, schema, releases, fetchError, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
 
   const options = useMemo(() => {
@@ -198,15 +203,13 @@ export const ReleaseField: React.FunctionComponent<
       {schema.description && (
         <Form.Text className="text-muted">The UIPath process to run</Form.Text>
       )}
-      {error && (
-        <Form.Control.Feedback type="invalid">
-          Error fetching releases: {error.toString()}
-        </Form.Control.Feedback>
+      {fetchError && (
+        <span className="text-danger small">
+          Error fetching releases: {fetchError.toString()}
+        </span>
       )}
       {meta.touched && meta.error && (
-        <Form.Control.Feedback type="invalid">
-          {meta.error}
-        </Form.Control.Feedback>
+        <span className="text-danger small">{meta.error}</span>
       )}
     </Form.Group>
   );
@@ -214,11 +217,21 @@ export const ReleaseField: React.FunctionComponent<
 
 function toType(type: string) {
   const { namespace, typeName } = parseAssemblyQualifiedName(type);
-
+  // https://docs.microsoft.com/en-us/dotnet/api/system.valuetype?view=net-5.0
   if (namespace === "System" && typeName === "String") {
     return "string";
   } else if (namespace === "System" && typeName === "Boolean") {
     return "boolean";
+  } else if (
+    namespace === "System" &&
+    ["Int64", "Int32", "Int16", "UInt64", "UInt32", "UInt16"].includes(typeName)
+  ) {
+    return "integer";
+  } else if (
+    namespace === "System" &&
+    ["Decimal", "Double"].includes(typeName)
+  ) {
+    return "number";
   } else {
     throw new Error(`Unsupported input type: ${type}`);
   }
@@ -248,6 +261,12 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const basePath = [name, configKey].filter(identity).join(".");
 
+  const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
+  const [hasPermissions] = useAsyncState(
+    () => checkPermissions([UIPATH_PERMISSIONS]),
+    []
+  );
+
   const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);
   const [{ value: strategy }, , strategyHelpers] = useField<string>(
     `${basePath}.strategy`
@@ -256,7 +275,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     `${basePath}.jobsCount`
   );
 
-  const { releases, error } = useReleases();
+  const { releases, error: releasesError } = useReleases();
 
   useEffect(() => {
     if (!strategy) {
@@ -272,7 +291,23 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     return [release, schema];
   }, [releases, releaseKey]);
 
-  console.debug("release", { release, schema });
+  const requestPermissions = useCallback(() => {
+    browser.permissions.request(UIPATH_PERMISSIONS).then(() => {
+      setGrantedPermissions(true);
+    });
+  }, [setGrantedPermissions]);
+
+  if (!(grantedPermissions || hasPermissions)) {
+    return (
+      <div className="my-2">
+        <p>
+          You must grant permissions for you browser to send information to
+          UiPath.
+        </p>
+        <Button onClick={requestPermissions}>Grant Permissions</Button>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -286,7 +321,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         name={`${basePath}.releaseKey`}
         schema={UIPATH_PROPERTIES["releaseKey"] as Schema}
         releases={releases}
-        error={error}
+        fetchError={releasesError}
       />
       <FieldRenderer
         name={`${basePath}.strategy`}

@@ -44,7 +44,7 @@ import useAsyncEffect from "use-async-effect";
 import { GridLoader } from "react-spinners";
 import { reportError } from "@/telemetry/logging";
 import BlockModal from "@/components/fields/BlockModal";
-import ProcessOptions from "@/contrib/uipath/processOptions";
+import optionsRegistry from "@/components/fields/optionsRegistry";
 
 export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
   "#/definitions/renderer": "render",
@@ -94,11 +94,10 @@ function useBlockOptions(
 
   const BlockOptions = useMemo(() => {
     if (block) {
-      if (block.id === "@pixiebrix/uipath/process") {
-        return ProcessOptions;
-      } else {
-        return genericOptionsFactory(inputProperties(block.inputSchema));
-      }
+      const registered = optionsRegistry.get(block.id);
+      return (
+        registered ?? genericOptionsFactory(inputProperties(block.inputSchema))
+      );
     } else {
       return null;
     }

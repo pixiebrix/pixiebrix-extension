@@ -20,6 +20,11 @@ import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema, SchemaProperties } from "@/core";
 import { partial } from "lodash";
+import { Permissions } from "webextension-polyfill-ts";
+import optionsRegistry from "@/components/fields/optionsRegistry";
+import ProcessOptions from "@/contrib/uipath/processOptions";
+
+const UIPATH_ID = "@pixiebrix/uipath/process";
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
   uipath: {
@@ -51,12 +56,16 @@ export const UIPATH_PROPERTIES: SchemaProperties = {
   },
 };
 
+export const UIPATH_PERMISSIONS: Permissions.Permissions = {
+  origins: ["https://*.uipath.com/*"],
+};
+
 export class RunProcess extends Effect {
   constructor() {
     super(
-      "@pixiebrix/uipath/process",
-      "Run a UIPath process",
-      "Run a UIPath process using UIPath Cloud Orchestrator"
+      UIPATH_ID,
+      "Run a UiPath process",
+      "Run a UiPath process using UiPath Cloud Orchestrator"
     );
   }
 
@@ -66,6 +75,11 @@ export class RunProcess extends Effect {
     required: ["uipath", "releaseKey"],
     properties: UIPATH_PROPERTIES,
   };
+
+  /**
+   * Additional permissions required for CORS
+   */
+  permissions: Permissions.Permissions = UIPATH_PERMISSIONS;
 
   async effect({
     uipath,
@@ -95,3 +109,4 @@ export class RunProcess extends Effect {
 }
 
 registerBlock(new RunProcess());
+optionsRegistry.set(UIPATH_ID, ProcessOptions);

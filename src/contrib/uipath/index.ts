@@ -16,3 +16,4 @@
  */
 
 import "./process";
+import "./processOptions";

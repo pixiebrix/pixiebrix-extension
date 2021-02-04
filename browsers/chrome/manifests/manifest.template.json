@@ -31,8 +31,7 @@
     "identity",
     "tabs",
     "webNavigation",
-    "contextMenus",
-    "https://*.uipath.com/*"
+    "contextMenus"
   ],
   "externally_connectable":  {
     "matches": [

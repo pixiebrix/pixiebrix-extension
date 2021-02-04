@@ -201,9 +201,9 @@ const _proxyService = liftBackground(
           ex
         );
         if ([401, 403].includes(ex.response?.status)) {
-          // have the user login again
+          // try again - have the user login again, or automatically try to get a new token
           const service = await serviceRegistry.lookup(serviceConfig.serviceId);
-          if (service.isOAuth2) {
+          if (service.isOAuth2 || service.isToken) {
             await deleteCachedAuthData(serviceConfig.id);
             return await backgroundRequest(
               await authenticate(serviceConfig, requestConfig)
