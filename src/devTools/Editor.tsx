@@ -22,6 +22,7 @@ import React, {
   useState,
 } from "react";
 import { Alert, Button, Container } from "react-bootstrap";
+import { browser } from "webextension-polyfill-ts";
 import { Formik, FormikValues } from "formik";
 import ElementWizard from "@/devTools/editor/ElementWizard";
 import {
@@ -30,7 +31,7 @@ import {
   FormState,
 } from "@/devTools/editor/editorSlice";
 import { EditablePackage, useCreate } from "@/devTools/editor/useCreate";
-import Sidebar from "@/devTools/editor/Sidebar";
+import Sidebar, { useInstallState } from "@/devTools/editor/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/pages/InstalledPage";
 import { RootState } from "@/devTools/store";
@@ -43,8 +44,11 @@ import { makeURL } from "@/hooks/fetch";
 import { getExtensionToken } from "@/auth/token";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { cancelSelectElement } from "@/background/devtools";
+import { cancelSelectElement, getTabInfo } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
+import { sleep } from "@/utils";
+import Centered from "@/devTools/editor/components/Centered";
+import { openTab } from "@/background/executor";
 
 const { updateElement } = editorSlice.actions;
 
@@ -69,7 +73,11 @@ const Effect: React.FunctionComponent<{
 };
 
 const Editor: React.FunctionComponent = () => {
-  const { port } = useContext(DevToolsContext);
+  const context = useContext(DevToolsContext);
+
+  console.debug("Editor", context);
+
+  const { port, connect } = context;
   const dispatch = useDispatch();
   const installed = useSelector(selectExtensions);
 
@@ -82,6 +90,18 @@ const Editor: React.FunctionComponent = () => {
     knownEditable,
     beta,
   } = useSelector<RootState, EditorState>((x) => x.editor);
+
+  const requestPermissions = useCallback(() => {
+    // Firefox browser.permissions.request gets confused by async code. Must use normal promises in the
+    // call path to browser.permissions.request so it knows it was triggered by a user action
+    getTabInfo(port).then(({ url }) => {
+      const requestPromise = browser.permissions.request({ origins: [url] });
+      requestPromise.then(async () => {
+        await sleep(500);
+        await connect();
+      });
+    });
+  }, [connect, port]);
 
   const updateHandler = useDebouncedCallback(
     (values: FormState) => {
@@ -122,13 +142,39 @@ const Editor: React.FunctionComponent = () => {
     await cancelSelectElement(port);
   }, [port]);
 
-  const body = useMemo(() => {
-    if (error && beta) {
-      return (
-        <div>
-          <div className="p-2">
-            <h3>This Page Editor feature is currently in private beta</h3>
+  const { availableDynamicIds, unavailableCount } = useInstallState(
+    installed,
+    elements
+  );
 
+  const body = useMemo(() => {
+    if (context.hasTabPermissions === false) {
+      return (
+        <Centered>
+          <div className="mb-2">
+            <b>PixieBrix does not have access to the page</b>
+          </div>
+          <div className="mb-2 text-left">
+            <p>
+              Grant permanent access to this domain by clicking the button
+              below.
+            </p>
+
+            <p>
+              Or, grant temporary access by 1) clicking on the PixieBrix
+              extension in the extensions dropdown, and 2) then refreshing the
+              page.
+            </p>
+          </div>
+          <Button onClick={requestPermissions}>Grant Permanent Access</Button>
+        </Centered>
+      );
+    } else if (error && beta) {
+      return (
+        <Centered>
+          <h3>This Page Editor feature is currently in private beta</h3>
+
+          <div className="text-left">
             <p>
               To request access, contact{" "}
               <a href="mailto:support@pixiebrix.com">support@pixiebrix.com</a>
@@ -139,45 +185,49 @@ const Editor: React.FunctionComponent = () => {
               feature in the Workshop.
             </p>
           </div>
-        </div>
+        </Centered>
       );
     } else if (inserting === "menuItem") {
       return (
-        <div className="p-2">
+        <Centered>
           <h3>Inserting button</h3>
-          <p>
-            Click on an existing <code>button</code> or button-like element to
-            add a button that that button group. You can also select a menu item
-            or nav link.
-          </p>
 
-          <div>
-            <Alert variant="info">
-              <FontAwesomeIcon icon={faInfo} /> <b>Tip:</b> to increase the
-              accuracy of detection, you can Shift+Click one or more buttons in
-              the button group. Click a button without holding Shift to complete
-              placement.
-            </Alert>
+          <div className="text-left">
+            <p>
+              Click on an existing <code>button</code> or button-like element to
+              add a button that that button group. You can also select a menu
+              item or nav link.
+            </p>
+
+            <div>
+              <Alert variant="info">
+                <FontAwesomeIcon icon={faInfo} /> <b>Tip:</b> to increase the
+                accuracy of detection, you can Shift+Click one or more buttons
+                in the button group. Click a button without holding Shift to
+                complete placement.
+              </Alert>
+            </div>
           </div>
-
           <div>
             <Button variant="danger" onClick={cancelInsert}>
               Cancel Insert
             </Button>
           </div>
-        </div>
+        </Centered>
       );
     } else if (inserting === "panel") {
       return (
-        <div className="p-2">
+        <Centered>
           <h3>Inserting panel</h3>
-          <p>Click on a container to insert a panel in that container.</p>
+          <div className="text-left">
+            <p>Click on a container to insert a panel in that container.</p>
+          </div>
           <div>
             <Button variant="danger" onClick={cancelInsert}>
               Cancel Insert
             </Button>
           </div>
-        </div>
+        </Centered>
       );
     } else if (error) {
       return (
@@ -204,17 +254,84 @@ const Editor: React.FunctionComponent = () => {
           )}
         </Formik>
       );
-    } else if (elements.length) {
+    } else if (
+      availableDynamicIds?.size ||
+      installed.length > unavailableCount
+    ) {
       return (
-        <div className="p-2">
-          <span>No element selected</span>
-        </div>
+        <Centered>
+          <h3>No extension selected</h3>
+
+          <div className="text-left">
+            <p>Select an extension in the sidebar to edit it.</p>
+            <p>
+              Or, click the <span className="text-info">&ldquo;Add&rdquo;</span>{" "}
+              button in the sidebar to add an extension to the page.
+            </p>
+          </div>
+        </Centered>
+      );
+    } else if (installed.length) {
+      return (
+        <Centered>
+          <h3>No custom extensions on the page</h3>
+
+          <div className="text-left">
+            <p>
+              Click <span className="text-info">&ldquo;Add&rdquo;</span> in the
+              sidebar to add an element to the page.
+            </p>
+
+            <p>
+              Check the &ldquo;Show {unavailableCount ?? 1} unavailable&rdquo;
+              box to list extensions that are installed but aren&apos;t
+              available for this page.
+            </p>
+
+            <p>
+              Learn how to use the Page Editor in our{" "}
+              <a
+                href="#"
+                onClick={async () =>
+                  await openTab({
+                    url: "https://docs.pixiebrix.com/quick-start-guide",
+                    active: true,
+                  })
+                }
+              >
+                Quick Start Guide
+              </a>
+            </p>
+          </div>
+        </Centered>
       );
     } else {
       return (
-        <div className="p-2">
-          <span>No elements added to page yet</span>
-        </div>
+        <Centered>
+          <h3>Welcome to the PixieBrix Page Editor!</h3>
+
+          <div className="text-left">
+            <p>
+              Click &ldquo;Add&rdquo; in the sidebar to add an element to the
+              page.
+            </p>
+
+            <p>
+              Learn how to use the Page Editor in our{" "}
+              <a
+                href="#"
+                onClick={async () =>
+                  await openTab({
+                    url: "https://docs.pixiebrix.com/quick-start-guide",
+                    active: true,
+                  })
+                }
+              >
+                Quick Start Guide
+              </a>
+            </p>
+          </div>
+        </Centered>
       );
     }
   }, [
@@ -225,6 +342,9 @@ const Editor: React.FunctionComponent = () => {
     editable,
     installed,
     selectionSeq,
+    availableDynamicIds?.size,
+    unavailableCount,
+    context.hasTabPermissions,
   ]);
 
   return (

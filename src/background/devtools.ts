@@ -36,6 +36,7 @@ import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import OnDOMContentLoadedDetailsType = WebNavigation.OnDOMContentLoadedDetailsType;
 import { Availability } from "@/blocks/types";
+import { addNavigationListener } from "@/background/navigation";
 
 interface HandlerEntry {
   handler: (
@@ -93,6 +94,8 @@ function backgroundListener(
       resolve(handler(meta.tabId, port)(...payload));
     });
 
+    let responded = false;
+
     if (notification) {
       handlerPromise.catch((reason) => {
         console.warn(
@@ -105,20 +108,43 @@ function backgroundListener(
 
     handlerPromise.then(
       (value) => {
-        port.postMessage({
-          type: `${type}_FULFILLED`,
-          meta: { nonce: meta?.nonce },
-          payload: value,
-        });
+        if (!responded) {
+          port.postMessage({
+            type: `${type}_FULFILLED`,
+            meta: { nonce: meta?.nonce },
+            payload: value,
+          });
+        }
+        responded = true;
       },
       (reason) => {
-        port.postMessage({
-          type: `${type}_REJECTED`,
-          meta: { nonce: meta?.nonce },
-          payload: toErrorResponse(type, reason),
-        });
+        if (!responded) {
+          port.postMessage({
+            type: `${type}_REJECTED`,
+            meta: { nonce: meta?.nonce },
+            payload: toErrorResponse(type, reason),
+          });
+        }
+        responded = true;
       }
     );
+
+    port.onDisconnect.addListener((port) => {
+      if (!responded) {
+        try {
+          port.postMessage({
+            type: `${type}_REJECTED`,
+            meta: { nonce: meta?.nonce },
+            payload: toErrorResponse(type, new Error("Port disconnected")),
+          });
+        } catch (err) {
+          console.debug(
+            `Dropping message ${type}_REJECTED because port is disconnected`
+          );
+        }
+      }
+      responded = true;
+    });
   } else {
     console.warn(`No handler defined for message ${type}`, { request });
   }
@@ -282,6 +308,18 @@ export const connect = liftBackground(
       console.warn(`Devtools connection already exists for tab: ${tabId}`);
     }
     connections.set(tabId, port);
+  }
+);
+
+export const waitNavigation: (
+  port: Runtime.Port,
+  tabId: number
+) => Promise<WebNavigation.OnHistoryStateUpdatedDetailsType> = liftBackground(
+  "AWAIT_NAVIGATION",
+  (tabId: number) => () => {
+    return new Promise((resolve) => {
+      addNavigationListener(tabId, resolve);
+    }) as Promise<WebNavigation.OnHistoryStateUpdatedDetailsType>;
   }
 );
 

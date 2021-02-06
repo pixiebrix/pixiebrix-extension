@@ -17,15 +17,14 @@
 
 import "regenerator-runtime/runtime";
 import "core-js/stable";
-import React, { useCallback } from "react";
-import { Button, Col, Container, Row } from "react-bootstrap";
+import React from "react";
+import { Button, Container } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
 import { GridLoader } from "react-spinners";
 import Editor from "@/devTools/Editor";
-import { browser } from "webextension-polyfill-ts";
-import { getTabInfo } from "@/background/devtools";
+
 import store, { persistor, RootState } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider, useSelector } from "react-redux";
@@ -35,7 +34,6 @@ import { AuthContext } from "@/auth/context";
 import { ToastProvider } from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
-import { sleep } from "@/utils";
 import ScopeSettings from "@/devTools/ScopeSettings";
 import { AuthState } from "@/core";
 
@@ -46,24 +44,13 @@ import "@/blocks/transformers";
 import "@/blocks/renderers";
 import "@/contrib/index";
 import "@/contrib/editors";
+import Centered from "@/devTools/editor/components/Centered";
 
 const defaultState: AuthState = {
   isLoggedIn: false,
   extension: true,
   isOnboarded: undefined,
   flags: [],
-};
-
-const Centered: React.FunctionComponent = ({ children }) => {
-  return (
-    <Container fluid>
-      <Row>
-        <Col className="mx-auto mt-4 text-center" md={8} lg={5} sm={11}>
-          {children}
-        </Col>
-      </Row>
-    </Container>
-  );
 };
 
 const PersistLoader: React.FunctionComponent = () => {
@@ -91,21 +78,11 @@ const RequireScope: React.FunctionComponent<{ scope: string | null }> = ({
 
 const Panel: React.FunctionComponent = () => {
   const [authState, , authError] = useAsyncState(getAuth);
-  const [context, connect] = useDevConnection();
+  const context = useDevConnection();
 
   useAsyncEffect(async () => {
     await blockRegistry.fetch();
   }, []);
-
-  const requestPermissions = useCallback(async () => {
-    // FIXME: will this work on Firefox? Might need to do as then() b/c it gets confused by await before
-    //   the permissions request.
-    const { url } = await getTabInfo(context.port);
-    if (await browser.permissions.request({ origins: [url] })) {
-      await sleep(500);
-      location.reload();
-    }
-  }, [connect, context.port]);
 
   if (authError) {
     return (
@@ -113,7 +90,7 @@ const Panel: React.FunctionComponent = () => {
         <div className="mb-2">
           <b>Error authenticating account</b>
         </div>
-        <div>{authError.toString()}</div>
+        <div>{authError?.toString() ?? "Unknown error"}</div>
         <Button onClick={() => location.reload()}>Reload Editor</Button>
       </Centered>
     );
@@ -123,17 +100,7 @@ const Panel: React.FunctionComponent = () => {
         <div className="mb-2">
           <b>An error occurred</b>
         </div>
-        <div>{authError.toString()}</div>
-        <Button onClick={() => location.reload()}>Reload Editor</Button>
-      </Centered>
-    );
-  } else if (context.error) {
-    return (
-      <Centered>
-        <div className="mb-2">
-          <b>An error occurred</b>
-        </div>
-        <div>{authError.toString()}</div>
+        <div>{context.error?.toString() ?? "Unknown error"}</div>
         <Button onClick={() => location.reload()}>Reload Editor</Button>
       </Centered>
     );
@@ -146,30 +113,11 @@ const Panel: React.FunctionComponent = () => {
         </div>
       </Centered>
     );
-  } else if (context.hasTabPermissions === false) {
-    return (
-      <Centered>
-        <div className="mb-2">
-          <b>PixieBrix does not have access to the page</b>
-        </div>
-        <div className="mb-2 text-left">
-          <p>
-            Grant permanent access to this domain by clicking the button below.
-          </p>
-
-          <p>
-            Or, grant temporary access by 1) clicking on the PixieBrix extension
-            in the extensions dropdown, and 2) then refreshing the page.
-          </p>
-        </div>
-        <Button onClick={requestPermissions}>Grant Permanent Access</Button>
-      </Centered>
-    );
   }
 
   return (
     <Provider store={store}>
-      <PersistGate loading={PersistLoader} persistor={persistor}>
+      <PersistGate loading={<PersistLoader />} persistor={persistor}>
         <AuthContext.Provider value={authState ?? defaultState}>
           <DevToolsContext.Provider value={context}>
             <ToastProvider>

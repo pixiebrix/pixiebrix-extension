@@ -293,34 +293,49 @@ function mapReservedNames(elements: FormState[]): string[] {
   );
 }
 
-const Sidebar: React.FunctionComponent<
-  Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
-    installed: IExtension[];
-  }
-> = ({ inserting, activeElement, installed, elements }) => {
-  const { port } = useContext(DevToolsContext);
-  const { scope } = useContext(AuthContext);
-  const [showAll, setShowAll] = useState(false);
+export interface InstallState {
+  installedIds: string[] | undefined;
+  availableDynamicIds: Set<string> | undefined;
+  unavailableCount: number | null;
+}
 
-  const [installedIds] = useAsyncState(
-    async () => getInstalledExtensionPointIds(port),
-    [port]
-  );
+export function useInstallState(
+  installed: IExtension[],
+  elements: FormState[]
+): InstallState {
+  const { port, navSequence, ready } = useContext(DevToolsContext);
+
+  const [installedIds] = useAsyncState(async () => {
+    console.debug("useInstallState:getInstalledExtensionPointIds", {
+      navSequence,
+      ready,
+    });
+    if (ready) {
+      return await getInstalledExtensionPointIds(port);
+    } else {
+      return [];
+    }
+  }, [port, navSequence, ready]);
 
   const [availableDynamicIds] = useAsyncState(async () => {
-    const availability = await Promise.all(
-      elements.map((element) =>
-        checkAvailable(port, element.extensionPoint.definition.isAvailable)
-      )
-    );
-    console.debug("Available", { available: zip(elements, availability) });
-    return new Set<string>(
-      zip(elements, availability)
-        .filter(([, available]) => available)
-        .map(([extension]) => extension.uuid)
-    );
+    if (ready) {
+      const availability = await Promise.all(
+        elements.map((element) =>
+          checkAvailable(port, element.extensionPoint.definition.isAvailable)
+        )
+      );
+      return new Set<string>(
+        zip(elements, availability)
+          .filter(([, available]) => available)
+          .map(([extension]) => extension.uuid)
+      );
+    } else {
+      return new Set<string>();
+    }
   }, [
     port,
+    ready,
+    navSequence,
     hash(
       elements.map((x) => ({
         uuid: x.uuid,
@@ -328,6 +343,41 @@ const Sidebar: React.FunctionComponent<
       }))
     ),
   ]);
+
+  const unavailableCount = useMemo(() => {
+    if (ready) {
+      if (installed && installedIds) {
+        return installed.filter(
+          (x) => !installedIds.includes(x.extensionPointId)
+        ).length;
+      } else {
+        return null;
+      }
+    } else {
+      return installed?.length;
+    }
+  }, [installed, navSequence, installedIds, ready]);
+
+  return { installedIds, availableDynamicIds, unavailableCount };
+}
+
+const Sidebar: React.FunctionComponent<
+  Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
+    installed: IExtension[];
+  }
+> = ({ inserting, activeElement, installed, elements }) => {
+  const context = useContext(DevToolsContext);
+  const { port, hasTabPermissions, navSequence } = context;
+  const { scope } = useContext(AuthContext);
+  const [showAll, setShowAll] = useState(false);
+
+  const {
+    installedIds,
+    availableDynamicIds,
+    unavailableCount,
+  } = useInstallState(installed, elements);
+
+  console.debug("Sidebar", context);
 
   const entries = useMemo(() => {
     const elementIds = new Set(elements.map((x) => x.uuid));
@@ -354,15 +404,6 @@ const Sidebar: React.FunctionComponent<
     activeElement,
   ]);
 
-  const unavailableCount = useMemo(() => {
-    if (installed && installedIds) {
-      return installed.filter((x) => !installedIds.includes(x.extensionPointId))
-        .length;
-    } else {
-      return null;
-    }
-  }, [installed, installedIds]);
-
   const reservedNames = useMemo(() => mapReservedNames(elements), [
     hash(mapReservedNames(elements)),
   ]);
@@ -383,7 +424,7 @@ const Sidebar: React.FunctionComponent<
       <div className="Sidebar__actions flex-grow-0">
         <div className="d-inline-flex flex-wrap">
           <DropdownButton
-            disabled={!!inserting}
+            disabled={!!inserting || !hasTabPermissions}
             variant="info"
             size="sm"
             title="Add"
@@ -453,6 +494,7 @@ const Sidebar: React.FunctionComponent<
         <span>
           Scope: <code>{scope}</code>
         </span>
+        {process.env.DEBUG && <span className="ml-3">Nav: {navSequence}</span>}
       </div>
     </div>
   );
