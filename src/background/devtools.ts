@@ -37,6 +37,7 @@ import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import OnDOMContentLoadedDetailsType = WebNavigation.OnDOMContentLoadedDetailsType;
 import { Availability } from "@/blocks/types";
 import { addNavigationListener } from "@/background/navigation";
+import { reportError } from "@/telemetry/logging";
 
 interface HandlerEntry {
   handler: (
@@ -56,7 +57,7 @@ type Nonce = string;
 const backgroundHandlers = new Map<string, HandlerEntry>();
 const devtoolsHandlers = new Map<Nonce, PromiseHandler>();
 const connections = new Map<TabId, Runtime.Port>();
-const waiting = new Map<TabId, PromiseHandler>();
+const permissionsListeners = new Map<TabId, PromiseHandler[]>();
 
 export const PORT_NAME = "devtools-page";
 export const MESSAGE_PREFIX = "@@pixiebrix/devtools/";
@@ -176,8 +177,16 @@ function deleteStaleConnections(port: Runtime.Port) {
     // Theoretically each port should only correspond to a single tab, but iterate overall just to be safe
     if (connections.get(tabId) === port) {
       connections.delete(tabId);
-      if (waiting.has(tabId)) {
-        cancelWaiting(tabId);
+      if (permissionsListeners.has(tabId)) {
+        const listeners = permissionsListeners.get(tabId);
+        permissionsListeners.delete(tabId);
+        for (const [, reject] of listeners) {
+          try {
+            reject(new Error(`Cleaning up state connection`));
+          } catch (err) {
+            reportError(err);
+          }
+        }
       }
     }
   }
@@ -323,7 +332,7 @@ export const waitNavigation: (
   }
 );
 
-async function checkPermissions(): Promise<boolean> {
+async function checkPermissions(tabId: number): Promise<boolean> {
   if (!isBackgroundPage()) {
     throw new Error(
       "checkPermissions can only be called from the background page"
@@ -331,12 +340,15 @@ async function checkPermissions(): Promise<boolean> {
   }
   // can't use browser.permissions.contains for permissions because it doesn't seem to work with activeTab
   try {
-    await browser.tabs.executeScript({
+    await browser.tabs.executeScript(tabId, {
+      allFrames: false,
+      frameId: 0,
       code: "true;",
       runAt: "document_start",
     });
     return true;
   } catch (reason) {
+    console.debug("checkPermissions failed", { reason });
     // no permissions
   }
   return false;
@@ -345,7 +357,7 @@ async function checkPermissions(): Promise<boolean> {
 export const getTabInfo = liftBackground(
   "CURRENT_URL",
   (tabId: number) => async () => {
-    const hasPermissions = await checkPermissions();
+    const hasPermissions = await checkPermissions(tabId);
     const { url } = await browser.tabs.get(tabId);
     return {
       url,
@@ -355,33 +367,27 @@ export const getTabInfo = liftBackground(
 );
 
 function resolveWaiting(tabId: number): void {
-  if (waiting.has(tabId)) {
-    const [resolve] = waiting.get(tabId);
-    resolve(undefined);
-    waiting.delete(tabId);
-  }
-}
+  const listeners = permissionsListeners.get(tabId) ?? [];
+  permissionsListeners.delete(tabId);
 
-function cancelWaiting(tabId: number): void {
-  // destroy the old promise
-  const [, reject] = waiting.get(tabId);
-  reject(
-    new Error(
-      `Devtools port disconnected, or another devtools panel is waiting for the tab: ${tabId}`
-    )
-  );
-  waiting.delete(tabId);
+  for (const [resolve] of listeners) {
+    try {
+      resolve(undefined);
+    } catch (err) {
+      reportError(err);
+    }
+  }
 }
 
 export const awaitPermissions = liftBackground(
   "AWAIT_PERMISSIONS",
   (tabId: number) => () => {
     return new Promise((resolve, reject) => {
-      if (waiting.has(tabId)) {
-        cancelWaiting(tabId);
-      }
       console.debug(`Devtools awaiting access to tab: ${tabId}`);
-      waiting.set(tabId, [resolve, reject]);
+      if (!permissionsListeners.has(tabId)) {
+        permissionsListeners.set(tabId, []);
+      }
+      permissionsListeners.get(tabId).push([resolve, reject]);
     });
   }
 );
@@ -398,12 +404,15 @@ async function injectDevtoolsContentScript(
 
   if (!(await contentScriptProtocol.isInstalled(tabId))) {
     console.debug(`Injecting devtools contentScript for tab ${tabId}: ${file}`);
+
     // inject in the top-level frame
     await browser.tabs.executeScript(tabId, {
-      file,
-      allFrames: false,
       frameId: 0,
+      allFrames: false,
+      file,
+      runAt: "document_end",
     });
+
     return true;
   } else {
     console.debug(`contentScript already installed`);
@@ -414,7 +423,7 @@ async function injectDevtoolsContentScript(
 export const injectScript = liftBackground(
   "INJECT_SCRIPT",
   (tabId: number) => async ({ file }: { file: string }) => {
-    console.debug("devtools:executeScript", { tabId });
+    console.debug("devtools:injectScript", { tabId });
     await injectDevtoolsContentScript(tabId, file);
   }
 );
@@ -594,7 +603,7 @@ async function injectionListener({
   tabId,
 }: OnDOMContentLoadedDetailsType): Promise<void> {
   if (connections.has(tabId)) {
-    const hasPermissions = await checkPermissions();
+    const hasPermissions = await checkPermissions(tabId);
     if (hasPermissions) {
       await injectDevtoolsContentScript(tabId, "contentScript.js");
     } else {

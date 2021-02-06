@@ -3,6 +3,7 @@
 
 // @ts-ignore
 import tests from "./libraries";
+import { zip } from "lodash";
 
 interface Library {
   id: string;
@@ -16,17 +17,18 @@ interface Test {
 
 async function detectLibraries(): Promise<Library[]> {
   const libraries: Library[] = [];
-  for (const { id, test } of Object.values(tests) as Test[]) {
-    try {
-      const result = await test(window);
-      if (result) {
-        libraries.push({
-          id,
-          version: result.version,
-        });
-      }
-    } catch (e) {
-      console.warn(`Library Detector test for ${id} failed:`);
+  const testDefinitions = Object.values(tests) as Test[];
+  const results = await Promise.allSettled(
+    testDefinitions.map((x) => x.test(window))
+  );
+  for (const [definition, result] of zip(testDefinitions, results)) {
+    if (result.status === "fulfilled") {
+      libraries.push({
+        id: definition.id,
+        version: result.value.version,
+      });
+    } else {
+      console.warn(`Library Detector test for ${definition.id} failed:`);
     }
   }
   return libraries;

@@ -17,7 +17,6 @@
 
 import React, { useState, useCallback } from "react";
 import { browser, Runtime } from "webextension-polyfill-ts";
-import { FrameworkMeta } from "@/messaging/constants";
 import { connectDevtools } from "@/devTools/protocol";
 import {
   detectFrameworks,
@@ -27,10 +26,46 @@ import {
   waitNavigation,
 } from "@/background/devtools";
 import useAsyncEffect from "use-async-effect";
+import { useAsyncState } from "@/hooks/common";
+import { FrameworkMeta } from "@/messaging/constants";
+import { reportError } from "@/telemetry/logging";
+
+interface FrameMeta {
+  url: string;
+  frameworks: FrameworkMeta[];
+}
+
+interface FrameConnectionState {
+  frameId: number;
+
+  /**
+   * Sequence number for the frameId
+   */
+  navSequence: number;
+
+  /**
+   * True if the devtools have permission to access the current tab
+   */
+  hasPermissions: boolean;
+
+  /**
+   * Error message when connecting to the page
+   */
+  error?: string;
+
+  meta: FrameMeta | undefined;
+}
+
+const initialFrameState: Omit<FrameConnectionState, "frameId"> = {
+  navSequence: 0,
+  hasPermissions: false,
+  error: undefined,
+  meta: undefined,
+};
 
 export interface Context {
   /**
-   * Reconnect to the page
+   * Re-connect to the background page
    */
   connect: () => Promise<void>;
 
@@ -40,39 +75,18 @@ export interface Context {
   port: Runtime.Port | null;
 
   /**
-   * True if the devtools have permission to access the current tab
+   * Error message when connecting to the background page.
    */
-  hasTabPermissions: boolean;
+  portError?: string;
 
-  /**
-   * True if the page script has been injected for the current page
-   */
-  ready: boolean;
-
-  /**
-   * Nav sequence number for top-level frame
-   */
-  navSequence: number;
-
-  /**
-   * Frameworks detected on the tab.
-   */
-  frameworks: FrameworkMeta[];
-
-  /**
-   * Error message if an error occurred when connecting to the page.
-   */
-  error?: string;
+  tabState: FrameConnectionState;
 }
 
 const initialValue: Context = {
   connect: () => Promise.resolve(),
   port: null,
-  navSequence: 0,
-  ready: false,
-  hasTabPermissions: false,
-  frameworks: [],
-  error: null,
+  portError: undefined,
+  tabState: { ...initialFrameState, frameId: 0 },
 };
 
 export const DevToolsContext = React.createContext(initialValue);
@@ -89,11 +103,9 @@ export function useNavSequence(port: Runtime.Port): number {
       if (port) {
         const details = await waitNavigation(port, tabId);
         console.debug(`Target page navigated: ${details?.url}`, { details });
-
         if (!isMounted()) {
           return;
         }
-
         setSeq((prevState) => prevState + 1);
       }
     },
@@ -103,105 +115,95 @@ export function useNavSequence(port: Runtime.Port): number {
   return seq;
 }
 
+class PermissionsError extends Error {
+  constructor(msg: string) {
+    super(msg);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, PermissionsError.prototype);
+  }
+}
+
+async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
+  const { url, hasPermissions } = await getTabInfo(port);
+  if (!hasPermissions) {
+    console.debug(`connectToFrame: no access to ${url}`);
+    throw new PermissionsError(`No access to URL: ${url}`);
+  }
+  console.debug(`connectToFrame: ensuring contentScript for ${url}`);
+  await injectScript(port, { file: "contentScript.js" });
+  console.debug(`connectToFrame: detecting frameworks on ${url}`);
+  const frameworks = await detectFrameworks(port);
+  console.debug(`connectToFrame: finished for ${url}`);
+  return { frameworks, url };
+}
+
 export function useDevConnection(): Context {
-  const [context, setContext] = useState<
-    Omit<Context, "connect" | "navSequence">
-  >(initialValue);
+  const [port, , portError] = useAsyncState(connectDevtools, []);
+  const navSequence = useNavSequence(port);
+  const [current, setCurrent] = useState<FrameConnectionState>({
+    ...initialFrameState,
+    frameId: 0,
+    navSequence,
+  });
+  // connectSeq is used to fake recursive calls to connect
+  const [connectSeq, setConnectSeq] = useState(0);
 
-  // setConnectSequence and navSequence is used to trigger re-connect
-  const navSequence = useNavSequence(context.port);
-  const [connectSequence, setConnectSequence] = useState(0);
-
-  const connect = useCallback(async () => {
-    let port: Runtime.Port;
-    let error: string = null;
-
-    setContext((prevState) => ({
-      ...prevState,
-      ready: false,
-      frameworks: [],
-      hasTabPermissions: false,
-      error: null,
-    }));
-
-    try {
-      console.debug("useMakeContext:connectDevtools");
-      port = await connectDevtools();
-      setContext((prevState) => ({ ...prevState, port }));
-    } catch (err) {
-      setContext({
-        port: null,
-        ready: false,
-        frameworks: [],
-        hasTabPermissions: null,
-        error: err.toString(),
-      });
-      return;
-    }
-
-    let hasTabPermissions: boolean;
-    try {
-      console.debug("useMakeContext:getTabInfo");
-      hasTabPermissions = (await getTabInfo(port)).hasPermissions;
-      setContext((prevState) => ({ ...prevState, hasTabPermissions: true }));
-    } catch (reason) {
-      hasTabPermissions = false;
-      error = reason.toString();
-      setContext((prevState) => ({
-        ...prevState,
-        hasTabPermissions: false,
-        error,
-      }));
-    }
-
-    if (!hasTabPermissions) {
-      awaitPermissions(port).then(() => {
-        setConnectSequence((prev) => prev + 1);
-      });
-      console.debug(
-        "Scheduling automatic re-connect once permissions granted",
-        { error }
-      );
-      return;
-    }
-
-    try {
-      await injectScript(port, { file: "contentScript.js" });
-      setContext((prevState) => ({ ...prevState, ready: true, error: null }));
-      console.debug("useMakeContext.injectScript: success");
-    } catch (reason) {
-      setContext((prevState) => ({
-        ...prevState,
-        ready: false,
-        error: reason.toString(),
-      }));
-      console.debug("useMakeContext.injectScript: error", reason);
-      return;
-    }
-
-    try {
-      console.debug("useMakeContext:detectFrameworks");
-      const frameworks = await detectFrameworks(port);
-      setContext((prevState) => ({ ...prevState, frameworks }));
-    } catch (reason) {
-      if (reason?.message?.includes("Receiving end does not exist")) {
-        setContext((prevState) => ({
-          ...prevState,
-          error: "Content script not initialized",
-        }));
-      } else {
-        setContext((prevState) => ({
-          ...prevState,
-          error:
-            reason?.message?.toString() ??
-            reason.toString() ??
-            "Unknown error detecting front-end frameworks",
-        }));
+  const connect = useCallback(
+    async (nav: number) => {
+      if (!port) {
+        throw new Error("background port not initialized");
       }
+      const common = { frameId: 0, navSequence: nav };
+      try {
+        console.debug(`useDevConnection.connect: connecting for ${nav}`);
+        const meta = await connectToFrame(port);
+        console.debug(
+          `useDevConnection.connect: replacing tabState for ${nav}: ${meta.url}`
+        );
+        setCurrent({
+          ...common,
+          hasPermissions: true,
+          meta,
+        });
+      } catch (err) {
+        if (err instanceof PermissionsError) {
+          setCurrent({
+            ...common,
+            hasPermissions: false,
+            meta: undefined,
+          });
+          awaitPermissions(port).then(() => {
+            setConnectSeq((prev) => prev + 1);
+          });
+        } else {
+          reportError(err);
+          setCurrent({
+            ...common,
+            hasPermissions: true,
+            meta: undefined,
+            error: err.message?.toString() ?? err.toString(),
+          });
+        }
+      }
+    },
+    [port, setCurrent, setConnectSeq]
+  );
+
+  const externalConnect = useCallback(async () => {
+    await connect(navSequence);
+  }, [connect, navSequence]);
+
+  // automatically connect on when background port connected, and on future navigations
+  useAsyncEffect(async () => {
+    if (port) {
+      await connect(navSequence);
     }
-  }, [setContext]);
+  }, [connectSeq, navSequence, port]);
 
-  useAsyncEffect(connect, [connectSequence, navSequence]);
-
-  return { ...context, navSequence, connect };
+  return {
+    port,
+    connect: externalConnect,
+    portError: portError?.toString(),
+    tabState: current,
+  };
 }

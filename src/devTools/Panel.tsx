@@ -36,6 +36,7 @@ import useAsyncEffect from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
 import ScopeSettings from "@/devTools/ScopeSettings";
 import { AuthState } from "@/core";
+import Centered from "@/devTools/editor/components/Centered";
 
 // Import bricks for the registry
 import "@/blocks/effects";
@@ -44,7 +45,6 @@ import "@/blocks/transformers";
 import "@/blocks/renderers";
 import "@/contrib/index";
 import "@/contrib/editors";
-import Centered from "@/devTools/editor/components/Centered";
 
 const defaultState: AuthState = {
   isLoggedIn: false,
@@ -94,13 +94,13 @@ const Panel: React.FunctionComponent = () => {
         <Button onClick={() => location.reload()}>Reload Editor</Button>
       </Centered>
     );
-  } else if (context.error) {
+  } else if (context.portError || context.tabState.error) {
     return (
       <Centered>
         <div className="mb-2">
           <b>An error occurred</b>
         </div>
-        <div>{context.error?.toString() ?? "Unknown error"}</div>
+        <div>{context.portError ?? context.tabState?.error}</div>
         <Button onClick={() => location.reload()}>Reload Editor</Button>
       </Centered>
     );

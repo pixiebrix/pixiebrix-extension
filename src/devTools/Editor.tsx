@@ -72,24 +72,28 @@ const Effect: React.FunctionComponent<{
   return null;
 };
 
-const Editor: React.FunctionComponent = () => {
-  const context = useContext(DevToolsContext);
+const BetaPane = () => {
+  return (
+    <Centered>
+      <h3>This Page Editor feature is currently in private beta</h3>
 
-  console.debug("Editor", context);
+      <div className="text-left">
+        <p>
+          To request access, contact{" "}
+          <a href="mailto:support@pixiebrix.com">support@pixiebrix.com</a>
+        </p>
 
-  const { port, connect } = context;
-  const dispatch = useDispatch();
-  const installed = useSelector(selectExtensions);
+        <p>
+          In the meantime, you can create extensions that depend on this feature
+          in the Workshop.
+        </p>
+      </div>
+    </Centered>
+  );
+};
 
-  const {
-    selectionSeq,
-    inserting,
-    elements,
-    activeElement,
-    error,
-    knownEditable,
-    beta,
-  } = useSelector<RootState, EditorState>((x) => x.editor);
+const PermissionsPane = () => {
+  const { port, connect } = useContext(DevToolsContext);
 
   const requestPermissions = useCallback(() => {
     // Firefox browser.permissions.request gets confused by async code. Must use normal promises in the
@@ -102,6 +106,174 @@ const Editor: React.FunctionComponent = () => {
       });
     });
   }, [connect, port]);
+
+  return (
+    <Centered>
+      <div className="mb-2">
+        <b>PixieBrix does not have access to the page</b>
+      </div>
+      <div className="mb-2 text-left">
+        <p>
+          Grant permanent access to this domain by clicking the button below.
+        </p>
+
+        <p>
+          Or, grant temporary access by 1) clicking on the PixieBrix extension
+          in the extensions dropdown, and 2) then refreshing the page.
+        </p>
+      </div>
+      <Button onClick={requestPermissions}>Grant Permanent Access</Button>
+    </Centered>
+  );
+};
+
+const InsertButtonPane: React.FunctionComponent<{ cancel: () => void }> = ({
+  cancel,
+}) => {
+  return (
+    <Centered>
+      <h3>Inserting button</h3>
+
+      <div className="text-left">
+        <p>
+          Click on an existing <code>button</code> or button-like element to add
+          a button that that button group. You can also select a menu item or
+          nav link.
+        </p>
+
+        <div>
+          <Alert variant="info">
+            <FontAwesomeIcon icon={faInfo} /> <b>Tip:</b> to increase the
+            accuracy of detection, you can Shift+Click one or more buttons in
+            the button group. Click a button without holding Shift to complete
+            placement.
+          </Alert>
+        </div>
+      </div>
+      <div>
+        <Button variant="danger" onClick={cancel}>
+          Cancel Insert
+        </Button>
+      </div>
+    </Centered>
+  );
+};
+
+const InsertPanelPane: React.FunctionComponent<{ cancel: () => void }> = ({
+  cancel,
+}) => {
+  return (
+    <Centered>
+      <h3>Inserting panel</h3>
+      <div className="text-left">
+        <p>Click on a container to insert a panel in that container.</p>
+      </div>
+      <div>
+        <Button variant="danger" onClick={cancel}>
+          Cancel Insert
+        </Button>
+      </div>
+    </Centered>
+  );
+};
+
+const NoExtensionsPane: React.FunctionComponent<{
+  unavailableCount: number;
+}> = ({ unavailableCount }) => {
+  return (
+    <Centered>
+      <h3>No custom extensions on the page</h3>
+
+      <div className="text-left">
+        <p>
+          Click <span className="text-info">&ldquo;Add&rdquo;</span> in the
+          sidebar to add an element to the page.
+        </p>
+
+        <p>
+          Check the &ldquo;Show {unavailableCount ?? 1} unavailable&rdquo; box
+          to list extensions that are installed but aren&apos;t available for
+          this page.
+        </p>
+
+        <p>
+          Learn how to use the Page Editor in our{" "}
+          <a
+            href="#"
+            onClick={async () =>
+              await openTab({
+                url: "https://docs.pixiebrix.com/quick-start-guide",
+                active: true,
+              })
+            }
+          >
+            Quick Start Guide
+          </a>
+        </p>
+      </div>
+    </Centered>
+  );
+};
+
+const WelcomePane = () => {
+  return (
+    <Centered>
+      <h3>Welcome to the PixieBrix Page Editor!</h3>
+
+      <div className="text-left">
+        <p>
+          Click &ldquo;Add&rdquo; in the sidebar to add an element to the page.
+        </p>
+
+        <p>
+          Learn how to use the Page Editor in our{" "}
+          <a
+            href="#"
+            onClick={async () =>
+              await openTab({
+                url: "https://docs.pixiebrix.com/quick-start-guide",
+                active: true,
+              })
+            }
+          >
+            Quick Start Guide
+          </a>
+        </p>
+      </div>
+    </Centered>
+  );
+};
+
+const NoExtensionSelectedPane = () => {
+  return (
+    <Centered>
+      <h3>No extension selected</h3>
+
+      <div className="text-left">
+        <p>Select an extension in the sidebar to edit it.</p>
+        <p>
+          Or, click the <span className="text-info">&ldquo;Add&rdquo;</span>{" "}
+          button in the sidebar to add an extension to the page.
+        </p>
+      </div>
+    </Centered>
+  );
+};
+
+const Editor: React.FunctionComponent = () => {
+  const { tabState, port } = useContext(DevToolsContext);
+  const dispatch = useDispatch();
+  const installed = useSelector(selectExtensions);
+
+  const {
+    selectionSeq,
+    inserting,
+    elements,
+    activeElement,
+    error,
+    knownEditable,
+    beta,
+  } = useSelector<RootState, EditorState>((x) => x.editor);
 
   const updateHandler = useDebouncedCallback(
     (values: FormState) => {
@@ -148,87 +320,14 @@ const Editor: React.FunctionComponent = () => {
   );
 
   const body = useMemo(() => {
-    if (context.hasTabPermissions === false) {
-      return (
-        <Centered>
-          <div className="mb-2">
-            <b>PixieBrix does not have access to the page</b>
-          </div>
-          <div className="mb-2 text-left">
-            <p>
-              Grant permanent access to this domain by clicking the button
-              below.
-            </p>
-
-            <p>
-              Or, grant temporary access by 1) clicking on the PixieBrix
-              extension in the extensions dropdown, and 2) then refreshing the
-              page.
-            </p>
-          </div>
-          <Button onClick={requestPermissions}>Grant Permanent Access</Button>
-        </Centered>
-      );
+    if (tabState.hasPermissions === false) {
+      return <PermissionsPane />;
     } else if (error && beta) {
-      return (
-        <Centered>
-          <h3>This Page Editor feature is currently in private beta</h3>
-
-          <div className="text-left">
-            <p>
-              To request access, contact{" "}
-              <a href="mailto:support@pixiebrix.com">support@pixiebrix.com</a>
-            </p>
-
-            <p>
-              In the meantime, you can create extensions that depend on this
-              feature in the Workshop.
-            </p>
-          </div>
-        </Centered>
-      );
+      return <BetaPane />;
     } else if (inserting === "menuItem") {
-      return (
-        <Centered>
-          <h3>Inserting button</h3>
-
-          <div className="text-left">
-            <p>
-              Click on an existing <code>button</code> or button-like element to
-              add a button that that button group. You can also select a menu
-              item or nav link.
-            </p>
-
-            <div>
-              <Alert variant="info">
-                <FontAwesomeIcon icon={faInfo} /> <b>Tip:</b> to increase the
-                accuracy of detection, you can Shift+Click one or more buttons
-                in the button group. Click a button without holding Shift to
-                complete placement.
-              </Alert>
-            </div>
-          </div>
-          <div>
-            <Button variant="danger" onClick={cancelInsert}>
-              Cancel Insert
-            </Button>
-          </div>
-        </Centered>
-      );
+      return <InsertButtonPane cancel={cancelInsert} />;
     } else if (inserting === "panel") {
-      return (
-        <Centered>
-          <h3>Inserting panel</h3>
-          <div className="text-left">
-            <p>Click on a container to insert a panel in that container.</p>
-          </div>
-          <div>
-            <Button variant="danger" onClick={cancelInsert}>
-              Cancel Insert
-            </Button>
-          </div>
-        </Centered>
-      );
+      return <InsertPanelPane cancel={cancelInsert} />;
     } else if (error) {
       return (
         <div className="p-2">
@@ -258,81 +357,11 @@ const Editor: React.FunctionComponent = () => {
       availableDynamicIds?.size ||
       installed.length > unavailableCount
     ) {
-      return (
-        <Centered>
-          <h3>No extension selected</h3>
-
-          <div className="text-left">
-            <p>Select an extension in the sidebar to edit it.</p>
-            <p>
-              Or, click the <span className="text-info">&ldquo;Add&rdquo;</span>{" "}
-              button in the sidebar to add an extension to the page.
-            </p>
-          </div>
-        </Centered>
-      );
+      return <NoExtensionSelectedPane />;
     } else if (installed.length) {
-      return (
-        <Centered>
-          <h3>No custom extensions on the page</h3>
-
-          <div className="text-left">
-            <p>
-              Click <span className="text-info">&ldquo;Add&rdquo;</span> in the
-              sidebar to add an element to the page.
-            </p>
-
-            <p>
-              Check the &ldquo;Show {unavailableCount ?? 1} unavailable&rdquo;
-              box to list extensions that are installed but aren&apos;t
-              available for this page.
-            </p>
-
-            <p>
-              Learn how to use the Page Editor in our{" "}
-              <a
-                href="#"
-                onClick={async () =>
-                  await openTab({
-                    url: "https://docs.pixiebrix.com/quick-start-guide",
-                    active: true,
-                  })
-                }
-              >
-                Quick Start Guide
-              </a>
-            </p>
-          </div>
-        </Centered>
-      );
+      return <NoExtensionsPane unavailableCount={unavailableCount} />;
     } else {
-      return (
-        <Centered>
-          <h3>Welcome to the PixieBrix Page Editor!</h3>
-
-          <div className="text-left">
-            <p>
-              Click &ldquo;Add&rdquo; in the sidebar to add an element to the
-              page.
-            </p>
-
-            <p>
-              Learn how to use the Page Editor in our{" "}
-              <a
-                href="#"
-                onClick={async () =>
-                  await openTab({
-                    url: "https://docs.pixiebrix.com/quick-start-guide",
-                    active: true,
-                  })
-                }
-              >
-                Quick Start Guide
-              </a>
-            </p>
-          </div>
-        </Centered>
-      );
+      return <WelcomePane />;
     }
   }, [
     inserting,
@@ -344,7 +373,7 @@ const Editor: React.FunctionComponent = () => {
     selectionSeq,
     availableDynamicIds?.size,
     unavailableCount,
-    context.hasTabPermissions,
+    tabState,
   ]);
 
   return (

@@ -135,7 +135,7 @@ function useAddElement(
   flag: string = undefined
 ) {
   const dispatch = useDispatch();
-  const { port, frameworks } = useContext(DevToolsContext);
+  const { port, tabState } = useContext(DevToolsContext);
   const { scope, flags = [] } = useContext(AuthContext);
   const { addToast } = useToasts();
 
@@ -156,7 +156,12 @@ function useAddElement(
         url,
         reservedNames
       );
-      const initialState = config.makeState(url, metadata, element, frameworks);
+      const initialState = config.makeState(
+        url,
+        metadata,
+        element,
+        tabState.meta.frameworks ?? []
+      );
       await nativeOperations.updateDynamicElement(
         port,
         config.makeConfig(initialState)
@@ -176,7 +181,15 @@ function useAddElement(
     } finally {
       dispatch(actions.toggleInsert(null));
     }
-  }, [port, frameworks, reservedNames, scope, addToast, flag, flags]);
+  }, [
+    port,
+    tabState.meta?.frameworks,
+    reservedNames,
+    scope,
+    addToast,
+    flag,
+    flags,
+  ]);
 }
 
 function getLabel(extension: FormState): string {
@@ -303,22 +316,25 @@ export function useInstallState(
   installed: IExtension[],
   elements: FormState[]
 ): InstallState {
-  const { port, navSequence, ready } = useContext(DevToolsContext);
+  const {
+    port,
+    tabState: { navSequence, meta },
+  } = useContext(DevToolsContext);
 
   const [installedIds] = useAsyncState(async () => {
     console.debug("useInstallState:getInstalledExtensionPointIds", {
       navSequence,
-      ready,
+      meta,
     });
-    if (ready) {
+    if (meta) {
       return await getInstalledExtensionPointIds(port);
     } else {
       return [];
     }
-  }, [port, navSequence, ready]);
+  }, [port, navSequence, meta]);
 
   const [availableDynamicIds] = useAsyncState(async () => {
-    if (ready) {
+    if (meta) {
       const availability = await Promise.all(
         elements.map((element) =>
           checkAvailable(port, element.extensionPoint.definition.isAvailable)
@@ -334,7 +350,7 @@ export function useInstallState(
     }
   }, [
     port,
-    ready,
+    meta,
     navSequence,
     hash(
       elements.map((x) => ({
@@ -345,7 +361,7 @@ export function useInstallState(
   ]);
 
   const unavailableCount = useMemo(() => {
-    if (ready) {
+    if (meta) {
       if (installed && installedIds) {
         return installed.filter(
           (x) => !installedIds.includes(x.extensionPointId)
@@ -356,7 +372,7 @@ export function useInstallState(
     } else {
       return installed?.length;
     }
-  }, [installed, navSequence, installedIds, ready]);
+  }, [installed, navSequence, installedIds, meta]);
 
   return { installedIds, availableDynamicIds, unavailableCount };
 }
@@ -367,7 +383,10 @@ const Sidebar: React.FunctionComponent<
   }
 > = ({ inserting, activeElement, installed, elements }) => {
   const context = useContext(DevToolsContext);
-  const { port, hasTabPermissions, navSequence } = context;
+  const {
+    port,
+    tabState: { hasPermissions, navSequence },
+  } = context;
   const { scope } = useContext(AuthContext);
   const [showAll, setShowAll] = useState(false);
 
@@ -376,8 +395,6 @@ const Sidebar: React.FunctionComponent<
     availableDynamicIds,
     unavailableCount,
   } = useInstallState(installed, elements);
-
-  console.debug("Sidebar", context);
 
   const entries = useMemo(() => {
     const elementIds = new Set(elements.map((x) => x.uuid));
@@ -424,7 +441,7 @@ const Sidebar: React.FunctionComponent<
       <div className="Sidebar__actions flex-grow-0">
         <div className="d-inline-flex flex-wrap">
           <DropdownButton
-            disabled={!!inserting || !hasTabPermissions}
+            disabled={!!inserting || !hasPermissions}
             variant="info"
             size="sm"
             title="Add"

@@ -225,7 +225,10 @@ const ReaderTab: React.FunctionComponent<{
   editable: Set<string>;
   available: boolean;
 }> = ({ eventKey = "reader", editable, available }) => {
-  const { port, frameworks } = useContext(DevToolsContext);
+  const {
+    port,
+    tabState: { meta },
+  } = useContext(DevToolsContext);
   const { addToast } = useToasts();
   const [query, setQuery] = useState("");
   const { values, setFieldValue } = useFormikContext<FormState>();
@@ -432,7 +435,7 @@ const ReaderTab: React.FunctionComponent<{
           <Col sm={10}>
             <FrameworkSelector
               name="reader.definition.type"
-              frameworks={frameworks}
+              frameworks={meta?.frameworks ?? []}
             />
           </Col>
         </Form.Group>
