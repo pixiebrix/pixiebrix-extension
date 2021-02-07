@@ -31,12 +31,12 @@ import {
 import { DevToolsContext } from "@/devTools/context";
 import { AuthContext } from "@/auth/context";
 import { sortBy, zip, uniq } from "lodash";
-import * as nativeOperations from "@/background/devtools";
+import * as nativeOperations from "@/background/devtools/index";
 import {
   checkAvailable,
   getInstalledExtensionPointIds,
   getTabInfo,
-} from "@/background/devtools";
+} from "@/background/devtools/index";
 import {
   Badge,
   Dropdown,
@@ -80,6 +80,7 @@ import {
 } from "@/devTools/editor/extensionPoints/adapter";
 import { RootState } from "@/devTools/store";
 import hash from "object-hash";
+import { BeatLoader } from "react-spinners";
 
 interface ElementConfig<
   TResult = unknown,
@@ -135,7 +136,7 @@ function useAddElement(
   flag: string = undefined
 ) {
   const dispatch = useDispatch();
-  const { port, frameworks } = useContext(DevToolsContext);
+  const { port, tabState } = useContext(DevToolsContext);
   const { scope, flags = [] } = useContext(AuthContext);
   const { addToast } = useToasts();
 
@@ -156,7 +157,12 @@ function useAddElement(
         url,
         reservedNames
       );
-      const initialState = config.makeState(url, metadata, element, frameworks);
+      const initialState = config.makeState(
+        url,
+        metadata,
+        element,
+        tabState.meta.frameworks ?? []
+      );
       await nativeOperations.updateDynamicElement(
         port,
         config.makeConfig(initialState)
@@ -176,7 +182,15 @@ function useAddElement(
     } finally {
       dispatch(actions.toggleInsert(null));
     }
-  }, [port, frameworks, reservedNames, scope, addToast, flag, flags]);
+  }, [
+    port,
+    tabState.meta?.frameworks,
+    reservedNames,
+    scope,
+    addToast,
+    flag,
+    flags,
+  ]);
 }
 
 function getLabel(extension: FormState): string {
@@ -293,34 +307,48 @@ function mapReservedNames(elements: FormState[]): string[] {
   );
 }
 
-const Sidebar: React.FunctionComponent<
-  Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
-    installed: IExtension[];
-  }
-> = ({ inserting, activeElement, installed, elements }) => {
-  const { port } = useContext(DevToolsContext);
-  const { scope } = useContext(AuthContext);
-  const [showAll, setShowAll] = useState(false);
+export interface InstallState {
+  installedIds: string[] | undefined;
+  availableDynamicIds: Set<string> | undefined;
+  unavailableCount: number | null;
+}
 
-  const [installedIds] = useAsyncState(
-    async () => getInstalledExtensionPointIds(port),
-    [port]
-  );
+export function useInstallState(
+  installed: IExtension[],
+  elements: FormState[]
+): InstallState {
+  const {
+    port,
+    tabState: { navSequence, meta },
+  } = useContext(DevToolsContext);
+
+  const [installedIds] = useAsyncState(async () => {
+    if (meta) {
+      return await getInstalledExtensionPointIds(port);
+    } else {
+      return [];
+    }
+  }, [port, navSequence, meta]);
 
   const [availableDynamicIds] = useAsyncState(async () => {
-    const availability = await Promise.all(
-      elements.map((element) =>
-        checkAvailable(port, element.extensionPoint.definition.isAvailable)
-      )
-    );
-    console.debug("Available", { available: zip(elements, availability) });
-    return new Set<string>(
-      zip(elements, availability)
-        .filter(([, available]) => available)
-        .map(([extension]) => extension.uuid)
-    );
+    if (meta) {
+      const availability = await Promise.all(
+        elements.map((element) =>
+          checkAvailable(port, element.extensionPoint.definition.isAvailable)
+        )
+      );
+      return new Set<string>(
+        zip(elements, availability)
+          .filter(([, available]) => available)
+          .map(([extension]) => extension.uuid)
+      );
+    } else {
+      return new Set<string>();
+    }
   }, [
     port,
+    meta,
+    navSequence,
     hash(
       elements.map((x) => ({
         uuid: x.uuid,
@@ -328,6 +356,43 @@ const Sidebar: React.FunctionComponent<
       }))
     ),
   ]);
+
+  const unavailableCount = useMemo(() => {
+    if (meta) {
+      if (installed && installedIds) {
+        return installed.filter(
+          (x) => !installedIds.includes(x.extensionPointId)
+        ).length;
+      } else {
+        return null;
+      }
+    } else {
+      return installed?.length;
+    }
+  }, [installed, navSequence, installedIds, meta]);
+
+  return { installedIds, availableDynamicIds, unavailableCount };
+}
+
+const Sidebar: React.FunctionComponent<
+  Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
+    installed: IExtension[];
+  }
+> = ({ inserting, activeElement, installed, elements }) => {
+  const context = useContext(DevToolsContext);
+  const {
+    port,
+    connecting,
+    tabState: { hasPermissions },
+  } = context;
+  const { scope } = useContext(AuthContext);
+  const [showAll, setShowAll] = useState(false);
+
+  const {
+    installedIds,
+    availableDynamicIds,
+    unavailableCount,
+  } = useInstallState(installed, elements);
 
   const entries = useMemo(() => {
     const elementIds = new Set(elements.map((x) => x.uuid));
@@ -354,15 +419,6 @@ const Sidebar: React.FunctionComponent<
     activeElement,
   ]);
 
-  const unavailableCount = useMemo(() => {
-    if (installed && installedIds) {
-      return installed.filter((x) => !installedIds.includes(x.extensionPointId))
-        .length;
-    } else {
-      return null;
-    }
-  }, [installed, installedIds]);
-
   const reservedNames = useMemo(() => mapReservedNames(elements), [
     hash(mapReservedNames(elements)),
   ]);
@@ -383,7 +439,7 @@ const Sidebar: React.FunctionComponent<
       <div className="Sidebar__actions flex-grow-0">
         <div className="d-inline-flex flex-wrap">
           <DropdownButton
-            disabled={!!inserting}
+            disabled={!!inserting || !hasPermissions}
             variant="info"
             size="sm"
             title="Add"
@@ -450,9 +506,12 @@ const Sidebar: React.FunctionComponent<
         </ListGroup>
       </div>
       <div className="Sidebar__footer flex-grow-0">
-        <span>
-          Scope: <code>{scope}</code>
-        </span>
+        <div className="d-flex">
+          <div className="flex-grow-1">
+            Scope: <code>{scope}</code>
+          </div>
+          <div>{connecting && <BeatLoader size={7} />}</div>
+        </div>
       </div>
     </div>
   );

@@ -35,7 +35,7 @@ import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import useAsyncEffect from "use-async-effect";
 import { GridLoader } from "react-spinners";
-import { runReader } from "@/background/devtools";
+import { runReader } from "@/background/devtools/index";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
@@ -101,6 +101,8 @@ const FrameworkSelector: React.FunctionComponent<{
   name: string;
   frameworks: FrameworkMeta[];
 }> = ({ name, frameworks = [] }) => {
+  console.debug("Frameworks", { frameworks });
+
   const frameworkOptions: FrameworkOption[] = useMemo(
     () =>
       readerOptions.map((option) => {
@@ -225,7 +227,10 @@ const ReaderTab: React.FunctionComponent<{
   editable: Set<string>;
   available: boolean;
 }> = ({ eventKey = "reader", editable, available }) => {
-  const { port, frameworks } = useContext(DevToolsContext);
+  const {
+    port,
+    tabState: { meta },
+  } = useContext(DevToolsContext);
   const { addToast } = useToasts();
   const [query, setQuery] = useState("");
   const { values, setFieldValue } = useFormikContext<FormState>();
@@ -432,7 +437,7 @@ const ReaderTab: React.FunctionComponent<{
           <Col sm={10}>
             <FrameworkSelector
               name="reader.definition.type"
-              frameworks={frameworks}
+              frameworks={meta?.frameworks ?? []}
             />
           </Col>
         </Form.Group>

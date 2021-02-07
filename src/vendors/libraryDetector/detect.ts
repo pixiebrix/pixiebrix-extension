@@ -2,34 +2,44 @@
 // https://github.com/johnmichel/Library-Detector-for-Chrome/blob/4c77e4e26197763ce87ea878be047c9c1d6f7017/content_scripts/lib_detect.js
 
 // @ts-ignore
-import tests from "./libraries";
+import libraryTests from "./libraries";
+import { zip } from "lodash";
 
 interface Library {
   id: string;
   version: string | null;
 }
 
+type TestResult = { version: string | null } | false;
+
 interface Test {
   id: string;
-  test: (win: Window) => { version: string | null };
+  test: (win: Window) => TestResult;
 }
 
 async function detectLibraries(): Promise<Library[]> {
-  const libraries: Library[] = [];
-  for (const { id, test } of Object.values(tests) as Test[]) {
-    try {
-      const result = await test(window);
-      if (result) {
-        libraries.push({
-          id,
-          version: result.version,
+  const detectedLibraries: Library[] = [];
+  const tests = Object.values(libraryTests) as Test[];
+  const results = await Promise.allSettled(
+    tests.map(
+      (test) => new Promise<TestResult>((resolve) => resolve(test.test(window)))
+    )
+  );
+  for (const [definition, result] of zip(tests, results)) {
+    if (result.status === "fulfilled") {
+      if (result.value !== false) {
+        detectedLibraries.push({
+          id: definition.id,
+          version: result.value.version,
         });
       }
-    } catch (e) {
-      console.warn(`Library Detector test for ${id} failed:`);
+    } else {
+      console.warn(
+        `Library Detector test for ${definition.id} failed: ${result.status}`
+      );
     }
   }
-  return libraries;
+  return detectedLibraries;
 }
 
 export default detectLibraries;

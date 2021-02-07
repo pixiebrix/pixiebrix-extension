@@ -16,135 +16,213 @@
  */
 
 import React, { useState, useCallback } from "react";
-import { Runtime } from "webextension-polyfill-ts";
-import { FrameworkMeta } from "@/messaging/constants";
+import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 import {
   detectFrameworks,
   getTabInfo,
   injectScript,
-  awaitPermissions,
-} from "@/background/devtools";
+  navigationEvent,
+  waitReady,
+} from "@/background/devtools/index";
 import useAsyncEffect from "use-async-effect";
+import { useAsyncState } from "@/hooks/common";
+import { FrameworkMeta } from "@/messaging/constants";
+import { reportError } from "@/telemetry/logging";
+import { v4 as uuidv4 } from "uuid";
+import { useTabEventListener } from "@/hooks/events";
 
-interface Context {
+interface FrameMeta {
+  url: string;
+  frameworks: FrameworkMeta[];
+}
+
+interface FrameConnectionState {
+  frameId: number;
+
+  /**
+   * UUID for the navigation result
+   */
+  navSequence: string | undefined;
+
+  /**
+   * True if the devtools have permission to access the current tab
+   */
+  hasPermissions: boolean;
+
+  /**
+   * Error message when connecting to the page
+   */
+  error?: string;
+
+  meta: FrameMeta | undefined;
+}
+
+const initialFrameState: Omit<FrameConnectionState, "frameId"> = {
+  navSequence: undefined,
+  hasPermissions: false,
+  error: undefined,
+  meta: undefined,
+};
+
+export interface Context {
+  /**
+   * Re-connect to the background page
+   */
+  connect: () => Promise<void>;
+
+  /**
+   * True if the a connection attempt is in process
+   */
+  connecting: boolean;
+
   /**
    * The background page port.
    */
   port: Runtime.Port | null;
 
   /**
-   * True if the devtools have permission to access the current tab
+   * Error message when connecting to the background page.
    */
-  hasTabPermissions: boolean;
+  portError?: string;
 
-  /**
-   * Frameworks detected on the tab.
-   */
-  frameworks: FrameworkMeta[];
-
-  /**
-   * Error message if an error occurred when connecting to the page.
-   */
-  error?: string;
+  tabState: FrameConnectionState;
 }
 
 const initialValue: Context = {
+  connect: () => Promise.resolve(),
+  connecting: false,
   port: null,
-  hasTabPermissions: false,
-  frameworks: [],
-  error: null,
+  portError: undefined,
+  tabState: { ...initialFrameState, frameId: 0 },
 };
 
 export const DevToolsContext = React.createContext(initialValue);
 
-export function useDevConnection(): [Context, () => Promise<void>] {
-  const [context, setContext] = useState(initialValue);
-  const [connectSequence, setConnectSequence] = useState(0);
+class PermissionsError extends Error {
+  constructor(msg: string) {
+    super(msg);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, PermissionsError.prototype);
+  }
+}
+
+function runInMillis<TResult>(
+  factory: () => Promise<TResult>,
+  maxMillis: number
+): Promise<TResult> {
+  return new Promise<TResult>((resolve, reject) => {
+    let settled = false;
+
+    const intervalId = setInterval(() => {
+      if (!settled) {
+        settled = true;
+        reject(`Method did not complete in ${maxMillis}ms`);
+      }
+    }, maxMillis);
+
+    factory()
+      .then(resolve)
+      .catch(reject)
+      .finally(() => {
+        settled = true;
+        clearInterval(intervalId);
+      });
+  });
+}
+
+async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
+  const { url, hasPermissions } = await getTabInfo(port);
+  if (!hasPermissions) {
+    console.debug(`connectToFrame: no access to ${url}`);
+    throw new PermissionsError(`No access to URL: ${url}`);
+  }
+  console.debug(`connectToFrame: ensuring contentScript for ${url}`);
+  await injectScript(port, { file: "contentScript.js" });
+
+  console.debug(
+    `connectToFrame: waiting for contentScript to be ready for ${url}`
+  );
+  await waitReady(port, { maxWaitMillis: 4000 });
+
+  let frameworks: FrameworkMeta[] = [];
+  try {
+    console.debug(`connectToFrame: detecting frameworks on ${url}`);
+    frameworks = await runInMillis(() => detectFrameworks(port), 500);
+  } catch (error) {
+    console.debug(`connectToFrame: error detecting frameworks ${url}`, {
+      error,
+    });
+  }
+
+  console.debug(`connectToFrame: finished for ${url}`);
+  return { frameworks, url };
+}
+
+export function useDevConnection(): Context {
+  const tabId = browser.devtools.inspectedWindow.tabId;
+
+  const [connecting, setConnecting] = useState(false);
+
+  const [port, , portError] = useAsyncState(connectDevtools, []);
+
+  const [current, setCurrent] = useState<FrameConnectionState>({
+    ...initialFrameState,
+    frameId: 0,
+  });
 
   const connect = useCallback(async () => {
-    let hasTabPermissions: boolean;
-    let port: Runtime.Port;
-    let error: unknown;
-
+    if (!port) {
+      throw new Error("background port not initialized");
+    }
+    const uuid = uuidv4();
+    const common = { frameId: 0, navSequence: uuid };
     try {
-      console.debug("useMakeContext:connectDevtools");
-      port = await connectDevtools();
+      console.debug(`useDevConnection.connect: connecting for ${uuid}`);
+      setConnecting(true);
+      const meta = await connectToFrame(port);
+      console.debug(
+        `useDevConnection.connect: replacing tabState for ${uuid}: ${meta.url}`
+      );
+      setCurrent({
+        ...common,
+        hasPermissions: true,
+        meta,
+      });
     } catch (err) {
-      setContext({
-        port: null,
-        frameworks: [],
-        hasTabPermissions: null,
-        error: err.toString(),
-      });
-      return;
-    }
-
-    try {
-      console.debug("useMakeContext:getTabInfo");
-      hasTabPermissions = (await getTabInfo(port)).hasPermissions;
-    } catch (reason) {
-      error = reason;
-    }
-
-    if (!hasTabPermissions) {
-      setContext({
-        port,
-        frameworks: [],
-        hasTabPermissions,
-        error: error?.toString(),
-      });
-
-      awaitPermissions(port).then(() => {
-        setConnectSequence((prev) => prev + 1);
-      });
-
-      return;
-    }
-
-    try {
-      console.debug("useMakeContext:injectScript");
-      await injectScript(port, { file: "contentScript.js" });
-    } catch (reason) {
-      setContext({
-        port,
-        frameworks: [],
-        hasTabPermissions,
-        error: reason.toString(),
-      });
-      return;
-    }
-
-    // ok so far
-    setContext({ port, frameworks: [], hasTabPermissions, error: null });
-
-    try {
-      console.debug("useMakeContext:detectFrameworks");
-      const frameworks = await detectFrameworks(port);
-      setContext({ port, frameworks, hasTabPermissions, error: null });
-    } catch (reason) {
-      if (reason?.message?.includes("Receiving end does not exist")) {
-        setContext({
-          port,
-          frameworks: [],
-          hasTabPermissions,
-          error: "Content script not initialized",
+      if (err instanceof PermissionsError) {
+        setCurrent({
+          ...common,
+          hasPermissions: false,
+          meta: undefined,
         });
       } else {
-        setContext({
-          port,
-          frameworks: [],
-          hasTabPermissions,
-          error:
-            reason?.message?.toString() ??
-            reason.toString() ??
-            "Unknown error detecting front-end frameworks",
+        reportError(err);
+        setCurrent({
+          ...common,
+          hasPermissions: true,
+          meta: undefined,
+          error: err.message?.toString() ?? err.toString(),
         });
       }
     }
-  }, [setContext]);
+    setConnecting(false);
+  }, [port, setCurrent]);
 
-  useAsyncEffect(connect, [connectSequence]);
+  // automatically connect on when background port connected, and on future navigations
+  useAsyncEffect(async () => {
+    if (port) {
+      await connect();
+    }
+  }, [port]);
 
-  return [context, connect];
+  useTabEventListener(tabId, navigationEvent, connect);
+
+  return {
+    port,
+    connecting,
+    connect: connect,
+    portError: portError?.toString(),
+    tabState: current,
+  };
 }

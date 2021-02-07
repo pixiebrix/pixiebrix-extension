@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,29 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { v4 as uuidv4 } from "uuid";
+import React from "react";
+import { Col, Container, Row } from "react-bootstrap";
 
-export const sessionId = uuidv4();
-export const sessionTimestamp = new Date();
+const Centered: React.FunctionComponent = ({ children }) => {
+  return (
+    <Container fluid>
+      <Row>
+        <Col className="mx-auto mt-4 text-center" md={8} lg={5} sm={11}>
+          {children}
+        </Col>
+      </Row>
+    </Container>
+  );
+};
 
-export let navigationId = uuidv4();
-export let navigationTimestamp = new Date();
-
-export let tabId: number = undefined;
-export let frameId: number = undefined;
-
-export let ready = false;
-
-export function updateNavigationId(): void {
-  navigationId = uuidv4();
-  navigationTimestamp = new Date();
-}
-
-export function markReady(): void {
-  ready = true;
-}
-
-export function updateTabInfo(info: { tabId: number; frameId: number }): void {
-  tabId = info.tabId;
-  frameId = info.frameId;
-}
+export default Centered;

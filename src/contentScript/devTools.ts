@@ -22,6 +22,7 @@ import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 import adapters from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
 import { Framework } from "@/messaging/constants";
+import { ready as contentScriptReady } from "@/contentScript/context";
 
 // install handlers
 import "@/nativeEditor/insertButton";
@@ -49,16 +50,27 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
   }
 }
 
+interface PingResponse {
+  installed: boolean;
+  ready: boolean;
+}
+
 export const _ping = liftContentScript("PING", async () => {
-  return true;
+  return {
+    installed: true,
+    ready: contentScriptReady,
+  };
 });
 
-export async function isInstalled(tabId: number): Promise<boolean> {
+export async function isInstalled(tabId: number): Promise<PingResponse> {
   try {
     return await _ping(tabId);
   } catch (reason) {
     if (reason.message?.includes("Receiving end does not exist")) {
-      return false;
+      return {
+        installed: false,
+        ready: false,
+      };
     }
     throw reason;
   }

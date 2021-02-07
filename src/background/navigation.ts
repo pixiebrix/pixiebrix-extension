@@ -16,15 +16,17 @@
  */
 
 import * as contentScript from "@/contentScript/lifecycle";
-
 import { liftBackground } from "@/background/protocol";
 import { browser } from "webextension-polyfill-ts";
 
 function initNavigation(): void {
+  // updates from the history API
   browser.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-    // console.debug(`onHistoryStateUpdated (tab=${details.tabId}, frame=${details.frameId})` , details);
-    const { tabId } = details;
-    contentScript.notifyNavigation(tabId);
+    // console.debug(
+    //   `onHistoryStateUpdated (tab=${details.tabId}, frame=${details.frameId})`,
+    //   details
+    // );
+    contentScript.notifyNavigation(details.tabId);
   });
 }
 
