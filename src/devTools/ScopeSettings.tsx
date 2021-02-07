@@ -121,11 +121,11 @@ const ScopeSettings: React.FunctionComponent = () => {
   return (
     <Row>
       <Col md={8} lg={6} className="mx-auto">
-        <div className="mt-2">
-          <b>
-            To create extensions, you must first set an account alias for your
-            PixieBrix account
-          </b>
+        <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
+
+        <div className="font-weight-bold">
+          To create extensions, you must first set an account alias for your
+          PixieBrix account
         </div>
 
         <Alert variant="info" className="mt-2">

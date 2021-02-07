@@ -44,7 +44,7 @@ import { makeURL } from "@/hooks/fetch";
 import { getExtensionToken } from "@/auth/token";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { cancelSelectElement, getTabInfo } from "@/background/devtools";
+import { cancelSelectElement, getTabInfo } from "@/background/devtools/index";
 import { DevToolsContext } from "@/devTools/context";
 import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
@@ -76,7 +76,9 @@ const Effect: React.FunctionComponent<{
 const BetaPane = () => {
   return (
     <Centered>
-      <h3>This Page Editor feature is currently in private beta</h3>
+      <div className="PaneTitle">
+        This Page Editor feature is currently in private beta
+      </div>
 
       <div className="text-left">
         <p>
@@ -110,8 +112,8 @@ const PermissionsPane = () => {
 
   return (
     <Centered>
-      <div className="mb-2">
-        <b>PixieBrix does not have access to the page</b>
+      <div className="PaneTitle">
+        PixieBrix does not have access to the page
       </div>
       <div className="mb-2 text-left">
         <p>
@@ -133,7 +135,7 @@ const InsertButtonPane: React.FunctionComponent<{ cancel: () => void }> = ({
 }) => {
   return (
     <Centered>
-      <h3>Inserting button</h3>
+      <div className="PaneTitle">Inserting button</div>
 
       <div className="text-left">
         <p>
@@ -165,7 +167,8 @@ const InsertPanelPane: React.FunctionComponent<{ cancel: () => void }> = ({
 }) => {
   return (
     <Centered>
-      <h3>Inserting panel</h3>
+      <div className="PaneTitle">Inserting panel</div>
+
       <div className="text-left">
         <p>Click on a container to insert a panel in that container.</p>
       </div>
@@ -183,7 +186,7 @@ const NoExtensionsPane: React.FunctionComponent<{
 }> = ({ unavailableCount }) => {
   return (
     <Centered>
-      <h3>No custom extensions on the page</h3>
+      <div className="PaneTitle">No custom extensions on the page</div>
 
       <div className="text-left">
         <p>
@@ -219,7 +222,7 @@ const NoExtensionsPane: React.FunctionComponent<{
 const WelcomePane = () => {
   return (
     <Centered>
-      <h3>Welcome to the PixieBrix Page Editor!</h3>
+      <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
 
       <div className="text-left">
         <p>
@@ -248,10 +251,10 @@ const WelcomePane = () => {
 const NoExtensionSelectedPane = () => {
   return (
     <Centered>
-      <h3>No extension selected</h3>
+      <div className="PaneTitle">No extension selected</div>
 
       <div className="text-left">
-        <p>Select an extension in the sidebar to edit it.</p>
+        <p>Select an extension in the sidebar to edit</p>
         <p>
           Or, click the <span className="text-info">&ldquo;Add&rdquo;</span>{" "}
           button in the sidebar to add an extension to the page.
@@ -378,7 +381,7 @@ const Editor: React.FunctionComponent = () => {
 
   return (
     <Container fluid className="h-100">
-      <SplitPane split="vertical" allowResize minSize={225} defaultSize={225}>
+      <SplitPane split="vertical" allowResize minSize={260} defaultSize={260}>
         <Sidebar
           installed={installed}
           elements={elements}
