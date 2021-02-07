@@ -27,7 +27,7 @@ import {
   injectScript,
   readSelectedElement,
   clearDynamicElements,
-} from "@/background/devtools";
+} from "@/background/devtools/index";
 import { reportError } from "@/telemetry/logging";
 
 function installSidebarPane(port: Runtime.Port) {
@@ -98,13 +98,20 @@ async function initialize(port: Runtime.Port) {
     console.debug("Could not inject contextScript for devtools", { reason });
   }
 
-  if (injected) {
-    // clear out any dynamic stuff from the previous devtools session
-    await clearDynamicElements(port, {});
-  }
-
   installSidebarPane(port);
   installPanel();
+
+  if (injected) {
+    try {
+      // clear out any dynamic stuff from a previous devtools session
+      await clearDynamicElements(port, {});
+    } catch (err) {
+      console.debug(
+        "Error clearing dynamic elements previous devtools sessions",
+        err
+      );
+    }
+  }
 }
 
 if (browser.devtools.inspectedWindow.tabId) {

@@ -64,7 +64,7 @@ import { notifyReady, whoAmI } from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "notifyjs-browser";
-import { updateTabInfo } from "@/contentScript/context";
+import { markReady, updateTabInfo } from "@/contentScript/context";
 
 const contextPromise = whoAmI()
   .then((sender) => {
@@ -97,6 +97,7 @@ contextPromise
   })
   .then(() => {
     // Let the background script know we're ready to execute remote actions
+    markReady();
     return notifyReady().catch((reason) => {
       console.warn("Error pinging the background script", reason);
       throw reason;

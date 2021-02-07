@@ -49,6 +49,7 @@ import { DevToolsContext } from "@/devTools/context";
 import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
 import { openTab } from "@/background/executor";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const { updateElement } = editorSlice.actions;
 
@@ -335,23 +336,22 @@ const Editor: React.FunctionComponent = () => {
         </div>
       );
     } else if (selectedElement) {
+      const key = `${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`;
       return (
-        <Formik
-          key={`${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`}
-          initialValues={selectedElement}
-          onSubmit={create}
-        >
-          {({ values }) => (
-            <>
-              <Effect values={values} onChange={updateHandler.callback} />
-              <ElementWizard
-                element={values}
-                editable={editable}
-                installed={installed}
-              />
-            </>
-          )}
-        </Formik>
+        <ErrorBoundary key={key}>
+          <Formik key={key} initialValues={selectedElement} onSubmit={create}>
+            {({ values }) => (
+              <>
+                <Effect values={values} onChange={updateHandler.callback} />
+                <ElementWizard
+                  element={values}
+                  editable={editable}
+                  installed={installed}
+                />
+              </>
+            )}
+          </Formik>
+        </ErrorBoundary>
       );
     } else if (
       availableDynamicIds?.size ||

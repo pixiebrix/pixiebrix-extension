@@ -27,6 +27,7 @@ import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
 import { MESSAGE_PREFIX } from "@/background/protocol";
 import { RenderedArgs } from "@/core";
 import { isBackgroundPage, isContentScript } from "webext-detect-page";
+import { emitDevtools } from "@/background/devtools/internal";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -158,14 +159,16 @@ function backgroundListener(
       });
     }
     case MESSAGE_CONTENT_SCRIPT_READY: {
-      console.debug(
-        `Marked tab ${sender.tab.id} (frame: ${sender.frameId}) as ready`,
-        { sender }
-      );
-      if (!tabReady[sender.tab.id]) {
-        tabReady[sender.tab.id] = {};
+      const tabId = sender.tab.id;
+      const { frameId } = sender;
+      console.debug(`Marked tab ${tabId} (frame: ${frameId}) as ready`, {
+        sender,
+      });
+      if (!tabReady[tabId]) {
+        tabReady[tabId] = {};
       }
-      tabReady[sender.tab.id][sender.frameId] = true;
+      tabReady[tabId][frameId] = true;
+      emitDevtools("ContentScriptReady", { tabId, frameId });
       return Promise.resolve();
     }
     case MESSAGE_CONTENT_SCRIPT_ECHO_SENDER: {

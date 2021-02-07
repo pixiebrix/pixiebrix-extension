@@ -31,12 +31,12 @@ import {
 import { DevToolsContext } from "@/devTools/context";
 import { AuthContext } from "@/auth/context";
 import { sortBy, zip, uniq } from "lodash";
-import * as nativeOperations from "@/background/devtools";
+import * as nativeOperations from "@/background/devtools/index";
 import {
   checkAvailable,
   getInstalledExtensionPointIds,
   getTabInfo,
-} from "@/background/devtools";
+} from "@/background/devtools/index";
 import {
   Badge,
   Dropdown,
@@ -80,6 +80,7 @@ import {
 } from "@/devTools/editor/extensionPoints/adapter";
 import { RootState } from "@/devTools/store";
 import hash from "object-hash";
+import { BeatLoader } from "react-spinners";
 
 interface ElementConfig<
   TResult = unknown,
@@ -322,10 +323,6 @@ export function useInstallState(
   } = useContext(DevToolsContext);
 
   const [installedIds] = useAsyncState(async () => {
-    console.debug("useInstallState:getInstalledExtensionPointIds", {
-      navSequence,
-      meta,
-    });
     if (meta) {
       return await getInstalledExtensionPointIds(port);
     } else {
@@ -385,7 +382,8 @@ const Sidebar: React.FunctionComponent<
   const context = useContext(DevToolsContext);
   const {
     port,
-    tabState: { hasPermissions, navSequence },
+    connecting,
+    tabState: { hasPermissions },
   } = context;
   const { scope } = useContext(AuthContext);
   const [showAll, setShowAll] = useState(false);
@@ -508,10 +506,12 @@ const Sidebar: React.FunctionComponent<
         </ListGroup>
       </div>
       <div className="Sidebar__footer flex-grow-0">
-        <span>
-          Scope: <code>{scope}</code>
-        </span>
-        {process.env.DEBUG && <span className="ml-3">Nav: {navSequence}</span>}
+        <div className="d-flex">
+          <div className="flex-grow-1">
+            Scope: <code>{scope}</code>
+          </div>
+          <div>{connecting && <BeatLoader size={7} />}</div>
+        </div>
       </div>
     </div>
   );

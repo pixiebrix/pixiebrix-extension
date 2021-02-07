@@ -35,7 +35,7 @@ import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import useAsyncEffect from "use-async-effect";
 import { GridLoader } from "react-spinners";
-import { runReader } from "@/background/devtools";
+import { runReader } from "@/background/devtools/index";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
@@ -101,6 +101,8 @@ const FrameworkSelector: React.FunctionComponent<{
   name: string;
   frameworks: FrameworkMeta[];
 }> = ({ name, frameworks = [] }) => {
+  console.debug("Frameworks", { frameworks });
+
   const frameworkOptions: FrameworkOption[] = useMemo(
     () =>
       readerOptions.map((option) => {

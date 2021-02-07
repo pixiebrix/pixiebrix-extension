@@ -16,7 +16,9 @@
  */
 
 import { browser, Runtime } from "webextension-polyfill-ts";
-import { connect, PORT_NAME } from "@/background/devtools";
+import { registerPort } from "@/background/devtools";
+import { PORT_NAME } from "@/background/devtools/contract";
+import { installPortListeners } from "@/background/devtools/external";
 
 let _cachedPort: Runtime.Port | null = null;
 
@@ -37,7 +39,8 @@ export async function connectDevtools(): Promise<Runtime.Port> {
   });
 
   if (browser.runtime.lastError) {
-    // Not helpful to use recordError here because it can't connect to the background page anyway.
+    // Not helpful to use recordError here because it can't connect to the background page to send
+    // the error telemetry
     console.error("Devtools cannot connect to the background page", {
       error: browser.runtime.lastError,
     });
@@ -54,7 +57,8 @@ export async function connectDevtools(): Promise<Runtime.Port> {
     }
   });
 
-  await connect(port);
+  installPortListeners(port);
+  await registerPort(port);
 
   _cachedPort = port;
   return port;
