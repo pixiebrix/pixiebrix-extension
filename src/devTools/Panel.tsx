@@ -87,9 +87,7 @@ const Panel: React.FunctionComponent = () => {
   if (authError) {
     return (
       <Centered>
-        <div className="mb-2">
-          <b>Error authenticating account</b>
-        </div>
+        <div className="PaneTitle">Error authenticating account</div>
         <div>{authError?.toString() ?? "Unknown error"}</div>
         <Button onClick={() => location.reload()}>Reload Editor</Button>
       </Centered>
@@ -97,11 +95,13 @@ const Panel: React.FunctionComponent = () => {
   } else if (context.portError || context.tabState.error) {
     return (
       <Centered>
-        <div className="mb-2">
+        <div className="PaneTitle">
           <b>An error occurred</b>
         </div>
         <div>{context.portError ?? context.tabState?.error}</div>
-        <Button onClick={() => location.reload()}>Reload Editor</Button>
+        <div className="mt-2">
+          <Button onClick={() => location.reload()}>Reload Editor</Button>
+        </div>
       </Centered>
     );
   } else if (!context.port) {

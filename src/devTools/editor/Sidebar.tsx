@@ -80,7 +80,9 @@ import {
 } from "@/devTools/editor/extensionPoints/adapter";
 import { RootState } from "@/devTools/store";
 import hash from "object-hash";
+import logo from "@/icons/custom-icons/favicon.svg";
 import { BeatLoader } from "react-spinners";
+import { openExtensionOptions } from "@/messaging/external";
 
 interface ElementConfig<
   TResult = unknown,
@@ -438,6 +440,12 @@ const Sidebar: React.FunctionComponent<
     <div className="Sidebar d-flex flex-column vh-100">
       <div className="Sidebar__actions flex-grow-0">
         <div className="d-inline-flex flex-wrap">
+          <span
+            className="Sidebar__logo"
+            dangerouslySetInnerHTML={{ __html: logo }}
+            onClick={() => openExtensionOptions()}
+          />
+
           <DropdownButton
             disabled={!!inserting || !hasPermissions}
             variant="info"

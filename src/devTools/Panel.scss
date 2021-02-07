@@ -19,6 +19,12 @@
   padding-left: 0;
   padding-right: 0;
 
+  .PaneTitle {
+    font-weight: bold;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+  }
+
   .nav-pills {
     padding-bottom: 0;
     margin-bottom: 5px;
@@ -95,6 +101,16 @@
     &__actions {
       .badge {
         margin-top: -5px;
+      }
+    }
+
+    &__logo {
+      width: 31px;
+      cursor: pointer;
+      margin-right: 2px;
+
+      svg:hover {
+        filter: brightness(0.75);
       }
     }
 
