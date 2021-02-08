@@ -23,6 +23,10 @@ import { BlockPipeline } from "@/blocks/combinators";
 import { Trigger } from "@/extensionPoints/triggerExtension";
 import { ContextMenus } from "webextension-polyfill-ts";
 
+export interface ReaderReferenceFormState {
+  metadata: Metadata;
+}
+
 export interface ReaderFormState {
   metadata: Metadata;
   outputSchema: Schema;
@@ -34,6 +38,12 @@ export interface ReaderFormState {
     selector: string | null;
     selectors: { [field: string]: string };
   };
+}
+
+export function isCustomReader(
+  reader: ReaderFormState | ReaderReferenceFormState
+): reader is ReaderFormState {
+  return "definition" in reader;
 }
 
 export type ElementType = "menuItem" | "trigger" | "panel" | "contextMenu";
@@ -49,7 +59,7 @@ export interface BaseFormState {
 
   services: ServiceDependency[];
 
-  reader: ReaderFormState;
+  readers: (ReaderFormState | ReaderReferenceFormState)[];
 
   extensionPoint: unknown;
 
@@ -266,7 +276,9 @@ export const editorSlice = createSlice({
       if (!element.installed) {
         state.knownEditable.push(
           element.extensionPoint.metadata.id,
-          element.reader.metadata.id
+          ...element.readers
+            .filter((x) => isCustomReader(x))
+            .map((x) => x.metadata.id)
         );
       }
       element.installed = true;

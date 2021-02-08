@@ -21,7 +21,7 @@ import { TriggerFormState } from "@/devTools/editor/editorSlice";
 import {
   getDomain,
   makeBaseState,
-  makeExtensionReader,
+  makeExtensionReaders,
   makeIsAvailable,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
@@ -33,7 +33,7 @@ import {
 import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
-import ReaderTab from "@/devTools/editor/tabs/ReaderTab";
+import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
@@ -76,7 +76,7 @@ export function makeTriggerState(
 
 export function makeTriggerExtensionPoint({
   extensionPoint,
-  reader,
+  readers,
 }: TriggerFormState): ExtensionPointConfig<TriggerDefinition> {
   const {
     metadata,
@@ -94,7 +94,7 @@ export function makeTriggerExtensionPoint({
     },
     definition: {
       type: "trigger",
-      reader: reader.metadata.id,
+      reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
       trigger,
       rootSelector,
@@ -125,6 +125,6 @@ export function makeTriggerConfig(
     type: "trigger",
     extension: makeTriggerExtension(element),
     extensionPoint: makeTriggerExtensionPoint(element),
-    reader: makeExtensionReader(element),
+    readers: makeExtensionReaders(element),
   };
 }

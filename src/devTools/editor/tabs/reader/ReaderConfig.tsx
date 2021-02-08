@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
-import { DevToolsContext } from "@/devTools/context";
+import React, { useContext, useMemo, useState } from "react";
 import {
-  compact,
-  isEmpty,
-  mapValues,
-  partial,
-  pick,
-  pickBy,
-  reverse,
-} from "lodash";
+  FormState,
+  isCustomReader,
+  ReaderFormState,
+} from "@/devTools/editor/editorSlice";
+import { DevToolsContext } from "@/devTools/context";
+import { compact, isEmpty, mapValues, partial, pick, pickBy } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
-import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
+import { Alert, Col, Form, Row } from "react-bootstrap";
 import Select from "react-select";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
@@ -40,8 +36,6 @@ import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import { useDebounce } from "use-debounce";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import copy from "copy-to-clipboard";
 import { Schema } from "@/core";
 import {
   getDefaultField,
@@ -51,8 +45,7 @@ import devtoolFields from "@/devTools/editor/Fields";
 
 // @ts-ignore: no type definitions?
 import GenerateSchema from "generate-schema";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
-import { useToasts } from "react-toast-notifications";
+import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 
 type ReaderSelector = (options: {
   type: string;
@@ -136,7 +129,7 @@ function normalize(value: unknown): string {
   return value.toString().toLowerCase();
 }
 
-function searchData(query: string, data: unknown): unknown {
+export function searchData(query: string, data: unknown): unknown {
   const normalized = normalize(query);
   if (data == null) {
     return null;
@@ -159,6 +152,7 @@ function searchData(query: string, data: unknown): unknown {
 }
 
 const FrameworkFields: React.FunctionComponent<{
+  name: string;
   element: FormState;
 }> = ({ element }) => {
   return (
@@ -170,7 +164,7 @@ const FrameworkFields: React.FunctionComponent<{
         <Col sm={10}>
           <SelectorSelectorField
             isClearable
-            name="reader.definition.selector"
+            name={`${name}.definition.selector`}
             initialElement={
               "containerInfo" in element ? element.containerInfo : null
             }
@@ -183,7 +177,7 @@ const FrameworkFields: React.FunctionComponent<{
           Traverse Up
         </Form.Label>
         <Col sm={10}>
-          <Field name="reader.definition.traverseUp">
+          <Field name={`${name}.definition.traverseUp`}>
             {({ field }: { field: FieldInputProps<number> }) => (
               <Form.Control type="number" {...field} min={0} max={10} />
             )}
@@ -198,8 +192,9 @@ const FrameworkFields: React.FunctionComponent<{
 };
 
 const JQueryFields: React.FunctionComponent<{
+  name: string;
   element: FormState;
-}> = () => {
+}> = ({ name }) => {
   const schema: Schema = {
     type: "object",
     additionalProperties: {
@@ -216,24 +211,36 @@ const JQueryFields: React.FunctionComponent<{
         Selectors
       </Form.Label>
       <Col sm={10}>
-        <Field name="reader.definition.selectors" schema={schema} />
+        <Field name={`${name}.definition.selectors`} schema={schema} />
       </Col>
     </Form.Group>
   );
 };
 
-const ReaderTab: React.FunctionComponent<{
-  eventKey?: string;
+const ReaderConfig: React.FunctionComponent<{
+  readerIndex: number;
   editable: Set<string>;
   available: boolean;
-}> = ({ eventKey = "reader", editable, available }) => {
+}> = ({ readerIndex, editable, available }) => {
   const {
     port,
     tabState: { meta },
   } = useContext(DevToolsContext);
-  const { addToast } = useToasts();
   const [query, setQuery] = useState("");
   const { values, setFieldValue } = useFormikContext<FormState>();
+
+  const reader: ReaderFormState = useMemo(() => {
+    // only passing number in
+    // eslint-disable-next-line security/detect-object-injection
+    const reader = values.readers[readerIndex];
+    if (!isCustomReader(reader)) {
+      throw new Error("Expecting custom reader");
+    }
+    return reader;
+  }, [readerIndex, values.readers]);
+
+  const baseName = `readers[${readerIndex}]`;
+
   const [{ output, schema, error }, setSchema] = useState({
     output: undefined,
     schema: undefined,
@@ -241,39 +248,11 @@ const ReaderTab: React.FunctionComponent<{
   });
 
   const locked = useMemo(
-    () => values.installed && !editable?.has(values.reader.metadata.id),
-    [editable, values.installed, values.reader.metadata.id]
+    () => values.installed && !editable?.has(reader.metadata.id),
+    [editable, values.installed, reader.metadata.id]
   );
 
-  // https://github.com/reduxjs/redux-devtools/blob/85b4b0fb04b1d6d95054d5073fa17fa61efc0df3/packages/redux-devtools-inspector-monitor/src/ActionPreview.tsx
-  const labelRenderer = useCallback(
-    (
-      [key, ...rest]: (string | number)[],
-      nodeType: string,
-      expanded: boolean
-    ) => {
-      return (
-        <span>
-          <span>{key}</span>
-          {!expanded && ": "}
-          <span
-            className="ReaderTree__copy-path"
-            aria-label="copy path"
-            onClick={() => {
-              copy(reverse([key, ...rest]).join("."));
-              addToast("Copied property path to the clipboard", {
-                appearance: "info",
-                autoDismiss: true,
-              });
-            }}
-          >
-            <FontAwesomeIcon icon={faCopy} aria-hidden />
-          </span>
-        </span>
-      );
-    },
-    [addToast]
-  );
+  const labelRenderer = useLabelRenderer();
 
   useAsyncEffect(
     async (isMounted) => {
@@ -287,7 +266,7 @@ const ReaderTab: React.FunctionComponent<{
       }
 
       setSchema({ output: undefined, schema: undefined, error: undefined });
-      const { type, selector } = values.reader?.definition ?? {};
+      const { type, selector } = reader?.definition ?? {};
       if (type !== "jquery" && !selector) {
         setSchema({
           output: {},
@@ -301,7 +280,7 @@ const ReaderTab: React.FunctionComponent<{
       let schema;
       try {
         const config = (option.makeConfig ?? defaultSelector)(
-          values.reader.definition
+          reader.definition
         );
         output = await runReader(port, { config });
         schema = GenerateSchema.json("Inferred Schema", output);
@@ -320,12 +299,12 @@ const ReaderTab: React.FunctionComponent<{
       }
 
       if (!locked) {
-        setFieldValue("reader.outputSchema", schema);
+        setFieldValue(`${baseName}.outputSchema`, schema);
       }
 
       setSchema({ output, schema, error: undefined });
     },
-    [values.reader?.definition, available, locked]
+    [reader?.definition, available, locked]
   );
 
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
@@ -340,16 +319,34 @@ const ReaderTab: React.FunctionComponent<{
 
   if (locked) {
     return (
-      <Tab.Pane eventKey={eventKey} className="h-100">
+      <div>
         <Alert variant="info">
           You do not have edit permissions for this reader
         </Alert>
+
+        <Form.Group as={Row} controlId="formReaderId">
+          <Form.Label column sm={2}>
+            Name
+          </Form.Label>
+          <Col sm={10}>
+            <Field name={`${baseName}.metadata.name`}>
+              {({ field }: { field: FieldInputProps<string> }) => (
+                <Form.Control
+                  type="text"
+                  {...field}
+                  disabled={values.installed}
+                />
+              )}
+            </Field>
+          </Col>
+        </Form.Group>
+
         <Form.Group as={Row} controlId="formReaderId">
           <Form.Label column sm={2}>
             Reader Id
           </Form.Label>
           <Col sm={10}>
-            <Field name="reader.metadata.id">
+            <Field name={`${baseName}.metadata.id`}>
               {({ field }: { field: FieldInputProps<string> }) => (
                 <Form.Control
                   type="text"
@@ -402,23 +399,40 @@ const ReaderTab: React.FunctionComponent<{
           <Col md={6} className="ReaderData">
             <span>Schema</span>
             <div className="overflow-auto h-100 w-100">
-              <SchemaTree schema={values.reader.outputSchema} />
+              <SchemaTree schema={reader.outputSchema} />
             </div>
           </Col>
         </Row>
-      </Tab.Pane>
+      </div>
     );
   }
 
   return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
+    <div className="h-100">
       <RendererContext.Provider value={devtoolFields}>
+        <Form.Group as={Row} controlId="formReaderId">
+          <Form.Label column sm={2}>
+            Name
+          </Form.Label>
+          <Col sm={10}>
+            <Field name={`${baseName}.metadata.name`}>
+              {({ field }: { field: FieldInputProps<string> }) => (
+                <Form.Control
+                  type="text"
+                  {...field}
+                  disabled={values.installed}
+                />
+              )}
+            </Field>
+          </Col>
+        </Form.Group>
+
         <Form.Group as={Row} controlId="formReaderId">
           <Form.Label column sm={2}>
             Reader Id
           </Form.Label>
           <Col sm={10}>
-            <Field name="reader.metadata.id">
+            <Field name={`${baseName}.metadata.id`}>
               {({ field }: { field: FieldInputProps<string> }) => (
                 <Form.Control
                   type="text"
@@ -436,16 +450,16 @@ const ReaderTab: React.FunctionComponent<{
           </Form.Label>
           <Col sm={10}>
             <FrameworkSelector
-              name="reader.definition.type"
+              name={`${baseName}.definition.type`}
               frameworks={meta?.frameworks ?? []}
             />
           </Col>
         </Form.Group>
 
-        {values.reader.definition.type === "jquery" ? (
-          <JQueryFields element={values} />
+        {reader.definition.type === "jquery" ? (
+          <JQueryFields element={values} name={baseName} />
         ) : (
-          <FrameworkFields element={values} />
+          <FrameworkFields element={values} name={baseName} />
         )}
 
         <Form.Group as={Row} controlId="readerSearch">
@@ -505,8 +519,8 @@ const ReaderTab: React.FunctionComponent<{
           </Row>
         )}
       </RendererContext.Provider>
-    </Tab.Pane>
+    </div>
   );
 };
 
-export default ReaderTab;
+export default ReaderConfig;

@@ -102,7 +102,8 @@ const BlockModal: React.FunctionComponent<{
   onSelect: (service: IBlock) => void;
   blocks: IBlock[];
   caption?: string;
-}> = ({ onSelect, blocks, caption = "Select a brick" }) => {
+  renderButton?: ({ show }: { show: () => void }) => React.ReactNode;
+}> = ({ onSelect, blocks, caption = "Select a brick", renderButton }) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -194,9 +195,14 @@ const BlockModal: React.FunctionComponent<{
           </Modal.Body>
         </Modal>
       )}
-      <Button variant="info" onClick={() => setShow(true)}>
-        {caption}
-      </Button>
+
+      {renderButton ? (
+        renderButton({ show: () => setShow(true) })
+      ) : (
+        <Button variant="info" onClick={() => setShow(true)}>
+          {caption}
+        </Button>
+      )}
     </div>
   );
 };

@@ -15,7 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ActionFormState, editorSlice } from "@/devTools/editor/editorSlice";
+import {
+  ActionFormState,
+  editorSlice,
+  isCustomReader,
+} from "@/devTools/editor/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -28,7 +32,7 @@ import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { makeExtensionReader } from "@/devTools/editor/extensionPoints/base";
+import { makeExtensionReaders } from "@/devTools/editor/extensionPoints/base";
 import {
   makeActionConfig,
   makeActionExtension,
@@ -102,31 +106,32 @@ export function useCreate(): (
         }
       );
 
-      if (
-        !button.installed ||
-        editable.find((x) => x.name === button.reader.metadata.id)
-      ) {
-        try {
-          const readerConfig = makeExtensionReader(button);
-          const packageId = button.installed
-            ? editable.find((x) => x.name === readerConfig.metadata.id)?.id
-            : null;
-          await axios({
-            ...(await makeRequestConfig(packageId)),
-            data: { config: safeDump(readerConfig), kind: "reader" },
-          } as AxiosRequestConfig);
-        } catch (ex) {
-          const err = ex as AxiosError;
-          const msg =
-            err.response.data["config"]?.toString() ?? err.response.statusText;
-          setStatus(`Error saving reader: ${msg}`);
-          addToast(`Error saving reader definition: ${msg}`, {
-            appearance: "error",
-            autoDismiss: true,
-          });
-          setSubmitting(false);
-          return;
+      try {
+        const readerConfigs = makeExtensionReaders(button);
+        for (const readerConfig of readerConfigs) {
+          // FIXME: check for userscope here to determine editability?
+          if (isCustomReader(readerConfig)) {
+            const packageId = button.installed
+              ? // bricks endpoint uses "name" instead of id
+                editable.find((x) => x.name === readerConfig.metadata.id)?.id
+              : null;
+            await axios({
+              ...(await makeRequestConfig(packageId)),
+              data: { config: safeDump(readerConfig), kind: "reader" },
+            } as AxiosRequestConfig);
+          }
         }
+      } catch (ex) {
+        const err = ex as AxiosError;
+        const msg =
+          err.response.data["config"]?.toString() ?? err.response.statusText;
+        setStatus(`Error saving reader: ${msg}`);
+        addToast(`Error saving reader definition: ${msg}`, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+        setSubmitting(false);
+        return;
       }
 
       if (

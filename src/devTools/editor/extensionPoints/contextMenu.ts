@@ -21,7 +21,7 @@ import { ContextMenuFormState } from "@/devTools/editor/editorSlice";
 import {
   getDomain,
   makeBaseState,
-  makeExtensionReader,
+  makeExtensionReaders,
   makeIsAvailable,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
@@ -29,7 +29,7 @@ import { v4 as uuidv4 } from "uuid";
 import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
-import ReaderTab from "@/devTools/editor/tabs/ReaderTab";
+import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
@@ -58,10 +58,14 @@ export function makeContextMenuState(
   metadata: Metadata,
   frameworks: FrameworkMeta[]
 ): ContextMenuFormState {
+  const base = makeBaseState(uuidv4(), null, metadata, frameworks);
+  // don't include a reader since in most cases can't use a selection reader
+  base.readers = [];
+
   return {
     type: "contextMenu",
     label: `My ${getDomain(url)} menu item`,
-    ...makeBaseState(uuidv4(), null, metadata, frameworks),
+    ...base,
     extensionPoint: {
       metadata,
       definition: {
@@ -78,7 +82,7 @@ export function makeContextMenuState(
 
 export function makeContextMenuExtensionPoint({
   extensionPoint,
-  reader,
+  readers,
 }: ContextMenuFormState): ExtensionPointConfig<MenuDefinition> {
   const {
     metadata,
@@ -96,7 +100,7 @@ export function makeContextMenuExtensionPoint({
     },
     definition: {
       type: "contextMenu",
-      reader: reader.metadata.id,
+      reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
     },
   };
@@ -128,6 +132,6 @@ export function makeContextMenuConfig(
     type: "contextMenu",
     extension: makeContextMenuExtension(element),
     extensionPoint: makeContextMenuExtensionPoint(element),
-    reader: makeExtensionReader(element),
+    readers: makeExtensionReaders(element),
   };
 }

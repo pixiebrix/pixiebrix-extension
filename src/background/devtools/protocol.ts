@@ -223,6 +223,22 @@ export const searchWindow: (
   }
 );
 
+export const runReaderBlock = liftBackground(
+  "RUN_READER_BLOCK",
+  (tabId: number) => async ({
+    id,
+    rootSelector,
+  }: {
+    id: string;
+    rootSelector?: string;
+  }) => {
+    return await contentScriptProtocol.runReaderBlock(tabId, {
+      id,
+      rootSelector,
+    });
+  }
+);
+
 export const runReader = liftBackground(
   "RUN_READER",
   (tabId: number) => async ({

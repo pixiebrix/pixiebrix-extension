@@ -21,7 +21,7 @@ import { PanelFormState } from "@/devTools/editor/editorSlice";
 import {
   getDomain,
   makeBaseState,
-  makeExtensionReader,
+  makeExtensionReaders,
   makeIsAvailable,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
@@ -29,7 +29,7 @@ import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
 import { PanelConfig, PanelDefinition } from "@/extensionPoints/panelExtension";
 import FoundationTab from "@/devTools/editor/tabs/panel/FoundationTab";
-import ReaderTab from "@/devTools/editor/tabs/ReaderTab";
+import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
 import PanelTab from "@/devTools/editor/tabs/panel/PanelTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
@@ -94,7 +94,7 @@ export function makePanelState(
 
 export function makePanelExtensionPoint({
   extensionPoint,
-  reader,
+  readers,
 }: PanelFormState): ExtensionPointConfig<PanelDefinition> {
   const {
     metadata,
@@ -112,7 +112,7 @@ export function makePanelExtensionPoint({
     },
     definition: {
       type: "panel",
-      reader: reader.metadata.id,
+      reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
       containerSelector: containerSelector,
       position,
@@ -142,6 +142,6 @@ export function makePanelConfig(element: PanelFormState): DynamicDefinition {
     type: "panel",
     extension: makePanelExtension(element),
     extensionPoint: makePanelExtensionPoint(element),
-    reader: makeExtensionReader(element),
+    readers: makeExtensionReaders(element),
   };
 }

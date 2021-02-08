@@ -23,6 +23,7 @@ import adapters from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
 import { Framework } from "@/messaging/constants";
 import { ready as contentScriptReady } from "@/contentScript/context";
+import blockRegistry from "@/blocks/registry";
 
 // install handlers
 import "@/nativeEditor/insertButton";
@@ -30,6 +31,7 @@ import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
 
 import getCssSelector from "css-selector-generator";
+import { IReader } from "@/core";
 
 let selectedElement: HTMLElement = undefined;
 
@@ -90,6 +92,18 @@ export const searchWindow: (
   "SEARCH_WINDOW",
   async (query: string) => {
     return await withSearchWindow({ query });
+  }
+);
+
+export const runReaderBlock = liftContentScript(
+  "RUN_READER_BLOCK",
+  async ({ id, rootSelector }: { id: string; rootSelector?: string }) => {
+    const reader = (await blockRegistry.lookup(id)) as IReader;
+    const root = rootSelector
+      ? $(document).find(rootSelector).get(0)
+      : document;
+
+    return await reader.read(root);
   }
 );
 

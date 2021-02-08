@@ -185,9 +185,9 @@ const ElementWizard: React.FunctionComponent<{
                 {x.step === "Reader" &&
                   element.installed &&
                   editable &&
-                  !editable.has(element.reader.metadata.id) && (
-                    <FontAwesomeIcon className="ml-2" icon={faLock} />
-                  )}
+                  !element.readers.some((reader) =>
+                    editable.has(reader.metadata.id)
+                  ) && <FontAwesomeIcon className="ml-2" icon={faLock} />}
               </Nav.Link>
             </Nav.Item>
           ))}

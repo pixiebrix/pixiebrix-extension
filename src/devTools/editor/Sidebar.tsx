@@ -320,7 +320,7 @@ function mapReservedNames(elements: FormState[]): string[] {
     uniq(
       elements.flatMap((x) => [
         x.extensionPoint.metadata.id,
-        x.reader.metadata.id,
+        ...x.readers.map((x) => x.metadata.id),
       ])
     )
   );
