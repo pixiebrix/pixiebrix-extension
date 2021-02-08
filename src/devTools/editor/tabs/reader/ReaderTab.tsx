@@ -32,6 +32,7 @@ import {
   faBars,
   faBookReader,
   faPlus,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import ReaderBlockConfig from "@/devTools/editor/tabs/reader/ReaderBlockConfig";
@@ -73,7 +74,7 @@ const ReaderTab: React.FunctionComponent<{
       <div className="d-flex">
         <FieldArray
           name="readers"
-          render={({ push, move }) => (
+          render={({ push, move, remove }) => (
             <div className="h-100 ReaderSidebar flex-grow-0">
               <div className="d-flex">
                 <BlockModal
@@ -140,8 +141,20 @@ const ReaderTab: React.FunctionComponent<{
                                 <div {...provided.dragHandleProps}>
                                   <FontAwesomeIcon icon={faBars} />
                                 </div>
-                                <div className="flex-grow-1 pl-1">
-                                  {reader.metadata.name}
+                                <div className="ReaderList__label">
+                                  <div>{reader.metadata.name}</div>
+                                </div>
+                                <div className="ReaderList__actions">
+                                  <span
+                                    role="button"
+                                    onClick={() => {
+                                      setActive(Math.max(0, index - 1));
+                                      remove(index);
+                                    }}
+                                    className="text-danger"
+                                  >
+                                    <FontAwesomeIcon icon={faTimes} />
+                                  </span>
                                 </div>
                               </div>
                             </ListGroup.Item>
@@ -156,26 +169,30 @@ const ReaderTab: React.FunctionComponent<{
           )}
         />
         <div className="ReaderContent h-100">
-          {readers.length > 0 && (
-            <>
-              {
-                // safe because active is a number
-                // eslint-disable-next-line security/detect-object-injection
-                isCustomReader(readers[active]) ? (
-                  <ReaderConfig
-                    editable={editable}
-                    available={available}
-                    readerIndex={active}
-                  />
-                ) : (
-                  <ReaderBlockConfig
-                    readerIndex={active}
-                    available={available}
-                  />
-                )
-              }
-            </>
-          )}
+          {
+            // safe because active is a number
+            // eslint-disable-next-line security/detect-object-injection
+            readers.length > 0 && readers[active] != null && (
+              <>
+                {
+                  // safe because active is a number
+                  // eslint-disable-next-line security/detect-object-injection
+                  isCustomReader(readers[active]) ? (
+                    <ReaderConfig
+                      editable={editable}
+                      available={available}
+                      readerIndex={active}
+                    />
+                  ) : (
+                    <ReaderBlockConfig
+                      readerIndex={active}
+                      available={available}
+                    />
+                  )
+                }
+              </>
+            )
+          }
         </div>
       </div>
     </Tab.Pane>
