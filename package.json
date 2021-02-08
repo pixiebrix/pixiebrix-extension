@@ -127,7 +127,7 @@
     "jsonpath-plus": "^4.0.0",
     "jsonschema": "^1.4.0",
     "lodash": "^4.17.20",
-    "marked": "^1.1.0",
+    "marked": "^2.0.0",
     "match-pattern": "0.0.2",
     "mini-css-extract-plugin": "~1.2.1",
     "moment": "^2.29.1",
