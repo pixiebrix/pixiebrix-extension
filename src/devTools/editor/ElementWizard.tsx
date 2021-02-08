@@ -21,8 +21,8 @@ import { useFormikContext } from "formik";
 import { isEmpty } from "lodash";
 import { useDebounce } from "use-debounce";
 import useAsyncEffect from "use-async-effect";
-import * as nativeOperations from "@/background/devtools";
-import { checkAvailable } from "@/background/devtools";
+import * as nativeOperations from "@/background/devtools/index";
+import { checkAvailable } from "@/background/devtools/index";
 import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
 import {
   actions,
@@ -35,6 +35,7 @@ import { CONFIG_MAP } from "@/devTools/editor/useCreate";
 import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
 import { wizard as triggerWizard } from "./extensionPoints/trigger";
 import { wizard as panelWizard } from "./extensionPoints/panel";
+import { wizard as contextMenuWizard } from "./extensionPoints/contextMenu";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -51,6 +52,7 @@ const wizardMap = {
   menuItem: menuItemWizard,
   trigger: triggerWizard,
   panel: panelWizard,
+  contextMenu: contextMenuWizard,
 };
 
 const ElementWizard: React.FunctionComponent<{

@@ -108,7 +108,7 @@ export function makeMenuExtensionPoint({
       id: metadata.id,
       version: "1.0.0",
       name: metadata.name,
-      description: "Button created with the devtools",
+      description: "Button created with the Page Editor",
     },
     definition: {
       type: "menuItem",
@@ -139,6 +139,7 @@ export function makeActionExtension({
 
 export function makeActionConfig(element: ActionFormState): ButtonDefinition {
   return {
+    type: "menuItem",
     extension: makeActionExtension(element),
     extensionPoint: makeMenuExtensionPoint(element),
     reader: makeExtensionReader(element),

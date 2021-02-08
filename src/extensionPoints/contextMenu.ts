@@ -45,7 +45,7 @@ import { ensureContextMenu } from "@/background/contextMenus";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
 
-interface ContextMenuConfig {
+export interface ContextMenuConfig {
   title: string;
   contexts: ContextMenus.ContextType | ContextMenus.ContextType[];
   action: BlockConfig | BlockPipeline;
@@ -65,7 +65,11 @@ function setActiveElement(event: MouseEvent): void {
       clickedElement = event?.target as HTMLElement;
     }
   } catch (err) {
-    reportError(err);
+    try {
+      reportError(err);
+    } catch (err) {
+      console.error(err);
+    }
   }
 }
 
@@ -82,7 +86,7 @@ function installMouseHandlerOnce(): void {
   }
 }
 
-class ContextMenuReader extends Reader {
+export class ContextMenuReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/context-menu-data",
@@ -91,7 +95,7 @@ class ContextMenuReader extends Reader {
     );
   }
 
-  async isAvailable() {
+  async isAvailable(): Promise<boolean> {
     return true;
   }
 
@@ -306,8 +310,8 @@ interface MenuDefaultOptions {
   [key: string]: string | string[];
 }
 
-interface MenuDefinition extends ExtensionPointDefinition {
-  defaultOptions: MenuDefaultOptions;
+export interface MenuDefinition extends ExtensionPointDefinition {
+  defaultOptions?: MenuDefaultOptions;
 }
 
 class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {

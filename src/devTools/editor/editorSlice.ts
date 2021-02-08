@@ -21,6 +21,7 @@ import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { BlockPipeline } from "@/blocks/combinators";
 import { Trigger } from "@/extensionPoints/triggerExtension";
+import { ContextMenus } from "webextension-polyfill-ts";
 
 export interface ReaderFormState {
   metadata: Metadata;
@@ -35,7 +36,7 @@ export interface ReaderFormState {
   };
 }
 
-export type ElementType = "menuItem" | "trigger" | "panel";
+export type ElementType = "menuItem" | "trigger" | "panel" | "contextMenu";
 
 export interface BaseFormState {
   readonly uuid: string;
@@ -53,6 +54,24 @@ export interface BaseFormState {
   extensionPoint: unknown;
 
   extension: unknown;
+}
+
+export interface ContextMenuFormState extends BaseFormState {
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+      contexts: ContextMenus.ContextType[];
+    };
+  };
+
+  extension: {
+    title: string;
+    action: BlockPipeline;
+  };
 }
 
 export interface TriggerFormState extends BaseFormState {
@@ -130,7 +149,11 @@ export interface ActionFormState extends BaseFormState {
   };
 }
 
-export type FormState = ActionFormState | TriggerFormState | PanelFormState;
+export type FormState =
+  | ActionFormState
+  | TriggerFormState
+  | PanelFormState
+  | ContextMenuFormState;
 
 export interface EditorState {
   selectionSeq: number;

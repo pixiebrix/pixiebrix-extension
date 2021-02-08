@@ -108,7 +108,7 @@ export function makePanelExtensionPoint({
       id: metadata.id,
       version: "1.0.0",
       name: metadata.name,
-      description: "Panel created with the devtools",
+      description: "Panel created with the Page Editor",
     },
     definition: {
       type: "panel",
@@ -139,6 +139,7 @@ export function makePanelExtension({
 
 export function makePanelConfig(element: PanelFormState): DynamicDefinition {
   return {
+    type: "panel",
     extension: makePanelExtension(element),
     extensionPoint: makePanelExtensionPoint(element),
     reader: makeExtensionReader(element),

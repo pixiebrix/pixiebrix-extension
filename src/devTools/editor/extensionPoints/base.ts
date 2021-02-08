@@ -164,7 +164,7 @@ export function makeExtensionReader({
       id: metadata.id,
       name: metadata.name,
       version: "1.0.0",
-      description: "Reader created with the devtools",
+      description: "Reader created with the Page Editor",
     },
     definition: {
       reader: (readerOption?.makeConfig ?? defaultSelector)(definition),

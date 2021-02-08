@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { TriggerFormState } from "@/devTools/editor/editorSlice";
+import { ContextMenuFormState } from "@/devTools/editor/editorSlice";
 import {
   getDomain,
   makeBaseState,
@@ -26,10 +26,6 @@ import {
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { v4 as uuidv4 } from "uuid";
-import {
-  TriggerConfig,
-  TriggerDefinition,
-} from "@/extensionPoints/triggerExtension";
 import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { identity, pickBy } from "lodash";
@@ -38,12 +34,18 @@ import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
-import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
+import {
+  ContextMenuConfig,
+  MenuDefinition,
+} from "@/extensionPoints/contextMenu";
+import FoundationTab from "@/devTools/editor/tabs/contextMenu/FoundationTab";
+import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
+  { step: "Menu Item", Component: MenuItemTab },
   { step: "Reader", Component: ReaderTab },
   { step: "Services", Component: ServicesTab },
   { step: "Effect", Component: EffectTab },
@@ -51,36 +53,36 @@ export const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export function makeTriggerState(
+export function makeContextMenuState(
   url: string,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
-): TriggerFormState {
+): ContextMenuFormState {
   return {
-    type: "trigger",
-    label: `My ${getDomain(url)} trigger`,
+    type: "contextMenu",
+    label: `My ${getDomain(url)} menu item`,
     ...makeBaseState(uuidv4(), null, metadata, frameworks),
     extensionPoint: {
       metadata,
       definition: {
-        rootSelector: null,
-        trigger: "load",
         isAvailable: makeIsAvailable(url),
+        contexts: ["page"],
       },
     },
     extension: {
+      title: "PixieBrix",
       action: [],
     },
   };
 }
 
-export function makeTriggerExtensionPoint({
+export function makeContextMenuExtensionPoint({
   extensionPoint,
   reader,
-}: TriggerFormState): ExtensionPointConfig<TriggerDefinition> {
+}: ContextMenuFormState): ExtensionPointConfig<MenuDefinition> {
   const {
     metadata,
-    definition: { isAvailable, rootSelector, trigger },
+    definition: { isAvailable },
   } = extensionPoint;
 
   return {
@@ -90,41 +92,42 @@ export function makeTriggerExtensionPoint({
       id: metadata.id,
       version: "1.0.0",
       name: metadata.name,
-      description: "Trigger created with the Page Editor",
+      description: "Context Menu created with the Page Editor",
     },
     definition: {
-      type: "trigger",
+      type: "contextMenu",
       reader: reader.metadata.id,
       isAvailable: pickBy(isAvailable, identity),
-      trigger,
-      rootSelector,
     },
   };
 }
 
-export function makeTriggerExtension({
+export function makeContextMenuExtension({
   uuid,
   label,
   extensionPoint,
   extension,
   services,
-}: TriggerFormState): IExtension<TriggerConfig> {
+}: ContextMenuFormState): IExtension<ContextMenuConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     label,
     services,
-    config: extension,
+    config: {
+      ...extension,
+      contexts: extensionPoint.definition.contexts,
+    },
   };
 }
 
-export function makeTriggerConfig(
-  element: TriggerFormState
+export function makeContextMenuConfig(
+  element: ContextMenuFormState
 ): DynamicDefinition {
   return {
-    type: "trigger",
-    extension: makeTriggerExtension(element),
-    extensionPoint: makeTriggerExtensionPoint(element),
+    type: "contextMenu",
+    extension: makeContextMenuExtension(element),
+    extensionPoint: makeContextMenuExtensionPoint(element),
     reader: makeExtensionReader(element),
   };
 }

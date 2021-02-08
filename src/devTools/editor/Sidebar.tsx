@@ -46,6 +46,7 @@ import {
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faBars,
   faBolt,
   faColumns,
   faEyeSlash,
@@ -83,6 +84,10 @@ import hash from "object-hash";
 import logo from "@/icons/custom-icons/favicon.svg";
 import { BeatLoader } from "react-spinners";
 import { openExtensionOptions } from "@/messaging/external";
+import {
+  makeContextMenuConfig,
+  makeContextMenuState,
+} from "@/devTools/editor/extensionPoints/contextMenu";
 
 interface ElementConfig<
   TResult = unknown,
@@ -108,6 +113,18 @@ const addElementDefinitions: Record<string, ElementConfig> = {
     insert: nativeOperations.insertButton,
     makeState: makeActionState,
     makeConfig: makeActionConfig,
+  },
+  contextMenu: {
+    elementType: "contextMenu",
+    label: "Context Menu",
+    insert: undefined,
+    makeState: (
+      url: string,
+      metadata: Metadata,
+      element: unknown,
+      frameworks: FrameworkMeta[]
+    ) => makeContextMenuState(url, metadata, frameworks),
+    makeConfig: makeContextMenuConfig,
   },
   panel: {
     elementType: "panel",
@@ -425,6 +442,10 @@ const Sidebar: React.FunctionComponent<
     hash(mapReservedNames(elements)),
   ]);
   const addButton = useAddElement(addElementDefinitions.button, reservedNames);
+  const addContextMenu = useAddElement(
+    addElementDefinitions.contextMenu,
+    reservedNames
+  );
   const addPanel = useAddElement(
     addElementDefinitions.panel,
     reservedNames,
@@ -457,6 +478,13 @@ const Sidebar: React.FunctionComponent<
             <Dropdown.Item onClick={addButton}>
               <FontAwesomeIcon icon={faMousePointer} />
               &nbsp;Button
+            </Dropdown.Item>
+            <Dropdown.Item onClick={addContextMenu}>
+              <FontAwesomeIcon icon={faBars} />
+              &nbsp;Context Menu{" "}
+              <Badge variant="success" pill>
+                Beta
+              </Badge>
             </Dropdown.Item>
             <Dropdown.Item onClick={addPanel}>
               <FontAwesomeIcon icon={faColumns} />

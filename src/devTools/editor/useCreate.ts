@@ -36,6 +36,7 @@ import {
 } from "@/devTools/editor/extensionPoints/menuItem";
 import { makeTriggerConfig } from "@/devTools/editor/extensionPoints/trigger";
 import { makePanelConfig } from "@/devTools/editor/extensionPoints/panel";
+import { makeContextMenuConfig } from "@/devTools/editor/extensionPoints/contextMenu";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -44,6 +45,7 @@ export const CONFIG_MAP = {
   menuItem: makeActionConfig,
   trigger: makeTriggerConfig,
   panel: makePanelConfig,
+  contextMenu: makeContextMenuConfig,
 };
 
 export interface EditablePackage {

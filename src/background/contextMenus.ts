@@ -20,6 +20,7 @@ import { browser, ContextMenus, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { handleMenuAction } from "@/contentScript/contextMenus";
+import { showNotification } from "@/contentScript/notify";
 
 type MenuItemId = number | string;
 
@@ -37,9 +38,22 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
     typeof info.menuItemId === "string" &&
     extensionMenuItems.has(info.menuItemId)
   ) {
-    handleMenuAction(tab.id, info.menuItemId, info).catch((reason) => {
-      reportError(`Error processing context menu action: ${reason}`);
-    });
+    handleMenuAction(tab.id, info.menuItemId, info)
+      .then(() => {
+        showNotification(tab.id, {
+          message: "Ran content menu item action",
+          className: "success",
+        });
+      })
+      .catch((reason) => {
+        const message = `Error processing context menu action: ${reason}`;
+        reportError(message);
+        showNotification(tab.id, { message, className: "error" }).catch(
+          (reason) => {
+            reportError(reason);
+          }
+        );
+      });
   }
 }
 

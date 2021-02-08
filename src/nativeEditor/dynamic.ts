@@ -34,12 +34,20 @@ import {
 } from "@/extensionPoints/types";
 import Overlay from "@/nativeEditor/Overlay";
 import { checkAvailable as checkAvailableUtil } from "@/blocks/available";
+import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import {
+  ContextMenuExtensionPoint,
+  ContextMenuReader,
+} from "@/extensionPoints/contextMenu";
+
+export type ElementType = "menuItem" | "trigger" | "panel" | "contextMenu";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
   TExtension = unknown,
   TReader extends ReaderDefinition = ReaderDefinition
 > {
+  type: ElementType;
   extensionPoint: ExtensionPointConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
   reader: ReaderConfig<TReader>;
@@ -70,15 +78,28 @@ export const getInstalledExtensionPointIds = liftContentScript(
 export const updateDynamicElement = liftContentScript(
   "UPDATE_DYNAMIC_ELEMENT",
   async ({
+    type,
     extensionPoint: extensionPointConfig,
     extension: extensionConfig,
     reader: readerConfig,
   }: DynamicDefinition) => {
     const extensionPoint = extensionPointFactory(extensionPointConfig);
 
-    // the reader won't be in the registry, so override the method
-    const reader = readerFactory(readerConfig);
-    extensionPoint.defaultReader = async () => reader;
+    // The dynamic reader won't be in the registry, so override the defaultReader to be
+    // our dynamic reader directly
+    if (type === "contextMenu") {
+      const baseReader = readerFactory(readerConfig);
+      const menuReader = new ArrayCompositeReader([
+        await baseReader,
+        new ContextMenuReader(),
+      ]);
+      extensionPoint.defaultReader = async () => menuReader;
+      (extensionPoint as ContextMenuExtensionPoint).getBaseReader = async () =>
+        baseReader;
+    } else {
+      const reader = readerFactory(readerConfig);
+      extensionPoint.defaultReader = async () => reader;
+    }
 
     _temporaryExtensions.set(extensionConfig.id, extensionPoint);
 
