@@ -323,6 +323,28 @@ const Editor: React.FunctionComponent = () => {
     elements
   );
 
+  const escapeHandler = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        event.stopPropagation();
+        cancelInsert();
+      }
+    },
+    [cancelInsert]
+  );
+
+  useEffect(() => {
+    // Needs to be the keydown event to prevent Google from opening the drawer
+    if (inserting === "menuItem" || inserting === "panel") {
+      document.addEventListener("keydown", escapeHandler, true);
+    } else {
+      document.removeEventListener("keydown", escapeHandler);
+    }
+    return () => document.removeEventListener("keydown", escapeHandler);
+  }, [inserting, cancelInsert, escapeHandler]);
+
   const body = useMemo(() => {
     if (tabState.hasPermissions === false) {
       return <PermissionsPane />;
