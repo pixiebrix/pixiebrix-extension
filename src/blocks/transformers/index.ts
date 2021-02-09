@@ -22,3 +22,4 @@ export * from "./remoteMethod";
 export * from "./regex";
 export * from "./mapping";
 export * from "./FormData";
+export * from "./parseURL";

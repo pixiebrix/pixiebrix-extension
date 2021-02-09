@@ -16,11 +16,7 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import {
-  FormState,
-  isCustomReader,
-  ReaderFormState,
-} from "@/devTools/editor/editorSlice";
+import { FormState, isCustomReader } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { compact, isEmpty, mapValues, partial, pick, pickBy } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
@@ -154,7 +150,7 @@ export function searchData(query: string, data: unknown): unknown {
 const FrameworkFields: React.FunctionComponent<{
   name: string;
   element: FormState;
-}> = ({ element }) => {
+}> = ({ element, name }) => {
   return (
     <>
       <Form.Group as={Row} controlId="readerSelector">
@@ -226,26 +222,25 @@ const ReaderConfig: React.FunctionComponent<{
     port,
     tabState: { meta },
   } = useContext(DevToolsContext);
+  const baseName = `readers[${readerIndex}]`;
   const [query, setQuery] = useState("");
   const { values, setFieldValue } = useFormikContext<FormState>();
 
-  const reader: ReaderFormState = useMemo(() => {
-    // only passing number in
-    // eslint-disable-next-line security/detect-object-injection
-    const reader = values.readers[readerIndex];
-    if (!isCustomReader(reader)) {
-      throw new Error("Expecting custom reader");
-    }
-    return reader;
-  }, [readerIndex, values.readers]);
-
-  const baseName = `readers[${readerIndex}]`;
+  console.debug("reader form state", { readerIndex, readers: values.readers });
 
   const [{ output, schema, error }, setSchema] = useState({
     output: undefined,
     schema: undefined,
     error: undefined,
   });
+
+  // only passing number in
+  // eslint-disable-next-line security/detect-object-injection
+  const reader = values.readers[readerIndex];
+
+  if (!isCustomReader(reader)) {
+    throw new Error("Expecting custom reader");
+  }
 
   const locked = useMemo(
     () => values.installed && !editable?.has(reader.metadata.id),
@@ -304,7 +299,7 @@ const ReaderConfig: React.FunctionComponent<{
 
       setSchema({ output, schema, error: undefined });
     },
-    [reader?.definition, available, locked]
+    [port, reader?.definition, available, locked, setFieldValue, setSchema]
   );
 
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });

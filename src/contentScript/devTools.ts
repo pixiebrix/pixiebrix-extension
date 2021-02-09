@@ -133,9 +133,13 @@ export const runReader = liftContentScript(
     config: ReaderTypeConfig;
     rootSelector?: string;
   }) => {
-    const root = rootSelector
-      ? $(document).find(rootSelector).get(0)
-      : document;
+    console.debug("runReader", { config, rootSelector });
+
+    const root =
+      (rootSelector?.trim() ?? "") !== ""
+        ? $(document).find(rootSelector).get(0)
+        : document;
+
     return await makeRead(config)(root);
   }
 );

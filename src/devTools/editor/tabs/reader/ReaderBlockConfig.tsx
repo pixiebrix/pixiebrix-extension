@@ -44,7 +44,7 @@ export const ReaderBlockForm: React.FunctionComponent<{
   const [query, setQuery] = useState("");
   const [testSelector, setTestSelector] = useState<string | null>(null);
 
-  const [{ output }, setOutput] = useState({
+  const [{ output, error }, setOutput] = useState({
     output: undefined,
     error: undefined,
   });
@@ -72,7 +72,7 @@ export const ReaderBlockForm: React.FunctionComponent<{
       try {
         output = await runReaderBlock(port, {
           id: reader.id,
-          rootSelector: testSelector,
+          rootSelector: testSelector !== "" ? testSelector : undefined,
         });
         if (!isMounted()) return;
         setOutput({ output, error: undefined });
@@ -138,39 +138,46 @@ export const ReaderBlockForm: React.FunctionComponent<{
           />
         </Col>
       </Form.Group>
-
-      <Row className="h-100">
-        <Col md={6} className="ReaderData">
-          <span>
-            {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
-          </span>
-          <div className="overflow-auto h-100 w-100">
-            {available === false && (
-              <span className="text-danger">
-                Extension not available on page
-              </span>
-            )}
-            {searchResults !== undefined ? (
-              <JSONTree
-                data={searchResults}
-                labelRenderer={labelRenderer}
-                theme={theme}
-                invertTheme
-                hideRoot
-                sortObjectKeys
-              />
-            ) : (
-              <GridLoader />
-            )}
-          </div>
-        </Col>
-        <Col md={6} className="ReaderData">
-          <span>Schema</span>
-          <div className="overflow-auto h-100 w-100">
-            <SchemaTree schema={reader?.outputSchema ?? {}} />
-          </div>
-        </Col>
-      </Row>
+      {error ? (
+        <Row className="h-100">
+          <Col>
+            <span className="text-danger">{error}</span>
+          </Col>
+        </Row>
+      ) : (
+        <Row className="h-100">
+          <Col md={6} className="ReaderData">
+            <span>
+              {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
+            </span>
+            <div className="overflow-auto h-100 w-100">
+              {available === false && (
+                <span className="text-danger">
+                  Extension not available on page
+                </span>
+              )}
+              {searchResults !== undefined ? (
+                <JSONTree
+                  data={searchResults}
+                  labelRenderer={labelRenderer}
+                  theme={theme}
+                  invertTheme
+                  hideRoot
+                  sortObjectKeys
+                />
+              ) : (
+                <GridLoader />
+              )}
+            </div>
+          </Col>
+          <Col md={6} className="ReaderData">
+            <span>Schema</span>
+            <div className="overflow-auto h-100 w-100">
+              <SchemaTree schema={reader?.outputSchema ?? {}} />
+            </div>
+          </Col>
+        </Row>
+      )}
     </div>
   );
 };

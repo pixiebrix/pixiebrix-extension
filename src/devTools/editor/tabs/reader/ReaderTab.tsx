@@ -119,6 +119,10 @@ const ReaderTab: React.FunctionComponent<{
     return annotated.filter((x) => x.type === "reader").map((x) => x.block);
   }, []);
 
+  // safe because active is a number
+  // eslint-disable-next-line security/detect-object-injection
+  const reader = readers[active];
+
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <div className="d-flex">
@@ -204,30 +208,28 @@ const ReaderTab: React.FunctionComponent<{
           )}
         />
         <div className="ReaderContent h-100">
-          {
-            // safe because active is a number
-            // eslint-disable-next-line security/detect-object-injection
-            readers.length > 0 && readers[active] != null && (
-              <>
-                {
-                  // safe because active is a number
-                  // eslint-disable-next-line security/detect-object-injection
-                  isCustomReader(readers[active]) ? (
-                    <ReaderConfig
-                      editable={editable}
-                      available={available}
-                      readerIndex={active}
-                    />
-                  ) : (
-                    <ReaderBlockConfig
-                      readerIndex={active}
-                      available={available}
-                    />
-                  )
-                }
-              </>
-            )
-          }
+          {reader != null && (
+            <>
+              {
+                // safe because active is a number
+                // eslint-disable-next-line security/detect-object-injection
+                isCustomReader(reader) ? (
+                  <ReaderConfig
+                    key={`${reader.metadata.id}-${active}`}
+                    editable={editable}
+                    available={available}
+                    readerIndex={active}
+                  />
+                ) : (
+                  <ReaderBlockConfig
+                    key={`${reader.metadata.id}-${active}`}
+                    readerIndex={active}
+                    available={available}
+                  />
+                )
+              }
+            </>
+          )}
           {active === readers.length && formValues.type === "contextMenu" && (
             <ReaderBlockForm
               reader={CONTEXT_MENU_READER}

@@ -121,13 +121,13 @@ export const SelectorSelectorControl: React.FunctionComponent<
   }
 > = ({
   value,
+  onSelect,
   initialElement,
   framework,
   selectMode = "element",
   traverseUp = 0,
   isClearable = false,
   sort = false,
-  onSelect,
   root = undefined,
   disabled = false,
 }) => {
@@ -152,7 +152,10 @@ export const SelectorSelectorControl: React.FunctionComponent<
       });
       setElement(selected);
       const selectors = selected.selectors ?? [];
-      onSelect((sort ? sortBy(selectors, (x) => x.length) : selectors)[0]);
+      const firstSelector = (sort
+        ? sortBy(selectors, (x) => x.length)
+        : selectors)[0];
+      onSelect(firstSelector);
     } finally {
       setSelecting(false);
     }
@@ -191,6 +194,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
               .catch((reason) => reportError(reason));
           }}
           onChange={async (option) => {
+            console.debug("selected", { option });
             onSelect(option ? (option as OptionValue).value : null);
             nativeOperations
               .toggleSelector(port, {
@@ -209,10 +213,13 @@ const SelectorSelectorField: React.FunctionComponent<
   CommonProps & { name?: string }
 > = ({ name, ...props }) => {
   const [field, , helpers] = useField(name);
+  const setValue = useCallback((value: string) => helpers.setValue(value), [
+    helpers.setValue,
+  ]);
   return (
     <SelectorSelectorControl
       value={field.value}
-      onSelect={helpers.setValue}
+      onSelect={setValue}
       {...props}
     />
   );
