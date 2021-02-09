@@ -18,8 +18,11 @@
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import PushOptions from "@/contrib/zapier/pushOptions";
 import ProcessOptions from "@/contrib/uipath/processOptions";
+import LocalProcessOptions from "@/contrib/uipath/localProcessOptions";
 import { ZAPIER_ID } from "@/contrib/zapier/push";
 import { UIPATH_ID } from "@/contrib/uipath/process";
+import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
 
 optionsRegistry.set(ZAPIER_ID, PushOptions);
 optionsRegistry.set(UIPATH_ID, ProcessOptions);
+optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);
