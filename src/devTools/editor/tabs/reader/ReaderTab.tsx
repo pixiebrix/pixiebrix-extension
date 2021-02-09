@@ -35,12 +35,62 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import ReaderBlockConfig from "@/devTools/editor/tabs/reader/ReaderBlockConfig";
+import ReaderBlockConfig, {
+  ReaderBlockForm,
+} from "@/devTools/editor/tabs/reader/ReaderBlockConfig";
 import BlockModal from "@/components/fields/BlockModal";
-import { IBlock, selectMetadata } from "@/core";
+import { IBlock, IReader, selectMetadata } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
+import { ContextMenuReader } from "@/extensionPoints/contextMenu";
+
+const ReaderEntry: React.FunctionComponent<{
+  reader: ReaderFormState | ReaderReferenceFormState | IReader;
+  index: number;
+  onSelect: () => void;
+  onRemove?: () => void;
+  isDragDisabled: boolean;
+  isActive: boolean;
+}> = ({ reader, index, isDragDisabled, isActive, onSelect, onRemove }) => {
+  const meta = "metadata" in reader ? reader.metadata : reader;
+
+  return (
+    <Draggable
+      index={index}
+      isDragDisabled={isDragDisabled}
+      draggableId={meta.id}
+    >
+      {(provided) => (
+        <ListGroup.Item
+          key={`${index}-${meta.id}`}
+          onClick={onSelect}
+          active={isActive}
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+        >
+          <div className="d-flex">
+            <div {...provided.dragHandleProps}>
+              <FontAwesomeIcon icon={faBars} />
+            </div>
+            <div className="ReaderList__label">
+              <div>{meta.name}</div>
+            </div>
+            {onRemove && (
+              <div className="ReaderList__actions">
+                <span role="button" onClick={onRemove} className="text-danger">
+                  <FontAwesomeIcon icon={faTimes} />
+                </span>
+              </div>
+            )}
+          </div>
+        </ListGroup.Item>
+      )}
+    </Draggable>
+  );
+};
+
+const CONTEXT_MENU_READER = new ContextMenuReader();
 
 const ReaderTab: React.FunctionComponent<{
   eventKey?: string;
@@ -123,44 +173,29 @@ const ReaderTab: React.FunctionComponent<{
                       ref={provided.innerRef}
                     >
                       {readers.map((reader, index) => (
-                        <Draggable
+                        <ReaderEntry
                           key={`${index}-${reader.metadata.id}`}
-                          draggableId={reader.metadata.id}
                           index={index}
+                          reader={reader}
+                          onSelect={() => setActive(index)}
+                          onRemove={() => {
+                            setActive(Math.max(0, index - 1));
+                            remove(index);
+                          }}
                           isDragDisabled={readers.length === 1}
-                        >
-                          {(provided) => (
-                            <ListGroup.Item
-                              key={`${index}-${reader.metadata.id}`}
-                              onClick={() => setActive(index)}
-                              active={index === active}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                            >
-                              <div className="d-flex">
-                                <div {...provided.dragHandleProps}>
-                                  <FontAwesomeIcon icon={faBars} />
-                                </div>
-                                <div className="ReaderList__label">
-                                  <div>{reader.metadata.name}</div>
-                                </div>
-                                <div className="ReaderList__actions">
-                                  <span
-                                    role="button"
-                                    onClick={() => {
-                                      setActive(Math.max(0, index - 1));
-                                      remove(index);
-                                    }}
-                                    className="text-danger"
-                                  >
-                                    <FontAwesomeIcon icon={faTimes} />
-                                  </span>
-                                </div>
-                              </div>
-                            </ListGroup.Item>
-                          )}
-                        </Draggable>
+                          isActive={active === index}
+                        />
                       ))}
+
+                      {formValues.type === "contextMenu" && (
+                        <ReaderEntry
+                          isDragDisabled
+                          index={readers.length}
+                          reader={CONTEXT_MENU_READER}
+                          onSelect={() => setActive(readers.length)}
+                          isActive={active === readers.length}
+                        />
+                      )}
                     </ListGroup>
                   )}
                 </Droppable>
@@ -193,6 +228,13 @@ const ReaderTab: React.FunctionComponent<{
               </>
             )
           }
+          {active === readers.length && formValues.type === "contextMenu" && (
+            <ReaderBlockForm
+              reader={CONTEXT_MENU_READER}
+              available={available}
+              testElement
+            />
+          )}
         </div>
       </div>
     </Tab.Pane>

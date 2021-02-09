@@ -98,12 +98,29 @@ export const searchWindow: (
 export const runReaderBlock = liftContentScript(
   "RUN_READER_BLOCK",
   async ({ id, rootSelector }: { id: string; rootSelector?: string }) => {
-    const reader = (await blockRegistry.lookup(id)) as IReader;
     const root = rootSelector
       ? $(document).find(rootSelector).get(0)
       : document;
 
-    return await reader.read(root);
+    if (id === "@pixiebrix/context-menu-data") {
+      // HACK: special handling for context menu built-in
+      if (root instanceof HTMLElement) {
+        return {
+          // TODO: extract the media type
+          mediaType: null,
+          linkText: root.tagName === "A" ? root.innerText : null,
+          linkUrl: root.tagName === "A" ? root.getAttribute("href") : null,
+          srcUrl: root.getAttribute("src"),
+        };
+      } else {
+        return {
+          selectionText: window.getSelection().toString(),
+        };
+      }
+    } else {
+      const reader = (await blockRegistry.lookup(id)) as IReader;
+      return await reader.read(root);
+    }
   }
 );
 

@@ -16,12 +16,8 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import {
-  FormState,
-  isCustomReader,
-  ReaderReferenceFormState,
-} from "@/devTools/editor/editorSlice";
-import { Field, FieldInputProps, useFormikContext } from "formik";
+import { FormState } from "@/devTools/editor/editorSlice";
+import { useFormikContext } from "formik";
 import { Alert, Col, Form, Row } from "react-bootstrap";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import useAsyncEffect from "use-async-effect";
@@ -36,45 +32,31 @@ import { IReader } from "@/core";
 import { runReaderBlock } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
+import { SelectorSelectorControl } from "@/devTools/editor/SelectorSelectorField";
 
-const ReaderBlockConfig: React.FunctionComponent<{
-  readerIndex: number;
+export const ReaderBlockForm: React.FunctionComponent<{
+  reader: IReader;
   available: boolean;
-}> = ({ readerIndex, available }) => {
+  testElement?: boolean;
+}> = ({ reader, available, testElement = false }) => {
   const { port } = useContext(DevToolsContext);
+
   const [query, setQuery] = useState("");
-  const { values } = useFormikContext<FormState>();
-
-  const reader: ReaderReferenceFormState = useMemo(() => {
-    // only passing number in
-    // eslint-disable-next-line security/detect-object-injection
-    const reader = values.readers[readerIndex];
-    if (isCustomReader(reader)) {
-      throw new Error("Expecting pre-existing reader");
-    }
-    return reader;
-  }, [readerIndex, values.readers]);
-
-  const [readerBlock] = useAsyncState(async () => {
-    // readerIndex is a number
-    // eslint-disable-next-line security/detect-object-injection
-    const reader = values.readers[readerIndex];
-    return (await blockRegistry.lookup(reader.metadata.id)) as IReader;
-  }, [readerIndex, values.readers]);
-
-  const baseName = `readers[${readerIndex}]`;
+  const [testSelector, setTestSelector] = useState<string | null>(null);
 
   const [{ output }, setOutput] = useState({
     output: undefined,
     error: undefined,
   });
 
-  const locked = true;
-
   const labelRenderer = useLabelRenderer();
 
   useAsyncEffect(
     async (isMounted) => {
+      if (!reader?.id) {
+        return;
+      }
+
       if (!available) {
         setOutput({
           output: {},
@@ -88,7 +70,10 @@ const ReaderBlockConfig: React.FunctionComponent<{
       let output: unknown;
 
       try {
-        output = await runReaderBlock(port, { id: reader.metadata.id });
+        output = await runReaderBlock(port, {
+          id: reader.id,
+          rootSelector: testSelector,
+        });
         if (!isMounted()) return;
         setOutput({ output, error: undefined });
       } catch (exc) {
@@ -99,7 +84,7 @@ const ReaderBlockConfig: React.FunctionComponent<{
         });
       }
     },
-    [reader?.metadata.id, available, locked]
+    [reader?.id, available, testSelector]
   );
 
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
@@ -122,13 +107,24 @@ const ReaderBlockConfig: React.FunctionComponent<{
           Reader Id
         </Form.Label>
         <Col sm={10}>
-          <Field name={`${baseName}.metadata.id`}>
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} disabled={true} />
-            )}
-          </Field>
+          <Form.Control type="text" value={reader.id} disabled={true} />
         </Col>
       </Form.Group>
+
+      {testElement && (
+        <Form.Group as={Row} controlId="readerSearch">
+          <Form.Label column sm={2}>
+            Test Selection
+          </Form.Label>
+          <Col sm={10}>
+            <SelectorSelectorControl
+              value={testSelector}
+              onSelect={(selector) => setTestSelector(selector)}
+              isClearable
+            />
+          </Col>
+        </Form.Group>
+      )}
 
       <Form.Group as={Row} controlId="readerSearch">
         <Form.Label column sm={2}>
@@ -171,12 +167,32 @@ const ReaderBlockConfig: React.FunctionComponent<{
         <Col md={6} className="ReaderData">
           <span>Schema</span>
           <div className="overflow-auto h-100 w-100">
-            <SchemaTree schema={readerBlock?.outputSchema ?? {}} />
+            <SchemaTree schema={reader?.outputSchema ?? {}} />
           </div>
         </Col>
       </Row>
     </div>
   );
+};
+
+const ReaderBlockConfig: React.FunctionComponent<{
+  readerIndex: number;
+  available: boolean;
+}> = ({ readerIndex, available }) => {
+  const { values } = useFormikContext<FormState>();
+
+  const [readerBlock] = useAsyncState(async () => {
+    // readerIndex is a number
+    // eslint-disable-next-line security/detect-object-injection
+    const reader = values.readers[readerIndex];
+    return (await blockRegistry.lookup(reader.metadata.id)) as IReader;
+  }, [readerIndex, values.readers]);
+
+  if (!readerBlock) {
+    return <GridLoader />;
+  }
+
+  return <ReaderBlockForm reader={readerBlock} available={available} />;
 };
 
 export default ReaderBlockConfig;

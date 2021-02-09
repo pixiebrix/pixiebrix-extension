@@ -30,11 +30,11 @@ import Creatable from "react-select/creatable";
 import { Badge, Button } from "react-bootstrap";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { selectElement } from "@/background/devtools";
+import { selectElement } from "@/background/devtools/index";
 import { DevToolsContext } from "@/devTools/context";
 import { SelectMode } from "@/nativeEditor/selector";
 import { ElementInfo } from "@/nativeEditor/frameworks";
-import * as nativeOperations from "@/background/devtools";
+import * as nativeOperations from "@/background/devtools/index";
 import { Framework } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
 
@@ -103,38 +103,43 @@ function makeOptions(
   }));
 }
 
-const SelectorSelectorField: React.FunctionComponent<{
-  name: string;
-  framework?: Framework;
+interface CommonProps {
   initialElement?: ElementInfo;
+  framework?: Framework;
   selectMode?: SelectMode;
   traverseUp?: number;
   isClearable?: boolean;
   sort?: boolean;
   root?: string;
   disabled?: boolean;
-}> = ({
-  name,
+}
+
+export const SelectorSelectorControl: React.FunctionComponent<
+  CommonProps & {
+    value: string;
+    onSelect: (selector: string) => void;
+  }
+> = ({
+  value,
   initialElement,
   framework,
   selectMode = "element",
   traverseUp = 0,
   isClearable = false,
   sort = false,
+  onSelect,
   root = undefined,
   disabled = false,
 }) => {
   const { port } = useContext(DevToolsContext);
-
-  const [field, , helpers] = useField(name);
   const [element, setElement] = useState<ElementInfo>(initialElement);
   const [created, setCreated] = useState([]);
   const [isSelecting, setSelecting] = useState(false);
 
   const options: SelectorOptions = useMemo(() => {
-    const raw = makeOptions(element, compact([...created, field.value]));
+    const raw = makeOptions(element, compact([...created, value]));
     return sort ? sortBy(raw, (x) => x.value.length) : raw;
-  }, [created, element, field.value, sort]);
+  }, [created, element, value, sort]);
 
   const select = useCallback(async () => {
     setSelecting(true);
@@ -147,13 +152,11 @@ const SelectorSelectorField: React.FunctionComponent<{
       });
       setElement(selected);
       const selectors = selected.selectors ?? [];
-      helpers.setValue(
-        (sort ? sortBy(selectors, (x) => x.length) : selectors)[0]
-      );
+      onSelect((sort ? sortBy(selectors, (x) => x.length) : selectors)[0]);
     } finally {
       setSelecting(false);
     }
-  }, [framework, setSelecting, traverseUp, selectMode, helpers, root]);
+  }, [framework, setSelecting, traverseUp, selectMode, onSelect, root]);
 
   return (
     <div className="d-flex">
@@ -176,9 +179,9 @@ const SelectorSelectorField: React.FunctionComponent<{
           components={{ Option: CustomOption }}
           onCreateOption={(inputValue) => {
             setCreated([...created, inputValue]);
-            helpers.setValue(inputValue);
+            onSelect(inputValue);
           }}
-          value={options.find((x) => x.value === field.value)}
+          value={options.find((x) => x.value === value)}
           onMenuClose={() => {
             nativeOperations
               .toggleSelector(port, {
@@ -188,7 +191,7 @@ const SelectorSelectorField: React.FunctionComponent<{
               .catch((reason) => reportError(reason));
           }}
           onChange={async (option) => {
-            helpers.setValue(option ? (option as OptionValue).value : null);
+            onSelect(option ? (option as OptionValue).value : null);
             nativeOperations
               .toggleSelector(port, {
                 selector: null,
@@ -199,6 +202,19 @@ const SelectorSelectorField: React.FunctionComponent<{
         />
       </div>
     </div>
+  );
+};
+
+const SelectorSelectorField: React.FunctionComponent<
+  CommonProps & { name?: string }
+> = ({ name, ...props }) => {
+  const [field, , helpers] = useField(name);
+  return (
+    <SelectorSelectorControl
+      value={field.value}
+      onSelect={helpers.setValue}
+      {...props}
+    />
   );
 };
 
