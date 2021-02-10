@@ -16,46 +16,9 @@
  */
 
 import React, { useMemo } from "react";
-import { Field, FieldInputProps, useField, useFormikContext } from "formik";
+import { Field, FieldInputProps, useFormikContext } from "formik";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/editorSlice";
-import Select from "react-select";
-
-const CONTEXTS = [
-  "page",
-  "all",
-  "frame",
-  "selection",
-  "link",
-  "editable",
-  "image",
-  "video",
-  "audio",
-];
-
-const contextOptions = CONTEXTS.map((value) => ({ value, label: value }));
-
-interface ContextOption {
-  value: string;
-  label: string;
-}
-
-const ContextSelector: React.FunctionComponent<{ name: string }> = ({
-  name,
-}) => {
-  const [field, , helpers] = useField<string[]>(name);
-  return (
-    <Select
-      isMulti
-      isClearable={false}
-      options={contextOptions}
-      value={contextOptions.filter((x) => field.value.includes(x.value))}
-      onChange={(values) =>
-        helpers.setValue((values as any).map((x: ContextOption) => x.value))
-      }
-    />
-  );
-};
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
@@ -118,15 +81,6 @@ const FoundationTab: React.FunctionComponent<{
               <Form.Control type="text" {...field} />
             )}
           </Field>
-        </Col>
-      </Form.Group>
-
-      <Form.Group as={Row} controlId="formPosition">
-        <Form.Label column sm={2}>
-          Contexts
-        </Form.Label>
-        <Col sm={10}>
-          <ContextSelector name="extensionPoint.definition.contexts" />
         </Col>
       </Form.Group>
     </Tab.Pane>

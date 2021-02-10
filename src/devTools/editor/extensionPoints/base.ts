@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "@/core";
+import { Metadata, selectMetadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import {
   BaseFormState,
@@ -26,11 +26,7 @@ import {
 import psl, { ParsedDomain } from "psl";
 import { identity, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
-import {
-  ReaderConfig,
-  ReaderDefinition,
-  ReaderReference,
-} from "@/blocks/readers/factory";
+import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
 import {
   defaultSelector,
   readerOptions,
@@ -81,19 +77,41 @@ export function makeIsAvailable(
   };
 }
 
-export function makeReaderId(foundationId: string): string {
-  return `${foundationId}-reader`;
+export function makeReaderId(
+  foundationId: string,
+  excludeIds: string[] = []
+): string {
+  const base = `${foundationId}-reader`;
+  if (!excludeIds.includes(base)) {
+    return base;
+  }
+  let num = 1;
+  let id: string;
+  do {
+    num++;
+    id = `${base}-${num}`;
+  } while (excludeIds.includes(id));
+  return id;
+}
+
+interface ReaderOptions {
+  defaultSelector?: string;
+  reservedIds?: string[];
+  name?: string;
 }
 
 export function makeDefaultReader(
   metadata: Metadata,
   frameworks: FrameworkMeta[],
-  defaultSelector: string | null = undefined
+  { defaultSelector, reservedIds, name }: ReaderOptions = {
+    defaultSelector: undefined,
+    reservedIds: [],
+  }
 ): ReaderFormState {
   return {
     metadata: {
-      id: makeReaderId(metadata.id),
-      name: `Default reader for ${metadata.id}`,
+      id: makeReaderId(metadata.id, reservedIds),
+      name: name ?? `Default reader for ${metadata.id}`,
     },
     outputSchema: {},
     definition: {
@@ -113,7 +131,7 @@ export function makeBaseState(
   return {
     uuid,
     services: [],
-    readers: [makeDefaultReader(metadata, frameworks, defaultSelector)],
+    readers: [makeDefaultReader(metadata, frameworks, { defaultSelector })],
     extension: {},
     extensionPoint: {},
   };
@@ -215,10 +233,18 @@ export async function makeReaderFormState(
 
   return Promise.all(
     readerIds.map(async (readerId) => {
-      // FIXME: this will break once we start working with built-ins
-      const reader = ((await findBrick(readerId))
-        .config as unknown) as ReaderConfig<ReaderDefinition>;
+      const brick = await findBrick(readerId);
 
+      if (!brick) {
+        try {
+          const reader = await brickRegistry.lookup(readerId);
+          return { metadata: selectMetadata(reader) };
+        } catch (err) {
+          throw new Error(`Cannot find reader: ${readerId}`);
+        }
+      }
+
+      const reader = (brick.config as unknown) as ReaderConfig;
       return {
         metadata: reader.metadata,
         outputSchema: reader.outputSchema,

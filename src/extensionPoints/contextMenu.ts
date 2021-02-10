@@ -304,7 +304,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 }
 
-interface MenuDefaultOptions {
+export interface MenuDefaultOptions {
   title?: string;
   contexts?: ContextMenus.ContextType | ContextMenus.ContextType[];
   [key: string]: string | string[];

@@ -226,6 +226,7 @@ const ICON_MAP = new Map([
   ["menuItem", faMousePointer],
   ["panel", faColumns],
   ["trigger", faBolt],
+  ["contextMenu", faBars],
 ]);
 
 const ExtensionIcon: React.FunctionComponent<{ type: string }> = ({ type }) => {
@@ -249,6 +250,7 @@ const InstalledEntry: React.FunctionComponent<{
         const state = await extensionToFormState(extension);
         dispatch(actions.selectInstalled(state));
       } catch (error) {
+        reportError(error);
         dispatch(actions.adapterError({ uuid: extension.id, error }));
       }
     },

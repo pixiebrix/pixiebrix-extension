@@ -23,10 +23,11 @@ import {
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
+  makeReaderFormState,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { identity, pickBy } from "lodash";
+import { castArray, identity, pickBy } from "lodash";
 import { PanelConfig, PanelDefinition } from "@/extensionPoints/panelExtension";
 import FoundationTab from "@/devTools/editor/tabs/panel/FoundationTab";
 import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
@@ -38,6 +39,7 @@ import { DynamicDefinition } from "@/nativeEditor";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import RendererTab from "@/devTools/editor/tabs/RendererTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
+import { find as findBrick } from "@/registry/localRegistry";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -143,5 +145,66 @@ export function makePanelConfig(element: PanelFormState): DynamicDefinition {
     extension: makePanelExtension(element),
     extensionPoint: makePanelExtensionPoint(element),
     readers: makeExtensionReaders(element),
+  };
+}
+
+export async function makePanelFormState(
+  config: IExtension<PanelConfig>
+): Promise<PanelFormState> {
+  const brick = await findBrick(config.extensionPointId);
+  if (!brick) {
+    throw new Error(
+      `Cannot find extension point definition: ${config.extensionPointId}`
+    );
+  }
+  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<PanelDefinition>;
+
+  const isAvailable = extensionPoint.definition.isAvailable;
+  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
+  const selectors = castArray(isAvailable.selectors ?? []);
+
+  if (matchPatterns.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability match patterns not implemented"
+    );
+  }
+
+  if (selectors.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability selectors not implemented"
+    );
+  }
+
+  return {
+    uuid: config.id,
+    installed: true,
+    type: extensionPoint.definition.type,
+    label: config.label,
+
+    readers: await makeReaderFormState(extensionPoint),
+    services: config.services,
+
+    extension: {
+      ...config.config,
+      heading: config.config.heading,
+      body: castArray(config.config.body),
+    },
+
+    containerInfo: null,
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      traits: {
+        // we don't provide a way to set style anywhere yet so this doesn't apply yet
+        style: { mode: "inherit" },
+      },
+      definition: {
+        ...extensionPoint.definition,
+        isAvailable: {
+          matchPatterns: matchPatterns[0],
+          selectors: selectors[0],
+        },
+      },
+    },
   };
 }

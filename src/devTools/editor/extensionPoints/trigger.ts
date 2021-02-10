@@ -23,6 +23,7 @@ import {
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
+  makeReaderFormState,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { v4 as uuidv4 } from "uuid";
@@ -32,7 +33,7 @@ import {
 } from "@/extensionPoints/triggerExtension";
 import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { identity, pickBy } from "lodash";
+import { castArray, identity, pickBy } from "lodash";
 import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
@@ -40,6 +41,7 @@ import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
+import { find as findBrick } from "@/registry/localRegistry";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -126,5 +128,65 @@ export function makeTriggerConfig(
     extension: makeTriggerExtension(element),
     extensionPoint: makeTriggerExtensionPoint(element),
     readers: makeExtensionReaders(element),
+  };
+}
+
+export async function makeTriggerFormState(
+  config: IExtension<TriggerConfig>
+): Promise<TriggerFormState> {
+  if (!config) {
+    throw new Error("config is required");
+  }
+
+  const brick = await findBrick(config.extensionPointId);
+  if (!brick) {
+    throw new Error(
+      `Cannot find extension point definition: ${config.extensionPointId}`
+    );
+  }
+
+  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<TriggerDefinition>;
+
+  const isAvailable = extensionPoint.definition.isAvailable;
+  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
+  const selectors = castArray(isAvailable.selectors ?? []);
+
+  if (matchPatterns.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability match patterns not implemented"
+    );
+  }
+
+  if (selectors.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability selectors not implemented"
+    );
+  }
+
+  return {
+    uuid: config.id,
+    installed: true,
+    type: extensionPoint.definition.type,
+    label: config.label,
+
+    readers: await makeReaderFormState(extensionPoint),
+    services: config.services,
+
+    extension: {
+      ...config.config,
+      action: castArray(config.config.action),
+    },
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      definition: {
+        rootSelector: extensionPoint.definition.rootSelector,
+        trigger: extensionPoint.definition.trigger,
+        isAvailable: {
+          matchPatterns: matchPatterns[0],
+          selectors: selectors[0],
+        },
+      },
+    },
   };
 }

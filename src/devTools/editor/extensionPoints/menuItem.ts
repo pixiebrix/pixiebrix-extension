@@ -149,8 +149,13 @@ export function makeActionConfig(element: ActionFormState): ButtonDefinition {
 export async function makeActionFormState(
   config: IExtension<MenuItemExtensionConfig>
 ): Promise<ActionFormState> {
-  const extensionPoint = ((await findBrick(config.extensionPointId))
-    .config as unknown) as ExtensionPointConfig<MenuDefinition>;
+  const brick = await findBrick(config.extensionPointId);
+  if (!brick) {
+    throw new Error(
+      `Cannot find extension point definition: ${config.extensionPointId}`
+    );
+  }
+  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<MenuDefinition>;
 
   const isAvailable = extensionPoint.definition.isAvailable;
   const matchPatterns = castArray(isAvailable.matchPatterns ?? []);

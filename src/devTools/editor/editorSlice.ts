@@ -19,6 +19,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IconConfig, Metadata, Schema, ServiceDependency } from "@/core";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
+import { MenuDefaultOptions as ContextMenuDefaultOptions } from "@/extensionPoints/contextMenu";
 import { BlockPipeline } from "@/blocks/combinators";
 import { Trigger } from "@/extensionPoints/triggerExtension";
 import { ContextMenus } from "webextension-polyfill-ts";
@@ -70,16 +71,17 @@ export interface ContextMenuFormState extends BaseFormState {
   extensionPoint: {
     metadata: Metadata;
     definition: {
+      defaultOptions: ContextMenuDefaultOptions;
       isAvailable: {
         matchPatterns: string;
         selectors: string;
       };
-      contexts: ContextMenus.ContextType[];
     };
   };
 
   extension: {
     title: string;
+    contexts: ContextMenus.ContextType[];
     action: BlockPipeline;
   };
 }

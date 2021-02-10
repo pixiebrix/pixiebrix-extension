@@ -20,6 +20,7 @@ import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import { FastField, FieldInputProps, useFormikContext } from "formik";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 import { FormState } from "@/devTools/editor/editorSlice";
+import { openTab } from "@/background/executor";
 
 const AvailabilityTab: React.FunctionComponent<{
   eventKey?: string;
@@ -49,26 +50,46 @@ const AvailabilityTab: React.FunctionComponent<{
             )}
           </FastField>
           <Form.Text className="text-muted">
-            URL match pattern for which pages to run the extension on
+            URL match pattern for which pages to run the extension on. See{" "}
+            <a
+              href="#"
+              onClick={() =>
+                openTab({
+                  url:
+                    "https://developer.chrome.com/docs/extensions/mv2/match_patterns/",
+                  active: true,
+                })
+              }
+            >
+              Chrome Documentation
+            </a>{" "}
+            for examples
           </Form.Text>
         </Col>
       </Form.Group>
-      <Form.Group as={Row} controlId="formAvailableSelectors" className="pb-4">
-        <Form.Label column sm={2}>
-          Selector
-        </Form.Label>
-        <Col sm={10}>
-          <SelectorSelectorField
-            name="extensionPoint.definition.isAvailable.selectors"
-            isClearable
-            disabled={locked}
-          />
-          <Form.Text className="text-muted">
-            (Optional) Element that must be found on page for extension point to
-            be available
-          </Form.Text>
-        </Col>
-      </Form.Group>
+
+      {values.type !== "contextMenu" && (
+        <Form.Group
+          as={Row}
+          controlId="formAvailableSelectors"
+          className="pb-4"
+        >
+          <Form.Label column sm={2}>
+            Selector
+          </Form.Label>
+          <Col sm={10}>
+            <SelectorSelectorField
+              name="extensionPoint.definition.isAvailable.selectors"
+              isClearable
+              disabled={locked}
+            />
+            <Form.Text className="text-muted">
+              (Optional) Element that must be found on page for extension point
+              to be available
+            </Form.Text>
+          </Col>
+        </Form.Group>
+      )}
     </Tab.Pane>
   );
 };

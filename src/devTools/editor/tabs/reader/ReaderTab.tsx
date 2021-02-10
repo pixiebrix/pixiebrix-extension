@@ -29,7 +29,7 @@ import ReaderConfig from "@/devTools/editor/tabs/reader/ReaderConfig";
 import { makeDefaultReader } from "@/devTools/editor/extensionPoints/base";
 import { DevToolsContext } from "@/devTools/context";
 import {
-  faBars,
+  faGripVertical,
   faBookReader,
   faPlus,
   faTimes,
@@ -44,6 +44,8 @@ import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { ContextMenuReader } from "@/extensionPoints/contextMenu";
+import cx from "classnames";
+import { useToasts } from "react-toast-notifications";
 
 const ReaderEntry: React.FunctionComponent<{
   reader: ReaderFormState | ReaderReferenceFormState | IReader;
@@ -51,8 +53,17 @@ const ReaderEntry: React.FunctionComponent<{
   onSelect: () => void;
   onRemove?: () => void;
   isDragDisabled: boolean;
+  showDragHandle?: boolean;
   isActive: boolean;
-}> = ({ reader, index, isDragDisabled, isActive, onSelect, onRemove }) => {
+}> = ({
+  reader,
+  index,
+  isDragDisabled,
+  showDragHandle = true,
+  isActive,
+  onSelect,
+  onRemove,
+}) => {
   const meta = "metadata" in reader ? reader.metadata : reader;
 
   return (
@@ -67,12 +78,15 @@ const ReaderEntry: React.FunctionComponent<{
           onClick={onSelect}
           active={isActive}
           ref={provided.innerRef}
+          className={cx("ReaderList__item", { dragDisabled: isDragDisabled })}
           {...provided.draggableProps}
         >
           <div className="d-flex">
-            <div {...provided.dragHandleProps}>
-              <FontAwesomeIcon icon={faBars} />
-            </div>
+            {showDragHandle && (
+              <div {...provided.dragHandleProps}>
+                <FontAwesomeIcon icon={faGripVertical} />
+              </div>
+            )}
             <div className="ReaderList__label">
               <div>{meta.name}</div>
             </div>
@@ -98,6 +112,7 @@ const ReaderTab: React.FunctionComponent<{
   available: boolean;
 }> = ({ eventKey = "reader", editable, available }) => {
   const { tabState } = useContext(DevToolsContext);
+  const { addToast } = useToasts();
 
   const { values: formValues } = useFormikContext<FormState>();
   const [{ value: readers }] = useField<
@@ -132,10 +147,17 @@ const ReaderTab: React.FunctionComponent<{
             <div className="h-100 ReaderSidebar flex-grow-0">
               <div className="d-flex">
                 <BlockModal
-                  onSelect={(x) => {
+                  onSelect={(selected) => {
                     const count = readers.length;
-                    push({ metadata: selectMetadata(x) });
-                    setActive(count);
+                    if (readers.some((x) => x.metadata.id === selected.id)) {
+                      addToast(`Reader ${selected.name} already added`, {
+                        appearance: "error",
+                        autoDismiss: true,
+                      });
+                    } else {
+                      push({ metadata: selectMetadata(selected) });
+                      setActive(count);
+                    }
                   }}
                   blocks={blocks ?? []}
                   renderButton={({ show }) => (
@@ -150,10 +172,15 @@ const ReaderTab: React.FunctionComponent<{
                     size="sm"
                     onClick={() => {
                       const count = readers.length;
+                      const reservedIds = readers.map((x) => x.metadata.id);
                       push(
                         makeDefaultReader(
                           formValues.extensionPoint.metadata,
-                          tabState.meta.frameworks ?? []
+                          tabState.meta.frameworks ?? [],
+                          {
+                            reservedIds,
+                            name: `New reader for ${formValues.extensionPoint.metadata.id}`,
+                          }
                         )
                       );
                       setActive(count);

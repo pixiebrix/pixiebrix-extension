@@ -140,7 +140,7 @@ const BlockModal: React.FunctionComponent<{
   }, [setShow]);
 
   return (
-    <div>
+    <>
       {show && (
         <Modal
           className="BlockModal"
@@ -203,7 +203,7 @@ const BlockModal: React.FunctionComponent<{
           {caption}
         </Button>
       )}
-    </div>
+    </>
   );
 };
 

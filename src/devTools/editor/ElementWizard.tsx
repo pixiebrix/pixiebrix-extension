@@ -31,7 +31,6 @@ import {
 } from "@/devTools/editor/editorSlice";
 import { optionsSlice } from "@/options/slices";
 import ToggleField from "@/devTools/editor/components/ToggleField";
-import { CONFIG_MAP } from "@/devTools/editor/useCreate";
 import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
 import { wizard as triggerWizard } from "./extensionPoints/trigger";
 import { wizard as panelWizard } from "./extensionPoints/panel";
@@ -46,7 +45,11 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { IExtension } from "@/core";
-import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";
+import {
+  ADAPTERS,
+  extensionToFormState,
+} from "@/devTools/editor/extensionPoints/adapter";
+import { reportError } from "@/telemetry/logging";
 
 const wizardMap = {
   menuItem: menuItemWizard,
@@ -90,7 +93,7 @@ const ElementWizard: React.FunctionComponent<{
   });
 
   const run = useCallback(async () => {
-    const factory = CONFIG_MAP[debounced.type];
+    const { definition: factory } = ADAPTERS.get(debounced.type);
     await nativeOperations.updateDynamicElement(
       port,
       factory(debounced as any)
@@ -107,7 +110,7 @@ const ElementWizard: React.FunctionComponent<{
       // by default, don't automatically trigger it
       return;
     }
-    const factory = CONFIG_MAP[debounced.type];
+    const { definition: factory } = ADAPTERS.get(debounced.type);
     console.debug("Updating dynamic element", {
       debounced,
       showReloadControls,
@@ -125,6 +128,7 @@ const ElementWizard: React.FunctionComponent<{
       const state = await extensionToFormState(extension);
       dispatch(actions.resetInstalled(state));
     } catch (error) {
+      reportError(error);
       dispatch(actions.adapterError({ uuid: element.uuid, error }));
     }
   }, [dispatch, element.uuid, installed]);
@@ -182,12 +186,6 @@ const ElementWizard: React.FunctionComponent<{
                   !editable.has(element.extensionPoint.metadata.id) && (
                     <FontAwesomeIcon className="ml-2" icon={faLock} />
                   )}
-                {x.step === "Reader" &&
-                  element.installed &&
-                  editable &&
-                  !element.readers.some((reader) =>
-                    editable.has(reader.metadata.id)
-                  ) && <FontAwesomeIcon className="ml-2" icon={faLock} />}
               </Nav.Link>
             </Nav.Item>
           ))}

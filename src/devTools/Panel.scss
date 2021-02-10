@@ -231,6 +231,16 @@
     .list-group-item {
       cursor: pointer;
 
+      svg {
+        cursor: grab;
+      }
+
+      &.dragDisabled {
+        svg {
+          cursor: not-allowed;
+        }
+      }
+
       .ReaderList__label {
         padding-left: 1rem;
         flex-grow: 1;
@@ -257,10 +267,6 @@
           display: block;
         }
       }
-    }
-
-    svg {
-      cursor: grab;
     }
   }
 }

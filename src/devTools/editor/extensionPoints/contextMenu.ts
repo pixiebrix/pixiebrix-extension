@@ -23,12 +23,13 @@ import {
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
+  makeReaderFormState,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { v4 as uuidv4 } from "uuid";
 import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { identity, pickBy } from "lodash";
+import { castArray, identity, pickBy } from "lodash";
 import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
@@ -41,6 +42,7 @@ import {
 } from "@/extensionPoints/contextMenu";
 import FoundationTab from "@/devTools/editor/tabs/contextMenu/FoundationTab";
 import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
+import { find as findBrick } from "@/registry/localRegistry";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -69,12 +71,15 @@ export function makeContextMenuState(
     extensionPoint: {
       metadata,
       definition: {
+        defaultOptions: {
+          contexts: ["page"],
+        },
         isAvailable: makeIsAvailable(url),
-        contexts: ["page"],
       },
     },
     extension: {
       title: "PixieBrix",
+      contexts: ["page"],
       action: [],
     },
   };
@@ -118,9 +123,63 @@ export function makeContextMenuExtension({
     extensionPointId: extensionPoint.metadata.id,
     label,
     services,
-    config: {
-      ...extension,
-      contexts: extensionPoint.definition.contexts,
+    config: extension,
+  };
+}
+
+export async function makeContextMenuFormState(
+  config: IExtension<ContextMenuConfig>
+): Promise<ContextMenuFormState> {
+  const brick = await findBrick(config.extensionPointId);
+  if (!brick) {
+    throw new Error(
+      `Cannot find extension point definition: ${config.extensionPointId}`
+    );
+  }
+  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<MenuDefinition>;
+
+  const isAvailable = extensionPoint.definition.isAvailable;
+  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
+  const selectors = castArray(isAvailable.selectors ?? []);
+
+  if (matchPatterns.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability match patterns not implemented"
+    );
+  }
+
+  if (selectors.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability selectors not implemented"
+    );
+  }
+
+  const extensionConfig = config.config;
+
+  return {
+    uuid: config.id,
+    installed: true,
+    type: extensionPoint.definition.type,
+    label: config.label,
+
+    readers: await makeReaderFormState(extensionPoint),
+    services: config.services,
+
+    extension: {
+      ...extensionConfig,
+      contexts: castArray(extensionConfig.contexts),
+      action: castArray(extensionConfig.action),
+    },
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      definition: {
+        defaultOptions: extensionPoint.definition.defaultOptions,
+        isAvailable: {
+          matchPatterns: matchPatterns[0],
+          selectors: selectors[0],
+        },
+      },
     },
   };
 }

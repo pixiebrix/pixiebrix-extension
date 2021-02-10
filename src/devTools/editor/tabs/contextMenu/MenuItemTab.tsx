@@ -16,8 +16,45 @@
  */
 
 import React from "react";
-import { FastField, FieldInputProps } from "formik";
+import { FastField, FieldInputProps, useField } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
+import Select from "react-select";
+
+const CONTEXTS = [
+  "page",
+  "all",
+  "frame",
+  "selection",
+  "link",
+  "editable",
+  "image",
+  "video",
+  "audio",
+];
+
+const contextOptions = CONTEXTS.map((value) => ({ value, label: value }));
+
+interface ContextOption {
+  value: string;
+  label: string;
+}
+
+const ContextSelector: React.FunctionComponent<{ name: string }> = ({
+  name,
+}) => {
+  const [field, , helpers] = useField<string[]>(name);
+  return (
+    <Select
+      isMulti
+      isClearable={false}
+      options={contextOptions}
+      value={contextOptions.filter((x) => field.value.includes(x.value))}
+      onChange={(values) =>
+        helpers.setValue((values as any).map((x: ContextOption) => x.value))
+      }
+    />
+  );
+};
 
 const MenuItemTab: React.FunctionComponent<{
   eventKey?: string;
@@ -37,6 +74,15 @@ const MenuItemTab: React.FunctionComponent<{
           <Form.Text className="text-muted">
             The context menu item caption. Use the %s to fill in the selection
           </Form.Text>
+        </Col>
+      </Form.Group>
+
+      <Form.Group as={Row} controlId="formPosition">
+        <Form.Label column sm={2}>
+          Contexts
+        </Form.Label>
+        <Col sm={10}>
+          <ContextSelector name="extension.contexts" />
         </Col>
       </Form.Group>
     </Tab.Pane>
