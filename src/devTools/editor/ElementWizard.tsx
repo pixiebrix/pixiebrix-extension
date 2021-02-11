@@ -22,7 +22,10 @@ import { isEmpty } from "lodash";
 import { useDebounce } from "use-debounce";
 import useAsyncEffect from "use-async-effect";
 import * as nativeOperations from "@/background/devtools/index";
-import { checkAvailable } from "@/background/devtools/index";
+import {
+  checkAvailable,
+  uninstallContextMenu,
+} from "@/background/devtools/index";
 import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
 import {
   actions,
@@ -50,6 +53,7 @@ import {
   extensionToFormState,
 } from "@/devTools/editor/extensionPoints/adapter";
 import { reportError } from "@/telemetry/logging";
+import { useToasts } from "react-toast-notifications";
 
 const wizardMap = {
   menuItem: menuItemWizard,
@@ -66,7 +70,7 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, refreshMillis = 250, editable, installed }) => {
   const dispatch = useDispatch();
   const { port } = useContext(DevToolsContext);
-
+  const { addToast } = useToasts();
   const wizard = useMemo(() => wizardMap[element.type], [element.type]);
 
   const [step, setStep] = useState(wizard[0].step);
@@ -135,9 +139,23 @@ const ElementWizard: React.FunctionComponent<{
 
   const remove = useCallback(async () => {
     try {
-      await nativeOperations.clearDynamicElements(port, {
-        uuid: element.uuid,
-      });
+      if (element.type === "contextMenu") {
+        try {
+          await uninstallContextMenu(port, { extensionId: element.uuid });
+        } catch (err) {
+          // The context menu may not currently be registered if it's not on a page that has a contentScript
+          // with a pattern that matches
+          console.info("Cannot unregister contextMenu", { err });
+        }
+      }
+      try {
+        await nativeOperations.clearDynamicElements(port, {
+          uuid: element.uuid,
+        });
+      } catch (err) {
+        // element might not be on the page anymore
+        console.info("Cannot clear dynamic element from page", { err });
+      }
       if (values.installed) {
         dispatch(
           optionsSlice.actions.removeExtension({
@@ -146,11 +164,18 @@ const ElementWizard: React.FunctionComponent<{
           })
         );
       }
-    } catch (reason) {
-      // element might not be on the page anymore
+      dispatch(actions.removeElement(element.uuid));
+    } catch (err) {
+      reportError(err);
+      addToast(
+        `Error removing element: ${err.message?.toString() ?? "Unknown Error"}`,
+        {
+          appearance: "error",
+          autoDismiss: true,
+        }
+      );
     }
-    dispatch(actions.removeElement(element.uuid));
-  }, [element, dispatch]);
+  }, [values, addToast, port, element, dispatch]);
 
   if (!isEmpty(errors)) {
     console.warn("Form errors", { errors });

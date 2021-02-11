@@ -24,14 +24,13 @@ import { getComponentData } from "@/pageScript/protocol";
 import { Framework } from "@/messaging/constants";
 import { ready as contentScriptReady } from "@/contentScript/context";
 import blockRegistry from "@/blocks/registry";
+import getCssSelector from "css-selector-generator";
+import { IReader } from "@/core";
 
 // install handlers
 import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
-
-import getCssSelector from "css-selector-generator";
-import { IReader } from "@/core";
 
 let selectedElement: HTMLElement = undefined;
 
@@ -111,10 +110,12 @@ export const runReaderBlock = liftContentScript(
           linkText: root.tagName === "A" ? root.innerText : null,
           linkUrl: root.tagName === "A" ? root.getAttribute("href") : null,
           srcUrl: root.getAttribute("src"),
+          documentUrl: document.location.href,
         };
       } else {
         return {
           selectionText: window.getSelection().toString(),
+          documentUrl: document.location.href,
         };
       }
     } else {

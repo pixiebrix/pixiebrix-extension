@@ -57,18 +57,20 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
   }
 }
 
+export async function uninstall(extensionId: string): Promise<void> {
+  try {
+    await browser.contextMenus.remove(extensionId);
+    console.debug(`Uninstalled context menu ${extensionId}`);
+  } catch (reason) {
+    console.debug(`Could not uninstall context menu ${extensionId}: ${reason}`);
+  }
+  extensionMenuItems.delete(extensionId);
+}
+
 export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
   async ({ extensionId }: { extensionId: string }) => {
-    try {
-      await browser.contextMenus.remove(extensionId);
-      console.debug(`Uninstalled context menu ${extensionId}`);
-    } catch (reason) {
-      console.debug(
-        `Could not uninstall context menu ${extensionId}: ${reason}`
-      );
-    }
-    extensionMenuItems.delete(extensionId);
+    await uninstall(extensionId);
   }
 );
 

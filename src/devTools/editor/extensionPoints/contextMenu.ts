@@ -72,14 +72,14 @@ export function makeContextMenuState(
       metadata,
       definition: {
         defaultOptions: {
-          contexts: ["page"],
+          contexts: ["all"],
         },
         isAvailable: makeIsAvailable(url),
       },
     },
     extension: {
       title: "PixieBrix",
-      contexts: ["page"],
+      contexts: ["all"],
       action: [],
     },
   };

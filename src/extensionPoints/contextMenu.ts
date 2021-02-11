@@ -132,6 +132,11 @@ export class ContextMenuReader extends Reader {
         type: "string",
         description: "The text for the context selection, if any.",
       },
+      documentUrl: {
+        type: "string",
+        description: "The URL of the page where the context menu was activated",
+        format: "uri",
+      },
     },
   };
 }
@@ -159,7 +164,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           "The text to display in the item. When the context is selection, use %s within the string to show the selected text.",
       },
       contexts: {
-        default: ["page"],
+        default: ["all"],
         oneOf: [
           {
             type: "string",
@@ -176,7 +181,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
               "audio",
               "page",
             ],
-            default: "page",
+            default: "all",
           },
           {
             type: "array",
@@ -218,6 +223,8 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   uninstall(): void {
+    // Clear out the context menu for this content script. It's still installed on other tabs through because we
+    // haven't unregistered things
     clickedElement = null;
     this.extensions.splice(0, this.extensions.length);
     document.removeEventListener("mousedown", setActiveElement);
@@ -256,10 +263,13 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     registerHandler(extension.id, async (clickData) => {
       const reader = await this.getBaseReader();
+
       const ctxt = {
         ...(await reader.read(clickedElement ?? document)),
         // clickData provides the data from schema defined above in ContextMenuReader
         ...clickData,
+        // add some additional data that people will generally want
+        documentUrl: document.location.href,
       };
       await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
         validate: true,

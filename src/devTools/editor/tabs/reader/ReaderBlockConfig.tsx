@@ -100,7 +100,9 @@ export const ReaderBlockForm: React.FunctionComponent<{
   return (
     <div>
       <Alert variant="info">
-        You cannot edit readers created outside the Page Editor
+        {reader.id.startsWith("@pixiebrix")
+          ? "You cannot edit built-in readers"
+          : "You cannot edit readers created outside the Page Editor"}
       </Alert>
       <Form.Group as={Row} controlId="formReaderId">
         <Form.Label column sm={2}>
@@ -114,7 +116,7 @@ export const ReaderBlockForm: React.FunctionComponent<{
       {testElement && (
         <Form.Group as={Row} controlId="readerSearch">
           <Form.Label column sm={2}>
-            Test Selection
+            Test Element
           </Form.Label>
           <Col sm={10}>
             <SelectorSelectorControl
@@ -122,6 +124,10 @@ export const ReaderBlockForm: React.FunctionComponent<{
               onSelect={(selector) => setTestSelector(selector)}
               isClearable
             />
+            <Form.Text>
+              Select an element on the page to view sample data for that
+              element.
+            </Form.Text>
           </Col>
         </Form.Group>
       )}

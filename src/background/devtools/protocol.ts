@@ -29,6 +29,7 @@ import {
 } from "@/background/devtools/internal";
 import { testTabPermissions, injectContentScript } from "@/background/util";
 import { sleep } from "@/utils";
+import * as contextMenuProtocol from "@/background/contextMenus";
 
 export const registerPort = liftBackground(
   "REGISTER_PORT",
@@ -252,5 +253,12 @@ export const runReader = liftBackground(
       config,
       rootSelector,
     });
+  }
+);
+
+export const uninstallContextMenu = liftBackground(
+  "UNINSTALL_CONTEXT_MENU",
+  () => async ({ extensionId }: { extensionId: string }) => {
+    return await contextMenuProtocol.uninstall(extensionId);
   }
 );
