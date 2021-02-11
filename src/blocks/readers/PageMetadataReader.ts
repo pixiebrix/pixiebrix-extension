@@ -16,7 +16,7 @@
  */
 
 // @ts-ignore: no type definitions available
-import getMetadata from "page-metadata-parser";
+import { getMetadata } from "page-metadata-parser";
 import { Reader } from "@/types";
 import { Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";

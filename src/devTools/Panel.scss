@@ -201,4 +201,72 @@
   .Resizer.disabled:hover {
     border-color: transparent;
   }
+
+  .ReaderSidebar {
+    button {
+      border-radius: 0;
+    }
+
+    .list-group {
+      border-radius: 0;
+    }
+
+    .list-group-item {
+      border-radius: 0;
+      font-size: 0.8rem;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+
+    width: 250px;
+  }
+
+  .ReaderContent {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    flex-grow: 1;
+  }
+
+  .ReaderList {
+    .list-group-item {
+      cursor: pointer;
+
+      svg {
+        cursor: grab;
+      }
+
+      &.dragDisabled {
+        svg {
+          cursor: not-allowed;
+        }
+      }
+
+      .ReaderList__label {
+        padding-left: 1rem;
+        flex-grow: 1;
+        overflow-x: hidden;
+
+        div {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      .ReaderList__actions {
+        display: none;
+      }
+
+      .ReaderList__actions {
+        span[role="button"] {
+          cursor: pointer;
+        }
+      }
+
+      &:hover {
+        .ReaderList__actions {
+          display: block;
+        }
+      }
+    }
+  }
 }

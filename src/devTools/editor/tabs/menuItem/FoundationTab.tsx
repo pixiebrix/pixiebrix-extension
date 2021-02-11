@@ -232,42 +232,44 @@ const FoundationTab: React.FunctionComponent<{
           Template
         </Form.Label>
         <Col sm={10}>
-          <div>
-            <span>Insert at cursor:</span>
-            <a
-              href="#"
-              className="mx-2"
-              role="button"
-              onClick={(e) => {
-                insertSnippet("{{{ caption }}}");
-                e.preventDefault();
-              }}
-            >
-              caption
-            </a>
-            <a
-              href="#"
-              className="mx-2"
-              role="button"
-              onClick={(e) => {
-                insertSnippet("{{{ icon }}}");
-                e.preventDefault();
-              }}
-            >
-              icon
-            </a>
-            <a
-              href="#"
-              className="mx-2"
-              role="button"
-              onClick={(e) => {
-                insertSnippet("&nbsp;");
-                e.preventDefault();
-              }}
-            >
-              space
-            </a>
-          </div>
+          {!locked && (
+            <div className="small">
+              <span>Insert at cursor:</span>
+              <a
+                href="#"
+                className="mx-2"
+                role="button"
+                onClick={(e) => {
+                  insertSnippet("{{{ caption }}}");
+                  e.preventDefault();
+                }}
+              >
+                caption
+              </a>
+              <a
+                href="#"
+                className="mx-2"
+                role="button"
+                onClick={(e) => {
+                  insertSnippet("{{{ icon }}}");
+                  e.preventDefault();
+                }}
+              >
+                icon
+              </a>
+              <a
+                href="#"
+                className="mx-2"
+                role="button"
+                onClick={(e) => {
+                  insertSnippet("&nbsp;");
+                  e.preventDefault();
+                }}
+              >
+                space
+              </a>
+            </div>
+          )}
           <FastField name="extensionPoint.definition.template">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control

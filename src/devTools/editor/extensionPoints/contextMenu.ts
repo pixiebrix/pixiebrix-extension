@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { PanelFormState } from "@/devTools/editor/editorSlice";
+import { ContextMenuFormState } from "@/devTools/editor/editorSlice";
 import {
   getDomain,
   makeBaseState,
@@ -26,81 +26,73 @@ import {
   makeReaderFormState,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
+import { v4 as uuidv4 } from "uuid";
+import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
-import { PanelConfig, PanelDefinition } from "@/extensionPoints/panelExtension";
-import FoundationTab from "@/devTools/editor/tabs/panel/FoundationTab";
 import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
-import PanelTab from "@/devTools/editor/tabs/panel/PanelTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
+import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
-import { DynamicDefinition } from "@/nativeEditor";
-import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
-import RendererTab from "@/devTools/editor/tabs/RendererTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
+import {
+  ContextMenuConfig,
+  MenuDefinition,
+} from "@/extensionPoints/contextMenu";
+import FoundationTab from "@/devTools/editor/tabs/contextMenu/FoundationTab";
+import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
 import { find as findBrick } from "@/registry/localRegistry";
+import AvailabilityTab from "@/devTools/editor/tabs/contextMenu/AvailabilityTab";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
+  { step: "Menu Item", Component: MenuItemTab },
   { step: "Reader", Component: ReaderTab },
-  { step: "Panel", Component: PanelTab },
   { step: "Services", Component: ServicesTab },
-  { step: "Renderer", Component: RendererTab },
+  { step: "Effect", Component: EffectTab },
   { step: "Availability", Component: AvailabilityTab },
   { step: "Logs", Component: LogsTab },
 ];
 
-export function makePanelState(
+export function makeContextMenuState(
   url: string,
   metadata: Metadata,
-  panel: PanelSelectionResult,
   frameworks: FrameworkMeta[]
-): PanelFormState {
+): ContextMenuFormState {
+  const base = makeBaseState(uuidv4(), null, metadata, frameworks);
+  // don't include a reader since in most cases can't use a selection reader
+  base.readers = [];
+
+  const isAvailable = makeIsAvailable(url);
+
   return {
-    type: "panel",
-    label: `My ${getDomain(url)} panel`,
-    ...makeBaseState(
-      panel.uuid,
-      panel.foundation.containerSelector,
-      metadata,
-      frameworks
-    ),
-    containerInfo: panel.containerInfo,
+    type: "contextMenu",
+    label: `My ${getDomain(url)} menu item`,
+    ...base,
     extensionPoint: {
       metadata,
       definition: {
-        ...panel.foundation,
-        isAvailable: makeIsAvailable(url),
-      },
-      traits: {
-        style: {
-          mode: "inherit",
-        },
+        documentUrlPatterns: [isAvailable.matchPatterns],
+        contexts: ["all"],
+        defaultOptions: {},
+        isAvailable,
       },
     },
     extension: {
-      heading: panel.panel.heading,
-      collapsible: panel.panel.collapsible ?? false,
-      shadowDOM: panel.panel.shadowDOM ?? true,
-      body: [
-        {
-          id: "@pixiebrix/property-table",
-          config: {},
-        },
-      ],
+      title: "PixieBrix",
+      action: [],
     },
   };
 }
 
-export function makePanelExtensionPoint({
+export function makeContextMenuExtensionPoint({
   extensionPoint,
   readers,
-}: PanelFormState): ExtensionPointConfig<PanelDefinition> {
+}: ContextMenuFormState): ExtensionPointConfig<MenuDefinition> {
   const {
     metadata,
-    definition: { isAvailable, position, template, containerSelector },
+    definition: { isAvailable },
   } = extensionPoint;
 
   return {
@@ -110,26 +102,25 @@ export function makePanelExtensionPoint({
       id: metadata.id,
       version: "1.0.0",
       name: metadata.name,
-      description: "Panel created with the Page Editor",
+      description: "Context Menu created with the Page Editor",
     },
     definition: {
-      type: "panel",
+      type: "contextMenu",
+      documentUrlPatterns: extensionPoint.definition.documentUrlPatterns,
+      contexts: ["all"],
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
-      containerSelector: containerSelector,
-      position,
-      template,
     },
   };
 }
 
-export function makePanelExtension({
+export function makeContextMenuExtension({
   uuid,
   label,
   extensionPoint,
   extension,
   services,
-}: PanelFormState): IExtension<PanelConfig> {
+}: ContextMenuFormState): IExtension<ContextMenuConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
@@ -139,25 +130,16 @@ export function makePanelExtension({
   };
 }
 
-export function makePanelConfig(element: PanelFormState): DynamicDefinition {
-  return {
-    type: "panel",
-    extension: makePanelExtension(element),
-    extensionPoint: makePanelExtensionPoint(element),
-    readers: makeExtensionReaders(element),
-  };
-}
-
-export async function makePanelFormState(
-  config: IExtension<PanelConfig>
-): Promise<PanelFormState> {
+export async function makeContextMenuFormState(
+  config: IExtension<ContextMenuConfig>
+): Promise<ContextMenuFormState> {
   const brick = await findBrick(config.extensionPointId);
   if (!brick) {
     throw new Error(
       `Cannot find extension point definition: ${config.extensionPointId}`
     );
   }
-  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<PanelDefinition>;
+  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<MenuDefinition>;
 
   const isAvailable = extensionPoint.definition.isAvailable;
   const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
@@ -175,6 +157,8 @@ export async function makePanelFormState(
     );
   }
 
+  const extensionConfig = config.config;
+
   return {
     uuid: config.id,
     installed: true,
@@ -185,26 +169,32 @@ export async function makePanelFormState(
     services: config.services,
 
     extension: {
-      ...config.config,
-      heading: config.config.heading,
-      body: castArray(config.config.body),
+      ...extensionConfig,
+      action: castArray(extensionConfig.action),
     },
-
-    containerInfo: null,
 
     extensionPoint: {
       metadata: extensionPoint.metadata,
-      traits: {
-        // we don't provide a way to set style anywhere yet so this doesn't apply yet
-        style: { mode: "inherit" },
-      },
       definition: {
-        ...extensionPoint.definition,
+        documentUrlPatterns: extensionPoint.definition.documentUrlPatterns,
+        defaultOptions: extensionPoint.definition.defaultOptions,
+        contexts: extensionPoint.definition.contexts,
         isAvailable: {
           matchPatterns: matchPatterns[0],
           selectors: selectors[0],
         },
       },
     },
+  };
+}
+
+export function makeContextMenuConfig(
+  element: ContextMenuFormState
+): DynamicDefinition {
+  return {
+    type: "contextMenu",
+    extension: makeContextMenuExtension(element),
+    extensionPoint: makeContextMenuExtensionPoint(element),
+    readers: makeExtensionReaders(element),
   };
 }

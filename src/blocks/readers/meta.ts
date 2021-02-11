@@ -19,11 +19,8 @@ import { Reader } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { getExtensionAuth } from "@/auth/token";
 import * as session from "@/contentScript/context";
-
-// @ts-ignore: babel/plugin-transform-typescript doesn't support the import = syntax
-import chromeNamespace from "chrome";
 import { ReaderOutput, Schema } from "@/core";
-type UserInfo = chromeNamespace.identity.UserInfo;
+import { Manifest, Permissions } from "webextension-polyfill-ts";
 
 class ChromeProfileReader extends Reader {
   constructor() {
@@ -34,13 +31,23 @@ class ChromeProfileReader extends Reader {
     );
   }
 
-  async read(): Promise<UserInfo> {
+  permissions: Permissions.Permissions = {
+    permissions: ["identity.email" as Manifest.OptionalPermission],
+    origins: [],
+  };
+
+  async read(): Promise<ReaderOutput> {
+    if (!chrome.identity) {
+      throw new Error("No access to the Chrome Identity API");
+    }
     // https://developer.chrome.com/apps/identity#method-getProfileUserInfo
-    return await new Promise((resolve) => {
-      // @ts-ignore: the type definition is out-of-date
-      chrome.identity.getProfileUserInfo("ANY", (userInfo) =>
-        resolve(userInfo)
-      );
+    return await new Promise((resolve, reject) => {
+      chrome.identity.getProfileUserInfo((userInfo) => {
+        if (browser.runtime.lastError) {
+          reject(browser.runtime.lastError.message);
+        }
+        resolve({ ...userInfo });
+      });
     });
   }
 

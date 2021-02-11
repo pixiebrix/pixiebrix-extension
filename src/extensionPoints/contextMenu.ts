@@ -39,15 +39,16 @@ import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { castArray } from "lodash";
+import { castArray, uniq } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { ensureContextMenu } from "@/background/contextMenus";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
+import { Manifest } from "webextension-polyfill-ts/lib/manifest";
+import { getCommonAncestor } from "@/nativeEditor/infer";
 
-interface ContextMenuConfig {
+export interface ContextMenuConfig {
   title: string;
-  contexts: ContextMenus.ContextType | ContextMenus.ContextType[];
   action: BlockConfig | BlockPipeline;
 }
 
@@ -65,7 +66,28 @@ function setActiveElement(event: MouseEvent): void {
       clickedElement = event?.target as HTMLElement;
     }
   } catch (err) {
-    reportError(err);
+    try {
+      reportError(err);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+}
+
+function guessSelectedElement(): HTMLElement | null {
+  const selection = document.getSelection();
+  if (selection?.rangeCount) {
+    const start = selection.getRangeAt(0).startContainer.parentNode;
+    const end = selection.getRangeAt(selection.rangeCount - 1).endContainer
+      .parentNode;
+    const node = getCommonAncestor(start, end);
+    if ("tagName" in node) {
+      return node;
+    } else {
+      return null;
+    }
+  } else {
+    return null;
   }
 }
 
@@ -82,7 +104,7 @@ function installMouseHandlerOnce(): void {
   }
 }
 
-class ContextMenuReader extends Reader {
+export class ContextMenuReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/context-menu-data",
@@ -91,7 +113,7 @@ class ContextMenuReader extends Reader {
     );
   }
 
-  async isAvailable() {
+  async isAvailable(): Promise<boolean> {
     return true;
   }
 
@@ -128,6 +150,11 @@ class ContextMenuReader extends Reader {
         type: "string",
         description: "The text for the context selection, if any.",
       },
+      documentUrl: {
+        type: "string",
+        description: "The URL of the page where the context menu was activated",
+        format: "uri",
+      },
     },
   };
 }
@@ -146,6 +173,8 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   abstract async getBaseReader(): Promise<IReader>;
+  abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
+  abstract readonly contexts: ContextMenus.ContextType[];
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -153,48 +182,6 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
         type: "string",
         description:
           "The text to display in the item. When the context is selection, use %s within the string to show the selected text.",
-      },
-      contexts: {
-        default: ["page"],
-        oneOf: [
-          {
-            type: "string",
-            description: "The context the menu will appear in",
-            enum: [
-              "all",
-              "page",
-              "frame",
-              "selection",
-              "link",
-              "editable",
-              "image",
-              "video",
-              "audio",
-              "page",
-            ],
-            default: "page",
-          },
-          {
-            type: "array",
-            description: "One or more contexts for the menu to appear in",
-            items: {
-              type: "string",
-              enum: [
-                "all",
-                "page",
-                "frame",
-                "selection",
-                "link",
-                "editable",
-                "image",
-                "video",
-                "audio",
-                "page",
-              ],
-            },
-            minProperties: 1,
-          },
-        ],
       },
       action: {
         oneOf: [
@@ -214,6 +201,8 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   uninstall(): void {
+    // Clear out the context menu for this content script. It's still installed on other tabs through because we
+    // haven't unregistered things
     clickedElement = null;
     this.extensions.splice(0, this.extensions.length);
     document.removeEventListener("mousedown", setActiveElement);
@@ -235,7 +224,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   async runExtension(extension: IExtension<ContextMenuConfig>): Promise<void> {
-    const { title, contexts, action: actionConfig } = extension.config;
+    const { title, action: actionConfig } = extension.config;
 
     const serviceContext = await makeServiceContext(extension.services);
 
@@ -243,20 +232,32 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       extensionId: extension.id,
     });
 
+    const patterns = uniq([
+      ...this.documentUrlPatterns,
+      ...(this.permissions.origins ?? []),
+    ]);
+
     await ensureContextMenu({
       extensionId: extension.id,
-      contexts: castArray(contexts),
+      contexts: this.contexts,
       title,
-      documentUrlPatterns: this.permissions.origins,
+      documentUrlPatterns: patterns,
     });
 
     registerHandler(extension.id, async (clickData) => {
       const reader = await this.getBaseReader();
+
+      const targetElement =
+        clickedElement ?? guessSelectedElement() ?? document;
+
       const ctxt = {
-        ...(await reader.read(clickedElement ?? document)),
+        ...(await reader.read(targetElement)),
         // clickData provides the data from schema defined above in ContextMenuReader
         ...clickData,
+        // add some additional data that people will generally want
+        documentUrl: document.location.href,
       };
+
       await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
         validate: true,
         serviceArgs: serviceContext,
@@ -265,12 +266,15 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     console.debug(`Added context menu ${title}`, {
       title,
-      documentUrlPatterns: this.permissions.origins,
+      documentUrlPatterns: patterns,
     });
   }
 
   async run(): Promise<void> {
     if (!this.extensions.length) {
+      console.debug(
+        `contextMenu extension point ${this.id} has no installed extension`
+      );
       return;
     }
 
@@ -300,32 +304,43 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 }
 
-interface MenuDefaultOptions {
+export interface MenuDefaultOptions {
   title?: string;
-  contexts?: ContextMenus.ContextType | ContextMenus.ContextType[];
   [key: string]: string | string[];
 }
 
-interface MenuDefinition extends ExtensionPointDefinition {
-  defaultOptions: MenuDefaultOptions;
+export interface MenuDefinition extends ExtensionPointDefinition {
+  documentUrlPatterns?: Manifest.MatchPattern[];
+  contexts: ContextMenus.ContextType[];
+  defaultOptions?: MenuDefaultOptions;
 }
 
 class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   private readonly _definition: MenuDefinition;
   public readonly permissions: Permissions.Permissions;
+  public readonly documentUrlPatterns: Manifest.MatchPattern[];
+  public readonly contexts: ContextMenus.ContextType[];
 
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
     this._definition = config.definition;
-    const { isAvailable } = config.definition;
+    const { isAvailable, documentUrlPatterns, contexts } = config.definition;
+    // if documentUrlPatterns not specified show everywhere
+    this.documentUrlPatterns = castArray(documentUrlPatterns ?? ["*://*/*"]);
+    this.contexts = castArray(contexts);
     this.permissions = {
       origins: castArray(isAvailable.matchPatterns),
     };
   }
 
   async isAvailable(): Promise<boolean> {
-    return await checkAvailable(this._definition.isAvailable);
+    return (
+      (await checkAvailable(this._definition.isAvailable)) ||
+      (await checkAvailable({
+        matchPatterns: this._definition.documentUrlPatterns,
+      }))
+    );
   }
 
   async getBaseReader() {
@@ -334,14 +349,11 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
 
   public get defaultOptions(): {
     title: string;
-    contexts: ContextMenus.ContextType[];
     [key: string]: string | string[];
   } {
-    const { contexts = ["page"], ...other } = this._definition.defaultOptions;
     return {
       title: "PixieBrix",
-      contexts: castArray(contexts),
-      ...other,
+      ...this._definition.defaultOptions,
     };
   }
 }

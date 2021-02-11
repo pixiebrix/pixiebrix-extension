@@ -25,7 +25,7 @@ import { ActionFormState } from "@/devTools/editor/editorSlice";
 import {
   getDomain,
   makeBaseState,
-  makeExtensionReader,
+  makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
   WizardStep,
@@ -38,7 +38,7 @@ import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
 import FoundationTab from "@/devTools/editor/tabs/menuItem/FoundationTab";
 import MenuItemTab from "@/devTools/editor/tabs/menuItem/MenuItemTab";
-import ReaderTab from "@/devTools/editor/tabs/ReaderTab";
+import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
@@ -94,7 +94,7 @@ export function makeActionState(
 
 export function makeMenuExtensionPoint({
   extensionPoint,
-  reader,
+  readers,
 }: ActionFormState): ExtensionPointConfig<MenuDefinition> {
   const {
     metadata,
@@ -108,11 +108,11 @@ export function makeMenuExtensionPoint({
       id: metadata.id,
       version: "1.0.0",
       name: metadata.name,
-      description: "Button created with the devtools",
+      description: "Button created with the Page Editor",
     },
     definition: {
       type: "menuItem",
-      reader: reader.metadata.id,
+      reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
       containerSelector: containerSelector,
       position,
@@ -139,17 +139,23 @@ export function makeActionExtension({
 
 export function makeActionConfig(element: ActionFormState): ButtonDefinition {
   return {
+    type: "menuItem",
     extension: makeActionExtension(element),
     extensionPoint: makeMenuExtensionPoint(element),
-    reader: makeExtensionReader(element),
+    readers: makeExtensionReaders(element),
   };
 }
 
 export async function makeActionFormState(
   config: IExtension<MenuItemExtensionConfig>
 ): Promise<ActionFormState> {
-  const extensionPoint = ((await findBrick(config.extensionPointId))
-    .config as unknown) as ExtensionPointConfig<MenuDefinition>;
+  const brick = await findBrick(config.extensionPointId);
+  if (!brick) {
+    throw new Error(
+      `Cannot find extension point definition: ${config.extensionPointId}`
+    );
+  }
+  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<MenuDefinition>;
 
   const isAvailable = extensionPoint.definition.isAvailable;
   const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
@@ -167,15 +173,13 @@ export async function makeActionFormState(
     );
   }
 
-  const reader = await makeReaderFormState(extensionPoint);
-
   return {
     uuid: config.id,
     installed: true,
     type: extensionPoint.definition.type,
     label: config.label,
 
-    reader,
+    readers: await makeReaderFormState(extensionPoint),
     services: config.services,
 
     extension: {

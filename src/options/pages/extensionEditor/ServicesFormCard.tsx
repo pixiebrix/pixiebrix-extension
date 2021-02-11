@@ -21,7 +21,6 @@ import Button from "react-bootstrap/Button";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ServiceDependency } from "@/core";
-import ServiceSelector from "@/components/ServiceSelector";
 import { Field, FieldArray, FieldInputProps, useField } from "formik";
 import Form from "react-bootstrap/Form";
 import Card from "react-bootstrap/Card";
@@ -30,6 +29,9 @@ import ServiceAuthSelector, {
   AuthOption,
   useAuthOptions,
 } from "@/options/pages/extensionEditor/ServiceAuthSelector";
+import ServiceModal from "@/components/fields/ServiceModal";
+import { useFetch } from "@/hooks/fetch";
+import { ServiceDefinition } from "@/types/definitions";
 
 export const DependencyRow: React.FunctionComponent<{
   field: FieldInputProps<unknown>;
@@ -94,6 +96,7 @@ const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
   const [selectKey, setKey] = useState(0);
   const [field, meta] = useField(props);
   const [authOptions] = useAuthOptions();
+  const services = useFetch<ServiceDefinition[]>("/api/services/");
 
   return (
     <FieldArray name={props.name}>
@@ -132,10 +135,11 @@ const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
             </Table>
           )}
           <Card.Footer>
-            <div style={{ width: 300 }}>
-              <ServiceSelector
+            <div>
+              <ServiceModal
                 key={selectKey}
-                placeholder="Pick a service to add"
+                services={services}
+                caption="Add Service"
                 onSelect={(x) => {
                   setKey((k) => k + 1);
                   push({

@@ -21,8 +21,11 @@ import { useFormikContext } from "formik";
 import { isEmpty } from "lodash";
 import { useDebounce } from "use-debounce";
 import useAsyncEffect from "use-async-effect";
-import * as nativeOperations from "@/background/devtools";
-import { checkAvailable } from "@/background/devtools";
+import * as nativeOperations from "@/background/devtools/index";
+import {
+  checkAvailable,
+  uninstallContextMenu,
+} from "@/background/devtools/index";
 import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
 import {
   actions,
@@ -31,10 +34,10 @@ import {
 } from "@/devTools/editor/editorSlice";
 import { optionsSlice } from "@/options/slices";
 import ToggleField from "@/devTools/editor/components/ToggleField";
-import { CONFIG_MAP } from "@/devTools/editor/useCreate";
 import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
 import { wizard as triggerWizard } from "./extensionPoints/trigger";
 import { wizard as panelWizard } from "./extensionPoints/panel";
+import { wizard as contextMenuWizard } from "./extensionPoints/contextMenu";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,12 +48,18 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { IExtension } from "@/core";
-import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";
+import {
+  ADAPTERS,
+  extensionToFormState,
+} from "@/devTools/editor/extensionPoints/adapter";
+import { reportError } from "@/telemetry/logging";
+import { useToasts } from "react-toast-notifications";
 
 const wizardMap = {
   menuItem: menuItemWizard,
   trigger: triggerWizard,
   panel: panelWizard,
+  contextMenu: contextMenuWizard,
 };
 
 const ElementWizard: React.FunctionComponent<{
@@ -61,7 +70,7 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, refreshMillis = 250, editable, installed }) => {
   const dispatch = useDispatch();
   const { port } = useContext(DevToolsContext);
-
+  const { addToast } = useToasts();
   const wizard = useMemo(() => wizardMap[element.type], [element.type]);
 
   const [step, setStep] = useState(wizard[0].step);
@@ -88,7 +97,7 @@ const ElementWizard: React.FunctionComponent<{
   });
 
   const run = useCallback(async () => {
-    const factory = CONFIG_MAP[debounced.type];
+    const { definition: factory } = ADAPTERS.get(debounced.type);
     await nativeOperations.updateDynamicElement(
       port,
       factory(debounced as any)
@@ -105,7 +114,7 @@ const ElementWizard: React.FunctionComponent<{
       // by default, don't automatically trigger it
       return;
     }
-    const factory = CONFIG_MAP[debounced.type];
+    const { definition: factory } = ADAPTERS.get(debounced.type);
     console.debug("Updating dynamic element", {
       debounced,
       showReloadControls,
@@ -123,15 +132,30 @@ const ElementWizard: React.FunctionComponent<{
       const state = await extensionToFormState(extension);
       dispatch(actions.resetInstalled(state));
     } catch (error) {
+      reportError(error);
       dispatch(actions.adapterError({ uuid: element.uuid, error }));
     }
   }, [dispatch, element.uuid, installed]);
 
   const remove = useCallback(async () => {
     try {
-      await nativeOperations.clearDynamicElements(port, {
-        uuid: element.uuid,
-      });
+      if (element.type === "contextMenu") {
+        try {
+          await uninstallContextMenu(port, { extensionId: element.uuid });
+        } catch (err) {
+          // The context menu may not currently be registered if it's not on a page that has a contentScript
+          // with a pattern that matches
+          console.info("Cannot unregister contextMenu", { err });
+        }
+      }
+      try {
+        await nativeOperations.clearDynamicElements(port, {
+          uuid: element.uuid,
+        });
+      } catch (err) {
+        // element might not be on the page anymore
+        console.info("Cannot clear dynamic element from page", { err });
+      }
       if (values.installed) {
         dispatch(
           optionsSlice.actions.removeExtension({
@@ -140,11 +164,18 @@ const ElementWizard: React.FunctionComponent<{
           })
         );
       }
-    } catch (reason) {
-      // element might not be on the page anymore
+      dispatch(actions.removeElement(element.uuid));
+    } catch (err) {
+      reportError(err);
+      addToast(
+        `Error removing element: ${err.message?.toString() ?? "Unknown Error"}`,
+        {
+          appearance: "error",
+          autoDismiss: true,
+        }
+      );
     }
-    dispatch(actions.removeElement(element.uuid));
-  }, [element, dispatch]);
+  }, [values, addToast, port, element, dispatch]);
 
   if (!isEmpty(errors)) {
     console.warn("Form errors", { errors });
@@ -178,12 +209,6 @@ const ElementWizard: React.FunctionComponent<{
                   element.installed &&
                   editable &&
                   !editable.has(element.extensionPoint.metadata.id) && (
-                    <FontAwesomeIcon className="ml-2" icon={faLock} />
-                  )}
-                {x.step === "Reader" &&
-                  element.installed &&
-                  editable &&
-                  !editable.has(element.reader.metadata.id) && (
                     <FontAwesomeIcon className="ml-2" icon={faLock} />
                   )}
               </Nav.Link>

@@ -31,7 +31,26 @@ export function registerHandler(extensionId: string, handler: Handler): void {
 
 export const handleMenuAction = liftContentScript(
   "HANDLE_MENU_ACTION",
-  async (extensionId: string, args: Menus.OnClickData) => {
-    await handlers.get(extensionId)(args);
+  async ({
+    extensionId,
+    args,
+    maxWaitMillis = 0,
+  }: {
+    extensionId: string;
+    args: Menus.OnClickData;
+    maxWaitMillis: number;
+  }) => {
+    const start = Date.now();
+    do {
+      const handler = handlers.get(extensionId);
+      if (handler) {
+        await handler(args);
+        return;
+      }
+    } while (Date.now() - start < maxWaitMillis);
+
+    throw new Error(
+      `No context menu handler found for extension in ${maxWaitMillis}ms: ${extensionId}`
+    );
   }
 );

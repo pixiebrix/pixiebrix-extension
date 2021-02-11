@@ -21,8 +21,10 @@ import { FieldArray, useField } from "formik";
 import { ServiceDependency } from "@/core";
 import { DependencyRow } from "@/options/pages/extensionEditor/ServicesFormCard";
 import { useAuthOptions } from "@/options/pages/extensionEditor/ServiceAuthSelector";
-import ServiceSelector from "@/components/ServiceSelector";
 import { head } from "lodash";
+import { useFetch } from "@/hooks/fetch";
+import { ServiceDefinition } from "@/types/definitions";
+import ServiceModal from "@/components/fields/ServiceModal";
 
 const PACKAGE_REGEX = /^((?<scope>@[a-z0-9-~][a-z0-9-._~]*)\/)?((?<collection>[a-z0-9-~][a-z0-9-._~]*)\/)?(?<name>[a-z0-9-~][a-z0-9-._~]*)$/;
 
@@ -38,6 +40,7 @@ const ServicesTab: React.FunctionComponent<{
   const [field, meta] = useField(name);
   const [selectKey, setKey] = useState(0);
   const [authOptions] = useAuthOptions();
+  const services = useFetch<ServiceDefinition[]>("/api/services/");
 
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
@@ -49,13 +52,12 @@ const ServicesTab: React.FunctionComponent<{
       <FieldArray name={name}>
         {({ push, remove }) => (
           <div>
-            <div style={{ width: 300 }}>
-              <ServiceSelector
+            <div>
+              <ServiceModal
                 key={selectKey}
-                placeholder="Pick a service to add"
+                caption="Add Service"
+                services={services}
                 onSelect={(x) => {
-                  // reset value in dropdown
-                  setKey((k) => k + 1);
                   push({
                     id: x.metadata.id,
                     outputKey: defaultOutputKey(x.metadata.id),
@@ -66,6 +68,8 @@ const ServicesTab: React.FunctionComponent<{
                       )
                     )?.value,
                   });
+                  // reset value in dropdown
+                  setKey((k) => k + 1);
                 }}
               />
             </div>

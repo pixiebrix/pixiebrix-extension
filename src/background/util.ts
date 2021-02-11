@@ -18,6 +18,7 @@
 import { isBackgroundPage } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
 import * as contentScriptProtocol from "@/contentScript/devTools";
+import { sleep } from "@/utils";
 
 export async function testTabPermissions(tabId: number): Promise<boolean> {
   if (!isBackgroundPage()) {
@@ -43,6 +44,21 @@ export async function testTabPermissions(tabId: number): Promise<boolean> {
     }
   }
   return false;
+}
+
+export async function waitReady(
+  tabId: number,
+  { maxWaitMillis }: { maxWaitMillis: number }
+): Promise<void> {
+  const start = Date.now();
+  do {
+    const { ready } = await contentScriptProtocol.isInstalled(tabId);
+    if (ready) {
+      return;
+    }
+    await sleep(150);
+  } while (Date.now() - start < maxWaitMillis);
+  throw new Error(`contentScript not ready in ${maxWaitMillis}ms`);
 }
 
 /**

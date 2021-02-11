@@ -20,6 +20,7 @@ import { AxiosRequestConfig } from "axios";
 import { Primitive } from "type-fest";
 import { ErrorObject } from "serialize-error";
 import { Permissions } from "webextension-polyfill-ts";
+import { pick } from "lodash";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
 export type Schema = JSONSchema7;
@@ -93,6 +94,10 @@ export interface Metadata {
   description?: string;
   icon?: BlockIcon;
   author?: string;
+}
+
+export function selectMetadata(metadata: Metadata): Metadata {
+  return pick(metadata, ["id", "name", "version", "description"]);
 }
 
 // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking

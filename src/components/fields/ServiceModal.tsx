@@ -28,68 +28,38 @@ import {
   Badge,
 } from "react-bootstrap";
 import { sortBy, truncate } from "lodash";
-import { IBlock } from "@/core";
-import {
-  faBookReader,
-  faCube,
-  faMagic,
-  faRandom,
-  faWindowMaximize,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { BlockType, getType } from "@/blocks/util";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import useAsyncEffect from "use-async-effect";
 import { useDebounce } from "use-debounce";
 
 import "./BlockModal.scss";
+import { ServiceDefinition } from "@/types/definitions";
 
-function getIcon(type: BlockType): IconProp {
-  switch (type) {
-    case "reader":
-      return faBookReader;
-    case "transform":
-      return faRandom;
-    case "effect":
-      return faMagic;
-    case "renderer":
-      return faWindowMaximize;
-    default:
-      return faCube;
-  }
-}
-
-const BlockResult: React.FunctionComponent<{
-  block: IBlock;
+const ServiceResult: React.FunctionComponent<{
+  service: ServiceDefinition;
   onSelect: () => void;
-}> = ({ block, onSelect }) => {
-  const [type, setType] = useState<BlockType>(null);
-
-  useAsyncEffect(async () => {
-    setType(await getType(block));
-  }, [block, setType]);
-
+}> = ({ service: { metadata }, onSelect }) => {
   return (
     <ListGroup.Item onClick={onSelect}>
       <div className="d-flex">
         <div className="mr-2">
-          <FontAwesomeIcon icon={getIcon(type)} />
+          <FontAwesomeIcon icon={faCloud} />
         </div>
         <div className="flex-grow-1">
           <div className="d-flex BlockModal__title">
-            <div className="flex-grow-1">{block.name}</div>
+            <div className="flex-grow-1">{metadata.name}</div>
             <div className="flex-grow-0 BlockModal__badges">
-              {block.id.startsWith("@pixiebrix/") && (
+              {metadata.id.startsWith("@pixiebrix/") && (
                 <Badge variant="info">Official</Badge>
               )}
             </div>
           </div>
           <div className="BlockModal__id">
-            <code className="small">{block.id}</code>
+            <code className="small">{metadata.id}</code>
           </div>
           <div>
             <p className="mb-0 small">
-              {truncate(block.description, { length: 256 })}
+              {truncate(metadata.description, { length: 256 })}
             </p>
           </div>
         </div>
@@ -98,49 +68,50 @@ const BlockResult: React.FunctionComponent<{
   );
 };
 
-const BlockModal: React.FunctionComponent<{
-  onSelect: (service: IBlock) => void;
-  blocks: IBlock[];
+const ServiceModal: React.FunctionComponent<{
+  onSelect: (service: ServiceDefinition) => void;
+  services: ServiceDefinition[];
   caption?: string;
-  renderButton?: ({ show }: { show: () => void }) => React.ReactNode;
-}> = ({ onSelect, blocks, caption = "Select a brick", renderButton }) => {
+}> = ({ onSelect, services, caption = "Select a service" }) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState("");
 
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
 
-  const blockOptions = useMemo(
+  const serviceOptions = useMemo(
     () =>
-      (blocks ?? []).map((x) => ({
-        value: x.id,
-        label: x.name,
-        block: x,
+      (services ?? []).map((service) => ({
+        value: service.metadata.id,
+        label: service.metadata.name,
+        service,
       })),
-    [blocks]
+    [services]
   );
 
   const filteredOptions = useMemo(() => {
     if (debouncedQuery.trim() != "") {
       const normalQuery = debouncedQuery.toLowerCase();
       return sortBy(
-        blockOptions.filter(
+        serviceOptions.filter(
           (x) =>
             x.label.toLowerCase().includes(normalQuery) ||
-            (x.block.description ?? "").toLowerCase().includes(normalQuery)
+            (x.service.metadata.description ?? "")
+              .toLowerCase()
+              .includes(normalQuery)
         ),
         (x) => x.label
       );
     } else {
-      return sortBy(blockOptions, (x) => x.label);
+      return sortBy(serviceOptions, (x) => x.label);
     }
-  }, [blockOptions, debouncedQuery]);
+  }, [serviceOptions, debouncedQuery]);
 
   const close = useCallback(() => {
     setShow(false);
   }, [setShow]);
 
   return (
-    <>
+    <div>
       {show && (
         <Modal
           className="BlockModal"
@@ -176,11 +147,11 @@ const BlockModal: React.FunctionComponent<{
                   <div className="BlockModal__results">
                     <ListGroup>
                       {filteredOptions.map((x) => (
-                        <BlockResult
-                          key={x.block.id}
-                          block={x.block}
+                        <ServiceResult
+                          key={x.service.metadata.id}
+                          service={x.service}
                           onSelect={() => {
-                            onSelect(x.block);
+                            onSelect(x.service);
                             // reset the query for the next time it opens
                             setQuery("");
                             close();
@@ -195,16 +166,11 @@ const BlockModal: React.FunctionComponent<{
           </Modal.Body>
         </Modal>
       )}
-
-      {renderButton ? (
-        renderButton({ show: () => setShow(true) })
-      ) : (
-        <Button variant="info" onClick={() => setShow(true)}>
-          {caption}
-        </Button>
-      )}
-    </>
+      <Button variant="info" onClick={() => setShow(true)}>
+        {caption}
+      </Button>
+    </div>
   );
 };
 
-export default BlockModal;
+export default ServiceModal;

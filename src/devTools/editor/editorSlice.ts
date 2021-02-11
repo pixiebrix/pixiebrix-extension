@@ -19,8 +19,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IconConfig, Metadata, Schema, ServiceDependency } from "@/core";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
+import { MenuDefaultOptions as ContextMenuDefaultOptions } from "@/extensionPoints/contextMenu";
 import { BlockPipeline } from "@/blocks/combinators";
 import { Trigger } from "@/extensionPoints/triggerExtension";
+import { ContextMenus } from "webextension-polyfill-ts";
+
+export interface ReaderReferenceFormState {
+  metadata: Metadata;
+}
 
 export interface ReaderFormState {
   metadata: Metadata;
@@ -35,7 +41,13 @@ export interface ReaderFormState {
   };
 }
 
-export type ElementType = "menuItem" | "trigger" | "panel";
+export function isCustomReader(
+  reader: ReaderFormState | ReaderReferenceFormState
+): reader is ReaderFormState {
+  return "definition" in reader;
+}
+
+export type ElementType = "menuItem" | "trigger" | "panel" | "contextMenu";
 
 export interface BaseFormState {
   readonly uuid: string;
@@ -48,11 +60,31 @@ export interface BaseFormState {
 
   services: ServiceDependency[];
 
-  reader: ReaderFormState;
+  readers: (ReaderFormState | ReaderReferenceFormState)[];
 
   extensionPoint: unknown;
 
   extension: unknown;
+}
+
+export interface ContextMenuFormState extends BaseFormState {
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      defaultOptions: ContextMenuDefaultOptions;
+      documentUrlPatterns: string[];
+      contexts: ContextMenus.ContextType[];
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+  };
+
+  extension: {
+    title: string;
+    action: BlockPipeline;
+  };
 }
 
 export interface TriggerFormState extends BaseFormState {
@@ -130,7 +162,11 @@ export interface ActionFormState extends BaseFormState {
   };
 }
 
-export type FormState = ActionFormState | TriggerFormState | PanelFormState;
+export type FormState =
+  | ActionFormState
+  | TriggerFormState
+  | PanelFormState
+  | ContextMenuFormState;
 
 export interface EditorState {
   selectionSeq: number;
@@ -243,7 +279,9 @@ export const editorSlice = createSlice({
       if (!element.installed) {
         state.knownEditable.push(
           element.extensionPoint.metadata.id,
-          element.reader.metadata.id
+          ...element.readers
+            .filter((x) => isCustomReader(x))
+            .map((x) => x.metadata.id)
         );
       }
       element.installed = true;

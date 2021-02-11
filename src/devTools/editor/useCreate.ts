@@ -15,7 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ActionFormState, editorSlice } from "@/devTools/editor/editorSlice";
+import {
+  FormState,
+  editorSlice,
+  isCustomReader,
+} from "@/devTools/editor/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback } from "react";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
@@ -28,23 +32,11 @@ import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { makeExtensionReader } from "@/devTools/editor/extensionPoints/base";
-import {
-  makeActionConfig,
-  makeActionExtension,
-  makeMenuExtensionPoint,
-} from "@/devTools/editor/extensionPoints/menuItem";
-import { makeTriggerConfig } from "@/devTools/editor/extensionPoints/trigger";
-import { makePanelConfig } from "@/devTools/editor/extensionPoints/panel";
+import { makeExtensionReaders } from "@/devTools/editor/extensionPoints/base";
+import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
-
-export const CONFIG_MAP = {
-  menuItem: makeActionConfig,
-  trigger: makeTriggerConfig,
-  panel: makePanelConfig,
-};
 
 export interface EditablePackage {
   id: string;
@@ -70,29 +62,21 @@ async function makeRequestConfig(
 }
 
 export function useCreate(): (
-  button: ActionFormState,
-  helpers: FormikHelpers<ActionFormState>
+  element: FormState,
+  helpers: FormikHelpers<FormState>
 ) => Promise<void> {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
 
   return useCallback(
     async (
-      button: ActionFormState,
-      { setSubmitting, setStatus }: FormikHelpers<ActionFormState>
+      element: FormState,
+      { setSubmitting, setStatus }: FormikHelpers<FormState>
     ) => {
-      console.debug("Updating/creating action", { button });
+      const adapter = ADAPTERS.get(element.type);
 
-      if (button.type !== "menuItem") {
-        addToast(`Saving for ${button.type} not implemented`, {
-          appearance: "error",
-          autoDismiss: true,
-        });
-        setSubmitting(false);
-        return;
-      }
-
-      // PERFORMANCE: inefficient, grabbing all visible bricks prior to save
+      // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
+      // number of bricks implemented and frequency of saves
       const { data: editable } = await axios.get<EditablePackage[]>(
         await makeURL("api/bricks/"),
         {
@@ -100,40 +84,43 @@ export function useCreate(): (
         }
       );
 
-      if (
-        !button.installed ||
-        editable.find((x) => x.name === button.reader.metadata.id)
-      ) {
-        try {
-          const readerConfig = makeExtensionReader(button);
-          const packageId = button.installed
-            ? editable.find((x) => x.name === readerConfig.metadata.id)?.id
-            : null;
-          await axios({
-            ...(await makeRequestConfig(packageId)),
-            data: { config: safeDump(readerConfig), kind: "reader" },
-          } as AxiosRequestConfig);
-        } catch (ex) {
-          const err = ex as AxiosError;
-          const msg =
-            err.response.data["config"]?.toString() ?? err.response.statusText;
-          setStatus(`Error saving reader: ${msg}`);
-          addToast(`Error saving reader definition: ${msg}`, {
-            appearance: "error",
-            autoDismiss: true,
-          });
-          setSubmitting(false);
-          return;
+      // Save the readers first
+      try {
+        const readerConfigs = makeExtensionReaders(element);
+        for (const readerConfig of readerConfigs) {
+          // FIXME: check for userscope here to determine editability?
+          if (isCustomReader(readerConfig)) {
+            const packageId = element.installed
+              ? // bricks endpoint uses "name" instead of id
+                editable.find((x) => x.name === readerConfig.metadata.id)?.id
+              : null;
+            await axios({
+              ...(await makeRequestConfig(packageId)),
+              data: { config: safeDump(readerConfig), kind: "reader" },
+            } as AxiosRequestConfig);
+          }
         }
+      } catch (ex) {
+        const err = ex as AxiosError;
+        const msg =
+          err.response.data["config"]?.toString() ?? err.response.statusText;
+        setStatus(`Error saving reader: ${msg}`);
+        addToast(`Error saving reader definition: ${msg}`, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+        setSubmitting(false);
+        return;
       }
 
+      // Save the foundation second, which depends on the reader
       if (
-        !button.installed ||
-        editable.find((x) => x.name === button.extensionPoint.metadata.id)
+        !element.installed ||
+        editable.find((x) => x.name === element.extensionPoint.metadata.id)
       ) {
         try {
-          const extensionPointConfig = makeMenuExtensionPoint(button);
-          const packageId = button.installed
+          const extensionPointConfig = adapter.extensionPoint(element);
+          const packageId = element.installed
             ? editable.find((x) => x.name === extensionPointConfig.metadata.id)
                 ?.id
             : null;
@@ -159,8 +146,8 @@ export function useCreate(): (
       }
 
       try {
-        dispatch(saveExtension(makeActionExtension(button)));
-        dispatch(markSaved(button.uuid));
+        dispatch(saveExtension(adapter.extension(element)));
+        dispatch(markSaved(element.uuid));
         addToast("Saved extension", {
           appearance: "success",
           autoDismiss: true,

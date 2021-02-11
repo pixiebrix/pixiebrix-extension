@@ -15,17 +15,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "@/core";
+import { Metadata, selectMetadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
-import { BaseFormState, ReaderFormState } from "@/devTools/editor/editorSlice";
+import {
+  BaseFormState,
+  isCustomReader,
+  ReaderFormState,
+  ReaderReferenceFormState,
+} from "@/devTools/editor/editorSlice";
 import psl, { ParsedDomain } from "psl";
-import { identity } from "lodash";
+import { identity, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
-import { ReaderConfig, ReaderDefinition } from "@/blocks/readers/factory";
+import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
 import {
   defaultSelector,
   readerOptions,
-} from "@/devTools/editor/tabs/ReaderTab";
+} from "@/devTools/editor/tabs/reader/ReaderConfig";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { find as findBrick } from "@/registry/localRegistry";
 import React from "react";
@@ -72,8 +77,49 @@ export function makeIsAvailable(
   };
 }
 
-export function makeReaderId(foundationId: string): string {
-  return `${foundationId}-reader`;
+export function makeReaderId(
+  foundationId: string,
+  excludeIds: string[] = []
+): string {
+  const base = `${foundationId}-reader`;
+  if (!excludeIds.includes(base)) {
+    return base;
+  }
+  let num = 1;
+  let id: string;
+  do {
+    num++;
+    id = `${base}-${num}`;
+  } while (excludeIds.includes(id));
+  return id;
+}
+
+interface ReaderOptions {
+  defaultSelector?: string;
+  reservedIds?: string[];
+  name?: string;
+}
+
+export function makeDefaultReader(
+  metadata: Metadata,
+  frameworks: FrameworkMeta[],
+  { defaultSelector, reservedIds, name }: ReaderOptions = {
+    defaultSelector: undefined,
+    reservedIds: [],
+  }
+): ReaderFormState {
+  return {
+    metadata: {
+      id: makeReaderId(metadata.id, reservedIds),
+      name: name ?? `Default reader for ${metadata.id}`,
+    },
+    outputSchema: {},
+    definition: {
+      type: defaultReader(frameworks),
+      selector: defaultSelector,
+      selectors: {},
+    },
+  };
 }
 
 export function makeBaseState(
@@ -85,18 +131,7 @@ export function makeBaseState(
   return {
     uuid,
     services: [],
-    reader: {
-      metadata: {
-        id: makeReaderId(metadata.id),
-        name: `Default reader for ${metadata.id}`,
-      },
-      outputSchema: {},
-      definition: {
-        type: defaultReader(frameworks),
-        selector: defaultSelector,
-        selectors: {},
-      },
-    },
+    readers: [makeDefaultReader(metadata, frameworks, { defaultSelector })],
     extension: {},
     extensionPoint: {},
   };
@@ -150,44 +185,71 @@ export async function generateExtensionPointMetadata(
   throw new Error("Could not find available id");
 }
 
-export function makeExtensionReader({
-  reader,
-}: BaseFormState): ReaderConfig<ReaderDefinition> {
-  const { metadata, definition, outputSchema = {} } = reader;
+export function makeExtensionReaders({
+  readers,
+}: BaseFormState): (ReaderConfig | ReaderReference)[] {
+  return readers.map((reader) => {
+    if (!isCustomReader(reader)) {
+      return { metadata: reader.metadata };
+    }
 
-  const readerOption = readerOptions.find((x) => x.value === definition.type);
+    const { metadata, definition, outputSchema = {} } = reader;
 
-  return {
-    apiVersion: "v1",
-    kind: "reader",
-    metadata: {
-      id: metadata.id,
-      name: metadata.name,
-      version: "1.0.0",
-      description: "Reader created with the devtools",
-    },
-    definition: {
-      reader: (readerOption?.makeConfig ?? defaultSelector)(definition),
-    },
-    outputSchema,
-  };
+    const readerOption = readerOptions.find((x) => x.value === definition.type);
+
+    return {
+      apiVersion: "v1",
+      kind: "reader",
+      metadata: {
+        id: metadata.id,
+        name: metadata.name,
+        version: "1.0.0",
+        description: "Reader created with the Page Editor",
+      },
+      definition: {
+        reader: (readerOption?.makeConfig ?? defaultSelector)(definition),
+      },
+      outputSchema,
+    };
+  });
 }
 
 export async function makeReaderFormState(
   extensionPoint: ExtensionPointConfig
-): Promise<ReaderFormState> {
+): Promise<(ReaderFormState | ReaderReferenceFormState)[]> {
   const readerId = extensionPoint.definition.reader;
 
-  if (typeof readerId !== "string") {
-    throw new Error("Composite readers not supported");
+  let readerIds: string[];
+
+  if (isPlainObject(readerId)) {
+    throw new Error("Key-based composite readers not supported");
+  } else if (typeof readerId === "string") {
+    readerIds = [readerId];
+  } else if (Array.isArray(readerId)) {
+    readerIds = readerId as string[];
+  } else {
+    throw new Error("Unexpected reader configuration");
   }
 
-  const reader = ((await findBrick(readerId))
-    .config as unknown) as ReaderConfig<ReaderDefinition>;
+  return Promise.all(
+    readerIds.map(async (readerId) => {
+      const brick = await findBrick(readerId);
 
-  return {
-    metadata: reader.metadata,
-    outputSchema: reader.outputSchema,
-    definition: reader.definition.reader as any,
-  };
+      if (!brick) {
+        try {
+          const reader = await brickRegistry.lookup(readerId);
+          return { metadata: selectMetadata(reader) };
+        } catch (err) {
+          throw new Error(`Cannot find reader: ${readerId}`);
+        }
+      }
+
+      const reader = (brick.config as unknown) as ReaderConfig;
+      return {
+        metadata: reader.metadata,
+        outputSchema: reader.outputSchema,
+        definition: reader.definition.reader as any,
+      };
+    })
+  );
 }

@@ -35,7 +35,13 @@ export interface ReaderDefinition {
   reader: ReaderTypeConfig;
 }
 
-export interface ReaderConfig<TDefinition extends ReaderDefinition> {
+export interface ReaderReference {
+  metadata: Metadata;
+}
+
+export interface ReaderConfig<
+  TDefinition extends ReaderDefinition = ReaderDefinition
+> {
   apiVersion?: "v1";
   metadata: Metadata;
   outputSchema: Schema;

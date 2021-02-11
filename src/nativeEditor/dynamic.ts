@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { IExtension, IExtensionPoint } from "@/core";
+import { IExtension, IExtensionPoint, IReader } from "@/core";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import {
   clearDynamic,
@@ -27,6 +27,7 @@ import {
   ReaderConfig,
   ReaderDefinition,
   readerFactory,
+  ReaderReference,
 } from "@/blocks/readers/factory";
 import {
   ExtensionPointConfig,
@@ -34,15 +35,23 @@ import {
 } from "@/extensionPoints/types";
 import Overlay from "@/nativeEditor/Overlay";
 import { checkAvailable as checkAvailableUtil } from "@/blocks/available";
+import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
+import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
+import { isCustomReader } from "@/devTools/editor/editorSlice";
+import blockRegistry from "@/blocks/registry";
+import { Reader } from "@/types";
+
+export type ElementType = "menuItem" | "trigger" | "panel" | "contextMenu";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
   TExtension = unknown,
   TReader extends ReaderDefinition = ReaderDefinition
 > {
+  type: ElementType;
   extensionPoint: ExtensionPointConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
-  reader: ReaderConfig<TReader>;
+  readers: (ReaderConfig<TReader> | ReaderReference)[];
 }
 
 let _overlay: Overlay | null = null;
@@ -67,18 +76,45 @@ export const getInstalledExtensionPointIds = liftContentScript(
   }
 );
 
+type ReaderLike = ReaderConfig | ReaderReference | Reader;
+
+async function buildSingleReader(config: ReaderLike): Promise<IReader> {
+  if (config instanceof Reader) {
+    return config;
+  } else if (isCustomReader(config)) {
+    return readerFactory(config);
+  } else {
+    return (await blockRegistry.lookup(config.metadata.id)) as IReader;
+  }
+}
+
+async function buildReaders(configs: ReaderLike[]): Promise<IReader> {
+  const array = await Promise.all(
+    configs.map((config) => buildSingleReader(config))
+  );
+  return new ArrayCompositeReader(array);
+}
+
 export const updateDynamicElement = liftContentScript(
   "UPDATE_DYNAMIC_ELEMENT",
   async ({
+    type,
     extensionPoint: extensionPointConfig,
     extension: extensionConfig,
-    reader: readerConfig,
+    readers: readerConfig,
   }: DynamicDefinition) => {
     const extensionPoint = extensionPointFactory(extensionPointConfig);
 
-    // the reader won't be in the registry, so override the method
-    const reader = readerFactory(readerConfig);
-    extensionPoint.defaultReader = async () => reader;
+    // The dynamic reader won't be in the registry, so override the defaultReader to be
+    // our dynamic reader directly
+    if (type === "contextMenu") {
+      const reader = await buildReaders(readerConfig);
+      (extensionPoint as ContextMenuExtensionPoint).getBaseReader = async () =>
+        reader;
+    } else {
+      const reader = await buildReaders(readerConfig);
+      extensionPoint.defaultReader = async () => reader;
+    }
 
     _temporaryExtensions.set(extensionConfig.id, extensionPoint);
 

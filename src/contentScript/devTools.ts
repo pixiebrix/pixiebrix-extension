@@ -23,13 +23,14 @@ import adapters from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
 import { Framework } from "@/messaging/constants";
 import { ready as contentScriptReady } from "@/contentScript/context";
+import blockRegistry from "@/blocks/registry";
+import getCssSelector from "css-selector-generator";
+import { IReader } from "@/core";
 
 // install handlers
 import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
-
-import getCssSelector from "css-selector-generator";
 
 let selectedElement: HTMLElement = undefined;
 
@@ -93,6 +94,37 @@ export const searchWindow: (
   }
 );
 
+export const runReaderBlock = liftContentScript(
+  "RUN_READER_BLOCK",
+  async ({ id, rootSelector }: { id: string; rootSelector?: string }) => {
+    const root = rootSelector
+      ? $(document).find(rootSelector).get(0)
+      : document;
+
+    if (id === "@pixiebrix/context-menu-data") {
+      // HACK: special handling for context menu built-in
+      if (root instanceof HTMLElement) {
+        return {
+          // TODO: extract the media type
+          mediaType: null,
+          linkText: root.tagName === "A" ? root.innerText : null,
+          linkUrl: root.tagName === "A" ? root.getAttribute("href") : null,
+          srcUrl: root.getAttribute("src"),
+          documentUrl: document.location.href,
+        };
+      } else {
+        return {
+          selectionText: window.getSelection().toString(),
+          documentUrl: document.location.href,
+        };
+      }
+    } else {
+      const reader = (await blockRegistry.lookup(id)) as IReader;
+      return await reader.read(root);
+    }
+  }
+);
+
 export const runReader = liftContentScript(
   "RUN_READER",
   async ({
@@ -102,9 +134,13 @@ export const runReader = liftContentScript(
     config: ReaderTypeConfig;
     rootSelector?: string;
   }) => {
-    const root = rootSelector
-      ? $(document).find(rootSelector).get(0)
-      : document;
+    console.debug("runReader", { config, rootSelector });
+
+    const root =
+      (rootSelector?.trim() ?? "") !== ""
+        ? $(document).find(rootSelector).get(0)
+        : document;
+
     return await makeRead(config)(root);
   }
 );

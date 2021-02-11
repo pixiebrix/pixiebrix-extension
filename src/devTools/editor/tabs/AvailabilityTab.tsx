@@ -15,20 +15,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import { FastField, FieldInputProps, useFormikContext } from "formik";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 import { FormState } from "@/devTools/editor/editorSlice";
+import { openTab } from "@/background/executor";
+import { getTabInfo } from "@/background/devtools";
+import { getDomain } from "@/devTools/editor/extensionPoints/base";
+import { DevToolsContext } from "@/devTools/context";
 
 const AvailabilityTab: React.FunctionComponent<{
   eventKey?: string;
   editable: Set<string>;
 }> = ({ eventKey = "availability", editable }) => {
-  const { values } = useFormikContext<FormState>();
+  const { port } = useContext(DevToolsContext);
+  const { values, getFieldHelpers } = useFormikContext<FormState>();
   const locked = useMemo(
     () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
     [editable, values.installed, values.extensionPoint.metadata.id]
+  );
+
+  const setMatchPattern = useCallback(
+    (pattern) => {
+      const helpers = getFieldHelpers(
+        "extensionPoint.definition.isAvailable.matchPatterns"
+      );
+      helpers.setValue(pattern);
+    },
+    [getFieldHelpers]
   );
 
   return (
@@ -43,16 +58,75 @@ const AvailabilityTab: React.FunctionComponent<{
           Match Patterns
         </Form.Label>
         <Col sm={10}>
+          {!locked && (
+            <div className="small">
+              <span>Shortcuts:</span>
+              <a
+                href="#"
+                className="mx-2"
+                role="button"
+                onClick={async () => {
+                  const url = (await getTabInfo(port)).url;
+                  const parsed = new URL(url);
+                  setMatchPattern(`${parsed.protocol}//${parsed.hostname}/*`);
+                }}
+              >
+                Site
+              </a>{" "}
+              <a
+                href="#"
+                className="mx-2"
+                role="button"
+                onClick={async () => {
+                  const url = (await getTabInfo(port)).url;
+                  const parsed = new URL(url);
+                  setMatchPattern(`${parsed.protocol}//*.${getDomain(url)}/*`);
+                }}
+              >
+                Domain
+              </a>{" "}
+              <a
+                href="#"
+                role="button"
+                className="mx-2"
+                onClick={() => setMatchPattern("https://*/*")}
+              >
+                HTTPS
+              </a>{" "}
+              <a
+                href="#"
+                role="button"
+                className="mx-2"
+                onClick={() => setMatchPattern("*://*/*")}
+              >
+                All URLs
+              </a>
+            </div>
+          )}
           <FastField name="extensionPoint.definition.isAvailable.matchPatterns">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} disabled={locked} />
             )}
           </FastField>
           <Form.Text className="text-muted">
-            URL match pattern for which pages to run the extension on
+            URL match pattern for which pages to run the extension on. See{" "}
+            <a
+              href="#"
+              onClick={() =>
+                openTab({
+                  url:
+                    "https://developer.chrome.com/docs/extensions/mv2/match_patterns/",
+                  active: true,
+                })
+              }
+            >
+              Chrome Documentation
+            </a>{" "}
+            for examples
           </Form.Text>
         </Col>
       </Form.Group>
+
       <Form.Group as={Row} controlId="formAvailableSelectors" className="pb-4">
         <Form.Label column sm={2}>
           Selector

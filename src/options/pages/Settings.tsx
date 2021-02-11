@@ -16,17 +16,13 @@
  */
 
 import React, { useCallback } from "react";
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
 import { useToasts } from "react-toast-notifications";
 import { optionsSlice, servicesSlice } from "../slices";
 import { connect } from "react-redux";
 import { PageTitle } from "@/layout/Page";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
+import { Row, Col, Form, Card, Button } from "react-bootstrap";
 import { useConfiguredHost, DEFAULT_SERVICE_URL } from "@/services/baseService";
-import isEmpty from "lodash/isEmpty";
+import { isEmpty } from "lodash";
 import { faCogs } from "@fortawesome/free-solid-svg-icons";
 import { clearExtensionAuth } from "@/auth/token";
 import { browser } from "webextension-polyfill-ts";
@@ -95,12 +91,25 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
               </p>
               <Button
                 variant="danger"
-                onClick={() => {
-                  resetOptions();
-                  addToast("Reset all options and service configurations", {
-                    appearance: "success",
-                    autoDismiss: true,
-                  });
+                onClick={async () => {
+                  try {
+                    resetOptions();
+                    await browser.contextMenus.removeAll();
+                    addToast("Reset all options and service configurations", {
+                      appearance: "success",
+                      autoDismiss: true,
+                    });
+                  } catch (err) {
+                    addToast(
+                      `Error resetting options and service configurations: ${
+                        err.message?.toString() ?? "Unknown error"
+                      }`,
+                      {
+                        appearance: "error",
+                        autoDismiss: true,
+                      }
+                    );
+                  }
                 }}
               >
                 Factory Reset

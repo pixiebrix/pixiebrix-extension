@@ -100,6 +100,14 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
       overlay.inspect([event.target as HTMLElement], null);
     }
 
+    function escape(event: KeyboardEvent) {
+      if (event.type === "keyup" && event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        cancel();
+      }
+    }
+
     function cancel() {
       stopInspectingNative();
       reject("Selection cancelled");
@@ -113,6 +121,7 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
       window.addEventListener("pointerdown", onPointerDown, true);
       window.addEventListener("pointerover", onPointerOver, true);
       window.addEventListener("pointerup", noopMouseHandler, true);
+      window.addEventListener("keyup", escape, true);
     }
 
     function removeListenersOnWindow(window: Window) {
@@ -123,6 +132,7 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
       window.removeEventListener("pointerdown", onPointerDown, true);
       window.removeEventListener("pointerover", onPointerOver, true);
       window.removeEventListener("pointerup", noopMouseHandler, true);
+      window.removeEventListener("keyup", escape, true);
     }
 
     _cancelSelect = cancel;
