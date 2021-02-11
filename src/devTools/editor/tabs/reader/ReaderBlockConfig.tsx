@@ -191,7 +191,8 @@ export const ReaderBlockForm: React.FunctionComponent<{
 const ReaderBlockConfig: React.FunctionComponent<{
   readerIndex: number;
   available: boolean;
-}> = ({ readerIndex, available }) => {
+  testElement: boolean;
+}> = ({ readerIndex, available, testElement = false }) => {
   const { values } = useFormikContext<FormState>();
 
   const [readerBlock] = useAsyncState(async () => {
@@ -205,7 +206,13 @@ const ReaderBlockConfig: React.FunctionComponent<{
     return <GridLoader />;
   }
 
-  return <ReaderBlockForm reader={readerBlock} available={available} />;
+  return (
+    <ReaderBlockForm
+      reader={readerBlock}
+      available={available}
+      testElement={testElement}
+    />
+  );
 };
 
 export default ReaderBlockConfig;

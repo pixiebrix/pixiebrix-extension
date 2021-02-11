@@ -72,6 +72,8 @@ export interface ContextMenuFormState extends BaseFormState {
     metadata: Metadata;
     definition: {
       defaultOptions: ContextMenuDefaultOptions;
+      documentUrlPatterns: string[];
+      contexts: ContextMenus.ContextType[];
       isAvailable: {
         matchPatterns: string;
         selectors: string;
@@ -81,7 +83,6 @@ export interface ContextMenuFormState extends BaseFormState {
 
   extension: {
     title: string;
-    contexts: ContextMenus.ContextType[];
     action: BlockPipeline;
   };
 }

@@ -446,7 +446,8 @@ const Sidebar: React.FunctionComponent<
   const addButton = useAddElement(addElementDefinitions.button, reservedNames);
   const addContextMenu = useAddElement(
     addElementDefinitions.contextMenu,
-    reservedNames
+    reservedNames,
+    "pageeditor-contextmenu"
   );
   const addPanel = useAddElement(
     addElementDefinitions.panel,

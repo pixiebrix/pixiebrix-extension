@@ -21,10 +21,14 @@ import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
+import { injectContentScript, waitReady } from "@/background/util";
 
 type MenuItemId = number | string;
 
 const extensionMenuItems = new Map<string, MenuItemId>();
+
+const CONTEXT_SCRIPT_INSTALL_MS = 1000;
+const CONTEXT_MENU_INSTALL_MS = 500;
 
 interface SelectionMenuOptions {
   extensionId: string;
@@ -33,27 +37,46 @@ interface SelectionMenuOptions {
   documentUrlPatterns: string[];
 }
 
+async function runMenu(info: Menus.OnClickData, tab: Tabs.Tab): Promise<void> {
+  // FIXME: this method doesn't handle frames properly
+
+  // Using the context menu gives temporary access to the page
+  await injectContentScript(tab.id);
+  await waitReady(tab.id, { maxWaitMillis: CONTEXT_SCRIPT_INSTALL_MS });
+
+  if (typeof info.menuItemId !== "string") {
+    throw new Error(
+      `Menu item ${info.menuItemId} is not a PixieBrix menu item`
+    );
+  }
+
+  try {
+    await handleMenuAction(tab.id, {
+      extensionId: info.menuItemId,
+      args: info,
+      maxWaitMillis: CONTEXT_MENU_INSTALL_MS,
+    });
+    showNotification(tab.id, {
+      message: "Ran content menu item action",
+      className: "success",
+    });
+  } catch (err) {
+    const message = `Error processing context menu action: ${err}`;
+    reportError(message);
+    showNotification(tab.id, { message, className: "error" }).catch(
+      (reason) => {
+        reportError(reason);
+      }
+    );
+  }
+}
+
 function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
   if (
     typeof info.menuItemId === "string" &&
     extensionMenuItems.has(info.menuItemId)
   ) {
-    handleMenuAction(tab.id, info.menuItemId, info)
-      .then(() => {
-        showNotification(tab.id, {
-          message: "Ran content menu item action",
-          className: "success",
-        });
-      })
-      .catch((reason) => {
-        const message = `Error processing context menu action: ${reason}`;
-        reportError(message);
-        showNotification(tab.id, { message, className: "error" }).catch(
-          (reason) => {
-            reportError(reason);
-          }
-        );
-      });
+    runMenu(info, tab);
   }
 }
 

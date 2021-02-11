@@ -34,7 +34,6 @@ import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
-import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import {
   ContextMenuConfig,
@@ -43,6 +42,7 @@ import {
 import FoundationTab from "@/devTools/editor/tabs/contextMenu/FoundationTab";
 import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
 import { find as findBrick } from "@/registry/localRegistry";
+import AvailabilityTab from "@/devTools/editor/tabs/contextMenu/AvailabilityTab";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -64,6 +64,8 @@ export function makeContextMenuState(
   // don't include a reader since in most cases can't use a selection reader
   base.readers = [];
 
+  const isAvailable = makeIsAvailable(url);
+
   return {
     type: "contextMenu",
     label: `My ${getDomain(url)} menu item`,
@@ -71,15 +73,14 @@ export function makeContextMenuState(
     extensionPoint: {
       metadata,
       definition: {
-        defaultOptions: {
-          contexts: ["all"],
-        },
-        isAvailable: makeIsAvailable(url),
+        documentUrlPatterns: [isAvailable.matchPatterns],
+        contexts: ["all"],
+        defaultOptions: {},
+        isAvailable,
       },
     },
     extension: {
       title: "PixieBrix",
-      contexts: ["all"],
       action: [],
     },
   };
@@ -105,6 +106,8 @@ export function makeContextMenuExtensionPoint({
     },
     definition: {
       type: "contextMenu",
+      documentUrlPatterns: extensionPoint.definition.documentUrlPatterns,
+      contexts: ["all"],
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
     },
@@ -167,14 +170,15 @@ export async function makeContextMenuFormState(
 
     extension: {
       ...extensionConfig,
-      contexts: castArray(extensionConfig.contexts),
       action: castArray(extensionConfig.action),
     },
 
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
+        documentUrlPatterns: extensionPoint.definition.documentUrlPatterns,
         defaultOptions: extensionPoint.definition.defaultOptions,
+        contexts: extensionPoint.definition.contexts,
         isAvailable: {
           matchPatterns: matchPatterns[0],
           selectors: selectors[0],

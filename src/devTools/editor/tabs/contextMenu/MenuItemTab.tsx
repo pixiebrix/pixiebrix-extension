@@ -15,50 +15,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FastField, FieldInputProps, useField } from "formik";
+import React, { useCallback, useRef } from "react";
+import { FastField, FieldInputProps } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import Select from "react-select";
-
-const CONTEXTS = [
-  "page",
-  "all",
-  "frame",
-  "selection",
-  "link",
-  "editable",
-  "image",
-  "video",
-  "audio",
-];
-
-const contextOptions = CONTEXTS.map((value) => ({ value, label: value }));
-
-interface ContextOption {
-  value: string;
-  label: string;
-}
-
-const ContextSelector: React.FunctionComponent<{ name: string }> = ({
-  name,
-}) => {
-  const [field, , helpers] = useField<string[]>(name);
-  return (
-    <Select
-      isMulti
-      isClearable={false}
-      options={contextOptions}
-      value={contextOptions.filter((x) => field.value.includes(x.value))}
-      onChange={(values) =>
-        helpers.setValue((values as any).map((x: ContextOption) => x.value))
-      }
-    />
-  );
-};
 
 const MenuItemTab: React.FunctionComponent<{
   eventKey?: string;
 }> = ({ eventKey = "menuItem" }) => {
+  const captionInput = useRef<HTMLInputElement>(null);
+
+  const insertSnippet = useCallback(
+    (snippet) => {
+      const { current } = captionInput;
+      const pos = current.selectionStart;
+      current.setRangeText(snippet, pos, pos);
+      current.focus();
+
+      // Trigger a DOM 'input' event
+      const event = new Event("input", { bubbles: true });
+      current.dispatchEvent(event);
+    },
+    [captionInput.current]
+  );
+
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <Form.Group as={Row} controlId="formCaption">
@@ -66,23 +45,30 @@ const MenuItemTab: React.FunctionComponent<{
           Caption
         </Form.Label>
         <Col sm={10}>
+          <div className="small">
+            <span>Insert at cursor:</span>
+            <a
+              href="#"
+              className="mx-2"
+              role="button"
+              onClick={(e) => {
+                insertSnippet("%s");
+                e.preventDefault();
+              }}
+            >
+              selected text
+            </a>
+          </div>
           <FastField name="extension.title">
             {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
+              <Form.Control type="text" {...field} ref={captionInput} />
             )}
           </FastField>
           <Form.Text className="text-muted">
-            The context menu item caption. Use the %s to fill in the selection
+            The context menu item caption. Use the <code>%s</code> placeholder
+            to have Chrome dynamically insert the current selection in the menu
+            caption
           </Form.Text>
-        </Col>
-      </Form.Group>
-
-      <Form.Group as={Row} controlId="formPosition">
-        <Form.Label column sm={2}>
-          Contexts
-        </Form.Label>
-        <Col sm={10}>
-          <ContextSelector name="extension.contexts" />
         </Col>
       </Form.Group>
     </Tab.Pane>

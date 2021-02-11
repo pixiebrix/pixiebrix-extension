@@ -47,6 +47,12 @@ import { ContextMenuReader } from "@/extensionPoints/contextMenu";
 import cx from "classnames";
 import { useToasts } from "react-toast-notifications";
 
+const INCLUDE_TEST_ELEMENT = new Set<string>([
+  "@pixiebrix/image/exif",
+  "@pixiebrix/image",
+  "@pixiebrix/html/element",
+]);
+
 const ReaderEntry: React.FunctionComponent<{
   reader: ReaderFormState | ReaderReferenceFormState | IReader;
   index: number;
@@ -252,6 +258,7 @@ const ReaderTab: React.FunctionComponent<{
                     key={`${reader.metadata.id}-${active}`}
                     readerIndex={active}
                     available={available}
+                    testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
                   />
                 )
               }
