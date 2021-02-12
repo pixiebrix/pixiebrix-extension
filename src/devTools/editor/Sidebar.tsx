@@ -480,7 +480,10 @@ const Sidebar: React.FunctionComponent<
           >
             <Dropdown.Item onClick={addButton}>
               <FontAwesomeIcon icon={faMousePointer} />
-              &nbsp;Button
+              &nbsp;Button{" "}
+              <Badge variant="success" pill>
+                Beta
+              </Badge>
             </Dropdown.Item>
             <Dropdown.Item onClick={addContextMenu}>
               <FontAwesomeIcon icon={faBars} />
