@@ -17,11 +17,10 @@
 
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { groupBy, sortBy, isEmpty } from "lodash";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { optionsSlice, OptionsState } from "../slices";
-import Button from "react-bootstrap/Button";
 import { useToasts } from "react-toast-notifications";
 import { PageTitle } from "@/layout/Page";
 import { useExtensionPermissions } from "@/permissions";
@@ -33,7 +32,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import { Row, Col, Card, Table } from "react-bootstrap";
+import { Row, Col, Card, Table, Button } from "react-bootstrap";
 import {
   ExtensionValidationResult,
   useExtensionValidator,
@@ -43,6 +42,7 @@ import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { useRegistry } from "@/hooks/registry";
 import { reportError } from "@/telemetry/logging";
+import { AuthContext } from "@/auth/context";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -148,6 +148,8 @@ const InstalledPage: React.FunctionComponent<{
   extensions: InstalledExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
+  const { flags } = useContext(AuthContext);
+
   const { addToast } = useToasts();
 
   const recipeExtensions = useMemo(() => {
@@ -182,9 +184,13 @@ const InstalledPage: React.FunctionComponent<{
         <Col>
           <div className="pb-4">
             <p>
-              Here&apos;s a list of bricks you currently have activated. You can
-              find more to activate in the{" "}
-              <Link to={"/marketplace"}>Marketplace</Link>
+              Here&apos;s a list of bricks you currently have activated.{" "}
+              {flags.includes("marketplace") && (
+                <>
+                  You can find more to activate in the{" "}
+                  <Link to={"/marketplace"}>Marketplace</Link>
+                </>
+              )}
             </p>
           </div>
         </Col>
@@ -233,8 +239,13 @@ const InstalledPage: React.FunctionComponent<{
                 <tbody>
                   <tr>
                     <td colSpan={4}>
-                      No bricks installed yet. Find some in the{" "}
-                      <Link to={"/marketplace"}>Marketplace</Link>
+                      No bricks installed yet.{" "}
+                      {flags.includes("marketplace") && (
+                        <>
+                          Find some in the{" "}
+                          <Link to={"/marketplace"}>Marketplace</Link>
+                        </>
+                      )}
                     </td>
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>

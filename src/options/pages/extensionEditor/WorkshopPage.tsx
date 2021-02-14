@@ -95,7 +95,7 @@ const CustomBricksCard: React.FunctionComponent<
 };
 
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, flags } = useContext(AuthContext);
   const [query, setQuery] = useState("");
   const optionsPromise = useMemo(getExtensionPointOptions, []);
 
@@ -112,8 +112,13 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
       <PageTitle icon={faHammer} title="Workshop" />
       <div className="pb-4">
         <p>
-          Build and install bricks. To install pre-made blueprints, visit the{" "}
-          <Link to={"/marketplace"}>Marketplace</Link>
+          Build and install bricks.{" "}
+          {flags.includes("marketplace") && (
+            <>
+              To install pre-made blueprints, visit the{" "}
+              <Link to={"/marketplace"}>Marketplace</Link>
+            </>
+          )}
         </p>
       </div>
       <Row>

@@ -15,12 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { connect, useSelector } from "react-redux";
 import { servicesSlice } from "../../slices";
 import { PageTitle } from "@/layout/Page";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { Row, Col, Card, Nav, Badge } from "react-bootstrap";
 import { push } from "connected-react-router";
 import { useToasts } from "react-toast-notifications";
 import ServiceEditorModal from "./ServiceEditorModal";
@@ -28,9 +27,6 @@ import PrivateServicesCard from "./PrivateServicesCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import SharedServicesCard from "./SharedServicesCard";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
-import Card from "react-bootstrap/Card";
-import Nav from "react-bootstrap/Nav";
-import Badge from "react-bootstrap/Badge";
 import { useFetch } from "@/hooks/fetch";
 import useServiceDefinitions from "./useServiceDefinitions";
 import { RootState } from "../../store";
@@ -39,6 +35,7 @@ import { SanitizedAuth } from "@/types/contract";
 import { refresh as refreshServices } from "@/background/locator";
 import { GridLoader } from "react-spinners";
 import ZapierModal from "@/options/pages/services/ZapierModal";
+import { AuthContext } from "@/auth/context";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -54,6 +51,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   navigate,
 }) => {
   const remoteAuths = useFetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
+  const { flags } = useContext(AuthContext);
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     ({ services }) => Object.values(services.configured)
@@ -164,14 +162,16 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
                     </Badge>
                   </Nav.Link>
                 </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="shared">
-                    Shared Services{" "}
-                    <Badge variant="info">
-                      {remoteAuths ? remoteAuths.length : "?"}
-                    </Badge>
-                  </Nav.Link>
-                </Nav.Item>
+                {flags.includes("teams") && (
+                  <Nav.Item>
+                    <Nav.Link eventKey="shared">
+                      Shared Services{" "}
+                      <Badge variant="info">
+                        {remoteAuths ? remoteAuths.length : "?"}
+                      </Badge>
+                    </Nav.Link>
+                  </Nav.Item>
+                )}
               </Nav>
             </Card.Header>
 
@@ -186,7 +186,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
               />
             )}
 
-            {activeTab === "shared" && (
+            {flags.includes("teams") && activeTab === "shared" && (
               <SharedServicesCard remoteAuths={remoteAuths} />
             )}
           </Card>

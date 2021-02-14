@@ -19,12 +19,16 @@ import { useSelector } from "react-redux";
 import Card from "react-bootstrap/Card";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-import React, { useCallback } from "react";
+import React, { useCallback, useContext } from "react";
 import { RawServiceConfiguration, IService, ServiceConfig } from "@/core";
 import { RootState } from "../../store";
-import ServiceSelector from "@/components/ServiceSelector";
 import { v4 as uuidv4 } from "uuid";
 import { ServiceDefinition } from "@/types/definitions";
+import ServiceModal from "@/components/fields/ServiceModal";
+import { useFetch } from "@/hooks/fetch";
+import { faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { AuthContext } from "@/auth/context";
 
 interface OwnProps {
   services: IService[];
@@ -37,6 +41,10 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   navigate,
   onCreate,
 }) => {
+  const { isLoggedIn } = useContext(AuthContext);
+
+  const serviceConfigs = useFetch("/api/services/") as ServiceDefinition[];
+
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     ({ services }) => Object.values(services.configured)
   );
@@ -55,10 +63,11 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
 
   return (
     <>
-      <Card.Body className="pb-2">
+      <Card.Body className="pb-2 px-3">
         <p>
-          Private services you configure are not shared with your teams or
-          transferred to the PixieBrix servers.
+          <FontAwesomeIcon icon={faEyeSlash} /> Private services configurations
+          are stored in your browser. They are not shared with your team or
+          transmitted to the PixieBrix servers.
         </p>
       </Card.Body>
       <Table>
@@ -71,21 +80,23 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td colSpan={3}>
-              Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
-            </td>
-            <td>
-              <Button
-                style={{ width: 100 }}
-                variant="info"
-                size="sm"
-                onClick={() => navigate(`/services/zapier/`)}
-              >
-                View Key
-              </Button>
-            </td>
-          </tr>
+          {isLoggedIn && (
+            <tr>
+              <td colSpan={3}>
+                Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
+              </td>
+              <td>
+                <Button
+                  style={{ width: 100 }}
+                  variant="info"
+                  size="sm"
+                  onClick={() => navigate(`/services/zapier/`)}
+                >
+                  View Key
+                </Button>
+              </td>
+            </tr>
+          )}
 
           {configuredServices.map((configuredService) => {
             const service = services.find(
@@ -123,9 +134,12 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         </tbody>
       </Table>
       <Card.Footer>
-        <div style={{ width: 300 }}>
-          <ServiceSelector onSelect={onSelect} />
-        </div>
+        <ServiceModal
+          onSelect={onSelect}
+          services={serviceConfigs}
+          caption="Add a service"
+          variant="primary"
+        />
       </Card.Footer>
     </>
   );

@@ -34,6 +34,7 @@ import { useDebounce } from "use-debounce";
 
 import "./BlockModal.scss";
 import { ServiceDefinition } from "@/types/definitions";
+import { ButtonVariant } from "react-bootstrap/types";
 
 const ServiceResult: React.FunctionComponent<{
   service: ServiceDefinition;
@@ -72,7 +73,13 @@ const ServiceModal: React.FunctionComponent<{
   onSelect: (service: ServiceDefinition) => void;
   services: ServiceDefinition[];
   caption?: string;
-}> = ({ onSelect, services, caption = "Select a service" }) => {
+  variant?: ButtonVariant;
+}> = ({
+  onSelect,
+  services,
+  caption = "Select a service",
+  variant = "info",
+}) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -166,7 +173,7 @@ const ServiceModal: React.FunctionComponent<{
           </Modal.Body>
         </Modal>
       )}
-      <Button variant="info" onClick={() => setShow(true)}>
+      <Button variant={variant} onClick={() => setShow(true)}>
         {caption}
       </Button>
     </div>
