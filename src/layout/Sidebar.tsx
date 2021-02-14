@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink } from "react-router-dom";
 import {
@@ -30,6 +30,7 @@ import cx from "classnames";
 import { useLocation } from "react-router";
 import { Location } from "history";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { AuthContext } from "@/auth/context";
 
 interface LinkProps {
   isActive?: (match: any, location: Location) => boolean;
@@ -61,41 +62,53 @@ const SidebarLink: React.FunctionComponent<LinkProps> = ({
   );
 };
 
-const Sidebar: React.FunctionComponent = () => (
-  <nav className="sidebar sidebar-offcanvas" id="sidebar">
-    <ul className="nav">
-      <SidebarLink
-        route="/installed"
-        title="Active Bricks"
-        icon={faCubes}
-        isActive={(match, location) =>
-          match ||
-          location.pathname === "/" ||
-          location.pathname.startsWith("/extensions/")
-        }
-      />
-      <SidebarLink route="/marketplace" title="Marketplace" icon={faStoreAlt} />
-      <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
-      {/*<ConnectedNavLink route="build" title="Build Brick" icon={faTools} />*/}
-      <SidebarLink
-        route="/services"
-        title="Configure Services"
-        icon={faCloud}
-      />
-      <SidebarLink route="/settings" title="Settings" icon={faCogs} />
-      <li className={cx("nav-item")}>
-        <a
-          href="https://docs.pixiebrix.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="nav-link"
-        >
-          <span className="menu-title">Documentation</span>
-          <FontAwesomeIcon icon={faInfoCircle} className="menu-icon" />
-        </a>
-      </li>
-    </ul>
-  </nav>
-);
+const Sidebar: React.FunctionComponent = () => {
+  const { flags } = useContext(AuthContext);
+
+  return (
+    <nav className="sidebar sidebar-offcanvas" id="sidebar">
+      <ul className="nav">
+        <SidebarLink
+          route="/installed"
+          title="Active Bricks"
+          icon={faCubes}
+          isActive={(match, location) =>
+            match ||
+            location.pathname === "/" ||
+            location.pathname.startsWith("/extensions/")
+          }
+        />
+        {flags.includes("marketplace") && (
+          <SidebarLink
+            route="/marketplace"
+            title="Marketplace"
+            icon={faStoreAlt}
+          />
+        )}
+        {flags.includes("workshop") && (
+          <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
+        )}
+        {/*<ConnectedNavLink route="build" title="Build Brick" icon={faTools} />*/}
+        <SidebarLink
+          route="/services"
+          title="Configure Services"
+          icon={faCloud}
+        />
+        <SidebarLink route="/settings" title="Settings" icon={faCogs} />
+        <li className={cx("nav-item")}>
+          <a
+            href="https://docs.pixiebrix.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="nav-link"
+          >
+            <span className="menu-title">Documentation</span>
+            <FontAwesomeIcon icon={faInfoCircle} className="menu-icon" />
+          </a>
+        </li>
+      </ul>
+    </nav>
+  );
+};
 
 export default Sidebar;

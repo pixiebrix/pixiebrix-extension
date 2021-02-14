@@ -83,10 +83,10 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
       <Row>
         <Col lg={6} md={8}>
           <Card border="danger">
-            <Card.Header className="danger">Reset Settings</Card.Header>
+            <Card.Header className="danger">Factory Reset</Card.Header>
             <Card.Body className="text-danger">
               <p className="card-text">
-                Click here to reset all the options.{" "}
+                Click here to reset your local PixieBrix data.{" "}
                 <b>This will delete any bricks you&apos;ve installed.</b>
               </p>
               <Button
