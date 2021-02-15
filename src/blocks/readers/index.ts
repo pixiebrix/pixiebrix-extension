@@ -17,6 +17,7 @@
 
 export * from "./meta";
 export * from "./PageMetadataReader";
+export * from "./PageSemanticReader";
 export * from "./BlankReader";
 export * from "./ImageReader";
 export * from "./ImageEXIFReader";
