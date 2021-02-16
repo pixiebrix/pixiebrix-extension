@@ -61,6 +61,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-common-types";
 const BlockEntry: React.FunctionComponent<{
   block: IBlock;
   index: number;
+  outputKey: string;
   onSelect: () => void;
   onRemove?: () => void;
   isDragDisabled: boolean;
@@ -69,6 +70,7 @@ const BlockEntry: React.FunctionComponent<{
 }> = ({
   block,
   index,
+  outputKey,
   isDragDisabled,
   showDragHandle = true,
   isActive,
@@ -98,6 +100,11 @@ const BlockEntry: React.FunctionComponent<{
             )}
             <div className="ReaderList__label">
               <div>{block.name}</div>
+              {outputKey && (
+                <div>
+                  <code>@{outputKey}</code>
+                </div>
+              )}
             </div>
             {onRemove && (
               <div className="ReaderList__actions">
@@ -142,7 +149,7 @@ const BlockConfiguration: React.FunctionComponent<{
       <Card>
         <Card.Header className="BlockAccordion__header">Input</Card.Header>
         <Card.Body>
-          <div className="overflow-auto">
+          <div>
             <RendererContext.Provider value={devtoolFields}>
               {errors?.id && (
                 <div className="invalid-feedback d-block mb-4">
@@ -184,7 +191,7 @@ const BlockConfiguration: React.FunctionComponent<{
       )}
       <Card>
         <Card.Header className="BlockAccordion__header">
-          Template Engine
+          Advanced: Template Engine
         </Card.Header>
         <Card.Body>
           <Form.Label>Template engine</Form.Label>
@@ -247,6 +254,7 @@ const RECOMMENDED_BRICKS = new Map<ElementType, Recommendation[]>([
     [
       { id: "@pixiebrix/browser/open-tab", icon: faWindowRestore },
       { id: "@pixiebrix/zapier/push-data", src: "img/zapier.svg" },
+      { id: "slack/simple-message", src: "img/slack.svg" },
     ],
   ],
   [
@@ -303,9 +311,9 @@ const QuickAdd: React.FunctionComponent<{
             <Card.Body>
               <Card.Title>{block.name}</Card.Title>
               <Card.Text className="small">{block.description}</Card.Text>
-              <Button variant="info" onClick={() => onSelect(block)}>
-                Add
-              </Button>
+              {/*<Button variant="info" onClick={() => onSelect(block)}>*/}
+              {/*  Add*/}
+              {/*</Button>*/}
             </Card.Body>
           </Card>
         ))}
@@ -393,6 +401,7 @@ const EffectTab: React.FunctionComponent<{
                           <BlockEntry
                             key={`${index}-${blockConfig.id}`}
                             index={index}
+                            outputKey={blockConfig.outputKey}
                             block={block}
                             onSelect={() => setActive(index)}
                             onRemove={() => {

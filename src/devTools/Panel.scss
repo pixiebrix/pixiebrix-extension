@@ -215,6 +215,7 @@
 
       &__image {
         font-size: 50px;
+        height: 80px;
 
         div {
           margin: auto;
@@ -309,6 +310,10 @@
       .ReaderList__actions {
         span[role="button"] {
           cursor: pointer;
+
+          svg {
+            cursor: pointer;
+          }
         }
       }
 
