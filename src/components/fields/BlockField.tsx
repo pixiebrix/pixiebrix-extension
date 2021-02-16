@@ -68,7 +68,7 @@ interface BlockState {
   error?: string | null;
 }
 
-function useBlockOptions(
+export function useBlockOptions(
   id: string
 ): [BlockState, React.FunctionComponent<BlockOptionProps>] {
   const [{ block, error }, setBlock] = useState<BlockState>({
