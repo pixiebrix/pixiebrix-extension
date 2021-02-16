@@ -42,6 +42,7 @@ export interface WizardStep {
     editable?: Set<string>;
     available?: boolean;
   }>;
+  extraProps?: object;
 }
 
 function getPathFromUrl(url: string): string {

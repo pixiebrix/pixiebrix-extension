@@ -258,12 +258,13 @@ const ElementWizard: React.FunctionComponent<{
         </Nav>
         {status && <div className="text-danger">{status}</div>}
         <Tab.Content className="h-100">
-          {wizard.map(({ Component, step }) => (
+          {wizard.map(({ Component, step, extraProps = {} }) => (
             <Component
               key={step}
               eventKey={step}
               editable={editable}
               available={available}
+              {...extraProps}
             />
           ))}
         </Tab.Content>

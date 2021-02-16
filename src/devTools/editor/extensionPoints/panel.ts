@@ -37,7 +37,7 @@ import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { DynamicDefinition } from "@/nativeEditor";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
-import RendererTab from "@/devTools/editor/tabs/RendererTab";
+import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { find as findBrick } from "@/registry/localRegistry";
 
@@ -47,7 +47,11 @@ export const wizard: WizardStep[] = [
   { step: "Reader", Component: ReaderTab },
   { step: "Panel", Component: PanelTab },
   { step: "Services", Component: ServicesTab },
-  { step: "Renderer", Component: RendererTab },
+  {
+    step: "Renderer",
+    Component: EffectTab,
+    extraProps: { fieldName: "extension.body" },
+  },
   { step: "Availability", Component: AvailabilityTab },
   { step: "Logs", Component: LogsTab },
 ];
