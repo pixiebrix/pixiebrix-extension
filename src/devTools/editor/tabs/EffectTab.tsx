@@ -61,6 +61,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-common-types";
 const BlockEntry: React.FunctionComponent<{
   block: IBlock;
   index: number;
+  outputKey: string;
   onSelect: () => void;
   onRemove?: () => void;
   isDragDisabled: boolean;
@@ -69,6 +70,7 @@ const BlockEntry: React.FunctionComponent<{
 }> = ({
   block,
   index,
+  outputKey,
   isDragDisabled,
   showDragHandle = true,
   isActive,
@@ -98,6 +100,11 @@ const BlockEntry: React.FunctionComponent<{
             )}
             <div className="ReaderList__label">
               <div>{block.name}</div>
+              {outputKey && (
+                <div>
+                  <code>@{outputKey}</code>
+                </div>
+              )}
             </div>
             {onRemove && (
               <div className="ReaderList__actions">
@@ -394,6 +401,7 @@ const EffectTab: React.FunctionComponent<{
                           <BlockEntry
                             key={`${index}-${blockConfig.id}`}
                             index={index}
+                            outputKey={blockConfig.outputKey}
                             block={block}
                             onSelect={() => setActive(index)}
                             onRemove={() => {
