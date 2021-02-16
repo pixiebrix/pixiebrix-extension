@@ -142,7 +142,7 @@ const BlockConfiguration: React.FunctionComponent<{
       <Card>
         <Card.Header className="BlockAccordion__header">Input</Card.Header>
         <Card.Body>
-          <div className="overflow-auto">
+          <div>
             <RendererContext.Provider value={devtoolFields}>
               {errors?.id && (
                 <div className="invalid-feedback d-block mb-4">
@@ -184,7 +184,7 @@ const BlockConfiguration: React.FunctionComponent<{
       )}
       <Card>
         <Card.Header className="BlockAccordion__header">
-          Template Engine
+          Advanced: Template Engine
         </Card.Header>
         <Card.Body>
           <Form.Label>Template engine</Form.Label>
@@ -247,6 +247,7 @@ const RECOMMENDED_BRICKS = new Map<ElementType, Recommendation[]>([
     [
       { id: "@pixiebrix/browser/open-tab", icon: faWindowRestore },
       { id: "@pixiebrix/zapier/push-data", src: "img/zapier.svg" },
+      { id: "slack/simple-message", src: "img/slack.svg" },
     ],
   ],
   [
@@ -303,9 +304,9 @@ const QuickAdd: React.FunctionComponent<{
             <Card.Body>
               <Card.Title>{block.name}</Card.Title>
               <Card.Text className="small">{block.description}</Card.Text>
-              <Button variant="info" onClick={() => onSelect(block)}>
-                Add
-              </Button>
+              {/*<Button variant="info" onClick={() => onSelect(block)}>*/}
+              {/*  Add*/}
+              {/*</Button>*/}
             </Card.Body>
           </Card>
         ))}
