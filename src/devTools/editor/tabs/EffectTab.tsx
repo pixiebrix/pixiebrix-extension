@@ -279,7 +279,7 @@ const QuickAdd: React.FunctionComponent<{
 
   return (
     <div>
-      <h4>Recommended Blocks</h4>
+      <h4>Recommended Bricks</h4>
       <div className="RecommendationContainer">
         {recommendedBlocks.map(({ block, recommendation }) => (
           <Card
