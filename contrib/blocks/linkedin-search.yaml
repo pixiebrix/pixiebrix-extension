@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: "linkedin/search"
+  version: 1.1.0
+  name: LinkedIn Search in new tab
+  description: Runs a LinkedIn search in a new tab
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    query:
+      type: string
+      description: The search query
+    type:
+      type: string
+      description: The search type
+      default: all
+      enum:
+        - all
+        - people
+        - events
+        - content
+        - companies
+        - schools
+        - groups
+  required:
+    - query
+pipeline:
+  - id: "@pixiebrix/browser/open-tab"
+    config:
+      url: https://www.linkedin.com/search/results/{{type}}{{^type}}all{{/type}}/
+      params:
+        keywords: query
+        origin: GLOBAL_SEARCH_HEADER

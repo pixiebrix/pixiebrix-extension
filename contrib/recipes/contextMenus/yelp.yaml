@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: yelp/template-search
+  version: 1.0.0
+  name: Yelp Search Context Menu
+  description: Yelp search context menus
+extensionPoints:
+  - id: "@pixiebrix/context-search"
+    label: Search Yelp
+    config:
+      title: Yelp
+      action:
+        id: yelp/search
+        config:
+          query: selectionText

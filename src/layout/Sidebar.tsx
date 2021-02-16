@@ -19,6 +19,7 @@ import React, { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink } from "react-router-dom";
 import {
+  faClipboardCheck,
   faCloud,
   faCogs,
   faCubes,
@@ -56,7 +57,7 @@ const SidebarLink: React.FunctionComponent<LinkProps> = ({
     >
       <NavLink to={route} className="nav-link" isActive={isActive}>
         <span className="menu-title">{title}</span>
-        <FontAwesomeIcon icon={icon} className="menu-icon" />
+        <FontAwesomeIcon icon={icon} className="menu-icon" fixedWidth />
       </NavLink>
     </li>
   );
@@ -77,6 +78,11 @@ const Sidebar: React.FunctionComponent = () => {
             location.pathname === "/" ||
             location.pathname.startsWith("/extensions/")
           }
+        />
+        <SidebarLink
+          route="/templates"
+          title="Templates"
+          icon={faClipboardCheck}
         />
         {flags.includes("marketplace") && (
           <SidebarLink

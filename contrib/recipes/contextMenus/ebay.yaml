@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: ebay/template-search
+  version: 1.0.0
+  name: eBay Search Context Menu
+  description: eBay search context menus
+extensionPoints:
+  - id: "@pixiebrix/context-search"
+    label: Search eBay
+    config:
+      title: eBay
+      action:
+        id: ebay/search
+        config:
+          query: selectionText

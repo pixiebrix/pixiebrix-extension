@@ -62,6 +62,12 @@ jobs:
           name: chrome-production
           path: browsers/chrome/bundles
           retention-days: 5
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: "release"
+          SLACK_MESSAGE: 'Chrome release build succeeded :rocket:'
 
   build-firefox:
     runs-on: ubuntu-latest
