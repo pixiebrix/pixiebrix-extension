@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: "quora/search"
+  version: 1.0.0
+  name: Quora Search in new tab
+  description: Runs a Quora search in a new tab
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    query:
+      type: string
+      description: The search query
+    type:
+      type: string
+      description: By type
+      enum:
+        - question
+        - answer
+        - post
+        - profile
+        - topic
+        - ama
+        - tribe
+    time:
+      type: string
+      description: By time
+      enum:
+        - hour
+        - day
+        - week
+        - month
+        - year
+  required:
+    - query
+pipeline:
+  - id: "@pixiebrix/browser/open-tab"
+    config:
+      url: https://www.quora.com/search
+      params:
+        q: query
+        time: "{{{ time }}}"
+        type: "{{{ type }}}"

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: extensionPoint
+metadata:
+  id: "@pixiebrix/context-search"
+  version: 1.0.0
+  name: Selection Context Menu
+  description: Base Context Menu that provides base context menu properties
+definition:
+  type: contextMenu
+  reader: "@pixiebrix/document-context"
+  contexts:
+    - selection
+  documentUrlPatterns:
+    - "*://*/*"
+  isAvailable:
+    matchPatterns: []

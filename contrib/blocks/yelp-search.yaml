@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: "yelp/search"
+  version: 1.0.0
+  name: Yelp Search in new tab
+  description: Runs a Yelp search in a new tab
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    query:
+      type: string
+      description: Name or description, e.g., plumbers, delivery, takeout
+    location:
+      type: string
+      description: Location, e.g., New York, NY
+  required:
+    - query
+pipeline:
+  - id: "@pixiebrix/browser/open-tab"
+    config:
+      url: https://www.yelp.com/search
+      params:
+        ns: "1"
+        find_desc: "{{{ query }}}"
+        find_loc: "{{{ location }}}"

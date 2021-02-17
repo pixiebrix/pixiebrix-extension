@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: "amazon/search"
+  version: 1.0.0
+  name: Amazon search in new tab
+  description: Runs a Amazon search in a new tab
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    query:
+      type: string
+      description: The search query
+    department:
+      type: string
+      description: The department to search
+      default: aps
+      enum:
+        - aps
+        - alexa-skills
+        - instant-video
+        - warehouse-deals
+        - appliances
+        - mobile-apps
+        - arts-craft
+        - automotive
+        - baby-products
+        - beauty
+        - stripbooks
+        - popular
+        - mobile
+        - fashion
+        - fashion-womens
+        - fashion-mens
+        - fashion-girls
+        - fashion-boys
+        - fashion-baby
+        - collectibles
+        - computers
+        - courses
+        - financial
+        - digital-music
+        - electronics
+        - gift-cards
+        - grocery
+        - handmade
+        - hpc
+        - local-services
+        - garden
+        - industrial
+        - digital-text
+        - fashion-luggage
+        - luxury-beauty
+        - magazines
+        - movies-tv
+        - mi
+        - office-products
+        - lawngarden
+        - pets
+        - pantry
+        - software
+        - sporting
+        - tools
+        - toys-and-games
+        - vehicles
+        - videogames
+        - wine
+  required:
+    - query
+pipeline:
+  - id: "@pixiebrix/browser/open-tab"
+    config:
+      url: http://www.amazon.com/s
+      params:
+        url: "search-alias={{{department}}}{{^department}}all{{/department}}&field-keywords={{{query}}}"

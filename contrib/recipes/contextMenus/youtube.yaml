@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: youtube/template-search
+  version: 1.0.0
+  name: YouTube Search Context Menu
+  description: YouTube search context menus
+extensionPoints:
+  - id: "@pixiebrix/context-search"
+    label: Search YouTube
+    config:
+      title: YouTube
+      action:
+        id: youtube/search
+        config:
+          query: selectionText

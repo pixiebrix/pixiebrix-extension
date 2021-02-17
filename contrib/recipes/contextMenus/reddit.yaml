@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: reddit/template-search
+  version: 1.0.0
+  name: Reddit Search Context Menu
+  description: Reddit search context menus
+extensionPoints:
+  - id: "@pixiebrix/context-search"
+    label: Search Reddit
+    config:
+      title: Reddit
+      action:
+        id: reddit/search
+        config:
+          query: selectionText

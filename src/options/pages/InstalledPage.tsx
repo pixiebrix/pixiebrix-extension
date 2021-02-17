@@ -17,9 +17,8 @@
 
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { groupBy, sortBy, isEmpty } from "lodash";
-import extensionPointRegistry from "@/extensionPoints/registry";
 import { optionsSlice, OptionsState } from "../slices";
 import { useToasts } from "react-toast-notifications";
 import { PageTitle } from "@/layout/Page";
@@ -29,6 +28,8 @@ import {
   faCheck,
   faCubes,
   faExclamation,
+  faCaretRight,
+  faCaretDown,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
@@ -40,7 +41,6 @@ import {
 import { IExtension } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
-import { useRegistry } from "@/hooks/registry";
 import { reportError } from "@/telemetry/logging";
 import { AuthContext } from "@/auth/context";
 
@@ -71,6 +71,72 @@ function validationMessage(validation: ExtensionValidationResult) {
   return message;
 }
 
+const RecipeEntry: React.FunctionComponent<{
+  recipeId: string;
+  extensions: InstalledExtension[];
+  onRemove: RemoveAction;
+}> = ({ recipeId, extensions, onRemove }) => {
+  const [expanded, setExpanded] = useState<boolean>(true);
+  const { addToast } = useToasts();
+
+  const removeMany = useCallback(
+    async (extensions: InstalledExtension[], name: string) => {
+      try {
+        for (const { id: extensionId, extensionPointId } of extensions) {
+          onRemove({ extensionId, extensionPointId });
+        }
+        addToast(`Uninstalled ${name}`, {
+          appearance: "success",
+          autoDismiss: true,
+        });
+      } catch (err) {
+        reportError(err);
+      }
+    },
+    [onRemove]
+  );
+
+  return (
+    <tbody key={recipeId}>
+      {recipeId !== "" && (
+        <tr
+          className="ActiveBricksCard__blueprint"
+          onClick={() => setExpanded((prev: boolean) => !prev)}
+        >
+          <th>
+            <FontAwesomeIcon
+              icon={expanded ? faCaretDown : faCaretRight}
+              onClick={() => setExpanded((prev: boolean) => !prev)}
+            />
+          </th>
+          <th colSpan={2} className="py-2">
+            {extensions[0]._recipe?.name ?? recipeId}
+          </th>
+          <th>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={() =>
+                removeMany(extensions, extensions[0]._recipe?.name)
+              }
+            >
+              Uninstall
+            </Button>
+          </th>
+        </tr>
+      )}
+      {expanded &&
+        extensions.map((extension) => (
+          <ExtensionRow
+            key={extension.id}
+            extension={extension}
+            onRemove={onRemove}
+          />
+        ))}
+    </tbody>
+  );
+};
+
 const ExtensionRow: React.FunctionComponent<{
   extension: IExtension;
   onRemove: RemoveAction;
@@ -82,7 +148,7 @@ const ExtensionRow: React.FunctionComponent<{
     extension
   );
 
-  const extensionPoint = useRegistry(extensionPointRegistry, extensionPointId);
+  // const extensionPoint = useRegistry(extensionPointRegistry, extensionPointId);
 
   const [validation] = useExtensionValidator(extension);
 
@@ -113,10 +179,11 @@ const ExtensionRow: React.FunctionComponent<{
 
   return (
     <tr>
-      <td>{extensionPoint?.name}</td>
+      <td>&nbsp;</td>
       <td>
         <Link to={`/workshop/extensions/${extension.id}`}>{label ?? id}</Link>
       </td>
+      {/*<td>2 weeks</td>*/}
       <td className="text-wrap">{statusElt}</td>
       <td>
         <Button
@@ -150,31 +217,12 @@ const InstalledPage: React.FunctionComponent<{
 }> = ({ extensions, onRemove }) => {
   const { flags } = useContext(AuthContext);
 
-  const { addToast } = useToasts();
-
   const recipeExtensions = useMemo(() => {
     return sortBy(
       Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
       (x) => (x[0] === "" ? 0 : 1)
     );
   }, [extensions]);
-
-  const removeMany = useCallback(
-    async (extensions: InstalledExtension[], name: string) => {
-      try {
-        for (const { id: extensionId, extensionPointId } of extensions) {
-          onRemove({ extensionId, extensionPointId });
-        }
-        addToast(`Uninstalled ${name}`, {
-          appearance: "success",
-          autoDismiss: true,
-        });
-      } catch (err) {
-        reportError(err);
-      }
-    },
-    [onRemove]
-  );
 
   return (
     <div>
@@ -202,43 +250,26 @@ const InstalledPage: React.FunctionComponent<{
             <Table>
               <thead>
                 <tr>
-                  <th>Location</th>
+                  <th>&nbsp;</th>
                   <th>Name</th>
+                  {/*<th>Last Used</th>*/}
                   <th>Status</th>
                   <th>Uninstall</th>
                 </tr>
               </thead>
               {recipeExtensions.map(([recipeId, xs]) => (
-                <tbody key={recipeId}>
-                  {recipeId !== "" && (
-                    <tr className="ActiveBricksCard__blueprint">
-                      <th colSpan={3} className="py-2">
-                        {xs[0]._recipe?.name ?? recipeId}
-                      </th>
-                      <th>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => removeMany(xs, xs[0]._recipe?.name)}
-                        >
-                          Uninstall
-                        </Button>
-                      </th>
-                    </tr>
-                  )}
-                  {xs.map((extension) => (
-                    <ExtensionRow
-                      key={extension.id}
-                      extension={extension}
-                      onRemove={onRemove}
-                    />
-                  ))}
-                </tbody>
+                <RecipeEntry
+                  key={recipeId}
+                  recipeId={recipeId}
+                  extensions={xs}
+                  onRemove={onRemove}
+                />
               ))}
               {isEmpty(extensions) && (
                 <tbody>
                   <tr>
-                    <td colSpan={4}>
+                    <td>&nbsp;</td>
+                    <td colSpan={3}>
                       No bricks installed yet.{" "}
                       {flags.includes("marketplace") && (
                         <>
@@ -247,7 +278,7 @@ const InstalledPage: React.FunctionComponent<{
                         </>
                       )}
                     </td>
-                    <td>&nbsp;</td>
+                    {/*<td>&nbsp;</td>*/}
                     <td>&nbsp;</td>
                     <td>&nbsp;</td>
                   </tr>

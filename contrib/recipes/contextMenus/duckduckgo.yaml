@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: duckduckgo/template-search
+  version: 1.0.0
+  name: DuckDuckGo Search Context Menu
+  description: DuckDuckGo search context menus
+extensionPoints:
+  - id: "@pixiebrix/context-search"
+    label: Search DuckDuckGo
+    config:
+      title: DuckDuckGo
+      action:
+        id: duckduckgo/search
+        config:
+          query: selectionText

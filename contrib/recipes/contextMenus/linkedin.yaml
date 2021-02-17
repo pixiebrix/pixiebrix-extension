@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: recipe
+metadata:
+  id: linkedin/template-search
+  version: 1.0.0
+  name: LinkedIn Search Context Menu
+  description: LinkedIn search context menus
+extensionPoints:
+  - id: "@pixiebrix/context-search"
+    label: Search LinkedIn
+    config:
+      title: LinkedIn
+      action:
+        id: linkedin/search
+        config:
+          query: selectionText
+          type: all
+  - id: "@pixiebrix/context-search"
+    label: Search People on LinkedIn
+    config:
+      title: "LinkedIn: People"
+      action:
+        id: linkedin/search
+        config:
+          query: selectionText
+          type: people
+  - id: "@pixiebrix/context-search"
+    label: Search Companies on LinkedIn
+    config:
+      title: "LinkedIn: Companies"
+      action:
+        id: linkedin/search
+        config:
+          query: selectionText
+          type: companies

@@ -50,13 +50,13 @@ const Entry: React.FunctionComponent<RecipeProps> = ({
     } else if (!installed) {
       return (
         <Button size="sm" variant="primary" onClick={onInstall}>
-          Activate
+          Add
         </Button>
       );
     } else {
       return (
         <Button size="sm" variant="primary" disabled>
-          Activated
+          Added
         </Button>
       );
     }

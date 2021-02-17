@@ -44,13 +44,15 @@ interface ContextOption {
   label: string;
 }
 
-const ContextSelector: React.FunctionComponent<{ name: string }> = ({
-  name,
-}) => {
+const ContextSelector: React.FunctionComponent<{
+  name: string;
+  disabled: boolean;
+}> = ({ name, disabled }) => {
   const [field, , helpers] = useField<string[]>(name);
   return (
     <Select
       isMulti
+      isDisabled={disabled}
       isClearable={false}
       options={contextOptions}
       value={contextOptions.filter((x) => field.value.includes(x.value))}
@@ -182,7 +184,10 @@ const AvailabilityTab: React.FunctionComponent<{
           Contexts
         </Form.Label>
         <Col sm={10}>
-          <ContextSelector name="extensionPoint.definition.contexts" />
+          <ContextSelector
+            disabled={locked}
+            name="extensionPoint.definition.contexts"
+          />
           <Form.Text className="text-muted">
             One or more contexts to include the context menu item. For example,
             use the <code>selection</code> context to show the menu item when

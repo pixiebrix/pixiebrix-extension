@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: component
+metadata:
+  id: "duckduckgo/search"
+  version: 1.0.0
+  name: DuckDuckGo Search in new tab
+  description: Runs a DuckDuckGo search in a new tab
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    query:
+      type: string
+      description: The search query
+    safeSearch:
+      type: string
+      default: moderate
+      enum:
+        - on
+        - moderate
+        - off
+  required:
+    - query
+pipeline:
+  - id: "@pixiebrix/mapping"
+    outputKey: safeSearchNumber
+    config:
+      key: safeSearch
+      missing: "null"
+      mapping:
+        on: 1
+        moderate: -1
+        off: -2
+  - id: "@pixiebrix/browser/open-tab"
+    config:
+      url: https://duckduckgo.com/
+      params:
+        q: query
+        kp: "{{{ @safeSearchNumber }}}"

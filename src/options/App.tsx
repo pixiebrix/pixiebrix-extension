@@ -51,6 +51,7 @@ import { AuthState } from "@/core";
 import "@/blocks";
 import "@/contrib";
 import "@/contrib/editors";
+import TemplatesPage from "@/options/pages/templates/TemplatesPage";
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(
@@ -87,6 +88,7 @@ const Layout = () => {
                     path="/marketplace"
                     component={MarketplacePage}
                   />
+                  <Route exact path="/templates" component={TemplatesPage} />
                   <Route
                     exact
                     path="/marketplace/activate/:blueprintId"
