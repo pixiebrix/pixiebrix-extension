@@ -22,19 +22,23 @@ import { ExtensionOptions, optionsSlice, OptionsState } from "@/options/slices";
 import { useToasts } from "react-toast-notifications";
 import Rollbar from "rollbar";
 import groupBy from "lodash/groupBy";
-import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import uniq from "lodash/uniq";
 import pickBy from "lodash/pickBy";
 import { push } from "connected-react-router";
 import "./ActivateWizard.scss";
-import { Formik, FormikHelpers, useFormikContext } from "formik";
-import ConfigureBody, { selectedExtensions } from "./ConfigureBody";
-import PermissionsBody from "./PermissionsBody";
+import { Formik, FormikHelpers } from "formik";
+import ConfigureBody, {
+  selectedExtensions,
+  useSelectedExtensions,
+} from "./ConfigureBody";
 import ServicesBody from "./ServicesBody";
 import { WizardValues } from "./wizard";
 import { checkPermissions, collectPermissions } from "@/permissions";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import ActivateBody, {
+  useEnsurePermissions,
+} from "@/options/pages/marketplace/ActivateBody";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -194,39 +198,24 @@ interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
-interface ActivateProps {
-  blueprint: RecipeDefinition;
-}
-
-const ActivateContent: React.FunctionComponent<ActivateProps> = ({
-  blueprint,
-}) => {
-  const { submitForm } = useFormikContext();
-  return (
-    <Card.Body>
-      <p>
-        Click the button to activate the blueprint. You can de-activate the
-        installed bricks at any time on the{" "}
-        <Link to="/installed">Active Bricks page</Link>
-      </p>
-
-      <Button onClick={() => submitForm()}>
-        Activate {blueprint.metadata.name}
-      </Button>
-    </Card.Body>
-  );
-};
-
 const STEPS = [
   { key: "review", label: "Configure", Component: ConfigureBody },
   { key: "services", label: "Select Services", Component: ServicesBody },
-  {
-    key: "permissions",
-    label: "Grant Permissions",
-    Component: PermissionsBody,
-  },
-  { key: "activate", label: "Activate", Component: ActivateContent },
+  { key: "activate", label: "Review & Activate", Component: ActivateBody },
 ];
+
+const ActivateButton: React.FunctionComponent<{
+  blueprint: RecipeDefinition;
+}> = ({ blueprint }) => {
+  const selected = useSelectedExtensions(blueprint.extensionPoints);
+  const { activate, isPending } = useEnsurePermissions(selected);
+
+  return (
+    <Button size="sm" disabled={isPending} onClick={activate}>
+      Activate
+    </Button>
+  );
+};
 
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [blueprintSteps, initialValues] = useMemo(() => {
@@ -239,7 +228,6 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         blueprint.extensionPoints.map((x, i) => [i, true])
       ),
       services: Object.fromEntries(services.map((x) => [x, undefined])),
-      grantPermissions: false,
     };
     return [steps, initialValues];
   }, [blueprint]);
@@ -280,13 +268,19 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                         >
                           Previous
                         </Button>
-                        <Button
-                          size="sm"
-                          disabled={index === blueprintSteps.length - 1}
-                          onClick={() => setStep(blueprintSteps[index + 1].key)}
-                        >
-                          Next
-                        </Button>
+
+                        {index < blueprintSteps.length - 1 ? (
+                          <Button
+                            size="sm"
+                            onClick={() =>
+                              setStep(blueprintSteps[index + 1].key)
+                            }
+                          >
+                            Next
+                          </Button>
+                        ) : (
+                          <ActivateButton blueprint={blueprint} />
+                        )}
                       </div>
                     </Card.Footer>
                   </Card>

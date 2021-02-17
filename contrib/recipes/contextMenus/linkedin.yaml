@@ -18,7 +18,7 @@ extensionPoints:
   - id: "@pixiebrix/context-search"
     label: Search People on LinkedIn
     config:
-      caption: "LinkedIn: People"
+      title: "LinkedIn: People"
       action:
         id: linkedin/search
         config:

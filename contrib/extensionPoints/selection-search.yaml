@@ -7,11 +7,10 @@ metadata:
   description: Base Context Menu that provides base context menu properties
 definition:
   type: contextMenu
-  reader:
-    - document: "@pixiebrix/document-context"
+  reader: "@pixiebrix/document-context"
   contexts:
     - selection
   documentUrlPatterns:
-    - "*://*/"
+    - "*://*/*"
   isAvailable:
     matchPatterns: []
