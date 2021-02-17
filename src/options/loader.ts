@@ -16,12 +16,25 @@
  */
 
 import { readStorage } from "@/chrome";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { Metadata, ServiceDependency } from "@/core";
+import { Permissions } from "webextension-polyfill-ts";
 
 const storageKey = "persist:extensionOptions";
 
+export interface ExtensionOptions {
+  id: string;
+  _recipeId?: string;
+  _recipe: Metadata | null;
+  extensionPointId: string;
+  active: boolean;
+  label: string;
+  permissions?: Permissions.Permissions;
+  services: ServiceDependency[];
+  config: { [prop: string]: unknown };
+}
+
 export async function loadOptions(): Promise<{
-  extensions: ExtensionPointConfig[];
+  extensions: Record<string, Record<string, ExtensionOptions>>;
 }> {
   const rawOptions = await readStorage(storageKey);
 

@@ -16,10 +16,10 @@
  */
 
 import React from "react";
-import Rollbar from "rollbar";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo } from "@fortawesome/free-solid-svg-icons";
+import { reportError } from "@/telemetry/logging";
 
 interface State {
   hasError: boolean;
@@ -43,8 +43,7 @@ class ErrorBoundary extends React.Component<{}, State> {
   }
 
   componentDidCatch(error: Error): void {
-    // @ts-ignore: not sure what's going on with the rollbar type
-    Rollbar.error(error);
+    reportError(error);
   }
 
   render() {

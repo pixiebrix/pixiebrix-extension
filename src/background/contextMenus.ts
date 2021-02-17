@@ -22,6 +22,7 @@ import { reportError } from "@/telemetry/logging";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
 import { injectContentScript, waitReady } from "@/background/util";
+import { reportEvent } from "@/telemetry/telemetry";
 
 type MenuItemId = number | string;
 
@@ -48,6 +49,12 @@ async function runMenu(info: Menus.OnClickData, tab: Tabs.Tab): Promise<void> {
     throw new Error(
       `Menu item ${info.menuItemId} is not a PixieBrix menu item`
     );
+  }
+
+  try {
+    reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
+  } catch (err) {
+    console.warn("Error reporting ContextMenuClick event", { err });
   }
 
   try {

@@ -31,9 +31,12 @@ export interface RegistryItem {
 }
 
 export class DoesNotExistError extends Error {
+  public readonly id: string;
+
   constructor(id: string) {
-    super(`${id} does not exist`);
+    super("Registry item does not exist");
     this.name = "DoesNotExistError";
+    this.id = id;
   }
 }
 

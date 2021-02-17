@@ -47,9 +47,10 @@ export const ADAPTERS = new Map<ElementType, Config>(
 export async function getType(extension: IExtension): Promise<ElementType> {
   const brick = await findBrick(extension.extensionPointId);
   if (!brick) {
-    throw new Error(
-      `Cannot find extension point: ${extension.extensionPointId}`
-    );
+    console.exception("Cannot find extension point", {
+      extensionPointId: extension.extensionPointId,
+    });
+    throw new Error(`Cannot find extension point`);
   }
   const extensionPoint = (brick.config as unknown) as ExtensionPointConfig;
   return extensionPoint.definition.type;

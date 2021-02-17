@@ -43,6 +43,7 @@ import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
 import { AuthContext } from "@/auth/context";
+import { reportEvent } from "@/telemetry/telemetry";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -267,7 +268,7 @@ const InstalledPage: React.FunctionComponent<{
               ))}
               {isEmpty(extensions) && (
                 <tbody>
-                  <tr>
+                  <tr className="ActiveBricksCard__empty">
                     <td>&nbsp;</td>
                     <td colSpan={3}>
                       No bricks installed yet.{" "}
@@ -315,6 +316,9 @@ export default connect(
   }),
   (dispatch) => ({
     onRemove: (identifier: ExtensionIdentifier) => {
+      reportEvent("ExtensionRemove", {
+        extensionId: identifier.extensionId,
+      });
       uninstallContextMenu(identifier).then(() => {
         dispatch(removeExtension(identifier));
       });

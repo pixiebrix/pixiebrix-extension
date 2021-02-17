@@ -50,6 +50,7 @@ import {
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
+import { reportEvent } from "@/telemetry/telemetry";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -226,8 +227,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   private async installMenus(): Promise<boolean> {
     if (this.uninstalled) {
+      console.error(`Menu item extension is uninstalled`, {
+        extensionId: this.instanceId,
+      });
       throw new Error(
-        `Extension ${this.id} (${this.instanceId}) is uninstalled`
+        `Cannot install menu item because it was already uninstalled`
       );
     }
 
@@ -321,6 +325,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       e.stopPropagation();
 
       console.debug(`Run menu item`, this.logger.context);
+
+      reportEvent("MenuItemClick", { extensionId: extension.id });
 
       try {
         // read latest state at the time of the action

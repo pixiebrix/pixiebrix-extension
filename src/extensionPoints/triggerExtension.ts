@@ -44,6 +44,7 @@ import { reportError } from "@/telemetry/logging";
 
 // @ts-ignore: using for the EventHandler type below
 import JQuery from "jquery";
+import { reportEvent } from "@/telemetry/telemetry";
 
 export interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
@@ -138,6 +139,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           reportError(ex, extensionLogger.context);
           return ex;
         }
+        reportEvent("TriggerRun", {
+          extensionId: extension.id,
+        });
       })
     );
     return compact(errors);
@@ -174,7 +178,6 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         ]);
         TriggerExtensionPoint.notifyErrors(compact(promises));
       };
-
       this.$installedRoot = $root;
       this.installedEvents.add(this.trigger);
       $root.on(this.trigger, this.handler);

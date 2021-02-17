@@ -241,7 +241,8 @@ export async function makeReaderFormState(
           const reader = await brickRegistry.lookup(readerId);
           return { metadata: selectMetadata(reader) };
         } catch (err) {
-          throw new Error(`Cannot find reader: ${readerId}`);
+          console.error("Cannot find reader", { readerId, err });
+          throw new Error("Cannot find reader");
         }
       }
 

@@ -19,6 +19,7 @@ import { browser, Runtime } from "webextension-polyfill-ts";
 import { reportError } from "@/telemetry/logging";
 import { liftBackground } from "@/background/protocol";
 import urljoin from "url-join";
+import { reportEvent, initTelemetry } from "@/telemetry/telemetry";
 
 const SERVICE_URL = process.env.SERVICE_URL;
 
@@ -29,9 +30,22 @@ async function openInstallPage() {
 function install({ reason }: Runtime.OnInstalledDetailsType) {
   if (reason === "install") {
     openInstallPage().catch((reason) => {
-      return reportError(reason);
+      reportError(reason);
+    });
+    initTelemetry();
+    reportEvent("PixieBrixInstall", {
+      version: browser.runtime.getManifest().version,
+    });
+  } else if (reason === "update") {
+    initTelemetry();
+    reportEvent("PixieBrixUpdate", {
+      version: browser.runtime.getManifest().version,
     });
   }
+}
+
+function init() {
+  initTelemetry();
 }
 
 export const hasAppAccount = liftBackground("CHECK_APP_ACCOUNT", async () => {
@@ -40,3 +54,4 @@ export const hasAppAccount = liftBackground("CHECK_APP_ACCOUNT", async () => {
 });
 
 browser.runtime.onInstalled.addListener(install);
+browser.runtime.onStartup.addListener(init);
