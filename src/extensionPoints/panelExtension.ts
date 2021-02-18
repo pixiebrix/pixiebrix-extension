@@ -46,7 +46,7 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
-import { reportEvent } from "@/telemetry/telemetry";
+import { reportEvent } from "@/telemetry/events";
 
 export interface PanelConfig {
   heading?: string;

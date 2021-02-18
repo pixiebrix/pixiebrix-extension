@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -52,6 +52,7 @@ import "@/blocks";
 import "@/contrib";
 import "@/contrib/editors";
 import TemplatesPage from "@/options/pages/templates/TemplatesPage";
+import { initTelemetry } from "@/telemetry/events";
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(
@@ -136,6 +137,12 @@ const defaultState: AuthState = {
 
 const App: React.FunctionComponent = () => {
   const [authState] = useAsyncState(getAuth);
+
+  useEffect(() => {
+    if (authState?.isLoggedIn) {
+      initTelemetry();
+    }
+  }, [authState?.isLoggedIn]);
 
   return (
     <Provider store={store}>

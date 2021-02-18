@@ -50,7 +50,7 @@ import {
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
-import { reportEvent } from "@/telemetry/telemetry";
+import { reportEvent } from "@/telemetry/events";
 
 interface ShadowDOM {
   mode?: "open" | "closed";

@@ -254,3 +254,13 @@ export function getPropByPath(
 
   return cleanValue(toJS(value));
 }
+
+export function isNullOrBlank(value: unknown): boolean {
+  if (value == null) {
+    return true;
+  } else if (typeof value === "string" && value.trim() === "") {
+    return true;
+  } else {
+    return false;
+  }
+}

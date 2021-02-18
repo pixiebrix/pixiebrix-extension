@@ -36,7 +36,7 @@ import { GridLoader } from "react-spinners";
 import { useAsyncState } from "@/hooks/common";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { reportEvent } from "@/telemetry/telemetry";
+import { reportEvent } from "@/telemetry/events";
 
 interface ActivateProps {
   blueprint: RecipeDefinition;

@@ -41,10 +41,9 @@ import { Permissions } from "webextension-polyfill-ts";
 import { compact, castArray } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
-
+import { reportEvent } from "@/telemetry/events";
 // @ts-ignore: using for the EventHandler type below
 import JQuery from "jquery";
-import { reportEvent } from "@/telemetry/telemetry";
 
 export interface TriggerConfig {
   action: BlockPipeline | BlockConfig;

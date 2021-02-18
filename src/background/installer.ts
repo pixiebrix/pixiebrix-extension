@@ -19,7 +19,7 @@ import { browser, Runtime } from "webextension-polyfill-ts";
 import { reportError } from "@/telemetry/logging";
 import { liftBackground } from "@/background/protocol";
 import urljoin from "url-join";
-import { reportEvent, initTelemetry } from "@/telemetry/telemetry";
+import { reportEvent, initTelemetry } from "@/telemetry/events";
 
 const SERVICE_URL = process.env.SERVICE_URL;
 

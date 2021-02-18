@@ -43,7 +43,7 @@ import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
 import { AuthContext } from "@/auth/context";
-import { reportEvent } from "@/telemetry/telemetry";
+import { reportEvent } from "@/telemetry/events";
 
 const { removeExtension } = optionsSlice.actions;
 

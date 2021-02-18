@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { createSlice } from "@reduxjs/toolkit";
 import { Metadata, RawServiceConfiguration, ServiceDependency } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
-import { reportEvent } from "@/telemetry/telemetry";
+import { reportEvent } from "@/telemetry/events";
 
 type InstallMode = "local" | "remote";
 

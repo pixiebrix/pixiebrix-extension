@@ -24,7 +24,6 @@ import { readStorage, setStorage } from "@/chrome";
 import { getExtensionToken } from "@/auth/token";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
-import getStorage from "redux-persist/es/storage/getStorage";
 import { boolean } from "@/utils";
 import { ExtensionOptions, loadOptions } from "@/options/loader";
 
@@ -71,7 +70,7 @@ export async function _getDNT(): Promise<boolean> {
   if (_dnt != null) {
     return _dnt;
   }
-  _dnt = boolean(await getStorage(DNT_STORAGE_KEY));
+  _dnt = boolean(await readStorage<string>(DNT_STORAGE_KEY));
   return _dnt;
 }
 
@@ -108,44 +107,48 @@ export const toggleDNT = liftBackground(
   }
 );
 
+async function userSummary() {
+  const { os } = await browser.runtime.getPlatformInfo();
+  // Getting browser information would require additional permissions
+  // const {name: browserName} = await browser.runtime.getBrowserInfo();
+  let numActiveExtensions: number = null;
+  let numActiveExtensionPoints: number = null;
+  let numActiveBlueprints: number = null;
+
+  try {
+    const { extensions: extensionPointConfigs } = await loadOptions();
+    const extensions: ExtensionOptions[] = Object.entries(
+      extensionPointConfigs
+    ).flatMap(([, xs]) => Object.values(xs));
+    numActiveExtensions = extensions.length;
+    numActiveBlueprints = uniq(
+      extensions.filter((x) => x._recipeId).map((x) => x._recipeId)
+    ).length;
+    numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
+      .length;
+  } catch (err) {
+    console.warn("Cannot get number of extensions", { err });
+  }
+
+  return {
+    numActiveExtensions,
+    numActiveBlueprints,
+    numActiveExtensionPoints,
+    $os: os,
+  };
+}
+
 export const initUID = liftBackground(
   "INIT_UID",
   async (): Promise<void> => {
     if (!(await _getDNT())) {
       const url = `${await getBaseURL()}/api/identify/`;
-      const { os } = await browser.runtime.getPlatformInfo();
-      // Getting browser information would require additional permissions
-      // const {name: browserName} = await browser.runtime.getBrowserInfo();
-      let numActiveExtensions: number = null;
-      let numActiveExtensionPoints: number = null;
-      let numActiveBlueprints: number = null;
-
-      try {
-        const { extensions: extensionPointConfigs } = await loadOptions();
-        const extensions: ExtensionOptions[] = Object.entries(
-          extensionPointConfigs
-        ).flatMap(([, xs]) => Object.values(xs));
-        numActiveExtensions = extensions.length;
-        numActiveBlueprints = uniq(
-          extensions.filter((x) => x._recipeId).map((x) => x._recipeId)
-        ).length;
-        numActiveExtensionPoints = uniq(
-          extensions.map((x) => x.extensionPointId)
-        ).length;
-      } catch (err) {
-        console.warn("Cannot get number of extensions", { err });
-      }
 
       await axios.post(
         url,
         {
           uid: await uid(),
-          data: {
-            numActiveExtensions,
-            numActiveBlueprints,
-            numActiveExtensionPoints,
-            $os: os,
-          },
+          data: await userSummary(),
         },
         {
           headers: { Authorization: `Token ${await getExtensionToken()}` },
