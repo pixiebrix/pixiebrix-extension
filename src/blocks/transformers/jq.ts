@@ -19,6 +19,7 @@ import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { isNullOrBlank } from "@/utils";
 
 export class JQTransformer extends Transformer {
   constructor() {
@@ -48,7 +49,7 @@ export class JQTransformer extends Transformer {
     { filter, data }: BlockArg,
     { ctxt, logger }: BlockOptions
   ): Promise<unknown> {
-    const input = (data ?? "").trim() !== "" ? data : ctxt;
+    const input = isNullOrBlank(data) ? data : ctxt;
 
     const jq = (
       await import(

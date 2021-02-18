@@ -39,7 +39,7 @@ import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { castArray, uniq } from "lodash";
+import { castArray, uniq, compact } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { ensureContextMenu } from "@/background/contextMenus";
 import { registerHandler } from "@/contentScript/contextMenus";
@@ -232,10 +232,9 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       extensionId: extension.id,
     });
 
-    const patterns = uniq([
-      ...this.documentUrlPatterns,
-      ...(this.permissions.origins ?? []),
-    ]);
+    const patterns = compact(
+      uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])])
+    );
 
     await ensureContextMenu({
       extensionId: extension.id,
@@ -330,7 +329,9 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
     this.documentUrlPatterns = castArray(documentUrlPatterns ?? ["*://*/*"]);
     this.contexts = castArray(contexts);
     this.permissions = {
-      origins: castArray(isAvailable.matchPatterns),
+      origins: isAvailable.matchPatterns
+        ? castArray(isAvailable.matchPatterns)
+        : [],
     };
   }
 

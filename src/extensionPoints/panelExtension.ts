@@ -46,6 +46,7 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
+import { reportEvent } from "@/telemetry/events";
 
 export interface PanelConfig {
   heading?: string;
@@ -245,6 +246,9 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     } else {
       console.debug(`Adding new panel for ${extension.id}`);
       this.addPanel($panel);
+      reportEvent("PanelAdd", {
+        extensionId: extension.id,
+      });
     }
 
     // update the body content with the new args

@@ -16,8 +16,10 @@
  */
 
 import { recordError } from "@/background/logging";
+import Rollbar from "rollbar";
 import { MessageContext, SerializedError } from "@/core";
 import { serializeError } from "serialize-error";
+import { isExtensionContext } from "@/chrome";
 
 function selectError(exc: unknown): SerializedError {
   if (exc instanceof Error) {
@@ -37,15 +39,14 @@ function selectError(exc: unknown): SerializedError {
   }
 }
 
-export async function reportError(
-  exc: unknown,
-  context?: MessageContext
-): Promise<void> {
-  // Wrap in try/catch, otherwise will enter infinite loop on unhandledrejection when
-  // messaging the background script
-  try {
-    await recordError(selectError(exc), context, null);
-  } catch (exc) {
-    console.error(`Another error occurred while reporting an error: ${exc}`);
+export function reportError(exc: unknown, context?: MessageContext): void {
+  if (isExtensionContext()) {
+    // Wrap in try/catch, otherwise will enter infinite loop on unhandledrejection when
+    // messaging the background script
+    recordError(selectError(exc), context, null).catch((exc) => {
+      console.error("Another error occurred while reporting an error", { exc });
+    });
+  } else {
+    (Rollbar as any).error(exc);
   }
 }

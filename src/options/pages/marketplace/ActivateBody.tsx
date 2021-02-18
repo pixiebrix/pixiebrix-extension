@@ -36,12 +36,16 @@ import { GridLoader } from "react-spinners";
 import { useAsyncState } from "@/hooks/common";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { reportEvent } from "@/telemetry/events";
 
 interface ActivateProps {
   blueprint: RecipeDefinition;
 }
 
-export function useEnsurePermissions(extensions: ExtensionPointDefinition[]) {
+export function useEnsurePermissions(
+  blueprint: RecipeDefinition,
+  extensions: ExtensionPointDefinition[]
+) {
   const { addToast } = useToasts();
   const { submitForm } = useFormikContext();
   const [enabled, setEnabled] = useState<boolean>(undefined);
@@ -93,12 +97,21 @@ export function useEnsurePermissions(extensions: ExtensionPointDefinition[]) {
     // can't use async here because Firefox loses track of trusted UX event
     request().then((accepted: boolean) => {
       if (accepted) {
+        reportEvent("MarketplaceActivate", {
+          blueprintId: blueprint.metadata.id,
+          extensions: extensions.map((x) => x.label),
+        });
         return submitForm();
+      } else {
+        reportEvent("MarketplaceRejectPermissions", {
+          blueprintId: blueprint.metadata.id,
+          extensions: extensions.map((x) => x.label),
+        });
       }
     });
-  }, [request, permissions, submitForm]);
+  }, [request, permissions, submitForm, blueprint.metadata]);
 
-  return { enabled, request, permissions, activate, isPending };
+  return { enabled, request, permissions, activate, isPending, extensions };
 }
 
 const ActivateBody: React.FunctionComponent<ActivateProps> = ({
@@ -106,13 +119,14 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
 }) => {
   const selected = useSelectedExtensions(blueprint.extensionPoints);
   const { enabled, activate, isPending, permissions } = useEnsurePermissions(
+    blueprint,
     selected
   );
 
   return (
     <>
       <Card.Body className="mb-0 p-3">
-        <Card.Title>Review Permissions and Activate</Card.Title>
+        <Card.Title>Review Permissions & Activate</Card.Title>
 
         <p className="text-info">
           <FontAwesomeIcon icon={faInfoCircle} /> You can de-activate bricks at
@@ -144,7 +158,13 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
           </tr>
         </thead>
         <tbody>
-          {isPending && <GridLoader />}
+          {isPending && (
+            <tr>
+              <td colSpan={2}>
+                <GridLoader />
+              </td>
+            </tr>
+          )}
           {permissions?.length > 0 &&
             permissions.map((x, i) => {
               const additional = x.permissions.filter(

@@ -19,6 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { createSlice } from "@reduxjs/toolkit";
 import { Metadata, RawServiceConfiguration, ServiceDependency } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
+import { reportEvent } from "@/telemetry/events";
 
 type InstallMode = "local" | "remote";
 
@@ -124,6 +125,10 @@ export const optionsSlice = createSlice({
         if (state.extensions[extensionPointId] == null) {
           state.extensions[extensionPointId] = {};
         }
+        reportEvent("ExtensionActivate", {
+          extensionId,
+          blueprintId: recipe.metadata.id,
+        });
         state.extensions[extensionPointId][extensionId] = {
           id: extensionId,
           _recipeId: recipe.metadata.id,

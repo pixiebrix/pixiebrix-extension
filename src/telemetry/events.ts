@@ -1,5 +1,5 @@
-/*!
- * Copyright (C) 2020 Pixie Brix, LLC
+/*
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,37 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-.ActiveBricksCard {
-  .table {
-    .ActiveBricksCard__blueprint {
-      cursor: pointer;
+import { recordEvent, initUID } from "@/background/telemetry";
+import { JsonObject } from "type-fest";
 
-      background-color: rgba(0, 0, 0, 0.03);
+export function reportEvent(event: string, data: JsonObject = {}): void {
+  recordEvent({ event, data }).catch((err) => {
+    console.warn("Error reporting event", { err });
+  });
+}
 
-      th {
-        font-weight: 400;
-        padding-top: 5px;
-        padding-bottom: 5px;
-
-        &:first-child {
-          width: 15px;
-        }
-      }
-    }
-
-    .ActiveBricksCard__empty {
-      td {
-        height: 3rem;
-      }
-    }
-
-    td {
-      padding-top: 5px;
-      padding-bottom: 5px;
-
-      &:first-child {
-        width: 15px;
-      }
-    }
-  }
+export function initTelemetry(): void {
+  initUID().catch((err) => {
+    console.warn("Error initializing uid", { err });
+  });
 }

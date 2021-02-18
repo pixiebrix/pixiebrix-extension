@@ -22,10 +22,12 @@ import { reportError } from "@/telemetry/logging";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
 import { injectContentScript, waitReady } from "@/background/util";
+import { reportEvent } from "@/telemetry/events";
 
+type ExtensionId = string;
 type MenuItemId = number | string;
 
-const extensionMenuItems = new Map<string, MenuItemId>();
+const extensionMenuItems = new Map<ExtensionId, MenuItemId>();
 
 const CONTEXT_SCRIPT_INSTALL_MS = 1000;
 const CONTEXT_MENU_INSTALL_MS = 500;
@@ -48,6 +50,12 @@ async function runMenu(info: Menus.OnClickData, tab: Tabs.Tab): Promise<void> {
     throw new Error(
       `Menu item ${info.menuItemId} is not a PixieBrix menu item`
     );
+  }
+
+  try {
+    reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
+  } catch (err) {
+    console.warn("Error reporting ContextMenuClick event", { err });
   }
 
   try {
@@ -105,7 +113,11 @@ export const ensureContextMenu = liftBackground(
     title,
     documentUrlPatterns,
   }: SelectionMenuOptions) => {
-    console.debug(`Registering context menu ${extensionId}`);
+    console.debug(`Registering context menu ${extensionId}`, {
+      title,
+      contexts,
+      documentUrlPatterns,
+    });
 
     const createProperties: Menus.CreateCreatePropertiesType = {
       type: "normal",

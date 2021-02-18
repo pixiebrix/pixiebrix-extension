@@ -61,6 +61,7 @@ const _reload = liftBackground("BACKGROUND_RELOAD", async () => {
   browser.runtime.reload();
 });
 
+// called by PixieBrix app
 export const setExtensionAuth = lift(
   "SET_EXTENSION_AUTH",
   async (auth: AuthData) => {

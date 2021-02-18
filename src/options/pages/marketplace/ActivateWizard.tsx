@@ -20,11 +20,8 @@ import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
 import { ExtensionOptions, optionsSlice, OptionsState } from "@/options/slices";
 import { useToasts } from "react-toast-notifications";
-import Rollbar from "rollbar";
-import groupBy from "lodash/groupBy";
+import { groupBy, uniq, pickBy } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
-import uniq from "lodash/uniq";
-import pickBy from "lodash/pickBy";
 import { push } from "connected-react-router";
 import "./ActivateWizard.scss";
 import { Formik, FormikHelpers } from "formik";
@@ -180,8 +177,6 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         setSubmitting(false);
         dispatch(push("/installed"));
       } catch (ex) {
-        // @ts-ignore: rollbar typings are incorrect?
-        Rollbar.error(ex);
         console.error(`Error installing ${recipe.metadata.name}`, ex);
         addToast(`Error installing ${recipe.metadata.name}`, {
           appearance: "error",
@@ -208,7 +203,7 @@ const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
   const selected = useSelectedExtensions(blueprint.extensionPoints);
-  const { activate, isPending } = useEnsurePermissions(selected);
+  const { activate, isPending } = useEnsurePermissions(blueprint, selected);
 
   return (
     <Button size="sm" disabled={isPending} onClick={activate}>

@@ -24,6 +24,7 @@ import { serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import reverse from "lodash/reverse";
 import sortBy from "lodash/sortBy";
+import { _getDNT } from "@/background/telemetry";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -165,7 +166,11 @@ export const recordError = liftBackground(
   ): Promise<void> => {
     try {
       console.error(errorMessage(error), error);
-      (Rollbar as any).error(errorMessage(error), error);
+
+      if (!(await _getDNT())) {
+        (Rollbar as any).error(errorMessage(error), error);
+      }
+
       await appendEntry({
         uuid: uuidv4(),
         timestamp: Date.now().toString(),
