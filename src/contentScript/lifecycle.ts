@@ -70,7 +70,7 @@ async function runExtensionPoint(
     );
     return;
   } else {
-    console.debug(`Installed extension ${extensionPoint.id}`);
+    console.debug(`Installed extension: ${extensionPoint.id}`);
     _installedExtensionPoints.push(extensionPoint);
   }
 
@@ -84,14 +84,14 @@ export function getInstalledIds(): string[] {
 export function clearDynamic(uuid?: string): void {
   if (uuid) {
     if (_dynamic.has(uuid)) {
-      _dynamic.get(uuid).uninstall();
+      _dynamic.get(uuid).uninstall({ global: true });
       _dynamic.delete(uuid);
     } else {
       console.debug(`No dynamic extension exists for uuid: ${uuid}`);
     }
   } else {
     for (const extensionPoint of _dynamic.values()) {
-      extensionPoint.uninstall();
+      extensionPoint.uninstall({ global: true });
     }
     _dynamic.clear();
   }
@@ -121,8 +121,8 @@ async function loadExtensions() {
     const activeExtensions = Object.values(extensions).filter((x) => x.active);
 
     if (!activeExtensions.length) {
-      // Avoid the case where we uninstalled the last extension and then the extension point was
-      // deleted from the registry.
+      // Avoid the case where we uninstalled the last extension, but the extension point was
+      // not deleted from the state.
       continue;
     }
 
@@ -146,7 +146,7 @@ async function loadExtensions() {
   }
 }
 
-async function loadExtensionsOnce() {
+async function loadExtensionsOnce(): Promise<IExtensionPoint[]> {
   if (_extensionPoints == null) {
     await loadExtensions();
   }
@@ -184,10 +184,17 @@ export async function handleNavigate(openerTabId?: number): Promise<void> {
     for (const extensionPoint of extensionPoints) {
       // Don't await each extension point since the extension point may never appear. For example, an
       // extension point that runs on the contact information page on LinkedIn
-      // eslint-disable-next-line require-await
-      runExtensionPoint(extensionPoint, cancel).catch((reason) => {
-        console.error(`Error running: ${extensionPoint.id}`, { reason });
-      });
+      const runPromise = runExtensionPoint(extensionPoint, cancel).catch(
+        (reason) => {
+          console.error(`Error installing/running: ${extensionPoint.id}`, {
+            reason,
+          });
+        }
+      );
+
+      if (extensionPoint.syncInstall) {
+        await runPromise;
+      }
     }
   }
 }

@@ -36,6 +36,8 @@ import { uninstallContextMenu } from "@/background/contextMenus";
 import ActivateBody, {
   useEnsurePermissions,
 } from "@/options/pages/marketplace/ActivateBody";
+import { reactivate } from "@/background/navigation";
+import { reportError } from "@/telemetry/logging";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -170,11 +172,18 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
             services: values.services,
           })
         );
+
         addToast(`Installed ${recipe.metadata.name}`, {
           appearance: "success",
           autoDismiss: true,
         });
+
         setSubmitting(false);
+
+        reactivate().catch((err) => {
+          reportError(err);
+        });
+
         dispatch(push("/installed"));
       } catch (ex) {
         console.error(`Error installing ${recipe.metadata.name}`, ex);

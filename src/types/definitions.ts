@@ -23,6 +23,7 @@ export interface ExtensionPointDefinition {
   label: string;
   permissions?: Permissions.Permissions;
   services?: { [key: string]: string };
+  config: Record<string, unknown>;
 }
 
 export interface RecipeDefinition {

@@ -34,6 +34,8 @@ import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { makeExtensionReaders } from "@/devTools/editor/extensionPoints/base";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
+import { reactivate } from "@/background/navigation";
+import { reportEvent } from "@/telemetry/events";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -131,6 +133,10 @@ export function useCreate(): (
               kind: "extensionPoint",
             },
           } as AxiosRequestConfig);
+
+          reportEvent("PageEditorCreate", {
+            type: element.type,
+          });
         } catch (ex) {
           const err = ex as AxiosError;
           const msg =
@@ -148,6 +154,9 @@ export function useCreate(): (
       try {
         dispatch(saveExtension(adapter.extension(element)));
         dispatch(markSaved(element.uuid));
+        reactivate().catch((err) => {
+          reportError(err);
+        });
         addToast("Saved extension", {
           appearance: "success",
           autoDismiss: true,

@@ -29,8 +29,9 @@ type MenuItemId = number | string;
 
 const extensionMenuItems = new Map<ExtensionId, MenuItemId>();
 
-const CONTEXT_SCRIPT_INSTALL_MS = 1000;
-const CONTEXT_MENU_INSTALL_MS = 500;
+const MENU_PREFIX = "pixiebrix-";
+const CONTEXT_SCRIPT_INSTALL_MS = 1_000;
+const CONTEXT_MENU_INSTALL_MS = 1_000;
 
 interface SelectionMenuOptions {
   extensionId: string;
@@ -39,28 +40,27 @@ interface SelectionMenuOptions {
   documentUrlPatterns: string[];
 }
 
-async function runMenu(info: Menus.OnClickData, tab: Tabs.Tab): Promise<void> {
+function makeMenuId(extensionId: string): string {
+  return `${MENU_PREFIX}${extensionId}`;
+}
+
+async function dispatchMenu(
+  info: Menus.OnClickData,
+  tab: Tabs.Tab
+): Promise<void> {
   // FIXME: this method doesn't handle frames properly
+
+  if (typeof info.menuItemId !== "string") {
+    throw new Error(`Not a PixieBrix menu item: ${info.menuItemId}`);
+  }
 
   // Using the context menu gives temporary access to the page
   await injectContentScript(tab.id);
   await waitReady(tab.id, { maxWaitMillis: CONTEXT_SCRIPT_INSTALL_MS });
 
-  if (typeof info.menuItemId !== "string") {
-    throw new Error(
-      `Menu item ${info.menuItemId} is not a PixieBrix menu item`
-    );
-  }
-
-  try {
-    reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-  } catch (err) {
-    console.warn("Error reporting ContextMenuClick event", { err });
-  }
-
   try {
     await handleMenuAction(tab.id, {
-      extensionId: info.menuItemId,
+      extensionId: info.menuItemId.substring(MENU_PREFIX.length),
       args: info,
       maxWaitMillis: CONTEXT_MENU_INSTALL_MS,
     });
@@ -70,32 +70,41 @@ async function runMenu(info: Menus.OnClickData, tab: Tabs.Tab): Promise<void> {
     });
   } catch (err) {
     const message = `Error processing context menu action: ${err}`;
-    reportError(message);
+    reportError(new Error(message));
     showNotification(tab.id, { message, className: "error" }).catch(
       (reason) => {
         reportError(reason);
       }
     );
   }
+
+  try {
+    reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
+  } catch (err) {
+    console.warn("Error reporting ContextMenuClick event", { err });
+  }
 }
 
 function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
   if (
     typeof info.menuItemId === "string" &&
-    extensionMenuItems.has(info.menuItemId)
+    info.menuItemId.startsWith(MENU_PREFIX)
   ) {
-    runMenu(info, tab);
+    dispatchMenu(info, tab);
+  } else {
+    console.debug(`Ignoring menu item: ${info.menuItemId}`);
   }
 }
 
 export async function uninstall(extensionId: string): Promise<void> {
   try {
-    await browser.contextMenus.remove(extensionId);
+    await browser.contextMenus.remove(makeMenuId(extensionId));
     console.debug(`Uninstalled context menu ${extensionId}`);
   } catch (reason) {
-    console.debug(`Could not uninstall context menu ${extensionId}: ${reason}`);
+    console.warn(`Could not uninstall context menu ${extensionId}: ${reason}`);
+  } finally {
+    extensionMenuItems.delete(extensionId);
   }
-  extensionMenuItems.delete(extensionId);
 }
 
 export const uninstallContextMenu = liftBackground(
@@ -113,11 +122,9 @@ export const ensureContextMenu = liftBackground(
     title,
     documentUrlPatterns,
   }: SelectionMenuOptions) => {
-    console.debug(`Registering context menu ${extensionId}`, {
-      title,
-      contexts,
-      documentUrlPatterns,
-    });
+    if (!extensionId) {
+      throw new Error("extensionId is required");
+    }
 
     const createProperties: Menus.CreateCreatePropertiesType = {
       type: "normal",
@@ -129,19 +136,52 @@ export const ensureContextMenu = liftBackground(
     try {
       // https://developer.chrome.com/extensions/contextMenus#method-create
       if (extensionMenuItems.has(extensionId)) {
-        await browser.contextMenus.update(
-          extensionMenuItems.get(extensionId),
-          createProperties
-        );
+        const menuId = extensionMenuItems.get(extensionId);
+
+        try {
+          await browser.contextMenus.update(menuId, createProperties);
+          console.debug(`Updated context menu: ${extensionId}`, {
+            menuId,
+            title,
+            contexts,
+            documentUrlPatterns,
+            extensionId,
+          });
+        } catch (err) {
+          console.debug("Cannot update context menu", { err });
+          const menuId = await browser.contextMenus.create({
+            ...createProperties,
+            id: makeMenuId(extensionId),
+          });
+          extensionMenuItems.set(extensionId, menuId);
+          console.debug(
+            `Created new context menu (update failed): ${extensionId}`,
+            {
+              menuId,
+              title,
+              contexts,
+              documentUrlPatterns,
+              extensionId,
+            }
+          );
+        }
       } else {
         const menuId = await browser.contextMenus.create({
           ...createProperties,
-          id: extensionId,
+          id: makeMenuId(extensionId),
         });
         extensionMenuItems.set(extensionId, menuId);
+
+        console.debug(`Created new context menu: ${extensionId}`, {
+          menuId,
+          title,
+          contexts,
+          documentUrlPatterns,
+          extensionId,
+        });
       }
     } catch (reason) {
-      console.error(`Error registering context menu item: ${reason}`);
+      console.error(`Error registering context menu item`, reason);
       throw reason;
     }
   }

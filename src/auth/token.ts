@@ -80,8 +80,9 @@ export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
       // pass
     }
     console.debug(`Setting extension auth for ${auth.email}`, auth);
-    updateRollbarAuth({
+    await updateRollbarAuth({
       userId: auth.user,
+      email: auth.email,
       organizationId: auth.organizationId,
     });
     await setStorage(STORAGE_EXTENSION_KEY, JSON.stringify(auth));

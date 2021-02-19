@@ -38,6 +38,7 @@ import { isBackgroundPage } from "webext-detect-page";
 import { v4 as uuidv4 } from "uuid";
 import { callBackground } from "@/background/devtools/external";
 import { testTabPermissions, injectContentScript } from "@/background/util";
+import * as nativeEditorProtocol from "@/nativeEditor";
 
 let numOpenConnections = 0;
 
@@ -179,12 +180,25 @@ function deleteStaleConnections(port: Runtime.Port) {
     // Theoretically each port should only correspond to a single tab, but iterate overall just to be safe
     if (connections.get(tabId) === port) {
       connections.delete(tabId);
+
+      nativeEditorProtocol
+        .clear(tabId, {})
+        .catch((err) => {
+          console.warn(`Error clearing dynamic elements for tab: ${tabId}`, {
+            err,
+          });
+          reportError(err);
+        })
+        .then(() => {
+          console.info(`Removed dynamic elements for tab: ${tabId}`);
+        });
+
       if (permissionsListeners.has(tabId)) {
         const listeners = permissionsListeners.get(tabId);
         permissionsListeners.delete(tabId);
         for (const [, reject] of listeners) {
           try {
-            reject(new Error(`Cleaning up state connection`));
+            reject(new Error(`Cleaning up stale connection`));
           } catch (err) {
             reportError(err);
           }

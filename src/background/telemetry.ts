@@ -18,7 +18,7 @@
 import { liftBackground } from "@/background/protocol";
 import { JsonObject } from "type-fest";
 import { v4 as uuidv4 } from "uuid";
-import { debounce, uniq } from "lodash";
+import { debounce, uniq, throttle } from "lodash";
 import { browser } from "webextension-polyfill-ts";
 import { readStorage, setStorage } from "@/chrome";
 import { getExtensionToken } from "@/auth/token";
@@ -100,6 +100,10 @@ export const getDNT = liftBackground("GET_DNT", async () => {
   return await _getDNT();
 });
 
+export const getUID = liftBackground("GET_UID", async () => {
+  return await uid();
+});
+
 export const toggleDNT = liftBackground(
   "TOGGLE_DNT",
   async (enabled: boolean) => {
@@ -138,22 +142,34 @@ async function userSummary() {
   };
 }
 
+async function _init(): Promise<void> {
+  const url = `${await getBaseURL()}/api/identify/`;
+  const token = await getExtensionToken();
+  if (token) {
+    await axios.post(
+      url,
+      {
+        uid: await uid(),
+        data: await userSummary(),
+      },
+      {
+        headers: { Authorization: `Token ${token}` },
+      }
+    );
+  }
+}
+
+// up to every 30 min,
+const throttledInit = throttle(_init, 30 * 60 * 1000, {
+  leading: true,
+  trailing: true,
+});
+
 export const initUID = liftBackground(
   "INIT_UID",
   async (): Promise<void> => {
     if (!(await _getDNT())) {
-      const url = `${await getBaseURL()}/api/identify/`;
-
-      await axios.post(
-        url,
-        {
-          uid: await uid(),
-          data: await userSummary(),
-        },
-        {
-          headers: { Authorization: `Token ${await getExtensionToken()}` },
-        }
-      );
+      throttledInit();
     }
   },
   { asyncResponse: false }

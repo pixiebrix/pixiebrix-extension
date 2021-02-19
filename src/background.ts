@@ -42,8 +42,10 @@ import initGoogle from "@/contrib/google/background";
 import initFrames from "@/background/iframes";
 import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
+import preload from "@/background/preload";
 
 initNavigation();
 initExecutor();
 initGoogle();
 initFrames();
+preload();

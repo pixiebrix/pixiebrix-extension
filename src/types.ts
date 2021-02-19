@@ -84,6 +84,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   protected readonly template?: string;
   public abstract readonly inputSchema: Schema;
   protected readonly logger: Logger;
+  public readonly syncInstall: boolean = false;
 
   /**
    * Permissions required to use this extensions
@@ -130,7 +131,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
 
   abstract async install(): Promise<boolean>;
 
-  uninstall(): void {
+  uninstall(options?: { global?: boolean }): void {
     console.warn(`Uninstall not implemented for extension point: ${this.id}`);
   }
 

@@ -16,9 +16,7 @@
  */
 
 import { useSelector } from "react-redux";
-import Card from "react-bootstrap/Card";
-import Table from "react-bootstrap/Table";
-import Button from "react-bootstrap/Button";
+import { Card, Table, Button } from "react-bootstrap";
 import React, { useCallback, useContext } from "react";
 import { RawServiceConfiguration, IService, ServiceConfig } from "@/core";
 import { RootState } from "../../store";

@@ -88,6 +88,7 @@ import {
   makeContextMenuConfig,
   makeContextMenuState,
 } from "@/devTools/editor/extensionPoints/contextMenu";
+import { reportEvent } from "@/telemetry/events";
 
 interface ElementConfig<
   TResult = unknown,
@@ -187,6 +188,9 @@ function useAddElement(
         config.makeConfig(initialState)
       );
       dispatch(actions.addElement(initialState));
+      reportEvent("PageEditorStart", {
+        type: config.elementType,
+      });
     } catch (exc) {
       if (!exc.toString().toLowerCase().includes("selection cancelled")) {
         reportError(exc);
