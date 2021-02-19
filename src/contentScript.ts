@@ -58,13 +58,15 @@ import "@/contentScript/contextMenus";
 
 // Import for the side effect of registering js defined blocks
 import { handleNavigate } from "@/contentScript/lifecycle";
-import { refresh as refreshServices } from "@/background/locator";
 import "@/contentScript/externalProtocol";
 import { notifyReady, whoAmI } from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "notifyjs-browser";
 import { markReady, updateTabInfo } from "@/contentScript/context";
+import { initTelemetry } from "@/telemetry/events";
+
+const start = Date.now();
 
 const contextPromise = whoAmI()
   .then((sender) => {
@@ -81,14 +83,15 @@ const contextPromise = whoAmI()
   });
 
 contextPromise
-  .then(() => {
-    // Reload services on background page for each new page. This is inefficient right now, but will
-    // avoid confusion if service configurations are updated remotely
-    return refreshServices().catch((reason) => {
-      console.warn("Error refreshing service configurations", reason);
-      throw reason;
-    });
-  })
+  // Refreshing services on every page load is too slow
+  // .then(() => {
+  //   // Reload services on background page for each new page. This is inefficient right now, but will
+  //   // avoid confusion if service configurations are updated remotely
+  //   return refreshServices().catch((reason) => {
+  //     console.warn("Error refreshing service configurations", reason);
+  //     throw reason;
+  //   });
+  // })
   .then(() => {
     return handleNavigate().catch((reason) => {
       console.warn("Error initializing content script", reason);
@@ -98,8 +101,11 @@ contextPromise
   .then(() => {
     // Let the background script know we're ready to execute remote actions
     markReady();
+    console.info(`contentScript ready in ${Date.now() - start}ms`);
     return notifyReady().catch((reason) => {
       console.warn("Error pinging the background script", reason);
       throw reason;
     });
   });
+
+initTelemetry();

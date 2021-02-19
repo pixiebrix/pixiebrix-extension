@@ -148,12 +148,17 @@ export interface IExtensionPoint extends Metadata {
 
   isAvailable: () => Promise<boolean>;
 
+  /**
+   * true iff the extension point must be installed before the page can be considered ready
+   */
+  syncInstall: boolean;
+
   install(): Promise<boolean>;
 
   /**
    * Remove the extension point and installed extensions from the page.
    */
-  uninstall(): void;
+  uninstall(options?: { global?: boolean }): void;
 
   /**
    * Register an extension with the extension point. Does not actually install/run the extension.

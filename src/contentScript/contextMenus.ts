@@ -23,9 +23,7 @@ type Handler = (args: Menus.OnClickData) => Promise<void>;
 const handlers = new Map<string, Handler>();
 
 export function registerHandler(extensionId: string, handler: Handler): void {
-  if (handlers.has(extensionId)) {
-    console.warn(`Handler already installed for extension: ${extensionId}`);
-  }
+  console.debug(`Registered handler for extension: ${extensionId}`);
   handlers.set(extensionId, handler);
 }
 
@@ -47,10 +45,15 @@ export const handleMenuAction = liftContentScript(
         await handler(args);
         return;
       }
-    } while (Date.now() - start < maxWaitMillis);
+    } while (Date.now() - start <= maxWaitMillis);
+
+    console.error(`No context menu found for extension: ${extensionId}`, {
+      extensionId,
+      handlers: Array.from(handlers.keys()),
+    });
 
     throw new Error(
-      `No context menu handler found for extension in ${maxWaitMillis}ms: ${extensionId}`
+      `No context menu handler found for extension in ${maxWaitMillis}ms`
     );
   }
 );

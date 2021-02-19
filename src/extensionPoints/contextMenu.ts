@@ -41,7 +41,10 @@ import {
 } from "@/extensionPoints/types";
 import { castArray, uniq, compact } from "lodash";
 import { checkAvailable } from "@/blocks/available";
-import { ensureContextMenu } from "@/background/contextMenus";
+import {
+  ensureContextMenu,
+  uninstallContextMenu,
+} from "@/background/contextMenus";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
 import { Manifest } from "webextension-polyfill-ts/lib/manifest";
@@ -53,7 +56,7 @@ export interface ContextMenuConfig {
 }
 
 let clickedElement: HTMLElement = null;
-let installedHandler = false;
+let selectionHandlerInstalled = false;
 
 const BUTTON_SECONDARY = 2;
 
@@ -92,8 +95,8 @@ function guessSelectedElement(): HTMLElement | null {
 }
 
 function installMouseHandlerOnce(): void {
-  if (!installedHandler) {
-    installedHandler = true;
+  if (!selectionHandlerInstalled) {
+    selectionHandlerInstalled = true;
     // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
     document.addEventListener("mousedown", setActiveElement, {
       // handle it first in case a target beneath it cancels the event
@@ -171,7 +174,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   ) {
     super(id, name, description, icon);
   }
-
+  public readonly syncInstall: boolean = true;
   abstract async getBaseReader(): Promise<IReader>;
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
   abstract readonly contexts: ContextMenus.ContextType[];
@@ -200,19 +203,21 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     return blockList(extension.config.action);
   }
 
-  uninstall(): void {
-    // Clear out the context menu for this content script. It's still installed on other tabs through because we
-    // haven't unregistered things
-    clickedElement = null;
-    this.extensions.splice(0, this.extensions.length);
-    document.removeEventListener("mousedown", setActiveElement);
+  uninstall({ global = false }: { global?: boolean }): void {
+    // don't uninstall the mouse handler because other context menus need it
+    const extensions = this.extensions.splice(0, this.extensions.length);
+    if (global) {
+      for (const extension of extensions) {
+        uninstallContextMenu({ extensionId: extension.id });
+      }
+    }
   }
 
   async install(): Promise<boolean> {
+    // always install the mouse handler in case a context menu is added later
+    installMouseHandlerOnce();
     const available = await this.isAvailable();
-    if (available) {
-      installMouseHandlerOnce();
-    }
+    await this.registerExtensions();
     return available;
   }
 
@@ -223,14 +228,10 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     ]);
   }
 
-  async runExtension(extension: IExtension<ContextMenuConfig>): Promise<void> {
-    const { title, action: actionConfig } = extension.config;
-
-    const serviceContext = await makeServiceContext(extension.services);
-
-    const extensionLogger = this.logger.childLogger({
-      extensionId: extension.id,
-    });
+  async ensureMenu(
+    extension: Pick<IExtension<ContextMenuConfig>, "id" | "config">
+  ): Promise<void> {
+    const { title } = extension.config;
 
     const patterns = compact(
       uniq([...this.documentUrlPatterns, ...(this.permissions?.origins ?? [])])
@@ -242,9 +243,45 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       title,
       documentUrlPatterns: patterns,
     });
+  }
+
+  private async registerExtensions(): Promise<void> {
+    const results = await Promise.allSettled(
+      this.extensions.map(async (extension) => {
+        try {
+          await this.registerExtension(extension);
+        } catch (ex) {
+          reportError(ex, {
+            extensionPointId: extension.extensionPointId,
+            extensionId: extension.id,
+          });
+          throw ex;
+        }
+      })
+    );
+
+    const numErrors = results.filter((x) => x.status === "rejected").length;
+    if (numErrors > 0) {
+      $.notify(`An error occurred adding ${numErrors} context menu item(s)`, {
+        className: "error",
+      });
+    }
+  }
+
+  private async registerExtension(
+    extension: IExtension<ContextMenuConfig>
+  ): Promise<void> {
+    const { action: actionConfig } = extension.config;
+
+    await this.ensureMenu(extension);
+
+    const extensionLogger = this.logger.childLogger({
+      extensionId: extension.id,
+    });
 
     registerHandler(extension.id, async (clickData) => {
       const reader = await this.getBaseReader();
+      const serviceContext = await makeServiceContext(extension.services);
 
       const targetElement =
         clickedElement ?? guessSelectedElement() ?? document;
@@ -262,11 +299,6 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
         serviceArgs: serviceContext,
       });
     });
-
-    console.debug(`Added context menu ${title}`, {
-      title,
-      documentUrlPatterns: patterns,
-    });
   }
 
   async run(): Promise<void> {
@@ -276,30 +308,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       );
       return;
     }
-
-    const errors = [];
-
-    for (const extension of this.extensions) {
-      try {
-        await this.runExtension(extension);
-      } catch (ex) {
-        // eslint-disable-next-line require-await
-        reportError(ex, {
-          extensionPointId: extension.extensionPointId,
-          extensionId: extension.id,
-        });
-        errors.push(ex);
-      }
-    }
-
-    if (errors.length) {
-      $.notify(
-        `An error occurred adding ${errors.length} context menu item(s)`,
-        {
-          className: "error",
-        }
-      );
-    }
+    await this.registerExtensions();
   }
 }
 

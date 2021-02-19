@@ -16,20 +16,37 @@
  */
 
 import Rollbar from "rollbar";
+import { isExtensionContext } from "@/chrome";
+import { getUID } from "@/background/telemetry";
 
 export let rollbar: Rollbar;
 
-export function updateAuth({
+export async function updateAuth({
   userId,
+  email,
   organizationId,
 }: {
   userId: string;
-  organizationId: string;
-}): void {
+  organizationId: string | null;
+  email: string | null;
+}): Promise<void> {
   if (rollbar) {
-    rollbar.configure({
-      payload: { person: { id: userId, organizationId: organizationId } },
-    });
+    if (isExtensionContext()) {
+      if (organizationId) {
+        // Enterprise accounts, use userId for telemetry
+        rollbar.configure({
+          payload: { person: { id: userId, email, organizationId } },
+        });
+      } else {
+        rollbar.configure({
+          payload: { person: { id: await getUID(), organizationId: null } },
+        });
+      }
+    } else {
+      rollbar.configure({
+        payload: { person: { id: userId, organizationId: organizationId } },
+      });
+    }
   }
 }
 

@@ -54,7 +54,11 @@ export async function getAuth(): Promise<AuthState> {
     flags = [],
   } = await fetch<ProfileResponse>("/api/me/");
   if (id) {
-    updateRollbarAuth({ userId: id, organizationId: organization?.id });
+    await updateRollbarAuth({
+      userId: id,
+      email,
+      organizationId: organization?.id,
+    });
     return {
       userId: id,
       email,

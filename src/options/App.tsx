@@ -139,10 +139,8 @@ const App: React.FunctionComponent = () => {
   const [authState] = useAsyncState(getAuth);
 
   useEffect(() => {
-    if (authState?.isLoggedIn) {
-      initTelemetry();
-    }
-  }, [authState?.isLoggedIn]);
+    initTelemetry();
+  }, []);
 
   return (
     <Provider store={store}>

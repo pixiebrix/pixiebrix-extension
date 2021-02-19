@@ -319,9 +319,10 @@ export default connect(
       reportEvent("ExtensionRemove", {
         extensionId: identifier.extensionId,
       });
-      uninstallContextMenu(identifier).then(() => {
-        dispatch(removeExtension(identifier));
+      uninstallContextMenu(identifier).catch(() => {
+        // noop because this is expected to error for non-context menus
       });
+      dispatch(removeExtension(identifier));
     },
   })
 )(InstalledPage);

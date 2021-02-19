@@ -20,6 +20,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { Metadata, RawServiceConfiguration, ServiceDependency } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
+import { preloadMenus } from "@/background/preload";
+import { reportError } from "@/telemetry/logging";
 
 type InstallMode = "local" | "remote";
 
@@ -75,7 +77,9 @@ export const servicesSlice = createSlice({
   },
 });
 
-export interface ExtensionOptions {
+type BaseConfig = Record<string, unknown>;
+
+export interface ExtensionOptions<TConfig = BaseConfig> {
   id: string;
   _recipeId?: string;
   _recipe: Metadata | null;
@@ -84,7 +88,7 @@ export interface ExtensionOptions {
   label: string;
   permissions?: Permissions.Permissions;
   services: ServiceDependency[];
-  config: { [prop: string]: unknown };
+  config: TConfig;
 }
 
 export interface OptionsState {
@@ -114,14 +118,15 @@ export const optionsSlice = createSlice({
       const { recipe, services: auths, extensionPoints } = payload;
       for (const {
         id: extensionPointId,
+
         label,
         services,
         config,
       } of extensionPoints) {
+        const extensionId = uuidv4();
         if (extensionPointId == null) {
           throw new Error("extensionPointId is required");
         }
-        const extensionId = uuidv4();
         if (state.extensions[extensionPointId] == null) {
           state.extensions[extensionPointId] = {};
         }
@@ -129,7 +134,8 @@ export const optionsSlice = createSlice({
           extensionId,
           blueprintId: recipe.metadata.id,
         });
-        state.extensions[extensionPointId][extensionId] = {
+
+        const extensionConfig = {
           id: extensionId,
           _recipeId: recipe.metadata.id,
           _recipe: recipe.metadata,
@@ -145,6 +151,12 @@ export const optionsSlice = createSlice({
           active: true,
           config,
         };
+
+        state.extensions[extensionPointId][extensionId] = extensionConfig;
+
+        preloadMenus({ extensions: [extensionConfig] }).catch((err) => {
+          reportError(err);
+        });
       }
     },
     saveExtension(state, { payload }) {
