@@ -16,13 +16,15 @@
  */
 
 import React, { useCallback, useRef } from "react";
-import { FastField, FieldInputProps } from "formik";
+import { FastField, FieldInputProps, useField } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 
 const MenuItemTab: React.FunctionComponent<{
   eventKey?: string;
 }> = ({ eventKey = "menuItem" }) => {
   const captionInput = useRef<HTMLInputElement>(null);
+
+  const [, , labelHelpers] = useField<string>("label");
 
   const insertSnippet = useCallback(
     (snippet) => {
@@ -60,8 +62,20 @@ const MenuItemTab: React.FunctionComponent<{
             </a>
           </div>
           <FastField name="extension.title">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} ref={captionInput} />
+            {({
+              field: { onChange, ...otherFieldProps },
+            }: {
+              field: FieldInputProps<string>;
+            }) => (
+              <Form.Control
+                type="text"
+                {...otherFieldProps}
+                onChange={(event) => {
+                  labelHelpers.setValue(event.target.value);
+                  onChange(event);
+                }}
+                ref={captionInput}
+              />
             )}
           </FastField>
           <Form.Text className="text-muted">

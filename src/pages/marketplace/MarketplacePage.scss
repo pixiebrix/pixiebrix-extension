@@ -16,17 +16,9 @@
  */
 
 .marketplace-component {
-  .input-group-text {
-    color: #343a40;
-  }
-
-  .TemplateCategories {
-    div:not(:first-child) {
-      margin-left: 1rem;
-    }
-
-    button {
-      border-radius: 0;
+  .input-group-prepend {
+    .input-group-text {
+      color: #343a40;
     }
   }
 }

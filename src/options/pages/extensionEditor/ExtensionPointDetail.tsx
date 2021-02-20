@@ -184,11 +184,11 @@ const ExtensionForm: React.FunctionComponent<{
                   fieldName="label"
                 />
                 <NavItem
-                  caption="Services"
+                  caption="Integrations"
                   eventKey="services"
                   fieldName="services"
                 />
-                <NavItem caption="Data Reader" eventKey="reader" />
+                <NavItem caption="Data" eventKey="reader" />
                 <NavItem
                   caption="Configuration"
                   eventKey="configuration"

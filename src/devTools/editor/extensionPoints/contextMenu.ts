@@ -19,7 +19,6 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { ContextMenuFormState } from "@/devTools/editor/editorSlice";
 import {
-  getDomain,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
@@ -34,24 +33,22 @@ import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
-import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import {
   ContextMenuConfig,
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
-import FoundationTab from "@/devTools/editor/tabs/contextMenu/FoundationTab";
 import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
 import { find as findBrick } from "@/registry/localRegistry";
 import AvailabilityTab from "@/devTools/editor/tabs/contextMenu/AvailabilityTab";
 
 export const wizard: WizardStep[] = [
-  { step: "Name", Component: MetaTab },
-  { step: "Foundation", Component: FoundationTab },
   { step: "Menu Item", Component: MenuItemTab },
-  { step: "Reader", Component: ReaderTab },
-  { step: "Services", Component: ServicesTab },
-  { step: "Effect", Component: EffectTab },
-  { step: "Availability", Component: AvailabilityTab },
+  // { step: "Name", Component: MetaTab },
+  // { step: "Foundation", Component: FoundationTab },
+  { step: "Location", Component: AvailabilityTab },
+  { step: "Data", Component: ReaderTab },
+  { step: "Integrations", Component: ServicesTab },
+  { step: "Action", Component: EffectTab },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -66,9 +63,12 @@ export function makeContextMenuState(
 
   const isAvailable = makeIsAvailable(url);
 
+  const title = "Context menu item";
+
   return {
     type: "contextMenu",
-    label: `My ${getDomain(url)} menu item`,
+    // to simplify the interface, this is kept in sync with the caption
+    label: title,
     ...base,
     extensionPoint: {
       metadata,
@@ -80,7 +80,7 @@ export function makeContextMenuState(
       },
     },
     extension: {
-      title: "PixieBrix",
+      title,
       action: [],
     },
   };

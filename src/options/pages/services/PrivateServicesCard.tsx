@@ -62,10 +62,10 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   return (
     <>
       <Card.Body className="pb-2 px-3">
-        <p>
-          <FontAwesomeIcon icon={faEyeSlash} /> Private services configurations
-          are stored in your browser. They are not shared with your team or
-          transmitted to the PixieBrix servers.
+        <p className="text-info">
+          <FontAwesomeIcon icon={faEyeSlash} /> Private configurations are
+          stored in your browser. They are never transmitted to the PixieBrix
+          servers or shared with your team
         </p>
       </Card.Body>
       <Table>
@@ -80,9 +80,11 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         <tbody>
           {isLoggedIn && (
             <tr>
-              <td colSpan={3}>
+              <td>
                 Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
               </td>
+              <td className="text-muted small">N/A</td>
+              <td className="text-muted small">N/A</td>
               <td>
                 <Button
                   style={{ width: 100 }}
@@ -135,7 +137,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         <ServiceModal
           onSelect={onSelect}
           services={serviceConfigs}
-          caption="Add a service"
+          caption="Add an integration"
           variant="primary"
         />
       </Card.Footer>

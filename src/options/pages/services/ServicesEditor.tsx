@@ -105,11 +105,11 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   if (servicesPending) {
     return (
       <div>
-        <PageTitle icon={faCloud} title="Configure Services" />
+        <PageTitle icon={faCloud} title="Integrations" />
         <div className="pb-4">
           <p>
-            Services are external accounts and resources that you configure and
-            re-use across bricks
+            Configure external accounts, resources, and APIs that you can re-use
+            across bricks
           </p>
         </div>
         <Row>
@@ -123,11 +123,11 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
   return (
     <div>
-      <PageTitle icon={faCloud} title="Configure Services" />
+      <PageTitle icon={faCloud} title="Integrations" />
       <div className="pb-4">
         <p>
-          Services are external accounts and resources that you configure and
-          re-use across extensions
+          Configure external accounts, resources, and APIs that you can re-use
+          across bricks
         </p>
       </div>
       {showZapier && <ZapierModal onClose={() => navigate("/services")} />}
@@ -156,7 +156,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
               >
                 <Nav.Item>
                   <Nav.Link eventKey="private">
-                    Private Services{" "}
+                    Private Integrations{" "}
                     <Badge variant="info">
                       {configuredServices ? configuredServices.length : "?"}
                     </Badge>
@@ -165,7 +165,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
                 {flags.includes("teams") && (
                   <Nav.Item>
                     <Nav.Link eventKey="shared">
-                      Shared Services{" "}
+                      Shared Integrations{" "}
                       <Badge variant="info">
                         {remoteAuths ? remoteAuths.length : "?"}
                       </Badge>

@@ -30,6 +30,8 @@ import {
   faExclamation,
   faCaretRight,
   faCaretDown,
+  faExternalLinkAlt,
+  faClipboardCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
@@ -212,12 +214,10 @@ interface InstalledExtension extends IExtension {
   } | null;
 }
 
-const InstalledPage: React.FunctionComponent<{
+const InstalledTable: React.FunctionComponent<{
   extensions: InstalledExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const { flags } = useContext(AuthContext);
-
   const recipeExtensions = useMemo(() => {
     return sortBy(
       Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
@@ -226,69 +226,150 @@ const InstalledPage: React.FunctionComponent<{
   }, [extensions]);
 
   return (
+    <Row>
+      <Col xl={9} lg={10} md={12}>
+        <Card className="ActiveBricksCard">
+          <Card.Header>Active Bricks</Card.Header>
+          <Table>
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th>Name</th>
+                {/*<th>Last Used</th>*/}
+                <th>Status</th>
+                <th>Uninstall</th>
+              </tr>
+            </thead>
+            {recipeExtensions.map(([recipeId, xs]) => (
+              <RecipeEntry
+                key={recipeId}
+                recipeId={recipeId}
+                extensions={xs}
+                onRemove={onRemove}
+              />
+            ))}
+          </Table>
+        </Card>
+      </Col>
+    </Row>
+  );
+};
+
+const EmptyPage: React.FunctionComponent = () => {
+  return (
+    <>
+      <Row>
+        <Col xl={6} lg={6} md={10}>
+          <Card>
+            <Card.Header>Activate Bricks</Card.Header>
+            <Card.Body>
+              <Row>
+                <Col>
+                  <h4>Activate an Official Template</h4>
+                  <p>
+                    <span className="text-primary">
+                      The easiest way to start using PixieBrix!
+                    </span>{" "}
+                    Activate a pre-made template from the Templates page.
+                  </p>
+                  <Link to={"/templates"} className="btn btn-info">
+                    View Templates <FontAwesomeIcon icon={faClipboardCheck} />
+                  </Link>
+                </Col>
+                <Col>
+                  <h4>Create your Own</h4>
+                  <p>
+                    Follow the Quickstart Guide in our documentation area to
+                    start creating your own bricks in minutes.
+                  </p>
+                  <a
+                    className="btn btn-info"
+                    href="https://docs.pixiebrix.com/quick-start-guide"
+                    target="_blank"
+                  >
+                    Open Quickstart Guide{" "}
+                    <FontAwesomeIcon icon={faExternalLinkAlt} />{" "}
+                  </a>
+                </Col>
+              </Row>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row>
+        <Col className="mt-3" xl={6} lg={6} md={10}>
+          <Card>
+            <Card.Header>Video Tour</Card.Header>
+            <Card.Body className="mx-auto">
+              <div>
+                <iframe
+                  src="https://player.vimeo.com/video/514469131"
+                  width="640"
+                  height="400"
+                  frameBorder="0"
+                  allow="fullscreen; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </>
+  );
+};
+
+const InstalledPage: React.FunctionComponent<{
+  extensions: InstalledExtension[];
+  onRemove: RemoveAction;
+}> = ({ extensions, onRemove }) => {
+  const { flags } = useContext(AuthContext);
+
+  return (
     <div>
       <PageTitle icon={faCubes} title="Active Bricks" />
 
       <Row>
         <Col>
           <div className="pb-4">
-            <p>
-              Here&apos;s a list of bricks you currently have activated.{" "}
-              {flags.includes("marketplace") && (
-                <>
-                  You can find more to activate in the{" "}
-                  <Link to={"/marketplace"}>Marketplace</Link>
-                </>
-              )}
-            </p>
+            {!isEmpty(extensions) ? (
+              <p>
+                Here&apos;s a list of bricks you currently have activated.{" "}
+                {flags.includes("marketplace") ? (
+                  <>
+                    You can find more to activate in the{" "}
+                    <Link to={"/marketplace"}>Marketplace</Link>
+                  </>
+                ) : (
+                  <>
+                    You can find more to activate on the{" "}
+                    <Link to={"/templates"}>Templates</Link> page. Or, follow
+                    the
+                    <a
+                      href="https://docs.pixiebrix.com/quick-start-guide"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Page Editor Quickstart Guide
+                    </a>{" "}
+                    to create your own
+                  </>
+                )}
+              </p>
+            ) : (
+              <p>
+                Once you&apos;ve activated templates or created your own bricks,
+                you&apos;ll be able to manage them here
+              </p>
+            )}
           </div>
         </Col>
       </Row>
-      <Row>
-        <Col xl={9} lg={10} md={12}>
-          <Card className="ActiveBricksCard">
-            <Card.Header>Active Bricks</Card.Header>
-            <Table>
-              <thead>
-                <tr>
-                  <th>&nbsp;</th>
-                  <th>Name</th>
-                  {/*<th>Last Used</th>*/}
-                  <th>Status</th>
-                  <th>Uninstall</th>
-                </tr>
-              </thead>
-              {recipeExtensions.map(([recipeId, xs]) => (
-                <RecipeEntry
-                  key={recipeId}
-                  recipeId={recipeId}
-                  extensions={xs}
-                  onRemove={onRemove}
-                />
-              ))}
-              {isEmpty(extensions) && (
-                <tbody>
-                  <tr className="ActiveBricksCard__empty">
-                    <td>&nbsp;</td>
-                    <td colSpan={3}>
-                      No bricks installed yet.{" "}
-                      {flags.includes("marketplace") && (
-                        <>
-                          Find some in the{" "}
-                          <Link to={"/marketplace"}>Marketplace</Link>
-                        </>
-                      )}
-                    </td>
-                    {/*<td>&nbsp;</td>*/}
-                    <td>&nbsp;</td>
-                    <td>&nbsp;</td>
-                  </tr>
-                </tbody>
-              )}
-            </Table>
-          </Card>
-        </Col>
-      </Row>
+      {!isEmpty(extensions) ? (
+        <InstalledTable extensions={extensions} onRemove={onRemove} />
+      ) : (
+        <EmptyPage />
+      )}
     </div>
   );
 };

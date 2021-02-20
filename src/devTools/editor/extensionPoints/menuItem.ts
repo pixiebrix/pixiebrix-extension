@@ -49,9 +49,9 @@ import { find as findBrick } from "@/registry/localRegistry";
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
-  { step: "Reader", Component: ReaderTab },
+  { step: "Data", Component: ReaderTab },
   { step: "Menu Item", Component: MenuItemTab },
-  { step: "Services", Component: ServicesTab },
+  { step: "Integrations", Component: ServicesTab },
   { step: "Effect", Component: EffectTab },
   { step: "Availability", Component: AvailabilityTab },
   { step: "Logs", Component: LogsTab },

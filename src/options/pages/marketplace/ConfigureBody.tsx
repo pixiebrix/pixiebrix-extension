@@ -66,9 +66,9 @@ const ConfigureRow: React.FunctionComponent<{
           onChange={(checked) => helpers.setValue(checked)}
         />
       </td>
-      <td>
-        <code className="pl-0">{definition.id}</code>
-      </td>
+      {/*<td>*/}
+      {/*  <code className="pl-0">{definition.id}</code>*/}
+      {/*</td>*/}
       <td>{definition.label ?? "No label provided"}</td>
     </tr>
   );
@@ -98,8 +98,8 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         <thead>
           <tr>
             <th>Activate?</th>
-            <th>Foundation</th>
-            <th className="w-100">Label</th>
+            {/*<th>Foundation</th>*/}
+            <th className="w-100">Name/Description</th>
           </tr>
         </thead>
         <tbody>

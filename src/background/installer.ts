@@ -20,6 +20,7 @@ import { reportError } from "@/telemetry/logging";
 import { liftBackground } from "@/background/protocol";
 import urljoin from "url-join";
 import { reportEvent, initTelemetry } from "@/telemetry/events";
+import { getDNT, getUID } from "@/background/telemetry";
 
 const SERVICE_URL = process.env.SERVICE_URL;
 
@@ -53,5 +54,17 @@ export const hasAppAccount = liftBackground("CHECK_APP_ACCOUNT", async () => {
   return tabs.length > 0;
 });
 
+async function setUninstallURL(): Promise<void> {
+  const url = new URL("https://www.pixiebrix.com/uninstall/");
+  if (!(await getDNT())) {
+    url.searchParams.set("uid", await getUID());
+    await browser.runtime.setUninstallURL(url.toString());
+  }
+}
+
 browser.runtime.onInstalled.addListener(install);
 browser.runtime.onStartup.addListener(init);
+
+setUninstallURL().catch((err) => {
+  reportError(err);
+});

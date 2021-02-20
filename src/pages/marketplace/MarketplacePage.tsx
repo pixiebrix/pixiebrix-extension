@@ -113,7 +113,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
               </InputGroup.Prepend>
               <Form.Control
                 id="query"
-                placeholder="Start typing to find results"
+                placeholder="Start typing to filter blueprints"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />

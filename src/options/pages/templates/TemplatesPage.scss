@@ -1,0 +1,122 @@
+/*!
+ * Copyright (C) 2021 Pixie Brix, LLC
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+.CategoryCard {
+  height: 4rem;
+  width: 150px;
+
+  &:not(:first-child) {
+    margin-left: 1rem;
+  }
+
+  &.active {
+    background-color: #b66dff;
+    color: white;
+  }
+
+  cursor: pointer;
+
+  &.inviteOnly {
+    cursor: not-allowed;
+  }
+
+  .card-body {
+    padding: 0.875rem;
+  }
+
+  &__title {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  &__subtitle {
+    font-size: 0.875rem;
+  }
+
+  // https://www.cssportal.com/css-ribbon-generator/
+  .ribbon {
+    position: absolute;
+    right: -5px;
+    top: -5px;
+    z-index: 1;
+    overflow: hidden;
+    width: 75px;
+    height: 75px;
+    text-align: right;
+  }
+  .ribbon span {
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 20px;
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    width: 100px;
+    display: block;
+    background: #79a70a;
+    background: linear-gradient(#2989d8 0%, #1e5799 100%);
+    box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+    position: absolute;
+    top: 19px;
+    right: -21px;
+  }
+  .ribbon span::before {
+    content: "";
+    position: absolute;
+    left: 0px;
+    top: 100%;
+    z-index: -1;
+    border-left: 3px solid #1e5799;
+    border-right: 3px solid transparent;
+    border-bottom: 3px solid transparent;
+    border-top: 3px solid #1e5799;
+  }
+  .ribbon span::after {
+    content: "";
+    position: absolute;
+    right: 0px;
+    top: 100%;
+    z-index: -1;
+    border-left: 3px solid transparent;
+    border-right: 3px solid #1e5799;
+    border-bottom: 3px solid transparent;
+    border-top: 3px solid #1e5799;
+  }
+}
+
+.TemplateEntry {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+
+  font-size: 0.875rem;
+}
+
+.CategoryInfo {
+  .card-title {
+    text-transform: none;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .input-group-text {
+    color: #495057;
+  }
+}

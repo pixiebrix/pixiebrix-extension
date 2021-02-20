@@ -16,7 +16,10 @@
  */
 
 import { PageTitle } from "@/layout/Page";
-import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClipboardCheck,
+  faStoreAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import React from "react";
 import { useParams } from "react-router";
 import { useFetch } from "@/hooks/fetch";
@@ -30,13 +33,16 @@ interface BlueprintResponse {
 }
 
 const ActivatePage: React.FunctionComponent = () => {
-  const { blueprintId } = useParams<{ blueprintId: string }>();
+  const { blueprintId, sourcePage } = useParams<{
+    blueprintId: string;
+    sourcePage: string;
+  }>();
   const blueprint = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
 
   return (
     <div>
       <PageTitle
-        icon={faStoreAlt}
+        icon={sourcePage === "templates" ? faClipboardCheck : faStoreAlt}
         title={
           blueprint
             ? `Activate: ${blueprint.config.metadata.name}`
@@ -44,7 +50,11 @@ const ActivatePage: React.FunctionComponent = () => {
         }
       />
       <div className="pb-4">
-        <p>Configure and activate a blueprint from the marketplace</p>
+        {sourcePage === "templates" ? (
+          <p>Configure and activate a blueprint from the marketplace</p>
+        ) : (
+          <p>Configure and activate a pre-made template</p>
+        )}
       </div>
 
       <Row>

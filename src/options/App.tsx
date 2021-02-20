@@ -92,7 +92,7 @@ const Layout = () => {
                   <Route exact path="/templates" component={TemplatesPage} />
                   <Route
                     exact
-                    path="/marketplace/activate/:blueprintId"
+                    path="/:sourcePage/activate/:blueprintId"
                     component={ActivatePage}
                   />
                   <Route exact path="/settings" component={Settings} />
