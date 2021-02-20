@@ -146,7 +146,8 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
           </Card.Text>
         ) : (
           <Card.Text>
-            PixieBrix already has the permissions required for these bricks.
+            PixieBrix already has the permissions required for the bricks
+            you&apos;ve selected.
           </Card.Text>
         )}
       </Card.Body>

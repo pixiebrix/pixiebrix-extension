@@ -19,6 +19,8 @@ import React, { useMemo } from "react";
 import { Field, FieldInputProps, useFormikContext } from "formik";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/editorSlice";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
@@ -35,7 +37,8 @@ const FoundationTab: React.FunctionComponent<{
     return (
       <Tab.Pane eventKey={eventKey} className="h-100">
         <Alert variant="info">
-          You do not have edit permissions for this foundation
+          <FontAwesomeIcon icon={faInfoCircle} /> You do not have edit
+          permissions for this foundation
         </Alert>
         <Form.Group as={Row} controlId="formExtensionPointId">
           <Form.Label column sm={2}>

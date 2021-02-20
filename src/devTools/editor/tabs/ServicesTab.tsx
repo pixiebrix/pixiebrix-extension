@@ -45,8 +45,8 @@ const ServicesTab: React.FunctionComponent<{
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <p>
-        Add services to re-use external accounts and resources that you or your
-        team have configured.
+        Add services to re-use external accounts, resources, and APIs that you
+        or your team have configured.
       </p>
 
       <FieldArray name={name}>
@@ -55,7 +55,7 @@ const ServicesTab: React.FunctionComponent<{
             <div>
               <ServiceModal
                 key={selectKey}
-                caption="Add Service"
+                caption="Add Integration"
                 services={services}
                 onSelect={(x) => {
                   push({

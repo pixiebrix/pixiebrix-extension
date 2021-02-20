@@ -33,6 +33,8 @@ import { runReaderBlock } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import { SelectorSelectorControl } from "@/devTools/editor/SelectorSelectorField";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export const ReaderBlockForm: React.FunctionComponent<{
   reader: IReader;
@@ -100,9 +102,17 @@ export const ReaderBlockForm: React.FunctionComponent<{
   return (
     <div>
       <Alert variant="info">
-        {reader.id.startsWith("@pixiebrix")
-          ? "You cannot edit built-in readers"
-          : "You cannot edit readers created outside the Page Editor"}
+        {reader.id.startsWith("@pixiebrix") ? (
+          <>
+            <FontAwesomeIcon icon={faInfoCircle} /> You cannot edit built-in
+            readers
+          </>
+        ) : (
+          <>
+            <FontAwesomeIcon icon={faInfoCircle} /> You cannot edit readers
+            created outside the Page Editor
+          </>
+        )}
       </Alert>
       <Form.Group as={Row} controlId="formReaderId">
         <Form.Label column sm={2}>

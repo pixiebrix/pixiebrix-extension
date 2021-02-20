@@ -95,11 +95,7 @@ const Sidebar: React.FunctionComponent = () => {
           <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
         )}
         {/*<ConnectedNavLink route="build" title="Build Brick" icon={faTools} />*/}
-        <SidebarLink
-          route="/services"
-          title="Configure Services"
-          icon={faCloud}
-        />
+        <SidebarLink route="/services" title="Integrations" icon={faCloud} />
         <SidebarLink route="/settings" title="Settings" icon={faCogs} />
         <li className={cx("nav-item")}>
           <a

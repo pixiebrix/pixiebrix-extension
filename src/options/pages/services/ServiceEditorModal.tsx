@@ -96,7 +96,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   return (
     <Modal show onHide={onClose} backdrop="static" keyboard={false}>
       <Modal.Header closeButton>
-        <Modal.Title>Configure Private Service: {service.name}</Modal.Title>
+        <Modal.Title>Configure Private Integration: {service.name}</Modal.Title>
       </Modal.Header>
 
       <Formik

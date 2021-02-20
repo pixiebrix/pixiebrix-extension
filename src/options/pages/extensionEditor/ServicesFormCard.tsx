@@ -139,7 +139,7 @@ const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
               <ServiceModal
                 key={selectKey}
                 services={services}
-                caption="Add Service"
+                caption="Add Integration"
                 onSelect={(x) => {
                   setKey((k) => k + 1);
                   push({

@@ -38,6 +38,7 @@ import ActivateBody, {
 } from "@/options/pages/marketplace/ActivateBody";
 import { reactivate } from "@/background/navigation";
 import { reportError } from "@/telemetry/logging";
+import { useParams } from "react-router";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -116,6 +117,7 @@ export function useReinstall(): (recipe: RecipeDefinition) => Promise<void> {
 
 function useInstall(recipe: RecipeDefinition): InstallRecipe {
   const dispatch = useDispatch();
+  const { sourcePage } = useParams<{ sourcePage: string }>();
   const { addToast } = useToasts();
 
   return useCallback(
@@ -184,7 +186,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           reportError(err);
         });
 
-        dispatch(push("/installed"));
+        dispatch(
+          push(sourcePage === "templates" ? "/templates" : "/installed")
+        );
       } catch (ex) {
         console.error(`Error installing ${recipe.metadata.name}`, ex);
         addToast(`Error installing ${recipe.metadata.name}`, {
@@ -194,7 +198,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         setSubmitting(false);
       }
     },
-    [installRecipe, addToast, dispatch]
+    [installRecipe, addToast, dispatch, sourcePage]
   );
 }
 

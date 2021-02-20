@@ -482,16 +482,16 @@ const Sidebar: React.FunctionComponent<
             id="add-extension-point"
             className="mr-2 Sidebar__actions__dropdown"
           >
-            <Dropdown.Item onClick={addButton}>
-              <FontAwesomeIcon icon={faMousePointer} />
-              &nbsp;Button{" "}
+            <Dropdown.Item onClick={addContextMenu}>
+              <FontAwesomeIcon icon={faBars} />
+              &nbsp;Context Menu{" "}
               <Badge variant="success" pill>
                 Beta
               </Badge>
             </Dropdown.Item>
-            <Dropdown.Item onClick={addContextMenu}>
-              <FontAwesomeIcon icon={faBars} />
-              &nbsp;Context Menu{" "}
+            <Dropdown.Item onClick={addButton}>
+              <FontAwesomeIcon icon={faMousePointer} />
+              &nbsp;Button{" "}
               <Badge variant="success" pill>
                 Beta
               </Badge>

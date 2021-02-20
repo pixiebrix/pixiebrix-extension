@@ -20,7 +20,11 @@ import { useFetch } from "@/hooks/fetch";
 import { RecipeDefinition } from "@/types/definitions";
 import { PageTitle } from "@/layout/Page";
 import { groupBy, sortBy } from "lodash";
-import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClipboardCheck,
+  faExternalLinkAlt,
+  faInfoCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import {
   Button,
   Card,
@@ -34,6 +38,10 @@ import { InstallRecipe } from "@/pages/marketplace/MarketplacePage";
 import { connect } from "react-redux";
 import { OptionsState } from "@/options/slices";
 import { push } from "connected-react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import cx from "classnames";
+
+import "./TemplatesPage.scss";
 
 export interface TemplatesProps {
   installedRecipes: Set<string>;
@@ -115,7 +123,7 @@ const TemplateEntry: React.FunctionComponent<
   FeaturedRecipeDefinition & { installed: boolean; onAdd: () => void }
 > = ({ feature, metadata, installed, onAdd }) => {
   return (
-    <ListGroup.Item>
+    <ListGroup.Item className="TemplateEntry">
       <div className="d-flex align-items-center">
         <div>
           {installed ? (
@@ -134,12 +142,33 @@ const TemplateEntry: React.FunctionComponent<
   );
 };
 
+const Category: React.FunctionComponent<{
+  active?: boolean;
+  inviteOnly?: boolean;
+  title: string;
+  subtitle: string;
+}> = ({ title, subtitle, active, inviteOnly }) => {
+  return (
+    <Card className={cx("CategoryCard", { active, inviteOnly })}>
+      <Card.Body>
+        {inviteOnly && (
+          <div className="ribbon">
+            <span>Invite-Only</span>
+          </div>
+        )}
+        <div className="CategoryCard__title">{title}</div>
+        <div className="CategoryCard__subtitle">{subtitle}</div>
+      </Card.Body>
+    </Card>
+  );
+};
+
 const TemplatesPage: React.FunctionComponent<
   TemplatesProps & { navigate: (url: string) => void }
 > = ({ installedRecipes, navigate }) => {
   const install = useCallback(
     async (x: RecipeDefinition) => {
-      navigate(`marketplace/activate/${encodeURIComponent(x.metadata.id)}`);
+      navigate(`templates/activate/${encodeURIComponent(x.metadata.id)}`);
     },
     [navigate]
   );
@@ -165,63 +194,62 @@ const TemplatesPage: React.FunctionComponent<
   return (
     <div className="marketplace-component">
       <PageTitle icon={faClipboardCheck} title="Templates" />
+      <div className="pb-2">
+        <p>
+          Activate pre-made templates for you favorite web sites and apps. To
+          edit them or create your own, follow our{" "}
+          <a
+            href="https://docs.pixiebrix.com/quick-start-guide"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Page Editor Quickstart <FontAwesomeIcon icon={faExternalLinkAlt} />
+          </a>
+        </p>
+      </div>
+
       <Row>
         <Col>
-          <div className="TemplateCategories d-flex align-items-center">
-            <div>Template Category:</div>
-            <div>
-              <Button size="sm" variant="primary">
-                Context Menus: Search
-              </Button>
-            </div>
-            <div>
-              <Button size="sm" variant="outline-primary" disabled>
-                Context Menus: Push Data
-              </Button>
-            </div>
-            <div>
-              <Button size="sm" variant="outline-primary" disabled>
-                Buttons: Search
-              </Button>
-            </div>
-            <div>
-              <Button size="sm" variant="outline-primary" disabled>
-                Buttons: Push Data
-              </Button>
-            </div>
+          <div className="d-flex align-items-center">
+            <Category active title="Context Menus" subtitle="Search" />
+            <Category title="Context Menus" subtitle="Push Data" inviteOnly />
+            <Category title="Buttons" subtitle="Search" inviteOnly />
+            <Category title="Buttons" subtitle="Push Data" inviteOnly />
           </div>
         </Col>
       </Row>
 
       <Row className="mt-3">
-        <Col>
-          <h3>Context Menus for Search</h3>
-          <p>
-            Context menus that let you right-click text on a page to run a
-            search.
-          </p>
+        <Col xl={6} lg={8} md={10}>
+          <Card className="CategoryInfo">
+            <Card.Body>
+              <Card.Title>Context Menus for Search</Card.Title>
+
+              <Card.Text className="text-info">
+                <FontAwesomeIcon icon={faInfoCircle} /> Once you activate a
+                template, you&apos;ll be able to right-click on any page to
+                search selected text
+              </Card.Text>
+
+              <Form>
+                <InputGroup className="mb-2 mr-sm-2">
+                  <InputGroup.Prepend>
+                    <InputGroup.Text>Search</InputGroup.Text>
+                  </InputGroup.Prepend>
+                  <Form.Control
+                    id="query"
+                    placeholder="Start typing to filter templates"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </InputGroup>
+              </Form>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
 
-      <Row className="mt-3">
-        <Col xl={8} lg={10} md={12}>
-          <Form>
-            <InputGroup className="mb-2 mr-sm-2">
-              <InputGroup.Prepend>
-                <InputGroup.Text>Search</InputGroup.Text>
-              </InputGroup.Prepend>
-              <Form.Control
-                id="query"
-                placeholder="Start typing to filter templates"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </InputGroup>
-          </Form>
-        </Col>
-      </Row>
-
-      <Row className="mt-3">
+      <Row className="mt-2">
         {groupedRecipes.map((group) => (
           <TemplateGroup
             key={group.label}

@@ -17,13 +17,21 @@
 
 import React, { useCallback, useContext, useMemo } from "react";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
-import { FastField, FieldInputProps, useField, useFormikContext } from "formik";
+import {
+  FastField,
+  Field,
+  FieldInputProps,
+  useField,
+  useFormikContext,
+} from "formik";
 import { ContextMenuFormState } from "@/devTools/editor/editorSlice";
 import { getTabInfo } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { getDomain } from "@/devTools/editor/extensionPoints/base";
 import { openTab } from "@/background/executor";
 import Select from "react-select";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 const CONTEXTS = [
   "page",
@@ -98,7 +106,8 @@ const AvailabilityTab: React.FunctionComponent<{
     <Tab.Pane eventKey={eventKey} className="h-100">
       {locked && (
         <Alert variant="info">
-          You do not have edit permissions for this foundation
+          <FontAwesomeIcon icon={faInfoCircle} /> You do not have edit
+          permissions for this foundation
         </Alert>
       )}
       <Form.Group as={Row} controlId="formMatchPatterns">
@@ -196,6 +205,39 @@ const AvailabilityTab: React.FunctionComponent<{
         </Col>
       </Form.Group>
 
+      <hr />
+
+      <h4>Advanced Configuration</h4>
+
+      <Form.Group as={Row} controlId="formExtensionPointId">
+        <Form.Label column sm={2}>
+          Foundation Id
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="extensionPoint.metadata.id">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control
+                type="text"
+                {...field}
+                disabled={values.installed}
+              />
+            )}
+          </Field>
+        </Col>
+      </Form.Group>
+      <Form.Group as={Row} controlId="formFoundationName">
+        <Form.Label column sm={2}>
+          Foundation Name
+        </Form.Label>
+        <Col sm={10}>
+          <Field name="extensionPoint.metadata.name">
+            {({ field }: { field: FieldInputProps<string> }) => (
+              <Form.Control type="text" {...field} disabled={locked} />
+            )}
+          </Field>
+        </Col>
+      </Form.Group>
+
       <Form.Group as={Row} controlId="formMatchPatterns">
         <Form.Label column sm={2}>
           Automatic Permissions Match Pattern
@@ -264,7 +306,7 @@ const AvailabilityTab: React.FunctionComponent<{
             )}
           </FastField>
           <Form.Text className="text-muted">
-            URL match patterns to give PixieBrix access to without first
+            URL match patterns give PixieBrix access to a page without you first
             clicking the context menu. Including URLs here helps PixieBrix run
             you action quicker, and accurately detect which page element you
             clicked to invoke the context menu.
