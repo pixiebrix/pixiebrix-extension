@@ -46,6 +46,7 @@ import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
 import { AuthContext } from "@/auth/context";
 import { reportEvent } from "@/telemetry/events";
+import { reactivate } from "@/background/navigation";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -259,7 +260,7 @@ const EmptyPage: React.FunctionComponent = () => {
   return (
     <>
       <Row>
-        <Col xl={6} lg={6} md={10}>
+        <Col className="VideoCard">
           <Card>
             <Card.Header>Activate Bricks</Card.Header>
             <Card.Body>
@@ -273,7 +274,8 @@ const EmptyPage: React.FunctionComponent = () => {
                     Activate a pre-made template from the Templates page.
                   </p>
                   <Link to={"/templates"} className="btn btn-info">
-                    View Templates <FontAwesomeIcon icon={faClipboardCheck} />
+                    View Templates&nbsp;
+                    <FontAwesomeIcon icon={faClipboardCheck} />
                   </Link>
                 </Col>
                 <Col>
@@ -286,9 +288,10 @@ const EmptyPage: React.FunctionComponent = () => {
                     className="btn btn-info"
                     href="https://docs.pixiebrix.com/quick-start-guide"
                     target="_blank"
+                    rel="noopener noreferrer"
                   >
-                    Open Quickstart Guide{" "}
-                    <FontAwesomeIcon icon={faExternalLinkAlt} />{" "}
+                    Open Quickstart Guide&nbsp;
+                    <FontAwesomeIcon icon={faExternalLinkAlt} />
                   </a>
                 </Col>
               </Row>
@@ -297,13 +300,13 @@ const EmptyPage: React.FunctionComponent = () => {
         </Col>
       </Row>
       <Row>
-        <Col className="mt-3" xl={6} lg={6} md={10}>
+        <Col className="VideoCard mt-3">
           <Card>
             <Card.Header>Video Tour</Card.Header>
             <Card.Body className="mx-auto">
               <div>
                 <iframe
-                  src="https://player.vimeo.com/video/514469131"
+                  src="https://player.vimeo.com/video/514828533"
                   width="640"
                   height="400"
                   frameBorder="0"
@@ -400,10 +403,14 @@ export default connect(
       reportEvent("ExtensionRemove", {
         extensionId: identifier.extensionId,
       });
+      // Remove from storage first so it doesn't get re-added in reactivate step below
+      dispatch(removeExtension(identifier));
       uninstallContextMenu(identifier).catch(() => {
         // noop because this is expected to error for non-context menus
       });
-      dispatch(removeExtension(identifier));
+      reactivate().catch((error) => {
+        console.warn("Error re-activating content scripts", { error });
+      });
     },
   })
 )(InstalledPage);

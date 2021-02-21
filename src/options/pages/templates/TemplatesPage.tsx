@@ -220,7 +220,7 @@ const TemplatesPage: React.FunctionComponent<
       </Row>
 
       <Row className="mt-3">
-        <Col xl={6} lg={8} md={10}>
+        <Col xl={9} lg={10} md={10} sm={12}>
           <Card className="CategoryInfo">
             <Card.Body>
               <Card.Title>Context Menus for Search</Card.Title>

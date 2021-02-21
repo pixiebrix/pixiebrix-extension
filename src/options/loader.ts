@@ -33,6 +33,9 @@ export interface ExtensionOptions {
   config: { [prop: string]: unknown };
 }
 
+/**
+ * Read extension options from local storage
+ */
 export async function loadOptions(): Promise<{
   extensions: Record<string, Record<string, ExtensionOptions>>;
 }> {
