@@ -213,6 +213,10 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     }
   }
 
+  removeExtensions(): void {
+    // Don't need to do any cleanup since context menu registration is handled globally
+  }
+
   async install(): Promise<boolean> {
     // always install the mouse handler in case a context menu is added later
     installMouseHandlerOnce();

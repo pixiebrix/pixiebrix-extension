@@ -143,6 +143,20 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     this.cancelPending.clear();
   }
 
+  removeExtensions(extensions: string[]): void {
+    // don't need to do any cleanup since context menu registration is handled globally
+    const menus = Array.from(this.menus.values());
+    for (const element of menus) {
+      for (const extension of extensions) {
+        const $item = $(element).find(`[${DATA_ATTR}="${extensions}"]`);
+        if ($item.length === 0) {
+          console.debug(`Item for ${extension} was not in the menu`);
+        }
+        $item.remove();
+      }
+    }
+  }
+
   public uninstall(): void {
     this.uninstalled = true;
 
@@ -161,13 +175,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     for (const element of menus) {
       try {
-        for (const extension of extensions) {
-          const $item = $(element).find(`[${DATA_ATTR}="${extension.id}"]`);
-          if (!$item.length) {
-            console.debug(`Item for ${extension.id} was not in the menu`);
-          }
-          $item.remove();
-        }
+        this.removeExtensions(extensions.map((x) => x.id));
         // release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
       } catch (exc) {

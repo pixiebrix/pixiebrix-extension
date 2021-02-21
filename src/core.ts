@@ -165,6 +165,12 @@ export interface IExtensionPoint extends Metadata {
    */
   addExtension(extension: IExtension): void;
 
+  /**
+   * Sync registered extensions, removing any extensions that aren't provided here. Does not actually install/run
+   * the extensions.
+   */
+  syncExtensions(extensions: IExtension[]): void;
+
   run(): Promise<void>;
 
   /**

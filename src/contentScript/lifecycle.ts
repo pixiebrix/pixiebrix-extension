@@ -110,6 +110,9 @@ export async function runDynamic(
   await runExtensionPoint(extensionPoint, cancel);
 }
 
+/**
+ * Add extensions to their respective extension points.
+ */
 async function loadExtensions() {
   _extensionPoints = [];
 
@@ -121,7 +124,7 @@ async function loadExtensions() {
     const activeExtensions = Object.values(extensions).filter((x) => x.active);
 
     if (!activeExtensions.length) {
-      // Avoid the case where we uninstalled the last extension, but the extension point was
+      // Ignore the case where we uninstalled the last extension, but the extension point was
       // not deleted from the state.
       continue;
     }
@@ -131,15 +134,10 @@ async function loadExtensions() {
         extensionPointId
       );
 
-      let added = false;
-      for (const extension of activeExtensions) {
-        extensionPoint.addExtension(extension);
-        added = true;
-      }
+      extensionPoint.syncExtensions(activeExtensions);
 
-      if (added) {
-        _extensionPoints.push(extensionPoint);
-      }
+      // Add to array of extension points with active extensions
+      _extensionPoints.push(extensionPoint);
     } catch (err) {
       console.warn(`Error adding extension point ${extensionPointId}`, { err });
     }

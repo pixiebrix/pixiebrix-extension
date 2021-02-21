@@ -36,6 +36,7 @@ import {
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
+import { partition } from "lodash";
 import { Permissions } from "webextension-polyfill-ts";
 
 export abstract class Service<
@@ -107,6 +108,17 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
     this.description = description;
     this.icon = icon;
     this.logger = new BackgroundLogger({ extensionPointId: this.id });
+  }
+
+  /** Internal method to perform a partial uninstall of the extension point */
+  protected abstract removeExtensions(extensionIds: string[]): void;
+
+  syncExtensions(extensions: IExtension<TConfig>[]): void {
+    const ids = new Set(extensions.map((x) => x.id));
+    const [, removed] = partition(this.extensions, (x) => ids.has(x.id));
+    this.removeExtensions(removed.map((x) => x.id));
+    this.extensions.splice(0, this.extensions.length);
+    this.extensions.push(...extensions);
   }
 
   addExtension(extension: IExtension<TConfig>): void {
