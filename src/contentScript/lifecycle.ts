@@ -114,6 +114,8 @@ export async function runDynamic(
  * Add extensions to their respective extension points.
  */
 async function loadExtensions() {
+  const previousIds = new Set((_extensionPoints ?? []).map((x) => x.id));
+
   _extensionPoints = [];
 
   const { extensions: extensionPointConfigs } = await loadOptions();
@@ -123,9 +125,12 @@ async function loadExtensions() {
   )) {
     const activeExtensions = Object.values(extensions).filter((x) => x.active);
 
-    if (!activeExtensions.length) {
+    if (!activeExtensions.length && !previousIds.has(extensionPointId)) {
       // Ignore the case where we uninstalled the last extension, but the extension point was
       // not deleted from the state.
+      //
+      // But for updates (i.e., re-activation flow) we need to include to so that when we run
+      // syncExtensions their elements are removed from the page
       continue;
     }
 
@@ -136,10 +141,14 @@ async function loadExtensions() {
 
       extensionPoint.syncExtensions(activeExtensions);
 
-      // Add to array of extension points with active extensions
-      _extensionPoints.push(extensionPoint);
+      if (activeExtensions.length) {
+        // Cleared out _extensionPoints before, so can just push w/o checking if it's already in the array
+        _extensionPoints.push(extensionPoint);
+      }
     } catch (err) {
-      console.warn(`Error adding extension point ${extensionPointId}`, { err });
+      console.warn(`Error adding extension point: ${extensionPointId}`, {
+        err,
+      });
     }
   }
 }

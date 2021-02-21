@@ -49,3 +49,15 @@
     }
   }
 }
+
+.VideoCard {
+  .card {
+    min-width: 725px;
+    max-width: 725px;
+    width: 725px;
+
+    .card-body {
+      padding: 1.5rem;
+    }
+  }
+}

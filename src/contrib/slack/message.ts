@@ -19,6 +19,7 @@ import { proxyService } from "@/background/requests";
 import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
+import { boolean } from "@/utils";
 
 export class SendSimpleSlackMessage extends Effect {
   constructor() {
@@ -82,7 +83,7 @@ export class SendSimpleSlackMessage extends Effect {
         icon_emoji: iconEmoji,
         channel,
         username: botName,
-        unfurl_links: unfurlLinks,
+        unfurl_links: boolean(unfurlLinks),
       },
     });
   }
@@ -205,7 +206,7 @@ export class SendAdvancedSlackMessage extends Effect {
         icon_emoji: iconEmoji,
         channel,
         username: botName,
-        unfurl_links: unfurlLinks,
+        unfurl_links: boolean(unfurlLinks),
         attachments,
       },
     });

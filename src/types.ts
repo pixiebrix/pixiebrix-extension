@@ -114,11 +114,23 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   protected abstract removeExtensions(extensionIds: string[]): void;
 
   syncExtensions(extensions: IExtension<TConfig>[]): void {
-    const ids = new Set(extensions.map((x) => x.id));
-    const [, removed] = partition(this.extensions, (x) => ids.has(x.id));
+    const before = this.extensions.map((x) => x.id);
+
+    const updatedIds = new Set(extensions.map((x) => x.id));
+    const [, removed] = partition(this.extensions, (currentExtension) =>
+      updatedIds.has(currentExtension.id)
+    );
     this.removeExtensions(removed.map((x) => x.id));
+
+    // clear extensions and re-populate with updated extensions
     this.extensions.splice(0, this.extensions.length);
     this.extensions.push(...extensions);
+
+    console.debug("syncExtensions", {
+      before,
+      after: extensions.map((x) => x.id),
+      removed: removed.map((x) => x.id),
+    });
   }
 
   addExtension(extension: IExtension<TConfig>): void {
