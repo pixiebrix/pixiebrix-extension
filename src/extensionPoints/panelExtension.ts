@@ -116,6 +116,11 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     return blockList(extension.config.body);
   }
 
+  removeExtensions(): void {
+    // FIXME: implement this to avoid unnecessary firing
+    console.warn("removeExtensions not implemented for panel extensionPoint");
+  }
+
   async defaultReader(): Promise<IReader> {
     throw new Error("PanelExtensionPoint.defaultReader not implemented");
   }

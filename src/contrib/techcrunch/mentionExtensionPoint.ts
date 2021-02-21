@@ -88,6 +88,10 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
     )) as IReader;
   }
 
+  protected removeExtensions(): void {
+    console.warn("removeExtensions not implemented for mention extensionPoint");
+  }
+
   async install() {
     if (!(await this.isAvailable())) {
       return false;

@@ -84,6 +84,12 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
     return (await blockRegistry.lookup(`@pixiebrix/blank`)) as IReader;
   }
 
+  protected removeExtensions(): void {
+    console.warn(
+      "removeExtensions not implemented for calendar extensionPoint"
+    );
+  }
+
   async install(): Promise<boolean> {
     if (!(await this.isAvailable())) {
       return false;

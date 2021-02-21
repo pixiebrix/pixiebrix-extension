@@ -71,6 +71,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return await this.isAvailable();
   }
 
+  removeExtensions(): void {
+    // FIXME: implement this to avoid unnecessary firing
+    console.warn("removeExtensions not implemented for trigger extensionPoint");
+  }
+
   uninstall(): void {
     try {
       if (this.$installedRoot) {
