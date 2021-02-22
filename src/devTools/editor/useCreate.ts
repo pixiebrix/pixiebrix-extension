@@ -75,107 +75,129 @@ export function useCreate(): (
       element: FormState,
       { setSubmitting, setStatus }: FormikHelpers<FormState>
     ) => {
-      const adapter = ADAPTERS.get(element.type);
-
-      // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
-      // number of bricks implemented and frequency of saves
-      const { data: editable } = await axios.get<EditablePackage[]>(
-        await makeURL("api/bricks/"),
-        {
-          headers: { Authorization: `Token ${await getExtensionToken()}` },
-        }
-      );
-
-      // Save the readers first
       try {
-        const readerConfigs = makeExtensionReaders(element);
-        for (const readerConfig of readerConfigs) {
-          // FIXME: check for userscope here to determine editability?
-          if (isCustomReader(readerConfig)) {
-            const packageId = element.installed
-              ? // bricks endpoint uses "name" instead of id
-                editable.find((x) => x.name === readerConfig.metadata.id)?.id
-              : null;
-            await axios({
-              ...(await makeRequestConfig(packageId)),
-              data: { config: safeDump(readerConfig), kind: "reader" },
-            } as AxiosRequestConfig);
+        const adapter = ADAPTERS.get(element.type);
+
+        // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
+        // number of bricks implemented and frequency of saves
+        const { data: editable } = await axios.get<EditablePackage[]>(
+          await makeURL("api/bricks/"),
+          {
+            headers: { Authorization: `Token ${await getExtensionToken()}` },
           }
-        }
-      } catch (ex) {
-        const err = ex as AxiosError;
-        const msg =
-          err.response.data["config"]?.toString() ?? err.response.statusText;
-        setStatus(`Error saving reader: ${msg}`);
-        addToast(`Error saving reader definition: ${msg}`, {
-          appearance: "error",
-          autoDismiss: true,
-        });
-        setSubmitting(false);
-        return;
-      }
+        );
 
-      // Save the foundation second, which depends on the reader
-      if (
-        !element.installed ||
-        editable.find((x) => x.name === element.extensionPoint.metadata.id)
-      ) {
+        // Save the readers first
         try {
-          const extensionPointConfig = adapter.extensionPoint(element);
-          const packageId = element.installed
-            ? editable.find((x) => x.name === extensionPointConfig.metadata.id)
-                ?.id
-            : null;
-          await axios({
-            ...(await makeRequestConfig(packageId)),
-            data: {
-              config: safeDump(extensionPointConfig),
-              kind: "extensionPoint",
-            },
-          } as AxiosRequestConfig);
-
-          reportEvent("PageEditorCreate", {
-            type: element.type,
-          });
+          const readerConfigs = makeExtensionReaders(element);
+          for (const readerConfig of readerConfigs) {
+            // FIXME: check for userscope here to determine editability?
+            if (isCustomReader(readerConfig)) {
+              const packageId = element.installed
+                ? // bricks endpoint uses "name" instead of id
+                  editable.find((x) => x.name === readerConfig.metadata.id)?.id
+                : null;
+              await axios({
+                ...(await makeRequestConfig(packageId)),
+                data: { config: safeDump(readerConfig), kind: "reader" },
+              } as AxiosRequestConfig);
+            }
+          }
         } catch (ex) {
-          const err = ex as AxiosError;
-          const msg =
-            err.response.data["config"]?.toString() ?? err.response.statusText;
-          setStatus(`Error saving foundation: ${msg}`);
-          addToast(`Error saving foundation definition: ${msg}`, {
+          let msg = ex.toString();
+          if (ex.isAxiosError) {
+            const err = ex as AxiosError;
+            msg =
+              err.response?.data["config"]?.toString() ??
+              err.response?.statusText ??
+              "No response from PixieBrix server";
+          }
+          setStatus(`Error saving reader: ${msg}`);
+          addToast(`Error saving reader definition: ${msg}`, {
             appearance: "error",
             autoDismiss: true,
           });
           setSubmitting(false);
           return;
         }
-      }
 
-      try {
-        dispatch(saveExtension(adapter.extension(element)));
-        dispatch(markSaved(element.uuid));
-        reactivate().catch((err) => {
-          reportError(err);
-        });
-        addToast("Saved extension", {
-          appearance: "success",
+        // Save the foundation second, which depends on the reader
+        if (
+          !element.installed ||
+          editable.find((x) => x.name === element.extensionPoint.metadata.id)
+        ) {
+          try {
+            const extensionPointConfig = adapter.extensionPoint(element);
+            const packageId = element.installed
+              ? editable.find(
+                  (x) => x.name === extensionPointConfig.metadata.id
+                )?.id
+              : null;
+
+            console.debug("extensionPointConfig", { extensionPointConfig });
+
+            await axios({
+              ...(await makeRequestConfig(packageId)),
+              data: {
+                config: safeDump(extensionPointConfig),
+                kind: "extensionPoint",
+              },
+            } as AxiosRequestConfig);
+
+            reportEvent("PageEditorCreate", {
+              type: element.type,
+            });
+          } catch (ex) {
+            let msg = ex.toString();
+            if (ex.isAxiosError) {
+              const err = ex as AxiosError;
+              msg =
+                err.response?.data["config"]?.toString() ??
+                err.response?.statusText ??
+                "No response from PixieBrix server";
+            }
+            setStatus(`Error saving foundation: ${msg}`);
+            addToast(`Error saving foundation definition: ${msg}`, {
+              appearance: "error",
+              autoDismiss: true,
+            });
+            setSubmitting(false);
+            return;
+          }
+        }
+
+        try {
+          dispatch(saveExtension(adapter.extension(element)));
+          dispatch(markSaved(element.uuid));
+          reactivate().catch((err) => {
+            reportError(err);
+          });
+          addToast("Saved extension", {
+            appearance: "success",
+            autoDismiss: true,
+          });
+        } catch (exc) {
+          reportError(exc);
+          addToast(`Error saving extension: ${exc.toString()}`, {
+            appearance: "error",
+            autoDismiss: true,
+          });
+          return;
+        } finally {
+          setSubmitting(false);
+        }
+
+        await Promise.all([
+          blockRegistry.fetch(),
+          extensionPointRegistry.fetch(),
+        ]);
+      } catch (err) {
+        reportError(err);
+        addToast(`Error saving extension: ${err.toString()}`, {
+          appearance: "error",
           autoDismiss: true,
         });
-      } catch (exc) {
-        reportError(exc);
-        addToast(`Error saving extension: ${exc.toString()}`, {
-          appearance: "success",
-          autoDismiss: true,
-        });
-        return;
-      } finally {
-        setSubmitting(false);
       }
-
-      await Promise.all([
-        blockRegistry.fetch(),
-        extensionPointRegistry.fetch(),
-      ]);
     },
     [dispatch, addToast]
   );

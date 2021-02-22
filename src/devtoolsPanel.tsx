@@ -26,5 +26,15 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // import "vendors/bootstrap.min.css";
 import "vendors/overrides.scss";
 import "@/devTools/Panel.scss";
+import { reportError } from "@/telemetry/logging";
+
+window.addEventListener("error", function (e) {
+  reportError(e);
+  return false;
+});
+
+window.addEventListener("unhandledrejection", function (e) {
+  reportError(e);
+});
 
 ReactDOM.render(<Panel />, document.getElementById("container"));

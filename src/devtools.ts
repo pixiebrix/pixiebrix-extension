@@ -30,6 +30,17 @@ import {
 } from "@/background/devtools/index";
 import { reportError } from "@/telemetry/logging";
 
+window.addEventListener("error", function (e) {
+  // eslint-disable-next-line require-await
+  reportError(e);
+  return false;
+});
+
+window.addEventListener("unhandledrejection", function (e) {
+  // eslint-disable-next-line require-await
+  reportError(e);
+});
+
 function installSidebarPane(port: Runtime.Port) {
   // The following wasn't returning a value
   // const sidebar = await browser.devtools.panels.elements.createSidebarPane("Data Viewer");
