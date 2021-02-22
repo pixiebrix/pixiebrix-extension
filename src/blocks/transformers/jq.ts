@@ -49,7 +49,7 @@ export class JQTransformer extends Transformer {
     { filter, data }: BlockArg,
     { ctxt, logger }: BlockOptions
   ): Promise<unknown> {
-    const input = isNullOrBlank(data) ? data : ctxt;
+    const input = !isNullOrBlank(data) ? data : ctxt;
 
     const jq = (
       await import(
