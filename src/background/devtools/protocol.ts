@@ -30,19 +30,23 @@ import {
 import { testTabPermissions, injectContentScript } from "@/background/util";
 import { sleep } from "@/utils";
 import * as contextMenuProtocol from "@/background/contextMenus";
+import { Target } from "@/background/devtools/contract";
 
 export const registerPort = liftBackground(
   "REGISTER_PORT",
-  (tabId: number, port: Runtime.Port) => async () => {
-    internalRegisterPort(tabId, port);
+  (target: Target, port: Runtime.Port) => async () => {
+    internalRegisterPort(target.tabId, port);
   }
 );
 
 export const getTabInfo = liftBackground(
   "CURRENT_URL",
-  (tabId: number) => async () => {
-    const hasPermissions = await testTabPermissions(tabId);
-    const { url } = await browser.tabs.get(tabId);
+  (target: Target) => async () => {
+    if (target.frameId !== 0) {
+      throw new Error("getTabInfo only supports top-level tab");
+    }
+    const hasPermissions = await testTabPermissions(target);
+    const { url } = await browser.tabs.get(target.tabId);
     return {
       url,
       hasPermissions,
@@ -52,17 +56,17 @@ export const getTabInfo = liftBackground(
 
 export const injectScript = liftBackground(
   "INJECT_SCRIPT",
-  (tabId: number) => async ({ file }: { file: string }) => {
-    return await injectContentScript(tabId, file);
+  (target: Target) => async ({ file }: { file: string }) => {
+    return await injectContentScript(target, file);
   }
 );
 
 export const waitReady = liftBackground(
   "WAIT_READY",
-  (tabId: number) => async ({ maxWaitMillis }: { maxWaitMillis: number }) => {
+  (target: Target) => async ({ maxWaitMillis }: { maxWaitMillis: number }) => {
     const start = Date.now();
     do {
-      const { ready } = await contentScriptProtocol.isInstalled(tabId);
+      const { ready } = await contentScriptProtocol.isInstalled(target);
       if (ready) {
         return;
       }
@@ -74,8 +78,8 @@ export const waitReady = liftBackground(
 
 export const readSelectedElement = liftBackground(
   "READ_ELEMENT",
-  (tabId: number) => async () => {
-    return await contentScriptProtocol.readSelected(tabId);
+  (target: Target) => async () => {
+    return await contentScriptProtocol.readSelected(target);
   }
 );
 
@@ -83,9 +87,9 @@ export const detectFrameworks: (
   port: Runtime.Port
 ) => Promise<FrameworkMeta[]> = liftBackground(
   "DETECT_FRAMEWORKS",
-  (tabId: number) => async () => {
+  (target: Target) => async () => {
     return (await contentScriptProtocol.detectFrameworks(
-      tabId
+      target
     )) as FrameworkMeta[];
   }
 );
@@ -105,14 +109,14 @@ export const detectFrameworks: (
 
 export const cancelSelectElement = liftBackground(
   "CANCEL_SELECT_ELEMENT",
-  (tabId: number) => async () => {
-    return await nativeSelectionProtocol.cancelSelect(tabId);
+  (target: Target) => async () => {
+    return await nativeSelectionProtocol.cancelSelect(target);
   }
 );
 
 export const selectElement = liftBackground(
   "SELECT_ELEMENT",
-  (tabId: number) => async ({
+  (target: Target) => async ({
     mode = "element",
     framework,
     traverseUp = 0,
@@ -123,7 +127,7 @@ export const selectElement = liftBackground(
     traverseUp?: number;
     root?: string;
   }) => {
-    return await nativeSelectionProtocol.selectElement(tabId, {
+    return await nativeSelectionProtocol.selectElement(target, {
       framework,
       mode,
       traverseUp,
@@ -134,15 +138,15 @@ export const selectElement = liftBackground(
 
 export const dragButton = liftBackground(
   "DRAG_BUTTON",
-  (tabId: number) => async ({ uuid }: { uuid: string }) => {
-    return await nativeEditorProtocol.dragButton(tabId, { uuid });
+  (target: Target) => async ({ uuid }: { uuid: string }) => {
+    return await nativeEditorProtocol.dragButton(target, { uuid });
   }
 );
 
 export const insertButton = liftBackground(
   "INSERT_BUTTON",
-  (tabId: number) => async () => {
-    return await nativeEditorProtocol.insertButton(tabId);
+  (target: Target) => async () => {
+    return await nativeEditorProtocol.insertButton(target);
   }
 );
 
@@ -150,37 +154,37 @@ export const insertPanel: (
   port: Runtime.Port
 ) => Promise<PanelSelectionResult> = liftBackground(
   "INSERT_PANEL",
-  (tabId: number) => async () => {
-    return await nativeEditorProtocol.insertPanel(tabId);
+  (target: Target) => async () => {
+    return await nativeEditorProtocol.insertPanel(target);
   }
 );
 
 export const updateDynamicElement = liftBackground(
   "UPDATE_DYNAMIC_ELEMENT",
-  (tabId: number) => async (
+  (target: Target) => async (
     element: nativeEditorProtocol.DynamicDefinition
   ) => {
-    return await nativeEditorProtocol.updateDynamicElement(tabId, element);
+    return await nativeEditorProtocol.updateDynamicElement(target, element);
   }
 );
 
 export const clearDynamicElements = liftBackground(
   "CLEAR_DYNAMIC",
-  (tabId: number) => async ({ uuid }: { uuid?: string }) => {
-    return await nativeEditorProtocol.clear(tabId, { uuid });
+  (target: Target) => async ({ uuid }: { uuid?: string }) => {
+    return await nativeEditorProtocol.clear(target, { uuid });
   }
 );
 
 export const toggleOverlay = liftBackground(
   "TOGGLE_ELEMENT",
-  (tabId: number) => async ({
+  (target: Target) => async ({
     uuid,
     on = true,
   }: {
     uuid: string;
     on: boolean;
   }) => {
-    return await nativeEditorProtocol.toggleOverlay(tabId, {
+    return await nativeEditorProtocol.toggleOverlay(target, {
       selector: `[data-uuid="${uuid}"]`,
       on,
     });
@@ -189,28 +193,28 @@ export const toggleOverlay = liftBackground(
 
 export const toggleSelector = liftBackground(
   "TOGGLE_SELECTOR",
-  (tabId: number) => async ({
+  (target: Target) => async ({
     selector,
     on = true,
   }: {
     selector: string;
     on: boolean;
   }) => {
-    return await nativeEditorProtocol.toggleOverlay(tabId, { selector, on });
+    return await nativeEditorProtocol.toggleOverlay(target, { selector, on });
   }
 );
 
 export const getInstalledExtensionPointIds = liftBackground(
   "INSTALLED_EXTENSION_POINT_IDS",
-  (tabId: number) => async () => {
-    return await nativeEditorProtocol.getInstalledExtensionPointIds(tabId);
+  (target: Target) => async () => {
+    return await nativeEditorProtocol.getInstalledExtensionPointIds(target);
   }
 );
 
 export const checkAvailable = liftBackground(
   "CHECK_AVAILABLE",
-  (tabId: number) => async (availability: Availability) => {
-    return await nativeEditorProtocol.checkAvailable(tabId, availability);
+  (target: Target) => async (availability: Availability) => {
+    return await nativeEditorProtocol.checkAvailable(target, availability);
   }
 );
 
@@ -219,21 +223,21 @@ export const searchWindow: (
   query: string
 ) => Promise<{ results: unknown[] }> = liftBackground(
   "SEARCH_WINDOW",
-  (tabId: number) => async (query: string) => {
-    return await contentScriptProtocol.searchWindow(tabId, query);
+  (target: Target) => async (query: string) => {
+    return await contentScriptProtocol.searchWindow(target, query);
   }
 );
 
 export const runReaderBlock = liftBackground(
   "RUN_READER_BLOCK",
-  (tabId: number) => async ({
+  (target: Target) => async ({
     id,
     rootSelector,
   }: {
     id: string;
     rootSelector?: string;
   }) => {
-    return await contentScriptProtocol.runReaderBlock(tabId, {
+    return await contentScriptProtocol.runReaderBlock(target, {
       id,
       rootSelector,
     });
@@ -242,14 +246,14 @@ export const runReaderBlock = liftBackground(
 
 export const runReader = liftBackground(
   "RUN_READER",
-  (tabId: number) => async ({
+  (target: Target) => async ({
     config,
     rootSelector,
   }: {
     config: ReaderTypeConfig;
     rootSelector?: string;
   }) => {
-    return await contentScriptProtocol.runReader(tabId, {
+    return await contentScriptProtocol.runReader(target, {
       config,
       rootSelector,
     });

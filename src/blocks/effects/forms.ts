@@ -82,9 +82,10 @@ export class SetInputValue extends Effect {
     for (const { selector, value } of inputs) {
       const $input = $(document).find(selector);
       if ($input.length === 0) {
-        logger.info(`Could not find input for selector: ${selector}`);
+        logger.warn(`Could not find input for selector: ${selector}`);
+      } else {
+        setValue($input, value, { dispatchEvent: true });
       }
-      setValue($input, value, { dispatchEvent: true });
     }
   }
 }

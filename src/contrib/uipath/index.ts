@@ -17,3 +17,4 @@
 
 import "./process";
 import "./localProcess";
+import "./embedApp";

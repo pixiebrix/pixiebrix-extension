@@ -40,9 +40,14 @@ export interface BackgroundResponse {
   payload: unknown;
 }
 
+export type Target = {
+  tabId: number;
+  frameId: number;
+};
+
 export interface HandlerEntry {
   handler: (
-    tabId: number,
+    target: Target,
     port: Runtime.Port
   ) => (...args: unknown[]) => unknown | Promise<unknown>;
   options: HandlerOptions;
@@ -51,4 +56,5 @@ export interface HandlerEntry {
 export interface Meta {
   nonce: Nonce;
   tabId: TabId;
+  frameId: number;
 }

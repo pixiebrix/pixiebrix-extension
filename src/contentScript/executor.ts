@@ -25,7 +25,10 @@ import {
   liftContentScript,
 } from "@/contentScript/backgroundProtocol";
 import { isContentScript } from "webext-detect-page";
+import { Availability } from "@/blocks/types";
+import { checkAvailable } from "@/blocks/available";
 
+export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
 export const MESSAGE_CONTENT_SCRIPT_READY = `${MESSAGE_PREFIX}SCRIPT_READY`;
 export const MESSAGE_CONTENT_SCRIPT_ECHO_SENDER = `${MESSAGE_PREFIX}ECHO_SENDER`;
@@ -34,12 +37,21 @@ export interface RemoteBlockOptions {
   ctxt: unknown;
   messageContext: MessageContext;
   maxRetries?: number;
+  isAvailable?: Availability;
+}
+
+export interface CheckAvailabilityAction {
+  type: typeof MESSAGE_CHECK_AVAILABILITY;
+  payload: {
+    isAvailable: Availability;
+  };
 }
 
 export interface RunBlockAction {
   type: typeof MESSAGE_RUN_BLOCK;
   payload: {
     sourceTabId?: number;
+    nonce?: string;
     blockId: string;
     blockArgs: { [param: string]: unknown };
     options: RemoteBlockOptions;
@@ -50,19 +62,19 @@ let sender: Runtime.MessageSender = null;
 const childTabs = new Set<number>();
 
 function runBlockAction(
-  request: RunBlockAction,
+  request: RunBlockAction | CheckAvailabilityAction,
   sender: Runtime.MessageSender
 ): Promise<unknown> | undefined {
-  const { type, payload } = request;
+  const { type } = request;
 
-  if (allowSender(sender) && type === MESSAGE_RUN_BLOCK) {
-    const { blockId, blockArgs, options } = payload;
-
-    // TODO: validate sourceTabId here
+  if (!allowSender(sender)) {
+    return;
+  } else if (type === MESSAGE_RUN_BLOCK) {
+    const { blockId, blockArgs, options } = (request as RunBlockAction).payload;
+    // FIXME: validate sourceTabId here
     // if (!childTabs.has(sourceTabId)) {
     //   return Promise.reject("Unknown source tab id");
     // }
-
     return blockRegistry.lookup(blockId).then((block) => {
       const logger = new BackgroundLogger(options.messageContext);
       return block.run(blockArgs, {
@@ -71,6 +83,9 @@ function runBlockAction(
         root: document,
       });
     });
+  } else if (type === MESSAGE_CHECK_AVAILABILITY) {
+    const { isAvailable } = (request as CheckAvailabilityAction).payload;
+    return checkAvailable(isAvailable);
   }
 }
 

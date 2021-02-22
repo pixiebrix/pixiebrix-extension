@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   BlockOptionProps,
   FieldRenderer,
@@ -30,6 +30,7 @@ import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
+import { openTab } from "@/background/executor";
 
 interface Process {
   id: string;
@@ -81,12 +82,23 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);
 
+  const [robotAvailable, setRobotAvailable] = useState(true);
+
   const [UiPathRobot, , initError] = useAsyncState(async () => {
-    const module = await import("@uipath/robot");
+    const module = await import(
+      /* webpackChunkName: "uipath" */
+      "@uipath/robot"
+    );
     const { UiPathRobot } = module;
+
+    UiPathRobot.on("missing-components", () => {
+      setRobotAvailable(false);
+    });
+
     UiPathRobot.init();
+
     return UiPathRobot;
-  }, []);
+  }, [setRobotAvailable]);
 
   const [processes, , processesError] = useAsyncState(async () => {
     if (UiPathRobot) {
@@ -99,6 +111,27 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   const process = useMemo(() => {
     return processes?.find((x) => x.id === releaseKey);
   }, [processes, releaseKey]);
+
+  if (!robotAvailable) {
+    return (
+      <div>
+        <span className="text-danger">
+          UiPath Assistant not found. Don&apos;t have the UiPath Assistant?{" "}
+          <a
+            href="#"
+            onClick={async () => {
+              await openTab({
+                url: "https://robotjs.uipath.com/download",
+                active: true,
+              });
+            }}
+          >
+            Get it now.
+          </a>
+        </span>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -16,10 +16,19 @@
  */
 
 // https://transitory.technology/browser-extensions-and-csp-headers/
-// Load the passed URL into an iframe to get around the parent page's CSP headers
-const url = decodeURIComponent(window.location.search.replace("?url=", ""));
+// Load the passed URL into an another iframe to get around the parent page's CSP headers
+
+const params = new URLSearchParams(window.location.search);
+
+const url = new URL(params.get("url"));
+const nonce = params.get("nonce");
+
+if (nonce) {
+  url.searchParams.set("_pb", nonce);
+}
+
 const iframe = document.createElement("iframe");
-iframe.src = url;
+iframe.src = url.toString();
 document.body.appendChild(iframe);
 
 // import {REQUEST_FRAME_DATA} from "@/messaging/constants";

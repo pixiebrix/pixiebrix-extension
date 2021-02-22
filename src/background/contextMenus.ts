@@ -50,28 +50,30 @@ async function dispatchMenu(
 ): Promise<void> {
   // FIXME: this method doesn't handle frames properly
 
+  const target = { frameId: info.frameId, tabId: tab.id };
+
   if (typeof info.menuItemId !== "string") {
     throw new Error(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
 
   // Using the context menu gives temporary access to the page
-  await injectContentScript(tab.id);
-  await waitReady(tab.id, { maxWaitMillis: CONTEXT_SCRIPT_INSTALL_MS });
+  await injectContentScript(target);
+  await waitReady(target, { maxWaitMillis: CONTEXT_SCRIPT_INSTALL_MS });
 
   try {
-    await handleMenuAction(tab.id, {
+    await handleMenuAction(target, {
       extensionId: info.menuItemId.substring(MENU_PREFIX.length),
       args: info,
       maxWaitMillis: CONTEXT_MENU_INSTALL_MS,
     });
-    showNotification(tab.id, {
+    showNotification(target, {
       message: "Ran content menu item action",
       className: "success",
     });
   } catch (err) {
     const message = `Error processing context menu action: ${err}`;
     reportError(new Error(message));
-    showNotification(tab.id, { message, className: "error" }).catch(
+    showNotification(target, { message, className: "error" }).catch(
       (reason) => {
         reportError(reason);
       }

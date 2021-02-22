@@ -22,11 +22,11 @@ import { browser } from "webextension-polyfill-ts";
 function initNavigation(): void {
   // updates from the history API
   browser.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-    // console.debug(
-    //   `onHistoryStateUpdated (tab=${details.tabId}, frame=${details.frameId})`,
-    //   details
-    // );
-    contentScript.notifyNavigation(details.tabId);
+    contentScript
+      .notifyNavigation({ tabId: details.tabId, frameId: details.frameId }, {})
+      .catch((err) => {
+        console.warn("Error notifying page navigation", err);
+      });
   });
 }
 

@@ -20,7 +20,12 @@ import { browser } from "webextension-polyfill-ts";
 import * as contentScriptProtocol from "@/contentScript/devTools";
 import { sleep } from "@/utils";
 
-export async function testTabPermissions(tabId: number): Promise<boolean> {
+export type Target = {
+  tabId: number;
+  frameId: number;
+};
+
+export async function testTabPermissions(target: Target): Promise<boolean> {
   if (!isBackgroundPage()) {
     throw new Error(
       "hasTabPermissions can only be called from the background page"
@@ -29,9 +34,9 @@ export async function testTabPermissions(tabId: number): Promise<boolean> {
 
   try {
     // can't use browser.permissions.contains for permissions because it doesn't seem to work with activeTab
-    await browser.tabs.executeScript(tabId, {
+    await browser.tabs.executeScript(target.tabId, {
       allFrames: false,
-      frameId: 0,
+      frameId: target.frameId ?? 0,
       code: "true;",
       runAt: "document_start",
     });
@@ -47,12 +52,12 @@ export async function testTabPermissions(tabId: number): Promise<boolean> {
 }
 
 export async function waitReady(
-  tabId: number,
+  target: Target,
   { maxWaitMillis }: { maxWaitMillis: number }
 ): Promise<void> {
   const start = Date.now();
   do {
-    const { ready } = await contentScriptProtocol.isInstalled(tabId);
+    const { ready } = await contentScriptProtocol.isInstalled(target);
     if (ready) {
       return;
     }
@@ -63,12 +68,12 @@ export async function waitReady(
 
 /**
  * Inject a contentScript into a page if the contentScript is not already available on the page
- * @param tabId the tab to inject the contentScript into
+ * @param target the tab frame to inject the contentScript into
  * @param file the contentScript file
  * @return true if the content script was injected
  */
 export async function injectContentScript(
-  tabId: number,
+  target: Target,
   file = "contentScript.js"
 ): Promise<boolean> {
   if (!isBackgroundPage()) {
@@ -77,14 +82,18 @@ export async function injectContentScript(
     );
   }
 
-  const { installed } = await contentScriptProtocol.isInstalled(tabId);
+  const { installed } = await contentScriptProtocol.isInstalled(target);
 
   if (!installed) {
-    console.debug(`Injecting devtools contentScript for tab ${tabId}: ${file}`);
+    console.debug(
+      `Injecting devtools contentScript for tab ${target.tabId}, frame ${
+        target.frameId ?? 0
+      }: ${file}`
+    );
 
     // inject in the top-level frame
-    await browser.tabs.executeScript(tabId, {
-      frameId: 0,
+    await browser.tabs.executeScript(target.tabId, {
+      frameId: target.frameId ?? 0,
       allFrames: false,
       file,
       runAt: "document_end",
@@ -92,7 +101,11 @@ export async function injectContentScript(
 
     return true;
   } else {
-    console.debug(`contentScript already installed on tab ${tabId}`);
+    console.debug(
+      `contentScript already installed on tab ${target.tabId}, frame ${
+        target.frameId ?? 0
+      }`
+    );
     return false;
   }
 }

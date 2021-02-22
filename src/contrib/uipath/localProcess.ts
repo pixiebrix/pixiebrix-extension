@@ -49,12 +49,27 @@ export class RunLocalProcess extends Effect {
   };
 
   async effect({ releaseKey, inputArguments = {} }: BlockArg): Promise<void> {
-    const { UiPathRobot } = (await import("@uipath/robot")).default;
-    const robot = UiPathRobot.init();
-    const process = (await robot.getProcesses()).find(
-      (x) => x.id === releaseKey
+    const module = await import(
+      /* webpackChunkName: "uipath" */
+      "@uipath/robot"
     );
-    process.start(inputArguments);
+
+    const { UiPathRobot } = module.default;
+
+    return new Promise((resolve, reject) => {
+      UiPathRobot.on("missing-components", () => {
+        reject(new Error("UiPath Assistant not found. Is it installed?"));
+      });
+      const robot = UiPathRobot.init();
+      robot.getProcesses().then((processes) => {
+        const process = processes.find((x) => x.id === releaseKey);
+        if (!process) {
+          throw new Error(`Can't find process ${releaseKey}`);
+        }
+        process.start(inputArguments);
+        resolve();
+      });
+    });
   }
 }
 
