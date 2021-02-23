@@ -90,7 +90,7 @@ const FrameworkSelector: React.FunctionComponent<{
   name: string;
   frameworks: FrameworkMeta[];
 }> = ({ name, frameworks = [] }) => {
-  console.debug("Frameworks", { frameworks });
+  // console.debug("Frameworks", { frameworks });
 
   const frameworkOptions: FrameworkOption[] = useMemo(
     () =>
@@ -226,7 +226,7 @@ const ReaderConfig: React.FunctionComponent<{
   const [query, setQuery] = useState("");
   const { values, setFieldValue } = useFormikContext<FormState>();
 
-  console.debug("reader form state", { readerIndex, readers: values.readers });
+  // console.debug("reader form state", { readerIndex, readers: values.readers });
 
   const [{ output, schema, error }, setSchema] = useState({
     output: undefined,

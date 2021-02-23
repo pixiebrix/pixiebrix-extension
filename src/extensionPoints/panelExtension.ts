@@ -44,7 +44,7 @@ import {
   ExtensionPointConfig,
 } from "@/extensionPoints/types";
 import { propertiesToSchema } from "@/validators/generic";
-import { render } from "@/extensionPoints/dom";
+import { PanelComponent, render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 
@@ -163,7 +163,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   async install(): Promise<boolean> {
     if (!(await this.isAvailable())) {
       console.debug(
-        `Skipping panel extension ${this.id} because it's not available for the page`
+        `Skipping panel extension because it's not available for the page: ${this.id}`
       );
       return false;
     }
@@ -212,6 +212,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       throw new Error("panelExtension has already been destroyed");
     }
 
+    console.debug(`Run panelExtension: ${extension.id}`);
+
     const bodyUUID = uuidv4();
     const extensionLogger = this.logger.childLogger({
       extensionId: extension.id,
@@ -257,7 +259,13 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
 
     // update the body content with the new args
-    const $bodyContainer = this.$container.find(`#${bodyUUID}`);
+    const $bodyContainers = this.$container.find(`#${bodyUUID}`);
+
+    if ($bodyContainers.length > 1) {
+      throw new Error("Found multiple body containers");
+    }
+
+    const bodyContainer = $bodyContainers.get(0);
 
     let isBodyInstalled = false;
 
@@ -273,45 +281,53 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
             validate: true,
             serviceArgs: serviceContext,
           }
-        ) as Promise<string>;
+        ) as Promise<PanelComponent>;
 
-        errorBoundary(rendererPromise, extensionLogger).then(
-          (bodyOrComponent) => {
-            render($bodyContainer.get(0), bodyOrComponent, {
+        return errorBoundary(rendererPromise, extensionLogger)
+          .then((bodyOrComponent: PanelComponent) => {
+            render(bodyContainer, bodyOrComponent, {
               shadowDOM: boolean(shadowDOM),
             });
             extensionLogger.debug("Successfully installed panel");
-          }
-        );
+          })
+          .catch((err) => {
+            extensionLogger.error(err);
+          });
       }
     };
 
     if (collapsible) {
       const startExpanded = !this.collapsedExtensions[extension.id];
 
-      if (startExpanded) {
-        installBody();
-      }
-
-      $bodyContainer.addClass(["collapse"]);
+      $bodyContainers.addClass(["collapse"]);
       const $toggle = $panel.find('[data-toggle="collapse"]');
 
-      $bodyContainer.toggleClass("show", startExpanded);
+      $bodyContainers.toggleClass("show", startExpanded);
       $toggle.attr("aria-expanded", String(startExpanded));
       $toggle.toggleClass("active", startExpanded);
 
       $toggle.on("click", () => {
-        $bodyContainer.toggleClass("show");
-        const showing = $bodyContainer.hasClass("show");
+        $bodyContainers.toggleClass("show");
+        const showing = $bodyContainers.hasClass("show");
         $toggle.attr("aria-expanded", String(showing));
         $toggle.toggleClass("active", showing);
         this.collapsedExtensions[extension.id] = !showing;
         if (showing) {
+          console.debug(
+            `Installing body for collapsible panel: ${extension.id}`
+          );
           installBody();
         }
       });
+
+      if (startExpanded) {
+        await installBody();
+      }
     } else {
-      installBody();
+      console.debug(
+        `Installing body for non-collapsible panel: ${extension.id}`
+      );
+      await installBody();
     }
   }
 

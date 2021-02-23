@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import mapValues from "lodash/mapValues";
 import { ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
+import { asyncMapValues, sleep } from "@/utils";
 
 type CastType = "string" | "boolean" | "number";
 
@@ -40,6 +40,9 @@ type CommonSelector = ChildrenSelector | SingleSelector;
 
 type Selector = CommonSelector & {
   selector?: string;
+
+  // block until the element is available
+  maxWaitMillis?: number;
 };
 
 type SelectorMap = { [key: string]: string | Selector };
@@ -77,11 +80,13 @@ function castValue(value: string, type?: CastType): Result {
   }
 }
 
-function processFind(
+async function processFind(
   $elt: JQuery<HTMLElement | Document>,
   selector: ChildrenSelector
-): { [key: string]: Result } {
-  return mapValues(selector.find, (selector) => select(selector, $elt));
+): Promise<{ [key: string]: Result }> {
+  return await asyncMapValues(selector.find, (selector) =>
+    select(selector, $elt)
+  );
 }
 
 function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
@@ -123,10 +128,10 @@ function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
   return castValue(value, selector.type);
 }
 
-function select(
+async function select(
   selector: string | Selector,
   $root?: JQuery<HTMLElement | Document>
-): Result {
+): Promise<Result> {
   const normalizedSelector: Selector =
     typeof selector === "string" ? { selector } : selector;
 
@@ -134,36 +139,64 @@ function select(
     return normalizedSelector.multi ? [] : undefined;
   }
 
-  let $elt;
-  if ($root) {
-    $elt = normalizedSelector.selector
-      ? $root.find(normalizedSelector.selector)
-      : $root;
-  } else {
-    if (!normalizedSelector.selector) {
-      throw new Error(
-        "'selector' required if not nested within a 'find' block"
-      );
+  let $elt: JQuery<HTMLElement | Document>;
+
+  const start = Date.now();
+
+  do {
+    if ($root) {
+      $elt = normalizedSelector.selector
+        ? $root.find(normalizedSelector.selector)
+        : $root;
+    } else {
+      if (!normalizedSelector.selector) {
+        throw new Error(
+          "'selector' required if not nested within a 'find' block"
+        );
+      }
+      $elt = $(document).find(normalizedSelector.selector);
     }
-    $elt = $(document).find(normalizedSelector.selector);
-  }
+
+    if (
+      $elt.length > 0 ||
+      normalizedSelector.multi ||
+      !normalizedSelector.maxWaitMillis
+    ) {
+      break;
+    }
+
+    await sleep(50);
+  } while (Date.now() - start < normalizedSelector.maxWaitMillis);
 
   if ($elt.length === 0) {
     console.debug(
-      `Did not find any elements for selector: ${normalizedSelector.selector}`,
+      `Did not find any elements for selector in ${
+        normalizedSelector.maxWaitMillis ?? 0
+      }ms: ${normalizedSelector.selector}`,
       { $root, normalizedSelector }
     );
+
+    if (normalizedSelector.maxWaitMillis) {
+      throw new Error(
+        `Did not find any elements for selector in ${
+          normalizedSelector.maxWaitMillis ?? 0
+        }ms: ${normalizedSelector.selector}`
+      );
+    }
+
     return normalizedSelector.multi ? [] : undefined;
   } else if ($elt.length > 1 && !normalizedSelector.multi) {
     throw new Error(
       `Multiple elements found for ${normalizedSelector.selector}. To return a list of values, supply multi=true`
     );
   } else if ("find" in normalizedSelector) {
-    const values = $elt
-      .map(function () {
-        return processFind($(this), normalizedSelector);
-      })
-      .toArray();
+    const values = await Promise.all(
+      $elt
+        .map(function () {
+          return processFind($(this), normalizedSelector);
+        })
+        .toArray()
+    );
     return normalizedSelector.multi ? values : values[0];
   } else {
     if ($elt === $(document)) {
@@ -187,10 +220,10 @@ async function read(
 ): Promise<ReaderOutput> {
   const { selectors } = reader;
   const $root = $(root ?? document);
-  if (!$root.length) {
+  if ($root.length === 0) {
     throw new Error("JQuery reader requires the document or element(s)");
   }
-  return mapValues(selectors, (selector) => select(selector, $root));
+  return await asyncMapValues(selectors, (selector) => select(selector, $root));
 }
 
 registerFactory("jquery", read);

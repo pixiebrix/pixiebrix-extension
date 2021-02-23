@@ -22,15 +22,18 @@ import {
   MESSAGE_RUN_BLOCK as CONTENT_MESSAGE_RUN_BLOCK,
   MESSAGE_CONTENT_SCRIPT_READY,
   MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
+  MESSAGE_CHECK_AVAILABILITY,
 } from "@/contentScript/executor";
 import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
 import { MESSAGE_PREFIX } from "@/background/protocol";
 import { RenderedArgs } from "@/core";
 import { isBackgroundPage, isContentScript } from "webext-detect-page";
 import { emitDevtools } from "@/background/devtools/internal";
+import { Availability } from "@/blocks/types";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
+const MESSAGE_RUN_BLOCK_FRAME_NONCE = `${MESSAGE_PREFIX}RUN_BLOCK_FRAME_NONCE`;
 const MESSAGE_ACTIVATE_TAB = `${MESSAGE_PREFIX}MESSAGE_ACTIVATE_TAB`;
 const MESSAGE_CLOSE_TAB = `${MESSAGE_PREFIX}MESSAGE_CLOSE_TAB`;
 const MESSAGE_OPEN_TAB = `${MESSAGE_PREFIX}MESSAGE_OPEN_TAB`;
@@ -43,13 +46,15 @@ interface Target {
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
 const tabReady: { [tabId: string]: { [frameId: string]: boolean } } = {};
+const nonceToTarget = new Map<string, Target>();
 
 async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 interface WaitOptions {
-  maxWaitMillis: number;
+  maxWaitMillis?: number;
+  isAvailable?: Availability;
 }
 
 type OpenTabAction = {
@@ -57,12 +62,51 @@ type OpenTabAction = {
   payload: Tabs.CreateCreatePropertiesType;
 };
 
+async function waitNonceReady(
+  nonce: string,
+  { maxWaitMillis, isAvailable }: WaitOptions = { maxWaitMillis: 10_000 }
+) {
+  const startTime = Date.now();
+
+  const isReady = async () => {
+    const target = nonceToTarget.get(nonce);
+    if (target == null) {
+      return false;
+    }
+    const frameReady = tabReady[target.tabId]?.[target.frameId] != null;
+    if (!frameReady) {
+      return false;
+    }
+
+    if (isAvailable) {
+      return await browser.tabs.sendMessage(
+        target.tabId,
+        {
+          type: MESSAGE_CHECK_AVAILABILITY,
+          payload: { isAvailable },
+        },
+        { frameId: target.frameId }
+      );
+    } else {
+      return true;
+    }
+  };
+
+  while (!(await isReady())) {
+    if (Date.now() - startTime > maxWaitMillis) {
+      throw new Error(`Nonce ${nonce} was not ready after ${maxWaitMillis}ms`);
+    }
+    await sleep(50);
+  }
+  return true;
+}
+
 async function waitReady(
   { tabId, frameId }: Target,
-  { maxWaitMillis }: WaitOptions = { maxWaitMillis: 10000 }
+  { maxWaitMillis }: WaitOptions = { maxWaitMillis: 10_000 }
 ): Promise<boolean> {
   const startTime = Date.now();
-  while (!tabReady[tabId]?.[frameId]) {
+  while (tabReady[tabId]?.[frameId] == null) {
     if (Date.now() - startTime > maxWaitMillis) {
       throw new Error(`Tab ${tabId} was not ready after ${maxWaitMillis}ms`);
     }
@@ -102,6 +146,31 @@ function backgroundListener(
             { frameId: 0 }
           )
           .then(resolve);
+      });
+    }
+    case MESSAGE_RUN_BLOCK_FRAME_NONCE: {
+      const action = request as RunBlockAction;
+      const { nonce, ...payload } = action.payload;
+
+      console.debug(`Waiting for frame with nonce ${nonce} to be ready`);
+      return waitNonceReady(nonce, {
+        isAvailable: payload.options.isAvailable,
+      }).then(() => {
+        const target = nonceToTarget.get(nonce);
+        console.debug(
+          `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
+        );
+        return browser.tabs.sendMessage(
+          target.tabId,
+          {
+            type: CONTENT_MESSAGE_RUN_BLOCK,
+            payload: {
+              sourceTabId: sender.tab.id,
+              ...payload,
+            },
+          },
+          { frameId: target.frameId }
+        );
       });
     }
     case MESSAGE_RUN_BLOCK_TARGET: {
@@ -164,6 +233,19 @@ function backgroundListener(
       console.debug(`Marked tab ${tabId} (frame: ${frameId}) as ready`, {
         sender,
       });
+
+      const url = new URL(sender.url);
+      const nonce = url.searchParams.get("_pb");
+
+      if (nonce) {
+        console.debug(`Marking nonce as ready: ${nonce}`, {
+          nonce,
+          tabId,
+          frameId,
+        });
+        nonceToTarget.set(nonce, { tabId, frameId });
+      }
+
       if (!tabReady[tabId]) {
         tabReady[tabId] = {};
       }
@@ -184,9 +266,11 @@ function linkTabListener(tab: Tabs.Tab): void {
   if (tab.openerTabId) {
     tabToOpener.set(tab.id, tab.openerTabId);
     tabToTarget.set(tab.openerTabId, tab.id);
-    linkChildTab(tab.openerTabId, tab.id).catch((reason) => {
-      console.warn("Error linking child tab", reason);
-    });
+    linkChildTab({ tabId: tab.openerTabId, frameId: 0 }, tab.id).catch(
+      (reason) => {
+        console.warn("Error linking child tab", reason);
+      }
+    );
   }
 }
 
@@ -230,6 +314,46 @@ export async function openTab(
 }
 
 const DEFAULT_MAX_RETRIES = 5;
+
+export async function executeForNonce(
+  nonce: string,
+  blockId: string,
+  blockArgs: RenderedArgs,
+  options: RemoteBlockOptions
+): Promise<unknown> {
+  console.debug(`Running ${blockId} in content script with nonce ${nonce}`);
+
+  const { maxRetries = DEFAULT_MAX_RETRIES } = options;
+  let retries = 0;
+
+  while (retries < maxRetries) {
+    try {
+      return await browser.runtime.sendMessage({
+        type: MESSAGE_RUN_BLOCK_FRAME_NONCE,
+        payload: {
+          nonce,
+          blockId,
+          blockArgs,
+          options,
+        },
+      });
+    } catch (err) {
+      if (err?.message?.includes("Could not establish connection")) {
+        console.debug(
+          `Target not ready for ${blockId}. Retrying in ${
+            100 * (retries + 1)
+          }ms`
+        );
+        await sleep(250 * (retries + 1));
+      } else {
+        throw err;
+      }
+    }
+    retries++;
+  }
+
+  throw new Error(`Unable to run ${blockId} after ${maxRetries} retries`);
+}
 
 export async function executeInTarget(
   blockId: string,

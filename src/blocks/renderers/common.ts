@@ -16,12 +16,13 @@
  */
 
 import { Logger } from "@/core";
+import { PanelComponent } from "@/extensionPoints/dom";
 
 /** An error boundary for renderers */
 export async function errorBoundary(
-  renderPromise: Promise<string>,
+  renderPromise: Promise<PanelComponent>,
   logger: Logger
-): Promise<string> {
+): Promise<PanelComponent> {
   try {
     return await renderPromise;
   } catch (exc) {

@@ -253,3 +253,5 @@ document.dispatchEvent(new CustomEvent(SCRIPT_LOADED));
 setTimeout(function () {
   document.dispatchEvent(new CustomEvent(CONNECT_EXTENSION, {}));
 }, 0);
+
+(window as any).__jquery = jQuery;

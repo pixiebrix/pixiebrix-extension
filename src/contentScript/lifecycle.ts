@@ -23,7 +23,6 @@ import {
   notifyContentScripts,
 } from "@/contentScript/backgroundProtocol";
 import * as context from "@/contentScript/context";
-import { frameId } from "@/contentScript/context";
 
 let _scriptPromise: Promise<void>;
 const _dynamic: Map<string, IExtensionPoint> = new Map();
@@ -168,9 +167,18 @@ function getNavSequence() {
  * Handle a website navigation, e.g., page load or a URL change in an SPA.
  * @returns {Promise<void>}
  */
-export async function handleNavigate(openerTabId?: number): Promise<void> {
+export async function handleNavigate({
+  openerTabId,
+}: { openerTabId?: number } = {}): Promise<void> {
+  if (context.frameId == null) {
+    console.debug(
+      "Ignoring handleNavigate because context.frameId is not set yet"
+    );
+    return;
+  }
+
   console.debug(
-    `Handling navigation to ${location.href} (tabId=${context.tabId}, frameId=${frameId})`
+    `Handling navigation to ${location.href} (tabId=${context.tabId}, frameId=${context.frameId})`
   );
   await installScriptOnce();
 
@@ -178,7 +186,7 @@ export async function handleNavigate(openerTabId?: number): Promise<void> {
 
   const extensionPoints = await loadExtensionsOnce();
 
-  if (openerTabId) {
+  if (openerTabId != null) {
     console.debug(`Setting opener tabId: ${openerTabId}`);
     _openerTabId = openerTabId;
   }
@@ -208,7 +216,8 @@ export async function handleNavigate(openerTabId?: number): Promise<void> {
 
 export const notifyNavigation = liftContentScript(
   "NAVIGATE",
-  (openerTabId?: number) => handleNavigate(openerTabId),
+  ({ openerTabId }: { openerTabId?: number; frameId?: number }) =>
+    handleNavigate({ openerTabId }),
   { asyncResponse: false }
 );
 

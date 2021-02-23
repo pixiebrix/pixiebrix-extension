@@ -132,6 +132,11 @@ export function notifyContentScripts(
   };
 }
 
+export type Target = {
+  tabId: number;
+  frameId: number;
+};
+
 /**
  * Lift a method to be run in the contentScript
  * @param type a unique name for the contentScript action
@@ -142,22 +147,22 @@ export function liftContentScript<R extends SerializableResponse>(
   type: string,
   method: () => R | Promise<R>,
   options?: HandlerOptions
-): (tabId: number) => Promise<R>;
+): (target: Target | null) => Promise<R>;
 export function liftContentScript<T, R extends SerializableResponse>(
   type: string,
   method: (a0: T) => R | Promise<R>,
   options?: HandlerOptions
-): (tabId: number, a0: T) => Promise<R>;
+): (target: Target | null, a0: T) => Promise<R>;
 export function liftContentScript<T0, T1, R extends SerializableResponse>(
   type: string,
   method: (a0: T0, a1: T1) => R | Promise<R>,
   options?: HandlerOptions
-): (tabId: number, a0: T0, a1: T1) => Promise<R>;
+): (target: Target | null, a0: T0, a1: T1) => Promise<R>;
 export function liftContentScript<T0, T1, T2, R extends SerializableResponse>(
   type: string,
   method: (a0: T0, a1: T1, a2: T2) => R | Promise<R>,
   options?: HandlerOptions
-): (tabId: number, a0: T0, a1: T1, a2: T2) => Promise<R>;
+): (target: Target | null, a0: T0, a1: T1, a2: T2) => Promise<R>;
 export function liftContentScript<
   T0,
   T1,
@@ -168,12 +173,12 @@ export function liftContentScript<
   type: string,
   method: (a0: T0, a1: T1, a2: T2, a3: T3) => R,
   options?: HandlerOptions
-): (tabId: number, a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>;
+): (target: Target | null, a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>;
 export function liftContentScript<R extends SerializableResponse>(
   type: string,
   method: (...args: unknown[]) => R,
   options?: HandlerOptions
-): (tabId: number, ...args: unknown[]) => Promise<R> {
+): (target: Target | null, ...args: unknown[]) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
@@ -181,7 +186,7 @@ export function liftContentScript<R extends SerializableResponse>(
     handlers.set(fullType, { handler: method, options });
   }
 
-  return async (tabId: number, ...args: unknown[]) => {
+  return async (target: Target | null, ...args: unknown[]) => {
     if (isContentScript()) {
       console.debug("Resolving call from the contentScript immediately");
       return method(...args);
@@ -192,19 +197,21 @@ export function liftContentScript<R extends SerializableResponse>(
     }
 
     console.debug(
-      `Sending content script action ${fullType} to tab: ${tabId ?? "<all>"}`
+      `Sending content script action ${fullType} to tab ${
+        target?.tabId ?? "<all>"
+      }, frame ${target?.frameId ?? ROOT_FRAME_ID}`
     );
 
     let response;
 
     try {
       response = await browser.tabs.sendMessage(
-        tabId,
+        target?.tabId,
         {
           type: fullType,
           payload: args,
         },
-        { frameId: ROOT_FRAME_ID }
+        { frameId: target.frameId ?? ROOT_FRAME_ID }
       );
     } catch (err) {
       if (
@@ -220,7 +227,7 @@ export function liftContentScript<R extends SerializableResponse>(
           isNotification(options) ? "notification" : "action"
         } ${type}`,
         {
-          tabId,
+          target,
           err,
         }
       );
@@ -235,6 +242,7 @@ export function liftContentScript<R extends SerializableResponse>(
     if (isErrorResponse(response)) {
       throw deserializeError(response.$$error);
     }
+
     return response;
   };
 }

@@ -27,9 +27,11 @@ interface RenderOptions {
   shadowDOM: boolean;
 }
 
+export type PanelComponent = string | ComponentRef;
+
 export function render(
   root: HTMLElement,
-  body: string | ComponentRef,
+  body: PanelComponent,
   { shadowDOM }: RenderOptions
 ): void {
   if (typeof body === "string") {

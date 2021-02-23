@@ -65,6 +65,7 @@ import "@/contentScript/script";
 import "notifyjs-browser";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
+import "@/contentScript/uipath";
 
 const start = Date.now();
 
@@ -83,7 +84,7 @@ const contextPromise = whoAmI()
   });
 
 contextPromise
-  // Refreshing services on every page load is too slow
+  // Refreshing remote services on every page load is too slow
   // .then(() => {
   //   // Reload services on background page for each new page. This is inefficient right now, but will
   //   // avoid confusion if service configurations are updated remotely

@@ -26,12 +26,12 @@ const URL_INPUT_SPEC: Schema = {
   properties: {
     url: {
       type: "string",
-      description: "The URL to redirect to",
+      description: "The URL",
       format: "uri",
     },
     params: {
       type: "object",
-      description: "URL parameters, will be encoded",
+      description: "URL parameters, will be automatically encoded",
       additionalProperties: { type: "string" },
     },
   },

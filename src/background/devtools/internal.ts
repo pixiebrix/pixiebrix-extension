@@ -32,6 +32,7 @@ import {
   PORT_NAME,
   PromiseHandler,
   TabId,
+  Target,
 } from "@/background/devtools/contract";
 import { reportError } from "@/telemetry/logging";
 import { isBackgroundPage } from "webext-detect-page";
@@ -42,7 +43,9 @@ import * as nativeEditorProtocol from "@/nativeEditor";
 
 let numOpenConnections = 0;
 
-const backgroundHandlers = new Map<string, HandlerEntry>();
+type Nonce = string;
+
+const backgroundHandlers = new Map<Nonce, HandlerEntry>();
 const connections = new Map<TabId, Runtime.Port>();
 const permissionsListeners = new Map<TabId, PromiseHandler[]>();
 
@@ -68,7 +71,12 @@ function backgroundMessageListener(
     console.debug(`Handling devtools request ${type} (nonce: ${meta?.nonce})`);
 
     const handlerPromise = new Promise((resolve) => {
-      resolve(handler(meta.tabId, port)(...payload));
+      resolve(
+        handler(
+          { tabId: meta.tabId, frameId: meta.frameId ?? 0 },
+          port
+        )(...payload)
+      );
     });
 
     let responded = false;
@@ -135,18 +143,18 @@ function backgroundMessageListener(
  */
 export function liftBackground<R extends SerializableResponse>(
   type: string,
-  method: (tabId: number, port: Runtime.Port) => () => R | Promise<R>,
+  method: (target: Target, port: Runtime.Port) => () => R | Promise<R>,
   options?: HandlerOptions
 ): (port: Runtime.Port) => Promise<R>;
 export function liftBackground<T, R extends SerializableResponse>(
   type: string,
-  method: (tabId: number, port: Runtime.Port) => (a0: T) => R | Promise<R>,
+  method: (target: Target, port: Runtime.Port) => (a0: T) => R | Promise<R>,
   options?: HandlerOptions
 ): (port: Runtime.Port, a0: T) => Promise<R>;
 export function liftBackground<R extends SerializableResponse>(
   type: string,
   method: (
-    tabId: number,
+    target: Target,
     port: Runtime.Port
   ) => (...args: unknown[]) => R | Promise<R>,
   options?: HandlerOptions
@@ -182,7 +190,8 @@ function deleteStaleConnections(port: Runtime.Port) {
       connections.delete(tabId);
 
       nativeEditorProtocol
-        .clear(tabId, {})
+        // FIXME: need to support non-top frame here?
+        .clear({ tabId, frameId: 0 }, {})
         .catch((err) => {
           console.warn(`Error clearing dynamic elements for tab: ${tabId}`, {
             err,
@@ -254,10 +263,10 @@ async function injectTemporaryAccess({
   tabId,
   frameId,
 }: WebNavigation.OnDOMContentLoadedDetailsType): Promise<void> {
-  if (frameId === 0 && connections.has(tabId)) {
-    const hasPermissions = await testTabPermissions(tabId);
+  if (connections.has(tabId)) {
+    const hasPermissions = await testTabPermissions({ tabId, frameId });
     if (hasPermissions) {
-      await injectContentScript(tabId);
+      await injectContentScript({ tabId, frameId });
     } else {
       console.debug(
         `Skipping injectDevtoolsContentScript because no activeTab permissions for tab: ${tabId}`
@@ -275,7 +284,7 @@ export function emitDevtools(
     const port = connections.get(details.tabId);
     port.postMessage({
       type,
-      meta: { tabId: details.tabId, nonce: uuidv4() },
+      meta: { tabId: details.tabId, frameId: details.frameId, nonce: uuidv4() },
       payload: details,
     });
   }

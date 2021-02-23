@@ -58,7 +58,7 @@ export class IFrameRenderer extends Renderer {
     height = 400,
     width = "100%",
     safeMode,
-  }: BlockArg) {
+  }: BlockArg): Promise<string> {
     if (safeMode) {
       return `<iframe src="${url}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`;
     } else {

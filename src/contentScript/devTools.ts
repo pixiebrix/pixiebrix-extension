@@ -32,6 +32,11 @@ import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
 
+export type Target = {
+  tabId: number;
+  frameId: number;
+};
+
 let selectedElement: HTMLElement = undefined;
 
 (window as any).setSelectedElement = function (el: HTMLElement) {
@@ -63,9 +68,9 @@ export const _ping = liftContentScript("PING", async () => {
   };
 });
 
-export async function isInstalled(tabId: number): Promise<PingResponse> {
+export async function isInstalled(target: Target): Promise<PingResponse> {
   try {
-    return await _ping(tabId);
+    return await _ping(target);
   } catch (reason) {
     if (reason.message?.includes("Receiving end does not exist")) {
       return {
@@ -85,7 +90,7 @@ export const detectFrameworks = liftContentScript(
 );
 
 export const searchWindow: (
-  tabId: number,
+  target: Target,
   query: string
 ) => Promise<{ results: unknown[] }> = liftContentScript(
   "SEARCH_WINDOW",

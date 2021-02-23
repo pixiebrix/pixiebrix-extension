@@ -24,7 +24,7 @@ import React, {
 } from "react";
 import { useField } from "formik";
 import { OptionsType, components } from "react-select";
-import { uniqBy, compact, sortBy } from "lodash";
+import { uniqBy, compact, sortBy, unary, isEmpty } from "lodash";
 import Creatable from "react-select/creatable";
 
 import { Badge, Button } from "react-bootstrap";
@@ -41,6 +41,7 @@ import { reportError } from "@/telemetry/logging";
 // eslint is complaining that it can't parse the Option file
 // eslint-disable-next-line import/namespace
 import { OptionProps } from "react-select/src/components/Option";
+import { useToasts } from "react-toast-notifications";
 
 type OptionValue = { value: string; elementInfo?: ElementInfo };
 type SelectorOptions = OptionsType<OptionValue>;
@@ -132,6 +133,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
   disabled = false,
 }) => {
   const { port } = useContext(DevToolsContext);
+  const { addToast } = useToasts();
   const [element, setElement] = useState<ElementInfo>(initialElement);
   const [created, setCreated] = useState([]);
   const [isSelecting, setSelecting] = useState(false);
@@ -150,16 +152,44 @@ export const SelectorSelectorControl: React.FunctionComponent<
         traverseUp,
         root,
       });
+
+      if (isEmpty(selected)) {
+        reportError(new Error("selectElement returned empty object"));
+        addToast("Unknown error selecting element", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+        return;
+      }
+
       setElement(selected);
+
       const selectors = selected.selectors ?? [];
       const firstSelector = (sort
         ? sortBy(selectors, (x) => x.length)
         : selectors)[0];
+
+      console.debug("Setting selector", { selected, firstSelector });
       onSelect(firstSelector);
+    } catch (err) {
+      reportError(err);
+      addToast(`Error selecting element: ${err.toString()} `, {
+        appearance: "error",
+        autoDismiss: true,
+      });
     } finally {
       setSelecting(false);
     }
-  }, [framework, setSelecting, traverseUp, selectMode, onSelect, root]);
+  }, [
+    framework,
+    addToast,
+    setSelecting,
+    traverseUp,
+    selectMode,
+    setElement,
+    onSelect,
+    root,
+  ]);
 
   return (
     <div className="d-flex">
@@ -191,7 +221,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
                 selector: null,
                 on: false,
               })
-              .catch((reason) => reportError(reason));
+              .catch(unary(reportError));
           }}
           onChange={async (option) => {
             console.debug("selected", { option });
@@ -201,7 +231,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
                 selector: null,
                 on: false,
               })
-              .catch((reason) => reportError(reason));
+              .catch(unary(reportError));
           }}
         />
       </div>

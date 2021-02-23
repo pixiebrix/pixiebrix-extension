@@ -435,20 +435,42 @@ function commonPanelHTML(tag: string, $items: JQuery<HTMLElement>): string {
   return outerHTML($common);
 }
 
+const DEFAULT_SELECTOR_PRIORITIES: css_selector_type[] = [
+  "tag",
+  "id",
+  "class",
+  "attribute",
+  "nthoftype",
+  "nthchild",
+];
+
+/**
+ * Calls getCssSelector with smarter handling of undefined root element and blacklisting common
+ * front-end framework elements that aren't good for selectors
+ */
 export function safeCssSelector(
   element: HTMLElement,
-  selectors: css_selector_type[] = [],
+  selectors: css_selector_type[] | undefined,
   root: Element = undefined
 ): string {
   // https://github.com/fczbkk/css-selector-generator
-  return getCssSelector(element, {
-    blacklist: ["#ember*"],
-    selectors: selectors,
+
+  const selector = getCssSelector(element, {
+    blacklist: ["#ember*", "[data-aura-rendered-by]"],
+    selectors: selectors ?? DEFAULT_SELECTOR_PRIORITIES,
     combineWithinSelector: true,
     combineBetweenSelectors: true,
     // convert null to undefined, because getCssSelector bails otherwise
     root: root ?? undefined,
   });
+
+  if (root == null && selector.startsWith(":nth-child")) {
+    // JQuery will happily return other matches that match the nth-child chain, so make attach it to the body
+    // to get the expected CSS selector behavior
+    return `body${selector}`;
+  }
+
+  return selector;
 }
 
 /**

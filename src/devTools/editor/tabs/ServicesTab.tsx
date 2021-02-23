@@ -45,8 +45,8 @@ const ServicesTab: React.FunctionComponent<{
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
       <p>
-        Add services to re-use external accounts, resources, and APIs that you
-        or your team have configured.
+        Add integrations to re-use external accounts, resources, and APIs that
+        you or your team have configured.
       </p>
 
       <FieldArray name={name}>
