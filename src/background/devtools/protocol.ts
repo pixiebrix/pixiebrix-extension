@@ -17,6 +17,7 @@
 
 import { browser, Runtime } from "webextension-polyfill-ts";
 import * as contentScriptProtocol from "@/contentScript/devTools";
+import * as robotProtocol from "@/contentScript/uipath";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import * as nativeSelectionProtocol from "@/nativeEditor/selector";
 import * as nativeEditorProtocol from "@/nativeEditor";
@@ -29,6 +30,7 @@ import {
 } from "@/background/devtools/internal";
 import { testTabPermissions, injectContentScript } from "@/background/util";
 import { sleep } from "@/utils";
+import { isEmpty } from "lodash";
 import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
 
@@ -43,9 +45,11 @@ export const getTabInfo = liftBackground(
   "CURRENT_URL",
   (target: Target) => async () => {
     if (target.frameId !== 0) {
-      throw new Error("getTabInfo only supports top-level tab");
+      console.warn(
+        `getTabInfo called targeting non top-level frame: ${target.frameId}`
+      );
     }
-    const hasPermissions = await testTabPermissions(target);
+    const hasPermissions = await testTabPermissions({ ...target, frameId: 0 });
     const { url } = await browser.tabs.get(target.tabId);
     return {
       url,
@@ -127,12 +131,16 @@ export const selectElement = liftBackground(
     traverseUp?: number;
     root?: string;
   }) => {
-    return await nativeSelectionProtocol.selectElement(target, {
+    const element = await nativeSelectionProtocol.selectElement(target, {
       framework,
       mode,
       traverseUp,
       root,
     });
+    if (isEmpty(element)) {
+      throw new Error("selectElement returned an empty element");
+    }
+    return element;
   }
 );
 
@@ -264,5 +272,19 @@ export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
   () => async ({ extensionId }: { extensionId: string }) => {
     return await contextMenuProtocol.uninstall(extensionId);
+  }
+);
+
+export const initUiPathRobot = liftBackground(
+  "UIPATH_INIT",
+  (target: Target) => async () => {
+    return await robotProtocol.initRobot(target);
+  }
+);
+
+export const getUiPathProcesses = liftBackground(
+  "UIPATH_GET_PROCESSES",
+  (target: Target) => async () => {
+    return await robotProtocol.getProcesses(target);
   }
 );

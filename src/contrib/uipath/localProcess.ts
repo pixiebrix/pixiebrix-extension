@@ -18,6 +18,7 @@
 import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema, SchemaProperties } from "@/core";
+import { UiPathRobot } from "@uipath/robot";
 
 export const UIPATH_ID = "@pixiebrix/uipath/local-process";
 
@@ -49,25 +50,24 @@ export class RunLocalProcess extends Effect {
   };
 
   async effect({ releaseKey, inputArguments = {} }: BlockArg): Promise<void> {
-    const module = await import(
-      /* webpackChunkName: "uipath" */
-      "@uipath/robot"
-    );
-
-    const { UiPathRobot } = module.default;
-
     return new Promise((resolve, reject) => {
       UiPathRobot.on("missing-components", () => {
         reject(new Error("UiPath Assistant not found. Is it installed?"));
       });
+
+      // OK to show the consent popup
+      // UiPathRobot.on("consent-prompt", () => {
+      //   reject(new Error("UiPath Assistant not connected. Provide consent from the devtools"));
+      // });
+
       const robot = UiPathRobot.init();
+
       robot.getProcesses().then((processes) => {
         const process = processes.find((x) => x.id === releaseKey);
         if (!process) {
           throw new Error(`Can't find process ${releaseKey}`);
         }
-        process.start(inputArguments);
-        resolve();
+        return process.start(inputArguments);
       });
     });
   }

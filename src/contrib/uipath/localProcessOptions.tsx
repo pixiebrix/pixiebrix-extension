@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import {
   BlockOptionProps,
   FieldRenderer,
@@ -25,12 +25,19 @@ import { UIPATH_PROPERTIES } from "@/contrib/uipath/localProcess";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { Card, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
-import { inputProperties } from "@/helpers";
 import { openTab } from "@/background/executor";
+import useAsyncEffect from "use-async-effect";
+import {
+  getUiPathProcesses,
+  initUiPathRobot,
+} from "@/background/devtools/protocol";
+import { DevToolsContext } from "@/devTools/context";
+import { RobotProcess } from "@uipath/robot/dist/models";
+import { ObjectField } from "@/components/fields/FieldTable";
 
 interface Process {
   id: string;
@@ -38,8 +45,12 @@ interface Process {
 }
 
 export const ProcessField: React.FunctionComponent<
-  FieldProps<string> & { processes: Process[]; fetchError: unknown }
-> = ({ label, schema, processes, fetchError, ...props }) => {
+  FieldProps<string> & {
+    processes: Process[];
+    isPending: boolean;
+    fetchError: unknown;
+  }
+> = ({ label, schema, processes, fetchError, isPending, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
 
   const options = useMemo(() => {
@@ -59,7 +70,12 @@ export const ProcessField: React.FunctionComponent<
         onChange={(option) => helpers.setValue((option as any)?.value)}
       />
       {schema.description && (
-        <Form.Text className="text-muted">The UIPath process to run</Form.Text>
+        <Form.Text className="text-muted">The UiPath process to run</Form.Text>
+      )}
+      {isPending && (
+        <span className="text-info small">
+          Fetching processes from UiPath Assistant...
+        </span>
       )}
       {fetchError && (
         <span className="text-danger small">
@@ -78,41 +94,84 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   configKey,
   showOutputKey,
 }) => {
+  const { port } = useContext(DevToolsContext);
   const basePath = [name, configKey].filter(identity).join(".");
 
   const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);
 
-  const [robotAvailable, setRobotAvailable] = useState(true);
+  const [robotAvailable, setRobotAvailable] = useState(false);
+  const [consentCode, setConsentCode] = useState(null);
+  const [initError, setInitError] = useState(null);
 
-  const [UiPathRobot, , initError] = useAsyncState(async () => {
-    const module = await import(
-      /* webpackChunkName: "uipath" */
-      "@uipath/robot"
-    );
-    const { UiPathRobot } = module;
+  useAsyncEffect(async () => {
+    if (!port) {
+      setInitError(
+        new Error("UiPath Assistant can only be configured from a page context")
+      );
+      return;
+    }
+    try {
+      const { available, consentCode } = await initUiPathRobot(port);
+      setConsentCode(consentCode);
+      setRobotAvailable(available);
+    } catch (err) {
+      setInitError(err);
+    }
+  }, [port, setConsentCode, setRobotAvailable, setInitError]);
 
-    UiPathRobot.on("missing-components", () => {
-      setRobotAvailable(false);
-    });
-
-    UiPathRobot.init();
-
-    return UiPathRobot;
-  }, [setRobotAvailable]);
-
-  const [processes, , processesError] = useAsyncState(async () => {
-    if (UiPathRobot) {
-      return await UiPathRobot.getProcesses();
+  const [processes, processesPending, processesError] = useAsyncState<
+    Array<RobotProcess>
+  >(async () => {
+    if (robotAvailable) {
+      return await getUiPathProcesses(port);
     } else {
       return [];
     }
-  }, [UiPathRobot]);
+  }, [robotAvailable]);
+
+  // const [UiPathRobot, , initError] = useAsyncState(async () => {
+  //   const module = await import(
+  //     /* webpackChunkName: "uipath" */
+  //     "@uipath/robot"
+  //   );
+  //   const { UiPathRobot } = module;
+  //
+  //   UiPathRobot.settings.appOrigin = "PixieBrix";
+  //
+  //   UiPathRobot.on("missing-components", () => {
+  //     setRobotAvailable(false);
+  //   });
+  //
+  //   UiPathRobot.on("consent-prompt", (consentCode) => {
+  //     setConsentCode(consentCode);
+  //   });
+  //
+  //   UiPathRobot.init();
+  //
+  //   return UiPathRobot;
+  // }, [setRobotAvailable, setConsentCode]);
+  //
+  // const [processes, , processesError] = useAsyncState(async () => {
+  //   if (UiPathRobot) {
+  //     return await UiPathRobot.getProcesses();
+  //   } else {
+  //     return [];
+  //   }
+  // }, [UiPathRobot]);
 
   const process = useMemo(() => {
     return processes?.find((x) => x.id === releaseKey);
   }, [processes, releaseKey]);
 
-  if (!robotAvailable) {
+  if (!port) {
+    return (
+      <div>
+        <span className="text-danger">
+          This action can only be configured from the Page Editor
+        </span>
+      </div>
+    );
+  } else if (!robotAvailable) {
     return (
       <div>
         <span className="text-danger">
@@ -135,38 +194,25 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   return (
     <div>
+      {consentCode && (
+        <span className="text-info">
+          UiPath Assistant consent code: {consentCode}
+        </span>
+      )}
       <ProcessField
         label="process"
         name={`${basePath}.releaseKey`}
         schema={UIPATH_PROPERTIES["releaseKey"] as Schema}
+        isPending={processesPending}
         processes={processes}
         fetchError={initError?.toString() ?? processesError?.toString()}
       />
       {process && (
-        <Form.Group>
-          <Form.Label>inputArguments</Form.Label>
-          <Card>
-            <Card.Header>{process}</Card.Header>
-            <Card.Body>
-              {Object.entries(
-                inputProperties({ additionalProperties: true })
-              ).map(([prop, fieldSchema]) => {
-                if (typeof fieldSchema === "boolean") {
-                  throw new Error("Expected schema for input property type");
-                }
-                return (
-                  <FieldRenderer
-                    key={prop}
-                    name={[name, configKey, "inputArguments", prop]
-                      .filter(identity)
-                      .join(".")}
-                    schema={fieldSchema}
-                  />
-                );
-              })}
-            </Card.Body>
-          </Card>
-        </Form.Group>
+        <ObjectField
+          schema={{ type: "object", additionalProperties: true }}
+          label={process.name}
+          name={[name, configKey, "inputArguments"].filter(identity).join(".")}
+        />
       )}
 
       {showOutputKey && (

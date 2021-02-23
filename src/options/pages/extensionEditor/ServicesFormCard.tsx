@@ -104,8 +104,8 @@ const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
         <>
           <Card.Body className="pb-2">
             <p>
-              Add services to re-use external accounts and resources that you or
-              your team have configured.
+              Add integrations to re-use external accounts and resources that
+              you or your team have configured.
             </p>
           </Card.Body>
           {field.value.length > 0 && (

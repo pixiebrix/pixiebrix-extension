@@ -43,7 +43,9 @@ import * as nativeEditorProtocol from "@/nativeEditor";
 
 let numOpenConnections = 0;
 
-const backgroundHandlers = new Map<string, HandlerEntry>();
+type Nonce = string;
+
+const backgroundHandlers = new Map<Nonce, HandlerEntry>();
 const connections = new Map<TabId, Runtime.Port>();
 const permissionsListeners = new Map<TabId, PromiseHandler[]>();
 
@@ -70,7 +72,10 @@ function backgroundMessageListener(
 
     const handlerPromise = new Promise((resolve) => {
       resolve(
-        handler({ tabId: meta.tabId, frameId: meta.frameId }, port)(...payload)
+        handler(
+          { tabId: meta.tabId, frameId: meta.frameId ?? 0 },
+          port
+        )(...payload)
       );
     });
 
@@ -279,7 +284,7 @@ export function emitDevtools(
     const port = connections.get(details.tabId);
     port.postMessage({
       type,
-      meta: { tabId: details.tabId, nonce: uuidv4() },
+      meta: { tabId: details.tabId, frameId: details.frameId, nonce: uuidv4() },
       payload: details,
     });
   }

@@ -65,6 +65,7 @@ import "@/contentScript/script";
 import "notifyjs-browser";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
+import "@/contentScript/uipath";
 
 const start = Date.now();
 

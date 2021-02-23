@@ -28,6 +28,9 @@ import {
   last,
   flow,
   head,
+  ObjectIterator,
+  fromPairs,
+  zip,
 } from "lodash";
 
 export function mostCommonElement<T>(items: T[]): T {
@@ -58,6 +61,22 @@ export async function waitAnimationFrame(): Promise<void> {
   return new Promise((resolve) => {
     window.requestAnimationFrame(() => resolve());
   });
+}
+
+/**
+ * Same as lodash mapValues but supports promises
+ */
+export async function asyncMapValues<T, TResult>(
+  mapping: T,
+  func: ObjectIterator<T, Promise<TResult>>
+): Promise<{ [K in keyof T]: TResult }> {
+  const entries = Object.entries(mapping);
+  const values = await Promise.all(
+    entries.map(([key, value]) => func(value, key, mapping))
+  );
+  return fromPairs(
+    zip(entries, values).map(([[key], value]) => [key, value])
+  ) as any;
 }
 
 export const sleep = (milliseconds: number): Promise<void> => {
