@@ -129,36 +129,6 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     }
   }, [robotAvailable]);
 
-  // const [UiPathRobot, , initError] = useAsyncState(async () => {
-  //   const module = await import(
-  //     /* webpackChunkName: "uipath" */
-  //     "@uipath/robot"
-  //   );
-  //   const { UiPathRobot } = module;
-  //
-  //   UiPathRobot.settings.appOrigin = "PixieBrix";
-  //
-  //   UiPathRobot.on("missing-components", () => {
-  //     setRobotAvailable(false);
-  //   });
-  //
-  //   UiPathRobot.on("consent-prompt", (consentCode) => {
-  //     setConsentCode(consentCode);
-  //   });
-  //
-  //   UiPathRobot.init();
-  //
-  //   return UiPathRobot;
-  // }, [setRobotAvailable, setConsentCode]);
-  //
-  // const [processes, , processesError] = useAsyncState(async () => {
-  //   if (UiPathRobot) {
-  //     return await UiPathRobot.getProcesses();
-  //   } else {
-  //     return [];
-  //   }
-  // }, [UiPathRobot]);
-
   const process = useMemo(() => {
     return processes?.find((x) => x.id === releaseKey);
   }, [processes, releaseKey]);

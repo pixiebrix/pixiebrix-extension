@@ -44,7 +44,7 @@ async function _initRobot(): Promise<InitResponse> {
       });
     });
 
-    UiPathRobot.on("consent-prompt", (consentCode) => {
+    UiPathRobot.on("consent-prompt", (consentCode: string) => {
       resolve({
         missingComponents: false,
         available: false,

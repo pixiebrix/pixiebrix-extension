@@ -57,6 +57,7 @@ module.exports = {
       "@contrib": path.resolve(rootDir, "contrib"),
       "@schemas": path.resolve(rootDir, "schemas"),
       vendors: path.resolve(rootDir, "src/vendors"),
+      "@uipath/robot": path.resolve(rootDir, "src/__mocks__/robotMock"),
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
   },
