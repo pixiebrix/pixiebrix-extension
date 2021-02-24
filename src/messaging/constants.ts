@@ -15,19 +15,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export const SEARCH_WINDOW = "@@pixiebrix/SEARCH_WINDOW";
-export const READ_WINDOW = "@@pixiebrix/READ_WINDOW";
-export const SCRIPT_LOADED = "@@pixiebrix/SCRIPT_LOADED";
-export const CONNECT_EXTENSION = "@@pixiebrix/CONNECT_EXTENSION";
+export const SEARCH_WINDOW = "@@pixiebrix/script/SEARCH_WINDOW";
+export const READ_WINDOW = "@@pixiebrix/script/READ_WINDOW";
+export const SCRIPT_LOADED = "@@pixiebrix/script/SCRIPT_LOADED";
+export const CONNECT_EXTENSION = "@@pixiebrix/script/CONNECT_EXTENSION";
 export const DETECT_FRAMEWORK_VERSIONS =
-  "@@pixiebrix/DETECT_FRAMEWORK_VERSIONS";
+  "@@pixiebrix/script/DETECT_FRAMEWORK_VERSIONS";
 
-export const GET_COMPONENT_DATA = "@@pixiebrix/GET_COMPONENT_DATA";
-export const SET_COMPONENT_DATA = "@@pixiebrix/SET_COMPONENT_DATA";
-export const GET_COMPONENT_INFO = "@@pixiebrix/GET_COMPONENT_INFO";
+export const GET_COMPONENT_DATA = "@@pixiebrix/script/GET_COMPONENT_DATA";
+export const SET_COMPONENT_DATA = "@@pixiebrix/script/SET_COMPONENT_DATA";
+export const GET_COMPONENT_INFO = "@@pixiebrix/script/GET_COMPONENT_INFO";
 
-export const FORWARD_FRAME_DATA = "@@pixiebrix/FORWARD_FRAME_DATA";
-export const REQUEST_FRAME_DATA = "@@pixiebrix/REQUEST_FRAME_DATA";
+export const FORWARD_FRAME_DATA = "@@pixiebrix/script/FORWARD_FRAME_DATA";
+export const REQUEST_FRAME_DATA = "@@pixiebrix/script/REQUEST_FRAME_DATA";
 
 type UNKNOWN_VERSION = null;
 

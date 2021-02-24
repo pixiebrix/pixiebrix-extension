@@ -19,7 +19,7 @@ type SendScriptMessage<TReturn = unknown, TPayload = unknown> = (
   payload: TPayload
 ) => Promise<TReturn>;
 
-type CallbackMap = { [key: string]: (result: unknown) => void };
+type CallbackMap = Map<number, (result: unknown) => void>;
 
 export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   messageType: string
@@ -30,36 +30,45 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
 
   let messageSeq = 0;
   const targetOrigin = document.defaultView.origin;
-  const fulfillmentCallbacks: CallbackMap = {};
-  const rejectionCallbacks: CallbackMap = {};
+  const fulfillmentCallbacks: CallbackMap = new Map();
+  const rejectionCallbacks: CallbackMap = new Map();
 
-  const listen = (type: string, callbacks: CallbackMap) => {
+  const listen = (
+    type: string,
+    callbacks: CallbackMap,
+    prop: "result" | "error"
+  ) => {
     document.addEventListener(type, function (event: CustomEvent) {
       if (!event.detail) {
-        throw new Error(`Handler for ${type} did not provide event detail`);
+        throw new Error(
+          `Handler for ${type} did not provide a detail property`
+        );
       }
-      const { id, result } = event.detail;
+      const { id } = event.detail;
       // This listener also receives it's own FULFILLED/REJECTED messages it sends back to the content
       // script. So if you add any logging outside of the if, the logs are confusing.
-      if (Object.prototype.hasOwnProperty.call(callbacks, id)) {
-        try {
-          callbacks[id](result);
-        } finally {
-          delete fulfillmentCallbacks[id];
-          delete rejectionCallbacks[id];
-        }
+      const callback = callbacks.get(id);
+
+      if (callback != null) {
+        // clean up callbacks
+        fulfillmentCallbacks.delete(id);
+        rejectionCallbacks.delete(id);
+
+        // Only getting called with "result" or "error"
+        // eslint-disable-next-line security/detect-object-injection
+        callback(event.detail[prop]);
       }
     });
   };
 
-  listen(`${messageType}_FULFILLED`, fulfillmentCallbacks);
-  listen(`${messageType}_REJECTED`, rejectionCallbacks);
+  listen(`${messageType}_FULFILLED`, fulfillmentCallbacks, "result");
+  listen(`${messageType}_REJECTED`, rejectionCallbacks, "error");
 
   return (payload: TPayload) => {
     const id = messageSeq++;
     const promise = new Promise((resolve, reject) => {
-      fulfillmentCallbacks[id] = resolve;
-      rejectionCallbacks[id] = reject;
+      fulfillmentCallbacks.set(id, resolve);
+      rejectionCallbacks.set(id, reject);
     });
     console.debug(
       `Messaging pageScript (origin: ${targetOrigin}): ${messageType}`,

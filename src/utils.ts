@@ -31,7 +31,9 @@ import {
   ObjectIterator,
   fromPairs,
   zip,
+  pickBy,
 } from "lodash";
+import { Primitive } from "type-fest";
 
 export function mostCommonElement<T>(items: T[]): T {
   // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
@@ -115,11 +117,26 @@ export async function awaitValue<T>(
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }
 
-export function isPrimitive(val: unknown): boolean {
+export function isPrimitive(val: unknown): val is Primitive {
   if (typeof val === "object") {
     return val === null;
   }
   return typeof val !== "function";
+}
+
+export function removeUndefined(obj: unknown): unknown {
+  if (obj === undefined) {
+    return null;
+  } else if (Array.isArray(obj)) {
+    return obj.map((x) => removeUndefined(x));
+  } else if (typeof obj === "object") {
+    return mapValues(
+      pickBy(obj, (x) => x !== undefined),
+      (x) => removeUndefined(x)
+    );
+  } else {
+    return obj;
+  }
 }
 
 export function boolean(value: unknown): boolean {
