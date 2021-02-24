@@ -77,6 +77,24 @@ const BlockEntry: React.FunctionComponent<{
   onSelect,
   onRemove,
 }) => {
+  if (!block) {
+    // There's a race when a new block is saved
+    return (
+      <ListGroup.Item
+        className={cx("ReaderList__item", { dragDisabled: isDragDisabled })}
+      >
+        <div className="d-flex">
+          <div>
+            <FontAwesomeIcon icon={faGripVertical} />
+          </div>
+          <div className="ReaderList__label">
+            <div>Block</div>
+          </div>
+        </div>
+      </ListGroup.Item>
+    );
+  }
+
   return (
     <Draggable
       index={index}

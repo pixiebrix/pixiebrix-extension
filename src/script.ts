@@ -240,10 +240,17 @@ attachListener(
   }: {
     selector: string;
     framework?: Framework;
+
+    /**
+     * traverseUp controls how many ancestor elements to also return
+     */
     traverseUp: number;
   }) => {
+    console.debug("GET_COMPONENT_INFO", { selector, framework, traverseUp });
     const element = requireSingleElement(selector);
-    return await elementInfo(element, framework, [selector], traverseUp);
+    const info = await elementInfo(element, framework, [selector], traverseUp);
+    console.debug("Element info", { element, selector, info });
+    return info;
   }
 );
 
@@ -254,4 +261,5 @@ setTimeout(function () {
   document.dispatchEvent(new CustomEvent(CONNECT_EXTENSION, {}));
 }, 0);
 
-(window as any).__jquery = jQuery;
+// Ensure $$jquery is available for testing selectors when debugging PixieBrix errors
+(window as any).$$jquery = jQuery;

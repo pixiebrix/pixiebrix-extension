@@ -38,13 +38,18 @@ export async function elementInfo(
     return undefined;
   }
 
+  console.debug(`elementInfo: building element info for ${element.tagName}`, {
+    element,
+    selectors,
+  });
+
   const inferredSelectors = uniq([
     ...(selectors ?? []),
     ...inferSelectors(element),
   ]);
 
-  console.debug(`Creating element info for ${element.tagName}`, {
-    element,
+  console.debug(`elementInfo: inferred selectors for ${element.tagName}`, {
+    inferredSelectors,
   });
 
   for (const [framework, adapter] of adapters.entries()) {

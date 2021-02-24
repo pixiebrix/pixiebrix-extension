@@ -88,6 +88,13 @@ function isMutableCell(cell: unknown): cell is MutableCell {
   return Object.keys(cell).some((key) => key.startsWith("__MUTABLE_CELL__"));
 }
 
+//
+// _cache:
+//     Primitive
+//     | e.default:
+//         content: e.EmbeddedMegaMorphicModel[]
+//
+
 export function getProp(value: any, prop: string | number): unknown {
   if (isPrimitive(value)) {
     return undefined;
@@ -105,7 +112,7 @@ export function getProp(value: any, prop: string | number): unknown {
     }
   } else if (Array.isArray(value)) {
     if (typeof prop !== "number") {
-      throw new Error("Expected number for prop because value is an array");
+      throw new Error("Expected number for prop for array value");
     }
     return value[prop];
   } else {
@@ -119,11 +126,12 @@ export function readEmberValueFromCache(
   maxDepth = 5,
   depth = 0
 ): unknown {
-  const recurse = partial(
-    readEmberValueFromCache,
-    partial.placeholder,
-    maxDepth,
-    depth + 1
+  const recurse = unary(
+    partial(readEmberValueFromCache, partial.placeholder, maxDepth, depth + 1)
+  );
+
+  const traverse = unary(
+    partial(readEmberValueFromCache, partial.placeholder, maxDepth, depth)
   );
 
   if (depth >= maxDepth) {
@@ -132,13 +140,14 @@ export function readEmberValueFromCache(
     return value;
   } else if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
-      return recurse(value.value);
+      return traverse(value.value);
     } else if ("_cache" in value) {
-      return recurse(value._cache);
+      return traverse(value._cache);
     } else if (Array.isArray(value.content)) {
       return value.content.map(recurse);
+    } else {
+      return mapValues(value, recurse);
     }
-    return mapValues(value, recurse);
   } else if (Array.isArray(value)) {
     return value.map(recurse);
   } else {
@@ -176,7 +185,7 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
   getComponent: (node) => {
     const elt = findElement(node);
     if (!elt) {
-      throw new Error("Could not get DOM HTMLElement for node");
+      throw new Error("No DOM HTMLElement for node");
     }
     return ignoreNotFound(() => getEmberComponentById(elt.id));
   },
@@ -187,6 +196,8 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );
+    // safe because the prop names are coming from getAllPropertyNames
+    // eslint-disable-next-line security/detect-object-injection
     return fromPairs(props.map((x) => [x, target[x]]));
   },
   proxy: {

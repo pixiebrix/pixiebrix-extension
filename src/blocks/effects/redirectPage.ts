@@ -40,11 +40,13 @@ const URL_INPUT_SPEC: Schema = {
 
 function makeURL(
   url: string,
-  params: { [key: string]: string } | undefined
+  params: { [key: string]: string } | undefined = {}
 ): string {
   const result = new URL(url);
   for (const [name, value] of Object.entries(params ?? {})) {
-    result.searchParams.append(name, value);
+    if ((value ?? "") !== "") {
+      result.searchParams.append(name, value);
+    }
   }
   return result.toString();
 }

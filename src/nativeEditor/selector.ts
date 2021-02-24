@@ -18,7 +18,7 @@ import Overlay from "@/nativeEditor/Overlay";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { findContainer, safeCssSelector } from "@/nativeEditor/infer";
 import { Framework } from "@/messaging/constants";
-import { uniq, isEmpty } from "lodash";
+import { uniq } from "lodash";
 import * as pageScript from "@/pageScript/protocol";
 import { requireSingleElement } from "@/nativeEditor/utils";
 
@@ -171,7 +171,7 @@ export const selectElement = liftContentScript(
     isMulti?: boolean;
     root?: string;
   }) => {
-    const rootElement = root ? requireSingleElement(root) : undefined;
+    const rootElement = root != null ? requireSingleElement(root) : undefined;
     const elements = await userSelectElement(rootElement);
 
     switch (mode) {
@@ -192,22 +192,16 @@ export const selectElement = liftContentScript(
       case "element": {
         const selector = safeCssSelector(elements[0], [], rootElement);
 
+        console.debug(`Generated selector: ${selector}`);
+
         // double-check we have a valid selector
         requireSingleElement(selector);
 
-        const elementInfo = await pageScript.getElementInfo({
+        return await pageScript.getElementInfo({
           selector,
           framework,
           traverseUp,
         });
-
-        if (isEmpty(elementInfo)) {
-          throw new Error(
-            "getElementInfo returned empty response for selector"
-          );
-        }
-
-        return elementInfo;
       }
       default: {
         throw new Error(`Unexpected mode: ${mode}`);

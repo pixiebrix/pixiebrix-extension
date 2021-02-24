@@ -67,7 +67,10 @@ function contentScriptListener(
         console.debug(`Handler returning error response for ${type}`, {
           reason,
         });
-        return toErrorResponse(type, reason);
+        return toErrorResponse(
+          type,
+          reason ?? new Error("Unknown error in content script handler")
+        );
       });
     }
   }

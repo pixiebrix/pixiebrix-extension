@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { uniq, compact, sortBy, partial } from "lodash";
+import { uniq, compact, sortBy } from "lodash";
 import getCssSelector, { css_selector_type } from "css-selector-generator";
 import { mostCommonElement } from "@/utils";
 
@@ -480,12 +480,20 @@ export function inferSelectors(
   element: HTMLElement,
   root: Element = undefined
 ): string[] {
-  const makeSelector = partial(
-    safeCssSelector,
-    element,
-    partial.placeholder,
-    root
-  );
+  const makeSelector = (allowed: css_selector_type[]) => {
+    try {
+      return safeCssSelector(element, allowed, root);
+    } catch (err) {
+      console.warn("Selector inference failed", {
+        element,
+        allowed,
+        root,
+        err,
+      });
+      return undefined;
+    }
+  };
+
   return sortBy(
     uniq(
       compact([
@@ -495,7 +503,7 @@ export function inferSelectors(
         makeSelector(["id", "tag", "attribute"]),
         makeSelector(undefined),
       ])
-    ).filter((x) => x.trim() !== ""),
+    ).filter((x) => (x ?? "").trim() !== ""),
     (x) => x.length
   );
 }

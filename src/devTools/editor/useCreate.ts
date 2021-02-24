@@ -36,6 +36,7 @@ import { makeExtensionReaders } from "@/devTools/editor/extensionPoints/base";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { reactivate } from "@/background/navigation";
 import { reportEvent } from "@/telemetry/events";
+import { removeUndefined } from "@/utils";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -61,6 +62,13 @@ async function makeRequestConfig(
       headers: { Authorization: `Token ${await getExtensionToken()}` },
     };
   }
+}
+
+/**
+ * Dump to YAML, removing keys with undefined values.
+ */
+function configToYaml(content: unknown): string {
+  return safeDump(removeUndefined(content));
 }
 
 export function useCreate(): (
@@ -99,7 +107,7 @@ export function useCreate(): (
                 : null;
               await axios({
                 ...(await makeRequestConfig(packageId)),
-                data: { config: safeDump(readerConfig), kind: "reader" },
+                data: { config: configToYaml(readerConfig), kind: "reader" },
               } as AxiosRequestConfig);
             }
           }
@@ -139,7 +147,7 @@ export function useCreate(): (
             await axios({
               ...(await makeRequestConfig(packageId)),
               data: {
-                config: safeDump(extensionPointConfig),
+                config: configToYaml(extensionPointConfig),
                 kind: "extensionPoint",
               },
             } as AxiosRequestConfig);
