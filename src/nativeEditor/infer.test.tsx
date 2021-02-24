@@ -129,7 +129,7 @@ test("infer list item mixed elements with icons", () => {
   );
 });
 
-test("infer list item mixed elements with surrounding div", () => {
+test.skip("infer list item mixed elements with surrounding div", () => {
   document.body.innerHTML =
     "<ul>" +
     "<li><button>Item 1</button></li>" +
