@@ -21,13 +21,14 @@ import {
   isCustomReader,
 } from "@/devTools/editor/editorSlice";
 import { useDispatch } from "react-redux";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { makeURL } from "@/hooks/fetch";
 import { safeDump } from "js-yaml";
 import { getExtensionToken } from "@/auth/token";
 import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
+import { uniq } from "lodash";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import blockRegistry from "@/blocks/registry";
@@ -71,12 +72,15 @@ function configToYaml(content: unknown): string {
   return safeDump(removeUndefined(content));
 }
 
-export function useCreate(): (
+type CreateCallback = (
   element: FormState,
   helpers: FormikHelpers<FormState>
-) => Promise<void> {
+) => Promise<void>;
+
+export function useCreate(): CreateCallback {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
+  const [savedReaders, setSavedReaders] = useState<string[]>([]);
 
   return useCallback(
     async (
@@ -88,7 +92,7 @@ export function useCreate(): (
 
         // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
         // number of bricks implemented and frequency of saves
-        const { data: editable } = await axios.get<EditablePackage[]>(
+        const { data: editablePackages } = await axios.get<EditablePackage[]>(
           await makeURL("api/bricks/"),
           {
             headers: { Authorization: `Token ${await getExtensionToken()}` },
@@ -101,14 +105,30 @@ export function useCreate(): (
           for (const readerConfig of readerConfigs) {
             // FIXME: check for userscope here to determine editability?
             if (isCustomReader(readerConfig)) {
-              const packageId = element.installed
-                ? // bricks endpoint uses "name" instead of id
-                  editable.find((x) => x.name === readerConfig.metadata.id)?.id
-                : null;
+              console.debug("saving reader", {
+                editablePackages,
+                readerConfig,
+                savedReaders,
+              });
+              // savedReaders is to handle case where save failed for the foundation, so subsequent saves needs
+              // to update the reader
+              const packageId =
+                element.installed ||
+                savedReaders.includes(readerConfig.metadata.id)
+                  ? // bricks endpoint uses "name" instead of id
+                    editablePackages.find(
+                      (x) => x.name === readerConfig.metadata.id
+                    )?.id
+                  : null;
+
               await axios({
                 ...(await makeRequestConfig(packageId)),
                 data: { config: configToYaml(readerConfig), kind: "reader" },
               } as AxiosRequestConfig);
+
+              setSavedReaders((prev) =>
+                uniq([...prev, readerConfig.metadata.id])
+              );
             }
           }
         } catch (ex) {
@@ -132,12 +152,14 @@ export function useCreate(): (
         // Save the foundation second, which depends on the reader
         if (
           !element.installed ||
-          editable.find((x) => x.name === element.extensionPoint.metadata.id)
+          editablePackages.find(
+            (x) => x.name === element.extensionPoint.metadata.id
+          )
         ) {
           try {
             const extensionPointConfig = adapter.extensionPoint(element);
             const packageId = element.installed
-              ? editable.find(
+              ? editablePackages.find(
                   (x) => x.name === extensionPointConfig.metadata.id
                 )?.id
               : null;
@@ -207,6 +229,6 @@ export function useCreate(): (
         });
       }
     },
-    [dispatch, addToast]
+    [dispatch, addToast, setSavedReaders, savedReaders]
   );
 }
