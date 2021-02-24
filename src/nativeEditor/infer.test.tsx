@@ -93,6 +93,57 @@ test("infer bootstrap anchor button", () => {
   );
 });
 
+test("infer list item mixed elements", () => {
+  document.body.innerHTML =
+    "<ul>" +
+    "<li><button>Item 1</button></li>" +
+    "<!---->" +
+    "<!---->" +
+    "<li><button>Item 2</button></li>" +
+    "<li><a>Item 3</a></li>" +
+    "</ul>";
+
+  const inferred = inferButtonHTML(
+    $(document).find("ul").get(0),
+    $(document).find("button").toArray()
+  );
+  expect(inferred).toBe("<li><button>{{{ caption }}}</button></li>");
+});
+
+test("infer list item mixed elements with icons", () => {
+  document.body.innerHTML =
+    "<ul>" +
+    "<li><button><li-icon><svg></svg></li-icon>Item 1</button></li>" +
+    "<!---->" +
+    "<!---->" +
+    "<li><button><li-icon><svg></svg></li-icon>Item 2</button></li>" +
+    "<li><a><li-icon><svg></svg></li-icon>Item 3</a></li>" +
+    "</ul>";
+
+  const inferred = inferButtonHTML(
+    $(document).find("ul").get(0),
+    $(document).find("button").toArray()
+  );
+  expect(inferred).toBe(
+    "<li><button><li-icon>{{{ icon }}}</li-icon>{{{ caption }}}</button></li>"
+  );
+});
+
+test("infer list item mixed elements with surrounding div", () => {
+  document.body.innerHTML =
+    "<ul>" +
+    "<li><button>Item 1</button></li>" +
+    "<li><div><button>Item 2</button></div></li>" +
+    "<li><a>Item 3</a></li>" +
+    "</ul>";
+
+  const inferred = inferButtonHTML(
+    $(document).find("ul").get(0),
+    $(document).find("button").toArray()
+  );
+  expect(inferred).toBe("<li><button>{{{ caption }}}</button></li>");
+});
+
 test("do not duplicate button caption", () => {
   document.body.innerHTML =
     '<div><button type="button"><!---->\n' +

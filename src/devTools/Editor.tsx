@@ -389,6 +389,7 @@ const Editor: React.FunctionComponent = () => {
       return <WelcomePane />;
     }
   }, [
+    create,
     inserting,
     selectedElement,
     elements?.length,

@@ -125,7 +125,9 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
     selected = [selected[0].parentElement];
   }
 
-  const { container, selectors } = findContainer(selected);
+  const { container, selectors: containerSelectors } = findContainer(selected);
+
+  console.debug("insertButton", { container, selected });
 
   const element: ButtonSelectionResult = {
     uuid: uuidv4(),
@@ -134,7 +136,7 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
     },
     menu: {
       type: "menuItem",
-      containerSelector: selectors[0],
+      containerSelector: containerSelectors[0],
       template: beautifyHTML(inferButtonHTML(container, selected), {
         indent_handlebars: true,
         wrap_line_length: 80,
@@ -143,7 +145,9 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
       shadowDOM: null,
       position: "append",
     },
-    containerInfo: await pageScript.getElementInfo({ selector: selectors[0] }),
+    containerInfo: await pageScript.getElementInfo({
+      selector: containerSelectors[0],
+    }),
   };
 
   return element;
