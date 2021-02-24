@@ -24,6 +24,8 @@ import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 import { findElement } from "@/frameworks/dom";
 
+const EMBER_MAX_DEPTH = 6;
+
 interface EmberObject {
   // https://api.emberjs.com/ember/release/classes/EmberObject/methods?anchor=get
   attrs: Record<string, unknown>;
@@ -123,7 +125,7 @@ export function getProp(value: any, prop: string | number): unknown {
 
 export function readEmberValueFromCache(
   value: any,
-  maxDepth = 5,
+  maxDepth = EMBER_MAX_DEPTH,
   depth = 0
 ): unknown {
   const recurse = unary(
