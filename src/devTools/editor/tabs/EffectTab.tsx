@@ -273,6 +273,7 @@ const RECOMMENDED_BRICKS = new Map<ElementType, Recommendation[]>([
       { id: "@pixiebrix/browser/open-tab", icon: faWindowRestore },
       { id: "@pixiebrix/zapier/push-data", src: "img/zapier.svg" },
       { id: "slack/simple-message", src: "img/slack.svg" },
+      { id: "@pixiebrix/google/sheets-append", src: "img/google_sheets.svg" },
     ],
   ],
   [

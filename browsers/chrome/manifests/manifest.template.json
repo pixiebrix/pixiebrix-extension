@@ -11,7 +11,7 @@
     "48": "icons/logo48.png",
     "128": "icons/logo128.png"
   },
-  "content_security_policy": "script-src 'self' https://apis.google.com/; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://apis.google.com/; object-src 'self';",
   "content_scripts": [
     {
       "matches": ["https://*.pixiebrix.com/*"],

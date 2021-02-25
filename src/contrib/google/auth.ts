@@ -19,6 +19,10 @@ export function ensureAuth(
   scopes: string[],
   { interactive }: { interactive: boolean } = { interactive: true }
 ): Promise<string> {
+  if (!gapi) {
+    throw new Error("Google API not loaded. Are you using Chrome?");
+  }
+
   return new Promise((resolve, reject) => {
     chrome.identity.getAuthToken({ interactive, scopes }, (token: string) => {
       if (chrome.runtime.lastError != null) {
@@ -41,13 +45,41 @@ export function ensureAuth(
   });
 }
 
+export async function resetToken(scopes: string[]): Promise<void> {
+  const token = await new Promise<string>((resolve) => {
+    chrome.identity.getAuthToken({ scopes, interactive: false }, (token) => {
+      resolve(token);
+    });
+    if (chrome.runtime.lastError) {
+      resolve(null);
+    }
+  });
+
+  if (token) {
+    console.debug(`Clearing Google token: ${token}`);
+
+    await new Promise((resolve, reject) => {
+      chrome.identity.removeCachedAuthToken({ token }, () => {
+        resolve();
+      });
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+      }
+    });
+  }
+
+  await ensureAuth(scopes);
+}
+
 export async function handleRejection(token: string, err: any): Promise<Error> {
   console.debug("Google rejected request", { err });
-  if (err.result.error.code === 404) {
+  if (err.result == null) {
+    throw err;
+  } else if (err.result?.error.code === 404) {
     throw new Error(
       "Cannot locate the Google drive resource. Have you been granted access?"
     );
-  } else if ([403, 401].includes(err.result.error.code)) {
+  } else if ([403, 401].includes(err.result?.error.code)) {
     await new Promise<void>((resolve) => {
       chrome.identity.removeCachedAuthToken({ token }, () => {
         resolve();

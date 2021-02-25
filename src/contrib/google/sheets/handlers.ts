@@ -18,12 +18,20 @@
 /// <reference types="gapi.client.sheets" />
 
 import { liftBackground } from "@/background/protocol";
+import { liftBackground as liftDevtools } from "@/background/devtools/internal";
 import { ensureAuth, handleRejection } from "@/contrib/google/auth";
+
 type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
 type BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
 type BatchUpdateSpreadsheetResponse = gapi.client.sheets.BatchUpdateSpreadsheetResponse;
+type Spreadsheet = gapi.client.sheets.Spreadsheet;
+type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
 
-const GOOGLE_SHEETS_SCOPES = ["https://www.googleapis.com/auth/spreadsheets"];
+// https://developers.google.com/sheets/api/guides/authorizing
+export const GOOGLE_SHEETS_SCOPES = [
+  "https://www.googleapis.com/auth/drive.file",
+  // "https://www.googleapis.com/auth/spreadsheets"
+];
 
 export const DISCOVERY_DOCS = [
   "https://sheets.googleapis.com/$discovery/rest?version=v4",
@@ -110,3 +118,126 @@ export const batchGet = liftBackground(
     }
   }
 );
+
+function columnToLetter(column: number): string {
+  // https://stackoverflow.com/a/21231012/402560
+  let temp,
+    letter = "";
+  while (column > 0) {
+    temp = (column - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    column = (column - temp - 1) / 26;
+  }
+  return letter;
+}
+
+async function getSheetProperties(
+  spreadsheetId: string
+): Promise<SpreadsheetProperties> {
+  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+
+  if (!gapi.client.sheets) {
+    throw new Error("gapi sheets module not loaded");
+  }
+
+  try {
+    const sheetRequest = gapi.client.sheets.spreadsheets.get({
+      spreadsheetId: spreadsheetId,
+      fields: "properties",
+    });
+    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) =>
+      sheetRequest.execute((r: any) => {
+        // Response in practice doesn't match the type signature
+        console.debug("Got spreadsheet response", r);
+        if (r.code >= 300) {
+          reject(
+            new Error(
+              r.message ?? `Google sheets request failed with status: ${r.code}`
+            )
+          );
+        }
+        resolve(r.result);
+      })
+    );
+    if (!spreadsheet) {
+      throw new Error("Unknown error fetching spreadsheet");
+    }
+    return spreadsheet.properties;
+  } catch (ex) {
+    throw await handleRejection(token, ex);
+  }
+}
+
+async function getTabNames(spreadsheetId: string): Promise<string[]> {
+  const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
+
+  if (!gapi.client.sheets) {
+    throw new Error("gapi sheets module not loaded");
+  }
+
+  try {
+    const sheetRequest = gapi.client.sheets.spreadsheets.get({
+      spreadsheetId: spreadsheetId,
+      fields: "sheets.properties",
+    });
+    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) =>
+      sheetRequest.execute((r: any) => {
+        // Response in practice doesn't match the type signature
+        console.debug("Got spreadsheet response", r);
+        if (r.code >= 300) {
+          reject(
+            new Error(
+              r.message ?? `Google sheets request failed with status: ${r.code}`
+            )
+          );
+        }
+        resolve(r.result);
+      })
+    );
+    if (!spreadsheet) {
+      throw new Error("Unknown error fetching spreadsheet");
+    }
+    return spreadsheet.sheets.map((x) => x.properties.title);
+  } catch (ex) {
+    throw await handleRejection(token, ex);
+  }
+}
+
+export const devtoolsProtocol = {
+  getTabNames: liftDevtools(
+    "GET_TAB_NAMES",
+    () => async (spreadsheetId: string) => {
+      return await getTabNames(spreadsheetId);
+    }
+  ),
+  getSheetProperties: liftDevtools(
+    "GET_SHEET_PROPERTIES",
+    () => async (spreadsheetId: string) => {
+      return await getSheetProperties(spreadsheetId);
+    }
+  ),
+  getHeaders: liftDevtools(
+    "GET_HEADERS",
+    () => async ({
+      spreadsheetId,
+      tabName,
+    }: {
+      spreadsheetId: string;
+      tabName: string;
+    }) => {
+      return await getHeaders(spreadsheetId, tabName);
+    }
+  ),
+};
+
+export async function getHeaders(
+  spreadsheetId: string,
+  tabName: string
+): Promise<string[]> {
+  // Lookup the headers in the first row so we can determine where to put the values
+  const response = await batchGet(
+    spreadsheetId,
+    `${tabName}!A1:${columnToLetter(256)}1`
+  );
+  return response.valueRanges[0].values[0];
+}

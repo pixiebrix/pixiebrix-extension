@@ -39,6 +39,7 @@ module.exports = mergeWithCustomize({
         CHROME: JSON.stringify(true),
         CHROME_EXTENSION_ID: JSON.stringify(process.env.CHROME_EXTENSION_ID),
         GOOGLE_API_KEY: JSON.stringify(process.env.GOOGLE_API_KEY),
+        GOOGLE_APP_ID: JSON.stringify(process.env.GOOGLE_APP_ID),
       },
     }),
     new CopyPlugin({
