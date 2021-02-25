@@ -83,6 +83,7 @@ export function getInstalledIds(): string[] {
 export function clearDynamic(uuid?: string): void {
   if (uuid) {
     if (_dynamic.has(uuid)) {
+      console.debug(`clearDynamic: ${uuid}`);
       _dynamic.get(uuid).uninstall({ global: true });
       _dynamic.delete(uuid);
     } else {

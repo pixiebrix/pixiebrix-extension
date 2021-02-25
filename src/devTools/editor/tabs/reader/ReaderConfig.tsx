@@ -415,7 +415,7 @@ const ReaderConfig: React.FunctionComponent<{
                 <Form.Control
                   type="text"
                   {...field}
-                  disabled={values.installed}
+                  disabled={values.installed && !reader._new}
                 />
               )}
             </Field>
@@ -432,7 +432,7 @@ const ReaderConfig: React.FunctionComponent<{
                 <Form.Control
                   type="text"
                   {...field}
-                  disabled={values.installed}
+                  disabled={values.installed && !reader._new}
                 />
               )}
             </Field>

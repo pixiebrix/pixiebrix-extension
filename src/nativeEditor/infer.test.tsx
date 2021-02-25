@@ -129,7 +129,21 @@ test("infer list item mixed elements with icons", () => {
   );
 });
 
-test.skip("infer list item mixed elements with surrounding div", () => {
+test("ignore blank surrounding div", () => {
+  document.body.innerHTML =
+    "<ul>" +
+    "<li><button>Item 1</button></li>" +
+    "<li>  \n<div>  <button>Item 2</button></div></li>" +
+    "</ul>";
+
+  const inferred = inferButtonHTML(
+    $(document).find("ul").get(0),
+    $(document).find("button").toArray()
+  );
+  expect(inferred).toBe("<li><button>{{{ caption }}}</button></li>");
+});
+
+test("infer list item mixed elements with surrounding div", () => {
   document.body.innerHTML =
     "<ul>" +
     "<li><button>Item 1</button></li>" +
@@ -208,8 +222,8 @@ test("infer list items", () => {
 test("infer list item from inside div", () => {
   document.body.innerHTML =
     "<div><ul>" +
-    "<li><div>Foo</div></li>" +
-    "<li><div>Bar</div></li>" +
+    '<li><div class="x">Foo</div></li>' +
+    '<li><div class="y">Bar</div></li>' +
     "</ul></div>";
 
   const inferred = inferButtonHTML(

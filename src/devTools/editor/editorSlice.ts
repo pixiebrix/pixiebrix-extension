@@ -29,6 +29,7 @@ export interface ReaderReferenceFormState {
 }
 
 export interface ReaderFormState {
+  _new?: boolean;
   metadata: Metadata;
   outputSchema: Schema;
   definition: {
@@ -203,6 +204,9 @@ export const editorSlice = createSlice({
       state.beta = false;
       state.error = null;
     },
+    markEditable: (state, action: PayloadAction<string>) => {
+      state.knownEditable.push(action.payload);
+    },
     addElement: (state, action: PayloadAction<FormState>) => {
       const element = action.payload;
       state.elements.push(element);
@@ -284,9 +288,19 @@ export const editorSlice = createSlice({
             .map((x) => x.metadata.id)
         );
       }
+
+      for (const reader of element.readers) {
+        if (isCustomReader(reader)) {
+          reader._new = false;
+        }
+      }
+
       element.installed = true;
       state.dirty[element.uuid] = false;
+      // force a reload so the _new flags are correct on the readers
+      state.selectionSeq++;
     },
+    // sync the redux state with the form state
     updateElement: (state, action: PayloadAction<FormState>) => {
       const { uuid } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);

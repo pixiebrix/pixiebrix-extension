@@ -24,6 +24,7 @@ import {
   isCustomReader,
   ReaderFormState,
   ReaderReferenceFormState,
+  actions,
 } from "@/devTools/editor/editorSlice";
 import ReaderConfig from "@/devTools/editor/tabs/reader/ReaderConfig";
 import { makeDefaultReader } from "@/devTools/editor/extensionPoints/base";
@@ -46,6 +47,7 @@ import { getType } from "@/blocks/util";
 import { ContextMenuReader } from "@/extensionPoints/contextMenu";
 import cx from "classnames";
 import { useToasts } from "react-toast-notifications";
+import { useDispatch } from "react-redux";
 
 const INCLUDE_TEST_ELEMENT = new Set<string>([
   "@pixiebrix/image/exif",
@@ -117,6 +119,7 @@ const ReaderTab: React.FunctionComponent<{
   editable: Set<string>;
   available: boolean;
 }> = ({ eventKey = "reader", editable, available }) => {
+  const dispatch = useDispatch();
   const { tabState } = useContext(DevToolsContext);
   const { addToast } = useToasts();
 
@@ -179,16 +182,16 @@ const ReaderTab: React.FunctionComponent<{
                     onClick={() => {
                       const count = readers.length;
                       const reservedIds = readers.map((x) => x.metadata.id);
-                      push(
-                        makeDefaultReader(
-                          formValues.extensionPoint.metadata,
-                          tabState.meta.frameworks ?? [],
-                          {
-                            reservedIds,
-                            name: `New reader for ${formValues.extensionPoint.metadata.id}`,
-                          }
-                        )
+                      const newReader = makeDefaultReader(
+                        formValues.extensionPoint.metadata,
+                        tabState.meta.frameworks ?? [],
+                        {
+                          reservedIds,
+                          name: `New reader for ${formValues.extensionPoint.metadata.id}`,
+                        }
                       );
+                      dispatch(actions.markEditable(newReader.metadata.id));
+                      push({ ...newReader, _new: true });
                       setActive(count);
                     }}
                   >

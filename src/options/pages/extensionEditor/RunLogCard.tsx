@@ -62,16 +62,23 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
     isLoading: boolean;
   }>({ entries: [], isLoading: true });
 
-  const refresh = useCallback(async () => {
-    setLogState({ entries: [], isLoading: true });
-    const entries = await getLog(context);
-    setLogState({ entries, isLoading: false });
-    setHasNew(0);
-  }, [context]);
+  const refresh = useCallback(
+    async (isMounted: () => boolean = () => true) => {
+      setLogState({ entries: [], isLoading: true });
+      const entries = await getLog(context);
+      if (!isMounted()) return;
+      setLogState({ entries, isLoading: false });
+      setHasNew(0);
+    },
+    [context]
+  );
 
-  useAsyncEffect(async () => {
-    await refresh();
-  }, [refresh]);
+  useAsyncEffect(
+    async (isMounted) => {
+      await refresh(isMounted);
+    },
+    [refresh]
+  );
 
   const [page, setPage] = useState(0);
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
