@@ -44,7 +44,7 @@ export class MappingTransformer extends Transformer {
       mapping: {
         type: "object",
         description: "The lookup table",
-        additionalProperties: { type: "string" },
+        additionalProperties: { type: ["string", "boolean", "number"] },
         minProperties: 1,
       },
     },
