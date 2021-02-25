@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { uniq, compact, sortBy } from "lodash";
+import { uniq, compact, sortBy, unary } from "lodash";
 import getCssSelector, { css_selector_type } from "css-selector-generator";
-import { mostCommonElement } from "@/utils";
+import { isNullOrBlank, mostCommonElement } from "@/utils";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -158,6 +158,43 @@ function setCommonAttrs(
   }
 }
 
+function ignoreDivChildNode(node: Node): boolean {
+  return (
+    [Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType) ||
+    (node.nodeType === Node.TEXT_NODE && node.textContent.trim() === "")
+  );
+}
+
+function removeUnstyledLayout(node: Node): Node | null {
+  if ([Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType)) {
+    return null;
+  } else if (node.nodeType === Node.ELEMENT_NODE) {
+    const element = node as HTMLElement;
+    const nonEmptyChildren = Array.from(node.childNodes).filter(
+      (x) => !ignoreDivChildNode(x)
+    );
+    if (
+      // This is a bit of a hack - the DIV element may impact layout because it's a block element
+      ["DIV"].includes(element.tagName) &&
+      isNullOrBlank(element.className) &&
+      nonEmptyChildren.length === 1
+    ) {
+      return removeUnstyledLayout(nonEmptyChildren[0]);
+    } else {
+      const clone = node.cloneNode(false);
+      node.childNodes.forEach((childNode) => {
+        const newChild = removeUnstyledLayout(childNode);
+        if (newChild != null) {
+          clone.appendChild(newChild);
+        }
+      });
+      return clone;
+    }
+  } else {
+    return node.cloneNode(false);
+  }
+}
+
 /**
  * Recursively extract common HTML template from one or more buttons/menu item.
  * @param $items JQuery of HTML elements
@@ -169,6 +206,7 @@ function commonButtonStructure(
   captioned = false
 ): [JQuery<HTMLElement | Text>, boolean] {
   let currentCaptioned = captioned;
+
   const proto = $items.get(0);
 
   if (ICON_TAGS.includes(proto.tagName.toLowerCase())) {
@@ -410,7 +448,15 @@ function commonButtonHTML(tag: string, $items: JQuery<HTMLElement>): string {
     throw new Error(`No items provided`);
   }
 
-  const [$common] = commonButtonStructure($items);
+  const elements = compact(
+    $items.toArray().map(unary(removeUnstyledLayout))
+  ).filter((x) => x.nodeType === Node.ELEMENT_NODE);
+
+  for (const element of elements) {
+    console.log(outerHTML($(element as HTMLElement)));
+  }
+
+  const [$common] = commonButtonStructure($(elements as HTMLElement[]));
 
   // Trick to get the HTML of the actual element
   return $("<div>").append($common.clone()).html();

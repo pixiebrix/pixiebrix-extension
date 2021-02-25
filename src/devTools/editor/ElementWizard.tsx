@@ -138,6 +138,7 @@ const ElementWizard: React.FunctionComponent<{
   }, [dispatch, element.uuid, installed]);
 
   const remove = useCallback(async () => {
+    console.debug(`pageEditor: remove element ${element.uuid}`);
     try {
       if (element.type === "contextMenu") {
         try {

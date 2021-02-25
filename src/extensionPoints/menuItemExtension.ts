@@ -145,21 +145,17 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   removeExtensions(extensionIds: string[]): void {
     console.debug(
-      `Remove extensionIds from menuItem extension point: ${this.id}`,
+      `Remove extensionIds for menuItem extension point: ${this.id}`,
       { extensionIds }
     );
 
-    // don't need to do any cleanup since context menu registration is handled globally
-    const menus = Array.from(this.menus.values());
-    for (const element of menus) {
-      const $element = $(element);
-      for (const extensionId of extensionIds) {
-        const $item = $element.find(`[${DATA_ATTR}="${extensionId}"]`);
-        if ($item.length === 0) {
-          console.debug(`Item for ${extensionId} was not in the menu`);
-        }
-        $item.remove();
+    // can't use this.menus.values() here b/c because it may have already been cleared
+    for (const extensionId of extensionIds) {
+      const $item = $(document).find(`[${DATA_ATTR}="${extensionId}"]`);
+      if ($item.length === 0) {
+        console.warn(`Item for ${extensionId} was not in the menu`);
       }
+      $item.remove();
     }
   }
 
@@ -167,11 +163,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     this.uninstalled = true;
 
     const menus = Array.from(this.menus.values());
-    const extensions = Array.from(this.extensions);
 
     // clear so they don't get re-added by the onNodeRemoved mechanism
-    this.extensions.splice(0, this.extensions.length);
+    const extensions = this.extensions.splice(0, this.extensions.length);
     this.menus.clear();
+
+    if (extensions.length === 0) {
+      console.warn(
+        `uninstall called on menu extension point with no extensions: ${this.id}`
+      );
+    }
 
     console.debug(
       `Uninstalling ${menus.length} menus for ${extensions.length} extensions`
