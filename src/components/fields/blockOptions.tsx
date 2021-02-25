@@ -24,7 +24,7 @@ import { ObjectField } from "@/components/fields/FieldTable";
 import { FieldArray, useField, useFormikContext } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select, { OptionsType } from "react-select";
-import { uniq, compact, sortBy, isEmpty, identity } from "lodash";
+import { uniq, sortBy, isEmpty, identity } from "lodash";
 import Creatable from "react-select/creatable";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 
@@ -45,9 +45,11 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
     const values = schema.examples ?? schema.enum;
     const options =
       schema.type === "string" && Array.isArray(values)
-        ? sortBy(uniq(compact([...created, ...values, value]))).map((x) => ({
-            value: x,
-            label: x,
+        ? sortBy(
+            uniq([...created, ...values, value].filter((x) => x != null))
+          ).map((value) => ({
+            value,
+            label: value,
           }))
         : [];
     return [schema?.enum == null, options];
