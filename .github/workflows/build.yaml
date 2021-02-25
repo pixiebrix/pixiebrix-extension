@@ -21,6 +21,7 @@ jobs:
           ENVIRONMENT: production
           ROLLBAR_PUBLIC_PATH: chrome-extension://production/
           CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
+          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
           SERVICE_URL: https://app.pixiebrix.com
@@ -50,6 +51,7 @@ jobs:
           ROLLBAR_PUBLIC_PATH: chrome-extension://production/
           CHROME_EXTENSION_ID: mpjjildhmpddojocokjkgmlkkkfjnepo
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
+          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
           SERVICE_URL: https://app.pixiebrix.com

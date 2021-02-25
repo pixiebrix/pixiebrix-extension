@@ -37,6 +37,7 @@ jobs:
           ROLLBAR_PUBLIC_PATH: chrome-extension://staging/
           CHROME_EXTENSION_ID: kkomancachnjkdalpcokenmjlimmbaog
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_STAGING_PUBLIC_KEY }}
+          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*

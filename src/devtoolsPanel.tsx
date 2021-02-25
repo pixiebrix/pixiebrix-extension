@@ -28,6 +28,8 @@ import "vendors/overrides.scss";
 import "@/devTools/Panel.scss";
 import { reportError } from "@/telemetry/logging";
 
+import initGoogle from "@/contrib/google/devtools";
+
 window.addEventListener("error", function (e) {
   reportError(e);
   return false;
@@ -36,5 +38,7 @@ window.addEventListener("error", function (e) {
 window.addEventListener("unhandledrejection", function (e) {
   reportError(e);
 });
+
+initGoogle();
 
 ReactDOM.render(<Panel />, document.getElementById("container"));

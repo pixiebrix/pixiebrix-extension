@@ -19,11 +19,12 @@ import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import {
   appendRows,
-  batchGet,
   createTab,
+  getHeaders,
 } from "@/contrib/google/sheets/handlers";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { isNullOrBlank } from "@/utils";
 
 type CellValue = string | number | null;
 
@@ -32,21 +33,45 @@ interface RowValue {
   value: CellValue;
 }
 
-function columnToLetter(column: number): string {
-  // https://stackoverflow.com/a/21231012/402560
-  let temp,
-    letter = "";
-  while (column > 0) {
-    temp = (column - 1) % 26;
-    letter = String.fromCharCode(temp + 65) + letter;
-    column = (column - temp - 1) / 26;
-  }
-  return letter;
-}
-
 function normalizeHeader(header: string): string {
   return header.toLowerCase().trim();
 }
+
+export const APPEND_SCHEMA: Schema = propertiesToSchema(
+  {
+    spreadsheetId: {
+      type: "string",
+      description: "The ID of the spreadsheet to update.",
+    },
+    tabName: {
+      type: "string",
+      description: "The tab name of the spreadsheet to update.",
+    },
+    rowValues: {
+      oneOf: [
+        {
+          type: "object",
+          description: "The row to append to the sheet",
+          additionalProperties: { type: ["number", "string", "null"] },
+        },
+        {
+          type: "array",
+          description: "The row to append to the sheet",
+          items: {
+            type: "object",
+            properties: {
+              header: { type: "string" },
+              value: { type: ["number", "string", "null"] },
+            },
+            required: ["header"],
+          },
+          minItems: 1,
+        },
+      ],
+    },
+  },
+  ["spreadsheetId", "tabName", "rowValues"]
+);
 
 function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
   const row = [];
@@ -78,56 +103,32 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
   return row;
 }
 
-async function getHeaders(
-  spreadsheetId: string,
-  tabName: string
-): Promise<string[]> {
-  // Lookup the headers in the first row so we can determine where to put the values
-  const response = await batchGet(
-    spreadsheetId,
-    `${tabName}!A1:${columnToLetter(256)}1`
-  );
-  return response.valueRanges[0].values[0];
-}
+export const GOOGLE_SHEETS_API_ID = "@pixiebrix/google/sheets-append";
 
 export class GoogleSheetsAppend extends Effect {
   constructor() {
     super(
-      "@pixiebrix/google/sheets-append",
+      GOOGLE_SHEETS_API_ID,
       "Add Google sheet row",
-      "Record data to Google sheets",
+      "Add a row of data to a Google sheet",
       "faTable"
     );
   }
 
-  inputSchema: Schema = propertiesToSchema(
-    {
-      spreadsheetId: {
-        type: "string",
-        description: "The ID of the spreadsheet to update.",
-      },
-      tabName: {
-        type: "string",
-        description: "The tab of the spreadsheet to update.",
-      },
-      rowValues: {
-        type: "array",
-        description: "The values to append to the sheet",
-        items: {
-          type: "object",
-          properties: {
-            header: { type: "string" },
-            value: { type: ["number", "string", "null"] },
-          },
-          required: ["header"],
-        },
-        minItems: 1,
-      },
-    },
-    ["spreadsheetId", "tabName", "rowValues"]
-  );
+  inputSchema: Schema = APPEND_SCHEMA;
 
-  async effect({ spreadsheetId, tabName, rowValues }: BlockArg): Promise<void> {
+  async effect(
+    { spreadsheetId, tabName, rowValues: rawValues = {} }: BlockArg,
+    { logger }: BlockOptions
+  ): Promise<void> {
+    const rowValues =
+      typeof rawValues === "object"
+        ? Object.entries(rawValues).map(([header, value]) => ({
+            header,
+            value,
+          }))
+        : rawValues;
+
     const valueHeaders = rowValues.map((x: RowValue) => x.header);
     let currentHeaders: string[];
 
@@ -137,15 +138,13 @@ export class GoogleSheetsAppend extends Effect {
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
       );
     } catch (ex) {
-      console.debug(`Creating tab ${tabName}`);
+      logger.warn(`Error retrieving headers: ${ex.toString()}`);
+      logger.info(`Creating tab ${tabName}`);
       await createTab(spreadsheetId, tabName);
     }
 
-    if (
-      !currentHeaders ||
-      currentHeaders.every((x) => x && x.toString().trim() === "")
-    ) {
-      console.debug(`Writing header row for ${tabName}`);
+    if (!currentHeaders || currentHeaders.every((x) => isNullOrBlank(x))) {
+      logger.info(`Writing header row for ${tabName}`);
       await appendRows(spreadsheetId, tabName, [valueHeaders]);
       currentHeaders = valueHeaders;
     }
