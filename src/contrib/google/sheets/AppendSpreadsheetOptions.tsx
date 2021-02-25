@@ -68,16 +68,19 @@ const FileField: React.FunctionComponent<
   const { addToast } = useToasts();
 
   const [field, meta, helpers] = useField<string>(name);
+  const [sheetError, setSheetError] = useState(null);
 
   useAsyncEffect(
     async (isMounted) => {
       const spreadsheetId = field.value;
+
       if (doc?.id === spreadsheetId) {
         // already up to date
         return;
       }
       try {
         if (!isNullOrBlank(field.value) && doc?.id !== spreadsheetId) {
+          setSheetError(null);
           const properties = await devtoolsProtocol.getSheetProperties(
             port,
             field.value
@@ -91,13 +94,14 @@ const FileField: React.FunctionComponent<
         if (!isMounted()) return;
         onSelect(null);
         reportError(err);
+        setSheetError(err);
         addToast("Error retrieving sheet information", {
           appearance: "error",
           autoDismiss: true,
         });
       }
     },
-    [doc?.id, field.value, onSelect, port]
+    [doc?.id, field.value, onSelect, port, setSheetError]
   );
 
   const showPicker = useCallback(async () => {
@@ -177,6 +181,12 @@ const FileField: React.FunctionComponent<
 
       <Form.Text className="text-muted">The Google spreadsheet</Form.Text>
 
+      {sheetError?.toString().includes("not found") && (
+        <span className="text-danger small">
+          The sheet does not exist, or you do not have access to it
+        </span>
+      )}
+
       {meta.touched && meta.error && (
         <span className="text-danger small">{meta.error}</span>
       )}
@@ -228,7 +238,8 @@ const TabField: React.FunctionComponent<
 
       {!tabsPending &&
         !isNullOrBlank(field.value) &&
-        !tabNames.includes(field.value) && (
+        !tabNames.includes(field.value) &&
+        doc != null && (
           <span className="text-info small">
             Tab does not exist in the sheet, it will be created
           </span>
