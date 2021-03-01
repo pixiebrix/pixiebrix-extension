@@ -81,6 +81,10 @@ export function isManaged(node: Node): boolean {
   );
 }
 
+export function hasReactProps(fiber: Fiber): boolean {
+  return Object.keys(fiber.memoizedProps).some((x) => x !== "children");
+}
+
 export function readReactProps(fiber: Fiber): { [prop: string]: unknown } {
   return pickBy(fiber.memoizedProps, (value, key) => key !== "children");
 }
@@ -135,6 +139,7 @@ export const adapter: ReadableComponentAdapter<Fiber> = {
   getNode: (instance) =>
     isNode(instance.stateNode) ? instance.stateNode : null,
   getData: readReactProps,
+  hasData: hasReactProps,
 };
 
 export default adapter;

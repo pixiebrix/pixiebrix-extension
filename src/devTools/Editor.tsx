@@ -42,7 +42,13 @@ import { useAsyncState } from "@/hooks/common";
 import axios from "axios";
 import { makeURL } from "@/hooks/fetch";
 import { getExtensionToken } from "@/auth/token";
-import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCommentAlt,
+  faExternalLinkAlt,
+  faInfo,
+  faPhone,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { cancelSelectElement, getTabInfo } from "@/background/devtools/index";
 import { DevToolsContext } from "@/devTools/context";
@@ -50,6 +56,7 @@ import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
 import { openTab } from "@/background/executor";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import ChatWidget from "@/components/ChatWidget";
 
 const { updateElement } = editorSlice.actions;
 
@@ -183,15 +190,16 @@ const InsertPanelPane: React.FunctionComponent<{ cancel: () => void }> = ({
 
 const NoExtensionsPane: React.FunctionComponent<{
   unavailableCount: number;
-}> = ({ unavailableCount }) => {
+  showSupport: () => void;
+}> = ({ unavailableCount, showSupport }) => {
   return (
     <Centered>
       <div className="PaneTitle">No custom extensions on the page</div>
 
       <div className="text-left">
         <p>
-          Click <span className="text-info">&ldquo;Add&rdquo;</span> in the
-          sidebar to add an element to the page.
+          Click <span className="text-info">Add</span> in the sidebar to add an
+          element to the page.
         </p>
 
         <p>
@@ -214,20 +222,39 @@ const NoExtensionsPane: React.FunctionComponent<{
             Quick Start Guide
           </a>
         </p>
+
+        <div className="text-center">
+          <Button variant="info" onClick={showSupport}>
+            <FontAwesomeIcon icon={faCommentAlt} /> Live Chat Support
+          </Button>
+
+          <Button
+            className="ml-2"
+            variant="info"
+            onClick={async () =>
+              await openTab({
+                url: "https://calendly.com/pixiebrix-todd/live-support-session",
+                active: true,
+              })
+            }
+          >
+            <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom Session
+          </Button>
+        </div>
       </div>
     </Centered>
   );
 };
 
-const WelcomePane = () => {
+const WelcomePane: React.FunctionComponent<{ showSupport: () => void }> = ({
+  showSupport,
+}) => {
   return (
     <Centered>
       <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
 
       <div className="text-left">
-        <p>
-          Click &ldquo;Add&rdquo; in the sidebar to add an element to the page.
-        </p>
+        <p>Click Add in the sidebar to add an element to the page.</p>
 
         <p>
           Learn how to use the Page Editor in our{" "}
@@ -243,6 +270,25 @@ const WelcomePane = () => {
             Quick Start Guide
           </a>
         </p>
+
+        <div className="text-center">
+          <Button variant="info" onClick={showSupport}>
+            <FontAwesomeIcon icon={faCommentAlt} /> Live Chat Support
+          </Button>
+
+          <Button
+            className="ml-2"
+            variant="info"
+            onClick={async () =>
+              await openTab({
+                url: "https://calendly.com/pixiebrix-todd/live-support-session",
+                active: true,
+              })
+            }
+          >
+            <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom Session
+          </Button>
+        </div>
       </div>
     </Centered>
   );
@@ -256,11 +302,65 @@ const NoExtensionSelectedPane = () => {
       <div className="text-left">
         <p>Select an extension in the sidebar to edit</p>
         <p>
-          Or, click the <span className="text-info">&ldquo;Add&rdquo;</span>{" "}
-          button in the sidebar to add an extension to the page.
+          Or, click the <span className="text-info">Add</span> button in the
+          sidebar to add an extension to the page.
         </p>
       </div>
     </Centered>
+  );
+};
+
+const SupportWidget: React.FunctionComponent<{ onClose: () => void }> = ({
+  onClose,
+}) => {
+  return (
+    <div className="d-flex flex-column h-100">
+      <div className="d-flex pl-2">
+        <div className="flex-grow-1">
+          <div className="small">
+            <span className="text-muted">
+              <FontAwesomeIcon icon={faPhone} />
+            </span>{" "}
+            <a
+              href="#"
+              onClick={async () =>
+                await openTab({
+                  url:
+                    "https://calendly.com/pixiebrix-todd/live-support-session",
+                  active: true,
+                })
+              }
+            >
+              Schedule FREE Zoom session
+            </a>
+          </div>
+          <div className="small">
+            <span className="text-muted">
+              <FontAwesomeIcon icon={faExternalLinkAlt} />{" "}
+            </span>
+            <a
+              href="#"
+              onClick={async () =>
+                await openTab({
+                  url: "https://docs.pixiebrix.com/",
+                  active: true,
+                })
+              }
+            >
+              Open Documentation
+            </a>
+          </div>
+        </div>
+        <div className="pr-2 text-muted">
+          <span onClick={() => onClose()} role="button">
+            <FontAwesomeIcon icon={faTimes} />
+          </span>
+        </div>
+      </div>
+      <div className="flex-grow-1">
+        <ChatWidget />
+      </div>
+    </div>
   );
 };
 
@@ -268,6 +368,8 @@ const Editor: React.FunctionComponent = () => {
   const { tabState, port } = useContext(DevToolsContext);
   const dispatch = useDispatch();
   const installed = useSelector(selectExtensions);
+
+  const [showChat, setShowChat] = useState<boolean>(false);
 
   const {
     selectionSeq,
@@ -372,6 +474,7 @@ const Editor: React.FunctionComponent = () => {
                   element={values}
                   editable={editable}
                   installed={installed}
+                  toggleChat={setShowChat}
                 />
               </>
             )}
@@ -384,9 +487,14 @@ const Editor: React.FunctionComponent = () => {
     ) {
       return <NoExtensionSelectedPane />;
     } else if (installed.length) {
-      return <NoExtensionsPane unavailableCount={unavailableCount} />;
+      return (
+        <NoExtensionsPane
+          unavailableCount={unavailableCount}
+          showSupport={() => setShowChat(true)}
+        />
+      );
     } else {
-      return <WelcomePane />;
+      return <WelcomePane showSupport={() => setShowChat(true)} />;
     }
   }, [
     create,
@@ -411,7 +519,14 @@ const Editor: React.FunctionComponent = () => {
           activeElement={activeElement}
           inserting={inserting}
         />
-        {body}
+        <div className="d-flex h-100">
+          <div className="h-100 flex-grow-1">{body}</div>
+          {showChat && (
+            <div className="SupportPane h-100">
+              <SupportWidget onClose={() => setShowChat(false)} />
+            </div>
+          )}
+        </div>
       </SplitPane>
     </Container>
   );

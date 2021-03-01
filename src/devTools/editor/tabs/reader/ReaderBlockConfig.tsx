@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { useFormikContext } from "formik";
 import { Alert, Col, Form, Row } from "react-bootstrap";
@@ -33,8 +33,10 @@ import { runReaderBlock } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import { SelectorSelectorControl } from "@/devTools/editor/SelectorSelectorField";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import copy from "copy-to-clipboard";
+import { useToasts } from "react-toast-notifications";
 
 export const ReaderBlockForm: React.FunctionComponent<{
   reader: IReader;
@@ -42,6 +44,7 @@ export const ReaderBlockForm: React.FunctionComponent<{
   testElement?: boolean;
 }> = ({ reader, available, testElement = false }) => {
   const { port } = useContext(DevToolsContext);
+  const { addToast } = useToasts();
 
   const [query, setQuery] = useState("");
   const [testSelector, setTestSelector] = useState<string | null>(null);
@@ -98,6 +101,14 @@ export const ReaderBlockForm: React.FunctionComponent<{
       return searchData(query, output);
     }
   }, [debouncedQuery, output]);
+
+  const copyData = useCallback(() => {
+    copy(JSON.stringify(searchResults, null, 3));
+    addToast("Copied JSON data to clipboard", {
+      appearance: "info",
+      autoDismiss: true,
+    });
+  }, [searchResults, addToast]);
 
   return (
     <div>
@@ -163,9 +174,20 @@ export const ReaderBlockForm: React.FunctionComponent<{
       ) : (
         <Row className="h-100">
           <Col md={6} className="ReaderData">
-            <span>
-              {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
-            </span>
+            <div>
+              <span>
+                {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
+              </span>
+
+              <span
+                className="ml-2 ReaderData__copy"
+                onClick={copyData}
+                role="button"
+              >
+                <FontAwesomeIcon icon={faCode} />
+              </span>
+            </div>
+
             <div className="overflow-auto h-100 w-100">
               {available === false && (
                 <span className="text-danger">

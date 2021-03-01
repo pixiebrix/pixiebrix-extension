@@ -100,6 +100,11 @@ function isMutableCell(cell: unknown): cell is MutableCell {
 export function getProp(value: any, prop: string | number): unknown {
   if (isPrimitive(value)) {
     return undefined;
+  } else if (Array.isArray(value)) {
+    if (typeof prop !== "number") {
+      throw new Error("Expected number for prop for array value");
+    }
+    return value[prop];
   } else if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
       return getProp(value.value, prop);
@@ -112,15 +117,17 @@ export function getProp(value: any, prop: string | number): unknown {
     } else {
       return value[prop];
     }
-  } else if (Array.isArray(value)) {
-    if (typeof prop !== "number") {
-      throw new Error("Expected number for prop for array value");
-    }
-    return value[prop];
   } else {
     // ignore functions and symbols
     return undefined;
   }
+}
+
+function pickExternalProps(obj: object): object {
+  // lodash's pickby was having issues with some getters
+  return fromPairs(
+    Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
+  );
 }
 
 export function readEmberValueFromCache(
@@ -140,18 +147,20 @@ export function readEmberValueFromCache(
     return undefined;
   } else if (isPrimitive(value)) {
     return value;
+  } else if (Array.isArray(value)) {
+    // must come before typeof value === "object" check because arrays are objects
+    return value.map(traverse);
   } else if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
       return traverse(value.value);
     } else if ("_cache" in value) {
       return traverse(value._cache);
     } else if (Array.isArray(value.content)) {
-      return value.content.map(recurse);
+      // consider arrays a traverse because knowing the property name by itself isn't useful for anything
+      return value.content.map(traverse);
     } else {
-      return mapValues(value, recurse);
+      return mapValues(pickExternalProps(value), recurse);
     }
-  } else if (Array.isArray(value)) {
-    return value.map(recurse);
   } else {
     // ignore functions and symbols
     return undefined;
@@ -171,6 +180,8 @@ const EMBER_INTERNAL_PROPS = new Set([
   "parentView",
   "store",
   "localStorage",
+  "childViews",
+  "elementId",
   "args",
 ]);
 
@@ -193,6 +204,12 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
   },
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,
+  hasData: (instance) => {
+    const target = targetForComponent(instance) as { [prop: string]: unknown };
+    return getAllPropertyNames(target).some(
+      (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
+    );
+  },
   getData: (instance) => {
     const target = targetForComponent(instance) as { [prop: string]: unknown };
     const props = getAllPropertyNames(target).filter(

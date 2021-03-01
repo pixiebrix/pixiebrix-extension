@@ -90,6 +90,12 @@ export interface ReadAdapter<
   getData: (component: TComponent) => TData;
 
   /**
+   * Returns true if there is data defined for the component
+   * @param component
+   */
+  hasData: (component: TComponent) => boolean;
+
+  /**
    * Proxy for reading/traversing objects in the data
    */
   proxy?: ReadProxy;

@@ -75,6 +75,7 @@ module.exports = {
     script: path.resolve(rootDir, "src/script"),
     frame: path.resolve(rootDir, "src/frame"),
     options: path.resolve(rootDir, "src/options"),
+    support: path.resolve(rootDir, "src/support"),
   },
   resolve: {
     // Need to set these fields manually as their default values rely on `web` target.
@@ -110,6 +111,7 @@ module.exports = {
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
         NODE_ENV: JSON.stringify(process.env.NODE_ENV),
         ENVIRONMENT: JSON.stringify(process.env.ENVIRONMENT),
+        SUPPORT_WIDGET_ID: JSON.stringify(process.env.SUPPORT_WIDGET_ID),
       },
     }),
     new MiniCssExtractPlugin({

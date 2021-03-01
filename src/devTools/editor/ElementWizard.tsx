@@ -42,6 +42,7 @@ import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
+  faCommentAlt,
   faHistory,
   faLock,
   faSave,
@@ -67,7 +68,8 @@ const ElementWizard: React.FunctionComponent<{
   element: FormState;
   refreshMillis?: number;
   editable: Set<string>;
-}> = ({ element, refreshMillis = 250, editable, installed }) => {
+  toggleChat: (toggle: boolean) => void;
+}> = ({ element, refreshMillis = 250, editable, installed, toggleChat }) => {
   const dispatch = useDispatch();
   const { port } = useContext(DevToolsContext);
   const { addToast } = useToasts();
@@ -217,6 +219,12 @@ const ElementWizard: React.FunctionComponent<{
           ))}
 
           <div className="flex-grow-1" />
+
+          <div className="ml-2">
+            <Button size="sm" variant="info" onClick={() => toggleChat(true)}>
+              <FontAwesomeIcon icon={faCommentAlt} /> Live Support
+            </Button>
+          </div>
 
           {showReloadControls && (
             <>
