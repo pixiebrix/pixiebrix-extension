@@ -87,7 +87,7 @@
     "classnames": "^2.2.6",
     "compass-mixins": "^0.12.10",
     "connected-react-router": "^6.8.0",
-    "content-scripts-register-polyfill": "^1.0.5",
+    "content-scripts-register-polyfill": "^2.1.0",
     "copy-to-clipboard": "^3.3.1",
     "copy-webpack-plugin": "^6.4.1",
     "core-js": "^3.8.2",
