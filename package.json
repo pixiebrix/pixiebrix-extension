@@ -67,7 +67,7 @@
     "@types/redux-logger": "^3.0.8",
     "@types/simple-icons": "^2.5.0",
     "@types/url-join": "^4.0.0",
-    "@types/webpack": "^4.41.25",
+    "@types/webpack": "^4.41.26",
     "@types/webpack-env": "^1.16.0",
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.9.0",
