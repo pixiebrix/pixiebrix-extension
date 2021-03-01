@@ -59,6 +59,8 @@ export class MappingTransformer extends Transformer {
     if (key == null || key === "") {
       return null;
     } else if (Object.prototype.hasOwnProperty.call(mapping, key)) {
+      // checking for hasOwnProperty
+      // eslint-disable-next-line security/detect-object-injection
       return mapping[key];
     } else if (missing === "null" || missing === null) {
       return null;

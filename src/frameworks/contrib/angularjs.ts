@@ -18,7 +18,7 @@
 // Resources:
 // angularjs: https://docs.angularjs.org/api/ng/function/angular.element
 
-import { pickBy } from "lodash";
+import { pickBy, isEmpty } from "lodash";
 import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 
@@ -65,19 +65,25 @@ export function isManaged(element: HTMLElement): boolean {
   return !!ignoreNotFound(() => getComponent(element));
 }
 
+function getAngularData(instance: AngularElement): Scope {
+  return pickBy(
+    instance.scope(),
+    (value, key) =>
+      typeof value !== "function" &&
+      !key.startsWith("$$") &&
+      !key.startsWith("$")
+  );
+}
+
 const adapter: ReadableComponentAdapter<AngularElement, Scope> = {
   isManaged,
   getComponent: (node) => ignoreNotFound(() => getComponent(node)),
   getParent: (instance) => instance.parent(),
   getNode: (instance) => instance[0],
-  getData: (instance) =>
-    pickBy(
-      instance.scope(),
-      (value, key) =>
-        typeof value !== "function" &&
-        !key.startsWith("$$") &&
-        !key.startsWith("$")
-    ),
+  hasData: (instance) => {
+    return !isEmpty(getAngularData(instance));
+  },
+  getData: getAngularData,
 };
 
 export default adapter;

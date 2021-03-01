@@ -22,6 +22,7 @@ const commonFactory = require("../../webpack/webpack.prod.js");
 const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
 const { uniq } = require("lodash");
+const Policy = require("csp-parse");
 
 const chromeRoot = path.resolve(__dirname, "../");
 
@@ -60,6 +61,11 @@ module.exports = () =>
                 manifest.key = process.env.CHROME_MANIFEST_KEY;
               }
               manifest.version = process.env.npm_package_version;
+
+              const policy = new Policy(manifest.content_security_policy);
+              policy.add("connect-src", "https://app.pixiebrix.com");
+              manifest.content_security_policy = policy.toString();
+
               if (process.env.EXTERNALLY_CONNECTABLE) {
                 manifest.externally_connectable.matches = uniq([
                   ...manifest.externally_connectable.matches,

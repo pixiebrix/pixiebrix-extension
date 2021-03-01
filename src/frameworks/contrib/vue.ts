@@ -19,7 +19,7 @@
 // https://github.com/vuejs/vue-devtools/blob/6d8fee4d058716fe72825c9ae22cf831ef8f5172/packages/app-backend/src/index.js#L185
 // https://github.com/vuejs/vue-devtools/blob/dev/packages/app-backend/src/utils.js
 
-import { pickBy } from "lodash";
+import { pickBy, isEmpty } from "lodash";
 import { RootInstanceVisitor } from "@/frameworks/scanner";
 import { WriteableComponentAdapter } from "@/frameworks/component";
 
@@ -133,21 +133,26 @@ export function findRelatedComponent(el: HTMLElement): Instance | null {
   return isManaged(el) ? el.__vue__ : null;
 }
 
+function readVueData(instance: Instance): object {
+  // TODO: might want to read from $data here also
+  return pickBy(
+    instance,
+    (value, key) =>
+      typeof value !== "function" &&
+      !key.startsWith("$") &&
+      !key.startsWith("_")
+  );
+}
+
 const adapter: WriteableComponentAdapter<Instance> = {
   isManaged,
   getComponent: findRelatedComponent,
   getNode: (instance: Instance) => instance.$el,
   getParent: (instance: Instance) => instance.$parent,
-  getData: (instance: Instance) => {
-    // TODO: might want to read from $data here also
-    return pickBy(
-      instance,
-      (value, key) =>
-        typeof value !== "function" &&
-        !key.startsWith("$") &&
-        !key.startsWith("_")
-    );
+  hasData: (instance: Instance) => {
+    return !isEmpty(instance);
   },
+  getData: readVueData,
   setData: (instance: Instance, data) => {
     for (const [key, value] of Object.entries(data)) {
       (instance as any)[key] = value;

@@ -60,9 +60,14 @@ module.exports = mergeWithCustomize({
               "http://localhost/*",
             ];
 
-            // const policy = new Policy(manifest.content_security_policy);
-            // policy.add('connect-src', 'ws://localhost:9090/ http://127.0.0.1:8000')
-            // manifest.content_security_policy = policy.toString();
+            const policy = new Policy(manifest.content_security_policy);
+            policy.add(
+              "connect-src",
+              "ws://localhost:9090/ http://127.0.0.1:8000"
+            );
+            manifest.content_security_policy = policy.toString();
+
+            // console.log(policy.toString());
 
             if (process.env.ENABLE_DEVTOOLS) {
               manifest.permissions = uniq([

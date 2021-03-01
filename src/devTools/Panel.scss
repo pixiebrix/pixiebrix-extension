@@ -19,6 +19,12 @@
   padding-left: 0;
   padding-right: 0;
 
+  .SupportPane {
+    border-left: 3px solid #c6bfdb;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
   .PaneTitle {
     font-weight: bold;
     font-size: 1.3rem;
@@ -75,6 +81,15 @@
 
     .SchemaTree {
       font-size: 0.875rem;
+    }
+
+    &__copy {
+      cursor: pointer;
+      color: lightgray;
+      margin-left: 5px;
+      &:hover {
+        color: #007bff;
+      }
     }
   }
 
