@@ -25,6 +25,7 @@ import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
 import "./MarketplacePage.scss";
+import { ButtonProps } from "react-bootstrap/Button";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -39,8 +40,11 @@ interface RecipeProps {
   onInstall?: () => void;
 }
 
-const Entry: React.FunctionComponent<RecipeProps> = ({
+const Entry: React.FunctionComponent<
+  RecipeProps & { buttonProps?: ButtonProps }
+> = ({
   metadata: { id, name, description },
+  buttonProps = {},
   onInstall,
   installed,
 }) => {
@@ -49,13 +53,13 @@ const Entry: React.FunctionComponent<RecipeProps> = ({
       return null;
     } else if (!installed) {
       return (
-        <Button size="sm" variant="primary" onClick={onInstall}>
+        <Button size="sm" variant="info" {...buttonProps} onClick={onInstall}>
           Add
         </Button>
       );
     } else {
       return (
-        <Button size="sm" variant="primary" disabled>
+        <Button size="sm" variant="info" {...buttonProps} disabled>
           Added
         </Button>
       );
@@ -64,15 +68,52 @@ const Entry: React.FunctionComponent<RecipeProps> = ({
 
   return (
     <ListGroup.Item>
-      <div className="d-flex w-100 justify-content-between">
-        <h5 className="mb-0">{name}</h5>
-        <code className="mb-1 pt-0">{id}</code>
-      </div>
-      <div className="d-flex w-100 justify-content-between">
-        <p className="mb-1">{description}</p>
-        {installButton}
+      <div className="d-flex align-middle">
+        <div className="my-auto mr-3">{installButton}</div>
+        <div className="flex-grow-1">
+          <div className="d-flex justify-content-between">
+            <div>
+              <h5 className="mb-0">{name}</h5>
+            </div>
+            <div className="small mb-1 pt-0">
+              <span className="text-monospace">id:</span>{" "}
+              <code className="pl-0 ml-0">{id}</code>
+            </div>
+          </div>
+          <div>
+            <p className="mb-1 mt-1">{description}</p>
+          </div>
+        </div>
       </div>
     </ListGroup.Item>
+  );
+};
+
+export const RecipeList: React.FunctionComponent<
+  MarketplaceProps & {
+    buttonProps?: ButtonProps;
+    recipes: RecipeDefinition[];
+  }
+> = ({ buttonProps, recipes, installedRecipes, installRecipe }) => {
+  return (
+    <ListGroup>
+      {(recipes ?? []).slice(0, 10).map((x) => (
+        <Entry
+          {...x}
+          buttonProps={buttonProps}
+          key={x.metadata.id}
+          onInstall={() => installRecipe(x)}
+          installed={installedRecipes.has(x.metadata.id)}
+        />
+      ))}
+      {recipes.length >= 10 && (
+        <ListGroup.Item>
+          <span className="text-muted">
+            {recipes.length - 10} more result(s) not shown
+          </span>
+        </ListGroup.Item>
+      )}
+    </ListGroup>
   );
 };
 
@@ -127,23 +168,11 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
           {rawRecipes == null ? (
             <GridLoader />
           ) : (
-            <ListGroup>
-              {(recipes ?? []).slice(0, 10).map((x) => (
-                <Entry
-                  {...x}
-                  key={x.metadata.id}
-                  onInstall={() => installRecipe(x)}
-                  installed={installedRecipes.has(x.metadata.id)}
-                />
-              ))}
-              {recipes.length >= 10 && (
-                <ListGroup.Item>
-                  <span className="text-muted">
-                    {recipes.length - 10} more result(s) not shown
-                  </span>
-                </ListGroup.Item>
-              )}
-            </ListGroup>
+            <RecipeList
+              installedRecipes={installedRecipes}
+              installRecipe={installRecipe}
+              recipes={recipes}
+            />
           )}
         </Col>
       </Row>

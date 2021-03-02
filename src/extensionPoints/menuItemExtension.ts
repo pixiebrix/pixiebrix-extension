@@ -63,6 +63,7 @@ export interface MenuItemExtensionConfig {
   caption: string;
   action: BlockConfig | BlockPipeline;
   icon?: IconConfig;
+  dynamicCaption?: boolean;
 }
 
 export const actionSchema: Schema = {
@@ -104,6 +105,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       caption: {
         type: "string",
         description: "The caption for the menu item.",
+      },
+      dynamicCaption: {
+        type: "boolean",
+        description: "True if the caption can refer to data from the reader",
+        default: "false",
       },
       action: actionSchema,
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
@@ -292,7 +298,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   private async runExtension(
     menu: HTMLElement,
-    ctxt: ReaderOutput,
+    ctxtPromise: Promise<ReaderOutput>,
     extension: IExtension<MenuItemExtensionConfig>
   ) {
     if (!extension.id) {
@@ -311,13 +317,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const {
       caption,
+      dynamicCaption = false,
       action: actionConfig,
       icon = { id: "box", size: 18 },
     } = extension.config;
 
     const serviceContext = await makeServiceContext(extension.services);
     const renderTemplate = engineRenderer(extension.templateEngine);
-    const extensionContext = { ...ctxt, ...serviceContext };
 
     const iconAsSVG = icon
       ? (
@@ -328,10 +334,21 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         ).default
       : null;
 
-    const html = Mustache.render(this.getTemplate(), {
-      caption: renderTemplate(caption, extensionContext),
-      icon: iconAsSVG?.(icon),
-    });
+    let html: string;
+
+    if (dynamicCaption) {
+      const ctxt = await ctxtPromise;
+      const extensionContext = { ...ctxt, ...serviceContext };
+      html = Mustache.render(this.getTemplate(), {
+        caption: renderTemplate(caption, extensionContext),
+        icon: iconAsSVG?.(icon),
+      });
+    } else {
+      html = Mustache.render(this.getTemplate(), {
+        caption,
+        icon: iconAsSVG?.(icon),
+      });
+    }
 
     const $menuItem = this.makeItem(html, extension);
 
@@ -392,20 +409,22 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     for (const menu of this.menus.values()) {
       const reader = await this.defaultReader();
-      const ctxt = await reader.read(this.getReaderRoot($(menu)));
 
-      if (ctxt == null) {
-        throw new Error(`Reader ${reader.id} returned null/undefined`);
-      }
+      let ctxtPromise: Promise<ReaderOutput>;
 
       for (const extension of this.extensions) {
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
+
+        if (extension.config.dynamicCaption) {
+          // Lazily read context for the menu if one of the extensions actually uses it
+          ctxtPromise = reader.read(this.getReaderRoot($(menu)));
+        }
+
         try {
-          await this.runExtension(menu, ctxt, extension);
+          await this.runExtension(menu, ctxtPromise, extension);
         } catch (ex) {
           errors.push(ex);
-          // noinspection ES6MissingAwait
           reportError(ex, {
             extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
