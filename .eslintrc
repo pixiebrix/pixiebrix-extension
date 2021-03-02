@@ -41,6 +41,7 @@
     "scripts/webpack.scripts.js",
     "src/vendors/libraryDetector/**",
     "src/**/*.test.ts",
-    "src/**/*.test.js"
+    "src/**/*.test.js",
+    "src/support.js"
   ]
 }

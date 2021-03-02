@@ -1,11 +1,8 @@
 // https://chatlio.com/docs/content-security-policy-csp/
 
-// defined via define plugin
-// eslint-disable-next-line no-undef
 const supportWidgetId = process.env.SUPPORT_WIDGET_ID;
 
 window._chatlio = window._chatlio || [];
-// eslint-disable-next-line no-undef
 !(function () {
   const t = document.getElementById("chatlio-widget-embed");
   if (t && window.ChatlioReact && _chatlio.init)

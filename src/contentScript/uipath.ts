@@ -17,10 +17,11 @@
 
 import { UiPathRobot } from "@uipath/robot";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
+import { IRobotSDK } from "@uipath/robot/dist/iRobotSDK";
 
-// UiPathRobot.settings.appOrigin = "PixieBrix";
+UiPathRobot.settings.disableTelemetry = true;
 
-let _robot: any;
+let _robot: IRobotSDK;
 
 type InitResponse = {
   missingComponents: boolean;

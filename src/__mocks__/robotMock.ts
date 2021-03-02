@@ -15,4 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export const UiPathRobot: any = {};
+export const UiPathRobot: any = {
+  settings: {
+    disableTelemetry: false,
+  },
+};

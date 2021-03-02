@@ -118,6 +118,7 @@ export function makeDefaultReader(
     definition: {
       type: defaultReader(frameworks),
       selector: defaultSelector,
+      optional: false,
       selectors: {},
     },
   };

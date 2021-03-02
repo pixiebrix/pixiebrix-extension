@@ -26,8 +26,14 @@
           "type": "string",
           "enum": ["react", "angularjs", "vue", "emberjs"]
         },
+        "optional": {
+          "type": "boolean",
+          "description": "True if the reader should return an empty result if the element is not found",
+          "default": false
+        },
         "selector": {
-          "type": "string"
+          "type": "string",
+          "description": "The selector for the framework argument"
         },
         "attrs": {
           "deprecationMessage": "Deprecated in a favor of pathSpec",

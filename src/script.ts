@@ -161,10 +161,23 @@ async function read<TComponent>(
     waitMillis = 0,
     retryMillis = 1000,
     rootProp,
+    optional = false,
     traverseUp = 0,
   } = options;
 
-  const element = requireSingleElement(selector);
+  let element: HTMLElement;
+
+  try {
+    element = requireSingleElement(selector);
+  } catch (err) {
+    console.debug("read: error calling requireSingleElement", { err, options });
+    if (optional) {
+      return {};
+    } else {
+      throw err;
+    }
+  }
+
   let component: TComponent;
 
   try {
@@ -190,19 +203,19 @@ async function read<TComponent>(
     pathSpec,
     adapter.proxy
   );
-  const clonedData = cloneDeep(readData);
 
-  if (process.env.DEBUG) {
-    console.debug(`Read ${selector}`, {
-      target,
-      rawData,
-      component,
-      clonedData,
-      readData,
-      options,
-      selector,
-    });
-  }
+  // if (process.env.DEBUG) {
+  //   const clonedData = cloneDeep(readData);
+  //   console.debug(`Read ${selector}`, {
+  //     target,
+  //     rawData,
+  //     component,
+  //     clonedData,
+  //     readData,
+  //     options,
+  //     selector,
+  //   });
+  // }
 
   return cloneDeep(readData);
 }
