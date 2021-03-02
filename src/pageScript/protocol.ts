@@ -37,6 +37,7 @@ export interface ReadOptions {
   retryMillis?: number;
   traverseUp?: number;
   rootProp?: string;
+  optional?: boolean;
 }
 
 export type ReadPayload = ReadOptions & {

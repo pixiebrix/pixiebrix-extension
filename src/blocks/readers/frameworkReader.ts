@@ -51,6 +51,7 @@ function makeRead(framework: Framework): Read<FrameworkConfig> {
       rootProp,
       waitMillis,
       traverseUp,
+      optional,
       attrs,
       pathSpec,
     } = reader;
@@ -64,6 +65,7 @@ function makeRead(framework: Framework): Read<FrameworkConfig> {
       selector: compact([rootSelector, selector]).join(" "),
       rootProp,
       waitMillis,
+      optional,
       traverseUp,
       pathSpec: attrs
         ? fromPairs(castArray(attrs).map((attr) => [attr, `attrs.${attr}`]))

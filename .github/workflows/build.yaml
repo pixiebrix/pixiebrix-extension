@@ -29,6 +29,7 @@ jobs:
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           ENABLE_DEVTOOLS: true
+          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
       - uses: actions/upload-artifact@v2
         with:
           name: chrome-web-store
@@ -59,6 +60,7 @@ jobs:
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
           ENABLE_DEVTOOLS: true
+          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
       - uses: actions/upload-artifact@v2
         with:
           name: chrome-production
@@ -88,6 +90,7 @@ jobs:
           SERVICE_URL: https://app.pixiebrix.com
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
       - uses: actions/upload-artifact@v2
         with:
           name: firefox-production

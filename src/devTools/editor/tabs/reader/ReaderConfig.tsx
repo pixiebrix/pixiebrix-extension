@@ -42,6 +42,7 @@ import devtoolFields from "@/devTools/editor/Fields";
 // @ts-ignore: no type definitions?
 import GenerateSchema from "generate-schema";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
+import ToggleField from "@/devTools/editor/components/ToggleField";
 
 type ReaderSelector = (options: {
   type: string;
@@ -58,7 +59,7 @@ type FrameworkOption = {
 export const defaultSelector: ReaderSelector = partial(
   pick,
   partial.placeholder,
-  ["type", "selector", "traverseUp"]
+  ["type", "selector", "traverseUp", "optional"]
 ) as ReaderSelector;
 
 export const readerOptions: FrameworkOption[] = [
@@ -166,6 +167,17 @@ const FrameworkFields: React.FunctionComponent<{
             }
             traverseUp={5}
           />
+        </Col>
+      </Form.Group>
+      <Form.Group as={Row} controlId="readerOptional">
+        <Form.Label column sm={2}>
+          Optional
+        </Form.Label>
+        <Col sm={10}>
+          <ToggleField name={`${name}.definition.optional`} />
+          <Form.Text className="text-muted">
+            Toggle on if the selector might not always be available
+          </Form.Text>
         </Col>
       </Form.Group>
       <Form.Group as={Row} controlId="readerTraverseUp">

@@ -39,6 +39,7 @@ export interface ReaderFormState {
     type: string | null;
     selector: string | null;
     selectors: { [field: string]: string };
+    optional: boolean;
   };
 }
 

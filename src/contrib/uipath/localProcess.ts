@@ -21,6 +21,8 @@ import { BlockArg, Schema, SchemaProperties } from "@/core";
 import { UiPathRobot } from "@uipath/robot";
 import { RobotProcess } from "@uipath/robot/dist/models";
 
+UiPathRobot.settings.disableTelemetry = true;
+
 export const UIPATH_ID = "@pixiebrix/uipath/local-process";
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
