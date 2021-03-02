@@ -159,6 +159,7 @@ export interface ActionFormState extends BaseFormState {
 
   extension: {
     caption: string;
+    dynamicCaption?: boolean;
     icon?: IconConfig;
     action: BlockPipeline;
   };

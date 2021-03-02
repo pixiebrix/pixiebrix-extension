@@ -15,11 +15,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useFetch } from "@/hooks/fetch";
 import { RecipeDefinition } from "@/types/definitions";
 import { PageTitle } from "@/layout/Page";
-import { groupBy, sortBy } from "lodash";
+import { groupBy, sortBy, noop } from "lodash";
 import {
   faClipboardCheck,
   faExternalLinkAlt,
@@ -34,7 +40,7 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { InstallRecipe } from "@/pages/marketplace/MarketplacePage";
+import { InstallRecipe, RecipeList } from "@/pages/marketplace/MarketplacePage";
 import { connect } from "react-redux";
 import { OptionsState } from "@/options/slices";
 import { push } from "connected-react-router";
@@ -42,6 +48,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 
 import "./TemplatesPage.scss";
+import AuthContext from "@/auth/context";
+import { GridLoader } from "react-spinners";
 
 export interface TemplatesProps {
   installedRecipes: Set<string>;
@@ -142,14 +150,32 @@ const TemplateEntry: React.FunctionComponent<
   );
 };
 
+const SharedWithMe: React.FunctionComponent<{
+  active?: boolean;
+  onSelect: () => void;
+}> = ({ active, onSelect }) => {
+  return (
+    <Card className={cx("CategoryCard", { active })} onClick={onSelect}>
+      <Card.Body>
+        <div className="CategoryCard__title">Shared with Me</div>
+        <div className="CategoryCard__subtitle">Custom</div>
+      </Card.Body>
+    </Card>
+  );
+};
+
 const Category: React.FunctionComponent<{
   active?: boolean;
   inviteOnly?: boolean;
   title: string;
   subtitle: string;
-}> = ({ title, subtitle, active, inviteOnly }) => {
+  onSelect?: () => void;
+}> = ({ title, subtitle, active, inviteOnly, onSelect = noop }) => {
   return (
-    <Card className={cx("CategoryCard", { active, inviteOnly })}>
+    <Card
+      className={cx("CategoryCard", { active, inviteOnly })}
+      onClick={onSelect}
+    >
       <Card.Body>
         {inviteOnly && (
           <div className="ribbon">
@@ -163,19 +189,14 @@ const Category: React.FunctionComponent<{
   );
 };
 
-const TemplatesPage: React.FunctionComponent<
-  TemplatesProps & { navigate: (url: string) => void }
-> = ({ installedRecipes, navigate }) => {
-  const install = useCallback(
-    async (x: RecipeDefinition) => {
-      navigate(`templates/activate/${encodeURIComponent(x.metadata.id)}`);
-    },
-    [navigate]
-  );
-
+const ContextMenuTemplates: React.FunctionComponent<{
+  installedRecipes: Set<string>;
+  install: InstallRecipe;
+}> = ({ installedRecipes, install }) => {
   const rawRecipes: FeaturedRecipeDefinition[] = useFetch<
     FeaturedRecipeDefinition[]
   >("/api/featured/recipes/?category=search");
+
   const [query, setQuery] = useState("");
 
   const groupedRecipes = useMemo(() => {
@@ -192,33 +213,7 @@ const TemplatesPage: React.FunctionComponent<
   }, [rawRecipes]);
 
   return (
-    <div className="marketplace-component">
-      <PageTitle icon={faClipboardCheck} title="Templates" />
-      <div className="pb-2">
-        <p>
-          Activate pre-made templates for you favorite web sites and apps. To
-          edit them or create your own, follow our{" "}
-          <a
-            href="https://docs.pixiebrix.com/quick-start-guide"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Page Editor Quickstart <FontAwesomeIcon icon={faExternalLinkAlt} />
-          </a>
-        </p>
-      </div>
-
-      <Row>
-        <Col>
-          <div className="d-flex align-items-center">
-            <Category active title="Context Menus" subtitle="Search" />
-            <Category title="Context Menus" subtitle="Push Data" inviteOnly />
-            <Category title="Buttons" subtitle="Search" inviteOnly />
-            <Category title="Buttons" subtitle="Push Data" inviteOnly />
-          </div>
-        </Col>
-      </Row>
-
+    <>
       <Row className="mt-3">
         <Col xl={9} lg={10} md={10} sm={12}>
           <Card className="CategoryInfo">
@@ -260,6 +255,142 @@ const TemplatesPage: React.FunctionComponent<
           />
         ))}
       </Row>
+    </>
+  );
+};
+
+const SharedTemplates: React.FunctionComponent<{
+  installedRecipes: Set<string>;
+  install: InstallRecipe;
+}> = ({ installedRecipes, install }) => {
+  const rawRecipes: RecipeDefinition[] = useFetch<FeaturedRecipeDefinition[]>(
+    "/api/invited/recipes/"
+  );
+
+  if (rawRecipes == null) {
+    return (
+      <Row className="mt-3">
+        <Col xl={9} lg={10} md={10} sm={12}>
+          <GridLoader />
+        </Col>
+      </Row>
+    );
+  }
+
+  return (
+    <>
+      <Row className="mt-3">
+        <Col xl={9} lg={10} md={10} sm={12}>
+          <Card className="CategoryInfo">
+            <Card.Body>
+              <Card.Title>Shared Templates</Card.Title>
+              {rawRecipes.length > 0 ? (
+                <Card.Text className="text-info">
+                  <FontAwesomeIcon icon={faInfoCircle} /> These templates have
+                  been personally shared with you
+                </Card.Text>
+              ) : (
+                <Card.Text className="text-info">
+                  <FontAwesomeIcon icon={faInfoCircle} /> No templates have been
+                  shared with you yet
+                </Card.Text>
+              )}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {rawRecipes.length > 0 && (
+        <Row className="mt-3">
+          <Col xl={8} lg={10} md={12}>
+            <RecipeList
+              installedRecipes={installedRecipes}
+              installRecipe={install}
+              recipes={rawRecipes}
+            />
+          </Col>
+        </Row>
+      )}
+    </>
+  );
+};
+
+const TemplatesPage: React.FunctionComponent<
+  TemplatesProps & { navigate: (url: string) => void }
+> = ({ installedRecipes, navigate }) => {
+  const { flags } = useContext(AuthContext);
+
+  const showShared = flags?.includes("templates-shared");
+
+  const [activeKey, setActiveKey] = useState(
+    showShared ? "shared" : "contextmenu-search"
+  );
+
+  useEffect(() => {
+    if (showShared) {
+      setActiveKey("shared");
+    }
+  }, [showShared]);
+
+  const install = useCallback(
+    async (x: RecipeDefinition) => {
+      navigate(`templates/activate/${encodeURIComponent(x.metadata.id)}`);
+    },
+    [navigate]
+  );
+
+  return (
+    <div className="marketplace-component">
+      <PageTitle icon={faClipboardCheck} title="Templates" />
+      <div className="pb-2">
+        <p>
+          Activate pre-made templates for you favorite web sites and apps. To
+          edit them or create your own, follow our{" "}
+          <a
+            href="https://docs.pixiebrix.com/quick-start-guide"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Page Editor Quickstart <FontAwesomeIcon icon={faExternalLinkAlt} />
+          </a>
+        </p>
+      </div>
+
+      <Row>
+        <Col>
+          <div className="d-flex align-items-center">
+            {flags.includes("templates-shared") && (
+              <SharedWithMe
+                active={activeKey === "shared"}
+                onSelect={() => setActiveKey("shared")}
+              />
+            )}
+            <Category
+              active={activeKey === "contextmenu-search"}
+              onSelect={() => setActiveKey("contextmenu-search")}
+              title="Context Menus"
+              subtitle="Search"
+            />
+            <Category title="Context Menus" subtitle="Push Data" inviteOnly />
+            <Category title="Buttons" subtitle="Search" inviteOnly />
+            <Category title="Buttons" subtitle="Push Data" inviteOnly />
+          </div>
+        </Col>
+      </Row>
+
+      {activeKey === "contextmenu-search" && (
+        <ContextMenuTemplates
+          installedRecipes={installedRecipes}
+          install={install}
+        />
+      )}
+
+      {activeKey === "shared" && (
+        <SharedTemplates
+          installedRecipes={installedRecipes}
+          install={install}
+        />
+      )}
     </div>
   );
 };

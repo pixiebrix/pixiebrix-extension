@@ -87,6 +87,7 @@ export function makeActionState(
     },
     extension: {
       caption: button.item.caption,
+      dynamicCaption: false,
       action: [],
     },
   };
