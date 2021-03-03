@@ -20,11 +20,15 @@ import PushOptions from "@/contrib/zapier/pushOptions";
 import ProcessOptions from "@/contrib/uipath/processOptions";
 import LocalProcessOptions from "@/contrib/uipath/localProcessOptions";
 import AppendSpreadsheetOptions from "@/contrib/google/sheets/AppendSpreadsheetOptions";
+import SheetServiceOptions, {
+  SERVICE_GOOGLE_SHEET_ID,
+} from "@/contrib/google/sheets/SheetServiceOptions";
 import { ZAPIER_ID } from "@/contrib/zapier/push";
 import { UIPATH_ID } from "@/contrib/uipath/process";
 import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { GOOGLE_SHEETS_API_ID } from "@/contrib/google/sheets/append";
 
+optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
 optionsRegistry.set(ZAPIER_ID, PushOptions);
 optionsRegistry.set(UIPATH_ID, ProcessOptions);
 optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);

@@ -28,7 +28,7 @@ import "vendors/overrides.scss";
 import "@/devTools/Panel.scss";
 import { reportError } from "@/telemetry/logging";
 
-import initGoogle from "@/contrib/google/devtools";
+import initGoogle from "@/contrib/google/initGoogle";
 
 window.addEventListener("error", function (e) {
   reportError(e);

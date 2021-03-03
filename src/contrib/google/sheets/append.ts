@@ -105,6 +105,10 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
 
 export const GOOGLE_SHEETS_API_ID = "@pixiebrix/google/sheets-append";
 
+function isAuthError(error: any): boolean {
+  return [404, 401, 403].includes(error.code);
+}
+
 export class GoogleSheetsAppend extends Effect {
   constructor() {
     super(
@@ -138,7 +142,10 @@ export class GoogleSheetsAppend extends Effect {
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
       );
     } catch (ex) {
-      logger.warn(`Error retrieving headers: ${ex.toString()}`);
+      logger.warn(`Error retrieving headers: ${ex.toString()}`, ex);
+      if (isAuthError(ex)) {
+        throw ex;
+      }
       logger.info(`Creating tab ${tabName}`);
       await createTab(spreadsheetId, tabName);
     }

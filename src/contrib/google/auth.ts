@@ -71,27 +71,46 @@ export async function resetToken(scopes: string[]): Promise<void> {
   await ensureAuth(scopes);
 }
 
+class PermissionsError extends Error {
+  public readonly status: number;
+
+  constructor(m: string, status: number) {
+    super(m);
+    this.status = status;
+    Object.setPrototypeOf(this, Error.prototype);
+  }
+}
+
 export async function handleRejection(token: string, err: any): Promise<Error> {
   console.debug("Google rejected request", { err });
   if (err.result == null) {
-    throw err;
-  } else if (err.result?.error.code === 404) {
-    throw new Error(
-      "Cannot locate the Google drive resource. Have you been granted access?"
+    return err;
+  }
+
+  const status = err.result?.error.code;
+
+  if (status === 404) {
+    return new PermissionsError(
+      "Cannot locate the Google drive resource. Have you been granted access?",
+      status
     );
-  } else if ([403, 401].includes(err.result?.error.code)) {
-    await new Promise<void>((resolve) => {
+  } else if ([403, 401].includes(status)) {
+    await new Promise<void>((resolve, reject) => {
       chrome.identity.removeCachedAuthToken({ token }, () => {
         resolve();
       });
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+      }
     });
     console.debug(
       "Bad Google OAuth token. Removed the auth token from the cache so the user can re-authenticate"
     );
-    throw new Error(
-      `Internal error connecting to Google Sheets. Details: ${err.result.error?.message}`
+    return new PermissionsError(
+      `Permission denied, re-authenticate with Google and try again. Details: ${err.result.error?.message}`,
+      status
     );
   } else {
-    throw new Error(err.result.error?.message ?? "Unknown error");
+    return new Error(err.result.error?.message ?? "Unknown error");
   }
 }

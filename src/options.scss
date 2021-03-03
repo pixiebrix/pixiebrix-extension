@@ -44,3 +44,8 @@ body {
     justify-content: center;
   }
 }
+
+.modal-backdrop {
+  // keep behind services modal of 999
+  z-index: 998;
+}

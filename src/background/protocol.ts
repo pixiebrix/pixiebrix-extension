@@ -101,20 +101,19 @@ function backgroundListener(
       return;
     }
 
-    return handlerPromise.then(
-      (value) => {
+    return handlerPromise
+      .then((value) => {
         console.debug(
           `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
         );
-        return value;
-      },
-      (reason) => {
+        return Promise.resolve(value);
+      })
+      .catch((reason) => {
         console.debug(
           `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
         );
-        return toErrorResponse(type, reason);
-      }
-    );
+        return Promise.resolve(toErrorResponse(type, reason));
+      });
   }
 }
 
@@ -188,10 +187,10 @@ export async function callBackground(
       throw err;
     }
 
-    // console.debug(
-    //   `Content script received response for ${type} (nonce: ${nonce})`,
-    //   response
-    // );
+    console.debug(
+      `Content script received response for ${type} (nonce: ${nonce})`,
+      response
+    );
 
     if (isErrorResponse(response)) {
       throw deserializeError(response.$$error);

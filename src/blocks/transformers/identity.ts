@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,20 +15,28 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "regenerator-runtime/runtime";
-import "core-js/stable";
-import "@/extensionContext";
+import { Transformer } from "@/types";
+import { registerBlock } from "@/blocks/registry";
+import { BlockArg, Schema } from "@/core";
 
-import ReactDOM from "react-dom";
-import React from "react";
-import App from "@/options/App";
-import { initRollbar } from "@/telemetry/rollbar";
-import initGoogle from "@/contrib/google/initGoogle";
+export class IdentityTransformer extends Transformer {
+  constructor() {
+    super(
+      "@pixiebrix/identity",
+      "Identity function",
+      "Returns the object passed into it",
+      "faCode"
+    );
+  }
 
-import "@/options.scss";
-import "@/vendors/overrides.scss";
+  inputSchema: Schema = {
+    type: "object",
+    additionalProperties: true,
+  };
 
-initRollbar();
-initGoogle();
+  async transform(arg: BlockArg): Promise<BlockArg> {
+    return arg;
+  }
+}
 
-ReactDOM.render(<App />, document.getElementById("container"));
+registerBlock(new IdentityTransformer());
