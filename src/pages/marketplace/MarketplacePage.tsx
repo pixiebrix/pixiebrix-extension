@@ -76,7 +76,6 @@ const Entry: React.FunctionComponent<
               <h5 className="mb-0">{name}</h5>
             </div>
             <div className="small mb-1 pt-0">
-              <span className="text-monospace">id:</span>{" "}
               <code className="pl-0 ml-0">{id}</code>
             </div>
           </div>

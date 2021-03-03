@@ -322,7 +322,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       icon = { id: "box", size: 18 },
     } = extension.config;
 
-    const serviceContext = await makeServiceContext(extension.services);
     const renderTemplate = engineRenderer(extension.templateEngine);
 
     const iconAsSVG = icon
@@ -338,6 +337,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
+      const serviceContext = await makeServiceContext(extension.services);
       const extensionContext = { ...ctxt, ...serviceContext };
       html = Mustache.render(this.getTemplate(), {
         caption: renderTemplate(caption, extensionContext),
@@ -364,6 +364,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         // read latest state at the time of the action
         const reader = await this.defaultReader();
         const ctxt = await reader.read(this.getReaderRoot($menu));
+        const serviceContext = await makeServiceContext(extension.services);
 
         await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
           validate: true,

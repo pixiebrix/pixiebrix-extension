@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
@@ -53,9 +54,13 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
     [onSave]
   );
 
-  const Editor = useMemo(() => genericOptionsFactory(service.schema), [
-    service,
-  ]);
+  const Editor = useMemo(() => {
+    if (optionsRegistry.has(service.id)) {
+      return optionsRegistry.get(service.id);
+    } else {
+      return genericOptionsFactory(service.schema);
+    }
+  }, [service]);
 
   const schemaPromise = useMemo(
     () =>
@@ -94,7 +99,13 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   }
 
   return (
-    <Modal show onHide={onClose} backdrop="static" keyboard={false}>
+    <Modal
+      style={{ zIndex: "999" }}
+      show
+      onHide={onClose}
+      backdrop="static"
+      keyboard={false}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Configure Private Integration: {service.name}</Modal.Title>
       </Modal.Header>
@@ -124,7 +135,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
                     isValid={touched.label && !errors.label}
                   />
                   <Form.Text className="text-muted">
-                    A label to help identify this service
+                    A label to help identify this integration
                   </Form.Text>
                 </Form.Group>
               </Form.Group>

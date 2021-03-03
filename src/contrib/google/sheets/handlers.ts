@@ -110,8 +110,14 @@ export const batchGet = liftBackground(
         spreadsheetId: spreadsheetId,
         ranges,
       });
-      return await new Promise<BatchGetValuesResponse>((resolve) =>
-        sheetRequest.execute((r) => resolve(r.result))
+      return await new Promise<BatchGetValuesResponse>((resolve, reject) =>
+        sheetRequest.execute((r) => {
+          if (r.status >= 300 || (r as any).code >= 300) {
+            reject(r);
+          } else {
+            resolve(r.result);
+          }
+        })
       );
     } catch (ex) {
       throw await handleRejection(token, ex);
@@ -131,7 +137,7 @@ function columnToLetter(column: number): string {
   return letter;
 }
 
-async function getSheetProperties(
+export async function getSheetProperties(
   spreadsheetId: string
 ): Promise<SpreadsheetProperties> {
   const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);

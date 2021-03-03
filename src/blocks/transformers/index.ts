@@ -21,5 +21,6 @@ export * from "./httpGet";
 export * from "./remoteMethod";
 export * from "./regex";
 export * from "./mapping";
+export * from "./identity";
 export * from "./FormData";
 export * from "./parseURL";

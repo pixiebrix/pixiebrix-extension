@@ -356,7 +356,7 @@ export async function mergeReaders(
   }
 }
 
-type ServiceContext = {
+export type ServiceContext = {
   [outputKey: string]: {
     __service: SanitizedServiceConfiguration;
     [prop: string]: string | SanitizedServiceConfiguration | null;
