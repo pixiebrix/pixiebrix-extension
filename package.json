@@ -112,7 +112,7 @@
     "formik": "^2.2.6",
     "generate-schema": "^2.6.0",
     "global": "^4.4.0",
-    "handlebars": "^4.7.6",
+    "handlebars": "^4.7.7",
     "hex-rgb": "^4.2.0",
     "history": "^4.10.1",
     "howler": "^2.2.1",
