@@ -213,16 +213,18 @@ export interface IReader extends IBlock {
 
 type ServiceId = string;
 
-export interface SanitizedConfig {
-  // nominal typing to distinguish from ServiceConfig
-  _sanitizedConfigBrand: null;
+export interface KeyedConfig {
   [key: string]: string | null;
 }
 
-export interface ServiceConfig {
+export interface SanitizedConfig extends KeyedConfig {
+  // nominal typing to distinguish from ServiceConfig
+  _sanitizedConfigBrand: null;
+}
+
+export interface ServiceConfig extends KeyedConfig {
   // nominal typing to distinguish from SanitizedConfig
   _serviceConfigBrand: null;
-  [key: string]: string | null;
 }
 
 export interface AuthData {
@@ -291,7 +293,9 @@ export interface SanitizedServiceConfiguration {
  * The input/output schema is the same since it's directly user configured.
  */
 export interface IService<
-  TConfig extends ServiceConfig = ServiceConfig,
+  TConfig extends KeyedConfig = KeyedConfig,
+  TSanitized = TConfig & { _sanitizedConfigBrand: null },
+  TSecret = TConfig & { _serviceConfigBrand: null },
   TOAuth extends AuthData = AuthData
 > extends Metadata {
   schema: Schema;
@@ -300,12 +304,14 @@ export interface IService<
 
   isToken: boolean;
 
-  getOAuth2Context: (serviceConfig: TConfig) => OAuth2Context;
+  getOrigins: (serviceConfig: TSanitized) => string[];
 
-  getTokenContext: (serviceConfig: TConfig) => TokenContext;
+  getOAuth2Context: (serviceConfig: TSecret) => OAuth2Context;
+
+  getTokenContext: (serviceConfig: TSecret) => TokenContext;
 
   authenticateRequest: (
-    serviceConfig: TConfig,
+    serviceConfig: TSecret,
     requestConfig: AxiosRequestConfig,
     oauthConfig?: TOAuth
   ) => AxiosRequestConfig;

@@ -44,6 +44,7 @@ import { reportError } from "@/telemetry/logging";
 import { reportEvent } from "@/telemetry/events";
 // @ts-ignore: using for the EventHandler type below
 import JQuery from "jquery";
+import { awaitElementOnce } from "@/extensionPoints/helpers";
 
 export interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
@@ -100,8 +101,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return blockList(extension.config.action);
   }
 
-  getTriggerRoot(): JQuery<HTMLElement | Document> {
-    return $(document);
+  getTriggerSelector(): string | null {
+    return undefined;
   }
 
   private async runExtension(
@@ -164,10 +165,20 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   async run(): Promise<void> {
-    const $root = this.getTriggerRoot();
+    const rootSelector = this.getTriggerSelector();
+
+    // TODO: add logic for cancelWait
+    const [rootPromise] = awaitElementOnce(rootSelector);
+
+    let $root = await rootPromise;
+
+    if (rootSelector) {
+      // awaitElementOnce doesn't work with multiple elements. Get what's currently on the page
+      $root = $(document).find(rootSelector);
+    }
 
     if ($root.length === 0) {
-      this.logger.warn("No root elements found");
+      console.warn(`No elements found for trigger selector: ${rootSelector}`);
     }
 
     if (this.trigger === "load") {
@@ -176,6 +187,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       );
       TriggerExtensionPoint.notifyErrors(promises);
     } else if (this.trigger) {
+      if (this.handler) {
+        console.debug(
+          `Removing existing ${this.trigger} handler for extension point`
+        );
+        $root.off(this.trigger, null, this.handler);
+      }
+
       this.handler = async (event) => {
         const promises = await Promise.allSettled([
           this.runTrigger(event.target),
@@ -184,7 +202,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       };
       this.$installedRoot = $root;
       this.installedEvents.add(this.trigger);
+
       $root.on(this.trigger, this.handler);
+      console.debug(
+        `Installed ${this.trigger} event handler on ${$root.length} elements`
+      );
+    } else {
+      throw new Error("No trigger event configured for extension point");
     }
   }
 }
@@ -224,10 +248,8 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
     return this._definition.trigger ?? "load";
   }
 
-  getTriggerRoot(): JQuery<HTMLElement | Document> {
-    return this._definition.rootSelector
-      ? $(this._definition.rootSelector)
-      : $(document);
+  getTriggerSelector(): string | null {
+    return this._definition.rootSelector;
   }
 
   defaultReader() {

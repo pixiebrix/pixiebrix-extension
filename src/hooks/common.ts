@@ -38,7 +38,10 @@ export function useAsyncState<T>(
       if (!isMounted()) return;
       setResult(promiseResult);
     } catch (ex) {
-      setError(ex ?? "Error calculating data");
+      if (isMounted()) {
+        setResult(undefined);
+        setError(ex ?? "Error calculating data");
+      }
     } finally {
       if (isMounted()) {
         setPending(false);

@@ -58,10 +58,21 @@ export async function deleteCachedAuthData(key: string): Promise<void> {
     throw new Error("Only the background page can access oauth2 information");
   }
   const current = JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}");
-  delete current[key];
+  if (Object.prototype.hasOwnProperty.call(current, key)) {
+    // OK because we're guarding with hasOwnProperty
+    // eslint-disable-next-line security/detect-object-injection
+    delete current[key];
+  } else {
+    console.warn(`No cached auth data exists for key: ${key}`);
+  }
   await setStorage(OAUTH2_STORAGE_KEY, JSON.stringify(current));
 }
 
+/**
+ * Exchange credentials for a token, and cache the token response
+ * @param service
+ * @param auth
+ */
 export async function getToken(
   service: IService,
   auth: RawServiceConfiguration

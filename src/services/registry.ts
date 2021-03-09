@@ -19,12 +19,13 @@ import { readStorage } from "@/chrome";
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/services/factory";
 import { RawServiceConfiguration } from "@/core";
+import { Service } from "@/types";
 
 export const PIXIEBRIX_SERVICE_ID = "@pixiebrix/api";
 
 const storageKey = "persist:servicesOptions";
 
-const registry = new BaseRegistry(["service"], "services", fromJS);
+const registry = new BaseRegistry<Service>(["service"], "services", fromJS);
 
 export async function readRawConfigurations(): Promise<
   RawServiceConfiguration[]

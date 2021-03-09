@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: service
+metadata:
+  id: automation-anywhere/control-room
+  version: 1.0.0
+  name: Automation Anywhere Control Room
+  description: Automation Anywhere Enterprise Control Room API
+  url: https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/control-room-apis.html
+inputSchema:
+  $schema: "https://json-schema.org/draft/2019-09/schema#"
+  type: object
+  properties:
+    controlRoomUrl:
+      type: string
+      format: uri
+      description: The Automation Anywhere Control Room API base URL, including https://
+    username:
+      type: string
+      description: The username of the Automation Anywhere user.
+    password:
+      $ref: "https://app.pixiebrix.com/schemas/key#"
+      description: The password of the Automation Anywhere user.
+    apiKey:
+      $ref: "https://app.pixiebrix.com/schemas/key#"
+      description: |
+        The apiKey is required to configure Single Sign On (SSO). It can also be used in place of a
+        password for users that are assigned to the API key generation role.
+    folderId:
+      type: string
+      description: The folder ID containing the bots to run
+      format: '\d+'
+  required:
+    - username
+authentication:
+  baseURL: "{{{ controlRoomUrl }}}"
+  token:
+    url: "{{{ controlRoomUrl }}}/v1/authentication"
+    data:
+      username: "{{{ username }}}"
+      password: "{{{ password }}}"
+      apiKey: "{{{ apiKey }}}"
+  headers:
+    X-Authorization: "{{{ token }}}"

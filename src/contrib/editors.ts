@@ -27,9 +27,12 @@ import { ZAPIER_ID } from "@/contrib/zapier/push";
 import { UIPATH_ID } from "@/contrib/uipath/process";
 import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { GOOGLE_SHEETS_API_ID } from "@/contrib/google/sheets/append";
+import BotOptions from "@/contrib/automationanywhere/BotOptions";
+import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/run";
 
 optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
 optionsRegistry.set(ZAPIER_ID, PushOptions);
 optionsRegistry.set(UIPATH_ID, ProcessOptions);
 optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);
 optionsRegistry.set(GOOGLE_SHEETS_API_ID, AppendSpreadsheetOptions);
+optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);

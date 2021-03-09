@@ -205,6 +205,11 @@ async function runStage(
       excludeUndefined(blockArgs)
     );
     if (!validationResult.valid) {
+      console.debug("Invalid inputs for block", {
+        errors: validationResult.errors,
+        schema: block.inputSchema,
+        blockArgs,
+      });
       throw new InputValidationError(
         "Invalid inputs for block",
         block.inputSchema,

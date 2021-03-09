@@ -31,16 +31,19 @@ import {
   ReaderOutput,
   RenderedHTML,
   Schema,
-  ServiceConfig,
   TokenContext,
+  KeyedConfig,
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
 import { partition } from "lodash";
 import { Permissions } from "webextension-polyfill-ts";
 
+type SanitizedBrand = { _sanitizedConfigBrand: null };
+type SecretBrand = { _serviceConfigBrand: null };
+
 export abstract class Service<
-  TConfig extends ServiceConfig = ServiceConfig,
+  TConfig extends KeyedConfig = KeyedConfig,
   TOAuth extends AuthData = AuthData
 > implements IService<TConfig> {
   id: string;
@@ -64,12 +67,16 @@ export abstract class Service<
     this.icon = icon;
   }
 
-  abstract getOAuth2Context(serviceConfig: TConfig): OAuth2Context;
+  abstract getOrigins(serviceConfig: TConfig & SanitizedBrand): string[];
 
-  abstract getTokenContext(serviceConfig: TConfig): TokenContext;
+  abstract getOAuth2Context(
+    serviceConfig: TConfig & SecretBrand
+  ): OAuth2Context;
+
+  abstract getTokenContext(serviceConfig: TConfig & SecretBrand): TokenContext;
 
   abstract authenticateRequest(
-    serviceConfig: TConfig,
+    serviceConfig: TConfig & SecretBrand,
     requestConfig: AxiosRequestConfig,
     authConfig?: TOAuth
   ): AxiosRequestConfig;

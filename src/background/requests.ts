@@ -26,6 +26,7 @@ import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import { ContextError } from "@/errors";
 import { isBackgroundPage } from "webext-detect-page";
+import { isEmpty } from "lodash";
 import {
   deleteCachedAuthData,
   getCachedAuthData,
@@ -124,15 +125,18 @@ async function authenticate(
   } else if (service.isOAuth2) {
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
-    if (!data) {
+    if (isEmpty(data)) {
       data = await launchOAuth2Flow(service, localConfig);
     }
     return service.authenticateRequest(localConfig.config, request, data);
   } else if (service.isToken) {
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
-    if (!data) {
+    if (isEmpty(data)) {
       data = await getToken(service, localConfig);
+    }
+    if (isEmpty(data)) {
+      throw new Error("No auth data found for token authentication");
     }
     return service.authenticateRequest(localConfig.config, request, data);
   } else {
@@ -222,7 +226,7 @@ export async function proxyService<TData>(
   serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig
 ): Promise<RemoteResponse<TData>> {
-  if (typeof serviceConfig !== "object") {
+  if (serviceConfig != null && typeof serviceConfig !== "object") {
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
     try {

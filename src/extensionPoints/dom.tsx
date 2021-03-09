@@ -34,6 +34,8 @@ export function render(
   body: PanelComponent,
   { shadowDOM }: RenderOptions
 ): void {
+  console.debug("render: panel body");
+
   if (typeof body === "string") {
     if (shadowDOM) {
       const shadowRoot = root.attachShadow({ mode: "closed" });
