@@ -26,6 +26,7 @@ import * as context from "@/contentScript/context";
 
 let _scriptPromise: Promise<void>;
 const _dynamic: Map<string, IExtensionPoint> = new Map();
+const _frameHref: Map<number, string> = new Map();
 let _extensionPoints: IExtensionPoint[] = undefined;
 let _navSequence = 1;
 const _installedExtensionPoints: IExtensionPoint[] = [];
@@ -178,8 +179,19 @@ export async function handleNavigate({
     return;
   }
 
+  const href = location.href;
+
+  if (_frameHref.get(context.frameId) === href) {
+    console.warn(
+      `Ignoring NOOP navigation to ${href} (tabId=${context.tabId}, frameId=${context.frameId})`
+    );
+    return;
+  }
+
+  _frameHref.set(context.frameId, href);
+
   console.debug(
-    `Handling navigation to ${location.href} (tabId=${context.tabId}, frameId=${context.frameId})`
+    `Handling navigation to ${href} (tabId=${context.tabId}, frameId=${context.frameId})`
   );
   await installScriptOnce();
 

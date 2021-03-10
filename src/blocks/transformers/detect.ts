@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,41 +20,45 @@ import { BlockArg, Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 
-export class FormData extends Transformer {
+export class DetectElement extends Transformer {
   constructor() {
     super(
-      "@pixiebrix/forms/data",
-      "Read data from a form",
-      "Read data from all inputs on a form"
+      "@pixiebrix/dom/detect",
+      "Detect an element on a page",
+      "Detect and/or count an element on a page from a JQuery selector"
     );
   }
 
   inputSchema: Schema = propertiesToSchema({
     selector: {
       type: "string",
-      description: "JQuery selector for the form",
+      description: "JQuery selector",
     },
   });
 
   outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
-    additionalProperties: true,
+    properties: {
+      exists: {
+        type: "boolean",
+        description: "True if the element was detected",
+      },
+      count: {
+        type: "number",
+        description: "The number of matches",
+      },
+    },
+    required: ["exists", "count"],
   };
 
   async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
-    const result: Record<string, unknown> = {};
-    $(document)
-      .find(selector)
-      .find(":input")
-      .each(function () {
-        const name = $(this).attr("name") ?? "";
-        if (name !== "") {
-          result[name] = $(this).val();
-        }
-      });
-    return result;
+    const $result = $(document).find(selector);
+    return {
+      count: $result.length,
+      exists: $result.length > 0,
+    };
   }
 }
 
-registerBlock(new FormData());
+registerBlock(new DetectElement());

@@ -50,12 +50,13 @@ export interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
 }
 
-export type Trigger = "load" | "click" | "dblclick" | "mouseover";
+export type Trigger = "load" | "click" | "dblclick" | "mouseover" | "appear";
 
 export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
   abstract get trigger(): Trigger;
 
   private handler: JQuery.EventHandler<unknown> | undefined;
+  private observer: IntersectionObserver | undefined;
   private $installedRoot: JQuery<HTMLElement | Document> | undefined;
   private installedEvents: Set<string> = new Set();
 
@@ -168,7 +169,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     const rootSelector = this.getTriggerSelector();
 
     // TODO: add logic for cancelWait
-    const [rootPromise] = awaitElementOnce(rootSelector);
+    const [rootPromise] = rootSelector
+      ? awaitElementOnce(rootSelector)
+      : [Promise.resolve($(document))];
 
     let $root = await rootPromise;
 
@@ -186,12 +189,53 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         $root.toArray().flatMap((root) => this.runTrigger(root))
       );
       TriggerExtensionPoint.notifyErrors(promises);
+    } else if (this.trigger === "appear") {
+      if (rootSelector == null) {
+        throw new Error("'appear' trigger not valid for document");
+      }
+
+      // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
+      this.observer?.disconnect();
+
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries.filter((x) => x.isIntersecting)) {
+            this.runTrigger(entry.target as HTMLElement).then((errors) => {
+              if (errors.length) {
+                console.error("An error occurred while running a trigger", {
+                  errors,
+                });
+                $.notify(`An error occurred while running a trigger`, {
+                  className: "error",
+                });
+              }
+            });
+          }
+        },
+        {
+          root: null,
+          // rootMargin: "0px",
+          threshold: 0.2,
+        }
+      );
+
+      $root.toArray().forEach((root) => {
+        this.observer.observe(root as HTMLElement);
+      });
     } else if (this.trigger) {
+      if (rootSelector == null) {
+        throw new Error(
+          `Trigger ${this.trigger} not supported for the document`
+        );
+      }
+
+      const $rootElement = $root as JQuery<HTMLElement>;
+
       if (this.handler) {
         console.debug(
           `Removing existing ${this.trigger} handler for extension point`
         );
-        $root.off(this.trigger, null, this.handler);
+        $rootElement.off(this.trigger, null, this.handler);
       }
 
       this.handler = async (event) => {
@@ -203,7 +247,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       this.$installedRoot = $root;
       this.installedEvents.add(this.trigger);
 
-      $root.on(this.trigger, this.handler);
+      $rootElement.on(this.trigger, this.handler);
       console.debug(
         `Installed ${this.trigger} event handler on ${$root.length} elements`
       );

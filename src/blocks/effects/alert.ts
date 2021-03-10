@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,46 +15,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
+import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
-export class FormData extends Transformer {
+export class AlertEffect extends Effect {
   constructor() {
     super(
-      "@pixiebrix/forms/data",
-      "Read data from a form",
-      "Read data from all inputs on a form"
+      "@pixiebrix/browser/alert",
+      "Window Alert",
+      "Show an alert in the window",
+      "faSearch"
     );
   }
 
   inputSchema: Schema = propertiesToSchema({
-    selector: {
+    message: {
       type: "string",
-      description: "JQuery selector for the form",
+      description: "A string you want to display in the alert dialog",
     },
   });
 
-  outputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    additionalProperties: true,
-  };
-
-  async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
-    const result: Record<string, unknown> = {};
-    $(document)
-      .find(selector)
-      .find(":input")
-      .each(function () {
-        const name = $(this).attr("name") ?? "";
-        if (name !== "") {
-          result[name] = $(this).val();
-        }
-      });
-    return result;
+  async effect({ message }: BlockArg): Promise<void> {
+    window.alert(message);
   }
 }
 
-registerBlock(new FormData());
+registerBlock(new AlertEffect());

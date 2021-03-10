@@ -33,10 +33,13 @@ import { Availability } from "@/blocks/types";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
+const MESSAGE_RUN_BLOCK_BROADCAST = `${MESSAGE_PREFIX}RUN_BLOCK_BROADCAST`;
 const MESSAGE_RUN_BLOCK_FRAME_NONCE = `${MESSAGE_PREFIX}RUN_BLOCK_FRAME_NONCE`;
 const MESSAGE_ACTIVATE_TAB = `${MESSAGE_PREFIX}MESSAGE_ACTIVATE_TAB`;
 const MESSAGE_CLOSE_TAB = `${MESSAGE_PREFIX}MESSAGE_CLOSE_TAB`;
 const MESSAGE_OPEN_TAB = `${MESSAGE_PREFIX}MESSAGE_OPEN_TAB`;
+
+const TOP_LEVEL_FRAME = 0;
 
 interface Target {
   tabId: number;
@@ -143,9 +146,41 @@ function backgroundListener(
               },
             },
             // for now, only support top-level frame as opener
-            { frameId: 0 }
+            { frameId: TOP_LEVEL_FRAME }
           )
           .then(resolve);
+      });
+    }
+    case MESSAGE_RUN_BLOCK_BROADCAST: {
+      console.debug("broadcast", {
+        sender: String(sender.tab.id),
+        known: Array.from(Object.keys(tabReady)),
+      });
+
+      const tabTargets = Object.entries(tabReady).filter(
+        ([tabId, ready]) =>
+          tabId !== String(sender.tab.id) && ready[TOP_LEVEL_FRAME]
+      );
+
+      return Promise.allSettled(
+        tabTargets.map(async ([tabId]) => {
+          return browser.tabs.sendMessage(
+            Number.parseInt(tabId, 10),
+            {
+              type: CONTENT_MESSAGE_RUN_BLOCK,
+              payload: {
+                sourceTabId: sender.tab.id,
+                ...request.payload,
+              },
+            },
+            // for now, only support top-level frame as opener
+            { frameId: TOP_LEVEL_FRAME }
+          );
+        })
+      ).then((results) => {
+        return results
+          .filter((x) => x.status === "fulfilled")
+          .map((x) => (x as any).value);
       });
     }
     case MESSAGE_RUN_BLOCK_FRAME_NONCE: {
@@ -391,6 +426,22 @@ export async function executeInTarget(
   }
 
   throw new Error(`Unable to run ${blockId} after ${maxRetries} retries`);
+}
+
+export async function executeInAll(
+  blockId: string,
+  blockArgs: RenderedArgs,
+  options: RemoteBlockOptions
+): Promise<unknown> {
+  console.debug(`Running ${blockId} in all tabs`);
+  return await browser.runtime.sendMessage({
+    type: MESSAGE_RUN_BLOCK_BROADCAST,
+    payload: {
+      blockId,
+      blockArgs,
+      options,
+    },
+  });
 }
 
 export async function executeInOpener(

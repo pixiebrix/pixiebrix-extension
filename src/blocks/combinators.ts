@@ -17,12 +17,10 @@
 
 import castArray from "lodash/castArray";
 import blockRegistry from "@/blocks/registry";
-import isPlainObject from "lodash/isPlainObject";
 import { engineRenderer, mapArgs } from "@/helpers";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { locate } from "@/background/locator";
-import mapValues from "lodash/mapValues";
 import {
   SanitizedServiceConfiguration,
   IBlock,
@@ -37,9 +35,13 @@ import {
 } from "@/core";
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
-import pickBy from "lodash/pickBy";
+import { pickBy, isPlainObject, mapValues } from "lodash";
 import { ContextError } from "@/errors";
-import { executeInOpener, executeInTarget } from "@/background/executor";
+import {
+  executeInOpener,
+  executeInTarget,
+  executeInAll,
+} from "@/background/executor";
 import { boolean } from "@/utils";
 
 export type ReaderConfig =
@@ -49,7 +51,7 @@ export type ReaderConfig =
 
 export interface BlockConfig {
   id: string;
-  window?: "self" | "opener" | "target";
+  window?: "self" | "opener" | "target" | "broadcast";
   outputKey?: string;
 
   // (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
@@ -226,6 +228,11 @@ async function runStage(
     });
   } else if (stage.window === "target") {
     return await executeInTarget(stage.id, blockArgs, {
+      ctxt: args,
+      messageContext: logger.context,
+    });
+  } else if (stage.window === "broadcast") {
+    return await executeInAll(stage.id, blockArgs, {
       ctxt: args,
       messageContext: logger.context,
     });
