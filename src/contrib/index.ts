@@ -23,3 +23,4 @@ export * from "./techcrunch";
 export * from "./salesforce";
 export * from "./uipath";
 export * from "./zapier";
+export * from "./automationanywhere";

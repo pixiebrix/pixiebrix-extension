@@ -74,7 +74,7 @@ function iconAsSVG(config: IconConfig): string {
 
   $elt.attr("width", config.size ?? 14);
   $elt.attr("height", config.size ?? 14);
-  $elt.find("path").attr("fill", "#ae87e8");
+  $elt.find("path").attr("fill", config.color ?? "#ae87e8");
 
   return $elt.get(0).outerHTML;
 }

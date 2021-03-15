@@ -33,6 +33,7 @@ import { boolean } from "@/utils";
 import { awaitElementOnce, acquireElement } from "@/extensionPoints/helpers";
 import {
   IBlock,
+  IconConfig,
   IExtension,
   IExtensionPoint,
   IReader,
@@ -51,6 +52,7 @@ import { reportEvent } from "@/telemetry/events";
 export interface PanelConfig {
   heading?: string;
   body: BlockConfig | BlockPipeline;
+  icon?: IconConfig;
   collapsible?: boolean;
   shadowDOM?: boolean;
 }
@@ -108,6 +110,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         description: "Whether or not the body is collapsible",
         default: false,
       },
+      icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
     },
     ["heading", "body"]
   );
@@ -180,6 +183,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     if (this.$container.length == 0) {
       return false;
     } else if (this.$container.length > 1) {
+      console.error(`Multiple containers found for selector: ${selector}`);
       this.logger.error(`Multiple containers found: ${this.$container.length}`);
       return false;
     }
@@ -221,6 +225,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     const {
       body,
+      icon,
       heading,
       collapsible: rawCollapsible = false,
       shadowDOM: rawShadowDOM = true,
@@ -232,11 +237,21 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const serviceContext = await makeServiceContext(extension.services);
     const extensionContext = { ...readerContext, ...serviceContext };
 
+    const iconAsSVG = icon
+      ? (
+          await import(
+            /* webpackChunkName: "icons" */
+            "@/icons/svgIcons"
+          )
+        ).default
+      : null;
+
     const $panel = $(
       Mustache.render(this.getTemplate(), {
         heading: Mustache.render(heading, extensionContext),
         // render a placeholder body that we'll fill in async
         body: `<div id="${bodyUUID}"></div>`,
+        icon: iconAsSVG?.(icon),
         bodyUUID,
       })
     );
@@ -286,7 +301,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         return errorBoundary(rendererPromise, extensionLogger)
           .then((bodyOrComponent: PanelComponent) => {
             render(bodyContainer, bodyOrComponent, {
-              shadowDOM: boolean(shadowDOM),
+              shadowDOM,
             });
             extensionLogger.debug("Successfully installed panel");
           })

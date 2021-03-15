@@ -10,6 +10,10 @@
       "type": "string",
       "enum": ["bootstrap", "simple-icons", "custom"]
     },
+    "color": {
+      "type": "string",
+      "default": "#ae87e8"
+    },
     "size": {
       "type": "number",
       "default": 14,

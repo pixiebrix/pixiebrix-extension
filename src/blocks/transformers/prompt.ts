@@ -16,45 +16,40 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
+import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
-export class FormData extends Transformer {
+export class Prompt extends Transformer {
   constructor() {
     super(
-      "@pixiebrix/forms/data",
-      "Read data from a form",
-      "Read data from all inputs on a form"
+      "@pixiebrix/prompt",
+      "Prompt for input",
+      "Show a browser prompt for a single input",
+      "faCode"
     );
   }
 
-  inputSchema: Schema = propertiesToSchema({
-    selector: {
-      type: "string",
-      description: "JQuery selector for the form",
+  inputSchema: Schema = propertiesToSchema(
+    {
+      message: {
+        type: "string",
+        description: "A string of text to display to the user.",
+      },
+      defaultValue: {
+        type: "string",
+        description:
+          "A string containing the default value displayed in the text input field",
+      },
     },
-  });
+    ["message"]
+  );
 
-  outputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    additionalProperties: true,
-  };
-
-  async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
-    const result: Record<string, unknown> = {};
-    $(document)
-      .find(selector)
-      .find(":input")
-      .each(function () {
-        const name = $(this).attr("name") ?? "";
-        if (name !== "") {
-          result[name] = $(this).val();
-        }
-      });
-    return result;
+  async transform({ message, defaultValue }: BlockArg): Promise<unknown> {
+    return {
+      value: window.prompt(message, defaultValue),
+    };
   }
 }
 
-registerBlock(new FormData());
+registerBlock(new Prompt());

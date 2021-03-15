@@ -28,10 +28,10 @@ import {
   Schema,
   ServiceConfig,
   TokenContext,
+  SanitizedConfig,
 } from "@/core";
-import castArray from "lodash/castArray";
 import { testMatchPattern } from "@/blocks/available";
-import isEmpty from "lodash/isEmpty";
+import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
 import {
   ServiceDefinition,
@@ -46,12 +46,14 @@ import { isAbsoluteURL } from "@/hooks/fetch";
  * A service created from a local definition. Has the ability to authenticate requests because it has
  * access to authenticate secrets.
  */
-class LocalDefinedService extends Service {
-  private readonly _definition: ServiceDefinition;
+class LocalDefinedService<
+  TDefinition extends ServiceDefinition = ServiceDefinition
+> extends Service {
+  private readonly _definition: TDefinition;
   public readonly schema: Schema;
   public readonly hasAuth: boolean;
 
-  constructor(definition: ServiceDefinition) {
+  constructor(definition: TDefinition) {
     const { id, name, description, icon } = definition.metadata;
     super(id, name, description, icon);
     this._definition = definition;
@@ -85,11 +87,37 @@ class LocalDefinedService extends Service {
     return "oauth2" in this._definition.authentication;
   }
 
+  /**
+   * Returns origins that require permissions to use the service
+   * @param serviceConfig
+   */
+  getOrigins(serviceConfig: SanitizedConfig): string[] {
+    const patterns = castArray(
+      this._definition.isAvailable?.matchPatterns ?? []
+    );
+
+    if ("baseURL" in this._definition.authentication) {
+      // convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
+      const baseUrlTemplate = this._definition.authentication.baseURL;
+      const baseUrl = mapArgs(baseUrlTemplate, serviceConfig);
+      patterns.push(baseUrl.endsWith("/") ? `${baseUrl}*` : `${baseUrl}/*`);
+    }
+
+    if (this.isToken) {
+      const tokenUrl = (this
+        ._definition as ServiceDefinition<TokenAuthenticationDefinition>)
+        .authentication.token.url;
+      patterns.push(mapArgs(tokenUrl, serviceConfig));
+    }
+
+    return uniq(compact(patterns));
+  }
+
   getTokenContext(serviceConfig: ServiceConfig): TokenContext {
     if (this.isToken) {
       const definition: TokenContext = (this._definition
         .authentication as TokenAuthenticationDefinition).token;
-      console.debug("token context", { definition, serviceConfig });
+      // console.debug("token context", { definition, serviceConfig });
       return mapArgs<TokenContext>(definition, serviceConfig);
     } else {
       return undefined;
@@ -100,7 +128,7 @@ class LocalDefinedService extends Service {
     if (this.isOAuth2) {
       const definition: OAuth2Context = (this._definition
         .authentication as OAuth2AuthenticationDefinition).oauth2;
-      console.debug("oauth2 context", { definition, serviceConfig });
+      // console.debug("oauth2 context", { definition, serviceConfig });
       return mapArgs<OAuth2Context>(definition, serviceConfig);
     } else {
       return undefined;
@@ -131,6 +159,10 @@ class LocalDefinedService extends Service {
     requestConfig: AxiosRequestConfig,
     tokenData: AuthData
   ): AxiosRequestConfig {
+    if (isEmpty(tokenData)) {
+      throw new Error("Empty token data provided");
+    }
+
     const { baseURL, headers = {} } = mapArgs(
       this._definition.authentication as
         | OAuth2AuthenticationDefinition

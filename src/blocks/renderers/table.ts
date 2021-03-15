@@ -21,6 +21,7 @@ import { registerBlock } from "@/blocks/registry";
 import Mustache from "mustache";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions } from "@/core";
+import { isNullOrBlank } from "@/utils";
 
 export class Table extends Renderer {
   constructor() {
@@ -49,14 +50,19 @@ export class Table extends Renderer {
     },
   });
 
-  async render({ columns, ...blockArgs }: BlockArg, { ctxt }: BlockOptions) {
+  async render(
+    { columns, ...blockArgs }: BlockArg,
+    { ctxt = [] }: BlockOptions
+  ) {
     if (!Array.isArray(ctxt)) {
-      throw new Error("Expected data to be an array");
+      throw new Error(`Expected data to be an array, actual: ${typeof ctxt}`);
     }
 
     const makeLinkRenderer = (href: string) => (value: any, row: Row) => {
       const anchorHref = Mustache.render(href, { ...row, "@block": blockArgs });
-      return `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${value}</a>`;
+      return !isNullOrBlank(anchorHref)
+        ? `<a href="${anchorHref}" target="_blank" rel="noopener noreferrer">${value}</a>`
+        : `${value}`;
     };
 
     const table = makeDataTable(

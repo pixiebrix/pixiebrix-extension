@@ -21,6 +21,7 @@ import { proxyService } from "@/background/requests";
 import { Schema, BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors";
+import { isNullOrBlank } from "@/utils";
 
 export class GetAPITransformer extends Transformer {
   constructor() {
@@ -55,7 +56,7 @@ export class GetAPITransformer extends Transformer {
   );
 
   async transform({ service, ...requestProps }: BlockArg): Promise<unknown> {
-    if (service && typeof service !== "object") {
+    if (!isNullOrBlank(service) && typeof service !== "object") {
       throw new PropError(
         "Expected configured service",
         this.id,
@@ -63,10 +64,13 @@ export class GetAPITransformer extends Transformer {
         service
       );
     }
-    const { data } = await proxyService(service, {
-      ...requestProps,
-      method: "get",
-    });
+    const { data } = await proxyService(
+      !isNullOrBlank(service) ? service : null,
+      {
+        ...requestProps,
+        method: "get",
+      }
+    );
 
     return data;
   }

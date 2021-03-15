@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,14 +15,4 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export * from "./jq";
-export * from "./jsonPath";
-export * from "./httpGet";
-export * from "./remoteMethod";
-export * from "./regex";
-export * from "./mapping";
-export * from "./identity";
-export * from "./FormData";
-export * from "./parseURL";
-export * from "./prompt";
-export * from "./detect";
+import "./run";

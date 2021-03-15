@@ -187,7 +187,7 @@ export function awaitElementOnce(
   rootElement: JQuery<HTMLElement | Document> = undefined
 ): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (selector == null) {
-    throw new Error("Expected selector");
+    throw new Error("awaitElementOnce expected selector");
   }
 
   const selectors = castArray(selector);
