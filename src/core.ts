@@ -323,6 +323,7 @@ export interface IconConfig {
   id: string;
   library?: IconLibrary;
   size?: number;
+  color?: string;
 }
 
 export interface RenderedArgs {
