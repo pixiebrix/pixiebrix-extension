@@ -20,8 +20,8 @@ import { useToasts } from "react-toast-notifications";
 import { optionsSlice, servicesSlice } from "../slices";
 import { connect } from "react-redux";
 import { PageTitle } from "@/layout/Page";
-import { Row, Col, Form, Card, Button } from "react-bootstrap";
-import { useConfiguredHost, DEFAULT_SERVICE_URL } from "@/services/baseService";
+import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
 import { isEmpty } from "lodash";
 import { faCogs, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { clearExtensionAuth } from "@/auth/token";
@@ -55,6 +55,30 @@ function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
 
   return [enabled, toggle];
 }
+
+// const PermissionsRow: React.FunctionComponent = () => {
+//   const [permissions] = useAsyncState<Permissions.AnyPermissions>(async () => {
+//     return await browser.permissions.getAll();
+//   }, []);
+//
+//   return (
+//       <Row className="mb-4">
+//         <Col lg={6} md={8}>
+//           <Card>
+//             <Card.Header>Permissions</Card.Header>
+//             <ListGroup variant="flush">
+//               {(permissions?.origins ?? []).map(origin => (
+//                   <ListGroup.Item key={origin}>
+//                     {origin}
+//                   </ListGroup.Item>
+//               ))}
+//             </ListGroup>
+//
+//           </Card>
+//         </Col>
+//       </Row>
+//   )
+// }
 
 const PrivacyRow: React.FunctionComponent = () => {
   const [dnt, toggleDNT] = useDNT();
@@ -153,6 +177,9 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
       </div>
 
       {organization == null && <PrivacyRow />}
+
+      {/* Permission API just lists what's in the manifest. Not what's currently granted */}
+      {/*<PermissionsRow/>*/}
 
       <Row className="mb-4">
         <Col lg={6} md={8}>

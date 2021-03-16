@@ -225,7 +225,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     } else if (this.trigger) {
       if (rootSelector == null) {
         throw new Error(
-          `Trigger ${this.trigger} not supported for the document`
+          `Trigger not supported for the document: ${this.trigger}`
         );
       }
 
