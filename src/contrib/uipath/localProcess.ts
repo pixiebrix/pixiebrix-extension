@@ -15,11 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
+import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
-import { BlockArg, Schema, SchemaProperties } from "@/core";
-import { UiPathRobot } from "@uipath/robot";
-import { RobotProcess } from "@uipath/robot/dist/models";
+import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
+import UiPathRobot from "@/contrib/uipath/UiPathRobot";
+import { JobResult, RobotProcess } from "@uipath/robot/dist/models";
 
 UiPathRobot.settings.disableTelemetry = true;
 
@@ -36,7 +36,7 @@ export const UIPATH_PROPERTIES: SchemaProperties = {
   },
 };
 
-export class RunLocalProcess extends Effect {
+export class RunLocalProcess extends Transformer {
   constructor() {
     super(
       UIPATH_ID,
@@ -52,7 +52,10 @@ export class RunLocalProcess extends Effect {
     properties: UIPATH_PROPERTIES,
   };
 
-  async effect({ releaseKey, inputArguments = {} }: BlockArg): Promise<void> {
+  async transform(
+    { releaseKey, inputArguments = {} }: BlockArg,
+    { logger }: BlockOptions
+  ): Promise<JobResult> {
     return new Promise((resolve, reject) => {
       UiPathRobot.on("missing-components", () => {
         reject(new Error("UiPath Assistant not found. Is it installed?"));
@@ -65,9 +68,20 @@ export class RunLocalProcess extends Effect {
           (x: RobotProcess) => x.id === releaseKey
         );
         if (!process) {
-          throw new Error(`Can't find process ${releaseKey}`);
+          logger.error(`Cannot find UiPath release: ${releaseKey}`);
+          throw new Error(`Cannot find UiPath release`);
         }
-        return process.start(inputArguments);
+        console.debug("Running local UiPath process", { releaseKey });
+        process.start(inputArguments).then(
+          (result) => {
+            console.debug("Forwarding result from local UiPath process", {
+              result,
+              releaseKey,
+            });
+            resolve(result);
+          },
+          (reason) => reject(reason)
+        );
       });
     });
   }

@@ -152,15 +152,15 @@ function backgroundListener(
       });
     }
     case MESSAGE_RUN_BLOCK_BROADCAST: {
-      console.debug("broadcast", {
-        sender: String(sender.tab.id),
-        known: Array.from(Object.keys(tabReady)),
-      });
-
       const tabTargets = Object.entries(tabReady).filter(
         ([tabId, ready]) =>
           tabId !== String(sender.tab.id) && ready[TOP_LEVEL_FRAME]
       );
+
+      console.debug(`Broadcasting to ${tabTargets.length} top-level frames`, {
+        sender: String(sender.tab.id),
+        known: Array.from(Object.keys(tabReady)),
+      });
 
       return Promise.allSettled(
         tabTargets.map(async ([tabId]) => {

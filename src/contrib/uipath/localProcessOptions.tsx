@@ -38,6 +38,13 @@ import {
 import { DevToolsContext } from "@/devTools/context";
 import { RobotProcess } from "@uipath/robot/dist/models";
 import { ObjectField } from "@/components/fields/FieldTable";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  InputArgumentsField,
+  releaseSchema,
+  useReleases,
+} from "@/contrib/uipath/processOptions";
+import { faInfo } from "@fortawesome/free-solid-svg-icons";
 
 interface Process {
   id: string;
@@ -89,6 +96,21 @@ export const ProcessField: React.FunctionComponent<
   );
 };
 
+function useReleaseSchema(releaseKey: string) {
+  const { releases, isPending, error, hasConfig } = useReleases();
+  const schema = useMemo(() => {
+    if (releaseKey != null && releases != null) {
+      const release = releases.find((x) => x.Key === releaseKey);
+      if (release) {
+        return releaseSchema(release);
+      }
+    }
+    return null;
+  }, [releaseKey, releases]);
+
+  return { schema, isPending, error, hasConfig };
+}
+
 const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
@@ -98,6 +120,12 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   const basePath = [name, configKey].filter(identity).join(".");
 
   const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);
+
+  const {
+    schema,
+    error: schemaError,
+    hasConfig: hasOrchestratorConfig,
+  } = useReleaseSchema(releaseKey);
 
   const [robotAvailable, setRobotAvailable] = useState(false);
   const [consentCode, setConsentCode] = useState(null);
@@ -162,6 +190,10 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     );
   }
 
+  const argumentsName = [name, configKey, "inputArguments"]
+    .filter(identity)
+    .join(".");
+
   return (
     <div>
       {consentCode && (
@@ -177,11 +209,31 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         processes={processes}
         fetchError={initError?.toString() ?? processesError?.toString()}
       />
-      {process && (
+
+      {!hasOrchestratorConfig && (
+        <span className="text-info">
+          <FontAwesomeIcon icon={faInfo} /> Add a UiPath Orchestrator API
+          integration to automatically fetch the input argument definitions.
+        </span>
+      )}
+
+      {schemaError && (
+        <span className="danger">
+          Error fetching input arguments: {schemaError.toString()}
+        </span>
+      )}
+
+      {schema ? (
+        <InputArgumentsField
+          name={argumentsName}
+          label={process?.name ?? "inputArguments"}
+          schema={schema}
+        />
+      ) : (
         <ObjectField
+          name={argumentsName}
+          label={process?.name ?? "inputArguments"}
           schema={{ type: "object", additionalProperties: true }}
-          label={process.name}
-          name={[name, configKey, "inputArguments"].filter(identity).join(".")}
         />
       )}
 

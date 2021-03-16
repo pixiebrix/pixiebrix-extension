@@ -88,6 +88,10 @@ module.exports = {
       "@contrib": path.resolve(rootDir, "contrib"),
       "@schemas": path.resolve(rootDir, "schemas"),
       vendors: path.resolve(rootDir, "src/vendors"),
+      "@microsoft/applicationinsights-web": path.resolve(
+        rootDir,
+        "src/contrib/uipath/quietLogger"
+      ),
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
   },

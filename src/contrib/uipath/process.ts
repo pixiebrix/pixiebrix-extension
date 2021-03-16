@@ -16,13 +16,16 @@
  */
 
 import { proxyService } from "@/background/requests";
-import { Effect } from "@/types";
+import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
-import { BlockArg, Schema, SchemaProperties } from "@/core";
-import { partial } from "lodash";
+import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
+import { sleep } from "@/utils";
 
 export const UIPATH_ID = "@pixiebrix/uipath/process";
+
+const MAX_WAIT_MILLIS = 20_000;
+const POLL_MILLIS = 1_000;
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
   uipath: {
@@ -48,6 +51,11 @@ export const UIPATH_PROPERTIES: SchemaProperties = {
     description:
       "When using strategy JobsCount, the process will run x times where x is the value of the JobsCount field.",
   },
+  awaitResult: {
+    type: "boolean",
+    default: false,
+    description: "Wait for the process to complete and output the results.",
+  },
   inputArguments: {
     type: "object",
     additionalProperties: true,
@@ -58,7 +66,19 @@ export const UIPATH_PERMISSIONS: Permissions.Permissions = {
   origins: ["https://*.uipath.com/*"],
 };
 
-export class RunProcess extends Effect {
+interface JobsResponse {
+  "@odata.context": "https://cloud.uipath.com/odata/$metadata#Jobs";
+  "@odata.count": number;
+  value: {
+    Id: number;
+    Key: string;
+    State: "Successful" | "Pending" | "Faulted";
+    OutputArguments: string;
+    Info: string;
+  }[];
+}
+
+export class RunProcess extends Transformer {
   constructor() {
     super(
       UIPATH_ID,
@@ -79,17 +99,19 @@ export class RunProcess extends Effect {
    */
   permissions: Permissions.Permissions = UIPATH_PERMISSIONS;
 
-  async effect({
-    uipath,
-    releaseKey,
-    strategy = "JobsCount",
-    jobsCount = 0,
-    robotIds = [],
-    inputArguments = {},
-  }: BlockArg): Promise<void> {
-    const proxyUIPath = partial(proxyService, uipath);
-
-    await proxyUIPath({
+  async transform(
+    {
+      uipath,
+      releaseKey,
+      strategy = "JobsCount",
+      jobsCount = 0,
+      robotIds = [],
+      awaitResult = false,
+      inputArguments = {},
+    }: BlockArg,
+    { logger }: BlockOptions
+  ): Promise<unknown> {
+    const { data: startData } = await proxyService<JobsResponse>(uipath, {
       url: `/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs`,
       method: "post",
       data: {
@@ -103,6 +125,38 @@ export class RunProcess extends Effect {
         },
       },
     });
+
+    const start = new Date().getTime();
+
+    if (awaitResult) {
+      if (startData.value.length > 1) {
+        throw new Error("Awaiting response of multiple jobs not supported");
+      }
+      do {
+        const { data: resultData } = await proxyService<JobsResponse>(uipath, {
+          url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
+          method: "get",
+        });
+
+        if (resultData.value.length === 0) {
+          logger.error(`UiPath job not found: ${startData.value[0].Id}`);
+          throw new Error("UiPath job not found");
+        }
+
+        if (resultData.value[0].State === "Successful") {
+          return JSON.parse(resultData.value[0].OutputArguments);
+        } else if (resultData.value[0].State === "Faulted") {
+          logger.error(`UiPath job failed: ${resultData.value[0].Info}`);
+          throw new Error("UiPath job failed");
+        }
+        await sleep(POLL_MILLIS);
+      } while (new Date().getTime() - start < MAX_WAIT_MILLIS);
+      throw new Error(
+        `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
+      );
+    }
+
+    return {};
   }
 }
 

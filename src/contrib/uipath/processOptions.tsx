@@ -79,10 +79,11 @@ interface Release {
 
 const UIPATH_SERVICE_ID = "uipath/cloud";
 
-function useReleases(): {
+export function useReleases(): {
   releases: Release[];
   isPending: boolean;
   error: unknown;
+  hasConfig: boolean;
 } {
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
 
@@ -98,20 +99,24 @@ function useReleases(): {
   }, [values.services]);
 
   const [releases, isPending, error] = useAsyncState(async () => {
-    const localConfig = await locator.locate(UIPATH_SERVICE_ID, config);
-    const response = await proxyService<ODataResponseData<Release>>(
-      localConfig,
-      {
-        url: "/odata/Releases",
-        method: "get",
-      }
-    );
-    return response.data.value;
+    if (config) {
+      const localConfig = await locator.locate(UIPATH_SERVICE_ID, config);
+      const response = await proxyService<ODataResponseData<Release>>(
+        localConfig,
+        {
+          url: "/odata/Releases",
+          method: "get",
+        }
+      );
+      return response.data.value;
+    } else {
+      return null;
+    }
   }, [config]);
 
   console.debug("releases", { releases, isPending, error });
 
-  return { releases, isPending, error };
+  return { releases, isPending, error, hasConfig: config != null };
 }
 
 function useRobots(): { robots: Robot[]; isPending: boolean; error: unknown } {
@@ -237,7 +242,7 @@ function toType(type: string) {
   }
 }
 
-function releaseSchema(release: Release): Schema {
+export function releaseSchema(release: Release): Schema {
   if (!release.Arguments.Input) {
     return {};
   }
@@ -253,6 +258,36 @@ function releaseSchema(release: Release): Schema {
     required: inputs.filter((input) => input.required).map((x) => x.name),
   };
 }
+
+export const InputArgumentsField: React.FunctionComponent<
+  FieldProps<object>
+> = ({ name, schema, label }) => {
+  return (
+    <Form.Group>
+      <Form.Label>inputArguments</Form.Label>
+      <Card>
+        <Card.Header>{label}</Card.Header>
+        <Card.Body>
+          {schema &&
+            Object.entries(inputProperties(schema)).map(
+              ([prop, fieldSchema]) => {
+                if (typeof fieldSchema === "boolean") {
+                  throw new Error("Expected schema for input property type");
+                }
+                return (
+                  <FieldRenderer
+                    key={prop}
+                    name={`${name}.${prop}`}
+                    schema={schema}
+                  />
+                );
+              }
+            )}
+        </Card.Body>
+      </Card>
+    </Form.Group>
+  );
+};
 
 const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
@@ -340,35 +375,16 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
           schema={UIPATH_PROPERTIES["jobsCount"] as Schema}
         />
       )}
-
+      <FieldRenderer
+        name={`${basePath}.awaitResult`}
+        schema={UIPATH_PROPERTIES["awaitResult"] as Schema}
+      />
       {releaseKey && (
-        <Form.Group>
-          <Form.Label>inputArguments</Form.Label>
-          <Card>
-            <Card.Header>{release.Name}</Card.Header>
-            <Card.Body>
-              {schema &&
-                Object.entries(inputProperties(schema)).map(
-                  ([prop, fieldSchema]) => {
-                    if (typeof fieldSchema === "boolean") {
-                      throw new Error(
-                        "Expected schema for input property type"
-                      );
-                    }
-                    return (
-                      <FieldRenderer
-                        key={prop}
-                        name={[name, configKey, "inputArguments", prop]
-                          .filter(identity)
-                          .join(".")}
-                        schema={fieldSchema}
-                      />
-                    );
-                  }
-                )}
-            </Card.Body>
-          </Card>
-        </Form.Group>
+        <InputArgumentsField
+          label={release.Name}
+          schema={schema}
+          name={[name, configKey, "inputArguments"].filter(identity).join(".")}
+        />
       )}
 
       {showOutputKey && (
