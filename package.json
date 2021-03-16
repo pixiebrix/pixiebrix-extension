@@ -145,7 +145,7 @@
     "node-sass": "^5.0.0",
     "notifyjs-browser": "^0.4.2",
     "npm": "^6.14.9",
-    "nunjucks": "^3.2.2",
+    "nunjucks": "^3.2.3",
     "object-hash": "^2.1.1",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
     "page-metadata-parser": "^1.1.4",
