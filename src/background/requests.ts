@@ -133,6 +133,9 @@ async function authenticate(
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
     if (isEmpty(data)) {
+      console.debug(
+        `Fetching token for ${config.id} because no auth cached locally`
+      );
       data = await getToken(service, localConfig);
     }
     if (isEmpty(data)) {

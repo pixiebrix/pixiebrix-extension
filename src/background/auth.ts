@@ -63,8 +63,11 @@ export async function deleteCachedAuthData(key: string): Promise<void> {
     // eslint-disable-next-line security/detect-object-injection
     delete current[key];
   } else {
-    console.warn(`No cached auth data exists for key: ${key}`);
+    console.warn(
+      `deleteCachedAuthData: No cached auth data exists for key: ${key}`
+    );
   }
+  // replace with updated object
   await setStorage(OAUTH2_STORAGE_KEY, JSON.stringify(current));
 }
 
@@ -81,11 +84,11 @@ export async function getToken(
     throw new Error(`Service ${service.id} does not use token authentication`);
   }
 
-  const { url, data } = await service.getTokenContext(auth.config);
+  const { url, data: tokenData } = await service.getTokenContext(auth.config);
 
   const { status, statusText, data: responseData } = await axios.post(
     url,
-    data
+    tokenData
   );
 
   if (status >= 400) {
@@ -94,7 +97,7 @@ export async function getToken(
 
   await setCachedAuthData(auth.id, responseData);
 
-  return data as AuthData;
+  return responseData as AuthData;
 }
 
 export async function launchOAuth2Flow(

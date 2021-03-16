@@ -15,11 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { UiPathRobot } from "@uipath/robot";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { IRobotSDK } from "@uipath/robot/dist/iRobotSDK";
-
-UiPathRobot.settings.disableTelemetry = true;
+import UiPathRobot from "@/contrib/uipath/UiPathRobot";
 
 let _robot: IRobotSDK;
 
