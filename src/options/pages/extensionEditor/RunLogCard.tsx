@@ -44,7 +44,7 @@ interface OwnProps {
 const RunLogCard: React.FunctionComponent<OwnProps> = ({
   extensionPointId,
   extensionId,
-  initialLevel,
+  initialLevel = "info",
   perPage = 10,
   refreshInterval = undefined,
 }) => {

@@ -15,30 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import {
   BlockOptionProps,
   FieldRenderer,
   ServiceField,
 } from "@/components/fields/blockOptions";
-import { identity, head, fromPairs } from "lodash";
-import {
-  UIPATH_PERMISSIONS,
-  UIPATH_PROPERTIES,
-} from "@/contrib/uipath/process";
-import { Schema, SchemaProperties, ServiceDependency } from "@/core";
-import { useField, useFormikContext } from "formik";
+import { fromPairs, identity } from "lodash";
+import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
+import { Schema, SchemaProperties } from "@/core";
+import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
 import { Button, Card, Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
-import { locator } from "@/background/locator";
 import { parseAssemblyQualifiedName } from "csharp-helpers";
 import { inputProperties } from "@/helpers";
-import { checkPermissions } from "@/permissions";
-import { browser } from "webextension-polyfill-ts";
+import { useDependency } from "@/services/hooks";
 
 interface Argument {
   name: string;
@@ -77,42 +72,29 @@ interface Release {
   };
 }
 
-const UIPATH_SERVICE_ID = "uipath/cloud";
+export const UIPATH_SERVICE_ID = "uipath/cloud";
 
-export function useReleases(): {
+export function useReleases(
+  fetchReleases = true
+): {
   releases: Release[];
   isPending: boolean;
   error: unknown;
   hasConfig: boolean;
 } {
-  const { values } = useFormikContext<{ services: ServiceDependency[] }>();
-
-  // FIXME: this could use the selected uipath for the block to avoid multiple results
-  const config = useMemo(() => {
-    const uipath = (values.services ?? []).filter(
-      (service) => service.id === UIPATH_SERVICE_ID
-    );
-    if (uipath.length > 1) {
-      throw new Error("Multiple UIPath services configured");
-    }
-    return head(uipath)?.config;
-  }, [values.services]);
+  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_ID);
 
   const [releases, isPending, error] = useAsyncState(async () => {
-    if (config) {
-      const localConfig = await locator.locate(UIPATH_SERVICE_ID, config);
-      const response = await proxyService<ODataResponseData<Release>>(
-        localConfig,
-        {
-          url: "/odata/Releases",
-          method: "get",
-        }
-      );
+    if (config && hasPermissions) {
+      const response = await proxyService<ODataResponseData<Release>>(config, {
+        url: "/odata/Releases",
+        method: "get",
+      });
       return response.data.value;
     } else {
       return null;
     }
-  }, [config]);
+  }, [config, hasPermissions]);
 
   console.debug("releases", { releases, isPending, error });
 
@@ -120,27 +102,18 @@ export function useReleases(): {
 }
 
 function useRobots(): { robots: Robot[]; isPending: boolean; error: unknown } {
-  const { values } = useFormikContext<{ services: ServiceDependency[] }>();
-
-  // FIXME: this could use the selected uipath for the block to avoid multiple results
-  const config = useMemo(() => {
-    const uipath = (values.services ?? []).filter(
-      (service) => service.id === UIPATH_SERVICE_ID
-    );
-    if (uipath.length > 1) {
-      throw new Error("Multiple UIPath services configured");
-    }
-    return head(uipath)?.config;
-  }, [values.services]);
-
+  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_ID);
   const [robots, isPending, error] = useAsyncState(async () => {
-    const localConfig = await locator.locate(UIPATH_SERVICE_ID, config);
-    const response = await proxyService<ODataResponseData<Robot>>(localConfig, {
-      url: "/odata/Robots",
-      method: "get",
-    });
-    return response.data.value;
-  }, [config]);
+    if (config && hasPermissions) {
+      const response = await proxyService<ODataResponseData<Robot>>(config, {
+        url: "/odata/Robots",
+        method: "get",
+      });
+      return response.data.value;
+    } else {
+      return [];
+    }
+  }, [config, hasPermissions]);
 
   return { robots, isPending, error };
 }
@@ -150,7 +123,7 @@ const RobotsField: React.FunctionComponent<FieldProps<number[]>> = ({
   schema,
   ...props
 }) => {
-  const [{ value = [], ...field }, meta] = useField<number[]>(props);
+  const [{ value = [], ...field }, meta, helper] = useField<number[]>(props);
 
   const { robots, error } = useRobots();
 
@@ -165,8 +138,9 @@ const RobotsField: React.FunctionComponent<FieldProps<number[]>> = ({
         isMulti
         options={options}
         value={options.filter((x) => value.includes(x.value))}
-        onChange={(option) => {
-          console.log(option);
+        onChange={(values) => {
+          console.debug("Selected values", { values });
+          helper.setValue((values as any)?.map((x: any) => x.value) ?? []);
         }}
       />
       {schema.description && (
@@ -296,10 +270,8 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 }) => {
   const basePath = [name, configKey].filter(identity).join(".");
 
-  const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
-  const [hasPermissions] = useAsyncState(
-    () => checkPermissions([UIPATH_PERMISSIONS]),
-    []
+  const { hasPermissions, requestPermissions } = useDependency(
+    UIPATH_SERVICE_ID
   );
 
   const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);
@@ -326,13 +298,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     return [release, schema];
   }, [releases, releaseKey]);
 
-  const requestPermissions = useCallback(() => {
-    browser.permissions.request(UIPATH_PERMISSIONS).then(() => {
-      setGrantedPermissions(true);
-    });
-  }, [setGrantedPermissions]);
-
-  if (!(grantedPermissions || hasPermissions)) {
+  if (!hasPermissions) {
     return (
       <div className="my-2">
         <p>

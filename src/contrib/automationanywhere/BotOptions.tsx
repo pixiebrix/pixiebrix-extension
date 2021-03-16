@@ -15,30 +15,25 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import {
   BlockOptionProps,
   FieldRenderer,
   ServiceField,
 } from "@/components/fields/blockOptions";
-import { head, identity, fromPairs, isEmpty } from "lodash";
+import { fromPairs, identity, isEmpty } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
-import { Schema, ServiceDependency } from "@/core";
-import { useField, useFormikContext } from "formik";
+import { Schema } from "@/core";
+import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
 import { Button, Card, Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
-import { locator } from "@/background/locator";
-import { checkPermissions } from "@/permissions";
-import { browser } from "webextension-polyfill-ts";
-import registry from "@/services/registry";
-import { useToasts } from "react-toast-notifications";
-import { reportError } from "@/telemetry/logging";
 import { inputProperties } from "@/helpers";
 import { GridLoader } from "react-spinners";
+import { useDependency } from "@/services/hooks";
 
 interface ListResponse<TData> {
   page: {
@@ -82,88 +77,12 @@ interface Device {
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = "automation-anywhere/control-room";
 
-function useDependency() {
-  const { addToast } = useToasts();
-  const { values } = useFormikContext<{ services: ServiceDependency[] }>();
-  const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
-
-  const dependency: ServiceDependency = useMemo(() => {
-    const service = (values.services ?? []).filter(
-      (service) => service.id === AUTOMATION_ANYWHERE_SERVICE_ID
-    );
-    if (service.length > 1) {
-      // FIXME: this could use the selected service for the block to avoid multiple results
-      throw new Error("Multiple Automation Anywhere services configured");
-    }
-    return head(service);
-  }, [values.services]);
-
-  const [serviceResult] = useAsyncState(async () => {
-    if (dependency.config) {
-      const localConfig = await locator.locate(
-        AUTOMATION_ANYWHERE_SERVICE_ID,
-        dependency.config
-      );
-      const service = await registry.lookup(dependency.id);
-      return { localConfig: localConfig, service };
-    } else {
-      throw Error("No Automation Anywhere integration selected");
-    }
-  }, [dependency?.config]);
-
-  const [hasPermissions] = useAsyncState(async () => {
-    if (serviceResult?.service) {
-      const origins = serviceResult.service.getOrigins(
-        serviceResult.localConfig.config
-      );
-      return await checkPermissions([{ origins }]);
-    } else {
-      return false;
-    }
-  }, [serviceResult]);
-
-  const requestPermissions = useCallback(async () => {
-    const permissions = {
-      origins: serviceResult.service.getOrigins(
-        serviceResult.localConfig.config
-      ),
-    };
-    console.debug("requesting origins", { permissions });
-    browser.permissions
-      .request(permissions)
-      .then((result) => {
-        setGrantedPermissions(result);
-        if (!result) {
-          addToast("You must accept the permissions request", {
-            appearance: "warning",
-            autoDismiss: true,
-          });
-        }
-      })
-      .catch((err) => {
-        setGrantedPermissions(false);
-        reportError(err);
-        addToast(`Error granting permissions: ${err.toString()}`, {
-          appearance: "error",
-          autoDismiss: true,
-        });
-      });
-  }, [serviceResult, addToast, setGrantedPermissions]);
-
-  return {
-    config: serviceResult?.localConfig,
-    service: serviceResult?.service,
-    hasPermissions: hasPermissions || grantedPermissions,
-    requestPermissions,
-  };
-}
-
 function useBots(): {
   bots: Bot[];
   isPending: boolean;
   error: unknown;
 } {
-  const { config } = useDependency();
+  const { config } = useDependency(AUTOMATION_ANYWHERE_SERVICE_ID);
 
   const [bots, isPending, error] = useAsyncState(async () => {
     const response = await proxyService<ListResponse<Bot>>(config, {
@@ -182,7 +101,7 @@ function useDevices(): {
   isPending: boolean;
   error: unknown;
 } {
-  const { config } = useDependency();
+  const { config } = useDependency(AUTOMATION_ANYWHERE_SERVICE_ID);
 
   const [devices, isPending, error] = useAsyncState(async () => {
     const response = await proxyService<ListResponse<Device>>(config, {
@@ -305,7 +224,9 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   showOutputKey,
 }) => {
   const basePath = [name, configKey].filter(identity).join(".");
-  const { hasPermissions, requestPermissions, config } = useDependency();
+  const { hasPermissions, requestPermissions, config } = useDependency(
+    AUTOMATION_ANYWHERE_SERVICE_ID
+  );
 
   const [{ value: fileId }] = useField<string>(`${basePath}.fileId`);
 

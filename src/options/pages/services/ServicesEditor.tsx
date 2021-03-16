@@ -36,6 +36,8 @@ import { refresh as refreshServices } from "@/background/locator";
 import { GridLoader } from "react-spinners";
 import ZapierModal from "@/options/pages/services/ZapierModal";
 import { AuthContext } from "@/auth/context";
+import { sleep } from "@/utils";
+import { reportError } from "@/telemetry/logging";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -79,11 +81,27 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const handleSave = useCallback(
     async (config) => {
       updateServiceConfig(config);
-      await refreshServices();
       addToast(`Updated your private configuration for ${activeService.name}`, {
         appearance: "success",
         autoDismiss: true,
       });
+
+      // wait 1000 to allow changes to propagate to storage
+      sleep(1000).then(async () => {
+        try {
+          await refreshServices();
+        } catch (err) {
+          reportError(err);
+          addToast(
+            `Error refreshing service configurations, restart the PixieBrix extension`,
+            {
+              appearance: "warning",
+              autoDismiss: true,
+            }
+          );
+        }
+      });
+
       navigate("/services");
     },
     [updateServiceConfig, activeService, addToast, navigate]
@@ -92,12 +110,28 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const handleDelete = useCallback(
     async (id) => {
       deleteServiceConfig({ id });
-      await refreshServices();
-      navigate("/services");
+
       addToast(`Deleted private configuration for ${activeService.name}`, {
         appearance: "success",
         autoDismiss: true,
       });
+
+      sleep(1000).then(async () => {
+        try {
+          await refreshServices();
+        } catch (err) {
+          addToast(
+            `Error refreshing service configurations, restart the PixieBrix extension`,
+            {
+              appearance: "warning",
+              autoDismiss: true,
+            }
+          );
+          reportError(err);
+        }
+      });
+
+      navigate("/services");
     },
     [deleteServiceConfig, navigate, addToast, activeService]
   );

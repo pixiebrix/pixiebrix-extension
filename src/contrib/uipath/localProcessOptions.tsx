@@ -25,7 +25,7 @@ import { UIPATH_PROPERTIES } from "@/contrib/uipath/localProcess";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
@@ -42,9 +42,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   InputArgumentsField,
   releaseSchema,
+  UIPATH_SERVICE_ID,
   useReleases,
 } from "@/contrib/uipath/processOptions";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import { useDependency } from "@/services/hooks";
 
 interface Process {
   id: string;
@@ -122,10 +124,12 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);
 
   const {
-    schema,
-    error: schemaError,
-    hasConfig: hasOrchestratorConfig,
-  } = useReleaseSchema(releaseKey);
+    config: remoteConfig,
+    hasPermissions,
+    requestPermissions,
+  } = useDependency(UIPATH_SERVICE_ID);
+
+  const { schema, error: schemaError } = useReleaseSchema(releaseKey);
 
   const [robotAvailable, setRobotAvailable] = useState(false);
   const [consentCode, setConsentCode] = useState(null);
@@ -210,15 +214,29 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         fetchError={initError?.toString() ?? processesError?.toString()}
       />
 
-      {!hasOrchestratorConfig && (
+      {!remoteConfig && (
         <span className="text-info">
           <FontAwesomeIcon icon={faInfo} /> Add a UiPath Orchestrator API
           integration to automatically fetch the input argument definitions.
         </span>
       )}
 
+      {!hasPermissions && remoteConfig != null && (
+        <div>
+          <div>
+            <span className="text-info">
+              <FontAwesomeIcon icon={faInfo} /> Grant PixieBrix access to
+              connect to UiPath to fetch the input argument definitions
+            </span>
+          </div>
+          <div>
+            <Button onClick={requestPermissions}>Grant Permissions</Button>
+          </div>
+        </div>
+      )}
+
       {schemaError && (
-        <span className="danger">
+        <span className="text-danger">
           Error fetching input arguments: {schemaError.toString()}
         </span>
       )}

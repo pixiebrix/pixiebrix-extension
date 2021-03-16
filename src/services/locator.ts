@@ -24,7 +24,7 @@ import {
   ServiceLocator,
   SanitizedConfig,
 } from "@/core";
-import sortBy from "lodash/sortBy";
+import { sortBy, isEmpty } from "lodash";
 import registry, {
   PIXIEBRIX_SERVICE_ID,
   readRawConfigurations,
@@ -56,15 +56,15 @@ export function excludeSecrets(
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
     // @ts-ignore: ts doesn't think $ref can be on SchemaDefinition
     if (!REF_SECRETS.includes(type["$ref"])) {
+      // safe because we're getting from Object.entries
+      // eslint-disable-next-line security/detect-object-injection
       result[key] = config[key];
     }
   }
   return result;
 }
 
-export async function pixieServiceFactory(): Promise<
-  SanitizedServiceConfiguration
-> {
+export async function pixieServiceFactory(): Promise<SanitizedServiceConfiguration> {
   return {
     _sanitizedServiceConfigurationBrand: undefined,
     id: undefined,
@@ -83,12 +83,22 @@ type Option = {
   config: ServiceConfig;
 };
 
+let _instance: any;
+
 class LazyLocatorFactory {
   private remote: ConfigurableAuth[] = [];
   private local: RawServiceConfiguration[] = [];
   private options: Option[];
   private _initialized = false;
   private _refreshPromise: Promise<void>;
+  private updateTimestamp: number = undefined;
+
+  constructor() {
+    if (_instance) {
+      throw new Error("LazyLocatorFactory is a singleton class");
+    }
+    _instance = this;
+  }
 
   get initialized(): boolean {
     return this._initialized;
@@ -109,6 +119,7 @@ class LazyLocatorFactory {
     if (this._refreshPromise) {
       return await this._refreshPromise;
     }
+    const timestamp = Date.now();
     this._refreshPromise = Promise.all([
       this.refreshLocal(),
       this.refreshRemote(),
@@ -118,6 +129,10 @@ class LazyLocatorFactory {
     });
     await this._refreshPromise;
     this._refreshPromise = null;
+    this.updateTimestamp = timestamp;
+    console.debug(`Refreshed service locator`, {
+      updateTimestamp: this.updateTimestamp,
+    });
   }
 
   private makeOptions() {
@@ -181,6 +196,16 @@ class LazyLocatorFactory {
         authId
       );
     }
+
+    if (isEmpty(match.config)) {
+      console.warn(`Config ${authId} for service ${serviceId} is empty`);
+    }
+
+    console.debug(`Locate auth for ${serviceId}`, {
+      currentTimestamp: Date.now(),
+      updateTimestamp: this.updateTimestamp,
+      config: match.config,
+    });
 
     return {
       _sanitizedServiceConfigurationBrand: undefined,
