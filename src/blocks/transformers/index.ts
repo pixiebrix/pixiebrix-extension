@@ -26,3 +26,4 @@ export * from "./FormData";
 export * from "./parseURL";
 export * from "./prompt";
 export * from "./detect";
+export * from "./modal";

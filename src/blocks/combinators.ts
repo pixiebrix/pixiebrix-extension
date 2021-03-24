@@ -15,7 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import castArray from "lodash/castArray";
 import blockRegistry from "@/blocks/registry";
 import { engineRenderer, mapArgs } from "@/helpers";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
@@ -35,7 +34,7 @@ import {
 } from "@/core";
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
-import { pickBy, isPlainObject, mapValues } from "lodash";
+import { pickBy, isPlainObject, mapValues, castArray } from "lodash";
 import { ContextError } from "@/errors";
 import {
   executeInOpener,
