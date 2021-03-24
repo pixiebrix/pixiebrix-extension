@@ -83,7 +83,20 @@ export class ModalTransformer extends Transformer {
                     onSubmit={({ formData }) => {
                       resolve(formData as object);
                     }}
-                  />
+                  >
+                    <div>
+                      <button className="btn btn-primary" type="submit">
+                        Submit
+                      </button>
+                      <button
+                        className="btn btn-link"
+                        type="button"
+                        onClick={() => reject(new Error("Form was cancelled"))}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </Form>
                 </div>
               </div>
             </div>
@@ -96,8 +109,14 @@ export class ModalTransformer extends Transformer {
       );
     });
 
-    const data = await resultPromise;
-    container.remove();
+    let data;
+
+    try {
+      data = await resultPromise;
+    } finally {
+      container.remove();
+    }
+
     return data;
   }
 }
