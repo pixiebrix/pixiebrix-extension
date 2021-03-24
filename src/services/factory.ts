@@ -128,7 +128,7 @@ class LocalDefinedService<
     if (this.isOAuth2) {
       const definition: OAuth2Context = (this._definition
         .authentication as OAuth2AuthenticationDefinition).oauth2;
-      // console.debug("oauth2 context", { definition, serviceConfig });
+      console.debug("getOAuth2Context", { definition, serviceConfig });
       return mapArgs<OAuth2Context>(definition, serviceConfig);
     } else {
       return undefined;

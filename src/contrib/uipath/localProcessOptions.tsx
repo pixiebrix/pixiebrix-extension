@@ -42,11 +42,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   InputArgumentsField,
   releaseSchema,
-  UIPATH_SERVICE_ID,
   useReleases,
 } from "@/contrib/uipath/processOptions";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { useDependency } from "@/services/hooks";
+import { UIPATH_SERVICE_ID } from "@/contrib/uipath/process";
 
 interface Process {
   id: string;

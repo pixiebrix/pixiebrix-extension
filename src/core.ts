@@ -239,9 +239,12 @@ export interface TokenContext {
 }
 
 export interface OAuth2Context {
-  host: string;
+  host?: string;
+  authorizeUrl?: string;
+  tokenUrl?: string;
   client_id: string;
   client_secret?: string;
+  code_challenge_method?: "S256";
 }
 
 /** Service configuration provided by a user. */
