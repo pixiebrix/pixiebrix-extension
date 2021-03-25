@@ -36,7 +36,6 @@ export class RemoteMethod extends Transformer {
       url: {
         type: "string",
         description: "The API URL",
-        format: "uri",
       },
       service: {
         $ref:

@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, compact } from "lodash";
+import { castArray, compact, once } from "lodash";
 import { engineRenderer } from "@/helpers";
 import {
   reducePipeline,
@@ -61,6 +61,8 @@ export const DATA_ATTR = "data-pb-uuid";
 
 export interface MenuItemExtensionConfig {
   caption: string;
+  if?: BlockConfig | BlockPipeline;
+  dependencies?: string[];
   action: BlockConfig | BlockPipeline;
   icon?: IconConfig;
   dynamicCaption?: boolean;
@@ -81,6 +83,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   private readonly instanceId: string;
   private readonly removed: Set<string>;
   private readonly cancelPending: Set<() => void>;
+  private readonly cancelDependencyObservers: Map<string, () => void>;
   private uninstalled = false;
 
   public get defaultOptions(): { caption: string } {
@@ -98,6 +101,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     this.menus = new Map<string, HTMLElement>();
     this.removed = new Set<string>();
     this.cancelPending = new Set();
+    this.cancelDependencyObservers = new Map<string, () => void>();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -110,6 +114,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         type: "boolean",
         description: "True if the caption can refer to data from the reader",
         default: "false",
+      },
+      if: actionSchema,
+      dependencies: {
+        type: "array",
+        items: {
+          type: "string",
+        },
+        minItems: 1,
       },
       action: actionSchema,
       icon: { $ref: "https://app.pixiebrix.com/schemas/icon#" },
@@ -194,6 +206,18 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       } catch (exc) {
         this.logger.error(exc);
       }
+    }
+
+    for (const extension of extensions) {
+      const clear = this.cancelDependencyObservers.get(extension.id);
+      if (clear) {
+        try {
+          clear();
+        } catch (err) {
+          console.exception("Error cancelling dependency observer");
+        }
+      }
+      this.cancelDependencyObservers.delete(extension.id);
     }
   }
 
@@ -335,6 +359,30 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     let html: string;
 
+    if (extension.config.if) {
+      // read latest state at the time of the action
+      const ctxt = await ctxtPromise;
+      const serviceContext = await makeServiceContext(extension.services);
+
+      console.debug("Checking menuItem precondition", { ctxt, serviceContext });
+
+      const show = await reducePipeline(
+        extension.config.if,
+        ctxt,
+        extensionLogger,
+        document,
+        {
+          validate: true,
+          serviceArgs: serviceContext,
+        }
+      );
+
+      if (!show) {
+        this.watchDependencies(extension);
+        return;
+      }
+    }
+
     if (dynamicCaption) {
       const ctxt = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
@@ -392,6 +440,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.addMenuItem($menu, $menuItem);
     }
 
+    this.watchDependencies(extension);
+
     if (process.env.DEBUG) {
       const cancelObserver = onNodeRemoved($menuItem.get(0), () => {
         // Don't re-install here. We're reinstalling the entire menu
@@ -401,7 +451,69 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  async run(): Promise<void> {
+  watchDependencies(extension: IExtension<MenuItemExtensionConfig>): void {
+    const { dependencies = [] } = extension.config;
+
+    // clean up old observers
+    if (this.cancelDependencyObservers.has(extension.id)) {
+      this.cancelDependencyObservers.get(extension.id)();
+      this.cancelDependencyObservers.delete(extension.id);
+    }
+
+    if (dependencies.length > 0) {
+      const rerun = once(() => {
+        console.debug("Dependency changed, re-running extension");
+        this.run([extension.id]);
+      });
+
+      const observer = new MutationObserver(rerun);
+
+      const cancellers: (() => void)[] = [];
+
+      let elementCount = 0;
+      for (const dependency of dependencies) {
+        const $dependency = $(document).find(dependency);
+        if ($dependency.length) {
+          $dependency.each((index, element) => {
+            elementCount++;
+            observer.observe(element, {
+              childList: true,
+              subtree: true,
+            });
+          });
+        } else {
+          const [elementPromise, cancel] = awaitElementOnce(dependency);
+          cancellers.push(cancel);
+          elementPromise.then(() => {
+            rerun();
+          });
+        }
+      }
+
+      console.debug(
+        `Observing ${elementCount} element(s) for extension: ${extension.id}`
+      );
+
+      this.cancelDependencyObservers.set(extension.id, () => {
+        try {
+          observer.disconnect();
+        } catch (err) {
+          console.exception("Error cancelling mutation observer", err);
+        }
+        for (const cancel of cancellers) {
+          try {
+            cancel();
+          } catch (err) {
+            console.exception("Error cancelling dependency observer", err);
+          }
+        }
+      });
+    } else {
+      console.debug(`Extension has no dependencies: ${extension.id}`);
+    }
+  }
+
+  async run(extensionIds?: string[]): Promise<void> {
     if (!this.menus.size || !this.extensions.length) {
       return;
     }
@@ -414,10 +526,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       let ctxtPromise: Promise<ReaderOutput>;
 
       for (const extension of this.extensions) {
+        if (extensionIds != null && !extensionIds.includes(extension.id)) {
+          continue;
+        }
+
         // Run in order so that the order stays the same for where they get rendered. The service
         // context is the only thing that's async as part of the initial configuration right now
 
-        if (extension.config.dynamicCaption) {
+        if (extension.config.dynamicCaption || extension.config.if) {
           // Lazily read context for the menu if one of the extensions actually uses it
           ctxtPromise = reader.read(this.getReaderRoot($(menu)));
         }
