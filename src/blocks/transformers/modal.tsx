@@ -48,13 +48,30 @@ export class ModalTransformer extends Transformer {
         type: "object",
         additionalProperties: true,
       },
+      containerAttrs: {
+        type: "object",
+        additionalProperties: true,
+      },
     },
     required: ["schema"],
   };
 
-  async transform({ schema, uiSchema = {} }: BlockArg): Promise<object> {
+  async transform({
+    schema,
+    uiSchema = {},
+    containerAttrs = {},
+  }: BlockArg): Promise<object> {
     const container = document.createElement("div");
     const shadowRoot = container.attachShadow({ mode: "closed" });
+
+    for (const [attr, value] of Object.entries(containerAttrs)) {
+      if (value != null) {
+        if (typeof value !== "string") {
+          throw new Error("Invalid containerAttr");
+        }
+        container.setAttribute(attr, value);
+      }
+    }
 
     document.body.append(container);
 
