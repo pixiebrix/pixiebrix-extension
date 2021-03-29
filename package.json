@@ -94,7 +94,7 @@
     "core-js": "^3.8.2",
     "csharp-helpers": "^0.9.3",
     "csp-parse": "0.0.2",
-    "css-loader": "^5.0.0",
+    "css-loader": "^5.2.0",
     "css-selector-generator": "^2.1.3",
     "deep-equal": "^2.0.5",
     "detect-browser": "^5.2.0",
