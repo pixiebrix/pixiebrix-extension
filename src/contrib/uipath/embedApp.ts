@@ -81,10 +81,9 @@ export class UiPathAppRenderer extends Renderer {
     // https://transitory.technology/browser-extensions-and-csp-headers/
     const frameSrc = chrome.extension.getURL("frame.html");
 
-    const frameURL = new URL(frameSrc);
-
     const nonce = uuidv4();
 
+    const frameURL = new URL(frameSrc);
     frameURL.searchParams.set("url", url);
     frameURL.searchParams.set("nonce", nonce);
 
@@ -102,7 +101,11 @@ export class UiPathAppRenderer extends Renderer {
         },
         {
           isAvailable: {
-            selectors: [".root-container"],
+            // UiPath apps lazy load the inputs, so make sure they've been rendered before trying
+            // to set the values
+            selectors: [
+              !isEmpty(inputs) ? ".root-container input" : ".root-container",
+            ],
           },
           ctxt: {},
           messageContext: {
