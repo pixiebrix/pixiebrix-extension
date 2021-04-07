@@ -27,8 +27,7 @@ import {
 import { IExtension, SchemaProperties, Schema } from "@/core";
 import serviceRegistry from "@/services/registry";
 import { inputProperties } from "@/helpers";
-import pickBy from "lodash/pickBy";
-import isEmpty from "lodash/isEmpty";
+import { pickBy, isEmpty } from "lodash";
 import urljoin from "url-join";
 import $RefParser, {
   FileInfo,

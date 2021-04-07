@@ -27,3 +27,4 @@ export * from "./event";
 export * from "./wait";
 export * from "./sound";
 export * from "./alert";
+export * from "./pageState";

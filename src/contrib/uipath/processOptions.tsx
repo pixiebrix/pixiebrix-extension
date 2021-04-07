@@ -74,9 +74,7 @@ interface Release {
 
 export const UIPATH_SERVICE_ID = "uipath/cloud";
 
-export function useReleases(
-  fetchReleases = true
-): {
+export function useReleases(): {
   releases: Release[];
   isPending: boolean;
   error: unknown;
@@ -345,7 +343,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         name={`${basePath}.awaitResult`}
         schema={UIPATH_PROPERTIES["awaitResult"] as Schema}
       />
-      {releaseKey && (
+      {releaseKey && release && (
         <InputArgumentsField
           label={release.Name}
           schema={schema}

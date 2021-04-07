@@ -29,7 +29,12 @@ const POLL_MILLIS = 1_000;
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
   uipath: {
-    $ref: "https://app.pixiebrix.com/schemas/services/uipath/cloud",
+    anyOf: [
+      { $ref: "https://app.pixiebrix.com/schemas/services/uipath/cloud" },
+      {
+        $ref: "https://app.pixiebrix.com/schemas/services/uipath/orchestrator",
+      },
+    ],
   },
   releaseKey: {
     type: "string",
