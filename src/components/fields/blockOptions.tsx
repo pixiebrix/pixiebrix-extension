@@ -109,29 +109,43 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
   );
 };
 
+function extractServiceIds(schema: Schema): string[] {
+  if ("$ref" in schema) {
+    return [schema.$ref.substring(SERVICE_BASE_SCHEMA.length)];
+  } else if ("anyOf" in schema) {
+    return schema.anyOf
+      .filter((x) => x != false)
+      .flatMap((x) => extractServiceIds(x as any));
+  } else {
+    throw new Error("Expected $ref or anyOf in schema for service");
+  }
+}
+
 export const ServiceField: React.FunctionComponent<
   FieldProps<string> & { detectDefault?: boolean }
 > = ({ label, detectDefault = true, schema, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
 
-  const { id, options } = useMemo(() => {
-    const id = schema.$ref.substring(SERVICE_BASE_SCHEMA.length);
+  const { serviceIds, options } = useMemo(() => {
+    const serviceIds = extractServiceIds(schema);
     return {
-      id,
+      serviceIds,
       options: values.services
-        .filter((service) => service.id === id)
+        .filter((service) => serviceIds.includes(service.id))
         .map((service) => ({
           value: `@${service.outputKey}`,
           label: `@${service.outputKey}`,
         })),
     };
-  }, [schema.$ref, values.services]);
+  }, [schema, values.services]);
 
   useEffect(() => {
     if (value == null && detectDefault && options.length) {
-      const id = schema.$ref.substring(SERVICE_BASE_SCHEMA.length);
-      const service = values.services.find((service) => service.id === id);
+      const ids = extractServiceIds(schema);
+      const service = values.services.find((service) =>
+        ids.includes(service.id)
+      );
       if (service?.outputKey) {
         helpers.setValue(`@${service.outputKey}`);
       }
@@ -148,7 +162,7 @@ export const ServiceField: React.FunctionComponent<
       />
       {schema.description && (
         <Form.Text className="text-muted">
-          A service variable configured for {id}
+          A service variable configured for {serviceIds.join(" or ")}
         </Form.Text>
       )}
       {meta.touched && meta.error && (
