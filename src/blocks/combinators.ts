@@ -172,12 +172,13 @@ async function runStage(
   let blockArgs: BlockArg;
 
   if (isReader(block)) {
-    // TODO: allow the stage to define a different root within the extension root
-    blockArgs = { root };
-    if (stage.window ?? "self" !== "self") {
-      throw new Error(
-        `Support for readers in other windows not implemented, got ${stage.window}`
-      );
+    if (stage.window ?? "self" === "self") {
+      // TODO: allow the stage to define a different root within the extension root
+      blockArgs = { root };
+    } else {
+      // TODO: allow other roots in other tabs.
+      // By not setting the root, the other tab's document is user
+      blockArgs = {};
     }
     logger.debug(
       `Passed document to reader ${stage.id} (window=${stage.window ?? "self"})`
