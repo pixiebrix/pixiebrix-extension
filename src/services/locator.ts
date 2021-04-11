@@ -204,7 +204,9 @@ class LazyLocatorFactory {
     console.debug(`Locate auth for ${serviceId}`, {
       currentTimestamp: Date.now(),
       updateTimestamp: this.updateTimestamp,
+      id: authId,
       config: match.config,
+      proxy: service.hasAuth && !match.local,
     });
 
     return {

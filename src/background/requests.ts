@@ -161,6 +161,7 @@ async function proxyRequest<T>(
         method: "post" as Method,
         data: {
           ...requestConfig,
+          auth_id: service.id,
           service_id: service.serviceId,
         },
       })
