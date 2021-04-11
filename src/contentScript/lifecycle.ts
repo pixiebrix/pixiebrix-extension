@@ -182,7 +182,7 @@ export async function handleNavigate({
   const href = location.href;
 
   if (_frameHref.get(context.frameId) === href) {
-    console.warn(
+    console.debug(
       `Ignoring NOOP navigation to ${href} (tabId=${context.tabId}, frameId=${context.frameId})`
     );
     return;
