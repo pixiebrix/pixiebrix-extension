@@ -22,6 +22,7 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
 import { v4 as uuidv4 } from "uuid";
+import { CancelError } from "@/errors";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const theme = require("!!raw-loader!bootstrap/dist/css/bootstrap.min.css?esModule=false")
@@ -111,7 +112,9 @@ export class ModalTransformer extends Transformer {
                       <button
                         className="btn btn-link"
                         type="button"
-                        onClick={() => reject(new Error("Form was cancelled"))}
+                        onClick={() =>
+                          reject(new CancelError("You cancelled the form"))
+                        }
                       >
                         Cancel
                       </button>
@@ -125,7 +128,7 @@ export class ModalTransformer extends Transformer {
       );
       ReactDOM.render(form, shadowRoot);
       $(`#${id}`).on("hide.bs.modal", () =>
-        reject(new Error("User closed modal"))
+        reject(new CancelError("You cancelled the form"))
       );
     });
 

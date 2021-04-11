@@ -258,3 +258,10 @@ export function acquireElement(
   element.setAttribute(EXTENSION_POINT_DATA_ATTR, extensionPointId);
   return onNodeRemoved(element, onRemove);
 }
+
+export function getErrorMessage(ex: Error): string {
+  if ("message" in ex && ex.message) {
+    return ex.message;
+  }
+  return ex.toString();
+}

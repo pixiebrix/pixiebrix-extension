@@ -35,6 +35,7 @@ import {
   acquireElement,
   onNodeRemoved,
   EXTENSION_POINT_DATA_ATTR,
+  getErrorMessage,
 } from "@/extensionPoints/helpers";
 import {
   ExtensionPointConfig,
@@ -51,6 +52,7 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
+import { hasCancelRootCause } from "@/errors";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -421,11 +423,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         extensionLogger.info("Successfully ran menu action");
 
-        $.notify(`Successfully ran menu action`, { className: "success" });
+        $.notify(`Successfully ran action`, { className: "success" });
       } catch (ex) {
-        // eslint-disable-next-line require-await
-        extensionLogger.error(ex);
-        $.notify(`Error running menu action: ${ex}`, { className: "error" });
+        if (hasCancelRootCause(ex)) {
+          $.notify("The action was cancelled", { className: "info" });
+        } else {
+          extensionLogger.error(ex);
+          $.notify(`Error running action: ${getErrorMessage(ex)}`, {
+            className: "error",
+          });
+        }
       }
     });
 
