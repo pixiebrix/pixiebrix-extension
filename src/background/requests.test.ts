@@ -88,6 +88,7 @@ it("can proxy request", async () => {
   expect(JSON.parse(axiosMock.history.post[0].data)).toEqual({
     ...requestConfig,
     service_id: "example/api",
+    auth_id: "123",
   });
   expect(status).toEqual(200);
   expect(data).toEqual({ foo: 42 });
