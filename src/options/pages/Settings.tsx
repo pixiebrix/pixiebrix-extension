@@ -31,6 +31,8 @@ import { getDNT, toggleDNT } from "@/background/telemetry";
 import useAsyncEffect from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/context";
+import { useLoggingConfig } from "@/hooks/logging";
+import { GridLoader } from "react-spinners";
 
 const { resetOptions } = optionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
@@ -79,6 +81,53 @@ function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
 //       </Row>
 //   )
 // }
+
+const LoggingRow: React.FunctionComponent = () => {
+  const [config, setConfig] = useLoggingConfig();
+
+  return (
+    <Row className="mb-4">
+      <Col lg={6} md={8}>
+        <Card>
+          <Card.Header>Developer Settings</Card.Header>
+          <Card.Body>
+            <Card.Text className="text-info">
+              <FontAwesomeIcon icon={faInfoCircle} /> Enable value logging to
+              include brick inputs/outputs in the brick logs. Brick logs are
+              never transmitted from your browser
+            </Card.Text>
+
+            {config ? (
+              <Form>
+                <Form.Group controlId="logging">
+                  <div>
+                    <Form.Label>
+                      Log values:{" "}
+                      <i>{config.logValues ? "Enabled" : "Disabled"}</i>
+                    </Form.Label>
+                  </div>
+                  <BootstrapSwitchButton
+                    size="sm"
+                    onstyle="info"
+                    offstyle="light"
+                    onlabel=" "
+                    offlabel=" "
+                    checked={config.logValues}
+                    onChange={(value) =>
+                      setConfig({ ...config, logValues: value })
+                    }
+                  />
+                </Form.Group>
+              </Form>
+            ) : (
+              <GridLoader />
+            )}
+          </Card.Body>
+        </Card>
+      </Col>
+    </Row>
+  );
+};
 
 const PrivacyRow: React.FunctionComponent = () => {
   const [dnt, toggleDNT] = useDNT();
@@ -177,6 +226,8 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
       </div>
 
       {organization == null && <PrivacyRow />}
+
+      <LoggingRow />
 
       {/* Permission API just lists what's in the manifest. Not what's currently granted */}
       {/*<PermissionsRow/>*/}

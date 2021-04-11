@@ -25,6 +25,8 @@ import { DBSchema, openDB } from "idb/with-async-ittr";
 import reverse from "lodash/reverse";
 import sortBy from "lodash/sortBy";
 import { _getDNT } from "@/background/telemetry";
+import { isBackgroundPage } from "webext-detect-page";
+import { readStorage, setStorage } from "@/chrome";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -255,3 +257,48 @@ export class BackgroundLogger implements ILogger {
     await recordError(serializeError(error), this.context, data);
   }
 }
+
+export type LoggingConfig = {
+  logValues: boolean;
+};
+
+const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS";
+let _config: LoggingConfig = null;
+
+export async function _getLoggingConfig(): Promise<LoggingConfig> {
+  if (!isBackgroundPage()) {
+    throw new Error(
+      "_getLoggingConfig should only be called from the background page"
+    );
+  }
+  if (_config != null) {
+    return _config;
+  }
+  const raw = await readStorage<string>(LOG_CONFIG_STORAGE_KEY);
+  _config = raw ? JSON.parse(raw) : {};
+  return _config;
+}
+
+export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
+  if (!isBackgroundPage()) {
+    throw new Error(
+      "_setLoggingConfig should only be called from the background page"
+    );
+  }
+  await setStorage(LOG_CONFIG_STORAGE_KEY, JSON.stringify(config));
+  _config = config;
+}
+
+export const getLoggingConfig = liftBackground(
+  "GET_LOGGING_CONFIG",
+  async () => {
+    return await _getLoggingConfig();
+  }
+);
+
+export const setLoggingConfig = liftBackground(
+  "SET_LOGGING_CONFIG",
+  async (config: LoggingConfig) => {
+    return await _setLoggingConfig(config);
+  }
+);

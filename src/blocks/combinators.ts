@@ -42,6 +42,7 @@ import {
   executeInAll,
 } from "@/background/executor";
 import { boolean } from "@/utils";
+import { getLoggingConfig } from "@/background/logging";
 
 export type ReaderConfig =
   | string
@@ -119,6 +120,7 @@ export async function blockList(
 
 interface ReduceOptions {
   validate?: boolean;
+  logValues?: boolean;
   serviceArgs: RenderedArgs;
 }
 
@@ -150,21 +152,19 @@ function isReader(block: IBlock): block is IReader {
   return "read" in block;
 }
 
+type StageOptions = {
+  context: RenderedArgs;
+  validate: boolean;
+  logValues: boolean;
+  logger: Logger;
+  root: ReaderRoot;
+};
+
 async function runStage(
   block: IBlock,
   stage: BlockConfig,
   args: RenderedArgs,
-  {
-    root,
-    context,
-    validate,
-    logger,
-  }: {
-    context: RenderedArgs;
-    validate: boolean;
-    logger: Logger;
-    root: ReaderRoot;
-  }
+  { root, context, validate, logValues, logger }: StageOptions
 ): Promise<unknown> {
   const argContext = { ...context, ...args };
   const stageConfig = stage.config ?? {};
@@ -189,16 +189,18 @@ async function runStage(
       ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
       : stageConfig;
 
-    logger.debug(
-      `Input for block ${stage.id} (window=${stage.window ?? "self"})`,
-      {
-        id: stage.id,
-        template: stageConfig,
-        templateContext: argContext,
-        renderedArgs: blockArgs,
-        blockContext: args,
-      }
-    );
+    if (logValues) {
+      logger.debug(
+        `Input for block ${stage.id} (window=${stage.window ?? "self"})`,
+        {
+          id: stage.id,
+          template: stageConfig,
+          templateContext: argContext,
+          renderedArgs: blockArgs,
+          blockContext: args,
+        }
+      );
+    }
   }
 
   if (validate) {
@@ -207,11 +209,14 @@ async function runStage(
       excludeUndefined(blockArgs)
     );
     if (!validationResult.valid) {
+      // don't need to check logValues here because this is logging to the console, not the provided logger
+      // so the values won't be persisted
       console.debug("Invalid inputs for block", {
         errors: validationResult.errors,
         schema: block.inputSchema,
         blockArgs,
       });
+
       throw new InputValidationError(
         "Invalid inputs for block",
         block.inputSchema,
@@ -254,12 +259,22 @@ export async function reducePipeline(
   renderedArgs: RenderedArgs,
   logger: Logger,
   root: HTMLElement | Document = null,
-  options: ReduceOptions = { validate: true, serviceArgs: {} as RenderedArgs }
+  options: ReduceOptions = {
+    validate: true,
+    logValues: false,
+    serviceArgs: {} as RenderedArgs,
+  }
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
     "@input": renderedArgs,
     ...options.serviceArgs,
   };
+
+  // If logValues not provided explicitly by the extension point, use the global value
+  let logValues = options.logValues;
+  if (logValues === undefined) {
+    logValues = (await getLoggingConfig()).logValues ?? false;
+  }
 
   let currentArgs: RenderedArgs = renderedArgs;
 
@@ -303,14 +318,17 @@ export async function reducePipeline(
       const output = await runStage(block, stage, currentArgs, {
         root: stageRoot,
         context: extraContext,
+        logValues,
         validate: options.validate,
         logger: stageLogger,
       });
 
-      logger.debug(`Output for block #${index + 1}: ${stage.id}`, {
-        output,
-        outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
-      });
+      if (logValues) {
+        logger.debug(`Output for block #${index + 1}: ${stage.id}`, {
+          output,
+          outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
+        });
+      }
 
       if (isEffectBlock(block)) {
         if (stage.outputKey) {
