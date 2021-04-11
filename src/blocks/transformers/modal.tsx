@@ -91,7 +91,10 @@ export class ModalTransformer extends Transformer {
             role="dialog"
             style={{ display: "block", paddingRight: 15 }}
           >
-            <div className="modal-dialog" role="document">
+            <div
+              className="modal-dialog modal-dialog-scrollable"
+              role="document"
+            >
               <div className="modal-content">
                 <div className="modal-body">
                   <Form
