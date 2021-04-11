@@ -27,6 +27,13 @@ export class ValidationError extends Error {
   }
 }
 
+export class CancelError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "CancelError";
+  }
+}
+
 export class PropError extends Error {
   public readonly blockId: string;
   public readonly prop: string;
@@ -54,4 +61,13 @@ export class ContextError extends Error {
     this.cause = cause;
     this.context = context;
   }
+}
+
+export function hasCancelRootCause(err: Error): boolean {
+  if (err instanceof CancelError || err.name === "CancelError") {
+    return true;
+  } else if (err instanceof ContextError) {
+    return hasCancelRootCause(err.cause);
+  }
+  return false;
 }
