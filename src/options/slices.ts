@@ -115,10 +115,9 @@ export const optionsSlice = createSlice({
       state.extensions[extensionPointId][extensionId].active = active;
     },
     installRecipe(state, { payload }) {
-      const { recipe, services: auths, extensionPoints } = payload;
+      const { recipe, services: auths, extensionPoints, deployment } = payload;
       for (const {
         id: extensionPointId,
-
         label,
         services,
         config,
@@ -137,6 +136,12 @@ export const optionsSlice = createSlice({
 
         const extensionConfig = {
           id: extensionId,
+          _deployment: deployment
+            ? {
+                id: deployment.id,
+                timestamp: deployment.updated_at,
+              }
+            : undefined,
           _recipeId: recipe.metadata.id,
           _recipe: recipe.metadata,
           services: Object.entries(services ?? {}).map(
