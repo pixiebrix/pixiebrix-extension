@@ -46,13 +46,14 @@ import { SettingsState } from "@/options/slices";
 import { getExtensionToken } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { AuthState } from "@/core";
+import TemplatesPage from "@/options/pages/templates/TemplatesPage";
+import { initTelemetry } from "@/telemetry/events";
+import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 
 // import the built-in bricks
 import "@/blocks";
 import "@/contrib";
 import "@/contrib/editors";
-import TemplatesPage from "@/options/pages/templates/TemplatesPage";
-import { initTelemetry } from "@/telemetry/events";
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(
@@ -81,6 +82,7 @@ const Layout = () => {
           <Sidebar />
           <div className="main-panel">
             <Banner />
+            <DeploymentBanner />
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>

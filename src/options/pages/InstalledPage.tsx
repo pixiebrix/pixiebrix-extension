@@ -213,6 +213,11 @@ interface InstalledExtension extends IExtension {
     id: string;
     name: string;
   } | null;
+
+  _deployment?: {
+    id: string;
+    timestamp: string;
+  };
 }
 
 const InstalledTable: React.FunctionComponent<{

@@ -18,7 +18,7 @@
 /**
  * Type contract between the backend and front-end.
  */
-import { ServiceDefinition } from "@/types/definitions";
+import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
 import { ServiceConfig, Metadata } from "@/core";
 
 export enum MemberRole {
@@ -123,4 +123,26 @@ type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 export interface RegistryPackage extends Record<string, unknown> {
   kind: Kind;
   metadata: Metadata;
+}
+
+export interface Deployment {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  package: {
+    id: string;
+    package_id: string;
+    name: string;
+    version: string;
+    config: RecipeDefinition;
+  };
+  bindings: {
+    id: string;
+    auth: {
+      id: string;
+      service_id: string;
+      label: string;
+    };
+  }[];
 }
