@@ -189,7 +189,7 @@
     "terser-webpack-plugin": "^4.2.2",
     "to-json-schema": "^0.2.5",
     "ts-loader": "^8.1.0",
-    "type-fest": "^0.18.0",
+    "type-fest": "^1.0.1",
     "typescript": "^4.0.5",
     "url-join": "^4.0.1",
     "use-async-effect": "^2.2.3",
