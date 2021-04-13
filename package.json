@@ -111,6 +111,7 @@
     "fake-indexeddb": "^3.1.2",
     "file-loader": "^6.2.0",
     "formik": "^2.2.6",
+    "fuse.js": "^6.4.6",
     "generate-schema": "^2.6.0",
     "global": "^4.4.0",
     "handlebars": "^4.7.7",

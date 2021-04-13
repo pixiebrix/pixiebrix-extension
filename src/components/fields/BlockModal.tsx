@@ -101,7 +101,7 @@ const BlockResult: React.FunctionComponent<{
 const BlockModal: React.FunctionComponent<{
   onSelect: (service: IBlock) => void;
   blocks: IBlock[];
-  caption?: string;
+  caption?: string | React.ReactNode;
   renderButton?: ({ show }: { show: () => void }) => React.ReactNode;
 }> = ({ onSelect, blocks, caption = "Select a brick", renderButton }) => {
   const [show, setShow] = useState(false);
