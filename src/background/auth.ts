@@ -15,13 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { readStorage, setStorage } from "@/chrome";
 import { isBackgroundPage } from "webext-detect-page";
 import { IService, AuthData, RawServiceConfiguration } from "@/core";
-import urljoin from "url-join";
 import { browser } from "webextension-polyfill-ts";
-import { computeChallenge, generateVerifier } from "vendors/pkce";
+import {
+  computeChallenge,
+  generateVerifier,
+  getRandomString,
+} from "vendors/pkce";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 
@@ -62,6 +65,8 @@ export async function deleteCachedAuthData(key: string): Promise<void> {
   if (Object.prototype.hasOwnProperty.call(current, key)) {
     // OK because we're guarding with hasOwnProperty
     // eslint-disable-next-line security/detect-object-injection
+    console.debug(`deleteCachedAuthData: removed data for auth ${key}`);
+
     delete current[key];
   } else {
     console.warn(
@@ -113,7 +118,6 @@ export async function launchOAuth2Flow(
   const oauth2 = await service.getOAuth2Context(auth.config);
 
   const {
-    host,
     code_challenge_method,
     authorizeUrl: rawAuthorizeUrl,
     tokenUrl: rawTokenUrl,
@@ -124,9 +128,7 @@ export async function launchOAuth2Flow(
 
   console.debug("Redirect URI", redirect_uri);
 
-  const authorizeURL = new URL(
-    rawAuthorizeUrl ?? urljoin(host, "/services/oauth2/authorize")
-  );
+  const authorizeURL = new URL(rawAuthorizeUrl);
   for (const [key, value] of Object.entries({
     redirect_uri,
     response_type: "code",
@@ -138,6 +140,9 @@ export async function launchOAuth2Flow(
 
   let code_verifier: string = null;
   let code_challenge: string = null;
+
+  const state = getRandomString(16);
+  authorizeURL.searchParams.set("state", state);
 
   if (code_challenge_method === "S256") {
     code_verifier = generateVerifier();
@@ -178,9 +183,11 @@ export async function launchOAuth2Flow(
     );
   }
 
-  const tokenURL = new URL(
-    rawTokenUrl ?? urljoin(host, "/services/oauth2/token")
-  );
+  if (authResponse.searchParams.get("state") !== state) {
+    throw new Error("OAuth2 state mismatch");
+  }
+
+  const tokenURL = new URL(rawTokenUrl);
 
   const tokenBody: Record<string, unknown> = {
     redirect_uri,
@@ -193,11 +200,26 @@ export async function launchOAuth2Flow(
     tokenBody.code_verifier = code_verifier;
   }
 
-  // FIXME: handle endpoints that want data via POST body
-  const { data, status, statusText } = await axios.post(
-    tokenURL.toString(),
-    tokenBody
-  );
+  const tokenParams = new URLSearchParams();
+  for (const [param, value] of Object.entries(tokenBody)) {
+    tokenParams.set(param, value.toString());
+  }
+
+  let tokenResponse: AxiosResponse;
+
+  try {
+    // FIXME: handle endpoints that want data via POST json body
+    tokenResponse = await axios.post(tokenURL.toString(), tokenParams, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    throw new Error(`Error getting OAuth2 token: ${err}`);
+  }
+
+  const { data, status, statusText } = tokenResponse;
 
   if (status >= 400) {
     throw new Error(`Error getting OAuth2 token: ${statusText}`);

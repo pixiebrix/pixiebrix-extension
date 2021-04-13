@@ -31,7 +31,7 @@ function dec2hex(dec: number): string {
   return ("0" + dec.toString(16)).substr(-2);
 }
 
-function getRandomString(length: number) {
+export function getRandomString(length: number) {
   var a = new Uint8Array(Math.ceil(length / 2));
   crypto.getRandomValues(a);
   var str = Array.from(a, dec2hex).join("");

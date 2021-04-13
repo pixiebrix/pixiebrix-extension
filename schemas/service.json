@@ -84,7 +84,11 @@
             "oauth2": {
               "type": "object",
               "properties": {
-                "host": {
+                "tokenUrl": {
+                  "type": "string",
+                  "format": "uri"
+                },
+                "authorizeUrl": {
                   "type": "string",
                   "format": "uri"
                 },
