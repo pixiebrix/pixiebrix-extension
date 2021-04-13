@@ -15,21 +15,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { PageTitle } from "@/layout/Page";
-import { faHammer } from "@fortawesome/free-solid-svg-icons";
-import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
-import AsyncSelect from "react-select/async";
 import {
-  ExtensionPointOption,
-  getExtensionPointOptions,
-} from "@/extensionPoints/registry";
+  faCube,
+  faHammer,
+  faInfoCircle,
+  faPlus,
+} from "@fortawesome/free-solid-svg-icons";
+import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import registry from "@/extensionPoints/registry";
 import { Link } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import { useFetch } from "@/hooks/fetch";
 import { AuthContext } from "@/auth/context";
-import { sortBy } from "lodash";
+import { sortBy, uniq, compact } from "lodash";
+import BlockModal from "@/components/fields/BlockModal";
+import { useAsyncState } from "@/hooks/common";
+import Select from "react-select";
+import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
+import Fuse from "fuse.js";
+
+import "./WorkshopPage.scss";
 
 interface OwnProps {
   navigate: (url: string) => void;
@@ -38,84 +47,208 @@ interface OwnProps {
 interface Brick {
   id: string;
   name: string;
+  verbose_name: string;
   version: string;
   kind: string;
 }
 
-const CustomBricksCard: React.FunctionComponent<
-  OwnProps & { query: string }
-> = ({ navigate, query }) => {
+interface EnhancedBrick extends Brick {
+  scope: string;
+  collection: string;
+}
+
+const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
+  navigate,
+}) => {
+  const [query, setQuery] = useState("");
+  const [scopes, setScopes] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [kinds, setKinds] = useState([]);
+
   const remoteBricks = useFetch<Brick[]>("/api/bricks/");
 
-  const sortedBricks = useMemo(
-    () =>
-      sortBy(remoteBricks ?? [], (x) => x.name).filter(
-        (x) => query === "" || x.name.includes(query)
-      ),
-    [remoteBricks, query]
-  );
+  const enhancedBricks: EnhancedBrick[] = useMemo(() => {
+    return sortBy(
+      (remoteBricks ?? []).map((brick) => {
+        const match = PACKAGE_NAME_REGEX.exec(brick.name);
+        return {
+          ...brick,
+          scope: match.groups.scope,
+          collection: match.groups.collection,
+        };
+      }),
+      (x) => x.name
+    );
+  }, [remoteBricks]);
+
+  const scopeOptions = useMemo(() => {
+    return sortBy(
+      uniq((enhancedBricks ?? []).map((x) => x.scope))
+    ).map((value) => ({ value, label: value ?? "[No Scope]" }));
+  }, [enhancedBricks]);
+
+  const collectionOptions = useMemo(() => {
+    return sortBy(
+      uniq((enhancedBricks ?? []).map((x) => x.collection))
+    ).map((value) => ({ value, label: value ?? "[No Collection]" }));
+  }, [enhancedBricks]);
+
+  const kindOptions = useMemo(() => {
+    return sortBy(
+      compact(uniq((enhancedBricks ?? []).map((x) => x.kind)))
+    ).map((value) => ({ value, label: value }));
+  }, [enhancedBricks]);
+
+  const fuse: Fuse<EnhancedBrick> = useMemo(() => {
+    return new Fuse(enhancedBricks, {
+      keys: ["verbose_name", "name"],
+    });
+  }, [enhancedBricks]);
+
+  const sortedBricks = useMemo(() => {
+    const results =
+      query.trim() !== ""
+        ? fuse.search(query).map((x) => x.item)
+        : enhancedBricks;
+    return results.filter(
+      (x) =>
+        (scopes.length === 0 || scopes.includes(x.scope)) &&
+        (collections.length === 0 || collections.includes(x.collection)) &&
+        (kinds.length === 0 || kinds.includes(x.kind))
+    );
+  }, [fuse, query, scopes, collections, kinds, enhancedBricks]);
 
   return (
+    <>
+      <Row className="mt-4">
+        <Col md="12" lg="8">
+          <Form>
+            <InputGroup className="mb-2 mr-sm-2">
+              <InputGroup.Prepend>
+                <InputGroup.Text>Search</InputGroup.Text>
+              </InputGroup.Prepend>
+              <Form.Control
+                id="query"
+                placeholder="Start typing to find results"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </InputGroup>
+          </Form>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <div className="d-flex">
+            <div style={{ width: 200 }}>
+              <Select
+                isMulti
+                placeholder="Filter @scope"
+                options={scopeOptions}
+                value={scopeOptions.filter((x) => scopes.includes(x.value))}
+                onChange={(values) => {
+                  const selected: any = values;
+                  setScopes((selected ?? []).map((x: any) => x.value));
+                }}
+              />
+            </div>
+            <div style={{ width: 200 }} className="ml-3">
+              <Select
+                isMulti
+                placeholder="Filter collection"
+                options={collectionOptions}
+                value={collectionOptions.filter((x) =>
+                  collections.includes(x.value)
+                )}
+                onChange={(values) => {
+                  const selected: any = values;
+                  setCollections((selected ?? []).map((x: any) => x.value));
+                }}
+              />
+            </div>
+            <div style={{ width: 200 }} className="ml-3">
+              <Select
+                isMulti
+                placeholder="Filter kind"
+                options={kindOptions}
+                value={kindOptions.filter((x) => kinds.includes(x.value))}
+                onChange={(values) => {
+                  const selected: any = values;
+                  setKinds((selected ?? []).map((x: any) => x.value));
+                }}
+              />
+            </div>
+          </div>
+        </Col>
+      </Row>
+      <Row>
+        <Col className="mt-4" md="12" lg="8">
+          <CustomBricksCard navigate={navigate} bricks={sortedBricks} />
+        </Col>
+      </Row>
+    </>
+  );
+};
+
+const CustomBricksCard: React.FunctionComponent<
+  OwnProps & { bricks: EnhancedBrick[]; maxRows?: number }
+> = ({ navigate, bricks, maxRows = 10 }) => {
+  return (
     <Card>
-      <Card.Header>Advanced: Custom Bricks</Card.Header>
-      <Table>
+      <Card.Header>Custom Bricks</Card.Header>
+      <Table className="WorkshopPage__BrickTable">
         <thead>
           <tr>
             <th>Name</th>
+            <th>Collection</th>
             <th>Type</th>
             <th>Version</th>
-            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {sortedBricks.map((x) => (
-            <tr key={x.id}>
-              <td>{x.name}</td>
+          {bricks.slice(0, maxRows).map((x) => (
+            <tr key={x.id} onClick={() => navigate(`/workshop/bricks/${x.id}`)}>
+              <td>
+                <div>{x.verbose_name}</div>
+                <div className="mt-1">
+                  <code className="p-0" style={{ fontSize: "0.8rem" }}>
+                    {x.name}
+                  </code>
+                </div>
+              </td>
+              <td>{x.collection}</td>
               <td>{x.kind}</td>
               <td>{x.version}</td>
-              <td>
-                <Button
-                  size="sm"
-                  onClick={() => navigate(`/workshop/bricks/${x.id}`)}
-                >
-                  Edit
-                </Button>
-              </td>
             </tr>
           ))}
+          {bricks.length >= maxRows && (
+            <tr>
+              <td colSpan={4} className="text-info text-center">
+                <FontAwesomeIcon icon={faInfoCircle} />{" "}
+                {bricks.length - maxRows} more entries not shown
+              </td>
+            </tr>
+          )}
         </tbody>
       </Table>
-      <Card.Footer>
-        <Button size="sm" onClick={() => navigate(`/workshop/create/`)}>
-          Create New Brick
-        </Button>
-      </Card.Footer>
     </Card>
   );
 };
 
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
   const { isLoggedIn, flags } = useContext(AuthContext);
-  const [query, setQuery] = useState("");
-  const optionsPromise = useMemo(getExtensionPointOptions, []);
 
-  const loadOptions = useCallback(async (query) => {
-    const allOptions = await optionsPromise;
-    const clean = (query ?? "").trim().toLowerCase();
-    return clean === ""
-      ? allOptions
-      : allOptions.filter((x) => x.label.toLowerCase().includes(clean));
-  }, []);
+  const [extensionPoints] = useAsyncState(registry.all(), []);
 
   return (
     <div>
       <PageTitle icon={faHammer} title="Workshop" />
       <div className="pb-4">
         <p>
-          Build and install bricks.{" "}
+          Build and attach bricks.{" "}
           {flags.includes("marketplace") && (
             <>
-              To install pre-made blueprints, visit the{" "}
+              To activate pre-made blueprints, visit the{" "}
               <Link to={"/marketplace"}>Marketplace</Link>
             </>
           )}
@@ -123,50 +256,32 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
       </div>
       <Row>
         <Col md="12" lg="8">
-          <div className="d-flex align-items-center">
-            <div className="mr-2">Install a brick:</div>
-            <div style={{ width: 250 }}>
-              <AsyncSelect
-                defaultOptions
-                placeholder="Select a foundation"
-                loadOptions={loadOptions}
-                onChange={(option: ExtensionPointOption) =>
-                  navigate(
-                    `/workshop/install/${encodeURIComponent(option.value)}`
-                  )
-                }
-              />
-            </div>
-          </div>
+          <BlockModal
+            blocks={extensionPoints}
+            caption="Select foundation"
+            renderButton={({ show }) => (
+              <Button variant="info" onClick={show}>
+                <FontAwesomeIcon icon={faCube} /> Use Foundation
+              </Button>
+            )}
+            onSelect={(block) => {
+              navigate(`/workshop/install/${encodeURIComponent(block.id)}`);
+            }}
+          />
+
+          {isLoggedIn && (
+            <Button
+              className="ml-3"
+              variant="info"
+              onClick={() => navigate(`/workshop/create/`)}
+            >
+              <FontAwesomeIcon icon={faPlus} /> Create New Brick
+            </Button>
+          )}
         </Col>
       </Row>
 
-      {isLoggedIn && (
-        <>
-          <Row className="mt-4">
-            <Col md="12" lg="8">
-              <Form>
-                <InputGroup className="mb-2 mr-sm-2">
-                  <InputGroup.Prepend>
-                    <InputGroup.Text>Search</InputGroup.Text>
-                  </InputGroup.Prepend>
-                  <Form.Control
-                    id="query"
-                    placeholder="Start typing to find results"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                  />
-                </InputGroup>
-              </Form>
-            </Col>
-          </Row>
-          <Row>
-            <Col className="mt-4" md="12" lg="8">
-              <CustomBricksCard navigate={navigate} query={query} />
-            </Col>
-          </Row>
-        </>
-      )}
+      {isLoggedIn && <CustomBricksSection navigate={navigate} />}
     </div>
   );
 };
