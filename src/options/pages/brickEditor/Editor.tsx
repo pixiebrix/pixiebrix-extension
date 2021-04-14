@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Card, Nav } from "react-bootstrap";
+import { Card, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBuilding,
@@ -29,6 +29,9 @@ import CodeEditor from "./CodeEditor";
 import SharingTable from "./Sharing";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext } from "@/core";
+import BrickReference from "@/options/pages/brickEditor/BrickReference";
+import { useAsyncState } from "@/hooks/common";
+import blockRegistry from "@/blocks/registry";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -65,6 +68,8 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const [editorWidth, setEditorWidth] = useState();
   const { errors, values } = useFormikContext<EditorValues>();
 
+  const [blocks] = useAsyncState(blockRegistry.all(), []);
+
   const editorRef = useRef(null);
 
   useEffect(() => {
@@ -75,44 +80,59 @@ const Editor: React.FunctionComponent<OwnProps> = ({
 
   return (
     <Card ref={editorRef}>
-      <Card.Header>
-        <Nav variant="tabs" defaultActiveKey={activeTab} onSelect={setTab}>
-          <Nav.Link eventKey="edit">
-            {errors.config ? (
-              <span className="text-danger">
-                Editor <FontAwesomeIcon icon={faTimesCircle} />
-              </span>
-            ) : (
-              "Editor"
-            )}
-          </Nav.Link>
-          <Nav.Link eventKey="share">
-            Sharing{" "}
-            <SharingIcon
-              isPublic={values.public}
-              organizations={!!values.organizations.length}
+      <Tab.Container id="editor-container" defaultActiveKey={activeTab}>
+        <Card.Header>
+          <Nav variant="tabs" onSelect={setTab}>
+            <Nav.Link eventKey="edit">
+              {errors.config ? (
+                <span className="text-danger">
+                  Editor <FontAwesomeIcon icon={faTimesCircle} />
+                </span>
+              ) : (
+                "Editor"
+              )}
+            </Nav.Link>
+            <Nav.Link eventKey="share">
+              Sharing{" "}
+              <SharingIcon
+                isPublic={values.public}
+                organizations={!!values.organizations.length}
+              />
+            </Nav.Link>
+            {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
+            <Nav.Link eventKey="reference">Reference</Nav.Link>
+          </Nav>
+        </Card.Header>
+
+        <Tab.Content className="p-0">
+          <Tab.Pane eventKey="edit" className="p-0">
+            <CodeEditor
+              name="config"
+              width={editorWidth}
+              showTemplates={showTemplates}
             />
-          </Nav.Link>
-          {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
-        </Nav>
-      </Card.Header>
+          </Tab.Pane>
+          <Tab.Pane eventKey="share" className="p-0">
+            <SharingTable />
+          </Tab.Pane>
 
-      {activeTab === "edit" && (
-        <CodeEditor
-          name="config"
-          width={editorWidth}
-          showTemplates={showTemplates}
-        />
-      )}
+          {showLogs && (
+            <Tab.Pane eventKey="logs" className="p-0">
+              {logContext ? (
+                <BrickLogs context={logContext} />
+              ) : (
+                <div className="p-4">
+                  Cannot determine log context for brick
+                </div>
+              )}
+            </Tab.Pane>
+          )}
 
-      {activeTab === "share" && <SharingTable />}
-
-      {activeTab === "logs" &&
-        (logContext ? (
-          <BrickLogs context={logContext} />
-        ) : (
-          <div className="p-4">Cannot determine log context for brick</div>
-        ))}
+          <Tab.Pane eventKey="reference" className="p-0">
+            <BrickReference blocks={blocks} />
+          </Tab.Pane>
+        </Tab.Content>
+      </Tab.Container>
     </Card>
   );
 };

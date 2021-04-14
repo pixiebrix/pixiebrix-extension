@@ -44,7 +44,7 @@ import { useDebounce } from "use-debounce";
 
 import "./BlockModal.scss";
 
-function getIcon(type: BlockType): IconProp {
+export function getIcon(type: BlockType): IconProp {
   switch (type) {
     case "reader":
       return faBookReader;
