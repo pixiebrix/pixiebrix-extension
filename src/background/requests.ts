@@ -103,6 +103,13 @@ const backgroundRequest = liftBackground<AxiosRequestConfig, SanitizedResponse>(
   }
 );
 
+export const deleteCachedAuth = liftBackground(
+  "DELETE_CACHED_AUTH",
+  async (authId: string) => {
+    await deleteCachedAuthData(authId);
+  }
+);
+
 async function authenticate(
   config: SanitizedServiceConfiguration,
   request: AxiosRequestConfig

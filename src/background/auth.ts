@@ -15,12 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { readStorage, setStorage } from "@/chrome";
 import { isBackgroundPage } from "webext-detect-page";
 import { IService, AuthData, RawServiceConfiguration } from "@/core";
-import urljoin from "url-join";
 import { browser } from "webextension-polyfill-ts";
+import {
+  computeChallenge,
+  generateVerifier,
+  getRandomString,
+} from "vendors/pkce";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 
@@ -61,6 +65,8 @@ export async function deleteCachedAuthData(key: string): Promise<void> {
   if (Object.prototype.hasOwnProperty.call(current, key)) {
     // OK because we're guarding with hasOwnProperty
     // eslint-disable-next-line security/detect-object-injection
+    console.debug(`deleteCachedAuthData: removed data for auth ${key}`);
+
     delete current[key];
   } else {
     console.warn(
@@ -110,12 +116,19 @@ export async function launchOAuth2Flow(
   }
 
   const oauth2 = await service.getOAuth2Context(auth.config);
-  console.debug("OAuth2 context", oauth2);
-  const { host, ...params } = oauth2;
+
+  const {
+    code_challenge_method,
+    authorizeUrl: rawAuthorizeUrl,
+    tokenUrl: rawTokenUrl,
+    ...params
+  } = oauth2;
 
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
 
-  const authorizeURL = new URL(urljoin(host, "/services/oauth2/authorize"));
+  console.debug("Redirect URI", redirect_uri);
+
+  const authorizeURL = new URL(rawAuthorizeUrl);
   for (const [key, value] of Object.entries({
     redirect_uri,
     response_type: "code",
@@ -124,6 +137,31 @@ export async function launchOAuth2Flow(
   })) {
     authorizeURL.searchParams.set(key, value);
   }
+
+  let code_verifier: string = null;
+  let code_challenge: string = null;
+
+  const state = getRandomString(16);
+  authorizeURL.searchParams.set("state", state);
+
+  if (code_challenge_method === "S256") {
+    code_verifier = generateVerifier();
+    code_challenge = await computeChallenge(code_verifier);
+    authorizeURL.searchParams.set("code_challenge", code_challenge);
+    authorizeURL.searchParams.set(
+      "code_challenge_method",
+      code_challenge_method
+    );
+  } else if (code_challenge_method != null) {
+    throw new Error(
+      `Unsupported code challenge method: ${code_challenge_method}`
+    );
+  }
+
+  console.debug("OAuth2 context", {
+    authorizeURL,
+    oauth2,
+  });
 
   const responseUrl = await browser.identity.launchWebAuthFlow({
     url: authorizeURL.toString(),
@@ -136,6 +174,8 @@ export async function launchOAuth2Flow(
 
   const authResponse = new URL(responseUrl);
 
+  console.debug("OAuth authorize response", authResponse);
+
   const error = authResponse.searchParams.get("error");
   if (error) {
     throw new Error(
@@ -143,22 +183,46 @@ export async function launchOAuth2Flow(
     );
   }
 
-  const tokenURL = new URL(urljoin(host, "/services/oauth2/token"));
-  const { data, status, statusText } = await axios.post(
-    tokenURL.toString(),
-    {},
-    {
-      params: {
-        redirect_uri,
-        grant_type: "authorization_code",
-        code: authResponse.searchParams.get("code"),
-        ...params,
+  if (authResponse.searchParams.get("state") !== state) {
+    throw new Error("OAuth2 state mismatch");
+  }
+
+  const tokenURL = new URL(rawTokenUrl);
+
+  const tokenBody: Record<string, unknown> = {
+    redirect_uri,
+    grant_type: "authorization_code",
+    code: authResponse.searchParams.get("code"),
+    client_id: params.client_id,
+  };
+
+  if (code_verifier) {
+    tokenBody.code_verifier = code_verifier;
+  }
+
+  const tokenParams = new URLSearchParams();
+  for (const [param, value] of Object.entries(tokenBody)) {
+    tokenParams.set(param, value.toString());
+  }
+
+  let tokenResponse: AxiosResponse;
+
+  try {
+    // FIXME: handle endpoints that want data via POST json body
+    tokenResponse = await axios.post(tokenURL.toString(), tokenParams, {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-    }
-  );
+    });
+  } catch (err) {
+    console.error(err);
+    throw new Error(`Error getting OAuth2 token: ${err}`);
+  }
+
+  const { data, status, statusText } = tokenResponse;
 
   if (status >= 400) {
-    throw new Error(statusText);
+    throw new Error(`Error getting OAuth2 token: ${statusText}`);
   }
 
   await setCachedAuthData(auth.id, data);

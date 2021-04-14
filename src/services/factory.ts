@@ -77,14 +77,20 @@ class LocalDefinedService<
    * Return true if service exchanges credentials for a bearer token
    */
   get isToken(): boolean {
-    return "token" in this._definition.authentication;
+    return (
+      this._definition.authentication != null &&
+      "token" in this._definition.authentication
+    );
   }
 
   /**
    * Return true if service uses OAuth2 authentication
    */
   get isOAuth2(): boolean {
-    return "oauth2" in this._definition.authentication;
+    return (
+      this._definition.authentication != null &&
+      "oauth2" in this._definition.authentication
+    );
   }
 
   /**
@@ -128,7 +134,7 @@ class LocalDefinedService<
     if (this.isOAuth2) {
       const definition: OAuth2Context = (this._definition
         .authentication as OAuth2AuthenticationDefinition).oauth2;
-      // console.debug("oauth2 context", { definition, serviceConfig });
+      console.debug("getOAuth2Context", { definition, serviceConfig });
       return mapArgs<OAuth2Context>(definition, serviceConfig);
     } else {
       return undefined;

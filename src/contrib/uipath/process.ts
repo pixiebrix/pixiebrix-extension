@@ -22,6 +22,7 @@ import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 import { sleep } from "@/utils";
 
+export const UIPATH_SERVICE_ID = "uipath/cloud";
 export const UIPATH_ID = "@pixiebrix/uipath/process";
 
 const MAX_WAIT_MILLIS = 20_000;
@@ -30,9 +31,14 @@ const POLL_MILLIS = 1_000;
 export const UIPATH_PROPERTIES: SchemaProperties = {
   uipath: {
     anyOf: [
-      { $ref: "https://app.pixiebrix.com/schemas/services/uipath/cloud" },
+      {
+        $ref: "https://app.pixiebrix.com/schemas/services/uipath/cloud"
+      },
       {
         $ref: "https://app.pixiebrix.com/schemas/services/uipath/orchestrator",
+      },
+      {
+        $ref: "https://app.pixiebrix.com/schemas/services/uipath/cloud-oauth",
       },
     ],
   },
@@ -88,7 +94,7 @@ export class RunProcess extends Transformer {
     super(
       UIPATH_ID,
       "Run a UiPath process",
-      "Run a UiPath process using UiPath Cloud Orchestrator"
+      "Run a UiPath process using UiPath Orchestrator"
     );
   }
 

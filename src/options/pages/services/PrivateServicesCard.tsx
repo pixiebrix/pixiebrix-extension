@@ -24,9 +24,12 @@ import { v4 as uuidv4 } from "uuid";
 import { ServiceDefinition } from "@/types/definitions";
 import ServiceModal from "@/components/fields/ServiceModal";
 import { useFetch } from "@/hooks/fetch";
-import { faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { faEyeSlash, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { AuthContext } from "@/auth/context";
+import { useToasts } from "react-toast-notifications";
+import { deleteCachedAuth } from "@/background/requests";
+import { reportError } from "@/telemetry/logging";
 
 interface OwnProps {
   services: IService[];
@@ -39,12 +42,32 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   navigate,
   onCreate,
 }) => {
+  const { addToast } = useToasts();
   const { isLoggedIn } = useContext(AuthContext);
 
   const serviceConfigs = useFetch("/api/services/") as ServiceDefinition[];
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     ({ services }) => Object.values(services.configured)
+  );
+
+  const resetAuth = useCallback(
+    async (authId: string) => {
+      try {
+        await deleteCachedAuth(authId);
+        addToast("Reset login for integration", {
+          appearance: "success",
+          autoDismiss: true,
+        });
+      } catch (err) {
+        reportError(err);
+        addToast("Error resetting login for integration", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      }
+    },
+    [addToast]
   );
 
   const onSelect = useCallback(
@@ -127,6 +150,20 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                   >
                     Configure
                   </Button>
+
+                  {service.isOAuth2 || service.isToken ? (
+                    <Button
+                      size="sm"
+                      variant="warning"
+                      onClick={() => resetAuth(configuredService.id)}
+                    >
+                      <FontAwesomeIcon icon={faSignOutAlt} /> Reset
+                    </Button>
+                  ) : (
+                    <Button size="sm" variant="outline-warning" disabled>
+                      <FontAwesomeIcon icon={faSignOutAlt} /> Reset
+                    </Button>
+                  )}
                 </td>
               </tr>
             );

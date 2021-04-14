@@ -22,7 +22,7 @@ import {
   ServiceField,
 } from "@/components/fields/blockOptions";
 import { fromPairs, identity } from "lodash";
-import { UIPATH_PROPERTIES } from "@/contrib/uipath/process";
+import { UIPATH_PROPERTIES, UIPATH_SERVICE_ID } from "@/contrib/uipath/process";
 import { Schema, SchemaProperties } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -72,7 +72,6 @@ interface Release {
   };
 }
 
-export const UIPATH_SERVICE_ID = "uipath/cloud";
 
 export function useReleases(): {
   releases: Release[];
