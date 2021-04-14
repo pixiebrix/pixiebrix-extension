@@ -33,6 +33,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/context";
 import { useLoggingConfig } from "@/hooks/logging";
 import { GridLoader } from "react-spinners";
+import { clearLogs } from "@/background/logging";
+import { reportError } from "@/telemetry/logging";
 
 const { resetOptions } = optionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
@@ -84,6 +86,7 @@ function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
 
 const LoggingRow: React.FunctionComponent = () => {
   const [config, setConfig] = useLoggingConfig();
+  const { addToast } = useToasts();
 
   return (
     <Row className="mb-4">
@@ -123,6 +126,33 @@ const LoggingRow: React.FunctionComponent = () => {
               <GridLoader />
             )}
           </Card.Body>
+          <Card.Footer>
+            <Button
+              variant="info"
+              onClick={async () => {
+                try {
+                  await clearLogs();
+                  addToast("Cleared local logs", {
+                    appearance: "success",
+                    autoDismiss: true,
+                  });
+                } catch (err) {
+                  reportError(err);
+                  addToast(
+                    `Error clearing local logs: ${
+                      err.message?.toString() ?? "Unknown error"
+                    }`,
+                    {
+                      appearance: "error",
+                      autoDismiss: true,
+                    }
+                  );
+                }
+              }}
+            >
+              Clear Local Logs
+            </Button>
+          </Card.Footer>
         </Card>
       </Col>
     </Row>

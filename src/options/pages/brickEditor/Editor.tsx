@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import Card from "react-bootstrap/Card";
-import Nav from "react-bootstrap/Nav";
+import { Card, Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBuilding,
@@ -28,6 +27,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
 import SharingTable from "./Sharing";
+import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
+import { MessageContext } from "@/core";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -51,12 +52,18 @@ export interface EditorValues {
 
 interface OwnProps {
   showTemplates?: boolean;
+  showLogs?: boolean;
+  logContext: MessageContext | null;
 }
 
-const Editor: React.FunctionComponent<OwnProps> = ({ showTemplates }) => {
+const Editor: React.FunctionComponent<OwnProps> = ({
+  showTemplates,
+  showLogs = true,
+  logContext,
+}) => {
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
-  const { errors, values } = useFormikContext() as { errors: any; values: any };
+  const { errors, values } = useFormikContext<EditorValues>();
 
   const editorRef = useRef(null);
 
@@ -69,11 +76,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({ showTemplates }) => {
   return (
     <Card ref={editorRef}>
       <Card.Header>
-        <Nav
-          variant="tabs"
-          defaultActiveKey={activeTab}
-          onSelect={(x: string) => setTab(x)}
-        >
+        <Nav variant="tabs" defaultActiveKey={activeTab} onSelect={setTab}>
           <Nav.Link eventKey="edit">
             {errors.config ? (
               <span className="text-danger">
@@ -90,6 +93,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({ showTemplates }) => {
               organizations={!!values.organizations.length}
             />
           </Nav.Link>
+          {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
         </Nav>
       </Card.Header>
 
@@ -102,6 +106,13 @@ const Editor: React.FunctionComponent<OwnProps> = ({ showTemplates }) => {
       )}
 
       {activeTab === "share" && <SharingTable />}
+
+      {activeTab === "logs" &&
+        (logContext ? (
+          <BrickLogs context={logContext} />
+        ) : (
+          <div className="p-4">Cannot determine log context for brick</div>
+        ))}
     </Card>
   );
 };

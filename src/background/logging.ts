@@ -22,8 +22,7 @@ import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { JsonObject } from "type-fest";
 import { serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import reverse from "lodash/reverse";
-import sortBy from "lodash/sortBy";
+import { reverse, sortBy } from "lodash";
 import { _getDNT } from "@/background/telemetry";
 import { isBackgroundPage } from "webext-detect-page";
 import { readStorage, setStorage } from "@/chrome";
@@ -110,6 +109,13 @@ function makeMatchEntry(context: MessageContext): (entry: LogEntry) => boolean {
       ([key, value]) =>
         (entry.context ?? {})[key as keyof MessageContext] === value
     );
+}
+
+export async function clearLogs(): Promise<void> {
+  const db = await getDB();
+
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+  await tx.store.clear();
 }
 
 export async function clearLog(context: MessageContext = {}): Promise<void> {

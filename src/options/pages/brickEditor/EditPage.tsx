@@ -18,12 +18,9 @@
 import React, { useMemo } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
+import { Row, Col, Button, Form } from "react-bootstrap";
 import { Formik, useField } from "formik";
 import { useFetch } from "@/hooks/fetch";
-import Form from "react-bootstrap/Form";
 import { useParams } from "react-router";
 import Editor from "./Editor";
 import { GridLoader } from "react-spinners";
@@ -33,6 +30,9 @@ import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import "./EditPage.scss";
 import { useSelector } from "react-redux";
 import { ExtensionOptions, OptionsState } from "@/options/slices";
+import { MessageContext } from "@/core";
+import { useDebounce } from "use-debounce";
+import { selectExtensions } from "@/options/pages/InstalledPage";
 
 interface BrickData {
   id: string;
@@ -87,6 +87,42 @@ const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
   );
 };
 
+function useLogContext(config: string | null): MessageContext | null {
+  const debouncedConfig = useDebounce(config, 250);
+  const installed = useSelector(selectExtensions);
+
+  const blueprintMap = useMemo(() => {
+    return new Map<string, string>(installed.map((x) => [x._recipe.id, x.id]));
+  }, [installed]);
+
+  return useMemo(() => {
+    try {
+      const json = yaml.safeLoad(config) as any;
+      switch (json.kind) {
+        case "service": {
+          return { serviceId: json.metadata.id };
+        }
+        case "extensionPoint": {
+          return { extensionPointId: json.metadata.id };
+        }
+        case "component":
+        case "reader": {
+          return { blockId: json.metadata.id };
+        }
+        case "recipe": {
+          const extensionId = blueprintMap.get(json.metadata.id);
+          return extensionId ? { extensionId } : null;
+        }
+        default: {
+          return null;
+        }
+      }
+    } catch (err) {
+      return null;
+    }
+  }, [debouncedConfig, blueprintMap]);
+}
+
 const EditPage: React.FunctionComponent = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -97,6 +133,8 @@ const EditPage: React.FunctionComponent = () => {
   const { isBlueprint, isInstalled } = useDetectBlueprint(data?.config);
 
   const { submit, validate, remove } = useSubmitBrick({ url, create: false });
+
+  const logContext = useLogContext(data?.config);
 
   if (!data) {
     return (
@@ -155,7 +193,7 @@ const EditPage: React.FunctionComponent = () => {
           </div>
           <Row>
             <Col className="mt-4" xl={8} lg={10} md={12}>
-              <Editor />
+              <Editor logContext={logContext} />
             </Col>
           </Row>
         </Form>
