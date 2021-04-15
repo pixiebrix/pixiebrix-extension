@@ -192,7 +192,7 @@ const EditPage: React.FunctionComponent = () => {
             </div>
           </div>
           <Row>
-            <Col className="mt-4" xl={8} lg={10} md={12}>
+            <Col className="mt-4">
               <Editor logContext={logContext} />
             </Col>
           </Row>

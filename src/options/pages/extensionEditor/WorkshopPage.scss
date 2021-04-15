@@ -16,7 +16,7 @@
  */
 
 .WorkshopPage__BrickTable {
-  tbody > tr {
+  tbody > tr:not(.WorkshopPage__BrickTable__more) {
     cursor: pointer;
 
     code {

@@ -23,6 +23,8 @@ import { getBaseURL } from "@/services/baseService";
 import urljoin from "url-join";
 import { GridLoader } from "react-spinners";
 import { SanitizedAuth } from "@/types/contract";
+import { faUsers } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface OwnProps {
   remoteAuths: SanitizedAuth[];
@@ -35,30 +37,34 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
 
   return (
     <>
-      <Card.Body className="pb-2">
-        <p>
-          Services made available by your team and/or built-in to PixieBrix.
+      <Card.Body className="pb-2 px-3">
+        <p className="text-info">
+          <FontAwesomeIcon icon={faUsers} /> Shared integrations made available
+          by your team and/or built-in to PixieBrix
         </p>
       </Card.Body>
       {remoteAuths ? (
         <Table>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Id</th>
               <th>Team</th>
               <th>Label</th>
+              <th>Type</th>
             </tr>
           </thead>
           <tbody>
             {remoteAuths.map((remoteAuth) => (
               <tr key={remoteAuth.id}>
-                <td>{remoteAuth.service.config.metadata.name}</td>
-                <td>
-                  <code>{remoteAuth.service.config.metadata.id}</code>
-                </td>
                 <td>{remoteAuth.organization?.name ?? "✨ Built-in"}</td>
                 <td>{remoteAuth.label}</td>
+                <td>
+                  <div>{remoteAuth.service.config.metadata.name}</div>
+                  <div>
+                    <code className="p-0" style={{ fontSize: "0.7rem" }}>
+                      {remoteAuth.service.config.metadata.id}
+                    </code>
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

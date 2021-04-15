@@ -91,12 +91,11 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           servers or shared with your team
         </p>
       </Card.Body>
-      <Table>
+      <Table responsive>
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Id</th>
             <th>Label</th>
+            <th>Type</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -106,7 +105,6 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
               <td>
                 Zapier <i>&ndash; use to connect to PixieBrix from Zapier</i>
               </td>
-              <td className="text-muted small">N/A</td>
               <td className="text-muted small">N/A</td>
               <td>
                 <Button
@@ -132,11 +130,15 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
               <tr
                 key={`${configuredService.serviceId}-${configuredService.id}`}
               >
-                <td>{service.name}</td>
-                <td>
-                  <code>{service.id}</code>
-                </td>
                 <td>{configuredService.label}</td>
+                <td>
+                  <div>{service.name}</div>
+                  <div>
+                    <code className="p-0" style={{ fontSize: "0.7rem" }}>
+                      {service.id}
+                    </code>
+                  </div>
+                </td>
                 <td>
                   <Button
                     style={{ width: 100 }}
@@ -154,14 +156,14 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                   {service.isOAuth2 || service.isToken ? (
                     <Button
                       size="sm"
-                      variant="warning"
+                      variant="dark"
                       onClick={() => resetAuth(configuredService.id)}
                     >
-                      <FontAwesomeIcon icon={faSignOutAlt} /> Reset
+                      <FontAwesomeIcon icon={faSignOutAlt} /> Reset Token
                     </Button>
                   ) : (
-                    <Button size="sm" variant="outline-warning" disabled>
-                      <FontAwesomeIcon icon={faSignOutAlt} /> Reset
+                    <Button size="sm" variant="outline-dark" disabled>
+                      <FontAwesomeIcon icon={faSignOutAlt} /> Reset Token
                     </Button>
                   )}
                 </td>
@@ -174,7 +176,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         <ServiceModal
           onSelect={onSelect}
           services={serviceConfigs}
-          caption="Add an integration"
+          caption="Add private integration"
           variant="primary"
         />
       </Card.Footer>

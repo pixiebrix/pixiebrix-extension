@@ -180,7 +180,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
         </Col>
       </Row>
       <Row>
-        <Col xl={8} lg={10} md={12}>
+        <Col xl={10} lg={12} md={12}>
           <Card>
             <Card.Header>
               <Nav

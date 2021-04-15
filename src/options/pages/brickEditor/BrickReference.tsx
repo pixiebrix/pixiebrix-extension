@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Badge,
   Button,
@@ -39,6 +39,7 @@ import "./BrickReference.scss";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
+import { GridLoader } from "react-spinners";
 
 const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
@@ -187,6 +188,12 @@ const BrickReference: React.FunctionComponent<{ blocks: IBlock[] }> = ({
     );
   }, [blocks]);
 
+  useEffect(() => {
+    if (sortedBlocks.length > 0 && selected == null) {
+      setSelected(sortedBlocks[0]);
+    }
+  }, [sortedBlocks, selected, setSelected]);
+
   const fuse: Fuse<IBlock> = useMemo(() => {
     return new Fuse(sortedBlocks, {
       keys: ["name", "id"],
@@ -237,7 +244,9 @@ const BrickReference: React.FunctionComponent<{ blocks: IBlock[] }> = ({
           {selected ? (
             <BrickDetail brick={selected} />
           ) : (
-            <div className="p-4">Select a brick to view its details</div>
+            <div>
+              <GridLoader />
+            </div>
           )}
         </Col>
       </Row>

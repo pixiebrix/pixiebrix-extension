@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { castArray, noop } from "lodash";
-
+import { castArray, noop, once } from "lodash";
 // @ts-ignore: no type definitions
 import initialize from "vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
@@ -46,6 +45,8 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
   const nodes = new WeakSet<Node>(ancestors);
   const observers = new Set<MutationObserver>();
 
+  const wrappedCallback = once(callback);
+
   // Observe the whole path to the node. A node is removed if any of its ancestors are removed. Observe individual
   // nodes instead of the subtree on the document for efficiency on wide trees
   for (const ancestor of ancestors) {
@@ -63,7 +64,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
                   console.warn("Error disconnecting mutation observer", err);
                 }
               }
-              callback();
+              wrappedCallback();
               break;
             }
           }
