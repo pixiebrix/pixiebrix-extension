@@ -209,35 +209,33 @@ const BrickReference: React.FunctionComponent<{ blocks: IBlock[] }> = ({
   }, [query, fuse, sortedBlocks]);
 
   return (
-    <Container className="px-0 h-100">
+    <Container className="px-0 h-100" fluid>
       <Row className="h-100">
         <Col md={4} className="h-100">
-          <div className="h-100">
-            <Form>
-              <InputGroup className="mb-2 mr-sm-2">
-                <InputGroup.Prepend>
-                  <InputGroup.Text>Search</InputGroup.Text>
-                </InputGroup.Prepend>
-                <Form.Control
-                  id="query"
-                  placeholder="Start typing to find results"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+          <Form>
+            <InputGroup className="mr-sm-2">
+              <InputGroup.Prepend>
+                <InputGroup.Text>Search</InputGroup.Text>
+              </InputGroup.Prepend>
+              <Form.Control
+                id="query"
+                placeholder="Start typing to find results"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </InputGroup>
+          </Form>
+          <div className="overflow-auto h-100">
+            <ListGroup className="BlockResults">
+              {results.map((result) => (
+                <BlockResult
+                  key={result.id}
+                  block={result}
+                  active={selected?.id === result.id}
+                  onSelect={() => setSelected(result)}
                 />
-                <div className="overflow-auto h-100">
-                  <ListGroup className="BlockResults">
-                    {results.map((result) => (
-                      <BlockResult
-                        key={result.id}
-                        block={result}
-                        active={selected?.id === result.id}
-                        onSelect={() => setSelected(result)}
-                      />
-                    ))}
-                  </ListGroup>
-                </div>
-              </InputGroup>
-            </Form>
+              ))}
+            </ListGroup>
           </div>
         </Col>
         <Col md={8} className="pt-4">
