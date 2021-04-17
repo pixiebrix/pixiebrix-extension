@@ -112,7 +112,7 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
         </td>
         <td>{moment(Number.parseInt(entry.timestamp, 10)).calendar()}</td>
         <td>{entry.level.toUpperCase()}</td>
-        <td>{entry.context.blockId ?? entry.context.serviceId ?? ""}</td>
+        <td>{entry.context?.blockId ?? entry.context?.serviceId ?? ""}</td>
         <td>{entry.message}</td>
       </tr>
       {expanded && expandable && (

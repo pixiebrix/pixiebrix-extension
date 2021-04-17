@@ -222,7 +222,7 @@ const CustomBricksCard: React.FunctionComponent<
             </tr>
           ))}
           {bricks.length >= maxRows && (
-            <tr>
+            <tr className="WorkshopPage__BrickTable__more">
               <td colSpan={4} className="text-info text-center">
                 <FontAwesomeIcon icon={faInfoCircle} />{" "}
                 {bricks.length - maxRows} more entries not shown

@@ -30,7 +30,11 @@ import {
   makeServiceContext,
 } from "@/blocks/combinators";
 import { boolean } from "@/utils";
-import { awaitElementOnce, acquireElement } from "@/extensionPoints/helpers";
+import {
+  awaitElementOnce,
+  acquireElement,
+  onNodeRemoved,
+} from "@/extensionPoints/helpers";
 import {
   IBlock,
   IconConfig,
@@ -57,6 +61,8 @@ export interface PanelConfig {
   shadowDOM?: boolean;
 }
 
+const RENDER_LOOP_THRESHOLD = 5;
+
 const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
 
 /**
@@ -68,6 +74,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   private readonly collapsedExtensions: { [key: string]: boolean };
   private readonly cancelPending: Set<() => void>;
   private uninstalled = false;
+  private readonly cancelRemovalMonitor: Map<string, () => void>;
+  private readonly renderCount: Map<string, number>;
 
   public get defaultOptions(): { heading: string } {
     return { heading: "Custom Panel" };
@@ -83,6 +91,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     this.$container = null;
     this.collapsedExtensions = {};
     this.cancelPending = new Set();
+    this.cancelRemovalMonitor = new Map();
+    this.renderCount = new Map();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -216,7 +226,15 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       throw new Error("panelExtension has already been destroyed");
     }
 
+    const cnt = this.renderCount.get(extension.id);
+    this.renderCount.set(extension.id, cnt == null ? 1 : cnt + 1);
+
     console.debug(`Run panelExtension: ${extension.id}`);
+
+    if (cnt > RENDER_LOOP_THRESHOLD) {
+      console.error(`Panel ${extension.id} is stuck in a render loop`);
+      throw new Error(`Panel is stuck in a render loop`);
+    }
 
     const bodyUUID = uuidv4();
     const extensionLogger = this.logger.childLogger({
@@ -233,6 +251,11 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     const collapsible = boolean(rawCollapsible);
     const shadowDOM = boolean(rawShadowDOM);
+
+    // start collapsed
+    if (collapsible && cnt == null) {
+      this.collapsedExtensions[extension.id] = true;
+    }
 
     const serviceContext = await makeServiceContext(extension.services);
     const extensionContext = { ...readerContext, ...serviceContext };
@@ -262,6 +285,17 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
     );
 
+    // clean up removal monitor, otherwise it will be re-triggered during replaceWith
+    const cancelCurrent = this.cancelRemovalMonitor.get(extension.id);
+    if (cancelCurrent) {
+      console.debug(`Cancelling removal monitor for ${extension.id}`);
+      cancelCurrent();
+      this.cancelRemovalMonitor.delete(extension.id);
+      this.cancelPending.delete(cancelCurrent);
+    } else {
+      console.debug(`No current removal monitor for ${extension.id}`);
+    }
+
     if ($existingPanel.length) {
       console.debug(`Replacing existing panel for ${extension.id}`);
       $existingPanel.replaceWith($panel);
@@ -272,6 +306,15 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         extensionId: extension.id,
       });
     }
+
+    const cancelNodeRemoved = onNodeRemoved($panel.get(0), () => {
+      console.debug(
+        `Panel for ${extension.id} was removed from the DOM (render: ${cnt}); re-running`
+      );
+      this.run([extension.id]);
+    });
+    this.cancelRemovalMonitor.set(extension.id, cancelNodeRemoved);
+    this.cancelPending.add(cancelNodeRemoved);
 
     // update the body content with the new args
     const $bodyContainers = this.$container.find(`#${bodyUUID}`);
@@ -346,7 +389,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
   }
 
-  async run(): Promise<void> {
+  async run(extensionIds?: string[]): Promise<void> {
     if (!this.$container || !this.extensions.length) {
       return;
     }
@@ -361,6 +404,10 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const errors = [];
 
     for (const extension of this.extensions) {
+      if (extensionIds != null && !extensionIds.includes(extension.id)) {
+        continue;
+      }
+
       try {
         await this.runExtension(readerContext, extension);
       } catch (ex) {
@@ -386,7 +433,7 @@ type PanelPosition =
   | "append"
   | "prepend"
   | {
-      // element to insert the menu item before, selector is relative to the container
+      // element to insert the panel item before, selector is relative to the container
       sibling: string | null;
     };
 
