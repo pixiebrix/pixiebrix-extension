@@ -208,7 +208,6 @@ export async function launchOAuth2Flow(
   let tokenResponse: AxiosResponse;
 
   try {
-    // FIXME: handle endpoints that want data via POST json body
     tokenResponse = await axios.post(tokenURL.toString(), tokenParams, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -222,7 +221,9 @@ export async function launchOAuth2Flow(
   const { data, status, statusText } = tokenResponse;
 
   if (status >= 400) {
-    throw new Error(`Error getting OAuth2 token: ${statusText}`);
+    throw new Error(
+      `Error getting OAuth2 token: ${statusText ?? "Unknown error"}`
+    );
   }
 
   await setCachedAuthData(auth.id, data);

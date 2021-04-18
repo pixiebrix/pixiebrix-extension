@@ -19,10 +19,13 @@ import { proxyService } from "@/background/requests";
 import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
-import { Permissions } from "webextension-polyfill-ts";
 import { sleep } from "@/utils";
 
-export const UIPATH_SERVICE_ID = "uipath/cloud";
+export const UIPATH_SERVICE_IDS = [
+  "uipath/cloud",
+  "uipath/cloud-oauth",
+  "uipath/orchestrator",
+];
 export const UIPATH_ID = "@pixiebrix/uipath/process";
 
 const MAX_WAIT_MILLIS = 20_000;
@@ -32,7 +35,7 @@ export const UIPATH_PROPERTIES: SchemaProperties = {
   uipath: {
     anyOf: [
       {
-        $ref: "https://app.pixiebrix.com/schemas/services/uipath/cloud"
+        $ref: "https://app.pixiebrix.com/schemas/services/uipath/cloud",
       },
       {
         $ref: "https://app.pixiebrix.com/schemas/services/uipath/orchestrator",
@@ -73,10 +76,6 @@ export const UIPATH_PROPERTIES: SchemaProperties = {
   },
 };
 
-export const UIPATH_PERMISSIONS: Permissions.Permissions = {
-  origins: ["https://*.uipath.com/*"],
-};
-
 interface JobsResponse {
   "@odata.context": "https://cloud.uipath.com/odata/$metadata#Jobs";
   "@odata.count": number;
@@ -104,11 +103,6 @@ export class RunProcess extends Transformer {
     required: ["uipath", "releaseKey"],
     properties: UIPATH_PROPERTIES,
   };
-
-  /**
-   * Additional permissions required for CORS
-   */
-  permissions: Permissions.Permissions = UIPATH_PERMISSIONS;
 
   async transform(
     {
@@ -167,6 +161,7 @@ export class RunProcess extends Transformer {
       );
     }
 
+    // Not awaiting the result
     return {};
   }
 }

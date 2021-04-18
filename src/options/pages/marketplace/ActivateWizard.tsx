@@ -27,6 +27,7 @@ import "./ActivateWizard.scss";
 import { Formik, FormikHelpers } from "formik";
 import ConfigureBody, {
   selectedExtensions,
+  useSelectedAuths,
   useSelectedExtensions,
 } from "./ConfigureBody";
 import ServicesBody from "./ServicesBody";
@@ -134,8 +135,13 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           (v, k) => requiredServices.includes(k) && v == null
         )
       );
+
+      const configuredAuths = Object.entries(values.services)
+        .filter((x) => x[1])
+        .map(([id, config]) => ({ id, config }));
+
       const enabled = await checkPermissions(
-        await collectPermissions(selected)
+        await collectPermissions(selected, configuredAuths)
       );
 
       if (!selected.length) {
@@ -215,8 +221,13 @@ const STEPS = [
 const ActivateButton: React.FunctionComponent<{
   blueprint: RecipeDefinition;
 }> = ({ blueprint }) => {
-  const selected = useSelectedExtensions(blueprint.extensionPoints);
-  const { activate, isPending } = useEnsurePermissions(blueprint, selected);
+  const extensions = useSelectedExtensions(blueprint.extensionPoints);
+  const serviceAuths = useSelectedAuths();
+  const { activate, isPending } = useEnsurePermissions(
+    blueprint,
+    extensions,
+    serviceAuths
+  );
 
   return (
     <Button size="sm" disabled={isPending} onClick={activate}>

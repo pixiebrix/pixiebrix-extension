@@ -22,7 +22,10 @@ import {
   ServiceField,
 } from "@/components/fields/blockOptions";
 import { fromPairs, identity } from "lodash";
-import { UIPATH_PROPERTIES, UIPATH_SERVICE_ID } from "@/contrib/uipath/process";
+import {
+  UIPATH_PROPERTIES,
+  UIPATH_SERVICE_IDS,
+} from "@/contrib/uipath/process";
 import { Schema, SchemaProperties } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -72,14 +75,13 @@ interface Release {
   };
 }
 
-
 export function useReleases(): {
   releases: Release[];
   isPending: boolean;
   error: unknown;
   hasConfig: boolean;
 } {
-  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_ID);
+  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_IDS);
 
   const [releases, isPending, error] = useAsyncState(async () => {
     if (config && hasPermissions) {
@@ -99,7 +101,7 @@ export function useReleases(): {
 }
 
 function useRobots(): { robots: Robot[]; isPending: boolean; error: unknown } {
-  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_ID);
+  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_IDS);
   const [robots, isPending, error] = useAsyncState(async () => {
     if (config && hasPermissions) {
       const response = await proxyService<ODataResponseData<Robot>>(config, {
@@ -268,7 +270,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   const basePath = [name, configKey].filter(identity).join(".");
 
   const { hasPermissions, requestPermissions } = useDependency(
-    UIPATH_SERVICE_ID
+    UIPATH_SERVICE_IDS
   );
 
   const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);

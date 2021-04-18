@@ -23,7 +23,10 @@ import React, { useCallback, useState } from "react";
 import { useFormikContext } from "formik";
 import { Button, Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { useSelectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
+import {
+  useSelectedAuths,
+  useSelectedExtensions,
+} from "@/options/pages/marketplace/ConfigureBody";
 import { useToasts } from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
 import {
@@ -31,6 +34,7 @@ import {
   collectPermissions,
   ensureAllPermissions,
   originPermissions,
+  ServiceAuthPair,
 } from "@/permissions";
 import { GridLoader } from "react-spinners";
 import { useAsyncState } from "@/hooks/common";
@@ -44,7 +48,8 @@ interface ActivateProps {
 
 export function useEnsurePermissions(
   blueprint: RecipeDefinition,
-  extensions: ExtensionPointDefinition[]
+  extensions: ExtensionPointDefinition[],
+  serviceAuths: ServiceAuthPair[]
 ) {
   const { addToast } = useToasts();
   const { submitForm } = useFormikContext();
@@ -53,12 +58,12 @@ export function useEnsurePermissions(
   useAsyncEffect(
     async (isMounted) => {
       const enabled = await checkPermissions(
-        await collectPermissions(extensions)
+        await collectPermissions(extensions, serviceAuths)
       );
       if (!isMounted()) return;
       setEnabled(enabled);
     },
-    [extensions]
+    [extensions, serviceAuths, setEnabled]
   );
 
   const request = useCallback(async () => {
@@ -66,7 +71,7 @@ export function useEnsurePermissions(
 
     try {
       accepted = await ensureAllPermissions(
-        await collectPermissions(extensions)
+        await collectPermissions(extensions, serviceAuths)
       );
     } catch (err) {
       console.error(err);
@@ -89,8 +94,9 @@ export function useEnsurePermissions(
   }, [extensions, setEnabled]);
 
   const [permissions, isPending] = useAsyncState(
-    async () => originPermissions(await collectPermissions(extensions)),
-    [extensions]
+    async () =>
+      originPermissions(await collectPermissions(extensions, serviceAuths)),
+    [extensions, serviceAuths]
   );
 
   const activate = useCallback(() => {
@@ -117,10 +123,12 @@ export function useEnsurePermissions(
 const ActivateBody: React.FunctionComponent<ActivateProps> = ({
   blueprint,
 }) => {
-  const selected = useSelectedExtensions(blueprint.extensionPoints);
+  const selectedExtensions = useSelectedExtensions(blueprint.extensionPoints);
+  const selectedAuths = useSelectedAuths();
   const { enabled, activate, isPending, permissions } = useEnsurePermissions(
     blueprint,
-    selected
+    selectedExtensions,
+    selectedAuths
   );
 
   return (
