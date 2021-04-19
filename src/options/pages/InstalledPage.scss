@@ -18,9 +18,10 @@
 .ActiveBricksCard {
   .table {
     .ActiveBricksCard__blueprint {
-      cursor: pointer;
-
-      background-color: rgba(0, 0, 0, 0.03);
+      &:not(.isDeployment) {
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, 0.03);
+      }
 
       th {
         font-weight: 400;
