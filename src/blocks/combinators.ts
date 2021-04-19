@@ -43,6 +43,7 @@ import {
 } from "@/background/executor";
 import { boolean } from "@/utils";
 import { getLoggingConfig } from "@/background/logging";
+import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 
 export type ReaderConfig =
   | string
@@ -51,7 +52,15 @@ export type ReaderConfig =
 
 export interface BlockConfig {
   id: string;
+
+  // (Optional) human-readable label for the step. Shown in the progress indicator
+  label?: string;
+
+  // (Optional) indicate the step is being run in the interface
+  notifyProgress?: boolean;
+
   window?: "self" | "opener" | "target" | "broadcast";
+
   outputKey?: string;
 
   // (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
@@ -226,25 +235,38 @@ async function runStage(
     }
   }
 
-  if (stage.window === "opener") {
-    return await executeInOpener(stage.id, blockArgs, {
-      ctxt: args,
-      messageContext: logger.context,
-    });
-  } else if (stage.window === "target") {
-    return await executeInTarget(stage.id, blockArgs, {
-      ctxt: args,
-      messageContext: logger.context,
-    });
-  } else if (stage.window === "broadcast") {
-    return await executeInAll(stage.id, blockArgs, {
-      ctxt: args,
-      messageContext: logger.context,
-    });
-  } else if (stage.window ?? "self" === "self") {
-    return await block.run(blockArgs, { ctxt: args, logger, root });
-  } else {
-    throw new Error(`Unexpected stage window ${stage.window}`);
+  let progressCallbacks: NotificationCallbacks;
+
+  if (stage.notifyProgress) {
+    progressCallbacks = notifyProgress(
+      logger.context.extensionId,
+      stage.label ?? block.name
+    );
+  }
+
+  try {
+    if (stage.window === "opener") {
+      return await executeInOpener(stage.id, blockArgs, {
+        ctxt: args,
+        messageContext: logger.context,
+      });
+    } else if (stage.window === "target") {
+      return await executeInTarget(stage.id, blockArgs, {
+        ctxt: args,
+        messageContext: logger.context,
+      });
+    } else if (stage.window === "broadcast") {
+      return await executeInAll(stage.id, blockArgs, {
+        ctxt: args,
+        messageContext: logger.context,
+      });
+    } else if (stage.window ?? "self" === "self") {
+      return await block.run(blockArgs, { ctxt: args, logger, root });
+    } else {
+      throw new Error(`Unexpected stage window ${stage.window}`);
+    }
+  } finally {
+    progressCallbacks?.hide();
   }
 }
 

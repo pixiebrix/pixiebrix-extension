@@ -45,6 +45,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
   const nodes = new WeakSet<Node>(ancestors);
   const observers = new Set<MutationObserver>();
 
+  // make sure we're only calling once
   const wrappedCallback = once(callback);
 
   // Observe the whole path to the node. A node is removed if any of its ancestors are removed. Observe individual

@@ -16,6 +16,7 @@
  */
 
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
+import { merge } from "lodash";
 
 export const showNotification = liftContentScript(
   "SHOW_NOTIFICATION",
@@ -25,3 +26,72 @@ export const showNotification = liftContentScript(
     });
   }
 );
+
+export const DEFAULT_ACTION_RESULTS = {
+  error: {
+    message: "Error running action",
+    config: {
+      className: "error",
+    },
+  },
+  cancel: {
+    message: "The action was cancelled",
+    config: {
+      className: "info",
+    },
+  },
+  success: {
+    message: "Successfully ran action",
+    config: {
+      className: "success",
+    },
+  },
+};
+
+export interface MessageConfig {
+  message: string;
+  detail?: string;
+  config: Partial<NotificationOptions>;
+}
+
+export function mergeConfig(
+  custom: MessageConfig | null,
+  defaults: MessageConfig
+): MessageConfig {
+  if (custom == null) {
+    return defaults;
+  }
+  return merge({}, defaults, custom);
+}
+
+export interface NotificationCallbacks {
+  hide: () => void;
+}
+
+export function notifyError(message: string, err?: unknown): void {
+  // call getErrorMessage on err and include in the details
+  $.notify(message, {
+    className: "error",
+  });
+}
+
+export function notifyResult(extensionId: string, config: MessageConfig): void {
+  $.notify(config.message, config.config);
+}
+
+export function notifyProgress(
+  extensionId: string,
+  message: string
+): NotificationCallbacks {
+  const element = $.notify(message, {
+    autoHide: false,
+    clickToHide: false,
+    className: "info",
+  });
+
+  return {
+    hide: () => {
+      $(element).trigger("notify-hide");
+    },
+  };
+}

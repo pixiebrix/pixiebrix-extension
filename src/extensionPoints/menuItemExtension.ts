@@ -35,7 +35,6 @@ import {
   acquireElement,
   onNodeRemoved,
   EXTENSION_POINT_DATA_ATTR,
-  getErrorMessage,
 } from "@/extensionPoints/helpers";
 import {
   ExtensionPointConfig,
@@ -53,6 +52,13 @@ import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { hasCancelRootCause } from "@/errors";
+import {
+  DEFAULT_ACTION_RESULTS,
+  mergeConfig,
+  MessageConfig,
+  notifyError,
+  notifyResult,
+} from "@/contentScript/notify";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -68,6 +74,10 @@ export interface MenuItemExtensionConfig {
   action: BlockConfig | BlockPipeline;
   icon?: IconConfig;
   dynamicCaption?: boolean;
+
+  onError?: MessageConfig;
+  onCancel?: MessageConfig;
+  onSuccess?: MessageConfig;
 }
 
 export const actionSchema: Schema = {
@@ -345,6 +355,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       caption,
       dynamicCaption = false,
       action: actionConfig,
+      onCancel,
+      onError,
+      onSuccess,
       icon = { id: "box", size: 18 },
     } = extension.config;
 
@@ -423,15 +436,22 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         extensionLogger.info("Successfully ran menu action");
 
-        $.notify(`Successfully ran action`, { className: "success" });
+        notifyResult(
+          extension.id,
+          mergeConfig(onSuccess, DEFAULT_ACTION_RESULTS.success)
+        );
       } catch (ex) {
         if (hasCancelRootCause(ex)) {
-          $.notify("The action was cancelled", { className: "info" });
+          notifyResult(
+            extension.id,
+            mergeConfig(onCancel, DEFAULT_ACTION_RESULTS.cancel)
+          );
         } else {
           extensionLogger.error(ex);
-          $.notify(`Error running action: ${getErrorMessage(ex)}`, {
-            className: "error",
-          });
+          notifyResult(
+            extension.id,
+            mergeConfig(onError, DEFAULT_ACTION_RESULTS.error)
+          );
         }
       }
     });
@@ -562,17 +582,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         errors,
       });
 
-      if (errors.length === 1) {
-        $.notify(
-          `An error occurred adding ${errors.length} menu item(s): ${errors[0]}`,
-          {
-            className: "error",
-          }
-        );
-      } else {
-        $.notify(`An error occurred adding ${errors.length} menu item(s)`, {
-          className: "error",
+      for (const error of errors) {
+        reportError(error, {
+          extensionPointId: this.id,
         });
+      }
+
+      if (errors.length === 1) {
+        notifyError("An error occurred adding the menu item/button", errors[0]);
+      } else {
+        notifyError(`An error occurred adding ${errors.length} menu items`);
       }
     }
   }

@@ -30,11 +30,7 @@ import {
   makeServiceContext,
 } from "@/blocks/combinators";
 import { boolean } from "@/utils";
-import {
-  awaitElementOnce,
-  acquireElement,
-  onNodeRemoved,
-} from "@/extensionPoints/helpers";
+import { awaitElementOnce, acquireElement } from "@/extensionPoints/helpers";
 import {
   IBlock,
   IconConfig,
@@ -52,6 +48,8 @@ import { propertiesToSchema } from "@/validators/generic";
 import { PanelComponent, render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
+import { notifyError } from "@/contentScript/notify";
+import moment from "moment";
 
 export interface PanelConfig {
   heading?: string;
@@ -61,9 +59,29 @@ export interface PanelConfig {
   shadowDOM?: boolean;
 }
 
-const RENDER_LOOP_THRESHOLD = 5;
+const RENDER_LOOP_THRESHOLD = 25;
+const RENDER_LOOP_WINDOW_MS = 500;
 
 const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
+
+/**
+ * Prevent panel render from entering an infinite loop
+ */
+function detectLoop(timestamps: moment.Moment[]): void {
+  const current = moment();
+
+  const renders = timestamps.filter(
+    (x) => Math.abs(current.diff(x)) < RENDER_LOOP_WINDOW_MS
+  );
+
+  if (renders.length > RENDER_LOOP_THRESHOLD) {
+    const diffs = timestamps.map((x) => Math.abs(current.diff(x)));
+    console.error(`Panel is stuck in a render loop`, {
+      diffs,
+    });
+    throw new Error(`Panel is stuck in a render loop`);
+  }
+}
 
 /**
  * Extension point that adds a panel to a web page.
@@ -75,7 +93,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   private readonly cancelPending: Set<() => void>;
   private uninstalled = false;
   private readonly cancelRemovalMonitor: Map<string, () => void>;
-  private readonly renderCount: Map<string, number>;
+
+  private readonly renderTimestamps: Map<string, moment.Moment[]>;
 
   public get defaultOptions(): { heading: string } {
     return { heading: "Custom Panel" };
@@ -92,7 +111,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     this.collapsedExtensions = {};
     this.cancelPending = new Set();
     this.cancelRemovalMonitor = new Map();
-    this.renderCount = new Map();
+    this.renderTimestamps = new Map();
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -226,15 +245,19 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       throw new Error("panelExtension has already been destroyed");
     }
 
-    const cnt = this.renderCount.get(extension.id);
-    this.renderCount.set(extension.id, cnt == null ? 1 : cnt + 1);
+    // initialize render timestamps for extension
+    let renderTimestamps = this.renderTimestamps.get(extension.id);
+    if (renderTimestamps == null) {
+      this.renderTimestamps.set(extension.id, []);
+      renderTimestamps = this.renderTimestamps.get(extension.id);
+    }
+
+    renderTimestamps.push(moment());
+    const cnt = renderTimestamps.length;
 
     console.debug(`Run panelExtension: ${extension.id}`);
 
-    if (cnt > RENDER_LOOP_THRESHOLD) {
-      console.error(`Panel ${extension.id} is stuck in a render loop`);
-      throw new Error(`Panel is stuck in a render loop`);
-    }
+    detectLoop(renderTimestamps);
 
     const bodyUUID = uuidv4();
     const extensionLogger = this.logger.childLogger({
@@ -253,7 +276,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const shadowDOM = boolean(rawShadowDOM);
 
     // start collapsed
-    if (collapsible && cnt == null) {
+    if (collapsible && cnt == 1) {
       this.collapsedExtensions[extension.id] = true;
     }
 
@@ -297,6 +320,9 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
 
     if ($existingPanel.length) {
+      if (this.cancelRemovalMonitor.get(extension.id) != null) {
+        throw new Error("Removal monitor still attached for panel");
+      }
       console.debug(`Replacing existing panel for ${extension.id}`);
       $existingPanel.replaceWith($panel);
     } else {
@@ -307,14 +333,16 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       });
     }
 
-    const cancelNodeRemoved = onNodeRemoved($panel.get(0), () => {
-      console.debug(
-        `Panel for ${extension.id} was removed from the DOM (render: ${cnt}); re-running`
-      );
-      this.run([extension.id]);
-    });
-    this.cancelRemovalMonitor.set(extension.id, cancelNodeRemoved);
-    this.cancelPending.add(cancelNodeRemoved);
+    // FIXME: required sites that remove the panel, e.g., Pipedrive. Currently causing infinite loop on Salesforce
+    //  when switching between cases
+    // const cancelNodeRemoved = onNodeRemoved($panel.get(0), () => {
+    //   console.debug(
+    //     `Panel for ${extension.id} was removed from the DOM (render: ${cnt}); re-running`
+    //   );
+    //   this.run([extension.id]);
+    // });
+    // this.cancelRemovalMonitor.set(extension.id, cancelNodeRemoved);
+    // this.cancelPending.add(cancelNodeRemoved);
 
     // update the body content with the new args
     const $bodyContainers = this.$container.find(`#${bodyUUID}`);
@@ -417,9 +445,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     }
 
     if (errors.length) {
-      $.notify(`An error occurred adding ${errors.length} panels(s)`, {
-        className: "error",
-      });
+      notifyError(`An error occurred adding ${errors.length} panels(s)`);
     }
   }
 }

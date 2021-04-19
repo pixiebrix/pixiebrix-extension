@@ -128,7 +128,7 @@ module.exports = {
       // https://github.com/webpack/webpack/issues/3017#issuecomment-285954512
       // prevent lodash from overriding window._
       {
-        exclude: /(notifyjs-browser)/,
+        exclude: /(notifyjs-browser|vendors\/notify)/,
         parser: { amd: false },
       },
       {
