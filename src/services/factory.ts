@@ -102,7 +102,10 @@ class LocalDefinedService<
       this._definition.isAvailable?.matchPatterns ?? []
     );
 
-    if ("baseURL" in this._definition.authentication) {
+    if (
+      this._definition.authentication != null &&
+      "baseURL" in this._definition.authentication
+    ) {
       // convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
       const baseUrlTemplate = this._definition.authentication.baseURL;
       const baseUrl = mapArgs(baseUrlTemplate, serviceConfig);
