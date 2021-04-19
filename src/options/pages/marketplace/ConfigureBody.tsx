@@ -26,6 +26,13 @@ import {
 import pickBy from "lodash/pickBy";
 import identity from "lodash/identity";
 import { WizardValues } from "@/options/pages/marketplace/wizard";
+import { ServiceAuthPair } from "@/permissions";
+
+export function selectedAuths(values: WizardValues): ServiceAuthPair[] {
+  return Object.entries(values.services)
+    .filter(([, config]) => config)
+    .map(([id, config]) => ({ id, config }));
+}
 
 export function selectedExtensions(
   values: WizardValues,
@@ -39,6 +46,11 @@ export function selectedExtensions(
     indexes,
   });
   return extensions.filter((x, i) => indexes.includes(i));
+}
+
+export function useSelectedAuths(): ServiceAuthPair[] {
+  const { values } = useFormikContext<WizardValues>();
+  return useMemo(() => selectedAuths(values), [values]);
 }
 
 export function useSelectedExtensions(

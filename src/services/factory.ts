@@ -109,6 +109,13 @@ class LocalDefinedService<
       patterns.push(baseUrl.endsWith("/") ? `${baseUrl}*` : `${baseUrl}/*`);
     }
 
+    if (this.isOAuth2) {
+      const oauth = this._definition
+        .authentication as OAuth2AuthenticationDefinition;
+      patterns.push(mapArgs(oauth.oauth2.authorizeUrl, serviceConfig));
+      patterns.push(mapArgs(oauth.oauth2.tokenUrl, serviceConfig));
+    }
+
     if (this.isToken) {
       const tokenUrl = (this
         ._definition as ServiceDefinition<TokenAuthenticationDefinition>)

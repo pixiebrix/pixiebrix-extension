@@ -6,7 +6,7 @@ import { reportError } from "@/telemetry/logging";
 import { useToasts } from "react-toast-notifications";
 import { useFormikContext } from "formik";
 import { SanitizedServiceConfiguration, ServiceDependency } from "@/core";
-import { head } from "lodash";
+import { head, castArray } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";
 import { Service } from "@/types";
@@ -16,7 +16,7 @@ type Listener = () => void;
 const permissionsListeners = new Map<string, Listener[]>();
 
 export function useDependency(
-  serviceId: string
+  serviceId: string | string[]
 ): {
   config: SanitizedServiceConfiguration;
   service: Service;
@@ -27,20 +27,24 @@ export function useDependency(
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
   const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
 
+  const serviceIds = castArray(serviceId);
+
   const dependency: ServiceDependency = useMemo(() => {
-    const service = (values.services ?? []).filter(
-      (service) => service.id === serviceId
+    const configuredServices = (values.services ?? []).filter((service) =>
+      serviceIds.includes(service.id)
     );
-    if (service.length > 1) {
-      // FIXME: this could use the selected service for the block to avoid multiple results
-      throw new Error(`Multiple services configured for ${serviceId}`);
+    if (configuredServices.length > 1) {
+      throw new Error("Multiple matching services configured");
     }
-    return head(service);
+    return head(configuredServices);
   }, [values.services]);
 
   const [serviceResult] = useAsyncState(async () => {
     if (dependency.config) {
-      const localConfig = await locator.locate(serviceId, dependency.config);
+      const localConfig = await locator.locate(
+        dependency.id,
+        dependency.config
+      );
       const service = await registry.lookup(dependency.id);
       return { localConfig: localConfig, service };
     } else {
@@ -64,7 +68,7 @@ export function useDependency(
 
   useEffect(() => {
     if (dependency?.config && !hasPermissions) {
-      const key = `${serviceId}:${dependency.config}`;
+      const key = `${dependency.id}:${dependency.config}`;
       const listener = () => setGrantedPermissions(true);
       permissionsListeners.set(key, [
         ...(permissionsListeners.get(key) ?? []),
@@ -77,7 +81,12 @@ export function useDependency(
         );
       };
     }
-  }, [serviceId, dependency?.config, setGrantedPermissions, hasPermissions]);
+  }, [
+    dependency?.id,
+    dependency?.config,
+    setGrantedPermissions,
+    hasPermissions,
+  ]);
 
   const requestPermissions = useCallback(async () => {
     const permissions = { origins };
@@ -92,7 +101,7 @@ export function useDependency(
             autoDismiss: true,
           });
         } else {
-          const key = `${serviceId}:${dependency.config}`;
+          const key = `${dependency.id}:${dependency.config}`;
           for (const listener of permissionsListeners.get(key)) {
             listener();
           }
@@ -111,7 +120,7 @@ export function useDependency(
     addToast,
     setGrantedPermissions,
     origins,
-    serviceId,
+    dependency?.id,
     dependency?.config,
   ]);
 

@@ -46,7 +46,7 @@ import {
 } from "@/contrib/uipath/processOptions";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import { useDependency } from "@/services/hooks";
-import { UIPATH_SERVICE_ID } from "@/contrib/uipath/process";
+import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
 
 interface Process {
   id: string;
@@ -127,7 +127,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     config: remoteConfig,
     hasPermissions,
     requestPermissions,
-  } = useDependency(UIPATH_SERVICE_ID);
+  } = useDependency(UIPATH_SERVICE_IDS);
 
   const { schema, error: schemaError } = useReleaseSchema(releaseKey);
 
@@ -208,7 +208,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       <ProcessField
         label="process"
         name={`${basePath}.releaseKey`}
-        schema={UIPATH_PROPERTIES["releaseKey"] as Schema}
+        schema={UIPATH_PROPERTIES.releaseKey as Schema}
         isPending={processesPending}
         processes={processes}
         fetchError={initError?.toString() ?? processesError?.toString()}

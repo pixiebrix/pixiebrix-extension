@@ -119,14 +119,21 @@ export async function launchOAuth2Flow(
 
   const {
     code_challenge_method,
+    client_secret,
     authorizeUrl: rawAuthorizeUrl,
     tokenUrl: rawTokenUrl,
     ...params
   } = oauth2;
 
+  if (!rawAuthorizeUrl) {
+    throw new Error("authorizeUrl is required for oauth2");
+  } else if (!rawTokenUrl) {
+    throw new Error("tokenUrl is required for oauth2");
+  }
+
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
 
-  console.debug("Redirect URI", redirect_uri);
+  // console.debug("OAuth2 context", {redirect_uri, context: oauth2});
 
   const authorizeURL = new URL(rawAuthorizeUrl);
   for (const [key, value] of Object.entries({
@@ -158,10 +165,10 @@ export async function launchOAuth2Flow(
     );
   }
 
-  console.debug("OAuth2 context", {
-    authorizeURL,
-    oauth2,
-  });
+  // console.debug("OAuth2 context", {
+  //   authorizeURL,
+  //   oauth2,
+  // });
 
   const responseUrl = await browser.identity.launchWebAuthFlow({
     url: authorizeURL.toString(),
@@ -174,7 +181,7 @@ export async function launchOAuth2Flow(
 
   const authResponse = new URL(responseUrl);
 
-  console.debug("OAuth authorize response", authResponse);
+  // console.debug("OAuth authorize response", authResponse);
 
   const error = authResponse.searchParams.get("error");
   if (error) {
@@ -196,6 +203,9 @@ export async function launchOAuth2Flow(
     client_id: params.client_id,
   };
 
+  if (client_secret) {
+    tokenBody.client_secret = client_secret;
+  }
   if (code_verifier) {
     tokenBody.code_verifier = code_verifier;
   }
@@ -208,7 +218,6 @@ export async function launchOAuth2Flow(
   let tokenResponse: AxiosResponse;
 
   try {
-    // FIXME: handle endpoints that want data via POST json body
     tokenResponse = await axios.post(tokenURL.toString(), tokenParams, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -222,10 +231,33 @@ export async function launchOAuth2Flow(
   const { data, status, statusText } = tokenResponse;
 
   if (status >= 400) {
-    throw new Error(`Error getting OAuth2 token: ${statusText}`);
+    throw new Error(
+      `Error getting OAuth2 token: ${statusText ?? "Unknown error"}`
+    );
+  } else if (typeof data === "string") {
+    let parsed;
+    try {
+      parsed = new URLSearchParams(data);
+    } catch (err) {
+      throw new Error(
+        "Expected application/x-www-form-urlencoded data for response"
+      );
+    }
+    if (parsed?.get("error")) {
+      throw new Error(parsed.get("error_description") ?? parsed.get("error"));
+    }
+    const json: Record<string, string> = {};
+    parsed.forEach((value, key) => {
+      // Coming from the URL search parameter so will be safe
+      // eslint-disable-next-line security/detect-object-injection
+      json[key] = value;
+    });
+    await setCachedAuthData(auth.id, json);
+    return json as AuthData;
+  } else if (typeof data === "object") {
+    await setCachedAuthData(auth.id, data);
+    return data as AuthData;
+  } else {
+    throw new Error("Error getting OAuth2 token: unexpected response format");
   }
-
-  await setCachedAuthData(auth.id, data);
-
-  return data as AuthData;
 }

@@ -30,24 +30,31 @@ function useEnsurePermissions(deployments: Deployment[]) {
     return deployments.map((x) => x.package.config);
   }, [deployments]);
 
+  const [permissions, isPending] = useAsyncState(async () => {
+    // Deployments can only use proxied services, so there's no additional permissions to request for the
+    // the serviceAuths.
+    return await collectPermissions(
+      blueprints.flatMap((x) => x.extensionPoints),
+      []
+    );
+  }, [blueprints]);
+
   useAsyncEffect(
     async (isMounted) => {
-      const enabled = await checkPermissions(
-        await collectPermissions(blueprints.flatMap((x) => x.extensionPoints))
-      );
-      if (!isMounted()) return;
-      setEnabled(enabled);
+      if (permissions) {
+        const enabled = await checkPermissions(permissions);
+        if (!isMounted()) return;
+        setEnabled(enabled);
+      }
     },
-    [blueprints]
+    [permissions, setEnabled]
   );
 
   const request = useCallback(async () => {
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissions(
-        await collectPermissions(blueprints.flatMap((x) => x.extensionPoints))
-      );
+      accepted = await ensureAllPermissions(permissions);
     } catch (err) {
       console.error(err);
       addToast(`Error granting permissions: ${err}`, {
@@ -66,17 +73,13 @@ function useEnsurePermissions(deployments: Deployment[]) {
     } else {
       return true;
     }
-  }, [blueprints, setEnabled]);
+  }, [permissions, setEnabled]);
 
-  const [permissions, isPending] = useAsyncState(
-    async () =>
-      originPermissions(
-        await collectPermissions(blueprints.flatMap((x) => x.extensionPoints))
-      ),
-    [blueprints]
-  );
+  const groupedPermissions = useMemo(() => {
+    return originPermissions(permissions ?? []);
+  }, [permissions]);
 
-  return { enabled, request, permissions, isPending };
+  return { enabled, request, permissions: groupedPermissions, isPending };
 }
 
 function useDeployments() {

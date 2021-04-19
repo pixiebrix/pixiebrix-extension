@@ -19,17 +19,15 @@ import extensionRegistry from "@/extensionPoints/registry";
 import { distinctPermissions, mergePermissions } from "@/blocks/available";
 import { useAsyncEffect } from "use-async-effect";
 import { useState, useCallback } from "react";
-import every from "lodash/every";
 import { IExtension } from "@/core";
 import {
   ExtensionPointDefinition,
   RecipeDefinition,
 } from "@/types/definitions";
 import { Permissions, browser } from "webextension-polyfill-ts";
-import sortBy from "lodash/sortBy";
-import castArray from "lodash/castArray";
-import groupBy from "lodash/groupBy";
-import uniq from "lodash/uniq";
+import { sortBy, castArray, groupBy, uniq, every } from "lodash";
+import { locator } from "@/background/locator";
+import registry from "@/services/registry";
 
 const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
 
@@ -57,14 +55,22 @@ export async function ensureAllPermissions(
   // return true;
 }
 
+export type ServiceAuthPair = {
+  id: string;
+  config: string;
+};
+
 export async function collectPermissions(
-  recipe: RecipeDefinition
+  recipe: RecipeDefinition,
+  serviceAuths: ServiceAuthPair[]
 ): Promise<Permissions.Permissions[]>;
 export async function collectPermissions(
-  extensionPoints: ExtensionPointDefinition[]
+  extensionPoints: ExtensionPointDefinition[],
+  serviceAuths: ServiceAuthPair[]
 ): Promise<Permissions.Permissions[]>;
 export async function collectPermissions(
-  recipeOrExtensionPoints: RecipeDefinition | ExtensionPointDefinition[]
+  recipeOrExtensionPoints: RecipeDefinition | ExtensionPointDefinition[],
+  serviceAuths: ServiceAuthPair[]
 ): Promise<Permissions.Permissions[]> {
   const normalize = (x: Permissions.Permissions) => ({
     origins: castArray(x.origins ?? []),
@@ -79,6 +85,10 @@ export async function collectPermissions(
     ? recipeOrExtensionPoints
     : recipeOrExtensionPoints.extensionPoints;
 
+  const servicePermissions = await Promise.all(
+    serviceAuths.map(serviceOriginPermissions)
+  );
+
   const permissions = await Promise.all(
     extensionPoints.map(
       async ({ id, permissions = {} }: ExtensionPointDefinition) => {
@@ -91,23 +101,48 @@ export async function collectPermissions(
     )
   );
 
-  return distinctPermissions(permissions);
+  return distinctPermissions([...servicePermissions, ...permissions]);
+}
+
+export async function serviceOriginPermissions(
+  dependency: ServiceAuthPair
+): Promise<Permissions.Permissions> {
+  const localConfig = await locator.locate(dependency.id, dependency.config);
+
+  if (localConfig.proxy) {
+    // Don't need permissions to access the pixiebrix api server because they're already granted on
+    // extension install
+    return { origins: [] };
+  } else {
+    const service = await registry.lookup(dependency.id);
+    const matchPatterns = service.getOrigins(localConfig.config);
+    return { origins: matchPatterns };
+  }
 }
 
 /**
- * Return distinct browser permissions required to run the extension.
- * @param extension
- * @returns {*}
+ * Return distinct browser permissions required to run the extensions
+ * - Extension point
+ * - Blocks
+ * - Services
  */
 export async function extensionPermissions(
   extension: IExtension
 ): Promise<Permissions.Permissions[]> {
   const { extensionPointId } = extension;
   const extensionPoint = await extensionRegistry.lookup(extensionPointId);
-  const blockPermissions = (await extensionPoint.getBlocks(extension)).map(
-    (x) => x.permissions
+  const services = await Promise.all(
+    extension.services
+      .filter((x) => x.config)
+      .map((x) => serviceOriginPermissions({ id: x.id, config: x.config }))
   );
-  return distinctPermissions([extensionPoint.permissions, ...blockPermissions]);
+  const blocks = await extensionPoint.getBlocks(extension);
+  const blockPermissions = blocks.map((x) => x.permissions);
+  return distinctPermissions([
+    extensionPoint.permissions,
+    ...services,
+    ...blockPermissions,
+  ]);
 }
 
 export async function checkPermissions(
@@ -135,6 +170,9 @@ export async function ensureExtensionPermissions(
   return await ensureAllPermissions(permissions);
 }
 
+/**
+ * Return permissions grouped by origin
+ */
 export function originPermissions(
   permissions: Permissions.Permissions[]
 ): Permissions.Permissions[] {

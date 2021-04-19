@@ -47,7 +47,11 @@ export interface TokenAuthenticationDefinition {
 
 export interface OAuth2AuthenticationDefinition {
   baseURL?: string;
-  oauth2: { client_id: string; host: string };
+  oauth2: {
+    client_id: string;
+    authorizeUrl: string;
+    tokenUrl: string;
+  };
   headers: { [header: string]: string };
 }
 
