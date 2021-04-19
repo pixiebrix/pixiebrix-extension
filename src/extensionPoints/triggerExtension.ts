@@ -45,6 +45,7 @@ import { reportEvent } from "@/telemetry/events";
 // @ts-ignore: using for the EventHandler type below
 import JQuery from "jquery";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
+import { notifyError } from "@/contentScript/notify";
 
 export interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
@@ -159,9 +160,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     );
     if (errors.length) {
       console.debug("Trigger errors", errors);
-      $.notify(`An error occurred running ${errors.length} triggers(s)`, {
-        className: "error",
-      });
+      notifyError(`An error occurred running ${errors.length} triggers(s)`);
     }
   }
 
@@ -205,9 +204,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
                 console.error("An error occurred while running a trigger", {
                   errors,
                 });
-                $.notify(`An error occurred while running a trigger`, {
-                  className: "error",
-                });
+                notifyError("An error occurred while running a trigger");
               }
             });
           }

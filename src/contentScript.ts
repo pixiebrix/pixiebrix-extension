@@ -62,7 +62,7 @@ import "@/contentScript/externalProtocol";
 import { notifyReady, whoAmI } from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
-import "notifyjs-browser";
+import "@/vendors/notify";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import "@/contentScript/uipath";

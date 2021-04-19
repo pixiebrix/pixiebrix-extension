@@ -49,6 +49,7 @@ import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
 import { Manifest } from "webextension-polyfill-ts/lib/manifest";
 import { getCommonAncestor } from "@/nativeEditor/infer";
+import { notifyError } from "@/contentScript/notify";
 
 export interface ContextMenuConfig {
   title: string;
@@ -266,9 +267,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     const numErrors = results.filter((x) => x.status === "rejected").length;
     if (numErrors > 0) {
-      $.notify(`An error occurred adding ${numErrors} context menu item(s)`, {
-        className: "error",
-      });
+      notifyError(`An error occurred adding ${numErrors} context menu item(s)`);
     }
   }
 
