@@ -25,6 +25,10 @@ export interface ExtensionOptions {
   id: string;
   _recipeId?: string;
   _recipe: Metadata | null;
+  _deployment?: {
+    id: string;
+    timestamp: string;
+  };
   extensionPointId: string;
   active: boolean;
   label: string;

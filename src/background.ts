@@ -43,9 +43,11 @@ import initFrames from "@/background/iframes";
 import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import preload from "@/background/preload";
+import initDeploymentUpdater from "@/background/deployment";
 
 initNavigation();
 initExecutor();
 initGoogle();
 initFrames();
 preload();
+initDeploymentUpdater();

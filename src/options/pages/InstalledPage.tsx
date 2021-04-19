@@ -47,6 +47,7 @@ import { reportError } from "@/telemetry/logging";
 import { AuthContext } from "@/auth/context";
 import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
+import cx from "classnames";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -83,6 +84,8 @@ const RecipeEntry: React.FunctionComponent<{
   const [expanded, setExpanded] = useState<boolean>(true);
   const { addToast } = useToasts();
 
+  const isDeployment = extensions.every((x) => x._deployment != null);
+
   const removeMany = useCallback(
     async (extensions: InstalledExtension[], name: string) => {
       try {
@@ -104,18 +107,31 @@ const RecipeEntry: React.FunctionComponent<{
     <tbody key={recipeId}>
       {recipeId !== "" && (
         <tr
-          className="ActiveBricksCard__blueprint"
+          className={cx("ActiveBricksCard__blueprint", { isDeployment })}
           onClick={() => setExpanded((prev: boolean) => !prev)}
         >
           <th>
-            <FontAwesomeIcon
-              icon={expanded ? faCaretDown : faCaretRight}
-              onClick={() => setExpanded((prev: boolean) => !prev)}
-            />
+            {!isDeployment && (
+              <FontAwesomeIcon
+                icon={expanded ? faCaretDown : faCaretRight}
+                onClick={() => setExpanded((prev: boolean) => !prev)}
+              />
+            )}
           </th>
-          <th colSpan={2} className="py-2">
-            {extensions[0]._recipe?.name ?? recipeId}
-          </th>
+          {isDeployment ? (
+            <>
+              <th className="py-2">
+                {extensions[0]._recipe?.name ?? recipeId}
+              </th>
+              <th className="py-2">
+                <FontAwesomeIcon icon={faCheck} /> Managed
+              </th>
+            </>
+          ) : (
+            <th colSpan={2} className="py-2">
+              {extensions[0]._recipe?.name ?? recipeId}
+            </th>
+          )}
           <th>
             <Button
               variant="danger"
@@ -130,6 +146,7 @@ const RecipeEntry: React.FunctionComponent<{
         </tr>
       )}
       {expanded &&
+        !isDeployment &&
         extensions.map((extension) => (
           <ExtensionRow
             key={extension.id}
