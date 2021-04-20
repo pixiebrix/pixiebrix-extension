@@ -159,7 +159,7 @@ async function _init(): Promise<void> {
   }
 }
 
-// up to every 30 min,
+// up to every 30 min
 const throttledInit = throttle(_init, 30 * 60 * 1000, {
   leading: true,
   trailing: true,
@@ -195,4 +195,18 @@ export const recordEvent = liftBackground(
     }
   },
   { asyncResponse: false }
+);
+
+export const sendDeploymentAlert = liftBackground(
+  "SEND_DEPLOYMENT_ALERT",
+  async ({ deploymentId, data }: { deploymentId: string; data: object }) => {
+    const url = `${await getBaseURL()}/api/deployments/${deploymentId}/alerts/`;
+    const token = await getExtensionToken();
+    if (!token) {
+      throw new Error("Extension not linked to PixieBrix server");
+    }
+    await axios.post(url, data, {
+      headers: { Authorization: `Token ${token}` },
+    });
+  }
 );

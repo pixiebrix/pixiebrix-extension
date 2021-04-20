@@ -35,6 +35,7 @@ export interface Message {
 }
 
 export interface MessageContext {
+  readonly deploymentId?: string;
   readonly extensionPointId?: string;
   readonly blockId?: string;
   readonly extensionId?: string;
@@ -116,12 +117,19 @@ export type ServiceLocator = (
   id?: string
 ) => Promise<SanitizedServiceConfiguration>;
 
+export interface DeploymentContext {
+  id: string;
+  timestamp: string;
+}
+
 export interface IExtension<
   T extends BaseExtensionConfig = BaseExtensionConfig
 > {
   id: string;
 
   extensionPointId: string;
+
+  _deployment?: DeploymentContext;
 
   label?: string;
 
