@@ -46,6 +46,7 @@ import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
 import { reportError } from "@/telemetry/logging";
+import { serializeError } from "serialize-error";
 
 export type ReaderConfig =
   | string
@@ -376,15 +377,20 @@ export async function reducePipeline(
     } catch (ex) {
       if (stage.onError?.alert) {
         if (logger.context.deploymentId) {
-          sendDeploymentAlert({
-            deploymentId: logger.context.deploymentId,
-            data: {
-              id: stage.id,
-              args: currentArgs,
-            },
-          }).catch((err) => {
+          try {
+            sendDeploymentAlert({
+              deploymentId: logger.context.deploymentId,
+              data: {
+                id: stage.id,
+                args: currentArgs,
+                error: serializeError(ex),
+              },
+            }).catch((err) => {
+              reportError(err);
+            });
+          } catch (err) {
             reportError(err);
-          });
+          }
         } else {
           console.warn("Can only send alert from deployment context");
         }
