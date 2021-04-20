@@ -257,6 +257,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           await this.registerExtension(extension);
         } catch (ex) {
           reportError(ex, {
+            deploymentId: extension._deployment?.id,
             extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
           });
@@ -279,6 +280,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     await this.ensureMenu(extension);
 
     const extensionLogger = this.logger.childLogger({
+      deploymentId: extension._deployment?.id,
       extensionId: extension.id,
     });
 

@@ -137,6 +137,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     const errors = await Promise.all(
       this.extensions.map(async (extension) => {
         const extensionLogger = this.logger.childLogger({
+          deploymentId: extension._deployment?.id,
           extensionId: extension.id,
         });
         try {

@@ -261,6 +261,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     const bodyUUID = uuidv4();
     const extensionLogger = this.logger.childLogger({
+      deploymentId: extension._deployment?.id,
       extensionId: extension.id,
     });
 
@@ -440,7 +441,12 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         await this.runExtension(readerContext, extension);
       } catch (ex) {
         errors.push(ex);
-        this.logger.childLogger({ extensionId: extension.id }).error(ex);
+        this.logger
+          .childLogger({
+            deploymentId: extension._deployment?.id,
+            extensionId: extension.id,
+          })
+          .error(ex);
       }
     }
 

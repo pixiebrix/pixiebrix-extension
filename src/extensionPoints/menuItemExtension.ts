@@ -343,8 +343,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
 
     const extensionLogger = this.logger.childLogger({
+      deploymentId: extension._deployment?.id,
       extensionId: extension.id,
     });
+
     console.debug(
       `${this.instanceId}: running menuItem extension ${extension.id}`
     );
@@ -570,6 +572,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } catch (ex) {
           errors.push(ex);
           reportError(ex, {
+            deploymentId: extension._deployment?.id,
             extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
           });
