@@ -188,17 +188,22 @@ async function runStage(
   let blockArgs: BlockArg;
 
   if (isReader(block)) {
-    if (stage.window ?? "self" === "self") {
+    if ((stage.window ?? "self") === "self") {
       // TODO: allow the stage to define a different root within the extension root
       blockArgs = { root };
+      logger.debug(
+        `Passed root to reader ${stage.id} (window=${stage.window ?? "self"})`
+      );
     } else {
-      // TODO: allow other roots in other tabs.
-      // By not setting the root, the other tab's document is user
+      // TODO: allow other roots in other tabs
       blockArgs = {};
+      // By not setting the root, the other tab's document is user
+      logger.debug(
+        `Passed blank root to reader ${stage.id} (window=${
+          stage.window ?? "self"
+        })`
+      );
     }
-    logger.debug(
-      `Passed document to reader ${stage.id} (window=${stage.window ?? "self"})`
-    );
   } else {
     // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
     blockArgs = isPlainObject(args)
