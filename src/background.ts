@@ -36,6 +36,7 @@ import "./background/locator";
 import "./background/logging";
 import "./background/auth";
 import "./background/contextMenus";
+import "./background/dataStore";
 import "./background/devtools";
 
 import initGoogle from "@/contrib/google/background";
