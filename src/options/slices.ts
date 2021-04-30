@@ -196,11 +196,13 @@ export const optionsSlice = createSlice({
       const { extensionPointId, extensionId } = payload;
       const extensions = state.extensions[extensionPointId] ?? {};
       if (!extensions[extensionId]) {
-        throw new Error(
+        // it's already removed
+        console.debug(
           `Extension id ${extensionId} does not exist for extension point ${extensionPointId}`
         );
+      } else {
+        delete extensions[extensionId];
       }
-      delete extensions[extensionId];
     },
   },
 });

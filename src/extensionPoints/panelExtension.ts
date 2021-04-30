@@ -458,7 +458,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
 interface PanelDefaultOptions {
   heading?: string;
-  [key: string]: string;
+  [key: string]: string | boolean | number;
 }
 
 type PanelPosition =
@@ -479,11 +479,13 @@ export interface PanelDefinition extends ExtensionPointDefinition {
 class RemotePanelExtensionPoint extends PanelExtensionPoint {
   private readonly _definition: PanelDefinition;
   public readonly permissions: Permissions.Permissions;
+  public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
     const { id, name, description } = config.metadata;
     super(id, name, description);
     this._definition = config.definition;
+    this.rawConfig = config;
     const { isAvailable } = config.definition;
     this.permissions = {
       permissions: ["tabs", "webNavigation"],
