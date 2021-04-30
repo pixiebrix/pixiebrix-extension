@@ -106,10 +106,13 @@ const ElementWizard: React.FunctionComponent<{
     );
   }, [debounced, port]);
 
-  const showReloadControls =
+  const isLoadTrigger =
     debounced?.type === "trigger" &&
     (debounced as TriggerFormState)?.extensionPoint.definition.trigger ===
       "load";
+  const isPanel = debounced?.type === "panel";
+
+  const showReloadControls = isLoadTrigger || isPanel;
 
   useAsyncEffect(async () => {
     if (showReloadControls && !(debounced as TriggerFormState).autoReload) {
@@ -220,7 +223,7 @@ const ElementWizard: React.FunctionComponent<{
 
           <div className="flex-grow-1" />
 
-          <div className="ml-2">
+          <div className="mx-3">
             <Button size="sm" variant="info" onClick={() => toggleChat(true)}>
               <FontAwesomeIcon icon={faCommentAlt} /> Live Support
             </Button>
@@ -228,7 +231,9 @@ const ElementWizard: React.FunctionComponent<{
 
           {showReloadControls && (
             <>
-              <label className="AutoRun my-auto mr-1">Auto-Run</label>
+              <label className="AutoRun my-auto mr-1">
+                {isPanel ? "Auto-Render" : "Auto-Run"}
+              </label>
               <ToggleField name="autoReload" />
               <Button
                 className="mx-2"
@@ -237,7 +242,7 @@ const ElementWizard: React.FunctionComponent<{
                 variant="info"
                 onClick={run}
               >
-                Run Trigger
+                {isPanel ? "Render Panel" : "Run Trigger"}
               </Button>
             </>
           )}

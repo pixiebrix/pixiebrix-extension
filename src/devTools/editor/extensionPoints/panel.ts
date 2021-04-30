@@ -40,6 +40,8 @@ import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { find as findBrick } from "@/registry/localRegistry";
+import { v4 as uuidv4 } from "uuid";
+import { boolean } from "@/utils";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -149,6 +151,68 @@ export function makePanelConfig(element: PanelFormState): DynamicDefinition {
     extension: makePanelExtension(element),
     extensionPoint: makePanelExtensionPoint(element),
     readers: makeExtensionReaders(element),
+  };
+}
+
+export async function makePanelExtensionFormState(
+  url: string,
+  extensionPoint: ExtensionPointConfig<PanelDefinition>
+): Promise<PanelFormState> {
+  const isAvailable = extensionPoint.definition.isAvailable;
+  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
+  const selectors = castArray(isAvailable.selectors ?? []);
+
+  if (matchPatterns.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability match patterns not implemented"
+    );
+  }
+
+  if (selectors.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability selectors not implemented"
+    );
+  }
+
+  return {
+    uuid: uuidv4(),
+    installed: true,
+    type: extensionPoint.definition.type,
+    label: `My ${getDomain(url)} panel`,
+
+    readers: await makeReaderFormState(extensionPoint),
+    services: [],
+
+    extension: {
+      heading:
+        extensionPoint.definition.defaultOptions.heading ?? "Custom Panel",
+      collapsible: boolean(
+        extensionPoint.definition.defaultOptions.collapsible ?? false
+      ),
+      body: [
+        {
+          id: "@pixiebrix/property-table",
+          config: {},
+        },
+      ],
+    },
+
+    containerInfo: null,
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      traits: {
+        // we don't provide a way to set style anywhere yet so this doesn't apply yet
+        style: { mode: "inherit" },
+      },
+      definition: {
+        ...extensionPoint.definition,
+        isAvailable: {
+          matchPatterns: matchPatterns[0],
+          selectors: selectors[0],
+        },
+      },
+    },
   };
 }
 

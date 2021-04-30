@@ -37,7 +37,7 @@ import { selectExtensions } from "@/options/pages/InstalledPage";
 import { RootState } from "@/devTools/store";
 import { useDebounce, useDebouncedCallback } from "use-debounce";
 import SplitPane from "react-split-pane";
-import { isEqual } from "lodash";
+import { isEqual, zip } from "lodash";
 import { useAsyncState } from "@/hooks/common";
 import axios from "axios";
 import { makeURL } from "@/hooks/fetch";
@@ -50,15 +50,27 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { cancelSelectElement, getTabInfo } from "@/background/devtools/index";
+import {
+  cancelSelectElement,
+  checkAvailable,
+  getTabInfo,
+} from "@/background/devtools/index";
 import { DevToolsContext } from "@/devTools/context";
 import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
 import { openTab } from "@/background/executor";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import ChatWidget from "@/components/ChatWidget";
+import BlockModal from "@/components/fields/BlockModal";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import {
+  PanelDefinition,
+  PanelExtensionPoint,
+} from "@/extensionPoints/panelExtension";
+import { makePanelExtensionFormState } from "@/devTools/editor/extensionPoints/panel";
+import { ExtensionPointConfig } from "@/extensionPoints/types";
 
-const { updateElement } = editorSlice.actions;
+const { updateElement, addElement } = editorSlice.actions;
 
 const Effect: React.FunctionComponent<{
   values: FormikValues;
@@ -169,9 +181,49 @@ const InsertButtonPane: React.FunctionComponent<{ cancel: () => void }> = ({
   );
 };
 
-const InsertPanelPane: React.FunctionComponent<{ cancel: () => void }> = ({
-  cancel,
-}) => {
+type PanelWithConfig = PanelExtensionPoint & {
+  rawConfig: ExtensionPointConfig<PanelDefinition>;
+};
+
+const InsertPanelPane: React.FunctionComponent<{
+  cancel: () => void;
+}> = ({ cancel }) => {
+  const dispatch = useDispatch();
+  const { port } = useContext(DevToolsContext);
+
+  const [panelExtensionPoints] = useAsyncState(async () => {
+    const all = await extensionPointRegistry.all();
+    const panels = all.filter(
+      (x) => x instanceof PanelExtensionPoint
+    ) as PanelWithConfig[];
+    const availability = await Promise.all(
+      panels.map((x) =>
+        checkAvailable(port, x.rawConfig.definition.isAvailable ?? {})
+      )
+    );
+    return zip(panels, availability)
+      .filter(([, available]) => available)
+      .map(([panel]) => panel);
+  }, [port]);
+
+  const addExistingPanel = useCallback(
+    async (extensionPoint: PanelWithConfig) => {
+      cancel();
+      if (!("rawConfig" in extensionPoint)) {
+        throw new Error(
+          "Cannot use panel extension point without config in the Page Editor"
+        );
+      }
+      const { url } = await getTabInfo(port);
+      const state = await makePanelExtensionFormState(
+        url,
+        extensionPoint.rawConfig
+      );
+      dispatch(addElement(state));
+    },
+    [dispatch, cancel]
+  );
+
   return (
     <Centered>
       <div className="PaneTitle">Inserting panel</div>
@@ -180,7 +232,22 @@ const InsertPanelPane: React.FunctionComponent<{ cancel: () => void }> = ({
         <p>Click on a container to insert a panel in that container.</p>
       </div>
       <div>
-        <Button variant="danger" onClick={cancel}>
+        <BlockModal
+          blocks={panelExtensionPoints ?? []}
+          caption="Select panel foundation"
+          renderButton={({ show }) => (
+            <Button
+              variant="info"
+              onClick={show}
+              disabled={!panelExtensionPoints?.length}
+            >
+              Add Existing Panel
+            </Button>
+          )}
+          onSelect={(block) => addExistingPanel(block as PanelWithConfig)}
+        />
+
+        <Button className="ml-2" variant="danger" onClick={cancel}>
           Cancel Insert
         </Button>
       </div>

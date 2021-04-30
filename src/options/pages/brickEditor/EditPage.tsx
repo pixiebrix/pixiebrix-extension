@@ -92,7 +92,11 @@ function useLogContext(config: string | null): MessageContext | null {
   const installed = useSelector(selectExtensions);
 
   const blueprintMap = useMemo(() => {
-    return new Map<string, string>(installed.map((x) => [x._recipe.id, x.id]));
+    return new Map<string, string>(
+      installed
+        .filter((x) => x._recipe != null)
+        .map((x) => [x._recipe.id, x.id])
+    );
   }, [installed]);
 
   return useMemo(() => {

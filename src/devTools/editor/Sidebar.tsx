@@ -60,6 +60,7 @@ import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoint
 import {
   makePanelConfig,
   makePanelState,
+  makePanelExtensionFormState,
 } from "@/devTools/editor/extensionPoints/panel";
 import {
   makeActionConfig,
@@ -89,6 +90,7 @@ import {
   makeContextMenuState,
 } from "@/devTools/editor/extensionPoints/contextMenu";
 import { reportEvent } from "@/telemetry/events";
+import { ExtensionPointConfig } from "@/extensionPoints/types";
 
 interface ElementConfig<
   TResult = unknown,
@@ -105,6 +107,10 @@ interface ElementConfig<
     frameworks: FrameworkMeta[]
   ) => TState;
   makeConfig: (state: TState) => DynamicDefinition;
+  makeFromExtensionPoint?: (
+    url: string,
+    config: ExtensionPointConfig
+  ) => Promise<TState>;
 }
 
 const addElementDefinitions: Record<string, ElementConfig> = {
@@ -134,6 +140,7 @@ const addElementDefinitions: Record<string, ElementConfig> = {
     makeState: makePanelState,
     makeConfig: makePanelConfig,
     preview: true,
+    makeFromExtensionPoint: makePanelExtensionFormState,
   },
   trigger: {
     elementType: "trigger",

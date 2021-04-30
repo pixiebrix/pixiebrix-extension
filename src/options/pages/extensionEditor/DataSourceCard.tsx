@@ -114,6 +114,14 @@ const PrimitiveEntry: React.FunctionComponent<{
 export const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
 }) => {
+  if (!schema) {
+    return (
+      <ListGroup variant="flush" className="SchemaTree">
+        <ListGroup.Item>No schema</ListGroup.Item>
+      </ListGroup>
+    );
+  }
+
   return (
     <ListGroup variant="flush" className="SchemaTree">
       {isEmpty(schema.properties) && (

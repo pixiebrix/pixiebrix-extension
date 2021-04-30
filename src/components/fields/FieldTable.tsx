@@ -20,7 +20,7 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { Schema } from "@/core";
 import { FieldProps } from "@/components/fields/propTypes";
-import fromPairs from "lodash/fromPairs";
+import { fromPairs } from "lodash";
 import Table from "react-bootstrap/Table";
 import {
   getDefaultField,
@@ -70,6 +70,11 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
 
   const valueComponent = useMemo(() => {
     const { Component } = customControls.find((x) => x.match(schema)) ?? {};
+
+    if (typeof field.value === "object") {
+      return <Form.Control plaintext readOnly defaultValue="Complex object" />;
+    }
+
     return Component ? (
       <Component schema={schema} {...field} />
     ) : (

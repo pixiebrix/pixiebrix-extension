@@ -27,3 +27,4 @@ export * from "./parseURL";
 export * from "./prompt";
 export * from "./detect";
 export * from "./modal";
+export * from "./encode";
