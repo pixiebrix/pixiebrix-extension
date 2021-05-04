@@ -300,3 +300,33 @@ export function isNullOrBlank(value: unknown): boolean {
     return false;
   }
 }
+
+export class PromiseCancelled extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "PromiseCancelled";
+  }
+}
+
+/**
+ * Creates a new promise that's rejected if isCancelled returns true.
+ * @throws PromiseCancelled
+ */
+export async function rejectOnCancelled<T>(
+  promise: Promise<T>,
+  isCancelled: () => boolean
+): Promise<T> {
+  let rv: T;
+  try {
+    rv = await promise;
+  } catch (err) {
+    if (isCancelled()) {
+      throw new PromiseCancelled("Promise was cancelled");
+    }
+    throw err;
+  }
+  if (isCancelled()) {
+    throw new PromiseCancelled("Promise was cancelled");
+  }
+  return rv;
+}

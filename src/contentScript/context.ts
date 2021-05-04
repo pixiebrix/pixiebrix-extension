@@ -28,9 +28,19 @@ export let frameId: number = undefined;
 
 export let ready = false;
 
+/**
+ * Set a unique id and timestamp for current navigation event.
+ */
 export function updateNavigationId(): void {
   navigationId = uuidv4();
   navigationTimestamp = new Date();
+}
+
+/**
+ * Return the current navigation id for the contentScript.
+ */
+export function getNavigationId(): string {
+  return navigationId;
 }
 
 export function markReady(): void {
