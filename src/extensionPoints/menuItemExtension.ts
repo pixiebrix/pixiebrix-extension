@@ -59,6 +59,8 @@ import {
   notifyError,
   notifyResult,
 } from "@/contentScript/notify";
+import { getNavigationId } from "@/contentScript/context";
+import { rejectOnCancelled, PromiseCancelled } from "@/utils";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -90,12 +92,36 @@ export const actionSchema: Schema = {
   ],
 };
 
+export async function cancelOnNavigation<T>(promise: Promise<T>): Promise<T> {
+  const startNavigationId = getNavigationId();
+  const isNavigationCancelled = () => getNavigationId() !== startNavigationId;
+  return rejectOnCancelled(promise, isNavigationCancelled);
+}
+
 export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExtensionConfig> {
+  /**
+   * Mapping of menu container UUID to the DOM element for the menu container
+   * @protected
+   */
   protected readonly menus: Map<string, HTMLElement>;
+
   private readonly instanceId: string;
+
+  /**
+   * Set of menu container UUID that have been removed from the DOM. Track so we we know which ones we've already
+   * taken action on to attempt to reacquire a menu container for
+   * @private
+   */
   private readonly removed: Set<string>;
+
+  /**
+   * Set of methods to call to cancel any DOM watchers associated with this extension point
+   * @private
+   */
   private readonly cancelPending: Set<() => void>;
+
   private readonly cancelDependencyObservers: Map<string, () => void>;
+
   private uninstalled = false;
 
   public get defaultOptions(): { caption: string } {
@@ -264,6 +290,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       console.warn(
         `${this.instanceId}: cannot reacquire because extension ${this.id} is destroyed`
       );
+      return;
     }
     const alreadyRemoved = this.removed.has(uuid);
     this.removed.add(uuid);
@@ -282,13 +309,17 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
+  /**
+   * Find and claim the new menu containers currently on the page for the extension point.
+   * @return true iff one or more menu containers were found
+   */
   private async installMenus(): Promise<boolean> {
     if (this.uninstalled) {
-      console.error(`Menu item extension is uninstalled`, {
+      console.error(`Menu item extension point is uninstalled`, {
         extensionId: this.instanceId,
       });
       throw new Error(
-        `Cannot install menu item because it was already uninstalled`
+        `Cannot install menu item because extension point was uninstalled`
       );
     }
 
@@ -298,30 +329,45 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       `${this.instanceId}: awaiting menu container for ${this.id}: ${selector}`
     );
 
-    const [menuPromise, cancelWait] = await awaitElementOnce(selector);
+    const [menuPromise, cancelWait] = awaitElementOnce(selector);
     this.cancelPending.add(cancelWait);
 
-    const $menu = (await menuPromise) as JQuery<HTMLElement>;
+    const $menuContainers = (await cancelOnNavigation(
+      menuPromise
+    )) as JQuery<HTMLElement>;
 
-    const acquired = compact(
-      $menu
+    const menuContainers = Array.from(this.menus.values());
+
+    let existingCount = 0;
+
+    const cancelObservers = compact(
+      $menuContainers
         .map((index, element) => {
-          const uuid = uuidv4();
-          this.menus.set(uuid, element);
-          return acquireElement(element, this.id, () => this.reacquire(uuid));
+          // Only acquire new menu items, otherwise we end up with duplicate entries in this.menus which causes
+          // repeat evaluation of menus in this.run
+          if (!menuContainers.includes(element)) {
+            const menuUUID = uuidv4();
+            this.menus.set(menuUUID, element);
+            return acquireElement(element, this.id, () =>
+              this.reacquire(menuUUID)
+            );
+          } else {
+            existingCount++;
+          }
         })
         .get()
     );
 
-    for (const cancelObserver of acquired) {
+    for (const cancelObserver of cancelObservers) {
       this.cancelPending.add(cancelObserver);
     }
 
-    return acquired.length > 0;
+    return cancelObservers.length + existingCount > 0;
   }
 
   async install(): Promise<boolean> {
-    if (!(await this.isAvailable())) {
+    const isAvailable = await this.isAvailable();
+    if (!isAvailable) {
       return false;
     }
     return this.installMenus();
@@ -461,7 +507,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const $existingItem = $menu.find(`[${DATA_ATTR}="${extension.id}"]`);
 
     if ($existingItem.length) {
-      // shouldn't need to unbind click handlers because we'll replace it outright
+      // We don't need to unbind any click handlers because we're replacing the element completely.
       console.debug(`Replacing existing menu item for ${extension.id}`);
       $existingItem.replaceWith($menuItem);
     } else {
@@ -547,50 +593,79 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       return;
     }
 
+    const startNavigationId = getNavigationId();
+    const isNavigationCancelled = () => getNavigationId() !== startNavigationId;
+
     const errors = [];
 
-    for (const menu of this.menus.values()) {
+    const menus = Array.from(this.menus.values());
+
+    const containerSelector = this.getContainerSelector();
+    const $currentMenus = $(document).find(
+      castArray(containerSelector).join(" ")
+    );
+    const currentMenus = $currentMenus.toArray();
+
+    for (const menu of menus) {
+      if (!currentMenus.includes(menu)) {
+        console.debug(
+          "Skipping menu because it's no longer found by the container selector"
+        );
+        continue;
+      }
+
       const reader = await this.defaultReader();
 
       let ctxtPromise: Promise<ReaderOutput>;
 
       for (const extension of this.extensions) {
+        // Run in order so that the order stays the same for where they get rendered. The service
+        // context is the only thing that's async as part of the initial configuration right now
+
         if (extensionIds != null && !extensionIds.includes(extension.id)) {
           continue;
         }
 
-        // Run in order so that the order stays the same for where they get rendered. The service
-        // context is the only thing that's async as part of the initial configuration right now
+        if (isNavigationCancelled()) {
+          continue;
+        }
 
         if (extension.config.dynamicCaption || extension.config.if) {
           // Lazily read context for the menu if one of the extensions actually uses it
-          ctxtPromise = reader.read(this.getReaderRoot($(menu)));
+
+          // Wrap in rejectOnCancelled because if the reader takes a long time to run, the user may
+          // navigate away from the page before the reader comes back.
+          ctxtPromise = rejectOnCancelled(
+            reader.read(this.getReaderRoot($(menu))),
+            isNavigationCancelled
+          );
         }
 
         try {
           await this.runExtension(menu, ctxtPromise, extension);
         } catch (ex) {
-          errors.push(ex);
-          reportError(ex, {
-            deploymentId: extension._deployment?.id,
-            extensionPointId: extension.extensionPointId,
-            extensionId: extension.id,
-          });
+          if (ex instanceof PromiseCancelled) {
+            console.debug(
+              `menuItemExtension run promise cancelled for extension: ${extension.id}`
+            );
+          } else {
+            errors.push(ex);
+            reportError(ex, {
+              deploymentId: extension._deployment?.id,
+              extensionPointId: extension.extensionPointId,
+              extensionId: extension.id,
+            });
+          }
         }
       }
     }
 
     if (errors.length) {
+      // Report the error to the user. Don't report to to the telemetry service since we already reported
+      // above in the loop
       console.warn(`An error occurred adding ${errors.length} menu item(s)`, {
         errors,
       });
-
-      for (const error of errors) {
-        reportError(error, {
-          extensionPointId: this.id,
-        });
-      }
-
       if (errors.length === 1) {
         notifyError("An error occurred adding the menu item/button", errors[0]);
       } else {

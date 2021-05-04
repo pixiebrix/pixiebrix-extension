@@ -23,6 +23,7 @@ import {
   notifyContentScripts,
 } from "@/contentScript/backgroundProtocol";
 import * as context from "@/contentScript/context";
+import { PromiseCancelled } from "@/utils";
 
 let _scriptPromise: Promise<void>;
 const _dynamic: Map<string, IExtensionPoint> = new Map();
@@ -57,7 +58,20 @@ async function runExtensionPoint(
   extensionPoint: IExtensionPoint,
   isCancelled: () => boolean
 ): Promise<void> {
-  const installed = await extensionPoint.install();
+  let installed = false;
+
+  try {
+    installed = await extensionPoint.install();
+  } catch (err) {
+    if (err instanceof PromiseCancelled) {
+      console.debug(
+        `Skipping ${extensionPoint.id} because user navigated away from the page`
+      );
+      return;
+    } else {
+      throw err;
+    }
+  }
 
   if (!installed) {
     console.debug(
@@ -69,10 +83,10 @@ async function runExtensionPoint(
       `Skipping ${extensionPoint.id} because user navigated away from the page`
     );
     return;
-  } else {
-    console.debug(`Installed extension: ${extensionPoint.id}`);
-    _installedExtensionPoints.push(extensionPoint);
   }
+
+  console.debug(`Installed extension: ${extensionPoint.id}`);
+  _installedExtensionPoints.push(extensionPoint);
 
   await extensionPoint.run();
 }
@@ -154,6 +168,9 @@ async function loadExtensions() {
   }
 }
 
+/**
+ * Add the extensions to their respective extension points, and return the extension points with extensions.
+ */
 async function loadExtensionsOnce(): Promise<IExtensionPoint[]> {
   if (_extensionPoints == null) {
     await loadExtensions();

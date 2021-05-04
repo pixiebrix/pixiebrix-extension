@@ -63,6 +63,10 @@ export class ContextError extends Error {
   }
 }
 
+/**
+ * Returns true iff the root cause of the error was a CancelError.
+ * @param err the error object
+ */
 export function hasCancelRootCause(err: Error): boolean {
   if (err instanceof CancelError || err.name === "CancelError") {
     return true;
