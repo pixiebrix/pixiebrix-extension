@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, compact, once } from "lodash";
+import { castArray, compact, once, debounce } from "lodash";
 import { engineRenderer } from "@/helpers";
 import {
   reducePipeline,
@@ -68,6 +68,8 @@ interface ShadowDOM {
 }
 
 export const DATA_ATTR = "data-pb-uuid";
+
+const MENU_INSTALL_ERROR_DEBOUNCE_MS = 1_000;
 
 export interface MenuItemExtensionConfig {
   caption: string;
@@ -123,6 +125,15 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   private readonly cancelDependencyObservers: Map<string, () => void>;
 
   private uninstalled = false;
+
+  private readonly notifyError = debounce(
+    notifyError,
+    MENU_INSTALL_ERROR_DEBOUNCE_MS,
+    {
+      leading: true,
+      trailing: false,
+    }
+  );
 
   public get defaultOptions(): { caption: string } {
     return { caption: "Custom Menu Item" };
@@ -667,9 +678,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         errors,
       });
       if (errors.length === 1) {
-        notifyError("An error occurred adding the menu item/button", errors[0]);
+        this.notifyError(
+          "An error occurred adding the menu item/button",
+          errors[0]
+        );
       } else {
-        notifyError(`An error occurred adding ${errors.length} menu items`);
+        this.notifyError(
+          `An error occurred adding ${errors.length} menu items`
+        );
       }
     }
   }
