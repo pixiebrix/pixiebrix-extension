@@ -24,7 +24,7 @@ import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 import { findElement } from "@/frameworks/dom";
 
-const EMBER_MAX_DEPTH = 6;
+const EMBER_MAX_DEPTH = 5;
 
 interface EmberObject {
   // https://api.emberjs.com/ember/release/classes/EmberObject/methods?anchor=get
@@ -183,6 +183,7 @@ const EMBER_INTERNAL_PROPS = new Set([
   "childViews",
   "elementId",
   "args",
+  "_router",
 ]);
 
 /**

@@ -65,6 +65,7 @@ import "@/blocks";
 import "@/contrib";
 import "@/contentScript/devTools";
 import "@/contentScript/contextMenus";
+import "@/contentScript/browserAction";
 
 // Import for the side effect of registering js defined blocks
 import { handleNavigate } from "@/contentScript/lifecycle";

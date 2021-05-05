@@ -159,6 +159,10 @@ export async function makeContextMenuFormState(
 
   const extensionConfig = config.config;
 
+  if (extensionPoint.definition.type !== "contextMenu") {
+    throw new Error("Expected contextMenu extension point type");
+  }
+
   return {
     uuid: config.id,
     installed: true,

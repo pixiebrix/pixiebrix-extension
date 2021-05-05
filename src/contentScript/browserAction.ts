@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,28 +15,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "@/core";
-import { ReaderConfig } from "@/blocks/combinators";
-import { Availability } from "@/blocks/types";
+import { liftContentScript } from "@/contentScript/backgroundProtocol";
+import { toggleActionPanel as toggle } from "@/actionPanel/native";
 
-type ExtensionPointType =
-  | "panel"
-  | "menuItem"
-  | "trigger"
-  | "contextMenu"
-  | "actionPanel";
-
-export interface ExtensionPointDefinition {
-  type: ExtensionPointType;
-  isAvailable: Availability;
-  reader: ReaderConfig;
-}
-
-export interface ExtensionPointConfig<
-  T extends ExtensionPointDefinition = ExtensionPointDefinition
-> {
-  apiVersion?: "v1";
-  metadata: Metadata;
-  definition: T;
-  kind: "extensionPoint";
-}
+export const toggleActionPanel = liftContentScript(
+  "TOGGLE_ACTION_PANEL",
+  async () => {
+    return toggle();
+  }
+);

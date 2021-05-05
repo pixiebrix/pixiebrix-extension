@@ -1,5 +1,5 @@
-/*
- * Copyright (C) 2020 Pixie Brix, LLC
+/*!
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,28 +15,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "@/core";
-import { ReaderConfig } from "@/blocks/combinators";
-import { Availability } from "@/blocks/types";
-
-type ExtensionPointType =
-  | "panel"
-  | "menuItem"
-  | "trigger"
-  | "contextMenu"
-  | "actionPanel";
-
-export interface ExtensionPointDefinition {
-  type: ExtensionPointType;
-  isAvailable: Availability;
-  reader: ReaderConfig;
+html {
+  display: flex;
+  font-size: 16px;
+  max-height: 100vh;
 }
 
-export interface ExtensionPointConfig<
-  T extends ExtensionPointDefinition = ExtensionPointDefinition
-> {
-  apiVersion?: "v1";
-  metadata: Metadata;
-  definition: T;
-  kind: "extensionPoint";
+body {
+  margin: 0;
+  padding: 0;
+  max-height: 100vh;
+  flex: 1;
+  display: flex;
+  overflow-y: hidden;
+}
+
+.ActionPanelToolbar {
+  .btn {
+    border-radius: 0;
+  }
 }

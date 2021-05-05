@@ -163,6 +163,10 @@ export async function makeTriggerFormState(
     );
   }
 
+  if (extensionPoint.definition.type !== "trigger") {
+    throw new Error("Expected trigger extension point type");
+  }
+
   return {
     uuid: config.id,
     installed: true,

@@ -18,7 +18,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-interface ComponentRef {
+export interface ComponentRef {
   Component: React.FunctionComponent;
   props: Record<string, unknown>;
 }

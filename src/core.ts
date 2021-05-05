@@ -71,6 +71,7 @@ export interface BlockOptions {
   ctxt: { [key: string]: any };
   logger: Logger;
   root: ReaderRoot;
+  headless?: boolean;
 }
 
 // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking

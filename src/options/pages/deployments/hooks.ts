@@ -33,6 +33,7 @@ import moment from "moment";
 import { fromPairs } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { optionsSlice } from "@/options/slices";
+
 import { reportError } from "@/telemetry/logging";
 
 const { actions } = optionsSlice;
