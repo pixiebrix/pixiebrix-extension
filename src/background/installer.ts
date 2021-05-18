@@ -24,6 +24,8 @@ import { getDNT, getUID } from "@/background/telemetry";
 
 const SERVICE_URL = process.env.SERVICE_URL;
 
+let _availableVersion: string | null = null;
+
 async function openInstallPage() {
   await browser.runtime.openOptionsPage();
 }
@@ -45,6 +47,10 @@ function install({ reason }: Runtime.OnInstalledDetailsType) {
   }
 }
 
+function onUpdateAvailable({ version }: Runtime.OnUpdateAvailableDetailsType) {
+  _availableVersion = version;
+}
+
 function init() {
   initTelemetry();
 }
@@ -54,6 +60,16 @@ export const hasAppAccount = liftBackground("CHECK_APP_ACCOUNT", async () => {
   return tabs.length > 0;
 });
 
+export const getAvailableVersion = liftBackground(
+  "GET_AVAILABLE_VERSION",
+  async () => {
+    return {
+      installed: browser.runtime.getManifest().version,
+      available: _availableVersion,
+    };
+  }
+);
+
 async function setUninstallURL(): Promise<void> {
   const url = new URL("https://www.pixiebrix.com/uninstall/");
   if (!(await getDNT())) {
@@ -62,6 +78,7 @@ async function setUninstallURL(): Promise<void> {
   }
 }
 
+browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
 browser.runtime.onInstalled.addListener(install);
 browser.runtime.onStartup.addListener(init);
 

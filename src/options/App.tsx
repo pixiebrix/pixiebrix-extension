@@ -54,6 +54,7 @@ import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import "@/blocks";
 import "@/contrib";
 import "@/contrib/editors";
+import UpdateBanner from "@/options/pages/UpdateBanner";
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(
@@ -82,6 +83,7 @@ const Layout = () => {
           <Sidebar />
           <div className="main-panel">
             <Banner />
+            <UpdateBanner />
             <DeploymentBanner />
             <div className="content-wrapper">
               <ErrorBoundary>
