@@ -26,11 +26,12 @@ import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
 import { checkPermissions, collectPermissions } from "@/permissions";
-
 import { optionsSlice, OptionsState } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { selectExtensions } from "@/options/pages/InstalledPage";
 import { refreshRegistries } from "@/hooks/refresh";
+import { liftBackground } from "@/background/protocol";
+import * as contentScript from "@/contentScript/lifecycle";
 
 const { reducer, actions } = optionsSlice;
 
@@ -44,6 +45,14 @@ async function deploymentPermissions(
   // the serviceAuths.
   return await collectPermissions(blueprint, []);
 }
+
+export const queueReactivate = liftBackground(
+  "QUEUE_REACTIVATE",
+  async () => {
+    await contentScript.queueReactivate(null);
+  },
+  { asyncResponse: false }
+);
 
 function installDeployment(
   state: OptionsState,
@@ -164,6 +173,7 @@ async function updateDeployments() {
             currentOptions = installDeployment(currentOptions, deployment);
           }
           await saveOptions(currentOptions);
+          queueReactivate().catch((err) => reportError(err));
           console.info(
             `Applied automatic updates for ${automatic.length} deployment(s)`
           );

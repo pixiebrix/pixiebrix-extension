@@ -33,6 +33,8 @@ const _frameHref: Map<number, string> = new Map();
 let _extensionPoints: IExtensionPoint[] = undefined;
 let _navSequence = 1;
 const _installedExtensionPoints: IExtensionPoint[] = [];
+// reload extension definitions on next navigation
+let _reloadOnNextNavigate = false;
 
 // @ts-ignore: may use in the future to determine which extension points to install
 let _openerTabId: number = undefined;
@@ -133,6 +135,8 @@ export async function runDynamic(
  * Add extensions to their respective extension points.
  */
 async function loadExtensions() {
+  console.debug("Loading extensions for page");
+
   const previousIds = new Set((_extensionPoints ?? []).map((x) => x.id));
 
   _extensionPoints = [];
@@ -176,7 +180,8 @@ async function loadExtensions() {
  * Add the extensions to their respective extension points, and return the extension points with extensions.
  */
 async function loadExtensionsOnce(): Promise<IExtensionPoint[]> {
-  if (_extensionPoints == null) {
+  if (_extensionPoints == null || _reloadOnNextNavigate) {
+    _reloadOnNextNavigate = false;
     await loadExtensions();
   }
   return _extensionPoints;
@@ -284,6 +289,14 @@ export const notifyNavigation = liftContentScript(
   ({ openerTabId }: { openerTabId?: number; frameId?: number }) =>
     handleNavigate({ openerTabId }),
   { asyncResponse: false }
+);
+
+export const queueReactivate = notifyContentScripts(
+  "QUEUE_REACTIVATE",
+  async () => {
+    console.debug("contentScript will reload extensions on next navigation");
+    _reloadOnNextNavigate = true;
+  }
 );
 
 export const reactivate = notifyContentScripts("REACTIVATE", async () => {

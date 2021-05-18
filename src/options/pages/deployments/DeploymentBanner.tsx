@@ -22,6 +22,7 @@ import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
 import { reportError } from "@/telemetry/logging";
+import { queueReactivate } from "@/background/deployment";
 
 const { actions } = optionsSlice;
 
@@ -155,6 +156,7 @@ function useDeployments() {
             deployment: deployment.id,
           });
         }
+        queueReactivate().catch((err) => reportError(err));
         addToast("Activated team bricks", {
           appearance: "success",
           autoDismiss: true,
