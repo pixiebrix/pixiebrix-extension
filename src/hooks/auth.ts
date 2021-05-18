@@ -29,8 +29,9 @@ interface ProfileResponse {
   readonly id: string;
   readonly email: string;
   readonly scope: string | null;
-  readonly isOnboarded: boolean;
+  readonly is_onboarded: boolean;
   readonly organization: OrganizationResponse | null;
+  readonly telemetry_organization: OrganizationResponse | null;
   readonly flags: string[];
 }
 
@@ -50,14 +51,15 @@ export async function getAuth(): Promise<AuthState> {
     email,
     scope,
     organization,
-    isOnboarded,
+    telemetry_organization: telemetryOrganization,
+    is_onboarded: isOnboarded,
     flags = [],
   } = await fetch<ProfileResponse>("/api/me/");
   if (id) {
     await updateRollbarAuth({
       userId: id,
       email,
-      organizationId: organization?.id,
+      organizationId: telemetryOrganization?.id ?? organization?.id,
     });
     return {
       userId: id,

@@ -28,6 +28,7 @@ interface UserData {
   user?: string;
   hostname?: string;
   organizationId?: string;
+  telemetryOrganizationId?: string;
 }
 
 export interface AuthData extends UserData {
@@ -36,12 +37,19 @@ export interface AuthData extends UserData {
 
 export function readAuthFromWebsite(): AuthData {
   const container = document.getElementById("container");
-  const { token, email, user, organization } = container.dataset;
+  const {
+    token,
+    email,
+    user,
+    organization,
+    telemetryOrganization,
+  } = container.dataset;
   return {
     token,
     email,
     user,
     organizationId: organization,
+    telemetryOrganizationId: telemetryOrganization,
     hostname: location.hostname,
   };
 }
@@ -83,7 +91,7 @@ export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
     await updateRollbarAuth({
       userId: auth.user,
       email: auth.email,
-      organizationId: auth.organizationId,
+      organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
     });
     await setStorage(STORAGE_EXTENSION_KEY, JSON.stringify(auth));
     return !equal(auth, previous);
