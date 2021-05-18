@@ -226,6 +226,24 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
     browser.runtime.reload();
   }, []);
 
+  const update = useCallback(() => {
+    chrome.runtime.requestUpdateCheck((status) => {
+      if (status === "update_available") {
+        browser.runtime.reload();
+      } else if (status === "throttled") {
+        addToast("Too many update requests", {
+          appearance: "error",
+          autoDismiss: true,
+        });
+      } else {
+        addToast("No update available", {
+          appearance: "info",
+          autoDismiss: true,
+        });
+      }
+    });
+  }, []);
+
   const handleUpdate = useCallback(
     async (event) => {
       const newURL = event.target.value;
@@ -328,6 +346,9 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
             <Card.Footer>
               <Button variant="info" onClick={reload}>
                 Reload Extension
+              </Button>
+              <Button variant="info" onClick={update}>
+                Check Updates
               </Button>
               <Button variant="warning" onClick={clear}>
                 Clear Token
