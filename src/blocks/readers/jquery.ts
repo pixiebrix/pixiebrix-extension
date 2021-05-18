@@ -18,6 +18,7 @@
 import { ReaderOutput } from "@/core";
 import { registerFactory } from "@/blocks/readers/factory";
 import { asyncMapValues, sleep } from "@/utils";
+import { BusinessError } from "@/errors";
 
 type CastType = "string" | "boolean" | "number";
 
@@ -76,7 +77,7 @@ function castValue(value: string, type?: CastType): Result {
     case "string":
       return value;
     default:
-      throw new Error(`Cast type ${type} not supported`);
+      throw new BusinessError(`Cast type ${type} not supported`);
   }
 }
 
@@ -101,7 +102,7 @@ function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
   } else if (selector.contents) {
     const nodeType = CONTENT_TYPES[selector.contents];
     if (!nodeType) {
-      throw new Error(
+      throw new BusinessError(
         "Invalid contents argument, must be either 'text' or 'comment'"
       );
     }
@@ -150,7 +151,7 @@ async function select(
         : $root;
     } else {
       if (!normalizedSelector.selector) {
-        throw new Error(
+        throw new BusinessError(
           "'selector' required if not nested within a 'find' block"
         );
       }
@@ -177,7 +178,7 @@ async function select(
     );
 
     if (normalizedSelector.maxWaitMillis) {
-      throw new Error(
+      throw new BusinessError(
         `Did not find any elements for selector in ${
           normalizedSelector.maxWaitMillis ?? 0
         }ms: ${normalizedSelector.selector}`
@@ -186,7 +187,7 @@ async function select(
 
     return normalizedSelector.multi ? [] : undefined;
   } else if ($elt.length > 1 && !normalizedSelector.multi) {
-    throw new Error(
+    throw new BusinessError(
       `Multiple elements found for ${normalizedSelector.selector}. To return a list of values, supply multi=true`
     );
   } else if ("find" in normalizedSelector) {

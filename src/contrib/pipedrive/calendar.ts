@@ -30,6 +30,7 @@ import {
   reducePipeline,
 } from "@/blocks/combinators";
 import { Permissions } from "webextension-polyfill-ts";
+import { BusinessError } from "@/errors";
 
 interface CalendarConfig {
   ranges: BlockConfig | BlockPipeline;
@@ -130,7 +131,7 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
         return $(this).text().trim() === time;
       });
       if ($label.length === 0) {
-        throw new Error(`Cannot find time ${time} in the calendar`);
+        throw new BusinessError(`Cannot find time ${time} in the calendar`);
       }
       return Number.parseInt($label.css("top"), 10);
     };

@@ -16,15 +16,25 @@
  */
 
 import { ExtensionOptions, loadOptions } from "@/options/loader";
-import { fetch } from "@/hooks/fetch";
 import { Deployment } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
 import moment from "moment";
+import { uniq, compact } from "lodash";
 import { reportError } from "@/telemetry/logging";
+import axios from "axios";
+import { getBaseURL } from "@/services/baseService";
+import { getUID } from "@/background/telemetry";
+import { getExtensionToken } from "@/auth/token";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
 async function updateDeployments() {
+  const token = await getExtensionToken();
+
+  if (!token) {
+    return;
+  }
+
   const { extensions: extensionPointConfigs } = await loadOptions();
   const extensions: ExtensionOptions[] = Object.entries(
     extensionPointConfigs
@@ -42,15 +52,25 @@ async function updateDeployments() {
       }
     }
 
-    const deployments = await fetch<Deployment[]>("/api/deployments/");
+    const { data: deployments } = await axios.post<Deployment[]>(
+      `${await getBaseURL()}/api/deployments/`,
+      {
+        uid: await getUID(),
+        active: compact(uniq(extensions.map((x) => x._deployment?.id))),
+      },
+      {
+        headers: { Authorization: `Token ${token}` },
+      }
+    );
 
     if (
       deployments.some(
-        (x) =>
+        (x: Deployment) =>
           !timestamps.has(x.id) ||
           moment(x.updated_at).isAfter(timestamps.get(x.id))
       )
     ) {
+      // TODO: check if additional permissions needed. If not, refresh brick definitions, then activate
       await browser.runtime.openOptionsPage();
     } else {
       console.debug("No deployment updates found");

@@ -1,30 +1,43 @@
-import React, { useCallback, useMemo, useState } from "react";
+/*
+ * Copyright (C) 2021 Pixie Brix, LLC
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { Deployment } from "@/types/contract";
-import { Button } from "react-bootstrap";
-import { compact, fromPairs, uniq } from "lodash";
-import "@/layout/Banner";
-import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/pages/InstalledPage";
-import moment from "moment";
 import { useToasts } from "react-toast-notifications";
-import useAsyncEffect from "use-async-effect";
+import { useCallback, useMemo, useState } from "react";
+import { useAsyncState } from "@/hooks/common";
 import {
   checkPermissions,
   collectPermissions,
   ensureAllPermissions,
   originPermissions,
 } from "@/permissions";
-import { useAsyncState } from "@/hooks/common";
+import useAsyncEffect from "use-async-effect";
+import { useFetch } from "@/hooks/fetch";
+import { useDispatch, useSelector } from "react-redux";
+import { selectExtensions } from "@/options/pages/InstalledPage";
+import moment from "moment";
+import { fromPairs } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { optionsSlice } from "@/options/slices";
-import axios from "axios";
-import { getBaseURL } from "@/services/baseService";
-import { getUID } from "@/background/telemetry";
-import { getExtensionToken } from "@/auth/token";
+import { reportError } from "@/telemetry/logging";
 
 const { actions } = optionsSlice;
 
-function useEnsurePermissions(deployments: Deployment[]) {
+export function useEnsurePermissions(deployments: Deployment[]) {
   const { addToast } = useToasts();
   const [enabled, setEnabled] = useState<boolean>(undefined);
 
@@ -59,6 +72,7 @@ function useEnsurePermissions(deployments: Deployment[]) {
       accepted = await ensureAllPermissions(permissions);
     } catch (err) {
       console.error(err);
+      reportError(err);
       addToast(`Error granting permissions: ${err}`, {
         appearance: "error",
         autoDismiss: true,
@@ -84,27 +98,11 @@ function useEnsurePermissions(deployments: Deployment[]) {
   return { enabled, request, permissions: groupedPermissions, isPending };
 }
 
-function useDeployments() {
+export function useDeployments() {
   const { addToast } = useToasts();
+  const deployments = useFetch<Deployment[]>("/api/deployments/");
   const dispatch = useDispatch();
   const installed = useSelector(selectExtensions);
-
-  const [deployments] = useAsyncState(async () => {
-    const token = await getExtensionToken();
-    const { data: deployments } = await axios.post<Deployment[]>(
-      `${await getBaseURL()}/api/deployments/`,
-      {
-        uid: await getUID(),
-        active: compact(uniq(installed.map((x) => x._deployment?.id))),
-      },
-      {
-        headers: { Authorization: `Token ${token}` },
-      }
-    );
-    return deployments;
-  }, [installed]);
-
-  // console.log("deployments", { deployments, installed });
 
   const updated = useMemo(() => {
     return (deployments ?? []).filter((deployment) => {
@@ -166,30 +164,3 @@ function useDeployments() {
 
   return { hasUpdate: updated?.length > 0, update };
 }
-
-const DeploymentBanner: React.FunctionComponent = () => {
-  const { hasUpdate, update } = useDeployments();
-
-  if (!hasUpdate) {
-    return null;
-  }
-
-  return (
-    <div className="deployment-banner w-100">
-      <div className="mx-auto d-flex">
-        <div className="flex-grow-1" />
-        <div className="align-self-center">
-          New team bricks are ready to activate
-        </div>
-        <div className="ml-3">
-          <Button className="info" size="sm" onClick={update}>
-            Activate
-          </Button>
-        </div>
-        <div className="flex-grow-1" />
-      </div>
-    </div>
-  );
-};
-
-export default DeploymentBanner;

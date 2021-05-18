@@ -22,6 +22,7 @@ import Mustache from "mustache";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions } from "@/core";
 import { isNullOrBlank } from "@/utils";
+import { BusinessError } from "@/errors";
 
 export class Table extends Renderer {
   constructor() {
@@ -55,7 +56,9 @@ export class Table extends Renderer {
     { ctxt = [] }: BlockOptions
   ) {
     if (!Array.isArray(ctxt)) {
-      throw new Error(`Expected data to be an array, actual: ${typeof ctxt}`);
+      throw new BusinessError(
+        `Expected data to be an array, actual: ${typeof ctxt}`
+      );
     }
 
     const makeLinkRenderer = (href: string) => (value: any, row: Row) => {

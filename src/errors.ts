@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { MessageContext } from "@/core";
+import { MessageContext, SerializedError } from "@/core";
 
 export class ValidationError extends Error {
   errors: unknown;
@@ -27,10 +27,23 @@ export class ValidationError extends Error {
   }
 }
 
+/**
+ * Based class for "Error" of cancelling out of a flow that's in progress
+ */
 export class CancelError extends Error {
   constructor(message: string) {
     super(message);
     this.name = "CancelError";
+  }
+}
+
+/**
+ * Base class for Errors arising from business logic in the brick, not the PixieBrix application itself.
+ */
+export class BusinessError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "BusinessError";
   }
 }
 
@@ -67,8 +80,25 @@ export class ContextError extends Error {
  * Returns true iff the root cause of the error was a CancelError.
  * @param err the error object
  */
-export function hasCancelRootCause(err: Error): boolean {
-  if (err instanceof CancelError || err.name === "CancelError") {
+export function hasCancelRootCause(err: Error | SerializedError): boolean {
+  if (typeof err !== "object") {
+    return false;
+  } else if (err instanceof CancelError || err.name === "CancelError") {
+    return true;
+  } else if (err instanceof ContextError) {
+    return hasCancelRootCause(err.cause);
+  }
+  return false;
+}
+
+/**
+ * Returns true iff the root cause of the error was a BusinessError.
+ * @param err the error object
+ */
+export function hasBusinessRootCause(err: Error | SerializedError): boolean {
+  if (typeof err !== "object") {
+    return false;
+  } else if (err instanceof BusinessError || err.name === "BusinessError") {
     return true;
   } else if (err instanceof ContextError) {
     return hasCancelRootCause(err.cause);

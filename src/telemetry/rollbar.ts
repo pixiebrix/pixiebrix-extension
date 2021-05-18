@@ -66,6 +66,12 @@ export function initRollbar(): void {
       // https://docs.rollbar.com/docs/rollbarjs-telemetry
       // disable autoInstrument until we can set up scrubbing rules
       autoInstrument: false,
+      // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
+      ignoredMessages: [
+        "ResizeObserver loop limit exceeded",
+        "Promise was cancelled",
+        "Uncaught Error: PixieBrix contentScript already installed",
+      ],
       payload: {
         client: {
           javascript: {

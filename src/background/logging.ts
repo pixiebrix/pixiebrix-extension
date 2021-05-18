@@ -26,6 +26,7 @@ import { reverse, sortBy } from "lodash";
 import { _getDNT } from "@/background/telemetry";
 import { isBackgroundPage } from "webext-detect-page";
 import { readStorage, setStorage } from "@/chrome";
+import { hasBusinessRootCause, hasCancelRootCause } from "@/errors";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -176,7 +177,13 @@ export const recordError = liftBackground(
       console.error(errorMessage(error), error);
 
       if (!(await _getDNT())) {
-        (Rollbar as any).error(errorMessage(error), error);
+        if (hasCancelRootCause(error)) {
+          // NOP - no reason to send to Rollbar
+        } else if (hasBusinessRootCause(error)) {
+          (Rollbar as any).debug(errorMessage(error), error);
+        } else {
+          (Rollbar as any).error(errorMessage(error), error);
+        }
       }
 
       await appendEntry({

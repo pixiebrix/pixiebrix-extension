@@ -19,6 +19,7 @@ import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { boolean } from "@/utils";
+import { BusinessError } from "@/errors";
 
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
@@ -135,9 +136,11 @@ export class FormFill extends Effect {
     const $form = $(document).find(formSelector);
 
     if ($form.length === 0) {
-      throw new Error(`Form not found for selector: ${formSelector}`);
+      throw new BusinessError(`Form not found for selector: ${formSelector}`);
     } else if ($form.length > 1) {
-      throw new Error(`Selector found ${$form.length} forms: ${formSelector}`);
+      throw new BusinessError(
+        `Selector found ${$form.length} forms: ${formSelector}`
+      );
     }
 
     for (const [name, value] of Object.entries(fieldNames)) {
@@ -161,7 +164,7 @@ export class FormFill extends Effect {
     if (typeof submit === "boolean") {
       if (submit) {
         if (!$form.is("form")) {
-          throw new Error(
+          throw new BusinessError(
             `Can only submit a form element, got tag ${$form.get(0).tagName}`
           );
         }
@@ -170,15 +173,15 @@ export class FormFill extends Effect {
     } else if (typeof submit === "string") {
       const $submit = $form.find(submit);
       if ($submit.length === 0) {
-        throw new Error(`Did not find selector ${submit} in the form`);
+        throw new BusinessError(`Did not find selector ${submit} in the form`);
       } else if ($submit.length > 1) {
-        throw new Error(
+        throw new BusinessError(
           `Found multiple elements for the submit selector ${submit} in the form`
         );
       }
       $submit.trigger("click");
     } else {
-      throw new Error("Unexpected argument for property submit");
+      throw new BusinessError("Unexpected argument for property submit");
     }
   }
 }

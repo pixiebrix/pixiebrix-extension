@@ -37,6 +37,7 @@ import { FieldProps } from "@/components/fields/propTypes";
 import { parseAssemblyQualifiedName } from "csharp-helpers";
 import { inputProperties } from "@/helpers";
 import { useDependency } from "@/services/hooks";
+import { BusinessError } from "@/errors";
 
 interface Argument {
   name: string;
@@ -211,7 +212,7 @@ function toType(type: string) {
   ) {
     return "number";
   } else {
-    throw new Error(`Unsupported input type: ${type}`);
+    throw new BusinessError(`Unsupported input type: ${type}`);
   }
 }
 
