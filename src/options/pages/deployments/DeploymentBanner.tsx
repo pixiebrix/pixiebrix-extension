@@ -1,26 +1,22 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { Deployment } from "@/types/contract";
-import { Button } from "react-bootstrap";
-import { compact, fromPairs, uniq } from "lodash";
+import React, {useCallback, useMemo, useState} from "react";
+import {Deployment} from "@/types/contract";
+import {Button} from "react-bootstrap";
+import {compact, fromPairs, uniq} from "lodash";
 import "@/layout/Banner";
-import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/pages/InstalledPage";
+import {useDispatch, useSelector} from "react-redux";
+import {selectExtensions} from "@/options/pages/InstalledPage";
 import moment from "moment";
-import { useToasts } from "react-toast-notifications";
+import {useToasts} from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
-import {
-  checkPermissions,
-  collectPermissions,
-  ensureAllPermissions,
-  originPermissions,
-} from "@/permissions";
-import { useAsyncState } from "@/hooks/common";
-import { reportEvent } from "@/telemetry/events";
-import { optionsSlice } from "@/options/slices";
+import {checkPermissions, collectPermissions, ensureAllPermissions, originPermissions,} from "@/permissions";
+import {useAsyncState} from "@/hooks/common";
+import {reportEvent} from "@/telemetry/events";
+import {optionsSlice} from "@/options/slices";
 import axios from "axios";
-import { getBaseURL } from "@/services/baseService";
-import { getUID } from "@/background/telemetry";
-import { getExtensionToken } from "@/auth/token";
+import {getBaseURL} from "@/services/baseService";
+import {getUID} from "@/background/telemetry";
+import {getExtensionToken} from "@/auth/token";
+import {reportError} from "@/telemetry/logging";
 
 const { actions } = optionsSlice;
 
@@ -59,6 +55,7 @@ function useEnsurePermissions(deployments: Deployment[]) {
       accepted = await ensureAllPermissions(permissions);
     } catch (err) {
       console.error(err);
+      reportError(err);
       addToast(`Error granting permissions: ${err}`, {
         appearance: "error",
         autoDismiss: true,
