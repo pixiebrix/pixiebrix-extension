@@ -24,9 +24,14 @@ import { serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { reverse, sortBy } from "lodash";
 import { _getDNT } from "@/background/telemetry";
-import { isBackgroundPage } from "webext-detect-page";
+import { isBackgroundPage, isContentScript } from "webext-detect-page";
 import { readStorage, setStorage } from "@/chrome";
-import { hasBusinessRootCause, hasCancelRootCause } from "@/errors";
+import {
+  hasBusinessRootCause,
+  hasCancelRootCause,
+  isConnectionError,
+} from "@/errors";
+import { showConnectionLost } from "@/contentScript/connection";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -267,6 +272,11 @@ export class BackgroundLogger implements ILogger {
       context: this.context,
       data,
     });
+
+    if (isConnectionError(error) && isContentScript()) {
+      showConnectionLost();
+    }
+
     await recordError(serializeError(error), this.context, data);
   }
 }
