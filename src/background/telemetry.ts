@@ -104,6 +104,13 @@ export const getUID = liftBackground("GET_UID", async () => {
   return await uid();
 });
 
+export const getExtensionVersion = liftBackground(
+  "GET_EXTENSION_VERSION",
+  async () => {
+    return browser.runtime.getManifest().version;
+  }
+);
+
 export const toggleDNT = liftBackground(
   "TOGGLE_DNT",
   async (enabled: boolean) => {

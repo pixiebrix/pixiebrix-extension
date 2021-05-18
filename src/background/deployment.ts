@@ -23,7 +23,7 @@ import { uniq, compact } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
-import { getUID } from "@/background/telemetry";
+import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
@@ -56,6 +56,7 @@ async function updateDeployments() {
       `${await getBaseURL()}/api/deployments/`,
       {
         uid: await getUID(),
+        version: await getExtensionVersion(),
         active: compact(uniq(extensions.map((x) => x._deployment?.id))),
       },
       {
