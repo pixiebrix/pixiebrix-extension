@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { readStorage } from "@/chrome";
+import { readStorage, setStorage } from "@/chrome";
 import { Metadata, ServiceDependency } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 
@@ -37,15 +37,31 @@ export interface ExtensionOptions {
   config: { [prop: string]: unknown };
 }
 
+type ExtensionOptionState = {
+  extensions: Record<string, Record<string, ExtensionOptions>>;
+};
+
 /**
  * Read extension options from local storage
  */
-export async function loadOptions(): Promise<{
-  extensions: Record<string, Record<string, ExtensionOptions>>;
-}> {
+export async function loadOptions(): Promise<ExtensionOptionState> {
   const rawOptions = await readStorage(storageKey);
 
-  // Not really sure why the next level down is escaped JSON?
+  // Not really sure why the next level down is also escaped JSON?
   const base = JSON.parse(rawOptions as string);
+
   return { extensions: JSON.parse(base.extensions) };
+}
+
+/**
+ * Save extension options to local storage
+ */
+export async function saveOptions(state: ExtensionOptionState): Promise<void> {
+  const rawOptions = await readStorage(storageKey);
+  const base = JSON.parse(rawOptions as string);
+  const { extensions } = state;
+  await setStorage(
+    storageKey,
+    JSON.stringify({ ...base, extensions: JSON.stringify(extensions) })
+  );
 }

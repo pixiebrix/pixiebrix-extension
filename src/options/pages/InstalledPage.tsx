@@ -169,8 +169,6 @@ const ExtensionRow: React.FunctionComponent<{
     extension
   );
 
-  // const extensionPoint = useRegistry(extensionPointRegistry, extensionPointId);
-
   const [validation] = useExtensionValidator(extension);
 
   const statusElt = useMemo(() => {
