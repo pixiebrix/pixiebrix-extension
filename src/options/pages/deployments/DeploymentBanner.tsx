@@ -140,7 +140,7 @@ function useDeployments() {
             }
           }
 
-          // install the blueprint with the service definition
+          // Install the blueprint with the service definition
           dispatch(
             actions.installRecipe({
               recipe: deployment.package.config,

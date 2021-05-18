@@ -22,6 +22,16 @@ import serviceRegistry from "@/services/registry";
 import { refresh as refreshLocator } from "@/background/locator";
 import { useCallback, useState } from "react";
 
+export async function refreshRegistries(): Promise<void> {
+  console.debug("Refreshing bricks from the server");
+  await Promise.all([
+    extensionPointRegistry.fetch(),
+    blockRegistry.fetch(),
+    serviceRegistry.fetch(),
+    refreshLocator(),
+  ]);
+}
+
 export function useRefresh(
   refreshOnMount = true
 ): [boolean, () => Promise<void>] {
@@ -31,19 +41,13 @@ export function useRefresh(
   const refresh = useCallback(
     async (isMounted: () => boolean = () => true) => {
       try {
-        console.debug("Fetching bricks from the server");
-        await Promise.all([
-          extensionPointRegistry.fetch(),
-          blockRegistry.fetch(),
-          serviceRegistry.fetch(),
-          refreshLocator(),
-        ]);
+        await refreshRegistries();
       } catch (exc) {
         console.exception(exc);
         if (!isMounted()) {
           return;
         }
-        addToast(`Error refreshing blocks from server: ${exc}`, {
+        addToast(`Error refreshing bricks from server: ${exc}`, {
           appearance: "error",
           autoDismiss: true,
         });

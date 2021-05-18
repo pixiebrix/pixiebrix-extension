@@ -15,18 +15,75 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ExtensionOptions, loadOptions } from "@/options/loader";
+import { ExtensionOptions, loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
-import { browser } from "webextension-polyfill-ts";
+import { browser, Permissions } from "webextension-polyfill-ts";
 import moment from "moment";
-import { uniq, compact } from "lodash";
+import { uniq, compact, partition, fromPairs } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
+import { checkPermissions, collectPermissions } from "@/permissions";
+
+import { optionsSlice, OptionsState } from "@/options/slices";
+import { reportEvent } from "@/telemetry/events";
+import { selectExtensions } from "@/options/pages/InstalledPage";
+import { refreshRegistries } from "@/hooks/refresh";
+
+const { reducer, actions } = optionsSlice;
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
+
+async function deploymentPermissions(
+  deployment: Deployment
+): Promise<Permissions.Permissions[]> {
+  const blueprint = deployment.package.config;
+  // Deployments can only use proxied services, so there's no additional permissions to request for the
+  // the serviceAuths.
+  return await collectPermissions(blueprint, []);
+}
+
+function installDeployment(
+  state: OptionsState,
+  deployment: Deployment
+): OptionsState {
+  let returnState = state;
+  const installed = selectExtensions({ options: state });
+
+  for (const extension of installed) {
+    if (extension._recipe.id === deployment.package.package_id) {
+      returnState = reducer(
+        returnState,
+        actions.removeExtension({
+          extensionPointId: extension.extensionPointId,
+          extensionId: extension.id,
+        })
+      );
+    }
+  }
+
+  // install the blueprint with the service definition
+  returnState = reducer(
+    returnState,
+    actions.installRecipe({
+      recipe: deployment.package.config,
+      extensionPoints: deployment.package.config.extensionPoints,
+      services: fromPairs(
+        deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
+      ),
+      deployment,
+    })
+  );
+
+  reportEvent("DeploymentActivate", {
+    deployment: deployment.id,
+    auto: true,
+  });
+
+  return returnState;
+}
 
 async function updateDeployments() {
   const token = await getExtensionToken();
@@ -64,15 +121,62 @@ async function updateDeployments() {
       }
     );
 
-    if (
-      deployments.some(
-        (x: Deployment) =>
-          !timestamps.has(x.id) ||
-          moment(x.updated_at).isAfter(timestamps.get(x.id))
-      )
-    ) {
-      // TODO: check if additional permissions needed. If not, refresh brick definitions, then activate
-      await browser.runtime.openOptionsPage();
+    const updatedDeployments = deployments.filter(
+      (x: Deployment) =>
+        !timestamps.has(x.id) ||
+        moment(x.updated_at).isAfter(timestamps.get(x.id))
+    );
+
+    if (updatedDeployments.length > 0) {
+      try {
+        // Get the current brick definitions, which will have the current permissions
+        await refreshRegistries();
+      } catch (err) {
+        reportError(err);
+        await browser.runtime.openOptionsPage();
+      }
+
+      const deploymentRequirements = await Promise.all(
+        updatedDeployments.map(async (deployment) => ({
+          deployment,
+          hasPermissions: await checkPermissions(
+            await deploymentPermissions(deployment)
+          ),
+        }))
+      );
+
+      const [automatic, manual] = partition(
+        deploymentRequirements,
+        (x) => x.hasPermissions
+      );
+
+      let automaticError = false;
+
+      if (automatic.length > 0) {
+        console.debug(
+          `Applying automatic updates for ${automatic.length} deployment(s)`
+        );
+
+        try {
+          let currentOptions = await loadOptions();
+          for (const { deployment } of automatic) {
+            // clear existing installs of the blueprint
+            currentOptions = installDeployment(currentOptions, deployment);
+          }
+          await saveOptions(currentOptions);
+          console.info(
+            `Applied automatic updates for ${automatic.length} deployment(s)`
+          );
+        } catch (err) {
+          console.warn(err);
+          reportError(err);
+          automaticError = true;
+        }
+      }
+
+      if (manual.length > 0 || automaticError) {
+        await browser.runtime.openOptionsPage();
+      }
     } else {
       console.debug("No deployment updates found");
     }

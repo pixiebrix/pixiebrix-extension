@@ -49,12 +49,12 @@ import { AuthState } from "@/core";
 import TemplatesPage from "@/options/pages/templates/TemplatesPage";
 import { initTelemetry } from "@/telemetry/events";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
+import UpdateBanner from "@/options/pages/UpdateBanner";
 
 // import the built-in bricks
 import "@/blocks";
 import "@/contrib";
 import "@/contrib/editors";
-import UpdateBanner from "@/options/pages/UpdateBanner";
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(
