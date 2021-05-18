@@ -20,6 +20,7 @@ import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import UiPathRobot from "@/contrib/uipath/UiPathRobot";
 import { JobResult, RobotProcess } from "@uipath/robot/dist/models";
+import { BusinessError } from "@/errors";
 
 UiPathRobot.settings.disableTelemetry = true;
 
@@ -69,7 +70,7 @@ export class RunLocalProcess extends Transformer {
         );
         if (!process) {
           logger.error(`Cannot find UiPath release: ${releaseKey}`);
-          throw new Error(`Cannot find UiPath release`);
+          throw new BusinessError(`Cannot find UiPath release`);
         }
         console.debug("Running local UiPath process", { releaseKey });
         process.start(inputArguments).then(

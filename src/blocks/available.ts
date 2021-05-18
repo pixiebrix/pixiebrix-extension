@@ -23,6 +23,7 @@ import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
 import { Availability } from "@/blocks/types";
 import { Permissions } from "webextension-polyfill-ts";
+import { BusinessError } from "@/errors";
 
 export function testMatchPattern(pattern: string, url?: string): boolean {
   let re;
@@ -30,13 +31,13 @@ export function testMatchPattern(pattern: string, url?: string): boolean {
   try {
     re = matchPattern.parse(pattern);
   } catch (ex) {
-    throw new Error(
+    throw new BusinessError(
       `Pattern not recognized as valid match pattern: ${pattern}`
     );
   }
 
   if (!re) {
-    throw new Error(
+    throw new BusinessError(
       `Pattern not recognized as valid match pattern: ${pattern}`
     );
   }
@@ -75,7 +76,7 @@ export async function checkAvailable({
  * @param permissions
  */
 export function mergePermissions(
-  permissions: Permissions.Permissions[]
+  permissions: Permissions.Permissions[] = []
 ): Permissions.Permissions {
   return {
     origins: uniq(permissions.flatMap((x) => x.origins ?? [])),

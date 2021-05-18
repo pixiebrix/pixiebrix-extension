@@ -81,13 +81,16 @@ import {
   WriteableComponentAdapter,
 } from "@/frameworks/component";
 import { elementInfo } from "@/nativeEditor/frameworks";
+import { BusinessError } from "@/errors";
 
 function requireSingleElement(selector: string): HTMLElement {
   const $elt = jQuery(document).find(selector);
   if (!$elt.length) {
-    throw new Error(`No elements found for selector: '${selector}'`);
+    throw new BusinessError(`No elements found for selector: '${selector}'`);
   } else if ($elt.length > 1) {
-    throw new Error(`Multiple elements found for selector: '${selector}'`);
+    throw new BusinessError(
+      `Multiple elements found for selector: '${selector}'`
+    );
   }
   return $elt.get(0);
 }

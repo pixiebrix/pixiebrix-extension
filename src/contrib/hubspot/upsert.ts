@@ -20,6 +20,7 @@ import { proxyService } from "@/background/requests";
 import { registerBlock } from "@/blocks/registry";
 import { Schema, BlockArg } from "@/core";
 import partial from "lodash/partial";
+import { BusinessError } from "@/errors";
 
 function makeProperties(
   obj: Record<string, unknown>,
@@ -116,7 +117,7 @@ export class AddUpdateContact extends Effect {
       });
     } else {
       if (!firstname || !lastname) {
-        throw new Error(
+        throw new BusinessError(
           "firstname and lastname are required if an email is not provided"
         );
       }
@@ -133,7 +134,7 @@ export class AddUpdateContact extends Effect {
           data: { properties },
         });
       } else if (contacts.length > 1) {
-        throw new Error("Multiple Hubspot connections found");
+        throw new BusinessError("Multiple Hubspot contacts found");
       } else {
         await proxyHubspot({
           url: `https://api.hubapi.com/contacts/v1/contact/`,
@@ -189,7 +190,7 @@ export class AddUpdateCompany extends Effect {
 
     if (!website) {
       console.error("Website is required", config);
-      throw new Error("Website is required");
+      throw new BusinessError("Website is required");
     }
 
     const properties = makeProperties(config, "name");
@@ -215,7 +216,7 @@ export class AddUpdateCompany extends Effect {
         data: { properties },
       });
     } else if (results.length > 1) {
-      throw new Error("Multiple Hubspot companies found");
+      throw new BusinessError("Multiple Hubspot companies found");
     } else {
       await proxyHubspot({
         url: "https://api.hubapi.com/companies/v2/companies",

@@ -19,6 +19,7 @@ import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { proxyService } from "@/background/requests";
 import { BlockArg, Schema } from "@/core";
+import { BusinessError } from "@/errors";
 
 const PIPEDRIVE_SERVICE_ID = "pipedrive/api";
 
@@ -90,7 +91,7 @@ export class ResolvePerson extends Transformer {
     });
 
     if (!data.items.length) {
-      throw new Error(`Could not find person matching ${name}`);
+      throw new BusinessError(`Could not find person matching ${name}`);
     }
 
     return data.items[0].item;

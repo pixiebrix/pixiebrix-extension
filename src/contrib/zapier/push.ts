@@ -25,6 +25,7 @@ import { validateInput } from "@/validators/generic";
 import { Webhook } from "@/contrib/zapier/contract";
 import { Permissions } from "webextension-polyfill-ts";
 import { v4 as uuidv4 } from "uuid";
+import { BusinessError } from "@/errors";
 
 export const ZAPIER_ID = "@pixiebrix/zapier/push-data";
 
@@ -78,7 +79,7 @@ export class PushZap extends Effect {
     );
 
     if (!webhook) {
-      throw new Error(`No Zapier hook found for name: ${pushKey}`);
+      throw new BusinessError(`No Zapier hook found for name: ${pushKey}`);
     }
 
     const validation = await validateInput(webhook.input_schema, data);

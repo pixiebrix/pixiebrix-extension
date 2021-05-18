@@ -18,6 +18,7 @@
 import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
+import { BusinessError } from "@/errors";
 
 export class MappingTransformer extends Transformer {
   constructor() {
@@ -67,7 +68,7 @@ export class MappingTransformer extends Transformer {
     } else if (missing === "ignore") {
       return key;
     }
-    throw new Error(`Key ${key} not found in the mapping`);
+    throw new BusinessError(`Key ${key} not found in the mapping`);
   }
 }
 

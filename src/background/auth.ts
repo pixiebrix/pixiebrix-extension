@@ -25,6 +25,7 @@ import {
   generateVerifier,
   getRandomString,
 } from "vendors/pkce";
+import { BusinessError } from "@/errors";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 
@@ -126,9 +127,9 @@ export async function launchOAuth2Flow(
   } = oauth2;
 
   if (!rawAuthorizeUrl) {
-    throw new Error("authorizeUrl is required for oauth2");
+    throw new BusinessError("authorizeUrl is required for oauth2");
   } else if (!rawTokenUrl) {
-    throw new Error("tokenUrl is required for oauth2");
+    throw new BusinessError("tokenUrl is required for oauth2");
   }
 
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
@@ -160,7 +161,7 @@ export async function launchOAuth2Flow(
       code_challenge_method
     );
   } else if (code_challenge_method != null) {
-    throw new Error(
+    throw new BusinessError(
       `Unsupported code challenge method: ${code_challenge_method}`
     );
   }

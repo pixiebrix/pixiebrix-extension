@@ -31,10 +31,13 @@ if (!window[PIXIEBRIX_SYMBOL]) {
   // eslint-disable-next-line security/detect-object-injection
   window[PIXIEBRIX_SYMBOL] = uuidv4();
 } else {
-  throw Error(
-    // eslint-disable-next-line security/detect-object-injection
+  // Don't load script multiple times. Required since we can't do conditional imports to no-op the
+  // content script if it's already installed
+  // eslint-disable-next-line security/detect-object-injection
+  console.debug(
     `PixieBrix contentScript already installed: ${window[PIXIEBRIX_SYMBOL]}`
   );
+  throw Error(`PixieBrix contentScript already installed`);
 }
 
 import "@/extensionContext";

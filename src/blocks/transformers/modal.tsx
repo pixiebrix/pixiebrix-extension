@@ -22,7 +22,7 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
 import { v4 as uuidv4 } from "uuid";
-import { CancelError } from "@/errors";
+import { BusinessError, CancelError } from "@/errors";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const theme = require("!!raw-loader!bootstrap/dist/css/bootstrap.min.css?esModule=false")
@@ -68,7 +68,7 @@ export class ModalTransformer extends Transformer {
     for (const [attr, value] of Object.entries(containerAttrs)) {
       if (value != null) {
         if (typeof value !== "string") {
-          throw new Error("Invalid containerAttr");
+          throw new BusinessError("Invalid containerAttr");
         }
         container.setAttribute(attr, value);
       }

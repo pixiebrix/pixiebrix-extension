@@ -20,6 +20,7 @@ import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import { sleep } from "@/utils";
+import { BusinessError } from "@/errors";
 
 export const UIPATH_SERVICE_IDS = [
   "uipath/cloud",
@@ -145,18 +146,18 @@ export class RunProcess extends Transformer {
 
         if (resultData.value.length === 0) {
           logger.error(`UiPath job not found: ${startData.value[0].Id}`);
-          throw new Error("UiPath job not found");
+          throw new BusinessError("UiPath job not found");
         }
 
         if (resultData.value[0].State === "Successful") {
           return JSON.parse(resultData.value[0].OutputArguments);
         } else if (resultData.value[0].State === "Faulted") {
           logger.error(`UiPath job failed: ${resultData.value[0].Info}`);
-          throw new Error("UiPath job failed");
+          throw new BusinessError("UiPath job failed");
         }
         await sleep(POLL_MILLIS);
       } while (new Date().getTime() - start < MAX_WAIT_MILLIS);
-      throw new Error(
+      throw new BusinessError(
         `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
       );
     }

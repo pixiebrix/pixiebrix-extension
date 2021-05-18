@@ -30,6 +30,7 @@ import { RenderedArgs } from "@/core";
 import { isBackgroundPage, isContentScript } from "webext-detect-page";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
+import { BusinessError } from "@/errors";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -97,7 +98,9 @@ async function waitNonceReady(
 
   while (!(await isReady())) {
     if (Date.now() - startTime > maxWaitMillis) {
-      throw new Error(`Nonce ${nonce} was not ready after ${maxWaitMillis}ms`);
+      throw new BusinessError(
+        `Nonce ${nonce} was not ready after ${maxWaitMillis}ms`
+      );
     }
     await sleep(50);
   }
@@ -111,7 +114,9 @@ async function waitReady(
   const startTime = Date.now();
   while (tabReady[tabId]?.[frameId] == null) {
     if (Date.now() - startTime > maxWaitMillis) {
-      throw new Error(`Tab ${tabId} was not ready after ${maxWaitMillis}ms`);
+      throw new BusinessError(
+        `Tab ${tabId} was not ready after ${maxWaitMillis}ms`
+      );
     }
     await sleep(50);
   }
@@ -131,7 +136,7 @@ function backgroundListener(
       const opener = tabToOpener.get(sender.tab.id);
 
       if (!opener) {
-        return Promise.reject(new Error("Sender tab has no opener"));
+        return Promise.reject(new BusinessError("Sender tab has no opener"));
       }
 
       return new Promise((resolve) => {
@@ -212,7 +217,7 @@ function backgroundListener(
       const target = tabToTarget.get(sender.tab.id);
 
       if (!target) {
-        return Promise.reject(new Error("Sender tab has no target"));
+        return Promise.reject(new BusinessError("Sender tab has no target"));
       }
 
       console.debug(`Waiting for target tab ${target} to be ready`);

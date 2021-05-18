@@ -35,7 +35,7 @@ import {
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
 import { pickBy, isPlainObject, mapValues, castArray } from "lodash";
-import { ContextError } from "@/errors";
+import { BusinessError, ContextError } from "@/errors";
 import {
   executeInOpener,
   executeInTarget,
@@ -98,7 +98,7 @@ class PipelineConfigurationError extends Error {
 /**
  * Error indicating input elements to a block did not match the schema.
  */
-export class InputValidationError extends Error {
+export class InputValidationError extends BusinessError {
   readonly schema: Schema;
   readonly input: unknown;
   readonly errors: OutputUnit[];
@@ -275,7 +275,7 @@ async function runStage(
     } else if (stage.window ?? "self" === "self") {
       return await block.run(blockArgs, { ctxt: args, logger, root });
     } else {
-      throw new Error(`Unexpected stage window ${stage.window}`);
+      throw new BusinessError(`Unexpected stage window ${stage.window}`);
     }
   } finally {
     progressCallbacks?.hide();
@@ -322,9 +322,9 @@ export async function reducePipeline(
         : $(root ?? document);
 
       if ($stageRoot.length > 1) {
-        throw new Error(`Multiple roots found for ${stage.root}`);
+        throw new BusinessError(`Multiple roots found for ${stage.root}`);
       } else if ($stageRoot.length === 0) {
-        throw new Error(
+        throw new BusinessError(
           `No roots found for ${stage.root} (root=${
             (root as HTMLElement).tagName ?? "document"
           })`
@@ -436,7 +436,7 @@ export async function mergeReaders(
       await resolveObj(mapValues(readerConfig, mergeReaders))
     );
   } else {
-    throw new Error("Unexpected value for readerConfig");
+    throw new BusinessError("Unexpected value for readerConfig");
   }
 }
 

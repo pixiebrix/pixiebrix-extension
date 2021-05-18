@@ -20,6 +20,7 @@ import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { merge, cloneDeep } from "lodash";
 import { registerBlock } from "@/blocks/registry";
+import { BusinessError } from "@/errors";
 
 let _pageState: Record<string, unknown> = {};
 
@@ -67,7 +68,7 @@ export class SetPageState extends Transformer {
         break;
       }
       default: {
-        throw new Error(`Unknown merge strategy: ${mergeStrategy}`);
+        throw new BusinessError(`Unknown merge strategy: ${mergeStrategy}`);
       }
     }
     return _pageState;

@@ -15,6 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { BusinessError } from "@/errors";
+
 export interface Row {
   [column: string]: unknown;
 }
@@ -46,7 +48,7 @@ function renderRow<TRow extends Row>(
 function makeDataTable<TRow extends {}>(columns: ColumnDefinition<TRow>[]) {
   function drawTable(ctxt: unknown) {
     if (!Array.isArray(ctxt)) {
-      throw new Error("makeDataTable expected an array of data");
+      throw new BusinessError("makeDataTable expected an array of data");
     }
 
     return `
