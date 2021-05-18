@@ -23,7 +23,9 @@ import {
   notifyContentScripts,
 } from "@/contentScript/backgroundProtocol";
 import * as context from "@/contentScript/context";
-import { PromiseCancelled } from "@/utils";
+import { PromiseCancelled, sleep } from "@/utils";
+import { NAVIGATION_RULES } from "@/contrib/navigationRules";
+import { testMatchPattern } from "@/blocks/available";
 
 let _scriptPromise: Promise<void>;
 const _dynamic: Map<string, IExtensionPoint> = new Map();
@@ -34,6 +36,8 @@ const _installedExtensionPoints: IExtensionPoint[] = [];
 
 // @ts-ignore: may use in the future to determine which extension points to install
 let _openerTabId: number = undefined;
+
+const WAIT_LOADED_INTERVAL_MS = 25;
 
 async function installScriptOnce(): Promise<void> {
   // https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script/9517879#9517879
@@ -183,6 +187,34 @@ function getNavSequence() {
 }
 
 /**
+ * Wait for the page to be ready according to the site-specific navigation rules.
+ */
+async function waitLoaded(cancel: () => boolean): Promise<void> {
+  const url = document.location.href;
+  const rules = NAVIGATION_RULES.filter((rule) =>
+    rule.matchPatterns.some((pattern) => testMatchPattern(pattern, url))
+  );
+  if (rules.length > 0) {
+    const $document = $(document);
+    while (
+      rules.some((rule) =>
+        rule.loadingSelectors.some(
+          (selector) => $document.find(selector).length > 0
+        )
+      )
+    ) {
+      if (cancel()) {
+        return;
+      }
+      console.debug(
+        `Custom navigation rule detected that page is still loading: ${url}`
+      );
+      await sleep(WAIT_LOADED_INTERVAL_MS);
+    }
+  }
+}
+
+/**
  * Handle a website navigation, e.g., page load or a URL change in an SPA.
  * @returns {Promise<void>}
  */
@@ -224,7 +256,10 @@ export async function handleNavigate({
   if (extensionPoints.length) {
     _navSequence++;
     const currentNavSequence = _navSequence;
+
     const cancel = () => getNavSequence() > currentNavSequence;
+
+    await waitLoaded(cancel);
 
     for (const extensionPoint of extensionPoints) {
       // Don't await each extension point since the extension point may never appear. For example, an
