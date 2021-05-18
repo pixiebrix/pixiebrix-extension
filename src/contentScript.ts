@@ -42,16 +42,23 @@ if (!window[PIXIEBRIX_SYMBOL]) {
 
 import "@/extensionContext";
 import { reportError } from "@/telemetry/logging";
+import { showConnectionLost } from "@/contentScript/connection";
 
 window.addEventListener("error", function (e) {
-  // eslint-disable-next-line require-await
-  reportError(e);
-  return false;
+  if (isConnectionError(e)) {
+    showConnectionLost();
+  } else {
+    reportError(e);
+    return false;
+  }
 });
 
 window.addEventListener("unhandledrejection", function (e) {
-  // eslint-disable-next-line require-await
-  reportError(e);
+  if (isConnectionError(e)) {
+    showConnectionLost();
+  } else {
+    reportError(e);
+  }
 });
 
 import "@/blocks";
@@ -69,6 +76,7 @@ import "@/vendors/notify";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import "@/contentScript/uipath";
+import { isConnectionError } from "@/errors";
 
 const start = Date.now();
 

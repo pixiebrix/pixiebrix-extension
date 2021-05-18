@@ -105,3 +105,37 @@ export function hasBusinessRootCause(err: Error | SerializedError): boolean {
   }
   return false;
 }
+
+const CONNECTION_ERROR_PATTERNS = [
+  "Could not establish connection. Receiving end does not exist.",
+  "Extension context invalidated",
+];
+
+function testConnectionErrorPatterns(message: string): boolean {
+  if (typeof message !== "string") {
+    return;
+  }
+  for (const pattern of CONNECTION_ERROR_PATTERNS) {
+    if ((message ?? "").includes(pattern)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function isConnectionError(
+  event: ErrorEvent | PromiseRejectionEvent | unknown
+): boolean {
+  if (typeof event === "string") {
+    return testConnectionErrorPatterns(event);
+  } else if (event != null && typeof event === "object") {
+    if ("reason" in event) {
+      return testConnectionErrorPatterns((event as { reason: string }).reason);
+    } else if ("message" in event) {
+      return testConnectionErrorPatterns(
+        (event as { message: string }).message
+      );
+    }
+  }
+  return false;
+}
