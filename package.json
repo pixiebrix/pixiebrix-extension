@@ -141,7 +141,7 @@
     "lodash": "^4.17.21",
     "marked": "^2.0.1",
     "match-pattern": "0.0.2",
-    "mini-css-extract-plugin": "~1.2.1",
+    "mini-css-extract-plugin": "~1.6.0",
     "moment": "^2.29.1",
     "mustache": "^4.0.1",
     "node-sass": "^5.0.0",
