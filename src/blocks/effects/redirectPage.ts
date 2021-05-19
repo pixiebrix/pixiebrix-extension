@@ -20,6 +20,9 @@ import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { openTab } from "@/background/executor";
 
+const SPACE_ENCODING_DEFAULT = "plus";
+const SPACE_ENCODED_VALUE = "%20";
+
 const URL_INPUT_SPEC: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
   type: "object",
@@ -34,21 +37,39 @@ const URL_INPUT_SPEC: Schema = {
       description: "URL parameters, will be automatically encoded",
       additionalProperties: { type: "string" },
     },
+    spaceEncoding: {
+      type: "string",
+      description: "Encode space using %20 vs. +",
+      default: SPACE_ENCODING_DEFAULT,
+      enum: ["percent", "plus"],
+    },
   },
   required: ["url"],
 };
 
 function makeURL(
   url: string,
-  params: { [key: string]: string } | undefined = {}
+  params: { [key: string]: string } | undefined = {},
+  spaceEncoding: "plus" | "percent" = SPACE_ENCODING_DEFAULT
 ): string {
+  // https://javascript.info/url#searchparams
   const result = new URL(url);
   for (const [name, value] of Object.entries(params ?? {})) {
     if ((value ?? "") !== "") {
       result.searchParams.append(name, value);
     }
   }
-  return result.toString();
+
+  const fullURL = result.toString();
+
+  if (spaceEncoding === "plus" || result.search.length === 0) {
+    return fullURL;
+  } else {
+    return fullURL.replace(
+      result.search,
+      result.search.replaceAll("+", SPACE_ENCODED_VALUE)
+    );
+  }
 }
 
 export class NavigateURLEffect extends Effect {
@@ -63,8 +84,12 @@ export class NavigateURLEffect extends Effect {
 
   inputSchema = URL_INPUT_SPEC;
 
-  async effect({ url, params }: BlockArg): Promise<void> {
-    document.location.href = makeURL(url, params);
+  async effect({
+    url,
+    params,
+    spaceEncoding = SPACE_ENCODING_DEFAULT,
+  }: BlockArg): Promise<void> {
+    document.location.href = makeURL(url, params, spaceEncoding);
   }
 }
 
@@ -80,9 +105,13 @@ export class OpenURLEffect extends Effect {
 
   inputSchema = URL_INPUT_SPEC;
 
-  async effect({ url, params }: BlockArg): Promise<void> {
+  async effect({
+    url,
+    params,
+    spaceEncoding = SPACE_ENCODING_DEFAULT,
+  }: BlockArg): Promise<void> {
     await openTab({
-      url: makeURL(url, params),
+      url: makeURL(url, params, spaceEncoding),
       active: true,
     });
   }
