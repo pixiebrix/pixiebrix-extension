@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Deployment } from "@/types/contract";
 import { Button } from "react-bootstrap";
-import { compact, fromPairs, uniq } from "lodash";
+import { fromPairs } from "lodash";
 import "@/layout/Banner";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/pages/InstalledPage";
@@ -22,7 +22,7 @@ import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
 import { reportError } from "@/telemetry/logging";
-import { queueReactivate } from "@/background/deployment";
+import { activeDeployments, queueReactivate } from "@/background/deployment";
 
 const { actions } = optionsSlice;
 
@@ -99,7 +99,7 @@ function useDeployments() {
       {
         uid: await getUID(),
         version: await getExtensionVersion(),
-        active: compact(uniq(installed.map((x) => x._deployment?.id))),
+        active: activeDeployments(installed),
       },
       {
         headers: { Authorization: `Token ${token}` },

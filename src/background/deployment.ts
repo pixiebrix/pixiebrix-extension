@@ -19,7 +19,7 @@ import { ExtensionOptions, loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
 import { browser, Permissions } from "webextension-polyfill-ts";
 import moment from "moment";
-import { uniq, compact, partition, fromPairs } from "lodash";
+import { partition, fromPairs, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
@@ -44,6 +44,27 @@ async function deploymentPermissions(
   // Deployments can only use proxied services, so there's no additional permissions to request for the
   // the serviceAuths.
   return await collectPermissions(blueprint, []);
+}
+
+type ActiveDeployment = {
+  deployment: string;
+  blueprint: string;
+  blueprintVersion: string;
+};
+
+export function activeDeployments(
+  extensions: Pick<ExtensionOptions, "_deployment" | "_recipe">[]
+): ActiveDeployment[] {
+  return uniqBy(
+    extensions
+      .filter((x) => x._deployment?.id != null)
+      .map((x) => ({
+        deployment: x._deployment.id,
+        blueprint: x._recipe?.id,
+        blueprintVersion: x._recipe?.version,
+      })),
+    (x) => x.deployment
+  );
 }
 
 export const queueReactivate = liftBackground(
@@ -123,7 +144,7 @@ async function updateDeployments() {
       {
         uid: await getUID(),
         version: await getExtensionVersion(),
-        active: compact(uniq(extensions.map((x) => x._deployment?.id))),
+        active: activeDeployments(extensions),
       },
       {
         headers: { Authorization: `Token ${token}` },
