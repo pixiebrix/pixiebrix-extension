@@ -53,6 +53,11 @@ export async function getType(extension: IExtension): Promise<ElementType> {
     throw new Error(`Cannot find extension point`);
   }
   const extensionPoint = (brick.config as unknown) as ExtensionPointConfig;
+
+  if (extensionPoint.definition.type === "actionPanel") {
+    throw new Error("actionPanel not supported in Page Editor");
+  }
+
   return extensionPoint.definition.type;
 }
 

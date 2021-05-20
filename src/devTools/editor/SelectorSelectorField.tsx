@@ -165,6 +165,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
       setElement(selected);
 
       const selectors = selected.selectors ?? [];
+
       const firstSelector = (sort
         ? sortBy(selectors, (x) => x.length)
         : selectors)[0];

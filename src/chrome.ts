@@ -40,6 +40,21 @@ export class RequestError extends Error {
   }
 }
 
+export function isBrowserActionPanel(): boolean {
+  const isExtensionContext =
+    typeof chrome === "object" &&
+    chrome &&
+    typeof chrome.extension === "object";
+
+  if (!isExtensionContext) {
+    return false;
+  }
+
+  const url = new URL("action.html", location.origin);
+
+  return url.pathname === location.pathname && url.origin === location.origin;
+}
+
 export function isDevtoolsPage(): boolean {
   const isExtensionContext =
     typeof chrome === "object" &&

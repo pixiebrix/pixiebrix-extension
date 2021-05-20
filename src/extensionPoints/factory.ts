@@ -19,6 +19,7 @@ import { fromJS as deserializePanel } from "@/extensionPoints/panelExtension";
 import { fromJS as deserializeMenuItem } from "@/extensionPoints/menuItemExtension";
 import { fromJS as deserializeTrigger } from "@/extensionPoints/triggerExtension";
 import { fromJS as deserializeSelectionAction } from "@/extensionPoints/contextMenu";
+import { fromJS as deserializeActionPanel } from "@/extensionPoints/actionPanelExtension";
 import { IExtensionPoint } from "@/core";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 
@@ -27,6 +28,7 @@ const TYPE_MAP = {
   menuItem: deserializeMenuItem,
   trigger: deserializeTrigger,
   contextMenu: deserializeSelectionAction,
+  actionPanel: deserializeActionPanel,
 };
 
 export function fromJS(config: ExtensionPointConfig): IExtensionPoint {

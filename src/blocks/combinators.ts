@@ -31,6 +31,7 @@ import {
   RenderedArgs,
   BlockArg,
   ReaderRoot,
+  MessageContext,
 } from "@/core";
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
@@ -96,6 +97,30 @@ class PipelineConfigurationError extends Error {
 }
 
 /**
+ * Error bailing if a renderer component is encountered while running in headless mode
+ */
+export class HeadlessModeError extends Error {
+  public readonly blockId: string;
+  public readonly args: unknown;
+  public readonly ctxt: unknown;
+  public readonly loggerContext: MessageContext;
+
+  constructor(
+    blockId: string,
+    args: unknown,
+    ctxt: unknown,
+    loggerContext: MessageContext
+  ) {
+    super(`${blockId} is a renderer`);
+    this.name = "HeadlessModeError";
+    this.blockId = blockId;
+    this.args = args;
+    this.ctxt = ctxt;
+    this.loggerContext = loggerContext;
+  }
+}
+
+/**
  * Error indicating input elements to a block did not match the schema.
  */
 export class InputValidationError extends BusinessError {
@@ -137,7 +162,8 @@ export async function blockList(
 interface ReduceOptions {
   validate?: boolean;
   logValues?: boolean;
-  serviceArgs: RenderedArgs;
+  headless?: boolean;
+  serviceArgs?: RenderedArgs;
 }
 
 type SchemaProperties = { [key: string]: Schema };
@@ -168,11 +194,21 @@ function isReader(block: IBlock): block is IReader {
   return "read" in block;
 }
 
+function isRendererBlock(block: IBlock & { render?: Function }): boolean {
+  return typeof block.render === "function";
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
+  return typeof block.effect === "function";
+}
+
 type StageOptions = {
   context: RenderedArgs;
   validate: boolean;
   logValues: boolean;
   logger: Logger;
+  headless?: boolean;
   root: ReaderRoot;
 };
 
@@ -180,7 +216,7 @@ async function runStage(
   block: IBlock,
   stage: BlockConfig,
   args: RenderedArgs,
-  { root, context, validate, logValues, logger }: StageOptions
+  { root, context, validate, logValues, logger, headless }: StageOptions
 ): Promise<unknown> {
   const argContext = { ...context, ...args };
   const stageConfig = stage.config ?? {};
@@ -256,6 +292,10 @@ async function runStage(
     );
   }
 
+  if (isRendererBlock(block) && headless) {
+    throw new HeadlessModeError(block.id, blockArgs, args, logger.context);
+  }
+
   try {
     if (stage.window === "opener") {
       return await executeInOpener(stage.id, blockArgs, {
@@ -273,18 +313,13 @@ async function runStage(
         messageContext: logger.context,
       });
     } else if (stage.window ?? "self" === "self") {
-      return await block.run(blockArgs, { ctxt: args, logger, root });
+      return await block.run(blockArgs, { ctxt: args, logger, root, headless });
     } else {
       throw new BusinessError(`Unexpected stage window ${stage.window}`);
     }
   } finally {
     progressCallbacks?.hide();
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
-  return typeof block.effect === "function";
 }
 
 /** Execute a pipeline of blocks and return the result. */
@@ -296,6 +331,7 @@ export async function reducePipeline(
   options: ReduceOptions = {
     validate: true,
     logValues: false,
+    headless: false,
     serviceArgs: {} as RenderedArgs,
   }
 ): Promise<unknown> {
@@ -354,6 +390,7 @@ export async function reducePipeline(
         context: extraContext,
         logValues,
         validate: options.validate,
+        headless: options.headless,
         logger: stageLogger,
       });
 
@@ -380,6 +417,11 @@ export async function reducePipeline(
         }
       }
     } catch (ex) {
+      if (ex instanceof HeadlessModeError) {
+        // An "expected" error, let the caller deal with it
+        throw ex;
+      }
+
       if (stage.onError?.alert) {
         if (logger.context.deploymentId) {
           try {

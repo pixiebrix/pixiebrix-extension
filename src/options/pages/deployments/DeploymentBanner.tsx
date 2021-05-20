@@ -1,28 +1,24 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { Deployment } from "@/types/contract";
-import { Button } from "react-bootstrap";
-import { fromPairs } from "lodash";
+import React, {useCallback, useMemo, useState} from "react";
+import {Deployment} from "@/types/contract";
+import {Button} from "react-bootstrap";
 import "@/layout/Banner";
-import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/pages/InstalledPage";
+import {useDispatch, useSelector} from "react-redux";
+import {selectExtensions} from "@/options/pages/InstalledPage";
 import moment from "moment";
-import { useToasts } from "react-toast-notifications";
+import {useToasts} from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
-import {
-  checkPermissions,
-  collectPermissions,
-  ensureAllPermissions,
-  originPermissions,
-} from "@/permissions";
-import { useAsyncState } from "@/hooks/common";
-import { reportEvent } from "@/telemetry/events";
-import { optionsSlice } from "@/options/slices";
+import {checkPermissions, collectPermissions, ensureAllPermissions, originPermissions,} from "@/permissions";
+import cx from "classnames";
+import {fromPairs} from "lodash";
+import {useAsyncState} from "@/hooks/common";
+import {reportEvent} from "@/telemetry/events";
+import {optionsSlice} from "@/options/slices";
 import axios from "axios";
-import { getBaseURL } from "@/services/baseService";
-import { getExtensionVersion, getUID } from "@/background/telemetry";
-import { getExtensionToken } from "@/auth/token";
-import { reportError } from "@/telemetry/logging";
-import { activeDeployments, queueReactivate } from "@/background/deployment";
+import {getBaseURL} from "@/services/baseService";
+import {getExtensionVersion, getUID} from "@/background/telemetry";
+import {getExtensionToken} from "@/auth/token";
+import {reportError} from "@/telemetry/logging";
+import {activeDeployments, queueReactivate} from "@/background/deployment";
 
 const { actions } = optionsSlice;
 
@@ -170,7 +166,9 @@ function useDeployments() {
   return { hasUpdate: updated?.length > 0, update };
 }
 
-const DeploymentBanner: React.FunctionComponent = () => {
+const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
+  className,
+}) => {
   const { hasUpdate, update } = useDeployments();
 
   if (!hasUpdate) {
@@ -178,7 +176,10 @@ const DeploymentBanner: React.FunctionComponent = () => {
   }
 
   return (
-    <div className="deployment-banner w-100">
+    <div
+      className={cx("deployment-banner w-100", className)}
+      style={{ flex: "none" }}
+    >
       <div className="mx-auto d-flex">
         <div className="flex-grow-1" />
         <div className="align-self-center">

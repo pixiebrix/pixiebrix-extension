@@ -223,7 +223,7 @@ const ExtensionRow: React.FunctionComponent<{
   );
 };
 
-interface InstalledExtension extends IExtension {
+export interface InstalledExtension extends IExtension {
   _recipe: {
     id: string;
     name: string;

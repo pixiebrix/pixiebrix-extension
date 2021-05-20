@@ -174,6 +174,10 @@ export async function makePanelExtensionFormState(
     );
   }
 
+  if (extensionPoint.definition.type !== "panel") {
+    throw new Error("Expected panel extension point type");
+  }
+
   return {
     uuid: uuidv4(),
     installed: true,
@@ -241,6 +245,10 @@ export async function makePanelFormState(
     throw new Error(
       "Editing extension point with multiple availability selectors not implemented"
     );
+  }
+
+  if (extensionPoint.definition.type !== "panel") {
+    throw new Error("Expected panel extension point type");
   }
 
   return {

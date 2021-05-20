@@ -111,7 +111,8 @@ class ExternalBlock extends Block {
       this.component.pipeline,
       renderedInputs,
       options.logger,
-      options.root
+      options.root,
+      { headless: options.headless }
     );
   }
 }
