@@ -202,4 +202,9 @@ export function upsertPanel(
   renderPanels();
 }
 
-storeOriginalCSS();
+const isBrowser =
+  typeof window !== "undefined" && typeof window.document !== "undefined";
+
+if (isBrowser) {
+  storeOriginalCSS();
+}
