@@ -1,24 +1,29 @@
-import React, {useCallback, useMemo, useState} from "react";
-import {Deployment} from "@/types/contract";
-import {Button} from "react-bootstrap";
+import React, { useCallback, useMemo, useState } from "react";
+import { Deployment } from "@/types/contract";
+import { Button } from "react-bootstrap";
 import "@/layout/Banner";
-import {useDispatch, useSelector} from "react-redux";
-import {selectExtensions} from "@/options/pages/InstalledPage";
+import { useDispatch, useSelector } from "react-redux";
+import { selectExtensions } from "@/options/pages/InstalledPage";
 import moment from "moment";
-import {useToasts} from "react-toast-notifications";
+import { useToasts } from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
-import {checkPermissions, collectPermissions, ensureAllPermissions, originPermissions,} from "@/permissions";
+import {
+  checkPermissions,
+  collectPermissions,
+  ensureAllPermissions,
+  originPermissions,
+} from "@/permissions";
 import cx from "classnames";
-import {fromPairs} from "lodash";
-import {useAsyncState} from "@/hooks/common";
-import {reportEvent} from "@/telemetry/events";
-import {optionsSlice} from "@/options/slices";
+import { fromPairs } from "lodash";
+import { useAsyncState } from "@/hooks/common";
+import { reportEvent } from "@/telemetry/events";
+import { optionsSlice } from "@/options/slices";
 import axios from "axios";
-import {getBaseURL} from "@/services/baseService";
-import {getExtensionVersion, getUID} from "@/background/telemetry";
-import {getExtensionToken} from "@/auth/token";
-import {reportError} from "@/telemetry/logging";
-import {activeDeployments, queueReactivate} from "@/background/deployment";
+import { getBaseURL } from "@/services/baseService";
+import { getExtensionVersion, getUID } from "@/background/telemetry";
+import { getExtensionToken } from "@/auth/token";
+import { reportError } from "@/telemetry/logging";
+import { activeDeployments, queueReactivate } from "@/background/deployment";
 
 const { actions } = optionsSlice;
 
@@ -127,7 +132,10 @@ function useDeployments() {
         for (const deployment of deployments) {
           // clear existing installs of the blueprint
           for (const extension of installed) {
-            if (extension._recipe.id === deployment.package.package_id) {
+            if (
+              extension._recipe != null &&
+              extension._recipe.id === deployment.package.package_id
+            ) {
               dispatch(
                 actions.removeExtension({
                   extensionPointId: extension.extensionPointId,
