@@ -67,7 +67,7 @@ const NoAvailablePanelsContent: React.FunctionComponent = () => {
     <Container>
       <Row className="mt-4">
         <Col className="text-center">
-          <h4 className="display-6">No panels available for the page</h4>
+          <h4 className="display-6">No panels activated for the page</h4>
         </Col>
       </Row>
 

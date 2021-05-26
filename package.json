@@ -171,7 +171,7 @@
     "react-select": "^3.1.0",
     "react-select-virtualized": "^2.5.11",
     "react-shadow-root": "^5.0.4",
-    "react-spinners": "^0.10.6",
+    "react-spinners": "^0.9.0",
     "react-split-pane": "^0.1.92",
     "react-toast-notifications": "^2.4.0",
     "react-virtualized": "^9.22.2",
