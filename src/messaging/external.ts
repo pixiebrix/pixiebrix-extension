@@ -94,6 +94,24 @@ const _openMarketplace = liftBackground(
   }
 );
 
+const _openActivate = liftBackground(
+  "BACKGROUND_OPEN_ACTIVATE_BLUEPRINT",
+  async (blueprintId: string) => {
+    const url = browser.runtime.getURL("options.html");
+    await browser.tabs.create({
+      url: `${url}#/marketplace/activate/${encodeURIComponent(blueprintId)}`,
+    });
+    return true;
+  }
+);
+
+export const openActivateBlueprint = lift(
+  "OPEN_ACTIVATE_BLUEPRINT",
+  async (blueprintId: string) => {
+    return await _openActivate(blueprintId);
+  }
+);
+
 export const openExtensionOptions = lift("OPEN_OPTIONS", async () => {
   return await _openOptions();
 });

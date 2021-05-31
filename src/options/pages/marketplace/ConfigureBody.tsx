@@ -78,6 +78,13 @@ const ConfigureRow: React.FunctionComponent<{
           onChange={(checked) => helpers.setValue(checked)}
         />
       </td>
+      <td>
+        {field.value ? (
+          <span className="text-primary">Selected</span>
+        ) : (
+          <span className="text-muted">Ignore</span>
+        )}
+      </td>
       {/*<td>*/}
       {/*  <code className="pl-0">{definition.id}</code>*/}
       {/*</td>*/}
@@ -109,7 +116,7 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
       <Table>
         <thead>
           <tr>
-            <th>Activate?</th>
+            <th colSpan={2}>Activate?</th>
             {/*<th>Foundation</th>*/}
             <th className="w-100">Name/Description</th>
           </tr>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import { hasAppAccount } from "@/background/installer";
 import { GridLoader } from "react-spinners";
 
 import "./SetupPage.scss";
+import { reportError } from "@/telemetry/logging";
 
 const { setMode } = settingsSlice.actions;
 
@@ -73,6 +74,19 @@ const SetupPage: React.FunctionComponent = () => {
 
     window.close();
   }, []);
+
+  // try to automatically open the web app to sync the credentials so that the user doesn't
+  // have to click the button
+  useAsyncState(async () => {
+    if (hasAccount) {
+      connectApp().catch((error) => {
+        reportError(error);
+        console.error("Could not automatically open tab to create account", {
+          error,
+        });
+      });
+    }
+  }, [connectApp, hasAccount]);
 
   if (accountPending) {
     return (

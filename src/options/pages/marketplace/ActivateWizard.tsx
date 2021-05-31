@@ -238,14 +238,14 @@ const ActivateButton: React.FunctionComponent<{
 
 const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [blueprintSteps, initialValues] = useMemo(() => {
+    const extensionPoints = blueprint.extensionPoints ?? [];
+
     const services = uniq(
-      blueprint.extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
+      extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
     );
     const steps = STEPS.filter((x) => x.key !== "services" || services.length);
     const initialValues = {
-      extensions: Object.fromEntries(
-        blueprint.extensionPoints.map((x, i) => [i, true])
-      ),
+      extensions: Object.fromEntries(extensionPoints.map((x, i) => [i, true])),
       services: Object.fromEntries(services.map((x) => [x, undefined])),
     };
     return [steps, initialValues];
