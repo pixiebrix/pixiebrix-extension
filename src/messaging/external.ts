@@ -25,6 +25,7 @@ import { liftExternal } from "@/contentScript/externalProtocol";
 
 import { browser } from "webextension-polyfill-ts";
 import { SerializableResponse } from "@/messaging/protocol";
+import { reportEvent } from "@/telemetry/events";
 
 const detectedBrowser = detect();
 
@@ -83,32 +84,96 @@ const _openOptions = liftBackground("BACKGROUND_OPEN_OPTIONS", async () => {
   return true;
 });
 
+type OpenOptionsOptions = {
+  /**
+   * True to open the extension in a new tab, false to replace the current tab (default=True)
+   */
+  newTab?: boolean;
+};
+
 const _openMarketplace = liftBackground(
   "BACKGROUND_OPEN_MARKETPLACE",
-  async () => {
-    const url = browser.runtime.getURL("options.html");
-    await browser.tabs.create({
-      url: `${url}#/marketplace`,
-    });
+  async ({ newTab = true }: OpenOptionsOptions) => {
+    const baseUrl = browser.runtime.getURL("options.html");
+
+    const url = `${baseUrl}#/marketplace`;
+
+    if (newTab) {
+      await browser.tabs.create({ url, active: true });
+    } else {
+      await browser.tabs.update({ url });
+    }
+
     return true;
   }
 );
 
+const _openTemplates = liftBackground(
+  "BACKGROUND_OPEN_TEMPLATES",
+  async ({ newTab = true }: OpenOptionsOptions) => {
+    const baseUrl = browser.runtime.getURL("options.html");
+
+    const url = `${baseUrl}#/templates`;
+
+    if (newTab) {
+      await browser.tabs.create({ url, active: true });
+    } else {
+      await browser.tabs.update({ url });
+    }
+
+    return true;
+  }
+);
+
+type ActivateBlueprintOptions = {
+  /**
+   * The blueprint to activate
+   */
+  blueprintId: string;
+
+  /**
+   * True to open the extension in a new tab, false to replace the current tab (default=True)
+   */
+  newTab?: boolean;
+
+  /**
+   * The "source" page to associate with the activate. This affects the wording in the ActivateWizard
+   * component
+   */
+  pageSource?: "templates" | "marketplace";
+};
+
 const _openActivate = liftBackground(
   "BACKGROUND_OPEN_ACTIVATE_BLUEPRINT",
-  async (blueprintId: string) => {
-    const url = browser.runtime.getURL("options.html");
-    await browser.tabs.create({
-      url: `${url}#/marketplace/activate/${encodeURIComponent(blueprintId)}`,
+  async ({
+    blueprintId,
+    newTab = true,
+    pageSource = "templates",
+  }: ActivateBlueprintOptions) => {
+    const baseUrl = browser.runtime.getURL("options.html");
+    const url = `${baseUrl}#/${pageSource}/activate/${encodeURIComponent(
+      blueprintId
+    )}`;
+
+    reportEvent("ExternalActivate", {
+      blueprintId,
+      pageSource,
     });
+
+    if (newTab) {
+      await browser.tabs.create({ url });
+    } else {
+      await browser.tabs.update({ url });
+    }
+
     return true;
   }
 );
 
 export const openActivateBlueprint = lift(
   "OPEN_ACTIVATE_BLUEPRINT",
-  async (blueprintId: string) => {
-    return await _openActivate(blueprintId);
+  async (options: ActivateBlueprintOptions) => {
+    return await _openActivate(options);
   }
 );
 
@@ -116,6 +181,16 @@ export const openExtensionOptions = lift("OPEN_OPTIONS", async () => {
   return await _openOptions();
 });
 
-export const openMarketplace = lift("OPEN_MARKETPLACE", async () => {
-  return await _openMarketplace();
-});
+export const openMarketplace = lift(
+  "OPEN_MARKETPLACE",
+  async (options: OpenOptionsOptions = {}) => {
+    return await _openMarketplace(options);
+  }
+);
+
+export const openTemplates = lift(
+  "OPEN_TEMPLATES",
+  async (options: OpenOptionsOptions = {}) => {
+    return await _openTemplates(options);
+  }
+);

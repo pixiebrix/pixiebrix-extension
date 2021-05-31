@@ -57,7 +57,7 @@ const Step: React.FunctionComponent<{
 
 const SetupPage: React.FunctionComponent = () => {
   const dispatch = useDispatch();
-  const [hasAccount, accountPending] = useAsyncState(() => hasAppAccount(), []);
+  const [accountTab, accountPending] = useAsyncState(() => hasAppAccount(), []);
 
   const setLocal = useCallback(() => {
     dispatch(setMode({ mode: "local" }));
@@ -67,26 +67,37 @@ const SetupPage: React.FunctionComponent = () => {
     const url = new URL(await getBaseURL());
     url.searchParams.set("install", "1");
 
-    await browser.tabs.create({
-      url: url.toString(),
-      active: true,
-    });
-
+    if (accountTab) {
+      // Try to do everything in the setup tab
+      await browser.tabs.update(accountTab.id, {
+        url: url.toString(),
+        active: true,
+      });
+    } else {
+      await browser.tabs.create({
+        url: url.toString(),
+        active: true,
+      });
+    }
+    // Close the browser extension tab
     window.close();
-  }, []);
+  }, [accountTab]);
 
   // try to automatically open the web app to sync the credentials so that the user doesn't
   // have to click the button
   useAsyncState(async () => {
-    if (hasAccount) {
+    if (accountTab) {
       connectApp().catch((error) => {
         reportError(error);
-        console.error("Could not automatically open tab to create account", {
-          error,
-        });
+        console.error(
+          "Error automatically opening application tab to link account",
+          {
+            error,
+          }
+        );
       });
     }
-  }, [connectApp, hasAccount]);
+  }, [connectApp, accountTab]);
 
   if (accountPending) {
     return (
@@ -109,13 +120,13 @@ const SetupPage: React.FunctionComponent = () => {
         <Card className="OnboardingCard">
           <Card.Header>PixieBrix Setup Steps</Card.Header>
           <ListGroup className="list-group-flush">
-            {hasAccount && (
+            {accountTab && (
               <Step number={1} completed>
                 Create an account
               </Step>
             )}
 
-            <Step number={hasAccount ? 2 : 1} completed>
+            <Step number={accountTab ? 2 : 1} completed>
               Install the PixieBrix browser extension
               <div>
                 <span className="text-muted">
@@ -125,7 +136,7 @@ const SetupPage: React.FunctionComponent = () => {
               </div>
             </Step>
 
-            {hasAccount ? (
+            {accountTab ? (
               <Step number={3} active>
                 <div>Link the extension to your account</div>
                 <div>

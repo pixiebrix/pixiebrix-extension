@@ -57,7 +57,7 @@ function init() {
 
 export const hasAppAccount = liftBackground("CHECK_APP_ACCOUNT", async () => {
   const tabs = await browser.tabs.query({ url: urljoin(SERVICE_URL, "setup") });
-  return tabs.length > 0;
+  return tabs.length > 0 ? { id: tabs[0].id } : null;
 });
 
 export const getAvailableVersion = liftBackground(
