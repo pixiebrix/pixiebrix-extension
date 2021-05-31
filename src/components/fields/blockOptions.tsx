@@ -82,6 +82,15 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
   } else if (typeof value === "object") {
     console.warn("Cannot edit object as text", { schema, value });
     control = <div>Cannot edit object value as text</div>;
+  } else if (schema.format === "markdown") {
+    control = (
+      <Form.Control
+        as="textarea"
+        value={value ?? ""}
+        {...field}
+        isInvalid={!!meta.error}
+      />
+    );
   } else {
     control = (
       <Form.Control

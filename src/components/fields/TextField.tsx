@@ -64,6 +64,15 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         onChange={(option) => helpers.setValue((option as any)?.value)}
       />
     );
+  } else if (schema.format === "markdown") {
+    control = (
+      <Form.Control
+        as="textarea"
+        value={value ?? ""}
+        {...field}
+        isInvalid={!!meta.error}
+      />
+    );
   } else {
     control = (
       <Form.Control

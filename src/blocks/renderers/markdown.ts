@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,12 +33,16 @@ export class Markdown extends Renderer {
     );
   }
 
-  inputSchema = propertiesToSchema({
-    markdown: {
-      type: "string",
-      description: "The Markdown to render",
+  inputSchema = propertiesToSchema(
+    {
+      markdown: {
+        type: "string",
+        description: "The Markdown to render",
+        format: "markdown",
+      },
     },
-  });
+    ["markdown"]
+  );
 
   async render({ markdown }: BlockArg) {
     if (!this.DOMPurify) {
