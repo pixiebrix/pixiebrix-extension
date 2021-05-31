@@ -20,17 +20,62 @@ import {
   faClipboardCheck,
   faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import { useFetch } from "@/hooks/fetch";
 import { RecipeDefinition } from "@/types/definitions";
-import { Col, Row } from "react-bootstrap";
+import { Card, Col, Row } from "react-bootstrap";
 import { GridLoader } from "react-spinners";
 import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-interface BlueprintResponse {
+export interface BlueprintResponse {
   config: RecipeDefinition;
 }
+
+const TEMPLATES_PAGE_PART = "templates";
+
+const TemplateHeader: React.FunctionComponent<{
+  blueprint: BlueprintResponse;
+}> = ({ blueprint }) => {
+  return (
+    <>
+      <PageTitle
+        icon={faClipboardCheck}
+        title={
+          blueprint
+            ? `Activate: ${blueprint.config.metadata.name}`
+            : "Activate Blueprint"
+        }
+      />
+      <div className="pb-4">
+        <p>Configure and activate a pre-made template</p>
+      </div>
+    </>
+  );
+};
+
+const MarketplaceHeader: React.FunctionComponent<{
+  blueprint: BlueprintResponse;
+}> = ({ blueprint }) => {
+  return (
+    <>
+      <PageTitle
+        icon={faStoreAlt}
+        title={
+          blueprint
+            ? `Activate: ${blueprint.config.metadata.name}`
+            : "Activate Blueprint"
+        }
+      />
+      <div className="pb-4">
+        <p>Configure and activate a blueprint from the marketplace</p>
+      </div>
+    </>
+  );
+};
 
 const ActivatePage: React.FunctionComponent = () => {
   const { blueprintId, sourcePage } = useParams<{
@@ -39,31 +84,46 @@ const ActivatePage: React.FunctionComponent = () => {
   }>();
   const blueprint = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
 
+  const body = useMemo(() => {
+    if (blueprint?.config?.extensionPoints != null) {
+      return <ActivateWizard blueprint={blueprint.config} />;
+    } else if (blueprint != null) {
+      return (
+        <Card>
+          <Card.Header>Invalid Blueprint</Card.Header>
+          <Card.Body>
+            <p className="text-danger">
+              Error: {decodeURIComponent(blueprintId)} is not a blueprint.
+              Please verify the link you received to activate the blueprint
+            </p>
+
+            {sourcePage === TEMPLATES_PAGE_PART ? (
+              <Link to={"/templates"} className="btn btn-info">
+                <FontAwesomeIcon icon={faClipboardCheck} /> Go to Templates
+              </Link>
+            ) : (
+              <Link to={"/marketplace"} className="btn btn-info">
+                <FontAwesomeIcon icon={faStoreAlt} /> Go to Marketplace
+              </Link>
+            )}
+          </Card.Body>
+        </Card>
+      );
+    } else {
+      return <GridLoader />;
+    }
+  }, [blueprint, sourcePage]);
+
   return (
     <div>
-      <PageTitle
-        icon={sourcePage === "templates" ? faClipboardCheck : faStoreAlt}
-        title={
-          blueprint
-            ? `Activate: ${blueprint.config.metadata.name}`
-            : "Activate Blueprint"
-        }
-      />
-      <div className="pb-4">
-        {sourcePage === "templates" ? (
-          <p>Configure and activate a blueprint from the marketplace</p>
-        ) : (
-          <p>Configure and activate a pre-made template</p>
-        )}
-      </div>
-
+      {sourcePage === TEMPLATES_PAGE_PART ? (
+        <TemplateHeader blueprint={blueprint} />
+      ) : (
+        <MarketplaceHeader blueprint={blueprint} />
+      )}
       <Row>
         <Col xl={8} lg={10} md={12}>
-          {blueprint ? (
-            <ActivateWizard blueprint={blueprint.config} />
-          ) : (
-            <GridLoader />
-          )}
+          <ErrorBoundary>{body}</ErrorBoundary>
         </Col>
       </Row>
     </div>
