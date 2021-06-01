@@ -15,16 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import blockRegistry from "@/blocks/registry";
 import { PageTitle } from "@/layout/Page";
 import cx from "classnames";
-import { faEdit, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Card from "react-bootstrap/Card";
-import Nav from "react-bootstrap/Nav";
+import {
+  faDownload,
+  faEdit,
+  faTimesCircle,
+} from "@fortawesome/free-solid-svg-icons";
+import { Form, Row, Col, Card, Nav, Button } from "react-bootstrap";
 import ServicesFormCard from "@/options/pages/extensionEditor/ServicesFormCard";
 import ExtensionConfigurationCard from "@/options/pages/extensionEditor/ExtensionConfigurationCard";
 import { IExtensionPoint, ServiceDependency } from "@/core";
@@ -34,16 +34,18 @@ import TextField from "@/components/fields/TextField";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { extensionValidatorFactory } from "@/validators/validation";
 import { SCHEMA_TYPE_TO_BLOCK_PROPERTY } from "@/components/fields/BlockField";
-import castArray from "lodash/castArray";
+import { castArray, isEmpty, fromPairs } from "lodash";
 import useAsyncEffect from "use-async-effect";
-import isEmpty from "lodash/isEmpty";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Button from "react-bootstrap/Button";
 import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
 import { useParams } from "react-router";
 import { useDispatch } from "react-redux";
 import { push as navigate } from "connected-react-router";
 import { useAsyncState } from "@/hooks/common";
+import { saveAs } from "file-saver";
+import { useToasts } from "react-toast-notifications";
+import { reportError } from "@/telemetry/logging";
+import { configToYaml } from "@/devTools/editor/useCreate";
 
 type TopConfig = { [prop: string]: unknown };
 
@@ -120,12 +122,44 @@ const NavItem: React.FunctionComponent<{
   );
 };
 
+function exportBlueprint(
+  { label, services, config }: Config,
+  extensionPoint: IExtensionPoint
+): void {
+  const blueprint = {
+    apiVersion: "v1",
+    kind: "recipe",
+    metadata: {
+      // In the future, could put in the user's scope here? Wouldn't be a valid id though
+      id: "",
+      name: label,
+      description: "Blueprint exported from PixieBrix",
+      version: "1.0.0",
+    },
+    extensionPoints: [
+      {
+        id: extensionPoint.id,
+        label,
+        services: fromPairs(
+          services
+            .filter((x) => x.outputKey != null)
+            .map(({ outputKey, id }) => [outputKey, id])
+        ),
+        config,
+      },
+    ],
+  };
+  const blueprintYAML = configToYaml(blueprint);
+  const blob = new Blob([blueprintYAML], { type: "text/plain;charset=utf-8" });
+  saveAs(blob, "blueprint.yaml");
+}
+
 const ExtensionForm: React.FunctionComponent<{
-  formikProps: FormikProps<unknown>;
+  formikProps: FormikProps<Config>;
   extensionPoint: IExtensionPoint;
   extensionId: string | null;
 }> = ({
-  formikProps: { handleSubmit, isSubmitting, isValid, validateForm },
+  formikProps: { handleSubmit, isSubmitting, isValid, validateForm, values },
   extensionPoint,
   extensionId,
 }) => {
@@ -135,9 +169,23 @@ const ExtensionForm: React.FunctionComponent<{
 
   const dispatch = useDispatch();
 
+  const { addToast } = useToasts();
+
   useAsyncEffect(async () => {
     await validateForm();
   }, [validateForm]);
+
+  const handleExport = useCallback(() => {
+    try {
+      exportBlueprint(values, extensionPoint);
+    } catch (err) {
+      reportError(err);
+      addToast(`Error exporting as blueprint: ${err}`, {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  }, [values, extensionPoint]);
 
   return (
     <Form noValidate onSubmit={handleSubmit}>
@@ -146,6 +194,9 @@ const ExtensionForm: React.FunctionComponent<{
           <PageTitle icon={faEdit} title={`Edit: ${extensionPoint.name}`} />
         </Col>
         <Col className="text-right">
+          <Button variant="info" onClick={handleExport}>
+            <FontAwesomeIcon icon={faDownload} /> Export Blueprint
+          </Button>
           <Button type="submit" disabled={isSubmitting || !isValid}>
             {extensionId ? "Update Brick" : "Activate Brick"}
           </Button>

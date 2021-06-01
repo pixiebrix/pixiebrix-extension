@@ -61,6 +61,7 @@ import {
 } from "@/contentScript/notify";
 import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
+import { PanelDefinition } from "@/extensionPoints/panelExtension";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -717,6 +718,7 @@ export interface MenuDefinition extends ExtensionPointDefinition {
 class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   private readonly _definition: MenuDefinition;
   public readonly permissions: Permissions.Permissions;
+  public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   public get defaultOptions(): {
     caption: string;
@@ -733,6 +735,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
     this._definition = config.definition;
+    this.rawConfig = config;
     const { isAvailable } = config.definition;
     this.permissions = {
       permissions: ["tabs", "webNavigation"],

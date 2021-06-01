@@ -68,7 +68,7 @@ async function makeRequestConfig(
 /**
  * Dump to YAML, removing keys with undefined values.
  */
-function configToYaml(content: unknown): string {
+export function configToYaml(content: unknown): string {
   return safeDump(removeUndefined(content));
 }
 
