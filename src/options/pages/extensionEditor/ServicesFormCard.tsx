@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,14 +16,12 @@
  */
 
 import React, { useState } from "react";
-import Table from "react-bootstrap/Table";
-import Button from "react-bootstrap/Button";
+import { Table, Button, Form, Card } from "react-bootstrap";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ServiceDependency } from "@/core";
 import { Field, FieldArray, FieldInputProps, useField } from "formik";
-import Form from "react-bootstrap/Form";
-import Card from "react-bootstrap/Card";
+import { head } from "lodash";
 import "./ServicesFormCard.scss";
 import ServiceAuthSelector, {
   AuthOption,
@@ -32,6 +30,12 @@ import ServiceAuthSelector, {
 import ServiceModal from "@/components/fields/ServiceModal";
 import { useFetch } from "@/hooks/fetch";
 import { ServiceDefinition } from "@/types/definitions";
+import { PACKAGE_REGEX } from "@/blocks/types";
+
+function defaultOutputKey(serviceId: string): string {
+  const match = PACKAGE_REGEX.exec(serviceId);
+  return match.groups.collection?.replace(".", "_").replace("-", "_") ?? "";
+}
 
 export const DependencyRow: React.FunctionComponent<{
   field: FieldInputProps<unknown>;
@@ -144,8 +148,13 @@ const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
                   setKey((k) => k + 1);
                   push({
                     id: x.metadata.id,
-                    outputKey: "",
-                    config: undefined,
+                    outputKey: defaultOutputKey(x.metadata.id),
+                    config: head(
+                      authOptions.filter(
+                        (option) =>
+                          option.local && option.serviceId === x.metadata.id
+                      )
+                    )?.value,
                   });
                 }}
               />

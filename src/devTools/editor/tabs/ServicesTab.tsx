@@ -25,12 +25,11 @@ import { head } from "lodash";
 import { useFetch } from "@/hooks/fetch";
 import { ServiceDefinition } from "@/types/definitions";
 import ServiceModal from "@/components/fields/ServiceModal";
-
-const PACKAGE_REGEX = /^((?<scope>@[a-z0-9-~][a-z0-9-._~]*)\/)?((?<collection>[a-z0-9-~][a-z0-9-._~]*)\/)?(?<name>[a-z0-9-~][a-z0-9-._~]*)$/;
+import { PACKAGE_REGEX } from "@/blocks/types";
 
 function defaultOutputKey(serviceId: string): string {
   const match = PACKAGE_REGEX.exec(serviceId);
-  return match.groups.collection?.replace(".", "_") ?? "";
+  return match.groups.collection?.replace(".", "_").replace("-", "_") ?? "";
 }
 
 const ServicesTab: React.FunctionComponent<{

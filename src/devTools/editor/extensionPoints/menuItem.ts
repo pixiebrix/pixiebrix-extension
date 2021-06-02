@@ -45,6 +45,7 @@ import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { find as findBrick } from "@/registry/localRegistry";
+import { v4 as uuidv4 } from "uuid";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -144,6 +145,64 @@ export function makeActionConfig(element: ActionFormState): ButtonDefinition {
     extension: makeActionExtension(element),
     extensionPoint: makeMenuExtensionPoint(element),
     readers: makeExtensionReaders(element),
+  };
+}
+
+export async function makeActionExtensionFormState(
+  url: string,
+  extensionPoint: ExtensionPointConfig<MenuDefinition>
+): Promise<ActionFormState> {
+  const isAvailable = extensionPoint.definition.isAvailable;
+  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
+  const selectors = castArray(isAvailable.selectors ?? []);
+
+  if (matchPatterns.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability match patterns not implemented"
+    );
+  }
+
+  if (selectors.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability selectors not implemented"
+    );
+  }
+
+  if (extensionPoint.definition.type !== "menuItem") {
+    throw new Error("Expected menuItem extension point type");
+  }
+
+  return {
+    uuid: uuidv4(),
+    installed: true,
+    type: extensionPoint.definition.type,
+    label: `My ${getDomain(url)} button`,
+
+    readers: await makeReaderFormState(extensionPoint),
+    services: [],
+
+    extension: {
+      caption:
+        extensionPoint.definition.defaultOptions.caption ?? "Custom Action",
+      action: [],
+    },
+
+    containerInfo: null,
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      traits: {
+        // we don't provide a way to set style anywhere yet so this doesn't apply yet
+        style: { mode: "inherit" },
+      },
+      definition: {
+        ...extensionPoint.definition,
+        isAvailable: {
+          matchPatterns: matchPatterns[0],
+          selectors: selectors[0],
+        },
+      },
+    },
   };
 }
 

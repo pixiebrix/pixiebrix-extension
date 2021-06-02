@@ -34,46 +34,13 @@ import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
 import { GridLoader } from "react-spinners";
 import { useDependency } from "@/services/hooks";
-
-interface ListResponse<TData> {
-  page: {
-    offset: number;
-    total: number;
-    totalFilter: number;
-  };
-  list: TData[];
-}
-
-const BOT_TYPE = "application/vnd.aa.taskbot";
-
-interface Variable {
-  name: string;
-  input: boolean;
-  type: "STRING";
-  description: string;
-}
-
-interface Interface {
-  variables: Variable[];
-}
-
-// https://docs.automationanywhere.com/bundle/enterprise-v11.3/page/enterprise/topics/control-room/control-room-api/orchestrator-bot-details.html
-interface Bot {
-  id: string;
-  parentId: string;
-  name: string;
-  path: string;
-  type: typeof BOT_TYPE;
-}
-
-interface Device {
-  id: string;
-  type: string;
-  hostName: string;
-  status: "CONNECTED";
-  botAgentVersion: string;
-  nickname: string;
-}
+import {
+  Bot,
+  BOT_TYPE,
+  Device,
+  Interface,
+  ListResponse,
+} from "@/contrib/automationanywhere/contract";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = "automation-anywhere/control-room";
 

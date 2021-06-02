@@ -69,6 +69,12 @@ import {
 } from "@/extensionPoints/panelExtension";
 import { makePanelExtensionFormState } from "@/devTools/editor/extensionPoints/panel";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
+import {
+  MenuDefinition,
+  MenuItemExtensionPoint,
+} from "@/extensionPoints/menuItemExtension";
+import { IExtensionPoint } from "@/core";
+import { makeActionExtensionFormState } from "@/devTools/editor/extensionPoints/menuItem";
 
 const { updateElement, addElement } = editorSlice.actions;
 
@@ -149,9 +155,75 @@ const PermissionsPane = () => {
   );
 };
 
+type MenuItemWithConfig = MenuItemExtensionPoint & {
+  rawConfig: ExtensionPointConfig<MenuDefinition>;
+};
+
+// we want Function to pass in the CTOR
+// eslint-disable-next-line @typescript-eslint/ban-types
+function useAvailableExtensionPoints<
+  TConfig extends IExtensionPoint & { rawConfig: ExtensionPointConfig }
+>(ctor: Function) {
+  const { port } = useContext(DevToolsContext);
+
+  const [availableExtensionPoints, , error] = useAsyncState(async () => {
+    const all = await extensionPointRegistry.all();
+    const validExtensionPoints = all.filter(
+      (x) => x instanceof ctor && (x as TConfig).rawConfig != null
+    ) as TConfig[];
+    const availability = await Promise.allSettled(
+      validExtensionPoints.map((x) =>
+        checkAvailable(port, x.rawConfig.definition.isAvailable ?? {})
+      )
+    );
+    console.debug("useAvailableExtensionPoints", {
+      all,
+      validExtensionPoints,
+      availability,
+    });
+    return zip(validExtensionPoints, availability)
+      .filter(
+        ([, availability]) =>
+          availability.status === "fulfilled" && availability.value === true
+      )
+      .map(([extensionPoint]) => extensionPoint);
+  }, [port]);
+
+  if (error) {
+    console.warn("useAvailableExtensionPoints", { error });
+  }
+
+  return availableExtensionPoints;
+}
+
 const InsertButtonPane: React.FunctionComponent<{ cancel: () => void }> = ({
   cancel,
 }) => {
+  const dispatch = useDispatch();
+  const { port } = useContext(DevToolsContext);
+
+  const addExistingButton = useCallback(
+    async (extensionPoint: MenuItemWithConfig) => {
+      cancel();
+      if (!("rawConfig" in extensionPoint)) {
+        throw new Error(
+          "Cannot use menuItem extension point without config in the Page Editor"
+        );
+      }
+      const { url } = await getTabInfo(port);
+      const state = await makeActionExtensionFormState(
+        url,
+        extensionPoint.rawConfig
+      );
+      dispatch(addElement(state));
+    },
+    [dispatch, cancel]
+  );
+
+  const menuItemExtensionPoints = useAvailableExtensionPoints(
+    MenuItemExtensionPoint
+  );
+
   return (
     <Centered>
       <div className="PaneTitle">Inserting button</div>
@@ -173,7 +245,22 @@ const InsertButtonPane: React.FunctionComponent<{ cancel: () => void }> = ({
         </div>
       </div>
       <div>
-        <Button variant="danger" onClick={cancel}>
+        <BlockModal
+          blocks={menuItemExtensionPoints ?? []}
+          caption="Select button foundation"
+          renderButton={({ show }) => (
+            <Button
+              variant="info"
+              onClick={show}
+              disabled={!menuItemExtensionPoints?.length}
+            >
+              Add Existing Button
+            </Button>
+          )}
+          onSelect={(block) => addExistingButton(block as MenuItemWithConfig)}
+        />
+
+        <Button variant="danger" className="ml-2" onClick={cancel}>
           Cancel Insert
         </Button>
       </div>
@@ -191,20 +278,7 @@ const InsertPanelPane: React.FunctionComponent<{
   const dispatch = useDispatch();
   const { port } = useContext(DevToolsContext);
 
-  const [panelExtensionPoints] = useAsyncState(async () => {
-    const all = await extensionPointRegistry.all();
-    const panels = all.filter(
-      (x) => x instanceof PanelExtensionPoint
-    ) as PanelWithConfig[];
-    const availability = await Promise.all(
-      panels.map((x) =>
-        checkAvailable(port, x.rawConfig.definition.isAvailable ?? {})
-      )
-    );
-    return zip(panels, availability)
-      .filter(([, available]) => available)
-      .map(([panel]) => panel);
-  }, [port]);
+  const panelExtensionPoints = useAvailableExtensionPoints(PanelExtensionPoint);
 
   const addExistingPanel = useCallback(
     async (extensionPoint: PanelWithConfig) => {

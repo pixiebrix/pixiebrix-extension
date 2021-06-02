@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
-import { Row, Col, Button, Form } from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { Formik, useField } from "formik";
 import { useFetch } from "@/hooks/fetch";
 import { useParams } from "react-router";
