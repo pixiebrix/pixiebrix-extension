@@ -154,19 +154,19 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
     }
   }
 
-  abstract async defaultReader(): Promise<IReader>;
+  abstract defaultReader(): Promise<IReader>;
 
-  abstract async getBlocks(extension: IExtension<TConfig>): Promise<IBlock[]>;
+  abstract getBlocks(extension: IExtension<TConfig>): Promise<IBlock[]>;
 
-  abstract async isAvailable(): Promise<boolean>;
+  abstract isAvailable(): Promise<boolean>;
 
-  abstract async install(): Promise<boolean>;
+  abstract install(): Promise<boolean>;
 
   uninstall(options?: { global?: boolean }): void {
     console.warn(`Uninstall not implemented for extension point: ${this.id}`);
   }
 
-  abstract async run(): Promise<void>;
+  abstract run(): Promise<void>;
 }
 
 export abstract class Block implements IBlock {
@@ -193,7 +193,7 @@ export abstract class Block implements IBlock {
     this.icon = icon;
   }
 
-  abstract async run(value: BlockArg, options: BlockOptions): Promise<unknown>;
+  abstract run(value: BlockArg, options: BlockOptions): Promise<unknown>;
 }
 
 export abstract class Effect extends Block {
@@ -206,7 +206,7 @@ export abstract class Effect extends Block {
     super(id, name, description, icon);
   }
 
-  abstract async effect(inputs: BlockArg, env?: BlockOptions): Promise<void>;
+  abstract effect(inputs: BlockArg, env?: BlockOptions): Promise<void>;
 
   async run(value: BlockArg, options: BlockOptions): Promise<void> {
     return this.effect(value, options);
@@ -223,10 +223,7 @@ export abstract class Transformer extends Block {
     super(id, name, description, icon);
   }
 
-  abstract async transform(
-    value: BlockArg,
-    options: BlockOptions
-  ): Promise<unknown>;
+  abstract transform(value: BlockArg, options: BlockOptions): Promise<unknown>;
 
   async run(value: BlockArg, options: BlockOptions): Promise<unknown> {
     return this.transform(value, options);
@@ -243,7 +240,7 @@ export abstract class Renderer extends Block {
     super(id, name, description, icon);
   }
 
-  abstract async render(
+  abstract render(
     inputs: BlockArg,
     options: BlockOptions
   ): Promise<RenderedHTML>;
@@ -267,9 +264,9 @@ export abstract class Reader extends Block implements IReader {
     super(id, name, description, icon);
   }
 
-  abstract async isAvailable($elt?: JQuery): Promise<boolean>;
+  abstract isAvailable($elt?: JQuery): Promise<boolean>;
 
-  abstract async read(root: HTMLElement | Document): Promise<ReaderOutput>;
+  abstract read(root: HTMLElement | Document): Promise<ReaderOutput>;
 
   async run({ root }: { root: HTMLElement | Document }): Promise<ReaderOutput> {
     return this.read(root);

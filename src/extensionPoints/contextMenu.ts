@@ -176,7 +176,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     super(id, name, description, icon);
   }
   public readonly syncInstall: boolean = true;
-  abstract async getBaseReader(): Promise<IReader>;
+  abstract getBaseReader(): Promise<IReader>;
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
   abstract readonly contexts: ContextMenus.ContextType[];
 
