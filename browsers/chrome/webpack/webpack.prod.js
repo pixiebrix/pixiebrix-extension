@@ -98,6 +98,7 @@ module.exports = () =>
       }),
       new MiniCssExtractPlugin({
         filename: "css/[name].css",
+        chunkFilename: "css/[id].css",
         ignoreOrder: false, // Enable to remove warnings about conflicting order
       }),
     ],
