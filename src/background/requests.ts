@@ -99,7 +99,13 @@ function cleanResponse<T>(response: AxiosResponse<T>): SanitizedResponse<T> {
 const backgroundRequest = liftBackground<AxiosRequestConfig, SanitizedResponse>(
   "HTTP_REQUEST",
   async (config: AxiosRequestConfig) => {
-    return cleanResponse(await axios(config));
+    try {
+      return cleanResponse(await axios(config));
+    } catch (reason) {
+      // Axios offers its own serialization method, but it doesn't include the response
+      reason.toJSON = null;
+      throw reason;
+    }
   }
 );
 
