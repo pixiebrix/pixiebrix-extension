@@ -97,7 +97,6 @@ module.exports = () =>
         ],
       }),
       new MiniCssExtractPlugin({
-        path: path.resolve(chromeRoot, "bundles", "css"),
         filename: "css/[name].css",
         chunkFilename: "css/[id].css",
         ignoreOrder: false, // Enable to remove warnings about conflicting order
