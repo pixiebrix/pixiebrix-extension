@@ -14,8 +14,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-      - uses: c-hive/gha-npm-cache@v1
-      - run: npm ci
+      - uses: bahmutov/npm-install@v1
       - run: npm run build:chrome
         env:
           NODE_ENV: production
@@ -45,8 +44,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-      - uses: c-hive/gha-npm-cache@v1
-      - run: npm ci
+      - uses: bahmutov/npm-install@v1
       - run: npm run build:chrome
         env:
           NODE_ENV: production
@@ -83,8 +81,7 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '14.x'
-      - uses: c-hive/gha-npm-cache@v1
-      - run: npm ci
+      - uses: bahmutov/npm-install@v1
       - run: npm run build:firefox
         env:
           NODE_ENV: production
