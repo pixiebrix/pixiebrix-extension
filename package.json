@@ -120,7 +120,7 @@
     "howler": "^2.2.1",
     "html-loader": "^1.3.2",
     "htmlmetaparser": "^2.1.1",
-    "idb": "^5.0.8",
+    "idb": "^6.1.2",
     "immer": "^8.0.1",
     "install": "^0.13.0",
     "is-promise": "^4.0.0",
