@@ -85,7 +85,7 @@ function guessSelectedElement(): HTMLElement | null {
     const end = selection.getRangeAt(selection.rangeCount - 1).endContainer
       .parentNode;
     const node = getCommonAncestor(start, end);
-    if ("tagName" in node) {
+    if (node instanceof HTMLElement) {
       return node;
     } else {
       return null;
