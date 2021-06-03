@@ -63,8 +63,8 @@ module.exports = {
   },
   plugins: [
     new webpack.ProvidePlugin({
-      window: "global/window",
-      document: "global/document",
+      window: "global/window.js",
+      document: "global/document.js",
     }),
     new webpack.EnvironmentPlugin({
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
