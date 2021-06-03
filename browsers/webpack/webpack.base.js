@@ -90,7 +90,7 @@ module.exports = {
       ),
 
       // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
-      handlebars: "handlebars/dist/cjs/handlebars.runtime",
+      handlebars: "handlebars/dist/handlebars.js",
     },
     fallback: {
       fs: false,

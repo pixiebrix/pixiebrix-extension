@@ -58,8 +58,13 @@ module.exports = {
       "@schemas": path.resolve(rootDir, "schemas"),
       vendors: path.resolve(rootDir, "src/vendors"),
       "@uipath/robot": path.resolve(rootDir, "src/__mocks__/robotMock"),
+      // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
+      handlebars: "handlebars/dist/handlebars.js",
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
+    fallback: {
+      chokidar: false,
+    },
   },
   plugins: [
     new webpack.ProvidePlugin({
