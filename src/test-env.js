@@ -15,8 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "regenerator-runtime/runtime";
-import "core-js/stable";
 import $ from "jquery";
 
 global.$ = global.jQuery = $;

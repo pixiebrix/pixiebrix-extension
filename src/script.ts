@@ -18,8 +18,6 @@
 /**
  * The script that get injected into the page
  */
-import "regenerator-runtime/runtime";
-import "core-js/stable";
 
 import { v4 as uuidv4 } from "uuid";
 

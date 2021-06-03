@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-import "regenerator-runtime/runtime";
-import "core-js/stable";
 
 // extensionContext needs to be imported before webpack-target-webextension to
 // ensure the webpack path is correct

@@ -15,8 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "regenerator-runtime/runtime";
-import "core-js/stable";
 import { createSendScriptMessage } from "./messaging/chrome";
 import {
   DETECT_FRAMEWORK_VERSIONS,
