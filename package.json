@@ -9,8 +9,8 @@
     "lint": "npx eslint src/**",
     "watch:chrome": "NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
     "watch:firefox": "NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/firefox/webpack/webpack.dev.js --watch",
-    "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js",
-    "build:firefox": "npx webpack --config browsers/firefox/webpack/webpack.prod.js",
+    "build:chrome": "NODE_OPTIONS=--max_old_space_size=8192 npx webpack --config browsers/chrome/webpack/webpack.prod.js",
+    "build:firefox": "NODE_OPTIONS=--max_old_space_size=8192 npx webpack --config browsers/firefox/webpack/webpack.prod.js",
     "build:scripts": "npx webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js"
   },
