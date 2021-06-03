@@ -37,14 +37,14 @@ module.exports = () =>
       path: path.resolve(chromeRoot, "bundles"),
     },
     plugins: [
-      new webpack.DefinePlugin({
-        "process.env": {
-          CHROME: JSON.stringify(true),
-          CHROME_EXTENSION_ID: JSON.stringify(process.env.CHROME_EXTENSION_ID),
-          GOOGLE_API_KEY: JSON.stringify(process.env.GOOGLE_API_KEY),
-          GOOGLE_APP_ID: JSON.stringify(process.env.GOOGLE_APP_ID),
-        },
+      new webpack.EnvironmentPlugin({
+        CHROME: JSON.stringify(true),
       }),
+      new webpack.EnvironmentPlugin([
+        "CHROME_EXTENSION_ID",
+        "GOOGLE_API_KEY",
+        "GOOGLE_APP_ID",
+      ]),
       new CopyPlugin({
         patterns: [
           {

@@ -37,13 +37,7 @@ const devConfig = {
       NODE_ENV: "development", // use 'development' unless process.env.NODE_ENV is defined
       ENVIRONMENT: "development",
       DEBUG: true,
-    }),
-    new webpack.DefinePlugin({
-      "process.env": {
-        SERVICE_URL: JSON.stringify(
-          process.env.SERVICE_URL ?? "http://127.0.0.1:8000"
-        ),
-      },
+      SERVICE_URL: process.env.SERVICE_URL ?? "http://127.0.0.1:8000",
     }),
     // https://github.com/rubenspgcavalcante/webpack-extension-reloader#using-as-a-plugin
     new ExtensionReloader({

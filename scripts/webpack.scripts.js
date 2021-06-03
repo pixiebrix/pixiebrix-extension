@@ -66,10 +66,10 @@ module.exports = {
       window: "global/window",
       document: "global/document",
     }),
+    new webpack.EnvironmentPlugin({
+      NPM_PACKAGE_VERSION: process.env.npm_package_version,
+    }),
     new webpack.DefinePlugin({
-      "process.env": {
-        NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
-      },
       chrome: {
         runtime: {
           id: 42,
