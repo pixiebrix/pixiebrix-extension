@@ -20,7 +20,9 @@
   "dependencies": {
     "@babel/core": "^7.12.9",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/preset-env": "^7.14.4",
     "@babel/preset-react": "^7.12.5",
+    "@babel/preset-typescript": "^7.13.0",
     "@cfworker/json-schema": "^1.6.3",
     "@fortawesome/fontawesome-svg-core": "1.2.34",
     "@fortawesome/free-brands-svg-icons": "^5.15.1",
@@ -88,7 +90,6 @@
     "content-scripts-register-polyfill": "^1.0.5",
     "copy-to-clipboard": "^3.3.1",
     "copy-webpack-plugin": "^6.4.1",
-    "core-js": "^3.8.2",
     "csharp-helpers": "^0.9.3",
     "csp-parse": "0.0.2",
     "css-loader": "^5.2.0",
@@ -209,6 +210,9 @@
     "yaml-jest": "^1.0.5",
     "yaml-loader": "^0.6.0"
   },
+  "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.14.0"
+  },
   "jest": {
     "modulePaths": [
       "/src"
@@ -253,10 +257,5 @@
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
-  },
-  "devDependencies": {
-    "@babel/plugin-transform-modules-commonjs": "^7.14.0",
-    "@babel/preset-env": "^7.14.4",
-    "@babel/preset-typescript": "^7.13.0"
   }
 }
