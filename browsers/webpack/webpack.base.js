@@ -97,6 +97,11 @@ module.exports = {
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
   },
+
+  // https://github.com/webpack/webpack/issues/3017#issuecomment-285954512
+  // prevent lodash from overriding window._
+  amd: false,
+
   optimization: {
     // Chrome bug https://bugs.chromium.org/p/chromium/issues/detail?id=1108199
     splitChunks: { automaticNameDelimiter: "-" },
@@ -132,11 +137,6 @@ module.exports = {
   ],
   module: {
     rules: [
-      // https://github.com/webpack/webpack/issues/3017#issuecomment-285954512
-      // prevent lodash from overriding window._
-      {
-        exclude: /(notifyjs-browser|vendors\/notify)/,
-      },
       {
         test: /\.s?css$/,
         use: [
