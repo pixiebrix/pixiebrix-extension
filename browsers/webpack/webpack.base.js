@@ -115,17 +115,19 @@ module.exports = {
       $: "jquery",
       jQuery: "jquery",
     }),
-    new webpack.EnvironmentPlugin({
-      NPM_PACKAGE_VERSION: process.env.npm_package_version,
+    new webpack.DefinePlugin({
+      "process.env": {
+        ROLLBAR_BROWSER_ACCESS_TOKEN: JSON.stringify(
+          process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
+        ),
+        SERVICE_URL: JSON.stringify(process.env.SERVICE_URL),
+        SOURCE_VERSION: JSON.stringify(process.env.SOURCE_VERSION),
+        NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
+        NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+        ENVIRONMENT: JSON.stringify(process.env.ENVIRONMENT),
+        SUPPORT_WIDGET_ID: JSON.stringify(process.env.SUPPORT_WIDGET_ID),
+      },
     }),
-    new webpack.EnvironmentPlugin([
-      "ROLLBAR_BROWSER_ACCESS_TOKEN",
-      "SERVICE_URL",
-      "SOURCE_VERSION",
-      "NODE_ENV",
-      "ENVIRONMENT",
-      "SUPPORT_WIDGET_ID",
-    ]),
     new MiniCssExtractPlugin(),
   ],
   module: {
