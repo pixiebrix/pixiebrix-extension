@@ -19,19 +19,6 @@ const path = require("path");
 const rootDir = path.resolve(__dirname, "../");
 const webpack = require("webpack");
 
-// https://github.com/TypeStrong/ts-loader/blob/master/examples/react-babel-karma-gulp/webpack.config.base.js#L10
-const babelLoader = {
-  loader: "babel-loader",
-  options: {
-    presets: [
-      "@babel/preset-env",
-      "@babel/preset-react",
-      "@babel/preset-typescript",
-    ],
-    plugins: ["@babel/plugin-proposal-class-properties"],
-  },
-};
-
 module.exports = {
   mode: "development",
   target: "node",
@@ -82,7 +69,7 @@ module.exports = {
       {
         test: /\.tsx?$/,
         use: [
-          babelLoader,
+          "babel-loader",
           { loader: "ts-loader?configFile=tsconfig.webpack.json" },
         ],
         exclude: /(node_modules|bower_components)/,
@@ -90,7 +77,7 @@ module.exports = {
       {
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
-        use: [babelLoader],
+        use: ["babel-loader"],
       },
       {
         test: /\.(svg|png|jpg|gif)?$/,
