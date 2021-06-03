@@ -19,6 +19,7 @@ const path = require("path");
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebExtensionTarget = require("webpack-target-webextension");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const rootDir = path.resolve(__dirname, "../../");
 
@@ -50,20 +51,14 @@ const babelLoader = {
 
 const nodeConfig = {
   global: true,
-  process: true,
-  Buffer: true,
-  console: true,
-  fs: "empty",
 };
 
 module.exports = {
   context: rootDir,
   node: nodeConfig,
-  target: WebExtensionTarget(nodeConfig),
   output: {
     // https://github.com/crimx/webpack-target-webextension#usage
     globalObject: "window",
-    filename: "[name].js",
     chunkFilename: "bundles/[name].bundle.js",
   },
   entry: {
@@ -93,6 +88,12 @@ module.exports = {
         rootDir,
         "src/contrib/uipath/quietLogger"
       ),
+
+      // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
+      handlebars: "handlebars/dist/cjs/handlebars.runtime",
+    },
+    fallback: {
+      fs: false,
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
   },
@@ -100,7 +101,15 @@ module.exports = {
     // Chrome bug https://bugs.chromium.org/p/chromium/issues/detail?id=1108199
     splitChunks: { automaticNameDelimiter: "-" },
   },
+
+  // Silence new size limit warnings https://github.com/webpack/webpack/issues/3486#issuecomment-646997697
+  performance: {
+    maxEntrypointSize: 5120000,
+    maxAssetSize: 5120000,
+  },
   plugins: [
+    new NodePolyfillPlugin(),
+    new WebExtensionTarget(nodeConfig),
     // https://webpack.js.org/plugins/provide-plugin/
     new webpack.ProvidePlugin({
       $: "jquery",
@@ -119,10 +128,7 @@ module.exports = {
         SUPPORT_WIDGET_ID: JSON.stringify(process.env.SUPPORT_WIDGET_ID),
       },
     }),
-    new MiniCssExtractPlugin({
-      filename: "[name].css",
-      chunkFilename: "bundles/[name].bundle.css",
-    }),
+    new MiniCssExtractPlugin(),
   ],
   module: {
     rules: [
@@ -130,7 +136,6 @@ module.exports = {
       // prevent lodash from overriding window._
       {
         exclude: /(notifyjs-browser|vendors\/notify)/,
-        parser: { amd: false },
       },
       {
         test: /\.s?css$/,
@@ -163,15 +168,10 @@ module.exports = {
       {
         test: /\.(svg|png|jpg|gif)?$/,
         exclude: /(bootstrap-icons|simple-icons|custom-icons)/,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              emitFile: true,
-              outputPath: "img",
-            },
-          },
-        ],
+        type: "asset/resource",
+        generator: {
+          filename: "img/[name][ext]",
+        },
       },
       {
         test: /(bootstrap-icons|simple-icons|custom-icons).*\.svg$/,
@@ -180,16 +180,10 @@ module.exports = {
       {
         test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
         exclude: /(bootstrap-icons|simple-icons)/,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              name: "[name].[ext]",
-              outputPath: "fonts/",
-              publicPath: "fonts/",
-            },
-          },
-        ],
+        type: "asset/resource",
+        generator: {
+          filename: "fonts/[name][ext]",
+        },
       },
       {
         test: /\.ya?ml$/,
