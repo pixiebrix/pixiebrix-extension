@@ -187,7 +187,7 @@
     "rollbar-sourcemap-webpack-plugin": "^3.1.0",
     "sass-loader": "^10.1.0",
     "schema-to-yup": "1.10.0",
-    "serialize-error": "^7.0.1",
+    "serialize-error": "^8.1.0",
     "simple-icons": "^4.16.0",
     "svg-inline-loader": "^0.8.2",
     "terser-webpack-plugin": "^4.2.2",
