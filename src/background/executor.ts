@@ -240,14 +240,14 @@ function backgroundListener(
       });
     }
     case MESSAGE_ACTIVATE_TAB: {
-      return new Promise((resolve) => {
+      return (
         browser.tabs
           .update(sender.tab.id, {
             active: true,
           })
           // ignore the returned tab
-          .then(() => resolve());
-      });
+          .then(() => {})
+      );
     }
     case MESSAGE_CLOSE_TAB: {
       return new Promise<unknown>((resolve) => {
@@ -255,17 +255,13 @@ function backgroundListener(
       });
     }
     case MESSAGE_OPEN_TAB: {
-      return new Promise<unknown>((resolve, reject) => {
-        browser.tabs
-          .create(request.payload as Tabs.CreateCreatePropertiesType)
-          .then((tab) => {
-            // FIXME: include frame information here
-            tabToTarget.set(sender.tab.id, tab.id);
-            tabToOpener.set(tab.id, sender.tab.id);
-            resolve();
-          })
-          .catch(reject);
-      });
+      return browser.tabs
+        .create(request.payload as Tabs.CreateCreatePropertiesType)
+        .then((tab) => {
+          // FIXME: include frame information here
+          tabToTarget.set(sender.tab.id, tab.id);
+          tabToOpener.set(tab.id, sender.tab.id);
+        });
     }
     case MESSAGE_CONTENT_SCRIPT_READY: {
       const tabId = sender.tab.id;
