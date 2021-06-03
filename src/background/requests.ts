@@ -103,7 +103,7 @@ const backgroundRequest = liftBackground<AxiosRequestConfig, SanitizedResponse>(
       return cleanResponse(await axios(config));
     } catch (reason) {
       // Axios offers its own serialization method, but it doesn't include the response
-      reason.toJSON = null;
+      delete reason.toJSON;
       throw reason;
     }
   }
