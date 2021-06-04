@@ -32,7 +32,7 @@ staticfiles
 # NPM/Webpack
 webpack-stats.json
 assets/bundles
-browsers/**/bundles/**
+browsers/dist
 
 # Other artifacts
 artifacts

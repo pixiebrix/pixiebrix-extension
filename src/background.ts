@@ -51,3 +51,7 @@ initGoogle();
 initFrames();
 preload();
 initDeploymentUpdater();
+
+const script = document.createElement("script");
+script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
+document.head.append(script);

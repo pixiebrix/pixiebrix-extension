@@ -32,7 +32,6 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - run: npm run build:chrome
         env:
-          NODE_ENV: production
           ENVIRONMENT: staging
           ROLLBAR_PUBLIC_PATH: chrome-extension://staging/
           CHROME_EXTENSION_ID: kkomancachnjkdalpcokenmjlimmbaog
@@ -68,7 +67,6 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - run: npm run build:firefox
         env:
-          NODE_ENV: production
           ENVIRONMENT: staging
           ROLLBAR_PUBLIC_PATH: moz-extension://staging/
           SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
