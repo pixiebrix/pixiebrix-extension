@@ -133,21 +133,16 @@ module.exports = {
         SUPPORT_WIDGET_ID: JSON.stringify(process.env.SUPPORT_WIDGET_ID),
       },
     }),
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({
+      chunkFilename: "css/[id].css",
+    }),
   ],
   module: {
     rules: [
       {
         test: /\.s?css$/,
         use: [
-          {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              // you can specify a publicPath here
-              // by default it uses publicPath in webpackOptions.output
-              publicPath: "../",
-            },
-          },
+          MiniCssExtractPlugin.loader,
           "css-loader",
           { loader: "sass-loader", options: { sourceMap: true } },
         ],
