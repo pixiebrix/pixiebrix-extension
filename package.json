@@ -200,7 +200,7 @@
     "webext-dynamic-content-scripts": "^7.0.0",
     "webextension-polyfill-ts": "^0.22.0",
     "webpack": "^5.25.1",
-    "webpack-bundle-analyzer": "^4.1.0",
+    "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.6.0",
     "webpack-dev-server": "^3.11.0",
     "webpack-extension-reloader": "^1.1.4",
