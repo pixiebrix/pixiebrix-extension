@@ -19,7 +19,7 @@ const path = require("path");
 const { mergeWithCustomize, customizeArray } = require("webpack-merge");
 const common = require("./webpack.base.js");
 const TerserJSPlugin = require("terser-webpack-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const RollbarSourceMapPlugin = require("rollbar-sourcemap-webpack-plugin");
 const webpack = require("webpack");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
@@ -76,7 +76,7 @@ module.exports = (rollbarPublicPath) => {
             output: { ascii_only: true },
           },
         }),
-        new OptimizeCSSAssetsPlugin({}),
+        new CssMinimizerPlugin(),
       ],
     },
     plugins: [

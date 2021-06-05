@@ -58,13 +58,18 @@ module.exports = {
       "@schemas": path.resolve(rootDir, "schemas"),
       vendors: path.resolve(rootDir, "src/vendors"),
       "@uipath/robot": path.resolve(rootDir, "src/__mocks__/robotMock"),
+      // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
+      handlebars: "handlebars/dist/handlebars.js",
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
+    fallback: {
+      chokidar: false,
+    },
   },
   plugins: [
     new webpack.ProvidePlugin({
-      window: "global/window",
-      document: "global/document",
+      window: "global/window.js",
+      document: "global/document.js",
     }),
     new webpack.DefinePlugin({
       "process.env": {
@@ -95,15 +100,10 @@ module.exports = {
       {
         test: /\.(svg|png|jpg|gif)?$/,
         exclude: /(bootstrap-icons|simple-icons)/,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              emitFile: true,
-              outputPath: "img",
-            },
-          },
-        ],
+        type: "asset/resource",
+        generator: {
+          filename: "img/[name][ext]",
+        },
       },
       {
         test: /(bootstrap-icons|simple-icons).*\.svg$/,
@@ -112,16 +112,10 @@ module.exports = {
       {
         test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
         exclude: /(bootstrap-icons|simple-icons)/,
-        use: [
-          {
-            loader: "file-loader",
-            options: {
-              name: "[name].[ext]",
-              outputPath: "fonts/",
-              publicPath: "fonts/",
-            },
-          },
-        ],
+        type: "asset/resource",
+        generator: {
+          filename: "fonts/[name][ext]",
+        },
       },
       {
         test: /\.ya?ml$/,
