@@ -16,7 +16,7 @@
  */
 
 import { Service } from "@/types";
-import produce from "immer";
+import { produce } from "immer";
 import { mapArgs, missingProperties } from "@/helpers";
 import {
   IncompatibleServiceError,
@@ -151,6 +151,26 @@ class LocalDefinedService<
     }
   }
 
+  /**
+   * Test that the request URL can be called by this service.
+   * @throws IncompatibleServiceError if the resulting URL cannot by called by this service
+   */
+  private checkRequestUrl(
+    baseURL: string | null,
+    requestConfig: AxiosRequestConfig
+  ): void {
+    const absoluteURL =
+      baseURL && !isAbsoluteURL(requestConfig.url)
+        ? urljoin(baseURL, requestConfig.url)
+        : requestConfig.url;
+
+    if (!this.isAvailable(absoluteURL)) {
+      throw new IncompatibleServiceError(
+        `Service ${this.id} cannot be used to authenticate requests to ${absoluteURL}`
+      );
+    }
+  }
+
   private authenticateRequestKey(
     serviceConfig: ServiceConfig,
     requestConfig: AxiosRequestConfig
@@ -160,14 +180,30 @@ class LocalDefinedService<
         `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`
       );
     }
-    const { headers = {}, params = {} } = mapArgs<KeyAuthenticationDefinition>(
+    const {
+      baseURL,
+      headers = {},
+      params = {},
+    } = mapArgs<KeyAuthenticationDefinition>(
       (this._definition.authentication as KeyAuthenticationDefinition) ?? {},
       serviceConfig
     );
-    return produce(requestConfig, (draft) => {
+
+    if (!baseURL && !isAbsoluteURL(requestConfig.url)) {
+      throw new Error(
+        "Must use absolute URLs for services that don't define a baseURL"
+      );
+    }
+
+    const result = produce(requestConfig, (draft) => {
+      requestConfig.baseURL = baseURL;
       draft.headers = { ...(draft.headers ?? {}), ...headers };
       draft.params = { ...(draft.params ?? {}), ...params };
     });
+
+    this.checkRequestUrl(baseURL, requestConfig);
+
+    return result;
   }
 
   private authenticateRequestToken(
@@ -197,16 +233,7 @@ class LocalDefinedService<
       draft.headers = { ...(draft.headers ?? {}), ...headers };
     });
 
-    const absoluteURL =
-      baseURL && !isAbsoluteURL(requestConfig.url)
-        ? urljoin(baseURL, requestConfig.url)
-        : requestConfig.url;
-
-    if (!this.isAvailable(absoluteURL)) {
-      throw new IncompatibleServiceError(
-        `Service ${this.id} cannot be used to authenticate requests to ${absoluteURL}`
-      );
-    }
+    this.checkRequestUrl(baseURL, requestConfig);
 
     return result;
   }
