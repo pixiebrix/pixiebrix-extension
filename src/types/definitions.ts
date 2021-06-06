@@ -32,6 +32,7 @@ export interface RecipeDefinition {
 }
 
 export interface KeyAuthenticationDefinition {
+  baseURL?: string;
   headers?: { [header: string]: string };
   params?: { [param: string]: string };
 }
