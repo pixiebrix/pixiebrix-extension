@@ -58,13 +58,14 @@ export async function resetToken(scopes: string[]): Promise<void> {
   if (token) {
     console.debug(`Clearing Google token: ${token}`);
 
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       chrome.identity.removeCachedAuthToken({ token }, () => {
-        resolve();
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+        } else {
+          resolve();
+        }
       });
-      if (chrome.runtime.lastError) {
-        reject(new Error(chrome.runtime.lastError.message));
-      }
     });
   }
 

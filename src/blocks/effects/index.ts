@@ -28,3 +28,4 @@ export * from "./wait";
 export * from "./sound";
 export * from "./alert";
 export * from "./pageState";
+export * from "./hide";

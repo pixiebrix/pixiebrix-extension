@@ -92,7 +92,7 @@ const FileField: React.FunctionComponent<
 
       console.debug(`Using Google token: ${token}`);
 
-      await new Promise((resolve) => {
+      await new Promise<void>((resolve) => {
         gapi.load("picker", {
           callback: () => resolve(),
         });

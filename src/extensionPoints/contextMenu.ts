@@ -85,7 +85,7 @@ function guessSelectedElement(): HTMLElement | null {
     const end = selection.getRangeAt(selection.rangeCount - 1).endContainer
       .parentNode;
     const node = getCommonAncestor(start, end);
-    if ("tagName" in node) {
+    if (node instanceof HTMLElement) {
       return node;
     } else {
       return null;
@@ -176,7 +176,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     super(id, name, description, icon);
   }
   public readonly syncInstall: boolean = true;
-  abstract async getBaseReader(): Promise<IReader>;
+  abstract getBaseReader(): Promise<IReader>;
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
   abstract readonly contexts: ContextMenus.ContextType[];
 

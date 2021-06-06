@@ -16,7 +16,6 @@
  */
 
 const path = require("path");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { mergeWithCustomize, customizeArray } = require("webpack-merge");
 const commonFactory = require("../../webpack/webpack.prod.js");
 const webpack = require("webpack");
@@ -95,11 +94,6 @@ module.exports = () =>
             from: path.resolve(chromeRoot, "..", "src"),
           },
         ],
-      }),
-      new MiniCssExtractPlugin({
-        filename: "css/[name].css",
-        chunkFilename: "css/[id].css",
-        ignoreOrder: false, // Enable to remove warnings about conflicting order
       }),
     ],
   });
