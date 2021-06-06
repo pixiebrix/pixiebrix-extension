@@ -15,8 +15,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import "regenerator-runtime/runtime";
-import "core-js/stable";
 import React from "react";
 import { Button, Container } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";

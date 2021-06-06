@@ -17,8 +17,6 @@
 
 // https://developer.chrome.com/extensions/devtools
 
-import "regenerator-runtime/runtime";
-import "core-js/stable";
 import { unary } from "lodash";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
