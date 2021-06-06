@@ -63,6 +63,10 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "baseURL": {
+              "type":  "string",
+              "format": "uri"
+            },
             "params": {
               "type": "object",
               "additionalProperties": {
@@ -76,6 +80,35 @@
               }
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "token": {
+              "type": "object",
+              "url": {
+                "type": "string"
+              },
+              "data": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            },
+            "baseURL": {
+              "type":  "string",
+              "format": "uri"
+            },
+            "headers": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["token"]
         },
         {
           "type": "object",
