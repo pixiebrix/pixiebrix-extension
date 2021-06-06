@@ -46,7 +46,7 @@ import { useToasts } from "react-toast-notifications";
 type OptionValue = { value: string; elementInfo?: ElementInfo };
 type SelectorOptions = OptionsType<OptionValue>;
 
-const CustomOption: ComponentType<OptionProps<OptionValue>> = ({
+const CustomOption: ComponentType<OptionProps<OptionValue, false>> = ({
   children,
   ...props
 }) => {
@@ -226,7 +226,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
           }}
           onChange={async (option) => {
             console.debug("selected", { option });
-            onSelect(option ? (option as OptionValue).value : null);
+            onSelect(option ? option.value : null);
             nativeOperations
               .toggleSelector(port, {
                 selector: null,
