@@ -29,7 +29,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.13.1",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@hot-loader/react-dom": "^16.13.0",
-    "@maxim_mazurok/gapi.client.bigquery": "^2.0.20201103",
+    "@maxim_mazurok/gapi.client.bigquery": "^2.0.20210529",
     "@reduxjs/toolkit": "^1.5.0",
     "@rjsf/core": "^2.5.1",
     "@types/chrome": "0.0.133",
