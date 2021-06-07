@@ -29,6 +29,7 @@ import { reactivate } from "@/background/navigation";
 import { GridLoader } from "react-spinners";
 
 import "./ExtensionEditor.scss";
+import { reportError } from "@/telemetry/logging";
 
 const { saveExtension } = optionsSlice.actions;
 
@@ -65,7 +66,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   );
 
   const save = useCallback(
-    ({ config, label, services }, { setSubmitting }) => {
+    ({ config, label, services, optionsArgs }, { setSubmitting }) => {
       if (!extensionPoint) {
         return;
       }
@@ -78,6 +79,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
           config,
           services,
           label,
+          optionsArgs,
         });
 
         const toastMsg = extensionConfig?.id
@@ -93,12 +95,14 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
           navigate(`/workshop/extensions/${extensionId}`);
         }
 
-        reactivate();
+        reactivate().catch((err) => {
+          reportError(err);
+        });
       } finally {
         setSubmitting(false);
       }
     },
-    [extensionPoint, extensionConfig, saveExtension, addToast]
+    [extensionPoint, extensionConfig, saveExtension, addToast, navigate]
   );
 
   if (isPending) {
@@ -112,6 +116,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
           label: extensionConfig?.label,
           config: extensionConfig?.config,
           services: extensionConfig?.services ?? [],
+          optionsArgs: extensionConfig?.optionsArgs ?? {},
         }}
         extensionId={extensionId}
         extensionPoint={extensionPoint}
@@ -121,6 +126,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   }
 };
 
-export default connect(undefined, { saveExtension, navigate: push })(
-  ExtensionEditor
-);
+const mapStateToProps: null = undefined;
+const mapDispatchToProps = { saveExtension, navigate: push };
+
+export default connect(mapStateToProps, mapDispatchToProps)(ExtensionEditor);

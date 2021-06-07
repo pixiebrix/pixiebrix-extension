@@ -181,7 +181,7 @@ const DataSourceCard: React.FunctionComponent<{
     } else {
       return <SchemaTree schema={outputSchema} />;
     }
-  }, [outputSchema, isPending]);
+  }, [error, outputSchema, isPending]);
 
   return <div className="DataSourceCard">{body}</div>;
 };

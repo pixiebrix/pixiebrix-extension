@@ -217,7 +217,7 @@ interface OwnProps {
 
 const STEPS = [
   { key: "review", label: "Select", Component: ConfigureBody },
-  { key: "options", label: "Configure", Component: OptionsBody },
+  { key: "options", label: "Personalize", Component: OptionsBody },
   { key: "services", label: "Select Services", Component: ServicesBody },
   { key: "activate", label: "Review & Activate", Component: ActivateBody },
 ];

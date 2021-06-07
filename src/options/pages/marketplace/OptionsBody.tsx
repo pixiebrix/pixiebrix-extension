@@ -19,6 +19,9 @@ import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import genericOptionsFactory from "@/components/fields/blockOptions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -26,13 +29,28 @@ interface OwnProps {
 
 const OptionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const Component = useMemo(
-    () => genericOptionsFactory(blueprint.options.schema),
-    [blueprint.options.schema]
+    () =>
+      genericOptionsFactory(
+        blueprint.options.schema,
+        blueprint.options.uiSchema
+      ),
+    [blueprint.options.schema, blueprint.options.uiSchema]
   );
   return (
-    <Card.Body className="p-3">
-      <Component name="optionsArgs" />
-    </Card.Body>
+    <>
+      <Card.Body className="px-3 pb-1">
+        <Card.Title>Personalize the Blueprint</Card.Title>
+
+        <p className="text-info">
+          <FontAwesomeIcon icon={faInfoCircle} /> After activating this brick,
+          you&apos;ll be able to modify it at any time on the{" "}
+          <Link to="/installed">Active Bricks page</Link>
+        </p>
+      </Card.Body>
+      <Card.Body className="p-3">
+        <Component name="optionsArgs" />
+      </Card.Body>
+    </>
   );
 };
 

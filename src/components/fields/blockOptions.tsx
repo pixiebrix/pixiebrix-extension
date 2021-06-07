@@ -19,7 +19,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
-import { Schema, ServiceDependency } from "@/core";
+import { Schema, ServiceDependency, UiSchema } from "@/core";
 import { ObjectField } from "@/components/fields/FieldTable";
 import { FieldArray, useField, useFormikContext } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
@@ -32,6 +32,7 @@ const SERVICE_BASE_SCHEMA = "https://app.pixiebrix.com/schemas/services/";
 
 const TextField: React.FunctionComponent<FieldProps<string>> = ({
   schema,
+  uiSchema,
   label,
   ...props
 }) => {
@@ -67,7 +68,7 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
           setCreated(uniq([...created, value]));
         }}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => helpers.setValue(option?.value)}
       />
     );
   } else if (options.length && !creatable) {
@@ -76,13 +77,16 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         isClearable
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => helpers.setValue(option?.value)}
       />
     );
   } else if (typeof value === "object") {
     console.warn("Cannot edit object as text", { schema, value });
     control = <div>Cannot edit object value as text</div>;
-  } else if (schema.format === "markdown") {
+  } else if (
+    schema.format === "markdown" ||
+    uiSchema?.["ui:widget"] === "textarea"
+  ) {
     control = (
       <Form.Control
         as="textarea"
@@ -124,7 +128,7 @@ function extractServiceIds(schema: Schema): string[] {
   } else if ("anyOf" in schema) {
     return schema.anyOf
       .filter((x) => x != false)
-      .flatMap((x) => extractServiceIds(x as any));
+      .flatMap((x) => extractServiceIds(x as Schema));
   } else {
     throw new Error("Expected $ref or anyOf in schema for service");
   }
@@ -159,7 +163,15 @@ export const ServiceField: React.FunctionComponent<
         helpers.setValue(`@${service.outputKey}`);
       }
     }
-  }, [detectDefault, value, options, values.services, helpers.setValue]);
+  }, [
+    helpers,
+    schema,
+    detectDefault,
+    value,
+    options,
+    values.services,
+    helpers.setValue,
+  ]);
 
   return (
     <Form.Group>
@@ -167,7 +179,7 @@ export const ServiceField: React.FunctionComponent<
       <Select
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => helpers.setValue(option?.value)}
       />
       {schema.description && (
         <Form.Text className="text-muted">
@@ -352,6 +364,7 @@ export const RendererContext = React.createContext<IRenderContext>({
 
 export const FieldRenderer: React.FunctionComponent<FieldProps<unknown>> = ({
   schema,
+  uiSchema,
   ...props
 }) => {
   const { customRenderers } = useContext(RendererContext);
@@ -359,7 +372,7 @@ export const FieldRenderer: React.FunctionComponent<FieldProps<unknown>> = ({
     const match = customRenderers.find((x) => x.match(schema));
     return match ? match.Component : getDefaultField(schema);
   }, [schema, customRenderers]);
-  return <Renderer schema={schema} {...props} />;
+  return <Renderer schema={schema} uiSchema={uiSchema} {...props} />;
 };
 
 export interface BlockOptionProps {
@@ -369,7 +382,8 @@ export interface BlockOptionProps {
 }
 
 function genericOptionsFactory(
-  schema: Schema
+  schema: Schema,
+  uiSchema?: UiSchema
 ): React.FunctionComponent<BlockOptionProps> {
   const element = ({ name, configKey, showOutputKey }: BlockOptionProps) => (
     <>
@@ -377,11 +391,15 @@ function genericOptionsFactory(
         if (typeof fieldSchema === "boolean") {
           throw new Error("Expected schema for input property type");
         }
+        // fine because coming from Object.entries for the schema
+        // eslint-disable-next-line security/detect-object-injection
+        const propUiSchema = uiSchema?.[prop];
         return (
           <FieldRenderer
             key={prop}
             name={[name, configKey, prop].filter(identity).join(".")}
             schema={fieldSchema}
+            uiSchema={propUiSchema}
           />
         );
       })}
@@ -391,7 +409,7 @@ function genericOptionsFactory(
           label="Output Variable"
           schema={{
             type: "string",
-            description: "A name to refer to this brick in subsequent bricks",
+            description: "A key to refer to this brick in subsequent bricks",
           }}
         />
       )}
