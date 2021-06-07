@@ -18,6 +18,7 @@
 import { readStorage, setStorage } from "@/chrome";
 import { Metadata, ServiceDependency } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
+import { Primitive } from "type-fest";
 
 const storageKey = "persist:extensionOptions";
 
@@ -34,6 +35,7 @@ export interface ExtensionOptions {
   label: string;
   permissions?: Permissions.Permissions;
   services: ServiceDependency[];
+  optionsArgs?: Record<string, Primitive>;
   config: { [prop: string]: unknown };
 }
 

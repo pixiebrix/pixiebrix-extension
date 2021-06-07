@@ -22,6 +22,7 @@ import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { preloadMenus } from "@/background/preload";
 import { reportError } from "@/telemetry/logging";
+import { Primitive } from "type-fest";
 
 type InstallMode = "local" | "remote";
 
@@ -51,6 +52,43 @@ const initialServicesState: ServicesState = {
   configured: {},
 };
 
+type BaseConfig = Record<string, unknown>;
+type UserOptions = Record<string, Primitive>;
+
+type DeploymentMeta = {
+  id: string;
+  timestamp: string;
+};
+
+export interface ExtensionOptions<TConfig = BaseConfig> {
+  id: string;
+  _deployment?: DeploymentMeta;
+  _recipeId?: string;
+  _recipe: Metadata | null;
+  extensionPointId: string;
+  active: boolean;
+  label: string;
+  optionsArgs?: UserOptions;
+  permissions?: Permissions.Permissions;
+  services: ServiceDependency[];
+  config: TConfig;
+}
+
+export interface OptionsState {
+  extensions: {
+    [extensionPointId: string]: {
+      [extensionId: string]: ExtensionOptions;
+    };
+  };
+}
+
+const initialOptionsState: OptionsState = {
+  extensions: {},
+};
+
+/* The object access in servicesSlice and optionsSlice should be safe because slice reducers use immer under the hood */
+/* eslint-disable security/detect-object-injection */
+
 export const servicesSlice = createSlice({
   name: "services",
   initialState: initialServicesState,
@@ -77,32 +115,6 @@ export const servicesSlice = createSlice({
   },
 });
 
-type BaseConfig = Record<string, unknown>;
-
-export interface ExtensionOptions<TConfig = BaseConfig> {
-  id: string;
-  _recipeId?: string;
-  _recipe: Metadata | null;
-  extensionPointId: string;
-  active: boolean;
-  label: string;
-  permissions?: Permissions.Permissions;
-  services: ServiceDependency[];
-  config: TConfig;
-}
-
-export interface OptionsState {
-  extensions: {
-    [extensionPointId: string]: {
-      [extensionId: string]: ExtensionOptions;
-    };
-  };
-}
-
-const initialOptionsState: OptionsState = {
-  extensions: {},
-};
-
 export const optionsSlice = createSlice({
   name: "options",
   initialState: initialOptionsState,
@@ -115,7 +127,13 @@ export const optionsSlice = createSlice({
       state.extensions[extensionPointId][extensionId].active = active;
     },
     installRecipe(state, { payload }) {
-      const { recipe, services: auths, extensionPoints, deployment } = payload;
+      const {
+        recipe,
+        services: auths,
+        optionsArgs,
+        extensionPoints,
+        deployment,
+      } = payload;
       for (const {
         id: extensionPointId,
         label,
@@ -134,7 +152,7 @@ export const optionsSlice = createSlice({
           blueprintId: recipe.metadata.id,
         });
 
-        const extensionConfig = {
+        const extensionConfig: ExtensionOptions = {
           id: extensionId,
           _deployment: deployment
             ? {
@@ -144,6 +162,7 @@ export const optionsSlice = createSlice({
             : undefined,
           _recipeId: recipe.metadata.id,
           _recipe: recipe.metadata,
+          optionsArgs,
           services: Object.entries(services ?? {}).map(
             ([outputKey, id]: [string, string]) => ({
               outputKey,
@@ -171,6 +190,7 @@ export const optionsSlice = createSlice({
         extensionPointId,
         config,
         label,
+        optionsArgs,
         services,
       } = payload;
       // support both extensionId and id to keep the API consistent with the shape of the stored extension
@@ -187,6 +207,7 @@ export const optionsSlice = createSlice({
         extensionPointId,
         _recipe: null,
         label,
+        optionsArgs,
         services,
         active: true,
         config,
@@ -206,3 +227,5 @@ export const optionsSlice = createSlice({
     },
   },
 });
+
+/* eslint-enable */

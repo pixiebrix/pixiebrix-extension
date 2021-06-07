@@ -284,6 +284,8 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       extensionId: extension.id,
     });
 
+    console.debug("Got extension", { extension });
+
     registerHandler(extension.id, async (clickData) => {
       const reader = await this.getBaseReader();
       const serviceContext = await makeServiceContext(extension.services);
@@ -302,6 +304,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
         validate: true,
         serviceArgs: serviceContext,
+        optionsArgs: extension.optionsArgs,
       });
     });
   }

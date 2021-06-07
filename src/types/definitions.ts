@@ -17,6 +17,7 @@
 
 import { Metadata, Schema } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
+import { UiSchema } from "@rjsf/core";
 
 export interface ExtensionPointDefinition {
   id: string;
@@ -26,9 +27,15 @@ export interface ExtensionPointDefinition {
   config: Record<string, unknown>;
 }
 
+export interface OptionsDefinition {
+  schema: Schema;
+  uiSchema?: UiSchema;
+}
+
 export interface RecipeDefinition {
   metadata: Metadata;
   extensionPoints: ExtensionPointDefinition[];
+  options?: OptionsDefinition;
 }
 
 export interface KeyAuthenticationDefinition {

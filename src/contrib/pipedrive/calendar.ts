@@ -119,6 +119,7 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
       {
         validate: true,
         serviceArgs: serviceContext,
+        optionsArgs: extension.optionsArgs,
       }
     )) as RangeConfig[];
 

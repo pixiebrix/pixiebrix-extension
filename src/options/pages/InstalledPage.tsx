@@ -48,6 +48,7 @@ import { AuthContext } from "@/auth/context";
 import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import cx from "classnames";
+import { Dispatch } from "redux";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -228,11 +229,6 @@ export interface InstalledExtension extends IExtension {
     id: string;
     name: string;
   } | null;
-
-  _deployment?: {
-    id: string;
-    timestamp: string;
-  };
 }
 
 const InstalledTable: React.FunctionComponent<{
@@ -414,23 +410,24 @@ export function selectExtensions(state: {
   );
 }
 
-export default connect(
-  (state: { options: OptionsState }) => ({
-    extensions: selectExtensions(state),
-  }),
-  (dispatch) => ({
-    onRemove: (identifier: ExtensionIdentifier) => {
-      reportEvent("ExtensionRemove", {
-        extensionId: identifier.extensionId,
-      });
-      // Remove from storage first so it doesn't get re-added in reactivate step below
-      dispatch(removeExtension(identifier));
-      uninstallContextMenu(identifier).catch(() => {
-        // noop because this is expected to error for non-context menus
-      });
-      reactivate().catch((error) => {
-        console.warn("Error re-activating content scripts", { error });
-      });
-    },
-  })
-)(InstalledPage);
+const mapStateToProps = (state: { options: OptionsState }) => ({
+  extensions: selectExtensions(state),
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  onRemove: (identifier: ExtensionIdentifier) => {
+    reportEvent("ExtensionRemove", {
+      extensionId: identifier.extensionId,
+    });
+    // Remove from storage first so it doesn't get re-added in reactivate step below
+    dispatch(removeExtension(identifier));
+    uninstallContextMenu(identifier).catch(() => {
+      // noop because this is expected to error for non-context menus
+    });
+    reactivate().catch((error) => {
+      console.warn("Error re-activating content scripts", { error });
+    });
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(InstalledPage);

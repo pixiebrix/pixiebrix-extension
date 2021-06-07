@@ -32,6 +32,7 @@ import {
   BlockArg,
   ReaderRoot,
   MessageContext,
+  OptionsArgs,
 } from "@/core";
 import { validateInput } from "@/validators/generic";
 import { OutputUnit } from "@cfworker/json-schema";
@@ -163,6 +164,7 @@ interface ReduceOptions {
   validate?: boolean;
   logValues?: boolean;
   headless?: boolean;
+  optionsArgs?: OptionsArgs;
   serviceArgs?: RenderedArgs;
 }
 
@@ -332,12 +334,14 @@ export async function reducePipeline(
     validate: true,
     logValues: false,
     headless: false,
-    serviceArgs: {} as RenderedArgs,
+    optionsArgs: {},
+    serviceArgs: {},
   }
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
     "@input": renderedArgs,
     ...options.serviceArgs,
+    "@options": options.optionsArgs,
   };
 
   // If logValues not provided explicitly by the extension point, use the global value
@@ -458,6 +462,7 @@ async function resolveObj<T>(
 ): Promise<Record<string, T>> {
   const result: Record<string, T> = {};
   for (const [key, promise] of Object.entries(obj)) {
+    // eslint-disable-next-line security/detect-object-injection -- safe because we're using Object.entries
     result[key] = await promise;
   }
   return result;
