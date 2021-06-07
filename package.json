@@ -146,7 +146,7 @@
     "nunjucks": "^3.2.3",
     "object-hash": "^2.1.1",
     "page-metadata-parser": "^1.1.4",
-    "prettier": "2.2.1",
+    "prettier": "^2.3.1",
     "primeicons": "^4.1.0",
     "primereact": "^5.0.2",
     "prop-types": "^15.7.2",
