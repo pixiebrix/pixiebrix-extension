@@ -99,7 +99,7 @@
     "dompurify": "^2.2.7",
     "dotenv": "^8.2.0",
     "dragula": "^3.7.3",
-    "eslint": "^7.17.0",
+    "eslint": "^7.28.0",
     "eslint-import-resolver-webpack": "^0.13.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-security": "^1.4.0",

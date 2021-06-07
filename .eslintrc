@@ -10,6 +10,9 @@
     "browser": true
   },
   "settings": {
+    "react": {
+      "version": "detect"
+    },
     "import/resolver": {
       "webpack": {
         "config": "./browsers/webpack/webpack.base.js"
