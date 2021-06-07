@@ -30,6 +30,8 @@
     "storage",
     "identity",
     "tabs",
+    "webRequest",
+    "webRequestBlocking",
     "webNavigation",
     "contextMenus"
   ],

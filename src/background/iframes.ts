@@ -16,6 +16,10 @@
  */
 
 import { FORWARD_FRAME_DATA, REQUEST_FRAME_DATA } from "@/messaging/constants";
+import { browser, WebRequest } from "webextension-polyfill-ts";
+type OnBeforeSendHeadersDetailsType = WebRequest.OnBeforeSendHeadersDetailsType;
+type OnHeadersReceivedDetailsType = WebRequest.OnHeadersReceivedDetailsType;
+type RequestFilter = chrome.webRequest.RequestFilter;
 type MessageSender = chrome.runtime.MessageSender;
 
 const _frameData: { [key: string]: string } = {};
@@ -27,7 +31,64 @@ type Request =
     }
   | { type: typeof REQUEST_FRAME_DATA; payload: { id: string } };
 
+function removeFrameOptionsHeader(info: OnHeadersReceivedDetailsType) {
+  console.debug(`Removing frame options header for: ${info.url}`);
+  return {
+    responseHeaders: info.responseHeaders.filter((header) => {
+      const headerName = header.name.toLowerCase();
+      return headerName != "x-frame-options" && headerName != "frame-options";
+    }),
+  };
+}
+
+function removeSecHeaders(info: OnBeforeSendHeadersDetailsType) {
+  console.debug(`Removing sec headers for: ${info.url}`);
+  return {
+    responseHeaders: info.requestHeaders.filter((header) => {
+      const headerName = header.name.toLowerCase();
+      return headerName != "sec-fetch-dest" && headerName != "sec-fetch-site";
+    }),
+  };
+}
+
+const DATA_ROBOT_SITE_FILTER: RequestFilter = {
+  urls: [
+    "https://*.apps2.datarobot.com/*",
+    "https://*.datarobot.com/*",
+    "https://datarobot.com/*",
+  ],
+  types: ["sub_frame"],
+};
+
 function initFrames(): void {
+  console.info("Initializing webRequest listeners");
+
+  browser.webRequest.onBeforeSendHeaders.addListener(
+    removeSecHeaders,
+    DATA_ROBOT_SITE_FILTER,
+    [
+      "blocking",
+      "requestHeaders",
+      // Modern Chrome needs 'extraHeaders' to see and change this header,
+      // so the following code evaluates to 'extraHeaders' only in modern Chrome.
+      // https://developer.chrome.com/docs/extensions/reference/webRequest/
+      "extraHeaders",
+    ]
+  );
+
+  browser.webRequest.onHeadersReceived.addListener(
+    removeFrameOptionsHeader,
+    DATA_ROBOT_SITE_FILTER,
+    [
+      "blocking",
+      "responseHeaders",
+      // Modern Chrome needs 'extraHeaders' to see and change this header,
+      // so the following code evaluates to 'extraHeaders' only in modern Chrome.
+      // https://developer.chrome.com/docs/extensions/reference/webRequest/
+      "extraHeaders",
+    ]
+  );
+
   // Save data to pass along to iframes
   chrome.runtime.onMessage.addListener(function (
     request: Request,
