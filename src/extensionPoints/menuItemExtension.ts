@@ -449,6 +449,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         {
           validate: true,
           serviceArgs: serviceContext,
+          optionsArgs: extension.optionsArgs,
         }
       );
 
@@ -492,6 +493,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
           validate: true,
           serviceArgs: serviceContext,
+          optionsArgs: extension.optionsArgs,
         });
 
         extensionLogger.info("Successfully ran menu action");

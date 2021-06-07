@@ -112,7 +112,7 @@ const ActivatePage: React.FunctionComponent = () => {
     } else {
       return <GridLoader />;
     }
-  }, [blueprint, sourcePage]);
+  }, [blueprintId, blueprint, sourcePage]);
 
   return (
     <div>

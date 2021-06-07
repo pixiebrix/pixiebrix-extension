@@ -124,6 +124,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       await reducePipeline(actionConfig, ctxt, extensionLogger, root, {
         validate: true,
         serviceArgs: serviceContext,
+        optionsArgs: extension.optionsArgs,
       });
       extensionLogger.info("Successfully ran trigger");
     } catch (ex) {

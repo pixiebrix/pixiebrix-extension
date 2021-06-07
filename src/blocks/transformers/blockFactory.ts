@@ -112,7 +112,12 @@ class ExternalBlock extends Block {
       renderedInputs,
       options.logger,
       options.root,
-      { headless: options.headless }
+      {
+        headless: options.headless,
+        // optionsArgs are set at the blueprint level. For composite bricks, they options should be passed in
+        // at part of the brick inputs
+        optionsArgs: undefined,
+      }
     );
   }
 }

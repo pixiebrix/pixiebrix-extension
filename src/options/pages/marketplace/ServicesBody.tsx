@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import ServiceAuthSelector, {
   useAuthOptions,
 } from "@/options/pages/extensionEditor/ServiceAuthSelector";
-import uniq from "lodash/uniq";
+import { uniq } from "lodash";
 import { Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { RecipeDefinition } from "@/types/definitions";

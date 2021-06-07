@@ -20,7 +20,7 @@ import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
 import { ExtensionOptions, optionsSlice, OptionsState } from "@/options/slices";
 import { useToasts } from "react-toast-notifications";
-import { groupBy, uniq, pickBy } from "lodash";
+import { groupBy, uniq, pickBy, isEmpty, mapValues } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { push } from "connected-react-router";
 import "./ActivateWizard.scss";
@@ -40,6 +40,7 @@ import ActivateBody, {
 import { reactivate } from "@/background/navigation";
 import { reportError } from "@/telemetry/logging";
 import { useParams } from "react-router";
+import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -63,22 +64,23 @@ function selectAuths(
     } else if (configs.length > 1) {
       throw new Error(`Service ${id} has multiple configurations`);
     }
+    // eslint-disable-next-line security/detect-object-injection -- safe because it's from Object.entries
     result[id] = configs[0];
   }
   return result;
 }
 
+const selectExtensions = ({ options }: { options: OptionsState }) => {
+  return Object.values(options.extensions).flatMap((extensionPointOptions) =>
+    Object.values(extensionPointOptions)
+  );
+};
+
 export function useReinstall(): (recipe: RecipeDefinition) => Promise<void> {
   const dispatch = useDispatch();
 
   const extensions = useSelector<{ options: OptionsState }, ExtensionOptions[]>(
-    ({ options }) => {
-      return Object.values(
-        options.extensions
-      ).flatMap((extensionPointOptions) =>
-        Object.values(extensionPointOptions)
-      );
-    }
+    selectExtensions
   );
 
   return useCallback(
@@ -178,6 +180,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
             recipe,
             extensionPoints: selected,
             services: values.services,
+            optionsArgs: values.optionsArgs,
           })
         );
 
@@ -204,7 +207,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         setSubmitting(false);
       }
     },
-    [installRecipe, addToast, dispatch, sourcePage]
+    [addToast, dispatch, sourcePage, recipe]
   );
 }
 
@@ -213,7 +216,8 @@ interface OwnProps {
 }
 
 const STEPS = [
-  { key: "review", label: "Configure", Component: ConfigureBody },
+  { key: "review", label: "Select", Component: ConfigureBody },
+  { key: "options", label: "Personalize", Component: OptionsBody },
   { key: "services", label: "Select Services", Component: ServicesBody },
   { key: "activate", label: "Review & Activate", Component: ActivateBody },
 ];
@@ -243,10 +247,27 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     const services = uniq(
       extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
     );
-    const steps = STEPS.filter((x) => x.key !== "services" || services.length);
-    const initialValues = {
+    const steps = STEPS.filter((x) => {
+      switch (x.key) {
+        case "services": {
+          return services.length;
+        }
+        case "options": {
+          return !isEmpty(blueprint.options?.schema);
+        }
+        default: {
+          return true;
+        }
+      }
+    });
+    const initialValues: WizardValues = {
       extensions: Object.fromEntries(extensionPoints.map((x, i) => [i, true])),
       services: Object.fromEntries(services.map((x) => [x, undefined])),
+      optionsArgs: mapValues(
+        blueprint.options?.schema ?? {},
+        (x) => (x as any).default
+      ),
+      grantPermissions: false,
     };
     return [steps, initialValues];
   }, [blueprint]);
@@ -255,7 +276,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const install = useInstall(blueprint);
 
   return (
-    <Formik initialValues={initialValues as WizardValues} onSubmit={install}>
+    <Formik initialValues={initialValues} onSubmit={install}>
       {({ handleSubmit }) => (
         <Form id="activate-wizard" noValidate onSubmit={handleSubmit}>
           <Tab.Container activeKey={stepKey}>

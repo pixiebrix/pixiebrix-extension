@@ -367,6 +367,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           {
             validate: true,
             serviceArgs: serviceContext,
+            optionsArgs: extension.optionsArgs,
           }
         ) as Promise<PanelComponent>;
 

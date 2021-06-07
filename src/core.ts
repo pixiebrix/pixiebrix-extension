@@ -16,6 +16,7 @@
  */
 
 import { JSONSchema7, JSONSchema7Definition } from "json-schema";
+import { UiSchema as StandardUiSchema } from "@rjsf/core";
 import { AxiosRequestConfig } from "axios";
 import { Primitive } from "type-fest";
 import { ErrorObject } from "serialize-error";
@@ -24,6 +25,7 @@ import { pick } from "lodash";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
 export type Schema = JSONSchema7;
+export type UiSchema = StandardUiSchema;
 export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = { [key: string]: SchemaDefinition };
 
@@ -134,6 +136,9 @@ export interface IExtension<
 
   label?: string;
 
+  /**
+   * Default template engine when running the extension
+   */
   templateEngine?: TemplateEngine;
 
   /**
@@ -141,7 +146,15 @@ export interface IExtension<
    */
   permissions?: Permissions.Permissions;
 
+  /**
+   * Configured services/integrations for the extension
+   */
   services: ServiceDependency[];
+
+  /**
+   * Options the end-user has configured (i.e., during blueprint activation)
+   */
+  optionsArgs?: OptionsArgs;
 
   config: T;
 }
@@ -336,6 +349,10 @@ export interface IconConfig {
   library?: IconLibrary;
   size?: number;
   color?: string;
+}
+
+export interface OptionsArgs {
+  [prop: string]: Primitive;
 }
 
 export interface RenderedArgs {

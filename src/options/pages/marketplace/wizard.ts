@@ -15,8 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Primitive } from "type-fest";
+
 export interface WizardValues {
-  extensions: { [key: string]: boolean };
-  services: { [key: string]: string };
+  extensions: Record<string, boolean>;
+  /**
+   * Mapping from service id to auth id
+   */
+  services: Record<string, string>;
+  optionsArgs: Record<string, Primitive>;
   grantPermissions: boolean;
 }

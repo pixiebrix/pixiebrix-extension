@@ -16,7 +16,7 @@
  */
 
 import PropTypes from "prop-types";
-import { Schema } from "@/core";
+import { Schema, UiSchema } from "@/core";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
 
@@ -38,4 +38,5 @@ export interface FieldProps<TValue> {
   name: string;
   label?: string;
   schema: Schema;
+  uiSchema?: UiSchema;
 }

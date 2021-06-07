@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Renderer } from "@/types";
-import { BlockArg, BlockOptions, RenderedHTML, Schema } from "@/core";
+import { BlockArg, BlockOptions, RenderedHTML, Schema, UiSchema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
 import Form from "@rjsf/core";
 import { JsonObject } from "type-fest";
@@ -35,7 +35,7 @@ const custom = require("!!raw-loader!@/blocks/renderers/customForm.css?esModule=
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
-  uiSchema: any;
+  uiSchema: UiSchema;
   formData: JsonObject;
   onSubmit: (values: JsonObject) => Promise<void>;
 }> = ({ schema, uiSchema, formData, onSubmit }) => {

@@ -27,7 +27,7 @@ import {
 import { Form, Row, Col, Card, Nav, Button } from "react-bootstrap";
 import ServicesFormCard from "@/options/pages/extensionEditor/ServicesFormCard";
 import ExtensionConfigurationCard from "@/options/pages/extensionEditor/ExtensionConfigurationCard";
-import { IExtensionPoint, ServiceDependency } from "@/core";
+import { IExtensionPoint, OptionsArgs, ServiceDependency } from "@/core";
 import DataSourceCard from "@/options/pages/extensionEditor/DataSourceCard";
 import { Formik, FormikProps, getIn, useFormikContext } from "formik";
 import TextField from "@/components/fields/TextField";
@@ -46,6 +46,7 @@ import { saveAs } from "file-saver";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { configToYaml } from "@/devTools/editor/useCreate";
+import OptionsArgsCard from "@/options/pages/extensionEditor/OptionsArgsCard";
 
 type TopConfig = { [prop: string]: unknown };
 
@@ -53,6 +54,7 @@ export interface Config {
   config: TopConfig;
   label: string;
   services: ServiceDependency[];
+  optionsArgs: OptionsArgs;
 }
 
 interface OwnProps {
@@ -185,7 +187,9 @@ const ExtensionForm: React.FunctionComponent<{
         autoDismiss: true,
       });
     }
-  }, [values, extensionPoint]);
+  }, [addToast, values, extensionPoint]);
+
+  const hasOptions = !isEmpty(values.optionsArgs);
 
   return (
     <Form noValidate onSubmit={handleSubmit}>
@@ -239,6 +243,7 @@ const ExtensionForm: React.FunctionComponent<{
                   eventKey="services"
                   fieldName="services"
                 />
+                {hasOptions && <NavItem caption="Options" eventKey="options" />}
                 <NavItem caption="Data" eventKey="reader" />
                 <NavItem
                   caption="Configuration"
@@ -272,6 +277,7 @@ const ExtensionForm: React.FunctionComponent<{
                 <DataSourceCard extensionPoint={extensionPoint} />
               </ErrorBoundary>
             )}
+            {activeTab === "options" && <OptionsArgsCard name="optionsArgs" />}
             {activeTab === "configuration" && (
               <ExtensionConfigurationCard
                 name="config"
@@ -300,6 +306,7 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
     config: initialConfig,
     label: initialLabel,
     services: initialServices,
+    optionsArgs: initialOptionsArgs,
   },
 }) => {
   const initialValues = useMemo(
@@ -307,8 +314,15 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
       label: initialLabel,
       services: initialServices ?? [],
       config: normalizeConfig(initialConfig, extensionPoint),
+      optionsArgs: initialOptionsArgs,
     }),
-    [initialConfig, extensionPoint]
+    [
+      initialOptionsArgs,
+      initialLabel,
+      initialServices,
+      initialConfig,
+      extensionPoint,
+    ]
   );
 
   const validationSchema = useMemo(() => {

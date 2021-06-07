@@ -53,6 +53,7 @@ import Mustache from "mustache";
 import { reportError } from "@/telemetry/logging";
 import { v4 as uuidv4 } from "uuid";
 import { getErrorMessage } from "@/extensionPoints/helpers";
+import { BusinessError } from "@/errors";
 
 export interface ActionPanelConfig {
   heading: string;
@@ -120,9 +121,12 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       await reducePipeline(body, readerContext, extensionLogger, document, {
         validate: true,
         serviceArgs: serviceContext,
+        optionsArgs: extension.optionsArgs,
         headless: true,
       });
-      throw new Error("No renderer attached to body");
+      // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
+      // noinspection ExceptionCaughtLocallyJS
+      throw new BusinessError("No renderer attached to body");
     } catch (err) {
       if (err instanceof HeadlessModeError) {
         upsertPanel(
