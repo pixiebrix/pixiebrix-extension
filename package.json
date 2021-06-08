@@ -199,7 +199,7 @@
     "webpack": "^5.25.1",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.6.0",
-    "webpack-dev-server": "^3.11.0",
+    "webpack-dev-server": "^3.11.2",
     "webpack-extension-reloader": "^1.1.4",
     "webpack-merge": "^5.7.3",
     "webpack-target-webextension": "^0.4.1",
