@@ -58,6 +58,7 @@ function defaultMatchPattern(url: string): string {
     obj.searchParams.delete(name);
   }
   obj.pathname = "*";
+  obj.hash = "";
   console.debug(`Generate match pattern`, { href: obj.href });
   return obj.href;
 }
