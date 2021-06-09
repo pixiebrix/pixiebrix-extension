@@ -21,7 +21,7 @@ import { useFormikContext } from "formik";
 import { Alert, Col, Form, Row } from "react-bootstrap";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import useAsyncEffect from "use-async-effect";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { useDebounce } from "use-debounce";

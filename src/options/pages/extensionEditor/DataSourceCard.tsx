@@ -27,7 +27,7 @@ import isEmpty from "lodash/isEmpty";
 
 import "./DataSourceCard.scss";
 import { useAsyncState } from "@/hooks/common";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 
 const ObjectEntry: React.FunctionComponent<{
   prop: string;

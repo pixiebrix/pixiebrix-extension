@@ -33,7 +33,7 @@ import { RootState } from "../../store";
 import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
 import { refresh as refreshServices } from "@/background/locator";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import ZapierModal from "@/options/pages/services/ZapierModal";
 import { AuthContext } from "@/auth/context";
 import { sleep } from "@/utils";

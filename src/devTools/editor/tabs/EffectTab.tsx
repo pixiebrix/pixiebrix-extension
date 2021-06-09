@@ -47,7 +47,7 @@ import {
 } from "formik";
 import hash from "object-hash";
 import Centered from "@/devTools/editor/components/Centered";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import BlockModal from "@/components/fields/BlockModal";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { useBlockOptions } from "@/components/fields/BlockField";

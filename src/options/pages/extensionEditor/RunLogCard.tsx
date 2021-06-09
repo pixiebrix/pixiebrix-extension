@@ -23,7 +23,7 @@ import {
   MessageLevel,
   LogEntry,
 } from "@/background/logging";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { Table, Form, Pagination, Card, Button } from "react-bootstrap";
 
 import range from "lodash/range";

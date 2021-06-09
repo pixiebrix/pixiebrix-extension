@@ -36,7 +36,7 @@ import {
   ServiceAuthPair,
 } from "@/permissions";
 import { locator } from "@/background/locator";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { useAsyncState } from "@/hooks/common";
 import { faCubes } from "@fortawesome/free-solid-svg-icons/faCubes";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";

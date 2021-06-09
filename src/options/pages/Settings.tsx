@@ -33,7 +33,7 @@ import useAsyncEffect from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/context";
 import { useLoggingConfig } from "@/hooks/logging";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { clearLogs } from "@/background/logging";
 import { reportError } from "@/telemetry/logging";
 

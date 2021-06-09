@@ -21,7 +21,7 @@ import React from "react";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import urljoin from "url-join";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { SanitizedAuth } from "@/types/contract";
 import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

@@ -23,7 +23,7 @@ import { Formik, useField } from "formik";
 import { useFetch } from "@/hooks/fetch";
 import { useParams } from "react-router";
 import Editor from "./Editor";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import useSubmitBrick from "./useSubmitBrick";
 import yaml from "js-yaml";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";

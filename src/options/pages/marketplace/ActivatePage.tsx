@@ -23,7 +23,7 @@ import { useParams } from "react-router";
 import { useFetch } from "@/hooks/fetch";
 import { RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
