@@ -105,7 +105,7 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
 
 export const GOOGLE_SHEETS_API_ID = "@pixiebrix/google/sheets-append";
 
-function isAuthError(error: any): boolean {
+function isAuthError(error: { code: number }): boolean {
   return [404, 401, 403].includes(error.code);
 }
 

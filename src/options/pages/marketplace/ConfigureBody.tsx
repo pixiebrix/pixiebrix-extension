@@ -27,6 +27,9 @@ import pickBy from "lodash/pickBy";
 import identity from "lodash/identity";
 import { WizardValues } from "@/options/pages/marketplace/wizard";
 import { ServiceAuthPair } from "@/permissions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 export function selectedAuths(values: WizardValues): ServiceAuthPair[] {
   return Object.entries(values.services)
@@ -74,13 +77,14 @@ const ConfigureRow: React.FunctionComponent<{
         <BootstrapSwitchButton
           onlabel=" "
           offlabel=" "
+          onstyle="info"
           checked={field.value}
           onChange={(checked) => helpers.setValue(checked)}
         />
       </td>
       <td>
         {field.value ? (
-          <span className="text-primary">Selected</span>
+          <span className="text-info">Selected</span>
         ) : (
           <span className="text-muted">Ignore</span>
         )}
@@ -101,8 +105,8 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   return (
     <>
       <Card.Body className="p-3">
-        <h3>{blueprint.metadata.name}</h3>
-        <code className="p-0">{blueprint.metadata.id}</code>
+        <h3 className="pb-1 mb-0">{blueprint.metadata.name}</h3>
+        <code className="p-0 small">{blueprint.metadata.id}</code>
         <div className="pt-3">
           <p>
             {blueprint.metadata.description ?? (
@@ -113,10 +117,25 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           </p>
         </div>
       </Card.Body>
+
+      <Card.Body className="px-3 py-0">
+        <p className="text-info">
+          <FontAwesomeIcon icon={faInfoCircle} /> Don&apos;t know which bricks
+          to select? Don&apos;t worry! &mdash; you can de-activate bricks at any
+          time on the{" "}
+          <Link to="/installed">
+            <u>
+              <FontAwesomeIcon icon={faCubes} />
+              {"  "}Active Bricks page
+            </u>
+          </Link>
+        </p>
+      </Card.Body>
+
       <Table>
         <thead>
           <tr>
-            <th colSpan={2}>Activate?</th>
+            <th colSpan={2}>Selected?</th>
             {/*<th>Foundation</th>*/}
             <th className="w-100">Name/Description</th>
           </tr>

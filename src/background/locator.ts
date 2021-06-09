@@ -30,9 +30,22 @@ export const locate = liftBackground(
   (serviceId: string, id: string | null) => locator.locate(serviceId, id)
 );
 
-export const refresh: () => Promise<unknown> = liftBackground(
+export const refresh: (options?: {
+  local: boolean;
+  remote: boolean;
+}) => Promise<unknown> = liftBackground(
   "REFRESH_SERVICES",
-  () => locator.refresh(),
+  async (
+    options: { local: boolean; remote: boolean } = { local: true, remote: true }
+  ) => {
+    if (options.remote && options.local) {
+      await locator.refresh();
+    } else if (options.remote) {
+      await locator.refreshRemote();
+    } else if (options.local) {
+      await locator.refreshLocal();
+    }
+  },
   {
     asyncResponse: false,
   }

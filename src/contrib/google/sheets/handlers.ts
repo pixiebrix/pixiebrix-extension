@@ -245,5 +245,5 @@ export async function getHeaders(
     spreadsheetId,
     `${tabName}!A1:${columnToLetter(256)}1`
   );
-  return response.valueRanges[0].values[0];
+  return response.valueRanges?.[0].values?.[0] ?? [];
 }

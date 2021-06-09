@@ -69,15 +69,21 @@ const ServiceResult: React.FunctionComponent<{
   );
 };
 
+export type ModalToggle = React.FunctionComponent<{
+  setShow: (show: boolean) => void;
+}>;
+
 const ServiceModal: React.FunctionComponent<{
   onSelect: (service: ServiceDefinition) => void;
   services: ServiceDefinition[];
   caption?: string;
+  renderButton?: ModalToggle;
   variant?: ButtonVariant;
 }> = ({
   onSelect,
   services,
   caption = "Select a service",
+  renderButton: rawRenderButton,
   variant = "info",
 }) => {
   const [show, setShow] = useState(false);
@@ -116,6 +122,20 @@ const ServiceModal: React.FunctionComponent<{
   const close = useCallback(() => {
     setShow(false);
   }, [setShow]);
+
+  const defaultButton = useMemo(() => {
+    const Component: React.FunctionComponent<{
+      setShow: (show: boolean) => void;
+    }> = ({ setShow }) => (
+      <Button variant={variant} onClick={() => setShow(true)}>
+        {caption}
+      </Button>
+    );
+    Component.displayName = "ServiceModal Button";
+    return Component;
+  }, [variant, caption]);
+
+  const renderButton = rawRenderButton ?? defaultButton;
 
   return (
     <div>
@@ -173,9 +193,7 @@ const ServiceModal: React.FunctionComponent<{
           </Modal.Body>
         </Modal>
       )}
-      <Button variant={variant} onClick={() => setShow(true)}>
-        {caption}
-      </Button>
+      {renderButton({ setShow })}
     </div>
   );
 };
