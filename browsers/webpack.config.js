@@ -93,6 +93,58 @@ function getConditionalPlugins(isProduction) {
 
 const isProd = (options) => options.mode === "production";
 
+function customizeManifest(manifest, options) {
+  if (!isProd(options)) {
+    manifest.name = "PixieBrix - Development";
+  }
+  if (process.env.CHROME_MANIFEST_KEY) {
+    manifest.key = process.env.CHROME_MANIFEST_KEY;
+  }
+  manifest.version = process.env.npm_package_version;
+  const internal = isProd(options)
+    ? []
+    : ["http://127.0.0.1:8000/*", "http://127.0.0.1/*", "http://localhost/*"];
+
+  const policy = new Policy(manifest.content_security_policy);
+
+  policy.add("connect-src", process.env.SERVICE_URL);
+  if (!isProd(options)) {
+    policy.add("connect-src", "ws://localhost:9090/ http://127.0.0.1:8000");
+  }
+  manifest.content_security_policy = policy.toString();
+
+  if (process.env.ENABLE_DEVTOOLS) {
+    manifest.permissions = uniq([...manifest.permissions, "activeTab"]);
+    manifest.devtools_page = "devtools.html";
+  }
+  if (process.env.EXTERNALLY_CONNECTABLE) {
+    manifest.externally_connectable.matches = uniq([
+      ...manifest.externally_connectable.matches,
+      ...process.env.EXTERNALLY_CONNECTABLE.split(","),
+    ]);
+  }
+
+  manifest.content_scripts[0].matches = uniq([
+    new URL("*", process.env.SERVICE_URL).href,
+    ...manifest.content_scripts[0].matches,
+    ...internal,
+  ]);
+
+  manifest.externally_connectable.matches = uniq([
+    ...manifest.externally_connectable.matches,
+    ...internal,
+  ]);
+
+  if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
+    manifest.oauth2 = {
+      client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,
+      // don't ask for any scopes up front, instead ask when they're required, e.g., when the user
+      // installs a brick for google sheets
+      scopes: [""],
+    };
+  }
+}
+
 module.exports = (env, options) => ({
   context: rootDir,
   node: nodeConfig,
@@ -170,7 +222,6 @@ module.exports = (env, options) => ({
     ],
   },
 
-  // Silence new size limit warnings https://github.com/webpack/webpack/issues/3486#issuecomment-646997697
   performance: {
     maxEntrypointSize: 5120000,
     maxAssetSize: 5120000,
@@ -179,24 +230,24 @@ module.exports = (env, options) => ({
     ...getConditionalPlugins(isProd(options)),
     new NodePolyfillPlugin(),
     new WebExtensionTarget(nodeConfig),
-    // https://webpack.js.org/plugins/provide-plugin/
     new webpack.ProvidePlugin({
       $: "jquery",
       jQuery: "jquery",
     }),
 
-    // The keys are the ENVs that are read from the shell and injected.
-    // If they're not specified by the shell:
-    // - Values here are used as defaults
-    // - "undefined" will cause the build to fail
-    // - "null" will leave the ENV unset in the bundle
+    // This will inject the current ENVs into the bundle, if found
     new webpack.EnvironmentPlugin({
+      // If not found, these values will be used as defaults
       DEBUG: !isProd(options),
-      SERVICE_URL: undefined,
-      ROLLBAR_BROWSER_ACCESS_TOKEN: null,
-      SOURCE_VERSION: undefined,
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
+
+      // If not found, "undefined" will cause the build to fail
+      SERVICE_URL: undefined,
+      SOURCE_VERSION: undefined,
       ENVIRONMENT: undefined,
+
+      // If not found, "null" will leave the ENV unset in the bundle
+      ROLLBAR_BROWSER_ACCESS_TOKEN: null,
       SUPPORT_WIDGET_ID: null,
       CHROME_EXTENSION_ID: null,
       GOOGLE_API_KEY: null,
@@ -210,68 +261,10 @@ module.exports = (env, options) => ({
         {
           from: path.resolve(__dirname, "manifest.json"),
           to: "manifest.json",
-          transform(content) {
-            const manifest = JSON.parse(content.toString());
-            if (!isProd(options)) {
-              manifest.name = "PixieBrix - Development";
-            }
-            if (process.env.CHROME_MANIFEST_KEY) {
-              manifest.key = process.env.CHROME_MANIFEST_KEY;
-            }
-            manifest.version = process.env.npm_package_version;
-            const internal = isProd(options)
-              ? []
-              : [
-                  "http://127.0.0.1:8000/*",
-                  "http://127.0.0.1/*",
-                  "http://localhost/*",
-                ];
-
-            const policy = new Policy(manifest.content_security_policy);
-
-            policy.add("connect-src", process.env.SERVICE_URL);
-            if (!isProd(options)) {
-              policy.add(
-                "connect-src",
-                "ws://localhost:9090/ http://127.0.0.1:8000"
-              );
-            }
-            manifest.content_security_policy = policy.toString();
-
-            if (process.env.ENABLE_DEVTOOLS) {
-              manifest.permissions = uniq([
-                ...manifest.permissions,
-                "activeTab",
-              ]);
-              manifest.devtools_page = "devtools.html";
-            }
-            if (process.env.EXTERNALLY_CONNECTABLE) {
-              manifest.externally_connectable.matches = uniq([
-                ...manifest.externally_connectable.matches,
-                ...process.env.EXTERNALLY_CONNECTABLE.split(","),
-              ]);
-            }
-
-            manifest.content_scripts[0].matches = uniq([
-              new URL("*", process.env.SERVICE_URL).href,
-              ...manifest.content_scripts[0].matches,
-              ...internal,
-            ]);
-
-            manifest.externally_connectable.matches = uniq([
-              ...manifest.externally_connectable.matches,
-              ...internal,
-            ]);
-
-            if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
-              manifest.oauth2 = {
-                client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,
-                // don't ask for any scopes up front, instead ask when they're required, e.g., when the user
-                // installs a brick for google sheets
-                scopes: [""],
-              };
-            }
-            return JSON.stringify(manifest, null, 4);
+          transform: (jsonString) => {
+            const manifest = JSON.parse(jsonString);
+            customizeManifest(manifest, options);
+            return JSON.stringify(null, 4);
           },
         },
         {
