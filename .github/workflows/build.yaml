@@ -15,7 +15,7 @@ jobs:
         with:
           node-version: '14.x'
       - uses: bahmutov/npm-install@v1
-      - run: npm run build:chrome
+      - run: npm run build
         env:
           ENVIRONMENT: production
           ROLLBAR_PUBLIC_PATH: chrome-extension://production/
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: chrome-web-store
-          path: browsers/chrome/bundles
+          path: browsers/dist
           retention-days: 5
 
   build-chrome-with-key:
@@ -44,7 +44,7 @@ jobs:
         with:
           node-version: '14.x'
       - uses: bahmutov/npm-install@v1
-      - run: npm run build:chrome
+      - run: npm run build
         env:
           ENVIRONMENT: production
           ROLLBAR_PUBLIC_PATH: chrome-extension://production/
@@ -62,7 +62,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: chrome-production
-          path: browsers/chrome/bundles
+          path: browsers/dist
           retention-days: 5
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
@@ -80,7 +80,7 @@ jobs:
         with:
           node-version: '14.x'
       - uses: bahmutov/npm-install@v1
-      - run: npm run build:firefox
+      - run: npm run build
         env:
           ENVIRONMENT: production
           ROLLBAR_PUBLIC_PATH: moz-extension://production/
@@ -91,5 +91,5 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: firefox-production
-          path: browsers/firefox/bundles
+          path: browsers/dist
           retention-days: 5

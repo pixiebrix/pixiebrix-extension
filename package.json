@@ -226,10 +226,6 @@
       "yml",
       "json"
     ],
-    "moduleDirectories": [
-      "node_modules",
-      "<rootDir>/node_modules"
-    ],
     "transform": {
       "^.+\\.[jt]sx?$": "babel-jest",
       "^.+\\.ya?ml$": "yaml-jest",
@@ -237,10 +233,6 @@
     },
     "transformIgnorePatterns": [
       "node_modules/(?!@cfworker|webext-detect-page|idb)"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules/",
-      "<rootDir>/browsers/chrome/bundles/"
     ],
     "setupFiles": [
       "<rootDir>/src/test-env.js",
