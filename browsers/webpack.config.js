@@ -193,22 +193,14 @@ module.exports = (env, options) => ({
     new webpack.EnvironmentPlugin({
       DEBUG: !isProd(options),
       SERVICE_URL: undefined,
-    }),
-    new webpack.DefinePlugin({
-      "process.env": {
-        ROLLBAR_BROWSER_ACCESS_TOKEN: JSON.stringify(
-          process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
-        ),
-        SOURCE_VERSION: JSON.stringify(process.env.SOURCE_VERSION),
-        NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
-        ENVIRONMENT: JSON.stringify(process.env.ENVIRONMENT),
-        SUPPORT_WIDGET_ID: JSON.stringify(process.env.SUPPORT_WIDGET_ID),
-
-        // TODO: Chrome only?
-        CHROME_EXTENSION_ID: JSON.stringify(process.env.CHROME_EXTENSION_ID),
-        GOOGLE_API_KEY: JSON.stringify(process.env.GOOGLE_API_KEY),
-        GOOGLE_APP_ID: JSON.stringify(process.env.GOOGLE_APP_ID),
-      },
+      ROLLBAR_BROWSER_ACCESS_TOKEN: null,
+      SOURCE_VERSION: undefined,
+      NPM_PACKAGE_VERSION: process.env.npm_package_version,
+      ENVIRONMENT: undefined,
+      SUPPORT_WIDGET_ID: null,
+      CHROME_EXTENSION_ID: null,
+      GOOGLE_API_KEY: null,
+      GOOGLE_APP_ID: null,
     }),
     new MiniCssExtractPlugin({
       chunkFilename: "css/[id].css",
