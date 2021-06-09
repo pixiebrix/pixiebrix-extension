@@ -240,7 +240,7 @@ export function getPropByPath(
     proxy = noopProxy,
   }: { args?: object; proxy?: ReadProxy } | undefined = {}
 ): unknown {
-  // consider using jsonpath syntax https://www.npmjs.com/package/jsonpath
+  // consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
 
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
 
