@@ -16,10 +16,10 @@
  */
 
 const API_KEY = process.env.GOOGLE_API_KEY;
-const CHROME = process.env.CHROME;
 
 import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
 import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
+import { isChrome } from "@/helpers";
 
 declare global {
   interface Window {
@@ -28,7 +28,7 @@ declare global {
 }
 
 function initGoogle(): void {
-  if (!CHROME) {
+  if (!isChrome) {
     console.info("gapi only available in Chrome");
     return;
   } else if (!API_KEY || API_KEY === "undefined") {

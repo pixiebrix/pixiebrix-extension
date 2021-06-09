@@ -155,3 +155,5 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
     return inputSchema as SchemaProperties;
   }
 }
+
+export const isChrome = navigator.userAgent.includes("chrome");

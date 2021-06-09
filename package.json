@@ -250,7 +250,7 @@
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
   },
-	"webExt": {
-		"sourceDir": "browsers/dist"
-	}
+  "webExt": {
+    "sourceDir": "browsers/dist"
+  }
 }
