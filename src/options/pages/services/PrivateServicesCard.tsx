@@ -30,12 +30,16 @@ import { AuthContext } from "@/auth/context";
 import { useToasts } from "react-toast-notifications";
 import { deleteCachedAuth } from "@/background/requests";
 import { reportError } from "@/telemetry/logging";
+import { ServicesState } from "@/options/slices";
 
 interface OwnProps {
   services: IService[];
   navigate: (x: string) => void;
   onCreate: (x: RawServiceConfiguration) => void;
 }
+
+const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
+  Object.values(services.configured);
 
 const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
@@ -48,7 +52,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   const serviceConfigs = useFetch("/api/services/") as ServiceDefinition[];
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    ({ services }) => Object.values(services.configured)
+    selectConfiguredServices
   );
 
   const resetAuth = useCallback(

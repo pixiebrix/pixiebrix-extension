@@ -35,7 +35,7 @@ interface OwnProps {
   configuration: RawServiceConfiguration;
   service: IService;
   onClose: () => void;
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void;
   onSave: (config: RawServiceConfiguration) => Promise<void>;
 }
 
@@ -149,12 +149,14 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
             <Modal.Footer>
               <div className="d-flex w-100">
                 <div className="flex-grow-1">
-                  <AsyncButton
-                    variant="outline-danger"
-                    onClick={() => onDelete(originalConfiguration.id)}
-                  >
-                    Delete
-                  </AsyncButton>
+                  {onDelete && (
+                    <AsyncButton
+                      variant="outline-danger"
+                      onClick={() => onDelete(originalConfiguration.id)}
+                    >
+                      Delete
+                    </AsyncButton>
+                  )}
                 </div>
                 <div>
                   {/* @ts-ignore: ts doesn't like the default variant */}

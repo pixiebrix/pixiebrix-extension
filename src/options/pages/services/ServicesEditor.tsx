@@ -17,7 +17,7 @@
 
 import React, { useCallback, useContext, useState } from "react";
 import { connect, useSelector } from "react-redux";
-import { servicesSlice } from "../../slices";
+import { servicesSlice, ServicesState } from "../../slices";
 import { PageTitle } from "@/layout/Page";
 import { Row, Col, Card, Nav, Badge } from "react-bootstrap";
 import { push } from "connected-react-router";
@@ -47,6 +47,9 @@ interface OwnProps {
   navigate: (url: string) => void;
 }
 
+const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
+  Object.values(services.configured);
+
 const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   updateServiceConfig,
   deleteServiceConfig,
@@ -56,7 +59,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const { flags } = useContext(AuthContext);
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    ({ services }) => Object.values(services.configured)
+    selectConfiguredServices
   );
 
   const [activeTab, setTab] = useState("private");

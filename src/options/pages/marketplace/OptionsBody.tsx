@@ -20,7 +20,7 @@ import { Card } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import genericOptionsFactory from "@/components/fields/blockOptions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
 interface OwnProps {
@@ -28,7 +28,7 @@ interface OwnProps {
 }
 
 const OptionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const Component = useMemo(
+  const OptionsGroup = useMemo(
     () =>
       genericOptionsFactory(
         blueprint.options.schema,
@@ -38,17 +38,21 @@ const OptionsBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   );
   return (
     <>
-      <Card.Body className="px-3 pb-1">
-        <Card.Title>Personalize the Blueprint</Card.Title>
-
+      <Card.Body className="px-3 py-3">
+        <Card.Title>Personalize Blueprint</Card.Title>
         <p className="text-info">
-          <FontAwesomeIcon icon={faInfoCircle} /> After activating this brick,
-          you&apos;ll be able to modify it at any time on the{" "}
-          <Link to="/installed">Active Bricks page</Link>
+          <FontAwesomeIcon icon={faInfoCircle} /> After activating this
+          blueprint, you can configure it at any time on the{" "}
+          <Link to="/installed">
+            <u>
+              <FontAwesomeIcon icon={faCubes} />
+              {"  "}Active Bricks page
+            </u>
+          </Link>
         </p>
       </Card.Body>
-      <Card.Body className="p-3">
-        <Component name="optionsArgs" />
+      <Card.Body className="OptionsBody p-3">
+        <OptionsGroup name="optionsArgs" />
       </Card.Body>
     </>
   );

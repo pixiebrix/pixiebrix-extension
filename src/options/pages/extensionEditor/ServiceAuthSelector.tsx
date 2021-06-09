@@ -24,6 +24,7 @@ import { RootState } from "@/options/store";
 import { RawServiceConfiguration } from "@/core";
 import { useFetch } from "@/hooks/fetch";
 import { SanitizedAuth } from "@/types/contract";
+import { ServicesState } from "@/options/slices";
 
 export interface AuthOption {
   value: string;
@@ -37,9 +38,12 @@ function defaultLabel(label: string): string {
   return normalized === "" ? "Default" : normalized;
 }
 
+const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
+  Object.values(services.configured);
+
 export function useAuthOptions(): [AuthOption[]] {
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    ({ services }) => Object.values(services.configured)
+    selectConfiguredServices
   );
 
   const remoteAuths = useFetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
@@ -105,7 +109,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
 
   const value = useMemo(
     () => authOptions.filter((x) => x.value === field.value),
-    [authOptions, serviceId]
+    [field.value, authOptions]
   );
 
   return (

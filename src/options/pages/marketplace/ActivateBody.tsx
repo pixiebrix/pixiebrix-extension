@@ -19,7 +19,7 @@ import {
   ExtensionPointDefinition,
   RecipeDefinition,
 } from "@/types/definitions";
-import React, { useCallback, useState } from "react";
+import React, { useCallback } from "react";
 import { useFormikContext } from "formik";
 import { Button, Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -28,17 +28,17 @@ import {
   useSelectedExtensions,
 } from "@/options/pages/marketplace/ConfigureBody";
 import { useToasts } from "react-toast-notifications";
-import useAsyncEffect from "use-async-effect";
 import {
   checkPermissions,
   collectPermissions,
   ensureAllPermissions,
-  originPermissions,
+  originPermissions as groupOriginPermissions,
   ServiceAuthPair,
 } from "@/permissions";
+import { locator } from "@/background/locator";
 import { GridLoader } from "react-spinners";
 import { useAsyncState } from "@/hooks/common";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reportEvent } from "@/telemetry/events";
 
@@ -53,26 +53,29 @@ export function useEnsurePermissions(
 ) {
   const { addToast } = useToasts();
   const { submitForm } = useFormikContext();
-  const [enabled, setEnabled] = useState<boolean>(undefined);
 
-  useAsyncEffect(
-    async (isMounted) => {
-      const enabled = await checkPermissions(
-        await collectPermissions(extensions, serviceAuths)
-      );
-      if (!isMounted()) return;
-      setEnabled(enabled);
-    },
-    [extensions, serviceAuths, setEnabled]
-  );
+  const [permissionState, isPending, error] = useAsyncState(async () => {
+    await locator.refreshLocal();
+    const permissions = await collectPermissions(extensions, serviceAuths);
+    const enabled = await checkPermissions(permissions);
+    return {
+      enabled,
+      permissions,
+      originPermissions: groupOriginPermissions(permissions),
+    };
+  }, [extensions, serviceAuths]);
+
+  const { enabled, permissions, originPermissions } = permissionState ?? {
+    enabled: false,
+    permissions: null,
+    originPermissions: null,
+  };
 
   const request = useCallback(async () => {
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissions(
-        await collectPermissions(extensions, serviceAuths)
-      );
+      accepted = await ensureAllPermissions(permissions ?? []);
     } catch (err) {
       console.error(err);
       addToast(`Error granting permissions: ${err}`, {
@@ -91,13 +94,7 @@ export function useEnsurePermissions(
     } else {
       return true;
     }
-  }, [extensions, setEnabled]);
-
-  const [permissions, isPending] = useAsyncState(
-    async () =>
-      originPermissions(await collectPermissions(extensions, serviceAuths)),
-    [extensions, serviceAuths]
-  );
+  }, [permissions, addToast]);
 
   const activate = useCallback(() => {
     // can't use async here because Firefox loses track of trusted UX event
@@ -115,9 +112,17 @@ export function useEnsurePermissions(
         });
       }
     });
-  }, [request, permissions, submitForm, blueprint.metadata]);
+  }, [extensions, request, submitForm, blueprint.metadata]);
 
-  return { enabled, request, permissions, activate, isPending, extensions };
+  return {
+    enabled,
+    request,
+    permissions: originPermissions,
+    activate,
+    isPending,
+    extensions,
+    error,
+  };
 }
 
 const ActivateBody: React.FunctionComponent<ActivateProps> = ({
@@ -125,11 +130,17 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
 }) => {
   const selectedExtensions = useSelectedExtensions(blueprint.extensionPoints);
   const selectedAuths = useSelectedAuths();
-  const { enabled, activate, isPending, permissions } = useEnsurePermissions(
-    blueprint,
-    selectedExtensions,
-    selectedAuths
-  );
+  const {
+    enabled,
+    activate,
+    isPending,
+    permissions,
+    error,
+  } = useEnsurePermissions(blueprint, selectedExtensions, selectedAuths);
+
+  if (error) {
+    console.error(error);
+  }
 
   return (
     <>
@@ -138,7 +149,13 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
 
         <p className="text-info">
           <FontAwesomeIcon icon={faInfoCircle} /> You can de-activate bricks at
-          any time on the <Link to="/installed">Active Bricks page</Link>.
+          any time on the{" "}
+          <Link to="/installed">
+            <u>
+              <FontAwesomeIcon icon={faCubes} />
+              {"  "}Active Bricks page
+            </u>
+          </Link>
         </p>
 
         <Button onClick={activate}>Activate</Button>
@@ -150,12 +167,12 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
         {enabled == null || !enabled ? (
           <Card.Text>
             Your browser will prompt to you approve any permissions you
-            haven&apos;t granted yet.
+            haven&apos;t granted yet
           </Card.Text>
         ) : (
           <Card.Text>
             PixieBrix already has the permissions required for the bricks
-            you&apos;ve selected.
+            you&apos;ve selected
           </Card.Text>
         )}
       </Card.Body>
@@ -171,6 +188,13 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
             <tr>
               <td colSpan={2}>
                 <GridLoader />
+              </td>
+            </tr>
+          )}
+          {error && (
+            <tr>
+              <td colSpan={2} className="text-danger">
+                An error occurred while determining the permissions
               </td>
             </tr>
           )}

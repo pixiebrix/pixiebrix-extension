@@ -23,6 +23,7 @@ import { useMemo } from "react";
 import sortBy from "lodash/sortBy";
 import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import { useAsyncState } from "@/hooks/common";
+import { ServicesState } from "@/options/slices";
 
 interface ServiceDefinitions {
   serviceDefinitions: IService[];
@@ -34,9 +35,12 @@ interface ServiceDefinitions {
 
 const ZAPIER_SLUG = "zapier";
 
+const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
+  Object.values(services.configured);
+
 function useServiceDefinitions(): ServiceDefinitions {
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    ({ services }) => Object.values(services.configured)
+    selectConfiguredServices
   );
   const { id: configurationId } = useParams<{ id: string }>();
 

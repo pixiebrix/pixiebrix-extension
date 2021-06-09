@@ -215,10 +215,16 @@ interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
-const STEPS = [
-  { key: "review", label: "Select", Component: ConfigureBody },
+type Step = {
+  key: string;
+  label: string;
+  Component: React.FunctionComponent<{ blueprint: RecipeDefinition }>;
+};
+
+const STEPS: Step[] = [
+  { key: "review", label: "Select Bricks", Component: ConfigureBody },
   { key: "options", label: "Personalize", Component: OptionsBody },
-  { key: "services", label: "Select Services", Component: ServicesBody },
+  { key: "services", label: "Select Integrations", Component: ServicesBody },
   { key: "activate", label: "Review & Activate", Component: ActivateBody },
 ];
 
@@ -240,8 +246,8 @@ const ActivateButton: React.FunctionComponent<{
   );
 };
 
-const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const [blueprintSteps, initialValues] = useMemo(() => {
+function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
+  return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
 
     const services = uniq(
@@ -271,6 +277,10 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     };
     return [steps, initialValues];
   }, [blueprint]);
+}
+
+const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
+  const [blueprintSteps, initialValues] = useWizard(blueprint);
 
   const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
@@ -303,6 +313,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                       <div className="ml-auto">
                         <Button
                           size="sm"
+                          variant="outline-primary"
                           disabled={index === 0}
                           onClick={() => setStep(blueprintSteps[index - 1].key)}
                         >
@@ -316,7 +327,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                               setStep(blueprintSteps[index + 1].key)
                             }
                           >
-                            Next
+                            Next Step
                           </Button>
                         ) : (
                           <ActivateButton blueprint={blueprint} />
