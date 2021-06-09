@@ -16,7 +16,7 @@
  */
 
 import { readStorage, setStorage } from "@/chrome";
-import equal from "deep-equal";
+import equal from "fast-deep-equal";
 import { browser } from "webextension-polyfill-ts";
 import Cookies from "js-cookie";
 import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";

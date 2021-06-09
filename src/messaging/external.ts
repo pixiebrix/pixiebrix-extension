@@ -20,14 +20,12 @@
  */
 import { AuthData, updateExtensionAuth } from "@/auth/token";
 import { liftBackground } from "@/background/protocol";
-import { detect } from "detect-browser";
 import { liftExternal } from "@/contentScript/externalProtocol";
 
 import { browser } from "webextension-polyfill-ts";
 import { SerializableResponse } from "@/messaging/protocol";
 import { reportEvent } from "@/telemetry/events";
-
-const detectedBrowser = detect();
+import { isChrome } from "@/helpers";
 
 function lift<R extends SerializableResponse = SerializableResponse>(
   type: string,
@@ -43,14 +41,11 @@ function lift<R extends SerializableResponse = SerializableResponse>(
   );
 
   return async (...args: unknown[]) => {
-    switch (detectedBrowser.name) {
-      case "chrome": {
-        return await backgroundMethod(...args);
-      }
-      default: {
-        return await contentScriptMethod(...args);
-      }
+    if (isChrome) {
+      return backgroundMethod(...args);
     }
+
+    return contentScriptMethod(...args);
   };
 }
 
