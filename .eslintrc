@@ -12,7 +12,7 @@
   "settings": {
     "import/resolver": {
       "webpack": {
-        "config": "./browsers/webpack/webpack.base.js"
+        "config": "./browsers/webpack.config.js"
       }
     }
   },
@@ -40,8 +40,7 @@
   "ignorePatterns": [
     "browsers/chrome/webpack/**",
     "browsers/firefox/webpack/**",
-    "browsers/webpack/**",
-    "scripts/webpack.scripts.js",
+    "browsers/webpack.config.js",
     "src/vendors/libraryDetector/**",
     "src/**/*.test.ts",
     "src/**/*.test.js",
