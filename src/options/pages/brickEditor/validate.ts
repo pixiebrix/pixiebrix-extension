@@ -33,7 +33,7 @@ export async function validateSchema(value: string): Promise<any> {
   let json: PartialSchema;
 
   try {
-    json = yaml.safeLoad(value) as PartialSchema;
+    json = yaml.load(value) as PartialSchema;
   } catch (ex) {
     return {
       config: [`Invalid YAML: ${ex}`],

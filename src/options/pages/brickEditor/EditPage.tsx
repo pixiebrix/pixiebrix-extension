@@ -58,7 +58,7 @@ function useDetectBlueprint(
     if (config == null) {
       return { isBlueprint: false, isInstalled: false };
     }
-    const configJSON = yaml.safeLoad(config) as any;
+    const configJSON = yaml.load(config) as any;
     const isBlueprint = configJSON.kind === "recipe";
     if (isBlueprint) {
       return {
@@ -101,7 +101,7 @@ function useLogContext(config: string | null): MessageContext | null {
 
   return useMemo(() => {
     try {
-      const json = yaml.safeLoad(config) as any;
+      const json = yaml.load(config) as any;
       switch (json.kind) {
         case "service": {
           return { serviceId: json.metadata.id };

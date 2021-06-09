@@ -86,7 +86,7 @@ function useSubmitBrick({
     async (values, { setErrors }) => {
       const { config, reactivate: reinstallBlueprint } = values;
 
-      const json = yaml.safeLoad(config) as any;
+      const json = yaml.load(config) as any;
       const { kind, metadata } = json;
 
       try {
