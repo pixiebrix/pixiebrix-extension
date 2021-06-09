@@ -31,7 +31,8 @@ import { useToasts } from "react-toast-notifications";
 import EntryRow from "./log/EntryRow";
 import useAsyncEffect from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faSync } from "@fortawesome/free-solid-svg-icons/faSync";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 
 interface OwnProps {
   initialLevel?: MessageLevel;

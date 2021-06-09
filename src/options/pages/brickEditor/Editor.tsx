@@ -17,12 +17,10 @@
 
 import { Card, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBuilding,
-  faEyeSlash,
-  faGlobe,
-  faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBuilding } from "@fortawesome/free-solid-svg-icons/faBuilding";
+import { faEyeSlash } from "@fortawesome/free-solid-svg-icons/faEyeSlash";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons/faGlobe";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import React, { useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";

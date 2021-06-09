@@ -19,7 +19,7 @@ import React, { useCallback } from "react";
 import copy from "copy-to-clipboard";
 import { reverse } from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
 import { useToasts } from "react-toast-notifications";
 
 export function useLabelRenderer() {

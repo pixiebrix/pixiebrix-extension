@@ -28,7 +28,8 @@ import identity from "lodash/identity";
 import { WizardValues } from "@/options/pages/marketplace/wizard";
 import { ServiceAuthPair } from "@/permissions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCubes } from "@fortawesome/free-solid-svg-icons/faCubes";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { Link } from "react-router-dom";
 
 export function selectedAuths(values: WizardValues): ServiceAuthPair[] {

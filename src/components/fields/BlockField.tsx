@@ -35,7 +35,8 @@ import {
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import blockRegistry from "@/blocks/registry";
 import Card from "react-bootstrap/Card";
-import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
+import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./BlockField.scss";

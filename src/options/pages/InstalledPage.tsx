@@ -24,15 +24,13 @@ import { useToasts } from "react-toast-notifications";
 import { PageTitle } from "@/layout/Page";
 import { useExtensionPermissions } from "@/permissions";
 import { BeatLoader } from "react-spinners";
-import {
-  faCheck,
-  faCubes,
-  faExclamation,
-  faCaretRight,
-  faCaretDown,
-  faExternalLinkAlt,
-  faClipboardCheck,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+import { faCubes } from "@fortawesome/free-solid-svg-icons/faCubes";
+import { faExclamation } from "@fortawesome/free-solid-svg-icons/faExclamation";
+import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
+import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons/faClipboardCheck";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { Row, Col, Card, Table, Button } from "react-bootstrap";

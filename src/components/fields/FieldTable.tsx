@@ -29,7 +29,7 @@ import {
 import { useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import produce from "immer";
 
 interface PropertyRow {

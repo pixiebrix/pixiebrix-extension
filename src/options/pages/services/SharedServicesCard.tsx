@@ -23,7 +23,7 @@ import { getBaseURL } from "@/services/baseService";
 import urljoin from "url-join";
 import { GridLoader } from "react-spinners";
 import { SanitizedAuth } from "@/types/contract";
-import { faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faUsers } from "@fortawesome/free-solid-svg-icons/faUsers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface OwnProps {

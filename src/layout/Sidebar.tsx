@@ -18,15 +18,13 @@
 import React, { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { NavLink } from "react-router-dom";
-import {
-  faClipboardCheck,
-  faCloud,
-  faCogs,
-  faCubes,
-  faHammer,
-  faInfoCircle,
-  faStoreAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons/faClipboardCheck";
+import { faCloud } from "@fortawesome/free-solid-svg-icons/faCloud";
+import { faCogs } from "@fortawesome/free-solid-svg-icons/faCogs";
+import { faCubes } from "@fortawesome/free-solid-svg-icons/faCubes";
+import { faHammer } from "@fortawesome/free-solid-svg-icons/faHammer";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
+import { faStoreAlt } from "@fortawesome/free-solid-svg-icons/faStoreAlt";
 import cx from "classnames";
 import { useLocation } from "react-router";
 import { Location } from "history";

@@ -19,11 +19,9 @@ import React, { useCallback, useMemo } from "react";
 import blockRegistry from "@/blocks/registry";
 import { PageTitle } from "@/layout/Page";
 import cx from "classnames";
-import {
-  faDownload,
-  faEdit,
-  faTimesCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDownload } from "@fortawesome/free-solid-svg-icons/faDownload";
+import { faEdit } from "@fortawesome/free-solid-svg-icons/faEdit";
+import { faTimesCircle } from "@fortawesome/free-solid-svg-icons/faTimesCircle";
 import { Form, Row, Col, Card, Nav, Button } from "react-bootstrap";
 import ServicesFormCard from "@/options/pages/extensionEditor/ServicesFormCard";
 import ExtensionConfigurationCard from "@/options/pages/extensionEditor/ExtensionConfigurationCard";

@@ -45,15 +45,13 @@ import {
   ListGroup,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faBars,
-  faBolt,
-  faColumns,
-  faEyeSlash,
-  faMousePointer,
-  faPuzzlePiece,
-  faSave,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
+import { faBolt } from "@fortawesome/free-solid-svg-icons/faBolt";
+import { faColumns } from "@fortawesome/free-solid-svg-icons/faColumns";
+import { faEyeSlash } from "@fortawesome/free-solid-svg-icons/faEyeSlash";
+import { faMousePointer } from "@fortawesome/free-solid-svg-icons/faMousePointer";
+import { faPuzzlePiece } from "@fortawesome/free-solid-svg-icons/faPuzzlePiece";
+import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";

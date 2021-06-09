@@ -20,7 +20,8 @@ import React, { useMemo, useState } from "react";
 import { IExtensionPoint, Schema } from "@/core";
 import ListGroup from "react-bootstrap/ListGroup";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
+import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
 import sortBy from "lodash/sortBy";
 import isEmpty from "lodash/isEmpty";
 

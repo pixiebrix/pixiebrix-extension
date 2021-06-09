@@ -44,7 +44,7 @@ import {
   releaseSchema,
   useReleases,
 } from "@/contrib/uipath/processOptions";
-import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import { faInfo } from "@fortawesome/free-solid-svg-icons/faInfo";
 import { useDependency } from "@/services/hooks";
 import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
 

@@ -20,7 +20,7 @@ import { Field, FieldInputProps, useFormikContext } from "formik";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;

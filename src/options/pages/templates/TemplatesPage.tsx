@@ -26,11 +26,9 @@ import { useFetch } from "@/hooks/fetch";
 import { RecipeDefinition } from "@/types/definitions";
 import { PageTitle } from "@/layout/Page";
 import { groupBy, sortBy, noop } from "lodash";
-import {
-  faClipboardCheck,
-  faExternalLinkAlt,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons/faClipboardCheck";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import {
   Button,
   Card,

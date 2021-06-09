@@ -20,7 +20,7 @@ import { useFetch } from "@/hooks/fetch";
 import { GridLoader } from "react-spinners";
 import { PageTitle } from "@/layout/Page";
 import sortBy from "lodash/sortBy";
-import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
+import { faStoreAlt } from "@fortawesome/free-solid-svg-icons/faStoreAlt";
 import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";

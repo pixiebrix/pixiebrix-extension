@@ -26,11 +26,9 @@ import { Button, Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
 import { useSelectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
-import {
-  faCloud,
-  faInfoCircle,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCloud } from "@fortawesome/free-solid-svg-icons/faCloud";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFetch } from "@/hooks/fetch";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";

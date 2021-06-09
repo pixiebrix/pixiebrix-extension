@@ -9,10 +9,8 @@ import marketplaceImage from "@img/marketplace.svg";
 import workshopImage from "@img/workshop.svg";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faClipboardCheck,
-  faExternalLinkAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons/faClipboardCheck";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
 import { openExtensionOptions } from "@/messaging/external";
 
 const OnboardingContent: React.FunctionComponent = () => {

@@ -41,13 +41,11 @@ import { wizard as contextMenuWizard } from "./extensionPoints/contextMenu";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCommentAlt,
-  faHistory,
-  faLock,
-  faSave,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCommentAlt } from "@fortawesome/free-solid-svg-icons/faCommentAlt";
+import { faHistory } from "@fortawesome/free-solid-svg-icons/faHistory";
+import { faLock } from "@fortawesome/free-solid-svg-icons/faLock";
+import { faSave } from "@fortawesome/free-solid-svg-icons/faSave";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { IExtension } from "@/core";
 import {
   ADAPTERS,

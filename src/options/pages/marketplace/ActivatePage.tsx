@@ -16,10 +16,8 @@
  */
 
 import { PageTitle } from "@/layout/Page";
-import {
-  faClipboardCheck,
-  faStoreAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faClipboardCheck } from "@fortawesome/free-solid-svg-icons/faClipboardCheck";
+import { faStoreAlt } from "@fortawesome/free-solid-svg-icons/faStoreAlt";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import { useFetch } from "@/hooks/fetch";

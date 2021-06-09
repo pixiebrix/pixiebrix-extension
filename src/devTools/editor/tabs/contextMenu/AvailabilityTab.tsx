@@ -31,7 +31,7 @@ import { getDomain } from "@/devTools/editor/extensionPoints/base";
 import { openTab } from "@/background/executor";
 import Select from "react-select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 
 const CONTEXTS = [
   "page",

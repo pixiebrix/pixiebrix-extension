@@ -38,7 +38,8 @@ import {
 import { locator } from "@/background/locator";
 import { GridLoader } from "react-spinners";
 import { useAsyncState } from "@/hooks/common";
-import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCubes } from "@fortawesome/free-solid-svg-icons/faCubes";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reportEvent } from "@/telemetry/events";
 

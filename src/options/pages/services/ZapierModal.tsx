@@ -19,7 +19,7 @@ import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import React, { useCallback } from "react";
 import { useFetch } from "@/hooks/fetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
 import copy from "copy-to-clipboard";
 import { useToasts } from "react-toast-notifications";
 

@@ -24,7 +24,8 @@ import axios, { AxiosResponse } from "axios";
 import { mapValues, castArray } from "lodash";
 import { makeURL } from "@/hooks/fetch";
 import { getExtensionToken } from "@/auth/token";
-import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
+import { faEyeSlash } from "@fortawesome/free-solid-svg-icons/faEyeSlash";
+import { faInfo } from "@fortawesome/free-solid-svg-icons/faInfo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface Profile {

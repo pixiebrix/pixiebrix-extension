@@ -26,7 +26,7 @@ import ServiceEditorModal from "./ServiceEditorModal";
 import PrivateServicesCard from "./PrivateServicesCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import SharedServicesCard from "./SharedServicesCard";
-import { faCloud } from "@fortawesome/free-solid-svg-icons";
+import { faCloud } from "@fortawesome/free-solid-svg-icons/faCloud";
 import { useFetch } from "@/hooks/fetch";
 import useServiceDefinitions from "./useServiceDefinitions";
 import { RootState } from "../../store";

@@ -16,7 +16,8 @@
  */
 
 import React, { useCallback } from "react";
-import { faCheck, faLink } from "@fortawesome/free-solid-svg-icons";
+import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
+import { faLink } from "@fortawesome/free-solid-svg-icons/faLink";
 import { Col, Row, Card, Button, ListGroup } from "react-bootstrap";
 import { settingsSlice } from "@/options/slices";
 import { useDispatch } from "react-redux";

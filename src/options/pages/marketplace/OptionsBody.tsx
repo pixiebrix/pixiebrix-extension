@@ -20,7 +20,8 @@ import { Card } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
 import genericOptionsFactory from "@/components/fields/blockOptions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCubes } from "@fortawesome/free-solid-svg-icons/faCubes";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import { Link } from "react-router-dom";
 
 interface OwnProps {

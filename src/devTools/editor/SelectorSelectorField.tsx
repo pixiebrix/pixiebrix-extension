@@ -28,7 +28,7 @@ import { uniqBy, compact, sortBy, unary, isEmpty } from "lodash";
 import Creatable from "react-select/creatable";
 
 import { Badge, Button } from "react-bootstrap";
-import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
+import { faMousePointer } from "@fortawesome/free-solid-svg-icons/faMousePointer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { selectElement } from "@/background/devtools/index";
 import { DevToolsContext } from "@/devTools/context";

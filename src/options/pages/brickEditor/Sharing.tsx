@@ -17,7 +17,7 @@
 
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons/faGlobe";
 import sortBy from "lodash/sortBy";
 import uniq from "lodash/uniq";
 import Table from "react-bootstrap/Table";

@@ -28,7 +28,7 @@ import {
   Badge,
 } from "react-bootstrap";
 import { sortBy, truncate } from "lodash";
-import { faCloud } from "@fortawesome/free-solid-svg-icons";
+import { faCloud } from "@fortawesome/free-solid-svg-icons/faCloud";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDebounce } from "use-debounce";
 

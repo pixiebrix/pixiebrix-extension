@@ -23,7 +23,7 @@ import { getExtensionToken } from "@/auth/token";
 import Card from "react-bootstrap/Card";
 import urljoin from "url-join";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
 
 const ConnectExtensionCard: React.FunctionComponent = () => {
   const [hasExtensionKey, setHasExtensionKey] = useState(true);

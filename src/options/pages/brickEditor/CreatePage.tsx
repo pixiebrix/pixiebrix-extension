@@ -17,7 +17,7 @@
 
 import React from "react";
 import { PageTitle } from "@/layout/Page";
-import { faHammer } from "@fortawesome/free-solid-svg-icons";
+import { faHammer } from "@fortawesome/free-solid-svg-icons/faHammer";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";

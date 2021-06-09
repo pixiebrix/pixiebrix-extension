@@ -29,12 +29,10 @@ import {
 import ReaderConfig from "@/devTools/editor/tabs/reader/ReaderConfig";
 import { makeDefaultReader } from "@/devTools/editor/extensionPoints/base";
 import { DevToolsContext } from "@/devTools/context";
-import {
-  faGripVertical,
-  faBookReader,
-  faPlus,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import { faGripVertical } from "@fortawesome/free-solid-svg-icons/faGripVertical";
+import { faBookReader } from "@fortawesome/free-solid-svg-icons/faBookReader";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import ReaderBlockConfig, {
   ReaderBlockForm,

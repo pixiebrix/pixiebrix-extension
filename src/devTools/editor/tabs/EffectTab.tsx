@@ -27,17 +27,15 @@ import { IBlock } from "@/core";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCloud,
-  faGripVertical,
-  faHighlighter,
-  faKeyboard,
-  faListOl,
-  faPlus,
-  faTable,
-  faTimes,
-  faWindowRestore,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCloud } from "@fortawesome/free-solid-svg-icons/faCloud";
+import { faGripVertical } from "@fortawesome/free-solid-svg-icons/faGripVertical";
+import { faHighlighter } from "@fortawesome/free-solid-svg-icons/faHighlighter";
+import { faKeyboard } from "@fortawesome/free-solid-svg-icons/faKeyboard";
+import { faListOl } from "@fortawesome/free-solid-svg-icons/faListOl";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
+import { faTable } from "@fortawesome/free-solid-svg-icons/faTable";
+import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
+import { faWindowRestore } from "@fortawesome/free-solid-svg-icons/faWindowRestore";
 import { BlockPipeline } from "@/blocks/combinators";
 import {
   Field,

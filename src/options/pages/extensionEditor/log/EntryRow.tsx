@@ -18,7 +18,8 @@
 import React, { useMemo, useState } from "react";
 import { LogEntry } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import { faCaretRight } from "@fortawesome/free-solid-svg-icons/faCaretRight";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
 import moment from "moment";
 import { ErrorObject } from "serialize-error";
 import JSONTree from "react-json-tree";

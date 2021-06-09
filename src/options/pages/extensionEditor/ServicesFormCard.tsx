@@ -17,7 +17,7 @@
 
 import React, { useState } from "react";
 import { Table, Button, Form, Card } from "react-bootstrap";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ServiceDependency } from "@/core";
 import { Field, FieldArray, FieldInputProps, useField } from "formik";

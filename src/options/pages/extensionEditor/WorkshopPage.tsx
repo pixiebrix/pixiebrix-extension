@@ -17,12 +17,10 @@
 
 import React, { useContext, useMemo, useState } from "react";
 import { PageTitle } from "@/layout/Page";
-import {
-  faCube,
-  faHammer,
-  faInfoCircle,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCube } from "@fortawesome/free-solid-svg-icons/faCube";
+import { faHammer } from "@fortawesome/free-solid-svg-icons/faHammer";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/faPlus";
 import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import registry from "@/extensionPoints/registry";

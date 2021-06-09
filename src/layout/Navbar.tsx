@@ -19,12 +19,10 @@ import React, { useContext } from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import Nav from "react-bootstrap/Nav";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faSignOutAlt,
-  faBars,
-  faCaretDown,
-  faExternalLinkAlt,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSignOutAlt } from "@fortawesome/free-solid-svg-icons/faSignOutAlt";
+import { faBars } from "@fortawesome/free-solid-svg-icons/faBars";
+import { faCaretDown } from "@fortawesome/free-solid-svg-icons/faCaretDown";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
 import { AuthContext } from "@/auth/context";
 import { Link } from "react-router-dom";
 import axios from "axios";

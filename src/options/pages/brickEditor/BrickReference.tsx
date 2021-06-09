@@ -37,7 +37,7 @@ import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
 import "./BrickReference.scss";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
-import { faClipboard } from "@fortawesome/free-solid-svg-icons";
+import { faClipboard } from "@fortawesome/free-solid-svg-icons/faClipboard";
 import { useToasts } from "react-toast-notifications";
 import { GridLoader } from "react-spinners";
 

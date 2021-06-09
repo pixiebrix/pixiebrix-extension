@@ -42,13 +42,11 @@ import { useAsyncState } from "@/hooks/common";
 import axios from "axios";
 import { makeURL } from "@/hooks/fetch";
 import { getExtensionToken } from "@/auth/token";
-import {
-  faCommentAlt,
-  faExternalLinkAlt,
-  faInfo,
-  faPhone,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCommentAlt } from "@fortawesome/free-solid-svg-icons/faCommentAlt";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons/faExternalLinkAlt";
+import { faInfo } from "@fortawesome/free-solid-svg-icons/faInfo";
+import { faPhone } from "@fortawesome/free-solid-svg-icons/faPhone";
+import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   cancelSelectElement,

@@ -29,7 +29,8 @@ import { range } from "lodash";
 import { useToasts } from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faSync } from "@fortawesome/free-solid-svg-icons/faSync";
+import { faTrash } from "@fortawesome/free-solid-svg-icons/faTrash";
 import { MessageContext } from "@/core";
 import EntryRow from "@/options/pages/extensionEditor/log/EntryRow";
 

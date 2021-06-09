@@ -29,13 +29,11 @@ import {
 } from "react-bootstrap";
 import { sortBy, truncate } from "lodash";
 import { IBlock } from "@/core";
-import {
-  faBookReader,
-  faCube,
-  faMagic,
-  faRandom,
-  faWindowMaximize,
-} from "@fortawesome/free-solid-svg-icons";
+import { faBookReader } from "@fortawesome/free-solid-svg-icons/faBookReader";
+import { faCube } from "@fortawesome/free-solid-svg-icons/faCube";
+import { faMagic } from "@fortawesome/free-solid-svg-icons/faMagic";
+import { faRandom } from "@fortawesome/free-solid-svg-icons/faRandom";
+import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons/faWindowMaximize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BlockType, getType } from "@/blocks/util";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";

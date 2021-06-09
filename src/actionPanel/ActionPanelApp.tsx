@@ -22,7 +22,7 @@ import { openExtensionOptions } from "@/messaging/external";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPuzzlePiece } from "@fortawesome/free-solid-svg-icons";
+import { faPuzzlePiece } from "@fortawesome/free-solid-svg-icons/faPuzzlePiece";
 import { getStore } from "@/actionPanel/native";
 import {
   ActionPanelStore,
