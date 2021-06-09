@@ -231,6 +231,14 @@ module.exports = (env, options) => ({
   },
   plugins: [
     ...getConditionalPlugins(isProd(options)),
+
+    // Ignore all locale files of moment.js
+    // https://webpack.js.org/plugins/ignore-plugin/#example-of-ignoring-moment-locales
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
+
     new NodePolyfillPlugin(),
     new WebExtensionTarget(nodeConfig),
     new webpack.ProvidePlugin({
