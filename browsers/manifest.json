@@ -53,7 +53,9 @@
     "default_title": "PixieBrix"
   },
   "background": {
-    "page": "background.html"
+    "scripts": [
+      "background.js"
+    ]
   },
   "options_ui": {
     "page": "options.html",

@@ -4,6 +4,7 @@ node_modules
 db.sqlite3
 .env
 .env.*
+!.env.defaults
 staticfiles
 
 # User-specific stuff:
@@ -33,6 +34,7 @@ staticfiles
 webpack-stats.json
 assets/bundles
 browsers/**/bundles/**
+browsers/dist
 
 # Other artifacts
 artifacts

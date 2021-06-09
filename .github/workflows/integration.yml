@@ -18,8 +18,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: bahmutov/npm-install@v1
       - run: npm test
-        env:
-          CI: true
 
   stage-chrome:
     runs-on: ubuntu-latest
@@ -30,26 +28,24 @@ jobs:
         with:
           node-version: '14.x'
       - uses: bahmutov/npm-install@v1
-      - run: npm run build:chrome
+      - run: npm run build
         env:
-          NODE_ENV: production
           ENVIRONMENT: staging
           ROLLBAR_PUBLIC_PATH: chrome-extension://staging/
+          EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
+          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
+          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
           CHROME_EXTENSION_ID: kkomancachnjkdalpcokenmjlimmbaog
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_STAGING_PUBLIC_KEY }}
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
-          EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
-          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
-          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
-          ENABLE_DEVTOOLS: true
-          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
       - uses: actions/upload-artifact@v2
         with:
           name: chrome-staging
-          path: browsers/chrome/bundles
+          path: browsers/dist
           retention-days: 5
       - uses: actions/upload-artifact@v2
         with:
@@ -66,11 +62,11 @@ jobs:
         with:
           node-version: '14.x'
       - uses: bahmutov/npm-install@v1
-      - run: npm run build:firefox
+      - run: npm run build
         env:
-          NODE_ENV: production
           ENVIRONMENT: staging
           ROLLBAR_PUBLIC_PATH: moz-extension://staging/
+          EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
           SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
           ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
@@ -78,7 +74,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: firefox-staging
-          path: browsers/firefox/bundles
+          path: browsers/dist
           retention-days: 5
       - uses: actions/upload-artifact@v2
         with:

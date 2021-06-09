@@ -4,14 +4,12 @@
   "description": "PixieBrix Browser Extension",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest",
-    "test:watch": "npx jest --watchAll",
-    "lint": "npx eslint src/**",
-    "watch:chrome": "NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
-    "watch:firefox": "NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/firefox/webpack/webpack.dev.js --watch",
-    "build:chrome": "NODE_OPTIONS=--max_old_space_size=8192 npx webpack --config browsers/chrome/webpack/webpack.prod.js",
-    "build:firefox": "NODE_OPTIONS=--max_old_space_size=8192 npx webpack --config browsers/firefox/webpack/webpack.prod.js",
-    "build:scripts": "npx webpack --config scripts/webpack.scripts.js",
+    "test": "jest",
+    "test:watch": "jest --watchAll",
+    "lint": "eslint src/**",
+    "watch": "ENV_FILE='.env.development' webpack --mode development --config browsers/webpack.config.js --watch",
+    "build": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production --config browsers/webpack.config.js",
+    "build:scripts": "webpack --mode production --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js"
   },
   "author": "Todd Schiller",
@@ -200,9 +198,6 @@
     "webpack": "^5.25.1",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.6.0",
-    "webpack-dev-server": "^3.11.2",
-    "webpack-extension-reloader": "^1.1.4",
-    "webpack-merge": "^5.7.3",
     "webpack-target-webextension": "^0.4.2",
     "yaml-jest": "^1.0.5",
     "yaml-loader": "^0.6.0"
@@ -228,10 +223,6 @@
       "yml",
       "json"
     ],
-    "moduleDirectories": [
-      "node_modules",
-      "<rootDir>/node_modules"
-    ],
     "transform": {
       "^.+\\.[jt]sx?$": "babel-jest",
       "^.+\\.ya?ml$": "yaml-jest",
@@ -239,10 +230,6 @@
     },
     "transformIgnorePatterns": [
       "node_modules/(?!@cfworker|webext-detect-page|idb)"
-    ],
-    "testPathIgnorePatterns": [
-      "<rootDir>/node_modules/",
-      "<rootDir>/browsers/chrome/bundles/"
     ],
     "setupFiles": [
       "<rootDir>/src/test-env.js",
@@ -259,5 +246,8 @@
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
+  },
+  "webExt": {
+    "sourceDir": "browsers/dist"
   }
 }
