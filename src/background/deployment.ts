@@ -18,7 +18,6 @@
 import { ExtensionOptions, loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
 import { browser, Permissions } from "webextension-polyfill-ts";
-import moment from "moment";
 import { partition, fromPairs, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import axios from "axios";
@@ -128,13 +127,13 @@ async function updateDeployments() {
   ).flatMap(([, xs]) => Object.values(xs));
 
   if (extensions.some((x) => x._deployment?.id)) {
-    const timestamps = new Map<string, moment.Moment>();
+    const timestamps = new Map<string, Date>();
 
     for (const extension of extensions) {
       if (extension._deployment?.id) {
         timestamps.set(
           extension._deployment?.id,
-          moment(extension._deployment?.timestamp)
+          new Date(extension._deployment?.timestamp)
         );
       }
     }
@@ -153,8 +152,7 @@ async function updateDeployments() {
 
     const updatedDeployments = deployments.filter(
       (x: Deployment) =>
-        !timestamps.has(x.id) ||
-        moment(x.updated_at).isAfter(timestamps.get(x.id))
+        !timestamps.has(x.id) || new Date(x.updated_at) > timestamps.get(x.id)
     );
 
     if (updatedDeployments.length > 0) {

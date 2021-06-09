@@ -29,7 +29,6 @@ import useAsyncEffect from "use-async-effect";
 import { useFetch } from "@/hooks/fetch";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/pages/InstalledPage";
-import moment from "moment";
 import { fromPairs } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { optionsSlice } from "@/options/slices";
@@ -112,9 +111,7 @@ export function useDeployments() {
       );
       return (
         !match ||
-        moment(match._deployment.timestamp).isBefore(
-          moment(deployment.updated_at)
-        )
+        new Date(match._deployment.timestamp) < new Date(deployment.updated_at)
       );
     });
   }, [installed, deployments]);
