@@ -95,13 +95,7 @@ export function setChromeExtensionId(extensionId: string): void {
 
 export function getChromeExtensionId(): string {
   const manualKey = localStorage.getItem(CHROME_EXTENSION_STORAGE_KEY);
-  if (!isEmpty(manualKey ?? "")) {
-    return manualKey;
-  } else if (!CHROME_EXTENSION_ID) {
-    throw new Error("CHROME_EXTENSION_ID not configured during build");
-  } else {
-    return CHROME_EXTENSION_ID;
-  }
+  return isEmpty(manualKey ?? "") ? CHROME_EXTENSION_ID : manualKey;
 }
 
 export class RuntimeNotFoundError extends Error {

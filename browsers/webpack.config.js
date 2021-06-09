@@ -33,6 +33,9 @@ const Policy = require("csp-parse");
 const rootDir = path.resolve(__dirname, "../");
 
 const dotenv = require("dotenv");
+dotenv.config({
+  path: path.resolve(__dirname, ".env.defaults"),
+});
 
 dotenv.config({
   path: path.resolve(__dirname, process.env.ENV_FILE ?? ".env"),
@@ -40,7 +43,7 @@ dotenv.config({
 
 console.log("SOURCE_VERSION: ", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL: ", process.env.SERVICE_URL);
-console.log("CHROME_EXTENSION_ID", process.env.CHROME_EXTENSION_ID);
+console.log("CHROME_EXTENSION_ID: ", process.env.CHROME_EXTENSION_ID);
 
 if (!process.env.SOURCE_VERSION) {
   process.env.SOURCE_VERSION = require("child_process")
@@ -242,14 +245,14 @@ module.exports = (env, options) => ({
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
 
       // If not found, "undefined" will cause the build to fail
+      ENVIRONMENT: undefined,
       SERVICE_URL: undefined,
       SOURCE_VERSION: undefined,
-      ENVIRONMENT: undefined,
+      CHROME_EXTENSION_ID: undefined,
 
       // If not found, "null" will leave the ENV unset in the bundle
       ROLLBAR_BROWSER_ACCESS_TOKEN: null,
       SUPPORT_WIDGET_ID: null,
-      CHROME_EXTENSION_ID: null,
       GOOGLE_API_KEY: null,
       GOOGLE_APP_ID: null,
     }),
