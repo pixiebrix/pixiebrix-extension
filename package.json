@@ -63,7 +63,6 @@
     "jsonschema": "^1.4.0",
     "lodash": "^4.17.21",
     "marked": "^2.0.1",
-    "match-pattern": "0.0.2",
     "moment": "^2.29.1",
     "mustache": "^4.0.1",
     "notifyjs-browser": "^0.4.2",
@@ -108,6 +107,7 @@
     "uuid": "^8.3.2",
     "webext-detect-page": "^2.0.5",
     "webext-dynamic-content-scripts": "^7.0.0",
+    "webext-patterns": "^1.1.0",
     "webextension-polyfill-ts": "^0.22.0"
   },
   "devDependencies": {

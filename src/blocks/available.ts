@@ -15,8 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-// @ts-ignore: types not defined for match-pattern
-import matchPattern from "match-pattern";
+import { patternToRegex } from "webext-patterns";
 import castArray from "lodash/castArray";
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
@@ -25,24 +24,26 @@ import { Availability } from "@/blocks/types";
 import { Permissions } from "webextension-polyfill-ts";
 import { BusinessError } from "@/errors";
 
-export function testMatchPattern(pattern: string, url?: string): boolean {
+export function testMatchPatterns(url: string, ...patterns: string[]): boolean {
   let re;
 
   try {
-    re = matchPattern.parse(pattern);
+    // Try all at once
+    re = patternToRegex(...patterns);
   } catch (ex) {
-    throw new BusinessError(
-      `Pattern not recognized as valid match pattern: ${pattern}`
-    );
+    // Try them one at a time to find the broken one
+    for (const pattern of patterns) {
+      try {
+        patternToRegex(pattern);
+      } catch (ex) {
+        throw new BusinessError(
+          `Pattern not recognized as valid match pattern: ${pattern}`
+        );
+      }
+    }
   }
 
-  if (!re) {
-    throw new BusinessError(
-      `Pattern not recognized as valid match pattern: ${pattern}`
-    );
-  }
-
-  return re.test(url ?? document.location.href);
+  return re.test(url);
 }
 
 function testSelector(selector: string): boolean {
@@ -57,7 +58,10 @@ export async function checkAvailable({
   const selectors = rawSelectors ? castArray(rawSelectors) : [];
 
   // check matchPatterns first b/c they'll be faster
-  if (matchPatterns.length && !matchPatterns.some((x) => testMatchPattern(x))) {
+  if (
+    matchPatterns.length &&
+    !testMatchPatterns(document.location.href, ...matchPatterns)
+  ) {
     // console.debug(
     //   `Location doesn't match any pattern: ${document.location.href}`,
     //   matchPatterns
