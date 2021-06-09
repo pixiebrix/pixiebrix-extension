@@ -41,6 +41,7 @@
     "browsers/chrome/webpack/**",
     "browsers/firefox/webpack/**",
     "browsers/webpack.config.js",
+    "scripts/webpack.scripts.js",
     "src/vendors/libraryDetector/**",
     "src/**/*.test.ts",
     "src/**/*.test.js",
