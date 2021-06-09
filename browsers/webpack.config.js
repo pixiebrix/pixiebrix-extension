@@ -264,7 +264,7 @@ module.exports = (env, options) => ({
           transform: (jsonString) => {
             const manifest = JSON.parse(jsonString);
             customizeManifest(manifest, options);
-            return JSON.stringify(null, 4);
+            return JSON.stringify(manifest, null, 4);
           },
         },
         {
