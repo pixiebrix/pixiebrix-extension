@@ -30,7 +30,7 @@ import {
   TokenContext,
   SanitizedConfig,
 } from "@/core";
-import { testMatchPattern } from "@/blocks/available";
+import { testMatchPatterns } from "@/blocks/available";
 import { isEmpty, castArray, uniq, compact } from "lodash";
 import urljoin from "url-join";
 import {
@@ -68,9 +68,7 @@ class LocalDefinedService<
     const patterns = castArray(
       this._definition.isAvailable?.matchPatterns ?? []
     );
-    return (
-      patterns.length == 0 || patterns.some((x) => testMatchPattern(x, url))
-    );
+    return patterns.length == 0 || testMatchPatterns(patterns, url);
   }
 
   /**

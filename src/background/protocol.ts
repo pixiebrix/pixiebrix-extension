@@ -22,8 +22,7 @@ import {
   RuntimeNotFoundError,
 } from "@/chrome";
 import { browser, Runtime } from "webextension-polyfill-ts";
-// @ts-ignore: types not defined for match-pattern
-import matchPattern from "match-pattern";
+import { patternToRegex } from "webext-patterns";
 import {
   isBackgroundPage,
   isContentScript,
@@ -60,9 +59,7 @@ export function allowBackgroundSender(
   return (
     sender.id === browser.runtime.id ||
     ("origin" in sender &&
-      externally_connectable.matches?.some((x) =>
-        matchPattern.parse(x).test(sender.origin)
-      ))
+      patternToRegex(...externally_connectable.matches).test(sender.origin))
   );
 }
 

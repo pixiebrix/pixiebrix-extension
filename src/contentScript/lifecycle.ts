@@ -25,7 +25,7 @@ import {
 import * as context from "@/contentScript/context";
 import { PromiseCancelled, sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
-import { testMatchPattern } from "@/blocks/available";
+import { testMatchPatterns } from "@/blocks/available";
 
 let _scriptPromise: Promise<void>;
 const _dynamic: Map<string, IExtensionPoint> = new Map();
@@ -197,7 +197,7 @@ function getNavSequence() {
 async function waitLoaded(cancel: () => boolean): Promise<void> {
   const url = document.location.href;
   const rules = NAVIGATION_RULES.filter((rule) =>
-    rule.matchPatterns.some((pattern) => testMatchPattern(pattern, url))
+    testMatchPatterns(rule.matchPatterns, url)
   );
   if (rules.length > 0) {
     const $document = $(document);
