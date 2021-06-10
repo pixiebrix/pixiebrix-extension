@@ -178,6 +178,7 @@
     "jest-webextension-mock": "^3.7.8",
     "jest-yaml-transform": "^0.2.0",
     "mini-css-extract-plugin": "~1.6.0",
+    "moment-locales-webpack-plugin": "^1.2.0",
     "node-polyfill-webpack-plugin": "^1.1.2",
     "node-sass": "^5.0.0",
     "raw-loader": "^4.0.1",

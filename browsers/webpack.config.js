@@ -21,6 +21,7 @@ const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebExtensionTarget = require("webpack-target-webextension");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 
 const TerserJSPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
@@ -244,6 +245,10 @@ module.exports = (env, options) => ({
   },
   plugins: [
     ...getConditionalPlugins(isProd(options)),
+
+    // To strip all locales except “en”
+    new MomentLocalesPlugin(),
+
     new NodePolyfillPlugin(),
     new WebExtensionTarget(nodeConfig),
     new webpack.ProvidePlugin({
