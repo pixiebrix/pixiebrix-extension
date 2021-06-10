@@ -32,7 +32,7 @@ import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { useDependency } from "@/services/hooks";
 import {
   Bot,

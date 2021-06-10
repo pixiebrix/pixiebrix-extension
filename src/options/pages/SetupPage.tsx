@@ -26,7 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
 import { hasAppAccount } from "@/background/installer";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 
 import "./SetupPage.scss";
 import { reportError } from "@/telemetry/logging";

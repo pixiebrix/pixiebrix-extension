@@ -28,7 +28,7 @@ import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { DevToolsContext } from "@/devTools/context";
 import { ObjectField } from "@/components/fields/FieldTable";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { isNullOrBlank } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileField from "@/contrib/google/sheets/FileField";

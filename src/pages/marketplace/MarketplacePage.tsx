@@ -17,7 +17,7 @@
 
 import React, { useMemo, useState } from "react";
 import { useFetch } from "@/hooks/fetch";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { PageTitle } from "@/layout/Page";
 import sortBy from "lodash/sortBy";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";

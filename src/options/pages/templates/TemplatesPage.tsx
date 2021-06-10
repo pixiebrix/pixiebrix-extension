@@ -49,7 +49,7 @@ import cx from "classnames";
 
 import "./TemplatesPage.scss";
 import AuthContext from "@/auth/context";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 
 export interface TemplatesProps {
   installedRecipes: Set<string>;

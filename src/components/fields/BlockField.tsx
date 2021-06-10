@@ -41,7 +41,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./BlockField.scss";
 import Button from "react-bootstrap/Button";
 import useAsyncEffect from "use-async-effect";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { reportError } from "@/telemetry/logging";
 import BlockModal from "@/components/fields/BlockModal";
 import optionsRegistry from "@/components/fields/optionsRegistry";

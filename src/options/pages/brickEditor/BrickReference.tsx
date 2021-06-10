@@ -39,7 +39,7 @@ import "./BrickReference.scss";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 
 const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
