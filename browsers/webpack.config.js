@@ -212,6 +212,10 @@ module.exports = (env, options) => ({
     },
     fallback: {
       fs: false,
+      crypto: false,
+      console: false,
+      vm: false,
+      path: false,
     },
     extensions: [".ts", ".tsx", ".jsx", ".js"],
   },
