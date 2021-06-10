@@ -24,7 +24,10 @@ import { Availability } from "@/blocks/types";
 import { Permissions } from "webextension-polyfill-ts";
 import { BusinessError } from "@/errors";
 
-export function testMatchPatterns(url: string, ...patterns: string[]): boolean {
+export function testMatchPatterns(
+  patterns: string[],
+  url: string = document.location.href
+): boolean {
   let re;
 
   try {
@@ -58,10 +61,7 @@ export async function checkAvailable({
   const selectors = rawSelectors ? castArray(rawSelectors) : [];
 
   // check matchPatterns first b/c they'll be faster
-  if (
-    matchPatterns.length &&
-    !testMatchPatterns(document.location.href, ...matchPatterns)
-  ) {
+  if (matchPatterns.length && !testMatchPatterns(matchPatterns)) {
     // console.debug(
     //   `Location doesn't match any pattern: ${document.location.href}`,
     //   matchPatterns

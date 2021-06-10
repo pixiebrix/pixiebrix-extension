@@ -68,7 +68,7 @@ class LocalDefinedService<
     const patterns = castArray(
       this._definition.isAvailable?.matchPatterns ?? []
     );
-    return patterns.length == 0 || testMatchPatterns(url, ...patterns);
+    return patterns.length == 0 || testMatchPatterns(patterns, url);
   }
 
   /**

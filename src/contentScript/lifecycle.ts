@@ -197,7 +197,7 @@ function getNavSequence() {
 async function waitLoaded(cancel: () => boolean): Promise<void> {
   const url = document.location.href;
   const rules = NAVIGATION_RULES.filter((rule) =>
-    testMatchPatterns(url, ...rule.matchPatterns)
+    testMatchPatterns(rule.matchPatterns, url)
   );
   if (rules.length > 0) {
     const $document = $(document);
