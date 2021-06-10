@@ -74,15 +74,14 @@ module.exports = {
       {
         test: /\.tsx?$/,
         use: [
-          "babel-loader",
-          { loader: "ts-loader?configFile=tsconfig.webpack.json" },
+          {
+            loader: "ts-loader",
+            options: {
+              configFile: "tsconfig.webpack.json",
+            },
+          },
         ],
-        exclude: /(node_modules|bower_components)/,
-      },
-      {
-        test: /\.m?js$/,
-        exclude: /(node_modules|bower_components)/,
-        use: ["babel-loader"],
+        exclude: /node_modules/,
       },
       {
         test: /\.(svg|png|jpg|gif)?$/,
