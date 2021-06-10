@@ -157,7 +157,6 @@
     "@typescript-eslint/parser": "^4.20.0",
     "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^27.0.2",
-    "babel-loader": "^8.2.2",
     "compass-mixins": "^0.12.10",
     "copy-webpack-plugin": "^9.0.0",
     "csp-parse": "0.0.2",
