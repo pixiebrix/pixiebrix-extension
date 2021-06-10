@@ -4,7 +4,6 @@ import { Button } from "react-bootstrap";
 import "@/layout/Banner";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/pages/InstalledPage";
-import moment from "moment";
 import { useToasts } from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
 import {
@@ -116,9 +115,7 @@ function useDeployments() {
       );
       return (
         !match ||
-        moment(match._deployment.timestamp).isBefore(
-          moment(deployment.updated_at)
-        )
+        new Date(match._deployment.timestamp) < new Date(deployment.updated_at)
       );
     });
   }, [installed, deployments]);

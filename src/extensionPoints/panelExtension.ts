@@ -49,7 +49,6 @@ import { PanelComponent, render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
-import moment from "moment";
 
 export interface PanelConfig {
   heading?: string;
@@ -67,15 +66,17 @@ const PIXIEBRIX_DATA_ATTR = "data-pb-uuid";
 /**
  * Prevent panel render from entering an infinite loop
  */
-function detectLoop(timestamps: moment.Moment[]): void {
-  const current = moment();
+function detectLoop(timestamps: Date[]): void {
+  const current = new Date();
 
   const renders = timestamps.filter(
-    (x) => Math.abs(current.diff(x)) < RENDER_LOOP_WINDOW_MS
+    (x) => Math.abs(current.getTime() - x.getTime()) < RENDER_LOOP_WINDOW_MS
   );
 
   if (renders.length > RENDER_LOOP_THRESHOLD) {
-    const diffs = timestamps.map((x) => Math.abs(current.diff(x)));
+    const diffs = timestamps.map((x) =>
+      Math.abs(current.getTime() - x.getTime())
+    );
     console.error(`Panel is stuck in a render loop`, {
       diffs,
     });
@@ -94,7 +95,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   private uninstalled = false;
   private readonly cancelRemovalMonitor: Map<string, () => void>;
 
-  private readonly renderTimestamps: Map<string, moment.Moment[]>;
+  private readonly renderTimestamps: Map<string, Date[]>;
 
   public get defaultOptions(): { heading: string } {
     return { heading: "Custom Panel" };
@@ -252,7 +253,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       renderTimestamps = this.renderTimestamps.get(extension.id);
     }
 
-    renderTimestamps.push(moment());
+    renderTimestamps.push(new Date());
     const cnt = renderTimestamps.length;
 
     console.debug(`Run panelExtension: ${extension.id}`);
