@@ -16,6 +16,7 @@
  */
 
 const path = require("path");
+const dotenv = require("dotenv");
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebExtensionTarget = require("webpack-target-webextension");
@@ -27,19 +28,31 @@ const RollbarSourceMapPlugin = require("rollbar-sourcemap-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 const CopyPlugin = require("copy-webpack-plugin");
-const { uniq } = require("lodash");
+const { uniq, isEmpty } = require("lodash");
 const Policy = require("csp-parse");
 
 const rootDir = path.resolve(__dirname, "../");
 
-const dotenv = require("dotenv");
-dotenv.config({
-  path: path.resolve(__dirname, ".env.defaults"),
-});
+const defaults = {
+  ENVIRONMENT: "production",
+  CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
+
+  // Include the PixieBrix devtools panel in the build
+  ENABLE_DEVTOOLS: "true",
+
+  // PixieBrix URL to enable connection to for credential exchange
+  SERVICE_URL: "https://app.pixiebrix.com",
+};
 
 dotenv.config({
   path: path.resolve(__dirname, process.env.ENV_FILE ?? ".env"),
 });
+
+for (const [env, defaultValue] of Object.entries(defaults)) {
+  if (isEmpty(process.env[env])) {
+    process.env[env] = defaultValue;
+  }
+}
 
 console.log("SOURCE_VERSION: ", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL: ", process.env.SERVICE_URL);
