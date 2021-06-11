@@ -264,10 +264,7 @@ module.exports = (env, options) => ({
       // If not found, these values will be used as defaults
       DEBUG: !isProd(options),
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
-      ENVIRONMENT:
-        process.env.ENVIRONMENT ?? isProd(options)
-          ? "production"
-          : "development",
+      ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
 
       // If not found, "undefined" will cause the build to fail
       SERVICE_URL: undefined,
