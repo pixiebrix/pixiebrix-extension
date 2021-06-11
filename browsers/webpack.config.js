@@ -37,9 +37,6 @@ const rootDir = path.resolve(__dirname, "../");
 const defaults = {
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
 
-  // Include the PixieBrix devtools panel in the build
-  ENABLE_DEVTOOLS: "true",
-
   // PixieBrix URL to enable connection to for credential exchange
   SERVICE_URL: "https://app.pixiebrix.com",
 };
@@ -129,10 +126,6 @@ function customizeManifest(manifest, options) {
   }
   manifest.content_security_policy = policy.toString();
 
-  if (process.env.ENABLE_DEVTOOLS) {
-    manifest.permissions = uniq([...manifest.permissions, "activeTab"]);
-    manifest.devtools_page = "devtools.html";
-  }
   if (process.env.EXTERNALLY_CONNECTABLE) {
     manifest.externally_connectable.matches = uniq([
       ...manifest.externally_connectable.matches,
