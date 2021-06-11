@@ -18,7 +18,7 @@
 import { ComponentRef } from "@/extensionPoints/dom";
 import React, { useMemo } from "react";
 import { PanelEntry } from "@/actionPanel/protocol";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";

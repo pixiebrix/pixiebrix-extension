@@ -20,7 +20,7 @@ import { Button, Container } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import Editor from "@/devTools/Editor";
 
 import store, { persistor, RootState } from "./store";
