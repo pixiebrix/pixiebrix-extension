@@ -36,6 +36,7 @@ const rootDir = path.resolve(__dirname, "../");
 
 const defaults = {
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
+  ROLLBAR_PUBLIC_PATH: "extension://dynamichost",
 
   // PixieBrix URL to enable connection to for credential exchange
   SERVICE_URL: "https://app.pixiebrix.com",

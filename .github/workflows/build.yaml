@@ -6,7 +6,7 @@ on:
       - 'release/**'
 
 jobs:
-  build-chrome-web-store:
+  build-for-store:
     runs-on: ubuntu-latest
 
     steps:
@@ -17,7 +17,6 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - run: npm run build
         env:
-          ROLLBAR_PUBLIC_PATH: chrome-extension://production/
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
@@ -26,11 +25,11 @@ jobs:
           SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
       - uses: actions/upload-artifact@v2
         with:
-          name: chrome-web-store
+          name: build-for-store
           path: browsers/dist
           retention-days: 5
 
-  build-chrome-with-key:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -41,7 +40,6 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - run: npm run build
         env:
-          ROLLBAR_PUBLIC_PATH: chrome-extension://production/
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
@@ -51,7 +49,7 @@ jobs:
           CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
       - uses: actions/upload-artifact@v2
         with:
-          name: chrome-production
+          name: build-production
           path: browsers/dist
           retention-days: 5
       - name: Slack Notification
@@ -60,24 +58,3 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_CHANNEL: "release"
           SLACK_MESSAGE: 'Chrome release build succeeded :rocket:'
-
-  build-firefox:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '14.x'
-      - uses: bahmutov/npm-install@v1
-      - run: npm run build
-        env:
-          ROLLBAR_PUBLIC_PATH: moz-extension://production/
-          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
-          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
-      - uses: actions/upload-artifact@v2
-        with:
-          name: firefox-production
-          path: browsers/dist
-          retention-days: 5
