@@ -35,7 +35,6 @@ const Policy = require("csp-parse");
 const rootDir = path.resolve(__dirname, "../");
 
 const defaults = {
-  ENVIRONMENT: "production",
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
 
   // Include the PixieBrix devtools panel in the build
@@ -55,9 +54,9 @@ for (const [env, defaultValue] of Object.entries(defaults)) {
   }
 }
 
-console.log("SOURCE_VERSION: ", process.env.SOURCE_VERSION);
-console.log("SERVICE_URL: ", process.env.SERVICE_URL);
-console.log("CHROME_EXTENSION_ID: ", process.env.CHROME_EXTENSION_ID);
+console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
+console.log("SERVICE_URL:", process.env.SERVICE_URL);
+console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
 
 if (!process.env.SOURCE_VERSION) {
   process.env.SOURCE_VERSION = require("child_process")
@@ -72,7 +71,7 @@ const nodeConfig = {
 
 function rollbarPlugins() {
   console.log(
-    "ROLLBAR_BROWSER_ACCESS_TOKEN: ",
+    "ROLLBAR_BROWSER_ACCESS_TOKEN:",
     process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
   );
   if (
@@ -265,9 +264,12 @@ module.exports = (env, options) => ({
       // If not found, these values will be used as defaults
       DEBUG: !isProd(options),
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
+      ENVIRONMENT:
+        process.env.ENVIRONMENT ?? isProd(options)
+          ? "production"
+          : "development",
 
       // If not found, "undefined" will cause the build to fail
-      ENVIRONMENT: undefined,
       SERVICE_URL: undefined,
       SOURCE_VERSION: undefined,
       CHROME_EXTENSION_ID: undefined,
