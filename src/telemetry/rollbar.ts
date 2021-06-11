@@ -86,12 +86,11 @@ export function initRollbar(): void {
         const trace = payload.body.trace;
         if (trace && trace.frames) {
           for (let i = 0; i < trace.frames.length; i++) {
-            const [, filename] =
-              trace.frames[i].filename?.split(location.origin) ?? [];
-            if (filename) {
-              // Be sure that the minified_url when uploading includes 'dynamichost'
-              trace.frames[i].filename = `extension://dynamichost${filename}`;
-            }
+            // Be sure that the minified_url when uploading includes 'dynamichost'
+            trace.frames[i].filename = trace.frames[i].filename?.replace(
+              location.origin,
+              process.env.ROLLBAR_PUBLIC_PATH
+            );
           }
         }
       },
