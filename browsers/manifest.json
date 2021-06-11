@@ -27,12 +27,14 @@
     "http://*/"
   ],
   "permissions": [
+    "activeTab",
     "storage",
     "identity",
     "tabs",
     "webNavigation",
     "contextMenus"
   ],
+  "devtools_page": "devtools.html",
   "externally_connectable":  {
     "matches": [
       "https://app.pixiebrix.com/*"
