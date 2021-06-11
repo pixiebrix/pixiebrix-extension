@@ -26,7 +26,7 @@ import { useExtension } from "@/selectors";
 import ExtensionPointDetail, { Config } from "./ExtensionPointDetail";
 import WorkshopPage from "@/options/pages/extensionEditor/WorkshopPage";
 import { reactivate } from "@/background/navigation";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 
 import "./ExtensionEditor.scss";
 import { reportError } from "@/telemetry/logging";

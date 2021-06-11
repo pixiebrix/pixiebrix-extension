@@ -26,7 +26,7 @@ import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import useAsyncEffect from "use-async-effect";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { runReader } from "@/background/devtools/index";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";

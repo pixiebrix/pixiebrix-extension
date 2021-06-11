@@ -36,7 +36,7 @@ import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ToastProvider } from "react-toast-notifications";
 import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
-import { GridLoader } from "react-spinners";
+import GridLoader from "react-spinners/GridLoader";
 import { PersistGate } from "redux-persist/integration/react";
 
 const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
