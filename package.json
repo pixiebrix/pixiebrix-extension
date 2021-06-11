@@ -145,7 +145,7 @@
     "@types/react-redux": "^7.1.14",
     "@types/react-router-dom": "^5.1.6",
     "@types/react-select": "^4.0.15",
-    "@types/react-toast-notifications": "^2.4.0",
+    "@types/react-toast-notifications": "^2.4.1",
     "@types/redux-logger": "^3.0.8",
     "@types/simple-icons": "^5.0.0",
     "@types/url-join": "^4.0.0",
