@@ -357,7 +357,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     let isBodyInstalled = false;
 
-    const installBody = () => {
+    const installBody = async () => {
       if (!isBodyInstalled) {
         isBodyInstalled = true;
         const rendererPromise = reducePipeline(
@@ -372,16 +372,18 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           }
         ) as Promise<PanelComponent>;
 
-        return errorBoundary(rendererPromise, extensionLogger)
-          .then((bodyOrComponent: PanelComponent) => {
-            render(bodyContainer, bodyOrComponent, {
-              shadowDOM,
-            });
-            extensionLogger.debug("Successfully installed panel");
-          })
-          .catch((err) => {
-            extensionLogger.error(err);
+        try {
+          const bodyOrComponent = await errorBoundary(
+            rendererPromise,
+            extensionLogger
+          );
+          render(bodyContainer, bodyOrComponent, {
+            shadowDOM,
           });
+          extensionLogger.debug("Successfully installed panel");
+        } catch (err) {
+          extensionLogger.error(err);
+        }
       }
     };
 

@@ -31,6 +31,7 @@ import { FrameworkMeta } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
 import { v4 as uuidv4 } from "uuid";
 import { useTabEventListener } from "@/hooks/events";
+import { sleep } from "@/utils";
 
 interface FrameMeta {
   url: string;
@@ -107,28 +108,21 @@ class PermissionsError extends Error {
   }
 }
 
-function runInMillis<TResult>(
+async function runInMillis<TResult>(
   factory: () => Promise<TResult>,
   maxMillis: number
 ): Promise<TResult> {
-  return new Promise<TResult>((resolve, reject) => {
-    let settled = false;
+  const timeout = Symbol("timeout");
+  const value = await Promise.race([
+    factory(),
+    sleep(maxMillis).then(() => timeout),
+  ]);
 
-    const intervalId = setInterval(() => {
-      if (!settled) {
-        settled = true;
-        reject(`Method did not complete in ${maxMillis}ms`);
-      }
-    }, maxMillis);
+  if (value === timeout) {
+    throw new Error(`Method did not complete in ${maxMillis}ms`);
+  }
 
-    factory()
-      .then(resolve)
-      .catch(reject)
-      .finally(() => {
-        settled = true;
-        clearInterval(intervalId);
-      });
-  });
+  return value as TResult;
 }
 
 async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
