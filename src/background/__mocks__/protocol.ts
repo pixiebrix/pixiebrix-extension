@@ -32,7 +32,7 @@ const MESSAGE_PREFIX = "@@pixiebrix/background-mock/";
 
 export function liftBackground<R extends SerializableResponse>(
   type: string,
-  method: (...args: unknown[]) => R,
+  method: ((...args: unknown[]) => R) | ((...args: unknown[]) => Promise<R>),
   options: HandlerOptions = { asyncResponse: true }
 ): (...args: unknown[]) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;

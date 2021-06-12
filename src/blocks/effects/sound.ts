@@ -61,7 +61,7 @@ export class SoundEffect extends Effect {
     );
 
     if (!_howl) {
-      const url = await browser.runtime.getURL("audio/sprite.mp3");
+      const url = browser.runtime.getURL("audio/sprite.mp3");
       _howl = new Howl({
         src: [url],
         sprite,

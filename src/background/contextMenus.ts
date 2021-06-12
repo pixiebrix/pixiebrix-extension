@@ -161,7 +161,7 @@ export const ensureContextMenu = liftBackground(
           });
         } catch (err) {
           console.debug("Cannot update context menu", { err });
-          const menuId = await browser.contextMenus.create({
+          const menuId = browser.contextMenus.create({
             ...createProperties,
             id: makeMenuId(extensionId),
           });
@@ -178,7 +178,7 @@ export const ensureContextMenu = liftBackground(
           );
         }
       } else {
-        const menuId = await browser.contextMenus.create({
+        const menuId = browser.contextMenus.create({
           ...createProperties,
           id: makeMenuId(extensionId),
         });
