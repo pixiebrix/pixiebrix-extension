@@ -248,7 +248,8 @@ export function liftBackground<R extends SerializableResponse>(
       console.log(`Resolving ${type} immediately from background page`);
       return new Promise((resolve) => resolve(method(...args)));
     }
-    return (await callBackground(fullType, args, options)) as any;
+
+    return callBackground(fullType, args, options) as any;
   };
 }
 

@@ -92,9 +92,9 @@ export const detectFrameworks: (
 ) => Promise<FrameworkMeta[]> = liftBackground(
   "DETECT_FRAMEWORKS",
   (target: Target) => async () => {
-    return (await contentScriptProtocol.detectFrameworks(
-      target
-    )) as FrameworkMeta[];
+    return contentScriptProtocol.detectFrameworks(target) as Promise<
+      FrameworkMeta[]
+    >;
   }
 );
 

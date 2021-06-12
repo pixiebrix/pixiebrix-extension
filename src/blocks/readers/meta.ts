@@ -175,7 +175,7 @@ class PixieBrixProfileReader extends Reader {
   }
 
   async read() {
-    return (await getExtensionAuth()) as ReaderOutput;
+    return getExtensionAuth() as Promise<ReaderOutput>;
   }
 
   outputSchema: Schema = {
