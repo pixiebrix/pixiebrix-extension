@@ -23,7 +23,7 @@ import { initRollbar } from "@/telemetry/rollbar";
 // init first so we get error reporting on the other initialization
 initRollbar();
 
-import "@/vendors/webpack-dynamic";
+import "webpack-target-webextension/lib/background";
 import "@/polyfills/registerPolyfill";
 import "webext-dynamic-content-scripts";
 
