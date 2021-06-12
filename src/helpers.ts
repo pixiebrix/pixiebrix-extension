@@ -157,4 +157,4 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
 }
 
 export const isChrome =
-  typeof navigator === "object" && navigator.userAgent.includes("chrome");
+  typeof navigator === "object" && navigator.userAgent.includes("Chrome");
