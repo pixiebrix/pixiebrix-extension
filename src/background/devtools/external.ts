@@ -76,7 +76,7 @@ function devtoolsMessageListener(response: BackgroundResponse) {
   }
 }
 
-export function callBackground(
+export async function callBackground(
   port: Runtime.Port,
   type: string,
   args: unknown[],
@@ -96,11 +96,11 @@ export function callBackground(
   if (isNotification(options)) {
     port.postMessage(message);
     if (browser.runtime.lastError) {
-      return Promise.reject(
+      throw new Error(
         `Error sending devtools notification: ${browser.runtime.lastError.message}`
       );
     } else {
-      return Promise.resolve();
+      return;
     }
   } else {
     return new Promise((resolve, reject) => {

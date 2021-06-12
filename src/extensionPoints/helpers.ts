@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Promisable } from "type-fest";
 import { castArray, noop, once } from "lodash";
 // @ts-ignore: no type definitions
 import initialize from "vendors/initialize";
@@ -187,7 +188,7 @@ function _initialize(
 export function awaitElementOnce(
   selector: string | string[],
   rootElement: JQuery<HTMLElement | Document> = undefined
-): [Promise<JQuery<HTMLElement | Document>>, () => void] {
+): [Promisable<JQuery<HTMLElement | Document>>, () => void] {
   if (selector == null) {
     throw new Error("awaitElementOnce expected selector");
   }
@@ -196,7 +197,7 @@ export function awaitElementOnce(
   const $root = rootElement ? $(rootElement) : $(document);
 
   if (!selectors.length) {
-    return [Promise.resolve($root), noop];
+    return [$root, noop];
   }
 
   // console.debug("Awaiting selectors", selectors);
@@ -228,7 +229,7 @@ export function awaitElementOnce(
       },
     ];
   } else if (rest.length === 0) {
-    return [Promise.resolve($element), noop];
+    return [$element, noop];
   } else {
     return awaitElementOnce(rest, $element);
   }

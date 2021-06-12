@@ -25,7 +25,9 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   messageType: string
 ): SendScriptMessage<TReturn, TPayload> {
   if (typeof document === "undefined" || document.defaultView == null) {
-    return () => Promise.reject("Not running in a browser context");
+    return async () => {
+      throw new Error("Not running in a browser context");
+    };
   }
 
   let messageSeq = 0;

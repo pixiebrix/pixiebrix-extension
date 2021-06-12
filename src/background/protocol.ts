@@ -103,13 +103,13 @@ function backgroundListener(
         console.debug(
           `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
         );
-        return Promise.resolve(value);
+        return value;
       })
       .catch((reason) => {
         console.debug(
           `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
         );
-        return Promise.resolve(toErrorResponse(type, reason));
+        return toErrorResponse(type, reason);
       });
   }
 }
