@@ -168,24 +168,24 @@ const _openActivate = liftBackground(
 export const openActivateBlueprint = lift(
   "OPEN_ACTIVATE_BLUEPRINT",
   async (options: ActivateBlueprintOptions) => {
-    return await _openActivate(options);
+    return _openActivate(options);
   }
 );
 
 export const openExtensionOptions = lift("OPEN_OPTIONS", async () => {
-  return await _openOptions();
+  return _openOptions();
 });
 
 export const openMarketplace = lift(
   "OPEN_MARKETPLACE",
   async (options: OpenOptionsOptions = {}) => {
-    return await _openMarketplace(options);
+    return _openMarketplace(options);
   }
 );
 
 export const openTemplates = lift(
   "OPEN_TEMPLATES",
   async (options: OpenOptionsOptions = {}) => {
-    return await _openTemplates(options);
+    return _openTemplates(options);
   }
 );

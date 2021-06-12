@@ -107,7 +107,7 @@ function dragPromise(uuid: string): Promise<DragResult | null> {
 export const dragButton = liftContentScript(
   "DRAG_BUTTON",
   async ({ uuid }: { uuid: string }) => {
-    return await dragPromise(uuid);
+    return dragPromise(uuid);
   }
 );
 

@@ -107,7 +107,7 @@ class ExternalBlock extends Block {
   }
 
   async run(renderedInputs: BlockArg, options: BlockOptions): Promise<unknown> {
-    return await reducePipeline(
+    return reducePipeline(
       this.component.pipeline,
       renderedInputs,
       options.logger,

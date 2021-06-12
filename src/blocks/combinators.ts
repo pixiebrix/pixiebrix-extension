@@ -155,7 +155,7 @@ export async function blockList(
           config
         );
       }
-      return await blockRegistry.lookup(id);
+      return blockRegistry.lookup(id);
     })
   );
 }

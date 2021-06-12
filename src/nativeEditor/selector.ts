@@ -183,7 +183,7 @@ export const selectElement = liftContentScript(
 
         requireSingleElement(selectors[0]);
 
-        return await pageScript.getElementInfo({
+        return pageScript.getElementInfo({
           selector: selectors[0],
           framework,
           traverseUp,
@@ -197,7 +197,7 @@ export const selectElement = liftContentScript(
         // double-check we have a valid selector
         requireSingleElement(selector);
 
-        return await pageScript.getElementInfo({
+        return pageScript.getElementInfo({
           selector,
           framework,
           traverseUp,

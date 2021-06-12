@@ -107,7 +107,7 @@ export function readerFactory(component: unknown): IReader {
     outputSchema: Schema = outputSchema;
 
     async isAvailable() {
-      return await checkAvailable(isAvailable);
+      return checkAvailable(isAvailable);
     }
 
     async read(root: ReaderRoot): Promise<ReaderOutput> {

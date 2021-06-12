@@ -22,6 +22,6 @@ export const createNotification = liftBackground(
   "CREATE_NOTIFICATION",
   async (options: Notifications.CreateNotificationOptions) => {
     // generate id automatically
-    return await browser.notifications.create(undefined, options);
+    return browser.notifications.create(undefined, options);
   }
 );

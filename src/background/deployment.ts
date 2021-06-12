@@ -42,7 +42,7 @@ async function deploymentPermissions(
   const blueprint = deployment.package.config;
   // Deployments can only use proxied services, so there's no additional permissions to request for the
   // the serviceAuths.
-  return await collectPermissions(blueprint, []);
+  return collectPermissions(blueprint, []);
 }
 
 type ActiveDeployment = {

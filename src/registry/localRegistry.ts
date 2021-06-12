@@ -72,7 +72,7 @@ function getKey(obj: Package): [string, number, number, number] {
 }
 
 async function getBrickDB() {
-  return await openDB<LogDB>(STORAGE_KEY, VERSION, {
+  return openDB<LogDB>(STORAGE_KEY, VERSION, {
     upgrade(db) {
       // Create a store of objects
       const store = db.createObjectStore(BRICK_STORE, {
@@ -112,7 +112,7 @@ export const getKind = liftBackground(
 
 export const getLocal = liftBackground("REGISTRY_GET_LOCAL", async () => {
   const db = await getBrickDB();
-  return await db.getAllFromIndex(BRICK_STORE, "scope", LOCAL_SCOPE);
+  return db.getAllFromIndex(BRICK_STORE, "scope", LOCAL_SCOPE);
 });
 
 export const add = liftBackground("REGISTRY_PUT", async (obj: Package) => {

@@ -41,7 +41,7 @@ class ChromeProfileReader extends Reader {
       throw new Error("No access to the Chrome Identity API");
     }
     // https://developer.chrome.com/apps/identity#method-getProfileUserInfo
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       chrome.identity.getProfileUserInfo((userInfo) => {
         if (browser.runtime.lastError) {
           reject(browser.runtime.lastError.message);

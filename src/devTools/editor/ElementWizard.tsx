@@ -79,7 +79,7 @@ const ElementWizard: React.FunctionComponent<{
 
   const [available] = useAsyncState(
     async () =>
-      await checkAvailable(port, element.extensionPoint.definition.isAvailable),
+      checkAvailable(port, element.extensionPoint.definition.isAvailable),
     [port, element.extensionPoint.definition.isAvailable]
   );
 
