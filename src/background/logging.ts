@@ -171,6 +171,7 @@ function buildContext(
   return context;
 }
 
+// Ensure this whole function’s content is wrapped in try/catch to avoid uncaught error loops
 export const recordError = liftBackground(
   "RECORD_ERROR",
   async (

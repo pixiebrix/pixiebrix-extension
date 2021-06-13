@@ -21,31 +21,20 @@ import { MessageContext, SerializedError } from "@/core";
 import { serializeError } from "serialize-error";
 import { isExtensionContext } from "@/chrome";
 
-function selectError(exc: unknown): SerializedError {
-  if (exc instanceof Error) {
-    return serializeError(exc);
-  } else if (typeof exc === "object") {
-    const obj = exc as Record<string, unknown>;
-    if (obj.type === "unhandledrejection") {
-      return serializeError({
-        // @ts-ignore: OK given the type of reason on unhandledrejection
-        message: obj.reason?.message ?? "Uncaught error in promise",
-      });
-    } else {
-      return serializeError(obj);
-    }
-  } else {
-    return serializeError(exc);
+function selectError(exc: any): SerializedError {
+  if (exc?.message && exc?.type === "unhandledrejection") {
+    exc = {
+      // @ts-ignore: OK given the type of reason on unhandledrejection
+      message: exc.reason?.message ?? "Uncaught error in promise",
+    };
   }
+
+  return serializeError(exc);
 }
 
 export function reportError(exc: unknown, context?: MessageContext): void {
   if (isExtensionContext()) {
-    // Wrap in try/catch, otherwise will enter infinite loop on unhandledrejection when
-    // messaging the background script
-    recordError(selectError(exc), context, null).catch((exc) => {
-      console.error("Another error occurred while reporting an error", { exc });
-    });
+    recordError(selectError(exc), context, null);
   } else {
     (Rollbar as any).error(exc);
   }
