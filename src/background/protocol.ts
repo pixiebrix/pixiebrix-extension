@@ -143,6 +143,8 @@ export async function callBackground(
   const nonce = uuidv4();
   const message = { type, payload: args, meta: { nonce } };
 
+  // When accessing from an external site via chrome, browser.runtime won't be available.
+  // https://developer.chrome.com/docs/extensions/mv3/messaging/#external-webpage
   const sendMessage = isExtensionContext()
     ? browser.runtime.sendMessage
     : externalSendMessage;

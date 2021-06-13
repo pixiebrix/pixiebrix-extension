@@ -95,7 +95,9 @@ async function initialize() {
     console.debug("Could not inject contextScript for devtools", { reason });
   }
 
-  installSidebarPane(port);
+  installSidebarPane(port).catch((error) => {
+    console.error("Error adding data viewer elements pane", { error });
+  });
   installPanel();
 
   if (injected) {

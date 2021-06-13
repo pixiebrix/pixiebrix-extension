@@ -94,16 +94,16 @@ export function useDependency(
     try {
       const result = await browser.permissions.request(permissions);
       setGrantedPermissions(result);
-      if (result) {
-        const key = `${dependency.id}:${dependency.config}`;
-        for (const listener of permissionsListeners.get(key)) {
-          listener();
-        }
-      } else {
+      if (!result) {
         addToast("You must accept the permissions request", {
           appearance: "warning",
           autoDismiss: true,
         });
+      } else {
+        const key = `${dependency.id}:${dependency.config}`;
+        for (const listener of permissionsListeners.get(key)) {
+          listener();
+        }
       }
     } catch (err) {
       setGrantedPermissions(false);
