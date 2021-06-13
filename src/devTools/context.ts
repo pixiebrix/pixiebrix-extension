@@ -90,7 +90,7 @@ export interface Context {
 }
 
 const initialValue: Context = {
-  connect: () => Promise.resolve(),
+  connect: async () => {},
   connecting: false,
   port: null,
   portError: undefined,

@@ -172,7 +172,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     // TODO: add logic for cancelWait
     const [rootPromise] = rootSelector
       ? awaitElementOnce(rootSelector)
-      : [Promise.resolve($(document))];
+      : [$(document)];
 
     let $root = await rootPromise;
 
