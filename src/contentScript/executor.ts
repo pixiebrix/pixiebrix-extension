@@ -61,34 +61,27 @@ export interface RunBlockAction {
 let sender: Runtime.MessageSender = null;
 const childTabs = new Set<number>();
 
-// Don't turn this into an async function because it's a runtime.onMessage callback
 function runBlockAction(
   request: RunBlockAction | CheckAvailabilityAction,
   sender: Runtime.MessageSender
 ): Promise<unknown> | undefined {
+  const { type } = request;
+
   if (!allowSender(sender)) {
     return;
-  }
-
-  return _runBlockAction(request);
-}
-
-async function _runBlockAction(
-  request: RunBlockAction | CheckAvailabilityAction
-): Promise<unknown> {
-  const { type } = request;
-  if (type === MESSAGE_RUN_BLOCK) {
+  } else if (type === MESSAGE_RUN_BLOCK) {
     const { blockId, blockArgs, options } = (request as RunBlockAction).payload;
     // FIXME: validate sourceTabId here
     // if (!childTabs.has(sourceTabId)) {
     //   return Promise.reject("Unknown source tab id");
     // }
-    const block = await blockRegistry.lookup(blockId);
-    const logger = new BackgroundLogger(options.messageContext);
-    return block.run(blockArgs, {
-      ctxt: options.ctxt,
-      logger,
-      root: document,
+    return blockRegistry.lookup(blockId).then((block) => {
+      const logger = new BackgroundLogger(options.messageContext);
+      return block.run(blockArgs, {
+        ctxt: options.ctxt,
+        logger,
+        root: document,
+      });
     });
   } else if (type === MESSAGE_CHECK_AVAILABILITY) {
     const { isAvailable } = (request as CheckAvailabilityAction).payload;
