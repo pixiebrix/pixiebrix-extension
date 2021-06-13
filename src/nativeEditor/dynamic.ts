@@ -84,7 +84,7 @@ async function buildSingleReader(config: ReaderLike): Promise<IReader> {
   } else if (isCustomReader(config)) {
     return readerFactory(config);
   } else {
-    return (await blockRegistry.lookup(config.metadata.id)) as IReader;
+    return blockRegistry.lookup(config.metadata.id) as Promise<IReader>;
   }
 }
 

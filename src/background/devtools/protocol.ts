@@ -61,7 +61,7 @@ export const getTabInfo = liftBackground(
 export const injectScript = liftBackground(
   "INJECT_SCRIPT",
   (target: Target) => async ({ file }: { file: string }) => {
-    return await injectContentScript(target, file);
+    return injectContentScript(target, file);
   }
 );
 
@@ -83,7 +83,7 @@ export const waitReady = liftBackground(
 export const readSelectedElement = liftBackground(
   "READ_ELEMENT",
   (target: Target) => async () => {
-    return await contentScriptProtocol.readSelected(target);
+    return contentScriptProtocol.readSelected(target);
   }
 );
 
@@ -92,9 +92,9 @@ export const detectFrameworks: (
 ) => Promise<FrameworkMeta[]> = liftBackground(
   "DETECT_FRAMEWORKS",
   (target: Target) => async () => {
-    return (await contentScriptProtocol.detectFrameworks(
-      target
-    )) as FrameworkMeta[];
+    return contentScriptProtocol.detectFrameworks(target) as Promise<
+      FrameworkMeta[]
+    >;
   }
 );
 
@@ -114,7 +114,7 @@ export const detectFrameworks: (
 export const cancelSelectElement = liftBackground(
   "CANCEL_SELECT_ELEMENT",
   (target: Target) => async () => {
-    return await nativeSelectionProtocol.cancelSelect(target);
+    return nativeSelectionProtocol.cancelSelect(target);
   }
 );
 
@@ -147,14 +147,14 @@ export const selectElement = liftBackground(
 export const dragButton = liftBackground(
   "DRAG_BUTTON",
   (target: Target) => async ({ uuid }: { uuid: string }) => {
-    return await nativeEditorProtocol.dragButton(target, { uuid });
+    return nativeEditorProtocol.dragButton(target, { uuid });
   }
 );
 
 export const insertButton = liftBackground(
   "INSERT_BUTTON",
   (target: Target) => async () => {
-    return await nativeEditorProtocol.insertButton(target);
+    return nativeEditorProtocol.insertButton(target);
   }
 );
 
@@ -163,7 +163,7 @@ export const insertPanel: (
 ) => Promise<PanelSelectionResult> = liftBackground(
   "INSERT_PANEL",
   (target: Target) => async () => {
-    return await nativeEditorProtocol.insertPanel(target);
+    return nativeEditorProtocol.insertPanel(target);
   }
 );
 
@@ -172,14 +172,14 @@ export const updateDynamicElement = liftBackground(
   (target: Target) => async (
     element: nativeEditorProtocol.DynamicDefinition
   ) => {
-    return await nativeEditorProtocol.updateDynamicElement(target, element);
+    return nativeEditorProtocol.updateDynamicElement(target, element);
   }
 );
 
 export const clearDynamicElements = liftBackground(
   "CLEAR_DYNAMIC",
   (target: Target) => async ({ uuid }: { uuid?: string }) => {
-    return await nativeEditorProtocol.clear(target, { uuid });
+    return nativeEditorProtocol.clear(target, { uuid });
   }
 );
 
@@ -192,7 +192,7 @@ export const toggleOverlay = liftBackground(
     uuid: string;
     on: boolean;
   }) => {
-    return await nativeEditorProtocol.toggleOverlay(target, {
+    return nativeEditorProtocol.toggleOverlay(target, {
       selector: `[data-uuid="${uuid}"]`,
       on,
     });
@@ -208,21 +208,21 @@ export const toggleSelector = liftBackground(
     selector: string;
     on: boolean;
   }) => {
-    return await nativeEditorProtocol.toggleOverlay(target, { selector, on });
+    return nativeEditorProtocol.toggleOverlay(target, { selector, on });
   }
 );
 
 export const getInstalledExtensionPointIds = liftBackground(
   "INSTALLED_EXTENSION_POINT_IDS",
   (target: Target) => async () => {
-    return await nativeEditorProtocol.getInstalledExtensionPointIds(target);
+    return nativeEditorProtocol.getInstalledExtensionPointIds(target);
   }
 );
 
 export const checkAvailable = liftBackground(
   "CHECK_AVAILABLE",
   (target: Target) => async (availability: Availability) => {
-    return await nativeEditorProtocol.checkAvailable(target, availability);
+    return nativeEditorProtocol.checkAvailable(target, availability);
   }
 );
 
@@ -232,7 +232,7 @@ export const searchWindow: (
 ) => Promise<{ results: unknown[] }> = liftBackground(
   "SEARCH_WINDOW",
   (target: Target) => async (query: string) => {
-    return await contentScriptProtocol.searchWindow(target, query);
+    return contentScriptProtocol.searchWindow(target, query);
   }
 );
 
@@ -245,7 +245,7 @@ export const runReaderBlock = liftBackground(
     id: string;
     rootSelector?: string;
   }) => {
-    return await contentScriptProtocol.runReaderBlock(target, {
+    return contentScriptProtocol.runReaderBlock(target, {
       id,
       rootSelector,
     });
@@ -261,7 +261,7 @@ export const runReader = liftBackground(
     config: ReaderTypeConfig;
     rootSelector?: string;
   }) => {
-    return await contentScriptProtocol.runReader(target, {
+    return contentScriptProtocol.runReader(target, {
       config,
       rootSelector,
     });
@@ -271,20 +271,20 @@ export const runReader = liftBackground(
 export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
   () => async ({ extensionId }: { extensionId: string }) => {
-    return await contextMenuProtocol.uninstall(extensionId);
+    return contextMenuProtocol.uninstall(extensionId);
   }
 );
 
 export const initUiPathRobot = liftBackground(
   "UIPATH_INIT",
   (target: Target) => async () => {
-    return await robotProtocol.initRobot(target);
+    return robotProtocol.initRobot(target);
   }
 );
 
 export const getUiPathProcesses = liftBackground(
   "UIPATH_GET_PROCESSES",
   (target: Target) => async () => {
-    return await robotProtocol.getProcesses(target);
+    return robotProtocol.getProcesses(target);
   }
 );

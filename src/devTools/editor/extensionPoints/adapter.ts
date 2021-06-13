@@ -71,5 +71,5 @@ export async function extensionToFormState(
       `Editing existing extensions of type '${type}' not implemented`
     );
   }
-  return await formState(extension);
+  return formState(extension);
 }

@@ -354,7 +354,7 @@ const NoExtensionsPane: React.FunctionComponent<{
           <a
             href="#"
             onClick={async () =>
-              await openTab({
+              openTab({
                 url: "https://docs.pixiebrix.com/quick-start-guide",
                 active: true,
               })
@@ -373,7 +373,7 @@ const NoExtensionsPane: React.FunctionComponent<{
             className="ml-2"
             variant="info"
             onClick={async () =>
-              await openTab({
+              openTab({
                 url: "https://calendly.com/pixiebrix-todd/live-support-session",
                 active: true,
               })
@@ -402,7 +402,7 @@ const WelcomePane: React.FunctionComponent<{ showSupport: () => void }> = ({
           <a
             href="#"
             onClick={async () =>
-              await openTab({
+              openTab({
                 url: "https://docs.pixiebrix.com/quick-start-guide",
                 active: true,
               })
@@ -421,7 +421,7 @@ const WelcomePane: React.FunctionComponent<{ showSupport: () => void }> = ({
             className="ml-2"
             variant="info"
             onClick={async () =>
-              await openTab({
+              openTab({
                 url: "https://calendly.com/pixiebrix-todd/live-support-session",
                 active: true,
               })
@@ -465,7 +465,7 @@ const SupportWidget: React.FunctionComponent<{ onClose: () => void }> = ({
             <a
               href="#"
               onClick={async () =>
-                await openTab({
+                openTab({
                   url:
                     "https://calendly.com/pixiebrix-todd/live-support-session",
                   active: true,
@@ -482,7 +482,7 @@ const SupportWidget: React.FunctionComponent<{ onClose: () => void }> = ({
             <a
               href="#"
               onClick={async () =>
-                await openTab({
+                openTab({
                   url: "https://docs.pixiebrix.com/",
                   active: true,
                 })

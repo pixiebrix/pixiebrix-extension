@@ -65,11 +65,9 @@ export function useExtension(
 
   const [extensionPoint, isPending] = useAsyncState(async () => {
     if (extensionConfig) {
-      return await extensionPointRegistry.lookup(
-        extensionConfig.extensionPointId
-      );
+      return extensionPointRegistry.lookup(extensionConfig.extensionPointId);
     } else if (extensionPointId) {
-      return await extensionPointRegistry.lookup(extensionPointId);
+      return extensionPointRegistry.lookup(extensionPointId);
     }
     return null;
   }, [extensionPointRegistry, extensionConfig, extensionPointId]);

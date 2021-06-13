@@ -350,13 +350,13 @@ const EffectTab: React.FunctionComponent<{
   } = useFormikContext<FormState>();
 
   const [blocks] = useAsyncState(async () => {
-    return await blockRegistry.all();
+    return blockRegistry.all();
   }, []);
 
   const [relevantBlocks] = useAsyncState(async () => {
     const excludeTypes: BlockType[] =
       type === "panel" ? ["reader", "effect"] : ["reader", "renderer"];
-    return await filterBlocks(blocks, { excludeTypes });
+    return filterBlocks(blocks, { excludeTypes });
   }, [blocks, type]);
 
   const [{ value: actions = [] }, , helpers] = useField<BlockPipeline>(

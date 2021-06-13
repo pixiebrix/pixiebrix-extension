@@ -61,7 +61,7 @@ async function _initRobot(): Promise<InitResponse> {
 }
 
 export const initRobot = liftContentScript("UIPATH_INIT", async () => {
-  return await _initRobot();
+  return _initRobot();
 });
 
 export const getProcesses = liftContentScript(

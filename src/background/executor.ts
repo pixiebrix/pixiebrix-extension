@@ -83,7 +83,7 @@ async function waitNonceReady(
     }
 
     if (isAvailable) {
-      return await browser.tabs.sendMessage(
+      return browser.tabs.sendMessage(
         target.tabId,
         {
           type: MESSAGE_CHECK_AVAILABILITY,
@@ -320,7 +320,7 @@ export async function activateTab(): Promise<void> {
   if (!isContentScript()) {
     throw new Error("activateTab can only be run from a content script");
   }
-  return await browser.runtime.sendMessage({
+  return browser.runtime.sendMessage({
     type: MESSAGE_ACTIVATE_TAB,
     payload: {},
   });
@@ -330,7 +330,7 @@ export async function closeTab(): Promise<void> {
   if (!isContentScript()) {
     throw new Error("closeTab can only be run from a content script");
   }
-  return await browser.runtime.sendMessage({
+  return browser.runtime.sendMessage({
     type: MESSAGE_CLOSE_TAB,
     payload: {},
   });
@@ -339,7 +339,7 @@ export async function closeTab(): Promise<void> {
 export async function openTab(
   options: Tabs.CreateCreatePropertiesType
 ): Promise<void> {
-  return await browser.runtime.sendMessage({
+  return browser.runtime.sendMessage({
     type: MESSAGE_OPEN_TAB,
     payload: options,
   });
@@ -431,7 +431,7 @@ export async function executeInAll(
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in all tabs`);
-  return await browser.runtime.sendMessage({
+  return browser.runtime.sendMessage({
     type: MESSAGE_RUN_BLOCK_BROADCAST,
     payload: {
       blockId,
@@ -447,7 +447,7 @@ export async function executeInOpener(
   options: RemoteBlockOptions
 ): Promise<unknown> {
   console.debug(`Running ${blockId} in the opener tab`);
-  return await browser.runtime.sendMessage({
+  return browser.runtime.sendMessage({
     type: MESSAGE_RUN_BLOCK_OPENER,
     payload: {
       blockId,

@@ -83,9 +83,9 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
   }
 
   async defaultReader() {
-    return (await blockRegistry.lookup(
+    return blockRegistry.lookup(
       `techcrunch/${this.entityType}-mention`
-    )) as IReader;
+    ) as Promise<IReader>;
   }
 
   protected removeExtensions(): void {

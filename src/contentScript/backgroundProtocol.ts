@@ -77,7 +77,8 @@ function contentScriptListener(
 }
 
 async function getTabIds(): Promise<number[]> {
-  return (await browser.tabs.query({})).map((x) => x.id);
+  const tabs = await browser.tabs.query({});
+  return tabs.map((x) => x.id);
 }
 
 export function notifyContentScripts(

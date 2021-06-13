@@ -91,7 +91,7 @@ export async function getToken(
     throw new Error(`Service ${service.id} does not use token authentication`);
   }
 
-  const { url, data: tokenData } = await service.getTokenContext(auth.config);
+  const { url, data: tokenData } = service.getTokenContext(auth.config);
 
   const { status, statusText, data: responseData } = await axios.post(
     url,
@@ -116,7 +116,7 @@ export async function launchOAuth2Flow(
     throw new Error(`Service ${service.id} is not an OAuth2 service`);
   }
 
-  const oauth2 = await service.getOAuth2Context(auth.config);
+  const oauth2 = service.getOAuth2Context(auth.config);
 
   const {
     code_challenge_method,

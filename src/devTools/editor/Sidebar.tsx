@@ -356,7 +356,7 @@ export function useInstallState(
 
   const [installedIds] = useAsyncState(async () => {
     if (meta) {
-      return await getInstalledExtensionPointIds(port);
+      return getInstalledExtensionPointIds(port);
     } else {
       return [];
     }

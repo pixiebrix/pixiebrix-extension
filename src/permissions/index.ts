@@ -39,7 +39,7 @@ const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
 export async function ensureAllPermissions(
   permissionsList: Permissions.Permissions[]
 ): Promise<boolean> {
-  return await browser.permissions.request(mergePermissions(permissionsList));
+  return browser.permissions.request(mergePermissions(permissionsList));
   // On FF can't check if we already have the permission because promise chains break it's detection of
   // whether or not we're in a user-triggered event. That also prevents making multiple permissions requests
   // for a single button click
@@ -160,14 +160,14 @@ export async function checkPermissions(
 export async function permissionsEnabled(
   extension: IExtension
 ): Promise<boolean> {
-  return await checkPermissions(await extensionPermissions(extension));
+  return checkPermissions(await extensionPermissions(extension));
 }
 
 export async function ensureExtensionPermissions(
   extension: IExtension
 ): Promise<boolean> {
   const permissions = await extensionPermissions(extension);
-  return await ensureAllPermissions(permissions);
+  return ensureAllPermissions(permissions);
 }
 
 /**

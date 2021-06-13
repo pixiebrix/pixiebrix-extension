@@ -60,7 +60,7 @@ export function useDependency(
 
   const [hasPermissions] = useAsyncState(async () => {
     if (origins != null) {
-      return await checkPermissions([{ origins }]);
+      return checkPermissions([{ origins }]);
     } else {
       return false;
     }

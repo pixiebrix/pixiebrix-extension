@@ -210,7 +210,7 @@ const _proxyService = liftBackground(
     requestConfig: AxiosRequestConfig
   ): Promise<RemoteResponse> => {
     if (serviceConfig.proxy) {
-      return await proxyRequest(serviceConfig, requestConfig);
+      return proxyRequest(serviceConfig, requestConfig);
     } else {
       try {
         return await backgroundRequest(

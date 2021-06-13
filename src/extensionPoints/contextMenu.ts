@@ -362,7 +362,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   }
 
   async getBaseReader() {
-    return await mergeReaders(this._definition.reader);
+    return mergeReaders(this._definition.reader);
   }
 
   public get defaultOptions(): {

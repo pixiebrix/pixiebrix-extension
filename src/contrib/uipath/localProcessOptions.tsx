@@ -155,7 +155,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     Array<RobotProcess>
   >(async () => {
     if (robotAvailable) {
-      return await getUiPathProcesses(port);
+      return getUiPathProcesses(port);
     } else {
       return [];
     }
