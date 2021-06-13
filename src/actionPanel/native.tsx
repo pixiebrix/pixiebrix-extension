@@ -141,17 +141,17 @@ export function getStore(): ActionPanelStore {
 
 function renderPanels() {
   if (_showPanel) {
-    try {
-      browser.runtime.sendMessage({
+    browser.runtime
+      .sendMessage({
         type: FORWARD_FRAME_NOTIFICATION,
         payload: {
           type: RENDER_PANELS_MESSAGE,
           payload: { panels: _panels },
         },
+      })
+      .catch((err) => {
+        reportError(err);
       });
-    } catch (err) {
-      reportError(err);
-    }
   }
 }
 
