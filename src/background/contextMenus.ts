@@ -18,7 +18,6 @@
 import { liftBackground } from "@/background/protocol";
 import { browser, ContextMenus, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
-import { unary } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
@@ -72,20 +71,20 @@ async function dispatchMenu(
     showNotification(target, {
       message: "Ran content menu item action",
       className: "success",
-    }).catch(unary(reportError));
+    }).catch(reportError);
   } catch (err) {
     if (hasCancelRootCause(err)) {
       showNotification(target, {
         message: "The action was cancelled",
         className: "info",
-      }).catch(unary(reportError));
+      }).catch(reportError);
     } else {
       const message = `Error processing context menu action: ${getErrorMessage(
         err
       )}`;
       reportError(new Error(message));
       showNotification(target, { message, className: "error" }).catch(
-        unary(reportError)
+        reportError
       );
     }
   }
