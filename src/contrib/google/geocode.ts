@@ -118,7 +118,7 @@ export class GeocodeTransformer extends Transformer {
   });
 
   async transform({ service, address }: BlockArg): Promise<GeocodedAddress> {
-    return await geocodeAddress(service, address);
+    return geocodeAddress(service, address);
   }
 }
 

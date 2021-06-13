@@ -155,7 +155,7 @@ export async function blockList(
           config
         );
       }
-      return await blockRegistry.lookup(id);
+      return blockRegistry.lookup(id);
     })
   );
 }
@@ -473,7 +473,7 @@ export async function mergeReaders(
   readerConfig: ReaderConfig
 ): Promise<IReader> {
   if (typeof readerConfig === "string") {
-    return (await blockRegistry.lookup(readerConfig)) as IReader;
+    return blockRegistry.lookup(readerConfig) as Promise<IReader>;
   } else if (Array.isArray(readerConfig)) {
     return new ArrayCompositeReader(
       await Promise.all(readerConfig.map(mergeReaders))

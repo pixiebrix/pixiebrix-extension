@@ -42,7 +42,7 @@ const TabField: React.FunctionComponent<
 
   const [tabNames, tabsPending, tabsError] = useAsyncState(async () => {
     if (doc?.id && port) {
-      return await devtoolsProtocol.getTabNames(port, doc.id);
+      return devtoolsProtocol.getTabNames(port, doc.id);
     } else {
       return [];
     }

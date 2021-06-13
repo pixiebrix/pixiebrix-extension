@@ -217,16 +217,16 @@ const pixieResolver: ResolverOptions = {
 };
 
 export async function bundle(schema: Schema): Promise<Schema> {
-  return (await $RefParser.bundle(schema as any, {
+  return $RefParser.bundle(schema as any, {
     resolve: { pixieResolver },
-  })) as Schema;
+  }) as Promise<Schema>;
 }
 
 export async function dereference(schema: Schema): Promise<Schema> {
-  return (await $RefParser.dereference(schema as any, {
+  return $RefParser.dereference(schema as any, {
     resolve: { pixieResolver },
     dereference: {
       circular: "ignore",
     },
-  })) as Schema;
+  }) as Promise<Schema>;
 }

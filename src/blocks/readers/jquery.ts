@@ -85,9 +85,7 @@ async function processFind(
   $elt: JQuery<HTMLElement | Document>,
   selector: ChildrenSelector
 ): Promise<{ [key: string]: Result }> {
-  return await asyncMapValues(selector.find, (selector) =>
-    select(selector, $elt)
-  );
+  return asyncMapValues(selector.find, (selector) => select(selector, $elt));
 }
 
 function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
@@ -224,7 +222,7 @@ async function read(
   if ($root.length === 0) {
     throw new Error("JQuery reader requires the document or element(s)");
   }
-  return await asyncMapValues(selectors, (selector) => select(selector, $root));
+  return asyncMapValues(selectors, (selector) => select(selector, $root));
 }
 
 registerFactory("jquery", read);

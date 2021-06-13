@@ -507,7 +507,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
   }
 
   async defaultReader(): Promise<IReader> {
-    return await mergeReaders(this._definition.reader);
+    return mergeReaders(this._definition.reader);
   }
 
   addPanel($panel: JQuery): void {
@@ -541,7 +541,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
 
   async isAvailable(): Promise<boolean> {
     const { isAvailable } = this._definition;
-    return await checkAvailable(isAvailable);
+    return checkAvailable(isAvailable);
   }
 }
 

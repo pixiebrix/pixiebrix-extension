@@ -85,7 +85,7 @@ export async function isInstalled(target: Target): Promise<PingResponse> {
 export const detectFrameworks = liftContentScript(
   "DETECT_FRAMEWORKS",
   async () => {
-    return await withDetectFrameworkVersions(null);
+    return withDetectFrameworkVersions(null);
   }
 );
 
@@ -95,7 +95,7 @@ export const searchWindow: (
 ) => Promise<{ results: unknown[] }> = liftContentScript(
   "SEARCH_WINDOW",
   async (query: string) => {
-    return await withSearchWindow({ query });
+    return withSearchWindow({ query });
   }
 );
 
@@ -125,7 +125,7 @@ export const runReaderBlock = liftContentScript(
       }
     } else {
       const reader = (await blockRegistry.lookup(id)) as IReader;
-      return await reader.read(root);
+      return reader.read(root);
     }
   }
 );
@@ -146,7 +146,7 @@ export const runReader = liftContentScript(
         ? $(document).find(rootSelector).get(0)
         : document;
 
-    return await makeRead(config)(root);
+    return makeRead(config)(root);
   }
 );
 

@@ -834,7 +834,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   }
 
   async isAvailable(): Promise<boolean> {
-    return await checkAvailable(this._definition.isAvailable);
+    return checkAvailable(this._definition.isAvailable);
   }
 }
 

@@ -231,7 +231,7 @@ const ReaderBlockConfig: React.FunctionComponent<{
     // readerIndex is a number
     // eslint-disable-next-line security/detect-object-injection
     const reader = values.readers[readerIndex];
-    return (await blockRegistry.lookup(reader.metadata.id)) as IReader;
+    return blockRegistry.lookup(reader.metadata.id) as Promise<IReader>;
   }, [readerIndex, values.readers]);
 
   if (!readerBlock) {

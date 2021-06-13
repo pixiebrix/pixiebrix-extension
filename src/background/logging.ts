@@ -80,7 +80,7 @@ const indexKeys = [
 ];
 
 async function getDB() {
-  return await openDB<LogDB>(STORAGE_KEY, 1, {
+  return openDB<LogDB>(STORAGE_KEY, 1, {
     upgrade(db) {
       // Create a store of objects
       const store = db.createObjectStore(ENTRY_OBJECT_STORE, {
@@ -315,13 +315,13 @@ export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
 export const getLoggingConfig = liftBackground(
   "GET_LOGGING_CONFIG",
   async () => {
-    return await _getLoggingConfig();
+    return _getLoggingConfig();
   }
 );
 
 export const setLoggingConfig = liftBackground(
   "SET_LOGGING_CONFIG",
   async (config: LoggingConfig) => {
-    return await _setLoggingConfig(config);
+    return _setLoggingConfig(config);
   }
 );

@@ -97,11 +97,11 @@ const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
 });
 
 export const getDNT = liftBackground("GET_DNT", async () => {
-  return await _getDNT();
+  return _getDNT();
 });
 
 export const getUID = liftBackground("GET_UID", async () => {
-  return await uid();
+  return uid();
 });
 
 export const getExtensionVersion = liftBackground(
@@ -114,7 +114,7 @@ export const getExtensionVersion = liftBackground(
 export const toggleDNT = liftBackground(
   "TOGGLE_DNT",
   async (enabled: boolean) => {
-    return await _toggleDNT(enabled);
+    return _toggleDNT(enabled);
   }
 );
 

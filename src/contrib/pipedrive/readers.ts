@@ -53,12 +53,12 @@ class PipedriveReader extends Reader {
   }
 
   async isAvailable() {
-    return await checkRoute(this.resourceType);
+    return checkRoute(this.resourceType);
   }
 
   async read() {
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/31265
-    return await withReadWindow({
+    return withReadWindow({
       pathSpec: mapValues(
         this.pathSpec,
         (x: string) => `${this.ROOT_PATH}.${x}`

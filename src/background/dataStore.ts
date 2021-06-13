@@ -41,7 +41,7 @@ async function _setRecord(uuid: string, value: JsonObject): Promise<void> {
 export const getRecord = liftBackground(
   "GET_DATA_STORE",
   async (uuid: string) => {
-    return await _getRecord(uuid);
+    return _getRecord(uuid);
   }
 );
 

@@ -40,7 +40,7 @@ async function handleFlatten(
 
 async function doRead(reader: WindowConfig): Promise<ReaderOutput> {
   const { pathSpec: rawPathSpec, waitMillis } = reader;
-  return await handleFlatten(rawPathSpec, (pathSpec) =>
+  return handleFlatten(rawPathSpec, (pathSpec) =>
     withReadWindow({
       pathSpec,
       waitMillis,

@@ -60,7 +60,7 @@ function makeRead(framework: Framework): Read<FrameworkConfig> {
       ? await asyncFastCssSelector(root as HTMLElement)
       : null;
 
-    return await getComponentData({
+    return getComponentData({
       framework,
       selector: compact([rootSelector, selector]).join(" "),
       rootProp,

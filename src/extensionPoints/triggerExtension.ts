@@ -71,7 +71,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 
   async install(): Promise<boolean> {
-    return await this.isAvailable();
+    return this.isAvailable();
   }
 
   removeExtensions(): void {
@@ -300,7 +300,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
   }
 
   async isAvailable(): Promise<boolean> {
-    return await checkAvailable(this._definition.isAvailable);
+    return checkAvailable(this._definition.isAvailable);
   }
 }
 

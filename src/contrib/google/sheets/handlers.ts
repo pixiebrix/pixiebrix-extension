@@ -213,13 +213,13 @@ export const devtoolsProtocol = {
   getTabNames: liftDevtools(
     "GET_TAB_NAMES",
     () => async (spreadsheetId: string) => {
-      return await getTabNames(spreadsheetId);
+      return getTabNames(spreadsheetId);
     }
   ),
   getSheetProperties: liftDevtools(
     "GET_SHEET_PROPERTIES",
     () => async (spreadsheetId: string) => {
-      return await getSheetProperties(spreadsheetId);
+      return getSheetProperties(spreadsheetId);
     }
   ),
   getHeaders: liftDevtools(
@@ -231,7 +231,7 @@ export const devtoolsProtocol = {
       spreadsheetId: string;
       tabName: string;
     }) => {
-      return await getHeaders(spreadsheetId, tabName);
+      return getHeaders(spreadsheetId, tabName);
     }
   ),
 };

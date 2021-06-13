@@ -234,11 +234,11 @@ class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
   }
 
   async defaultReader(): Promise<IReader> {
-    return await mergeReaders(this._definition.reader);
+    return mergeReaders(this._definition.reader);
   }
 
   async isAvailable(): Promise<boolean> {
-    return await checkAvailable(this._definition.isAvailable);
+    return checkAvailable(this._definition.isAvailable);
   }
 }
 

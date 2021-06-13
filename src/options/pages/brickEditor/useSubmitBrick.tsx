@@ -57,7 +57,7 @@ function useSubmitBrick({
   const dispatch = useDispatch();
 
   const validate = useCallback(
-    async (values: EditorValues) => await validateSchema(values.config),
+    async (values: EditorValues) => validateSchema(values.config),
     []
   );
 

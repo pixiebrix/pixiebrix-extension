@@ -103,7 +103,7 @@ attachListener(SEARCH_WINDOW, ({ query }) => {
 });
 
 attachListener(DETECT_FRAMEWORK_VERSIONS, async () => {
-  return await detectLibraries();
+  return detectLibraries();
 });
 
 // needs to be object because we want window to be a valid argument
@@ -228,7 +228,7 @@ attachListener(
     if (!adapter) {
       throw new Error(`No read adapter available for ${framework}`);
     }
-    return await read(adapter, selector, options);
+    return read(adapter, selector, options);
   }
 );
 

@@ -170,7 +170,7 @@ export function liftBackground<R extends SerializableResponse>(
     }
   }
 
-  return async (port: Runtime.Port, ...args: unknown[]) => {
+  return async (port: Runtime.Port, ...args: unknown[]): Promise<R> => {
     if (isBackgroundPage()) {
       throw new Error(
         "This method should not be called from the background page"
@@ -178,7 +178,7 @@ export function liftBackground<R extends SerializableResponse>(
     } else if (!port) {
       throw new Error("Devtools port is required");
     }
-    return (await callBackground(port, fullType, args, options)) as R;
+    return callBackground(port, fullType, args, options) as Promise<R>;
   };
 }
 

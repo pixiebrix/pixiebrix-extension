@@ -48,7 +48,7 @@ export function useEnsurePermissions(deployments: Deployment[]) {
   const [permissions, isPending] = useAsyncState(async () => {
     // Deployments can only use proxied services, so there's no additional permissions to request for the
     // the serviceAuths.
-    return await collectPermissions(
+    return collectPermissions(
       blueprints.flatMap((x) => x.extensionPoints),
       []
     );
