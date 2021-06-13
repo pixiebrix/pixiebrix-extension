@@ -175,12 +175,8 @@ const throttledInit = throttle(_init, 30 * 60 * 1000, {
 export const initUID = liftBackground(
   "INIT_UID",
   async (): Promise<void> => {
-    try {
-      if (!(await _getDNT())) {
-        throttledInit();
-      }
-    } catch (err) {
-      console.warn("Error initializing uid", { err });
+    if (!(await _getDNT())) {
+      throttledInit();
     }
   },
   { asyncResponse: false }
