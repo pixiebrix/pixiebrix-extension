@@ -71,8 +71,8 @@ export const getAvailableVersion = liftBackground(
 );
 
 async function setUninstallURL(): Promise<void> {
-  const url = new URL("https://www.pixiebrix.com/uninstall/");
   if (!(await getDNT())) {
+    const url = new URL("https://www.pixiebrix.com/uninstall/");
     url.searchParams.set("uid", await getUID());
     await browser.runtime.setUninstallURL(url.toString());
   }
@@ -82,6 +82,6 @@ browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
 browser.runtime.onInstalled.addListener(install);
 browser.runtime.onStartup.addListener(init);
 
-setUninstallURL().catch((err) => {
-  reportError(err);
-});
+if (!process.env.DEBUG) {
+  setUninstallURL().catch(reportError);
+}
