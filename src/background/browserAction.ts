@@ -34,20 +34,18 @@ export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAM
 const tabNonces = new Map<number, string>();
 const tabFrames = new Map<number, number>();
 
-function handleBrowserAction(tab: chrome.tabs.Tab): void {
+async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
   // We're either getting a new frame, or getting rid of the existing one. Therefore, forget the old frame
   // id so we're not sending messages to a dead frame
   tabFrames.delete(tab.id);
 
-  injectContentScript({ tabId: tab.id, frameId: 0 })
-    .then(() => {
-      return toggleActionPanel({ tabId: tab.id, frameId: 0 }).then((nonce) => {
-        tabNonces.set(tab.id, nonce);
-      });
-    })
-    .catch((err) => {
-      reportError(err);
-    });
+  try {
+    await injectContentScript({ tabId: tab.id, frameId: 0 });
+    const nonce = await toggleActionPanel({ tabId: tab.id, frameId: 0 });
+    tabNonces.set(tab.id, nonce);
+  } catch (err) {
+    reportError(err);
+  }
 }
 
 type RegisterActionFrameMessage = {

@@ -70,72 +70,62 @@ type AttachHandler = (type: string, handler: Handler) => void;
 
 const handlers: { [type: string]: Handler } = {};
 
-export function initialize(): AttachHandler {
-  window.addEventListener("message", function (event) {
-    const handler = handlers[event.data?.type];
+async function messageHandler(event: MessageEvent): Promise<void> {
+  const handler = handlers[event.data?.type];
 
-    if (!handler) {
-      return;
+  if (!handler) {
+    return;
+  }
+
+  const { meta, type, payload } = event.data;
+
+  console.debug(`RECEIVE ${type}`, event.data);
+
+  try {
+    const result = await handler(payload);
+
+    let cleanResult;
+    try {
+      // Chrome will drop the whole detail if it contains non-serializable values, e.g., methods
+      cleanResult = cleanValue(result ?? null);
+    } catch (err) {
+      console.error("Cannot serialize result", { result, err });
+      throw new Error(`Cannot serialize result for result ${type}`);
     }
 
-    const { meta, type, payload } = event.data;
-
-    console.debug(`RECEIVE ${type}`, event.data);
-
-    const reject = (error: unknown) => {
-      try {
-        const detail = {
-          id: meta.id,
-          error,
-        };
-        console.warn(`pageScript responding ${type}_REJECTED`, detail);
-        document.dispatchEvent(
-          new CustomEvent(`${type}_REJECTED`, {
-            detail,
-          })
-        );
-      } catch (err) {
-        console.error(
-          `An error occurred while dispatching an error for ${type}`,
-          { error: err, originalError: error }
-        );
-      }
+    const detail = {
+      id: meta.id,
+      result: cleanResult,
     };
-
-    const fulfill = (result: unknown) => {
-      let cleanResult;
-      try {
-        // Chrome will drop the whole detail if it contains non-serializable values, e.g., methods
-        cleanResult = cleanValue(result ?? null);
-      } catch (err) {
-        console.error("Cannot serialize result", { result, err });
-        throw new Error(`Cannot serialize result for result ${type}`);
-      }
-
+    console.debug(`pageScript responding ${type}_FULFILLED`, detail);
+    document.dispatchEvent(
+      new CustomEvent(`${type}_FULFILLED`, {
+        detail,
+      })
+    );
+  } catch (error) {
+    try {
       const detail = {
         id: meta.id,
-        result: cleanResult,
+        error,
       };
-      console.debug(`pageScript responding ${type}_FULFILLED`, detail);
+      console.warn(`pageScript responding ${type}_REJECTED`, detail);
       document.dispatchEvent(
-        new CustomEvent(`${type}_FULFILLED`, {
+        new CustomEvent(`${type}_REJECTED`, {
           detail,
         })
       );
-    };
-
-    let resultPromise;
-
-    try {
-      resultPromise = handler(payload);
-    } catch (error) {
-      // handler is a function that immediately generated an error -- bail early.
-      reject(error);
-      return;
+    } catch (err) {
+      console.error(
+        `An error occurred while dispatching an error for ${type}`,
+        { error: err, originalError: error }
+      );
     }
+  }
+}
 
-    Promise.resolve(resultPromise).then(fulfill).catch(reject);
-  });
+export function initialize(): AttachHandler {
+  window.addEventListener("message", messageHandler);
 
   return (messageType: string, handler: Handler) => {
     handlers[messageType] = handler;

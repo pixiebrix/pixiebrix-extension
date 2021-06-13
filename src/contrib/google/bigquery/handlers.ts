@@ -36,19 +36,18 @@ const actionId = (x: string) => `GOOGLE_BIGQUERY_${x}`;
 const initialized = false;
 
 async function ensureBigQuery(): Promise<void> {
-  if (!initialized) {
-    // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md
-    return new Promise<void>((resolve, reject) => {
-      gapi.client.load("bigquery", "v2").then(resolve, (reason) => {
-        console.debug("Error fetching BigQuery API definition", {
-          error: reason.error,
-        });
-        reject("Error fetching BigQuery API definition");
-      });
-    });
-  } else {
-    // return Promise.resolve();
+  if (initialized) {
     return;
+  }
+
+  // https://github.com/google/google-api-javascript-client/blob/master/docs/reference.md
+  try {
+    return await gapi.client.load("bigquery", "v2");
+  } catch (reason) {
+    console.debug("Error fetching BigQuery API definition", {
+      error: reason.error,
+    });
+    throw new Error("Error fetching BigQuery API definition");
   }
 }
 

@@ -115,20 +115,18 @@ class LazyLocatorFactory {
     this.makeOptions();
   }
 
+  // TODO: Replace with proper debouncer when one exists https://github.com/sindresorhus/promise-fun/issues/15
   async refresh(): Promise<void> {
-    if (this._refreshPromise) {
-      return await this._refreshPromise;
-    }
-    const timestamp = Date.now();
-    this._refreshPromise = Promise.all([
-      this.refreshLocal(),
-      this.refreshRemote(),
-    ]).then(() => {
-      this.makeOptions();
-      this._initialized = true;
-    });
+    this._refreshPromise = this._refreshPromise || this._refresh();
     await this._refreshPromise;
     this._refreshPromise = null;
+  }
+
+  private async _refresh(): Promise<void> {
+    const timestamp = Date.now();
+    await Promise.all([this.refreshLocal(), this.refreshRemote()]);
+    this.makeOptions();
+    this._initialized = true;
     this.updateTimestamp = timestamp;
     console.debug(`Refreshed service locator`, {
       updateTimestamp: this.updateTimestamp,

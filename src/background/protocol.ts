@@ -132,15 +132,7 @@ function externalSendMessage(
   message: unknown,
   options?: Runtime.SendMessageOptionsType
 ): Promise<unknown> {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(extensionId, message, options, (response) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        resolve(response);
-      }
-    });
-  });
+  return browser.runtime.sendMessage(extensionId, message, options);
 }
 
 export async function callBackground(
@@ -151,8 +143,6 @@ export async function callBackground(
   const nonce = uuidv4();
   const message = { type, payload: args, meta: { nonce } };
 
-  // When accessing from an external site via chrome, browser.runtime won't be available.
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Content_scripts#Communicating_with_background_scripts
   const sendMessage = isExtensionContext()
     ? browser.runtime.sendMessage
     : externalSendMessage;
@@ -246,7 +236,7 @@ export function liftBackground<R extends SerializableResponse>(
   return async (...args: unknown[]) => {
     if (isBackgroundPage()) {
       console.log(`Resolving ${type} immediately from background page`);
-      return new Promise((resolve) => resolve(method(...args)));
+      return method(...args);
     }
     return (await callBackground(fullType, args, options)) as any;
   };

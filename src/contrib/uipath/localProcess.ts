@@ -19,7 +19,7 @@ import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import UiPathRobot from "@/contrib/uipath/UiPathRobot";
-import { JobResult, RobotProcess } from "@uipath/robot/dist/models";
+import { JobResult } from "@uipath/robot/dist/models";
 import { BusinessError } from "@/errors";
 
 UiPathRobot.settings.disableTelemetry = true;
@@ -57,34 +57,33 @@ export class RunLocalProcess extends Transformer {
     { releaseKey, inputArguments = {} }: BlockArg,
     { logger }: BlockOptions
   ): Promise<JobResult> {
-    return new Promise((resolve, reject) => {
-      UiPathRobot.on("missing-components", () => {
-        reject(new Error("UiPath Assistant not found. Is it installed?"));
-      });
+    return Promise.race([
+      // Throw error if Assistant is missing
+      await new Promise((_, reject) => {
+        UiPathRobot.on("missing-components", () => {
+          reject(new Error("UiPath Assistant not found. Is it installed?"));
+        });
+      }),
 
-      const robot = UiPathRobot.init();
+      // Run requested process
+      (async () => {
+        const processes = await UiPathRobot.init().getProcesses();
 
-      robot.getProcesses().then((processes: RobotProcess[]) => {
-        const process = processes.find(
-          (x: RobotProcess) => x.id === releaseKey
-        );
+        const process = processes.find((x) => x.id === releaseKey);
         if (!process) {
           logger.error(`Cannot find UiPath release: ${releaseKey}`);
           throw new BusinessError(`Cannot find UiPath release`);
         }
+
         console.debug("Running local UiPath process", { releaseKey });
-        process.start(inputArguments).then(
-          (result) => {
-            console.debug("Forwarding result from local UiPath process", {
-              result,
-              releaseKey,
-            });
-            resolve(result);
-          },
-          (reason) => reject(reason)
-        );
-      });
-    });
+        const result = await process.start(inputArguments);
+        console.debug("Forwarding result from local UiPath process", {
+          result,
+          releaseKey,
+        });
+        return result;
+      })(),
+    ]);
   }
 }
 
