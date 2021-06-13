@@ -38,11 +38,15 @@
     }]
   },
   "ignorePatterns": [
-    "browsers/chrome/webpack/**",
-    "browsers/firefox/webpack/**",
+    "node_modules",
+    ".idea",
+    "assets/bundles",
+    "browsers/dist",
+    "artifacts",
+    "scripts/bin",
     "browsers/webpack.config.js",
     "scripts/webpack.scripts.js",
-    "src/vendors/libraryDetector/**",
+    "src/vendors",
     "src/**/*.test.ts",
     "src/**/*.test.js",
     "src/support.js"
