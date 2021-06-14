@@ -108,7 +108,7 @@
     "webext-detect-page": "^2.0.5",
     "webext-dynamic-content-scripts": "^7.0.0",
     "webext-patterns": "^1.1.0",
-    "webextension-polyfill-ts": "^0.22.0"
+    "webextension-polyfill-ts": "^0.25.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
