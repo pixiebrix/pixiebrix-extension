@@ -36,22 +36,18 @@ function initGoogle(): void {
   }
 
   // https://bumbu.me/gapi-in-chrome-extension
-  function onGAPILoad() {
-    gapi.client
-      .init({
+  async function onGAPILoad() {
+    try {
+      await gapi.client.init({
         // Don't pass client nor scope as these will init auth2, which we don't want
         // until the user actually uses a brick
         apiKey: API_KEY,
         discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
-      })
-      .then(
-        () => {
-          console.log("gapi initialized");
-        },
-        (error) => {
-          console.error("Error initializing gapi", error);
-        }
-      );
+      });
+      console.log("gapi initialized");
+    } catch (error) {
+      console.error("Error initializing gapi", error);
+    }
   }
 
   window.onGAPILoad = onGAPILoad;

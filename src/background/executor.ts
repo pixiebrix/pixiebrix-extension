@@ -139,22 +139,18 @@ function backgroundListener(
         return Promise.reject(new BusinessError("Sender tab has no opener"));
       }
 
-      return new Promise((resolve) => {
-        browser.tabs
-          .sendMessage(
-            opener,
-            {
-              type: CONTENT_MESSAGE_RUN_BLOCK,
-              payload: {
-                sourceTabId: sender.tab.id,
-                ...request.payload,
-              },
-            },
-            // for now, only support top-level frame as opener
-            { frameId: TOP_LEVEL_FRAME }
-          )
-          .then(resolve);
-      });
+      return browser.tabs.sendMessage(
+        opener,
+        {
+          type: CONTENT_MESSAGE_RUN_BLOCK,
+          payload: {
+            sourceTabId: sender.tab.id,
+            ...request.payload,
+          },
+        },
+        // for now, only support top-level frame as opener
+        { frameId: TOP_LEVEL_FRAME }
+      );
     }
     case MESSAGE_RUN_BLOCK_BROADCAST: {
       const tabTargets = Object.entries(tabReady).filter(

@@ -82,21 +82,20 @@ import { isConnectionError } from "@/errors";
 
 const start = Date.now();
 
-const contextPromise = whoAmI()
-  .then((sender) => {
+async function init(): Promise<void> {
+  const sender = await whoAmI();
+  try {
     updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
     console.debug(
       // Safe because we're using our own symbol defined above
       // eslint-disable-next-line security/detect-object-injection
       `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}: ${window[PIXIEBRIX_SYMBOL]}`
     );
-  })
-  .catch((reason) => {
+  } catch (reason) {
     console.warn("Error getting tabId/frameId", reason);
     throw reason;
-  });
+  }
 
-contextPromise
   // Refreshing remote services on every page load is too slow
   // .then(() => {
   //   // Reload services on background page for each new page. This is inefficient right now, but will
@@ -106,20 +105,24 @@ contextPromise
   //     throw reason;
   //   });
   // })
-  .then(() => {
-    return handleNavigate().catch((reason) => {
-      console.warn("Error initializing content script", reason);
-      throw reason;
-    });
-  })
-  .then(() => {
-    // Let the background script know we're ready to execute remote actions
+
+  try {
+    await handleNavigate();
+  } catch (reason) {
+    console.warn("Error initializing content script", reason);
+    throw reason;
+  }
+
+  try {
+    // await the background script know we're ready to execute remote actions
     markReady();
     console.info(`contentScript ready in ${Date.now() - start}ms`);
-    return notifyReady().catch((reason) => {
-      console.warn("Error pinging the background script", reason);
-      throw reason;
-    });
-  });
+    await notifyReady();
+  } catch (reason) {
+    console.warn("Error pinging the background script", reason);
+    throw reason;
+  }
+}
 
+init();
 initTelemetry();

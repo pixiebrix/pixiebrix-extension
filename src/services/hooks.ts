@@ -91,30 +91,28 @@ export function useDependency(
   const requestPermissions = useCallback(async () => {
     const permissions = { origins };
     console.debug("requesting origins", { permissions });
-    browser.permissions
-      .request(permissions)
-      .then((result) => {
-        setGrantedPermissions(result);
-        if (!result) {
-          addToast("You must accept the permissions request", {
-            appearance: "warning",
-            autoDismiss: true,
-          });
-        } else {
-          const key = `${dependency.id}:${dependency.config}`;
-          for (const listener of permissionsListeners.get(key)) {
-            listener();
-          }
-        }
-      })
-      .catch((err) => {
-        setGrantedPermissions(false);
-        reportError(err);
-        addToast(`Error granting permissions: ${err.toString()}`, {
-          appearance: "error",
+    try {
+      const result = await browser.permissions.request(permissions);
+      setGrantedPermissions(result);
+      if (!result) {
+        addToast("You must accept the permissions request", {
+          appearance: "warning",
           autoDismiss: true,
         });
+      } else {
+        const key = `${dependency.id}:${dependency.config}`;
+        for (const listener of permissionsListeners.get(key)) {
+          listener();
+        }
+      }
+    } catch (err) {
+      setGrantedPermissions(false);
+      reportError(err);
+      addToast(`Error granting permissions: ${err.toString()}`, {
+        appearance: "error",
+        autoDismiss: true,
       });
+    }
   }, [
     serviceResult,
     addToast,

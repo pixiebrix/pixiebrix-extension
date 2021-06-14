@@ -17,7 +17,6 @@
 
 // https://developer.chrome.com/extensions/devtools
 
-import { unary } from "lodash";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 
@@ -39,42 +38,30 @@ window.addEventListener("unhandledrejection", function (e) {
   reportError(e);
 });
 
-function installSidebarPane(port: Runtime.Port) {
-  // The following wasn't returning a value
-  // const sidebar = await browser.devtools.panels.elements.createSidebarPane("Data Viewer");
-  chrome.devtools.panels.elements.createSidebarPane(
-    "PixieBrix Data Viewer",
-    function (sidebar) {
-      function updateElementProperties() {
-        if (sidebar) {
-          // https://developer.chrome.com/extensions/devtools#selected-element
-          chrome.devtools.inspectedWindow.eval("setSelectedElement($0)", {
-            useContentScriptContext: true,
-          });
+async function installSidebarPane(port: Runtime.Port) {
+  // TODO: Drop type assertion after https://github.com/Lusito/webextension-polyfill-ts/issues/60
+  const sidebar = ((await browser.devtools.panels.elements.createSidebarPane(
+    "PixieBrix Data Viewer"
+  )) as any) as chrome.devtools.panels.ExtensionSidebarPane;
 
-          sidebar.setObject({ state: "loading..." });
-
-          readSelectedElement(port)
-            .then((obj) => {
-              sidebar.setObject(obj);
-            })
-            .catch((reason) => {
-              sidebar.setObject({ error: reason ?? "Unknown error" });
-            });
-        }
-      }
-      updateElementProperties();
-      chrome.devtools.panels.elements.onSelectionChanged.addListener(
-        updateElementProperties
-      );
-    }
-  );
-
-  if (browser.runtime.lastError) {
-    console.error("Error adding data viewer elements pane", {
-      error: browser.runtime.lastError,
+  async function updateElementProperties() {
+    // https://developer.chrome.com/extensions/devtools#selected-element
+    chrome.devtools.inspectedWindow.eval("setSelectedElement($0)", {
+      useContentScriptContext: true,
     });
+
+    sidebar.setObject({ state: "loading..." });
+
+    try {
+      sidebar.setObject(await readSelectedElement(port));
+    } catch (reason) {
+      sidebar.setObject({ error: reason ?? "Unknown error" });
+    }
   }
+  updateElementProperties();
+  chrome.devtools.panels.elements.onSelectionChanged.addListener(
+    updateElementProperties
+  );
 }
 
 function installPanel() {
@@ -96,7 +83,8 @@ function installPanel() {
   );
 }
 
-async function initialize(port: Runtime.Port) {
+async function initialize() {
+  const port = await connectDevtools();
   let injected = false;
 
   try {
@@ -107,7 +95,9 @@ async function initialize(port: Runtime.Port) {
     console.debug("Could not inject contextScript for devtools", { reason });
   }
 
-  installSidebarPane(port);
+  installSidebarPane(port).catch((error) => {
+    console.error("Error adding data viewer elements pane", { error });
+  });
   installPanel();
 
   if (injected) {
@@ -124,5 +114,5 @@ async function initialize(port: Runtime.Port) {
 }
 
 if (browser.devtools.inspectedWindow.tabId) {
-  connectDevtools().then(initialize).catch(unary(reportError));
+  initialize().catch(reportError);
 }
