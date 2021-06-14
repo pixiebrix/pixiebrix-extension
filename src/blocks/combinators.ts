@@ -429,13 +429,15 @@ export async function reducePipeline(
       if (stage.onError?.alert) {
         if (logger.context.deploymentId) {
           try {
-            await sendDeploymentAlert({
+            void sendDeploymentAlert({
               deploymentId: logger.context.deploymentId,
               data: {
                 id: stage.id,
                 args: currentArgs,
                 error: serializeError(ex),
               },
+            }).catch((err) => {
+              reportError(err);
             });
           } catch (err) {
             reportError(err);
