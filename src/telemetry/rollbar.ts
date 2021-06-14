@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,18 @@ export async function updateAuth({
   }
 }
 
+type Frame = {
+  filename: string;
+};
+
+type Payload = {
+  body: {
+    trace: {
+      frames: Frame[];
+    };
+  };
+};
+
 export function initRollbar(): void {
   if (
     process.env.ROLLBAR_BROWSER_ACCESS_TOKEN &&
@@ -81,19 +93,17 @@ export function initRollbar(): void {
         },
         environment: process.env.ENVIRONMENT,
       },
-      transform: function (payload: Record<string, unknown>) {
-        // @ts-ignore: copied this example from Rollbar's documentation, so should presumably always be available
+      transform: function (payload: Payload) {
+        // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
+        // https://docs.rollbar.com/docs/source-maps#section-using-source-maps-on-many-domains
         const trace = payload.body.trace;
-        const locRegex = /^(chrome-extension|moz-extension):\/\/(.*?)\/(.*)/;
         if (trace && trace.frames) {
-          for (let i = 0; i < trace.frames.length; i++) {
-            const filename = trace.frames[i].filename;
-            if (filename) {
-              const m = filename.match(locRegex);
-              // Be sure that the minified_url when uploading includes the build type
-              trace.frames[
-                i
-              ].filename = `${m[1]}://${process.env.ENVIRONMENT}/${m[3]}`;
+          for (const frame of trace.frames) {
+            if (frame.filename?.includes(process.env.CHROME_EXTENSION_ID)) {
+              frame.filename = frame.filename.replace(
+                location.origin,
+                process.env.ROLLBAR_PUBLIC_PATH
+              );
             }
           }
         }

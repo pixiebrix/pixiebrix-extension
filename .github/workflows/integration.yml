@@ -14,7 +14,7 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - run: npm test
 
-  stage-chrome:
+  stage:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +26,6 @@ jobs:
       - run: npm run build
         env:
           ENVIRONMENT: staging
-          ROLLBAR_PUBLIC_PATH: chrome-extension://staging/
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
           SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
           ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
@@ -39,41 +38,12 @@ jobs:
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
       - uses: actions/upload-artifact@v2
         with:
-          name: chrome-staging
+          name: build-staging
           path: browsers/dist
           retention-days: 5
       - uses: actions/upload-artifact@v2
         with:
-          name: chrome-bundle-size
-          path: report.html
-          retention-days: 5
-
-  stage-firefox:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: '14.x'
-      - uses: bahmutov/npm-install@v1
-      - run: npm run build
-        env:
-          ENVIRONMENT: staging
-          ROLLBAR_PUBLIC_PATH: moz-extension://staging/
-          EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
-          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
-          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
-          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
-          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
-      - uses: actions/upload-artifact@v2
-        with:
-          name: firefox-staging
-          path: browsers/dist
-          retention-days: 5
-      - uses: actions/upload-artifact@v2
-        with:
-          name: firefox-bundle-size
+          name: staging-build-size
           path: report.html
           retention-days: 5
 
