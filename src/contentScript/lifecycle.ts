@@ -101,34 +101,61 @@ export function getInstalledIds(): string[] {
   return _installedExtensionPoints.map((x) => x.id);
 }
 
+/**
+ * Remove a dynamic extension from the page.
+ *
+ * NOTE: if the dynamic extension was taking the place of a "permanent" extension, call `reactivate` or a similar
+ * method for the extension to be reloaded.
+ *
+ * @param uuid the uuid of the dynamic extension, or undefined to clear all dynamic extensions
+ */
 export function clearDynamic(uuid?: string): void {
+  const markUninstalled = (id: string) => {
+    // Remove from _installedExtensionPoints so they'll be re-added on a call to loadExtensions
+    const index = _installedExtensionPoints.findIndex((x) => x.id === id);
+    if (index >= 0) {
+      console.debug(`Extension point needs to be re-loaded: ${id}`);
+      _installedExtensionPoints.splice(index, 1);
+    }
+  };
   if (uuid) {
     if (_dynamic.has(uuid)) {
       console.debug(`clearDynamic: ${uuid}`);
-      _dynamic.get(uuid).uninstall({ global: true });
+      const extensionPoint = _dynamic.get(uuid);
+      extensionPoint.uninstall({ global: true });
       _dynamic.delete(uuid);
+      markUninstalled(extensionPoint.id);
     } else {
       console.debug(`No dynamic extension exists for uuid: ${uuid}`);
     }
   } else {
     for (const extensionPoint of _dynamic.values()) {
       extensionPoint.uninstall({ global: true });
+      markUninstalled(extensionPoint.id);
     }
     _dynamic.clear();
   }
+}
+
+function getNavSequence(): number {
+  return _navSequence;
+}
+
+function makeCancelOnNavigate(): () => boolean {
+  const currentNavSequence = _navSequence;
+  return () => getNavSequence() > currentNavSequence;
 }
 
 export async function runDynamic(
   uuid: string,
   extensionPoint: IExtensionPoint
 ): Promise<void> {
+  // Uninstall the previous extension point instance (in favor of the updated extensionPoint)
   if (_dynamic.has(uuid)) {
     _dynamic.get(uuid).uninstall();
   }
   _dynamic.set(uuid, extensionPoint);
-  const currentNavSequence = _navSequence;
-  const cancel = () => getNavSequence() > currentNavSequence;
-  await runExtensionPoint(extensionPoint, cancel);
+  await runExtensionPoint(extensionPoint, makeCancelOnNavigate());
 }
 
 /**
@@ -187,10 +214,6 @@ async function loadExtensionsOnce(): Promise<IExtensionPoint[]> {
   return _extensionPoints;
 }
 
-function getNavSequence() {
-  return _navSequence;
-}
-
 /**
  * Wait for the page to be ready according to the site-specific navigation rules.
  */
@@ -225,7 +248,8 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
  */
 export async function handleNavigate({
   openerTabId,
-}: { openerTabId?: number } = {}): Promise<void> {
+  force,
+}: { openerTabId?: number; force?: boolean } = {}): Promise<void> {
   if (context.frameId == null) {
     console.debug(
       "Ignoring handleNavigate because context.frameId is not set yet"
@@ -235,7 +259,7 @@ export async function handleNavigate({
 
   const href = location.href;
 
-  if (_frameHref.get(context.frameId) === href) {
+  if (!force && _frameHref.get(context.frameId) === href) {
     console.debug(
       `Ignoring NOOP navigation to ${href} (tabId=${context.tabId}, frameId=${context.frameId})`
     );
@@ -247,6 +271,7 @@ export async function handleNavigate({
   console.debug(
     `Handling navigation to ${href} (tabId=${context.tabId}, frameId=${context.frameId})`
   );
+
   await installScriptOnce();
 
   context.updateNavigationId();
@@ -260,9 +285,8 @@ export async function handleNavigate({
 
   if (extensionPoints.length) {
     _navSequence++;
-    const currentNavSequence = _navSequence;
 
-    const cancel = () => getNavSequence() > currentNavSequence;
+    const cancel = makeCancelOnNavigate();
 
     await waitLoaded(cancel);
 
@@ -301,5 +325,6 @@ export const queueReactivate = notifyContentScripts(
 
 export const reactivate = notifyContentScripts("REACTIVATE", async () => {
   await loadExtensions();
-  await handleNavigate();
+  // force navigate event even though the href hasn't changed
+  await handleNavigate({ force: true });
 });

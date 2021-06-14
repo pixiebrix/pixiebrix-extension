@@ -40,6 +40,9 @@ import { v4 as uuidv4 } from "uuid";
 import { callBackground } from "@/background/devtools/external";
 import { testTabPermissions, injectContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
+import { reactivate } from "@/background/navigation";
+
+const TOP_LEVEL_FRAME_ID = 0;
 
 let numOpenConnections = 0;
 
@@ -182,25 +185,34 @@ export function liftBackground<R extends SerializableResponse>(
   };
 }
 
+async function resetTab(tabId: number): Promise<void> {
+  try {
+    await nativeEditorProtocol.clear(
+      { tabId, frameId: TOP_LEVEL_FRAME_ID },
+      {}
+    );
+  } catch (err) {
+    console.warn(`Error clearing dynamic elements for tab: %d`, tabId, {
+      err,
+    });
+    reportError(err);
+  }
+  console.info(`Removed dynamic elements for tab: %d`, tabId);
+
+  // Re-activate the content script so any saved extensions are added to the page as "permanent" extensions
+  await reactivate();
+
+  console.info(`Re-activated extensions for tab: %d`, tabId);
+}
+
 function deleteStaleConnections(port: Runtime.Port) {
   const tabIds = Array.from(connections.keys());
+  // Theoretically each port should only correspond to a single tab, but iterate over all tabIds just to be safe
   for (const tabId of tabIds) {
-    // Theoretically each port should only correspond to a single tab, but iterate overall just to be safe
     if (connections.get(tabId) === port) {
       connections.delete(tabId);
 
-      nativeEditorProtocol
-        // FIXME: need to support non-top frame here?
-        .clear({ tabId, frameId: 0 }, {})
-        .catch((err) => {
-          console.warn(`Error clearing dynamic elements for tab: ${tabId}`, {
-            err,
-          });
-          reportError(err);
-        })
-        .then(() => {
-          console.info(`Removed dynamic elements for tab: ${tabId}`);
-        });
+      void resetTab(tabId);
 
       if (permissionsListeners.has(tabId)) {
         const listeners = permissionsListeners.get(tabId);
@@ -256,9 +268,11 @@ export function registerPort(tabId: TabId, port: Runtime.Port): void {
   connections.set(tabId, port);
 }
 
-// Listener to inject contentScript on tabs that user has granted temporary access to and that the devtools
-// are open. If the user has granted permanent access, the content script will be injected based on the
-// dynamic content script permissions registerPolyfill
+/**
+ * Listener to inject contentScript on tabs that user has granted temporary access to and that the devtools
+ * are open. If the user has granted permanent access, the content script will be injected based on the
+ * dynamic content script permissions registerPolyfill
+ */
 async function injectTemporaryAccess({
   tabId,
   frameId,
@@ -299,7 +313,7 @@ if (isBackgroundPage()) {
   });
 
   browser.webNavigation.onDOMContentLoaded.addListener((details) => {
-    injectTemporaryAccess(details);
+    void injectTemporaryAccess(details);
     emitDevtools("DOMContentLoaded", details);
   });
 }

@@ -204,7 +204,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         cancelObserver?.();
       } catch (err) {
         // try to proceed as normal
-        // noinspection JSIgnoredPromiseFromCall
         reportError(err, this.logger.context);
       }
     }
@@ -213,10 +212,10 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   removeExtensions(extensionIds: string[]): void {
     console.debug(
-      `Remove extensionIds for menuItem extension point: ${this.id}`,
+      "Remove extensionIds for menuItem extension point: %s",
+      this.id,
       { extensionIds }
     );
-
     // can't use this.menus.values() here b/c because it may have already been cleared
     for (const extensionId of extensionIds) {
       const $item = $(document).find(`[${DATA_ATTR}="${extensionId}"]`);
