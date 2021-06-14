@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,18 @@ export async function updateAuth({
   }
 }
 
+type Frame = {
+  filename: string;
+};
+
+type Payload = {
+  body: {
+    trace: {
+      frames: Frame[];
+    };
+  };
+};
+
 export function initRollbar(): void {
   if (
     process.env.ROLLBAR_BROWSER_ACCESS_TOKEN &&
@@ -81,16 +93,18 @@ export function initRollbar(): void {
         },
         environment: process.env.ENVIRONMENT,
       },
-      transform: function (payload: Record<string, unknown>) {
-        // @ts-ignore: copied this example from Rollbar's documentation, so should presumably always be available https://docs.rollbar.com/docs/source-maps#section-using-source-maps-on-many-domains
+      transform: function (payload: Payload) {
+        // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
+        // https://docs.rollbar.com/docs/source-maps#section-using-source-maps-on-many-domains
         const trace = payload.body.trace;
         if (trace && trace.frames) {
-          for (let i = 0; i < trace.frames.length; i++) {
-            // Be sure that the minified_url when uploading includes 'dynamichost'
-            trace.frames[i].filename = trace.frames[i].filename?.replace(
-              location.origin,
-              process.env.ROLLBAR_PUBLIC_PATH
-            );
+          for (const frame of trace.frames) {
+            if (frame.filename?.includes(process.env.CHROME_EXTENSION_ID)) {
+              frame.filename = frame.filename.replace(
+                location.origin,
+                process.env.ROLLBAR_PUBLIC_PATH
+              );
+            }
           }
         }
       },
