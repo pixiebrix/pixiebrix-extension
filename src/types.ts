@@ -133,7 +133,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
     this.extensions.splice(0, this.extensions.length);
     this.extensions.push(...extensions);
 
-    console.debug("syncExtensions", {
+    console.debug(`syncExtensions for extension point %s`, this.id, {
       before,
       after: extensions.map((x) => x.id),
       removed: removed.map((x) => x.id),
@@ -144,7 +144,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
     const index = this.extensions.findIndex((x) => x.id === extension.id);
     if (index >= 0) {
       console.warn(
-        `Extension ${extension.id} already registered with the extension point`
+        `Extension ${extension.id} already registered for the extension point ${this.id}`
       );
       // index is guaranteed to be a number, and this.extensions is an array
       // eslint-disable-next-line security/detect-object-injection

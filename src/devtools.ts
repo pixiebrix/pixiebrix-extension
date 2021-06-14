@@ -28,13 +28,11 @@ import {
 import { reportError } from "@/telemetry/logging";
 
 window.addEventListener("error", function (e) {
-  // eslint-disable-next-line require-await
   reportError(e);
   return false;
 });
 
 window.addEventListener("unhandledrejection", function (e) {
-  // eslint-disable-next-line require-await
   reportError(e);
 });
 
@@ -42,9 +40,9 @@ async function installSidebarPane(port: Runtime.Port) {
   // TODO: Drop type assertion after https://github.com/Lusito/webextension-polyfill-ts/issues/60
   const sidebar = ((await browser.devtools.panels.elements.createSidebarPane(
     "PixieBrix Data Viewer"
-  )) as any) as chrome.devtools.panels.ExtensionSidebarPane;
+  )) as unknown) as chrome.devtools.panels.ExtensionSidebarPane;
 
-  async function updateElementProperties() {
+  async function updateElementProperties(): Promise<void> {
     // https://developer.chrome.com/extensions/devtools#selected-element
     chrome.devtools.inspectedWindow.eval("setSelectedElement($0)", {
       useContentScriptContext: true,
@@ -58,7 +56,11 @@ async function installSidebarPane(port: Runtime.Port) {
       sidebar.setObject({ error: reason ?? "Unknown error" });
     }
   }
-  updateElementProperties();
+
+  // IntelliJ doesn't always respect void keyword: https://youtrack.jetbrains.com/issue/WEB-50191
+  // noinspection ES6MissingAwait
+  void updateElementProperties();
+
   chrome.devtools.panels.elements.onSelectionChanged.addListener(
     updateElementProperties
   );
@@ -98,11 +100,12 @@ async function initialize() {
   installSidebarPane(port).catch((error) => {
     console.error("Error adding data viewer elements pane", { error });
   });
+
   installPanel();
 
   if (injected) {
     try {
-      // clear out any dynamic stuff from a previous devtools session
+      // clear out any dynamic stuff from any previous devtools sessions
       await clearDynamicElements(port, {});
     } catch (err) {
       console.debug(
@@ -114,5 +117,5 @@ async function initialize() {
 }
 
 if (browser.devtools.inspectedWindow.tabId) {
-  initialize().catch(reportError);
+  void initialize();
 }

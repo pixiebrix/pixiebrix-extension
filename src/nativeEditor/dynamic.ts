@@ -34,7 +34,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import Overlay from "@/nativeEditor/Overlay";
-import { checkAvailable as checkAvailableUtil } from "@/blocks/available";
+import { checkAvailable as _checkAvailable } from "@/blocks/available";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { isCustomReader } from "@/devTools/editor/editorSlice";
@@ -143,5 +143,5 @@ export const toggleOverlay = liftContentScript(
 
 export const checkAvailable = liftContentScript(
   "CHECK_AVAILABLE",
-  checkAvailableUtil
+  _checkAvailable
 );
