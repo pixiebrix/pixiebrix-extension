@@ -27,10 +27,10 @@ import { getExtensionToken } from "@/auth/token";
 import { checkPermissions, collectPermissions } from "@/permissions";
 import { optionsSlice, OptionsState } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
-import { selectExtensions } from "@/options/pages/InstalledPage";
 import { refreshRegistries } from "@/hooks/refresh";
 import { liftBackground } from "@/background/protocol";
 import * as contentScript from "@/contentScript/lifecycle";
+import { selectInstalledExtensions } from "@/options/selectors";
 
 const { reducer, actions } = optionsSlice;
 
@@ -79,7 +79,7 @@ function installDeployment(
   deployment: Deployment
 ): OptionsState {
   let returnState = state;
-  const installed = selectExtensions({ options: state });
+  const installed = selectInstalledExtensions({ options: state });
 
   for (const extension of installed) {
     if (extension._recipe.id === deployment.package.package_id) {

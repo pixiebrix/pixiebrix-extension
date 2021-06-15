@@ -33,7 +33,6 @@ import {
 import { EditablePackage, useCreate } from "@/devTools/editor/useCreate";
 import Sidebar, { useInstallState } from "@/devTools/editor/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/pages/InstalledPage";
 import { RootState } from "@/devTools/store";
 import { useDebounce, useDebouncedCallback } from "use-debounce";
 import SplitPane from "react-split-pane";
@@ -75,6 +74,7 @@ import {
 } from "@/extensionPoints/menuItemExtension";
 import { IExtensionPoint } from "@/core";
 import { makeActionExtensionFormState } from "@/devTools/editor/extensionPoints/menuItem";
+import { selectInstalledExtensions } from "@/options/selectors";
 
 const { updateElement, addElement } = editorSlice.actions;
 
@@ -505,10 +505,12 @@ const SupportWidget: React.FunctionComponent<{ onClose: () => void }> = ({
   );
 };
 
+const selectEditor = (x: RootState) => x.editor;
+
 const Editor: React.FunctionComponent = () => {
   const { tabState, port } = useContext(DevToolsContext);
   const dispatch = useDispatch();
-  const installed = useSelector(selectExtensions);
+  const installed = useSelector(selectInstalledExtensions);
 
   const [showChat, setShowChat] = useState<boolean>(false);
 
@@ -520,7 +522,7 @@ const Editor: React.FunctionComponent = () => {
     error,
     knownEditable,
     beta,
-  } = useSelector<RootState, EditorState>((x) => x.editor);
+  } = useSelector<RootState, EditorState>(selectEditor);
 
   const updateHandler = useDebouncedCallback(
     (values: FormState) => {
@@ -638,10 +640,12 @@ const Editor: React.FunctionComponent = () => {
       return <WelcomePane showSupport={() => setShowChat(true)} />;
     }
   }, [
+    beta,
+    cancelInsert,
+    updateHandler.callback,
     create,
     inserting,
     selectedElement,
-    elements?.length,
     error,
     editable,
     installed,

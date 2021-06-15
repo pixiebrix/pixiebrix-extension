@@ -3,7 +3,6 @@ import { Deployment } from "@/types/contract";
 import { Button } from "react-bootstrap";
 import "@/layout/Banner";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/pages/InstalledPage";
 import { useToasts } from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
 import {
@@ -23,6 +22,7 @@ import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
 import { reportError } from "@/telemetry/logging";
 import { activeDeployments, queueReactivate } from "@/background/deployment";
+import { selectInstalledExtensions } from "@/options/selectors";
 
 const { actions } = optionsSlice;
 
@@ -90,7 +90,7 @@ function useEnsurePermissions(deployments: Deployment[]) {
 function useDeployments() {
   const { addToast } = useToasts();
   const dispatch = useDispatch();
-  const installed = useSelector(selectExtensions);
+  const installed = useSelector(selectInstalledExtensions);
 
   const [deployments] = useAsyncState(async () => {
     const token = await getExtensionToken();

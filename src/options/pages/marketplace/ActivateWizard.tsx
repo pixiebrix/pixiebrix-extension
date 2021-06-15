@@ -18,7 +18,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
-import { ExtensionOptions, optionsSlice, OptionsState } from "@/options/slices";
+import { ExtensionOptions, optionsSlice } from "@/options/slices";
 import { useToasts } from "react-toast-notifications";
 import { groupBy, uniq, pickBy, isEmpty, mapValues } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
@@ -41,6 +41,7 @@ import { reactivate } from "@/background/navigation";
 import { reportError } from "@/telemetry/logging";
 import { useParams } from "react-router";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
+import { selectExtensions } from "@/options/selectors";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -70,18 +71,11 @@ function selectAuths(
   return result;
 }
 
-const selectExtensions = ({ options }: { options: OptionsState }) => {
-  return Object.values(options.extensions).flatMap((extensionPointOptions) =>
-    Object.values(extensionPointOptions)
-  );
-};
+type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 
-export function useReinstall(): (recipe: RecipeDefinition) => Promise<void> {
+export function useReinstall(): Reinstall {
   const dispatch = useDispatch();
-
-  const extensions = useSelector<{ options: OptionsState }, ExtensionOptions[]>(
-    selectExtensions
-  );
+  const extensions = useSelector(selectExtensions);
 
   return useCallback(
     async (recipe: RecipeDefinition) => {
