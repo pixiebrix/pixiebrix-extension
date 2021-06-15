@@ -22,21 +22,17 @@ import { serializeError } from "serialize-error";
 import { isExtensionContext } from "@/chrome";
 
 function selectError(exc: unknown): SerializedError {
-  if (exc instanceof Error) {
-    return serializeError(exc);
-  } else if (typeof exc === "object") {
-    const obj = exc as Record<string, unknown>;
-    if (obj.type === "unhandledrejection") {
-      return serializeError({
-        // @ts-ignore: OK given the type of reason on unhandledrejection
-        message: obj.reason?.message ?? "Uncaught error in promise",
-      });
+  if (exc instanceof PromiseRejectionEvent) {
+    // convert the project rejection to an error instance
+    if (exc.reason instanceof Error) {
+      exc = exc.reason;
+    } else if (typeof exc.reason === "string") {
+      exc = new Error(exc.reason);
     } else {
-      return serializeError(obj);
+      exc = new Error(exc.reason?.message ?? "Uncaught error in promise");
     }
-  } else {
-    return serializeError(exc);
   }
+  return serializeError(exc);
 }
 
 export function reportError(exc: unknown, context?: MessageContext): void {

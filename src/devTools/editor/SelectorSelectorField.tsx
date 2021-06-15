@@ -24,7 +24,7 @@ import React, {
 } from "react";
 import { useField } from "formik";
 import { OptionsType, components } from "react-select";
-import { uniqBy, compact, sortBy, unary, isEmpty } from "lodash";
+import { uniqBy, compact, sortBy, isEmpty } from "lodash";
 import Creatable from "react-select/creatable";
 
 import { Badge, Button } from "react-bootstrap";
@@ -222,7 +222,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
                 selector: null,
                 on: false,
               })
-              .catch(unary(reportError));
+              .catch(reportError);
           }}
           onChange={async (option) => {
             console.debug("selected", { option });
@@ -232,7 +232,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
                 selector: null,
                 on: false,
               })
-              .catch(unary(reportError));
+              .catch(reportError);
           }}
         />
       </div>
