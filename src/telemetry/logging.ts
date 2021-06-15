@@ -21,14 +21,17 @@ import { MessageContext, SerializedError } from "@/core";
 import { serializeError } from "serialize-error";
 import { isExtensionContext } from "@/chrome";
 
-function selectError(exc: any): SerializedError {
-  if (exc?.message && exc?.type === "unhandledrejection") {
-    exc = {
-      // @ts-ignore: OK given the type of reason on unhandledrejection
-      message: exc.reason?.message ?? "Uncaught error in promise",
-    };
+function selectError(exc: unknown): SerializedError {
+  if (exc instanceof PromiseRejectionEvent) {
+    // convert the project rejection to an error instance
+    if (exc.reason instanceof Error) {
+      exc = exc.reason;
+    } else if (typeof exc.reason === "string") {
+      exc = new Error(exc.reason);
+    } else {
+      exc = new Error(exc.reason?.message ?? "Uncaught error in promise");
+    }
   }
-
   return serializeError(exc);
 }
 
