@@ -17,7 +17,12 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { createSlice } from "@reduxjs/toolkit";
-import { Metadata, RawServiceConfiguration, ServiceDependency } from "@/core";
+import {
+  DeploymentContext,
+  Metadata,
+  RawServiceConfiguration,
+  ServiceDependency,
+} from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { preloadMenus } from "@/background/preload";
@@ -55,14 +60,9 @@ const initialServicesState: ServicesState = {
 type BaseConfig = Record<string, unknown>;
 type UserOptions = Record<string, Primitive>;
 
-type DeploymentMeta = {
-  id: string;
-  timestamp: string;
-};
-
 export interface ExtensionOptions<TConfig = BaseConfig> {
   id: string;
-  _deployment?: DeploymentMeta;
+  _deployment?: DeploymentContext;
   _recipeId?: string;
   _recipe: Metadata | null;
   extensionPointId: string;

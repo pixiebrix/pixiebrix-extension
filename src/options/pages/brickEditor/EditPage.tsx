@@ -32,7 +32,6 @@ import { useSelector } from "react-redux";
 import { ExtensionOptions, OptionsState } from "@/options/slices";
 import { MessageContext } from "@/core";
 import { useDebounce } from "use-debounce";
-import { selectExtensions } from "@/options/pages/InstalledPage";
 
 interface BrickData {
   id: string;
@@ -41,17 +40,17 @@ interface BrickData {
   public: boolean;
 }
 
+const selectExtensions = ({ options }: { options: OptionsState }) => {
+  return Object.values(options.extensions).flatMap((extensionPointOptions) =>
+    Object.values(extensionPointOptions)
+  );
+};
+
 function useDetectBlueprint(
   config: string | null
 ): { isBlueprint: boolean; isInstalled: boolean } {
   const extensions = useSelector<{ options: OptionsState }, ExtensionOptions[]>(
-    ({ options }) => {
-      return Object.values(
-        options.extensions
-      ).flatMap((extensionPointOptions) =>
-        Object.values(extensionPointOptions)
-      );
-    }
+    selectExtensions
   );
 
   return useMemo(() => {
@@ -88,7 +87,7 @@ const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
 };
 
 function useLogContext(config: string | null): MessageContext | null {
-  const debouncedConfig = useDebounce(config, 250);
+  const [debouncedConfig] = useDebounce(config, 250);
   const installed = useSelector(selectExtensions);
 
   const blueprintMap = useMemo(() => {
@@ -101,7 +100,7 @@ function useLogContext(config: string | null): MessageContext | null {
 
   return useMemo(() => {
     try {
-      const json = yaml.safeLoad(config) as any;
+      const json = yaml.safeLoad(debouncedConfig) as any;
       switch (json.kind) {
         case "service": {
           return { serviceId: json.metadata.id };

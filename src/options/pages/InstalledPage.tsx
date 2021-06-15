@@ -49,6 +49,10 @@ import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import cx from "classnames";
 import { Dispatch } from "redux";
+import {
+  InstalledExtension,
+  selectInstalledExtensions,
+} from "@/options/selectors";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -224,13 +228,6 @@ const ExtensionRow: React.FunctionComponent<{
   );
 };
 
-export interface InstalledExtension extends IExtension {
-  _recipe: {
-    id: string;
-    name: string;
-  } | null;
-}
-
 const InstalledTable: React.FunctionComponent<{
   extensions: InstalledExtension[];
   onRemove: RemoveAction;
@@ -397,21 +394,8 @@ InstalledPage.propTypes = {
   extensions: PropTypes.array,
 };
 
-export function selectExtensions(state: {
-  options: OptionsState;
-}): InstalledExtension[] {
-  return Object.entries(state.options.extensions).flatMap(
-    ([extensionPointId, pointExtensions]) =>
-      Object.entries(pointExtensions).map(([extensionId, extension]) => ({
-        id: extensionId,
-        extensionPointId,
-        ...extension,
-      }))
-  );
-}
-
 const mapStateToProps = (state: { options: OptionsState }) => ({
-  extensions: selectExtensions(state),
+  extensions: selectInstalledExtensions(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({

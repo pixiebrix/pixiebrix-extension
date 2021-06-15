@@ -28,12 +28,12 @@ import {
 import useAsyncEffect from "use-async-effect";
 import { useFetch } from "@/hooks/fetch";
 import { useDispatch, useSelector } from "react-redux";
-import { selectExtensions } from "@/options/pages/InstalledPage";
 import { fromPairs } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { optionsSlice } from "@/options/slices";
 
 import { reportError } from "@/telemetry/logging";
+import { selectInstalledExtensions } from "@/options/selectors";
 
 const { actions } = optionsSlice;
 
@@ -102,7 +102,7 @@ export function useDeployments() {
   const { addToast } = useToasts();
   const deployments = useFetch<Deployment[]>("/api/deployments/");
   const dispatch = useDispatch();
-  const installed = useSelector(selectExtensions);
+  const installed = useSelector(selectInstalledExtensions);
 
   const updated = useMemo(() => {
     return (deployments ?? []).filter((deployment) => {
@@ -158,7 +158,7 @@ export function useDeployments() {
         reportEvent("DeploymentRejectPermissions", {});
       }
     });
-  }, [request, updated, addToast, installed]);
+  }, [deployments, dispatch, request, addToast, installed]);
 
   return { hasUpdate: updated?.length > 0, update };
 }

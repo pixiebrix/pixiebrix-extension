@@ -1,10 +1,5 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { OptionsState } from "@/options/slices";
-import {
-  InstalledExtension,
-  selectExtensions,
-} from "@/options/pages/InstalledPage";
 import marketplaceImage from "@img/marketplace.svg";
 import workshopImage from "@img/workshop.svg";
 import { Button, Col, Container, Row } from "react-bootstrap";
@@ -14,6 +9,7 @@ import {
   faExternalLinkAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { openExtensionOptions } from "@/messaging/external";
+import { selectInstalledExtensions } from "@/options/selectors";
 
 const OnboardingContent: React.FunctionComponent = () => {
   return (
@@ -81,10 +77,7 @@ const NoAvailablePanelsContent: React.FunctionComponent = () => {
 };
 
 const DefaultActionPanel: React.FunctionComponent = () => {
-  const extensions = useSelector<
-    { options: OptionsState },
-    InstalledExtension[]
-  >(selectExtensions);
+  const extensions = useSelector(selectInstalledExtensions);
 
   return (
     <div>

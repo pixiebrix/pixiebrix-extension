@@ -17,8 +17,7 @@
 
 import yaml from "js-yaml";
 import { makeURL } from "@/hooks/fetch";
-import isPlainObject from "lodash/isPlainObject";
-import castArray from "lodash/castArray";
+import { castArray, isPlainObject } from "lodash";
 import { useCallback } from "react";
 import { useHistory } from "react-router";
 import { push } from "connected-react-router";
@@ -31,6 +30,8 @@ import { getExtensionToken } from "@/auth/token";
 import { useRefresh } from "@/hooks/refresh";
 import { reactivate } from "@/background/navigation";
 import { useReinstall } from "@/options/pages/marketplace/ActivateWizard";
+import { RecipeDefinition, Definition } from "@/types/definitions";
+import { reportError } from "@/telemetry/logging";
 
 interface SubmitOptions {
   create: boolean;
@@ -80,13 +81,13 @@ function useSubmitBrick({
       autoDismiss: true,
     });
     dispatch(push("/workshop"));
-  }, [url, dispatch]);
+  }, [addToast, url, dispatch]);
 
   const submit = useCallback(
     async (values, { setErrors }) => {
       const { config, reactivate: reinstallBlueprint } = values;
 
-      const json = yaml.safeLoad(config) as any;
+      const json = yaml.safeLoad(config) as Definition | RecipeDefinition;
       const { kind, metadata } = json;
 
       try {
@@ -99,8 +100,12 @@ function useSubmitBrick({
 
         const { data } = response;
 
+        // We attach the handler below, and don't want it to block the save
+        // noinspection ES6MissingAwait
         const refreshPromise =
-          kind === "recipe" && reinstallBlueprint ? reinstall(json) : refresh();
+          kind === "recipe" && reinstallBlueprint
+            ? reinstall(json as RecipeDefinition)
+            : refresh();
 
         addToast(`${create ? "Created" : "Updated"} ${metadata.name}`, {
           appearance: "success",
@@ -110,6 +115,7 @@ function useSubmitBrick({
         refreshPromise
           .then(() => reactivate())
           .catch((reason) => {
+            reportError(reason);
             console.warn("An error occurred when re-activating bricks", reason);
             addToast(`Error re-activating bricks: ${reason}`, {
               appearance: "warning",
@@ -138,7 +144,7 @@ function useSubmitBrick({
         }
       }
     },
-    [url, create, addToast]
+    [history, refresh, reinstall, url, create, addToast]
   );
 
   return { submit, validate, remove: !create ? remove : null };

@@ -23,7 +23,7 @@ export interface ExtensionPointDefinition {
   id: string;
   label: string;
   permissions?: Permissions.Permissions;
-  services?: { [key: string]: string };
+  services?: Record<string, string>;
   config: Record<string, unknown>;
 }
 
@@ -32,8 +32,18 @@ export interface OptionsDefinition {
   uiSchema?: UiSchema;
 }
 
-export interface RecipeDefinition {
+type Kind = "recipe" | "service" | "reader" | "component";
+
+/**
+ * A PixieBrix brick or extension point definition
+ */
+export interface Definition {
+  kind: Kind;
   metadata: Metadata;
+}
+
+export interface RecipeDefinition extends Definition {
+  kind: "recipe";
   extensionPoints: ExtensionPointDefinition[];
   options?: OptionsDefinition;
 }
