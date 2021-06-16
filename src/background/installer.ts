@@ -82,6 +82,4 @@ browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
 browser.runtime.onInstalled.addListener(install);
 browser.runtime.onStartup.addListener(init);
 
-if (!process.env.DEBUG) {
-  setUninstallURL().catch(reportError);
-}
+setUninstallURL();
