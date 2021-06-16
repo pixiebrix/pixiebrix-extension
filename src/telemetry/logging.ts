@@ -16,10 +16,14 @@
  */
 
 import { recordError } from "@/background/logging";
-import Rollbar from "rollbar";
+import { rollbar, toLogArgument } from "@/telemetry/rollbar";
 import { MessageContext, SerializedError } from "@/core";
 import { serializeError } from "serialize-error";
 import { isExtensionContext } from "@/chrome";
+
+export function errorMessage(err: SerializedError): string {
+  return typeof err === "object" ? err.message : String(err);
+}
 
 function selectError(exc: unknown): SerializedError {
   if (exc instanceof PromiseRejectionEvent) {
@@ -43,6 +47,6 @@ export function reportError(exc: unknown, context?: MessageContext): void {
       console.error("Another error occurred while reporting an error", { exc });
     });
   } else {
-    (Rollbar as any).error(exc);
+    rollbar.error(toLogArgument(exc));
   }
 }

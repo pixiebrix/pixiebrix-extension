@@ -18,10 +18,9 @@
 // extensionContext needs to be imported before webpack-target-webextension to
 // ensure the webpack path is correct
 import "@/extensionContext";
-import { initRollbar } from "@/telemetry/rollbar";
 
-// init first so we get error reporting on the other initialization
-initRollbar();
+// init rollbar early so we get error reporting on the other initialization
+import "@/telemetry/rollbar";
 
 import "webpack-target-webextension/lib/background";
 import "@/polyfills/registerPolyfill";

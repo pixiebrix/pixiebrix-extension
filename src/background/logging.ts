@@ -17,10 +17,10 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { liftBackground } from "@/background/protocol";
-import Rollbar from "rollbar";
+import { rollbar } from "@/telemetry/rollbar";
 import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { JsonObject } from "type-fest";
-import { serializeError } from "serialize-error";
+import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { reverse, sortBy } from "lodash";
 import { _getDNT } from "@/background/telemetry";
@@ -32,6 +32,7 @@ import {
   isConnectionError,
 } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
+import { errorMessage } from "@/telemetry/logging";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -153,10 +154,6 @@ export async function getLog(
   return sortBy(reverse(entries), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
-function errorMessage(err: SerializedError): string {
-  return typeof err === "object" ? err.message : String(err);
-}
-
 function buildContext(
   error: SerializedError,
   context: MessageContext
@@ -179,15 +176,20 @@ export const recordError = liftBackground(
     data: JsonObject | undefined
   ): Promise<void> => {
     try {
-      console.error(errorMessage(error), error);
+      const message = errorMessage(error);
 
       if (!(await _getDNT())) {
+        // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the
+        // object is the custom payload data
+        // https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+        const errorObj = deserializeError(error);
+
         if (hasCancelRootCause(error)) {
           // NOP - no reason to send to Rollbar
         } else if (hasBusinessRootCause(error)) {
-          (Rollbar as any).debug(errorMessage(error), error);
+          rollbar.debug(message, errorObj);
         } else {
-          (Rollbar as any).error(errorMessage(error), error);
+          rollbar.error(message, errorObj);
         }
       }
 
@@ -196,7 +198,7 @@ export const recordError = liftBackground(
         timestamp: Date.now().toString(),
         level: "error",
         context: buildContext(error, context),
-        message: errorMessage(error),
+        message,
         error,
         data,
       });

@@ -16,11 +16,15 @@
  */
 
 import "@/extensionContext";
+
+// init rollbar early so we get error reporting on the other initialization
+import "@/telemetry/rollbar";
+
 import App from "./actionPanel/ActionPanelApp";
 import ReactDOM from "react-dom";
 import React from "react";
 import { browser } from "webextension-polyfill-ts";
-import { initRollbar } from "@/telemetry/rollbar";
+
 import { REGISTER_ACTION_FRAME } from "@/background/browserAction";
 import { reportError } from "@/telemetry/logging";
 import "@/actionPanel/protocol";
@@ -29,8 +33,6 @@ import "@/actionPanel/protocol";
 import "vendors/theme/app/app.scss";
 import "./action.scss";
 import "@/vendors/overrides.scss";
-
-initRollbar();
 
 const url = new URL(location.href);
 const nonce = url.searchParams.get("nonce");
