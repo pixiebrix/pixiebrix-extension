@@ -37,7 +37,7 @@ interface UserEvent {
   data: JsonObject;
 }
 
-const DNT_STORAGE_KEY = "DNT";
+export const DNT_STORAGE_KEY = "DNT";
 const UUID_STORAGE_KEY = "USER_UUID";
 
 let _uid: string = null;
@@ -62,7 +62,7 @@ async function uid(): Promise<string> {
 
 export async function _toggleDNT(enable: boolean): Promise<boolean> {
   _dnt = enable;
-  await setStorage(DNT_STORAGE_KEY, enable.toString());
+  await browser.storage.local.set({ [DNT_STORAGE_KEY]: enable });
   return enable;
 }
 
@@ -70,7 +70,7 @@ export async function _getDNT(): Promise<boolean> {
   if (_dnt != null) {
     return _dnt;
   }
-  _dnt = boolean(await readStorage<string>(DNT_STORAGE_KEY));
+  _dnt = boolean(await readStorage<boolean | string>(DNT_STORAGE_KEY) ?? process.env.DEBUG);
   return _dnt;
 }
 

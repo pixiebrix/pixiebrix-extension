@@ -20,7 +20,7 @@ import { reportError } from "@/telemetry/logging";
 import { liftBackground } from "@/background/protocol";
 import urljoin from "url-join";
 import { reportEvent, initTelemetry } from "@/telemetry/events";
-import { getDNT, getUID } from "@/background/telemetry";
+import { DNT_STORAGE_KEY, getDNT, getUID } from "@/background/telemetry";
 
 const SERVICE_URL = process.env.SERVICE_URL;
 
@@ -71,7 +71,9 @@ export const getAvailableVersion = liftBackground(
 );
 
 async function setUninstallURL(): Promise<void> {
-  if (!(await getDNT())) {
+  if (await getDNT()) {
+    await browser.runtime.setUninstallURL();
+  } else {
     const url = new URL("https://www.pixiebrix.com/uninstall/");
     url.searchParams.set("uid", await getUID());
     await browser.runtime.setUninstallURL(url.toString());
@@ -82,6 +84,10 @@ browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
 browser.runtime.onInstalled.addListener(install);
 browser.runtime.onStartup.addListener(init);
 
-if (!process.env.DEBUG) {
-  setUninstallURL().catch(reportError);
-}
+browser.storage.onChanged.addListener((changes) => {
+  if (DNT_STORAGE_KEY in changes) {
+    void setUninstallURL();
+  }
+});
+
+setUninstallURL();
