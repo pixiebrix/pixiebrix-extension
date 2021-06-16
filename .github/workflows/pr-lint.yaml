@@ -12,11 +12,4 @@ jobs:
         with:
           node-version: '14.x'
       - uses: bahmutov/npm-install@v1
-      - name: npx eslint $FILES_CHANGED
-        run: |
-          git fetch origin main
-          FILES_CHANGED=$(git diff origin/${{ github.base_ref }}.. --name-only -- "*.ts" "*.tsx" "*.js" "*.jsx")
-          echo Will check these files:
-          echo $FILES_CHANGED
-          echo -----------------------
-          npx eslint $FILES_CHANGED || true
+      - run: npm run lint || true
