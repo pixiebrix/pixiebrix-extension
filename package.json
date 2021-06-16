@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "lint": "eslint src/**",
+    "lint": "eslint src",
     "watch": "ENV_FILE='.env.development' webpack --mode development --config browsers/webpack.config.js --watch",
     "build": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production --config browsers/webpack.config.js",
     "build:scripts": "webpack --mode production --config scripts/webpack.scripts.js",
