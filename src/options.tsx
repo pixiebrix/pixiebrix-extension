@@ -17,16 +17,17 @@
 
 import "@/extensionContext";
 
+// init rollbar early so we get error reporting on the other initialization
+import "@/telemetry/rollbar";
+
 import ReactDOM from "react-dom";
 import React from "react";
 import App from "@/options/App";
-import { initRollbar } from "@/telemetry/rollbar";
 import initGoogle from "@/contrib/google/initGoogle";
 
 import "@/options.scss";
 import "@/vendors/overrides.scss";
 
-initRollbar();
 initGoogle();
 
 ReactDOM.render(<App />, document.getElementById("container"));
