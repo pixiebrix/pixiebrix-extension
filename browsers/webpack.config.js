@@ -276,6 +276,7 @@ module.exports = (env, options) => ({
       SERVICE_URL: undefined,
       SOURCE_VERSION: undefined,
       CHROME_EXTENSION_ID: undefined,
+      ROLLBAR_PUBLIC_PATH: undefined,
 
       // If not found, "null" will leave the ENV unset in the bundle
       ROLLBAR_BROWSER_ACCESS_TOKEN: null,
