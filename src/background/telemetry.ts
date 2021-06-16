@@ -37,7 +37,7 @@ interface UserEvent {
   data: JsonObject;
 }
 
-const DNT_STORAGE_KEY = "DNT";
+export const DNT_STORAGE_KEY = "DNT";
 const UUID_STORAGE_KEY = "USER_UUID";
 
 let _uid: string = null;
