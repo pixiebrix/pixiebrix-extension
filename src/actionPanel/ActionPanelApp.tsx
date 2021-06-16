@@ -45,8 +45,8 @@ const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
   const [key, setKey] = useState(panels[0]?.extensionId);
 
   return (
-    <Card>
-      <Tab.Container id="panel-container" defaultActiveKey={key}>
+    <Tab.Container id="panel-container" defaultActiveKey={key}>
+      <Card className="h-100">
         <Card.Header>
           <Nav variant="tabs" onSelect={setKey}>
             {panels.map((panel) => (
@@ -56,10 +56,15 @@ const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
             ))}
           </Nav>
         </Card.Header>
-        <Card.Body className="p-0" style={{ overflowY: "auto" }}>
-          <Tab.Content className="p-0">
+        <Card.Body className="p-0 flex-grow-1">
+          <Tab.Content className="p-0 h-100">
             {panels.map((panel) => (
-              <Tab.Pane key={panel.extensionId} eventKey={panel.extensionId}>
+              <Tab.Pane
+                className="h-100 overflow-y-auto"
+                key={panel.extensionId}
+                eventKey={panel.extensionId}
+                style={{ minHeight: "1px" }}
+              >
                 <ErrorBoundary>
                   <PanelBody panel={panel} />
                 </ErrorBoundary>
@@ -67,8 +72,8 @@ const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
             ))}
           </Tab.Content>
         </Card.Body>
-      </Tab.Container>
-    </Card>
+      </Card>
+    </Tab.Container>
   );
 };
 
@@ -91,7 +96,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
     <Provider store={store}>
       <PersistGate loading={<GridLoader />} persistor={persistor}>
         <ToastProvider>
-          <div className="d-flex flex-column" style={{ maxHeight: "100vh" }}>
+          <div className="d-flex flex-column" style={{ height: "100vh" }}>
             <div className="d-flex mb-2" style={{ flex: "none" }}>
               <div className="align-self-center">
                 <img
@@ -101,6 +106,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
                   className="px-2"
                 />
               </div>
+              {/* spacer */}
               <div className="flex-grow-1"></div>
               <div className="ActionPanelToolbar">
                 <Button

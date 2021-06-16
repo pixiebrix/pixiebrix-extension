@@ -36,7 +36,12 @@ const BodyComponent: React.FunctionComponent<{
 }> = ({ body }) => {
   return useMemo(() => {
     if (typeof body === "string") {
-      return <div dangerouslySetInnerHTML={{ __html: body }} />;
+      return (
+        <div
+          style={{ height: "100%" }}
+          dangerouslySetInnerHTML={{ __html: body }}
+        />
+      );
     } else {
       const { Component, props } = body;
       return <Component {...props} />;
@@ -63,7 +68,7 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
         logger: new ConsoleLogger(),
       });
       return (
-        <div>
+        <div className="h-100">
           <ReactShadowRoot>
             <BodyComponent body={body as string | ComponentRef} />
           </ReactShadowRoot>
