@@ -43,8 +43,20 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
     await injectContentScript({ tabId: tab.id, frameId: 0 });
     const nonce = await toggleActionPanel({ tabId: tab.id, frameId: 0 });
     tabNonces.set(tab.id, nonce);
-  } catch (err) {
-    reportError(err);
+  } catch (err: unknown) {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    switch ((err as any)?.message) {
+      case "Cannot access a chrome:// URL":
+      case "The extensions gallery cannot be scripted.":
+        alert("This is a special Chrome page that can’t be edited");
+        break;
+      case "Could not establish connection. Receiving end does not exist.":
+        // TODO: Firefox does not support `alert()` from a background page. Maybe implement via `chrome.windows.create()`
+        // alert('PixieBrix might not work on this page. Try again?');
+        break;
+      default:
+        reportError(err);
+    }
   }
 }
 
