@@ -21,7 +21,7 @@ import { reportError } from "@/telemetry/logging";
 import { injectContentScript } from "@/background/util";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { allowSender } from "@/actionPanel/protocol";
-import { sleep } from "@/utils";
+import { isErrorObject, sleep } from "@/utils";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 
@@ -43,20 +43,22 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
     await injectContentScript({ tabId: tab.id, frameId: 0 });
     const nonce = await toggleActionPanel({ tabId: tab.id, frameId: 0 });
     tabNonces.set(tab.id, nonce);
-  } catch (err: unknown) {
-    /* eslint-disable @typescript-eslint/no-explicit-any */
-    switch ((err as any)?.message) {
-      case "Cannot access a chrome:// URL":
-      case "The extensions gallery cannot be scripted.":
-        alert("This is a special Chrome page that can’t be edited");
-        break;
-      case "Could not establish connection. Receiving end does not exist.":
-        // TODO: Firefox does not support `alert()` from a background page. Maybe implement via `chrome.windows.create()`
-        // alert('PixieBrix might not work on this page. Try again?');
-        break;
-      default:
-        reportError(err);
+  } catch (error: unknown) {
+    if (isErrorObject(error)) {
+      switch (error.message) {
+        case "Cannot access a chrome:// URL":
+        case "The extensions gallery cannot be scripted.":
+          alert("This is a special Chrome page that can’t be edited");
+          break;
+        case "Could not establish connection. Receiving end does not exist.":
+          // TODO: Firefox does not support `alert()` from a background page. Maybe implement via `chrome.windows.create()`
+          // alert('PixieBrix might not work on this page. Try again?');
+          break;
+        default:
+      }
     }
+
+    reportError(error);
   }
 }
 
