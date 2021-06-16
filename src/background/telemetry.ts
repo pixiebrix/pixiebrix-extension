@@ -62,7 +62,7 @@ async function uid(): Promise<string> {
 
 export async function _toggleDNT(enable: boolean): Promise<boolean> {
   _dnt = enable;
-  await setStorage(DNT_STORAGE_KEY, enable.toString());
+  await browser.storage.local.set({ [DNT_STORAGE_KEY]: enable });
   return enable;
 }
 
