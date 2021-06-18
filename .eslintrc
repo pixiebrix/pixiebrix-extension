@@ -25,7 +25,6 @@
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
-    "plugin:react-redux/recommended",
     "plugin:security/recommended"
   ],
   "rules": {
