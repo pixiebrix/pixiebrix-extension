@@ -30,9 +30,13 @@ import {
 import { sortBy, truncate, unary } from "lodash";
 import { IBlock } from "@/core";
 import {
+  faBars,
+  faBolt,
   faBookReader,
+  faColumns,
   faCube,
   faMagic,
+  faMousePointer,
   faRandom,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
@@ -43,8 +47,13 @@ import useAsyncEffect from "use-async-effect";
 import { useDebounce } from "use-debounce";
 
 import "./BlockModal.scss";
+import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
+import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
+import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
+import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
+import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
 
-export function getIcon(type: BlockType): IconProp {
+export function getIcon(block: IBlock, type: BlockType): IconProp {
   switch (type) {
     case "reader":
       return faBookReader;
@@ -55,8 +64,22 @@ export function getIcon(type: BlockType): IconProp {
     case "renderer":
       return faWindowMaximize;
     default:
-      return faCube;
+      break;
   }
+
+  if (block instanceof TriggerExtensionPoint) {
+    return faBolt;
+  } else if (block instanceof MenuItemExtensionPoint) {
+    return faMousePointer;
+  } else if (block instanceof ContextMenuExtensionPoint) {
+    return faBars;
+  } else if (block instanceof PanelExtensionPoint) {
+    return faWindowMaximize;
+  } else if (block instanceof ActionPanelExtensionPoint) {
+    return faColumns;
+  }
+
+  return faCube;
 }
 
 const BlockResult: React.FunctionComponent<{
@@ -72,8 +95,8 @@ const BlockResult: React.FunctionComponent<{
   return (
     <ListGroup.Item onClick={onSelect}>
       <div className="d-flex">
-        <div className="mr-2">
-          <FontAwesomeIcon icon={getIcon(type)} />
+        <div className="mr-2 text-muted">
+          <FontAwesomeIcon icon={getIcon(block, type)} fixedWidth />
         </div>
         <div className="flex-grow-1">
           <div className="d-flex BlockModal__title">

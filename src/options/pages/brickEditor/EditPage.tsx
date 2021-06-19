@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -29,12 +29,14 @@ import useSubmitBrick from "./useSubmitBrick";
 import yaml from "js-yaml";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import "./EditPage.scss";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { MessageContext, RawConfig } from "@/core";
 import { useDebounce } from "use-debounce";
 import { selectExtensions } from "@/options/selectors";
 import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";
+import { workshopSlice } from "@/options/slices";
+const { touchBrick } = workshopSlice.actions;
 
 interface BrickData {
   id: string;
@@ -144,9 +146,18 @@ const LoadingBody: React.FunctionComponent = () => {
   );
 };
 
+
 const keyMap = {
   SAVE: "command+s",
 };
+
+function useTouchBrick(id: string): void {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    console.debug(`Marking brick as touched: %s`, id);
+    dispatch(touchBrick({ id }));
+  }, [dispatch, id]);
+}
 
 const EditPage: React.FunctionComponent = () => {
   const { id } = useParams<{ id: string }>();
@@ -158,6 +169,8 @@ const EditPage: React.FunctionComponent = () => {
   const { isBlueprint, isInstalled, config: rawConfig } = useParseBrick(
     data?.config
   );
+
+  useTouchBrick(id);
 
   const { submit, validate, remove } = useSubmitBrick({ url, create: false });
 

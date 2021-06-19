@@ -154,7 +154,7 @@ const BlockResult: React.FunctionComponent<{
     >
       <div className="d-flex">
         <div className="mr-2">
-          <FontAwesomeIcon icon={getIcon(type)} />
+          <FontAwesomeIcon icon={getIcon(block, type)} />
         </div>
         <div className="flex-grow-1">
           <div className="d-flex BlockResult__title">
