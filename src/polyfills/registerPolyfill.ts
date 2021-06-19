@@ -4,6 +4,7 @@
 import { patternToRegex } from "webext-patterns";
 import { browser, WebNavigation } from "webextension-polyfill-ts";
 import OnDOMContentLoadedDetailsType = WebNavigation.OnDOMContentLoadedDetailsType;
+import objectHash from "object-hash";
 
 // @ts-expect-error
 async function p<T>(fn, ...args): Promise<T> {
@@ -18,6 +19,8 @@ async function p<T>(fn, ...args): Promise<T> {
     });
   });
 }
+
+const pending = new Set<string>();
 
 async function isOriginPermitted(url: string): Promise<boolean> {
   return p(chrome.permissions.contains, {
@@ -61,6 +64,13 @@ if (typeof chrome === "object" && !chrome.contentScripts) {
         frameId,
         url,
       }: OnDOMContentLoadedDetailsType): Promise<void> => {
+        const requestHash = objectHash({
+          tabId,
+          frameId,
+          url,
+          loadCheck,
+        });
+
         if (
           !url || // No URL = no permission;
           !matchesRegex.test(url) || // Manual `matches` glob matching
@@ -70,6 +80,21 @@ if (typeof chrome === "object" && !chrome.contentScripts) {
           return;
         }
 
+        if (pending.has(requestHash)) {
+          console.warn("Double-injection detected", {
+            tabId,
+            frameId,
+            url,
+            options: {
+              js,
+              css,
+            },
+          });
+          return;
+        }
+
+        pending.add(requestHash);
+
         // Mark as loaded first to avoid race conditions with multiple loads
         chrome.tabs.executeScript(tabId, {
           code: `${loadCheck} = true`,
@@ -77,34 +102,41 @@ if (typeof chrome === "object" && !chrome.contentScripts) {
           frameId,
         });
 
-        for (const file of css) {
-          chrome.tabs.insertCSS(tabId, {
-            ...file,
-            matchAboutBlank,
-            // Using allFrames here would lead to multiple injections from the top-level one. Instead we
-            // manage each frame separately with the onDOMContentLoaded event
-            allFrames: false,
-            frameId,
-            runAt: runAt ?? "document_start", // CSS should prefer `document_start` when unspecified
-          });
-        }
+        try {
+          await Promise.allSettled(
+            css.map(async (file) => {
+              await p(chrome.tabs.insertCSS, tabId, {
+                ...file,
+                matchAboutBlank,
+                // Using allFrames here would lead to multiple injections from the top-level one. Instead we
+                // manage each frame separately with the onDOMContentLoaded event
+                allFrames: false,
+                frameId,
+                runAt: runAt ?? "document_start", // CSS should prefer `document_start` when unspecified
+              });
+            })
+          );
 
-        for (const file of js) {
-          console.debug("registerPolyfill:executeScript", {
-            tabId,
-            frameId,
-            url,
-          });
-
-          chrome.tabs.executeScript(tabId, {
-            ...file,
-            matchAboutBlank,
-            // Using allFrames here would lead to multiple injections from the top-level one. Instead we
-            // manage each frame separately with the onDOMContentLoaded event
-            allFrames: false,
-            frameId,
-            runAt,
-          });
+          await Promise.allSettled(
+            js.map(async (file) => {
+              console.debug("registerPolyfill:executeScript", {
+                tabId,
+                frameId,
+                url,
+              });
+              return await p(chrome.tabs.executeScript, tabId, {
+                ...file,
+                matchAboutBlank,
+                // Using allFrames here would lead to multiple injections from the top-level one. Instead we
+                // manage each frame separately with the onDOMContentLoaded event
+                allFrames: false,
+                frameId,
+                runAt,
+              });
+            })
+          );
+        } finally {
+          pending.delete(requestHash);
         }
       };
 
