@@ -23,6 +23,7 @@ import {
   RawServiceConfiguration,
   ServiceDependency,
 } from "@/core";
+import { orderBy } from "lodash";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { preloadMenus } from "@/background/preload";
@@ -82,12 +83,77 @@ export interface OptionsState {
   };
 }
 
+type RecentBrick = {
+  id: string;
+  timestamp: number;
+};
+
+export type WorkshopState = {
+  recent: RecentBrick[];
+  maxRecent: number;
+
+  filters: {
+    scopes: string[];
+    collections: string[];
+    kinds: string[];
+  };
+};
+
+const initialWorkshopState: WorkshopState = {
+  recent: [],
+  // Only track the 10 most recent bricks accessed, since that's how many are shown on the workspace page
+  maxRecent: 10,
+
+  filters: {
+    scopes: [],
+    collections: [],
+    kinds: [],
+  },
+};
+
 const initialOptionsState: OptionsState = {
   extensions: {},
 };
 
 /* The object access in servicesSlice and optionsSlice should be safe because slice reducers use immer under the hood */
 /* eslint-disable security/detect-object-injection */
+
+export const workshopSlice = createSlice({
+  name: "workshop",
+  initialState: initialWorkshopState,
+  reducers: {
+    setScopes(state, { payload: scopes }) {
+      state.filters.scopes = scopes;
+    },
+    setCollections(state, { payload: collections }) {
+      state.filters.collections = collections;
+    },
+    setKinds(state, { payload: kinds }) {
+      state.filters.kinds = kinds;
+    },
+    clearFilters(state) {
+      state.filters = {
+        scopes: [],
+        collections: [],
+        kinds: [],
+      };
+    },
+    touchBrick(state, { payload: { id } }) {
+      if (id) {
+        state.recent = state.recent.filter((x) => x.id !== id);
+        state.recent.push({
+          id,
+          timestamp: Date.now(),
+        });
+        state.recent = orderBy(
+          state.recent,
+          [(x) => x.timestamp],
+          ["desc"]
+        ).slice(0, state.maxRecent);
+      }
+    },
+  },
+});
 
 export const servicesSlice = createSlice({
   name: "services",
@@ -228,4 +294,4 @@ export const optionsSlice = createSlice({
   },
 });
 
-/* eslint-enable */
+/* eslint-enable security/detect-object-injection */

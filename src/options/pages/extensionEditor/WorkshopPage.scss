@@ -19,6 +19,10 @@
   tbody > tr:not(.WorkshopPage__BrickTable__more) {
     cursor: pointer;
 
+    td:first-child {
+      max-width: 10px;
+    }
+
     code {
       padding-left: 0;
       padding-right: 0;
