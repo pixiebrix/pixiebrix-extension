@@ -48,6 +48,7 @@ import { reportError } from "@/telemetry/logging";
 import { configToYaml } from "@/devTools/editor/useCreate";
 import OptionsArgsCard from "@/options/pages/extensionEditor/OptionsArgsCard";
 import { useTitle } from "@/hooks/title";
+import { HotKeys } from "react-hotkeys";
 
 type TopConfig = { [prop: string]: unknown };
 
@@ -308,6 +309,10 @@ const ExtensionForm: React.FunctionComponent<{
   );
 };
 
+const keyMap = {
+  SAVE: "command+s",
+};
+
 const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
   extensionPoint,
   extensionId,
@@ -340,19 +345,30 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
   }, [extensionPoint]);
 
   return (
-    <Formik
-      onSubmit={onSave}
-      validationSchema={validationSchema}
-      initialValues={initialValues}
-    >
-      {(formikProps) => (
-        <ExtensionForm
-          formikProps={formikProps}
-          extensionPoint={extensionPoint}
-          extensionId={extensionId}
-        />
-      )}
-    </Formik>
+    <HotKeys keyMap={keyMap}>
+      <Formik
+        onSubmit={onSave}
+        validationSchema={validationSchema}
+        initialValues={initialValues}
+      >
+        {(formikProps) => (
+          <HotKeys
+            handlers={{
+              SAVE: (keyEvent) => {
+                keyEvent.preventDefault();
+                formikProps.handleSubmit();
+              },
+            }}
+          >
+            <ExtensionForm
+              formikProps={formikProps}
+              extensionPoint={extensionPoint}
+              extensionId={extensionId}
+            />
+          </HotKeys>
+        )}
+      </Formik>
+    </HotKeys>
   );
 };
 

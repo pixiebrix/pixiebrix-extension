@@ -34,6 +34,7 @@ import { MessageContext, RawConfig } from "@/core";
 import { useDebounce } from "use-debounce";
 import { selectExtensions } from "@/options/selectors";
 import { useTitle } from "@/hooks/title";
+import { HotKeys } from "react-hotkeys";
 
 interface BrickData {
   id: string;
@@ -143,6 +144,10 @@ const LoadingBody: React.FunctionComponent = () => {
   );
 };
 
+const keyMap = {
+  SAVE: "command+s",
+};
+
 const EditPage: React.FunctionComponent = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -159,58 +164,72 @@ const EditPage: React.FunctionComponent = () => {
   const logContext = useLogContext(data?.config);
 
   const name = rawConfig?.metadata?.name;
-
-  useTitle(name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick");
+  const title = useMemo(
+    () => (name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick"),
+    [name]
+  );
+  useTitle(title);
 
   if (!data) {
     return <LoadingBody />;
   }
 
   return (
-    <Formik
-      onSubmit={submit}
-      validate={validate}
-      initialValues={{ ...data, reactivate: isBlueprint && isInstalled }}
-    >
-      {({ values, isValid, handleSubmit, isSubmitting }) => (
-        <Form noValidate onSubmit={handleSubmit} autoComplete="off">
-          <div className="d-flex">
-            <div className="flex-grow-1">
-              <PageTitle icon={faHammer} title="Edit Brick" />
-            </div>
-            <div className="flex-grow-1 EditPage__toolbar">
-              <div className="d-flex justify-content-end">
-                {isBlueprint && isInstalled && (
-                  <div className="mr-4 my-auto">
-                    <ToggleField name="reactivate" />
-                    <span className="ml-2">Re-activate Blueprint</span>
-                  </div>
-                )}
-                <div>
-                  <Button disabled={!isValid || isSubmitting} type="submit">
-                    {values.public ? "Publish Brick" : "Update Brick"}
-                  </Button>
+    <HotKeys keyMap={keyMap}>
+      <Formik
+        onSubmit={submit}
+        validate={validate}
+        initialValues={{ ...data, reactivate: isBlueprint && isInstalled }}
+      >
+        {({ values, isValid, handleSubmit, isSubmitting }) => (
+          <HotKeys
+            handlers={{
+              SAVE: (keyEvent) => {
+                keyEvent.preventDefault();
+                handleSubmit();
+              },
+            }}
+          >
+            <Form noValidate onSubmit={handleSubmit} autoComplete="off">
+              <div className="d-flex">
+                <div className="flex-grow-1">
+                  <PageTitle icon={faHammer} title="Edit Brick" />
                 </div>
-                <div>
-                  <Button
-                    disabled={isSubmitting}
-                    variant="danger"
-                    onClick={remove}
-                  >
-                    Delete Brick
-                  </Button>
+                <div className="flex-grow-1 EditPage__toolbar">
+                  <div className="d-flex justify-content-end">
+                    {isBlueprint && isInstalled && (
+                      <div className="mr-4 my-auto">
+                        <ToggleField name="reactivate" />
+                        <span className="ml-2">Re-activate Blueprint</span>
+                      </div>
+                    )}
+                    <div>
+                      <Button disabled={!isValid || isSubmitting} type="submit">
+                        {values.public ? "Publish Brick" : "Update Brick"}
+                      </Button>
+                    </div>
+                    <div>
+                      <Button
+                        disabled={isSubmitting}
+                        variant="danger"
+                        onClick={remove}
+                      >
+                        Delete Brick
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <Row>
-            <Col className="mt-4">
-              <Editor logContext={logContext} />
-            </Col>
-          </Row>
-        </Form>
-      )}
-    </Formik>
+              <Row>
+                <Col className="mt-4">
+                  <Editor logContext={logContext} />
+                </Col>
+              </Row>
+            </Form>
+          </HotKeys>
+        )}
+      </Formik>
+    </HotKeys>
   );
 };
 

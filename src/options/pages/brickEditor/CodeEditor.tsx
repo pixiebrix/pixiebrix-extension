@@ -20,7 +20,7 @@ import castArray from "lodash/castArray";
 import Card from "react-bootstrap/Card";
 import Select from "react-select";
 import React, { useState, Suspense } from "react";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 
 // https://webpack.js.org/loaders/raw-loader/#examples
 const serviceTemplate = require("raw-loader!@contrib/templates/service.txt?esModule=false")
@@ -96,6 +96,8 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
   const [template, setTemplate] = useState<TemplateOption>();
   const [field, meta, { setValue }] = useField<string>(name);
 
+  const { submitForm } = useFormikContext();
+
   return (
     <>
       <Suspense fallback={<div>Loading editor...</div>}>
@@ -105,8 +107,17 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
           width={(width ?? 400).toString()}
           mode="yaml"
           theme="chrome"
-          name="UNIQUE_ID_OF_DIV"
+          name="ACE_EDITOR_DIV"
           editorProps={{ $blockScrolling: true }}
+          commands={[
+            {
+              name: "save", //name for the key binding.
+              bindKey: { win: "Ctrl-S", mac: "Command-S" }, //key combination used for the command.
+              exec: () => {
+                void submitForm();
+              },
+            },
+          ]}
         />
         {meta.error && (
           <ListGroup>
