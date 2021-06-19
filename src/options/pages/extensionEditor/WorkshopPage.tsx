@@ -30,7 +30,7 @@ import { Link } from "react-router-dom";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import { useFetch } from "@/hooks/fetch";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { sortBy, uniq, compact } from "lodash";
 import BlockModal from "@/components/fields/BlockModal";
 import { useAsyncState } from "@/hooks/common";
@@ -39,6 +39,7 @@ import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
 import Fuse from "fuse.js";
 
 import "./WorkshopPage.scss";
+import { useTitle } from "@/hooks/title";
 
 interface OwnProps {
   navigate: (url: string) => void;
@@ -236,6 +237,7 @@ const CustomBricksCard: React.FunctionComponent<
 };
 
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
+  useTitle("Workshop");
   const { isLoggedIn, flags } = useContext(AuthContext);
 
   const [extensionPoints] = useAsyncState(registry.all(), []);

@@ -377,3 +377,8 @@ export interface AuthState {
   readonly organization?: OrganizationAuthState | null;
   readonly flags: string[];
 }
+
+export type RawConfig = {
+  kind: "service" | "extensionPoint" | "component" | "reader" | "recipe";
+  metadata: Metadata;
+};

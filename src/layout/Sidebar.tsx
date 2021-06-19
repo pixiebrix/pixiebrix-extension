@@ -31,7 +31,7 @@ import cx from "classnames";
 import { useLocation } from "react-router";
 import { Location } from "history";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 
 interface LinkProps {
   isActive?: (match: any, location: Location) => boolean;

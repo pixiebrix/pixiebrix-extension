@@ -25,7 +25,7 @@ import {
   faCaretDown,
   faExternalLinkAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import logo from "@img/logo.svg";

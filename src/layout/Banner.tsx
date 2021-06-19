@@ -20,7 +20,7 @@ import cx from "classnames";
 import "./Banner.scss";
 import { getExtensionAuth } from "@/auth/token";
 import useAsyncEffect from "use-async-effect";
-import AuthContext from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 
 const environment = process.env.ENVIRONMENT;
 const version = process.env.NPM_PACKAGE_VERSION;

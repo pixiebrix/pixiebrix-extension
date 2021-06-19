@@ -28,7 +28,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { Provider, useSelector } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import { getAuth } from "@/hooks/auth";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { ToastProvider } from "react-toast-notifications";
 import useAsyncEffect from "use-async-effect";
 import blockRegistry from "@/blocks/registry";

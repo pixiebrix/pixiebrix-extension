@@ -23,15 +23,17 @@ import { Formik, useField } from "formik";
 import { useFetch } from "@/hooks/fetch";
 import { useParams } from "react-router";
 import Editor from "./Editor";
+import { truncate } from "lodash";
 import GridLoader from "react-spinners/GridLoader";
 import useSubmitBrick from "./useSubmitBrick";
 import yaml from "js-yaml";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import "./EditPage.scss";
 import { useSelector } from "react-redux";
-import { ExtensionOptions, OptionsState } from "@/options/slices";
-import { MessageContext } from "@/core";
+import { MessageContext, RawConfig } from "@/core";
 import { useDebounce } from "use-debounce";
+import { selectExtensions } from "@/options/selectors";
+import { useTitle } from "@/hooks/title";
 
 interface BrickData {
   id: string;
@@ -40,24 +42,20 @@ interface BrickData {
   public: boolean;
 }
 
-const selectExtensions = ({ options }: { options: OptionsState }) => {
-  return Object.values(options.extensions).flatMap((extensionPointOptions) =>
-    Object.values(extensionPointOptions)
-  );
+type ParsedBrickInfo = {
+  isBlueprint: boolean;
+  isInstalled: boolean;
+  config: RawConfig;
 };
 
-function useDetectBlueprint(
-  config: string | null
-): { isBlueprint: boolean; isInstalled: boolean } {
-  const extensions = useSelector<{ options: OptionsState }, ExtensionOptions[]>(
-    selectExtensions
-  );
+function useParseBrick(config: string | null): ParsedBrickInfo {
+  const extensions = useSelector(selectExtensions);
 
   return useMemo(() => {
     if (config == null) {
-      return { isBlueprint: false, isInstalled: false };
+      return { isBlueprint: false, isInstalled: false, config: undefined };
     }
-    const configJSON = yaml.safeLoad(config) as any;
+    const configJSON = yaml.safeLoad(config) as RawConfig;
     const isBlueprint = configJSON.kind === "recipe";
     if (isBlueprint) {
       return {
@@ -65,9 +63,10 @@ function useDetectBlueprint(
         isInstalled: extensions.some(
           (x) => x._recipeId === configJSON.metadata?.id
         ),
+        config: configJSON,
       };
     } else {
-      return { isBlueprint: false, isInstalled: false };
+      return { isBlueprint: false, isInstalled: false, config: undefined };
     }
   }, [config, extensions]);
 }
@@ -100,7 +99,7 @@ function useLogContext(config: string | null): MessageContext | null {
 
   return useMemo(() => {
     try {
-      const json = yaml.safeLoad(debouncedConfig) as any;
+      const json = yaml.safeLoad(debouncedConfig) as RawConfig;
       switch (json.kind) {
         case "service": {
           return { serviceId: json.metadata.id };
@@ -126,6 +125,24 @@ function useLogContext(config: string | null): MessageContext | null {
   }, [debouncedConfig, blueprintMap]);
 }
 
+const LoadingBody: React.FunctionComponent = () => {
+  return (
+    <>
+      <div className="d-flex">
+        <div className="flex-grow-1">
+          <PageTitle icon={faHammer} title="Edit Brick" />
+        </div>
+        <div className="flex-grow-1 text-right">
+          <Button disabled>Update Brick</Button>
+        </div>
+      </div>
+      <div>
+        <GridLoader />
+      </div>
+    </>
+  );
+};
+
 const EditPage: React.FunctionComponent = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -133,28 +150,20 @@ const EditPage: React.FunctionComponent = () => {
 
   const data = useFetch<BrickData>(url);
 
-  const { isBlueprint, isInstalled } = useDetectBlueprint(data?.config);
+  const { isBlueprint, isInstalled, config: rawConfig } = useParseBrick(
+    data?.config
+  );
 
   const { submit, validate, remove } = useSubmitBrick({ url, create: false });
 
   const logContext = useLogContext(data?.config);
 
+  const name = rawConfig?.metadata?.name;
+
+  useTitle(name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick");
+
   if (!data) {
-    return (
-      <>
-        <div className="d-flex">
-          <div className="flex-grow-1">
-            <PageTitle icon={faHammer} title="Edit Brick" />
-          </div>
-          <div className="flex-grow-1 text-right">
-            <Button disabled>Update Brick</Button>
-          </div>
-        </div>
-        <div>
-          <GridLoader />
-        </div>
-      </>
-    );
+    return <LoadingBody />;
   }
 
   return (

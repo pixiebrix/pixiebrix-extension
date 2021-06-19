@@ -30,6 +30,7 @@ import GridLoader from "react-spinners/GridLoader";
 
 import "./SetupPage.scss";
 import { reportError } from "@/telemetry/logging";
+import { useTitle } from "@/hooks/title";
 
 const { setMode } = settingsSlice.actions;
 
@@ -56,6 +57,8 @@ const Step: React.FunctionComponent<{
 };
 
 const SetupPage: React.FunctionComponent = () => {
+  useTitle("Setup");
+
   const dispatch = useDispatch();
   const [accountTab, accountPending] = useAsyncState(() => hasAppAccount(), []);
 
