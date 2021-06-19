@@ -23,6 +23,7 @@ import { reportEvent, initTelemetry } from "@/telemetry/events";
 import { DNT_STORAGE_KEY, getDNT, getUID } from "@/background/telemetry";
 
 const SERVICE_URL = process.env.SERVICE_URL;
+const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
 let _availableVersion: string | null = null;
 
@@ -72,9 +73,11 @@ export const getAvailableVersion = liftBackground(
 
 async function setUninstallURL(): Promise<void> {
   if (await getDNT()) {
-    await browser.runtime.setUninstallURL();
+    // We still want to show the uninstall page so the user can optionally fill out the uninstall form. Also,
+    // Chrome reports an error if no argument is passed in
+    await browser.runtime.setUninstallURL(UNINSTALL_URL);
   } else {
-    const url = new URL("https://www.pixiebrix.com/uninstall/");
+    const url = new URL(UNINSTALL_URL);
     url.searchParams.set("uid", await getUID());
     await browser.runtime.setUninstallURL(url.toString());
   }
@@ -90,4 +93,4 @@ browser.storage.onChanged.addListener((changes) => {
   }
 });
 
-setUninstallURL();
+void setUninstallURL();
