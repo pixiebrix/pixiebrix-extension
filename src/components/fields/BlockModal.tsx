@@ -27,7 +27,7 @@ import {
   Container,
   Badge,
 } from "react-bootstrap";
-import { sortBy, truncate } from "lodash";
+import { sortBy, truncate, unary } from "lodash";
 import { IBlock } from "@/core";
 import {
   faBookReader,
@@ -98,6 +98,34 @@ const BlockResult: React.FunctionComponent<{
   );
 };
 
+type BlockOption = {
+  block: IBlock;
+  value: string;
+  label: string;
+};
+
+function searchBlocks(query: string, options: BlockOption[]): BlockOption[] {
+  let filtered = options;
+  if (query?.trim() != "") {
+    const normalizedQuery = query.toLowerCase();
+    filtered = options.filter(
+      (x) =>
+        x.label.toLowerCase().includes(normalizedQuery) ||
+        x.block.id.includes(normalizedQuery) ||
+        (x.block.description ?? "").toLowerCase().includes(normalizedQuery)
+    );
+  }
+  return sortBy(filtered, (x) => x.label);
+}
+
+function makeBlockOption(block: IBlock): BlockOption {
+  return {
+    value: block.id,
+    label: block.name,
+    block,
+  };
+}
+
 const BlockModal: React.FunctionComponent<{
   onSelect: (service: IBlock) => void;
   blocks: IBlock[];
@@ -110,30 +138,14 @@ const BlockModal: React.FunctionComponent<{
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
 
   const blockOptions = useMemo(
-    () =>
-      (blocks ?? []).map((x) => ({
-        value: x.id,
-        label: x.name,
-        block: x,
-      })),
+    () => (blocks ?? []).map(unary(makeBlockOption)),
     [blocks]
   );
 
-  const filteredOptions = useMemo(() => {
-    if (debouncedQuery.trim() != "") {
-      const normalQuery = debouncedQuery.toLowerCase();
-      return sortBy(
-        blockOptions.filter(
-          (x) =>
-            x.label.toLowerCase().includes(normalQuery) ||
-            (x.block.description ?? "").toLowerCase().includes(normalQuery)
-        ),
-        (x) => x.label
-      );
-    } else {
-      return sortBy(blockOptions, (x) => x.label);
-    }
-  }, [blockOptions, debouncedQuery]);
+  const filteredOptions = useMemo(
+    () => searchBlocks(debouncedQuery, blockOptions),
+    [blockOptions, debouncedQuery]
+  );
 
   const close = useCallback(() => {
     setShow(false);
