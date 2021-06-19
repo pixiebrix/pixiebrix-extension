@@ -34,7 +34,7 @@ import TextField from "@/components/fields/TextField";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { extensionValidatorFactory } from "@/validators/validation";
 import { SCHEMA_TYPE_TO_BLOCK_PROPERTY } from "@/components/fields/BlockField";
-import { castArray, isEmpty, fromPairs } from "lodash";
+import { castArray, isEmpty, fromPairs, truncate } from "lodash";
 import useAsyncEffect from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
@@ -47,6 +47,7 @@ import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { configToYaml } from "@/devTools/editor/useCreate";
 import OptionsArgsCard from "@/options/pages/extensionEditor/OptionsArgsCard";
+import { useTitle } from "@/hooks/title";
 
 type TopConfig = { [prop: string]: unknown };
 
@@ -83,6 +84,8 @@ function normalizeConfig(
   const schema = extensionPoint.inputSchema;
   const result: TopConfig = {};
   for (const [prop, definition] of Object.entries(schema.properties)) {
+    // Safe because prop is coming from Object.entries
+    /* eslint-disable security/detect-object-injection */
     if (typeof definition === "boolean") {
       throw Error("Expected schema definition not boolean");
     } else if (
@@ -97,6 +100,7 @@ function normalizeConfig(
     } else {
       result[prop] = config[prop];
     }
+    /* eslint-enable security/detect-object-injection */
   }
   return result;
 }
@@ -165,6 +169,12 @@ const ExtensionForm: React.FunctionComponent<{
   extensionPoint,
   extensionId,
 }) => {
+  useTitle(
+    `Configure ${truncate(!isEmpty(values.label) ? values.label : "Brick", {
+      length: 15,
+    })}`
+  );
+
   const [blocks] = useAsyncState(blockRegistry.all(), []);
 
   const { tab: activeTab = "details" } = useParams<{ tab?: string }>();

@@ -36,7 +36,7 @@ import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import { ToastProvider } from "react-toast-notifications";
 import "vendors/theme/app/app.scss";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { useAsyncState } from "@/hooks/common";
 import Banner from "@/layout/Banner";
 import ActivatePage from "@/options/pages/marketplace/ActivatePage";

@@ -20,7 +20,7 @@ import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
 import { ExtensionOptions, optionsSlice } from "@/options/slices";
 import { useToasts } from "react-toast-notifications";
-import { groupBy, uniq, pickBy, isEmpty, mapValues } from "lodash";
+import { groupBy, uniq, pickBy, isEmpty, mapValues, truncate } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { push } from "connected-react-router";
 import "./ActivateWizard.scss";
@@ -42,6 +42,7 @@ import { reportError } from "@/telemetry/logging";
 import { useParams } from "react-router";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { selectExtensions } from "@/options/selectors";
+import { useTitle } from "@/hooks/title";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -278,6 +279,8 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
 
   const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
+
+  useTitle(`Activate ${truncate(blueprint.metadata.name, { length: 15 })}`);
 
   return (
     <Formik initialValues={initialValues} onSubmit={install}>
