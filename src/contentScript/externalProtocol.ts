@@ -84,7 +84,8 @@ function initContentScriptListener() {
               send(toErrorResponse(type, reason), true);
             } else {
               console.warn(
-                `An error occurred while processing notification ${type}`,
+                "An error occurred while processing notification %s",
+                type,
                 reason
               );
             }
@@ -125,7 +126,7 @@ function initExternalPageListener() {
         pageRejectedCallbacks.delete(meta.nonce);
       }
     } else if (type) {
-      console.debug(`Ignoring message: ${type}`, event);
+      console.debug("Ignoring message: %s", type, event);
     }
   });
 }
