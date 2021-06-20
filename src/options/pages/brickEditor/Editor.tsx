@@ -32,6 +32,7 @@ import { MessageContext } from "@/core";
 import BrickReference from "@/options/pages/brickEditor/BrickReference";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
+import extensionPointRegistry from "@/extensionPoints/registry";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -68,7 +69,13 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const [editorWidth, setEditorWidth] = useState();
   const { errors, values } = useFormikContext<EditorValues>();
 
-  const [blocks] = useAsyncState(blockRegistry.all(), []);
+  const [blocks] = useAsyncState(async () => {
+    const [extensionPoints, blocks] = await Promise.all([
+      extensionPointRegistry.all(),
+      blockRegistry.all(),
+    ]);
+    return [...extensionPoints, ...blocks];
+  }, []);
 
   const editorRef = useRef(null);
 
