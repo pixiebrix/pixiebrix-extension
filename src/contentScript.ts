@@ -54,7 +54,7 @@ window.addEventListener("error", function (e) {
   }
 });
 
-window.addEventListener("unhandledrejection", function (e) {
+window.addEventListener("unhandledrejection", function (e: any) {
   if (isConnectionError(e)) {
     showConnectionLost();
   } else {
