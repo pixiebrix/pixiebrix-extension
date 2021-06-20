@@ -120,13 +120,16 @@ function getConditionalPlugins(isProduction) {
 const isProd = (options) => options.mode === "production";
 
 function customizeManifest(manifest, options) {
+  manifest.version = process.env.npm_package_version;
   if (!isProd(options)) {
     manifest.name = "PixieBrix - Development";
+    const date = new Date();
+    manifest.version +=
+      "." + date.getHours() + String(date.getMinutes()).padStart("0", 2);
   }
   if (process.env.CHROME_MANIFEST_KEY) {
     manifest.key = process.env.CHROME_MANIFEST_KEY;
   }
-  manifest.version = process.env.npm_package_version;
   const internal = isProd(options)
     ? []
     : ["http://127.0.0.1:8000/*", "http://127.0.0.1/*", "http://localhost/*"];
