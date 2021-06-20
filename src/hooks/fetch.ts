@@ -25,6 +25,8 @@ import { isExtensionContext } from "@/chrome";
 import { getExtensionToken } from "@/auth/token";
 
 export function isAbsoluteURL(url: string): boolean {
+  // We're testing if a URL is absolute here, not creating a URL to call
+  // noinspection HttpUrlsUsage
   return url.indexOf("http://") === 0 || url.indexOf("https://") === 0;
 }
 

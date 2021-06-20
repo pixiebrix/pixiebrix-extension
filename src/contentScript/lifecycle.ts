@@ -244,7 +244,6 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
 
 /**
  * Handle a website navigation, e.g., page load or a URL change in an SPA.
- * @returns {Promise<void>}
  */
 export async function handleNavigate({
   openerTabId,

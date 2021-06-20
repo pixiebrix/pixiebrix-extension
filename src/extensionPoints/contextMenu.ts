@@ -209,7 +209,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     const extensions = this.extensions.splice(0, this.extensions.length);
     if (global) {
       for (const extension of extensions) {
-        uninstallContextMenu({ extensionId: extension.id });
+        void uninstallContextMenu({ extensionId: extension.id });
       }
     }
   }
@@ -283,8 +283,6 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       deploymentId: extension._deployment?.id,
       extensionId: extension.id,
     });
-
-    console.debug("Got extension", { extension });
 
     registerHandler(extension.id, async (clickData) => {
       const reader = await this.getBaseReader();
