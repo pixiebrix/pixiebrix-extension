@@ -103,6 +103,14 @@ export interface SanitizedAuth {
   service: RemoteService;
 }
 
+export interface Brick {
+  id: string;
+  name: string;
+  verbose_name: string;
+  version: string;
+  kind: string;
+}
+
 export interface ConfigurableAuth {
   id: string;
   editable?: boolean;

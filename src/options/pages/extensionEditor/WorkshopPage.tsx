@@ -60,17 +60,10 @@ import Fuse from "fuse.js";
 
 import "./WorkshopPage.scss";
 import { useTitle } from "@/hooks/title";
+import { Brick } from "@/types/contract";
 
 interface OwnProps {
   navigate: (url: string) => void;
-}
-
-interface Brick {
-  id: string;
-  name: string;
-  verbose_name: string;
-  version: string;
-  kind: string;
 }
 
 interface EnhancedBrick extends Brick {
