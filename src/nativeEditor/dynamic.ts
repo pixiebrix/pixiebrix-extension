@@ -41,7 +41,12 @@ import { isCustomReader } from "@/devTools/editor/editorSlice";
 import blockRegistry from "@/blocks/registry";
 import { Reader } from "@/types";
 
-export type ElementType = "menuItem" | "trigger" | "panel" | "contextMenu";
+export type ElementType =
+  | "menuItem"
+  | "trigger"
+  | "panel"
+  | "contextMenu"
+  | "actionPanel";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Metadata, selectMetadata } from "@/core";
+import { IExtension, Metadata, selectMetadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import {
   BaseFormState,
@@ -24,14 +24,17 @@ import {
   ReaderReferenceFormState,
 } from "@/devTools/editor/editorSlice";
 import psl, { ParsedDomain } from "psl";
-import { identity, isPlainObject } from "lodash";
+import { castArray, identity, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
 import {
   defaultSelector,
   readerOptions,
 } from "@/devTools/editor/tabs/reader/ReaderConfig";
-import { ExtensionPointConfig } from "@/extensionPoints/types";
+import {
+  ExtensionPointConfig,
+  ExtensionPointDefinition,
+} from "@/extensionPoints/types";
 import { find as findBrick } from "@/registry/localRegistry";
 import React from "react";
 
@@ -42,7 +45,7 @@ export interface WizardStep {
     editable?: Set<string>;
     available?: boolean;
   }>;
-  extraProps?: object;
+  extraProps?: Record<string, unknown>;
 }
 
 function getPathFromUrl(url: string): string {
@@ -53,6 +56,8 @@ function defaultMatchPattern(url: string): string {
   const cleanURL = getPathFromUrl(url);
   console.debug(`Clean URL: ${cleanURL}`);
   const obj = new URL(cleanURL);
+  // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/entries
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TypeScript definitions are incorrect
   for (const [name] of (obj.searchParams as any).entries()) {
     console.debug(`Deleting param ${name}`);
     obj.searchParams.delete(name);
@@ -64,7 +69,7 @@ function defaultMatchPattern(url: string): string {
 }
 
 function defaultReader(frameworks: FrameworkMeta[]): Framework {
-  const knownFrameworks = frameworks.filter((x) =>
+  const knownFrameworks = (frameworks ?? []).filter((x) =>
     KNOWN_READERS.includes(x.id)
   );
   return knownFrameworks.length ? knownFrameworks[0].id : "jquery";
@@ -252,8 +257,85 @@ export async function makeReaderFormState(
       return {
         metadata: reader.metadata,
         outputSchema: reader.outputSchema,
-        definition: reader.definition.reader as any,
+        definition: reader.definition.reader,
       };
     })
   );
+}
+
+export const PROPERTY_TABLE_BODY = [
+  {
+    id: "@pixiebrix/property-table",
+    config: {},
+  },
+];
+
+/**
+ * Availability with single matchPattern and selector.
+ * The page editor UI currently doesn't support multiple patterns/selectors
+ * @see Availability
+ */
+type SimpleAvailability = {
+  matchPatterns: string | undefined;
+  selectors: string | undefined;
+};
+
+/**
+ * Map availability from extension point configuration to state for the page editor.
+ * Is subject to the limitations of the page editor interface.
+ */
+export function selectIsAvailable(
+  extensionPoint: ExtensionPointConfig
+): SimpleAvailability {
+  const isAvailable = extensionPoint.definition.isAvailable;
+  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
+  const selectors = castArray(isAvailable.selectors ?? []);
+
+  if (matchPatterns.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability match patterns not implemented"
+    );
+  }
+
+  if (selectors.length > 1) {
+    throw new Error(
+      "Editing extension point with multiple availability selectors not implemented"
+    );
+  }
+
+  return {
+    matchPatterns: matchPatterns[0],
+    selectors: selectors[0],
+  };
+}
+
+export async function lookupExtensionPoint<
+  TDefinition extends ExtensionPointDefinition,
+  TConfig,
+  TType extends string
+>(
+  config: IExtension<TConfig>,
+  type: TType
+): Promise<
+  ExtensionPointConfig<TDefinition> & { definition: { type: TType } }
+> {
+  if (!config) {
+    throw new Error("config is required");
+  }
+
+  const brick = await findBrick(config.extensionPointId);
+  if (!brick) {
+    throw new Error(
+      `Cannot find extension point definition: ${config.extensionPointId}`
+    );
+  }
+
+  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<TDefinition>;
+  if (extensionPoint.definition.type !== type) {
+    throw new Error("Expected panel extension point type");
+  }
+
+  return extensionPoint as ExtensionPointConfig<TDefinition> & {
+    definition: { type: TType };
+  };
 }

@@ -49,7 +49,12 @@ export function isCustomReader(
   return "definition" in reader;
 }
 
-export type ElementType = "menuItem" | "trigger" | "panel" | "contextMenu";
+export type ElementType =
+  | "menuItem"
+  | "trigger"
+  | "panel"
+  | "contextMenu"
+  | "actionPanel";
 
 export interface BaseFormState {
   readonly uuid: string;
@@ -70,6 +75,8 @@ export interface BaseFormState {
 }
 
 export interface ContextMenuFormState extends BaseFormState {
+  type: "contextMenu";
+
   extensionPoint: {
     metadata: Metadata;
     definition: {
@@ -90,6 +97,8 @@ export interface ContextMenuFormState extends BaseFormState {
 }
 
 export interface TriggerFormState extends BaseFormState {
+  type: "trigger";
+
   extensionPoint: {
     metadata: Metadata;
     definition: {
@@ -107,7 +116,28 @@ export interface TriggerFormState extends BaseFormState {
   };
 }
 
+export interface ActionPanelFormState extends BaseFormState {
+  type: "actionPanel";
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+  };
+
+  extension: {
+    heading: string;
+    body: BlockPipeline;
+  };
+}
+
 export interface PanelFormState extends BaseFormState {
+  type: "panel";
+
   containerInfo: ElementInfo;
 
   extensionPoint: {
@@ -137,6 +167,8 @@ export interface PanelFormState extends BaseFormState {
 }
 
 export interface ActionFormState extends BaseFormState {
+  type: "menuItem";
+
   containerInfo: ElementInfo;
 
   extensionPoint: {
@@ -167,6 +199,7 @@ export interface ActionFormState extends BaseFormState {
 
 export type FormState =
   | ActionFormState
+  | ActionPanelFormState
   | TriggerFormState
   | PanelFormState
   | ContextMenuFormState;
