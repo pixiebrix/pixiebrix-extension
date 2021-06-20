@@ -29,7 +29,7 @@ import {
   FormState,
 } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { sortBy, zip, uniq } from "lodash";
 import * as nativeOperations from "@/background/devtools/index";
 import {

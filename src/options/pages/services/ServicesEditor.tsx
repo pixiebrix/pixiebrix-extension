@@ -35,9 +35,10 @@ import { SanitizedAuth } from "@/types/contract";
 import { refresh as refreshServices } from "@/background/locator";
 import GridLoader from "react-spinners/GridLoader";
 import ZapierModal from "@/options/pages/services/ZapierModal";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { sleep } from "@/utils";
 import { reportError } from "@/telemetry/logging";
+import { useTitle } from "@/hooks/title";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -55,6 +56,8 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   deleteServiceConfig,
   navigate,
 }) => {
+  useTitle("Integrations");
+
   const remoteAuths = useFetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
   const { flags } = useContext(AuthContext);
 
@@ -73,13 +76,6 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
     showZapier,
     isPending: servicesPending,
   } = useServiceDefinitions();
-
-  // console.log("service state", {
-  //   activeConfiguration,
-  //   servicesPending,
-  //   activeService,
-  //   serviceDefinitions,
-  // });
 
   const handleSave = useCallback(
     async (config) => {

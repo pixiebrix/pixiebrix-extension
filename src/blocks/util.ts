@@ -15,11 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { IBlock } from "@/core";
+import { IBlock, IService } from "@/core";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 
-export async function getType(block: IBlock): Promise<BlockType | null> {
+export async function getType(
+  block: IBlock | IService
+): Promise<BlockType | null> {
   if ("inferType" in block) {
     return await (block as any).inferType();
   } else if ("read" in block) {

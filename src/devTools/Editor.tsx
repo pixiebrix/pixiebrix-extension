@@ -159,10 +159,10 @@ type MenuItemWithConfig = MenuItemExtensionPoint & {
   rawConfig: ExtensionPointConfig<MenuDefinition>;
 };
 
-// we want Function to pass in the CTOR
-// eslint-disable-next-line @typescript-eslint/ban-types
 function useAvailableExtensionPoints<
   TConfig extends IExtensionPoint & { rawConfig: ExtensionPointConfig }
+  // we want Function to pass in the CTOR
+  // eslint-disable-next-line @typescript-eslint/ban-types
 >(ctor: Function) {
   const { port } = useContext(DevToolsContext);
 
@@ -217,7 +217,7 @@ const InsertButtonPane: React.FunctionComponent<{ cancel: () => void }> = ({
       );
       dispatch(addElement(state));
     },
-    [dispatch, cancel]
+    [port, dispatch, cancel]
   );
 
   const menuItemExtensionPoints = useAvailableExtensionPoints(
@@ -295,7 +295,7 @@ const InsertPanelPane: React.FunctionComponent<{
       );
       dispatch(addElement(state));
     },
-    [dispatch, cancel]
+    [port, dispatch, cancel]
   );
 
   return (
@@ -574,7 +574,7 @@ const Editor: React.FunctionComponent = () => {
         event.preventDefault();
         event.stopImmediatePropagation();
         event.stopPropagation();
-        cancelInsert();
+        void cancelInsert();
       }
     },
     [cancelInsert]
@@ -612,7 +612,7 @@ const Editor: React.FunctionComponent = () => {
           <Formik key={key} initialValues={selectedElement} onSubmit={create}>
             {({ values }) => (
               <>
-                <Effect values={values} onChange={updateHandler.callback} />
+                <Effect values={values} onChange={updateHandler} />
                 <ElementWizard
                   element={values}
                   editable={editable}
@@ -642,7 +642,7 @@ const Editor: React.FunctionComponent = () => {
   }, [
     beta,
     cancelInsert,
-    updateHandler.callback,
+    updateHandler,
     create,
     inserting,
     selectedElement,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, Row } from "react-bootstrap";
@@ -23,15 +23,20 @@ import { Formik, useField } from "formik";
 import { useFetch } from "@/hooks/fetch";
 import { useParams } from "react-router";
 import Editor from "./Editor";
+import { truncate } from "lodash";
 import GridLoader from "react-spinners/GridLoader";
 import useSubmitBrick from "./useSubmitBrick";
 import yaml from "js-yaml";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import "./EditPage.scss";
-import { useSelector } from "react-redux";
-import { ExtensionOptions, OptionsState } from "@/options/slices";
-import { MessageContext } from "@/core";
+import { useDispatch, useSelector } from "react-redux";
+import { MessageContext, RawConfig } from "@/core";
 import { useDebounce } from "use-debounce";
+import { selectExtensions } from "@/options/selectors";
+import { useTitle } from "@/hooks/title";
+import { HotKeys } from "react-hotkeys";
+import { workshopSlice } from "@/options/slices";
+const { touchBrick } = workshopSlice.actions;
 
 interface BrickData {
   id: string;
@@ -40,24 +45,20 @@ interface BrickData {
   public: boolean;
 }
 
-const selectExtensions = ({ options }: { options: OptionsState }) => {
-  return Object.values(options.extensions).flatMap((extensionPointOptions) =>
-    Object.values(extensionPointOptions)
-  );
+type ParsedBrickInfo = {
+  isBlueprint: boolean;
+  isInstalled: boolean;
+  config: RawConfig;
 };
 
-function useDetectBlueprint(
-  config: string | null
-): { isBlueprint: boolean; isInstalled: boolean } {
-  const extensions = useSelector<{ options: OptionsState }, ExtensionOptions[]>(
-    selectExtensions
-  );
+function useParseBrick(config: string | null): ParsedBrickInfo {
+  const extensions = useSelector(selectExtensions);
 
   return useMemo(() => {
     if (config == null) {
-      return { isBlueprint: false, isInstalled: false };
+      return { isBlueprint: false, isInstalled: false, config: undefined };
     }
-    const configJSON = yaml.safeLoad(config) as any;
+    const configJSON = yaml.safeLoad(config) as RawConfig;
     const isBlueprint = configJSON.kind === "recipe";
     if (isBlueprint) {
       return {
@@ -65,9 +66,10 @@ function useDetectBlueprint(
         isInstalled: extensions.some(
           (x) => x._recipeId === configJSON.metadata?.id
         ),
+        config: configJSON,
       };
     } else {
-      return { isBlueprint: false, isInstalled: false };
+      return { isBlueprint: false, isInstalled: false, config: configJSON };
     }
   }, [config, extensions]);
 }
@@ -100,7 +102,7 @@ function useLogContext(config: string | null): MessageContext | null {
 
   return useMemo(() => {
     try {
-      const json = yaml.safeLoad(debouncedConfig) as any;
+      const json = yaml.safeLoad(debouncedConfig) as RawConfig;
       switch (json.kind) {
         case "service": {
           return { serviceId: json.metadata.id };
@@ -126,6 +128,36 @@ function useLogContext(config: string | null): MessageContext | null {
   }, [debouncedConfig, blueprintMap]);
 }
 
+const LoadingBody: React.FunctionComponent = () => {
+  return (
+    <>
+      <div className="d-flex">
+        <div className="flex-grow-1">
+          <PageTitle icon={faHammer} title="Edit Brick" />
+        </div>
+        <div className="flex-grow-1 text-right">
+          <Button disabled>Update Brick</Button>
+        </div>
+      </div>
+      <div>
+        <GridLoader />
+      </div>
+    </>
+  );
+};
+
+const keyMap = {
+  SAVE: "command+s",
+};
+
+function useTouchBrick(id: string): void {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    console.debug(`Marking brick as touched: %s`, id);
+    dispatch(touchBrick({ id }));
+  }, [dispatch, id]);
+}
+
 const EditPage: React.FunctionComponent = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -133,75 +165,83 @@ const EditPage: React.FunctionComponent = () => {
 
   const data = useFetch<BrickData>(url);
 
-  const { isBlueprint, isInstalled } = useDetectBlueprint(data?.config);
+  const { isBlueprint, isInstalled, config: rawConfig } = useParseBrick(
+    data?.config
+  );
+
+  useTouchBrick(id);
 
   const { submit, validate, remove } = useSubmitBrick({ url, create: false });
 
   const logContext = useLogContext(data?.config);
 
+  const name = rawConfig?.metadata?.name;
+  const title = useMemo(
+    () => (name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick"),
+    [name]
+  );
+  useTitle(title);
+
   if (!data) {
-    return (
-      <>
-        <div className="d-flex">
-          <div className="flex-grow-1">
-            <PageTitle icon={faHammer} title="Edit Brick" />
-          </div>
-          <div className="flex-grow-1 text-right">
-            <Button disabled>Update Brick</Button>
-          </div>
-        </div>
-        <div>
-          <GridLoader />
-        </div>
-      </>
-    );
+    return <LoadingBody />;
   }
 
   return (
-    <Formik
-      onSubmit={submit}
-      validate={validate}
-      initialValues={{ ...data, reactivate: isBlueprint && isInstalled }}
-    >
-      {({ values, isValid, handleSubmit, isSubmitting }) => (
-        <Form noValidate onSubmit={handleSubmit} autoComplete="off">
-          <div className="d-flex">
-            <div className="flex-grow-1">
-              <PageTitle icon={faHammer} title="Edit Brick" />
-            </div>
-            <div className="flex-grow-1 EditPage__toolbar">
-              <div className="d-flex justify-content-end">
-                {isBlueprint && isInstalled && (
-                  <div className="mr-4 my-auto">
-                    <ToggleField name="reactivate" />
-                    <span className="ml-2">Re-activate Blueprint</span>
-                  </div>
-                )}
-                <div>
-                  <Button disabled={!isValid || isSubmitting} type="submit">
-                    {values.public ? "Publish Brick" : "Update Brick"}
-                  </Button>
+    <HotKeys keyMap={keyMap}>
+      <Formik
+        onSubmit={submit}
+        validate={validate}
+        initialValues={{ ...data, reactivate: isBlueprint && isInstalled }}
+      >
+        {({ values, isValid, handleSubmit, isSubmitting }) => (
+          <HotKeys
+            handlers={{
+              SAVE: (keyEvent) => {
+                keyEvent.preventDefault();
+                handleSubmit();
+              },
+            }}
+          >
+            <Form noValidate onSubmit={handleSubmit} autoComplete="off">
+              <div className="d-flex">
+                <div className="flex-grow-1">
+                  <PageTitle icon={faHammer} title="Edit Brick" />
                 </div>
-                <div>
-                  <Button
-                    disabled={isSubmitting}
-                    variant="danger"
-                    onClick={remove}
-                  >
-                    Delete Brick
-                  </Button>
+                <div className="flex-grow-1 EditPage__toolbar">
+                  <div className="d-flex justify-content-end">
+                    {isBlueprint && isInstalled && (
+                      <div className="mr-4 my-auto">
+                        <ToggleField name="reactivate" />
+                        <span className="ml-2">Re-activate Blueprint</span>
+                      </div>
+                    )}
+                    <div>
+                      <Button disabled={!isValid || isSubmitting} type="submit">
+                        {values.public ? "Publish Brick" : "Update Brick"}
+                      </Button>
+                    </div>
+                    <div>
+                      <Button
+                        disabled={isSubmitting}
+                        variant="danger"
+                        onClick={remove}
+                      >
+                        Delete Brick
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <Row>
-            <Col className="mt-4">
-              <Editor logContext={logContext} />
-            </Col>
-          </Row>
-        </Form>
-      )}
-    </Formik>
+              <Row>
+                <Col className="mt-4">
+                  <Editor logContext={logContext} />
+                </Col>
+              </Row>
+            </Form>
+          </HotKeys>
+        )}
+      </Formik>
+    </HotKeys>
   );
 };
 

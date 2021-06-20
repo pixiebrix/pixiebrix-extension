@@ -26,7 +26,7 @@ import ServiceModal from "@/components/fields/ServiceModal";
 import { useFetch } from "@/hooks/fetch";
 import { faEyeSlash, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
 import { deleteCachedAuth } from "@/background/requests";
 import { reportError } from "@/telemetry/logging";

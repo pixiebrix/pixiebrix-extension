@@ -17,7 +17,6 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-// @ts-ignore: redux-persist-webextension-storage has no type definitions
 import { localStorage } from "redux-persist-webextension-storage";
 import {
   optionsSlice,
@@ -26,6 +25,8 @@ import {
   ServicesState,
   settingsSlice,
   SettingsState,
+  workshopSlice,
+  WorkshopState,
 } from "./slices";
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
@@ -52,6 +53,7 @@ export interface RootState {
   options: OptionsState;
   services: ServicesState;
   settings: SettingsState;
+  workshop: WorkshopState;
 }
 
 const store = configureStore({
@@ -60,6 +62,7 @@ const store = configureStore({
     options: persistReducer(persistOptionsConfig, optionsSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
+    workshop: persistReducer(persistSettingsConfig, workshopSlice.reducer),
   },
   middleware: [routerMiddleware(hashHistory), createLogger()],
   devTools: true,

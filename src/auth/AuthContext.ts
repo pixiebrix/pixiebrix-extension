@@ -1,5 +1,5 @@
-/*!
- * Copyright (C) 2021 Pixie Brix, LLC
+/*
+ * Copyright (C) 2020 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,22 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-.WorkshopPage__BrickTable {
-  tbody > tr:not(.WorkshopPage__BrickTable__more) {
-    cursor: pointer;
+import React from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { isExtensionContext } from "@/chrome";
+import { AuthState } from "@/core";
 
-    td:first-child {
-      max-width: 10px;
-    }
-
-    code {
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    &:hover {
-      color: #fff;
-      background-color: #b66dff;
-    }
-  }
+if (!isExtensionContext()) {
+  console.debug("Setting axios web app authentication context");
+  axios.defaults.headers.post["X-CSRFToken"] = Cookies.get("csrftoken");
 }
+
+const anonAuthState: AuthState = {
+  userId: undefined,
+  email: undefined,
+  isLoggedIn: false,
+  isOnboarded: false,
+  extension: false,
+  scope: null,
+  flags: [],
+};
+
+const AuthContext = React.createContext(anonAuthState);
+
+export default AuthContext;

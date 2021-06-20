@@ -48,8 +48,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 
 import "./TemplatesPage.scss";
-import AuthContext from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import GridLoader from "react-spinners/GridLoader";
+import { useTitle } from "@/hooks/title";
 
 export interface TemplatesProps {
   installedRecipes: Set<string>;
@@ -318,6 +319,8 @@ const SharedTemplates: React.FunctionComponent<{
 const TemplatesPage: React.FunctionComponent<
   TemplatesProps & { navigate: (url: string) => void }
 > = ({ installedRecipes, navigate }) => {
+  useTitle("Templates");
+
   const { flags } = useContext(AuthContext);
 
   const showShared = flags?.includes("templates-shared");

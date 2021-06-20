@@ -30,11 +30,12 @@ import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { getDNT, toggleDNT } from "@/background/telemetry";
 import useAsyncEffect from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import AuthContext from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { useLoggingConfig } from "@/hooks/logging";
 import GridLoader from "react-spinners/GridLoader";
 import { clearLogs } from "@/background/logging";
 import { reportError } from "@/telemetry/logging";
+import { useTitle } from "@/hooks/title";
 
 const { resetOptions } = optionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
@@ -59,30 +60,6 @@ function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
 
   return [enabled, toggle];
 }
-
-// const PermissionsRow: React.FunctionComponent = () => {
-//   const [permissions] = useAsyncState<Permissions.AnyPermissions>(async () => {
-//     return await browser.permissions.getAll();
-//   }, []);
-//
-//   return (
-//       <Row className="mb-4">
-//         <Col lg={6} md={8}>
-//           <Card>
-//             <Card.Header>Permissions</Card.Header>
-//             <ListGroup variant="flush">
-//               {(permissions?.origins ?? []).map(origin => (
-//                   <ListGroup.Item key={origin}>
-//                     {origin}
-//                   </ListGroup.Item>
-//               ))}
-//             </ListGroup>
-//
-//           </Card>
-//         </Col>
-//       </Row>
-//   )
-// }
 
 const LoggingRow: React.FunctionComponent = () => {
   const [config, setConfig] = useLoggingConfig();
@@ -207,8 +184,8 @@ const PrivacyRow: React.FunctionComponent = () => {
 };
 
 const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
+  useTitle("Settings");
   const { addToast } = useToasts();
-
   const [serviceURL, setServiceURL] = useConfiguredHost();
 
   const { organization } = useContext(AuthContext);
@@ -220,7 +197,7 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
       appearance: "success",
       autoDismiss: true,
     });
-  }, []);
+  }, [addToast]);
 
   const reload = useCallback(() => {
     browser.runtime.reload();
@@ -242,7 +219,7 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
         });
       }
     });
-  }, []);
+  }, [addToast]);
 
   const handleUpdate = useCallback(
     async (event) => {
@@ -257,7 +234,7 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
         autoDismiss: true,
       });
     },
-    [serviceURL, setServiceURL]
+    [addToast, serviceURL, setServiceURL]
   );
 
   return (

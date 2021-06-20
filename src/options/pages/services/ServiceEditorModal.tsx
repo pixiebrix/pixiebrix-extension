@@ -17,19 +17,18 @@
 
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
+import { Modal, Button, Form } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
 import { IService, RawServiceConfiguration } from "@/core";
-import Form from "react-bootstrap/Form";
-import { Formik, FormikHelpers, FormikValues } from "formik";
+import { Formik, FormikHelpers } from "formik";
 import { dereference } from "@/validators/generic";
-import cloneDeep from "lodash/cloneDeep";
+import { cloneDeep, truncate } from "lodash";
 import { useAsyncState } from "@/hooks/common";
 import genericOptionsFactory from "@/components/fields/blockOptions";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
 import { reportError } from "@/telemetry/logging";
+import { useTitle } from "@/hooks/title";
 
 interface OwnProps {
   configuration: RawServiceConfiguration;
@@ -46,10 +45,15 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   onDelete,
   onSave,
 }) => {
+  useTitle(`Configure ${truncate(service.name, { length: 15 })}`);
+
   const handleSave = useCallback(
-    async (values: FormikValues, actions: FormikHelpers<FormikValues>) => {
+    async (
+      values: RawServiceConfiguration,
+      actions: FormikHelpers<RawServiceConfiguration>
+    ) => {
       actions.setSubmitting(true);
-      await onSave(values as any);
+      await onSave(values);
     },
     [onSave]
   );
