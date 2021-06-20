@@ -27,7 +27,7 @@ export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 export type SchemaDefinition = JSONSchema7Definition;
-export type SchemaProperties = { [key: string]: SchemaDefinition };
+export type SchemaProperties = Record<string, SchemaDefinition>;
 
 export type RenderedHTML = string;
 

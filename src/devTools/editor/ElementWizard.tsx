@@ -37,6 +37,7 @@ import ToggleField from "@/devTools/editor/components/ToggleField";
 import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
 import { wizard as triggerWizard } from "./extensionPoints/trigger";
 import { wizard as panelWizard } from "./extensionPoints/panel";
+import { wizard as actionPanelWizard } from "./extensionPoints/actionPanel";
 import { wizard as contextMenuWizard } from "./extensionPoints/contextMenu";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
@@ -61,6 +62,7 @@ const wizardMap = {
   trigger: triggerWizard,
   panel: panelWizard,
   contextMenu: contextMenuWizard,
+  actionPanel: actionPanelWizard,
 };
 
 const ElementWizard: React.FunctionComponent<{
@@ -100,17 +102,15 @@ const ElementWizard: React.FunctionComponent<{
 
   const run = useCallback(async () => {
     const { definition: factory } = ADAPTERS.get(debounced.type);
-    await nativeOperations.updateDynamicElement(
-      port,
-      factory(debounced as any)
-    );
+    await nativeOperations.updateDynamicElement(port, factory(debounced));
   }, [debounced, port]);
 
   const isLoadTrigger =
     debounced?.type === "trigger" &&
     (debounced as TriggerFormState)?.extensionPoint.definition.trigger ===
       "load";
-  const isPanel = debounced?.type === "panel";
+
+  const isPanel = ["panel", "actionPanel"].includes(debounced?.type);
 
   const showReloadControls = isLoadTrigger || isPanel;
 
@@ -123,12 +123,9 @@ const ElementWizard: React.FunctionComponent<{
     console.debug("Updating dynamic element", {
       debounced,
       showReloadControls,
-      element: factory(debounced as any),
+      element: factory(debounced),
     });
-    await nativeOperations.updateDynamicElement(
-      port,
-      factory(debounced as any)
-    );
+    await nativeOperations.updateDynamicElement(port, factory(debounced));
   }, [debounced, port, showReloadControls]);
 
   const reset = useCallback(async () => {

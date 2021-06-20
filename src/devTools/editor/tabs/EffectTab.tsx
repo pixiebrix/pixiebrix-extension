@@ -284,6 +284,14 @@ const RECOMMENDED_BRICKS = new Map<ElementType, Recommendation[]>([
       { id: "@pixiebrix/get", icon: faCloud },
     ],
   ],
+  [
+    "actionPanel",
+    [
+      { id: "@pixiebrix/property-table", icon: faListOl },
+      { id: "@pixiebrix/table", icon: faTable },
+      { id: "@pixiebrix/get", icon: faCloud },
+    ],
+  ],
 ]);
 
 const QuickAdd: React.FunctionComponent<{
@@ -297,12 +305,12 @@ const QuickAdd: React.FunctionComponent<{
   const recommendations = RECOMMENDED_BRICKS.get(type);
 
   const recommendedBlocks = useMemo(() => {
-    const matched = recommendations.map((recommendation) => ({
+    const matched = (recommendations ?? []).map((recommendation) => ({
       recommendation,
       block: (blocks ?? []).find((x) => x.id === recommendation.id),
     }));
     return matched.filter((x) => x.block != null);
-  }, [blocks]);
+  }, [recommendations, blocks]);
 
   return (
     <div>
@@ -330,9 +338,6 @@ const QuickAdd: React.FunctionComponent<{
             <Card.Body>
               <Card.Title>{block.name}</Card.Title>
               <Card.Text className="small">{block.description}</Card.Text>
-              {/*<Button variant="info" onClick={() => onSelect(block)}>*/}
-              {/*  Add*/}
-              {/*</Button>*/}
             </Card.Body>
           </Card>
         ))}
@@ -354,8 +359,9 @@ const EffectTab: React.FunctionComponent<{
   }, []);
 
   const [relevantBlocks] = useAsyncState(async () => {
-    const excludeTypes: BlockType[] =
-      type === "panel" ? ["reader", "effect"] : ["reader", "renderer"];
+    const excludeTypes: BlockType[] = ["actionPanel", "panel"].includes(type)
+      ? ["reader", "effect"]
+      : ["reader", "renderer"];
     return filterBlocks(blocks, { excludeTypes });
   }, [blocks, type]);
 
@@ -363,13 +369,20 @@ const EffectTab: React.FunctionComponent<{
     fieldName
   );
 
-  const resolvedBlocks = useMemo(() => {
-    return actions.map(({ id }) =>
-      (blocks ?? []).find((block) => block.id === id)
-    );
-  }, [blocks, hash(actions.map((x) => x.id))]);
+  const actionsHash = hash(actions.map((x) => x.id));
+  const resolvedBlocks = useMemo(
+    () => {
+      return actions.map(({ id }) =>
+        (blocks ?? []).find((block) => block.id === id)
+      );
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- using actionsHash since we only use the actions ids
+    [blocks, actionsHash]
+  );
 
-  const [active, setActive] = useState(actions.length > 0 ? 0 : null);
+  const [active, setActive] = useState<number | null>(
+    actions.length > 0 ? 0 : null
+  );
 
   if (blocks == null) {
     return (

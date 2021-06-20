@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 import React from "react";
 import { Field, FieldInputProps, useFormikContext } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
 import { FormState } from "@/devTools/editor/editorSlice";
 import LockedFoundationTab from "@/devTools/editor/tabs/LockedFoundationTab";
 
@@ -60,36 +59,6 @@ const FoundationTab: React.FunctionComponent<{
           <Field name="extensionPoint.metadata.name">
             {({ field }: { field: FieldInputProps<string> }) => (
               <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-
-      <Form.Group as={Row} controlId="formContainerSelector">
-        <Form.Label column sm={2}>
-          Root Selector
-        </Form.Label>
-        <Col sm={10}>
-          <SelectorSelectorField
-            name="extensionPoint.definition.rootSelector"
-            selectMode="container"
-          />
-        </Col>
-      </Form.Group>
-
-      <Form.Group as={Row} controlId="formPosition">
-        <Form.Label column sm={2}>
-          Trigger
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="extensionPoint.definition.trigger">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="select" {...field}>
-                <option value="load">Load</option>
-                <option value="click">Click</option>
-                <option value="dblclick">Double Click</option>
-                <option value="mouseover">Mouseover</option>
-              </Form.Control>
             )}
           </Field>
         </Col>
