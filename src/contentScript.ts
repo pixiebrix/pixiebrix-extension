@@ -51,6 +51,7 @@ declare global {
 async function init(): Promise<void> {
   // Add error listeners first so they can catch any initialization errors
   addErrorListeners();
+
   addContentScriptListener();
   addExternalListener();
   addExecutorListener();
@@ -84,10 +85,10 @@ async function init(): Promise<void> {
 // Make sure we don't install the content script multiple times
 // eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
 const existing: string = window[PIXIEBRIX_SYMBOL];
-if (!existing) {
+if (existing) {
+  console.debug(`PixieBrix contentScript already installed: ${existing}`);
+} else {
   // eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
   window[PIXIEBRIX_SYMBOL] = uuid;
   void init();
-} else {
-  console.debug(`PixieBrix contentScript already installed: ${existing}`);
 }

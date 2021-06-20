@@ -100,8 +100,8 @@ export function notifyContentScripts(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
-    // Don't log here because the message is confusing -- the handler isn't installed until addContentScriptListener
-    // console.debug(`Installed content script handler for notification ${type}`);
+    // addContentScriptListener logs to console when the handler is installed on the window. So it would be confusing
+    // to include a console.debug statement here
     handlers.set(fullType, {
       // HandlerEntry's Handler field has a return value, not void
       handler: method as (...args: unknown[]) => null,
@@ -187,8 +187,8 @@ export function liftContentScript<R extends SerializableResponse>(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
-    // Don't log here because the message is confusing -- the handler isn't installed until addContentScriptListener
-    // console.debug(`Installed content script handler for action ${type}`);
+    // addContentScriptListener logs to console when the handler is installed on the window. So it would be confusing
+    // to include a console.debug statement here
     handlers.set(fullType, { handler: method, options });
   }
 
@@ -254,20 +254,20 @@ export function liftContentScript<R extends SerializableResponse>(
 }
 
 function addContentScriptListener(): void {
-  if (isContentScript()) {
-    browser.runtime.onMessage.addListener(contentScriptListener);
-    console.debug(
-      "Installed handlers for %d actions/notifications",
-      handlers.size,
-      {
-        actions: Array.from(handlers.keys()),
-      }
-    );
-  } else {
+  if (!isContentScript()) {
     throw new Error(
       "addContentScriptListener should only be run from the content script"
     );
   }
+
+  browser.runtime.onMessage.addListener(contentScriptListener);
+  console.debug(
+    "Installed handlers for %d actions/notifications",
+    handlers.size,
+    {
+      actions: Array.from(handlers.keys()),
+    }
+  );
 }
 
 export default addContentScriptListener;
