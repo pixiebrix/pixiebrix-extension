@@ -125,7 +125,7 @@ function customizeManifest(manifest, options) {
     manifest.name = "PixieBrix - Development";
     const date = new Date();
     manifest.version +=
-      "." + date.getHours() + String(date.getMinutes()).padStart("0", 2);
+      "." + date.getHours() + String(date.getMinutes()).padStart(2, "0");
   }
   if (process.env.CHROME_MANIFEST_KEY) {
     manifest.key = process.env.CHROME_MANIFEST_KEY;
