@@ -28,11 +28,12 @@ import {
   Badge,
 } from "react-bootstrap";
 import { sortBy, truncate, unary } from "lodash";
-import { IBlock } from "@/core";
+import { IBlock, IService } from "@/core";
 import {
   faBars,
   faBolt,
   faBookReader,
+  faCloud,
   faColumns,
   faCube,
   faMagic,
@@ -53,7 +54,11 @@ import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
 
-export function getIcon(block: IBlock, type: BlockType): IconProp {
+export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
+  if ("schema" in block) {
+    return faCloud;
+  }
+
   switch (type) {
     case "reader":
       return faBookReader;

@@ -15,11 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import ListGroup from "react-bootstrap/ListGroup";
-import castArray from "lodash/castArray";
-import Card from "react-bootstrap/Card";
+import { castArray, trim, noop, isEmpty } from "lodash";
+import { Card, ListGroup } from "react-bootstrap";
 import Select from "react-select";
-import React, { useState, Suspense } from "react";
+import React, { useState, useRef, Suspense, useEffect } from "react";
 import { useField, useFormikContext } from "formik";
 
 // https://webpack.js.org/loaders/raw-loader/#examples
@@ -86,17 +85,34 @@ interface OwnProps {
   name: string;
   width: number | undefined;
   showTemplates?: boolean;
+  openDefinition?: (id: string) => void;
+  openEditor?: (id: string) => void;
 }
 
 const CodeEditor: React.FunctionComponent<OwnProps> = ({
   name,
   width,
   showTemplates,
+  openDefinition = noop,
+  openEditor = noop,
 }) => {
   const [template, setTemplate] = useState<TemplateOption>();
   const [field, meta, { setValue }] = useField<string>(name);
-
   const { submitForm } = useFormikContext();
+
+  // Have to use useRef because AceEditor only binds on mount
+  // https://github.com/securingsincity/react-ace/issues/684
+  const openDefinitionRef = useRef(openDefinition);
+  useEffect(() => {
+    openDefinitionRef.current = openDefinition;
+  }, [openDefinition]);
+
+  // Have to use useRef because AceEditor only binds on mount
+  // https://github.com/securingsincity/react-ace/issues/684
+  const openEditorRef = useRef(openEditor);
+  useEffect(() => {
+    openEditorRef.current = openEditor;
+  }, [openEditor]);
 
   return (
     <>
@@ -115,6 +131,34 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
               bindKey: { win: "Ctrl-S", mac: "Command-S" }, //key combination used for the command.
               exec: () => {
                 void submitForm();
+              },
+            },
+            {
+              name: "openEditor",
+              bindKey: { win: "Ctrl-O", mac: "Command-O" },
+              exec: (editor) => {
+                const { row, column } = editor.getCursorPosition();
+                const id = trim(
+                  editor.session.getTokenAt(row, column).value,
+                  "'\" \t"
+                );
+                if (!isEmpty(id)) {
+                  openEditorRef.current(id);
+                }
+              },
+            },
+            {
+              name: "openDefinition",
+              bindKey: { win: "Ctrl-B", mac: "Command-B" },
+              exec: (editor) => {
+                const { row, column } = editor.getCursorPosition();
+                const id = trim(
+                  editor.session.getTokenAt(row, column).value,
+                  "'\" \t"
+                );
+                if (!isEmpty(id)) {
+                  openDefinitionRef.current(id);
+                }
               },
             },
           ]}

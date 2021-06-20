@@ -26,7 +26,7 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { IBlock, IExtensionPoint, Schema } from "@/core";
+import { IBlock, IExtensionPoint, IService, Schema } from "@/core";
 import Fuse from "fuse.js";
 import { isEmpty, sortBy } from "lodash";
 import copy from "copy-to-clipboard";
@@ -41,7 +41,7 @@ import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
 import GridLoader from "react-spinners/GridLoader";
 
-type ReferenceEntry = IBlock | IExtensionPoint;
+export type ReferenceEntry = IBlock | IExtensionPoint | IService;
 
 const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
@@ -81,8 +81,12 @@ function makeArgumentYaml(schema: Schema): string {
   return result;
 }
 
-const BrickDetail: React.FunctionComponent<{ brick: IBlock }> = ({ brick }) => {
+const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
+  brick,
+}) => {
   const { addToast } = useToasts();
+
+  const schema = "schema" in brick ? brick.schema : brick.inputSchema;
 
   return (
     <div>
@@ -98,14 +102,14 @@ const BrickDetail: React.FunctionComponent<{ brick: IBlock }> = ({ brick }) => {
       </DetailSection>
 
       <DetailSection title="Input Schema">
-        {!isEmpty(brick.inputSchema) ? (
+        {!isEmpty(schema) ? (
           <div>
             <Button
               className="p-0"
               variant="link"
               onClick={() => {
                 try {
-                  copy(makeArgumentYaml(brick.inputSchema));
+                  copy(makeArgumentYaml(schema));
                   addToast("Copied input argument YAML to clipboard", {
                     appearance: "success",
                     autoDismiss: true,
@@ -120,30 +124,32 @@ const BrickDetail: React.FunctionComponent<{ brick: IBlock }> = ({ brick }) => {
             >
               <FontAwesomeIcon icon={faClipboard} /> Copy Argument YAML
             </Button>
-            <SchemaTree schema={brick.inputSchema} />
+            <SchemaTree schema={schema} />
           </div>
         ) : (
           <div className="text-muted">No input schema provided</div>
         )}
       </DetailSection>
 
-      <DetailSection title="Output Schema">
-        {!isEmpty(brick.outputSchema) ? (
-          <SchemaTree schema={brick.outputSchema} />
-        ) : (
-          <div className="text-muted">No output schema provided</div>
-        )}
-      </DetailSection>
+      {"outputSchema" in brick && (
+        <DetailSection title="Output Schema">
+          {!isEmpty(brick.outputSchema) ? (
+            <SchemaTree schema={brick.outputSchema} />
+          ) : (
+            <div className="text-muted">No output schema provided</div>
+          )}
+        </DetailSection>
+      )}
     </div>
   );
 };
 
-function isOfficial(block: IBlock): boolean {
+function isOfficial(block: ReferenceEntry): boolean {
   return block.id.startsWith("@pixiebrix/");
 }
 
 const BlockResult: React.FunctionComponent<{
-  block: IBlock;
+  block: ReferenceEntry;
   active?: boolean;
   onSelect: () => void;
 }> = ({ block, onSelect, active }) => {
@@ -178,11 +184,12 @@ const BlockResult: React.FunctionComponent<{
   );
 };
 
-const BrickReference: React.FunctionComponent<{ blocks: ReferenceEntry[] }> = ({
-  blocks,
-}) => {
+const BrickReference: React.FunctionComponent<{
+  blocks: ReferenceEntry[];
+  initialSelected?: ReferenceEntry;
+}> = ({ blocks, initialSelected }) => {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<ReferenceEntry>();
+  const [selected, setSelected] = useState<ReferenceEntry>(initialSelected);
 
   const sortedBlocks = useMemo(() => {
     return sortBy(
@@ -198,19 +205,26 @@ const BrickReference: React.FunctionComponent<{ blocks: ReferenceEntry[] }> = ({
     }
   }, [sortedBlocks, selected, setSelected]);
 
-  const fuse: Fuse<IBlock> = useMemo(() => {
+  const fuse: Fuse<IBlock | IService> = useMemo(() => {
     return new Fuse(sortedBlocks, {
+      // prefer name, then id
       keys: ["name", "id"],
     });
   }, [sortedBlocks]);
 
-  const [results] = useMemo(() => {
-    const all =
+  const results = useMemo(() => {
+    let matches =
       query.trim() === ""
         ? sortedBlocks
         : fuse.search(query).map((x) => x.item);
-    return [all.slice(0, 10), all.length];
-  }, [query, fuse, sortedBlocks]);
+
+    // if a brick is selected, have it show up at the top of the list
+    if (selected && selected.id === initialSelected?.id) {
+      matches = [selected, ...matches.filter((x) => x.id !== selected.id)];
+    }
+
+    return matches.slice(0, 10);
+  }, [selected, initialSelected, query, fuse, sortedBlocks]);
 
   return (
     <Container className="px-0 h-100" fluid>
