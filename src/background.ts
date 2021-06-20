@@ -23,7 +23,6 @@ import "@/extensionContext";
 import "@/telemetry/rollbar";
 
 import "webpack-target-webextension/lib/background";
-import "content-scripts-register-polyfill";
 import "webext-dynamic-content-scripts";
 
 import "./background/installer";
