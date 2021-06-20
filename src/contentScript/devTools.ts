@@ -19,7 +19,7 @@ import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { deserializeError } from "serialize-error";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
-import adapters from "@/frameworks/adapters";
+import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
 import { Framework } from "@/messaging/constants";
 import { ready as contentScriptReady } from "@/contentScript/context";
@@ -37,9 +37,15 @@ export type Target = {
   frameId: number;
 };
 
+declare global {
+  interface Window {
+    setSelectedElement?: (el: HTMLElement) => void;
+  }
+}
+
 let selectedElement: HTMLElement = undefined;
 
-(window as any).setSelectedElement = function (el: HTMLElement) {
+window.setSelectedElement = function (el: HTMLElement) {
   // do something with the selected element
   selectedElement = el;
 };
@@ -159,7 +165,8 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
       selector,
       htmlData: $(selectedElement).data(),
     };
-    for (const framework of adapters.keys()) {
+    for (const framework of FRAMEWORK_ADAPTERS.keys()) {
+      // eslint-disable-next-line security/detect-object-injection -- safe because key coming from compile-time constant
       base[framework] = await read(() =>
         getComponentData({ framework: framework as Framework, selector })
       );

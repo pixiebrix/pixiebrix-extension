@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,24 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import emberAdapter from "./contrib/ember";
-import angularjsAdapter from "@/frameworks/contrib/angularjs";
-import reactAdapter from "./contrib/react";
-import vueAdapter from "./contrib/vue";
-import { Framework } from "@/messaging/constants";
-import {
-  ReadableComponentAdapter,
-  WriteableComponentAdapter,
-} from "@/frameworks/component";
+import { isConnectionError } from "@/errors";
+import { showConnectionLost } from "@/contentScript/connection";
+import { reportError } from "@/telemetry/logging";
 
-const FRAMEWORK_ADAPTERS = new Map<
-  Framework,
-  ReadableComponentAdapter | WriteableComponentAdapter
->([
-  ["react", reactAdapter],
-  ["emberjs", emberAdapter],
-  ["vue", vueAdapter],
-  ["angularjs", angularjsAdapter],
-]);
+function addErrorListeners(): void {
+  window.addEventListener("error", function (e) {
+    if (isConnectionError(e)) {
+      showConnectionLost();
+    } else {
+      reportError(e);
+      return false;
+    }
+  });
 
-export default FRAMEWORK_ADAPTERS;
+  window.addEventListener("unhandledrejection", function (e) {
+    if (isConnectionError(e)) {
+      showConnectionLost();
+    } else {
+      reportError(e);
+    }
+  });
+}
+
+export default addErrorListeners;

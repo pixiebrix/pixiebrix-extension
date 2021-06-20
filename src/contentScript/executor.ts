@@ -109,12 +109,20 @@ export async function whoAmI(): Promise<Runtime.MessageSender> {
 }
 
 export async function notifyReady(): Promise<void> {
-  await browser.runtime.sendMessage({
+  return browser.runtime.sendMessage({
     type: MESSAGE_CONTENT_SCRIPT_READY,
     payload: {},
   });
 }
 
-if (isContentScript()) {
-  browser.runtime.onMessage.addListener(runBlockAction);
+function addExecutorListener(): void {
+  if (isContentScript()) {
+    browser.runtime.onMessage.addListener(runBlockAction);
+  } else {
+    throw new Error(
+      "addExecutorListener should only be called from the content script"
+    );
+  }
 }
+
+export default addExecutorListener;

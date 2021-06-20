@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,9 +15,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const start = Date.now();
+
 import { v4 as uuidv4 } from "uuid";
+import "@/extensionContext";
+import addErrorListeners from "@/contentScript/errors";
+import "@/blocks";
+import "@/contrib";
+import "@/contentScript/devTools";
+import "@/contentScript/contextMenus";
+import "@/contentScript/browserAction";
+import addContentScriptListener from "@/contentScript/backgroundProtocol";
+import { handleNavigate } from "@/contentScript/lifecycle";
+import addExternalListener from "@/contentScript/externalProtocol";
+import addExecutorListener, {
+  notifyReady,
+  whoAmI,
+} from "@/contentScript/executor";
+import "@/messaging/external";
+import "@/contentScript/script";
+import "@/vendors/notify";
+import { markReady, updateTabInfo } from "@/contentScript/context";
+import { initTelemetry } from "@/telemetry/events";
+import "@/contentScript/uipath";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
+const uuid = uuidv4();
 
 declare global {
   interface Window {
@@ -25,104 +48,46 @@ declare global {
   }
 }
 
-// Usages below are safe because we're using our own symbol defined above
-// eslint-disable-next-line security/detect-object-injection
-if (!window[PIXIEBRIX_SYMBOL]) {
-  // eslint-disable-next-line security/detect-object-injection
-  window[PIXIEBRIX_SYMBOL] = uuidv4();
-} else {
-  // Don't load script multiple times. Required since we can't do conditional imports to no-op the
-  // content script if it's already installed
-
-  console.debug(
-    // eslint-disable-next-line security/detect-object-injection -- safe because it's using the symbol we create
-    `PixieBrix contentScript already installed: ${window[PIXIEBRIX_SYMBOL]}`
-  );
-  throw Error(`PixieBrix contentScript already installed`);
-}
-
-import "@/extensionContext";
-import { reportError } from "@/telemetry/logging";
-import { showConnectionLost } from "@/contentScript/connection";
-
-window.addEventListener("error", function (e) {
-  if (isConnectionError(e)) {
-    showConnectionLost();
-  } else {
-    reportError(e);
-    return false;
-  }
-});
-
-window.addEventListener("unhandledrejection", function (e) {
-  if (isConnectionError(e)) {
-    showConnectionLost();
-  } else {
-    reportError(e);
-  }
-});
-
-import "@/blocks";
-import "@/contrib";
-import "@/contentScript/devTools";
-import "@/contentScript/contextMenus";
-import "@/contentScript/browserAction";
-
-// Import for the side effect of registering js defined blocks
-import { handleNavigate } from "@/contentScript/lifecycle";
-import "@/contentScript/externalProtocol";
-import { notifyReady, whoAmI } from "@/contentScript/executor";
-import "@/messaging/external";
-import "@/contentScript/script";
-import "@/vendors/notify";
-import { markReady, updateTabInfo } from "@/contentScript/context";
-import { initTelemetry } from "@/telemetry/events";
-import "@/contentScript/uipath";
-import { isConnectionError } from "@/errors";
-
-const start = Date.now();
-
 async function init(): Promise<void> {
-  const sender = await whoAmI();
-  try {
-    updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
-    console.debug(
-      // Safe because we're using our own symbol defined above
-      // eslint-disable-next-line security/detect-object-injection
-      `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}: ${window[PIXIEBRIX_SYMBOL]}`
-    );
-  } catch (reason) {
-    console.warn("Error getting tabId/frameId", reason);
-    throw reason;
-  }
+  // Add error listeners first so they can catch any initialization errors
+  addErrorListeners();
+  addContentScriptListener();
+  addExternalListener();
+  addExecutorListener();
+  initTelemetry();
 
-  // Refreshing remote services on every page load is too slow
-  // .then(() => {
-  //   // Reload services on background page for each new page. This is inefficient right now, but will
-  //   // avoid confusion if service configurations are updated remotely
-  //   return refreshServices().catch((reason) => {
-  //     console.warn("Error refreshing service configurations", reason);
-  //     throw reason;
-  //   });
-  // })
+  const sender = await whoAmI();
+
+  updateTabInfo({ tabId: sender.tab.id, frameId: sender.frameId });
+  console.debug(
+    `Loading contentScript for tabId=${sender.tab.id}, frameId=${sender.frameId}: ${uuid}`
+  );
 
   try {
     await handleNavigate();
-  } catch (reason) {
-    console.warn("Error initializing content script", reason);
-    throw reason;
+  } catch (error) {
+    console.error("Error initializing contentScript", error);
+    throw error;
   }
 
   try {
-    // await the background script know we're ready to execute remote actions
+    // notify the background script know we're ready to execute remote actions
     markReady();
-    console.info(`contentScript ready in ${Date.now() - start}ms`);
     await notifyReady();
-  } catch (reason) {
-    console.warn("Error pinging the background script", reason);
-    throw reason;
+    console.info(`contentScript ready in ${Date.now() - start}ms`);
+  } catch (error) {
+    console.error("Error pinging the background script", error);
+    throw error;
   }
 }
 
-init();
-initTelemetry();
+// Make sure we don't install the content script multiple times
+// eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
+const existing: string = window[PIXIEBRIX_SYMBOL];
+if (!existing) {
+  // eslint-disable-next-line security/detect-object-injection -- using PIXIEBRIX_SYMBOL
+  window[PIXIEBRIX_SYMBOL] = uuid;
+  void init();
+} else {
+  console.debug(`PixieBrix contentScript already installed: ${existing}`);
+}
