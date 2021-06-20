@@ -97,7 +97,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
       id: meta.id,
       result: cleanResult,
     };
-    console.debug(`pageScript responding ${type}_FULFILLED`, detail);
+    console.debug("pageScript responding %s_FULFILLED", type, detail);
     document.dispatchEvent(
       new CustomEvent(`${type}_FULFILLED`, {
         detail,
@@ -109,7 +109,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
         id: meta.id,
         error,
       };
-      console.warn(`pageScript responding ${type}_REJECTED`, detail);
+      console.warn("pageScript responding %s_REJECTED", type, detail);
       document.dispatchEvent(
         new CustomEvent(`${type}_REJECTED`, {
           detail,
@@ -117,7 +117,8 @@ async function messageHandler(event: MessageEvent): Promise<void> {
       );
     } catch (err) {
       console.error(
-        `An error occurred while dispatching an error for ${type}`,
+        "An error occurred while dispatching an error for %s",
+        type,
         { error: err, originalError: error }
       );
     }
