@@ -26,7 +26,7 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { IBlock, Schema } from "@/core";
+import { IBlock, IExtensionPoint, Schema } from "@/core";
 import Fuse from "fuse.js";
 import { isEmpty, sortBy } from "lodash";
 import copy from "copy-to-clipboard";
@@ -40,6 +40,8 @@ import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
 import GridLoader from "react-spinners/GridLoader";
+
+type ReferenceEntry = IBlock | IExtensionPoint;
 
 const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
@@ -136,6 +138,10 @@ const BrickDetail: React.FunctionComponent<{ brick: IBlock }> = ({ brick }) => {
   );
 };
 
+function isOfficial(block: IBlock): boolean {
+  return block.id.startsWith("@pixiebrix/");
+}
+
 const BlockResult: React.FunctionComponent<{
   block: IBlock;
   active?: boolean;
@@ -153,16 +159,14 @@ const BlockResult: React.FunctionComponent<{
       className={cx("BlockResult", { active })}
     >
       <div className="d-flex">
-        <div className="mr-2">
-          <FontAwesomeIcon icon={getIcon(block, type)} />
+        <div className="mr-2 text-muted">
+          <FontAwesomeIcon icon={getIcon(block, type)} fixedWidth />
         </div>
         <div className="flex-grow-1">
           <div className="d-flex BlockResult__title">
             <div className="flex-grow-1">{block.name}</div>
             <div className="flex-grow-0 BlockResult__badges">
-              {block.id.startsWith("@pixiebrix/") && (
-                <Badge variant="info">Official</Badge>
-              )}
+              {isOfficial(block) && <Badge variant="info">Official</Badge>}
             </div>
           </div>
           <div className="BlockResult__id">
@@ -174,16 +178,16 @@ const BlockResult: React.FunctionComponent<{
   );
 };
 
-const BrickReference: React.FunctionComponent<{ blocks: IBlock[] }> = ({
+const BrickReference: React.FunctionComponent<{ blocks: ReferenceEntry[] }> = ({
   blocks,
 }) => {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<IBlock>();
+  const [selected, setSelected] = useState<ReferenceEntry>();
 
   const sortedBlocks = useMemo(() => {
     return sortBy(
       blocks ?? [],
-      (x) => (x.id.startsWith("@pixiebrix") ? 0 : 1),
+      (x) => (isOfficial(x) ? 0 : 1),
       (x) => x.name
     );
   }, [blocks]);
@@ -198,7 +202,7 @@ const BrickReference: React.FunctionComponent<{ blocks: IBlock[] }> = ({
     return new Fuse(sortedBlocks, {
       keys: ["name", "id"],
     });
-  }, [blocks]);
+  }, [sortedBlocks]);
 
   const [results] = useMemo(() => {
     const all =
@@ -212,19 +216,17 @@ const BrickReference: React.FunctionComponent<{ blocks: IBlock[] }> = ({
     <Container className="px-0 h-100" fluid>
       <Row className="h-100">
         <Col md={4} className="h-100">
-          <Form>
-            <InputGroup className="mr-sm-2">
-              <InputGroup.Prepend>
-                <InputGroup.Text>Search</InputGroup.Text>
-              </InputGroup.Prepend>
-              <Form.Control
-                id="query"
-                placeholder="Start typing to find results"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-              />
-            </InputGroup>
-          </Form>
+          <InputGroup className="mr-sm-2">
+            <InputGroup.Prepend>
+              <InputGroup.Text>Search</InputGroup.Text>
+            </InputGroup.Prepend>
+            <Form.Control
+              id="query"
+              placeholder="Start typing to find results"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </InputGroup>
           <div className="overflow-auto h-100">
             <ListGroup className="BlockResults">
               {results.map((result) => (
