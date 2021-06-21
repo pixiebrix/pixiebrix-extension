@@ -27,7 +27,7 @@ export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 export type SchemaDefinition = JSONSchema7Definition;
-export type SchemaProperties = { [key: string]: SchemaDefinition };
+export type SchemaProperties = Record<string, SchemaDefinition>;
 
 export type RenderedHTML = string;
 
@@ -377,3 +377,8 @@ export interface AuthState {
   readonly organization?: OrganizationAuthState | null;
   readonly flags: string[];
 }
+
+export type RawConfig = {
+  kind: "service" | "extensionPoint" | "component" | "reader" | "recipe";
+  metadata: Metadata;
+};

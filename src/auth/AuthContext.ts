@@ -1,5 +1,5 @@
-/*!
- * Copyright (C) 2021 Pixie Brix, LLC
+/*
+ * Copyright (C) 2020 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-html {
-  font-size: 16px;
-  max-height: 100vh;
-  height: 100vh;
+import React from "react";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { isExtensionContext } from "@/chrome";
+import { AuthState } from "@/core";
+
+if (!isExtensionContext()) {
+  console.debug("Setting axios web app authentication context");
+  axios.defaults.headers.post["X-CSRFToken"] = Cookies.get("csrftoken");
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  max-height: 100vh;
-  overflow-y: hidden;
-}
+const anonAuthState: AuthState = {
+  userId: undefined,
+  email: undefined,
+  isLoggedIn: false,
+  isOnboarded: false,
+  extension: false,
+  scope: null,
+  flags: [],
+};
 
-#container {
-  height: 100%;
-  width: 100%;
+const AuthContext = React.createContext(anonAuthState);
 
-  .action-sidebar-loader {
-    width: 100%;
-    margin-top: 60px;
-    display: flex;
-    justify-content: center;
-  }
-}
-
-.ActionPanelToolbar {
-  .btn {
-    border-radius: 0;
-  }
-}
+export default AuthContext;

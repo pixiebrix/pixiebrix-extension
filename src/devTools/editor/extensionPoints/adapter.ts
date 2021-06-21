@@ -7,6 +7,7 @@ import * as menuExtension from "@/devTools/editor/extensionPoints/menuItem";
 import * as triggerExtension from "@/devTools/editor/extensionPoints/trigger";
 import * as panelExtension from "@/devTools/editor/extensionPoints/panel";
 import * as contextExtension from "@/devTools/editor/extensionPoints/contextMenu";
+import * as actionPanelExtension from "@/devTools/editor/extensionPoints/actionPanel";
 
 interface Config<TFormState extends FormState = FormState> {
   definition: (element: TFormState) => DynamicDefinition;
@@ -28,6 +29,12 @@ export const ADAPTERS = new Map<ElementType, Config>(
       extensionPoint: triggerExtension.makeTriggerExtensionPoint,
       extension: triggerExtension.makeTriggerExtension,
       formState: triggerExtension.makeTriggerFormState,
+    },
+    actionPanel: {
+      definition: actionPanelExtension.makeActionPanelConfig,
+      extensionPoint: actionPanelExtension.makeActionPanelExtensionPoint,
+      extension: actionPanelExtension.makeActionPanelExtension,
+      formState: actionPanelExtension.makeActionPanelFormState,
     },
     panel: {
       definition: panelExtension.makePanelConfig,
@@ -53,10 +60,6 @@ export async function getType(extension: IExtension): Promise<ElementType> {
     throw new Error(`Cannot find extension point`);
   }
   const extensionPoint = (brick.config as unknown) as ExtensionPointConfig;
-
-  if (extensionPoint.definition.type === "actionPanel") {
-    throw new Error("actionPanel not supported in Page Editor");
-  }
 
   return extensionPoint.definition.type;
 }

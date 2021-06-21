@@ -25,7 +25,7 @@ import {
   WriteableComponentAdapter,
 } from "@/frameworks/component";
 
-export const FRAMEWORK_ADAPTERS = new Map<
+const FRAMEWORK_ADAPTERS = new Map<
   Framework,
   ReadableComponentAdapter | WriteableComponentAdapter
 >([

@@ -27,12 +27,17 @@ import {
   Container,
   Badge,
 } from "react-bootstrap";
-import { sortBy, truncate } from "lodash";
-import { IBlock } from "@/core";
+import { sortBy, truncate, unary } from "lodash";
+import { IBlock, IService } from "@/core";
 import {
+  faBars,
+  faBolt,
   faBookReader,
+  faCloud,
+  faColumns,
   faCube,
   faMagic,
+  faMousePointer,
   faRandom,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
@@ -43,8 +48,17 @@ import useAsyncEffect from "use-async-effect";
 import { useDebounce } from "use-debounce";
 
 import "./BlockModal.scss";
+import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
+import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
+import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
+import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
+import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
 
-export function getIcon(type: BlockType): IconProp {
+export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
+  if ("schema" in block) {
+    return faCloud;
+  }
+
   switch (type) {
     case "reader":
       return faBookReader;
@@ -55,8 +69,22 @@ export function getIcon(type: BlockType): IconProp {
     case "renderer":
       return faWindowMaximize;
     default:
-      return faCube;
+      break;
   }
+
+  if (block instanceof TriggerExtensionPoint) {
+    return faBolt;
+  } else if (block instanceof MenuItemExtensionPoint) {
+    return faMousePointer;
+  } else if (block instanceof ContextMenuExtensionPoint) {
+    return faBars;
+  } else if (block instanceof PanelExtensionPoint) {
+    return faWindowMaximize;
+  } else if (block instanceof ActionPanelExtensionPoint) {
+    return faColumns;
+  }
+
+  return faCube;
 }
 
 const BlockResult: React.FunctionComponent<{
@@ -72,8 +100,8 @@ const BlockResult: React.FunctionComponent<{
   return (
     <ListGroup.Item onClick={onSelect}>
       <div className="d-flex">
-        <div className="mr-2">
-          <FontAwesomeIcon icon={getIcon(type)} />
+        <div className="mr-2 text-muted">
+          <FontAwesomeIcon icon={getIcon(block, type)} fixedWidth />
         </div>
         <div className="flex-grow-1">
           <div className="d-flex BlockModal__title">
@@ -98,6 +126,34 @@ const BlockResult: React.FunctionComponent<{
   );
 };
 
+type BlockOption = {
+  block: IBlock;
+  value: string;
+  label: string;
+};
+
+function searchBlocks(query: string, options: BlockOption[]): BlockOption[] {
+  let filtered = options;
+  if (query?.trim() != "") {
+    const normalizedQuery = query.toLowerCase();
+    filtered = options.filter(
+      (x) =>
+        x.label.toLowerCase().includes(normalizedQuery) ||
+        x.block.id.includes(normalizedQuery) ||
+        (x.block.description ?? "").toLowerCase().includes(normalizedQuery)
+    );
+  }
+  return sortBy(filtered, (x) => x.label);
+}
+
+function makeBlockOption(block: IBlock): BlockOption {
+  return {
+    value: block.id,
+    label: block.name,
+    block,
+  };
+}
+
 const BlockModal: React.FunctionComponent<{
   onSelect: (service: IBlock) => void;
   blocks: IBlock[];
@@ -110,30 +166,14 @@ const BlockModal: React.FunctionComponent<{
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
 
   const blockOptions = useMemo(
-    () =>
-      (blocks ?? []).map((x) => ({
-        value: x.id,
-        label: x.name,
-        block: x,
-      })),
+    () => (blocks ?? []).map(unary(makeBlockOption)),
     [blocks]
   );
 
-  const filteredOptions = useMemo(() => {
-    if (debouncedQuery.trim() != "") {
-      const normalQuery = debouncedQuery.toLowerCase();
-      return sortBy(
-        blockOptions.filter(
-          (x) =>
-            x.label.toLowerCase().includes(normalQuery) ||
-            (x.block.description ?? "").toLowerCase().includes(normalQuery)
-        ),
-        (x) => x.label
-      );
-    } else {
-      return sortBy(blockOptions, (x) => x.label);
-    }
-  }, [blockOptions, debouncedQuery]);
+  const filteredOptions = useMemo(
+    () => searchBlocks(debouncedQuery, blockOptions),
+    [blockOptions, debouncedQuery]
+  );
 
   const close = useCallback(() => {
     setShow(false);

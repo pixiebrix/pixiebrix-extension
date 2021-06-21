@@ -24,6 +24,8 @@ import {
   makeIsAvailable,
   makeReaderFormState,
   WizardStep,
+  selectIsAvailable,
+  lookupExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
 import { v4 as uuidv4 } from "uuid";
 import { DynamicDefinition } from "@/nativeEditor";
@@ -38,7 +40,6 @@ import {
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
 import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
-import { find as findBrick } from "@/registry/localRegistry";
 import AvailabilityTab from "@/devTools/editor/tabs/contextMenu/AvailabilityTab";
 
 export const wizard: WizardStep[] = [
@@ -133,35 +134,12 @@ export function makeContextMenuExtension({
 export async function makeContextMenuFormState(
   config: IExtension<ContextMenuConfig>
 ): Promise<ContextMenuFormState> {
-  const brick = await findBrick(config.extensionPointId);
-  if (!brick) {
-    throw new Error(
-      `Cannot find extension point definition: ${config.extensionPointId}`
-    );
-  }
-  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<MenuDefinition>;
-
-  const isAvailable = extensionPoint.definition.isAvailable;
-  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
-  const selectors = castArray(isAvailable.selectors ?? []);
-
-  if (matchPatterns.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability match patterns not implemented"
-    );
-  }
-
-  if (selectors.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability selectors not implemented"
-    );
-  }
-
+  const extensionPoint = await lookupExtensionPoint<
+    MenuDefinition,
+    ContextMenuConfig,
+    "contextMenu"
+  >(config, "contextMenu");
   const extensionConfig = config.config;
-
-  if (extensionPoint.definition.type !== "contextMenu") {
-    throw new Error("Expected contextMenu extension point type");
-  }
 
   return {
     uuid: config.id,
@@ -183,10 +161,7 @@ export async function makeContextMenuFormState(
         documentUrlPatterns: extensionPoint.definition.documentUrlPatterns,
         defaultOptions: extensionPoint.definition.defaultOptions,
         contexts: extensionPoint.definition.contexts,
-        isAvailable: {
-          matchPatterns: matchPatterns[0],
-          selectors: selectors[0],
-        },
+        isAvailable: selectIsAvailable(extensionPoint),
       },
     },
   };

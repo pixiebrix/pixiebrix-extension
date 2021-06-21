@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,8 @@
 import React from "react";
 import { Field, FieldInputProps } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import ToggleField from "@/devTools/editor/components/ToggleField";
 
-const PanelTeb: React.FunctionComponent<{
+const PanelTab: React.FunctionComponent<{
   eventKey?: string;
 }> = ({ eventKey = "panelBody" }) => {
   return (
@@ -37,26 +36,8 @@ const PanelTeb: React.FunctionComponent<{
           </Field>
         </Col>
       </Form.Group>
-
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Collapsible
-        </Form.Label>
-        <Col sm={10}>
-          <ToggleField name="extension.collapsible" />
-        </Col>
-      </Form.Group>
-
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Shadow DOM
-        </Form.Label>
-        <Col sm={10}>
-          <ToggleField name="extension.shadowDOM" />
-        </Col>
-      </Form.Group>
     </Tab.Pane>
   );
 };
 
-export default PanelTeb;
+export default PanelTab;

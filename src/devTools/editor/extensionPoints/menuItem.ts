@@ -29,6 +29,8 @@ import {
   makeIsAvailable,
   makeReaderFormState,
   WizardStep,
+  selectIsAvailable,
+  lookupExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
 import {
   MenuDefinition,
@@ -44,7 +46,6 @@ import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
-import { find as findBrick } from "@/registry/localRegistry";
 import { v4 as uuidv4 } from "uuid";
 
 export const wizard: WizardStep[] = [
@@ -152,22 +153,6 @@ export async function makeActionExtensionFormState(
   url: string,
   extensionPoint: ExtensionPointConfig<MenuDefinition>
 ): Promise<ActionFormState> {
-  const isAvailable = extensionPoint.definition.isAvailable;
-  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
-  const selectors = castArray(isAvailable.selectors ?? []);
-
-  if (matchPatterns.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability match patterns not implemented"
-    );
-  }
-
-  if (selectors.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability selectors not implemented"
-    );
-  }
-
   if (extensionPoint.definition.type !== "menuItem") {
     throw new Error("Expected menuItem extension point type");
   }
@@ -197,10 +182,7 @@ export async function makeActionExtensionFormState(
       },
       definition: {
         ...extensionPoint.definition,
-        isAvailable: {
-          matchPatterns: matchPatterns[0],
-          selectors: selectors[0],
-        },
+        isAvailable: selectIsAvailable(extensionPoint),
       },
     },
   };
@@ -209,29 +191,11 @@ export async function makeActionExtensionFormState(
 export async function makeActionFormState(
   config: IExtension<MenuItemExtensionConfig>
 ): Promise<ActionFormState> {
-  const brick = await findBrick(config.extensionPointId);
-  if (!brick) {
-    throw new Error(
-      `Cannot find extension point definition: ${config.extensionPointId}`
-    );
-  }
-  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<MenuDefinition>;
-
-  const isAvailable = extensionPoint.definition.isAvailable;
-  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
-  const selectors = castArray(isAvailable.selectors ?? []);
-
-  if (matchPatterns.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability match patterns not implemented"
-    );
-  }
-
-  if (selectors.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability selectors not implemented"
-    );
-  }
+  const extensionPoint = await lookupExtensionPoint<
+    MenuDefinition,
+    MenuItemExtensionConfig,
+    "menuItem"
+  >(config, "menuItem");
 
   return {
     uuid: config.id,
@@ -253,10 +217,7 @@ export async function makeActionFormState(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
-        isAvailable: {
-          matchPatterns: matchPatterns[0],
-          selectors: selectors[0],
-        },
+        isAvailable: selectIsAvailable(extensionPoint),
       },
     },
   };

@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,34 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-html {
-  font-size: 16px;
-  max-height: 100vh;
-  height: 100vh;
+import { isConnectionError } from "@/errors";
+import { showConnectionLost } from "@/contentScript/connection";
+import { reportError } from "@/telemetry/logging";
+
+function addErrorListeners(): void {
+  window.addEventListener("error", function (e) {
+    if (isConnectionError(e)) {
+      showConnectionLost();
+    } else {
+      reportError(e);
+      return false;
+    }
+  });
+
+  window.addEventListener("unhandledrejection", function (e) {
+    if (isConnectionError(e)) {
+      showConnectionLost();
+    } else {
+      reportError(e);
+    }
+  });
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
-  max-height: 100vh;
-  overflow-y: hidden;
-}
-
-#container {
-  height: 100%;
-  width: 100%;
-
-  .action-sidebar-loader {
-    width: 100%;
-    margin-top: 60px;
-    display: flex;
-    justify-content: center;
-  }
-}
-
-.ActionPanelToolbar {
-  .btn {
-    border-radius: 0;
-  }
-}
+export default addErrorListeners;

@@ -25,6 +25,7 @@ import { Formik } from "formik";
 import Form from "react-bootstrap/Form";
 import Editor, { EditorValues } from "./Editor";
 import useSubmitBrick from "./useSubmitBrick";
+import { useTitle } from "@/hooks/title";
 
 const initialValue: EditorValues = {
   config: "",
@@ -33,6 +34,8 @@ const initialValue: EditorValues = {
 };
 
 const CreatePage: React.FunctionComponent = () => {
+  useTitle("Create Brick");
+
   const { submit, validate } = useSubmitBrick({
     url: "api/bricks/",
     create: true,

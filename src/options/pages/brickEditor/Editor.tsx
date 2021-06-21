@@ -23,15 +23,24 @@ import {
   faGlobe,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
 import SharingTable from "./Sharing";
+import { sortBy } from "lodash";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext } from "@/core";
-import BrickReference from "@/options/pages/brickEditor/BrickReference";
+import BrickReference, {
+  ReferenceEntry,
+} from "@/options/pages/brickEditor/BrickReference";
 import { useAsyncState } from "@/hooks/common";
+import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import { useToasts } from "react-toast-notifications";
+import { fetch } from "@/hooks/fetch";
+import { Brick } from "@/types/contract";
+import { browser } from "webextension-polyfill-ts";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -59,16 +68,69 @@ interface OwnProps {
   logContext: MessageContext | null;
 }
 
+function isMac(): boolean {
+  // https://stackoverflow.com/a/27862868/402560
+  return navigator.platform.indexOf("Mac") > -1;
+}
+
 const Editor: React.FunctionComponent<OwnProps> = ({
   showTemplates,
   showLogs = true,
   logContext,
 }) => {
+  const { addToast } = useToasts();
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
+  const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values } = useFormikContext<EditorValues>();
 
-  const [blocks] = useAsyncState(blockRegistry.all(), []);
+  const [blocks] = useAsyncState(async () => {
+    const [extensionPoints, blocks, services] = await Promise.all([
+      extensionPointRegistry.all(),
+      blockRegistry.all(),
+      serviceRegistry.all(),
+    ]);
+    return [...extensionPoints, ...blocks, ...services];
+  }, []);
+
+  const openReference = useCallback(
+    (id: string) => {
+      const block = blocks?.find((x) => x.id === id);
+      if (!block) {
+        console.debug("Known bricks", {
+          blocks: sortBy(blocks.map((x) => x.id)),
+        });
+        addToast(`Cannot find block: ${id}`, {
+          appearance: "warning",
+          autoDismiss: true,
+        });
+      } else {
+        console.debug("Open reference for block: %s", block.id, { block });
+        setSelectedReference(block);
+        setTab("reference");
+      }
+    },
+    [setTab, blocks, setSelectedReference, addToast]
+  );
+
+  const openEditor = useCallback(
+    async (id: string) => {
+      const available = await fetch<Brick[]>("/api/bricks/");
+      const brick = available.find((x) => x.name === id);
+      if (!brick) {
+        addToast(`You cannot edit brick: ${id}`, {
+          appearance: "warning",
+          autoDismiss: true,
+        });
+      } else {
+        console.debug("Open editor for brick: %s", id, { brick });
+        const url = browser.runtime.getURL("options.html");
+        // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
+        window.open(`${url}#/workshop/bricks/${brick.id}`);
+      }
+    },
+    [addToast]
+  );
 
   const editorRef = useRef(null);
 
@@ -79,61 +141,87 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   }, [editorRef]);
 
   return (
-    <Card ref={editorRef}>
-      <Tab.Container id="editor-container" defaultActiveKey={activeTab}>
-        <Card.Header>
-          <Nav variant="tabs" onSelect={setTab}>
-            <Nav.Link eventKey="edit">
-              {errors.config ? (
-                <span className="text-danger">
-                  Editor <FontAwesomeIcon icon={faTimesCircle} />
-                </span>
-              ) : (
-                "Editor"
-              )}
-            </Nav.Link>
-            <Nav.Link eventKey="share">
-              Sharing{" "}
-              <SharingIcon
-                isPublic={values.public}
-                organizations={!!values.organizations.length}
+    <div>
+      <div className="mb-3">
+        <ul className="list-unstyled list-inline">
+          <li className="list-inline-item">
+            <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>S</kbd>: Save
+          </li>
+          <li className="list-inline-item mx-3">
+            <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>B</kbd>: View Reference
+          </li>
+          <li className="list-inline-item mx-3">
+            <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>O</kbd>: Open Brick
+          </li>
+        </ul>
+      </div>
+
+      <Card ref={editorRef}>
+        <Tab.Container
+          id="editor-container"
+          defaultActiveKey={activeTab}
+          activeKey={activeTab}
+        >
+          <Card.Header>
+            <Nav variant="tabs" onSelect={setTab}>
+              <Nav.Link eventKey="edit">
+                {errors.config ? (
+                  <span className="text-danger">
+                    Editor <FontAwesomeIcon icon={faTimesCircle} />
+                  </span>
+                ) : (
+                  "Editor"
+                )}
+              </Nav.Link>
+              <Nav.Link eventKey="share">
+                Sharing{" "}
+                <SharingIcon
+                  isPublic={values.public}
+                  organizations={!!values.organizations.length}
+                />
+              </Nav.Link>
+              {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
+              <Nav.Link eventKey="reference">Reference</Nav.Link>
+            </Nav>
+          </Card.Header>
+
+          <Tab.Content className="p-0">
+            <Tab.Pane eventKey="edit" className="p-0">
+              <CodeEditor
+                name="config"
+                width={editorWidth}
+                showTemplates={showTemplates}
+                openDefinition={openReference}
+                openEditor={openEditor}
               />
-            </Nav.Link>
-            {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}
-            <Nav.Link eventKey="reference">Reference</Nav.Link>
-          </Nav>
-        </Card.Header>
-
-        <Tab.Content className="p-0">
-          <Tab.Pane eventKey="edit" className="p-0">
-            <CodeEditor
-              name="config"
-              width={editorWidth}
-              showTemplates={showTemplates}
-            />
-          </Tab.Pane>
-          <Tab.Pane eventKey="share" className="p-0">
-            <SharingTable />
-          </Tab.Pane>
-
-          {showLogs && (
-            <Tab.Pane eventKey="logs" className="p-0">
-              {logContext ? (
-                <BrickLogs context={logContext} />
-              ) : (
-                <div className="p-4">
-                  Cannot determine log context for brick
-                </div>
-              )}
             </Tab.Pane>
-          )}
+            <Tab.Pane eventKey="share" className="p-0">
+              <SharingTable />
+            </Tab.Pane>
 
-          <Tab.Pane eventKey="reference" className="p-0">
-            <BrickReference blocks={blocks} />
-          </Tab.Pane>
-        </Tab.Content>
-      </Tab.Container>
-    </Card>
+            {showLogs && (
+              <Tab.Pane eventKey="logs" className="p-0">
+                {logContext ? (
+                  <BrickLogs context={logContext} />
+                ) : (
+                  <div className="p-4">
+                    Cannot determine log context for brick
+                  </div>
+                )}
+              </Tab.Pane>
+            )}
+
+            <Tab.Pane eventKey="reference" className="p-0">
+              <BrickReference
+                key={selectedReference?.id}
+                blocks={blocks}
+                initialSelected={selectedReference}
+              />
+            </Tab.Pane>
+          </Tab.Content>
+        </Tab.Container>
+      </Card>
+    </div>
   );
 };
 

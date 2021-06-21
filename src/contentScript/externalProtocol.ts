@@ -16,9 +16,6 @@
  */
 
 import { isExtensionContext } from "@/chrome";
-
-const MESSAGE_PREFIX = "@@pixiebrix/external/";
-
 import { v4 as uuidv4 } from "uuid";
 import {
   HandlerEntry,
@@ -31,6 +28,7 @@ import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
 
+const MESSAGE_PREFIX = "@@pixiebrix/external/";
 const fulfilledSuffix = "_FULFILLED";
 const rejectedSuffix = "_REJECTED";
 
@@ -86,7 +84,8 @@ function initContentScriptListener() {
               send(toErrorResponse(type, reason), true);
             } else {
               console.warn(
-                `An error occurred while processing notification ${type}`,
+                "An error occurred while processing notification %s",
+                type,
                 reason
               );
             }
@@ -127,7 +126,7 @@ function initExternalPageListener() {
         pageRejectedCallbacks.delete(meta.nonce);
       }
     } else if (type) {
-      console.debug(`Ignoring message: ${type}`, event);
+      console.debug("Ignoring message: %s", type, event);
     }
   });
 }
@@ -194,8 +193,16 @@ export function liftExternal<R extends SerializableResponse>(
   };
 }
 
-if (isContentScript()) {
-  initContentScriptListener();
-} else if (!isExtensionContext()) {
-  initExternalPageListener();
+function addExternalListener(): void {
+  if (isContentScript()) {
+    initContentScriptListener();
+  } else if (!isExtensionContext()) {
+    initExternalPageListener();
+  } else {
+    throw new Error(
+      "addExternalListener can only be called from the content script or an external page"
+    );
+  }
 }
+
+export default addExternalListener;

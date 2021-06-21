@@ -25,6 +25,9 @@ import {
   makeIsAvailable,
   makeReaderFormState,
   WizardStep,
+  PROPERTY_TABLE_BODY,
+  selectIsAvailable,
+  lookupExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
@@ -39,7 +42,6 @@ import { DynamicDefinition } from "@/nativeEditor";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
-import { find as findBrick } from "@/registry/localRegistry";
 import { v4 as uuidv4 } from "uuid";
 import { boolean } from "@/utils";
 
@@ -90,12 +92,7 @@ export function makePanelState(
       heading: panel.panel.heading,
       collapsible: panel.panel.collapsible ?? false,
       shadowDOM: panel.panel.shadowDOM ?? true,
-      body: [
-        {
-          id: "@pixiebrix/property-table",
-          config: {},
-        },
-      ],
+      body: PROPERTY_TABLE_BODY,
     },
   };
 }
@@ -158,22 +155,6 @@ export async function makePanelExtensionFormState(
   url: string,
   extensionPoint: ExtensionPointConfig<PanelDefinition>
 ): Promise<PanelFormState> {
-  const isAvailable = extensionPoint.definition.isAvailable;
-  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
-  const selectors = castArray(isAvailable.selectors ?? []);
-
-  if (matchPatterns.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability match patterns not implemented"
-    );
-  }
-
-  if (selectors.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability selectors not implemented"
-    );
-  }
-
   if (extensionPoint.definition.type !== "panel") {
     throw new Error("Expected panel extension point type");
   }
@@ -193,12 +174,7 @@ export async function makePanelExtensionFormState(
       collapsible: boolean(
         extensionPoint.definition.defaultOptions.collapsible ?? false
       ),
-      body: [
-        {
-          id: "@pixiebrix/property-table",
-          config: {},
-        },
-      ],
+      body: PROPERTY_TABLE_BODY,
     },
 
     containerInfo: null,
@@ -211,10 +187,7 @@ export async function makePanelExtensionFormState(
       },
       definition: {
         ...extensionPoint.definition,
-        isAvailable: {
-          matchPatterns: matchPatterns[0],
-          selectors: selectors[0],
-        },
+        isAvailable: selectIsAvailable(extensionPoint),
       },
     },
   };
@@ -223,33 +196,11 @@ export async function makePanelExtensionFormState(
 export async function makePanelFormState(
   config: IExtension<PanelConfig>
 ): Promise<PanelFormState> {
-  const brick = await findBrick(config.extensionPointId);
-  if (!brick) {
-    throw new Error(
-      `Cannot find extension point definition: ${config.extensionPointId}`
-    );
-  }
-  const extensionPoint = (brick.config as unknown) as ExtensionPointConfig<PanelDefinition>;
-
-  const isAvailable = extensionPoint.definition.isAvailable;
-  const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
-  const selectors = castArray(isAvailable.selectors ?? []);
-
-  if (matchPatterns.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability match patterns not implemented"
-    );
-  }
-
-  if (selectors.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability selectors not implemented"
-    );
-  }
-
-  if (extensionPoint.definition.type !== "panel") {
-    throw new Error("Expected panel extension point type");
-  }
+  const extensionPoint = await lookupExtensionPoint<
+    PanelDefinition,
+    PanelConfig,
+    "panel"
+  >(config, "panel");
 
   return {
     uuid: config.id,
@@ -276,10 +227,7 @@ export async function makePanelFormState(
       },
       definition: {
         ...extensionPoint.definition,
-        isAvailable: {
-          matchPatterns: matchPatterns[0],
-          selectors: selectors[0],
-        },
+        isAvailable: selectIsAvailable(extensionPoint),
       },
     },
   };

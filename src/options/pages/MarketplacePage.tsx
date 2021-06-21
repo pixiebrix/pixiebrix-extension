@@ -21,6 +21,7 @@ import { OptionsState } from "../slices";
 import GenericMarketplacePage from "@/pages/marketplace/MarketplacePage";
 import { push } from "connected-react-router";
 import { RecipeDefinition } from "@/types/definitions";
+import { useTitle } from "@/hooks/title";
 
 export interface MarketplaceProps {
   installedRecipes: Set<string>;
@@ -31,6 +32,8 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installedRecipes,
   navigate,
 }) => {
+  useTitle("Marketplace");
+
   const install = useCallback(
     async (x: RecipeDefinition) => {
       navigate(`marketplace/activate/${encodeURIComponent(x.metadata.id)}`);

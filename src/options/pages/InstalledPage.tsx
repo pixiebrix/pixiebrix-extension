@@ -44,7 +44,7 @@ import { IExtension } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import cx from "classnames";
@@ -53,6 +53,7 @@ import {
   InstalledExtension,
   selectInstalledExtensions,
 } from "@/options/selectors";
+import { useTitle } from "@/hooks/title";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -105,7 +106,7 @@ const RecipeEntry: React.FunctionComponent<{
         reportError(err);
       }
     },
-    [onRemove]
+    [addToast, onRemove]
   );
 
   return (
@@ -325,7 +326,7 @@ const EmptyPage: React.FunctionComponent = () => {
                   frameBorder="0"
                   allow="fullscreen; picture-in-picture"
                   allowFullScreen
-                ></iframe>
+                />
               </div>
             </Card.Body>
           </Card>
@@ -339,6 +340,8 @@ const InstalledPage: React.FunctionComponent<{
   extensions: InstalledExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
+  useTitle("Active Bricks");
+
   const { flags } = useContext(AuthContext);
 
   return (

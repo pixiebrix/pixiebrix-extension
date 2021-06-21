@@ -18,105 +18,150 @@
 import React, { useContext, useMemo, useState } from "react";
 import { PageTitle } from "@/layout/Page";
 import {
+  faBars,
+  faBolt,
+  faBookOpen,
+  faCloud,
+  faColumns,
   faCube,
   faHammer,
   faInfoCircle,
+  faMousePointer,
   faPlus,
+  faStoreAlt,
+  faTimes,
+  faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
-import { Row, Col, Card, Form, InputGroup } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  InputGroup,
+  Table,
+  Button,
+} from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import registry from "@/extensionPoints/registry";
 import { Link } from "react-router-dom";
-import Table from "react-bootstrap/Table";
-import Button from "react-bootstrap/Button";
 import { useFetch } from "@/hooks/fetch";
-import { AuthContext } from "@/auth/context";
-import { sortBy, uniq, compact } from "lodash";
+import AuthContext from "@/auth/AuthContext";
+import { orderBy, uniq, compact, sortBy, isEmpty } from "lodash";
 import BlockModal from "@/components/fields/BlockModal";
 import { useAsyncState } from "@/hooks/common";
 import Select from "react-select";
 import { PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
+import { WorkshopState, workshopSlice } from "@/options/slices";
+import { useDispatch, useSelector } from "react-redux";
+
+const { actions } = workshopSlice;
+
 import Fuse from "fuse.js";
 
 import "./WorkshopPage.scss";
+import { useTitle } from "@/hooks/title";
+import { Brick } from "@/types/contract";
 
 interface OwnProps {
   navigate: (url: string) => void;
 }
 
-interface Brick {
-  id: string;
-  name: string;
-  verbose_name: string;
-  version: string;
-  kind: string;
-}
-
 interface EnhancedBrick extends Brick {
   scope: string;
   collection: string;
+  timestamp: number | null;
 }
 
-const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
-  navigate,
-}) => {
-  const [query, setQuery] = useState("");
-  const [scopes, setScopes] = useState([]);
-  const [collections, setCollections] = useState([]);
-  const [kinds, setKinds] = useState([]);
+function selectRecent(state: { workshop: WorkshopState }) {
+  return new Map((state.workshop.recent ?? []).map((x) => [x.id, x.timestamp]));
+}
 
-  const remoteBricks = useFetch<Brick[]>("/api/bricks/");
+function selectFilters(state: { workshop: WorkshopState }) {
+  return state.workshop.filters;
+}
 
-  const enhancedBricks: EnhancedBrick[] = useMemo(() => {
-    return sortBy(
-      (remoteBricks ?? []).map((brick) => {
+function useEnrichBricks(bricks: Brick[]): EnhancedBrick[] {
+  const recent = useSelector(selectRecent);
+
+  return useMemo(() => {
+    console.debug("Recent bricks", { recent });
+
+    return orderBy(
+      (bricks ?? []).map((brick) => {
         const match = PACKAGE_NAME_REGEX.exec(brick.name);
         return {
           ...brick,
           scope: match.groups.scope,
           collection: match.groups.collection,
+          timestamp: recent.get(brick.id),
         };
       }),
-      (x) => x.name
+      // show recently accessed first
+      [(x) => x.timestamp ?? -1, (x) => x.verbose_name],
+      ["desc", "asc"]
     );
-  }, [remoteBricks]);
+  }, [recent, bricks]);
+}
 
+function useSearchOptions(bricks: EnhancedBrick[]) {
   const scopeOptions = useMemo(() => {
-    return sortBy(
-      uniq((enhancedBricks ?? []).map((x) => x.scope))
-    ).map((value) => ({ value, label: value ?? "[No Scope]" }));
-  }, [enhancedBricks]);
+    return sortBy(uniq((bricks ?? []).map((x) => x.scope))).map((value) => ({
+      value,
+      label: value ?? "[No Scope]",
+    }));
+  }, [bricks]);
 
   const collectionOptions = useMemo(() => {
     return sortBy(
-      uniq((enhancedBricks ?? []).map((x) => x.collection))
+      uniq((bricks ?? []).map((x) => x.collection))
     ).map((value) => ({ value, label: value ?? "[No Collection]" }));
-  }, [enhancedBricks]);
+  }, [bricks]);
 
   const kindOptions = useMemo(() => {
     return sortBy(
-      compact(uniq((enhancedBricks ?? []).map((x) => x.kind)))
+      compact(uniq((bricks ?? []).map((x) => x.kind)))
     ).map((value) => ({ value, label: value }));
-  }, [enhancedBricks]);
+  }, [bricks]);
+
+  return {
+    scopeOptions,
+    collectionOptions,
+    kindOptions,
+  };
+}
+
+const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
+  navigate,
+}) => {
+  const dispatch = useDispatch();
+  const [query, setQuery] = useState("");
+  const remoteBricks = useFetch<Brick[]>("/api/bricks/");
+  const { scopes = [], collections = [], kinds = [] } = useSelector(
+    selectFilters
+  );
+  const bricks = useEnrichBricks(remoteBricks);
+  const { scopeOptions, kindOptions, collectionOptions } = useSearchOptions(
+    bricks
+  );
+
+  const filtered = !isEmpty(scopes) || !isEmpty(collections) || !isEmpty(kinds);
 
   const fuse: Fuse<EnhancedBrick> = useMemo(() => {
-    return new Fuse(enhancedBricks, {
+    return new Fuse(bricks, {
       keys: ["verbose_name", "name"],
     });
-  }, [enhancedBricks]);
+  }, [bricks]);
 
   const sortedBricks = useMemo(() => {
     const results =
-      query.trim() !== ""
-        ? fuse.search(query).map((x) => x.item)
-        : enhancedBricks;
+      query.trim() !== "" ? fuse.search(query).map((x) => x.item) : bricks;
     return results.filter(
       (x) =>
         (scopes.length === 0 || scopes.includes(x.scope)) &&
         (collections.length === 0 || collections.includes(x.collection)) &&
         (kinds.length === 0 || kinds.includes(x.kind))
     );
-  }, [fuse, query, scopes, collections, kinds, enhancedBricks]);
+  }, [fuse, query, scopes, collections, kinds, bricks]);
 
   return (
     <>
@@ -147,8 +192,9 @@ const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
                 options={scopeOptions}
                 value={scopeOptions.filter((x) => scopes.includes(x.value))}
                 onChange={(values) => {
-                  const selected: any = values;
-                  setScopes((selected ?? []).map((x: any) => x.value));
+                  dispatch(
+                    actions.setScopes((values ?? []).map((x) => x.value))
+                  );
                 }}
               />
             </div>
@@ -161,8 +207,9 @@ const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
                   collections.includes(x.value)
                 )}
                 onChange={(values) => {
-                  const selected: any = values;
-                  setCollections((selected ?? []).map((x: any) => x.value));
+                  dispatch(
+                    actions.setCollections((values ?? []).map((x) => x.value))
+                  );
                 }}
               />
             </div>
@@ -173,10 +220,25 @@ const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
                 options={kindOptions}
                 value={kindOptions.filter((x) => kinds.includes(x.value))}
                 onChange={(values) => {
-                  const selected: any = values;
-                  setKinds((selected ?? []).map((x: any) => x.value));
+                  dispatch(
+                    actions.setKinds((values ?? []).map((x) => x.value))
+                  );
                 }}
               />
+            </div>
+            <div className="ml-3">
+              {filtered && (
+                <Button
+                  variant="info"
+                  size="sm"
+                  style={{ height: "36px", marginTop: "1px" }}
+                  onClick={() => {
+                    dispatch(actions.clearFilters());
+                  }}
+                >
+                  <FontAwesomeIcon icon={faTimes} /> Reset Filters
+                </Button>
+              )}
             </div>
           </div>
         </Col>
@@ -190,6 +252,36 @@ const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
   );
 };
 
+const KindIcon: React.FunctionComponent<{ brick: EnhancedBrick }> = ({
+  brick: { kind, verbose_name },
+}) => {
+  // HACK: inferring from the brick naming convention instead of the type since the API doesn't return it yet
+  let icon = faCube;
+  if (kind === "Service") {
+    icon = faCloud;
+  } else if (kind === "Foundation") {
+    const normalized = verbose_name.toLowerCase();
+    if (normalized.includes("trigger")) {
+      icon = faBolt;
+    } else if (normalized.includes("panel")) {
+      icon = faWindowMaximize;
+    } else if (normalized.includes("button")) {
+      icon = faMousePointer;
+    } else if (normalized.includes("context")) {
+      icon = faBars;
+    } else if (normalized.includes("menu")) {
+      icon = faMousePointer;
+    } else if (normalized.includes("sidebar")) {
+      icon = faColumns;
+    }
+  } else if (kind === "Reader") {
+    icon = faBookOpen;
+  } else if (kind === "Blueprint") {
+    icon = faStoreAlt;
+  }
+  return <FontAwesomeIcon icon={icon} fixedWidth />;
+};
+
 const CustomBricksCard: React.FunctionComponent<
   OwnProps & { bricks: EnhancedBrick[]; maxRows?: number }
 > = ({ navigate, bricks, maxRows = 10 }) => {
@@ -199,6 +291,7 @@ const CustomBricksCard: React.FunctionComponent<
       <Table className="WorkshopPage__BrickTable">
         <thead>
           <tr>
+            <th>&nbsp;</th>
             <th>Name</th>
             <th>Collection</th>
             <th>Type</th>
@@ -206,24 +299,30 @@ const CustomBricksCard: React.FunctionComponent<
           </tr>
         </thead>
         <tbody>
-          {bricks.slice(0, maxRows).map((x) => (
-            <tr key={x.id} onClick={() => navigate(`/workshop/bricks/${x.id}`)}>
+          {bricks.slice(0, maxRows).map((brick) => (
+            <tr
+              key={brick.id}
+              onClick={() => navigate(`/workshop/bricks/${brick.id}`)}
+            >
+              <td className="text-right text-muted px-1">
+                <KindIcon brick={brick} />
+              </td>
               <td>
-                <div>{x.verbose_name}</div>
+                <div>{brick.verbose_name}</div>
                 <div className="mt-1">
                   <code className="p-0" style={{ fontSize: "0.8rem" }}>
-                    {x.name}
+                    {brick.name}
                   </code>
                 </div>
               </td>
-              <td>{x.collection}</td>
-              <td>{x.kind}</td>
-              <td>{x.version}</td>
+              <td>{brick.collection}</td>
+              <td>{brick.kind}</td>
+              <td>{brick.version}</td>
             </tr>
           ))}
           {bricks.length >= maxRows && (
             <tr className="WorkshopPage__BrickTable__more">
-              <td colSpan={4} className="text-info text-center">
+              <td colSpan={5} className="text-info text-center">
                 <FontAwesomeIcon icon={faInfoCircle} />{" "}
                 {bricks.length - maxRows} more entries not shown
               </td>
@@ -236,8 +335,8 @@ const CustomBricksCard: React.FunctionComponent<
 };
 
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
+  useTitle("Workshop");
   const { isLoggedIn, flags } = useContext(AuthContext);
-
   const [extensionPoints] = useAsyncState(registry.all(), []);
 
   return (

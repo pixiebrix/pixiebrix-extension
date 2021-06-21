@@ -29,7 +29,7 @@ import {
   FormState,
 } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
-import { AuthContext } from "@/auth/context";
+import AuthContext from "@/auth/AuthContext";
 import { sortBy, zip, uniq } from "lodash";
 import * as nativeOperations from "@/background/devtools/index";
 import {
@@ -53,6 +53,7 @@ import {
   faMousePointer,
   faPuzzlePiece,
   faSave,
+  faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
@@ -62,6 +63,7 @@ import {
   makePanelState,
   makePanelExtensionFormState,
 } from "@/devTools/editor/extensionPoints/panel";
+import * as actionPanel from "@/devTools/editor/extensionPoints/actionPanel";
 import {
   makeActionConfig,
   makeActionState,
@@ -91,6 +93,7 @@ import {
 } from "@/devTools/editor/extensionPoints/contextMenu";
 import { reportEvent } from "@/telemetry/events";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 interface ElementConfig<
   TResult = unknown,
@@ -141,6 +144,15 @@ const addElementDefinitions: Record<string, ElementConfig> = {
     makeConfig: makePanelConfig,
     preview: true,
     makeFromExtensionPoint: makePanelExtensionFormState,
+  },
+  actionPanel: {
+    elementType: "actionPanel",
+    label: "Sidebar",
+    insert: undefined,
+    makeState: actionPanel.makeActionPanelState,
+    makeConfig: actionPanel.makeActionPanelConfig,
+    preview: true,
+    makeFromExtensionPoint: actionPanel.makeActionPanelExtensionFormState,
   },
   trigger: {
     elementType: "trigger",
@@ -200,6 +212,7 @@ function useAddElement(
       });
     } catch (exc) {
       if (!exc.toString().toLowerCase().includes("selection cancelled")) {
+        console.error(exc);
         reportError(exc);
         addToast(
           `Error adding ${config.label.toLowerCase()}: ${exc.toString()}`,
@@ -213,6 +226,8 @@ function useAddElement(
       dispatch(actions.toggleInsert(null));
     }
   }, [
+    config,
+    dispatch,
     port,
     tabState.meta?.frameworks,
     reservedNames,
@@ -235,7 +250,8 @@ function isExtension(value: SidebarItem): value is IExtension {
 
 const ICON_MAP = new Map([
   ["menuItem", faMousePointer],
-  ["panel", faColumns],
+  ["panel", faWindowMaximize],
+  ["actionPanel", faColumns],
   ["trigger", faBolt],
   ["contextMenu", faBars],
 ]);
@@ -401,10 +417,32 @@ export function useInstallState(
     } else {
       return installed?.length;
     }
-  }, [installed, navSequence, installedIds, meta]);
+  }, [installed, installedIds, meta]);
 
   return { installedIds, availableDynamicIds, unavailableCount };
 }
+
+const DropdownEntry: React.FunctionComponent<{
+  caption: string;
+  icon: IconProp;
+  onClick: () => void;
+  beta?: boolean;
+}> = ({ beta, icon, caption, onClick }) => {
+  return (
+    <Dropdown.Item onClick={onClick}>
+      <FontAwesomeIcon icon={icon} />
+      &nbsp;{caption}
+      {beta && (
+        <>
+          {" "}
+          <Badge variant="success" pill>
+            Beta
+          </Badge>
+        </>
+      )}
+    </Dropdown.Item>
+  );
+};
 
 const Sidebar: React.FunctionComponent<
   Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
@@ -426,49 +464,56 @@ const Sidebar: React.FunctionComponent<
     unavailableCount,
   } = useInstallState(installed, elements);
 
-  const entries = useMemo(() => {
-    const elementIds = new Set(elements.map((x) => x.uuid));
-    const entries = [
-      ...elements.filter(
-        (x) =>
-          showAll ||
-          availableDynamicIds?.has(x.uuid) ||
-          activeElement === x.uuid
-      ),
-      ...installed.filter(
-        (x) =>
-          !elementIds.has(x.id) &&
-          (showAll || installedIds?.includes(x.extensionPointId))
-      ),
-    ];
-    return sortBy(entries, (x) => x.label);
-  }, [
-    installed,
-    hash(sortBy(elements.map((x) => x.uuid))),
-    availableDynamicIds,
-    showAll,
-    installedIds,
-    activeElement,
-  ]);
+  const elementHash = hash(sortBy(elements.map((x) => x.uuid)));
+  const entries = useMemo(
+    () => {
+      const elementIds = new Set(elements.map((x) => x.uuid));
+      const entries = [
+        ...elements.filter(
+          (x) =>
+            showAll ||
+            availableDynamicIds?.has(x.uuid) ||
+            activeElement === x.uuid
+        ),
+        ...installed.filter(
+          (x) =>
+            !elementIds.has(x.id) &&
+            (showAll || installedIds?.includes(x.extensionPointId))
+        ),
+      ];
+      return sortBy(entries, (x) => x.label);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- using elementHash to track element changes
+    [
+      installed,
+      elementHash,
+      availableDynamicIds,
+      showAll,
+      installedIds,
+      activeElement,
+    ]
+  );
 
-  const reservedNames = useMemo(() => mapReservedNames(elements), [
-    hash(mapReservedNames(elements)),
-  ]);
+  const nameHash = hash(mapReservedNames(elements));
+  const reservedNames = useMemo(
+    () => mapReservedNames(elements),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- using memo to enforce reference equality for list
+    [nameHash]
+  );
+
   const addButton = useAddElement(addElementDefinitions.button, reservedNames);
   const addContextMenu = useAddElement(
     addElementDefinitions.contextMenu,
-    reservedNames,
-    "pageeditor-contextmenu"
+    reservedNames
   );
-  const addPanel = useAddElement(
-    addElementDefinitions.panel,
-    reservedNames,
-    "pageeditor-panel"
+  const addPanel = useAddElement(addElementDefinitions.panel, reservedNames);
+  const addActionPanel = useAddElement(
+    addElementDefinitions.actionPanel,
+    reservedNames
   );
   const addTrigger = useAddElement(
     addElementDefinitions.trigger,
-    reservedNames,
-    "pageeditor-trigger"
+    reservedNames
   );
 
   return (
@@ -489,34 +534,34 @@ const Sidebar: React.FunctionComponent<
             id="add-extension-point"
             className="mr-2 Sidebar__actions__dropdown"
           >
-            <Dropdown.Item onClick={addContextMenu}>
-              <FontAwesomeIcon icon={faBars} />
-              &nbsp;Context Menu{" "}
-              <Badge variant="success" pill>
-                Beta
-              </Badge>
-            </Dropdown.Item>
-            <Dropdown.Item onClick={addButton}>
-              <FontAwesomeIcon icon={faMousePointer} />
-              &nbsp;Button{" "}
-              <Badge variant="success" pill>
-                Beta
-              </Badge>
-            </Dropdown.Item>
-            <Dropdown.Item onClick={addPanel}>
-              <FontAwesomeIcon icon={faColumns} />
-              &nbsp;Panel{" "}
-              <Badge variant="success" pill>
-                Beta
-              </Badge>
-            </Dropdown.Item>
-            <Dropdown.Item onClick={addTrigger}>
-              <FontAwesomeIcon icon={faBolt} />
-              &nbsp;Trigger{" "}
-              <Badge variant="success" pill>
-                Beta
-              </Badge>
-            </Dropdown.Item>
+            <DropdownEntry
+              caption="Context Menu"
+              icon={faBars}
+              onClick={addContextMenu}
+            />
+            <DropdownEntry
+              caption="Button"
+              icon={faMousePointer}
+              onClick={addButton}
+            />
+            <DropdownEntry
+              caption="Panel"
+              icon={faWindowMaximize}
+              onClick={addPanel}
+              beta
+            />
+            <DropdownEntry
+              caption="Side Panel"
+              icon={faColumns}
+              onClick={addActionPanel}
+              beta
+            />
+            <DropdownEntry
+              caption="Trigger"
+              icon={faBolt}
+              onClick={addTrigger}
+              beta
+            />
           </DropdownButton>
           <div className="my-auto">
             <Form.Check

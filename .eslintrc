@@ -3,7 +3,6 @@
   "parser": "@typescript-eslint/parser",
   "plugins": [
     "@typescript-eslint",
-    "react-redux",
     "security"
   ],
   "env": {
@@ -25,7 +24,6 @@
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
-    "plugin:react-redux/recommended",
     "plugin:security/recommended"
   ],
   "rules": {
