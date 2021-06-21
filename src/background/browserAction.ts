@@ -22,6 +22,7 @@ import { injectContentScript } from "@/background/util";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { allowSender } from "@/actionPanel/protocol";
 import { isErrorObject, sleep } from "@/utils";
+import webextAlert from "./webextAlert";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 
@@ -48,11 +49,10 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
       switch (error.message) {
         case "Cannot access a chrome:// URL":
         case "The extensions gallery cannot be scripted.":
-          alert("This is a special Chrome page that can’t be edited");
+          webextAlert("This is a special Chrome page that can’t be edited");
           break;
         case "Could not establish connection. Receiving end does not exist.":
-          // TODO: Firefox does not support `alert()` from a background page. Maybe implement via `chrome.windows.create()`
-          // alert('PixieBrix might not work on this page. Try again?');
+          webextAlert("PixieBrix might not work on this page. Try again?");
           break;
         default:
       }
