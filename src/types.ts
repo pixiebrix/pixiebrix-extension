@@ -162,6 +162,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
 
   abstract install(): Promise<boolean>;
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   uninstall(options?: { global?: boolean }): void {
     console.warn(`Uninstall not implemented for extension point: ${this.id}`);
   }

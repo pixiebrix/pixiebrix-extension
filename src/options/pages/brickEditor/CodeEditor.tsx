@@ -22,20 +22,13 @@ import React, { useState, useRef, Suspense, useEffect } from "react";
 import { useField, useFormikContext } from "formik";
 
 // https://webpack.js.org/loaders/raw-loader/#examples
-const serviceTemplate = require("raw-loader!@contrib/templates/service.txt?esModule=false")
-  .default;
-const emberjsTemplate = require("raw-loader!@contrib/templates/reader-emberjs.txt?esModule=false")
-  .default;
-const jqueryTemplate = require("raw-loader!@contrib/templates/reader-jquery.txt?esModule=false")
-  .default;
-const reactTemplate = require("raw-loader!@contrib/templates/reader-react.txt?esModule=false")
-  .default;
-const menuTemplate = require("raw-loader!@contrib/templates/foundation-menu-item.txt?esModule=false")
-  .default;
-const panelTemplate = require("raw-loader!@contrib/templates/foundation-panel.txt?esModule=false")
-  .default;
-const blueprintTemplate = require("raw-loader!@contrib/templates/blueprint-menu.txt?esModule=false")
-  .default;
+import serviceTemplate from "@contrib/templates/service.txt";
+import emberjsTemplate from "@contrib/templates/reader-emberjs.txt";
+import jqueryTemplate from "@contrib/templates/reader-jquery.txt";
+import reactTemplate from "@contrib/templates/reader-react.txt";
+import menuTemplate from "@contrib/templates/foundation-menu-item.txt";
+import panelTemplate from "@contrib/templates/foundation-panel.txt";
+import blueprintTemplate from "@contrib/templates/blueprint-menu.txt";
 
 const AceEditor = React.lazy(
   () =>
