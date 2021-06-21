@@ -21,7 +21,6 @@ import Select from "react-select";
 import React, { useState, useRef, Suspense, useEffect } from "react";
 import { useField, useFormikContext } from "formik";
 
-// https://webpack.js.org/loaders/raw-loader/#examples
 import serviceTemplate from "@contrib/templates/service.txt";
 import emberjsTemplate from "@contrib/templates/reader-emberjs.txt";
 import jqueryTemplate from "@contrib/templates/reader-jquery.txt";
