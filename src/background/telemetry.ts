@@ -70,7 +70,9 @@ export async function _getDNT(): Promise<boolean> {
   if (_dnt != null) {
     return _dnt;
   }
-  _dnt = boolean(await readStorage<boolean | string>(DNT_STORAGE_KEY) ?? process.env.DEBUG);
+  _dnt = boolean(
+    (await readStorage<boolean | string>(DNT_STORAGE_KEY)) ?? process.env.DEBUG
+  );
   return _dnt;
 }
 

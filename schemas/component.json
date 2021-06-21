@@ -7,9 +7,7 @@
   "properties": {
     "apiVersion": {
       "type": "string",
-      "enum": [
-        "v1"
-      ]
+      "enum": ["v1"]
     },
     "kind": {
       "type": "string",

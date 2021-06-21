@@ -20,7 +20,7 @@ outputSchema:
       type: string
       format: uri
     websites:
-      type: 'null'
+      type: "null"
     phoneNumbers:
       type: array
       items:
@@ -31,7 +31,7 @@ outputSchema:
           type:
             type: string
     address:
-      type: 'null'
+      type: "null"
     emailAddress:
       type: string
       format: email
@@ -43,11 +43,11 @@ outputSchema:
           name:
             type: string
     ims:
-      type: 'null'
+      type: "null"
     connectedAt:
       type: integer
     weChatContactInfo:
-      type: 'null'
+      type: "null"
     birthDateOn:
       type: object
       properties:
