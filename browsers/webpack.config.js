@@ -94,10 +94,11 @@ function rollbarPlugins() {
 }
 
 function getVersionName(isProduction) {
-  if (isProduction) {
-    return process.env.npm_package_version;
-  } else if (process.env.ENVIRONMENT === "staging") {
+  if (process.env.ENVIRONMENT === "staging") {
+    // staging builds (i.e., from CI) are production builds, so check ENVIRONMENT first
     return `${process.env.npm_package_version}-alpha+${process.env.SOURCE_VERSION}`;
+  } else if (isProduction) {
+    return process.env.npm_package_version;
   } else {
     return `${
       process.env.npm_package_version
