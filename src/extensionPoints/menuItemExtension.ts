@@ -270,8 +270,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: Use the types or fix them
-  getReaderRoot($containerElement: JQuery): HTMLElement | Document {
+  getReaderRoot(_$containerElement: JQuery): HTMLElement | Document {
     return document;
   }
 
