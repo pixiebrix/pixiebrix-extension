@@ -368,6 +368,10 @@ module.exports = (env, options) => ({
         type: "json", // Required by Webpack v4
         use: "yaml-loader",
       },
+      {
+        test: /\.txt/,
+        type: "asset/source",
+      },
     ],
   },
 });

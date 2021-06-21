@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "lint": "eslint src/**",
+    "lint": "eslint src",
     "watch": "ENV_FILE='.env.development' webpack --mode development --config browsers/webpack.config.js --watch",
     "build": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production --config browsers/webpack.config.js",
     "build:scripts": "webpack --mode production --config scripts/webpack.scripts.js",
@@ -156,7 +156,7 @@
     "@types/webpack-env": "^1.16.0",
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
-    "@typescript-eslint/parser": "^4.20.0",
+    "@typescript-eslint/parser": "^4.27.0",
     "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^27.0.2",
     "compass-mixins": "^0.12.10",

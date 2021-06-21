@@ -39,7 +39,6 @@ import { Framework } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
 
 // eslint is complaining that it can't parse the Option file
-// eslint-disable-next-line import/namespace
 import { OptionProps } from "react-select/src/components/Option";
 import { useToasts } from "react-toast-notifications";
 
