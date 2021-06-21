@@ -270,8 +270,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getReaderRoot($containerElement: JQuery): HTMLElement | Document {
+  getReaderRoot(_$containerElement: JQuery): HTMLElement | Document {
     return document;
   }
 
@@ -680,10 +679,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         errors,
       });
       if (errors.length === 1) {
-        this.notifyError(
-          "An error occurred adding the menu item/button",
-          errors[0]
-        );
+        this.notifyError("An error occurred adding the menu item/button");
       } else {
         this.notifyError(
           `An error occurred adding ${errors.length} menu items`

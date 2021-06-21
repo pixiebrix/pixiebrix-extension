@@ -44,7 +44,7 @@ export class Markdown extends Renderer {
     ["markdown"]
   );
 
-  async render({ markdown }: BlockArg) {
+  async render({ markdown }: BlockArg): Promise<string> {
     if (!this.DOMPurify) {
       this.DOMPurify = createDOMPurify(window);
     }

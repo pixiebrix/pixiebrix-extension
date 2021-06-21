@@ -127,12 +127,38 @@ export function getExtensionId(): string {
   }
 }
 
-function externalSendMessage(
+/**
+ * Send a message from an `externally_connectable` web page to an extension.
+ *
+ * This method is not called from the extension, it's called by the PixieBrix webapp which includes this
+ * module as a dependency.
+ *
+ * On Firefox, we mimic externally_connectable's functionality with `liftExternal`
+ *
+ * @see https://developer.chrome.com/docs/extensions/mv3/messaging/#external-webpage
+ */
+function externalSendMessage<TResponse = unknown>(
   extensionId: string | undefined,
   message: unknown,
   options?: Runtime.SendMessageOptionsType
-): Promise<unknown> {
-  return browser.runtime.sendMessage(extensionId, message, options);
+): Promise<TResponse> {
+  if (isExtensionContext()) {
+    throw new Error(
+      "externalSendMessage should not be called from an extension context"
+    );
+  }
+
+  // When accessing from an external site, browser.runtime is undefined because Mozilla's polyfill is only enabled
+  // in extension contexts. Therefore, we we have to use the Chrome API namespace
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(extensionId, message, options, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
 }
 
 export async function callBackground(

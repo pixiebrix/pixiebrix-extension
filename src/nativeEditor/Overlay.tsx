@@ -182,7 +182,21 @@ function findTipPos(dims: any, bounds: any, tipSize: any) {
   };
 }
 
-export function getElementDimensions(domElement: Element) {
+interface Dimensions {
+  borderLeft: number;
+  borderRight: number;
+  borderTop: number;
+  borderBottom: number;
+  marginLeft: number;
+  marginRight: number;
+  marginTop: number;
+  marginBottom: number;
+  paddingLeft: number;
+  paddingRight: number;
+  paddingTop: number;
+  paddingBottom: number;
+}
+export function getElementDimensions(domElement: Element): Dimensions {
   const calculatedStyle = window.getComputedStyle(domElement);
   return {
     borderLeft: parseInt(calculatedStyle.borderLeftWidth, 10),
@@ -243,7 +257,7 @@ export default class Overlay {
     doc.body.appendChild(this.container);
   }
 
-  remove() {
+  remove(): void {
     this.tip.remove();
     this.rects.forEach((rect) => {
       rect.remove();
@@ -254,7 +268,7 @@ export default class Overlay {
     }
   }
 
-  inspect(nodes: Array<HTMLElement>, name?: string) {
+  inspect(nodes: Array<HTMLElement>, name?: string): void {
     // We can't get the size of text nodes or comment nodes. React as of v15
     // heavily uses comment nodes to delimit text.
     const elements = nodes.filter(
