@@ -121,12 +121,18 @@ const isProd = (options) => options.mode === "production";
 
 function customizeManifest(manifest, options) {
   manifest.version = process.env.npm_package_version;
-  if (!isProd(options)) {
+  if (process.env.ENVIRONMENT === "staging") {
+    manifest.version_name += "-rc-" + process.env.SOURCE_VERSION;
+  } else if (!isProd(options)) {
+    const buildTime = new Date()
+      .toISOString() // 2021-06-21T11:25:41.707Z
+      .replace(/\..+$/g, "") // 2021-06-21T11:25:41
+      .replace(/\D/g, "."); // 2021.06.21.11.25.41
+
     manifest.name = "PixieBrix - Development";
-    const date = new Date();
-    manifest.version +=
-      "." + date.getHours() + String(date.getMinutes()).padStart(2, "0");
+    manifest.version_name = manifest.version + ".local+" + buildTime;
   }
+
   if (process.env.CHROME_MANIFEST_KEY) {
     manifest.key = process.env.CHROME_MANIFEST_KEY;
   }
