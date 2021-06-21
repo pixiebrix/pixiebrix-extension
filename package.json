@@ -52,7 +52,7 @@
     "htmlmetaparser": "^2.1.1",
     "htmlparser2": "^4.1.0",
     "idb": "^6.1.2",
-    "immer": "^8.0.4",
+    "immer": "^9.0.3",
     "is-promise": "^4.0.0",
     "jq-web": "^0.5.1",
     "jquery": "^3.6.0",
