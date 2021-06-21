@@ -23,6 +23,10 @@
     "plugin:react-hooks/recommended",
     "plugin:import/typescript",
     "plugin:security/recommended"
+
+    // TODO: Restore these after https://github.com/benmosher/eslint-plugin-import/issues/1931
+    // "plugin:import/errors",
+    // "plugin:import/warnings",
   ],
   "rules": {
     "@typescript-eslint/no-empty-function": "off",
