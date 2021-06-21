@@ -63,3 +63,20 @@ jobs:
           name: brick-headers
           path: headers.json
           retention-days: 5
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - uses: bahmutov/npm-install@v1
+        # Run eslint without GitHub Actions annotations
+        # https://stackoverflow.com/a/65964721/288906
+      - name: npm run lint
+        run: |
+          echo "::remove-matcher owner=eslint-compact::"
+          echo "::remove-matcher owner=eslint-stylish::"
+          npm run lint
