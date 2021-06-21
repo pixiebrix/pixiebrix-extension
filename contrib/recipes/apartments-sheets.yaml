@@ -30,7 +30,7 @@ extensionPoints:
         - id: "@pixiebrix/jq"
           outputKey: rent
           config:
-            filter: "[.availability[] | select(.beds == 1) | select(.maxrent != \"\")] | map(.maxrent) | max"
+            filter: '[.availability[] | select(.beds == 1) | select(.maxrent != "")] | map(.maxrent) | max'
             input: availability
         - id: "@pixiebrix/google/sheets-append"
           config:

@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '14.x'
+          node-version: "14.x"
       - uses: bahmutov/npm-install@v1
       - run: npm test
 
@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '14.x'
+          node-version: "14.x"
       - uses: bahmutov/npm-install@v1
       - run: npm run build
         env:
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '14.x'
+          node-version: "14.x"
       - uses: bahmutov/npm-install@v1
       - run: npm run build:scripts
       - run: node scripts/bin/headers.js

@@ -17,4 +17,4 @@ extensionPoints:
         id: google/scholar-table
         config:
           service: "@service"
-          query: "\"{{&firstName}} {{&lastName}}\""
+          query: '"{{&firstName}} {{&lastName}}"'
