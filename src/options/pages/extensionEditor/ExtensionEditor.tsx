@@ -95,9 +95,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
           navigate(`/workshop/extensions/${extensionId}`);
         }
 
-        reactivate().catch((err) => {
-          reportError(err);
-        });
+        reactivate().catch(reportError);
       } finally {
         setSubmitting(false);
       }

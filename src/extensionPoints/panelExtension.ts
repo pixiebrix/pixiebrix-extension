@@ -381,8 +381,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
             shadowDOM,
           });
           extensionLogger.debug("Successfully installed panel");
-        } catch (err) {
-          extensionLogger.error(err);
+        } catch (error) {
+          extensionLogger.error(error);
         }
       }
     };
@@ -443,14 +443,14 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
       try {
         await this.runExtension(readerContext, extension);
-      } catch (ex) {
-        errors.push(ex);
+      } catch (error) {
+        errors.push(error);
         this.logger
           .childLogger({
             deploymentId: extension._deployment?.id,
             extensionId: extension.id,
           })
-          .error(ex);
+          .error(error);
       }
     }
 

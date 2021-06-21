@@ -21,8 +21,8 @@ import { MessageContext, SerializedError } from "@/core";
 import { serializeError } from "serialize-error";
 import { isExtensionContext } from "@/chrome";
 
-export function errorMessage(err: SerializedError): string {
-  return typeof err === "object" ? err.message : String(err);
+export function errorMessage(error: SerializedError): string {
+  return typeof error === "object" ? error.message : String(error);
 }
 
 function selectError(exc: unknown): SerializedError {
@@ -43,8 +43,10 @@ export function reportError(exc: unknown, context?: MessageContext): void {
   if (isExtensionContext()) {
     // Wrap in try/catch, otherwise will enter infinite loop on unhandledrejection when
     // messaging the background script
-    recordError(selectError(exc), context, null).catch((exc) => {
-      console.error("Another error occurred while reporting an error", { exc });
+    recordError(selectError(exc), context, null).catch((error) => {
+      console.error("Another error occurred while reporting an error", {
+        exc: error,
+      });
     });
   } else {
     rollbar.error(toLogArgument(exc));

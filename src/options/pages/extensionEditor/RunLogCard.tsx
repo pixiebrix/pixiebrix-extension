@@ -187,7 +187,7 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
                     autoDismiss: true,
                   });
                   await refresh();
-                } catch (ex) {
+                } catch {
                   addToast("Error clearing log entries for extension", {
                     appearance: "error",
                     autoDismiss: true,

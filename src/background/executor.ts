@@ -299,8 +299,8 @@ function linkTabListener(tab: Tabs.Tab): void {
     tabToOpener.set(tab.id, tab.openerTabId);
     tabToTarget.set(tab.openerTabId, tab.id);
     linkChildTab({ tabId: tab.openerTabId, frameId: 0 }, tab.id).catch(
-      (reason) => {
-        console.warn("Error linking child tab", reason);
+      (error) => {
+        console.warn("Error linking child tab", error);
       }
     );
   }
@@ -369,8 +369,8 @@ export async function executeForNonce(
           options,
         },
       });
-    } catch (err) {
-      if (err?.message?.includes("Could not establish connection")) {
+    } catch (error) {
+      if (error?.message?.includes("Could not establish connection")) {
         console.debug(
           `Target not ready for ${blockId}. Retrying in ${
             100 * (retries + 1)
@@ -378,7 +378,7 @@ export async function executeForNonce(
         );
         await sleep(250 * (retries + 1));
       } else {
-        throw err;
+        throw error;
       }
     }
     retries++;
@@ -407,8 +407,8 @@ export async function executeInTarget(
           options,
         },
       });
-    } catch (err) {
-      if (err?.message?.includes("Could not establish connection")) {
+    } catch (error) {
+      if (error?.message?.includes("Could not establish connection")) {
         console.debug(
           `Target not ready for ${blockId}. Retrying in ${
             100 * (retries + 1)
@@ -416,7 +416,7 @@ export async function executeInTarget(
         );
         await sleep(250 * (retries + 1));
       } else {
-        throw err;
+        throw error;
       }
     }
     retries++;

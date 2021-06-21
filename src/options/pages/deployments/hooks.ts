@@ -70,10 +70,10 @@ export function useEnsurePermissions(deployments: Deployment[]) {
 
     try {
       accepted = await ensureAllPermissions(permissions);
-    } catch (err) {
-      console.error(err);
-      reportError(err);
-      addToast(`Error granting permissions: ${err}`, {
+    } catch (error) {
+      console.error(error);
+      reportError(error);
+      addToast(`Error granting permissions: ${error}`, {
         appearance: "error",
         autoDismiss: true,
       });

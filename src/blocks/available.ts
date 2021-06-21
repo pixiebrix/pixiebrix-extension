@@ -33,12 +33,12 @@ export function testMatchPatterns(
   try {
     // Try all at once
     re = patternToRegex(...patterns);
-  } catch (ex) {
+  } catch {
     // Try them one at a time to find the broken one
     for (const pattern of patterns) {
       try {
         patternToRegex(pattern);
-      } catch (ex) {
+      } catch {
         throw new BusinessError(
           `Pattern not recognized as valid match pattern: ${pattern}`
         );

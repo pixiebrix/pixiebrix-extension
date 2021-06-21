@@ -28,8 +28,8 @@ const UpdateBanner: React.FunctionComponent = () => {
     try {
       const { installed, available } = await getAvailableVersion();
       return available && installed !== available;
-    } catch (err) {
-      reportError(err);
+    } catch (error) {
+      reportError(error);
       return false;
     }
   }, []);

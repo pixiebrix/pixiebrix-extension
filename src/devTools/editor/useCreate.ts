@@ -131,13 +131,13 @@ export function useCreate(): CreateCallback {
               );
             }
           }
-        } catch (ex) {
-          let msg = ex.toString();
-          if (ex.isAxiosError) {
-            const err = ex as AxiosError;
+        } catch (error) {
+          let msg = error.toString();
+          if (error.isAxiosError) {
+            const error_ = error as AxiosError;
             msg =
-              err.response?.data["config"]?.toString() ??
-              err.response?.statusText ??
+              error_.response?.data["config"]?.toString() ??
+              error_.response?.statusText ??
               "No response from PixieBrix server";
           }
           setStatus(`Error saving reader: ${msg}`);
@@ -177,13 +177,13 @@ export function useCreate(): CreateCallback {
             reportEvent("PageEditorCreate", {
               type: element.type,
             });
-          } catch (ex) {
-            let msg = ex.toString();
-            if (ex.isAxiosError) {
-              const err = ex as AxiosError;
+          } catch (error) {
+            let msg = error.toString();
+            if (error.isAxiosError) {
+              const error_ = error as AxiosError;
               msg =
-                err.response?.data["config"]?.toString() ??
-                err.response?.statusText ??
+                error_.response?.data["config"]?.toString() ??
+                error_.response?.statusText ??
                 "No response from PixieBrix server";
             }
             setStatus(`Error saving foundation: ${msg}`);
@@ -199,16 +199,14 @@ export function useCreate(): CreateCallback {
         try {
           dispatch(saveExtension(adapter.extension(element)));
           dispatch(markSaved(element.uuid));
-          reactivate().catch((err) => {
-            reportError(err);
-          });
+          reactivate().catch(reportError);
           addToast("Saved extension", {
             appearance: "success",
             autoDismiss: true,
           });
-        } catch (exc) {
-          reportError(exc);
-          addToast(`Error saving extension: ${exc.toString()}`, {
+        } catch (error) {
+          reportError(error);
+          addToast(`Error saving extension: ${error.toString()}`, {
             appearance: "error",
             autoDismiss: true,
           });
@@ -221,9 +219,9 @@ export function useCreate(): CreateCallback {
           blockRegistry.fetch(),
           extensionPointRegistry.fetch(),
         ]);
-      } catch (err) {
-        reportError(err);
-        addToast(`Error saving extension: ${err.toString()}`, {
+      } catch (error) {
+        reportError(error);
+        addToast(`Error saving extension: ${error.toString()}`, {
           appearance: "error",
           autoDismiss: true,
         });

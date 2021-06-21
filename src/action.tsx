@@ -45,8 +45,6 @@ browser.runtime
   .then(() => {
     console.debug("Registered action frame with background page");
   })
-  .catch((err) => {
-    reportError(err);
-  });
+  .catch(reportError);
 
 ReactDOM.render(<App />, document.getElementById("container"));

@@ -150,8 +150,8 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
           async (value) => {
             try {
               await serviceRegistry.lookup(value);
-            } catch (ex) {
-              if (ex instanceof DoesNotExistError) {
+            } catch (error) {
+              if (error instanceof DoesNotExistError) {
                 return false;
               }
             }
@@ -170,8 +170,8 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
             async function (value) {
               try {
                 await locate(this.parent.id, value);
-              } catch (ex) {
-                if (ex instanceof MissingConfigurationError) {
+              } catch (error) {
+                if (error instanceof MissingConfigurationError) {
                   return this.createError({
                     message: "Configuration no longer available",
                   });

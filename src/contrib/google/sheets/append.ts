@@ -141,10 +141,10 @@ export class GoogleSheetsAppend extends Effect {
       console.debug(
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
       );
-    } catch (ex) {
-      logger.warn(`Error retrieving headers: ${ex.toString()}`, ex);
-      if (isAuthError(ex)) {
-        throw ex;
+    } catch (error) {
+      logger.warn(`Error retrieving headers: ${error.toString()}`, error);
+      if (isAuthError(error)) {
+        throw error;
       }
       logger.info(`Creating tab ${tabName}`);
       await createTab(spreadsheetId, tabName);

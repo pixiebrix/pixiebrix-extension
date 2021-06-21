@@ -106,8 +106,8 @@ export function showActionPanel(): string {
   for (const callback of _callbacks) {
     try {
       callback();
-    } catch (err) {
-      reportError(err);
+    } catch (error) {
+      reportError(error);
     }
   }
 
@@ -149,9 +149,7 @@ function renderPanels() {
           payload: { panels: _panels },
         },
       })
-      .catch((err) => {
-        reportError(err);
-      });
+      .catch(reportError);
   }
 }
 

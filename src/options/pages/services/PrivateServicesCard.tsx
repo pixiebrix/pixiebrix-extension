@@ -63,8 +63,8 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           appearance: "success",
           autoDismiss: true,
         });
-      } catch (err) {
-        reportError(err);
+      } catch (error) {
+        reportError(error);
         addToast("Error resetting login for integration", {
           appearance: "error",
           autoDismiss: true,

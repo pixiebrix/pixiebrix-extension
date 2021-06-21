@@ -70,10 +70,10 @@ const FoundationTab: React.FunctionComponent<{
           true
         );
       }
-    } catch (err) {
+    } catch (error) {
       // can continue, because it won't have any effect on the form values, so the user can just try again
       // noinspection ES6MissingAwait
-      reportError(err);
+      reportError(error);
     } finally {
       setDragging(false);
     }

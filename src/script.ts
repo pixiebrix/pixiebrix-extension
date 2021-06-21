@@ -170,12 +170,15 @@ async function read<TComponent>(
 
   try {
     element = requireSingleElement(selector);
-  } catch (err) {
-    console.debug("read: error calling requireSingleElement", { err, options });
+  } catch (error) {
+    console.debug("read: error calling requireSingleElement", {
+      error,
+      options,
+    });
     if (optional) {
       return {};
     } else {
-      throw err;
+      throw error;
     }
   }
 
@@ -187,14 +190,14 @@ async function read<TComponent>(
       retryMillis,
       predicate: identity,
     });
-  } catch (err) {
-    if (err instanceof TimeoutError) {
+  } catch (error) {
+    if (error instanceof TimeoutError) {
       console.warn(
         `Could not find framework component for selector ${selector} in ${waitMillis}ms`
       );
       return {};
     }
-    throw err;
+    throw error;
   }
 
   const target = traverse(adapter.getParent, component, traverseUp);

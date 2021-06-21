@@ -81,11 +81,11 @@ export const ReaderBlockForm: React.FunctionComponent<{
         });
         if (!isMounted()) return;
         setOutput({ output, error: undefined });
-      } catch (exc) {
+      } catch (error_) {
         if (!isMounted()) return;
         setOutput({
           output: undefined,
-          error: exc.toString(),
+          error: error_.toString(),
         });
       }
     },

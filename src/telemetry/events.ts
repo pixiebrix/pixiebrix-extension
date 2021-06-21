@@ -19,13 +19,13 @@ import { recordEvent, initUID } from "@/background/telemetry";
 import { JsonObject } from "type-fest";
 
 export function reportEvent(event: string, data: JsonObject = {}): void {
-  recordEvent({ event, data }).catch((err) => {
-    console.warn("Error reporting event", { err });
+  recordEvent({ event, data }).catch((error) => {
+    console.warn("Error reporting event", { error });
   });
 }
 
 export function initTelemetry(): void {
-  initUID().catch((err) => {
-    console.warn("Error initializing uid", { err });
+  initUID().catch((error) => {
+    console.warn("Error initializing uid", { error });
   });
 }

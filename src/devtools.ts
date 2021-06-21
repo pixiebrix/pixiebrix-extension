@@ -52,8 +52,8 @@ async function installSidebarPane(port: Runtime.Port) {
 
     try {
       sidebar.setObject(await readSelectedElement(port));
-    } catch (reason) {
-      sidebar.setObject({ error: reason ?? "Unknown error" });
+    } catch (error) {
+      sidebar.setObject({ error: error ?? "Unknown error" });
     }
   }
 
@@ -92,9 +92,11 @@ async function initialize() {
   try {
     await injectScript(port, { file: "contentScript.js" });
     injected = true;
-  } catch (reason) {
+  } catch (error) {
     // Can install without having content script on the page; they just won't do much
-    console.debug("Could not inject contextScript for devtools", { reason });
+    console.debug("Could not inject contextScript for devtools", {
+      reason: error,
+    });
   }
 
   installSidebarPane(port).catch((error) => {
@@ -107,10 +109,10 @@ async function initialize() {
     try {
       // clear out any dynamic stuff from any previous devtools sessions
       await clearDynamicElements(port, {});
-    } catch (err) {
+    } catch (error) {
       console.debug(
         "Error clearing dynamic elements previous devtools sessions",
-        err
+        error
       );
     }
   }

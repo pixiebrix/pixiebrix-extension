@@ -69,7 +69,7 @@ function useSubmitBrick({
         method: "delete",
         headers: { Authorization: `Token ${await getExtensionToken()}` },
       });
-    } catch (err) {
+    } catch {
       addToast("Error deleting brick", {
         appearance: "success",
         autoDismiss: true,
@@ -114,10 +114,10 @@ function useSubmitBrick({
 
         refreshPromise
           .then(() => reactivate())
-          .catch((reason) => {
-            reportError(reason);
-            console.warn("An error occurred when re-activating bricks", reason);
-            addToast(`Error re-activating bricks: ${reason}`, {
+          .catch((error) => {
+            reportError(error);
+            console.warn("An error occurred when re-activating bricks", error);
+            addToast(`Error re-activating bricks: ${error}`, {
               appearance: "warning",
               autoDismiss: true,
             });
@@ -126,18 +126,18 @@ function useSubmitBrick({
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);
         }
-      } catch (ex) {
-        console.debug("Got validation error", ex);
-        if (isPlainObject(ex.response?.data)) {
-          castArray(ex.response.data.__all__ ?? []).map((message) => {
+      } catch (error) {
+        console.debug("Got validation error", error);
+        if (isPlainObject(error.response?.data)) {
+          castArray(error.response.data.__all__ ?? []).map((message) => {
             addToast(`Error: ${message} `, {
               appearance: "error",
               autoDismiss: true,
             });
           });
-          setErrors(ex.response.data);
+          setErrors(error.response.data);
         } else {
-          addToast(ex.toString(), {
+          addToast(error.toString(), {
             appearance: "error",
             autoDismiss: true,
           });

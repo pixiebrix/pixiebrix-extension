@@ -53,11 +53,11 @@ window.setSelectedElement = function (el: HTMLElement) {
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
     return await factory();
-  } catch (err) {
-    if (deserializeError(err).name === "ComponentNotFoundError") {
+  } catch (error) {
+    if (deserializeError(error).name === "ComponentNotFoundError") {
       return "Component not detected";
     } else {
-      return { error: err };
+      return { error: error };
     }
   }
 }
@@ -77,14 +77,14 @@ export const _ping = liftContentScript("PING", async () => {
 export async function isInstalled(target: Target): Promise<PingResponse> {
   try {
     return await _ping(target);
-  } catch (reason) {
-    if (reason.message?.includes("Receiving end does not exist")) {
+  } catch (error) {
+    if (error.message?.includes("Receiving end does not exist")) {
       return {
         installed: false,
         ready: false,
       };
     }
-    throw reason;
+    throw error;
   }
 }
 

@@ -69,9 +69,9 @@ it("can handle unauthenticated request error", async () => {
   try {
     await proxyService(null, requestConfig);
     fail("Expected proxyService to throw an error");
-  } catch (reason) {
-    expect(reason).toBeInstanceOf(Error);
-    const { status } = reason.response;
+  } catch (error) {
+    expect(error).toBeInstanceOf(Error);
+    const { status } = error.response;
     expect(status).toEqual(500);
   }
 });
@@ -104,9 +104,9 @@ it("can proxy remote error", async () => {
   try {
     await proxyService(proxyServiceConfig, requestConfig);
     fail("Expected proxyService to throw an error");
-  } catch (reason) {
-    expect(reason).toBeInstanceOf(Error);
-    const { status, statusText } = reason.cause.response;
+  } catch (error) {
+    expect(error).toBeInstanceOf(Error);
+    const { status, statusText } = error.cause.response;
     expect(status).toEqual(400);
     expect(statusText).toEqual("Bad request");
   }
@@ -118,9 +118,9 @@ it("handle proxy error", async () => {
   try {
     await proxyService(proxyServiceConfig, requestConfig);
     fail("Expected proxyService to throw an error");
-  } catch (reason) {
-    expect(reason).toBeInstanceOf(Error);
-    expect(reason.message).toEqual(
+  } catch (error) {
+    expect(error).toBeInstanceOf(Error);
+    expect(error.message).toEqual(
       "An error occurred when proxying the service request"
     );
   }

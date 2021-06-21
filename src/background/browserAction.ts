@@ -43,8 +43,8 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
     await injectContentScript({ tabId: tab.id, frameId: 0 });
     const nonce = await toggleActionPanel({ tabId: tab.id, frameId: 0 });
     tabNonces.set(tab.id, nonce);
-  } catch (err) {
-    reportError(err);
+  } catch (error) {
+    reportError(error);
   }
 }
 
@@ -83,11 +83,11 @@ async function forwardWhenReady(
   while (true) {
     try {
       return await browser.tabs.sendMessage(tabId, message, { frameId });
-    } catch (err) {
-      if (err?.message?.includes("Could not establish connection")) {
+    } catch (error) {
+      if (error?.message?.includes("Could not establish connection")) {
         await sleep(RETRY_INTERVAL_MILLIS);
       } else {
-        throw err;
+        throw error;
       }
     }
   }
@@ -117,8 +117,8 @@ function backgroundListener(
       case FORWARD_FRAME_NOTIFICATION: {
         const forwardAction = request as ForwardActionFrameNotification;
         return forwardWhenReady(sender.tab.id, forwardAction.payload).catch(
-          (err) => {
-            reportError(err);
+          (error) => {
+            reportError(error);
           }
         );
       }

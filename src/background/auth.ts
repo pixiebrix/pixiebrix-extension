@@ -224,9 +224,9 @@ export async function launchOAuth2Flow(
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
-  } catch (err) {
-    console.error(err);
-    throw new Error(`Error getting OAuth2 token: ${err}`);
+  } catch (error_) {
+    console.error(error_);
+    throw new Error(`Error getting OAuth2 token: ${error_}`);
   }
 
   const { data, status, statusText } = tokenResponse;
@@ -239,7 +239,7 @@ export async function launchOAuth2Flow(
     let parsed;
     try {
       parsed = new URLSearchParams(data);
-    } catch (err) {
+    } catch {
       throw new Error(
         "Expected application/x-www-form-urlencoded data for response"
       );

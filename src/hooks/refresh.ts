@@ -42,12 +42,12 @@ export function useRefresh(
     async (isMounted: () => boolean = () => true) => {
       try {
         await refreshRegistries();
-      } catch (exc) {
-        console.exception(exc);
+      } catch (error) {
+        console.exception(error);
         if (!isMounted()) {
           return;
         }
-        addToast(`Error refreshing bricks from server: ${exc}`, {
+        addToast(`Error refreshing bricks from server: ${error}`, {
           appearance: "error",
           autoDismiss: true,
         });

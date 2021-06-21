@@ -113,11 +113,11 @@ const LoggingRow: React.FunctionComponent = () => {
                     appearance: "success",
                     autoDismiss: true,
                   });
-                } catch (err) {
-                  reportError(err);
+                } catch (error) {
+                  reportError(error);
                   addToast(
                     `Error clearing local logs: ${
-                      err.message?.toString() ?? "Unknown error"
+                      error.message?.toString() ?? "Unknown error"
                     }`,
                     {
                       appearance: "error",
@@ -276,10 +276,10 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
                       appearance: "success",
                       autoDismiss: true,
                     });
-                  } catch (err) {
+                  } catch (error) {
                     addToast(
                       `Error resetting options and service configurations: ${
-                        err.message?.toString() ?? "Unknown error"
+                        error.message?.toString() ?? "Unknown error"
                       }`,
                       {
                         appearance: "error",
