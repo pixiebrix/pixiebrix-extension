@@ -5,10 +5,10 @@ import { patternToRegex } from "webext-patterns";
 import { browser, WebNavigation } from "webextension-polyfill-ts";
 import OnDOMContentLoadedDetailsType = WebNavigation.OnDOMContentLoadedDetailsType;
 
-// @ts-expect-error Will be dropped by #535
+// @ts-expect-error
 async function p<T>(fn, ...args): Promise<T> {
   return new Promise((resolve, reject) => {
-    // @ts-expect-error Will be dropped by #535
+    // @ts-expect-error
     fn(...args, (result) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
