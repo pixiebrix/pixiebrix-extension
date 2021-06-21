@@ -30,7 +30,7 @@ export interface IconOption {
 
 export const iconOptions: IconOption[] = [];
 
-function iconAsSVG(config: IconConfig): string {
+function iconAsSVG(): string {
   return "<svg></svg>";
 }
 
