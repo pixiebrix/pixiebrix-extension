@@ -192,7 +192,7 @@
     "type-fest": "^1.0.1",
     "typescript": "^4.3.2",
     "webpack": "^5.25.1",
-    "webpack-build-notifier": "^2.2.1",
+    "webpack-build-notifier": "^2.3.0",
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.6.0",
     "webpack-target-webextension": "^0.4.3",
