@@ -35,10 +35,8 @@
     "contextMenus"
   ],
   "devtools_page": "devtools.html",
-  "externally_connectable":  {
-    "matches": [
-      "https://app.pixiebrix.com/*"
-    ]
+  "externally_connectable": {
+    "matches": ["https://app.pixiebrix.com/*"]
   },
   "web_accessible_resources": [
     "css/*",
@@ -55,9 +53,7 @@
     "default_title": "PixieBrix"
   },
   "background": {
-    "scripts": [
-      "background.js"
-    ]
+    "scripts": ["background.js"]
   },
   "options_ui": {
     "page": "options.html",

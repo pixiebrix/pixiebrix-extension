@@ -13,7 +13,7 @@
       "type": "string",
       "const": "recipe"
     },
-    "metadata": {"$ref": "https://app.pixiebrix.com/schemas/metadata#"},
+    "metadata": { "$ref": "https://app.pixiebrix.com/schemas/metadata#" },
     "options": {
       "type": "object",
       "properties": {

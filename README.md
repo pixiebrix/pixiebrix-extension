@@ -8,18 +8,18 @@ registry of bricks and pre-made blueprints. You can create a PixieBrix account t
 support for team features, such as shared service configurations and team bricks.
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png" alt="Firefox" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png" alt="Chrome" width="24px" height="24px" />](http://godban.github.io/browsers-support-badges/)<br/>Chrome |
-| --------- | --------- |
-| last 2 versions| last 2 versions
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| last 2 versions                                                                                                                                                                                                   | last 2 versions                                                                                                                                                                                               |
 
 ## Example Uses
 
 Whenever you notice yourself switching back and forth between browser tabs, it's
 a great time to use PixieBrix:
 
-* Add a button to Apartments.com to send your favorite apartment listings to a Google sheet
-* Show Google Scholar results on a person's LinkedIn profile
-* Embed a [YouTube video](https://www.youtube.com/watch?v=dQw4w9WgXcQ) in your
-employee training site
+- Add a button to Apartments.com to send your favorite apartment listings to a Google sheet
+- Show Google Scholar results on a person's LinkedIn profile
+- Embed a [YouTube video](https://www.youtube.com/watch?v=dQw4w9WgXcQ) in your
+  employee training site
 
 <img src="https://raw.githubusercontent.com/pixiebrix/pixiebrix-extension/main/img/demo.gif" alt="PixieBrix demo GIF">
 

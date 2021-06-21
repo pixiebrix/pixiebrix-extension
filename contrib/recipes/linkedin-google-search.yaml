@@ -17,4 +17,4 @@ extensionPoints:
       action:
         id: google/search
         config:
-          query: "\"{{&firstName}} {{&lastName}}\" {{&currentCompanyName}}"
+          query: '"{{&firstName}} {{&lastName}}" {{&currentCompanyName}}'

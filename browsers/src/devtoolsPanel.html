@@ -14,41 +14,44 @@
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <https://www.gnu.org/licenses/>.
   -->
-<!doctype html>
+<!DOCTYPE html>
 <html style="display: flex">
-<head>
-    <meta charset="utf8">
+  <head>
+    <meta charset="utf8" />
     <style>
-        html {
-            display: flex;
-            height: 100%;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            flex: 1;
-            display: flex;
-        }
-        #container {
-            display: flex;
-            flex: 1;
-            width: 100%;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
+      html {
+        display: flex;
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        flex: 1;
+        display: flex;
+      }
+      #container {
+        display: flex;
+        flex: 1;
+        width: 100%;
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
     </style>
 
     <link rel="stylesheet" href="devtoolsPanel.css" />
-</head>
-<body>
+  </head>
+  <body>
     <!-- main react mount point -->
     <div id="container">🚀 Loading PixieBrix devtools.</div>
     <script src="devtoolsPanel.js"></script>
-    <script async src="https://apis.google.com/js/client.js?onload=onGAPILoad"></script>
-</body>
+    <script
+      async
+      src="https://apis.google.com/js/client.js?onload=onGAPILoad"
+    ></script>
+  </body>
 </html>

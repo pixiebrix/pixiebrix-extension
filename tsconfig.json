@@ -20,11 +20,7 @@
       "@schemas/*": ["schemas/*"],
       "vendors/*": ["src/vendors/*"]
     },
-    "lib": [
-      "dom",
-      "es2019",
-      "es2020",
-    ]
+    "lib": ["dom", "es2019", "es2020"]
   },
   "exclude": [
     "node_modules",

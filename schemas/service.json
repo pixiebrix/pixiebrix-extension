@@ -17,13 +17,13 @@
         },
         "config": {
           "type": "object",
-          "additionalProperties": {"type": "string"}
+          "additionalProperties": { "type": "string" }
         }
       }
     },
     "configuredServiceOrVar": {
       "oneOf": [
-        {"$ref":  "#/definitions/configuredService"},
+        { "$ref": "#/definitions/configuredService" },
         {
           "type": "string",
           "pattern": "^@?[a-zA-Z_]+$"
@@ -47,8 +47,9 @@
       "properties": {
         "matchPatterns": {
           "oneOf": [
-            {"type":  "string"},
-            {"type":  "array",
+            { "type": "string" },
+            {
+              "type": "array",
               "items": {
                 "type": "string"
               }
@@ -64,7 +65,7 @@
           "additionalProperties": false,
           "properties": {
             "baseURL": {
-              "type":  "string",
+              "type": "string",
               "format": "uri"
             },
             "params": {
@@ -98,7 +99,7 @@
               }
             },
             "baseURL": {
-              "type":  "string",
+              "type": "string",
               "format": "uri"
             },
             "headers": {
@@ -134,7 +135,7 @@
               }
             },
             "baseURL": {
-              "type":  "string",
+              "type": "string",
               "format": "uri"
             },
             "headers": {
