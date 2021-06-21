@@ -271,7 +271,7 @@ export function registerPort(tabId: TabId, port: Runtime.Port): void {
 /**
  * Listener to inject contentScript on tabs that user has granted temporary access to and that the devtools
  * are open. If the user has granted permanent access, the content script will be injected based on the
- * dynamic content script permissions registerPolyfill
+ * dynamic content script permissions via `webext-dynamic-content-scripts`
  */
 async function injectTemporaryAccess({
   tabId,

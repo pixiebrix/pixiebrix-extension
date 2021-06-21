@@ -32,7 +32,6 @@
     "canvas": "^2.8.0",
     "classnames": "^2.3.1",
     "connected-react-router": "^6.8.0",
-    "content-scripts-register-polyfill": "^1.0.5",
     "copy-to-clipboard": "^3.3.1",
     "csharp-helpers": "^0.9.3",
     "css-selector-generator": "^3.0.1",
@@ -108,7 +107,7 @@
     "use-immer": "^0.5.2",
     "uuid": "^8.3.2",
     "webext-detect-page": "^2.0.5",
-    "webext-dynamic-content-scripts": "^7.0.0",
+    "webext-dynamic-content-scripts": "^7.2.0-0",
     "webext-patterns": "^1.1.0",
     "webextension-polyfill-ts": "^0.25.0"
   },
