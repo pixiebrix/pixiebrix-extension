@@ -20,6 +20,8 @@ export function fieldLabel(name: string): string {
   return parts[parts.length - 1];
 }
 
-export function makeInitialValues(values: { [key: string]: unknown }) {
+export function makeInitialValues<InitialType = Record<string, unknown>>(
+  values: InitialType
+): InitialType {
   return values;
 }
