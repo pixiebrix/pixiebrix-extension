@@ -28,7 +28,7 @@ const webextAlert = ((): typeof alert => {
     return windowAlert;
   }
 
-  return windowAlert;
+  return alert;
 })();
 
 export default webextAlert;
