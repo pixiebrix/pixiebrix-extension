@@ -48,7 +48,7 @@ export function useDependency(
       const service = await registry.lookup(dependency.id);
       return { localConfig: localConfig, service };
     } else {
-      throw Error("No integration selected");
+      throw new Error("No integration selected");
     }
   }, [dependency?.config]);
 

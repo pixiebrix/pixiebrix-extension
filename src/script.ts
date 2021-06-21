@@ -36,7 +36,7 @@ if (!window[PAGESCRIPT_SYMBOL]) {
   // eslint-disable-next-line security/detect-object-injection
   window[PAGESCRIPT_SYMBOL] = uuidv4();
 } else {
-  throw Error(
+  throw new Error(
     // false positive: using constant symbol defined above
     // eslint-disable-next-line security/detect-object-injection
     `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`

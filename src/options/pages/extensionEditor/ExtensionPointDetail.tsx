@@ -88,7 +88,7 @@ function normalizeConfig(
     // Safe because prop is coming from Object.entries
     /* eslint-disable security/detect-object-injection */
     if (typeof definition === "boolean") {
-      throw Error("Expected schema definition not boolean");
+      throw new Error("Expected schema definition not boolean");
     } else if (
       Object.prototype.hasOwnProperty.call(
         SCHEMA_TYPE_TO_BLOCK_PROPERTY,

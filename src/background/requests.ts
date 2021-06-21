@@ -180,7 +180,7 @@ async function proxyRequest<T>(
       })
     )) as SanitizedResponse<ProxyResponseData>;
   } catch {
-    throw Error("An error occurred when proxying the service request");
+    throw new Error("An error occurred when proxying the service request");
   }
 
   const { data: remoteResponse } = proxyResponse;
