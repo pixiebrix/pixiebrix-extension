@@ -1,10 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint",
-    "security"
-  ],
+  "plugins": ["@typescript-eslint", "security"],
   "env": {
     "browser": true
   },
@@ -13,6 +10,9 @@
       "webpack": {
         "config": "./browsers/webpack.config.js"
       }
+    },
+    "react": {
+      "version": "detect"
     }
   },
   "extends": [
@@ -21,28 +21,47 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
     "plugin:import/typescript",
     "plugin:security/recommended"
   ],
   "rules": {
+    "@typescript-eslint/no-empty-function": "off",
     "react/prop-types": "off",
     "@typescript-eslint/ban-types": ["warn"],
     "@typescript-eslint/no-explicit-any": ["warn"],
-    "@typescript-eslint/ban-ts-comment": ["error", {
-      "ts-ignore": "allow-with-description",
-      "minimumDescriptionLength": 3
-    }]
+    "@typescript-eslint/ban-ts-comment": [
+      "error",
+      {
+        "ts-ignore": "allow-with-description",
+        "minimumDescriptionLength": 3
+      }
+    ]
   },
   "ignorePatterns": [
-    "browsers/chrome/webpack/**",
-    "browsers/firefox/webpack/**",
-    "browsers/webpack.config.js",
-    "scripts/webpack.scripts.js",
-    "src/vendors/libraryDetector/**",
-    "src/**/*.test.ts",
-    "src/**/*.test.js",
+    "node_modules",
+    ".idea",
+    "browsers/dist",
+    "artifacts",
+    "scripts/bin",
+    "src/vendors",
     "src/support.js"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "webpack.*.js",
+        "*.config.js",
+        "test-env.js",
+        "**/__mocks__/**",
+        "*.test.js"
+      ],
+      "env": {
+        "node": true,
+        "jest": true
+      },
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    }
   ]
 }
