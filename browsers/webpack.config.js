@@ -94,22 +94,15 @@ function rollbarPlugins() {
 }
 
 function getVersionName(isProduction) {
-  if (process.env.ENVIRONMENT === "staging") {
-    return (
-      process.env.npm_package_version + "-rc-" + process.env.SOURCE_VERSION
-    );
-  }
-
   if (isProduction) {
     return process.env.npm_package_version;
+  } else if (process.env.ENVIRONMENT === "staging") {
+    return `${process.env.npm_package_version}-alpha+${process.env.SOURCE_VERSION}`;
+  } else {
+    return `${
+      process.env.npm_package_version
+    }-local+${new Date().toISOString()}`;
   }
-
-  const buildTime = new Date()
-    .toISOString() // 2021-06-21T11:25:41.707Z
-    .replace(/\..+$/g, "") // 2021-06-21T11:25:41
-    .replace(/\D/g, "."); // 2021.06.21.11.25.41
-
-  return process.env.npm_package_version + ".local+" + buildTime;
 }
 
 function getConditionalPlugins(isProduction) {
