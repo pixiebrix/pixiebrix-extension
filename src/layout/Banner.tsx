@@ -23,7 +23,7 @@ import useAsyncEffect from "use-async-effect";
 import AuthContext from "@/auth/AuthContext";
 
 const environment = process.env.ENVIRONMENT;
-const version = process.env.NPM_PACKAGE_VERSION;
+const versionName = process.env.VERSION_NAME;
 const source_version = process.env.SOURCE_VERSION;
 
 const classMap: { [key: string]: string } = {
@@ -65,7 +65,7 @@ const Banner: React.FunctionComponent = () => {
       })}
     >
       You are using {extension ? "extension" : "server"}{" "}
-      {environment ?? "unknown"} build {version} (
+      {environment ?? "unknown"} build {versionName} (
       {source_version.substring(0, 8).trim()}) {extension && syncText}
     </div>
   );

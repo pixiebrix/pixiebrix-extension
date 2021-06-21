@@ -93,6 +93,25 @@ function rollbarPlugins() {
   }
 }
 
+function getVersionName(isProduction) {
+  if (process.env.ENVIRONMENT === "staging") {
+    return (
+      process.env.npm_package_version + "-rc-" + process.env.SOURCE_VERSION
+    );
+  }
+
+  if (isProduction) {
+    return process.env.npm_package_version;
+  }
+
+  const buildTime = new Date()
+    .toISOString() // 2021-06-21T11:25:41.707Z
+    .replace(/\..+$/g, "") // 2021-06-21T11:25:41
+    .replace(/\D/g, "."); // 2021.06.21.11.25.41
+
+  return process.env.npm_package_version + ".local+" + buildTime;
+}
+
 function getConditionalPlugins(isProduction) {
   if (isProduction) {
     return [
@@ -119,31 +138,25 @@ function getConditionalPlugins(isProduction) {
 
 const isProd = (options) => options.mode === "production";
 
-function customizeManifest(manifest, options) {
+function customizeManifest(manifest, isProduction) {
   manifest.version = process.env.npm_package_version;
-  if (process.env.ENVIRONMENT === "staging") {
-    manifest.version_name += "-rc-" + process.env.SOURCE_VERSION;
-  } else if (!isProd(options)) {
-    const buildTime = new Date()
-      .toISOString() // 2021-06-21T11:25:41.707Z
-      .replace(/\..+$/g, "") // 2021-06-21T11:25:41
-      .replace(/\D/g, "."); // 2021.06.21.11.25.41
+  manifest.version_name = getVersionName(isProduction);
 
+  if (!isProduction) {
     manifest.name = "PixieBrix - Development";
-    manifest.version_name = manifest.version + ".local+" + buildTime;
   }
 
   if (process.env.CHROME_MANIFEST_KEY) {
     manifest.key = process.env.CHROME_MANIFEST_KEY;
   }
-  const internal = isProd(options)
+  const internal = isProduction
     ? []
     : ["http://127.0.0.1:8000/*", "http://127.0.0.1/*", "http://localhost/*"];
 
   const policy = new Policy(manifest.content_security_policy);
 
   policy.add("connect-src", process.env.SERVICE_URL);
-  if (!isProd(options)) {
+  if (!isProduction) {
     policy.add("connect-src", "ws://localhost:9090/ http://127.0.0.1:8000");
   }
   manifest.content_security_policy = policy.toString();
@@ -279,6 +292,7 @@ module.exports = (env, options) => ({
       // If not found, these values will be used as defaults
       DEBUG: !isProd(options),
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
+      VERSION_NAME: getVersionName(isProd(options)),
       ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
 
       // If not found, "undefined" will cause the build to fail
@@ -303,7 +317,7 @@ module.exports = (env, options) => ({
           to: "manifest.json",
           transform: (jsonString) => {
             const manifest = JSON.parse(jsonString);
-            customizeManifest(manifest, options);
+            customizeManifest(manifest, isProd(options));
             return JSON.stringify(manifest, null, 4);
           },
         },
