@@ -40,7 +40,10 @@ export class JSONPathTransformer extends Transformer {
     },
   };
 
-  async transform({ path }: BlockArg, { ctxt }: BlockOptions) {
+  async transform(
+    { path }: BlockArg,
+    { ctxt }: BlockOptions
+  ): Promise<unknown> {
     return JSONPath({ preventEval: true, path, json: ctxt });
   }
 }

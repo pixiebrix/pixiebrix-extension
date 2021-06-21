@@ -45,8 +45,10 @@ function renderRow<TRow extends Row>(
   return `<tr>${columnHTML}</tr>`;
 }
 
-function makeDataTable<TRow extends {}>(columns: ColumnDefinition<TRow>[]) {
-  function drawTable(ctxt: unknown) {
+function makeDataTable<TRow extends {}>(
+  columns: ColumnDefinition<TRow>[]
+): (ctxt: unknown) => string {
+  return function drawTable(ctxt: unknown): string {
     if (!Array.isArray(ctxt)) {
       throw new BusinessError("makeDataTable expected an array of data");
     }
@@ -122,8 +124,7 @@ table.blueTable tfoot .links a{
             </tbody>
         </table>
     `;
-  }
-  return drawTable;
+  };
 }
 
 export default makeDataTable;

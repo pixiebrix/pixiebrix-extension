@@ -68,7 +68,7 @@ export interface NotificationCallbacks {
   hide: () => void;
 }
 
-export function notifyError(message: string, err?: unknown): void {
+export function notifyError(message: string): void {
   // call getErrorMessage on err and include in the details
   $.notify(message, {
     className: "error",

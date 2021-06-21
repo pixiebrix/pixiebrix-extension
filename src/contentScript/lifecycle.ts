@@ -36,9 +36,6 @@ const _installedExtensionPoints: IExtensionPoint[] = [];
 // reload extension definitions on next navigation
 let _reloadOnNextNavigate = false;
 
-// @ts-ignore: may use in the future to determine which extension points to install
-let _openerTabId: number = undefined;
-
 const WAIT_LOADED_INTERVAL_MS = 25;
 
 async function installScriptOnce(): Promise<void> {
@@ -279,7 +276,6 @@ export async function handleNavigate({
 
   if (openerTabId != null) {
     console.debug(`Setting opener tabId: ${openerTabId}`);
-    _openerTabId = openerTabId;
   }
 
   if (extensionPoints.length) {
