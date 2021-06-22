@@ -37,10 +37,10 @@ export function useAsyncState<T>(
         : promiseFactory);
       if (!isMounted()) return;
       setResult(promiseResult);
-    } catch (ex) {
+    } catch (error_) {
       if (isMounted()) {
         setResult(undefined);
-        setError(ex ?? "Error calculating data");
+        setError(error_ ?? "Error calculating data");
       }
     } finally {
       if (isMounted()) {

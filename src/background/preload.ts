@@ -40,8 +40,8 @@ async function preload(extensions: PreloadOptions[]): Promise<void> {
         await extensionPoint.ensureMenu(
           (definition as unknown) as PreloadOptions<ContextMenuConfig>
         );
-      } catch (err) {
-        reportError(err);
+      } catch (error) {
+        reportError(error);
       }
     }
   }
@@ -63,7 +63,5 @@ export async function preloadAllMenus(): Promise<void> {
 }
 
 export default (): void => {
-  preloadAllMenus().catch((err) => {
-    reportError(err);
-  });
+  preloadAllMenus().catch(reportError);
 };

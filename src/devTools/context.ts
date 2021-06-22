@@ -183,20 +183,20 @@ export function useDevConnection(): Context {
         hasPermissions: true,
         meta,
       });
-    } catch (err) {
-      if (err instanceof PermissionsError) {
+    } catch (error) {
+      if (error instanceof PermissionsError) {
         setCurrent({
           ...common,
           hasPermissions: false,
           meta: undefined,
         });
       } else {
-        reportError(err);
+        reportError(error);
         setCurrent({
           ...common,
           hasPermissions: true,
           meta: undefined,
-          error: err.message?.toString() ?? err.toString(),
+          error: error.message?.toString() ?? error.toString(),
         });
       }
     }

@@ -139,8 +139,8 @@ async function userSummary() {
     ).length;
     numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
       .length;
-  } catch (err) {
-    console.warn("Cannot get number of extensions", { err });
+  } catch (error) {
+    console.warn("Cannot get number of extensions", { error });
   }
 
   return {

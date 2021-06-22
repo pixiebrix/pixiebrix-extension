@@ -25,8 +25,8 @@ export async function errorBoundary(
 ): Promise<PanelComponent> {
   try {
     return await renderPromise;
-  } catch (exc) {
-    logger.error(exc);
-    return `<div>An error occurred: ${exc.toString()}</div>`;
+  } catch (error) {
+    logger.error(error);
+    return `<div>An error occurred: ${error.toString()}</div>`;
   }
 }

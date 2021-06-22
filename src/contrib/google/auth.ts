@@ -82,13 +82,16 @@ class PermissionsError extends Error {
   }
 }
 
-export async function handleRejection(token: string, err: any): Promise<Error> {
-  console.debug("Google rejected request", { err });
-  if (err.result == null) {
-    return err;
+export async function handleRejection(
+  token: string,
+  error: any
+): Promise<Error> {
+  console.debug("Google rejected request", { err: error });
+  if (error.result == null) {
+    return error;
   }
 
-  const status = err.result?.error.code;
+  const status = error.result?.error.code;
 
   if (status === 404) {
     return new PermissionsError(
@@ -108,10 +111,10 @@ export async function handleRejection(token: string, err: any): Promise<Error> {
       "Bad Google OAuth token. Removed the auth token from the cache so the user can re-authenticate"
     );
     return new PermissionsError(
-      `Permission denied, re-authenticate with Google and try again. Details: ${err.result.error?.message}`,
+      `Permission denied, re-authenticate with Google and try again. Details: ${error.result.error?.message}`,
       status
     );
   } else {
-    return new Error(err.result.error?.message ?? "Unknown error");
+    return new Error(error.result.error?.message ?? "Unknown error");
   }
 }

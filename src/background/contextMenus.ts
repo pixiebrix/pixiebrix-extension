@@ -72,15 +72,15 @@ async function dispatchMenu(
       message: "Ran content menu item action",
       className: "success",
     }).catch(reportError);
-  } catch (err) {
-    if (hasCancelRootCause(err)) {
+  } catch (error) {
+    if (hasCancelRootCause(error)) {
       showNotification(target, {
         message: "The action was cancelled",
         className: "info",
       }).catch(reportError);
     } else {
       const message = `Error processing context menu action: ${getErrorMessage(
-        err
+        error
       )}`;
       reportError(new Error(message));
       showNotification(target, { message, className: "error" }).catch(
@@ -91,8 +91,8 @@ async function dispatchMenu(
 
   try {
     reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-  } catch (err) {
-    console.warn("Error reporting ContextMenuClick event", { err });
+  } catch (error) {
+    console.warn("Error reporting ContextMenuClick event", { error });
   }
 }
 
@@ -111,8 +111,8 @@ export async function uninstall(extensionId: string): Promise<void> {
   try {
     await browser.contextMenus.remove(makeMenuId(extensionId));
     console.debug(`Uninstalled context menu ${extensionId}`);
-  } catch (reason) {
-    console.warn(`Could not uninstall context menu ${extensionId}: ${reason}`);
+  } catch (error) {
+    console.warn(`Could not uninstall context menu ${extensionId}: ${error}`);
   } finally {
     extensionMenuItems.delete(extensionId);
   }
@@ -158,8 +158,8 @@ export const ensureContextMenu = liftBackground(
             documentUrlPatterns,
             extensionId,
           });
-        } catch (err) {
-          console.debug("Cannot update context menu", { err });
+        } catch (error) {
+          console.debug("Cannot update context menu", { error });
           const menuId = browser.contextMenus.create({
             ...createProperties,
             id: makeMenuId(extensionId),
@@ -191,9 +191,9 @@ export const ensureContextMenu = liftBackground(
           extensionId,
         });
       }
-    } catch (reason) {
-      console.error(`Error registering context menu item`, reason);
-      throw reason;
+    } catch (error) {
+      console.error(`Error registering context menu item`, error);
+      throw error;
     }
   }
 );

@@ -76,17 +76,17 @@ function initContentScriptListener() {
               send(response);
             }
           })
-          .catch((reason) => {
+          .catch((error) => {
             if (asyncResponse) {
               console.debug(
                 `Handler returning error response for ${type} with nonce ${meta.nonce}`
               );
-              send(toErrorResponse(type, reason), true);
+              send(toErrorResponse(type, error), true);
             } else {
               console.warn(
                 "An error occurred while processing notification %s",
                 type,
-                reason
+                error
               );
             }
           });

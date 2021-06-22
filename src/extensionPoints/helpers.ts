@@ -61,8 +61,8 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
               for (const observer of observers) {
                 try {
                   observer.disconnect();
-                } catch (err) {
-                  console.warn("Error disconnecting mutation observer", err);
+                } catch (error) {
+                  console.warn("Error disconnecting mutation observer", error);
                 }
               }
               wrappedCallback();
@@ -79,8 +79,8 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
     for (const observer of observers) {
       try {
         observer.disconnect();
-      } catch (err) {
-        console.warn("Error disconnecting mutation observer", err);
+      } catch (error) {
+        console.warn("Error disconnecting mutation observer", error);
       }
     }
     observers.clear();
@@ -94,7 +94,7 @@ function isNativeCssSelector(selector: string): boolean {
   try {
     document.querySelector(selector);
     return true;
-  } catch (err) {
+  } catch {
     return false;
   }
 }

@@ -102,8 +102,8 @@ const RecipeEntry: React.FunctionComponent<{
           appearance: "success",
           autoDismiss: true,
         });
-      } catch (err) {
-        reportError(err);
+      } catch (error) {
+        reportError(error);
       }
     },
     [addToast, onRemove]

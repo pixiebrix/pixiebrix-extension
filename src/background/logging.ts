@@ -202,7 +202,7 @@ export const recordError = liftBackground(
         error,
         data,
       });
-    } catch (ex) {
+    } catch {
       console.error("An error occurred while recording another error", {
         error,
         context,

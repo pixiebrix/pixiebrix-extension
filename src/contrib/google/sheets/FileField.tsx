@@ -72,11 +72,11 @@ const FileField: React.FunctionComponent<
         } else {
           onSelect(null);
         }
-      } catch (err) {
+      } catch (error) {
         if (!isMounted()) return;
         onSelect(null);
-        reportError(err);
-        setSheetError(err);
+        reportError(error);
+        setSheetError(error);
         addToast("Error retrieving sheet information", {
           appearance: "error",
           autoDismiss: true,
@@ -131,8 +131,8 @@ const FileField: React.FunctionComponent<
         )
         .build();
       picker.setVisible(true);
-    } catch (err) {
-      addToast(`Error loading file picker: ${err}`, {
+    } catch (error) {
+      addToast(`Error loading file picker: ${error}`, {
         appearance: "error",
         autoDismiss: true,
       });

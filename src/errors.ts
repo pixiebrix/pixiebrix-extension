@@ -80,13 +80,13 @@ export class ContextError extends Error {
  * Returns true iff the root cause of the error was a CancelError.
  * @param err the error object
  */
-export function hasCancelRootCause(err: Error | SerializedError): boolean {
-  if (typeof err !== "object") {
+export function hasCancelRootCause(error: Error | SerializedError): boolean {
+  if (typeof error !== "object") {
     return false;
-  } else if (err instanceof CancelError || err.name === "CancelError") {
+  } else if (error instanceof CancelError || error.name === "CancelError") {
     return true;
-  } else if (err instanceof ContextError) {
-    return hasCancelRootCause(err.cause);
+  } else if (error instanceof ContextError) {
+    return hasCancelRootCause(error.cause);
   }
   return false;
 }
@@ -95,13 +95,13 @@ export function hasCancelRootCause(err: Error | SerializedError): boolean {
  * Returns true iff the root cause of the error was a BusinessError.
  * @param err the error object
  */
-export function hasBusinessRootCause(err: Error | SerializedError): boolean {
-  if (typeof err !== "object") {
+export function hasBusinessRootCause(error: Error | SerializedError): boolean {
+  if (typeof error !== "object") {
     return false;
-  } else if (err instanceof BusinessError || err.name === "BusinessError") {
+  } else if (error instanceof BusinessError || error.name === "BusinessError") {
     return true;
-  } else if (err instanceof ContextError) {
-    return hasCancelRootCause(err.cause);
+  } else if (error instanceof ContextError) {
+    return hasCancelRootCause(error.cause);
   }
   return false;
 }

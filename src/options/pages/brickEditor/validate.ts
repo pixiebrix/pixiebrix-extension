@@ -34,9 +34,9 @@ export async function validateSchema(value: string): Promise<any> {
 
   try {
     json = yaml.safeLoad(value) as PartialSchema;
-  } catch (ex) {
+  } catch (error) {
     return {
-      config: [`Invalid YAML: ${ex}`],
+      config: [`Invalid YAML: ${error}`],
     };
   }
 
@@ -55,8 +55,8 @@ export async function validateSchema(value: string): Promise<any> {
       json,
       json.kind as keyof typeof KIND_SCHEMAS
     );
-  } catch (ex) {
-    console.error("An error occurred when validating the schema", ex);
+  } catch (error) {
+    console.error("An error occurred when validating the schema", error);
     return { config: ["An error occurred when validating the schema"] };
   }
 

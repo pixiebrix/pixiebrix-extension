@@ -33,9 +33,9 @@ class PageSemanticReader extends Reader {
   async read(): Promise<ReaderOutput> {
     return new Promise((resolve, reject) => {
       const handler = new Handler(
-        (err, result) => {
-          if (err) {
-            reject(err);
+        (error, result) => {
+          if (error) {
+            reject(error);
           } else {
             resolve((result as unknown) as ReaderOutput);
           }

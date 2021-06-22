@@ -122,7 +122,7 @@ function useLogContext(config: string | null): MessageContext | null {
           return null;
         }
       }
-    } catch (err) {
+    } catch {
       return null;
     }
   }, [debouncedConfig, blueprintMap]);

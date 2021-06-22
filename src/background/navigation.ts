@@ -24,8 +24,8 @@ function initNavigation(): void {
   browser.webNavigation.onHistoryStateUpdated.addListener(function (details) {
     contentScript
       .notifyNavigation({ tabId: details.tabId, frameId: details.frameId }, {})
-      .catch((err) => {
-        console.warn("Error notifying page navigation", err);
+      .catch((error) => {
+        console.warn("Error notifying page navigation", error);
       });
   });
 }

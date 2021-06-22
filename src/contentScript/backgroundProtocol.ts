@@ -63,13 +63,13 @@ function contentScriptListener(
     if (isNotification(options)) {
       return;
     } else {
-      return handlerPromise.catch((reason) => {
+      return handlerPromise.catch((error) => {
         console.debug(`Handler returning error response for ${type}`, {
-          reason,
+          error,
         });
         return toErrorResponse(
           type,
-          reason ?? new Error("Unknown error in content script handler")
+          error ?? new Error("Unknown error in content script handler")
         );
       });
     }
@@ -127,10 +127,10 @@ export function notifyContentScripts(
         { frameId: ROOT_FRAME_ID }
       );
     const tabIds = tabId ? [tabId] : await getTabIds();
-    Promise.all(tabIds.map(messageOne)).catch((reason) => {
+    Promise.all(tabIds.map(messageOne)).catch((error) => {
       console.warn(
         `An error occurred when broadcasting content script notification ${fullType}`,
-        reason
+        error
       );
     });
     return;
@@ -219,10 +219,10 @@ export function liftContentScript<R extends SerializableResponse>(
         },
         { frameId: target.frameId ?? ROOT_FRAME_ID }
       );
-    } catch (err) {
+    } catch (error) {
       if (
         isNotification(options) &&
-        err?.message.includes("Receiving end does not exist")
+        error?.message.includes("Receiving end does not exist")
       ) {
         // Ignore the content script not being loaded
         return;
@@ -234,14 +234,14 @@ export function liftContentScript<R extends SerializableResponse>(
         } ${type}`,
         {
           target,
-          err,
+          error,
         }
       );
 
       if (isNotification(options)) {
         return;
       } else {
-        throw err;
+        throw error;
       }
     }
 

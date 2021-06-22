@@ -48,7 +48,7 @@ export function useDependency(
       const service = await registry.lookup(dependency.id);
       return { localConfig: localConfig, service };
     } else {
-      throw Error("No integration selected");
+      throw new Error("No integration selected");
     }
   }, [dependency?.config]);
 
@@ -105,10 +105,10 @@ export function useDependency(
           listener();
         }
       }
-    } catch (err) {
+    } catch (error) {
       setGrantedPermissions(false);
-      reportError(err);
-      addToast(`Error granting permissions: ${err.toString()}`, {
+      reportError(error);
+      addToast(`Error granting permissions: ${error.toString()}`, {
         appearance: "error",
         autoDismiss: true,
       });

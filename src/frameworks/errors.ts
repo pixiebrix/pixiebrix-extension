@@ -32,13 +32,13 @@ export class FrameworkNotFound extends Error {
 export function ignoreNotFound<T>(factory: () => T): T | null {
   try {
     return factory();
-  } catch (err) {
+  } catch (error) {
     if (
-      err instanceof ComponentNotFoundError ||
-      err instanceof FrameworkNotFound
+      error instanceof ComponentNotFoundError ||
+      error instanceof FrameworkNotFound
     ) {
       return null;
     }
-    throw err;
+    throw error;
   }
 }

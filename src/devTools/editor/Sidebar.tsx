@@ -210,12 +210,12 @@ function useAddElement(
       reportEvent("PageEditorStart", {
         type: config.elementType,
       });
-    } catch (exc) {
-      if (!exc.toString().toLowerCase().includes("selection cancelled")) {
-        console.error(exc);
-        reportError(exc);
+    } catch (error) {
+      if (!error.toString().toLowerCase().includes("selection cancelled")) {
+        console.error(error);
+        reportError(error);
         addToast(
-          `Error adding ${config.label.toLowerCase()}: ${exc.toString()}`,
+          `Error adding ${config.label.toLowerCase()}: ${error.toString()}`,
           {
             appearance: "error",
             autoDismiss: true,

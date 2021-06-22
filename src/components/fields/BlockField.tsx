@@ -83,10 +83,10 @@ export function useBlockOptions(
         const block = await blockRegistry.lookup(id);
         if (!isMounted()) return;
         setBlock({ block });
-      } catch (exc) {
-        reportError(exc);
+      } catch (error_) {
+        reportError(error_);
         if (!isMounted()) return;
-        setBlock({ error: exc.toString() });
+        setBlock({ error: error_.toString() });
       }
     },
     [id, setBlock]

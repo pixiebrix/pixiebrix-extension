@@ -1,7 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint", "security"],
+  "plugins": ["@typescript-eslint", "security", "unicorn"],
   "env": {
     "browser": true
   },
@@ -49,6 +49,19 @@
       {
         "ts-ignore": "allow-with-description",
         "minimumDescriptionLength": 3
+      }
+    ],
+    "unicorn/prefer-optional-catch-binding": "error",
+    "unicorn/catch-error-name": "error",
+    "unicorn/prevent-abbreviations": [
+      "error",
+      {
+        "extendDefaultReplacements": false,
+        "replacements": {
+          "err": {
+            "error": true
+          }
+        }
       }
     ]
   },

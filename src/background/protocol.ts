@@ -89,10 +89,10 @@ function backgroundListener(
     );
 
     if (notification) {
-      handlerPromise.catch((reason) => {
+      handlerPromise.catch((error) => {
         console.warn(
           `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
-          reason
+          error
         );
       });
       return;
@@ -105,11 +105,11 @@ function backgroundListener(
         );
         return value;
       })
-      .catch((reason) => {
+      .catch((error) => {
         console.debug(
           `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
         );
-        return toErrorResponse(type, reason);
+        return toErrorResponse(type, error);
       });
   }
 }
@@ -180,10 +180,10 @@ export async function callBackground(
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
       extensionId,
     });
-    sendMessage(extensionId, message, {}).catch((reason) => {
+    sendMessage(extensionId, message, {}).catch((error) => {
       console.warn(
         `An error occurred processing background notification ${type} (nonce: ${nonce})`,
-        reason
+        error
       );
     });
     return;
@@ -194,12 +194,12 @@ export async function callBackground(
     let response;
     try {
       response = await sendMessage(extensionId, message, {});
-    } catch (err) {
+    } catch (error) {
       console.debug(
         `Error sending background action ${type} (nonce: ${nonce})`,
-        { extensionId, err }
+        { extensionId, error }
       );
-      throw err;
+      throw error;
     }
 
     // console.debug(

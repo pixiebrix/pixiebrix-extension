@@ -92,14 +92,14 @@ const ScopeSettings: React.FunctionComponent = () => {
         response = await axios.patch(await makeURL("/api/settings/"), values, {
           headers: { Authorization: `Token ${await getExtensionToken()}` },
         });
-      } catch (err) {
-        if (err.response.status === 401) {
+      } catch (error) {
+        if (error.response.status === 401) {
           addToast("Could not authenticate with PixieBrix", {
             appearance: "error",
             autoDismiss: true,
           });
-        } else if (err.response.status === 400) {
-          setErrors(mapValues(err.response.data, (xs) => castArray(xs)[0]));
+        } else if (error.response.status === 400) {
+          setErrors(mapValues(error.response.data, (xs) => castArray(xs)[0]));
         } else {
           console.error(response.data);
           addToast("Error updating account alias", {

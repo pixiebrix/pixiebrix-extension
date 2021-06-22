@@ -244,9 +244,7 @@ export const optionsSlice = createSlice({
 
         state.extensions[extensionPointId][extensionId] = extensionConfig;
 
-        preloadMenus({ extensions: [extensionConfig] }).catch((err) => {
-          reportError(err);
-        });
+        preloadMenus({ extensions: [extensionConfig] }).catch(reportError);
       }
     },
     saveExtension(state, { payload }) {

@@ -168,8 +168,8 @@ class CalendarTimeRange extends ExtensionPoint<CalendarConfig> {
       for (const extension of this.extensions) {
         try {
           await this.runExtension(readerContext, extension);
-        } catch (ex) {
-          this.logger.childLogger({ extensionId: extension.id }).error(ex);
+        } catch (error) {
+          this.logger.childLogger({ extensionId: extension.id }).error(error);
         }
       }
     }

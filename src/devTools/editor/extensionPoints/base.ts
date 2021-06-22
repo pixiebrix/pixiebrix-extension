@@ -165,7 +165,7 @@ export async function generateExtensionPointMetadata(
     if (!reservedNames.includes(id)) {
       try {
         await brickRegistry.lookup(id);
-      } catch (err) {
+      } catch {
         // name doesn't exist yet
         return true;
       }
@@ -247,8 +247,8 @@ export async function makeReaderFormState(
         try {
           const reader = await brickRegistry.lookup(readerId);
           return { metadata: selectMetadata(reader) };
-        } catch (err) {
-          console.error("Cannot find reader", { readerId, err });
+        } catch (error) {
+          console.error("Cannot find reader", { readerId, error });
           throw new Error("Cannot find reader");
         }
       }

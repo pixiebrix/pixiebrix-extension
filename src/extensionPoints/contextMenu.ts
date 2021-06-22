@@ -69,11 +69,11 @@ function setActiveElement(event: MouseEvent): void {
     if (event?.button === BUTTON_SECONDARY) {
       clickedElement = event?.target as HTMLElement;
     }
-  } catch (err) {
+  } catch (error) {
     try {
-      reportError(err);
-    } catch (err) {
-      console.error(err);
+      reportError(error);
+    } catch (error) {
+      console.error(error);
     }
   }
 }
@@ -255,13 +255,13 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       this.extensions.map(async (extension) => {
         try {
           await this.registerExtension(extension);
-        } catch (ex) {
-          reportError(ex, {
+        } catch (error) {
+          reportError(error, {
             deploymentId: extension._deployment?.id,
             extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
           });
-          throw ex;
+          throw error;
         }
       })
     );
