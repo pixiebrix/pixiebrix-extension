@@ -74,7 +74,7 @@
     "prop-types": "^15.7.2",
     "psl": "^1.8.0",
     "react": "^16.13.1",
-    "react-ace": "^9.2.1",
+    "react-ace": "^9.4.1",
     "react-beautiful-dnd": "^13.0.0",
     "react-bootstrap": "^1.4.3",
     "react-dom": "^16.13.1",
