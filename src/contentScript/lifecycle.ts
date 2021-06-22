@@ -291,7 +291,7 @@ export async function handleNavigate({
       const runPromise = runExtensionPoint(extensionPoint, cancel).catch(
         (error) => {
           console.error(`Error installing/running: ${extensionPoint.id}`, {
-            reason: error,
+            error,
           });
         }
       );

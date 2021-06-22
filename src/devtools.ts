@@ -95,7 +95,7 @@ async function initialize() {
   } catch (error) {
     // Can install without having content script on the page; they just won't do much
     console.debug("Could not inject contextScript for devtools", {
-      reason: error,
+      error,
     });
   }
 

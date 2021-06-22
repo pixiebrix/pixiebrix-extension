@@ -117,9 +117,7 @@ function backgroundListener(
       case FORWARD_FRAME_NOTIFICATION: {
         const forwardAction = request as ForwardActionFrameNotification;
         return forwardWhenReady(sender.tab.id, forwardAction.payload).catch(
-          (error) => {
-            reportError(error);
-          }
+          reportError
         );
       }
       default: {

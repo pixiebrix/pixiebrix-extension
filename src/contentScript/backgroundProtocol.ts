@@ -65,7 +65,7 @@ function contentScriptListener(
     } else {
       return handlerPromise.catch((error) => {
         console.debug(`Handler returning error response for ${type}`, {
-          reason: error,
+          error,
         });
         return toErrorResponse(
           type,

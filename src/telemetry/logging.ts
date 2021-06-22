@@ -45,7 +45,7 @@ export function reportError(exc: unknown, context?: MessageContext): void {
     // messaging the background script
     recordError(selectError(exc), context, null).catch((error) => {
       console.error("Another error occurred while reporting an error", {
-        exc: error,
+        error,
       });
     });
   } else {
