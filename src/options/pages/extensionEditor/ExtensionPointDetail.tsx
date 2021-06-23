@@ -45,7 +45,7 @@ import { useAsyncState } from "@/hooks/common";
 import { saveAs } from "file-saver";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
-import { configToYaml } from "@/devTools/editor/useCreate";
+import { configToYaml } from "@/devTools/editor/hooks/useCreate";
 import OptionsArgsCard from "@/options/pages/extensionEditor/OptionsArgsCard";
 import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";

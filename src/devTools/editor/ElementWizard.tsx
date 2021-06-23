@@ -15,17 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
 import { isEmpty } from "lodash";
-import { useDebounce } from "use-debounce";
-import useAsyncEffect from "use-async-effect";
-import * as nativeOperations from "@/background/devtools/index";
 import { checkAvailable } from "@/background/devtools";
-import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
-import { FormState, TriggerFormState } from "@/devTools/editor/editorSlice";
-import ToggleField from "@/devTools/editor/components/ToggleField";
+import { Button, Form, Nav, Tab } from "react-bootstrap";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
 import { wizard as triggerWizard } from "./extensionPoints/trigger";
 import { wizard as panelWizard } from "./extensionPoints/panel";
@@ -33,16 +29,11 @@ import { wizard as actionPanelWizard } from "./extensionPoints/actionPanel";
 import { wizard as contextMenuWizard } from "./extensionPoints/contextMenu";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCommentAlt,
-  faHistory,
-  faLock,
-  faSave,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCommentAlt, faLock } from "@fortawesome/free-solid-svg-icons";
 import { IExtension } from "@/core";
-import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { useRemove, useReset } from "@/devTools/editor/editorHooks";
+import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
+import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
+import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 
 const wizardMap = {
   menuItem: menuItemWizard,
@@ -52,17 +43,40 @@ const wizardMap = {
   actionPanel: actionPanelWizard,
 };
 
+const LOCKABLE_STEPS = ["Foundation", "Availability", "Location"];
+
+const WizardNavItem: React.FunctionComponent<{
+  step: WizardStep;
+  isLocked: boolean;
+  lockableStepNames?: string[];
+}> = ({ step, isLocked, lockableStepNames = LOCKABLE_STEPS }) => {
+  return (
+    <Nav.Item>
+      <Nav.Link eventKey={step.step}>
+        {step.step}
+        {lockableStepNames.includes(step.step) && isLocked && (
+          <FontAwesomeIcon className="ml-2" icon={faLock} />
+        )}
+      </Nav.Link>
+    </Nav.Item>
+  );
+};
+
 const ElementWizard: React.FunctionComponent<{
   installed: IExtension[];
   element: FormState;
-  refreshMillis?: number;
   editable: Set<string>;
   toggleChat: (toggle: boolean) => void;
-}> = ({ element, refreshMillis = 250, editable, installed, toggleChat }) => {
+}> = ({ element, editable, installed, toggleChat }) => {
   const { port } = useContext(DevToolsContext);
-  const wizard = useMemo(() => wizardMap[element.type], [element.type]);
 
+  const wizard = useMemo(() => wizardMap[element.type], [element.type]);
   const [step, setStep] = useState(wizard[0].step);
+
+  const isLocked =
+    element.installed &&
+    editable &&
+    !editable.has(element.extensionPoint.metadata.id);
 
   const [available] = useAsyncState(
     async () =>
@@ -71,7 +85,6 @@ const ElementWizard: React.FunctionComponent<{
   );
 
   const {
-    values,
     errors,
     isSubmitting,
     isValid,
@@ -79,42 +92,6 @@ const ElementWizard: React.FunctionComponent<{
     handleSubmit,
     handleReset,
   } = useFormikContext<FormState>();
-
-  const [debounced] = useDebounce(element, refreshMillis, {
-    leading: false,
-    trailing: true,
-  });
-
-  const remove = useRemove(element);
-  const reset = useReset(installed, element);
-
-  const run = useCallback(async () => {
-    const { definition: factory } = ADAPTERS.get(debounced.type);
-    await nativeOperations.updateDynamicElement(port, factory(debounced));
-  }, [debounced, port]);
-
-  const isLoadTrigger =
-    debounced?.type === "trigger" &&
-    (debounced as TriggerFormState)?.extensionPoint.definition.trigger ===
-      "load";
-
-  const isPanel = ["panel", "actionPanel"].includes(debounced?.type);
-
-  const showReloadControls = isLoadTrigger || isPanel;
-
-  useAsyncEffect(async () => {
-    if (showReloadControls && !(debounced as TriggerFormState).autoReload) {
-      // by default, don't automatically trigger it
-      return;
-    }
-    const { definition: factory } = ADAPTERS.get(debounced.type);
-    console.debug("Updating dynamic element", {
-      debounced,
-      showReloadControls,
-      element: factory(debounced),
-    });
-    await nativeOperations.updateDynamicElement(port, factory(debounced));
-  }, [debounced, port, showReloadControls]);
 
   if (!isEmpty(errors)) {
     console.warn("Form errors", { errors });
@@ -134,24 +111,8 @@ const ElementWizard: React.FunctionComponent<{
           activeKey={step}
           onSelect={(step: string) => setStep(step)}
         >
-          {wizard.map((x) => (
-            <Nav.Item key={x.step}>
-              <Nav.Link eventKey={x.step}>
-                {x.step}
-                {x.step === "Foundation" &&
-                  element.installed &&
-                  editable &&
-                  !editable.has(element.extensionPoint.metadata.id) && (
-                    <FontAwesomeIcon className="ml-2" icon={faLock} />
-                  )}
-                {x.step === "Availability" &&
-                  element.installed &&
-                  editable &&
-                  !editable.has(element.extensionPoint.metadata.id) && (
-                    <FontAwesomeIcon className="ml-2" icon={faLock} />
-                  )}
-              </Nav.Link>
-            </Nav.Item>
+          {wizard.map((step) => (
+            <WizardNavItem key={step.step} step={step} isLocked={isLocked} />
           ))}
 
           <div className="flex-grow-1" />
@@ -162,47 +123,17 @@ const ElementWizard: React.FunctionComponent<{
             </Button>
           </div>
 
-          {showReloadControls && (
-            <>
-              <label className="AutoRun my-auto mr-1">
-                {isPanel ? "Auto-Render" : "Auto-Run"}
-              </label>
-              <ToggleField name="autoReload" />
-              <Button
-                className="mx-2"
-                disabled={isSubmitting || !isValid}
-                size="sm"
-                variant="info"
-                onClick={run}
-              >
-                {isPanel ? "Render Panel" : "Run Trigger"}
-              </Button>
-            </>
-          )}
-          <ButtonGroup className="ml-2">
-            <Button
-              disabled={isSubmitting || !isValid}
-              type="submit"
-              size="sm"
-              variant="primary"
-            >
-              <FontAwesomeIcon icon={faSave} /> Save
-            </Button>
-            {values.installed && (
-              <Button
-                disabled={isSubmitting || !isValid}
-                size="sm"
-                variant="warning"
-                onClick={reset}
-              >
-                <FontAwesomeIcon icon={faHistory} /> Reset
-              </Button>
-            )}
-            <Button variant="danger" size="sm" onClick={remove}>
-              <FontAwesomeIcon icon={faTrash} /> Remove
-            </Button>
-          </ButtonGroup>
+          <ReloadToolbar
+            element={element}
+            disabled={isSubmitting || !isValid}
+          />
+          <ActionToolbar
+            installed={installed}
+            element={element}
+            disabled={isSubmitting || !isValid}
+          />
         </Nav>
+
         {status && <div className="text-danger">{status}</div>}
         <Tab.Content className="h-100">
           {wizard.map(({ Component, step, extraProps = {} }) => (

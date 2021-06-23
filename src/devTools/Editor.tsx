@@ -30,7 +30,7 @@ import {
   editorSlice,
   FormState,
 } from "@/devTools/editor/editorSlice";
-import { EditablePackage, useCreate } from "@/devTools/editor/useCreate";
+import { EditablePackage, useCreate } from "@/devTools/editor/hooks/useCreate";
 import Sidebar, { useInstallState } from "@/devTools/editor/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
