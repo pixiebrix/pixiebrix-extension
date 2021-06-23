@@ -17,8 +17,8 @@
 
 import { IExtension } from "@/core";
 import { actions, FormState } from "@/devTools/editor/editorSlice";
-import { useDispatch } from "react-redux";
-import { useCallback, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useCallback, useContext, useMemo } from "react";
 import { extensionToFormState } from "@/devTools/editor/extensionPoints/adapter";
 import { reportError } from "@/telemetry/logging";
 import { DevToolsContext } from "@/devTools/context";
@@ -28,6 +28,14 @@ import { uninstallContextMenu } from "@/background/devtools";
 import * as nativeOperations from "@/background/devtools";
 import { optionsSlice } from "@/options/slices";
 import { useModals } from "@/components/ConfirmationModal";
+import { useAsyncState } from "@/hooks/common";
+import axios from "axios";
+import { EditablePackage } from "@/devTools/editor/hooks/useCreate";
+import { makeURL } from "@/hooks/fetch";
+import { getExtensionToken } from "@/auth/token";
+import { RootState } from "@/devTools/store";
+
+const selectEditor = (x: RootState) => x.editor;
 
 export function useReset(
   installed: IExtension[],
@@ -107,4 +115,27 @@ export function useRemove(element: FormState): () => void {
       );
     }
   }, [showConfirmation, values, addToast, port, element, dispatch]);
+}
+
+export function useEditable(): Set<string> {
+  const { knownEditable } = useSelector(selectEditor);
+
+  const [initialEditable] = useAsyncState(async () => {
+    const { data } = await axios.get<EditablePackage[]>(
+      await makeURL("api/bricks/"),
+      {
+        headers: { Authorization: `Token ${await getExtensionToken()}` },
+      }
+    );
+    return new Set(data.map((x) => x.name));
+  }, []);
+
+  return useMemo<Set<string>>(() => {
+    // set union
+    const rv = new Set<string>(initialEditable ?? new Set());
+    for (const x of knownEditable) {
+      rv.add(x);
+    }
+    return rv;
+  }, [initialEditable, knownEditable]);
 }

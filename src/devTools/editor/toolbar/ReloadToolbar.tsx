@@ -25,6 +25,8 @@ import useAsyncEffect from "use-async-effect";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { Button } from "react-bootstrap";
 
+const DEFAULT_RELOAD_MILLIS = 350;
+
 function isPanelElement(element: FormState | null): boolean {
   return ["panel", "actionPanel"].includes(element?.type);
 }
@@ -53,7 +55,7 @@ const ReloadToolbar: React.FunctionComponent<{
   element: FormState;
   disabled: boolean;
   refreshMillis?: number;
-}> = ({ element, refreshMillis = 350, disabled }) => {
+}> = ({ element, refreshMillis = DEFAULT_RELOAD_MILLIS, disabled }) => {
   const { port } = useContext(DevToolsContext);
 
   const run = useCallback(async () => {
@@ -67,8 +69,10 @@ const ReloadToolbar: React.FunctionComponent<{
   }, [element, port, disabled]);
 
   const debouncedRun = useDebouncedCallback(run, refreshMillis, {
-    leading: true,
-    // make sure to run on last change so we have the final state after all the changes
+    // If we could distinguish between types of edits, it might be reasonable to set leading: true. But in
+    // general, the first keypress is going to lead to a state that's not interesting
+    leading: false,
+    // Make sure to run on last change so we have the final state after all the changes
     trailing: true,
   });
 

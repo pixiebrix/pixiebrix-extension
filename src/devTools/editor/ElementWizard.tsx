@@ -43,13 +43,13 @@ const wizardMap = {
   actionPanel: actionPanelWizard,
 };
 
-const LOCKABLE_STEPS = ["Foundation", "Availability", "Location"];
+const LOCKABLE_STEP_NAMES = ["Foundation", "Availability", "Location"];
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
   isLocked: boolean;
   lockableStepNames?: string[];
-}> = ({ step, isLocked, lockableStepNames = LOCKABLE_STEPS }) => {
+}> = ({ step, isLocked, lockableStepNames = LOCKABLE_STEP_NAMES }) => {
   return (
     <Nav.Item>
       <Nav.Link eventKey={step.step}>
