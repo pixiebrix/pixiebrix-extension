@@ -18,7 +18,7 @@
 import Centered from "@/devTools/editor/components/Centered";
 import React from "react";
 
-const NoExtensionSelectedPane = () => {
+const NoExtensionSelectedPane: React.FunctionComponent = () => {
   return (
     <Centered>
       <div className="PaneTitle">No extension selected</div>
