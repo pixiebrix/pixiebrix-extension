@@ -22,24 +22,15 @@ import { isEmpty } from "lodash";
 import { useDebounce } from "use-debounce";
 import useAsyncEffect from "use-async-effect";
 import * as nativeOperations from "@/background/devtools/index";
-import {
-  checkAvailable,
-  uninstallContextMenu,
-} from "@/background/devtools/index";
+import { checkAvailable } from "@/background/devtools";
 import { Button, ButtonGroup, Form, Nav, Tab } from "react-bootstrap";
-import {
-  actions,
-  FormState,
-  TriggerFormState,
-} from "@/devTools/editor/editorSlice";
-import { optionsSlice } from "@/options/slices";
+import { FormState, TriggerFormState } from "@/devTools/editor/editorSlice";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
 import { wizard as triggerWizard } from "./extensionPoints/trigger";
 import { wizard as panelWizard } from "./extensionPoints/panel";
 import { wizard as actionPanelWizard } from "./extensionPoints/actionPanel";
 import { wizard as contextMenuWizard } from "./extensionPoints/contextMenu";
-import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -50,12 +41,8 @@ import {
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { IExtension } from "@/core";
-import {
-  ADAPTERS,
-  extensionToFormState,
-} from "@/devTools/editor/extensionPoints/adapter";
-import { reportError } from "@/telemetry/logging";
-import { useToasts } from "react-toast-notifications";
+import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
+import { useRemove, useReset } from "@/devTools/editor/editorHooks";
 
 const wizardMap = {
   menuItem: menuItemWizard,
@@ -72,9 +59,7 @@ const ElementWizard: React.FunctionComponent<{
   editable: Set<string>;
   toggleChat: (toggle: boolean) => void;
 }> = ({ element, refreshMillis = 250, editable, installed, toggleChat }) => {
-  const dispatch = useDispatch();
   const { port } = useContext(DevToolsContext);
-  const { addToast } = useToasts();
   const wizard = useMemo(() => wizardMap[element.type], [element.type]);
 
   const [step, setStep] = useState(wizard[0].step);
@@ -99,6 +84,9 @@ const ElementWizard: React.FunctionComponent<{
     leading: false,
     trailing: true,
   });
+
+  const remove = useRemove(element);
+  const reset = useReset(installed, element);
 
   const run = useCallback(async () => {
     const { definition: factory } = ADAPTERS.get(debounced.type);
@@ -127,60 +115,6 @@ const ElementWizard: React.FunctionComponent<{
     });
     await nativeOperations.updateDynamicElement(port, factory(debounced));
   }, [debounced, port, showReloadControls]);
-
-  const reset = useCallback(async () => {
-    try {
-      const extension = installed.find((x) => x.id === element.uuid);
-      const state = await extensionToFormState(extension);
-      dispatch(actions.resetInstalled(state));
-    } catch (error) {
-      reportError(error);
-      dispatch(actions.adapterError({ uuid: element.uuid, error }));
-    }
-  }, [dispatch, element.uuid, installed]);
-
-  const remove = useCallback(async () => {
-    console.debug(`pageEditor: remove element ${element.uuid}`);
-    try {
-      if (element.type === "contextMenu") {
-        try {
-          await uninstallContextMenu(port, { extensionId: element.uuid });
-        } catch (error) {
-          // The context menu may not currently be registered if it's not on a page that has a contentScript
-          // with a pattern that matches
-          console.info("Cannot unregister contextMenu", { error });
-        }
-      }
-      try {
-        await nativeOperations.clearDynamicElements(port, {
-          uuid: element.uuid,
-        });
-      } catch (error) {
-        // element might not be on the page anymore
-        console.info("Cannot clear dynamic element from page", { error });
-      }
-      if (values.installed) {
-        dispatch(
-          optionsSlice.actions.removeExtension({
-            extensionPointId: values.extensionPoint.metadata.id,
-            extensionId: values.uuid,
-          })
-        );
-      }
-      dispatch(actions.removeElement(element.uuid));
-    } catch (error) {
-      reportError(error);
-      addToast(
-        `Error removing element: ${
-          error.message?.toString() ?? "Unknown Error"
-        }`,
-        {
-          appearance: "error",
-          autoDismiss: true,
-        }
-      );
-    }
-  }, [values, addToast, port, element, dispatch]);
 
   if (!isEmpty(errors)) {
     console.warn("Form errors", { errors });
