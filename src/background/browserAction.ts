@@ -46,15 +46,17 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
     tabNonces.set(tab.id, nonce);
   } catch (error: unknown) {
     if (isErrorObject(error)) {
-      switch (error.message) {
-        case "Cannot access a chrome:// URL":
-        case "The extensions gallery cannot be scripted.":
-          webextAlert("This is a special Chrome page that can’t be edited");
-          break;
-        case "Could not establish connection. Receiving end does not exist.":
-          webextAlert("PixieBrix might not work on this page. Try again?");
-          break;
-        default:
+      // Example error messages:
+      // Cannot access a chrome:// URL
+      // Cannot access a chrome-extension:// URL of different extension
+      // Cannot access contents of url "chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/". Extension manifest must request permission to access this host.
+      // The extensions gallery cannot be scripted.
+      if (
+        /cannot be scripted|(chrome|about|extension):[/][/]/.test(error.message)
+      ) {
+        webextAlert("This is a special page that can’t be edited");
+      } else {
+        webextAlert("PixieBrix might not be compatible with this page");
       }
     }
 
