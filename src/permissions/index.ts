@@ -204,7 +204,7 @@ export function useExtensionPermissions(
         const result = await permissionsEnabled(extension);
         if (!isMounted()) return;
         setEnabled(result);
-      } catch (ex) {
+      } catch {
         // If there's an error checking permissions, just assume they're OK. The use will
         // need to fix the configuration before we can check permissions.
         setEnabled(true);

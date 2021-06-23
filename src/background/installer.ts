@@ -33,9 +33,7 @@ async function openInstallPage() {
 
 function install({ reason }: Runtime.OnInstalledDetailsType) {
   if (reason === "install") {
-    openInstallPage().catch((reason) => {
-      reportError(reason);
-    });
+    openInstallPage().catch(reportError);
     initTelemetry();
     reportEvent("PixieBrixInstall", {
       version: browser.runtime.getManifest().version,

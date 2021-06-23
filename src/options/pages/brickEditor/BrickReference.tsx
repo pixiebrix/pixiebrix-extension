@@ -114,7 +114,7 @@ const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
                     appearance: "success",
                     autoDismiss: true,
                   });
-                } catch (err) {
+                } catch {
                   addToast("Error copying YAML to clipboard", {
                     appearance: "error",
                     autoDismiss: true,

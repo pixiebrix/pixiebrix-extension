@@ -36,9 +36,6 @@ const _installedExtensionPoints: IExtensionPoint[] = [];
 // reload extension definitions on next navigation
 let _reloadOnNextNavigate = false;
 
-// @ts-ignore: may use in the future to determine which extension points to install
-let _openerTabId: number = undefined;
-
 const WAIT_LOADED_INTERVAL_MS = 25;
 
 async function installScriptOnce(): Promise<void> {
@@ -68,14 +65,14 @@ async function runExtensionPoint(
 
   try {
     installed = await extensionPoint.install();
-  } catch (err) {
-    if (err instanceof PromiseCancelled) {
+  } catch (error) {
+    if (error instanceof PromiseCancelled) {
       console.debug(
         `Skipping ${extensionPoint.id} because user navigated away from the page`
       );
       return;
     } else {
-      throw err;
+      throw error;
     }
   }
 
@@ -195,9 +192,9 @@ async function loadExtensions() {
         // Cleared out _extensionPoints before, so can just push w/o checking if it's already in the array
         _extensionPoints.push(extensionPoint);
       }
-    } catch (err) {
+    } catch (error) {
       console.warn(`Error adding extension point: ${extensionPointId}`, {
-        err,
+        error,
       });
     }
   }
@@ -279,7 +276,6 @@ export async function handleNavigate({
 
   if (openerTabId != null) {
     console.debug(`Setting opener tabId: ${openerTabId}`);
-    _openerTabId = openerTabId;
   }
 
   if (extensionPoints.length) {
@@ -293,9 +289,9 @@ export async function handleNavigate({
       // Don't await each extension point since the extension point may never appear. For example, an
       // extension point that runs on the contact information page on LinkedIn
       const runPromise = runExtensionPoint(extensionPoint, cancel).catch(
-        (reason) => {
+        (error) => {
           console.error(`Error installing/running: ${extensionPoint.id}`, {
-            reason,
+            error,
           });
         }
       );

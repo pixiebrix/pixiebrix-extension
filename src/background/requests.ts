@@ -101,10 +101,10 @@ const backgroundRequest = liftBackground<AxiosRequestConfig, SanitizedResponse>(
   async (config: AxiosRequestConfig) => {
     try {
       return cleanResponse(await axios(config));
-    } catch (reason) {
+    } catch (error) {
       // Axios offers its own serialization method, but it doesn't include the response
-      delete reason.toJSON;
-      throw reason;
+      delete error.toJSON;
+      throw error;
     }
   }
 );
@@ -179,8 +179,8 @@ async function proxyRequest<T>(
         },
       })
     )) as SanitizedResponse<ProxyResponseData>;
-  } catch (err) {
-    throw Error("An error occurred when proxying the service request");
+  } catch {
+    throw new Error("An error occurred when proxying the service request");
   }
 
   const { data: remoteResponse } = proxyResponse;
@@ -216,12 +216,12 @@ const _proxyService = liftBackground(
         return await backgroundRequest(
           await authenticate(serviceConfig, requestConfig)
         );
-      } catch (ex) {
+      } catch (error) {
         console.debug(
           "An error occurred when making a request from the background page",
-          ex
+          error
         );
-        if ([401, 403].includes(ex.response?.status)) {
+        if ([401, 403].includes(error.response?.status)) {
           // try again - have the user login again, or automatically try to get a new token
           const service = await serviceRegistry.lookup(serviceConfig.serviceId);
           if (service.isOAuth2 || service.isToken) {
@@ -233,7 +233,7 @@ const _proxyService = liftBackground(
         }
         // caught outside to add additional context to the exception
         // noinspection ExceptionCaughtLocallyJS
-        throw ex;
+        throw error;
       }
     }
   }
@@ -250,12 +250,9 @@ export async function proxyService<TData>(
       return (await backgroundRequest(
         requestConfig
       )) as SanitizedResponse<TData>;
-    } catch (reason) {
-      if (reason.response) {
-        throw new RemoteServiceError(
-          reason.response.statusText,
-          reason.response
-        );
+    } catch (error) {
+      if (error.response) {
+        throw new RemoteServiceError(error.response.statusText, error.response);
       } else {
         const msg = "No response received; see browser network log for error.";
         console.exception(msg);
@@ -269,8 +266,8 @@ export async function proxyService<TData>(
       serviceConfig,
       requestConfig
     )) as RemoteResponse<TData>;
-  } catch (ex) {
-    throw new ContextError(ex, {
+  } catch (error) {
+    throw new ContextError(error, {
       serviceId: serviceConfig.id,
       authId: serviceConfig.id,
     });

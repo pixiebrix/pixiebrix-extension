@@ -283,8 +283,8 @@ export function getPropByPath(
     if (typeof value === "function") {
       try {
         value = value.apply(previous, args);
-      } catch (exc) {
-        throw new Error(`Error running method ${part}: ${exc}`);
+      } catch (error) {
+        throw new Error(`Error running method ${part}: ${error}`);
       }
     }
   }
@@ -320,11 +320,11 @@ export async function rejectOnCancelled<T>(
   let rv: T;
   try {
     rv = await promise;
-  } catch (err) {
+  } catch (error) {
     if (isCancelled()) {
       throw new PromiseCancelled("Promise was cancelled");
     }
-    throw err;
+    throw error;
   }
   if (isCancelled()) {
     throw new PromiseCancelled("Promise was cancelled");

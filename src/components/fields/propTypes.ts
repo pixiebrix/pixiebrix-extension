@@ -34,6 +34,7 @@ export const fieldPropTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: Use the generic or drop it from FieldProps usage
 export interface FieldProps<TValue> {
   name: string;
   label?: string;

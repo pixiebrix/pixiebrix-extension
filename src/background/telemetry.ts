@@ -70,7 +70,9 @@ export async function _getDNT(): Promise<boolean> {
   if (_dnt != null) {
     return _dnt;
   }
-  _dnt = boolean(await readStorage<boolean | string>(DNT_STORAGE_KEY) ?? process.env.DEBUG);
+  _dnt = boolean(
+    (await readStorage<boolean | string>(DNT_STORAGE_KEY)) ?? process.env.DEBUG
+  );
   return _dnt;
 }
 
@@ -137,8 +139,8 @@ async function userSummary() {
     ).length;
     numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
       .length;
-  } catch (err) {
-    console.warn("Cannot get number of extensions", { err });
+  } catch (error) {
+    console.warn("Cannot get number of extensions", { error });
   }
 
   return {

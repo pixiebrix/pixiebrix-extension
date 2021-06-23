@@ -39,7 +39,7 @@ export class Html extends Renderer {
     },
   });
 
-  async render({ html }: BlockArg) {
+  async render({ html }: BlockArg): Promise<string> {
     if (!this.DOMPurify) {
       this.DOMPurify = createDOMPurify(window);
     }

@@ -57,10 +57,9 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
         webextAlert("This is a special page that can’t be edited");
       } else {
         webextAlert("PixieBrix might not be compatible with this page");
+        reportError(error);
       }
     }
-
-    reportError(error);
   }
 }
 
@@ -99,11 +98,11 @@ async function forwardWhenReady(
   while (true) {
     try {
       return await browser.tabs.sendMessage(tabId, message, { frameId });
-    } catch (err) {
-      if (err?.message?.includes("Could not establish connection")) {
+    } catch (error) {
+      if (error?.message?.includes("Could not establish connection")) {
         await sleep(RETRY_INTERVAL_MILLIS);
       } else {
-        throw err;
+        throw error;
       }
     }
   }
@@ -133,9 +132,7 @@ function backgroundListener(
       case FORWARD_FRAME_NOTIFICATION: {
         const forwardAction = request as ForwardActionFrameNotification;
         return forwardWhenReady(sender.tab.id, forwardAction.payload).catch(
-          (err) => {
-            reportError(err);
-          }
+          reportError
         );
       }
       default: {

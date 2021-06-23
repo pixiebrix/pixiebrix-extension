@@ -145,19 +145,19 @@ const ElementWizard: React.FunctionComponent<{
       if (element.type === "contextMenu") {
         try {
           await uninstallContextMenu(port, { extensionId: element.uuid });
-        } catch (err) {
+        } catch (error) {
           // The context menu may not currently be registered if it's not on a page that has a contentScript
           // with a pattern that matches
-          console.info("Cannot unregister contextMenu", { err });
+          console.info("Cannot unregister contextMenu", { error });
         }
       }
       try {
         await nativeOperations.clearDynamicElements(port, {
           uuid: element.uuid,
         });
-      } catch (err) {
+      } catch (error) {
         // element might not be on the page anymore
-        console.info("Cannot clear dynamic element from page", { err });
+        console.info("Cannot clear dynamic element from page", { error });
       }
       if (values.installed) {
         dispatch(
@@ -168,10 +168,12 @@ const ElementWizard: React.FunctionComponent<{
         );
       }
       dispatch(actions.removeElement(element.uuid));
-    } catch (err) {
-      reportError(err);
+    } catch (error) {
+      reportError(error);
       addToast(
-        `Error removing element: ${err.message?.toString() ?? "Unknown Error"}`,
+        `Error removing element: ${
+          error.message?.toString() ?? "Unknown Error"
+        }`,
         {
           appearance: "error",
           autoDismiss: true,

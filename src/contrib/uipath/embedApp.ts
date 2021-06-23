@@ -112,8 +112,8 @@ export class UiPathAppRenderer extends Renderer {
             blockId: this.id,
           },
         }
-      ).catch((err) => {
-        logger.error(err);
+      ).catch((error) => {
+        logger.error(error);
       });
     }
 

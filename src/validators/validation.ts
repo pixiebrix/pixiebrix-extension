@@ -150,8 +150,8 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
           async (value) => {
             try {
               await serviceRegistry.lookup(value);
-            } catch (ex) {
-              if (ex instanceof DoesNotExistError) {
+            } catch (error) {
+              if (error instanceof DoesNotExistError) {
                 return false;
               }
             }
@@ -164,24 +164,26 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
         // https://github.com/jquense/yup/issues/954
         config: Yup.string()
           .required(`Select a service configuration`)
-          .test("is-config", "Invalid service configuration", async function (
-            value
-          ) {
-            try {
-              await locate(this.parent.id, value);
-            } catch (ex) {
-              if (ex instanceof MissingConfigurationError) {
-                return this.createError({
-                  message: "Configuration no longer available",
-                });
-              } else {
-                console.exception(
-                  `An error occurred validating service: ${this.parent.id}`
-                );
+          .test(
+            "is-config",
+            "Invalid service configuration",
+            async function (value) {
+              try {
+                await locate(this.parent.id, value);
+              } catch (error) {
+                if (error instanceof MissingConfigurationError) {
+                  return this.createError({
+                    message: "Configuration no longer available",
+                  });
+                } else {
+                  console.exception(
+                    `An error occurred validating service: ${this.parent.id}`
+                  );
+                }
               }
+              return true;
             }
-            return true;
-          }),
+          ),
       })
     )
     .test("unique-keys", "Services must have unique keys", function (value) {

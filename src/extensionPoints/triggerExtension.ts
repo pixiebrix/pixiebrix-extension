@@ -127,8 +127,8 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         optionsArgs: extension.optionsArgs,
       });
       extensionLogger.info("Successfully ran trigger");
-    } catch (ex) {
-      extensionLogger.error(ex);
+    } catch (error) {
+      extensionLogger.error(error);
     }
   }
 
@@ -143,10 +143,10 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         });
         try {
           await this.runExtension(readerContext, extension, root);
-        } catch (ex) {
+        } catch (error) {
           // eslint-disable-next-line require-await
-          reportError(ex, extensionLogger.context);
-          return ex;
+          reportError(error, extensionLogger.context);
+          return error;
         }
         reportEvent("TriggerRun", {
           extensionId: extension.id,

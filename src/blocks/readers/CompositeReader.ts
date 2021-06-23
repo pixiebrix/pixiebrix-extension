@@ -36,7 +36,7 @@ class CompositeReader extends Reader {
     };
   }
 
-  async isAvailable() {
+  async isAvailable(): Promise<boolean> {
     const readerArray = Object.values(this._readers);
     // PERFORMANCE: could return quicker if any came back false using Promise.any
     const availability = await Promise.all(

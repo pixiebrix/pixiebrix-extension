@@ -73,7 +73,7 @@ export class AddOrganization extends Effect {
         data: { name, owner_id },
       });
       $.notify(`Added ${name} to Pipedrive`, "success");
-    } catch (e) {
+    } catch {
       $.notify(`Error adding ${name} to Pipedrive`, "error");
     }
   }
@@ -150,7 +150,7 @@ export class AddPerson extends Effect {
         },
       });
       $.notify(`Added ${name} to Pipedrive`, "success");
-    } catch (e) {
+    } catch {
       $.notify(`Error adding ${name} to Pipedrive`, "error");
     }
   }

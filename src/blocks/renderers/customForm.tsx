@@ -118,8 +118,8 @@ export class CustomForm extends Renderer {
                 className: "success",
               },
             });
-          } catch (err) {
-            reportError(err);
+          } catch (error) {
+            reportError(error);
             notifyResult(logger.context.extensionId, {
               message: "Error saving record",
               config: {

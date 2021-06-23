@@ -89,10 +89,10 @@ function backgroundListener(
     );
 
     if (notification) {
-      handlerPromise.catch((reason) => {
+      handlerPromise.catch((error) => {
         console.warn(
           `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
-          reason
+          error
         );
       });
       return;
@@ -105,11 +105,11 @@ function backgroundListener(
         );
         return value;
       })
-      .catch((reason) => {
+      .catch((error) => {
         console.debug(
           `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
         );
-        return toErrorResponse(type, reason);
+        return toErrorResponse(type, error);
       });
   }
 }
@@ -127,12 +127,38 @@ export function getExtensionId(): string {
   }
 }
 
-function externalSendMessage(
+/**
+ * Send a message from an `externally_connectable` web page to an extension.
+ *
+ * This method is not called from the extension, it's called by the PixieBrix webapp which includes this
+ * module as a dependency.
+ *
+ * On Firefox, we mimic externally_connectable's functionality with `liftExternal`
+ *
+ * @see https://developer.chrome.com/docs/extensions/mv3/messaging/#external-webpage
+ */
+function externalSendMessage<TResponse = unknown>(
   extensionId: string | undefined,
   message: unknown,
   options?: Runtime.SendMessageOptionsType
-): Promise<unknown> {
-  return browser.runtime.sendMessage(extensionId, message, options);
+): Promise<TResponse> {
+  if (isExtensionContext()) {
+    throw new Error(
+      "externalSendMessage should not be called from an extension context"
+    );
+  }
+
+  // When accessing from an external site, browser.runtime is undefined because Mozilla's polyfill is only enabled
+  // in extension contexts. Therefore, we we have to use the Chrome API namespace
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage(extensionId, message, options, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
 }
 
 export async function callBackground(
@@ -154,10 +180,10 @@ export async function callBackground(
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
       extensionId,
     });
-    sendMessage(extensionId, message, {}).catch((reason) => {
+    sendMessage(extensionId, message, {}).catch((error) => {
       console.warn(
         `An error occurred processing background notification ${type} (nonce: ${nonce})`,
-        reason
+        error
       );
     });
     return;
@@ -168,12 +194,12 @@ export async function callBackground(
     let response;
     try {
       response = await sendMessage(extensionId, message, {});
-    } catch (err) {
+    } catch (error) {
       console.debug(
         `Error sending background action ${type} (nonce: ${nonce})`,
-        { extensionId, err }
+        { extensionId, error }
       );
-      throw err;
+      throw error;
     }
 
     // console.debug(

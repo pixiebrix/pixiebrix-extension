@@ -27,26 +27,26 @@ definition:
 outputSchema:
   type: object
   properties:
-      firstName:
-        type: string
-      lastName:
-        type: string
-      followersCount:
-        type: number
-      vanityName:
-        type: string
-      vanityUrl:
-        type: string
-        format: uri
-      headline:
-        type: string
-      isInfluencer:
-        type: boolean
-      currentCompanyName:
-        type: string
-      geoLocationName:
-        type: string
-      locationName:
-        type: string
-      schoolName:
-        type: string
+    firstName:
+      type: string
+    lastName:
+      type: string
+    followersCount:
+      type: number
+    vanityName:
+      type: string
+    vanityUrl:
+      type: string
+      format: uri
+    headline:
+      type: string
+    isInfluencer:
+      type: boolean
+    currentCompanyName:
+      type: string
+    geoLocationName:
+      type: string
+    locationName:
+      type: string
+    schoolName:
+      type: string

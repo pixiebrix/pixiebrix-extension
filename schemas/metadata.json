@@ -4,31 +4,31 @@
   "type": "object",
   "title": "PixieBrix object metadata",
   "properties": {
-      "id": {
-        "type": "string",
-        "description": "A unique identifier for the object across the PixieBrix ecosystem",
-        "pattern": "^(@[a-z0-9-~][a-z0-9-._~]*/)?([a-z0-9-~][a-z0-9-._~]*/)?([a-z0-9-~][a-z0-9-._~]*)$"
-      },
-      "version": {
-        "type": "string",
-        "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
-      },
-      "name": {
-        "type": "string",
-        "description": "A user-friendly name for the object"
-      },
-      "description": {
-        "type": "string",
-        "description": "A description of the object, with support for common Markdown"
-      },
-      "author": {
-        "type": "string"
-      },
-      "url": {
-        "type": "string",
-        "description": "A optional URL to find more information about the object",
-        "format": "uri"
-      }
+    "id": {
+      "type": "string",
+      "description": "A unique identifier for the object across the PixieBrix ecosystem",
+      "pattern": "^(@[a-z0-9-~][a-z0-9-._~]*/)?([a-z0-9-~][a-z0-9-._~]*/)?([a-z0-9-~][a-z0-9-._~]*)$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "A user-friendly name for the object"
+    },
+    "description": {
+      "type": "string",
+      "description": "A description of the object, with support for common Markdown"
+    },
+    "author": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "description": "A optional URL to find more information about the object",
+      "format": "uri"
+    }
   },
   "additionalProperties": false,
   "required": ["id", "name"]

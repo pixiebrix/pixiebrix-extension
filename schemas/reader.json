@@ -88,10 +88,7 @@
           "type": "string"
         }
       },
-      "required": [
-        "type",
-        "selector"
-      ]
+      "required": ["type", "selector"]
     },
     "windowReader": {
       "type": "object",
@@ -104,9 +101,7 @@
           "type": "number"
         }
       },
-      "required": [
-        "type"
-      ]
+      "required": ["type"]
     },
     "jqueryReader": {
       "type": "object",
@@ -141,11 +136,7 @@
                   },
                   "type": {
                     "type": "string",
-                    "enum": [
-                      "string",
-                      "boolean",
-                      "number"
-                    ]
+                    "enum": ["string", "boolean", "number"]
                   },
                   "find": {
                     "type": "object",
@@ -159,18 +150,13 @@
           "minProperties": 1
         }
       },
-      "required": [
-        "type",
-        "selectors"
-      ]
+      "required": ["type", "selectors"]
     }
   },
   "properties": {
     "apiVersion": {
       "type": "string",
-      "enum": [
-        "v1"
-      ]
+      "enum": ["v1"]
     },
     "kind": {
       "type": "string",
@@ -210,16 +196,9 @@
           }
         }
       },
-      "required": [
-        "reader"
-      ]
+      "required": ["reader"]
     }
   },
   "additionalProperties": false,
-  "required": [
-    "apiVersion",
-    "kind",
-    "metadata",
-    "definition"
-  ]
+  "required": ["apiVersion", "kind", "metadata", "definition"]
 }

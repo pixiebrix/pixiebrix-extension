@@ -159,8 +159,8 @@ async function updateDeployments() {
       try {
         // Get the current brick definitions, which will have the current permissions
         await refreshRegistries();
-      } catch (err) {
-        reportError(err);
+      } catch (error) {
+        reportError(error);
         await browser.runtime.openOptionsPage();
       }
 
@@ -192,13 +192,13 @@ async function updateDeployments() {
             currentOptions = installDeployment(currentOptions, deployment);
           }
           await saveOptions(currentOptions);
-          queueReactivate().catch((err) => reportError(err));
+          queueReactivate().catch(reportError);
           console.info(
             `Applied automatic updates for ${automatic.length} deployment(s)`
           );
-        } catch (err) {
-          console.warn(err);
-          reportError(err);
+        } catch (error) {
+          console.warn(error);
+          reportError(error);
           automaticError = true;
         }
       }
@@ -216,7 +216,7 @@ async function updateDeployments() {
 
 export function initDeploymentUpdater(): void {
   setInterval(updateDeployments, UPDATE_INTERVAL_MS);
-  updateDeployments().catch((err) => reportError(err));
+  updateDeployments().catch(reportError);
 }
 
 export default initDeploymentUpdater;

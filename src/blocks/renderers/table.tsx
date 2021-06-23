@@ -60,7 +60,7 @@ export class Table extends Renderer {
   async render(
     { columns, ...blockArgs }: BlockArg,
     { ctxt = [] }: BlockOptions
-  ) {
+  ): Promise<string> {
     if (!Array.isArray(ctxt)) {
       throw new BusinessError(
         `Expected data to be an array, actual: ${typeof ctxt}`

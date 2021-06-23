@@ -43,9 +43,9 @@ function useSearchWindow(query: string) {
         const { results } = await searchWindow(port, query);
         if (!isMounted()) return;
         setResults(results as any);
-      } catch (err) {
+      } catch (error_) {
         if (!isMounted()) return;
-        setError(err);
+        setError(error_);
       }
     },
     [query, tabId]

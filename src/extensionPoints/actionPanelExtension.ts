@@ -127,16 +127,16 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
       // noinspection ExceptionCaughtLocallyJS
       throw new BusinessError("No renderer attached to body");
-    } catch (err) {
-      if (err instanceof HeadlessModeError) {
+    } catch (error) {
+      if (error instanceof HeadlessModeError) {
         upsertPanel(
           { extensionId: extension.id, extensionPointId: this.id },
           heading,
           {
-            blockId: err.blockId,
+            blockId: error.blockId,
             key: uuidv4(),
-            ctxt: err.ctxt,
-            args: err.args,
+            ctxt: error.ctxt,
+            args: error.args,
           }
         );
       } else {
@@ -145,11 +145,11 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
           heading,
           {
             key: uuidv4(),
-            error: getErrorMessage(err as Error),
+            error: getErrorMessage(error as Error),
           }
         );
-        reportError(err);
-        throw err;
+        reportError(error);
+        throw error;
       }
     }
   }
@@ -195,14 +195,14 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
       try {
         await this.runExtension(readerContext, extension);
-      } catch (ex) {
-        errors.push(ex);
+      } catch (error) {
+        errors.push(error);
         this.logger
           .childLogger({
             deploymentId: extension._deployment?.id,
             extensionId: extension.id,
           })
-          .error(ex);
+          .error(error);
       }
     }
 

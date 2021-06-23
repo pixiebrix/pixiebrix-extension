@@ -60,7 +60,7 @@ export function engineRenderer(
 }
 
 // first part of the path can be global context with a @
-const pathRegex = /^(@?[a-zA-Z0-9_\-]+\??)(\.[a-zA-Z0-9_\-]+\??)*$/;
+const pathRegex = /^(@?[a-zA-Z0-9_-]+\??)(\.[a-zA-Z0-9_-]+\??)*$/;
 
 /**
  * Return true if maybePath refers to a property in ctxt.
@@ -157,4 +157,5 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
 }
 
 export const isChrome =
-  typeof navigator === "object" && navigator.userAgent.toLowerCase().includes("chrome");
+  typeof navigator === "object" &&
+  navigator.userAgent.toLowerCase().includes("chrome");

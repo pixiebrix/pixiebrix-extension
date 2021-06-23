@@ -15,14 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useToasts } from "react-toast-notifications";
 import { optionsSlice, servicesSlice } from "../slices";
 import { connect } from "react-redux";
 import { PageTitle } from "@/layout/Page";
-import { Button, Card, Col, Form, Row } from "react-bootstrap";
+import { Button, Card, Col, Form, Row, ListGroup } from "react-bootstrap";
 import { DEFAULT_SERVICE_URL, useConfiguredHost } from "@/services/baseService";
-import { isEmpty } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import { faCogs, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { clearExtensionAuth } from "@/auth/token";
 import { browser } from "webextension-polyfill-ts";
@@ -36,6 +36,8 @@ import GridLoader from "react-spinners/GridLoader";
 import { clearLogs } from "@/background/logging";
 import { reportError } from "@/telemetry/logging";
 import { useTitle } from "@/hooks/title";
+import { getAdditionalPermissions } from "webext-additional-permissions";
+import Permissions = chrome.permissions.Permissions;
 
 const { resetOptions } = optionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
@@ -60,6 +62,62 @@ function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
 
   return [enabled, toggle];
 }
+
+const PermissionsRow: React.FunctionComponent = () => {
+  const { addToast } = useToasts();
+  const [permissions, setPermissions] = useState<Permissions>();
+
+  const refresh = useCallback(async () => {
+    setPermissions(await getAdditionalPermissions());
+  }, [setPermissions]);
+
+  const remove = useCallback(
+    async (origin: string) => {
+      await browser.permissions.remove({ origins: [origin] });
+      addToast(`Removed permission for ${origin}`, {
+        appearance: "success",
+        autoDismiss: true,
+      });
+      await refresh();
+    },
+    [refresh, addToast]
+  );
+
+  const origins = useMemo(() => {
+    return sortBy(permissions?.origins ?? []);
+  }, [permissions]);
+
+  useAsyncEffect(async () => refresh(), []);
+
+  return (
+    <Row className="mb-4">
+      <Col lg={6} md={8}>
+        <Card>
+          <Card.Header>Additional Permissions</Card.Header>
+          <ListGroup variant="flush">
+            {origins.map((origin) => (
+              <ListGroup.Item key={origin} className="d-flex">
+                <div className="flex-grow-1 align-self-center">{origin}</div>
+                <div className="align-self-center">
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => remove(origin)}
+                  >
+                    Revoke
+                  </Button>{" "}
+                </div>
+              </ListGroup.Item>
+            ))}
+            {origins.length === 0 && (
+              <ListGroup.Item>No active permissions</ListGroup.Item>
+            )}
+          </ListGroup>
+        </Card>
+      </Col>
+    </Row>
+  );
+};
 
 const LoggingRow: React.FunctionComponent = () => {
   const [config, setConfig] = useLoggingConfig();
@@ -113,11 +171,11 @@ const LoggingRow: React.FunctionComponent = () => {
                     appearance: "success",
                     autoDismiss: true,
                   });
-                } catch (err) {
-                  reportError(err);
+                } catch (error) {
+                  reportError(error);
                   addToast(
                     `Error clearing local logs: ${
-                      err.message?.toString() ?? "Unknown error"
+                      error.message?.toString() ?? "Unknown error"
                     }`,
                     {
                       appearance: "error",
@@ -254,8 +312,7 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
 
       <LoggingRow />
 
-      {/* Permission API just lists what's in the manifest. Not what's currently granted */}
-      {/*<PermissionsRow/>*/}
+      <PermissionsRow />
 
       <Row className="mb-4">
         <Col lg={6} md={8}>
@@ -276,10 +333,10 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
                       appearance: "success",
                       autoDismiss: true,
                     });
-                  } catch (err) {
+                  } catch (error) {
                     addToast(
                       `Error resetting options and service configurations: ${
-                        err.message?.toString() ?? "Unknown error"
+                        error.message?.toString() ?? "Unknown error"
                       }`,
                       {
                         appearance: "error",

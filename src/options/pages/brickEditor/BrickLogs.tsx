@@ -180,7 +180,7 @@ const BrickLogs: React.FunctionComponent<OwnProps> = ({
                     autoDismiss: true,
                   });
                   await refresh();
-                } catch (ex) {
+                } catch {
                   addToast("Error clearing log entries for brick", {
                     appearance: "error",
                     autoDismiss: true,

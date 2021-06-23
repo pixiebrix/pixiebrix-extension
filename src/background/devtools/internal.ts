@@ -85,10 +85,10 @@ function backgroundMessageListener(
     let responded = false;
 
     if (notification) {
-      handlerPromise.catch((reason) => {
+      handlerPromise.catch((error) => {
         console.warn(
-          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}): ${reason}`,
-          reason
+          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}): ${error}`,
+          error
         );
       });
       return;
@@ -105,12 +105,12 @@ function backgroundMessageListener(
         }
         responded = true;
       },
-      (reason) => {
+      (error) => {
         if (!responded) {
           port.postMessage({
             type: `${type}_REJECTED`,
             meta: { nonce: meta?.nonce },
-            payload: toErrorResponse(type, reason),
+            payload: toErrorResponse(type, error),
           });
         }
         responded = true;
@@ -125,7 +125,7 @@ function backgroundMessageListener(
             meta: { nonce: meta?.nonce },
             payload: toErrorResponse(type, new Error("Port disconnected")),
           });
-        } catch (err) {
+        } catch {
           console.debug(
             `Dropping message ${type}_REJECTED because port is disconnected`
           );
@@ -191,11 +191,11 @@ async function resetTab(tabId: number): Promise<void> {
       { tabId, frameId: TOP_LEVEL_FRAME_ID },
       {}
     );
-  } catch (err) {
+  } catch (error) {
     console.warn(`Error clearing dynamic elements for tab: %d`, tabId, {
-      err,
+      error,
     });
-    reportError(err);
+    reportError(error);
   }
   console.info(`Removed dynamic elements for tab: %d`, tabId);
 
@@ -220,8 +220,8 @@ function deleteStaleConnections(port: Runtime.Port) {
         for (const [, reject] of listeners) {
           try {
             reject(new Error(`Cleaning up stale connection`));
-          } catch (err) {
-            reportError(err);
+          } catch (error) {
+            reportError(error);
           }
         }
       }
@@ -271,7 +271,7 @@ export function registerPort(tabId: TabId, port: Runtime.Port): void {
 /**
  * Listener to inject contentScript on tabs that user has granted temporary access to and that the devtools
  * are open. If the user has granted permanent access, the content script will be injected based on the
- * dynamic content script permissions registerPolyfill
+ * dynamic content script permissions via `webext-dynamic-content-scripts`
  */
 async function injectTemporaryAccess({
   tabId,

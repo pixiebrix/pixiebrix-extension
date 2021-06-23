@@ -420,10 +420,10 @@ export async function reducePipeline(
           currentArgs = output as any;
         }
       }
-    } catch (ex) {
-      if (ex instanceof HeadlessModeError) {
+    } catch (error) {
+      if (error instanceof HeadlessModeError) {
         // An "expected" error, let the caller deal with it
-        throw ex;
+        throw error;
       }
 
       if (stage.onError?.alert) {
@@ -434,20 +434,18 @@ export async function reducePipeline(
               data: {
                 id: stage.id,
                 args: currentArgs,
-                error: serializeError(ex),
+                error: serializeError(error),
               },
-            }).catch((err) => {
-              reportError(err);
-            });
-          } catch (err) {
-            reportError(err);
+            }).catch(reportError);
+          } catch (error_) {
+            reportError(error_);
           }
         } else {
           console.warn("Can only send alert from deployment context");
         }
       }
       throw new ContextError(
-        ex,
+        error,
         stageContext,
         `An error occurred running pipeline stage #${index + 1}: ${stage.id}`
       );

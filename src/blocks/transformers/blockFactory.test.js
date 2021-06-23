@@ -41,7 +41,7 @@ test("can read trello reader", async () => {
 test("reject invalid fixture fixture", async () => {
   try {
     await fromJS({ foo: "bar" });
-  } catch (ex) {
-    expect(ex).toBeInstanceOf(ValidationError);
+  } catch (error) {
+    expect(error).toBeInstanceOf(ValidationError);
   }
 });

@@ -23,14 +23,14 @@ import useAsyncEffect from "use-async-effect";
 import AuthContext from "@/auth/AuthContext";
 
 const environment = process.env.ENVIRONMENT;
-const version = process.env.NPM_PACKAGE_VERSION;
-const source_version = process.env.SOURCE_VERSION;
+const versionName = process.env.VERSION_NAME;
 
-const classMap: { [key: string]: string } = {
-  "": "development",
-  development: "development",
-  staging: "staging",
-};
+const classMap = new Map([
+  [null, "development"],
+  ["", "development"],
+  ["development", "development"],
+  ["staging", "staging"],
+]);
 
 function useSyncedHostname() {
   const { extension } = useContext(AuthContext);
@@ -61,12 +61,11 @@ const Banner: React.FunctionComponent = () => {
   return (
     <div
       className={cx("environment-banner", "w-100", {
-        [classMap[environment] ?? "unknown"]: true,
+        [classMap.get(environment) ?? "unknown"]: true,
       })}
     >
       You are using {extension ? "extension" : "server"}{" "}
-      {environment ?? "unknown"} build {version} (
-      {source_version.substring(0, 8).trim()}) {extension && syncText}
+      {environment ?? "unknown"} build {versionName} {extension && syncText}
     </div>
   );
 };

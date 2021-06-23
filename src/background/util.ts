@@ -41,11 +41,11 @@ export async function testTabPermissions(target: Target): Promise<boolean> {
       runAt: "document_start",
     });
     return true;
-  } catch (reason) {
-    if ((reason.message as string)?.includes("Cannot access contents")) {
+  } catch (error) {
+    if ((error.message as string)?.includes("Cannot access contents")) {
       // no permissions
     } else {
-      console.warn("testTabPermissions failed", { reason });
+      console.warn("testTabPermissions failed", { reason: error });
     }
   }
   return false;
