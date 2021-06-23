@@ -56,7 +56,11 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
       ) {
         webextAlert("This is a special page that can’t be edited");
       } else {
+        // Firefox does not catch injection errors so we don't get a specific error message
+        // https://github.com/pixiebrix/pixiebrix-extension/issues/579#issuecomment-866451242
         webextAlert("PixieBrix might not be compatible with this page");
+        
+        // Only report unknown-reason errors
         reportError(error);
       }
     }
