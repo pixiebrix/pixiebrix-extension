@@ -135,6 +135,12 @@ export interface ActionPanelFormState extends BaseFormState {
   };
 }
 
+export type PanelTraits = {
+  style: {
+    mode: "default" | "inherit";
+  };
+};
+
 export interface PanelFormState extends BaseFormState {
   type: "panel";
 
@@ -151,11 +157,7 @@ export interface PanelFormState extends BaseFormState {
         selectors: string;
       };
     };
-    traits: {
-      style: {
-        mode: "default" | "inherit";
-      };
-    };
+    traits: PanelTraits;
   };
 
   extension: {

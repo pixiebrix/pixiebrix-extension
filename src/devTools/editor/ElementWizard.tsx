@@ -35,7 +35,7 @@ import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 
-const wizardMap = {
+const WIZARD_MAP = {
   menuItem: menuItemWizard,
   trigger: triggerWizard,
   panel: panelWizard,
@@ -70,7 +70,7 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable, installed, toggleChat }) => {
   const { port } = useContext(DevToolsContext);
 
-  const wizard = useMemo(() => wizardMap[element.type], [element.type]);
+  const wizard = useMemo(() => WIZARD_MAP[element.type], [element.type]);
   const [step, setStep] = useState(wizard[0].step);
 
   const isLocked =

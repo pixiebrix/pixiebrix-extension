@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,9 +18,9 @@
 import React from "react";
 import { FieldProps } from "@/components/fields/propTypes";
 import { useField } from "formik";
-import Form from "react-bootstrap/Form";
+import { Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import SelectorSelectorField from "./SelectorSelectorField";
 import { IRenderContext } from "@/components/fields/blockOptions";
 import { Schema } from "@/core";
 

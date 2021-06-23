@@ -20,7 +20,7 @@ import { Button, Card, Form, ListGroup, Tab } from "react-bootstrap";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { RendererContext } from "@/components/fields/blockOptions";
-import devtoolFields from "@/devTools/editor/Fields";
+import devtoolFields from "@/devTools/editor/fields/Fields";
 import { zip } from "lodash";
 import "./EffectTab.scss";
 import { IBlock } from "@/core";

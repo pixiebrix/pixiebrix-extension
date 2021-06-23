@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,22 +23,19 @@ import React, {
   useState,
 } from "react";
 import { useField } from "formik";
-import { OptionsType, components } from "react-select";
-import { uniqBy, compact, sortBy, isEmpty } from "lodash";
+import { components, OptionsType } from "react-select";
+import { compact, isEmpty, sortBy, uniqBy } from "lodash";
 import Creatable from "react-select/creatable";
-
 import { Badge, Button } from "react-bootstrap";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { selectElement } from "@/background/devtools/index";
+import * as nativeOperations from "@/background/devtools";
+import { selectElement } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { SelectMode } from "@/nativeEditor/selector";
 import { ElementInfo } from "@/nativeEditor/frameworks";
-import * as nativeOperations from "@/background/devtools/index";
 import { Framework } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
-
-// eslint is complaining that it can't parse the Option file
 import { OptionProps } from "react-select/src/components/Option";
 import { useToasts } from "react-toast-notifications";
 
@@ -181,6 +178,8 @@ export const SelectorSelectorControl: React.FunctionComponent<
       setSelecting(false);
     }
   }, [
+    port,
+    sort,
     framework,
     addToast,
     setSelecting,
@@ -243,13 +242,10 @@ const SelectorSelectorField: React.FunctionComponent<
   CommonProps & { name?: string }
 > = ({ name, ...props }) => {
   const [field, , helpers] = useField(name);
-  const setValue = useCallback((value: string) => helpers.setValue(value), [
-    helpers.setValue,
-  ]);
   return (
     <SelectorSelectorControl
       value={field.value}
-      onSelect={setValue}
+      onSelect={helpers.setValue}
       {...props}
     />
   );

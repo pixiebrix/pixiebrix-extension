@@ -18,7 +18,7 @@
 import React, { useCallback, useContext, useMemo } from "react";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import { FastField, FieldInputProps, useFormikContext } from "formik";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { openTab } from "@/background/executor";
 import { getTabInfo } from "@/background/devtools";

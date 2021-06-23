@@ -29,7 +29,7 @@ import { useEditable } from "@/devTools/editor/hooks/editorHooks";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
-const CHANGE_DETECT_DELAY_MILLIS = 50;
+const CHANGE_DETECT_DELAY_MILLIS = 100;
 const REDUX_SYNC_WAIT_MILLIS = 500;
 
 const { updateElement } = editorSlice.actions;

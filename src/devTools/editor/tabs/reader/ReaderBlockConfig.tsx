@@ -32,7 +32,7 @@ import { IReader } from "@/core";
 import { runReaderBlock } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
-import { SelectorSelectorControl } from "@/devTools/editor/SelectorSelectorField";
+import { SelectorSelectorControl } from "@/devTools/editor/fields/SelectorSelectorField";
 import { faCode, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import copy from "copy-to-clipboard";
@@ -228,9 +228,11 @@ const ReaderBlockConfig: React.FunctionComponent<{
   const { values } = useFormikContext<FormState>();
 
   const [readerBlock] = useAsyncState(async () => {
-    // readerIndex is a number
-    // eslint-disable-next-line security/detect-object-injection
+    // eslint-disable-next-line security/detect-object-injection -- readerIndex is a number
     const reader = values.readers[readerIndex];
+
+    // OK to return the promise directly
+    // noinspection ES6MissingAwait
     return blockRegistry.lookup(reader.metadata.id) as Promise<IReader>;
   }, [readerIndex, values.readers]);
 

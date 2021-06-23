@@ -18,7 +18,7 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import { FormState } from "@/devTools/editor/editorSlice";
 
 const FoundationTab: React.FunctionComponent<{
@@ -36,7 +36,7 @@ const FoundationTab: React.FunctionComponent<{
   );
 
   const insertSnippet = useCallback(
-    (snippet) => {
+    (snippet: string) => {
       const { current } = templateInput;
       const pos = current.selectionStart;
       current.setRangeText(snippet, pos, pos);

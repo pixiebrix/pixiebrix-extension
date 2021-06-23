@@ -1,5 +1,5 @@
 import { ElementType, FormState } from "@/devTools/editor/editorSlice";
-import { IExtension } from "@/core";
+import { IExtension, Metadata } from "@/core";
 import { find as findBrick } from "@/registry/localRegistry";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { DynamicDefinition } from "@/nativeEditor";
@@ -8,6 +8,18 @@ import * as triggerExtension from "@/devTools/editor/extensionPoints/trigger";
 import * as panelExtension from "@/devTools/editor/extensionPoints/panel";
 import * as contextExtension from "@/devTools/editor/extensionPoints/contextMenu";
 import * as actionPanelExtension from "@/devTools/editor/extensionPoints/actionPanel";
+import * as nativeOperations from "@/background/devtools";
+import { FrameworkMeta } from "@/messaging/constants";
+import * as actionPanel from "@/devTools/editor/extensionPoints/actionPanel";
+import { Runtime } from "webextension-polyfill-ts";
+import {
+  faBars,
+  faBolt,
+  faColumns,
+  faMousePointer,
+  faWindowMaximize,
+} from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 interface Config<TFormState extends FormState = FormState> {
   definition: (element: TFormState) => DynamicDefinition;
@@ -40,7 +52,7 @@ export const ADAPTERS = new Map<ElementType, Config>(
       definition: panelExtension.makePanelConfig,
       extensionPoint: panelExtension.makePanelExtensionPoint,
       extension: panelExtension.makePanelExtension,
-      formState: undefined,
+      formState: panelExtension.makePanelFormState,
     },
     contextMenu: {
       definition: contextExtension.makeContextMenuConfig,
@@ -51,6 +63,96 @@ export const ADAPTERS = new Map<ElementType, Config>(
   }) as [ElementType, Config][]
 );
 
+export interface ElementConfig<
+  TResult = unknown,
+  TState extends FormState = FormState
+> {
+  elementType: ElementType;
+  preview?: boolean;
+  label: string;
+  icon: IconProp;
+  beta?: boolean;
+  flag?: string;
+  insert: (port: Runtime.Port) => Promise<TResult>;
+  makeState: (
+    url: string,
+    metadata: Metadata,
+    element: TResult,
+    frameworks: FrameworkMeta[]
+  ) => TState;
+  makeConfig: (state: TState) => DynamicDefinition;
+  makeFromExtensionPoint?: (
+    url: string,
+    config: ExtensionPointConfig
+  ) => Promise<TState>;
+}
+
+export const ICON_MAP = new Map([
+  ["menuItem", faMousePointer],
+  ["panel", faWindowMaximize],
+  ["actionPanel", faColumns],
+  ["trigger", faBolt],
+  ["contextMenu", faBars],
+]);
+
+export const ELEMENT_DEFINITIONS: Record<string, ElementConfig> = {
+  button: {
+    elementType: "menuItem",
+    label: "Button",
+    icon: faMousePointer,
+    insert: nativeOperations.insertButton,
+    makeState: menuExtension.makeActionState,
+    makeConfig: menuExtension.makeActionConfig,
+  },
+  contextMenu: {
+    elementType: "contextMenu",
+    label: "Context Menu",
+    insert: undefined,
+    icon: faBars,
+    makeState: (
+      url: string,
+      metadata: Metadata,
+      element: unknown,
+      frameworks: FrameworkMeta[]
+    ) => contextExtension.makeContextMenuState(url, metadata, frameworks),
+    makeConfig: contextExtension.makeContextMenuConfig,
+  },
+  panel: {
+    elementType: "panel",
+    label: "Panel",
+    icon: faWindowMaximize,
+    insert: nativeOperations.insertPanel,
+    makeState: panelExtension.makePanelState,
+    makeConfig: panelExtension.makePanelConfig,
+    preview: true,
+    makeFromExtensionPoint: panelExtension.makePanelExtensionFormState,
+  },
+  actionPanel: {
+    elementType: "actionPanel",
+    label: "Sidebar",
+    insert: undefined,
+    icon: faColumns,
+    makeState: actionPanel.makeActionPanelState,
+    makeConfig: actionPanel.makeActionPanelConfig,
+    preview: true,
+    makeFromExtensionPoint: actionPanel.makeActionPanelExtensionFormState,
+  },
+  trigger: {
+    elementType: "trigger",
+    label: "Trigger",
+    insert: undefined,
+    preview: true,
+    icon: faBolt,
+    makeState: (
+      url: string,
+      metadata: Metadata,
+      element: unknown,
+      frameworks: FrameworkMeta[]
+    ) => triggerExtension.makeTriggerState(url, metadata, frameworks),
+    makeConfig: triggerExtension.makeTriggerConfig,
+  },
+};
+
 export async function getType(extension: IExtension): Promise<ElementType> {
   const brick = await findBrick(extension.extensionPointId);
   if (!brick) {
@@ -60,7 +162,6 @@ export async function getType(extension: IExtension): Promise<ElementType> {
     throw new Error(`Cannot find extension point`);
   }
   const extensionPoint = (brick.config as unknown) as ExtensionPointConfig;
-
   return extensionPoint.definition.type;
 }
 
