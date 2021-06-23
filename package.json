@@ -106,6 +106,7 @@
     "use-debounce": "^6.0.1",
     "use-immer": "^0.5.2",
     "uuid": "^8.3.2",
+    "webext-additional-permissions": "^2.0.1",
     "webext-detect-page": "^2.0.5",
     "webext-dynamic-content-scripts": "^7.2.0-0",
     "webext-patterns": "^1.1.0",
