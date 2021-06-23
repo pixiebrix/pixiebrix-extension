@@ -56,8 +56,6 @@ const EditorPane: React.FunctionComponent<{
   // key to force reload of component when user selects a different element from the sidebar
   const key = `${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`;
 
-  console.debug("Editor key", { key });
-
   return (
     <ErrorBoundary key={key}>
       <Formik key={key} initialValues={selectedElement} onSubmit={create}>
