@@ -62,6 +62,8 @@
     ],
 
     // Soft-enable some rules
+    "@typescript-eslint/ban-types": "warn",
+    "@typescript-eslint/no-explicit-any": "warn",
     "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
     "unicorn/no-useless-undefined": "warn", // Buggy with React
     "unicorn/consistent-function-scoping": "warn", // Complains about some of the lifted functions
@@ -69,10 +71,8 @@
     "unicorn/prefer-switch": "warn",
 
     // Disable recommended rules
-    "react/prop-types": "off",
     "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/ban-types": "off",
-    "@typescript-eslint/no-explicit-any": "off",
+    "react/prop-types": "off",
     "unicorn/no-null": "off",
     "unicorn/filename-case": "off",
     "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
