@@ -53,7 +53,7 @@ export class DetectElement extends Transformer {
   };
 
   async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
-    const $result = $(document).find(selector);
+    const $result = $(selector);
     return {
       count: $result.length,
       exists: $result.length > 0,

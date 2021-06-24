@@ -31,7 +31,7 @@ interface Profile {
   scope: string | null;
 }
 
-const SCOPE_REGEX = /^@[a-z0-9-~][a-z0-9-._~]*$/;
+const SCOPE_REGEX = /^@[\da-z~-][\d._a-z~-]*$/;
 
 interface FieldProps {
   placeholder?: string;

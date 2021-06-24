@@ -36,7 +36,7 @@ export interface AuthData extends UserData {
 }
 
 export function readAuthFromWebsite(): AuthData {
-  const container = document.getElementById("container");
+  const container = document.querySelector<HTMLElement>("#container");
   const {
     token,
     email,

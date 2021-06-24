@@ -27,7 +27,7 @@ import { getBaseURL } from "@/services/baseService";
 import { boolean } from "@/utils";
 import { ExtensionOptions, loadOptions } from "@/options/loader";
 
-const EVENT_BUFFER_DEBOUNCE_MS = 2_000;
+const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
 
 interface UserEvent {

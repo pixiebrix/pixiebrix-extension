@@ -75,9 +75,9 @@ export class ElementEvent extends Effect {
     { selector, event }: BlockArg,
     { logger }: BlockOptions
   ): Promise<void> {
-    const $element = $(document).find(selector);
+    const $element = $(selector);
 
-    if (!$element.length) {
+    if ($element.length === 0) {
       logger.debug(`Element not found for selector: ${selector}`);
     } else if ($element.length > 1) {
       logger.debug(`Multiple elements found for selector: ${selector}`);

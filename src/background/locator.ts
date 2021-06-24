@@ -35,14 +35,12 @@ export const refresh: (options?: {
   remote: boolean;
 }) => Promise<unknown> = liftBackground(
   "REFRESH_SERVICES",
-  async (
-    options: { local: boolean; remote: boolean } = { local: true, remote: true }
-  ) => {
-    if (options.remote && options.local) {
+  async ({ local = true, remote = true }) => {
+    if (remote && local) {
       await locator.refresh();
-    } else if (options.remote) {
+    } else if (remote) {
       await locator.refreshRemote();
-    } else if (options.local) {
+    } else if (local) {
       await locator.refreshLocal();
     }
   },

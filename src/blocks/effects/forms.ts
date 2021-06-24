@@ -81,7 +81,7 @@ export class SetInputValue extends Effect {
 
   async effect({ inputs }: BlockArg, { logger }: BlockOptions): Promise<void> {
     for (const { selector, value } of inputs) {
-      const $input = $(document).find(selector);
+      const $input = $(selector);
       if ($input.length === 0) {
         logger.warn(`Could not find input for selector: ${selector}`);
       } else {
@@ -133,7 +133,7 @@ export class FormFill extends Effect {
     }: BlockArg,
     { logger }: BlockOptions
   ): Promise<void> {
-    const $form = $(document).find(formSelector);
+    const $form = $(formSelector);
 
     if ($form.length === 0) {
       throw new BusinessError(`Form not found for selector: ${formSelector}`);

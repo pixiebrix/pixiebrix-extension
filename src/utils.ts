@@ -56,7 +56,7 @@ export function getAllPropertyNames(obj: object): string[] {
     }
     current = Object.getPrototypeOf(current);
   }
-  return Array.from(props.values());
+  return [...props.values()];
 }
 
 export async function waitAnimationFrame(): Promise<void> {
@@ -104,7 +104,7 @@ export async function awaitValue<T>(
     predicate?: (value: T) => boolean;
   }
 ): Promise<T> {
-  const start = new Date().getTime();
+  const start = Date.now();
   let value: T;
   do {
     value = valueFactory();
@@ -112,7 +112,7 @@ export async function awaitValue<T>(
       return value;
     }
     await sleep(retryMillis);
-  } while (new Date().getTime() - start < waitMillis);
+  } while (Date.now() - start < waitMillis);
 
   throw new TimeoutError(`Value not found after ${waitMillis} milliseconds`);
 }
@@ -260,8 +260,8 @@ export function getPropByPath(
       coalesce = true;
     }
 
-    if (part.match(/^\d+$/) && Array.isArray(value)) {
-      part = parseInt(part, 0);
+    if (/^\d+$/.test(part) && Array.isArray(value)) {
+      part = Number.parseInt(part, 0);
       numeric = true;
     }
 

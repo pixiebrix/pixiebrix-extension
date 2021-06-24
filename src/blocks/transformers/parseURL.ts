@@ -76,11 +76,11 @@ export class UrlParser extends Transformer {
     }
 
     const searchParams: Record<string, string> = {};
-    parsed.searchParams.forEach((value, key) => {
+    for (const [key, value] of parsed.searchParams.entries()) {
       // fine because value will always be a string
       // eslint-disable-next-line security/detect-object-injection
       searchParams[key] = value;
-    });
+    }
 
     return {
       ...pick(parsed, URL_PROPERTIES),

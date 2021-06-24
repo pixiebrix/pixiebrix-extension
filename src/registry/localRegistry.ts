@@ -25,7 +25,7 @@ const VERSION = 1;
 
 export const LOCAL_SCOPE = "@local";
 
-export const PACKAGE_NAME_REGEX = /^((?<scope>@[a-z0-9-~][a-z0-9-._~]*)\/)?((?<collection>[a-z0-9-~][a-z0-9-._~]*)\/)?(?<name>[a-z0-9-~][a-z0-9-._~]*)$/;
+export const PACKAGE_NAME_REGEX = /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
 
 export interface Version {
   major: number;

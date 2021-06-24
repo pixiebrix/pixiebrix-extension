@@ -43,7 +43,7 @@ declare global {
   }
 }
 
-let selectedElement: HTMLElement = undefined;
+let selectedElement: HTMLElement;
 
 window.setSelectedElement = function (el: HTMLElement) {
   // do something with the selected element
@@ -108,9 +108,7 @@ export const searchWindow: (
 export const runReaderBlock = liftContentScript(
   "RUN_READER_BLOCK",
   async ({ id, rootSelector }: { id: string; rootSelector?: string }) => {
-    const root = rootSelector
-      ? $(document).find(rootSelector).get(0)
-      : document;
+    const root = rootSelector ? $(rootSelector).get(0) : document;
 
     if (id === "@pixiebrix/context-menu-data") {
       // HACK: special handling for context menu built-in
@@ -118,6 +116,7 @@ export const runReaderBlock = liftContentScript(
         return {
           // TODO: extract the media type
           mediaType: null,
+          // eslint-disable-next-line unicorn/prefer-dom-node-text-content -- TODO: Review if necessary
           linkText: root.tagName === "A" ? root.innerText : null,
           linkUrl: root.tagName === "A" ? root.getAttribute("href") : null,
           srcUrl: root.getAttribute("src"),
@@ -148,9 +147,7 @@ export const runReader = liftContentScript(
     console.debug("runReader", { config, rootSelector });
 
     const root =
-      (rootSelector?.trim() ?? "") !== ""
-        ? $(document).find(rootSelector).get(0)
-        : document;
+      (rootSelector?.trim() ?? "") !== "" ? $(rootSelector).get(0) : document;
 
     return makeRead(config)(root);
   }

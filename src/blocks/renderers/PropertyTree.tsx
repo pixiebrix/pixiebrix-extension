@@ -19,16 +19,16 @@ import { TreeTable } from "primereact/treetable";
 import { Column } from "primereact/column";
 import React from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
 const theme = require("!!raw-loader!primereact/resources/themes/saga-blue/theme.css?esModule=false")
   .default;
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
 const primereact = require("!!raw-loader!primereact/resources/primereact.min.css?esModule=false")
   .default;
 
 // FIXME: figure out how to load the fonts, since the font URL in the file doesn't work with Chrome extensions
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
 const primeicons = require("!!raw-loader!primeicons/primeicons.css?esModule=false")
   .default;
 

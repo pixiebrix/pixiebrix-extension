@@ -52,7 +52,7 @@ export class RegexTransformer extends Transformer {
     regex,
     input,
   }: BlockArg): Promise<Record<string, string> | Record<string, string>[]> {
-    const compiled = RegExp(regex);
+    const compiled = new RegExp(regex);
 
     const extract = (x: string | null) => {
       if (x == null) {

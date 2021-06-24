@@ -39,7 +39,7 @@ export async function readRawConfigurations(): Promise<
   // Not really sure why the next level down is escaped JSON?
   const base = JSON.parse(rawConfigs as string);
   const configured = JSON.parse(base.configured);
-  return Array.from(Object.values(configured)) as RawServiceConfiguration[];
+  return Object.values(configured);
 }
 
 export default registry;

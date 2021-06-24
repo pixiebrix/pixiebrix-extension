@@ -113,7 +113,7 @@ export function readerFactory(component: unknown): IReader {
     async read(root: ReaderRoot): Promise<ReaderOutput> {
       const doRead = _readerFactories.get(reader.type);
       if (doRead) {
-        return doRead(definition.reader as any, root);
+        return doRead(reader as any, root);
       } else {
         throw new Error(`Reader type ${reader.type} not implemented`);
       }

@@ -265,7 +265,7 @@ function addContentScriptListener(): void {
     "Installed handlers for %d actions/notifications",
     handlers.size,
     {
-      actions: Array.from(handlers.keys()),
+      actions: [...handlers.keys()],
     }
   );
 }

@@ -63,14 +63,14 @@ type RemoveAction = (identifier: ExtensionIdentifier) => void;
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
-  if (validation.notConfigured.length) {
+  if (validation.notConfigured.length > 0) {
     const services = validation.notConfigured.map((x) => x.serviceId);
     if (services.length > 1) {
       message = `You need to select configurations for ${services.join(", ")}`;
     } else {
       message = `You need to select a configuration for ${services[0]}`;
     }
-  } else if (validation.missingConfiguration.length) {
+  } else if (validation.missingConfiguration.length > 0) {
     const services = validation.missingConfiguration.map((x) => x.serviceId);
     message = `
       The following services use configurations that no longer exist: ${services.join(
@@ -206,7 +206,7 @@ const ExtensionRow: React.FunctionComponent<{
     <tr>
       <td>&nbsp;</td>
       <td>
-        <Link to={`/workshop/extensions/${extension.id}`}>{label ?? id}</Link>
+        <Link to={`/workshop/extensions/${id}`}>{label ?? id}</Link>
       </td>
       {/*<td>2 weeks</td>*/}
       <td className="text-wrap">{statusElt}</td>

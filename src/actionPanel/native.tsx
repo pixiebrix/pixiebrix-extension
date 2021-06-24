@@ -51,11 +51,8 @@ function getHTMLElement(): JQuery<HTMLElement> {
   // resolve html tag, which is more dominant than <body>
   if (document.documentElement) {
     return $(document.documentElement);
-  } else if (
-    document.getElementsByTagName("html") &&
-    document.getElementsByTagName("html")[0]
-  ) {
-    return $(document.getElementsByTagName("html")[0]);
+  } else if (document.querySelector("html")) {
+    return $(document.querySelector("html"));
   } else if ($("html").length > -1) {
     return $("html");
   } else {
@@ -65,7 +62,7 @@ function getHTMLElement(): JQuery<HTMLElement> {
 
 function storeOriginalCSS() {
   const $html = getHTMLElement();
-  _originalMarginRight = parseFloat($html.css("margin-right"));
+  _originalMarginRight = Number.parseFloat($html.css("margin-right"));
 }
 
 function adjustDocumentStyle(): void {
@@ -162,7 +159,7 @@ export function removeExtensionPoint(extensionPointId: string): void {
 }
 
 export function reservePanels(refs: ExtensionRef[]): void {
-  if (refs.length) {
+  if (refs.length > 0) {
     for (const { extensionId, extensionPointId } of refs) {
       const entry = _panels.find((x) => x.extensionId === extensionId);
       if (!entry) {

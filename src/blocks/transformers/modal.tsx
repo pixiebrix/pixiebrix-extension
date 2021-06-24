@@ -24,7 +24,7 @@ import { registerBlock } from "@/blocks/registry";
 import { v4 as uuidv4 } from "uuid";
 import { BusinessError, CancelError } from "@/errors";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
 const theme = require("!!raw-loader!bootstrap/dist/css/bootstrap.min.css?esModule=false")
   .default;
 

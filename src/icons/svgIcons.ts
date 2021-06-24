@@ -29,22 +29,25 @@ const iconCache: { [libraryKey in IconLibrary]: { [key: string]: string } } = {
 };
 
 function importAll(library: IconLibrary, r: RequireContext): void {
-  return r.keys().forEach((key: string) => {
+  for (const key of r.keys()) {
     const match = filenameRegex.exec(key);
     iconCache[library][match.groups.fileName] = r(key);
-  });
+  }
 }
 
 importAll(
   "bootstrap",
+  // eslint-disable-next-line unicorn/prefer-module
   require.context("bootstrap-icons/icons/", false, /\.svg$/)
 );
 
 importAll(
   "simple-icons",
+  // eslint-disable-next-line unicorn/prefer-module
   require.context("simple-icons/icons/", false, /\.svg$/)
 );
 
+// eslint-disable-next-line unicorn/prefer-module
 importAll("custom", require.context("@/icons/custom-icons/", false, /\.svg$/));
 
 export const iconOptions: IconOption[] = sortBy(
@@ -66,7 +69,7 @@ function iconAsSVG(config: IconConfig): string {
 
   const $elt = $(library[config.id] ?? library["box"]);
 
-  if (!$elt.length) {
+  if ($elt.length === 0) {
     throw new Error(
       `Could not find icon ${config.id} in icon library ${library}`
     );

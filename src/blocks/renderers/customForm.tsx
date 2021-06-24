@@ -25,11 +25,11 @@ import { getRecord, setRecord } from "@/background/dataStore";
 import { reportError } from "@/telemetry/logging";
 import { notifyResult } from "@/contentScript/notify";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
 const theme = require("!!raw-loader!bootstrap/dist/css/bootstrap.min.css?esModule=false")
   .default;
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
 const custom = require("!!raw-loader!@/blocks/renderers/customForm.css?esModule=false")
   .default;
 

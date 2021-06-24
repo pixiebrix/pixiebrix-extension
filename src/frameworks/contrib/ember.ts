@@ -68,9 +68,9 @@ export function getEmberApplication(): EmberApplication {
     // https://github.com/emberjs/ember-inspector/blob/2237dc1b4818e31a856f3348f35305b10f42f60a/ember_debug/vendor/startup-wrapper.js#L201
     const namespaces = Ember.A(Ember.Namespace.NAMESPACES);
     // TODO: support multiple Ember applications on the page
-    return namespaces.filter(
+    return namespaces.find(
       (namespace) => namespace instanceof (Ember.Application as any)
-    )[0] as EmberApplication;
+    ) as EmberApplication;
   } else {
     return undefined;
   }
@@ -102,7 +102,7 @@ export function getProp(value: any, prop: string | number): unknown {
     return undefined;
   } else if (Array.isArray(value)) {
     if (typeof prop !== "number") {
-      throw new Error("Expected number for prop for array value");
+      throw new TypeError("Expected number for prop for array value");
     }
     return value[prop];
   } else if (typeof value === "object") {

@@ -46,7 +46,7 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   extensionId,
   initialLevel = "info",
   perPage = 10,
-  refreshInterval = undefined,
+  refreshInterval,
 }) => {
   const { addToast } = useToasts();
 

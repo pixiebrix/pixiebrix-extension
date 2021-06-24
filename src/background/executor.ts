@@ -160,7 +160,7 @@ function backgroundListener(
 
       console.debug(`Broadcasting to ${tabTargets.length} top-level frames`, {
         sender: String(sender.tab.id),
-        known: Array.from(Object.keys(tabReady)),
+        known: Object.keys(tabReady),
       });
 
       return Promise.allSettled(

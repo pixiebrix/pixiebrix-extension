@@ -83,7 +83,7 @@ type Option = {
   config: ServiceConfig;
 };
 
-let _instance: any;
+let wasInitialized = false;
 
 class LazyLocatorFactory {
   private remote: ConfigurableAuth[] = [];
@@ -94,10 +94,10 @@ class LazyLocatorFactory {
   private updateTimestamp: number = undefined;
 
   constructor() {
-    if (_instance) {
+    if (wasInitialized) {
       throw new Error("LazyLocatorFactory is a singleton class");
     }
-    _instance = this;
+    wasInitialized = true;
   }
 
   get initialized(): boolean {

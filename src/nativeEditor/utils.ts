@@ -19,7 +19,7 @@ import jQuery from "jquery";
 
 export function requireSingleElement(selector: string): HTMLElement {
   const $elt = jQuery(document).find(selector);
-  if (!$elt.length) {
+  if ($elt.length === 0) {
     throw new Error(`No elements found for selector: '${selector}'`);
   } else if ($elt.length > 1) {
     throw new Error(`Multiple elements found for selector: '${selector}'`);

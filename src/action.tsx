@@ -47,4 +47,4 @@ browser.runtime
   })
   .catch(reportError);
 
-ReactDOM.render(<App />, document.getElementById("container"));
+ReactDOM.render(<App />, document.querySelector("#container"));

@@ -32,8 +32,8 @@ type MenuItemId = number | string;
 const extensionMenuItems = new Map<ExtensionId, MenuItemId>();
 
 const MENU_PREFIX = "pixiebrix-";
-const CONTEXT_SCRIPT_INSTALL_MS = 1_000;
-const CONTEXT_MENU_INSTALL_MS = 1_000;
+const CONTEXT_SCRIPT_INSTALL_MS = 1000;
+const CONTEXT_MENU_INSTALL_MS = 1000;
 
 interface SelectionMenuOptions {
   extensionId: string;
@@ -55,7 +55,7 @@ async function dispatchMenu(
   const target = { frameId: info.frameId, tabId: tab.id };
 
   if (typeof info.menuItemId !== "string") {
-    throw new Error(`Not a PixieBrix menu item: ${info.menuItemId}`);
+    throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
 
   // Using the context menu gives temporary access to the page
@@ -64,7 +64,7 @@ async function dispatchMenu(
 
   try {
     await handleMenuAction(target, {
-      extensionId: info.menuItemId.substring(MENU_PREFIX.length),
+      extensionId: info.menuItemId.slice(MENU_PREFIX.length),
       args: info,
       maxWaitMillis: CONTEXT_MENU_INSTALL_MS,
     });

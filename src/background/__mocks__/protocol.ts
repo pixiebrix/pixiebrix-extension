@@ -33,14 +33,14 @@ const MESSAGE_PREFIX = "@@pixiebrix/background-mock/";
 export function liftBackground<R extends SerializableResponse>(
   type: string,
   method: ((...args: unknown[]) => R) | ((...args: unknown[]) => Promise<R>),
-  options: HandlerOptions = { asyncResponse: true }
+  { asyncResponse = true }: HandlerOptions = {}
 ): (...args: unknown[]) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   return async (...args: unknown[]) => {
     console.debug(`running fake ${fullType}`, { fullType, args });
 
-    if (!options.asyncResponse) {
+    if (!asyncResponse) {
       throw new Error("background notifications not implemented");
     }
 

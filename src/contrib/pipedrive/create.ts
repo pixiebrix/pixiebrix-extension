@@ -61,7 +61,7 @@ export class AddOrganization extends Effect {
       },
     });
 
-    if (data.items.length) {
+    if (data.items.length > 0) {
       $.notify(`Organization already exists for ${name}`, "info");
       return;
     }
@@ -133,7 +133,7 @@ export class AddPerson extends Effect {
       },
     });
 
-    if (data.items.length) {
+    if (data.items.length > 0) {
       $.notify(`Person record already exists for ${name}`, "info");
       return;
     }

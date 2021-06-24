@@ -93,7 +93,7 @@ export function makeContextMenuExtensionPoint({
 }: ContextMenuFormState): ExtensionPointConfig<MenuDefinition> {
   const {
     metadata,
-    definition: { isAvailable },
+    definition: { isAvailable, documentUrlPatterns },
   } = extensionPoint;
 
   return {
@@ -107,7 +107,7 @@ export function makeContextMenuExtensionPoint({
     },
     definition: {
       type: "contextMenu",
-      documentUrlPatterns: extensionPoint.definition.documentUrlPatterns,
+      documentUrlPatterns: documentUrlPatterns,
       contexts: ["all"],
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),

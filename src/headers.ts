@@ -21,7 +21,7 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import "@/blocks";
 import "@/contrib";
 
-Error.stackTraceLimit = Infinity;
+Error.stackTraceLimit = Number.POSITIVE_INFINITY;
 
 console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
 

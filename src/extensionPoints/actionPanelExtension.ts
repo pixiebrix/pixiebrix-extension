@@ -160,7 +160,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       return;
     }
 
-    if (!this.extensions.length) {
+    if (this.extensions.length === 0) {
       console.debug(
         `actionPanel extension point ${this.id} has no installed extension`
       );
@@ -206,7 +206,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       }
     }
 
-    if (errors.length) {
+    if (errors.length > 0) {
       notifyError(`An error occurred adding ${errors.length} panels(s)`);
     }
   }

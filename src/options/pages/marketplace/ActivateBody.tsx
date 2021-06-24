@@ -205,7 +205,9 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
               );
               return (
                 <tr key={i}>
-                  <td>{x.origins.length ? x.origins.join(", ") : "Any URL"}</td>
+                  <td>
+                    {x.origins.length > 0 ? x.origins.join(", ") : "Any URL"}
+                  </td>
                   <td>
                     <ul className="mb-0">
                       <li>Read/write information and detect page navigation</li>

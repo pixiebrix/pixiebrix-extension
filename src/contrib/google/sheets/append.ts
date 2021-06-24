@@ -95,7 +95,7 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
   const unmatched = rowValues
     .map((x) => x.header)
     .filter((x) => !matched.has(x));
-  if (unmatched.length) {
+  if (unmatched.length > 0) {
     console.warn(
       `${unmatched.length} field(s) were unmatched: ${unmatched.join(", ")}`
     );

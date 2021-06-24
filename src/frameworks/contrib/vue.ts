@@ -83,7 +83,7 @@ export class VueRootVisitor implements RootInstanceVisitor<Instance> {
 
   private processInstance(instance: Instance): boolean {
     if (instance) {
-      if (this.rootInstances.indexOf(instance.$root) === -1) {
+      if (!this.rootInstances.includes(instance.$root)) {
         instance = instance.$root;
       }
       if (instance._isFragment) {

@@ -120,6 +120,7 @@ function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
   } else if (selector.renderedText) {
     const $clone = $elt.clone();
     $clone.find("br").replaceWith("\n");
+    // eslint-disable-next-line unicorn/prefer-dom-node-text-content -- TODO: May be unnecessary
     value = $clone.get(0).innerText;
   } else {
     value = cleanValue($elt.text());
@@ -153,7 +154,7 @@ async function select(
           "'selector' required if not nested within a 'find' block"
         );
       }
-      $elt = $(document).find(normalizedSelector.selector);
+      $elt = $(normalizedSelector.selector);
     }
 
     if (

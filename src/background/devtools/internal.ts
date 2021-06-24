@@ -206,9 +206,8 @@ async function resetTab(tabId: number): Promise<void> {
 }
 
 function deleteStaleConnections(port: Runtime.Port) {
-  const tabIds = Array.from(connections.keys());
   // Theoretically each port should only correspond to a single tab, but iterate over all tabIds just to be safe
-  for (const tabId of tabIds) {
+  for (const tabId of connections.keys()) {
     if (connections.get(tabId) === port) {
       connections.delete(tabId);
 

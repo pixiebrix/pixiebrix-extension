@@ -39,4 +39,4 @@ window.addEventListener("unhandledrejection", function (e) {
 
 initGoogle();
 
-ReactDOM.render(<Panel />, document.getElementById("container"));
+ReactDOM.render(<Panel />, document.querySelector("#container"));

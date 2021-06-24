@@ -246,7 +246,9 @@ export const InputArgumentsField: React.FunctionComponent<
             Object.entries(inputProperties(schema)).map(
               ([prop, fieldSchema]) => {
                 if (typeof fieldSchema === "boolean") {
-                  throw new Error("Expected schema for input property type");
+                  throw new TypeError(
+                    "Expected schema for input property type"
+                  );
                 }
                 return (
                   <FieldRenderer

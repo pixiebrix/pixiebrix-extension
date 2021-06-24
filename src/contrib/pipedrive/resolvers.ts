@@ -62,7 +62,7 @@ export class ResolvePerson extends Transformer {
     name,
     organization,
   }: BlockArg): Promise<unknown> {
-    let organization_id = undefined;
+    let organization_id;
 
     if (organization) {
       const {
@@ -75,7 +75,8 @@ export class ResolvePerson extends Transformer {
           term: name,
         },
       });
-      organization_id = data.items.length ? data.items[0].item.id : undefined;
+      organization_id =
+        data.items.length > 0 ? data.items[0].item.id : undefined;
     }
 
     const {
@@ -90,7 +91,7 @@ export class ResolvePerson extends Transformer {
       },
     });
 
-    if (!data.items.length) {
+    if (data.items.length === 0) {
       throw new BusinessError(`Could not find person matching ${name}`);
     }
 

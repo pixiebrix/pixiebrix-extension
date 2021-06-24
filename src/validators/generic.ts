@@ -132,7 +132,7 @@ export function propertiesToSchema(
     properties: properties,
     required:
       required === undefined && !isEmpty(properties)
-        ? Array.from(Object.keys(properties))
+        ? Object.keys(properties)
         : required,
   };
 }
@@ -187,7 +187,10 @@ async function validateExtension(
   }
 
   return {
-    valid: !notConfigured.length && !missingConfiguration.length && validated,
+    valid:
+      notConfigured.length === 0 &&
+      missingConfiguration.length === 0 &&
+      validated,
     notConfigured,
     missingConfiguration,
     schemaErrors,

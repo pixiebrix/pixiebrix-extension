@@ -56,7 +56,7 @@ export class ExportCSV extends Effect {
   };
 
   async effect(
-    { filename = "exported", useBOM = false, data = undefined }: BlockArg,
+    { filename = "exported", useBOM = false, data }: BlockArg,
     { ctxt }: BlockOptions
   ): Promise<void> {
     const { ExportToCsv } = await import("export-to-csv");

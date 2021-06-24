@@ -265,8 +265,8 @@ module.exports = (env, options) => ({
   },
 
   performance: {
-    maxEntrypointSize: 5120000,
-    maxAssetSize: 5120000,
+    maxEntrypointSize: 5_120_000,
+    maxAssetSize: 5_120_000,
   },
   plugins: [
     ...getConditionalPlugins(isProd(options)),
