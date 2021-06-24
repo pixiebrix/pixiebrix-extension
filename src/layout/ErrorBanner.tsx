@@ -21,12 +21,9 @@ import "./Banner.scss";
 const errorMessages = new Map([
   [
     "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",
-    "This is a special page that can’t be edited",
+    "PixieBrix can’t run on internal browser pages",
   ],
-  [
-    "ERR_BROWSER_ACTION_TOGGLE",
-    "PixieBrix might not be compatible with this page",
-  ],
+  ["ERR_BROWSER_ACTION_TOGGLE", "PixieBrix could not run on the page"],
 ]);
 
 const ErrorBanner: React.FunctionComponent = () => {
