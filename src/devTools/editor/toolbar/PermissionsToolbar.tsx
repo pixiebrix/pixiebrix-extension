@@ -24,36 +24,13 @@ import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import {
   checkPermissions,
   ensureAllPermissions,
-  serviceOriginPermissions,
+  extensionPermissions,
 } from "@/permissions";
-import { distinctPermissions } from "@/blocks/available";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { Permissions } from "webextension-polyfill-ts";
 import useAsyncEffect from "use-async-effect";
 import { useDebounce } from "use-debounce";
 import { useToasts } from "react-toast-notifications";
-
-/**
- * Same logic to useEnsurePermissions call but 1) the extension permissions aren't included, 2) the extension
- * point is created via factory vs. the registry
- * @see useEnsurePermissions
- */
-async function collectPermissions(
-  element: FormState
-): Promise<Permissions.Permissions[]> {
-  const { definition: factory } = ADAPTERS.get(element.type);
-
-  const { extension, extensionPoint: extensionPointConfig } = factory(element);
-  const extensionPoint = extensionPointFactory(extensionPointConfig);
-  const services = await Promise.all(
-    extension.services
-      .filter((x) => x.config)
-      .map((x) => serviceOriginPermissions({ id: x.id, config: x.config }))
-  );
-  const blocks = await extensionPoint.getBlocks(extension);
-  const blockPermissions = blocks.map((x) => x.permissions);
-  return distinctPermissions([...services, ...blockPermissions]);
-}
 
 type PermissionsState = {
   hasPermissions: boolean;
@@ -80,7 +57,22 @@ const PermissionsToolbar: React.FunctionComponent<{
 
   const run = useCallback(
     async (element: FormState, disabled: boolean) => {
-      const permissions = disabled ? [] : await collectPermissions(element);
+      if (disabled) {
+        return;
+      }
+
+      const { definition: factory } = ADAPTERS.get(element.type);
+      const { extension, extensionPoint: extensionPointConfig } = factory(
+        element
+      );
+      const extensionPoint = await extensionPointFactory(extensionPointConfig);
+
+      // We don't want the extension point availability because we already have access to it on the page
+      // because the user is using the devtools. We can request additional permissions on save
+      const permissions = await extensionPermissions(extension, {
+        extensionPoint,
+        includeExtensionPoint: false,
+      });
       const hasPermissions = await checkPermissions(permissions);
       setState({ permissions, hasPermissions });
     },

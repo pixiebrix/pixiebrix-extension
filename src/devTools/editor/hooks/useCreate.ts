@@ -38,6 +38,12 @@ import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { reactivate } from "@/background/navigation";
 import { reportEvent } from "@/telemetry/events";
 import { removeUndefined } from "@/utils";
+import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
+import {
+  checkPermissions,
+  ensureExtensionPermissions,
+  extensionPermissions,
+} from "@/permissions";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -89,6 +95,31 @@ export function useCreate(): CreateCallback {
     ) => {
       try {
         const adapter = ADAPTERS.get(element.type);
+        const {
+          extension,
+          extensionPoint: extensionPointConfig,
+        } = adapter.definition(element);
+        const extensionPoint = await extensionPointFactory(
+          extensionPointConfig
+        );
+
+        // We don't want the extension point availability because we already have access to it on the page
+        // because the user is using the devtools. We can request additional permissions on save
+        const permissions = await extensionPermissions(extension, {
+          extensionPoint,
+        });
+        const hasPermissions = await checkPermissions(permissions);
+
+        // FIREFOX: FF probably won't realize this permissions request is user initiated
+        if (!hasPermissions && !(await ensureExtensionPermissions(extension))) {
+          addToast(
+            `You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions`,
+            {
+              appearance: "warning",
+              autoDismiss: true,
+            }
+          );
+        }
 
         // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
         // number of bricks implemented and frequency of saves
