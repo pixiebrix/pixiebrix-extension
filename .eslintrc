@@ -62,8 +62,8 @@
     ],
 
     // Soft-enable some rules
-    "unicorn/no-array-callback-reference": "warn",
-    "unicorn/consistent-function-scoping": "warn",
+    "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
+    "unicorn/consistent-function-scoping": "warn", // Complains about some of the lifted functions
     "unicorn/prefer-prototype-methods": "warn",
 
     // Disable recommended rules
@@ -74,13 +74,11 @@
     "unicorn/no-null": "off",
     "unicorn/filename-case": "off",
     "unicorn/prefer-ternary": "off",
-    "unicorn/no-useless-undefined": "off",
+    "unicorn/no-useless-undefined": "off", // Buggy with React
     "unicorn/prefer-set-has": "off",
     "unicorn/prefer-switch": "off",
-    "unicorn/prefer-node-protocol": "off",
-
-    // It conflicts with Prettier
-    "unicorn/no-nested-ternary": "off"
+    "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
+    "unicorn/no-nested-ternary": "off" // It conflicts with Prettier
   },
   "ignorePatterns": [
     "node_modules",

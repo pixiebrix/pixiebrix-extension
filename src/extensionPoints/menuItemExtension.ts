@@ -610,13 +610,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const errors = [];
 
-    const menus = [...this.menus.values()];
-
     const containerSelector = this.getContainerSelector();
     const $currentMenus = $(castArray(containerSelector).join(" "));
     const currentMenus = $currentMenus.toArray();
 
-    for (const menu of menus) {
+    for (const menu of this.menus.values()) {
       if (!currentMenus.includes(menu)) {
         console.debug(
           "Skipping menu because it's no longer found by the container selector"
