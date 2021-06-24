@@ -50,7 +50,7 @@ export class HideEffect extends Effect {
     selector: string;
     mode?: "hide" | "remove";
   }): Promise<void> {
-    const $elt = $(selector);
+    const $elt = $(document).find(selector);
     if (mode === "hide") {
       $elt.hide();
     } else {

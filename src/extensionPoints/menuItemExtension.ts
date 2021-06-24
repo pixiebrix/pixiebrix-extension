@@ -611,7 +611,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const errors = [];
 
     const containerSelector = this.getContainerSelector();
-    const $currentMenus = $(castArray(containerSelector).join(" "));
+    const $currentMenus = $(document).find(
+      castArray(containerSelector).join(" ")
+    );
     const currentMenus = $currentMenus.toArray();
 
     for (const menu of this.menus.values()) {

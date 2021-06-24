@@ -178,7 +178,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     if (rootSelector) {
       // awaitElementOnce doesn't work with multiple elements. Get what's currently on the page
-      $root = $(rootSelector);
+      $root = $(document).find(rootSelector);
     }
 
     if ($root.length === 0) {

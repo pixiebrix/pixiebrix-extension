@@ -154,7 +154,7 @@ async function select(
           "'selector' required if not nested within a 'find' block"
         );
       }
-      $elt = $(normalizedSelector.selector);
+      $elt = $(document).find(normalizedSelector.selector);
     }
 
     if (

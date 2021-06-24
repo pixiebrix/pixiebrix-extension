@@ -108,7 +108,9 @@ export const searchWindow: (
 export const runReaderBlock = liftContentScript(
   "RUN_READER_BLOCK",
   async ({ id, rootSelector }: { id: string; rootSelector?: string }) => {
-    const root = rootSelector ? $(rootSelector).get(0) : document;
+    const root = rootSelector
+      ? $(document).find(rootSelector).get(0)
+      : document;
 
     if (id === "@pixiebrix/context-menu-data") {
       // HACK: special handling for context menu built-in

@@ -137,7 +137,7 @@ export const toggleOverlay = liftContentScript(
       if (_overlay == null) {
         _overlay = new Overlay();
       }
-      const $elt = $(selector);
+      const $elt = $(document).find(selector);
       _overlay.inspect($elt.toArray(), null);
     } else if (_overlay != null) {
       _overlay.remove();

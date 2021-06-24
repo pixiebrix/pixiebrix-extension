@@ -551,7 +551,7 @@ export function inferSelectors(
  * Returns true if selector uniquely identifies an element on the page
  */
 function isUniqueSelector(selector: string): boolean {
-  return $(selector).length === 1;
+  return $(document).find(selector).length === 1;
 }
 
 export function getCommonAncestor(...args: Node[]): Node {

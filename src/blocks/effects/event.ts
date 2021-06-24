@@ -75,7 +75,7 @@ export class ElementEvent extends Effect {
     { selector, event }: BlockArg,
     { logger }: BlockOptions
   ): Promise<void> {
-    const $element = $(selector);
+    const $element = $(document).find(selector);
 
     if ($element.length === 0) {
       logger.debug(`Element not found for selector: ${selector}`);
