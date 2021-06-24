@@ -218,7 +218,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     );
     // can't use this.menus.values() here b/c because it may have already been cleared
     for (const extensionId of extensionIds) {
-      const $item = $(`[${DATA_ATTR}="${extensionId}"]`);
+      const $item = $(document).find(`[${DATA_ATTR}="${extensionId}"]`);
       if ($item.length === 0) {
         console.warn(`Item for ${extensionId} was not in the menu`);
       }
@@ -559,8 +559,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       let elementCount = 0;
       for (const dependency of dependencies) {
-        const $dependency = $(dependency);
-        if ($dependency.length > 0) {
+        const $dependency = $(document).find(dependency);
+        if ($dependency.length) {
           $dependency.each((index, element) => {
             elementCount++;
             observer.observe(element, {

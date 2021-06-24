@@ -149,7 +149,9 @@ export const runReader = liftContentScript(
     console.debug("runReader", { config, rootSelector });
 
     const root =
-      (rootSelector?.trim() ?? "") !== "" ? $(rootSelector).get(0) : document;
+      (rootSelector?.trim() ?? "") !== ""
+        ? $(document).find(rootSelector).get(0)
+        : document;
 
     return makeRead(config)(root);
   }
