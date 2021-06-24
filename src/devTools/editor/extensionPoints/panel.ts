@@ -17,7 +17,7 @@
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { PanelFormState } from "@/devTools/editor/editorSlice";
+import { PanelFormState, PanelTraits } from "@/devTools/editor/editorSlice";
 import {
   getDomain,
   makeBaseState,
@@ -60,6 +60,12 @@ export const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
+const DEFAULT_TRAITS: PanelTraits = {
+  style: {
+    mode: "inherit",
+  },
+};
+
 export function makePanelState(
   url: string,
   metadata: Metadata,
@@ -82,11 +88,7 @@ export function makePanelState(
         ...panel.foundation,
         isAvailable: makeIsAvailable(url),
       },
-      traits: {
-        style: {
-          mode: "inherit",
-        },
-      },
+      traits: DEFAULT_TRAITS,
     },
     extension: {
       heading: panel.panel.heading,

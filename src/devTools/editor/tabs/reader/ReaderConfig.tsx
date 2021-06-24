@@ -23,11 +23,11 @@ import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Alert, Col, Form, Row } from "react-bootstrap";
 import Select from "react-select";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import useAsyncEffect from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
-import { runReader } from "@/background/devtools/index";
+import { runReader } from "@/background/devtools";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
@@ -37,8 +37,7 @@ import {
   getDefaultField,
   RendererContext,
 } from "@/components/fields/blockOptions";
-import devtoolFields from "@/devTools/editor/Fields";
-
+import devtoolFields from "@/devTools/editor/fields/Fields";
 // @ts-ignore: no type definitions?
 import GenerateSchema from "generate-schema";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";

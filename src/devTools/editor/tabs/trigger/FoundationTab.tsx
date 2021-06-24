@@ -18,7 +18,7 @@
 import React from "react";
 import { Field, FieldInputProps, useFormikContext } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import { FormState } from "@/devTools/editor/editorSlice";
 import LockedFoundationTab from "@/devTools/editor/tabs/LockedFoundationTab";
 
@@ -30,6 +30,7 @@ const FoundationTab: React.FunctionComponent<{
 
   const locked =
     values.installed && !editable?.has(values.extensionPoint.metadata.id);
+
   if (locked) {
     return <LockedFoundationTab eventKey={eventKey} />;
   }

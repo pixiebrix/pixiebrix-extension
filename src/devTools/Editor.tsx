@@ -22,7 +22,7 @@ import React, {
   useState,
 } from "react";
 import { Container } from "react-bootstrap";
-import Sidebar, { useInstallState } from "@/devTools/editor/Sidebar";
+import Sidebar from "@/devTools/editor/Sidebar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 import SplitPane from "react-split-pane";
@@ -38,6 +38,7 @@ import NoExtensionSelectedPane from "@/devTools/editor/panes/NoExtensionsSelecte
 import NoExtensionsPane from "@/devTools/editor/panes/NoExtensionsPane";
 import WelcomePane from "@/devTools/editor/panes/WelcomePane";
 import EditorPane from "@/devTools/editor/panes/EditorPane";
+import useInstallState from "@/devTools/editor/hooks/useInstallState";
 
 const selectEditor = (x: RootState) => x.editor;
 

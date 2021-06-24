@@ -16,24 +16,24 @@
  */
 
 import React from "react";
-import "./Banner.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ICON_MAP } from "@/devTools/editor/extensionPoints/adapter";
+import {
+  faEyeSlash,
+  faPuzzlePiece,
+  faSave,
+} from "@fortawesome/free-solid-svg-icons";
 
-const errorMessages = new Map([
-  [
-    "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",
-    "PixieBrix can’t run on internal browser pages",
-  ],
-  ["ERR_BROWSER_ACTION_TOGGLE", "PixieBrix could not run on the page"],
-]);
-
-const ErrorBanner: React.FunctionComponent = () => {
-  const message = errorMessages.get(
-    new URLSearchParams(location.search).get("error")
-  );
-  if (message) {
-    return <div className="error-banner w-100">{message}</div>;
-  }
-  return null;
+export const ExtensionIcon: React.FunctionComponent<{ type: string }> = ({
+  type,
+}) => {
+  return <FontAwesomeIcon icon={ICON_MAP.get(type) ?? faPuzzlePiece} />;
 };
 
-export default ErrorBanner;
+export const NotAvailableIcon: React.FunctionComponent = () => (
+  <FontAwesomeIcon icon={faEyeSlash} title="Not available on page" />
+);
+
+export const UnsavedChangesIcon: React.FunctionComponent = () => (
+  <FontAwesomeIcon icon={faSave} title="Has unsaved changes" />
+);

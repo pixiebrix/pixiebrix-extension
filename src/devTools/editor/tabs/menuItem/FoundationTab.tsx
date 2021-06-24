@@ -30,7 +30,7 @@ import {
   useFormikContext,
 } from "formik";
 import { Alert, Button, Col, Form, Row, Tab } from "react-bootstrap";
-import SelectorSelectorField from "@/devTools/editor/SelectorSelectorField";
+import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import * as nativeOperations from "@/background/devtools";
 import { ActionFormState, FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";

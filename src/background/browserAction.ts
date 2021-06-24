@@ -60,7 +60,7 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
       // Cannot access contents of url "chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/". Extension manifest must request permission to access this host.
       // The extensions gallery cannot be scripted.
       if (
-        /cannot be scripted|(chrome|about|extension):[/][/]/.test(error.message)
+        /cannot be scripted|(chrome|about|extension):\/\//.test(error.message)
       ) {
         await showErrorInOptions(
           "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",

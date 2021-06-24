@@ -15,25 +15,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import "./Banner.scss";
+import { FormState } from "@/devTools/editor/editorSlice";
+import { IExtension } from "@/core";
 
-const errorMessages = new Map([
-  [
-    "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",
-    "PixieBrix can’t run on internal browser pages",
-  ],
-  ["ERR_BROWSER_ACTION_TOGGLE", "PixieBrix could not run on the page"],
-]);
+export type SidebarItem = IExtension | FormState;
 
-const ErrorBanner: React.FunctionComponent = () => {
-  const message = errorMessages.get(
-    new URLSearchParams(location.search).get("error")
-  );
-  if (message) {
-    return <div className="error-banner w-100">{message}</div>;
-  }
-  return null;
-};
+export function getLabel(extension: FormState): string {
+  return extension.label ?? extension.extensionPoint.metadata.name;
+}
 
-export default ErrorBanner;
+export function isExtension(value: SidebarItem): value is IExtension {
+  return "extensionPointId" in value;
+}
