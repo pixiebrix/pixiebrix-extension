@@ -43,6 +43,7 @@ import "@/blocks/transformers";
 import "@/blocks/renderers";
 import "@/contrib/index";
 import "@/contrib/editors";
+import { ModalProvider } from "@/components/ConfirmationModal";
 
 const defaultState: AuthState = {
   isLoggedIn: false,
@@ -119,15 +120,17 @@ const Panel: React.FunctionComponent = () => {
         <AuthContext.Provider value={authState ?? defaultState}>
           <DevToolsContext.Provider value={context}>
             <ToastProvider>
-              <ErrorBoundary>
-                <Router>
-                  <Container fluid className="DevToolsContainer">
-                    <RequireScope scope={authState?.scope}>
-                      <Editor />
-                    </RequireScope>
-                  </Container>
-                </Router>
-              </ErrorBoundary>
+              <ModalProvider>
+                <ErrorBoundary>
+                  <Router>
+                    <Container fluid className="DevToolsContainer">
+                      <RequireScope scope={authState?.scope}>
+                        <Editor />
+                      </RequireScope>
+                    </Container>
+                  </Router>
+                </ErrorBoundary>
+              </ModalProvider>
             </ToastProvider>
           </DevToolsContext.Provider>
         </AuthContext.Provider>
