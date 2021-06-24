@@ -560,7 +560,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       let elementCount = 0;
       for (const dependency of dependencies) {
         const $dependency = $(document).find(dependency);
-        if ($dependency.length) {
+        if ($dependency.length > 0) {
           $dependency.each((index, element) => {
             elementCount++;
             observer.observe(element, {
