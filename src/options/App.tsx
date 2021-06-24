@@ -39,6 +39,7 @@ import "vendors/theme/app/app.scss";
 import AuthContext from "@/auth/AuthContext";
 import { useAsyncState } from "@/hooks/common";
 import Banner from "@/layout/Banner";
+import ErrorBanner from "@/layout/ErrorBanner";
 import ActivatePage from "@/options/pages/marketplace/ActivatePage";
 import { getAuth } from "@/hooks/auth";
 import { useRefresh } from "@/hooks/refresh";
@@ -82,6 +83,7 @@ const Layout = () => {
         <RequireInstall>
           <Sidebar />
           <div className="main-panel">
+            <ErrorBanner />
             <Banner />
             <UpdateBanner />
             <DeploymentBanner />

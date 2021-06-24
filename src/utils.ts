@@ -33,6 +33,7 @@ import {
   zip,
   pickBy,
 } from "lodash";
+import { ErrorObject } from "serialize-error";
 import { Primitive } from "type-fest";
 
 export function mostCommonElement<T>(items: T[]): T {
@@ -329,4 +330,8 @@ export async function rejectOnCancelled<T>(
     throw new PromiseCancelled("Promise was cancelled");
   }
   return rv;
+}
+
+export function isErrorObject(error: unknown): error is ErrorObject {
+  return error && typeof error === "object" && "message" in error;
 }

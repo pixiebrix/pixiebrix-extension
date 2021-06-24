@@ -21,7 +21,7 @@ import { reportError } from "@/telemetry/logging";
 import { injectContentScript } from "@/background/util";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { allowSender } from "@/actionPanel/protocol";
-import { sleep } from "@/utils";
+import { isErrorObject, sleep } from "@/utils";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 
@@ -34,6 +34,15 @@ export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAM
 const tabNonces = new Map<number, string>();
 const tabFrames = new Map<number, number>();
 
+async function showErrorInOptions(id: string, tabIndex: number): Promise<void> {
+  const url = new URL(browser.runtime.getURL("options.html"));
+  url.searchParams.set("error", id);
+  await browser.tabs.create({
+    url: url.toString(),
+    index: tabIndex + 1,
+  });
+}
+
 async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
   // We're either getting a new frame, or getting rid of the existing one. Therefore, forget the old frame
   // id so we're not sending messages to a dead frame
@@ -43,7 +52,29 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
     await injectContentScript({ tabId: tab.id, frameId: 0 });
     const nonce = await toggleActionPanel({ tabId: tab.id, frameId: 0 });
     tabNonces.set(tab.id, nonce);
-  } catch (error) {
+  } catch (error: unknown) {
+    if (isErrorObject(error)) {
+      // Example error messages:
+      // Cannot access a chrome:// URL
+      // Cannot access a chrome-extension:// URL of different extension
+      // Cannot access contents of url "chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/". Extension manifest must request permission to access this host.
+      // The extensions gallery cannot be scripted.
+      if (
+        /cannot be scripted|(chrome|about|extension):[/][/]/.test(error.message)
+      ) {
+        await showErrorInOptions(
+          "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",
+          tab.index
+        );
+        return;
+      }
+
+      // Firefox does not catch injection errors so we don't get a specific error message
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/579#issuecomment-866451242
+      await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
+    }
+
+    // Only report unknown-reason errors
     reportError(error);
   }
 }
