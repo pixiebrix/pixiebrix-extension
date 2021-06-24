@@ -34,6 +34,7 @@ import { IExtension } from "@/core";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
+import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 
 const WIZARD_MAP = {
   menuItem: menuItemWizard,
@@ -122,6 +123,11 @@ const ElementWizard: React.FunctionComponent<{
               <FontAwesomeIcon icon={faCommentAlt} /> Live Support
             </Button>
           </div>
+
+          <PermissionsToolbar
+            element={element}
+            disabled={isSubmitting || !isValid}
+          />
 
           <ReloadToolbar
             element={element}

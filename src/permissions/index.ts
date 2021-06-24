@@ -19,13 +19,13 @@ import extensionRegistry from "@/extensionPoints/registry";
 import { distinctPermissions, mergePermissions } from "@/blocks/available";
 import { useAsyncEffect } from "use-async-effect";
 import { useState, useCallback } from "react";
-import { IExtension } from "@/core";
+import { IExtension, IExtensionPoint } from "@/core";
 import {
   ExtensionPointDefinition,
   RecipeDefinition,
 } from "@/types/definitions";
 import { Permissions, browser } from "webextension-polyfill-ts";
-import { sortBy, castArray, groupBy, uniq, every } from "lodash";
+import { sortBy, castArray, groupBy, uniq, every, compact } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";
 
@@ -86,7 +86,7 @@ export async function collectPermissions(
     : recipeOrExtensionPoints.extensionPoints;
 
   const servicePermissions = await Promise.all(
-    serviceAuths.map(serviceOriginPermissions)
+    serviceAuths.map((serviceAuth) => serviceOriginPermissions(serviceAuth))
   );
 
   const permissions = await Promise.all(
@@ -95,7 +95,7 @@ export async function collectPermissions(
         // console.debug(`Extra permissions for ${id}`, permissions);
         const extensionPoint = await extensionRegistry.lookup(id);
         return mergePermissions(
-          [extensionPoint.permissions, permissions].map(normalize)
+          [extensionPoint.permissions, permissions].map((x) => normalize(x))
         );
       }
     )
@@ -127,10 +127,21 @@ export async function serviceOriginPermissions(
  * - Services
  */
 export async function extensionPermissions(
-  extension: IExtension
+  extension: IExtension,
+  options?: {
+    extensionPoint?: IExtensionPoint;
+    includeExtensionPoint?: boolean;
+    includeServices?: boolean;
+  }
 ): Promise<Permissions.Permissions[]> {
-  const { extensionPointId } = extension;
-  const extensionPoint = await extensionRegistry.lookup(extensionPointId);
+  const opts = Object.assign(
+    {},
+    { includeExtensionPoint: true, includeServices: true },
+    options
+  );
+  const extensionPoint =
+    opts.extensionPoint ??
+    (await extensionRegistry.lookup(extension.extensionPointId));
   const services = await Promise.all(
     extension.services
       .filter((x) => x.config)
@@ -138,11 +149,13 @@ export async function extensionPermissions(
   );
   const blocks = await extensionPoint.getBlocks(extension);
   const blockPermissions = blocks.map((x) => x.permissions);
-  return distinctPermissions([
-    extensionPoint.permissions,
-    ...services,
-    ...blockPermissions,
-  ]);
+  return distinctPermissions(
+    compact([
+      opts.includeExtensionPoint ? extensionPoint.permissions : null,
+      ...(opts.includeServices ? services : []),
+      ...blockPermissions,
+    ])
+  );
 }
 
 export async function checkPermissions(
@@ -196,7 +209,7 @@ export function originPermissions(
 export function useExtensionPermissions(
   extension: IExtension
 ): [boolean | undefined, () => Promise<void>] {
-  const [enabled, setEnabled] = useState(undefined);
+  const [enabled, setEnabled] = useState<boolean | undefined>();
 
   useAsyncEffect(
     async (isMounted) => {
