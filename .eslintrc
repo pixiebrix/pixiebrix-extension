@@ -63,8 +63,10 @@
 
     // Soft-enable some rules
     "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
+    "unicorn/no-useless-undefined": "warn", // Buggy with React
     "unicorn/consistent-function-scoping": "warn", // Complains about some of the lifted functions
     "unicorn/prefer-prototype-methods": "warn",
+    "unicorn/prefer-switch": "warn",
 
     // Disable recommended rules
     "react/prop-types": "off",
@@ -73,11 +75,9 @@
     "@typescript-eslint/no-explicit-any": "off",
     "unicorn/no-null": "off",
     "unicorn/filename-case": "off",
-    "unicorn/prefer-ternary": "off",
-    "unicorn/no-useless-undefined": "off", // Buggy with React
-    "unicorn/prefer-set-has": "off",
-    "unicorn/prefer-switch": "off",
     "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
+    "unicorn/prefer-set-has": "off",
+    "unicorn/prefer-ternary": "off",
     "unicorn/no-nested-ternary": "off" // It conflicts with Prettier
   },
   "ignorePatterns": [
