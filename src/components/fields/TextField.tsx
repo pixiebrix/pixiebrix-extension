@@ -45,7 +45,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
 
   let control;
 
-  if (options.length && creatable) {
+  if (options.length > 0 && creatable) {
     control = (
       <Creatable
         isClearable
@@ -55,7 +55,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         onChange={(option) => helpers.setValue((option as any)?.value)}
       />
     );
-  } else if (options.length && !creatable) {
+  } else if (options.length > 0 && !creatable) {
     control = (
       <Select
         isClearable

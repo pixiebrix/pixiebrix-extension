@@ -178,7 +178,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       const $item = this.$container.find(
         `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
       );
-      if (!$item.length) {
+      if ($item.length === 0) {
         console.debug(`Panel for ${extension.id} was not in the menu`);
       }
       $item.remove();
@@ -210,7 +210,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     this.$container = (await containerPromise) as JQuery<HTMLElement>;
 
-    if (this.$container.length == 0) {
+    if (this.$container.length === 0) {
       return false;
     } else if (this.$container.length > 1) {
       console.error(`Multiple containers found for selector: ${selector}`);
@@ -321,7 +321,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       console.debug(`No current removal monitor for ${extension.id}`);
     }
 
-    if ($existingPanel.length) {
+    if ($existingPanel.length > 0) {
       if (this.cancelRemovalMonitor.get(extension.id) != null) {
         throw new Error("Removal monitor still attached for panel");
       }
@@ -423,7 +423,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   }
 
   async run(extensionIds?: string[]): Promise<void> {
-    if (!this.$container || !this.extensions.length) {
+    if (!this.$container || this.extensions.length === 0) {
       return;
     }
 
@@ -454,7 +454,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       }
     }
 
-    if (errors.length) {
+    if (errors.length > 0) {
       notifyError(`An error occurred adding ${errors.length} panels(s)`);
     }
   }
@@ -516,7 +516,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
     const { position = "append" } = this._definition;
 
     if (typeof position !== "string") {
-      throw new Error(`Expected string for panel position`);
+      throw new TypeError(`Expected string for panel position`);
     }
 
     switch (position) {

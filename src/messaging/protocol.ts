@@ -46,10 +46,10 @@ interface ErrorResponse {
   $$error: SerializedError;
 }
 
-export function isNotification(
-  options: HandlerOptions = { asyncResponse: true }
-): boolean {
-  return !(options?.asyncResponse ?? true);
+export function isNotification({
+  asyncResponse = true,
+}: HandlerOptions = {}): boolean {
+  return !asyncResponse;
 }
 
 export function isErrorResponse(ex: unknown): ex is ErrorResponse {

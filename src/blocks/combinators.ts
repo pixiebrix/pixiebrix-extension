@@ -330,22 +330,21 @@ export async function reducePipeline(
   renderedArgs: RenderedArgs,
   logger: Logger,
   root: HTMLElement | Document = null,
-  options: ReduceOptions = {
-    validate: true,
-    logValues: false,
-    headless: false,
-    optionsArgs: {},
-    serviceArgs: {},
-  }
+  {
+    validate = true,
+    logValues = false,
+    headless = false,
+    optionsArgs = {},
+    serviceArgs = {},
+  }: ReduceOptions = {}
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
     "@input": renderedArgs,
-    ...options.serviceArgs,
-    "@options": options.optionsArgs,
+    ...serviceArgs,
+    "@options": optionsArgs,
   };
 
   // If logValues not provided explicitly by the extension point, use the global value
-  let logValues = options.logValues;
   if (logValues === undefined) {
     logValues = (await getLoggingConfig()).logValues ?? false;
   }
@@ -393,8 +392,8 @@ export async function reducePipeline(
         root: stageRoot,
         context: extraContext,
         logValues,
-        validate: options.validate,
-        headless: options.headless,
+        validate: validate,
+        headless: headless,
         logger: stageLogger,
       });
 

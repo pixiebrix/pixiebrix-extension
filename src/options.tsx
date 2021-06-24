@@ -30,4 +30,4 @@ import "@/vendors/overrides.scss";
 
 initGoogle();
 
-ReactDOM.render(<App />, document.getElementById("container"));
+ReactDOM.render(<App />, document.querySelector("#container"));

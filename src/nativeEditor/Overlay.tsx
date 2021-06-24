@@ -42,15 +42,15 @@ class OverlayRect {
 
     this.node.style.zIndex = "10000000";
 
-    this.node.appendChild(this.border);
-    this.border.appendChild(this.padding);
-    this.padding.appendChild(this.content);
-    container.appendChild(this.node);
+    this.node.append(this.border);
+    this.border.append(this.padding);
+    this.padding.append(this.content);
+    container.append(this.node);
   }
 
   remove() {
     if (this.node.parentNode) {
-      this.node.parentNode.removeChild(this.node);
+      this.node.remove();
     }
   }
 
@@ -106,7 +106,7 @@ class OverlayTip {
     });
 
     this.nameSpan = doc.createElement("span");
-    this.tip.appendChild(this.nameSpan);
+    this.tip.append(this.nameSpan);
     Object.assign(this.nameSpan.style, {
       color: "#ee78e6",
       borderRight: "1px solid #aaaaaa",
@@ -114,18 +114,18 @@ class OverlayTip {
       marginRight: "0.5rem",
     });
     this.dimSpan = doc.createElement("span");
-    this.tip.appendChild(this.dimSpan);
+    this.tip.append(this.dimSpan);
     Object.assign(this.dimSpan.style, {
       color: "#d7d7d7",
     });
 
     this.tip.style.zIndex = "10000000";
-    container.appendChild(this.tip);
+    container.append(this.tip);
   }
 
   remove() {
     if (this.tip.parentNode) {
-      this.tip.parentNode.removeChild(this.tip);
+      this.tip.remove();
     }
   }
 
@@ -199,18 +199,18 @@ interface Dimensions {
 export function getElementDimensions(domElement: Element): Dimensions {
   const calculatedStyle = window.getComputedStyle(domElement);
   return {
-    borderLeft: parseInt(calculatedStyle.borderLeftWidth, 10),
-    borderRight: parseInt(calculatedStyle.borderRightWidth, 10),
-    borderTop: parseInt(calculatedStyle.borderTopWidth, 10),
-    borderBottom: parseInt(calculatedStyle.borderBottomWidth, 10),
-    marginLeft: parseInt(calculatedStyle.marginLeft, 10),
-    marginRight: parseInt(calculatedStyle.marginRight, 10),
-    marginTop: parseInt(calculatedStyle.marginTop, 10),
-    marginBottom: parseInt(calculatedStyle.marginBottom, 10),
-    paddingLeft: parseInt(calculatedStyle.paddingLeft, 10),
-    paddingRight: parseInt(calculatedStyle.paddingRight, 10),
-    paddingTop: parseInt(calculatedStyle.paddingTop, 10),
-    paddingBottom: parseInt(calculatedStyle.paddingBottom, 10),
+    borderLeft: Number.parseInt(calculatedStyle.borderLeftWidth, 10),
+    borderRight: Number.parseInt(calculatedStyle.borderRightWidth, 10),
+    borderTop: Number.parseInt(calculatedStyle.borderTopWidth, 10),
+    borderBottom: Number.parseInt(calculatedStyle.borderBottomWidth, 10),
+    marginLeft: Number.parseInt(calculatedStyle.marginLeft, 10),
+    marginRight: Number.parseInt(calculatedStyle.marginRight, 10),
+    marginTop: Number.parseInt(calculatedStyle.marginTop, 10),
+    marginBottom: Number.parseInt(calculatedStyle.marginBottom, 10),
+    paddingLeft: Number.parseInt(calculatedStyle.paddingLeft, 10),
+    paddingRight: Number.parseInt(calculatedStyle.paddingRight, 10),
+    paddingTop: Number.parseInt(calculatedStyle.paddingTop, 10),
+    paddingBottom: Number.parseInt(calculatedStyle.paddingBottom, 10),
   };
 }
 
@@ -254,17 +254,17 @@ export default class Overlay {
     this.tip = new OverlayTip(doc, this.container);
     this.rects = [];
 
-    doc.body.appendChild(this.container);
+    doc.body.append(this.container);
   }
 
   remove(): void {
     this.tip.remove();
-    this.rects.forEach((rect) => {
+    for (const rect of this.rects) {
       rect.remove();
-    });
+    }
     this.rects.length = 0;
     if (this.container.parentNode) {
-      this.container.parentNode.removeChild(this.container);
+      this.container.remove();
     }
   }
 
@@ -294,7 +294,7 @@ export default class Overlay {
       left: Number.POSITIVE_INFINITY,
     };
 
-    elements.forEach((element, index) => {
+    for (const [index, element] of elements.entries()) {
       const box = getNestedBoundingClientRect(element, this.window);
       const dims = getElementDimensions(element);
 
@@ -311,7 +311,7 @@ export default class Overlay {
 
       const rect = this.rects[index];
       rect.update(box, dims);
-    });
+    }
 
     if (!name) {
       name = elements[0].nodeName.toLowerCase();
@@ -372,6 +372,7 @@ function getBoundingClientRectWithBorderOffset(node: HTMLElement) {
 // Add together the top, left, bottom, and right properties of
 // each ClientRect, but keep the width and height of the first one.
 function mergeRectOffsets(rects: Array<Rect>): Rect {
+  // eslint-disable-next-line unicorn/no-array-reduce
   return rects.reduce((previousRect, rect) => {
     if (previousRect == null) {
       return rect;

@@ -308,7 +308,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   async run(): Promise<void> {
-    if (!this.extensions.length) {
+    if (this.extensions.length === 0) {
       console.debug(
         `contextMenu extension point ${this.id} has no installed extension`
       );

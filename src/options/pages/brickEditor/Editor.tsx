@@ -70,7 +70,7 @@ interface OwnProps {
 
 function isMac(): boolean {
   // https://stackoverflow.com/a/27862868/402560
-  return navigator.platform.indexOf("Mac") > -1;
+  return navigator.platform.includes("Mac");
 }
 
 const Editor: React.FunctionComponent<OwnProps> = ({
@@ -177,7 +177,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
                 Sharing{" "}
                 <SharingIcon
                   isPublic={values.public}
-                  organizations={!!values.organizations.length}
+                  organizations={values.organizations.length > 0}
                 />
               </Nav.Link>
               {showLogs && <Nav.Link eventKey="logs">Logs</Nav.Link>}

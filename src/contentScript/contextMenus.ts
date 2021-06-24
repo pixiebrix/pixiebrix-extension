@@ -49,7 +49,7 @@ export const handleMenuAction = liftContentScript(
 
     console.error(`No context menu found for extension: ${extensionId}`, {
       extensionId,
-      handlers: Array.from(handlers.keys()),
+      handlers: [...handlers.keys()],
     });
 
     throw new Error(

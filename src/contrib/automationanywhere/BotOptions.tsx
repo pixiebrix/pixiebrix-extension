@@ -205,7 +205,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       });
       return interfaceToInputSchema(response.data);
     } else {
-      return undefined;
+      return;
     }
   }, [fileId, hasPermissions]);
 
@@ -258,7 +258,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                 Object.entries(inputProperties(inputSchema)).map(
                   ([prop, fieldSchema]) => {
                     if (typeof fieldSchema === "boolean") {
-                      throw new Error(
+                      throw new TypeError(
                         "Expected schema for input property type"
                       );
                     }

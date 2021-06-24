@@ -84,7 +84,7 @@ export function useReinstall(): Reinstall {
         (x) => x._recipeId === recipe.metadata.id
       );
 
-      if (!recipeExtensions.length) {
+      if (recipeExtensions.length === 0) {
         throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
       }
 
@@ -141,14 +141,14 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         await collectPermissions(selected, configuredAuths)
       );
 
-      if (!selected.length) {
+      if (selected.length === 0) {
         addToast(`Select at least one brick to activate`, {
           appearance: "error",
           autoDismiss: true,
         });
         setSubmitting(false);
         return;
-      } else if (missing.length) {
+      } else if (missing.length > 0) {
         addToast(
           `You must select a configuration for each service: ${missing.join(
             ", "

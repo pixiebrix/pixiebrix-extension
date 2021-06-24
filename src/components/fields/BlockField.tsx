@@ -224,7 +224,7 @@ const BlockField: React.FunctionComponent<
         <FieldArray name={field.name}>
           {({ remove, push }) => (
             <div>
-              {!!pipeline.length && (
+              {pipeline.length > 0 && (
                 <div className="mb-3">
                   {pipeline.map((blockConfig, index) => (
                     <ErrorBoundary key={makeKey(blockConfig.id, index)}>

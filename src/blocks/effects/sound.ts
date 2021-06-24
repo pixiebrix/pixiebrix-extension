@@ -27,10 +27,10 @@ const sprite: { [key: string]: [number, number] } = {
   escape: [4000, 7200],
   meow: [8000, 8500],
   numkey: [9000, 9100],
-  ping: [10000, 11000],
-  death: [12000, 16200],
-  shot: [17000, 18000],
-  squit: [19000, 19300],
+  ping: [10_000, 11_000],
+  death: [12_000, 16_200],
+  shot: [17_000, 18_000],
+  squit: [19_000, 19_300],
 };
 
 let _howl: any;
@@ -49,7 +49,7 @@ export class SoundEffect extends Effect {
     sound: {
       type: "string",
       description: "The sound effect to play",
-      enum: Array.from(Object.keys(sprite)),
+      enum: Object.keys(sprite),
       default: "ping",
     },
   });

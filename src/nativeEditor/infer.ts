@@ -32,7 +32,7 @@ const TEXT_TAGS = ["span", "p", "b", "h1", "h2", "h3", "h4", "h5", "h6"];
 
 const ATTR_SKIP_ELEMENT_PATTERNS = [
   /^chevron-down$/,
-  /^([a-zA-Z0-9]+)-chevron-down$/,
+  /^([\dA-Za-z]+)-chevron-down$/,
 ];
 
 /**
@@ -65,6 +65,7 @@ class SkipElement extends Error {
 }
 
 function intersection<T>(sets: Set<T>[]): Set<T> {
+  // eslint-disable-next-line unicorn/no-array-reduce -- TODO: Maybe replace with lodash
   return sets.reduce((acc, other) => {
     return acc == null ? other : new Set([...acc].filter((x) => other.has(x)));
   }, null);
@@ -77,7 +78,7 @@ function outerHTML($element: JQuery<HTMLElement | Text>): string {
 
 function escapeDoubleQuotes(str: string): string {
   // https://gist.github.com/getify/3667624
-  return str.replace(/\\([\s\S])|(")/g, "\\$1$2");
+  return str.replace(/\\([\S\s])|(")/g, "\\$1$2");
 }
 
 /**
@@ -104,7 +105,7 @@ function commonAttr($items: JQuery<HTMLElement>, attr: string) {
       (x) => new Set(x ? x.split(" ") : [])
     );
     const commonValues = intersection(classNames);
-    unfiltered = Array.from(commonValues.values());
+    unfiltered = [...commonValues.values()];
   } else if (uniq(attributeValues).length === 1) {
     unfiltered = attributeValues[0].split(" ");
   } else {
@@ -170,7 +171,7 @@ function removeUnstyledLayout(node: Node): Node | null {
     return null;
   } else if (node.nodeType === Node.ELEMENT_NODE) {
     const element = node as HTMLElement;
-    const nonEmptyChildren = Array.from(node.childNodes).filter(
+    const nonEmptyChildren = [...node.childNodes].filter(
       (x) => !ignoreDivChildNode(x)
     );
     if (
@@ -181,13 +182,13 @@ function removeUnstyledLayout(node: Node): Node | null {
     ) {
       return removeUnstyledLayout(nonEmptyChildren[0]);
     } else {
-      const clone = node.cloneNode(false);
-      node.childNodes.forEach((childNode) => {
+      const clone = node.cloneNode(false) as Element;
+      for (const childNode of node.childNodes) {
         const newChild = removeUnstyledLayout(childNode);
         if (newChild != null) {
-          clone.appendChild(newChild);
+          clone.append(newChild);
         }
-      });
+      }
       return clone;
     }
   } else {
@@ -271,7 +272,7 @@ function commonButtonStructure(
 
   if (
     !currentCaptioned &&
-    !$common.children().length &&
+    $common.children().length === 0 &&
     CAPTION_TAGS.includes(proto.tagName.toLowerCase())
   ) {
     $common.append(document.createTextNode("{{{ caption }}}"));
@@ -294,17 +295,14 @@ type PanelStructureState = {
  */
 function commonPanelStructure(
   $items: JQuery<HTMLElement>,
-  state: PanelStructureState = {
-    inHeader: false,
-    headingInserted: false,
-    bodyInserted: false,
-  }
+  {
+    inHeader = false,
+    headingInserted = false,
+    bodyInserted = false,
+  }: PanelStructureState = {} as PanelStructureState
 ): [JQuery<HTMLElement | Text>, PanelStructureState] {
   const proto = $items.get(0);
-  const inHeader =
-    state.inHeader || HEADER_TAGS.includes(proto.tagName.toLowerCase());
-  let headingInserted = state.headingInserted;
-  let bodyInserted = state.bodyInserted;
+  inHeader = inHeader || HEADER_TAGS.includes(proto.tagName.toLowerCase());
 
   const $common = $(`<${proto.tagName.toLowerCase()}>`);
 
@@ -413,13 +411,8 @@ function buildBody(proto: HTMLElement): [JQuery<HTMLElement | Text>, boolean] {
 
 export function buildSinglePanelElement(
   proto: HTMLElement,
-  state: PanelStructureState = {
-    inHeader: false,
-    headingInserted: false,
-    bodyInserted: false,
-  }
+  { headingInserted = false }: PanelStructureState = {} as PanelStructureState
 ): [JQuery<HTMLElement>, PanelStructureState] {
-  let headingInserted = state.headingInserted;
   let bodyInserted = false;
 
   const $inferred = $(`<${proto.tagName.toLowerCase()}>`);
@@ -536,7 +529,7 @@ export function inferSelectors(
         root,
         error,
       });
-      return undefined;
+      return;
     }
   };
 
@@ -659,13 +652,13 @@ function containerChildren(
       return this === element;
     });
 
-    if (exactMatch.length) {
+    if (exactMatch.length > 0) {
       return exactMatch.get(0);
     }
 
     const match = $container.children().has(element);
 
-    if (!match.length) {
+    if (match.length === 0) {
       throw new Error("element not found in container");
     }
 
@@ -715,7 +708,7 @@ export function inferButtonHTML(
     for (const buttonTag of [...BUTTON_SELECTORS, ...BUTTON_TAGS]) {
       const $items = $container.children(buttonTag);
       if (
-        $items.length &&
+        $items.length > 0 &&
         ($items.is(element) || $items.has(element).length > 0)
       ) {
         if (buttonTag === "input") {

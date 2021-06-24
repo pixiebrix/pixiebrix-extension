@@ -58,7 +58,7 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
 
   let control;
 
-  if (options.length && creatable) {
+  if (options.length > 0 && creatable) {
     control = (
       <Creatable
         isClearable
@@ -71,7 +71,7 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         onChange={(option) => helpers.setValue(option?.value)}
       />
     );
-  } else if (options.length && !creatable) {
+  } else if (options.length > 0 && !creatable) {
     control = (
       <Select
         isClearable
@@ -124,7 +124,7 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
 
 function extractServiceIds(schema: Schema): string[] {
   if ("$ref" in schema) {
-    return [schema.$ref.substring(SERVICE_BASE_SCHEMA.length)];
+    return [schema.$ref.slice(SERVICE_BASE_SCHEMA.length)];
   } else if ("anyOf" in schema) {
     return schema.anyOf
       .filter((x) => x != false)
@@ -154,7 +154,7 @@ export const ServiceField: React.FunctionComponent<
   }, [schema, values.services]);
 
   useEffect(() => {
-    if (value == null && detectDefault && options.length) {
+    if (value == null && detectDefault && options.length > 0) {
       const ids = extractServiceIds(schema);
       const service = values.services.find((service) =>
         ids.includes(service.id)
@@ -235,9 +235,9 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
   const [field] = useField(props);
 
   if (Array.isArray(schema.items)) {
-    throw new Error("Support for arrays of mixed types is not implemented");
+    throw new TypeError("Support for arrays of mixed types is not implemented");
   } else if (typeof schema.items === "boolean") {
-    throw new Error("Schema required for items");
+    throw new TypeError("Schema required for items");
   }
   const schemaItems = schema.items as Schema;
 
@@ -389,7 +389,7 @@ function genericOptionsFactory(
     <>
       {Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
         if (typeof fieldSchema === "boolean") {
-          throw new Error("Expected schema for input property type");
+          throw new TypeError("Expected schema for input property type");
         }
         // fine because coming from Object.entries for the schema
         // eslint-disable-next-line security/detect-object-injection

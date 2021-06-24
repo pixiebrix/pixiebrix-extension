@@ -29,7 +29,7 @@ if (nonce) {
 
 const iframe = document.createElement("iframe");
 iframe.src = url.toString();
-document.body.appendChild(iframe);
+document.body.append(iframe);
 
 // import {REQUEST_FRAME_DATA} from "@/messaging/constants";
 // import {sendMessage} from "@/chrome";

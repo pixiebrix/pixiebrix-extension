@@ -30,7 +30,7 @@ import { testMatchPatterns } from "@/blocks/available";
 let _scriptPromise: Promise<void>;
 const _dynamic: Map<string, IExtensionPoint> = new Map();
 const _frameHref: Map<number, string> = new Map();
-let _extensionPoints: IExtensionPoint[] = undefined;
+let _extensionPoints: IExtensionPoint[];
 let _navSequence = 1;
 const _installedExtensionPoints: IExtensionPoint[] = [];
 // reload extension definitions on next navigation
@@ -46,12 +46,12 @@ async function installScriptOnce(): Promise<void> {
     _scriptPromise = new Promise((resolve) => {
       const script = document.createElement("script");
       script.src = chrome.extension.getURL("script.js");
-      (document.head || document.documentElement).appendChild(script);
-      script.onload = function () {
+      (document.head || document.documentElement).append(script);
+      script.addEventListener("load", function () {
         script.remove();
         console.debug("Installed page script");
         resolve();
-      };
+      });
     });
   }
   return _scriptPromise;
@@ -172,7 +172,7 @@ async function loadExtensions() {
   )) {
     const activeExtensions = Object.values(extensions).filter((x) => x.active);
 
-    if (!activeExtensions.length && !previousIds.has(extensionPointId)) {
+    if (activeExtensions.length === 0 && !previousIds.has(extensionPointId)) {
       // Ignore the case where we uninstalled the last extension, but the extension point was
       // not deleted from the state.
       //
@@ -188,7 +188,7 @@ async function loadExtensions() {
 
       extensionPoint.syncExtensions(activeExtensions);
 
-      if (activeExtensions.length) {
+      if (activeExtensions.length > 0) {
         // Cleared out _extensionPoints before, so can just push w/o checking if it's already in the array
         _extensionPoints.push(extensionPoint);
       }
@@ -278,7 +278,7 @@ export async function handleNavigate({
     console.debug(`Setting opener tabId: ${openerTabId}`);
   }
 
-  if (extensionPoints.length) {
+  if (extensionPoints.length > 0) {
     _navSequence++;
 
     const cancel = makeCancelOnNavigate();

@@ -54,7 +54,7 @@ const AuthWidget: React.FunctionComponent<{
   authOptions: AuthOption[];
   serviceId: string;
 }> = ({ serviceId, authOptions }) => {
-  const [, , helpers] = useField(`services.${serviceId}`);
+  const helpers = useField(`services.${serviceId}`)[2];
   const dispatch = useDispatch();
   const { addToast } = useToasts();
 
@@ -140,14 +140,14 @@ const AuthWidget: React.FunctionComponent<{
         )}
         <div>
           <Button
-            variant={options.length ? "info" : "primary"}
+            variant={options.length > 0 ? "info" : "primary"}
             size="sm"
             style={{ height: "36px", marginTop: "1px" }}
             onClick={() => setShow(true)}
             disabled={isPending || error != null}
           >
             <FontAwesomeIcon icon={faPlus} />{" "}
-            {options.length ? "Add New" : "Configure"}
+            {options.length > 0 ? "Add New" : "Configure"}
           </Button>
         </div>
       </div>

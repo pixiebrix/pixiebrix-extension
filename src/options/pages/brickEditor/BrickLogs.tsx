@@ -44,7 +44,7 @@ const BrickLogs: React.FunctionComponent<OwnProps> = ({
   context,
   initialLevel = "debug",
   perPage = 10,
-  refreshInterval = undefined,
+  refreshInterval,
 }) => {
   const { addToast } = useToasts();
 

@@ -128,7 +128,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
   traverseUp = 0,
   isClearable = false,
   sort = false,
-  root = undefined,
+  root,
   disabled = false,
 }) => {
   const { port } = useContext(DevToolsContext);

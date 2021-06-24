@@ -43,7 +43,7 @@ declare global {
   }
 }
 
-let selectedElement: HTMLElement = undefined;
+let selectedElement: HTMLElement;
 
 window.setSelectedElement = function (el: HTMLElement) {
   // do something with the selected element
@@ -118,6 +118,7 @@ export const runReaderBlock = liftContentScript(
         return {
           // TODO: extract the media type
           mediaType: null,
+          // eslint-disable-next-line unicorn/prefer-dom-node-text-content -- TODO: Review if necessary
           linkText: root.tagName === "A" ? root.innerText : null,
           linkUrl: root.tagName === "A" ? root.getAttribute("href") : null,
           srcUrl: root.getAttribute("src"),

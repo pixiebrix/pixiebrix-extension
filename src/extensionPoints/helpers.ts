@@ -136,7 +136,7 @@ function pollSelector(
   const promise = _wait<JQuery<HTMLElement>>(
     () => {
       const $elt = $target.find(selector);
-      return $elt.length ? $elt : null;
+      return $elt.length > 0 ? $elt : null;
     },
     () => cancelled,
     waitMillis
@@ -195,7 +195,7 @@ export function awaitElementOnce(
   const selectors = castArray(selector);
   const $root = rootElement ? $(rootElement) : $(document);
 
-  if (!selectors.length) {
+  if (selectors.length === 0) {
     return [Promise.resolve($root), noop];
   }
 

@@ -61,14 +61,14 @@ export async function checkAvailable({
   const selectors = rawSelectors ? castArray(rawSelectors) : [];
 
   // check matchPatterns first b/c they'll be faster
-  if (matchPatterns.length && !testMatchPatterns(matchPatterns)) {
+  if (matchPatterns.length > 0 && !testMatchPatterns(matchPatterns)) {
     // console.debug(
     //   `Location doesn't match any pattern: ${document.location.href}`,
     //   matchPatterns
     // );
     return false;
   }
-  if (selectors.length && !selectors.some(testSelector)) {
+  if (selectors.length > 0 && !selectors.some(testSelector)) {
     // console.debug("Page doesn't match any selectors", selectors);
     return false;
   }

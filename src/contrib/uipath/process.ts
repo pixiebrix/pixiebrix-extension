@@ -30,7 +30,7 @@ export const UIPATH_SERVICE_IDS = [
 export const UIPATH_ID = "@pixiebrix/uipath/process";
 
 const MAX_WAIT_MILLIS = 20_000;
-const POLL_MILLIS = 1_000;
+const POLL_MILLIS = 1000;
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
   uipath: {
@@ -132,7 +132,7 @@ export class RunProcess extends Transformer {
       },
     });
 
-    const start = new Date().getTime();
+    const start = Date.now();
 
     if (awaitResult) {
       if (startData.value.length > 1) {
@@ -156,7 +156,7 @@ export class RunProcess extends Transformer {
           throw new BusinessError("UiPath job failed");
         }
         await sleep(POLL_MILLIS);
-      } while (new Date().getTime() - start < MAX_WAIT_MILLIS);
+      } while (Date.now() - start < MAX_WAIT_MILLIS);
       throw new BusinessError(
         `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
       );

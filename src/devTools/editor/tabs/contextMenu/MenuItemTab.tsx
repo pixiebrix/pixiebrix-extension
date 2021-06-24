@@ -24,7 +24,7 @@ const MenuItemTab: React.FunctionComponent<{
 }> = ({ eventKey = "menuItem" }) => {
   const captionInput = useRef<HTMLInputElement>(null);
 
-  const [, , labelHelpers] = useField<string>("label");
+  const labelHelpers = useField<string>("label")[2];
 
   const insertSnippet = useCallback(
     (snippet) => {

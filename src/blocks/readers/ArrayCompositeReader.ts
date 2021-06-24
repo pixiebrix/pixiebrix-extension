@@ -43,6 +43,7 @@ class ArrayCompositeReader extends Reader {
     this.outputSchema = {
       $schema: "https://json-schema.org/draft/2019-09/schema#",
       type: "object",
+      // eslint-disable-next-line unicorn/no-array-reduce
       properties: this._readers.reduce(
         (acc, reader) => ({
           ...acc,

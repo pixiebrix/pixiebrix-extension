@@ -98,7 +98,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
     }
     this.$links = $(`article a[data-type="${this.entityType}"]`);
     console.log(`Found ${this.$links.length} ${this.entityType} link(s)`);
-    return !!this.$links.length;
+    return this.$links.length > 0;
   }
 
   async runOne($link: JQuery) {
@@ -126,7 +126,7 @@ class MentionAction extends ExtensionPoint<MentionConfig> {
         .parent()
         .find(`[data-pixiebrix-uuid="${extension.id}"`);
 
-      if ($existingButton.length) {
+      if ($existingButton.length > 0) {
         // shouldn't need to unbind click handlers because we're replace it outright
         $existingButton.replaceWith($button);
       } else {

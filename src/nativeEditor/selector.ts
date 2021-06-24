@@ -86,7 +86,7 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
       event.preventDefault();
       event.stopPropagation();
 
-      console.log("Pointer down: ", event.target);
+      console.log("Pointer down:", event.target);
     }
 
     function onPointerOver(event: MouseEvent) {

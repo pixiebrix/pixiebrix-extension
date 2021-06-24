@@ -152,7 +152,7 @@ export function useCreate(): CreateCallback {
         // Save the foundation second, which depends on the reader
         if (
           !element.installed ||
-          editablePackages.find(
+          editablePackages.some(
             (x) => x.name === element.extensionPoint.metadata.id
           )
         ) {

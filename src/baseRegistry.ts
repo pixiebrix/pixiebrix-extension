@@ -163,7 +163,7 @@ export class Registry<TItem extends RegistryItem> {
         console.warn(
           `Item ${item.metadata?.id ?? "<unknown>"} has kind ${
             item.kind
-          }; expected: ${Array.from(this.kinds.values()).join(", ")}`
+          }; expected: ${[...this.kinds.values()].join(", ")}`
         );
       }
 

@@ -70,7 +70,7 @@ interface ShadowDOM {
 
 export const DATA_ATTR = "data-pb-uuid";
 
-const MENU_INSTALL_ERROR_DEBOUNCE_MS = 1_000;
+const MENU_INSTALL_ERROR_DEBOUNCE_MS = 1000;
 
 export interface MenuItemExtensionConfig {
   caption: string;
@@ -229,7 +229,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   public uninstall(): void {
     this.uninstalled = true;
 
-    const menus = Array.from(this.menus.values());
+    const menus = [...this.menus.values()];
 
     // clear so they don't get re-added by the onNodeRemoved mechanism
     const extensions = this.extensions.splice(0, this.extensions.length);
@@ -346,7 +346,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       menuPromise
     )) as JQuery<HTMLElement>;
 
-    const menuContainers = Array.from(this.menus.values());
+    const menuContainers = [...this.menus.values()];
 
     let existingCount = 0;
 
@@ -518,7 +518,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const $existingItem = $menu.find(`[${DATA_ATTR}="${extension.id}"]`);
 
-    if ($existingItem.length) {
+    if ($existingItem.length > 0) {
       // We don't need to unbind any click handlers because we're replacing the element completely.
       console.debug(`Replacing existing menu item for ${extension.id}`);
       $existingItem.replaceWith($menuItem);
@@ -560,7 +560,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       let elementCount = 0;
       for (const dependency of dependencies) {
         const $dependency = $(document).find(dependency);
-        if ($dependency.length) {
+        if ($dependency.length > 0) {
           $dependency.each((index, element) => {
             elementCount++;
             observer.observe(element, {
@@ -601,7 +601,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   }
 
   async run(extensionIds?: string[]): Promise<void> {
-    if (!this.menus.size || !this.extensions.length) {
+    if (this.menus.size === 0 || this.extensions.length === 0) {
       return;
     }
 
@@ -610,15 +610,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const errors = [];
 
-    const menus = Array.from(this.menus.values());
-
     const containerSelector = this.getContainerSelector();
     const $currentMenus = $(document).find(
       castArray(containerSelector).join(" ")
     );
     const currentMenus = $currentMenus.toArray();
 
-    for (const menu of menus) {
+    for (const menu of this.menus.values()) {
       if (!currentMenus.includes(menu)) {
         console.debug(
           "Skipping menu because it's no longer found by the container selector"
@@ -672,7 +670,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       }
     }
 
-    if (errors.length) {
+    if (errors.length > 0) {
       // Report the error to the user. Don't report to to the telemetry service since we already reported
       // above in the loop
       console.warn(`An error occurred adding ${errors.length} menu item(s)`, {

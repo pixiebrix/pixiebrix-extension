@@ -77,7 +77,7 @@ export class ElementEvent extends Effect {
   ): Promise<void> {
     const $element = $(document).find(selector);
 
-    if (!$element.length) {
+    if ($element.length === 0) {
       logger.debug(`Element not found for selector: ${selector}`);
     } else if ($element.length > 1) {
       logger.debug(`Multiple elements found for selector: ${selector}`);

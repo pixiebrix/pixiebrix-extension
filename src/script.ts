@@ -82,8 +82,9 @@ import { elementInfo } from "@/nativeEditor/frameworks";
 import { BusinessError } from "@/errors";
 
 function requireSingleElement(selector: string): HTMLElement {
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- False positive
   const $elt = jQuery(document).find(selector);
-  if (!$elt.length) {
+  if ($elt.length === 0) {
     throw new BusinessError(`No elements found for selector: '${selector}'`);
   } else if ($elt.length > 1) {
     throw new BusinessError(

@@ -72,7 +72,7 @@ function defaultReader(frameworks: FrameworkMeta[]): Framework {
   const knownFrameworks = (frameworks ?? []).filter((x) =>
     KNOWN_READERS.includes(x.id)
   );
-  return knownFrameworks.length ? knownFrameworks[0].id : "jquery";
+  return knownFrameworks.length > 0 ? knownFrameworks[0].id : "jquery";
 }
 
 export function makeIsAvailable(
@@ -236,7 +236,7 @@ export async function makeReaderFormState(
   } else if (Array.isArray(readerId)) {
     readerIds = readerId as string[];
   } else {
-    throw new Error("Unexpected reader configuration");
+    throw new TypeError("Unexpected reader configuration");
   }
 
   return Promise.all(

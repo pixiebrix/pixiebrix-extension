@@ -23,8 +23,8 @@ export const sessionTimestamp = new Date();
 export let navigationId = uuidv4();
 export let navigationTimestamp = new Date();
 
-export let tabId: number = undefined;
-export let frameId: number = undefined;
+export let tabId: number;
+export let frameId: number;
 
 export let ready = false;
 

@@ -160,7 +160,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     const errors = compact(
       results.flatMap((x) => (x.status === "fulfilled" ? x.value : [x.reason]))
     );
-    if (errors.length) {
+    if (errors.length > 0) {
       console.debug("Trigger errors", errors);
       notifyError(`An error occurred running ${errors.length} triggers(s)`);
     }
@@ -202,7 +202,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         (entries) => {
           for (const entry of entries.filter((x) => x.isIntersecting)) {
             this.runTrigger(entry.target as HTMLElement).then((errors) => {
-              if (errors.length) {
+              if (errors.length > 0) {
                 console.error("An error occurred while running a trigger", {
                   errors,
                 });
@@ -218,9 +218,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         }
       );
 
-      $root.toArray().forEach((root) => {
+      for (const root of $root) {
         this.observer.observe(root as HTMLElement);
-      });
+      }
     } else if (this.trigger) {
       if (rootSelector == null) {
         throw new Error(

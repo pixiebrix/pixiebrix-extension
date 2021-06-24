@@ -22,16 +22,14 @@
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:import/typescript",
-    "plugin:security/recommended"
+    "plugin:security/recommended",
+    "plugin:unicorn/recommended"
 
     // TODO: Restore these after https://github.com/benmosher/eslint-plugin-import/issues/1931
     // "plugin:import/errors",
     // "plugin:import/warnings",
   ],
   "rules": {
-    "@typescript-eslint/no-empty-function": "off",
-    "react/prop-types": "off",
-    "@typescript-eslint/ban-types": ["warn"],
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
@@ -43,7 +41,6 @@
         "caughtErrorsIgnorePattern": "^_$"
       }
     ],
-    "@typescript-eslint/no-explicit-any": ["warn"],
     "@typescript-eslint/ban-ts-comment": [
       "error",
       {
@@ -51,8 +48,7 @@
         "minimumDescriptionLength": 3
       }
     ],
-    "unicorn/prefer-optional-catch-binding": "error",
-    "unicorn/catch-error-name": "error",
+
     "unicorn/prevent-abbreviations": [
       "error",
       {
@@ -63,7 +59,26 @@
           }
         }
       }
-    ]
+    ],
+
+    // Soft-enable some rules
+    "@typescript-eslint/ban-types": "warn",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
+    "unicorn/no-useless-undefined": "warn", // Buggy with React
+    "unicorn/no-nested-ternary": "warn", // Sometimes it conflicts with Prettier
+    "unicorn/consistent-function-scoping": "warn", // Complains about some of the lifted functions
+    "unicorn/prefer-prototype-methods": "warn", // Buggy with abstract classes
+    "unicorn/prefer-switch": "warn", // TODO: Enforce later
+
+    // Disable recommended rules
+    "@typescript-eslint/no-empty-function": "off",
+    "react/prop-types": "off",
+    "unicorn/no-null": "off", // Maybe later
+    "unicorn/filename-case": "off", // Contrasts with React
+    "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
+    "unicorn/prefer-set-has": "off", // Not always worth the extra code
+    "unicorn/prefer-ternary": "off" // Maybe later
   },
   "ignorePatterns": [
     "node_modules",
@@ -88,7 +103,8 @@
         "jest": true
       },
       "rules": {
-        "@typescript-eslint/no-var-requires": "off"
+        "@typescript-eslint/no-var-requires": "off",
+        "unicorn/prefer-module": "off"
       }
     }
   ]

@@ -125,7 +125,7 @@ export async function setStorage(
   storageType: StorageLocation = "local"
 ): Promise<void> {
   if (typeof value !== "string") {
-    throw new Error("Expected string value");
+    throw new TypeError("Expected string value");
   }
   await browser.storage[storageType].set({ [storageKey]: value });
 }

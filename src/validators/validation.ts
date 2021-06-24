@@ -26,7 +26,7 @@ import uniq from "lodash/uniq";
 import isPlainObject from "lodash/isPlainObject";
 import mapValues from "lodash/mapValues";
 
-const IDENTIFIER_REGEX = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
+const IDENTIFIER_REGEX = /^[A-Z_a-z]\w*$/;
 
 const BRICK_RUN_METHODS: Record<string, string> = {
   "#/definitions/renderer": "render",
@@ -82,9 +82,9 @@ function isBrickSchema(schema: Schema): boolean {
 
 export function configSchemaFactory(
   schema: Schema,
-  options: Options = { required: false }
+  { required = false }: Options = {} as Options
 ): Yup.Schema<unknown> {
-  const wrapRequired = (x: any) => (options.required ? x.required() : x);
+  const wrapRequired = (x: any) => (required ? x.required() : x);
 
   if (isBrickSchema(schema)) {
     return Yup.lazy((val) => {
@@ -116,7 +116,7 @@ export function configSchemaFactory(
     });
   } else if (schema.type === "array") {
     if (typeof schema.items === "boolean") {
-      throw new Error("Expected schema definition for items, not boolean");
+      throw new TypeError("Expected schema definition for items, not boolean");
     } else if (Array.isArray(schema.items)) {
       // TODO: implement support for tuples
       // https://github.com/jquense/yup/issues/528

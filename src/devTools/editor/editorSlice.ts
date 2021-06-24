@@ -302,7 +302,7 @@ export const editorSlice = createSlice({
       state.selectionSeq++;
     },
     selectElement: (state, action: PayloadAction<string>) => {
-      if (!state.elements.find((x) => action.payload === x.uuid)) {
+      if (!state.elements.some((x) => action.payload === x.uuid)) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
       state.error = null;

@@ -68,7 +68,7 @@ class LocalDefinedService<
     const patterns = castArray(
       this._definition.isAvailable?.matchPatterns ?? []
     );
-    return patterns.length == 0 || testMatchPatterns(patterns, url);
+    return patterns.length === 0 || testMatchPatterns(patterns, url);
   }
 
   /**
@@ -113,8 +113,10 @@ class LocalDefinedService<
     if (this.isOAuth2) {
       const oauth = this._definition
         .authentication as OAuth2AuthenticationDefinition;
-      patterns.push(mapArgs(oauth.oauth2.authorizeUrl, serviceConfig));
-      patterns.push(mapArgs(oauth.oauth2.tokenUrl, serviceConfig));
+      patterns.push(
+        mapArgs(oauth.oauth2.authorizeUrl, serviceConfig),
+        mapArgs(oauth.oauth2.tokenUrl, serviceConfig)
+      );
     }
 
     if (this.isToken) {
@@ -242,7 +244,7 @@ class LocalDefinedService<
     authData?: AuthData
   ): AxiosRequestConfig {
     const missing = missingProperties(this.schema, serviceConfig);
-    if (missing.length) {
+    if (missing.length > 0) {
       throw new NotConfiguredError(
         `Service ${this.id} is not fully configured`,
         this.id,
