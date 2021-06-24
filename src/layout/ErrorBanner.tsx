@@ -1,5 +1,5 @@
-/*!
- * Copyright (C) 2020 Pixie Brix, LLC
+/*
+ * Copyright (C) 2021 Pixie Brix, LLC
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,40 +15,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-.environment-banner {
-  text-align: center;
-  padding: 10px;
+import React from "react";
+import "./Banner.scss";
 
-  &.unknown {
-    background-color: #ffd9b1;
+const errorMessages = new Map([
+  [
+    "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",
+    "This is a special page that can’t be edited",
+  ],
+  [
+    "ERR_BROWSER_ACTION_TOGGLE",
+    "PixieBrix might not be compatible with this page",
+  ],
+]);
+
+const ErrorBanner: React.FunctionComponent = () => {
+  const message = errorMessages.get(
+    new URLSearchParams(location.search).get("error")
+  );
+  if (message) {
+    return <div className="error-banner w-100">{message}</div>;
   }
+};
 
-  &.development {
-    background-color: #bfd7bf;
-  }
-
-  &.staging {
-    background-color: #8bcaff;
-  }
-}
-
-.deployment-banner {
-  text-align: center;
-  padding: 10px;
-
-  background-color: #8bcaff;
-}
-
-.update-banner {
-  text-align: center;
-  padding: 10px;
-
-  background-color: #ffd9b1;
-}
-
-.error-banner {
-  text-align: center;
-  padding: 10px;
-
-  background-color: #fe7c96;
-}
+export default ErrorBanner;

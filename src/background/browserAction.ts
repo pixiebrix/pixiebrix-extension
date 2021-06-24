@@ -22,7 +22,6 @@ import { injectContentScript } from "@/background/util";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { allowSender } from "@/actionPanel/protocol";
 import { isErrorObject, sleep } from "@/utils";
-import webextAlert from "./webextAlert";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 
@@ -34,6 +33,15 @@ export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAM
  */
 const tabNonces = new Map<number, string>();
 const tabFrames = new Map<number, number>();
+
+async function showErrorInOptions(id: string, tabIndex: number): Promise<void> {
+  const url = new URL(browser.runtime.getURL("options.html"));
+  url.searchParams.set("error", id);
+  await browser.tabs.create({
+    url: url.toString(),
+    index: tabIndex + 1,
+  });
+}
 
 async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
   // We're either getting a new frame, or getting rid of the existing one. Therefore, forget the old frame
@@ -54,16 +62,20 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
       if (
         /cannot be scripted|(chrome|about|extension):[/][/]/.test(error.message)
       ) {
-        webextAlert("This is a special page that can’t be edited");
-      } else {
-        // Firefox does not catch injection errors so we don't get a specific error message
-        // https://github.com/pixiebrix/pixiebrix-extension/issues/579#issuecomment-866451242
-        webextAlert("PixieBrix might not be compatible with this page");
-        
-        // Only report unknown-reason errors
-        reportError(error);
+        await showErrorInOptions(
+          "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",
+          tab.index
+        );
+        return;
       }
+
+      // Firefox does not catch injection errors so we don't get a specific error message
+      // https://github.com/pixiebrix/pixiebrix-extension/issues/579#issuecomment-866451242
+      await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
     }
+
+    // Only report unknown-reason errors
+    reportError(error);
   }
 }
 
