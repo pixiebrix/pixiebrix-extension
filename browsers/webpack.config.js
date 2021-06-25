@@ -286,7 +286,6 @@ module.exports = (env, options) => ({
       // If not found, these values will be used as defaults
       DEBUG: !isProd(options),
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
-      VERSION_NAME: getVersionName(isProd(options)),
       ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
 
       // If not found, "undefined" will cause the build to fail
@@ -301,6 +300,15 @@ module.exports = (env, options) => ({
       GOOGLE_API_KEY: null,
       GOOGLE_APP_ID: null,
     }),
+
+    // Unlike the EnvironmentPlugin, this is evaluate at every build
+    new webpack.DefinePlugin({
+      "process.env.VERSION_NAME": webpack.DefinePlugin.runtimeValue(
+        () => JSON.stringify(getVersionName(isProd(options))),
+        true
+      ),
+    }),
+
     new MiniCssExtractPlugin({
       chunkFilename: "css/[id].css",
     }),
