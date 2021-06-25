@@ -104,7 +104,7 @@
     "url-join": "^4.0.1",
     "use-async-effect": "^2.2.3",
     "use-debounce": "^6.0.1",
-    "use-immer": "^0.5.2",
+    "use-immer": "^0.6.0",
     "uuid": "^8.3.2",
     "webext-additional-permissions": "^2.0.1",
     "webext-detect-page": "^2.0.5",
