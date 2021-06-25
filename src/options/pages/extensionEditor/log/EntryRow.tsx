@@ -19,7 +19,6 @@ import React, { useMemo, useState } from "react";
 import { LogEntry } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
-import moment from "moment";
 import { ErrorObject } from "serialize-error";
 import JSONTree from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
@@ -82,6 +81,10 @@ const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
 
 const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
   const [expanded, setExpanded] = useState(false);
+  const dateFormat = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "long",
+    timeStyle: "short",
+  });
 
   const Detail = useMemo(() => {
     if (typeof entry.error === "object" && entry.error) {
@@ -110,7 +113,7 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
             </span>
           )}
         </td>
-        <td>{moment(Number.parseInt(entry.timestamp, 10)).calendar()}</td>
+        <td>{dateFormat.format(new Date(entry.timestamp))}</td>
         <td>{entry.level.toUpperCase()}</td>
         <td>{entry.context?.blockId ?? entry.context?.serviceId ?? ""}</td>
         <td>{entry.message}</td>
