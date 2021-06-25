@@ -63,6 +63,7 @@ if (process.env.ENVIRONMENT === "development" && isChrome) {
   const { version_name } = chrome.runtime.getManifest();
 
   if (localStorage.getItem("dev:last-version") === version_name) {
+    // This helps avoid reload loops
     localStorage.removeItem("dev:last-version");
     chrome.runtime.reload();
   }
