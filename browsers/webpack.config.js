@@ -301,14 +301,6 @@ module.exports = (env, options) => ({
       GOOGLE_APP_ID: null,
     }),
 
-    // Unlike the EnvironmentPlugin, this is evaluate at every build
-    new webpack.DefinePlugin({
-      "process.env.VERSION_NAME": webpack.DefinePlugin.runtimeValue(
-        () => JSON.stringify(getVersionName(isProd(options))),
-        true
-      ),
-    }),
-
     new MiniCssExtractPlugin({
       chunkFilename: "css/[id].css",
     }),
