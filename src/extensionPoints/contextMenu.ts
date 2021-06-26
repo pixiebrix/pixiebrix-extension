@@ -62,16 +62,11 @@ let selectionHandlerInstalled = false;
 const BUTTON_SECONDARY = 2;
 
 function setActiveElement(event: MouseEvent): void {
-  try {
-    if (event?.button === BUTTON_SECONDARY) {
-      clickedElement = event?.target as HTMLElement;
-    }
-  } catch (error) {
-    try {
-      reportError(error);
-    } catch (error) {
-      console.error(error);
-    }
+  // This method can't throw, otherwise I think it breaks event dispatching because we're passing
+  // useCapture: true to the event listener
+  clickedElement = null;
+  if (event?.button === BUTTON_SECONDARY) {
+    clickedElement = event?.target as HTMLElement;
   }
 }
 
