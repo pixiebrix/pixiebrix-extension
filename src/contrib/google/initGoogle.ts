@@ -50,6 +50,10 @@ function initGoogle(): void {
   }
 
   window.onGAPILoad = onGAPILoad;
+
+  const script = document.createElement("script");
+  script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
+  document.head.append(script);
 }
 
 export default initGoogle;

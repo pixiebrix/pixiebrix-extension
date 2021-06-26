@@ -42,7 +42,6 @@ import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import preload from "@/background/preload";
 import initDeploymentUpdater from "@/background/deployment";
-import { isChrome } from "@/helpers";
 
 initNavigation();
 initExecutor();
@@ -50,9 +49,3 @@ initGoogle();
 initFrames();
 preload();
 initDeploymentUpdater();
-
-if (isChrome) {
-  const script = document.createElement("script");
-  script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
-  document.head.append(script);
-}
