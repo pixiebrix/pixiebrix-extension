@@ -46,7 +46,7 @@ export default {
               gwtVersion = frames[n].contentWindow.$gwt_version;
               break;
             }
-          } catch (e) {}
+          } catch {}
         }
 
         if (gwtVersion == "0.0.999") {
