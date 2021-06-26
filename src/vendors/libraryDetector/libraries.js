@@ -1789,14 +1789,13 @@ export default {
             });
         });
 
-      return Promise.race([workerPromise, timeoutPromise])
-        .catch(function (exception) {
-          return false;
-        })
-        .finally((result) => {
-          clearTimeout();
-          return result;
-        });
+      try {
+        return await Promise.race([workerPromise, timeoutPromise]);
+      } catch {
+        return false;
+      } finally {
+        clearTimeout();
+      }
     },
   },
   Boq: {
