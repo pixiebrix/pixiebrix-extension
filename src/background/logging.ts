@@ -32,7 +32,7 @@ import {
   isConnectionError,
 } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
-import { errorMessage } from "@/telemetry/logging";
+import { reportError } from "@/telemetry/logging";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -171,25 +171,25 @@ function buildContext(
 export const recordError = liftBackground(
   "RECORD_ERROR",
   async (
-    error: SerializedError,
+    error: unknown,
     context: MessageContext,
     data: JsonObject | undefined
   ): Promise<void> => {
     try {
-      const message = errorMessage(error);
+      const realError = deserializeError(error);
+      const serializedError = serializeError(error);
 
       if (!(await _getDNT())) {
         // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the
         // object is the custom payload data
         // https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
-        const errorObj = deserializeError(error);
 
-        if (hasCancelRootCause(error)) {
+        if (hasCancelRootCause(realError)) {
           // NOP - no reason to send to Rollbar
-        } else if (hasBusinessRootCause(error)) {
-          rollbar.debug(message, errorObj);
+        } else if (hasBusinessRootCause(realError)) {
+          rollbar.debug(realError.message, realError);
         } else {
-          rollbar.error(message, errorObj);
+          rollbar.error(realError.message, realError);
         }
       }
 
@@ -197,9 +197,9 @@ export const recordError = liftBackground(
         uuid: uuidv4(),
         timestamp: Date.now().toString(),
         level: "error",
-        context: buildContext(error, context),
-        message,
-        error,
+        context: buildContext(serializedError, context),
+        message: realError.message,
+        error: serializedError,
         data,
       });
     } catch {
@@ -279,7 +279,7 @@ export class BackgroundLogger implements ILogger {
       showConnectionLost();
     }
 
-    await recordError(serializeError(error), this.context, data);
+    await reportError(error, this.context, data);
   }
 }
 

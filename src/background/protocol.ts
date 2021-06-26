@@ -39,6 +39,7 @@ import {
   isErrorResponse,
   RemoteProcedureCallRequest,
 } from "@/messaging/protocol";
+import { selectAndSerializeError } from "@/telemetry/logging";
 type ChromeMessageSender = chrome.runtime.MessageSender;
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/";
@@ -193,6 +194,9 @@ export async function callBackground(
     });
     let response;
     try {
+      if (message.payload[0] instanceof Error) {
+        message.payload[0] = selectAndSerializeError(message.payload[0]);
+      }
       response = await sendMessage(extensionId, message, {});
     } catch (error) {
       console.debug(

@@ -18,32 +18,44 @@
 import { recordError } from "@/background/logging";
 import { rollbar, toLogArgument } from "@/telemetry/rollbar";
 import { MessageContext, SerializedError } from "@/core";
-import { serializeError } from "serialize-error";
 import { isExtensionContext } from "@/chrome";
+import { JsonObject } from "type-fest";
+import { serializeError } from "serialize-error";
 
 export function errorMessage(error: SerializedError): string {
   return typeof error === "object" ? error.message : String(error);
 }
 
-function selectError(exc: unknown): SerializedError {
-  if (exc instanceof PromiseRejectionEvent) {
-    // convert the project rejection to an error instance
-    if (exc.reason instanceof Error) {
-      exc = exc.reason;
-    } else if (typeof exc.reason === "string") {
-      exc = new Error(exc.reason);
-    } else {
-      exc = new Error(exc.reason?.message ?? "Uncaught error in promise");
-    }
+function selectError(exc: unknown): Error | unknown {
+  if (!(exc instanceof PromiseRejectionEvent)) {
+    return exc;
   }
-  return serializeError(exc);
+
+  // convert the project rejection to an error instance
+  if (exc.reason instanceof Error) {
+    return exc.reason;
+  }
+
+  if (typeof exc.reason === "string") {
+    return new Error(exc.reason);
+  }
+
+  return new Error(exc.reason?.message ?? "Uncaught error in promise");
 }
 
-export function reportError(exc: unknown, context?: MessageContext): void {
+export function selectAndSerializeError(error: unknown): SerializedError {
+  return serializeError(selectError(error));
+}
+
+export function reportError(
+  exc: unknown,
+  context?: MessageContext,
+  data?: JsonObject
+): void {
   if (isExtensionContext()) {
     // Wrap in try/catch, otherwise will enter infinite loop on unhandledrejection when
     // messaging the background script
-    recordError(selectError(exc), context, null).catch((error) => {
+    recordError(selectError(exc), context, data).catch((error) => {
       console.error("Another error occurred while reporting an error", {
         error,
       });
