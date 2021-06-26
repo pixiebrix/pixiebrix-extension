@@ -46,7 +46,7 @@ export default {
               gwtVersion = frames[n].contentWindow.$gwt_version;
               break;
             }
-          } catch {}
+          } catch (e) {}
         }
 
         if (gwtVersion == "0.0.999") {
@@ -1789,13 +1789,14 @@ export default {
             });
         });
 
-      try {
-        return await Promise.race([workerPromise, timeoutPromise]);
-      } catch {
-        return false;
-      } finally {
-        clearTimeout();
-      }
+      return Promise.race([workerPromise, timeoutPromise])
+        .catch(function (exception) {
+          return false;
+        })
+        .finally((result) => {
+          clearTimeout();
+          return result;
+        });
     },
   },
   Boq: {
