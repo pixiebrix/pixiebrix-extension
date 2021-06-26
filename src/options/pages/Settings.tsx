@@ -18,6 +18,7 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useToasts } from "react-toast-notifications";
 import { optionsSlice, servicesSlice } from "../slices";
+import chromeP from "webext-polyfill-kinda";
 import { connect } from "react-redux";
 import { PageTitle } from "@/layout/Page";
 import { Button, Card, Col, Form, Row, ListGroup } from "react-bootstrap";
@@ -261,22 +262,21 @@ const Settings: React.FunctionComponent<OwnProps> = ({ resetOptions }) => {
     browser.runtime.reload();
   }, []);
 
-  const update = useCallback(() => {
-    chrome.runtime.requestUpdateCheck((status) => {
-      if (status === "update_available") {
-        browser.runtime.reload();
-      } else if (status === "throttled") {
-        addToast("Too many update requests", {
-          appearance: "error",
-          autoDismiss: true,
-        });
-      } else {
-        addToast("No update available", {
-          appearance: "info",
-          autoDismiss: true,
-        });
-      }
-    });
+  const update = useCallback(async () => {
+    const status = await chromeP.runtime.requestUpdateCheck();
+    if (status === "update_available") {
+      browser.runtime.reload();
+    } else if (status === "throttled") {
+      addToast("Too many update requests", {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    } else {
+      addToast("No update available", {
+        appearance: "info",
+        autoDismiss: true,
+      });
+    }
   }, [addToast]);
 
   const handleUpdate = useCallback(

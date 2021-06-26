@@ -23,6 +23,7 @@ import {
 } from "@/chrome";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { patternToRegex } from "webext-patterns";
+import chromeP from "webext-polyfill-kinda";
 import {
   isBackgroundPage,
   isContentScript,
@@ -150,15 +151,7 @@ function externalSendMessage<TResponse = unknown>(
 
   // When accessing from an external site, browser.runtime is undefined because Mozilla's polyfill is only enabled
   // in extension contexts. Therefore, we we have to use the Chrome API namespace
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(extensionId, message, options, (response) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        resolve(response);
-      }
-    });
-  });
+  return chromeP.runtime.sendMessage(extensionId, message, options);
 }
 
 export async function callBackground(
