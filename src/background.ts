@@ -36,7 +36,7 @@ import "./background/dataStore";
 import "./background/devtools";
 import "./background/browserAction";
 
-import initGoogle from "@/contrib/google/background";
+import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
 import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
