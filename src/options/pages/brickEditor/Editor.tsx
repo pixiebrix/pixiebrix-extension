@@ -17,6 +17,7 @@
 
 import { Card, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Prompt } from "react-router";
 import {
   faBuilding,
   faEyeSlash,
@@ -142,6 +143,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
 
   return (
     <div>
+      <Prompt message="You have unsaved changes. Are you sure you want to leave?" />
       <div className="mb-3">
         <ul className="list-unstyled list-inline">
           <li className="list-inline-item">
