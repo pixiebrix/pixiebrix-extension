@@ -16,7 +16,6 @@
  */
 
 import { browser, Runtime } from "webextension-polyfill-ts";
-import { reportError } from "@/telemetry/logging";
 import { liftBackground } from "@/background/protocol";
 import urljoin from "url-join";
 import { reportEvent, initTelemetry } from "@/telemetry/events";
@@ -33,7 +32,7 @@ async function openInstallPage() {
 
 function install({ reason }: Runtime.OnInstalledDetailsType) {
   if (reason === "install") {
-    openInstallPage().catch(reportError);
+    void openInstallPage();
     initTelemetry();
     reportEvent("PixieBrixInstall", {
       version: browser.runtime.getManifest().version,

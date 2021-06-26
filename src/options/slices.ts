@@ -27,7 +27,6 @@ import { orderBy } from "lodash";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { preloadMenus } from "@/background/preload";
-import { reportError } from "@/telemetry/logging";
 import { Primitive } from "type-fest";
 
 type InstallMode = "local" | "remote";
@@ -244,7 +243,7 @@ export const optionsSlice = createSlice({
 
         state.extensions[extensionPointId][extensionId] = extensionConfig;
 
-        preloadMenus({ extensions: [extensionConfig] }).catch(reportError);
+        void preloadMenus({ extensions: [extensionConfig] });
       }
     },
     saveExtension(state, { payload }) {
