@@ -16,7 +16,7 @@
  */
 
 import isEmpty from "lodash/isEmpty";
-import { browser } from "webextension-polyfill-ts";
+import { browser, Runtime } from "webextension-polyfill-ts";
 import {
   isBackgroundPage,
   isContentScript,
@@ -96,6 +96,25 @@ export function setChromeExtensionId(extensionId: string): void {
 export function getChromeExtensionId(): string {
   const manualKey = localStorage.getItem(CHROME_EXTENSION_STORAGE_KEY);
   return isEmpty(manualKey ?? "") ? CHROME_EXTENSION_ID : manualKey;
+}
+
+/** Connect to the extension runtime and throw proper errors if it fails */
+export async function runtimeConnect(name: string): Promise<Runtime.Port> {
+  return new Promise((resolve, reject) => {
+    const port = chrome.runtime.connect({ name });
+
+    // If the connection fails, the error will only be available on this callback
+    port.onDisconnect.addListener(() => {
+      // TODO: Also handle port.error in Firefox https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port#type
+      const message =
+        chrome.runtime.lastError?.message ??
+        "There was an error while connecting to the runtime";
+      reject(new Error(message));
+    });
+
+    // If onDisconnect hasn't been called by now, we assume the connection succeeded. There's no port.onConnect
+    setTimeout(resolve, 0, port);
+  });
 }
 
 export class RuntimeNotFoundError extends Error {
