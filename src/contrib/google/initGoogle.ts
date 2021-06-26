@@ -35,17 +35,19 @@ async function onGAPILoad(): Promise<void> {
     apiKey: API_KEY,
     discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
   });
-  console.log("gapi initialized");
+  console.info("gapi initialized");
 }
 
 function initGoogle(): void {
-  if (!isChrome || !API_KEY) {
+  if (!isChrome) {
+    // TODO: Use feature detection instead of sniffing the user agent
     console.info(
-      "Google API not enabled because",
-      isChrome
-        ? "the API key is not available"
-        : "it's not supported by this browser"
+      "Google API not enabled because it's not supported by this browser"
     );
+    return;
+  }
+  if (!API_KEY) {
+    console.info("Google API not enabled because the API key is not available");
     return;
   }
 
