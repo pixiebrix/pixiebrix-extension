@@ -63,7 +63,7 @@ export function useReset(
       reportError(error);
       dispatch(actions.adapterError({ uuid: element.uuid, error }));
     }
-  }, [dispatch, element.uuid, installed]);
+  }, [showConfirmation, dispatch, element.uuid, installed]);
 }
 
 export function useRemove(element: FormState): () => void {
