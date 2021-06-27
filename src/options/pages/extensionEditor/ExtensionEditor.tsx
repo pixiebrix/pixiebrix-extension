@@ -29,7 +29,6 @@ import { reactivate } from "@/background/navigation";
 import GridLoader from "react-spinners/GridLoader";
 
 import "./ExtensionEditor.scss";
-import { reportError } from "@/telemetry/logging";
 
 const { saveExtension } = optionsSlice.actions;
 
@@ -95,7 +94,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
           navigate(`/workshop/extensions/${extensionId}`);
         }
 
-        reactivate().catch(reportError);
+        void reactivate();
       } finally {
         setSubmitting(false);
       }

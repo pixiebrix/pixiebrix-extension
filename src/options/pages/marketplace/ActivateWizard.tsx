@@ -38,7 +38,6 @@ import ActivateBody, {
   useEnsurePermissions,
 } from "@/options/pages/marketplace/ActivateBody";
 import { reactivate } from "@/background/navigation";
-import { reportError } from "@/telemetry/logging";
 import { useParams } from "react-router";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { selectExtensions } from "@/options/selectors";
@@ -186,7 +185,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
         setSubmitting(false);
 
-        reactivate().catch(reportError);
+        void reactivate();
 
         dispatch(
           push(sourcePage === "templates" ? "/templates" : "/installed")
