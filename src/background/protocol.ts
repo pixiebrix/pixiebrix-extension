@@ -138,7 +138,9 @@ export async function callBackground(
 
   // `browser.*` APIs are not polyfilled outside the extension context (`externally_connectable` pages)
   // https://github.com/mozilla/webextension-polyfill/issues/326
-  const sendMessage = chromeP.runtime.sendMessage;
+  const sendMessage = isExtensionContext()
+    ? browser.runtime.sendMessage
+    : chromeP.runtime.sendMessage;
   const extensionId = isExtensionContext() ? null : getExtensionId();
 
   if (isNotification(options)) {
