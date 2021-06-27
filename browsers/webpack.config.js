@@ -286,7 +286,6 @@ module.exports = (env, options) => ({
       DEBUG: !isProd(options),
       REDUX_DEV_TOOLS: !isProd(options),
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
-      VERSION_NAME: getVersionName(isProd(options)),
       ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
 
       // If not found, "undefined" will cause the build to fail
@@ -301,6 +300,7 @@ module.exports = (env, options) => ({
       GOOGLE_API_KEY: null,
       GOOGLE_APP_ID: null,
     }),
+
     new MiniCssExtractPlugin({
       chunkFilename: "css/[id].css",
     }),
