@@ -23,7 +23,7 @@ const OnboardingContent: React.FunctionComponent = () => {
             </span>{" "}
             Activate a pre-made template from the Templates page.
           </p>
-          <Button onClick={() => openExtensionOptions()} variant="info">
+          <Button onClick={async () => openExtensionOptions()} variant="info">
             View Templates&nbsp;
             <FontAwesomeIcon icon={faClipboardCheck} />
           </Button>

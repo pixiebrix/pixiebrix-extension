@@ -27,7 +27,7 @@ async function initLocator() {
 
 export const locate = liftBackground(
   "LOCATE_SERVICE",
-  (serviceId: string, id: string | null) => locator.locate(serviceId, id)
+  async (serviceId: string, id: string | null) => locator.locate(serviceId, id)
 );
 
 export const refresh: (options?: {
@@ -50,7 +50,7 @@ export const refresh: (options?: {
 );
 
 if (isBackgroundPage()) {
-  initLocator().then(() => {
+  void initLocator().then(() => {
     console.debug("Eagerly initialized service locator");
   });
 }

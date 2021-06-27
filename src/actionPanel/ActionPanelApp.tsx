@@ -18,7 +18,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Card, Nav, Tab } from "react-bootstrap";
 import { openExtensionOptions } from "@/messaging/external";
-
 import ErrorBoundary from "@/components/ErrorBoundary";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -107,10 +106,10 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 />
               </div>
               {/* spacer */}
-              <div className="flex-grow-1"></div>
+              <div className="flex-grow-1" />
               <div className="ActionPanelToolbar">
                 <Button
-                  onClick={() => openExtensionOptions()}
+                  onClick={async () => openExtensionOptions()}
                   size="sm"
                   variant="info"
                 >

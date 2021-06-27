@@ -53,14 +53,14 @@ function getHTMLElement(): JQuery<HTMLElement> {
     return $(document.documentElement);
   } else if (document.querySelector("html")) {
     return $(document.querySelector("html"));
-  } else if ($("html").length > -1) {
+  } else if ($("html").length >= 0) {
     return $("html");
   } else {
     throw new Error("HTML node not found");
   }
 }
 
-function storeOriginalCSS() {
+function storeOriginalCSS(): void {
   const $html = getHTMLElement();
   _originalMarginRight = Number.parseFloat($html.css("margin-right"));
 }
@@ -79,27 +79,29 @@ export function showActionPanel(): string {
   adjustDocumentStyle();
 
   if ($("#pixiebrix-chrome-extension").length > 0) {
-    console.warn("Action panel already in DOM");
-    return;
+    // This occurs if the panel is opened using a brick
+    console.debug("Action panel already in DOM");
+    if (!_nonce) {
+      throw new Error("nonce not set for action panel on page");
+    }
+  } else {
+    _nonce = uuidv4();
+    const actionURL = browser.runtime.getURL("action.html");
+
+    const $panelContainer = $(
+      `<div id="pixiebrix-chrome-extension" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
+    );
+
+    const $frame = $(
+      `<iframe src="${actionURL}?nonce=${_nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" handleSubmitid="pixiebrix-frame"></iframe>`
+    );
+
+    $panelContainer.append($frame);
+
+    $("body").append($panelContainer);
   }
 
-  const actionURL = browser.runtime.getURL("action.html");
-
-  const $panelContainer = $(
-    `<div id="pixiebrix-chrome-extension" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
-  );
-
-  _nonce = uuidv4();
-
-  const $frame = $(
-    `<iframe src="${actionURL}?nonce=${_nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" id="pixiebrix-frame"></iframe>`
-  );
-
-  $panelContainer.append($frame);
-
-  $("body").append($panelContainer);
-
-  // run the extension points available on the page
+  // Run the extension points available on the page
   for (const callback of _callbacks) {
     try {
       callback();

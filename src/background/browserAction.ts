@@ -16,17 +16,20 @@
  */
 
 import { isBackgroundPage } from "webext-detect-page";
-import { toggleActionPanel } from "@/contentScript/browserAction";
+import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
 import { injectContentScript } from "@/background/util";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { allowSender } from "@/actionPanel/protocol";
 import { isErrorObject, sleep } from "@/utils";
+import { JsonObject, JsonValue } from "type-fest";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
 export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
+export const SHOW_ACTION_FRAME = `${MESSAGE_PREFIX}/SHOW_ACTION_FRAME`;
+export const HIDE_ACTION_FRAME = `${MESSAGE_PREFIX}/HIDE_ACTION_FRAME`;
 
 /**
  * Mapping from tabId to the nonce for the browser action iframe
@@ -48,9 +51,12 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
   // id so we're not sending messages to a dead frame
   tabFrames.delete(tab.id);
 
+  // Browser action gets added to the top-level frame
+  const tabTarget = { tabId: tab.id, frameId: 0 };
+
   try {
-    await injectContentScript({ tabId: tab.id, frameId: 0 });
-    const nonce = await toggleActionPanel({ tabId: tab.id, frameId: 0 });
+    await injectContentScript(tabTarget);
+    const nonce = await contentScript.toggleActionPanel(tabTarget);
     tabNonces.set(tab.id, nonce);
   } catch (error: unknown) {
     if (isErrorObject(error)) {
@@ -88,8 +94,8 @@ type ForwardActionFrameNotification = {
   type: typeof FORWARD_FRAME_NOTIFICATION;
   payload: {
     type: string;
-    meta?: object;
-    payload: unknown;
+    meta?: JsonObject;
+    payload: JsonValue;
   };
 };
 
@@ -124,6 +130,7 @@ async function forwardWhenReady(
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listeners cannot have async keyword
 function backgroundListener(
   request: RegisterActionFrameMessage | ForwardActionFrameNotification,
   sender: Runtime.MessageSender
@@ -132,7 +139,9 @@ function backgroundListener(
     switch (request.type) {
       case REGISTER_ACTION_FRAME: {
         const registerAction = request as RegisterActionFrameMessage;
-        if (tabNonces.get(sender.tab.id) !== registerAction.payload.nonce) {
+        const nonce = tabNonces.get(sender.tab.id);
+
+        if (nonce !== registerAction.payload.nonce) {
           console.warn("Action frame nonce mismatch", {
             expected: tabNonces.get(sender.tab.id),
             actual: registerAction.payload.nonce,
@@ -150,6 +159,22 @@ function backgroundListener(
         return forwardWhenReady(sender.tab.id, forwardAction.payload).catch(
           reportError
         );
+      }
+      case SHOW_ACTION_FRAME: {
+        tabFrames.delete(sender.tab.id);
+        return contentScript
+          .showActionPanel({ tabId: sender.tab.id, frameId: 0 })
+          .then((nonce) => {
+            tabNonces.set(sender.tab.id, nonce);
+          });
+      }
+      case HIDE_ACTION_FRAME: {
+        tabFrames.delete(sender.tab.id);
+        return contentScript
+          .hideActionPanel({ tabId: sender.tab.id, frameId: 0 })
+          .then(() => {
+            tabNonces.delete(sender.tab.id);
+          });
       }
       default: {
         // NOOP
