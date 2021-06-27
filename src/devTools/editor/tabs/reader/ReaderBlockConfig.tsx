@@ -115,13 +115,13 @@ export const ReaderBlockForm: React.FunctionComponent<{
       <Alert variant="info">
         {reader.id.startsWith("@pixiebrix") ? (
           <>
-            <FontAwesomeIcon icon={faInfoCircle} /> You cannot edit built-in
-            readers
+            <FontAwesomeIcon icon={faInfoCircle} /> Built-in readers cannot be
+            edited
           </>
         ) : (
           <>
-            <FontAwesomeIcon icon={faInfoCircle} /> You cannot edit readers
-            created outside the Page Editor
+            <FontAwesomeIcon icon={faInfoCircle} /> Readers created outside the
+            Page Editor cannot be edited
           </>
         )}
       </Alert>
