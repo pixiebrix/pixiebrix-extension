@@ -17,17 +17,24 @@
 
 import * as contentScript from "@/contentScript/lifecycle";
 import { liftBackground } from "@/background/protocol";
-import { browser } from "webextension-polyfill-ts";
+import { browser, WebNavigation } from "webextension-polyfill-ts";
+
+async function historyListener(
+  details: WebNavigation.OnHistoryStateUpdatedDetailsType
+) {
+  try {
+    await contentScript.notifyNavigation(
+      { tabId: details.tabId, frameId: details.frameId },
+      {}
+    );
+  } catch (error) {
+    console.warn("Error notifying page navigation", error);
+  }
+}
 
 function initNavigation(): void {
   // updates from the history API
-  browser.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-    contentScript
-      .notifyNavigation({ tabId: details.tabId, frameId: details.frameId }, {})
-      .catch((error) => {
-        console.warn("Error notifying page navigation", error);
-      });
-  });
+  browser.webNavigation.onHistoryStateUpdated.addListener(historyListener);
 }
 
 export const reactivate = liftBackground(

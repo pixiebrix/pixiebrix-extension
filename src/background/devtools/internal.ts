@@ -217,11 +217,7 @@ function deleteStaleConnections(port: Runtime.Port) {
         const listeners = permissionsListeners.get(tabId);
         permissionsListeners.delete(tabId);
         for (const [, reject] of listeners) {
-          try {
-            reject(new Error(`Cleaning up stale connection`));
-          } catch (error) {
-            reportError(error);
-          }
+          reject(new Error(`Cleaning up stale connection`));
         }
       }
     }

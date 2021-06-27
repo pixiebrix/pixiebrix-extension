@@ -230,7 +230,7 @@ export function useCreate(): CreateCallback {
         try {
           dispatch(saveExtension(adapter.extension(element)));
           dispatch(markSaved(element.uuid));
-          reactivate().catch(reportError);
+          void reactivate();
           addToast("Saved extension", {
             appearance: "success",
             autoDismiss: true,
