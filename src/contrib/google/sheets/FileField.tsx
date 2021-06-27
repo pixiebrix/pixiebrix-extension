@@ -99,7 +99,7 @@ const FileField: React.FunctionComponent<
       });
 
       if (isNullOrBlank(APP_ID)) {
-        throw new Error("Internal error: Google app id is not configured");
+        throw new Error("Internal error: Google app ID is not configured");
       } else if (isNullOrBlank(API_KEY)) {
         throw new Error("Internal error: Google API key is not configured");
       }
