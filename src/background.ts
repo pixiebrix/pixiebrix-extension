@@ -25,6 +25,7 @@ import "@/telemetry/rollbar";
 import "webpack-target-webextension/lib/background";
 import "webext-dynamic-content-scripts";
 
+import "./development/autoreload";
 import "./background/installer";
 import "./messaging/external";
 import "./background/requests";
@@ -42,7 +43,6 @@ import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import preload from "@/background/preload";
 import initDeploymentUpdater from "@/background/deployment";
-import { isChrome } from "./helpers";
 
 initNavigation();
 initExecutor();
@@ -50,21 +50,3 @@ initGoogle();
 initFrames();
 preload();
 initDeploymentUpdater();
-
-// In Chrome, `web-ext run` reloads the extension without reloading the manifest.
-// This forces a full reload if the version hasn't changed since the last run.
-if (process.env.ENVIRONMENT === "development" && isChrome) {
-  const { version_name } = chrome.runtime.getManifest();
-
-  if (localStorage.getItem("dev:last-version") === version_name) {
-    // This helps avoid reload loops
-    localStorage.removeItem("dev:last-version");
-    chrome.runtime.reload();
-  }
-
-  chrome.runtime.onInstalled.addListener(({ reason }) => {
-    if (reason === "update") {
-      localStorage.setItem("dev:last-version", version_name);
-    }
-  });
-}
