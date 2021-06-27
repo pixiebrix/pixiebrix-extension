@@ -36,13 +36,13 @@ import "./background/dataStore";
 import "./background/devtools";
 import "./background/browserAction";
 
-import initGoogle from "@/contrib/google/background";
+import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
 import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import preload from "@/background/preload";
 import initDeploymentUpdater from "@/background/deployment";
-import { isChrome } from "@/helpers";
+import { isChrome } from "./helpers";
 
 initNavigation();
 initExecutor();
@@ -50,12 +50,6 @@ initGoogle();
 initFrames();
 preload();
 initDeploymentUpdater();
-
-if (isChrome) {
-  const script = document.createElement("script");
-  script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
-  document.head.append(script);
-}
 
 // In Chrome, `web-ext run` reloads the extension without reloading the manifest.
 // This forces a full reload if the version hasn't changed since the last run.

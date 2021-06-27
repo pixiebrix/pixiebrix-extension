@@ -5,6 +5,9 @@
   "env": {
     "browser": true
   },
+  "parserOptions": {
+    "project": "tsconfig.json"
+  },
   "settings": {
     "import/resolver": {
       "webpack": {
@@ -16,9 +19,11 @@
     }
   },
   "extends": [
+    // TODO: replace the following 3 with the stricter xo-typescript config
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
+
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
     "plugin:import/typescript",
@@ -61,15 +66,25 @@
       }
     ],
 
-    // Soft-enable some rules
+    // Soft-enable some rules, maybe enforce them later
     "@typescript-eslint/ban-types": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/promise-function-async": "warn",
     "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
     "unicorn/no-useless-undefined": "warn", // Buggy with React
     "unicorn/no-nested-ternary": "warn", // Sometimes it conflicts with Prettier
     "unicorn/consistent-function-scoping": "warn", // Complains about some of the lifted functions
     "unicorn/prefer-prototype-methods": "warn", // Buggy with abstract classes
-    "unicorn/prefer-switch": "warn", // TODO: Enforce later
+    "unicorn/prefer-switch": "warn",
+
+    // Config copied from https://github.com/xojs/eslint-config-xo-typescript/blob/7842d05deaadff1ced9a46f3e56d786e7b2922d2/index.js#L306
+    "@typescript-eslint/no-floating-promises": [
+      "warn",
+      {
+        "ignoreVoid": true, // Prepend a function call with `void` to mark it as not needing to be await'ed, which silences this rule.
+        "ignoreIIFE": true
+      }
+    ],
 
     // Disable recommended rules
     "@typescript-eslint/no-empty-function": "off",
@@ -104,7 +119,12 @@
       },
       "rules": {
         "@typescript-eslint/no-var-requires": "off",
-        "unicorn/prefer-module": "off"
+        "unicorn/prefer-module": "off",
+
+        // the webpack/testing files only run on the CI server, so don't need to watch for these:
+        "security/detect-object-injection": "off",
+        "security/detect-child-process": "off",
+        "security/detect-unsafe-regex": "off"
       }
     }
   ]

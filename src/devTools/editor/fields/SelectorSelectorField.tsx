@@ -215,22 +215,18 @@ export const SelectorSelectorControl: React.FunctionComponent<
           }}
           value={options.find((x) => x.value === value)}
           onMenuClose={() => {
-            nativeOperations
-              .toggleSelector(port, {
-                selector: null,
-                on: false,
-              })
-              .catch(reportError);
+            void nativeOperations.toggleSelector(port, {
+              selector: null,
+              on: false,
+            });
           }}
           onChange={async (option) => {
             console.debug("selected", { option });
             onSelect(option ? option.value : null);
-            nativeOperations
-              .toggleSelector(port, {
-                selector: null,
-                on: false,
-              })
-              .catch(reportError);
+            void nativeOperations.toggleSelector(port, {
+              selector: null,
+              on: false,
+            });
           }}
         />
       </div>

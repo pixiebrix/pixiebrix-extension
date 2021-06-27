@@ -15,12 +15,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { readStorage, setStorage } from "@/chrome";
 import { Metadata, ServiceDependency } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 import { Primitive } from "type-fest";
+import { browser } from "webextension-polyfill-ts";
 
-const storageKey = "persist:extensionOptions";
+const STORAGE_KEY = "persist:extensionOptions";
+const INITIAL_STATE = JSON.stringify({});
 
 export interface ExtensionOptions {
   id: string;
@@ -43,15 +44,23 @@ type ExtensionOptionState = {
   extensions: Record<string, Record<string, ExtensionOptions>>;
 };
 
+type JSONString = string;
+type RawOptionsState = Record<string, JSONString>;
+
+async function getOptionsState(): Promise<RawOptionsState> {
+  // eslint-disable-next-line security/detect-object-injection -- constant storage key
+  const rawOptions = (await browser.storage.local.get(STORAGE_KEY))[
+    STORAGE_KEY
+  ];
+  return JSON.parse((rawOptions as string) ?? INITIAL_STATE);
+}
+
 /**
  * Read extension options from local storage
  */
 export async function loadOptions(): Promise<ExtensionOptionState> {
-  const rawOptions = await readStorage(storageKey);
-
-  // Not really sure why the next level down is also escaped JSON?
-  const base = JSON.parse(rawOptions as string);
-
+  const base = await getOptionsState();
+  // The redux persist layer persists the extensions value as as JSON-string
   return { extensions: JSON.parse(base.extensions) };
 }
 
@@ -59,11 +68,12 @@ export async function loadOptions(): Promise<ExtensionOptionState> {
  * Save extension options to local storage
  */
 export async function saveOptions(state: ExtensionOptionState): Promise<void> {
-  const rawOptions = await readStorage(storageKey);
-  const base = JSON.parse(rawOptions as string);
-  const { extensions } = state;
-  await setStorage(
-    storageKey,
-    JSON.stringify({ ...base, extensions: JSON.stringify(extensions) })
-  );
+  const base = await getOptionsState();
+  await browser.storage.local.set({
+    // The redux persist layer persists the extensions value as as JSON-string
+    [STORAGE_KEY]: JSON.stringify({
+      ...base,
+      extensions: JSON.stringify(state.extensions),
+    }),
+  });
 }

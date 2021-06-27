@@ -157,7 +157,7 @@ function init($) {
     $("head").append(elem);
     try {
       elem.html(cssText);
-    } catch (_) {
+    } catch {
       elem[0].styleSheet.cssText = cssText;
     }
     return elem;
