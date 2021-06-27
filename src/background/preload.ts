@@ -63,5 +63,5 @@ export async function preloadAllMenus(): Promise<void> {
 }
 
 export default (): void => {
-  preloadAllMenus().catch(reportError);
+  void preloadAllMenus();
 };

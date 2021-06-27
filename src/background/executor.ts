@@ -294,15 +294,15 @@ function backgroundListener(
   }
 }
 
-function linkTabListener(tab: Tabs.Tab): void {
+async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
     tabToOpener.set(tab.id, tab.openerTabId);
     tabToTarget.set(tab.openerTabId, tab.id);
-    linkChildTab({ tabId: tab.openerTabId, frameId: 0 }, tab.id).catch(
-      (error) => {
-        console.warn("Error linking child tab", error);
-      }
-    );
+    try {
+      await linkChildTab({ tabId: tab.openerTabId, frameId: 0 }, tab.id);
+    } catch (error: unknown) {
+      console.warn("Error linking child tab", error);
+    }
   }
 }
 

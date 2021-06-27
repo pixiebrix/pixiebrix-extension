@@ -65,16 +65,8 @@ function setActiveElement(event: MouseEvent): void {
   // This method can't throw, otherwise I think it breaks event dispatching because we're passing
   // useCapture: true to the event listener
   clickedElement = null;
-  try {
-    if (event?.button === BUTTON_SECONDARY) {
-      clickedElement = event?.target as HTMLElement;
-    }
-  } catch (error) {
-    try {
-      reportError(error);
-    } catch (error) {
-      console.error(error);
-    }
+  if (event?.button === BUTTON_SECONDARY) {
+    clickedElement = event?.target as HTMLElement;
   }
 }
 

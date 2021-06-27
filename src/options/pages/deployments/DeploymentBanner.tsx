@@ -157,7 +157,7 @@ function useDeployments() {
             deployment: deployment.id,
           });
         }
-        queueReactivate().catch(reportError);
+        void queueReactivate();
         addToast("Activated team bricks", {
           appearance: "success",
           autoDismiss: true,
