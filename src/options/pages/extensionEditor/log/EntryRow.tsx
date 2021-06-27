@@ -23,6 +23,11 @@ import { ErrorObject } from "serialize-error";
 import JSONTree from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 
+const dateFormat = new Intl.DateTimeFormat("en-US", {
+  dateStyle: "long",
+  timeStyle: "short",
+});
+
 const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
   entry,
 }) => {
@@ -81,10 +86,6 @@ const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
 
 const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
   const [expanded, setExpanded] = useState(false);
-  const dateFormat = new Intl.DateTimeFormat("en-US", {
-    dateStyle: "long",
-    timeStyle: "short",
-  });
 
   const Detail = useMemo(() => {
     if (typeof entry.error === "object" && entry.error) {
