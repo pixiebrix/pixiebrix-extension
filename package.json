@@ -110,6 +110,7 @@
     "webext-detect-page": "^2.0.5",
     "webext-dynamic-content-scripts": "^7.2.0-0",
     "webext-patterns": "^1.1.0",
+    "webext-polyfill-kinda": "^0.1.0",
     "webextension-polyfill-ts": "^0.25.0"
   },
   "devDependencies": {
@@ -219,7 +220,7 @@
       "^.+\\.txt$": "jest-raw-loader"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!@cfworker|webext-detect-page|idb|webext-patterns)"
+      "node_modules/(?!@cfworker|webext-detect-page|idb|webext-patterns|webext-polyfill-kinda)"
     ],
     "setupFiles": [
       "<rootDir>/src/test-env.js",
