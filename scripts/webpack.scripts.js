@@ -62,6 +62,7 @@ module.exports = {
       "process.env": {
         NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
       },
+      // Define enough of the chrome API that the header generation script won't error out
       chrome: {
         runtime: {
           id: 42,

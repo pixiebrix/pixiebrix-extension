@@ -40,6 +40,10 @@ const blockDefinitions = blockRegistry.cached().map((block) => ({
   outputSchema: block.outputSchema,
 }));
 
+if (blockDefinitions.length === 0) {
+  throw new Error("Found no block definitions");
+}
+
 const extensionPointDefinitions = extensionPointRegistry
   .cached()
   .map((block) => ({
@@ -56,7 +60,14 @@ const extensionPointDefinitions = extensionPointRegistry
     inputSchema: block.inputSchema,
   }));
 
+if (extensionPointDefinitions.length === 0) {
+  throw new Error("Found no extension point definitions");
+}
+
 fs.writeFileSync(
+  // filename needs to be kept in sync with upload-artifact@v2 in integration.yaml
   "headers.json",
   JSON.stringify([...blockDefinitions, ...extensionPointDefinitions])
 );
+
+console.log("Wrote file headers.json");

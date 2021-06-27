@@ -30,3 +30,4 @@ export * from "./alert";
 export * from "./pageState";
 export * from "./hide";
 export * from "./exportCSV";
+export * from "./sidebar";
