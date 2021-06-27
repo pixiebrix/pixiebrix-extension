@@ -31,6 +31,9 @@ import {
 import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
+import { boolean } from "@/utils";
+
+const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 const persistOptionsConfig = {
   key: "extensionOptions",
@@ -56,6 +59,13 @@ export interface RootState {
   workshop: WorkshopState;
 }
 
+const middleware = [routerMiddleware(hashHistory)];
+if (process.env.NODE_ENV === "development") {
+  // allow tree shaking of logger in production
+  // https://github.com/LogRocket/redux-logger/issues/6
+  middleware.push(createLogger());
+}
+
 const store = configureStore({
   reducer: {
     router: connectRouter(hashHistory),
@@ -64,8 +74,8 @@ const store = configureStore({
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistSettingsConfig, workshopSlice.reducer),
   },
-  middleware: [routerMiddleware(hashHistory), createLogger()],
-  devTools: true,
+  middleware,
+  devTools: REDUX_DEV_TOOLS,
 });
 
 export const persistor = persistStore(store);

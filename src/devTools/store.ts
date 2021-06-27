@@ -17,7 +17,6 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
-// @ts-ignore: redux-persist-webextension-storage has no type definitions
 import { localStorage } from "redux-persist-webextension-storage";
 import {
   optionsSlice,
@@ -28,8 +27,10 @@ import {
 } from "@/options/slices";
 
 import { editorSlice, EditorState } from "@/devTools/editor/editorSlice";
-
 import { createLogger } from "redux-logger";
+import { boolean } from "@/utils";
+
+const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
 const persistOptionsConfig = {
   key: "extensionOptions",
@@ -52,6 +53,13 @@ export interface RootState {
   settings: SettingsState;
 }
 
+const middleware = [];
+if (process.env.NODE_ENV === "development") {
+  // allow tree shaking of logger in production
+  // https://github.com/LogRocket/redux-logger/issues/6
+  middleware.push(createLogger());
+}
+
 const store = configureStore({
   reducer: {
     options: persistReducer(persistOptionsConfig, optionsSlice.reducer),
@@ -59,8 +67,8 @@ const store = configureStore({
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: editorSlice.reducer,
   },
-  middleware: [createLogger()],
-  devTools: true,
+  middleware,
+  devTools: REDUX_DEV_TOOLS,
 });
 
 export const persistor = persistStore(store);
