@@ -42,22 +42,6 @@ export async function ensureAuth(
   throw new Error(`Cannot get Chrome OAuth token`);
 }
 
-export async function resetToken(scopes: string[]): Promise<void> {
-  const token = await chromeP.identity
-    .getAuthToken({
-      interactive: false,
-      scopes,
-    })
-    .catch(() => {});
-
-  if (token) {
-    console.debug(`Clearing Google token: ${token}`);
-    await chromeP.identity.removeCachedAuthToken({ token });
-  }
-
-  await ensureAuth(scopes);
-}
-
 class PermissionsError extends Error {
   public readonly status: number;
 
