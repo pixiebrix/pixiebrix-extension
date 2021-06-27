@@ -78,7 +78,7 @@ export function useRemove(element: FormState): () => void {
 
     const confirm = await showConfirmation({
       title: "Remove Brick?",
-      message: "Remove this brick? This action cannot be undone",
+      message: "This action cannot be undone",
       submitCaption: "Remove",
     });
 
