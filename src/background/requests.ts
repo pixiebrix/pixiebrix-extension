@@ -33,6 +33,8 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
+import { isAbsoluteURL } from "@/hooks/fetch";
+import urljoin from "url-join";
 
 interface ProxyResponseSuccessData {
   json: unknown;
@@ -131,9 +133,14 @@ async function authenticate(
     if (!apiKey) {
       throw new Error("Extension not authenticated with PixieBrix web service");
     }
+
+    const absoluteURL = !isAbsoluteURL(request.url)
+      ? urljoin(await getBaseURL(), request.url)
+      : request.url;
+
     return service.authenticateRequest(
       ({ apiKey } as unknown) as ServiceConfig,
-      request
+      { ...request, url: absoluteURL }
     );
   } else if (service.isOAuth2) {
     const localConfig = await locator.getLocalConfig(config.id);
