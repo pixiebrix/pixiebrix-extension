@@ -100,6 +100,10 @@ const Editor: React.FunctionComponent<OwnProps> = ({
     setModalVisibility(true);
   };
 
+  const closeModal = () => {
+    setModalVisibility(false);
+  };
+
   const unsavedNavigation = () => {
     showModal();
     return false;
@@ -164,7 +168,9 @@ const Editor: React.FunctionComponent<OwnProps> = ({
         </Modal.Body>
         <Modal.Footer>
           <Button variant="danger">Discard changes</Button>
-          <Button variant="primary">Stay on this page</Button>
+          <Button variant="primary" onClick={closeModal}>
+            Stay on this page
+          </Button>
         </Modal.Footer>
       </Modal>
       <div className="mb-3">
