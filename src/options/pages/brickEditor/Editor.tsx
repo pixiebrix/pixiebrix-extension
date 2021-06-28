@@ -83,6 +83,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const { addToast } = useToasts();
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
+  const [modalVisible, setModalVisibility] = useState(false);
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
 
@@ -94,6 +95,15 @@ const Editor: React.FunctionComponent<OwnProps> = ({
     ]);
     return [...extensionPoints, ...blocks, ...services];
   }, []);
+
+  const showModal = () => {
+    setModalVisibility(true);
+  };
+
+  const unsavedNavigation = () => {
+    showModal();
+    return false;
+  };
 
   const openReference = useCallback(
     (id: string) => {
@@ -144,11 +154,8 @@ const Editor: React.FunctionComponent<OwnProps> = ({
 
   return (
     <div>
-      <Prompt
-        when={dirty}
-        message="You have unsaved changes. Are you sure you want to leave?"
-      />
-      <Modal>
+      <Prompt when={dirty} message={unsavedNavigation} />
+      <Modal show={modalVisible}>
         <Modal.Header>
           <Modal.Title>Unsaved changes</Modal.Title>
         </Modal.Header>
@@ -173,7 +180,6 @@ const Editor: React.FunctionComponent<OwnProps> = ({
           </li>
         </ul>
       </div>
-
       <Card ref={editorRef}>
         <Tab.Container
           id="editor-container"
