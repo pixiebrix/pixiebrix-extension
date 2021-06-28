@@ -84,7 +84,7 @@ function useSubmitBrick({
   }, [addToast, url, dispatch]);
 
   const submit = useCallback(
-    async (values, { setErrors }) => {
+    async (values, { setErrors, resetForm }) => {
       const { config, reactivate: reinstallBlueprint } = values;
 
       const json = yaml.safeLoad(config) as Definition | RecipeDefinition;
@@ -122,6 +122,8 @@ function useSubmitBrick({
               autoDismiss: true,
             });
           });
+
+        resetForm({ values: values });
 
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);

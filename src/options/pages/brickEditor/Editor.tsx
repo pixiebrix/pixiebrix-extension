@@ -15,14 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Card, Nav, Tab } from "react-bootstrap";
+import { Card, Nav, Tab, Modal, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Prompt } from "react-router";
 import {
   faBuilding,
   faEyeSlash,
   faGlobe,
   faTimesCircle,
+  faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
@@ -42,6 +42,7 @@ import { useToasts } from "react-toast-notifications";
 import { fetch } from "@/hooks/fetch";
 import { Brick } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
+import { Prompt } from "react-router";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -83,7 +84,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
-  const { errors, values } = useFormikContext<EditorValues>();
+  const { errors, values, dirty } = useFormikContext<EditorValues>();
 
   const [blocks] = useAsyncState(async () => {
     const [extensionPoints, blocks, services] = await Promise.all([
@@ -143,7 +144,22 @@ const Editor: React.FunctionComponent<OwnProps> = ({
 
   return (
     <div>
-      <Prompt message="You have unsaved changes. Are you sure you want to leave?" />
+      <Prompt
+        when={dirty}
+        message="You have unsaved changes. Are you sure you want to leave?"
+      />
+      <Modal>
+        <Modal.Header>
+          <Modal.Title>Unsaved changes</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to leave? Unsaved changes will be lost.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger">Discard changes</Button>
+          <Button variant="primary">Stay on this page</Button>
+        </Modal.Footer>
+      </Modal>
       <div className="mb-3">
         <ul className="list-unstyled list-inline">
           <li className="list-inline-item">
@@ -167,9 +183,14 @@ const Editor: React.FunctionComponent<OwnProps> = ({
           <Card.Header>
             <Nav variant="tabs" onSelect={setTab}>
               <Nav.Link eventKey="edit">
-                {errors.config ? (
+                {dirty ? (
                   <span className="text-danger">
-                    Editor <FontAwesomeIcon icon={faTimesCircle} />
+                    Editor{" "}
+                    {errors.config ? (
+                      <FontAwesomeIcon icon={faTimesCircle} />
+                    ) : (
+                      <FontAwesomeIcon icon={faSave} />
+                    )}
                   </span>
                 ) : (
                   "Editor"
