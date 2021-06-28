@@ -39,14 +39,17 @@ export class IFrameRenderer extends Renderer {
       width: {
         type: "string",
         description: "The width of the IFrame",
+        default: "100%",
       },
       height: {
         type: "string",
         description: "The height of the IFrame",
+        default: "100%",
       },
       safeMode: {
         type: "boolean",
-        description: "Run with the parent CSP",
+        description: "Run with the parent Content Security Policy (CSP)",
+        default: false,
       },
     },
     required: ["url"],
@@ -55,7 +58,7 @@ export class IFrameRenderer extends Renderer {
   async render({
     url,
     title = "PixieBrix",
-    height = 400,
+    height = "100%",
     width = "100%",
     safeMode,
   }: BlockArg): Promise<string> {
