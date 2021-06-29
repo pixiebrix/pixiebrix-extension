@@ -157,7 +157,7 @@
     "@types/webpack-env": "^1.16.0",
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.27.0",
-    "@typescript-eslint/parser": "^4.27.0",
+    "@typescript-eslint/parser": "^4.28.1",
     "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^27.0.2",
     "compass-mixins": "^0.12.10",
