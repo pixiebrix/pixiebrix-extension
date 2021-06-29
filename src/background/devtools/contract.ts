@@ -43,6 +43,7 @@ export interface BackgroundResponse {
 export type Target = {
   tabId: number;
   frameId: number;
+  url: string;
 };
 
 export interface HandlerEntry {
@@ -57,4 +58,5 @@ export interface Meta {
   nonce: Nonce;
   tabId: TabId;
   frameId: number;
+  url: string;
 }

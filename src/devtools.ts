@@ -90,7 +90,7 @@ async function initialize() {
   let injected = false;
 
   try {
-    await injectScript(port, { file: "contentScript.js" });
+    await injectScript(port);
     injected = true;
   } catch (error) {
     // Can install without having content script on the page; they just won't do much

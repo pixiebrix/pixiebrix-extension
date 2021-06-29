@@ -38,7 +38,7 @@ import { reportError } from "@/telemetry/logging";
 import { isBackgroundPage } from "webext-detect-page";
 import { v4 as uuidv4 } from "uuid";
 import { callBackground } from "@/background/devtools/external";
-import { testTabPermissions, injectContentScript } from "@/background/util";
+import { injectContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { reactivate } from "@/background/navigation";
 
@@ -76,7 +76,7 @@ function backgroundMessageListener(
     const handlerPromise = new Promise((resolve) => {
       resolve(
         handler(
-          { tabId: meta.tabId, frameId: meta.frameId ?? 0 },
+          { tabId: meta.tabId, frameId: meta.frameId ?? 0, url: meta.url },
           port
         )(...payload)
       );
@@ -271,16 +271,18 @@ export function registerPort(tabId: TabId, port: Runtime.Port): void {
 async function injectTemporaryAccess({
   tabId,
   frameId,
+  url,
 }: WebNavigation.OnDOMContentLoadedDetailsType): Promise<void> {
-  if (connections.has(tabId)) {
-    const hasPermissions = await testTabPermissions({ tabId, frameId });
-    if (hasPermissions) {
-      await injectContentScript({ tabId, frameId });
-    } else {
-      console.debug(
-        `Skipping injectDevtoolsContentScript because no activeTab permissions for tab: ${tabId}`
-      );
-    }
+  if (!connections.has(tabId)) {
+    return;
+  }
+
+  try {
+    await injectContentScript({ tabId, frameId, url });
+  } catch (error: unknown) {
+    console.warn(`injectDevtoolsContentScript failed on tab ${tabId}`, {
+      error,
+    });
   }
 }
 

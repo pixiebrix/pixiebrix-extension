@@ -132,7 +132,7 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
     throw new PermissionsError(`No access to URL: ${url}`);
   }
   console.debug(`connectToFrame: ensuring contentScript for ${url}`);
-  await injectScript(port, { file: "contentScript.js" });
+  await injectScript(port);
 
   console.debug(
     `connectToFrame: waiting for contentScript to be ready for ${url}`

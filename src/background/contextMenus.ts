@@ -21,7 +21,6 @@ import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
-import { injectContentScript, waitReady } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
 import { hasCancelRootCause } from "@/errors";
 import { getErrorMessage } from "@/extensionPoints/helpers";
@@ -32,7 +31,6 @@ type MenuItemId = number | string;
 const extensionMenuItems = new Map<ExtensionId, MenuItemId>();
 
 const MENU_PREFIX = "pixiebrix-";
-const CONTEXT_SCRIPT_INSTALL_MS = 1000;
 const CONTEXT_MENU_INSTALL_MS = 1000;
 
 interface SelectionMenuOptions {
@@ -57,10 +55,6 @@ async function dispatchMenu(
   if (typeof info.menuItemId !== "string") {
     throw new TypeError(`Not a PixieBrix menu item: ${info.menuItemId}`);
   }
-
-  // Using the context menu gives temporary access to the page
-  await injectContentScript(target);
-  await waitReady(target, { maxWaitMillis: CONTEXT_SCRIPT_INSTALL_MS });
 
   try {
     await handleMenuAction(target, {

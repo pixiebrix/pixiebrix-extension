@@ -60,8 +60,8 @@ export const getTabInfo = liftBackground(
 
 export const injectScript = liftBackground(
   "INJECT_SCRIPT",
-  (target: Target) => async ({ file }: { file: string }) => {
-    return injectContentScript(target, file);
+  (target: Target) => async () => {
+    return injectContentScript(target);
   }
 );
 
