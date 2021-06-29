@@ -87,7 +87,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const [nextLocation, setNextLocation] = useState(null);
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
-  let history = useHistory();
+  const history = useHistory();
 
   const [blocks] = useAsyncState(async () => {
     const [extensionPoints, blocks, services] = await Promise.all([
@@ -114,8 +114,6 @@ const Editor: React.FunctionComponent<OwnProps> = ({
 
   const confirmNavigation = () => {
     closeModal();
-    console.log(history);
-    console.log(nextLocation);
     if (nextLocation) {
       history.push(nextLocation.pathname);
     }
