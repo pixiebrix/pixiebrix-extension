@@ -42,7 +42,7 @@ import { useToasts } from "react-toast-notifications";
 import { fetch } from "@/hooks/fetch";
 import { Brick } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
-import { Prompt } from "react-router";
+import { Prompt, useHistory } from "react-router";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -84,8 +84,10 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
   const [modalVisible, setModalVisibility] = useState(false);
+  const [nextLocation, setNextLocation] = useState(null);
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
+  let history = useHistory();
 
   const [blocks] = useAsyncState(async () => {
     const [extensionPoints, blocks, services] = await Promise.all([
@@ -104,9 +106,19 @@ const Editor: React.FunctionComponent<OwnProps> = ({
     setModalVisibility(false);
   };
 
-  const unsavedNavigation = () => {
+  const unsavedNavigation = (location) => {
     showModal();
+    setNextLocation(location);
     return false;
+  };
+
+  const confirmNavigation = () => {
+    closeModal();
+    console.log(history);
+    console.log(nextLocation);
+    if (nextLocation) {
+      history.push(nextLocation.pathname);
+    }
   };
 
   const openReference = useCallback(
@@ -167,7 +179,9 @@ const Editor: React.FunctionComponent<OwnProps> = ({
           Are you sure you want to leave? Unsaved changes will be lost.
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger">Discard changes</Button>
+          <Button variant="danger" onClick={confirmNavigation}>
+            Discard changes
+          </Button>
           <Button variant="primary" onClick={closeModal}>
             Stay on this page
           </Button>
