@@ -218,7 +218,7 @@
       "^.+\\.txt$": "jest-raw-loader"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!@cfworker|webext-detect-page|idb|webext-patterns|webext-polyfill-kinda)"
+      "node_modules/(?!@cfworker|webext-detect-page|idb|webext-patterns|webext-polyfill-kinda|webext-additional-permissions)"
     ],
     "setupFiles": [
       "<rootDir>/src/test-env.js",
