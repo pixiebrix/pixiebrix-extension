@@ -22,7 +22,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@maxim_mazurok/gapi.client.bigquery": "^2.0.20210617",
     "@reduxjs/toolkit": "^1.6.0",
-    "@rjsf/core": "^2.5.1",
+    "@rjsf/core": "^3.0.0",
     "@uipath/robot": "^1.2.5",
     "ace-builds": "^1.4.12",
     "axios": "^0.21.1",
