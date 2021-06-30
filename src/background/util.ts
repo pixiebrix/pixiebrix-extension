@@ -17,95 +17,133 @@
 
 import { isBackgroundPage } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
-import * as contentScriptProtocol from "@/contentScript/devTools";
-import { sleep } from "@/utils";
+import { getAdditionalPermissions } from "webext-additional-permissions";
+import { patternToRegex } from "webext-patterns";
 
 export type Target = {
   tabId: number;
   frameId: number;
 };
 
-export async function testTabPermissions(target: Target): Promise<boolean> {
+/** Checks whether a URL has permanent permissions and therefore whether `webext-dynamic-content-scripts` already registered the scripts */
+export async function isContentScriptRegistered(url: string): Promise<boolean> {
+  const { origins } = await getAdditionalPermissions({
+    strictOrigins: false,
+  });
+
+  return patternToRegex(...origins).test(url);
+}
+
+interface TargetState {
+  url: string;
+  installed: boolean;
+  ready: boolean;
+}
+
+/** Fetches the URL from a tab/frame. Return value is empty if it's unknowable (likely because we don't have permission to access it) */
+export async function getTargetState(
+  target: Target
+): Promise<TargetState | void> {
   if (!isBackgroundPage()) {
     throw new Error(
-      "hasTabPermissions can only be called from the background page"
+      "getTargetState can only be called from the background page"
     );
   }
 
-  try {
-    // can't use browser.permissions.contains for permissions because it doesn't seem to work with activeTab
-    await browser.tabs.executeScript(target.tabId, {
-      allFrames: false,
-      frameId: target.frameId ?? 0,
-      code: "true;",
-      runAt: "document_start",
-    });
-    return true;
-  } catch (error) {
-    if ((error.message as string)?.includes("Cannot access contents")) {
-      // no permissions
-    } else {
-      console.warn("testTabPermissions failed", { reason: error });
-    }
-  }
-  return false;
+  return browser.tabs
+    .executeScript(target.tabId, {
+      // This imitates the new chrome.scripting API by wrapping a function in a IIFE
+      code: `(${() => ({
+        url: location.href,
+        installed: Symbol.for("pixiebrix-content-script") in window,
+        ready: (window as any).pbReady,
+      })})()`,
+      frameId: target.frameId,
+    })
+    .then(([state]: [TargetState]) => state)
+    .catch(() => {});
 }
 
-export async function waitReady(
-  target: Target,
-  { maxWaitMillis }: { maxWaitMillis: number }
-): Promise<void> {
-  const start = Date.now();
-  do {
-    const { ready } = await contentScriptProtocol.isInstalled(target);
-    if (ready) {
-      return;
-    }
-    await sleep(150);
-  } while (Date.now() - start < maxWaitMillis);
-  throw new Error(`contentScript not ready in ${maxWaitMillis}ms`);
+export async function onReadyNotification(signal: AbortSignal): Promise<true> {
+  return new Promise((resolve) => {
+    const onMessage = (message: unknown) => {
+      if (message === "pbReady") {
+        resolve(true);
+        browser.runtime.onMessage.removeListener(onMessage);
+      }
+    };
+
+    signal.addEventListener("abort", () => {
+      browser.runtime.onMessage.removeListener(onMessage);
+      resolve(true);
+    });
+
+    browser.runtime.onMessage.addListener(onMessage);
+  });
 }
 
 /**
- * Inject a contentScript into a page if the contentScript is not already available on the page
+ * Ensures that the contentScript is available on the specified page
  * @param target the tab frame to inject the contentScript into
  * @param file the contentScript file
  * @return true if the content script was injected
  */
-export async function injectContentScript(
-  target: Target,
-  file = "contentScript.js"
-): Promise<boolean> {
+export async function ensureContentScript(target: Target): Promise<void> {
   if (!isBackgroundPage()) {
     throw new Error(
-      "injectContentScript can only be called from the background page"
+      "ensureContentScript can only be called from the background page"
     );
   }
 
-  const { installed } = await contentScriptProtocol.isInstalled(target);
+  console.debug(
+    `Content script was requested for frame ${target.frameId} in tab ${target.tabId}`
+  );
 
-  if (!installed) {
-    console.debug(
-      `Injecting devtools contentScript for tab ${target.tabId}, frame ${
-        target.frameId ?? 0
-      }: ${file}`
+  const controller = new AbortController();
+
+  // Start waiting for the notification as early as possible,
+  // `webext-dynamic-content-scripts` might have already injected the content script
+  const readyNotificationPromise = onReadyNotification(controller.signal);
+
+  const result = await Promise.race([
+    readyNotificationPromise,
+    getTargetState(target),
+  ]);
+
+  if (result === true) {
+    // We got the notification while waiting for the script to run, how lucky!
+    console.debug(`Content script messaged us back while waiting`, target);
+    return;
+  }
+
+  const state = result;
+  if (!state) {
+    controller.abort();
+    throw new Error(
+      `No access to frame ${target.frameId} in tab ${target.tabId}`
     );
+  }
 
-    // inject in the top-level frame
+  if (state.ready) {
+    console.debug(`Content script already exists and is ready`, target);
+    controller.abort();
+    return;
+  }
+
+  if (state.installed || (await isContentScriptRegistered(state.url))) {
+    console.debug(
+      `Content script already exists or will be injected automatically`,
+      target
+    );
+  } else {
+    console.debug(`Injecting content script`, target);
     await browser.tabs.executeScript(target.tabId, {
       frameId: target.frameId ?? 0,
       allFrames: false,
-      file,
+      file: "contentScript.js",
       runAt: "document_end",
     });
-
-    return true;
-  } else {
-    console.debug(
-      `contentScript already installed on tab ${target.tabId}, frame ${
-        target.frameId ?? 0
-      }`
-    );
-    return false;
   }
+
+  await readyNotificationPromise;
 }

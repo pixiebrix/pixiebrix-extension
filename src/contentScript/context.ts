@@ -26,8 +26,6 @@ export let navigationTimestamp = new Date();
 export let tabId: number;
 export let frameId: number;
 
-export let ready = false;
-
 /**
  * Set a unique id and timestamp for current navigation event.
  */
@@ -44,7 +42,7 @@ export function getNavigationId(): string {
 }
 
 export function markReady(): void {
-  ready = true;
+  (window as any).pbReady = true;
 }
 
 export function updateTabInfo(info: { tabId: number; frameId: number }): void {

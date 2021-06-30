@@ -109,6 +109,7 @@ export async function whoAmI(): Promise<Runtime.MessageSender> {
 }
 
 export async function notifyReady(): Promise<void> {
+  void browser.runtime.sendMessage("pbReady");
   return browser.runtime.sendMessage({
     type: MESSAGE_CONTENT_SCRIPT_READY,
     payload: {},

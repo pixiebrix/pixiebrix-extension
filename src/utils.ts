@@ -335,3 +335,22 @@ export async function rejectOnCancelled<T>(
 export function isErrorObject(error: unknown): error is ErrorObject {
   return error && typeof error === "object" && "message" in error;
 }
+
+/**
+ * Some pages are off-limits to extension. This function can find out if an error is due to this limitation.
+ *
+ * Example error messages:
+ * Cannot access a chrome:// URL
+ * Cannot access a chrome-extension:// URL of different extension
+ * Cannot access contents of url "chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/". Extension manifest must request permission to access this host.
+ * The extensions gallery cannot be scripted.
+ *
+ * @param error
+ * @returns
+ */
+export function isPrivatePageError(error: unknown): boolean {
+  return (
+    isErrorObject(error) &&
+    /cannot be scripted|(chrome|about|extension):\/\//.test(error.message)
+  );
+}

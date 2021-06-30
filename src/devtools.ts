@@ -21,7 +21,7 @@ import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 
 import {
-  injectScript,
+  ensureScript,
   readSelectedElement,
   clearDynamicElements,
 } from "@/background/devtools/index";
@@ -90,7 +90,7 @@ async function initialize() {
   let injected = false;
 
   try {
-    await injectScript(port, { file: "contentScript.js" });
+    await ensureScript(port);
     injected = true;
   } catch (error) {
     // Can install without having content script on the page; they just won't do much
