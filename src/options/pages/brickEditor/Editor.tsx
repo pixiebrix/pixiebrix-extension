@@ -21,6 +21,7 @@ import {
   faBuilding,
   faEyeSlash,
   faGlobe,
+  faSave,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
@@ -41,6 +42,7 @@ import { useToasts } from "react-toast-notifications";
 import { fetch } from "@/hooks/fetch";
 import { Brick } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
+import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -73,6 +75,28 @@ function isMac(): boolean {
   return navigator.platform.includes("Mac");
 }
 
+function useOpenEditorTab() {
+  const { addToast } = useToasts();
+  return useCallback(
+    async (id: string) => {
+      const available = await fetch<Brick[]>("/api/bricks/");
+      const brick = available.find((x) => x.name === id);
+      if (!brick) {
+        addToast(`You cannot edit brick: ${id}`, {
+          appearance: "warning",
+          autoDismiss: true,
+        });
+      } else {
+        console.debug("Open editor for brick: %s", id, { brick });
+        const url = browser.runtime.getURL("options.html");
+        // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
+        window.open(`${url}#/workshop/bricks/${brick.id}`);
+      }
+    },
+    [addToast]
+  );
+}
+
 const Editor: React.FunctionComponent<OwnProps> = ({
   showTemplates,
   showLogs = true,
@@ -82,7 +106,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
-  const { errors, values } = useFormikContext<EditorValues>();
+  const { errors, values, dirty } = useFormikContext<EditorValues>();
 
   const [blocks] = useAsyncState(async () => {
     const [extensionPoints, blocks, services] = await Promise.all([
@@ -113,24 +137,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
     [setTab, blocks, setSelectedReference, addToast]
   );
 
-  const openEditor = useCallback(
-    async (id: string) => {
-      const available = await fetch<Brick[]>("/api/bricks/");
-      const brick = available.find((x) => x.name === id);
-      if (!brick) {
-        addToast(`You cannot edit brick: ${id}`, {
-          appearance: "warning",
-          autoDismiss: true,
-        });
-      } else {
-        console.debug("Open editor for brick: %s", id, { brick });
-        const url = browser.runtime.getURL("options.html");
-        // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
-        window.open(`${url}#/workshop/bricks/${brick.id}`);
-      }
-    },
-    [addToast]
-  );
+  const openEditorTab = useOpenEditorTab();
 
   const editorRef = useRef(null);
 
@@ -142,6 +149,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
 
   return (
     <div>
+      <ConfirmNavigationModal />
       <div className="mb-3">
         <ul className="list-unstyled list-inline">
           <li className="list-inline-item">
@@ -155,7 +163,6 @@ const Editor: React.FunctionComponent<OwnProps> = ({
           </li>
         </ul>
       </div>
-
       <Card ref={editorRef}>
         <Tab.Container
           id="editor-container"
@@ -165,9 +172,12 @@ const Editor: React.FunctionComponent<OwnProps> = ({
           <Card.Header>
             <Nav variant="tabs" onSelect={setTab}>
               <Nav.Link eventKey="edit">
-                {errors.config ? (
+                {dirty ? (
                   <span className="text-danger">
-                    Editor <FontAwesomeIcon icon={faTimesCircle} />
+                    Editor{" "}
+                    <FontAwesomeIcon
+                      icon={errors.config ? faTimesCircle : faSave}
+                    />
                   </span>
                 ) : (
                   "Editor"
@@ -192,7 +202,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
                 width={editorWidth}
                 showTemplates={showTemplates}
                 openDefinition={openReference}
-                openEditor={openEditor}
+                openEditor={openEditorTab}
               />
             </Tab.Pane>
             <Tab.Pane eventKey="share" className="p-0">
