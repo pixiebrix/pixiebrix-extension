@@ -16,7 +16,7 @@
   "license": "GPL-3.0",
   "repository": "https://github.com/pixiebrix/pixiebrix-extension",
   "dependencies": {
-    "@cfworker/json-schema": "^1.6.3",
+    "@cfworker/json-schema": "^1.8.1",
     "@fortawesome/fontawesome-svg-core": "1.2.35",
     "@fortawesome/free-solid-svg-icons": "^5.13.1",
     "@fortawesome/react-fontawesome": "^0.1.14",
