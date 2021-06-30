@@ -48,7 +48,9 @@ export const getTabInfo = liftBackground(
         `getTabInfo called targeting non top-level frame: ${target.frameId}`
       );
     }
-    const state = await getTargetState({ ...target, frameId: 0 });
+    const state = await getTargetState({ ...target, frameId: 0 }).catch(
+      () => false
+    );
     const { url } = await browser.tabs.get(target.tabId);
     return {
       url,

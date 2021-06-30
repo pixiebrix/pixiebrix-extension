@@ -40,28 +40,24 @@ interface TargetState {
   ready: boolean;
 }
 
-/** Fetches the URL from a tab/frame. Return value is empty if it's unknowable (likely because we don't have permission to access it) */
-export async function getTargetState(
-  target: Target
-): Promise<TargetState | void> {
+/** Fetches the URL from a tab/frame. It will throw if we don't have permission to access it */
+export async function getTargetState(target: Target): Promise<TargetState> {
   if (!isBackgroundPage()) {
     throw new Error(
       "getTargetState can only be called from the background page"
     );
   }
 
-  return browser.tabs
-    .executeScript(target.tabId, {
-      // This imitates the new chrome.scripting API by wrapping a function in a IIFE
-      code: `(${() => ({
-        url: location.href,
-        installed: Symbol.for("pixiebrix-content-script") in window,
-        ready: (window as any).pbReady,
-      })})()`,
-      frameId: target.frameId,
-    })
-    .then(([state]: [TargetState]) => state)
-    .catch(() => {});
+  const [state] = await browser.tabs.executeScript(target.tabId, {
+    // This imitates the new chrome.scripting API by wrapping a function in a IIFE
+    code: `(${() => ({
+      url: location.href,
+      installed: Symbol.for("pixiebrix-content-script") in window,
+      ready: (window as any).pbReady,
+    })})()`,
+    frameId: target.frameId,
+  });
+  return state;
 }
 
 export async function onReadyNotification(signal: AbortSignal): Promise<true> {
@@ -82,12 +78,7 @@ export async function onReadyNotification(signal: AbortSignal): Promise<true> {
   });
 }
 
-/**
- * Ensures that the contentScript is available on the specified page
- * @param target the tab frame to inject the contentScript into
- * @param file the contentScript file
- * @return true if the content script was injected
- */
+/** Ensures that the contentScript is available on the specified page */
 export async function ensureContentScript(target: Target): Promise<void> {
   if (!isBackgroundPage()) {
     throw new Error(
@@ -95,9 +86,7 @@ export async function ensureContentScript(target: Target): Promise<void> {
     );
   }
 
-  console.debug(
-    `Content script was requested for frame ${target.frameId} in tab ${target.tabId}`
-  );
+  console.debug(`ensureContentScript: requested`, target);
 
   const controller = new AbortController();
 
@@ -105,45 +94,43 @@ export async function ensureContentScript(target: Target): Promise<void> {
   // `webext-dynamic-content-scripts` might have already injected the content script
   const readyNotificationPromise = onReadyNotification(controller.signal);
 
-  const result = await Promise.race([
-    readyNotificationPromise,
-    getTargetState(target),
-  ]);
+  try {
+    const result = await Promise.race([
+      readyNotificationPromise,
+      getTargetState(target), // It will throw if we don't have permissions
+    ]);
 
-  if (result === true) {
-    // We got the notification while waiting for the script to run, how lucky!
-    console.debug(`Content script messaged us back while waiting`, target);
-    return;
-  }
+    if (result === true) {
+      console.debug(
+        `ensureContentScript: script messaged us back while waiting`,
+        target
+      );
+      return;
+    }
 
-  const state = result;
-  if (!state) {
+    if (result.ready) {
+      console.debug(`ensureContentScript: already exists and is ready`, target);
+      return;
+    }
+
+    if (result.installed || (await isContentScriptRegistered(result.url))) {
+      console.debug(
+        `ensureContentScript: already exists or will be injected automatically`,
+        target
+      );
+    } else {
+      console.debug(`ensureContentScript: injecting`, target);
+      await browser.tabs.executeScript(target.tabId, {
+        frameId: target.frameId ?? 0,
+        allFrames: false,
+        file: "contentScript.js",
+        runAt: "document_end",
+      });
+    }
+
+    await readyNotificationPromise;
+  } finally {
+    console.debug(`ensureContentScript: ready`, target);
     controller.abort();
-    throw new Error(
-      `No access to frame ${target.frameId} in tab ${target.tabId}`
-    );
   }
-
-  if (state.ready) {
-    console.debug(`Content script already exists and is ready`, target);
-    controller.abort();
-    return;
-  }
-
-  if (state.installed || (await isContentScriptRegistered(state.url))) {
-    console.debug(
-      `Content script already exists or will be injected automatically`,
-      target
-    );
-  } else {
-    console.debug(`Injecting content script`, target);
-    await browser.tabs.executeScript(target.tabId, {
-      frameId: target.frameId ?? 0,
-      allFrames: false,
-      file: "contentScript.js",
-      runAt: "document_end",
-    });
-  }
-
-  await readyNotificationPromise;
 }

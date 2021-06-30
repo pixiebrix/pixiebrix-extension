@@ -41,7 +41,7 @@ import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { reactivate } from "@/background/navigation";
-import { isErrorObject } from "@/utils";
+import { isErrorObject, isPrivatePageError } from "@/utils";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -274,25 +274,28 @@ async function attemptTemporaryAccess({
   frameId,
   url,
 }: WebNavigation.OnDOMContentLoadedDetailsType): Promise<void> {
-  console.debug(`attemptTemporaryAccess called for`, { tabId, frameId });
   if (!connections.has(tabId)) {
     return;
   }
 
+  console.debug(`attemptTemporaryAccess:`, { tabId, frameId, url });
+
   try {
     await ensureContentScript({ tabId, frameId });
   } catch (error) {
-    if (
-      isErrorObject(error) &&
-      error.message.startsWith("No access to frame")
-    ) {
+    if (isPrivatePageError(error)) {
+      return;
+    }
+
+    if (isErrorObject(error) && error.message.startsWith("Cannot access")) {
       console.debug(
-        `Skipping injectDevtoolsContentScript because no activeTab permissions`,
+        `Skipping attemptTemporaryAccess because no activeTab permissions`,
         { tabId, frameId, url }
       );
-    } else {
-      throw error;
+      return;
     }
+
+    throw error;
   }
 }
 
@@ -320,7 +323,7 @@ if (isBackgroundPage()) {
   });
 
   browser.webNavigation.onDOMContentLoaded.addListener((details) => {
-    void attemptTemporaryAccess(details);
     emitDevtools("DOMContentLoaded", details);
+    void attemptTemporaryAccess(details);
   });
 }
