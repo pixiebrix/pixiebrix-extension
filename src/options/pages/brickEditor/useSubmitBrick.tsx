@@ -123,7 +123,8 @@ function useSubmitBrick({
             });
           });
 
-        resetForm({ values: values });
+        // reset initial values of the form so dirty=false
+        resetForm({ values });
 
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);

@@ -15,14 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Card, Nav, Tab, Modal, Button } from "react-bootstrap";
+import { Card, Nav, Tab } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBuilding,
   faEyeSlash,
   faGlobe,
-  faTimesCircle,
   faSave,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
@@ -42,7 +42,7 @@ import { useToasts } from "react-toast-notifications";
 import { fetch } from "@/hooks/fetch";
 import { Brick } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
-import { Prompt, useHistory } from "react-router";
+import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -75,6 +75,28 @@ function isMac(): boolean {
   return navigator.platform.indexOf("Mac") > -1;
 }
 
+function useOpenEditorTab() {
+  const { addToast } = useToasts();
+  return useCallback(
+    async (id: string) => {
+      const available = await fetch<Brick[]>("/api/bricks/");
+      const brick = available.find((x) => x.name === id);
+      if (!brick) {
+        addToast(`You cannot edit brick: ${id}`, {
+          appearance: "warning",
+          autoDismiss: true,
+        });
+      } else {
+        console.debug("Open editor for brick: %s", id, { brick });
+        const url = browser.runtime.getURL("options.html");
+        // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
+        window.open(`${url}#/workshop/bricks/${brick.id}`);
+      }
+    },
+    [addToast]
+  );
+}
+
 const Editor: React.FunctionComponent<OwnProps> = ({
   showTemplates,
   showLogs = true,
@@ -83,11 +105,8 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const { addToast } = useToasts();
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
-  const [modalVisible, setModalVisibility] = useState(false);
-  const [nextLocation, setNextLocation] = useState(null);
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
-  const history = useHistory();
 
   const [blocks] = useAsyncState(async () => {
     const [extensionPoints, blocks, services] = await Promise.all([
@@ -97,27 +116,6 @@ const Editor: React.FunctionComponent<OwnProps> = ({
     ]);
     return [...extensionPoints, ...blocks, ...services];
   }, []);
-
-  const showModal = () => {
-    setModalVisibility(true);
-  };
-
-  const closeModal = () => {
-    setModalVisibility(false);
-  };
-
-  const unsavedNavigation = (location) => {
-    showModal();
-    setNextLocation(location);
-    return false;
-  };
-
-  const confirmNavigation = () => {
-    closeModal();
-    if (nextLocation) {
-      history.push(nextLocation.pathname);
-    }
-  };
 
   const openReference = useCallback(
     (id: string) => {
@@ -139,24 +137,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
     [setTab, blocks, setSelectedReference, addToast]
   );
 
-  const openEditor = useCallback(
-    async (id: string) => {
-      const available = await fetch<Brick[]>("/api/bricks/");
-      const brick = available.find((x) => x.name === id);
-      if (!brick) {
-        addToast(`You cannot edit brick: ${id}`, {
-          appearance: "warning",
-          autoDismiss: true,
-        });
-      } else {
-        console.debug("Open editor for brick: %s", id, { brick });
-        const url = browser.runtime.getURL("options.html");
-        // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
-        window.open(`${url}#/workshop/bricks/${brick.id}`);
-      }
-    },
-    [addToast]
-  );
+  const openEditorTab = useOpenEditorTab();
 
   const editorRef = useRef(null);
 
@@ -168,23 +149,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
 
   return (
     <div>
-      <Prompt when={dirty} message={unsavedNavigation} />
-      <Modal show={modalVisible}>
-        <Modal.Header>
-          <Modal.Title>Unsaved changes</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          Are you sure you want to leave? Unsaved changes will be lost.
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={confirmNavigation}>
-            Discard changes
-          </Button>
-          <Button variant="primary" onClick={closeModal}>
-            Stay on this page
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ConfirmNavigationModal />
       <div className="mb-3">
         <ul className="list-unstyled list-inline">
           <li className="list-inline-item">
@@ -239,7 +204,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
                 width={editorWidth}
                 showTemplates={showTemplates}
                 openDefinition={openReference}
-                openEditor={openEditor}
+                openEditor={openEditorTab}
               />
             </Tab.Pane>
             <Tab.Pane eventKey="share" className="p-0">
