@@ -87,45 +87,33 @@ export function configToYaml(content: unknown): string {
 }
 
 async function ensurePermissions(element: FormState, addToast: AddToast) {
-  try {
-    const adapter = ADAPTERS.get(element.type);
+  const adapter = ADAPTERS.get(element.type);
 
-    const {
-      extension,
-      extensionPoint: extensionPointConfig,
-    } = adapter.definition(element);
+  const {
+    extension,
+    extensionPoint: extensionPointConfig,
+  } = adapter.definition(element);
 
-    const extensionPoint = await extensionPointFactory(extensionPointConfig);
+  const extensionPoint = await extensionPointFactory(extensionPointConfig);
 
-    // Pass the extensionPoint in directly because the foundation will not have been saved/added to the
-    // registry at this point when called from useCreate
-    const permissions = await extensionPermissions(extension, {
-      extensionPoint,
-    });
+  // Pass the extensionPoint in directly because the foundation will not have been saved/added to the
+  // registry at this point when called from useCreate
+  const permissions = await extensionPermissions(extension, {
+    extensionPoint,
+  });
 
-    console.debug("Ensuring permissions", {
-      permissions,
-      extensionPointConfig,
-      extension,
-    });
+  console.debug("Ensuring permissions", {
+    permissions,
+    extensionPointConfig,
+    extension,
+  });
 
-    // FIXME: Firefox probably won't realize this permissions request is user-initiated
-    const hasPermissions = await ensureAllPermissions(permissions);
+  // FIXME: Firefox probably won't realize this permissions request is user-initiated
+  const hasPermissions = await ensureAllPermissions(permissions);
 
-    if (!hasPermissions) {
-      addToast(
-        `You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions`,
-        {
-          appearance: "warning",
-          autoDismiss: true,
-        }
-      );
-    }
-  } catch (error) {
-    reportError(error);
-    console.error("Error checking/enabling permissions", { error });
+  if (!hasPermissions) {
     addToast(
-      `An error occurred checking/enabling permissions. You will need to grant permissions on the active extensions page`,
+      `You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions`,
       {
         appearance: "warning",
         autoDismiss: true,
@@ -164,7 +152,20 @@ export function useCreate(): CreateCallback {
       try {
         const adapter = ADAPTERS.get(element.type);
 
-        await ensurePermissions(element, addToast);
+        try {
+          await ensurePermissions(element, addToast);
+        } catch (error) {
+          // continue to allow saving (because there's a workaround)
+          reportError(error);
+          console.error("Error checking/enabling permissions", { error });
+          addToast(
+            `An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page`,
+            {
+              appearance: "warning",
+              autoDismiss: true,
+            }
+          );
+        }
 
         // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
         // number of bricks implemented and frequency of saves
