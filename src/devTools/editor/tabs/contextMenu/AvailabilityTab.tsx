@@ -27,11 +27,16 @@ import {
 import { ContextMenuFormState } from "@/devTools/editor/editorSlice";
 import { getTabInfo } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
-import { getDomain } from "@/devTools/editor/extensionPoints/base";
 import { openTab } from "@/background/executor";
 import Select from "react-select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  createDomainPattern,
+  createSitePattern,
+  HTTPS_PATTERN,
+  SITES_PATTERN,
+} from "@/permissions/patterns";
 
 const CONTEXTS = [
   "page",
@@ -124,10 +129,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 role="button"
                 onClick={async () => {
                   const url = (await getTabInfo(port)).url;
-                  const parsed = new URL(url);
-                  setDocumentPattern(
-                    `${parsed.protocol}//${parsed.hostname}/*`
-                  );
+                  setDocumentPattern(createSitePattern(url));
                 }}
               >
                 Site
@@ -138,10 +140,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 role="button"
                 onClick={async () => {
                   const url = (await getTabInfo(port)).url;
-                  const parsed = new URL(url);
-                  setDocumentPattern(
-                    `${parsed.protocol}//*.${getDomain(url)}/*`
-                  );
+                  setDocumentPattern(createDomainPattern(url));
                 }}
               >
                 Domain
@@ -150,7 +149,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setDocumentPattern("https://*/")}
+                onClick={() => setDocumentPattern(HTTPS_PATTERN)}
               >
                 HTTPS
               </a>{" "}
@@ -158,7 +157,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setDocumentPattern("*://*/")}
+                onClick={() => setDocumentPattern(SITES_PATTERN)}
               >
                 All URLs
               </a>
@@ -264,8 +263,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 role="button"
                 onClick={async () => {
                   const url = (await getTabInfo(port)).url;
-                  const parsed = new URL(url);
-                  setMatchPattern(`${parsed.protocol}//${parsed.hostname}/*`);
+                  setMatchPattern(createSitePattern(url));
                 }}
               >
                 Site
@@ -276,8 +274,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 role="button"
                 onClick={async () => {
                   const url = (await getTabInfo(port)).url;
-                  const parsed = new URL(url);
-                  setMatchPattern(`${parsed.protocol}//*.${getDomain(url)}/*`);
+                  setMatchPattern(createDomainPattern(url));
                 }}
               >
                 Domain
@@ -286,7 +283,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern("https://*/")}
+                onClick={() => setMatchPattern(HTTPS_PATTERN)}
               >
                 HTTPS
               </a>{" "}
@@ -294,7 +291,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern("*://*/")}
+                onClick={() => setMatchPattern(SITES_PATTERN)}
               >
                 All URLs
               </a>

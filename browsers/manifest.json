@@ -20,12 +20,7 @@
       "run_at": "document_idle"
     }
   ],
-  "optional_permissions": [
-    "notifications",
-    "clipboardWrite",
-    "https://*/",
-    "<all_urls>"
-  ],
+  "optional_permissions": ["notifications", "clipboardWrite", "*://*/*  "],
   "permissions": [
     "activeTab",
     "storage",

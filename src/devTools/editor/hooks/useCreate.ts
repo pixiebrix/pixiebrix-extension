@@ -157,7 +157,7 @@ export function useCreate(): CreateCallback {
         } catch (error) {
           // continue to allow saving (because there's a workaround)
           reportError(error);
-          console.error("Error checking/enabling permissions", { error });
+          console.error("Error  checking/enabling permissions", { error });
           addToast(
             `An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page`,
             {
