@@ -175,11 +175,9 @@ const Editor: React.FunctionComponent<OwnProps> = ({
                 {dirty ? (
                   <span className="text-danger">
                     Editor{" "}
-                    {errors.config ? (
-                      <FontAwesomeIcon icon={faTimesCircle} />
-                    ) : (
-                      <FontAwesomeIcon icon={faSave} />
-                    )}
+                    <FontAwesomeIcon
+                      icon={errors.config ? faTimesCircle : faSave}
+                    />
                   </span>
                 ) : (
                   "Editor"
