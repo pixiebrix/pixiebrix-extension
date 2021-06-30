@@ -24,7 +24,7 @@
     "notifications",
     "clipboardWrite",
     "https://*/",
-    "http://*/"
+    "<all_urls>"
   ],
   "permissions": [
     "activeTab",

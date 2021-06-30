@@ -150,7 +150,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setDocumentPattern("https://*/*")}
+                onClick={() => setDocumentPattern("https://*/")}
               >
                 HTTPS
               </a>{" "}
@@ -158,7 +158,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setDocumentPattern("*://*/*")}
+                onClick={() => setDocumentPattern("*://*/")}
               >
                 All URLs
               </a>
@@ -173,7 +173,7 @@ const AvailabilityTab: React.FunctionComponent<{
             Show context menu on documents whose URL matches the pattern. See{" "}
             <a
               href="#"
-              onClick={() =>
+              onClick={async () =>
                 openTab({
                   url:
                     "https://developer.chrome.com/docs/extensions/mv2/match_patterns/",
@@ -286,7 +286,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern("https://*/*")}
+                onClick={() => setMatchPattern("https://*/")}
               >
                 HTTPS
               </a>{" "}
@@ -294,7 +294,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern("*://*/*")}
+                onClick={() => setMatchPattern("*://*/")}
               >
                 All URLs
               </a>

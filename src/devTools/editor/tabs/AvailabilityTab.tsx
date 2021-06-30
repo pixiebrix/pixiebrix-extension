@@ -89,7 +89,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern("https://*/*")}
+                onClick={() => setMatchPattern("https://*/")}
               >
                 HTTPS
               </a>{" "}
@@ -97,7 +97,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern("*://*/*")}
+                onClick={() => setMatchPattern("*://*/")}
               >
                 All URLs
               </a>
@@ -112,7 +112,7 @@ const AvailabilityTab: React.FunctionComponent<{
             URL match pattern for which pages to run the extension on. See{" "}
             <a
               href="#"
-              onClick={() =>
+              onClick={async () =>
                 openTab({
                   url:
                     "https://developer.chrome.com/docs/extensions/mv2/match_patterns/",
