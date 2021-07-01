@@ -179,6 +179,7 @@
     "fake-indexeddb": "^3.1.2",
     "global": "^4.4.0",
     "jest": "^27.0.6",
+    "jest-environment-jsdom": "^27.0.6",
     "jest-raw-loader": "^1.0.1",
     "jest-webextension-mock": "^3.7.8",
     "jest-yaml-transform": "^0.2.0",
@@ -202,6 +203,7 @@
     "yaml-loader": "^0.6.0"
   },
   "jest": {
+    "testEnvironment": "jest-environment-jsdom",
     "modulePaths": [
       "/src"
     ],
