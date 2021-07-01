@@ -29,7 +29,7 @@ export const SITES_PATTERN = "*://*/*";
  */
 export function getDomain(url: string): string {
   const urlClass = new URL(url);
-  const { domain } = psl.parse(urlClass.host.split(":")[0]) as ParsedDomain;
+  const { domain } = psl.parse(urlClass.hostname) as ParsedDomain;
   return domain;
 }
 
@@ -41,24 +41,4 @@ export function createSitePattern(url: string): string {
 export function createDomainPattern(url: string): string {
   const parsed = new URL(url);
   return `${parsed.protocol}//*.${getDomain(url)}/*`;
-}
-
-function getPathFromUrl(url: string): string {
-  return url.split("?")[0];
-}
-
-export function defaultMatchPattern(url: string): string {
-  const cleanURL = getPathFromUrl(url);
-  console.debug(`Clean URL: ${cleanURL}`);
-  const obj = new URL(cleanURL);
-  // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/entries
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TypeScript definitions are incorrect
-  for (const [name] of (obj.searchParams as any).entries()) {
-    console.debug(`Deleting param ${name}`);
-    obj.searchParams.delete(name);
-  }
-  obj.pathname = "*";
-  obj.hash = "";
-  console.debug(`Generate match pattern`, { href: obj.href });
-  return obj.href;
 }

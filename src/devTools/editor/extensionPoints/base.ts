@@ -23,7 +23,7 @@ import {
   ReaderFormState,
   ReaderReferenceFormState,
 } from "@/devTools/editor/editorSlice";
-import { castArray, identity, isPlainObject } from "lodash";
+import { castArray, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
 import {
@@ -36,7 +36,7 @@ import {
 } from "@/extensionPoints/types";
 import { find as findBrick } from "@/registry/localRegistry";
 import React from "react";
-import { defaultMatchPattern, getDomain } from "@/permissions/patterns";
+import { createSitePattern, getDomain } from "@/permissions/patterns";
 
 export interface WizardStep {
   step: string;
@@ -59,7 +59,7 @@ export function makeIsAvailable(
   url: string
 ): { matchPatterns: string; selectors: string | null } {
   return {
-    matchPatterns: defaultMatchPattern(url),
+    matchPatterns: createSitePattern(url),
     selectors: null,
   };
 }
@@ -155,7 +155,7 @@ export async function generateExtensionPointMetadata(
 
     const ok = (
       await Promise.all([allowId(id), allowId(makeReaderId(id))])
-    ).every(identity);
+    ).every((allowed) => allowed);
 
     if (ok) {
       return {
