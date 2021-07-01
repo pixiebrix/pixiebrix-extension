@@ -19,7 +19,6 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { TriggerFormState } from "@/devTools/editor/editorSlice";
 import {
-  getDomain,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
@@ -43,6 +42,7 @@ import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
+import { getDomain } from "@/permissions/patterns";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },

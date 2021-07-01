@@ -19,7 +19,6 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { PanelFormState, PanelTraits } from "@/devTools/editor/editorSlice";
 import {
-  getDomain,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
@@ -44,6 +43,7 @@ import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { v4 as uuidv4 } from "uuid";
 import { boolean } from "@/utils";
+import { getDomain } from "@/permissions/patterns";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },

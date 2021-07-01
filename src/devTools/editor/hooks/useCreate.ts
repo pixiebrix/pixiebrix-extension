@@ -29,7 +29,7 @@ import { getExtensionToken } from "@/auth/token";
 import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
 import { uniq } from "lodash";
-import { useToasts } from "react-toast-notifications";
+import { AddToast, useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
@@ -39,11 +39,7 @@ import { reactivate } from "@/background/navigation";
 import { reportEvent } from "@/telemetry/events";
 import { removeUndefined } from "@/utils";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import {
-  checkPermissions,
-  ensureExtensionPermissions,
-  extensionPermissions,
-} from "@/permissions";
+import { ensureAllPermissions, extensionPermissions } from "@/permissions";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -71,11 +67,59 @@ async function makeRequestConfig(
   }
 }
 
+function selectErrorMessage(error: unknown): string {
+  if (typeof error === "object" && (error as AxiosError).isAxiosError) {
+    const error_ = error as AxiosError;
+    return (
+      error_.response?.data["config"]?.toString() ??
+      error_.response?.statusText ??
+      "No response from PixieBrix server"
+    );
+  }
+  return error.toString();
+}
+
 /**
  * Dump to YAML, removing keys with undefined values.
  */
 export function configToYaml(content: unknown): string {
   return safeDump(removeUndefined(content));
+}
+
+async function ensurePermissions(element: FormState, addToast: AddToast) {
+  const adapter = ADAPTERS.get(element.type);
+
+  const {
+    extension,
+    extensionPoint: extensionPointConfig,
+  } = adapter.definition(element);
+
+  const extensionPoint = await extensionPointFactory(extensionPointConfig);
+
+  // Pass the extensionPoint in directly because the foundation will not have been saved/added to the
+  // registry at this point when called from useCreate
+  const permissions = await extensionPermissions(extension, {
+    extensionPoint,
+  });
+
+  console.debug("Ensuring permissions", {
+    permissions,
+    extensionPointConfig,
+    extension,
+  });
+
+  // FIXME: Firefox probably won't realize this permissions request is user-initiated
+  const hasPermissions = await ensureAllPermissions(permissions);
+
+  if (!hasPermissions) {
+    addToast(
+      `You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions`,
+      {
+        appearance: "warning",
+        autoDismiss: true,
+      }
+    );
+  }
 }
 
 type CreateCallback = (
@@ -93,27 +137,29 @@ export function useCreate(): CreateCallback {
       element: FormState,
       { setSubmitting, setStatus }: FormikHelpers<FormState>
     ) => {
+      const onStepError = (error: unknown, step: string) => {
+        const message = selectErrorMessage(error);
+        reportError(error);
+        console.warn(`Error %s: %s`, step, message, { error });
+        setStatus(`Error ${step}: ${message}`);
+        addToast(`Error ${step}: ${message}`, {
+          appearance: "error",
+          autoDismiss: true,
+        });
+        setSubmitting(false);
+      };
+
       try {
         const adapter = ADAPTERS.get(element.type);
-        const {
-          extension,
-          extensionPoint: extensionPointConfig,
-        } = adapter.definition(element);
-        const extensionPoint = await extensionPointFactory(
-          extensionPointConfig
-        );
 
-        // We don't want the extension point availability because we already have access to it on the page
-        // because the user is using the devtools. We can request additional permissions on save
-        const permissions = await extensionPermissions(extension, {
-          extensionPoint,
-        });
-        const hasPermissions = await checkPermissions(permissions);
-
-        // FIREFOX: FF probably won't realize this permissions request is user initiated
-        if (!hasPermissions && !(await ensureExtensionPermissions(extension))) {
+        try {
+          await ensurePermissions(element, addToast);
+        } catch (error) {
+          // continue to allow saving (because there's a workaround)
+          reportError(error);
+          console.error("Error  checking/enabling permissions", { error });
           addToast(
-            `You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions`,
+            `An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page`,
             {
               appearance: "warning",
               autoDismiss: true,
@@ -155,7 +201,7 @@ export function useCreate(): CreateCallback {
               await axios({
                 ...(await makeRequestConfig(packageId)),
                 data: { config: configToYaml(readerConfig), kind: "reader" },
-              } as AxiosRequestConfig);
+              });
 
               setSavedReaders((prev) =>
                 uniq([...prev, readerConfig.metadata.id])
@@ -163,20 +209,7 @@ export function useCreate(): CreateCallback {
             }
           }
         } catch (error) {
-          let msg = error.toString();
-          if (error.isAxiosError) {
-            const error_ = error as AxiosError;
-            msg =
-              error_.response?.data["config"]?.toString() ??
-              error_.response?.statusText ??
-              "No response from PixieBrix server";
-          }
-          setStatus(`Error saving reader: ${msg}`);
-          addToast(`Error saving reader definition: ${msg}`, {
-            appearance: "error",
-            autoDismiss: true,
-          });
-          setSubmitting(false);
+          onStepError(error, "saving reader definition");
           return;
         }
 
@@ -203,26 +236,13 @@ export function useCreate(): CreateCallback {
                 config: configToYaml(extensionPointConfig),
                 kind: "extensionPoint",
               },
-            } as AxiosRequestConfig);
+            });
 
             reportEvent("PageEditorCreate", {
               type: element.type,
             });
           } catch (error) {
-            let msg = error.toString();
-            if (error.isAxiosError) {
-              const error_ = error as AxiosError;
-              msg =
-                error_.response?.data["config"]?.toString() ??
-                error_.response?.statusText ??
-                "No response from PixieBrix server";
-            }
-            setStatus(`Error saving foundation: ${msg}`);
-            addToast(`Error saving foundation definition: ${msg}`, {
-              appearance: "error",
-              autoDismiss: true,
-            });
-            setSubmitting(false);
+            onStepError(error, "saving foundation");
             return;
           }
         }
@@ -236,21 +256,18 @@ export function useCreate(): CreateCallback {
             autoDismiss: true,
           });
         } catch (error) {
-          reportError(error);
-          addToast(`Error saving extension: ${error.toString()}`, {
-            appearance: "error",
-            autoDismiss: true,
-          });
+          onStepError(error, "saving extension");
           return;
-        } finally {
-          setSubmitting(false);
         }
+
+        setSubmitting(false);
 
         await Promise.all([
           blockRegistry.fetch(),
           extensionPointRegistry.fetch(),
         ]);
       } catch (error) {
+        console.error("Error saving extension", { error });
         reportError(error);
         addToast(`Error saving extension: ${error.toString()}`, {
           appearance: "error",

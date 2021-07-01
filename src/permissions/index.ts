@@ -86,7 +86,9 @@ export async function collectPermissions(
     : recipeOrExtensionPoints.extensionPoints;
 
   const servicePermissions = await Promise.all(
-    serviceAuths.map((serviceAuth) => serviceOriginPermissions(serviceAuth))
+    serviceAuths.map(async (serviceAuth) =>
+      serviceOriginPermissions(serviceAuth)
+    )
   );
 
   const permissions = await Promise.all(
@@ -145,7 +147,9 @@ export async function extensionPermissions(
   const services = await Promise.all(
     extension.services
       .filter((x) => x.config)
-      .map((x) => serviceOriginPermissions({ id: x.id, config: x.config }))
+      .map(async (x) =>
+        serviceOriginPermissions({ id: x.id, config: x.config })
+      )
   );
   const blocks = await extensionPoint.getBlocks(extension);
   const blockPermissions = blocks.map((x) => x.permissions);
@@ -163,7 +167,7 @@ export async function checkPermissions(
 ): Promise<boolean> {
   return every(
     await Promise.all(
-      permissionsList.map((permissions) =>
+      permissionsList.map(async (permissions) =>
         browser.permissions.contains(permissions)
       )
     )
