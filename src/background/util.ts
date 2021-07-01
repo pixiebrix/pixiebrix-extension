@@ -15,6 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import pDefer from "p-defer";
 import { isBackgroundPage } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
@@ -62,25 +63,25 @@ export async function getTargetState(target: Target): Promise<TargetState> {
   return state;
 }
 
-export async function onReadyNotification(signal: AbortSignal): Promise<true> {
-  return new Promise((resolve) => {
-    const onMessage = (message: unknown) => {
-      if (
-        isRemoteProcedureCallRequest(message) &&
-        message.type === ENSURE_CONTENT_SCRIPT_READY
-      ) {
-        resolve(true);
-        browser.runtime.onMessage.removeListener(onMessage);
-      }
-    };
+export async function onReadyNotification(signal: AbortSignal): Promise<void> {
+  const { resolve, promise: readyNotification } = pDefer();
 
-    signal.addEventListener("abort", () => {
-      browser.runtime.onMessage.removeListener(onMessage);
-      resolve(true);
-    });
+  const onMessage = (message: unknown) => {
+    if (
+      isRemoteProcedureCallRequest(message) &&
+      message.type === ENSURE_CONTENT_SCRIPT_READY
+    ) {
+      resolve();
+    }
+  };
 
-    browser.runtime.onMessage.addListener(onMessage);
-  });
+  browser.runtime.onMessage.addListener(onMessage);
+  signal.addEventListener("abort", resolve);
+
+  await readyNotification;
+
+  browser.runtime.onMessage.removeListener(onMessage);
+  signal.removeEventListener("abort", resolve);
 }
 
 /** Ensures that the contentScript is available on the specified page */
@@ -105,7 +106,7 @@ export async function ensureContentScript(target: Target): Promise<void> {
       getTargetState(target), // It will throw if we don't have permissions
     ]);
 
-    if (result === true) {
+    if (!result) {
       console.debug(
         `ensureContentScript: script messaged us back while waiting`,
         target
