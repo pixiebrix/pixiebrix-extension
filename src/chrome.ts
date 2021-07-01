@@ -120,7 +120,7 @@ export async function runtimeConnect(name: string): Promise<Runtime.Port> {
   port.onDisconnect.addListener(onDisconnect);
 
   try {
-    await pTimeout(deferred.promise, 100);
+    await pTimeout(deferred.promise, 1000);
     return port;
   } finally {
     port.onMessage.removeListener(deferred.resolve);
