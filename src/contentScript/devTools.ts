@@ -22,7 +22,6 @@ import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
 import { Framework } from "@/messaging/constants";
-import { ready as contentScriptReady } from "@/contentScript/context";
 import blockRegistry from "@/blocks/registry";
 import getCssSelector from "css-selector-generator";
 import { IReader } from "@/core";
@@ -59,32 +58,6 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
     } else {
       return { error: error };
     }
-  }
-}
-
-interface PingResponse {
-  installed: boolean;
-  ready: boolean;
-}
-
-export const _ping = liftContentScript("PING", async () => {
-  return {
-    installed: true,
-    ready: contentScriptReady,
-  };
-});
-
-export async function isInstalled(target: Target): Promise<PingResponse> {
-  try {
-    return await _ping(target);
-  } catch (error) {
-    if (error.message?.includes("Receiving end does not exist")) {
-      return {
-        installed: false,
-        ready: false,
-      };
-    }
-    throw error;
   }
 }
 

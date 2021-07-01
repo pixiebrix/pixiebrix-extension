@@ -38,9 +38,10 @@ import { reportError } from "@/telemetry/logging";
 import { isBackgroundPage } from "webext-detect-page";
 import { v4 as uuidv4 } from "uuid";
 import { callBackground } from "@/background/devtools/external";
-import { testTabPermissions, injectContentScript } from "@/background/util";
+import { ensureContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { reactivate } from "@/background/navigation";
+import { isErrorObject, isPrivatePageError } from "@/utils";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -273,19 +274,35 @@ export function registerPort(tabId: TabId, port: Runtime.Port): void {
  * are open. If the user has granted permanent access, the content script will be injected based on the
  * dynamic content script permissions via `webext-dynamic-content-scripts`
  */
-async function injectTemporaryAccess({
+async function attemptTemporaryAccess({
   tabId,
   frameId,
+  url,
 }: WebNavigation.OnDOMContentLoadedDetailsType): Promise<void> {
-  if (connections.has(tabId)) {
-    const hasPermissions = await testTabPermissions({ tabId, frameId });
-    if (hasPermissions) {
-      await injectContentScript({ tabId, frameId });
-    } else {
-      console.debug(
-        `Skipping injectDevtoolsContentScript because no activeTab permissions for tab: ${tabId}`
-      );
+  if (!connections.has(tabId)) {
+    return;
+  }
+
+  console.debug(`attemptTemporaryAccess:`, { tabId, frameId, url });
+
+  try {
+    await ensureContentScript({ tabId, frameId });
+  } catch (error) {
+    if (isPrivatePageError(error)) {
+      return;
     }
+
+    // Side note: Cross-origin iframes lose the `activeTab` after navigation
+    // https://github.com/pixiebrix/pixiebrix-extension/pull/661#discussion_r661590847
+    if (isErrorObject(error) && error.message.startsWith("Cannot access")) {
+      console.debug(
+        `Skipping attemptTemporaryAccess because no activeTab permissions`,
+        { tabId, frameId, url }
+      );
+      return;
+    }
+
+    throw error;
   }
 }
 
@@ -313,7 +330,7 @@ if (isBackgroundPage()) {
   });
 
   browser.webNavigation.onDOMContentLoaded.addListener((details) => {
-    void injectTemporaryAccess(details);
     emitDevtools("DOMContentLoaded", details);
+    void attemptTemporaryAccess(details);
   });
 }

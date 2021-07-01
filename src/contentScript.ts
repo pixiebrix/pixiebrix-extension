@@ -35,7 +35,7 @@ import addExecutorListener, {
 import "@/messaging/external";
 import "@/contentScript/script";
 import "@/vendors/notify";
-import { markReady, updateTabInfo } from "@/contentScript/context";
+import { updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import "@/contentScript/uipath";
 
@@ -73,7 +73,6 @@ async function init(): Promise<void> {
 
   try {
     // notify the background script know we're ready to execute remote actions
-    markReady();
     await notifyReady();
     console.info(`contentScript ready in ${Date.now() - start}ms`);
   } catch (error) {

@@ -28,8 +28,7 @@ import {
   liftBackground,
   registerPort as internalRegisterPort,
 } from "@/background/devtools/internal";
-import { testTabPermissions, injectContentScript } from "@/background/util";
-import { sleep } from "@/utils";
+import { getTargetState, ensureContentScript } from "@/background/util";
 import { isEmpty } from "lodash";
 import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
@@ -49,34 +48,21 @@ export const getTabInfo = liftBackground(
         `getTabInfo called targeting non top-level frame: ${target.frameId}`
       );
     }
-    const hasPermissions = await testTabPermissions({ ...target, frameId: 0 });
+    const state = await getTargetState({ ...target, frameId: 0 }).catch(
+      () => false
+    );
     const { url } = await browser.tabs.get(target.tabId);
     return {
       url,
-      hasPermissions,
+      hasPermissions: Boolean(state),
     };
   }
 );
 
-export const injectScript = liftBackground(
+export const ensureScript = liftBackground(
   "INJECT_SCRIPT",
-  (target: Target) => async ({ file }: { file: string }) => {
-    return injectContentScript(target, file);
-  }
-);
-
-export const waitReady = liftBackground(
-  "WAIT_READY",
-  (target: Target) => async ({ maxWaitMillis }: { maxWaitMillis: number }) => {
-    const start = Date.now();
-    do {
-      const { ready } = await contentScriptProtocol.isInstalled(target);
-      if (ready) {
-        return;
-      }
-      await sleep(150);
-    } while (Date.now() - start < maxWaitMillis);
-    throw new Error(`contentScript not ready in ${maxWaitMillis}ms`);
+  (target: Target) => async () => {
+    return ensureContentScript(target);
   }
 );
 
