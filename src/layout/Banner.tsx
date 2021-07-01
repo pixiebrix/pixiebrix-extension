@@ -23,7 +23,6 @@ import useAsyncEffect from "use-async-effect";
 import AuthContext from "@/auth/AuthContext";
 
 const environment = process.env.ENVIRONMENT;
-const versionName = process.env.VERSION_NAME;
 
 const classMap = new Map([
   [null, "development"],
@@ -53,6 +52,8 @@ const Banner: React.FunctionComponent = () => {
   if (environment === "production") {
     return null;
   }
+
+  const versionName = chrome.runtime.getManifest().version_name;
 
   const syncText = hostname
     ? `synced with ${hostname}`

@@ -25,6 +25,7 @@ import "@/telemetry/rollbar";
 import "webpack-target-webextension/lib/background";
 import "webext-dynamic-content-scripts";
 
+import "./development/autoreload";
 import "./background/installer";
 import "./messaging/external";
 import "./background/requests";

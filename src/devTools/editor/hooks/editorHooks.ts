@@ -42,8 +42,19 @@ export function useReset(
   element: FormState
 ): () => void {
   const dispatch = useDispatch();
+  const { showConfirmation } = useModals();
 
   return useCallback(async () => {
+    const confirm = await showConfirmation({
+      title: "Reset Brick?",
+      message: "Any changes you made since the last save will be lost",
+      submitCaption: "Reset",
+    });
+
+    if (!confirm) {
+      return;
+    }
+
     try {
       const extension = installed.find((x) => x.id === element.uuid);
       const state = await extensionToFormState(extension);
@@ -52,7 +63,7 @@ export function useReset(
       reportError(error);
       dispatch(actions.adapterError({ uuid: element.uuid, error }));
     }
-  }, [dispatch, element.uuid, installed]);
+  }, [showConfirmation, dispatch, element.uuid, installed]);
 }
 
 export function useRemove(element: FormState): () => void {
@@ -67,7 +78,7 @@ export function useRemove(element: FormState): () => void {
 
     const confirm = await showConfirmation({
       title: "Remove Brick?",
-      message: "Remove this brick? This action cannot be undone",
+      message: "This action cannot be undone",
       submitCaption: "Remove",
     });
 

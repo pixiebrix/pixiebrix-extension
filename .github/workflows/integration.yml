@@ -41,11 +41,13 @@ jobs:
           name: build-staging
           path: browsers/dist
           retention-days: 5
+          if-no-files-found: error
       - uses: actions/upload-artifact@v2
         with:
           name: staging-build-size
           path: report.html
           retention-days: 5
+          if-no-files-found: error
 
   generate-headers:
     runs-on: ubuntu-latest
@@ -63,6 +65,7 @@ jobs:
           name: brick-headers
           path: headers.json
           retention-days: 5
+          if-no-files-found: error
 
   lint:
     runs-on: ubuntu-latest

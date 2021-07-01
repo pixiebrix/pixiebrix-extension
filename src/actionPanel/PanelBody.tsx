@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ComponentRef } from "@/extensionPoints/dom";
+import { ComponentRef, PanelComponent } from "@/extensionPoints/dom";
 import React, { useMemo } from "react";
 import { PanelEntry } from "@/actionPanel/protocol";
 import GridLoader from "react-spinners/GridLoader";
@@ -70,7 +70,7 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
       return (
         <div className="h-100">
           <ReactShadowRoot>
-            <BodyComponent body={body as string | ComponentRef} />
+            <BodyComponent body={body as PanelComponent} />
           </ReactShadowRoot>
         </div>
       );

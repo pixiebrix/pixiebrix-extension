@@ -23,8 +23,6 @@ import {
   isOptionsPage,
 } from "webext-detect-page";
 
-type RequestUpdateCheckStatus = chrome.runtime.RequestUpdateCheckStatus;
-
 export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
 
@@ -147,19 +145,4 @@ export async function setStorage(
     throw new TypeError("Expected string value");
   }
   await browser.storage[storageType].set({ [storageKey]: value });
-}
-
-// https://developer.chrome.com/extensions/runtime#method-requestUpdateCheck
-export function requestUpdateCheck(): Promise<RequestUpdateCheckStatus> {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.requestUpdateCheck(function (
-      status: RequestUpdateCheckStatus
-    ) {
-      if (chrome.runtime.lastError == null) {
-        resolve(status);
-      } else {
-        reject(chrome.runtime.lastError.message);
-      }
-    });
-  });
 }

@@ -23,6 +23,7 @@ import {
 } from "@/chrome";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { patternToRegex } from "webext-patterns";
+import chromeP from "webext-polyfill-kinda";
 import {
   isBackgroundPage,
   isContentScript,
@@ -127,40 +128,6 @@ export function getExtensionId(): string {
   }
 }
 
-/**
- * Send a message from an `externally_connectable` web page to an extension.
- *
- * This method is not called from the extension, it's called by the PixieBrix webapp which includes this
- * module as a dependency.
- *
- * On Firefox, we mimic externally_connectable's functionality with `liftExternal`
- *
- * @see https://developer.chrome.com/docs/extensions/mv3/messaging/#external-webpage
- */
-function externalSendMessage<TResponse = unknown>(
-  extensionId: string | undefined,
-  message: unknown,
-  options?: Runtime.SendMessageOptionsType
-): Promise<TResponse> {
-  if (isExtensionContext()) {
-    throw new Error(
-      "externalSendMessage should not be called from an extension context"
-    );
-  }
-
-  // When accessing from an external site, browser.runtime is undefined because Mozilla's polyfill is only enabled
-  // in extension contexts. Therefore, we we have to use the Chrome API namespace
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage(extensionId, message, options, (response) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        resolve(response);
-      }
-    });
-  });
-}
-
 export async function callBackground(
   type: string,
   args: unknown[],
@@ -169,11 +136,11 @@ export async function callBackground(
   const nonce = uuidv4();
   const message = { type, payload: args, meta: { nonce } };
 
-  // When accessing from an external site via chrome, browser.runtime won't be available.
-  // https://developer.chrome.com/docs/extensions/mv3/messaging/#external-webpage
+  // `browser.*` APIs are not polyfilled outside the extension context (`externally_connectable` pages)
+  // https://github.com/mozilla/webextension-polyfill/issues/326
   const sendMessage = isExtensionContext()
     ? browser.runtime.sendMessage
-    : externalSendMessage;
+    : chromeP.runtime.sendMessage;
   const extensionId = isExtensionContext() ? null : getExtensionId();
 
   if (isNotification(options)) {
