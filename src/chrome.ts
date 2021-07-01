@@ -16,6 +16,8 @@
  */
 
 import isEmpty from "lodash/isEmpty";
+import pDefer from "p-defer";
+import pTimeout from "p-timeout";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import {
   isBackgroundPage,
@@ -96,23 +98,34 @@ export function getChromeExtensionId(): string {
   return isEmpty(manualKey ?? "") ? CHROME_EXTENSION_ID : manualKey;
 }
 
-/** Connect to the extension runtime and throw proper errors if it fails */
+/** Connect to the extension runtime and throw proper errors if it fails. NOTE: It expects a message from the other side */
 export async function runtimeConnect(name: string): Promise<Runtime.Port> {
-  return new Promise((resolve, reject) => {
-    const port = chrome.runtime.connect({ name });
+  if (isBackgroundPage()) {
+    throw new Error("runtimeConnect cannot be called from the background page");
+  }
 
+  const deferred = pDefer();
+
+  const onDisconnect = () => {
     // If the connection fails, the error will only be available on this callback
-    port.onDisconnect.addListener(() => {
-      // TODO: Also handle port.error in Firefox https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port#type
-      const message =
-        chrome.runtime.lastError?.message ??
-        "There was an error while connecting to the runtime";
-      reject(new Error(message));
-    });
+    // TODO: Also handle port.error in Firefox https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port#type
+    const message =
+      chrome.runtime.lastError?.message ??
+      "There was an error while connecting to the runtime";
+    deferred.reject(new Error(message));
+  };
 
-    // If onDisconnect hasn't been called by now, we assume the connection succeeded. There's no port.onConnect
-    setTimeout(resolve, 0, port);
-  });
+  const port = browser.runtime.connect(null, { name });
+  port.onMessage.addListener(deferred.resolve); // Any message is fine
+  port.onDisconnect.addListener(onDisconnect);
+
+  try {
+    await pTimeout(deferred.promise, 100);
+    return port;
+  } finally {
+    port.onMessage.removeListener(deferred.resolve);
+    port.onDisconnect.removeListener(onDisconnect);
+  }
 }
 
 export class RuntimeNotFoundError extends Error {

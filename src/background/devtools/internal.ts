@@ -237,6 +237,9 @@ function connectDevtools(port: Runtime.Port): void {
       }`
     );
 
+    // ping back
+    port.postMessage("Port open");
+
     // add/cleanup listener
     numOpenConnections++;
     port.onMessage.addListener(backgroundMessageListener);
