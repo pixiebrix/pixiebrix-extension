@@ -19,6 +19,8 @@ import { isBackgroundPage } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
+import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
+import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 
 export type Target = {
   tabId: number;
@@ -63,7 +65,10 @@ export async function getTargetState(target: Target): Promise<TargetState> {
 export async function onReadyNotification(signal: AbortSignal): Promise<true> {
   return new Promise((resolve) => {
     const onMessage = (message: unknown) => {
-      if (message === "pbReady") {
+      if (
+        isRemoteProcedureCallRequest(message) &&
+        message.type === ENSURE_CONTENT_SCRIPT_READY
+      ) {
         resolve(true);
         browser.runtime.onMessage.removeListener(onMessage);
       }
