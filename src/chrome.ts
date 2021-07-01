@@ -98,13 +98,17 @@ export function getChromeExtensionId(): string {
   return isEmpty(manualKey ?? "") ? CHROME_EXTENSION_ID : manualKey;
 }
 
-/** Connect to the extension runtime and throw proper errors if it fails. NOTE: It expects a message from the other side */
+/**
+ * Connect to the background page and throw real errors if the connection fails.
+ * NOTE: To determine whether the connection was successful, the background page
+ * needs to send one message back within a second.
+ * */
 export async function runtimeConnect(name: string): Promise<Runtime.Port> {
   if (isBackgroundPage()) {
     throw new Error("runtimeConnect cannot be called from the background page");
   }
 
-  const deferred = pDefer();
+  const { resolve, reject, promise: connectionPromise } = pDefer();
 
   const onDisconnect = () => {
     // If the connection fails, the error will only be available on this callback
@@ -112,18 +116,23 @@ export async function runtimeConnect(name: string): Promise<Runtime.Port> {
     const message =
       chrome.runtime.lastError?.message ??
       "There was an error while connecting to the runtime";
-    deferred.reject(new Error(message));
+    reject(new Error(message));
   };
 
   const port = browser.runtime.connect(null, { name });
-  port.onMessage.addListener(deferred.resolve); // Any message is fine
+  port.onMessage.addListener(resolve); // Any message is accepted
   port.onDisconnect.addListener(onDisconnect);
 
   try {
-    await pTimeout(deferred.promise, 1000);
+    // The timeout is to avoid hanging if the background isn't set up to respond immediately
+    await pTimeout(
+      connectionPromise,
+      1000,
+      "The background page hasn’t responded in time"
+    );
     return port;
   } finally {
-    port.onMessage.removeListener(deferred.resolve);
+    port.onMessage.removeListener(resolve);
     port.onDisconnect.removeListener(onDisconnect);
   }
 }

@@ -237,8 +237,10 @@ function connectDevtools(port: Runtime.Port): void {
       }`
     );
 
-    // ping back
-    port.postMessage("Port open");
+    // `runtimeConnect` in chrome.ts expects a message after a successful connection
+    port.postMessage({
+      type: "DEVTOOLS_RUNTIME_CONNECTION_CONFIRMED",
+    });
 
     // add/cleanup listener
     numOpenConnections++;
