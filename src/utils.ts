@@ -333,7 +333,8 @@ export async function rejectOnCancelled<T>(
 }
 
 export function isErrorObject(error: unknown): error is ErrorObject {
-  return error && typeof error === "object" && "message" in error;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
+  return typeof (error as any)?.message === "string";
 }
 
 /**

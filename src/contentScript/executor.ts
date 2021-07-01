@@ -27,6 +27,7 @@ import {
 import { isContentScript } from "webext-detect-page";
 import { Availability } from "@/blocks/types";
 import { checkAvailable } from "@/blocks/available";
+import { markReady } from "./context";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 
 export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
@@ -110,6 +111,8 @@ export async function whoAmI(): Promise<Runtime.MessageSender> {
 }
 
 export async function notifyReady(): Promise<void> {
+  markReady();
+
   // Inform `ensureContentScript` that the content script has loaded, if it's listening
   void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
 
