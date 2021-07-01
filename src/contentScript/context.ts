@@ -26,6 +26,14 @@ export let navigationTimestamp = new Date();
 export let tabId: number;
 export let frameId: number;
 
+const PIXIEBRIX_READY_SYMBOL = Symbol.for("pixiebrix-content-script-ready");
+
+declare global {
+  interface Window {
+    [PIXIEBRIX_READY_SYMBOL]?: true;
+  }
+}
+
 /**
  * Set a unique id and timestamp for current navigation event.
  */
@@ -42,7 +50,8 @@ export function getNavigationId(): string {
 }
 
 export function markReady(): void {
-  (window as any).pbReady = true;
+  // eslint-disable-next-line security/detect-object-injection -- Static symbol
+  window[PIXIEBRIX_READY_SYMBOL] = true;
 }
 
 export function updateTabInfo(info: { tabId: number; frameId: number }): void {

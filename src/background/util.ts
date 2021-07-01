@@ -53,7 +53,7 @@ export async function getTargetState(target: Target): Promise<TargetState> {
     code: `(${() => ({
       url: location.href,
       installed: Symbol.for("pixiebrix-content-script") in window,
-      ready: (window as any).pbReady,
+      ready: Symbol.for("pixiebrix-content-script-ready") in window,
     })})()`,
     frameId: target.frameId,
   });
