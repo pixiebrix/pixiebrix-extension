@@ -23,8 +23,7 @@ import {
   ReaderFormState,
   ReaderReferenceFormState,
 } from "@/devTools/editor/editorSlice";
-import psl, { ParsedDomain } from "psl";
-import { castArray, identity, isPlainObject } from "lodash";
+import { castArray, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
 import {
@@ -37,6 +36,7 @@ import {
 } from "@/extensionPoints/types";
 import { find as findBrick } from "@/registry/localRegistry";
 import React from "react";
+import { createSitePattern, getDomain } from "@/permissions/patterns";
 
 export interface WizardStep {
   step: string;
@@ -46,26 +46,6 @@ export interface WizardStep {
     available?: boolean;
   }>;
   extraProps?: Record<string, unknown>;
-}
-
-function getPathFromUrl(url: string): string {
-  return url.split("?")[0];
-}
-
-function defaultMatchPattern(url: string): string {
-  const cleanURL = getPathFromUrl(url);
-  console.debug(`Clean URL: ${cleanURL}`);
-  const obj = new URL(cleanURL);
-  // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/entries
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- TypeScript definitions are incorrect
-  for (const [name] of (obj.searchParams as any).entries()) {
-    console.debug(`Deleting param ${name}`);
-    obj.searchParams.delete(name);
-  }
-  obj.pathname = "*";
-  obj.hash = "";
-  console.debug(`Generate match pattern`, { href: obj.href });
-  return obj.href;
 }
 
 function defaultReader(frameworks: FrameworkMeta[]): Framework {
@@ -79,7 +59,7 @@ export function makeIsAvailable(
   url: string
 ): { matchPatterns: string; selectors: string | null } {
   return {
-    matchPatterns: defaultMatchPattern(url),
+    matchPatterns: createSitePattern(url),
     selectors: null,
   };
 }
@@ -145,12 +125,6 @@ export function makeBaseState(
   };
 }
 
-export function getDomain(url: string): string {
-  const urlClass = new URL(url);
-  const { domain } = psl.parse(urlClass.host.split(":")[0]) as ParsedDomain;
-  return domain;
-}
-
 export async function generateExtensionPointMetadata(
   label: string,
   scope: string,
@@ -181,7 +155,7 @@ export async function generateExtensionPointMetadata(
 
     const ok = (
       await Promise.all([allowId(id), allowId(makeReaderId(id))])
-    ).every(identity);
+    ).every((allowed) => allowed);
 
     if (ok) {
       return {

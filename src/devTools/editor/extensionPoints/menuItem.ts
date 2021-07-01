@@ -23,7 +23,6 @@ import {
 import { FrameworkMeta } from "@/messaging/constants";
 import { ActionFormState } from "@/devTools/editor/editorSlice";
 import {
-  getDomain,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
@@ -47,6 +46,7 @@ import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { v4 as uuidv4 } from "uuid";
+import { getDomain } from "@/permissions/patterns";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
