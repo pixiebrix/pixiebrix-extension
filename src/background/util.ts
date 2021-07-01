@@ -75,6 +75,8 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
     }
   };
 
+  // `onReadyNotification` is not expected to throw. It resolves on `abort` simply to
+  // clean up the listeners, but by then nothing is await this promise anyway.
   browser.runtime.onMessage.addListener(onMessage);
   signal.addEventListener("abort", resolve);
 
@@ -84,7 +86,11 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
   signal.removeEventListener("abort", resolve);
 }
 
-/** Ensures that the contentScript is available on the specified page */
+/**
+ * Ensures that the contentScript is ready on the specified page, regardless of its status.
+ * If it's not expected to be injected automatically, it also injects it into the page.
+ * If it's been injected, it will resolve once the content script is ready.
+ */
 export async function ensureContentScript(target: Target): Promise<void> {
   if (!isBackgroundPage()) {
     throw new Error(
