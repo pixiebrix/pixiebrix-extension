@@ -35,6 +35,7 @@ import {
 } from "lodash";
 import { ErrorObject } from "serialize-error";
 import { Primitive } from "type-fest";
+import { isBackgroundPage, isContentScript } from "webext-detect-page";
 
 export function mostCommonElement<T>(items: T[]): T {
   // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
@@ -354,4 +355,60 @@ export function isPrivatePageError(error: unknown): boolean {
     isErrorObject(error) &&
     /cannot be scripted|(chrome|about|extension):\/\//.test(error.message)
   );
+}
+
+// TODO: Use keyof Map instead of inlining the contexts in the parameters https://github.com/sindresorhus/type-fest/issues/225
+type Context = "background" | "contentScript";
+
+const contextsMap = new Map<Context, () => boolean>([
+  ["background", isBackgroundPage],
+  ["contentScript", isContentScript],
+]);
+
+/**
+ * Accepts 'This is my error' | new Error('This is my error') | Error;
+ * The constructor would be used to create a custom error with the defalt message
+ */
+type ErrorBaseType = string | Error | { new (message?: string): Error };
+function createError(
+  defaultMessage: string,
+  error: ErrorBaseType = Error
+): Error {
+  if (typeof error === "string") {
+    // eslint-disable-next-line unicorn/prefer-type-error
+    throw new Error(error);
+  }
+
+  if (error instanceof Error) {
+    throw error;
+  }
+
+  throw new error(defaultMessage);
+}
+
+/**
+ * @example expectContext('background')
+ * @example expectContext('background', WrongContextError)
+ * @example expectContext('background', 'Wrong context and this is my custom error')
+ * @example expectContext('background', new Error('Wrong context and this is my custom error'))
+ */
+export function expectContext(context: Context, error?: ErrorBaseType): void {
+  if (!contextsMap.get(context)()) {
+    throw createError(
+      `This code can only run in the ${context} context`,
+      error
+    );
+  }
+}
+
+/**
+ * @example forbidContext('background')
+ * @example forbidContext('background', WrongContextError)
+ * @example forbidContext('background', 'Wrong context and this is my custom error')
+ * @example forbidContext('background', new Error('Wrong context and this is my custom error'))
+ */
+export function forbidContext(context: Context, error?: ErrorBaseType): void {
+  if (contextsMap.get(context)()) {
+    throw createError(`This code cannot run in the ${context} context`, error);
+  }
 }

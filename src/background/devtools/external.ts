@@ -31,7 +31,7 @@ import {
 import { browser, Runtime, WebNavigation } from "webextension-polyfill-ts";
 import { v4 as uuidv4 } from "uuid";
 import { SimpleEvent } from "@/hooks/events";
-import { isBackgroundPage } from "webext-detect-page";
+import { forbidContext } from "@/utils";
 
 const devtoolsHandlers = new Map<Nonce, PromiseHandler>();
 
@@ -112,12 +112,12 @@ export async function callBackground(
 }
 
 export function installPortListeners(port: Runtime.Port): void {
-  if (isBackgroundPage()) {
-    // can't use isDevtoolsPage since this will be called from the pane and other places
-    throw new Error(
-      "installPortListeners should only be called from the devtools"
-    );
-  }
+  // can't use isDevtoolsPage since this will be called from the pane and other places
+  forbidContext(
+    "background",
+    "installPortListeners should only be called from the devtools"
+  );
+
   port.onMessage.addListener(devtoolsMessageListener);
   port.onMessage.addListener(devtoolsEventListener);
 }

@@ -24,7 +24,7 @@ import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { reverse, sortBy } from "lodash";
 import { _getDNT } from "@/background/telemetry";
-import { isBackgroundPage, isContentScript } from "webext-detect-page";
+import { isContentScript } from "webext-detect-page";
 import { readStorage, setStorage } from "@/chrome";
 import {
   hasBusinessRootCause,
@@ -33,6 +33,7 @@ import {
 } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
 import { errorMessage } from "@/telemetry/logging";
+import { expectContext } from "@/utils";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -291,11 +292,8 @@ const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS";
 let _config: LoggingConfig = null;
 
 export async function _getLoggingConfig(): Promise<LoggingConfig> {
-  if (!isBackgroundPage()) {
-    throw new Error(
-      "_getLoggingConfig should only be called from the background page"
-    );
-  }
+  expectContext("background");
+
   if (_config != null) {
     return _config;
   }
@@ -305,11 +303,8 @@ export async function _getLoggingConfig(): Promise<LoggingConfig> {
 }
 
 export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
-  if (!isBackgroundPage()) {
-    throw new Error(
-      "_setLoggingConfig should only be called from the background page"
-    );
-  }
+  expectContext("background");
+
   await setStorage(LOG_CONFIG_STORAGE_KEY, JSON.stringify(config));
   _config = config;
 }

@@ -24,11 +24,11 @@ import {
   allowSender,
   liftContentScript,
 } from "@/contentScript/backgroundProtocol";
-import { isContentScript } from "webext-detect-page";
 import { Availability } from "@/blocks/types";
 import { checkAvailable } from "@/blocks/available";
 import { markReady } from "./context";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
+import { expectContext } from "@/utils";
 
 export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
@@ -124,13 +124,9 @@ export async function notifyReady(): Promise<void> {
 }
 
 function addExecutorListener(): void {
-  if (isContentScript()) {
-    browser.runtime.onMessage.addListener(runBlockAction);
-  } else {
-    throw new Error(
-      "addExecutorListener should only be called from the content script"
-    );
-  }
+  expectContext("contentScript");
+
+  browser.runtime.onMessage.addListener(runBlockAction);
 }
 
 export default addExecutorListener;

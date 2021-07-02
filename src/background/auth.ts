@@ -17,7 +17,6 @@
 
 import axios, { AxiosResponse } from "axios";
 import { readStorage, setStorage } from "@/chrome";
-import { isBackgroundPage } from "webext-detect-page";
 import { IService, AuthData, RawServiceConfiguration } from "@/core";
 import { browser } from "webextension-polyfill-ts";
 import {
@@ -26,6 +25,7 @@ import {
   getRandomString,
 } from "vendors/pkce";
 import { BusinessError } from "@/errors";
+import { expectContext } from "@/utils";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 
@@ -33,9 +33,11 @@ async function setCachedAuthData(
   key: string,
   data: Record<string, string>
 ): Promise<void> {
-  if (!isBackgroundPage()) {
-    throw new Error("Only the background page can access oauth2 information");
-  }
+  expectContext(
+    "background",
+    "Only the background page can access oauth2 information"
+  );
+
   const current = JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}");
   await setStorage(
     OAUTH2_STORAGE_KEY,
@@ -49,9 +51,11 @@ async function setCachedAuthData(
 export async function getCachedAuthData<T extends AuthData>(
   key: string
 ): Promise<T> {
-  if (!isBackgroundPage()) {
-    throw new Error("Only the background page can access oauth2 information");
-  }
+  expectContext(
+    "background",
+    "Only the background page can access oauth2 information"
+  );
+
   const current = new Map<string, T>(
     Object.entries(JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}"))
   );
@@ -59,9 +63,11 @@ export async function getCachedAuthData<T extends AuthData>(
 }
 
 export async function deleteCachedAuthData(key: string): Promise<void> {
-  if (!isBackgroundPage()) {
-    throw new Error("Only the background page can access oauth2 information");
-  }
+  expectContext(
+    "background",
+    "Only the background page can access oauth2 information"
+  );
+
   const current = JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}");
   if (Object.prototype.hasOwnProperty.call(current, key)) {
     // OK because we're guarding with hasOwnProperty

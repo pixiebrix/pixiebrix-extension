@@ -24,9 +24,10 @@ import {
   SerializableResponse,
   toErrorResponse,
 } from "@/messaging/protocol";
-import { isBackgroundPage, isContentScript } from "webext-detect-page";
+import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
+import { expectContext } from "@/utils";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
 export const ROOT_FRAME_ID = 0;
@@ -110,11 +111,8 @@ export function notifyContentScripts(
   }
 
   return async (tabId: number | null, ...args: unknown[]) => {
-    if (!isBackgroundPage()) {
-      throw new ContentScriptActionError(
-        "This method can only be called from the background page"
-      );
-    }
+    expectContext("background", ContentScriptActionError);
+
     console.debug(
       `Broadcasting content script notification ${fullType} to tab: ${
         tabId ?? "<all>"
@@ -196,11 +194,9 @@ export function liftContentScript<R extends SerializableResponse>(
     if (isContentScript()) {
       console.debug("Resolving call from the contentScript immediately");
       return method(...args);
-    } else if (!isBackgroundPage()) {
-      throw new ContentScriptActionError(
-        "Unexpected call from origin other than the background page"
-      );
     }
+
+    expectContext("background", ContentScriptActionError);
 
     console.debug(
       `Sending content script action ${fullType} to tab ${
@@ -254,11 +250,7 @@ export function liftContentScript<R extends SerializableResponse>(
 }
 
 function addContentScriptListener(): void {
-  if (!isContentScript()) {
-    throw new Error(
-      "addContentScriptListener should only be run from the content script"
-    );
-  }
+  expectContext("contentScript");
 
   browser.runtime.onMessage.addListener(contentScriptListener);
   console.debug(
