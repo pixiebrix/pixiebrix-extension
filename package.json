@@ -109,7 +109,7 @@
     "uuid": "^8.3.2",
     "webext-additional-permissions": "^2.0.1",
     "webext-detect-page": "^2.0.6",
-    "webext-dynamic-content-scripts": "^7.2.0-0",
+    "webext-dynamic-content-scripts": "^8.0.0-0",
     "webext-patterns": "^1.1.0",
     "webext-polyfill-kinda": "^0.1.0",
     "webextension-polyfill-ts": "^0.25.0"
