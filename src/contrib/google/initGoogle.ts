@@ -27,30 +27,35 @@ declare global {
   }
 }
 
+// https://bumbu.me/gapi-in-chrome-extension
+async function onGAPILoad(): Promise<void> {
+  await gapi.client.init({
+    // Don't pass client nor scope as these will init auth2, which we don't want
+    // until the user actually uses a brick
+    apiKey: API_KEY,
+    discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
+  });
+  console.info("gapi initialized");
+}
+
 function initGoogle(): void {
   if (!isChrome) {
-    console.info("gapi only available in Chrome");
+    // TODO: Use feature detection instead of sniffing the user agent
+    console.info(
+      "Google API not enabled because it's not supported by this browser"
+    );
     return;
-  } else if (!API_KEY || API_KEY === "undefined") {
-    throw new Error("Google API_KEY not set");
   }
-
-  // https://bumbu.me/gapi-in-chrome-extension
-  async function onGAPILoad() {
-    try {
-      await gapi.client.init({
-        // Don't pass client nor scope as these will init auth2, which we don't want
-        // until the user actually uses a brick
-        apiKey: API_KEY,
-        discoveryDocs: [...BIGQUERY_DOCS, ...SHEETS_DOCS],
-      });
-      console.log("gapi initialized");
-    } catch (error) {
-      console.error("Error initializing gapi", error);
-    }
+  if (!API_KEY) {
+    console.info("Google API not enabled because the API key is not available");
+    return;
   }
 
   window.onGAPILoad = onGAPILoad;
+
+  const script = document.createElement("script");
+  script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
+  document.head.append(script);
 }
 
 export default initGoogle;

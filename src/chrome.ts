@@ -16,14 +16,14 @@
  */
 
 import isEmpty from "lodash/isEmpty";
-import { browser } from "webextension-polyfill-ts";
+import pDefer from "p-defer";
+import pTimeout from "p-timeout";
+import { browser, Runtime } from "webextension-polyfill-ts";
 import {
   isBackgroundPage,
   isContentScript,
   isOptionsPage,
 } from "webext-detect-page";
-
-type RequestUpdateCheckStatus = chrome.runtime.RequestUpdateCheckStatus;
 
 export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -98,6 +98,45 @@ export function getChromeExtensionId(): string {
   return isEmpty(manualKey ?? "") ? CHROME_EXTENSION_ID : manualKey;
 }
 
+/**
+ * Connect to the background page and throw real errors if the connection fails.
+ * NOTE: To determine whether the connection was successful, the background page
+ * needs to send one message back within a second.
+ * */
+export async function runtimeConnect(name: string): Promise<Runtime.Port> {
+  if (isBackgroundPage()) {
+    throw new Error("runtimeConnect cannot be called from the background page");
+  }
+
+  const { resolve, reject, promise: connectionPromise } = pDefer();
+
+  const onDisconnect = () => {
+    // If the connection fails, the error will only be available on this callback
+    // TODO: Also handle port.error in Firefox https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/Port#type
+    const message =
+      chrome.runtime.lastError?.message ??
+      "There was an error while connecting to the runtime";
+    reject(new Error(message));
+  };
+
+  const port = browser.runtime.connect(null, { name });
+  port.onMessage.addListener(resolve); // Any message is accepted
+  port.onDisconnect.addListener(onDisconnect);
+
+  try {
+    // The timeout is to avoid hanging if the background isn't set up to respond immediately
+    await pTimeout(
+      connectionPromise,
+      1000,
+      "The background page hasn’t responded in time"
+    );
+    return port;
+  } finally {
+    port.onMessage.removeListener(resolve);
+    port.onDisconnect.removeListener(onDisconnect);
+  }
+}
+
 export class RuntimeNotFoundError extends Error {
   constructor(message: string) {
     super(message);
@@ -128,19 +167,4 @@ export async function setStorage(
     throw new TypeError("Expected string value");
   }
   await browser.storage[storageType].set({ [storageKey]: value });
-}
-
-// https://developer.chrome.com/extensions/runtime#method-requestUpdateCheck
-export function requestUpdateCheck(): Promise<RequestUpdateCheckStatus> {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.requestUpdateCheck(function (
-      status: RequestUpdateCheckStatus
-    ) {
-      if (chrome.runtime.lastError == null) {
-        resolve(status);
-      } else {
-        reject(chrome.runtime.lastError.message);
-      }
-    });
-  });
 }

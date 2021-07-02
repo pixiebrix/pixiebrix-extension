@@ -192,7 +192,7 @@ async function updateDeployments() {
             currentOptions = installDeployment(currentOptions, deployment);
           }
           await saveOptions(currentOptions);
-          queueReactivate().catch(reportError);
+          void queueReactivate();
           console.info(
             `Applied automatic updates for ${automatic.length} deployment(s)`
           );
@@ -216,7 +216,7 @@ async function updateDeployments() {
 
 export function initDeploymentUpdater(): void {
   setInterval(updateDeployments, UPDATE_INTERVAL_MS);
-  updateDeployments().catch(reportError);
+  void updateDeployments();
 }
 
 export default initDeploymentUpdater;

@@ -25,6 +25,7 @@ import { RawServiceConfiguration } from "@/core";
 import { useFetch } from "@/hooks/fetch";
 import { SanitizedAuth } from "@/types/contract";
 import { ServicesState } from "@/options/slices";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 
 export interface AuthOption {
   value: string;
@@ -111,6 +112,19 @@ const ServiceAuthSelector: React.FunctionComponent<{
     () => authOptions.filter((x) => x.value === field.value),
     [field.value, authOptions]
   );
+
+  if (serviceId === PIXIEBRIX_SERVICE_ID) {
+    return (
+      <Form.Group controlId={field.name}>
+        <Form.Control type="text" readOnly value="Automatic" />
+        {meta.error && (
+          <Form.Control.Feedback type="invalid" style={{ display: "inline" }}>
+            {meta.error}
+          </Form.Control.Feedback>
+        )}
+      </Form.Group>
+    );
+  }
 
   return (
     <Form.Group controlId={field.name}>

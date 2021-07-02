@@ -21,6 +21,7 @@ import { getExtensionAuth } from "@/auth/token";
 import * as session from "@/contentScript/context";
 import { ReaderOutput, Schema } from "@/core";
 import { Manifest, Permissions } from "webextension-polyfill-ts";
+import chromeP from "webext-polyfill-kinda";
 
 class ChromeProfileReader extends Reader {
   constructor() {
@@ -40,15 +41,8 @@ class ChromeProfileReader extends Reader {
     if (!chrome.identity) {
       throw new Error("No access to the Chrome Identity API");
     }
-    // https://developer.chrome.com/apps/identity#method-getProfileUserInfo
-    return new Promise((resolve, reject) => {
-      chrome.identity.getProfileUserInfo((userInfo) => {
-        if (browser.runtime.lastError) {
-          reject(browser.runtime.lastError.message);
-        }
-        resolve({ ...userInfo });
-      });
-    });
+    const userInfo = await chromeP.identity.getProfileUserInfo();
+    return { ...userInfo };
   }
 
   outputSchema: Schema = {

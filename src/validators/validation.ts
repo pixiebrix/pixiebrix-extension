@@ -17,7 +17,7 @@
 
 import { Schema } from "@/core";
 import * as Yup from "yup";
-import serviceRegistry from "@/services/registry";
+import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
 import { locate } from "@/background/locator";
 import { DoesNotExistError } from "@/baseRegistry";
@@ -49,7 +49,8 @@ type Options = {
 
 function blockSchemaFactory(): Yup.Schema<Record<string, unknown>> {
   return Yup.object().shape({
-    id: Yup.string().test("is-block", "Block not found", (id: string) =>
+    id: Yup.string().test("is-block", "Block not found", async (id: string) =>
+      // eslint-disable-next-line security/detect-non-literal-fs-filename -- false positive
       blockRegistry.exists(id)
     ),
     templateEngine: Yup.string()
@@ -89,55 +90,61 @@ export function configSchemaFactory(
   if (isBrickSchema(schema)) {
     return Yup.lazy((val) => {
       if (isPlainObject(val)) {
-        // console.debug("config is a single block");
         return Yup.lazy(blockSchemaFactory);
       } else {
-        // console.debug("config is array of blocks");
         return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
       }
     });
-  } else if (schema.type === "object") {
-    return Yup.lazy((val) => {
-      if (isPlainObject(val)) {
-        return Yup.object().shape(
-          mapValues(schema.properties, (definition, prop) => {
-            if (typeof definition === "boolean") {
-              return wrapRequired(Yup.string());
-            } else {
-              return configSchemaFactory(definition, {
-                required: (schema.required ?? []).includes(prop),
-              });
-            }
-          })
-        );
-      } else {
-        return Yup.string();
+  } else
+    switch (schema.type) {
+      case "object": {
+        return Yup.lazy((val) => {
+          if (isPlainObject(val)) {
+            return Yup.object().shape(
+              mapValues(schema.properties, (definition, prop) => {
+                if (typeof definition === "boolean") {
+                  return wrapRequired(Yup.string());
+                } else {
+                  return configSchemaFactory(definition, {
+                    required: (schema.required ?? []).includes(prop),
+                  });
+                }
+              })
+            );
+          } else {
+            return Yup.string();
+          }
+        });
       }
-    });
-  } else if (schema.type === "array") {
-    if (typeof schema.items === "boolean") {
-      throw new TypeError("Expected schema definition for items, not boolean");
-    } else if (Array.isArray(schema.items)) {
-      // TODO: implement support for tuples
-      // https://github.com/jquense/yup/issues/528
-      return Yup.lazy((x) =>
-        Array.isArray(x)
-          ? wrapRequired(Yup.array())
-          : wrapRequired(Yup.string())
-      );
-    } else {
-      const items = schema.items as Schema;
-      return Yup.lazy((x) =>
-        Array.isArray(x)
-          ? wrapRequired(Yup.array().of(configSchemaFactory(items)))
-          : wrapRequired(Yup.string())
-      );
+      case "array": {
+        if (typeof schema.items === "boolean") {
+          throw new TypeError(
+            "Expected schema definition for items, not boolean"
+          );
+        } else if (Array.isArray(schema.items)) {
+          // TODO: implement support for tuples
+          // https://github.com/jquense/yup/issues/528
+          return Yup.lazy((x) =>
+            Array.isArray(x)
+              ? wrapRequired(Yup.array())
+              : wrapRequired(Yup.string())
+          );
+        } else {
+          const items = schema.items as Schema;
+          return Yup.lazy((x) =>
+            Array.isArray(x)
+              ? wrapRequired(Yup.array().of(configSchemaFactory(items)))
+              : wrapRequired(Yup.string())
+          );
+        }
+      }
+      case "boolean": {
+        return Yup.bool();
+      }
+      default: {
+        return wrapRequired(Yup.string());
+      }
     }
-  } else if (schema.type === "boolean") {
-    return Yup.bool();
-  } else {
-    return wrapRequired(Yup.string());
-  }
 }
 
 function serviceSchemaFactory(): Yup.Schema<unknown> {
@@ -162,28 +169,38 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
           .required()
           .matches(IDENTIFIER_REGEX, "Not a valid identifier"),
         // https://github.com/jquense/yup/issues/954
-        config: Yup.string()
-          .required(`Select a service configuration`)
-          .test(
-            "is-config",
-            "Invalid service configuration",
-            async function (value) {
-              try {
-                await locate(this.parent.id, value);
-              } catch (error) {
-                if (error instanceof MissingConfigurationError) {
-                  return this.createError({
-                    message: "Configuration no longer available",
-                  });
-                } else {
-                  console.exception(
-                    `An error occurred validating service: ${this.parent.id}`
-                  );
-                }
+        config: Yup.string().test(
+          "is-config",
+          "Invalid service configuration",
+          async function (value) {
+            if (this.parent.id == PIXIEBRIX_SERVICE_ID) {
+              if (value != null) {
+                return this.createError({
+                  message: "PixieBrix service configuration should be blank",
+                });
               }
               return true;
+            } else if (value == null) {
+              return this.createError({
+                message: "Select a service configuration",
+              });
             }
-          ),
+            try {
+              await locate(this.parent.id, value);
+            } catch (error) {
+              if (error instanceof MissingConfigurationError) {
+                return this.createError({
+                  message: "Configuration no longer available",
+                });
+              } else {
+                console.exception(
+                  `An error occurred validating service: ${this.parent.id}`
+                );
+              }
+            }
+            return true;
+          }
+        ),
       })
     )
     .test("unique-keys", "Services must have unique keys", function (value) {

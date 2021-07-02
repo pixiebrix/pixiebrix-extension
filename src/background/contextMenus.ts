@@ -15,13 +15,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import pTimeout from "p-timeout";
 import { liftBackground } from "@/background/protocol";
 import { browser, ContextMenus, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
-import { injectContentScript, waitReady } from "@/background/util";
+import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
 import { hasCancelRootCause } from "@/errors";
 import { getErrorMessage } from "@/extensionPoints/helpers";
@@ -59,8 +60,11 @@ async function dispatchMenu(
   }
 
   // Using the context menu gives temporary access to the page
-  await injectContentScript(target);
-  await waitReady(target, { maxWaitMillis: CONTEXT_SCRIPT_INSTALL_MS });
+  await pTimeout(
+    ensureContentScript(target),
+    CONTEXT_SCRIPT_INSTALL_MS,
+    `contentScript not ready in ${CONTEXT_SCRIPT_INSTALL_MS}s`
+  );
 
   try {
     await handleMenuAction(target, {
@@ -68,24 +72,22 @@ async function dispatchMenu(
       args: info,
       maxWaitMillis: CONTEXT_MENU_INSTALL_MS,
     });
-    showNotification(target, {
+    void showNotification(target, {
       message: "Ran content menu item action",
       className: "success",
-    }).catch(reportError);
+    });
   } catch (error) {
     if (hasCancelRootCause(error)) {
-      showNotification(target, {
+      void showNotification(target, {
         message: "The action was cancelled",
         className: "info",
-      }).catch(reportError);
+      });
     } else {
       const message = `Error processing context menu action: ${getErrorMessage(
         error
       )}`;
       reportError(new Error(message));
-      showNotification(target, { message, className: "error" }).catch(
-        reportError
-      );
+      void showNotification(target, { message, className: "error" });
     }
   }
 

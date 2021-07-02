@@ -26,7 +26,6 @@ import React from "react";
 import { browser } from "webextension-polyfill-ts";
 
 import { REGISTER_ACTION_FRAME } from "@/background/browserAction";
-import { reportError } from "@/telemetry/logging";
 import "@/actionPanel/protocol";
 
 // keep in order so precedence is preserved
@@ -37,14 +36,13 @@ import "@/vendors/overrides.scss";
 const url = new URL(location.href);
 const nonce = url.searchParams.get("nonce");
 
-browser.runtime
+void browser.runtime
   .sendMessage({
     type: REGISTER_ACTION_FRAME,
     payload: { nonce },
   })
   .then(() => {
     console.debug("Registered action frame with background page");
-  })
-  .catch(reportError);
+  });
 
 ReactDOM.render(<App />, document.querySelector("#container"));

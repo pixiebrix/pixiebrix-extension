@@ -94,22 +94,18 @@ export async function callBackground(
   }
 
   if (isNotification(options)) {
-    port.postMessage(message);
-    if (browser.runtime.lastError) {
-      throw new Error(
-        `Error sending devtools notification: ${browser.runtime.lastError.message}`
-      );
-    } else {
-      return;
+    try {
+      port.postMessage(message);
+    } catch (error) {
+      throw new Error(`Error sending devtools notification: ${error.message}`);
     }
   } else {
     return new Promise((resolve, reject) => {
       devtoolsHandlers.set(nonce, [resolve, reject]);
-      port.postMessage(message);
-      if (browser.runtime.lastError) {
-        reject(
-          `Error sending devtools message: ${browser.runtime.lastError.message}`
-        );
+      try {
+        port.postMessage(message);
+      } catch (error) {
+        reject(new Error(`Error sending devtools message: ${error.message}`));
       }
     });
   }

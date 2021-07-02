@@ -25,6 +25,7 @@ import "@/telemetry/rollbar";
 import "webpack-target-webextension/lib/background";
 import "webext-dynamic-content-scripts";
 
+import "./development/autoreload";
 import "./background/installer";
 import "./messaging/external";
 import "./background/requests";
@@ -36,13 +37,12 @@ import "./background/dataStore";
 import "./background/devtools";
 import "./background/browserAction";
 
-import initGoogle from "@/contrib/google/background";
+import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
 import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import preload from "@/background/preload";
 import initDeploymentUpdater from "@/background/deployment";
-import { isChrome } from "@/helpers";
 
 initNavigation();
 initExecutor();
@@ -50,9 +50,3 @@ initGoogle();
 initFrames();
 preload();
 initDeploymentUpdater();
-
-if (isChrome) {
-  const script = document.createElement("script");
-  script.src = "https://apis.google.com/js/client.js?onload=onGAPILoad";
-  document.head.append(script);
-}

@@ -22,8 +22,13 @@ import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorFiel
 import { FormState } from "@/devTools/editor/editorSlice";
 import { openTab } from "@/background/executor";
 import { getTabInfo } from "@/background/devtools";
-import { getDomain } from "@/devTools/editor/extensionPoints/base";
 import { DevToolsContext } from "@/devTools/context";
+import {
+  createDomainPattern,
+  createSitePattern,
+  HTTPS_PATTERN,
+  SITES_PATTERN,
+} from "@/permissions/patterns";
 
 const AvailabilityTab: React.FunctionComponent<{
   eventKey?: string;
@@ -67,8 +72,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 role="button"
                 onClick={async () => {
                   const url = (await getTabInfo(port)).url;
-                  const parsed = new URL(url);
-                  setMatchPattern(`${parsed.protocol}//${parsed.hostname}/*`);
+                  setMatchPattern(createSitePattern(url));
                 }}
               >
                 Site
@@ -79,8 +83,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 role="button"
                 onClick={async () => {
                   const url = (await getTabInfo(port)).url;
-                  const parsed = new URL(url);
-                  setMatchPattern(`${parsed.protocol}//*.${getDomain(url)}/*`);
+                  setMatchPattern(createDomainPattern(url));
                 }}
               >
                 Domain
@@ -89,7 +92,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern("https://*/*")}
+                onClick={() => setMatchPattern(HTTPS_PATTERN)}
               >
                 HTTPS
               </a>{" "}
@@ -97,7 +100,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern("*://*/*")}
+                onClick={() => setMatchPattern(SITES_PATTERN)}
               >
                 All URLs
               </a>
@@ -112,7 +115,7 @@ const AvailabilityTab: React.FunctionComponent<{
             URL match pattern for which pages to run the extension on. See{" "}
             <a
               href="#"
-              onClick={() =>
+              onClick={async () =>
                 openTab({
                   url:
                     "https://developer.chrome.com/docs/extensions/mv2/match_patterns/",

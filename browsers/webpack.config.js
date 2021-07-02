@@ -21,20 +21,18 @@ const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const WebExtensionTarget = require("webpack-target-webextension");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
-const MomentLocalesPlugin = require("moment-locales-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
-
 const TerserJSPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const RollbarSourceMapPlugin = require("rollbar-sourcemap-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-
 const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, isEmpty } = require("lodash");
 const Policy = require("csp-parse");
 
 const rootDir = path.resolve(__dirname, "../");
 
+// Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
 const defaults = {
   DEV_NOTIFY: "true",
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
@@ -271,9 +269,6 @@ module.exports = (env, options) => ({
   plugins: [
     ...getConditionalPlugins(isProd(options)),
 
-    // To strip all locales except “en”
-    new MomentLocalesPlugin(),
-
     new NodePolyfillPlugin(),
     new WebExtensionTarget(nodeConfig),
     new webpack.ProvidePlugin({
@@ -285,8 +280,8 @@ module.exports = (env, options) => ({
     new webpack.EnvironmentPlugin({
       // If not found, these values will be used as defaults
       DEBUG: !isProd(options),
+      REDUX_DEV_TOOLS: !isProd(options),
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
-      VERSION_NAME: getVersionName(isProd(options)),
       ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
 
       // If not found, "undefined" will cause the build to fail
@@ -301,6 +296,7 @@ module.exports = (env, options) => ({
       GOOGLE_API_KEY: null,
       GOOGLE_APP_ID: null,
     }),
+
     new MiniCssExtractPlugin({
       chunkFilename: "css/[id].css",
     }),

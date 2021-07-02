@@ -16,14 +16,14 @@
  */
 
 import React, { useState, useCallback } from "react";
+import pTimeout from "p-timeout";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 import {
   detectFrameworks,
   getTabInfo,
-  injectScript,
+  ensureScript,
   navigationEvent,
-  waitReady,
 } from "@/background/devtools/index";
 import useAsyncEffect from "use-async-effect";
 import { useAsyncState } from "@/hooks/common";
@@ -126,18 +126,14 @@ async function runInMillis<TResult>(
 }
 
 async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
+  // TODO: drop the next few lines and just let ensureScript throw
   const { url, hasPermissions } = await getTabInfo(port);
   if (!hasPermissions) {
     console.debug(`connectToFrame: no access to ${url}`);
     throw new PermissionsError(`No access to URL: ${url}`);
   }
   console.debug(`connectToFrame: ensuring contentScript for ${url}`);
-  await injectScript(port, { file: "contentScript.js" });
-
-  console.debug(
-    `connectToFrame: waiting for contentScript to be ready for ${url}`
-  );
-  await waitReady(port, { maxWaitMillis: 4000 });
+  await pTimeout(ensureScript(port), 4000, "contentScript not ready in 4s");
 
   let frameworks: FrameworkMeta[] = [];
   try {

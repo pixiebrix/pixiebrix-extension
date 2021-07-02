@@ -38,11 +38,11 @@ import ActivateBody, {
   useEnsurePermissions,
 } from "@/options/pages/marketplace/ActivateBody";
 import { reactivate } from "@/background/navigation";
-import { reportError } from "@/telemetry/logging";
 import { useParams } from "react-router";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { selectExtensions } from "@/options/selectors";
 import { useTitle } from "@/hooks/title";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -123,13 +123,15 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       console.debug("Wizard form values", values);
 
       const selected = selectedExtensions(values, recipe.extensionPoints);
-      const requiredServices = uniq(
-        selected.flatMap((x) => Object.values(x.services ?? {}))
+      const requiredServiceIds = uniq(
+        selected
+          .flatMap((x) => Object.values(x.services ?? {}))
+          .filter((x) => x !== PIXIEBRIX_SERVICE_ID)
       );
-      const missing = Object.keys(
+      const missingServiceIds = Object.keys(
         pickBy(
           values.services,
-          (v, k) => requiredServices.includes(k) && v == null
+          (v, k) => requiredServiceIds.includes(k) && v == null
         )
       );
 
@@ -148,9 +150,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         });
         setSubmitting(false);
         return;
-      } else if (missing.length > 0) {
+      } else if (missingServiceIds.length > 0) {
         addToast(
-          `You must select a configuration for each service: ${missing.join(
+          `You must select a configuration for each service: ${missingServiceIds.join(
             ", "
           )}`,
           {
@@ -186,7 +188,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
 
         setSubmitting(false);
 
-        reactivate().catch(reportError);
+        void reactivate();
 
         dispatch(
           push(sourcePage === "templates" ? "/templates" : "/installed")
@@ -243,13 +245,15 @@ function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
   return useMemo(() => {
     const extensionPoints = blueprint.extensionPoints ?? [];
 
-    const services = uniq(
+    const serviceIds = uniq(
       extensionPoints.flatMap((x) => Object.values(x.services ?? {}))
     );
-    const steps = STEPS.filter((x) => {
-      switch (x.key) {
+    const steps = STEPS.filter((step) => {
+      switch (step.key) {
         case "services": {
-          return services.length;
+          return serviceIds.some(
+            (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
+          );
         }
         case "options": {
           return !isEmpty(blueprint.options?.schema);
@@ -261,7 +265,7 @@ function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
     });
     const initialValues: WizardValues = {
       extensions: Object.fromEntries(extensionPoints.map((x, i) => [i, true])),
-      services: Object.fromEntries(services.map((x) => [x, undefined])),
+      services: Object.fromEntries(serviceIds.map((x) => [x, undefined])),
       optionsArgs: mapValues(
         blueprint.options?.schema ?? {},
         (x) => (x as any).default

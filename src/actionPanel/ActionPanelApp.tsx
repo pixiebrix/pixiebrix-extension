@@ -18,11 +18,10 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Card, Nav, Tab } from "react-bootstrap";
 import { openExtensionOptions } from "@/messaging/external";
-
 import ErrorBoundary from "@/components/ErrorBoundary";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPuzzlePiece } from "@fortawesome/free-solid-svg-icons";
+import { faPuzzlePiece, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { getStore } from "@/actionPanel/native";
 import {
   ActionPanelStore,
@@ -51,16 +50,16 @@ const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
           <Nav variant="tabs" onSelect={setKey}>
             {panels.map((panel) => (
               <Nav.Link key={panel.extensionId} eventKey={panel.extensionId}>
-                {panel.heading ?? "..."}
+                {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
               </Nav.Link>
             ))}
           </Nav>
         </Card.Header>
-        <Card.Body className="p-0 flex-grow-1">
+        <Card.Body className="p-0 flex-grow-1" style={{ overflowY: "auto" }}>
           <Tab.Content className="p-0 h-100">
             {panels.map((panel) => (
               <Tab.Pane
-                className="h-100 overflow-y-auto"
+                className="h-100"
                 key={panel.extensionId}
                 eventKey={panel.extensionId}
                 style={{ minHeight: "1px" }}
@@ -107,10 +106,10 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 />
               </div>
               {/* spacer */}
-              <div className="flex-grow-1"></div>
+              <div className="flex-grow-1" />
               <div className="ActionPanelToolbar">
                 <Button
-                  onClick={() => openExtensionOptions()}
+                  onClick={async () => openExtensionOptions()}
                   size="sm"
                   variant="info"
                 >
