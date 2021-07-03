@@ -18,4 +18,3 @@
 export * from "./create";
 export * from "./readers";
 export * from "./resolvers";
-export * from "./calendar";
