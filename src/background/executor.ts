@@ -27,10 +27,13 @@ import {
 import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
 import { MESSAGE_PREFIX } from "@/background/protocol";
 import { RenderedArgs } from "@/core";
-import { isBackgroundPage, isContentScript } from "webext-detect-page";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
+import {
+  expectBackgroundPage,
+  expectContentScript,
+} from "@/utils/expect-context";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -307,19 +310,15 @@ async function linkTabListener(tab: Tabs.Tab): Promise<void> {
 }
 
 function initExecutor(): void {
-  if (!isBackgroundPage()) {
-    throw new Error(
-      "initExecutor can only be called from the background thread"
-    );
-  }
+  expectBackgroundPage();
+
   browser.tabs.onCreated.addListener(linkTabListener);
   browser.runtime.onMessage.addListener(backgroundListener);
 }
 
 export async function activateTab(): Promise<void> {
-  if (!isContentScript()) {
-    throw new Error("activateTab can only be run from a content script");
-  }
+  expectContentScript();
+
   return browser.runtime.sendMessage({
     type: MESSAGE_ACTIVATE_TAB,
     payload: {},
@@ -327,9 +326,8 @@ export async function activateTab(): Promise<void> {
 }
 
 export async function closeTab(): Promise<void> {
-  if (!isContentScript()) {
-    throw new Error("closeTab can only be run from a content script");
-  }
+  expectContentScript();
+
   return browser.runtime.sendMessage({
     type: MESSAGE_CLOSE_TAB,
     payload: {},

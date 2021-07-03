@@ -24,6 +24,7 @@ import {
   isContentScript,
   isOptionsPage,
 } from "webext-detect-page";
+import { forbidBackgroundPage } from "./utils/expect-context";
 
 export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -104,9 +105,7 @@ export function getChromeExtensionId(): string {
  * needs to send one message back within a second.
  * */
 export async function runtimeConnect(name: string): Promise<Runtime.Port> {
-  if (isBackgroundPage()) {
-    throw new Error("runtimeConnect cannot be called from the background page");
-  }
+  forbidBackgroundPage();
 
   const { resolve, reject, promise: connectionPromise } = pDefer();
 
