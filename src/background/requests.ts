@@ -25,6 +25,7 @@ import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import { ContextError } from "@/errors";
+import { isBackgroundPage } from "webext-detect-page";
 import { isEmpty } from "lodash";
 import {
   deleteCachedAuthData,
@@ -34,7 +35,6 @@ import {
 } from "@/background/auth";
 import { isAbsoluteURL } from "@/hooks/fetch";
 import urljoin from "url-join";
-import { expectContext } from "@/utils";
 
 interface ProxyResponseSuccessData {
   json: unknown;
@@ -122,7 +122,9 @@ async function authenticate(
   config: SanitizedServiceConfiguration,
   request: AxiosRequestConfig
 ): Promise<AxiosRequestConfig> {
-  expectContext("background");
+  if (!isBackgroundPage()) {
+    throw new Error("authenticate can only be called from the background page");
+  }
 
   const service = await serviceRegistry.lookup(config.serviceId);
 
