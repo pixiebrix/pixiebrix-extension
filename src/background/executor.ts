@@ -30,7 +30,10 @@ import { RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
-import { expectContext } from "@/utils";
+import {
+  expectBackgroundPage,
+  expectContentScript,
+} from "@/utils/expect-context";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -307,14 +310,14 @@ async function linkTabListener(tab: Tabs.Tab): Promise<void> {
 }
 
 function initExecutor(): void {
-  expectContext("background");
+  expectBackgroundPage();
 
   browser.tabs.onCreated.addListener(linkTabListener);
   browser.runtime.onMessage.addListener(backgroundListener);
 }
 
 export async function activateTab(): Promise<void> {
-  expectContext("contentScript");
+  expectContentScript();
 
   return browser.runtime.sendMessage({
     type: MESSAGE_ACTIVATE_TAB,
@@ -323,7 +326,7 @@ export async function activateTab(): Promise<void> {
 }
 
 export async function closeTab(): Promise<void> {
-  expectContext("contentScript");
+  expectContentScript();
 
   return browser.runtime.sendMessage({
     type: MESSAGE_CLOSE_TAB,

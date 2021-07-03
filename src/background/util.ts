@@ -21,7 +21,7 @@ import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
-import { expectContext } from "@/utils";
+import { expectBackgroundPage } from "@/utils/expect-context";
 
 export type Target = {
   tabId: number;
@@ -45,7 +45,7 @@ interface TargetState {
 
 /** Fetches the URL from a tab/frame. It will throw if we don't have permission to access it */
 export async function getTargetState(target: Target): Promise<TargetState> {
-  expectContext("background");
+  expectBackgroundPage();
 
   const [state] = await browser.tabs.executeScript(target.tabId, {
     // This imitates the new chrome.scripting API by wrapping a function in a IIFE
@@ -88,7 +88,7 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
  * If it's been injected, it will resolve once the content script is ready.
  */
 export async function ensureContentScript(target: Target): Promise<void> {
-  expectContext("background");
+  expectBackgroundPage();
 
   console.debug(`ensureContentScript: requested`, target);
 
