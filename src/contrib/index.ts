@@ -19,7 +19,6 @@ export * from "./google";
 export * from "./hubspot";
 export * from "./pipedrive";
 export * from "./slack";
-export * from "./techcrunch";
 export * from "./salesforce";
 export * from "./uipath";
 export * from "./zapier";
