@@ -178,10 +178,10 @@
     "eslint-plugin-unicorn": "^33.0.1",
     "fake-indexeddb": "^3.1.2",
     "global": "^4.4.0",
-    "jest": "^26.6.3",
+    "jest": "^27.0.6",
+    "jest-environment-jsdom": "^27.0.6",
     "jest-raw-loader": "^1.0.1",
     "jest-webextension-mock": "^3.7.8",
-    "jest-yaml-transform": "^0.2.0",
     "mini-css-extract-plugin": "~1.6.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "node-sass": "^6.0.1",
@@ -198,10 +198,11 @@
     "webpack-bundle-analyzer": "^4.4.2",
     "webpack-cli": "^4.6.0",
     "webpack-target-webextension": "^0.4.3",
-    "yaml-jest": "^1.0.5",
+    "yaml-jest-transform": "^1.0.0",
     "yaml-loader": "^0.6.0"
   },
   "jest": {
+    "testEnvironment": "jest-environment-jsdom",
     "modulePaths": [
       "/src"
     ],
@@ -216,7 +217,7 @@
     ],
     "transform": {
       "^.+\\.[jt]sx?$": "babel-jest",
-      "^.+\\.ya?ml$": "yaml-jest",
+      "^.+\\.ya?ml$": "yaml-jest-transform",
       "^.+\\.txt$": "jest-raw-loader"
     },
     "transformIgnorePatterns": [
