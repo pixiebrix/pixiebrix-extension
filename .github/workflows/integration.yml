@@ -11,7 +11,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14.x"
-      - uses: bahmutov/npm-install@v1
+          cache: npm
+      - run: npm ci
       - run: npm test
 
   stage:
@@ -22,7 +23,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14.x"
-      - uses: bahmutov/npm-install@v1
+          cache: npm
+      - run: npm ci
       - run: npm run build
         env:
           ENVIRONMENT: staging
@@ -57,7 +59,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14.x"
-      - uses: bahmutov/npm-install@v1
+          cache: npm
+      - run: npm ci
       - run: npm run build:scripts
       - run: node scripts/bin/headers.js
       - uses: actions/upload-artifact@v2
@@ -75,7 +78,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14.x"
-      - uses: bahmutov/npm-install@v1
+          cache: npm
+      - run: npm ci
         # Run eslint without GitHub Actions annotations
         # https://stackoverflow.com/a/65964721/288906
       - name: npm run lint

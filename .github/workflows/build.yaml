@@ -14,7 +14,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14.x"
-      - uses: bahmutov/npm-install@v1
+          cache: npm
+      - run: npm ci
       - run: npm run build
         env:
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
@@ -37,7 +38,8 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14.x"
-      - uses: bahmutov/npm-install@v1
+          cache: npm
+      - run: npm ci
       - run: npm run build
         env:
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
