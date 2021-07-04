@@ -372,21 +372,23 @@ function getBoundingClientRectWithBorderOffset(node: HTMLElement) {
 // Add together the top, left, bottom, and right properties of
 // each ClientRect, but keep the width and height of the first one.
 function mergeRectOffsets(rects: Array<Rect>): Rect {
-  // eslint-disable-next-line unicorn/no-array-reduce
-  return rects.reduce((previousRect, rect) => {
-    if (previousRect == null) {
-      return rect;
-    }
+  const merged = {
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    width: rects[0]?.width ?? 0,
+    height: rects[0]?.width ?? 0,
+  };
 
-    return {
-      top: previousRect.top + rect.top,
-      left: previousRect.left + rect.left,
-      width: previousRect.width,
-      height: previousRect.height,
-      bottom: previousRect.bottom + rect.bottom,
-      right: previousRect.right + rect.right,
-    };
-  });
+  for (const rect of rects) {
+    merged.top += rect.top;
+    merged.left += rect.left;
+    merged.bottom += rect.bottom;
+    merged.right += rect.right;
+  }
+
+  return merged;
 }
 
 // Calculate a boundingClientRect for a node relative to boundaryWindow,
