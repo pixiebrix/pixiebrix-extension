@@ -42,7 +42,7 @@ class ArrayCompositeReader extends Reader {
 
     const properties = {};
     for (const reader of this._readers) {
-      Object.assign(properties, reader.outputSchema.properties ?? {});
+      Object.assign(properties, reader.outputSchema.properties);
     }
 
     this.outputSchema = {
