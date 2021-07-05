@@ -166,7 +166,7 @@
     "copy-webpack-plugin": "^9.0.1",
     "csp-parse": "0.0.2",
     "css-loader": "^5.2.0",
-    "css-minimizer-webpack-plugin": "^3.0.1",
+    "css-minimizer-webpack-plugin": "^3.0.2",
     "dotenv": "^10.0.0",
     "eslint": "^7.29.0",
     "eslint-import-resolver-webpack": "^0.13.1",
