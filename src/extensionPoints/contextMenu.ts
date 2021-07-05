@@ -33,7 +33,7 @@ import {
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { ContextMenus, Permissions } from "webextension-polyfill-ts";
+import { Menus, Permissions } from "webextension-polyfill-ts";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import {
   ExtensionPointConfig,
@@ -170,7 +170,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   public readonly syncInstall: boolean = true;
   abstract getBaseReader(): Promise<IReader>;
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
-  abstract readonly contexts: ContextMenus.ContextType[];
+  abstract readonly contexts: Menus.ContextType[];
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -317,7 +317,7 @@ export interface MenuDefaultOptions {
 
 export interface MenuDefinition extends ExtensionPointDefinition {
   documentUrlPatterns?: Manifest.MatchPattern[];
-  contexts: ContextMenus.ContextType[];
+  contexts: Menus.ContextType[];
   defaultOptions?: MenuDefaultOptions;
 }
 
@@ -325,7 +325,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   private readonly _definition: MenuDefinition;
   public readonly permissions: Permissions.Permissions;
   public readonly documentUrlPatterns: Manifest.MatchPattern[];
-  public readonly contexts: ContextMenus.ContextType[];
+  public readonly contexts: Menus.ContextType[];
 
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     const { id, name, description, icon } = config.metadata;
