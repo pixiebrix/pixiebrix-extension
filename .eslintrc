@@ -102,6 +102,7 @@
     "artifacts",
     "scripts/bin",
     "src/vendors",
+    "src/nativeEditor/Overlay.tsx",
     "src/support.js"
   ],
   "overrides": [
