@@ -38,6 +38,14 @@ jobs:
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
+      - name: BrowserStack Env Setup # Invokes the setup-env action
+        uses: browserstack/github-actions/setup-env@master
+        with:
+          username: ${{ secrets.BROWSERSTACK_USERNAME }}
+          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+      - name: Running test on BrowserStack
+        # Invokes the actual test script that would run on BrowserStack browsers
+        run: node selenium/sample-build.js
       - uses: actions/upload-artifact@v2
         with:
           name: build-staging
