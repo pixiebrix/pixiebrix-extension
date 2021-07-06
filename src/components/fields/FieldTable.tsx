@@ -199,9 +199,9 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
   // allow additional properties for empty schema (empty schema allows shape)
   const additionalProperties = isEmpty(schema) || schema.additionalProperties;
 
-  // PERFORMANCE: helpers.setValue changes on every render, so use setFieldValue instead
-  // // https://github.com/formium/formik/issues/2268
-  const [field, ,] = useField(props);
+  // helpers.setValue changes on every render, so use setFieldValue instead
+  // https://github.com/formium/formik/issues/2268
+  const [field] = useField(props);
   const { setFieldValue } = useFormikContext();
 
   // useRef indirection layer so the callbacks below don't re-calculate on every change
