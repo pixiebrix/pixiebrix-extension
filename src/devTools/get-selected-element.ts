@@ -14,8 +14,8 @@ export function updateSelectedElement(): void {
   chrome.devtools.inspectedWindow.eval(
     evaluableFunction(() => {
       // This function must be self-contained
-      // @ts-expect-error -- $0 is from the dev Tools API
-      $0.dispatchEvent(
+      // @ts-expect-error -- $0 is from the dev Tools API. It might also be undefined at first run
+      ($0 ?? document.body).dispatchEvent(
         new CustomEvent("@@pixiebrix/devtools/get-selected", { bubbles: true })
       );
     })
