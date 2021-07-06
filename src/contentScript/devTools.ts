@@ -17,6 +17,7 @@
 
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { deserializeError } from "serialize-error";
+import { isContentScript } from "webext-detect-page";
 import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
@@ -25,6 +26,10 @@ import { Framework } from "@/messaging/constants";
 import blockRegistry from "@/blocks/registry";
 import getCssSelector from "css-selector-generator";
 import { IReader } from "@/core";
+import {
+  addListenerForUpdateSelectedElement,
+  selectedElement,
+} from "@/devTools/get-selected-element";
 
 // install handlers
 import "@/nativeEditor/insertButton";
@@ -36,18 +41,9 @@ export type Target = {
   frameId: number;
 };
 
-declare global {
-  interface Window {
-    setSelectedElement?: (el: HTMLElement) => void;
-  }
+if (isContentScript()) {
+  addListenerForUpdateSelectedElement();
 }
-
-let selectedElement: HTMLElement;
-
-window.setSelectedElement = function (el: HTMLElement) {
-  // do something with the selected element
-  selectedElement = el;
-};
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {

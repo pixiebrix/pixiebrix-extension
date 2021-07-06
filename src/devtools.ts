@@ -26,6 +26,7 @@ import {
   clearDynamicElements,
 } from "@/background/devtools/index";
 import { reportError } from "@/telemetry/logging";
+import { updateSelectedElement } from "./devTools/get-selected-element";
 
 window.addEventListener("error", function (e) {
   reportError(e);
@@ -43,10 +44,7 @@ async function installSidebarPane(port: Runtime.Port) {
   )) as unknown) as chrome.devtools.panels.ExtensionSidebarPane;
 
   async function updateElementProperties(): Promise<void> {
-    // https://developer.chrome.com/extensions/devtools#selected-element
-    chrome.devtools.inspectedWindow.eval("setSelectedElement($0)", {
-      useContentScriptContext: true,
-    });
+    updateSelectedElement();
 
     sidebar.setObject({ state: "loading..." });
 

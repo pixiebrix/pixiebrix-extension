@@ -22,6 +22,7 @@ import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectBackgroundPage } from "@/utils/expect-context";
+import { evaluableFunction } from "@/utils";
 
 export type Target = {
   tabId: number;
@@ -49,11 +50,11 @@ export async function getTargetState(target: Target): Promise<TargetState> {
 
   const [state] = await browser.tabs.executeScript(target.tabId, {
     // This imitates the new chrome.scripting API by wrapping a function in a IIFE
-    code: `(${() => ({
+    code: evaluableFunction(() => ({
       url: location.href,
       installed: Symbol.for("pixiebrix-content-script") in window,
       ready: Symbol.for("pixiebrix-content-script-ready") in window,
-    })})()`,
+    })),
     frameId: target.frameId,
   });
   return state;

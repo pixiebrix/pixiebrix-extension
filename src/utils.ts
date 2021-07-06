@@ -355,3 +355,9 @@ export function isPrivatePageError(error: unknown): boolean {
     /cannot be scripted|(chrome|about|extension):\/\//.test(error.message)
   );
 }
+
+export function evaluableFunction(
+  function_: (...parameters: unknown[]) => unknown
+): string {
+  return "(" + function_.toString() + ")()";
+}
