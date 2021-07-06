@@ -20,7 +20,18 @@ const webdriver = require("selenium-webdriver");
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 
-async function runTestWithCaps(capabilities) {
+// TODO: install extensions on startup
+// Chrome instructions: https://www.browserstack.com/docs/automate/selenium/add-plugins-extensions-remote-browsers#nodejs
+// Firefox instructions (not verified to work on browserstack): https://stackoverflow.com/questions/7477959/selenium-how-to-start-firefox-with-addons
+// Can web-ext package it? https://github.com/mozilla/web-ext/issues/119
+
+// More references:
+// https://github.com/applitools/jest-environment-selenium
+// https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Cross_browser_testing/Your_own_automation_environment#browserstack
+// Using Jest with Selenium: https://www.lambdatest.com/blog/jest-tutorial-for-selenium-javascript-testing-with-examples/
+// Open devtools: https://stackoverflow.com/questions/37683576/how-do-you-automatically-open-the-chrome-devtools-tab-within-selenium-c
+
+async function testPixieBrixHomepage(capabilities) {
   const driver = new webdriver.Builder()
     .usingServer(
       `https://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`
@@ -54,8 +65,7 @@ const capabilities1 = {
     os: "Windows",
     osVersion: "10",
   },
-  build: "browserstack-build-1",
-  name: "Parallel test 1",
+  name: "Chrome test",
 };
 const capabilities2 = {
   browser: "firefox",
@@ -64,9 +74,9 @@ const capabilities2 = {
     os: "Windows",
     osVersion: "10",
   },
-  build: "browserstack-build-1",
-  name: "Parallel test 2",
+  name: "Firefox test",
 };
+
 const capabilities3 = {
   browser: "safari",
   browser_version: "latest",
@@ -74,10 +84,9 @@ const capabilities3 = {
     os: "OS X",
     osVersion: "Big Sur",
   },
-  build: "browserstack-build-1",
-  name: "Parallel test 3",
+  name: "Safari test",
 };
 
-void runTestWithCaps(capabilities1);
-void runTestWithCaps(capabilities2);
-void runTestWithCaps(capabilities3);
+void testPixieBrixHomepage(capabilities1);
+void testPixieBrixHomepage(capabilities2);
+void testPixieBrixHomepage(capabilities3);

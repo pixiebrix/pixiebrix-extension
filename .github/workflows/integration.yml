@@ -43,6 +43,9 @@ jobs:
         with:
           username: ${{ secrets.BROWSERSTACK_USERNAME }}
           access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          # https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
+          build-name: ${{ GITHUB_WORKFLOW }} - ${{ GITHUB_RUN_ID }}
+          project-name: pixiebrix-extension
       - name: Running test on BrowserStack
         # Invokes the actual test script that would run on BrowserStack browsers
         run: node selenium/sample-build.js
