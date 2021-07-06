@@ -46,12 +46,12 @@ async function keepSidebarUpToDate(
       useContentScriptContext: true,
     });
 
-    sidebar.setObject({ state: "loading..." });
+    void sidebar.setObject({ state: "loading..." });
 
     try {
-      sidebar.setObject(await readSelectedElement(port));
+      void sidebar.setObject(await readSelectedElement(port));
     } catch (error) {
-      sidebar.setObject({ error: error ?? "Unknown error" });
+      void sidebar.setObject({ error: error ?? "Unknown error" });
     }
   }
 
@@ -76,28 +76,21 @@ async function initialize() {
     console.error("Error adding data viewer elements pane", { error });
   });
 
-  let injected = false;
-
   try {
     await ensureScript(port);
-    injected = true;
+
+    // clear out any dynamic stuff from any previous devtools sessions
+    await clearDynamicElements(port, {}).catch((error) => {
+      console.debug(
+        "Error clearing dynamic elements previous devtools sessions",
+        error
+      );
+    });
   } catch (error) {
     // Can install without having content script on the page; they just won't do much
     console.debug("Could not inject contextScript for devtools", {
       error,
     });
-  }
-
-  if (injected) {
-    try {
-      // clear out any dynamic stuff from any previous devtools sessions
-      await clearDynamicElements(port, {});
-    } catch (error) {
-      console.debug(
-        "Error clearing dynamic elements previous devtools sessions",
-        error
-      );
-    }
   }
 }
 
