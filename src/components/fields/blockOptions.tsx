@@ -328,7 +328,8 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
   } else if (fieldSchema.type === "object") {
     return ObjectField;
   } else if (booleanPredicate(fieldSchema)) {
-    // should this be a TextField so it can be dynamically determined?
+    // Should this be a TextField so it can be dynamically determined?
+    // see https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return BooleanField;
   } else if (textPredicate(fieldSchema)) {
     return TextField;

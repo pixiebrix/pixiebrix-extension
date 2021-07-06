@@ -54,6 +54,22 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRow> = ({
   );
 };
 
+const ComplexObjectValue: React.FunctionComponent<FieldProps<unknown>> = () => (
+  <Form.Control plaintext readOnly defaultValue="Complex object" />
+);
+
+const SimpleValue: React.FunctionComponent<FieldProps<unknown>> = (props) => {
+  const [field, meta] = useField(props);
+  return (
+    <Form.Control
+      type="text"
+      {...props}
+      value={field.value ?? ""}
+      isInvalid={!!meta.error}
+    />
+  );
+};
+
 const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   readOnly,
   onDelete,
@@ -62,29 +78,19 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   schema,
   ...props
 }) => {
-  const [field, meta] = useField(props);
+  const [field] = useField(props);
 
   const { customControls } = useContext(RendererContext);
 
-  // PERFORMANCE: this re-computes on each keypress because field changes
-  const valueComponent = useMemo(() => {
-    const { Component } = customControls.find((x) => x.match(schema)) ?? {};
+  const isComplex = typeof field.value === "object";
 
-    if (typeof field.value === "object") {
-      return <Form.Control plaintext readOnly defaultValue="Complex object" />;
+  const ValueComponent = useMemo(() => {
+    if (isComplex) {
+      return ComplexObjectValue;
     }
-
-    return Component ? (
-      <Component schema={schema} {...field} />
-    ) : (
-      <Form.Control
-        type="text"
-        {...field}
-        value={field.value ?? ""}
-        isInvalid={!!meta.error}
-      />
-    );
-  }, [meta.error, customControls, schema, field]);
+    const { Component } = customControls.find((x) => x.match(schema)) ?? {};
+    return Component ?? SimpleValue;
+  }, [isComplex, customControls, schema]);
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -105,12 +111,10 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
           defaultValue={currentProperty}
           onBlur={updateName}
         />
-        {/* This screws up the column width */}
-        {/*{schema.description && (*/}
-        {/*    <Form.Text className="text-muted">{schema.description}</Form.Text>*/}
-        {/*)}*/}
       </td>
-      <td>{valueComponent}</td>
+      <td>
+        <ValueComponent {...field} schema={schema} />
+      </td>
       {showActions && (
         <td>
           {onDelete && (
@@ -124,7 +128,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   );
 };
 
-function newPropertyName(obj: { [key: string]: unknown }) {
+function freshPropertyName(obj: { [key: string]: unknown }) {
   let x = 1;
   while (Object.prototype.hasOwnProperty.call(obj, `property${x}`)) {
     x++;
@@ -232,10 +236,18 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
   const onRename = useCallback(
     (oldProp: string, newProp: string) => {
       if (oldProp !== newProp) {
+        const previousValue = fieldRef.current.value ?? {};
+
+        console.debug("Renaming property", {
+          newProp,
+          oldProp,
+          previousValue,
+        });
+
         setFieldValue(
           name,
-          produce(fieldRef.current.value, (draft: ObjectValue) => {
-            draft[newProp] = draft[oldProp];
+          produce(previousValue, (draft: ObjectValue) => {
+            draft[newProp] = draft[oldProp] ?? "";
             delete draft[oldProp];
           })
         );
@@ -245,16 +257,12 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
   );
 
   const addProperty = useCallback(() => {
-    if (fieldRef.current.value) {
-      setFieldValue(
-        name,
-        produce(fieldRef.current.value, (draft: ObjectValue) => {
-          draft[newPropertyName(draft)] = "";
-        })
-      );
-    } else {
-      setFieldValue(name, { [newPropertyName({})]: "" });
-    }
+    setFieldValue(
+      name,
+      produce(fieldRef.current.value ?? {}, (draft: ObjectValue) => {
+        draft[freshPropertyName(draft)] = "";
+      })
+    );
   }, [name, setFieldValue, fieldRef]);
 
   return (
