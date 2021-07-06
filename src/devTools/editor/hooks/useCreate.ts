@@ -24,7 +24,7 @@ import { useDispatch } from "react-redux";
 import { useCallback, useState } from "react";
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { makeURL } from "@/hooks/fetch";
-import { safeDump } from "js-yaml";
+import { dump } from "js-yaml";
 import { getExtensionToken } from "@/auth/token";
 import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
@@ -83,7 +83,8 @@ function selectErrorMessage(error: unknown): string {
  * Dump to YAML, removing keys with undefined values.
  */
 export function configToYaml(content: unknown): string {
-  return safeDump(removeUndefined(content));
+  // As of js-yaml 4, dump is safe by default
+  return dump(removeUndefined(content));
 }
 
 async function ensurePermissions(element: FormState, addToast: AddToast) {
