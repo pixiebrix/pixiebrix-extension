@@ -79,12 +79,14 @@ async function initialize() {
     await clearDynamicElements(port, {}).catch((error) => {
       console.warn(
         "Error clearing dynamic elements from previous devtools sessions",
-        error
+        {
+          error,
+        }
       );
     });
   } catch (error) {
-    // Can install without having content script on the page; they just won't do much
-    console.debug("Could not inject contextScript for devtools", {
+    // We could install without having content script on the page; they just won't do much
+    console.error("Could not inject contentScript for devtools", {
       error,
     });
   }
