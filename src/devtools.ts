@@ -86,7 +86,13 @@ function installPanel() {
 }
 
 async function initialize() {
+  installPanel();
+
   const port = await connectDevtools();
+  installSidebarPane(port).catch((error) => {
+    console.error("Error adding data viewer elements pane", { error });
+  });
+
   let injected = false;
 
   try {
@@ -98,12 +104,6 @@ async function initialize() {
       error,
     });
   }
-
-  installSidebarPane(port).catch((error) => {
-    console.error("Error adding data viewer elements pane", { error });
-  });
-
-  installPanel();
 
   if (injected) {
     try {
