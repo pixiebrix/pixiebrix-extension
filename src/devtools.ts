@@ -17,7 +17,7 @@
 
 // https://developer.chrome.com/extensions/devtools
 
-import { browser, Runtime } from "webextension-polyfill-ts";
+import { browser, DevtoolsPanels, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 
 import {
@@ -36,12 +36,10 @@ window.addEventListener("unhandledrejection", function (e) {
   reportError(e);
 });
 
-async function installSidebarPane(port: Runtime.Port) {
-  // TODO: Drop type assertion after https://github.com/Lusito/webextension-polyfill-ts/issues/60
-  const sidebar = ((await browser.devtools.panels.elements.createSidebarPane(
-    "PixieBrix Data Viewer"
-  )) as unknown) as chrome.devtools.panels.ExtensionSidebarPane;
-
+async function keepSidebarUpToDate(
+  sidebar: DevtoolsPanels.ExtensionSidebarPane,
+  port: Runtime.Port
+) {
   async function updateElementProperties(): Promise<void> {
     // https://developer.chrome.com/extensions/devtools#selected-element
     chrome.devtools.inspectedWindow.eval("setSelectedElement($0)", {
@@ -67,10 +65,14 @@ async function installSidebarPane(port: Runtime.Port) {
 }
 
 async function initialize() {
+  // Add panel and sidebar
   await browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html");
+  const sidebar = await browser.devtools.panels.elements.createSidebarPane(
+    "PixieBrix Data Viewer"
+  );
 
   const port = await connectDevtools();
-  installSidebarPane(port).catch((error) => {
+  keepSidebarUpToDate(sidebar, port).catch((error) => {
     console.error("Error adding data viewer elements pane", { error });
   });
 
