@@ -95,7 +95,7 @@ function commonAttr($items: JQuery<HTMLElement>, attr: string) {
   // For classes and rel we take the common values
   if (MULTI_ATTRS.includes(attr)) {
     const classNames = attributeValues.map((x) => (x ? x.split(" ") : []));
-    unfiltered = uniq(intersection(...classNames));
+    unfiltered = intersection(...classNames);
   } else if (uniq(attributeValues).length === 1) {
     unfiltered = attributeValues[0].split(" ");
   } else {
