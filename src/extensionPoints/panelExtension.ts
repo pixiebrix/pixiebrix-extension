@@ -397,7 +397,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       $toggle.attr("aria-expanded", String(startExpanded));
       $toggle.toggleClass("active", startExpanded);
 
-      $toggle.on("click", () => {
+      $toggle.on("click", async () => {
         $bodyContainers.toggleClass("show");
         const showing = $bodyContainers.hasClass("show");
         $toggle.attr("aria-expanded", String(showing));
@@ -407,7 +407,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           console.debug(
             `Installing body for collapsible panel: ${extension.id}`
           );
-          installBody();
+          await installBody();
         }
       });
 

@@ -15,18 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
+import { Form, Button, Table } from "react-bootstrap";
 import { Schema } from "@/core";
 import { FieldProps } from "@/components/fields/propTypes";
-import { fromPairs } from "lodash";
-import Table from "react-bootstrap/Table";
+import { fromPairs, isEmpty } from "lodash";
 import {
   getDefaultField,
   RendererContext,
 } from "@/components/fields/blockOptions";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -56,6 +54,22 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRow> = ({
   );
 };
 
+const ComplexObjectValue: React.FunctionComponent<FieldProps<unknown>> = () => (
+  <Form.Control plaintext readOnly defaultValue="Complex object" />
+);
+
+const SimpleValue: React.FunctionComponent<FieldProps<unknown>> = (props) => {
+  const [field, meta] = useField(props);
+  return (
+    <Form.Control
+      type="text"
+      {...props}
+      value={field.value ?? ""}
+      isInvalid={!!meta.error}
+    />
+  );
+};
+
 const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   readOnly,
   onDelete,
@@ -64,28 +78,19 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   schema,
   ...props
 }) => {
-  const [field, meta] = useField(props);
+  const [field] = useField(props);
 
   const { customControls } = useContext(RendererContext);
 
-  const valueComponent = useMemo(() => {
-    const { Component } = customControls.find((x) => x.match(schema)) ?? {};
+  const isComplex = typeof field.value === "object";
 
-    if (typeof field.value === "object") {
-      return <Form.Control plaintext readOnly defaultValue="Complex object" />;
+  const ValueComponent = useMemo(() => {
+    if (isComplex) {
+      return ComplexObjectValue;
     }
-
-    return Component ? (
-      <Component schema={schema} {...field} />
-    ) : (
-      <Form.Control
-        type="text"
-        {...field}
-        value={field.value ?? ""}
-        isInvalid={!!meta.error}
-      />
-    );
-  }, [customControls, schema, field]);
+    const { Component } = customControls.find((x) => x.match(schema)) ?? {};
+    return Component ?? SimpleValue;
+  }, [isComplex, customControls, schema]);
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -106,12 +111,10 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
           defaultValue={currentProperty}
           onBlur={updateName}
         />
-        {/* This screws up the column width */}
-        {/*{schema.description && (*/}
-        {/*    <Form.Text className="text-muted">{schema.description}</Form.Text>*/}
-        {/*)}*/}
       </td>
-      <td>{valueComponent}</td>
+      <td>
+        <ValueComponent {...field} schema={schema} />
+      </td>
       {showActions && (
         <td>
           {onDelete && (
@@ -125,7 +128,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   );
 };
 
-function newPropertyName(obj: { [key: string]: unknown }) {
+function freshPropertyName(obj: { [key: string]: unknown }) {
   let x = 1;
   while (Object.prototype.hasOwnProperty.call(obj, `property${x}`)) {
     x++;
@@ -142,6 +145,9 @@ interface RowProps {
   onRename: (oldProp: string, newProp: string) => void;
 }
 
+const BOOLEAN_SCHEMA: Schema = { type: "string" };
+const FALLBACK_SCHEMA: Schema = { type: "string" };
+
 const PropertyRow: React.FunctionComponent<RowProps> = ({
   parentSchema,
   defined,
@@ -150,12 +156,15 @@ const PropertyRow: React.FunctionComponent<RowProps> = ({
   onDelete,
   onRename,
 }) => {
-  const rawSchema = defined
-    ? parentSchema.properties[property]
-    : parentSchema.additionalProperties;
+  const propertySchema: Schema = useMemo(() => {
+    const rawSchema = defined
+      ? parentSchema.properties[property]
+      : parentSchema.additionalProperties;
 
-  const propertySchema: Schema =
-    typeof rawSchema === "boolean" ? { type: "string" } : rawSchema;
+    return typeof rawSchema === "boolean"
+      ? BOOLEAN_SCHEMA
+      : rawSchema ?? FALLBACK_SCHEMA;
+  }, [property, defined, parentSchema]);
 
   const PropertyRow = useMemo(() => getPropertyRow(propertySchema), [
     propertySchema,
@@ -182,49 +191,79 @@ const PropertyRow: React.FunctionComponent<RowProps> = ({
   );
 };
 
+type ObjectValue = Record<string, unknown>;
+
 export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
   label,
   schema,
   ...props
 }) => {
-  const [field, , helpers] = useField(props);
+  const { name } = props;
+
+  // allow additional properties for empty schema (empty schema allows shape)
+  const additionalProperties = isEmpty(schema) || schema.additionalProperties;
+
+  // helpers.setValue changes on every render, so use setFieldValue instead
+  // https://github.com/formium/formik/issues/2268
+  const [field] = useField(props);
+  const { setFieldValue } = useFormikContext();
+
+  // useRef indirection layer so the callbacks below don't re-calculate on every change
+  const fieldRef = useRef(field);
 
   const [properties, declaredProperties] = useMemo(() => {
     const declared = schema.properties ?? {};
     const additional = fromPairs(
-      Object.entries(field.value ?? {}).filter(([x]) => !declared[x])
+      Object.entries(field.value ?? {}).filter(
+        ([property]) => !declared[property]
+      )
     );
     return [[...Object.keys(declared), ...Object.keys(additional)], declared];
   }, [field.value, schema.properties]);
 
   const onDelete = useCallback(
     (property: string) => {
-      helpers.setValue(
-        produce(field.value, (draft: any) => {
+      setFieldValue(
+        name,
+        produce(fieldRef.current.value, (draft: ObjectValue) => {
           delete draft[property];
         })
       );
     },
-    [helpers, field.value]
+    [name, setFieldValue, fieldRef]
   );
 
   const onRename = useCallback(
     (oldProp: string, newProp: string) => {
       if (oldProp !== newProp) {
-        helpers.setValue(
-          produce(field.value, (draft: any) => {
-            console.debug("rename", {
-              object: field.value,
-              value: draft[oldProp],
-            });
-            draft[newProp] = draft[oldProp];
+        const previousValue = fieldRef.current.value ?? {};
+
+        console.debug("Renaming property", {
+          newProp,
+          oldProp,
+          previousValue,
+        });
+
+        setFieldValue(
+          name,
+          produce(previousValue, (draft: ObjectValue) => {
+            draft[newProp] = draft[oldProp] ?? "";
             delete draft[oldProp];
           })
         );
       }
     },
-    [helpers, field.value]
+    [name, setFieldValue, fieldRef]
   );
+
+  const addProperty = useCallback(() => {
+    setFieldValue(
+      name,
+      produce(fieldRef.current.value ?? {}, (draft: ObjectValue) => {
+        draft[freshPropertyName(draft)] = "";
+      })
+    );
+  }, [name, setFieldValue, fieldRef]);
 
   return (
     <Form.Group controlId={field.name}>
@@ -234,7 +273,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
           <tr>
             <th scope="col">Property</th>
             <th scope="col">Value</th>
-            {schema.additionalProperties && <th scope="col">Action</th>}
+            {additionalProperties && <th scope="col">Action</th>}
           </tr>
         </thead>
         <tbody>
@@ -242,7 +281,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
             <PropertyRow
               key={property}
               parentSchema={schema}
-              name={`${field.name}.${property}`}
+              name={[field.name, property].join(".")}
               property={property}
               defined={Object.prototype.hasOwnProperty.call(
                 declaredProperties,
@@ -254,22 +293,8 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
           ))}
         </tbody>
       </Table>
-      {schema.additionalProperties && (
-        <Button
-          onClick={() => {
-            if (field.value) {
-              helpers.setValue(
-                produce(field.value, (draft: any) => {
-                  draft[newPropertyName(draft)] = "";
-                })
-              );
-            } else {
-              helpers.setValue({ [newPropertyName({})]: "" });
-            }
-          }}
-        >
-          Add Property
-        </Button>
+      {additionalProperties && (
+        <Button onClick={addProperty}>Add Property</Button>
       )}
     </Form.Group>
   );
@@ -278,7 +303,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 export function getPropertyRow(
   schema: Schema
 ): React.FunctionComponent<PropertyRow> {
-  switch (schema.type) {
+  switch (schema?.type) {
     case "array":
     case "object":
       return CompositePropertyRow;
