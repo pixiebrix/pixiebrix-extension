@@ -52,6 +52,8 @@ export function getNavigationId(): string {
 export function markReady(): void {
   // eslint-disable-next-line security/detect-object-injection -- Static symbol
   window[PIXIEBRIX_READY_SYMBOL] = true;
+
+  document.documentElement.dataset.pixieBrixReady = "true";
 }
 
 export function updateTabInfo(info: { tabId: number; frameId: number }): void {

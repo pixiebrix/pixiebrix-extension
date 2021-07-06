@@ -186,7 +186,13 @@ export function liftExternal<R extends SerializableResponse>(
         meta: { nonce },
       };
       console.debug("Sending message from page to content script", message);
-      document.defaultView.postMessage(message, targetOrigin);
+      (function check() {
+        if ("pixieBrixReady" in document.documentElement.dataset) {
+          document.defaultView.postMessage(message, targetOrigin);
+        } else {
+          setTimeout(check, 100);
+        }
+      })();
     });
   };
 }
