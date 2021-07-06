@@ -19,12 +19,11 @@
 
 import { browser, DevtoolsPanels, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
-
 import {
+  clearDynamicElements,
   ensureScript,
   readSelectedElement,
-  clearDynamicElements,
-} from "@/background/devtools/index";
+} from "@/background/devtools";
 import { reportError } from "@/telemetry/logging";
 
 window.addEventListener("error", function (e) {
@@ -36,10 +35,10 @@ window.addEventListener("unhandledrejection", function (e) {
   reportError(e);
 });
 
-async function keepSidebarUpToDate(
+function initSidebarListeners(
   sidebar: DevtoolsPanels.ExtensionSidebarPane,
   port: Runtime.Port
-) {
+): void {
   async function updateElementProperties(): Promise<void> {
     // https://developer.chrome.com/extensions/devtools#selected-element
     chrome.devtools.inspectedWindow.eval("setSelectedElement($0)", {
@@ -49,14 +48,12 @@ async function keepSidebarUpToDate(
     void sidebar.setObject({ state: "loading..." });
 
     try {
-      void sidebar.setObject(await readSelectedElement(port));
+      await sidebar.setObject(await readSelectedElement(port));
     } catch (error) {
-      void sidebar.setObject({ error: error ?? "Unknown error" });
+      await sidebar.setObject({ error: error ?? "Unknown error" });
     }
   }
 
-  // IntelliJ doesn't always respect void keyword: https://youtrack.jetbrains.com/issue/WEB-50191
-  // noinspection ES6MissingAwait
   void updateElementProperties();
 
   chrome.devtools.panels.elements.onSelectionChanged.addListener(
@@ -65,24 +62,23 @@ async function keepSidebarUpToDate(
 }
 
 async function initialize() {
-  // Add panel and sidebar
-  await browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html");
-  const sidebar = await browser.devtools.panels.elements.createSidebarPane(
-    "PixieBrix Data Viewer"
-  );
+  // Add panel and sidebar components/elements first so their tabs appear quickly
+  const [sidebar, , port] = await Promise.all([
+    browser.devtools.panels.elements.createSidebarPane("PixieBrix Data Viewer"),
+    browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html"),
+    connectDevtools(),
+  ]);
 
-  const port = await connectDevtools();
-  keepSidebarUpToDate(sidebar, port).catch((error) => {
-    console.error("Error adding data viewer elements pane", { error });
-  });
+  // Attach elements
+  initSidebarListeners(sidebar, port);
 
   try {
     await ensureScript(port);
 
     // clear out any dynamic stuff from any previous devtools sessions
     await clearDynamicElements(port, {}).catch((error) => {
-      console.debug(
-        "Error clearing dynamic elements previous devtools sessions",
+      console.warn(
+        "Error clearing dynamic elements from previous devtools sessions",
         error
       );
     });
