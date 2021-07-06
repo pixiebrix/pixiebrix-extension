@@ -66,27 +66,8 @@ async function installSidebarPane(port: Runtime.Port) {
   );
 }
 
-function installPanel() {
-  // https://developer.chrome.com/extensions/devtools_panels#method-create
-  // https://github.com/facebook/react/blob/master/packages/react-devtools-extensions/src/main.js#L298
-
-  let currentPanel = null;
-
-  chrome.devtools.panels.create(
-    "PixieBrix",
-    "",
-    "devtoolsPanel.html",
-    (panel) => {
-      currentPanel = panel;
-      if (currentPanel === panel) {
-        return;
-      }
-    }
-  );
-}
-
 async function initialize() {
-  installPanel();
+  await browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html");
 
   const port = await connectDevtools();
   installSidebarPane(port).catch((error) => {
