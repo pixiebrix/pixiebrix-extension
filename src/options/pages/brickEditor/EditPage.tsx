@@ -58,7 +58,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
     if (config == null) {
       return { isBlueprint: false, isInstalled: false, config: undefined };
     }
-    const configJSON = yaml.safeLoad(config) as RawConfig;
+    const configJSON = yaml.load(config) as RawConfig;
     const isBlueprint = configJSON.kind === "recipe";
     if (isBlueprint) {
       return {
@@ -102,7 +102,7 @@ function useLogContext(config: string | null): MessageContext | null {
 
   return useMemo(() => {
     try {
-      const json = yaml.safeLoad(debouncedConfig) as RawConfig;
+      const json = yaml.load(debouncedConfig) as RawConfig;
       switch (json.kind) {
         case "service": {
           return { serviceId: json.metadata.id };
