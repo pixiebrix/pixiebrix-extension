@@ -58,11 +58,10 @@ export class RemoteMethod extends Transformer {
         description: "Additional request headers",
         additionalProperties: { type: "string" },
       },
-      data: {
-        type: "object",
-        additionalProperties: true,
-      },
+      // Match anything, as valid values are determined by the API being called
+      data: {},
     },
+    // XXX: data should not be required for GET/DELETE requests
     ["url", "data"]
   );
 

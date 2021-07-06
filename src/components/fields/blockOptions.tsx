@@ -24,7 +24,7 @@ import { ObjectField } from "@/components/fields/FieldTable";
 import { FieldArray, useField, useFormikContext } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select, { OptionsType } from "react-select";
-import { uniq, sortBy, isEmpty, identity } from "lodash";
+import { uniq, sortBy, isEmpty, compact } from "lodash";
 import Creatable from "react-select/creatable";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 
@@ -336,17 +336,28 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
     return makeOneOfField(findOneOf(fieldSchema, booleanPredicate));
   } else if (findOneOf(fieldSchema, textPredicate)) {
     return makeOneOfField(findOneOf(fieldSchema, textPredicate));
+  } else if (isEmpty(fieldSchema)) {
+    // An empty field schema supports any value. For now, provide an object field since this just shows up
+    // in the @pixiebrix/http brick.
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/709
+    return ObjectField;
   } else {
     // number, string, other primitives, etc.
     return TextField;
   }
 }
 
+/**
+ * A form field, including label, error message, etc.
+ */
 type CustomRenderer = {
   match: (fieldSchema: Schema) => boolean;
   Component: FieldComponent;
 };
 
+/**
+ * An individual form control (excluding label, error message, etc.)
+ */
 type CustomControl = {
   match: (fieldSchema: Schema) => boolean;
   Component: FieldComponent;
@@ -381,6 +392,11 @@ export interface BlockOptionProps {
   showOutputKey?: boolean;
 }
 
+const OUTPUT_KEY_SCHEMA: Schema = {
+  type: "string",
+  description: "A key to refer to this brick in subsequent bricks",
+};
+
 function genericOptionsFactory(
   schema: Schema,
   uiSchema?: UiSchema
@@ -397,7 +413,7 @@ function genericOptionsFactory(
         return (
           <FieldRenderer
             key={prop}
-            name={[name, configKey, prop].filter(identity).join(".")}
+            name={compact([name, configKey, prop]).join(".")}
             schema={fieldSchema}
             uiSchema={propUiSchema}
           />
@@ -407,17 +423,14 @@ function genericOptionsFactory(
         <FieldRenderer
           name={`${name}.outputKey`}
           label="Output Variable"
-          schema={{
-            type: "string",
-            description: "A key to refer to this brick in subsequent bricks",
-          }}
+          schema={OUTPUT_KEY_SCHEMA}
         />
       )}
       {isEmpty(schema) && <div>No options available</div>}
     </>
   );
 
-  element.displayName = `Options Field`;
+  element.displayName = "Options Field";
   return element;
 }
 

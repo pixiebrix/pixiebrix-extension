@@ -41,7 +41,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
       ? uniq([...created, ...values]).map((x) => ({ value: x, label: x }))
       : [];
     return [schema?.enum == null, options];
-  }, [schema?.examples, schema?.enum]);
+  }, [created, schema?.examples, schema?.enum]);
 
   let control;
 
@@ -52,7 +52,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         options={options}
         onCreateOption={(value) => setCreated(uniq([...created, value]))}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => helpers.setValue(option?.value)}
       />
     );
   } else if (options.length > 0 && !creatable) {
@@ -61,7 +61,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         isClearable
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => helpers.setValue(option?.value)}
       />
     );
   } else if (schema.format === "markdown") {
