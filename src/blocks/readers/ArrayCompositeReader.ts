@@ -40,17 +40,15 @@ class ArrayCompositeReader extends Reader {
       throw new Error("One or more readers are missing an outputSchema");
     }
 
+    const properties = {};
+    for (const reader of this._readers) {
+      Object.assign(properties, reader.outputSchema.properties);
+    }
+
     this.outputSchema = {
+      properties,
       $schema: "https://json-schema.org/draft/2019-09/schema#",
       type: "object",
-      // eslint-disable-next-line unicorn/no-array-reduce
-      properties: this._readers.reduce(
-        (acc, reader) => ({
-          ...acc,
-          ...(reader.outputSchema.properties ?? {}),
-        }),
-        {}
-      ),
     };
   }
 

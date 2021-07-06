@@ -372,7 +372,6 @@ function getBoundingClientRectWithBorderOffset(node: HTMLElement) {
 // Add together the top, left, bottom, and right properties of
 // each ClientRect, but keep the width and height of the first one.
 function mergeRectOffsets(rects: Array<Rect>): Rect {
-  // eslint-disable-next-line unicorn/no-array-reduce
   return rects.reduce((previousRect, rect) => {
     if (previousRect == null) {
       return rect;

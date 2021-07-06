@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { uniq, compact, sortBy, unary } from "lodash";
+import { uniq, compact, sortBy, unary, intersection } from "lodash";
 import getCssSelector, { css_selector_type } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement } from "@/utils";
 
@@ -64,13 +64,6 @@ class SkipElement extends Error {
   }
 }
 
-function intersection<T>(sets: Set<T>[]): Set<T> {
-  // eslint-disable-next-line unicorn/no-array-reduce -- TODO: Maybe replace with lodash
-  return sets.reduce((acc, other) => {
-    return acc == null ? other : new Set([...acc].filter((x) => other.has(x)));
-  }, null);
-}
-
 function outerHTML($element: JQuery<HTMLElement | Text>): string {
   // Trick to get the HTML of the actual element
   return $("<div>").append($element.clone()).html();
@@ -101,11 +94,8 @@ function commonAttr($items: JQuery<HTMLElement>, attr: string) {
 
   // For classes and rel we take the common values
   if (MULTI_ATTRS.includes(attr)) {
-    const classNames = attributeValues.map(
-      (x) => new Set(x ? x.split(" ") : [])
-    );
-    const commonValues = intersection(classNames);
-    unfiltered = [...commonValues.values()];
+    const classNames = attributeValues.map((x) => (x ? x.split(" ") : []));
+    unfiltered = intersection(...classNames);
   } else if (uniq(attributeValues).length === 1) {
     unfiltered = attributeValues[0].split(" ");
   } else {
