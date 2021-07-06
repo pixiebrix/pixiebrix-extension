@@ -17,7 +17,7 @@
 
 import pTimeout from "p-timeout";
 import { liftBackground } from "@/background/protocol";
-import { browser, ContextMenus, Menus, Tabs } from "webextension-polyfill-ts";
+import { browser, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { handleMenuAction } from "@/contentScript/contextMenus";
@@ -39,7 +39,7 @@ const CONTEXT_MENU_INSTALL_MS = 1000;
 interface SelectionMenuOptions {
   extensionId: string;
   title: string;
-  contexts: ContextMenus.ContextType[];
+  contexts: Menus.ContextType[];
   documentUrlPatterns: string[];
 }
 

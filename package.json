@@ -112,7 +112,7 @@
     "webext-dynamic-content-scripts": "^8.0.0-1",
     "webext-patterns": "^1.1.0",
     "webext-polyfill-kinda": "^0.1.0",
-    "webextension-polyfill-ts": "^0.25.0"
+    "webextension-polyfill-ts": "^0.26.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",

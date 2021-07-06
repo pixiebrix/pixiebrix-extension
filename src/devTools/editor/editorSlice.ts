@@ -22,7 +22,7 @@ import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { MenuDefaultOptions as ContextMenuDefaultOptions } from "@/extensionPoints/contextMenu";
 import { BlockPipeline } from "@/blocks/combinators";
 import { Trigger } from "@/extensionPoints/triggerExtension";
-import { ContextMenus } from "webextension-polyfill-ts";
+import { Menus } from "webextension-polyfill-ts";
 
 export interface ReaderReferenceFormState {
   metadata: Metadata;
@@ -82,7 +82,7 @@ export interface ContextMenuFormState extends BaseFormState {
     definition: {
       defaultOptions: ContextMenuDefaultOptions;
       documentUrlPatterns: string[];
-      contexts: ContextMenus.ContextType[];
+      contexts: Menus.ContextType[];
       isAvailable: {
         matchPatterns: string;
         selectors: string;
