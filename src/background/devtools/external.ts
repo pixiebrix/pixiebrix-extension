@@ -89,7 +89,9 @@ export async function callBackground(
     meta: { nonce, tabId: browser.devtools.inspectedWindow.tabId },
   };
 
-  if (!port.onMessage.hasListeners()) {
+  // Firefox does not support the API yet
+  // https://github.com/pixiebrix/pixiebrix-extension/issues/679
+  if (port.onMessage.hasListeners && !port.onMessage.hasListeners()) {
     throw new Error("Listeners not installed on devtools port");
   }
 
