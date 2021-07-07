@@ -180,16 +180,18 @@ export function liftExternal<R extends SerializableResponse>(
       throw new ContentScriptActionError("Expected call from external page");
     }
     // Wait for the extension to load before sending the message
-    await Promise.race([
-      oneMutation(document.documentElement, {
-        attributes: true,
-        attributeFilter: [PIXIEBRIX_READY_ATTRIBUTE],
-      }),
+    if (!document.documentElement.hasAttribute(PIXIEBRIX_READY_ATTRIBUTE)) {
+      await Promise.race([
+        oneMutation(document.documentElement, {
+          attributes: true,
+          attributeFilter: [PIXIEBRIX_READY_ATTRIBUTE],
+        }),
 
-      // TODO: Replace `sleep` with `p-timeout`
-      // Timeouts are temporarily being let through just for backwards compatibility.
-      sleep(POLL_READY_TIMEOUT),
-    ]);
+        // TODO: Replace `sleep` with `p-timeout`
+        // Timeouts are temporarily being let through just for backwards compatibility.
+        sleep(POLL_READY_TIMEOUT),
+      ]);
+    }
 
     return new Promise((resolve, reject) => {
       const nonce = uuidv4();
