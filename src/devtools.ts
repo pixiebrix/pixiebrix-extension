@@ -25,6 +25,7 @@ import {
   readSelectedElement,
 } from "@/background/devtools";
 import { reportError } from "@/telemetry/logging";
+import { updateSelectedElement } from "./devTools/getSelectedElement";
 
 window.addEventListener("error", function (e) {
   reportError(e);
@@ -40,10 +41,7 @@ function initSidebarListeners(
   port: Runtime.Port
 ): void {
   async function updateElementProperties(): Promise<void> {
-    // https://developer.chrome.com/extensions/devtools#selected-element
-    chrome.devtools.inspectedWindow.eval("setSelectedElement($0)", {
-      useContentScriptContext: true,
-    });
+    updateSelectedElement();
 
     void sidebar.setObject({ state: "loading..." });
 

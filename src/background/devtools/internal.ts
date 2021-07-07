@@ -45,7 +45,7 @@ import { isErrorObject, isPrivatePageError } from "@/utils";
 import {
   expectBackgroundPage,
   forbidBackgroundPage,
-} from "@/utils/expect-context";
+} from "@/utils/expectContext";
 
 const TOP_LEVEL_FRAME_ID = 0;
 

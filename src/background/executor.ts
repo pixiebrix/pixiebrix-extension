@@ -33,7 +33,7 @@ import { BusinessError } from "@/errors";
 import {
   expectBackgroundPage,
   expectContentScript,
-} from "@/utils/expect-context";
+} from "@/utils/expectContext";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;

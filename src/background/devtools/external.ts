@@ -31,7 +31,7 @@ import {
 import { browser, Runtime, WebNavigation } from "webextension-polyfill-ts";
 import { v4 as uuidv4 } from "uuid";
 import { SimpleEvent } from "@/hooks/events";
-import { forbidBackgroundPage } from "@/utils/expect-context";
+import { forbidBackgroundPage } from "@/utils/expectContext";
 
 const devtoolsHandlers = new Map<Nonce, PromiseHandler>();
 

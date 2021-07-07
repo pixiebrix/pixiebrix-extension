@@ -30,7 +30,7 @@ import { browser, Runtime } from "webextension-polyfill-ts";
 import {
   expectBackgroundPage,
   expectContentScript,
-} from "@/utils/expect-context";
+} from "@/utils/expectContext";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
 export const ROOT_FRAME_ID = 0;

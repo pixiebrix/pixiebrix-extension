@@ -28,7 +28,7 @@ import { Availability } from "@/blocks/types";
 import { checkAvailable } from "@/blocks/available";
 import { markReady } from "./context";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
-import { expectContentScript } from "@/utils/expect-context";
+import { expectContentScript } from "@/utils/expectContext";
 
 export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
