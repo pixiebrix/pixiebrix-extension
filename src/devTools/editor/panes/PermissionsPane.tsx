@@ -43,17 +43,13 @@ const PermissionsPane: React.FunctionComponent = () => {
       <div className="PaneTitle">
         PixieBrix does not have access to the page
       </div>
-      <div className="mb-2 text-left">
-        <p>
-          Grant permanent access to this domain by clicking the button below.
-        </p>
-
-        <p>
-          Or, grant temporary access by 1) clicking on the PixieBrix extension
-          in the extensions dropdown, and 2) then refreshing the page.
-        </p>
-      </div>
-      <Button onClick={requestPermissions}>Grant Permanent Access</Button>
+      <p>
+        <Button onClick={requestPermissions}>Grant permanent access</Button>
+      </p>
+      <p>
+        Or grant temporary access by 1) clicking on the PixieBrix extension in
+        the extensions dropdown and 2) then refreshing the page
+      </p>
     </Centered>
   );
 };
