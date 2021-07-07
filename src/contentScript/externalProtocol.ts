@@ -24,10 +24,14 @@ import {
   SerializableResponse,
   toErrorResponse,
 } from "@/messaging/protocol";
+import oneMutation from "one-mutation";
 import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
+import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
+import { sleep } from "@/utils";
 
+const POLL_READY_TIMEOUT = 2000;
 const MESSAGE_PREFIX = "@@pixiebrix/external/";
 const fulfilledSuffix = "_FULFILLED";
 const rejectedSuffix = "_REJECTED";
@@ -175,6 +179,18 @@ export function liftExternal<R extends SerializableResponse>(
     if (isExtensionContext()) {
       throw new ContentScriptActionError("Expected call from external page");
     }
+    // Wait for the extension to load before sending the message
+    await Promise.race([
+      oneMutation(document.documentElement, {
+        attributes: true,
+        attributeFilter: [PIXIEBRIX_READY_ATTRIBUTE],
+      }),
+
+      // TODO: Replace `sleep` with `p-timeout`
+      // Timeouts are temporarily being let through just for backwards compatibility.
+      sleep(POLL_READY_TIMEOUT),
+    ]);
+
     return new Promise((resolve, reject) => {
       const nonce = uuidv4();
       pageFulfilledCallbacks.set(nonce, resolve);
@@ -186,13 +202,7 @@ export function liftExternal<R extends SerializableResponse>(
         meta: { nonce },
       };
       console.debug("Sending message from page to content script", message);
-      (function check() {
-        if ("pixieBrixReady" in document.documentElement.dataset) {
-          document.defaultView.postMessage(message, targetOrigin);
-        } else {
-          setTimeout(check, 100);
-        }
-      })();
+      document.defaultView.postMessage(message, targetOrigin);
     });
   };
 }
