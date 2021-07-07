@@ -17,14 +17,13 @@
 
 // https://developer.chrome.com/extensions/devtools
 
-import { browser, Runtime } from "webextension-polyfill-ts";
+import { browser, DevtoolsPanels, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
-
 import {
+  clearDynamicElements,
   ensureScript,
   readSelectedElement,
-  clearDynamicElements,
-} from "@/background/devtools/index";
+} from "@/background/devtools";
 import { reportError } from "@/telemetry/logging";
 import { updateSelectedElement } from "./devTools/getSelectedElement";
 
@@ -37,26 +36,22 @@ window.addEventListener("unhandledrejection", function (e) {
   reportError(e);
 });
 
-async function installSidebarPane(port: Runtime.Port) {
-  // TODO: Drop type assertion after https://github.com/Lusito/webextension-polyfill-ts/issues/60
-  const sidebar = ((await browser.devtools.panels.elements.createSidebarPane(
-    "PixieBrix Data Viewer"
-  )) as unknown) as chrome.devtools.panels.ExtensionSidebarPane;
-
+function initSidebarListeners(
+  sidebar: DevtoolsPanels.ExtensionSidebarPane,
+  port: Runtime.Port
+): void {
   async function updateElementProperties(): Promise<void> {
     updateSelectedElement();
 
-    sidebar.setObject({ state: "loading..." });
+    void sidebar.setObject({ state: "loading..." });
 
     try {
-      sidebar.setObject(await readSelectedElement(port));
+      await sidebar.setObject(await readSelectedElement(port));
     } catch (error) {
-      sidebar.setObject({ error: error ?? "Unknown error" });
+      await sidebar.setObject({ error: error ?? "Unknown error" });
     }
   }
 
-  // IntelliJ doesn't always respect void keyword: https://youtrack.jetbrains.com/issue/WEB-50191
-  // noinspection ES6MissingAwait
   void updateElementProperties();
 
   chrome.devtools.panels.elements.onSelectionChanged.addListener(
@@ -64,55 +59,34 @@ async function installSidebarPane(port: Runtime.Port) {
   );
 }
 
-function installPanel() {
-  // https://developer.chrome.com/extensions/devtools_panels#method-create
-  // https://github.com/facebook/react/blob/master/packages/react-devtools-extensions/src/main.js#L298
-
-  let currentPanel = null;
-
-  chrome.devtools.panels.create(
-    "PixieBrix",
-    "",
-    "devtoolsPanel.html",
-    (panel) => {
-      currentPanel = panel;
-      if (currentPanel === panel) {
-        return;
-      }
-    }
-  );
-}
-
 async function initialize() {
-  const port = await connectDevtools();
-  let injected = false;
+  // Add panel and sidebar components/elements first so their tabs appear quickly
+  const [sidebar, , port] = await Promise.all([
+    browser.devtools.panels.elements.createSidebarPane("PixieBrix Data Viewer"),
+    browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html"),
+    connectDevtools(),
+  ]);
+
+  // Attach elements
+  initSidebarListeners(sidebar, port);
 
   try {
     await ensureScript(port);
-    injected = true;
+
+    // clear out any dynamic stuff from any previous devtools sessions
+    await clearDynamicElements(port, {}).catch((error) => {
+      console.warn(
+        "Error clearing dynamic elements from previous devtools sessions",
+        {
+          error,
+        }
+      );
+    });
   } catch (error) {
-    // Can install without having content script on the page; they just won't do much
-    console.debug("Could not inject contextScript for devtools", {
+    // We could install without having content script on the page; they just won't do much
+    console.error("Could not inject contentScript for devtools", {
       error,
     });
-  }
-
-  installSidebarPane(port).catch((error) => {
-    console.error("Error adding data viewer elements pane", { error });
-  });
-
-  installPanel();
-
-  if (injected) {
-    try {
-      // clear out any dynamic stuff from any previous devtools sessions
-      await clearDynamicElements(port, {});
-    } catch (error) {
-      console.debug(
-        "Error clearing dynamic elements previous devtools sessions",
-        error
-      );
-    }
   }
 }
 
