@@ -27,6 +27,7 @@ export let tabId: number;
 export let frameId: number;
 
 const PIXIEBRIX_READY_SYMBOL = Symbol.for("pixiebrix-content-script-ready");
+export const PIXIEBRIX_READY_ATTRIBUTE = "data-pb-ready";
 
 declare global {
   interface Window {
@@ -52,6 +53,8 @@ export function getNavigationId(): string {
 export function markReady(): void {
   // eslint-disable-next-line security/detect-object-injection -- Static symbol
   window[PIXIEBRIX_READY_SYMBOL] = true;
+
+  document.documentElement.setAttribute(PIXIEBRIX_READY_ATTRIBUTE, "");
 }
 
 export function updateTabInfo(info: { tabId: number; frameId: number }): void {

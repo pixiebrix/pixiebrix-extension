@@ -24,10 +24,14 @@ import {
   SerializableResponse,
   toErrorResponse,
 } from "@/messaging/protocol";
+import oneMutation from "one-mutation";
 import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
+import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
+import { sleep } from "@/utils";
 
+const POLL_READY_TIMEOUT = 2000;
 const MESSAGE_PREFIX = "@@pixiebrix/external/";
 const fulfilledSuffix = "_FULFILLED";
 const rejectedSuffix = "_REJECTED";
@@ -133,32 +137,32 @@ function initExternalPageListener() {
 
 export function liftExternal<R extends SerializableResponse>(
   type: string,
-  method: () => R | Promise<R>,
+  method: () => Promise<R>,
   options?: HandlerOptions
 ): () => Promise<R>;
 export function liftExternal<T, R extends SerializableResponse>(
   type: string,
-  method: (a0: T) => R | Promise<R>,
+  method: (a0: T) => Promise<R>,
   options?: HandlerOptions
 ): (a0: T) => Promise<R>;
 export function liftExternal<T0, T1, R extends SerializableResponse>(
   type: string,
-  method: (a0: T0, a1: T1) => R | Promise<R>,
+  method: (a0: T0, a1: T1) => Promise<R>,
   options?: HandlerOptions
 ): (a0: T0, a1: T1) => Promise<R>;
 export function liftExternal<T0, T1, T2, R extends SerializableResponse>(
   type: string,
-  method: (a0: T0, a1: T1, a2: T2) => R | Promise<R>,
+  method: (a0: T0, a1: T1, a2: T2) => Promise<R>,
   options?: HandlerOptions
 ): (a0: T0, a1: T1, a2: T2) => Promise<R>;
 export function liftExternal<T0, T1, T2, T3, R extends SerializableResponse>(
   type: string,
-  method: (a0: T0, a1: T1, a2: T2, a3: T3) => R | Promise<R>,
+  method: (a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>,
   options?: HandlerOptions
 ): (a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>;
 export function liftExternal<R extends SerializableResponse>(
   type: string,
-  method: (...args: unknown[]) => R | Promise<R>,
+  method: (...args: unknown[]) => Promise<R>,
   options?: HandlerOptions
 ): (tabId: number, ...args: unknown[]) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
@@ -166,17 +170,29 @@ export function liftExternal<R extends SerializableResponse>(
   if (isContentScript()) {
     // console.debug(`Installed content script handler for ${type}`);
     contentScriptHandlers.set(fullType, { handler: method, options });
+    return method;
   }
 
   const targetOrigin = document.defaultView.origin;
 
   return async (...args: unknown[]) => {
-    if (isContentScript()) {
-      console.debug("Resolving call from the contentScript immediately");
-      return method(...args);
-    } else if (isExtensionContext()) {
+    if (isExtensionContext()) {
       throw new ContentScriptActionError("Expected call from external page");
     }
+    // Wait for the extension to load before sending the message
+    if (!document.documentElement.hasAttribute(PIXIEBRIX_READY_ATTRIBUTE)) {
+      await Promise.race([
+        oneMutation(document.documentElement, {
+          attributes: true,
+          attributeFilter: [PIXIEBRIX_READY_ATTRIBUTE],
+        }),
+
+        // TODO: Replace `sleep` with `p-timeout`
+        // Timeouts are temporarily being let through just for backwards compatibility.
+        sleep(POLL_READY_TIMEOUT),
+      ]);
+    }
+
     return new Promise((resolve, reject) => {
       const nonce = uuidv4();
       pageFulfilledCallbacks.set(nonce, resolve);

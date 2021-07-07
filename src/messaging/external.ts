@@ -23,31 +23,10 @@ import { liftBackground } from "@/background/protocol";
 import { liftExternal } from "@/contentScript/externalProtocol";
 
 import { browser } from "webextension-polyfill-ts";
-import { SerializableResponse } from "@/messaging/protocol";
 import { reportEvent } from "@/telemetry/events";
 import { isChrome } from "@/helpers";
 
-function lift<R extends SerializableResponse = SerializableResponse>(
-  type: string,
-  method: (...args: unknown[]) => Promise<R>
-): (...args: unknown[]) => Promise<R> {
-  const backgroundMethod: (...args: unknown[]) => Promise<R> = liftBackground(
-    type,
-    method
-  );
-  const contentScriptMethod: (...args: unknown[]) => Promise<R> = liftExternal(
-    type,
-    method
-  );
-
-  return async (...args: unknown[]) => {
-    if (isChrome) {
-      return backgroundMethod(...args);
-    }
-
-    return contentScriptMethod(...args);
-  };
-}
+const lift = isChrome ? liftBackground : liftExternal;
 
 export const connectPage = lift("CONNECT_PAGE", async () => {
   return browser.runtime.getManifest();
