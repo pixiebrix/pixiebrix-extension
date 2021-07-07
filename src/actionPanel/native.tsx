@@ -75,14 +75,7 @@ function restoreDocumentStyle(): void {
   html.css("margin-right", _originalMarginRight);
 }
 
-export function showActionPanel(): string {
-  adjustDocumentStyle();
-
-  if ($("#pixiebrix-chrome-extension").length > 0) {
-    console.warn("Action panel already in DOM");
-    return;
-  }
-
+function appendActionPanel(): void {
   const actionURL = browser.runtime.getURL("action.html");
 
   const $panelContainer = $(
@@ -98,6 +91,19 @@ export function showActionPanel(): string {
   $panelContainer.append($frame);
 
   $("body").append($panelContainer);
+}
+
+export function showActionPanel(): string {
+  adjustDocumentStyle();
+
+  if ($("#pixiebrix-chrome-extension").length > 0) {
+    console.debug("Action panel already in DOM");
+    if (!_nonce) {
+      throw new Error("nonce not set for action panel on page");
+    }
+  } else {
+    appendActionPanel();
+  }
 
   // run the extension points available on the page
   for (const callback of _callbacks) {

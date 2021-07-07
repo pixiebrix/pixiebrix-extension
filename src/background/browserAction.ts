@@ -16,17 +16,20 @@
  */
 
 import { isBackgroundPage } from "webext-detect-page";
-import { toggleActionPanel } from "@/contentScript/browserAction";
+import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript } from "@/background/util";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { allowSender } from "@/actionPanel/protocol";
 import { sleep, isPrivatePageError } from "@/utils";
+import { JsonObject, JsonValue } from "type-fest";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
 export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
+export const SHOW_ACTION_FRAME = `${MESSAGE_PREFIX}/SHOW_ACTION_FRAME`;
+export const HIDE_ACTION_FRAME = `${MESSAGE_PREFIX}/HIDE_ACTION_FRAME`;
 
 /**
  * Mapping from tabId to the nonce for the browser action iframe
@@ -50,7 +53,10 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
 
   try {
     await ensureContentScript({ tabId: tab.id, frameId: 0 });
-    const nonce = await toggleActionPanel({ tabId: tab.id, frameId: 0 });
+    const nonce = await contentScript.toggleActionPanel({
+      tabId: tab.id,
+      frameId: 0,
+    });
     tabNonces.set(tab.id, nonce);
   } catch (error: unknown) {
     if (isPrivatePageError(error)) {
@@ -70,6 +76,14 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
   }
 }
 
+type ShowFrameMessage = {
+  type: typeof SHOW_ACTION_FRAME;
+};
+
+type HideFrameMessage = {
+  type: typeof HIDE_ACTION_FRAME;
+};
+
 type RegisterActionFrameMessage = {
   type: typeof REGISTER_ACTION_FRAME;
   payload: { nonce: string };
@@ -79,8 +93,8 @@ type ForwardActionFrameNotification = {
   type: typeof FORWARD_FRAME_NOTIFICATION;
   payload: {
     type: string;
-    meta?: object;
-    payload: unknown;
+    meta?: JsonObject;
+    payload: JsonValue;
   };
 };
 
@@ -115,8 +129,12 @@ async function forwardWhenReady(
   }
 }
 
-function backgroundListener(
-  request: RegisterActionFrameMessage | ForwardActionFrameNotification,
+async function backgroundListener(
+  request:
+    | RegisterActionFrameMessage
+    | ForwardActionFrameNotification
+    | ShowFrameMessage
+    | HideFrameMessage,
   sender: Runtime.MessageSender
 ): Promise<unknown> | undefined {
   if (allowSender(sender)) {
@@ -141,6 +159,22 @@ function backgroundListener(
         return forwardWhenReady(sender.tab.id, forwardAction.payload).catch(
           reportError
         );
+      }
+      case SHOW_ACTION_FRAME: {
+        tabFrames.delete(sender.tab.id);
+        return contentScript
+          .showActionPanel({ tabId: sender.tab.id, frameId: 0 })
+          .then((nonce) => {
+            tabNonces.set(sender.tab.id, nonce);
+          });
+      }
+      case HIDE_ACTION_FRAME: {
+        tabFrames.delete(sender.tab.id);
+        return contentScript
+          .hideActionPanel({ tabId: sender.tab.id, frameId: 0 })
+          .then(() => {
+            tabNonces.delete(sender.tab.id);
+          });
       }
       default: {
         // NOOP
