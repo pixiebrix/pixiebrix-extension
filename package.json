@@ -123,7 +123,7 @@
     "@babel/preset-typescript": "^7.14.5",
     "@types/chrome": "0.0.145",
     "@types/classnames": "^2.2.10",
-    "@types/dompurify": "^2.2.2",
+    "@types/dompurify": "^2.2.3",
     "@types/dragula": "^3.7.0",
     "@types/file-saver": "^2.0.2",
     "@types/gapi": "0.0.39",
