@@ -1,4 +1,4 @@
-import { expectContentScript } from "@/utils/expect-context";
+import { expectContentScript } from "@/utils/expectContext";
 import { evaluableFunction } from "@/utils";
 
 export let selectedElement: HTMLElement; // Live binding

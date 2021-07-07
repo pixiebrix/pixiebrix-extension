@@ -26,7 +26,7 @@ import {
   clearDynamicElements,
 } from "@/background/devtools/index";
 import { reportError } from "@/telemetry/logging";
-import { updateSelectedElement } from "./devTools/get-selected-element";
+import { updateSelectedElement } from "./devTools/getSelectedElement";
 
 window.addEventListener("error", function (e) {
   reportError(e);

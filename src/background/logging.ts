@@ -33,7 +33,7 @@ import {
 } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
 import { errorMessage } from "@/telemetry/logging";
-import { expectBackgroundPage } from "@/utils/expect-context";
+import { expectBackgroundPage } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";

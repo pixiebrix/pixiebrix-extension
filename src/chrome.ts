@@ -24,7 +24,7 @@ import {
   isContentScript,
   isOptionsPage,
 } from "webext-detect-page";
-import { forbidBackgroundPage } from "./utils/expect-context";
+import { forbidBackgroundPage } from "./utils/expectContext";
 
 export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;

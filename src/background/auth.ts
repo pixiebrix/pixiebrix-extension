@@ -25,7 +25,7 @@ import {
   getRandomString,
 } from "vendors/pkce";
 import { BusinessError } from "@/errors";
-import { expectBackgroundPage } from "@/utils/expect-context";
+import { expectBackgroundPage } from "@/utils/expectContext";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 

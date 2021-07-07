@@ -21,7 +21,7 @@ import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
-import { expectBackgroundPage } from "@/utils/expect-context";
+import { expectBackgroundPage } from "@/utils/expectContext";
 import { evaluableFunction } from "@/utils";
 
 export type Target = {

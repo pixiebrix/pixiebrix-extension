@@ -34,7 +34,7 @@ import {
 } from "@/background/auth";
 import { isAbsoluteURL } from "@/hooks/fetch";
 import urljoin from "url-join";
-import { expectBackgroundPage } from "@/utils/expect-context";
+import { expectBackgroundPage } from "@/utils/expectContext";
 
 interface ProxyResponseSuccessData {
   json: unknown;

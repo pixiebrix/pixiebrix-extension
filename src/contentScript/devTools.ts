@@ -29,7 +29,7 @@ import { IReader } from "@/core";
 import {
   addListenerForUpdateSelectedElement,
   selectedElement,
-} from "@/devTools/get-selected-element";
+} from "@/devTools/getSelectedElement";
 
 // install handlers
 import "@/nativeEditor/insertButton";
