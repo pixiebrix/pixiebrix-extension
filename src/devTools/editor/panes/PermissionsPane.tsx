@@ -47,8 +47,8 @@ const PermissionsPane: React.FunctionComponent = () => {
         <Button onClick={requestPermissions}>Grant permanent access</Button>
       </p>
       <p>
-        Or grant temporary access by clicking on the PixieBrix extension in the
-        extensions dropdown and then refreshing the page
+        Or grant temporary access by 1) clicking on the PixieBrix extension in
+        the extensions dropdown and 2) then refreshing the page
       </p>
     </Centered>
   );
