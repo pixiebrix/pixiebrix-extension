@@ -139,7 +139,7 @@ export function isActionPanelVisible(): boolean {
 }
 
 export function getStore(): ActionPanelStore {
-  return { panels: panels };
+  return { panels };
 }
 
 function renderPanels() {
@@ -148,7 +148,7 @@ function renderPanels() {
       type: FORWARD_FRAME_NOTIFICATION,
       payload: {
         type: RENDER_PANELS_MESSAGE,
-        payload: { panels: panels },
+        payload: { panels },
       },
     });
   }
