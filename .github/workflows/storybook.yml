@@ -1,0 +1,22 @@
+name: Storybook
+
+on: [push]
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+          cache: npm
+      - run: npm ci
+      - run: build-storybook
+      - uses: actions/upload-artifact@v2
+        with:
+          name: storybook
+          path: storybook-static
+          retention-days: 3
+          if-no-files-found: error
