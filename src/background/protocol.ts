@@ -53,7 +53,7 @@ const handlers: Map<string, HandlerEntry> = new Map();
 export function allowBackgroundSender(
   sender: ChromeMessageSender | Runtime.MessageSender
 ): boolean {
-  if (!sender) {
+  if (sender == null) {
     return false;
   }
   const { externally_connectable } = chrome.runtime.getManifest();
@@ -64,6 +64,7 @@ export function allowBackgroundSender(
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
 function backgroundListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender

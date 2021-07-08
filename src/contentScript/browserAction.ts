@@ -16,11 +16,21 @@
  */
 
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
-import { toggleActionPanel as toggle } from "@/actionPanel/native";
+import * as native from "@/actionPanel/native";
 
 export const toggleActionPanel = liftContentScript(
   "TOGGLE_ACTION_PANEL",
   async () => {
-    return toggle();
+    return native.toggleActionPanel();
   }
+);
+
+export const showActionPanel = liftContentScript(
+  "SHOW_ACTION_PANEL",
+  async () => native.showActionPanel()
+);
+
+export const hideActionPanel = liftContentScript(
+  "HIDE_ACTION_PANEL",
+  async () => native.hideActionPanel()
 );

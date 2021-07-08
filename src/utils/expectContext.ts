@@ -46,7 +46,7 @@ function createError(
  */
 export function expectBackgroundPage(error?: ErrorBaseType): void {
   if (!isBackgroundPage()) {
-    throw createError(`This code can only run in the background page`, error);
+    throw createError("This code can only run in the background page", error);
   }
 }
 
@@ -58,7 +58,7 @@ export function expectBackgroundPage(error?: ErrorBaseType): void {
  */
 export function expectContentScript(error?: ErrorBaseType): void {
   if (!isContentScript()) {
-    throw createError(`This code can only run in the content script`, error);
+    throw createError("This code can only run in the content script", error);
   }
 }
 
@@ -70,7 +70,7 @@ export function expectContentScript(error?: ErrorBaseType): void {
  */
 export function forbidBackgroundPage(error?: ErrorBaseType): void {
   if (isBackgroundPage()) {
-    throw createError(`This code cannot run in the background page`, error);
+    throw createError("This code cannot run in the background page", error);
   }
 }
 

@@ -29,6 +29,7 @@ import { checkAvailable } from "@/blocks/available";
 import { markReady } from "./context";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { expectContentScript } from "@/utils/expectContext";
+import { ConnectionError } from "@/errors";
 
 export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
@@ -60,9 +61,9 @@ export interface RunBlockAction {
   };
 }
 
-let sender: Runtime.MessageSender = null;
 const childTabs = new Set<number>();
 
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listeners cannot use async keyword
 function runBlockAction(
   request: RunBlockAction | CheckAvailabilityAction,
   sender: Runtime.MessageSender
@@ -71,23 +72,32 @@ function runBlockAction(
 
   if (!allowSender(sender)) {
     return;
-  } else if (type === MESSAGE_RUN_BLOCK) {
-    const { blockId, blockArgs, options } = (request as RunBlockAction).payload;
-    // FIXME: validate sourceTabId here
-    // if (!childTabs.has(sourceTabId)) {
-    //   return Promise.reject("Unknown source tab id");
-    // }
-    return blockRegistry.lookup(blockId).then((block) => {
-      const logger = new BackgroundLogger(options.messageContext);
-      return block.run(blockArgs, {
-        ctxt: options.ctxt,
-        logger,
-        root: document,
+  }
+
+  switch (type) {
+    case MESSAGE_RUN_BLOCK: {
+      const {
+        blockId,
+        blockArgs,
+        options,
+      } = (request as RunBlockAction).payload;
+      // FIXME: validate sourceTabId here
+      // if (!childTabs.has(sourceTabId)) {
+      //   return Promise.reject("Unknown source tab id");
+      // }
+      return blockRegistry.lookup(blockId).then(async (block) => {
+        const logger = new BackgroundLogger(options.messageContext);
+        return block.run(blockArgs, {
+          ctxt: options.ctxt,
+          logger,
+          root: document,
+        });
       });
-    });
-  } else if (type === MESSAGE_CHECK_AVAILABILITY) {
-    const { isAvailable } = (request as CheckAvailabilityAction).payload;
-    return checkAvailable(isAvailable);
+    }
+    case MESSAGE_CHECK_AVAILABILITY: {
+      const { isAvailable } = (request as CheckAvailabilityAction).payload;
+      return checkAvailable(isAvailable);
+    }
   }
 }
 
@@ -100,13 +110,21 @@ export const linkChildTab = liftContentScript(
 );
 
 export async function whoAmI(): Promise<Runtime.MessageSender> {
-  if (sender) {
-    return sender;
-  }
-  sender = await browser.runtime.sendMessage({
+  const sender = await browser.runtime.sendMessage({
     type: MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
     payload: {},
   });
+
+  if (sender == null) {
+    // If you see this error, it means the wrong message handler responded to the message.
+    // The most likely cause of this is that background listener function was accidentally marked
+    // with the "async" keyword as that prevents the method from returning "undefined" to indicate
+    // that it did not handle the message
+    throw new ConnectionError(
+      `Received null response for ${MESSAGE_CONTENT_SCRIPT_ECHO_SENDER}`
+    );
+  }
+
   return sender;
 }
 

@@ -21,8 +21,10 @@ let _hooks: NotificationCallbacks = null;
 
 export function showConnectionLost(): void {
   if (_hooks) {
+    // Don't show connection notification if it's already being displayed
     return null;
   }
+
   const element = $.notify(
     "Connection to PixieBrix lost. Please reload the page",
     {

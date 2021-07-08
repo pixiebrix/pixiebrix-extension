@@ -126,6 +126,7 @@ async function waitReady(
   return true;
 }
 
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
 function backgroundListener(
   request: RunBlockAction | OpenTabAction,
   sender: Runtime.MessageSender
@@ -194,7 +195,7 @@ function backgroundListener(
       console.debug(`Waiting for frame with nonce ${nonce} to be ready`);
       return waitNonceReady(nonce, {
         isAvailable: payload.options.isAvailable,
-      }).then(() => {
+      }).then(async () => {
         const target = nonceToTarget.get(nonce);
         console.debug(
           `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
@@ -221,7 +222,7 @@ function backgroundListener(
 
       console.debug(`Waiting for target tab ${target} to be ready`);
       // for now, only support top-level frame as target
-      return waitReady({ tabId: target, frameId: 0 }).then(() => {
+      return waitReady({ tabId: target, frameId: 0 }).then(async () => {
         console.debug(
           `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
         );
@@ -289,6 +290,9 @@ function backgroundListener(
       return Promise.resolve();
     }
     case MESSAGE_CONTENT_SCRIPT_ECHO_SENDER: {
+      console.debug("Responding %s", MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, {
+        sender,
+      });
       return Promise.resolve(sender);
     }
     default: {
