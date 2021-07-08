@@ -71,13 +71,12 @@ handlers.set(MESSAGE_RUN_BLOCK, async (request) => {
   // if (!childTabs.has(sourceTabId)) {
   //   return Promise.reject("Unknown source tab id");
   // }
-  return blockRegistry.lookup(blockId).then(async (block) => {
-    const logger = new BackgroundLogger(options.messageContext);
-    return block.run(blockArgs, {
-      ctxt: options.ctxt,
-      logger,
-      root: document,
-    });
+  const block = await blockRegistry.lookup(blockId);
+  const logger = new BackgroundLogger(options.messageContext);
+  return block.run(blockArgs, {
+    ctxt: options.ctxt,
+    logger,
+    root: document,
   });
 });
 

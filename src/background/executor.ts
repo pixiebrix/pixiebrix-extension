@@ -132,7 +132,7 @@ handlers.set(MESSAGE_RUN_BLOCK_OPENER, async (request, sender) => {
   const opener = tabToOpener.get(sender.tab.id);
 
   if (!opener) {
-    return Promise.reject(new BusinessError("Sender tab has no opener"));
+    throw new BusinessError("Sender tab has no opener");
   }
 
   return browser.tabs.sendMessage(
@@ -160,7 +160,7 @@ handlers.set(MESSAGE_RUN_BLOCK_BROADCAST, async (request, sender) => {
     known: Object.keys(tabReady),
   });
 
-  return Promise.allSettled(
+  const results = await Promise.allSettled(
     tabTargets.map(async ([tabId]) => {
       return browser.tabs.sendMessage(
         Number.parseInt(tabId, 10),
@@ -175,11 +175,10 @@ handlers.set(MESSAGE_RUN_BLOCK_BROADCAST, async (request, sender) => {
         { frameId: TOP_LEVEL_FRAME }
       );
     })
-  ).then((results) => {
-    return results
-      .filter((x) => x.status === "fulfilled")
-      .map((x) => (x as any).value);
-  });
+  );
+  return results
+    .filter((x) => x.status === "fulfilled")
+    .map((x) => (x as any).value);
 });
 
 handlers.set(MESSAGE_RUN_BLOCK_FRAME_NONCE, async (request, sender) => {
@@ -187,79 +186,70 @@ handlers.set(MESSAGE_RUN_BLOCK_FRAME_NONCE, async (request, sender) => {
   const { nonce, ...payload } = action.payload;
 
   console.debug(`Waiting for frame with nonce ${nonce} to be ready`);
-  return waitNonceReady(nonce, {
+  await waitNonceReady(nonce, {
     isAvailable: payload.options.isAvailable,
-  }).then(async () => {
-    const target = nonceToTarget.get(nonce);
-    console.debug(
-      `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
-    );
-    return browser.tabs.sendMessage(
-      target.tabId,
-      {
-        type: CONTENT_MESSAGE_RUN_BLOCK,
-        payload: {
-          sourceTabId: sender.tab.id,
-          ...payload,
-        },
-      },
-      { frameId: target.frameId }
-    );
   });
+
+  const target = nonceToTarget.get(nonce);
+  console.debug(
+    `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
+  );
+  return browser.tabs.sendMessage(
+    target.tabId,
+    {
+      type: CONTENT_MESSAGE_RUN_BLOCK,
+      payload: {
+        sourceTabId: sender.tab.id,
+        ...payload,
+      },
+    },
+    { frameId: target.frameId }
+  );
 });
 
 handlers.set(MESSAGE_RUN_BLOCK_TARGET, async (request, sender) => {
   const target = tabToTarget.get(sender.tab.id);
 
   if (!target) {
-    return Promise.reject(new BusinessError("Sender tab has no target"));
+    throw new BusinessError("Sender tab has no target");
   }
 
   console.debug(`Waiting for target tab ${target} to be ready`);
   // for now, only support top-level frame as target
-  return waitReady({ tabId: target, frameId: 0 }).then(async () => {
-    console.debug(
-      `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
-    );
-    return browser.tabs.sendMessage(
-      target,
-      {
-        type: CONTENT_MESSAGE_RUN_BLOCK,
-        payload: {
-          sourceTabId: sender.tab.id,
-          ...request.payload,
-        },
+  await waitReady({ tabId: target, frameId: 0 });
+  console.debug(
+    `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
+  );
+  return browser.tabs.sendMessage(
+    target,
+    {
+      type: CONTENT_MESSAGE_RUN_BLOCK,
+      payload: {
+        sourceTabId: sender.tab.id,
+        ...request.payload,
       },
-      { frameId: 0 }
-    );
-  });
-});
-
-handlers.set(MESSAGE_ACTIVATE_TAB, async (request, sender) => {
-  return (
-    browser.tabs
-      .update(sender.tab.id, {
-        active: true,
-      })
-      // ignore the returned tab
-      .then(() => {})
+    },
+    { frameId: 0 }
   );
 });
 
-handlers.set(MESSAGE_CLOSE_TAB, async (request, sender) => {
-  return new Promise<unknown>((resolve) => {
-    browser.tabs.remove(sender.tab.id).then(resolve);
+handlers.set(MESSAGE_ACTIVATE_TAB, async (request, sender) => {
+  await browser.tabs.update(sender.tab.id, {
+    active: true,
   });
 });
 
+handlers.set(MESSAGE_CLOSE_TAB, async (request, sender) => {
+  return browser.tabs.remove(sender.tab.id);
+});
+
 handlers.set(MESSAGE_OPEN_TAB, async (request, sender) => {
-  return browser.tabs
-    .create(request.payload as Tabs.CreateCreatePropertiesType)
-    .then((tab) => {
-      // FIXME: include frame information here
-      tabToTarget.set(sender.tab.id, tab.id);
-      tabToOpener.set(tab.id, sender.tab.id);
-    });
+  const tab = await browser.tabs.create(
+    request.payload as Tabs.CreateCreatePropertiesType
+  );
+  // FIXME: include frame information here
+  tabToTarget.set(sender.tab.id, tab.id);
+  tabToOpener.set(tab.id, sender.tab.id);
 });
 
 handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (request, sender) => {
@@ -286,14 +276,13 @@ handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (request, sender) => {
   }
   tabReady[tabId][frameId] = true;
   emitDevtools("ContentScriptReady", { tabId, frameId });
-  return Promise.resolve();
 });
 
 handlers.set(MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, async (request, sender) => {
   console.debug("Responding %s", MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, {
     sender,
   });
-  return Promise.resolve(sender);
+  return sender;
 });
 
 function backgroundListener(

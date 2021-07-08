@@ -154,23 +154,20 @@ handlers.set(FORWARD_FRAME_NOTIFICATION, async (request, sender) => {
 handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
   const tabId = sender.tab.id;
   tabFrames.delete(tabId);
-  return contentScript
-    .showActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
-    .then((nonce) => {
-      console.debug("Setting action frame nonce", { sender, nonce });
-      tabNonces.set(tabId, nonce);
-    });
+  const nonce = await contentScript.showActionPanel({
+    tabId,
+    frameId: TOP_LEVEL_FRAME_ID,
+  });
+  console.debug("Setting action frame nonce", { sender, nonce });
+  tabNonces.set(tabId, nonce);
 });
 
 handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
   const tabId = sender.tab.id;
   tabFrames.delete(tabId);
-  return contentScript
-    .hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
-    .then(() => {
-      console.debug("Clearing action frame nonce", { sender, nonce });
-      tabNonces.delete(tabId);
-    });
+  await contentScript.hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
+  console.debug("Clearing action frame nonce", { sender, nonce });
+  tabNonces.delete(tabId);
 });
 
 function backgroundMessageListener(
