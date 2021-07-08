@@ -126,7 +126,7 @@ async function waitReady(
   return true;
 }
 
-const handlers = new Map<string, typeof backgroundListener>([]);
+const handlers = new Map<string, typeof backgroundListener>();
 
 handlers.set(MESSAGE_RUN_BLOCK_OPENER, async (request, sender) => {
   const opener = tabToOpener.get(sender.tab.id);

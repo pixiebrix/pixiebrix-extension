@@ -63,7 +63,7 @@ export interface RunBlockAction {
 
 const childTabs = new Set<number>();
 
-const handlers = new Map<string, typeof runBlockAction>([]);
+const handlers = new Map<string, typeof runBlockAction>();
 
 handlers.set(MESSAGE_RUN_BLOCK, async (request) => {
   const { blockId, blockArgs, options } = (request as RunBlockAction).payload;

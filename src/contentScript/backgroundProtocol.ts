@@ -64,7 +64,7 @@ async function handleRequest(
   }
 
   try {
-    await handler(...payload);
+    return await handler(...payload);
   } catch (error) {
     console.debug(`Handler returning error response for ${type}`, {
       error,

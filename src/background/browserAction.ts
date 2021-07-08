@@ -126,7 +126,7 @@ async function forwardWhenReady(
   }
 }
 
-const handlers = new Map<string, typeof backgroundMessageListener>([]);
+const handlers = new Map<string, typeof backgroundMessageListener>();
 
 handlers.set(REGISTER_ACTION_FRAME, async (request, sender) => {
   const tabId = sender.tab.id;

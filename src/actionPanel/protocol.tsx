@@ -69,7 +69,7 @@ export function removeListener(fn: StoreListener): void {
   _listeners = _listeners.filter((x) => x !== fn);
 }
 
-const handlers = new Map<string, typeof actionPanelListener>([]);
+const handlers = new Map<string, typeof actionPanelListener>();
 
 handlers.set(RENDER_PANELS_MESSAGE, async (request) => {
   const renderRequest = request as RenderPanelsMessage;
