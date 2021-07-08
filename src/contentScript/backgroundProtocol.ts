@@ -50,33 +50,40 @@ export function allowSender(sender: Runtime.MessageSender): boolean {
   return sender.id === browser.runtime.id;
 }
 
+async function handleRequest(
+  request: RemoteProcedureCallRequest
+): Promise<unknown> {
+  const { type, payload } = request;
+  const { handler, options } = handlers.get(type) ?? {};
+
+  console.debug(`Handling contentScript action ${type}`);
+
+  const handlerPromise = new Promise((resolve) => resolve(handler(...payload)));
+
+  if (isNotification(options)) {
+    return;
+  } else {
+    return handlerPromise.catch((error) => {
+      console.debug(`Handler returning error response for ${type}`, {
+        error,
+      });
+      return toErrorResponse(
+        type,
+        error ?? new Error("Unknown error in content script handler")
+      );
+    });
+  }
+}
 function contentScriptListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
 ): Promise<unknown> | void {
-  const { type, payload } = request;
-  const { handler, options } = handlers.get(type) ?? {};
+  if (!allowSender(sender)) {
+    return;
+  }
 
-  if (allowSender(sender) && handler) {
-    console.debug(`Handling contentScript action ${type}`);
-
-    const handlerPromise = new Promise((resolve) =>
-      resolve(handler(...payload))
-    );
-
-    if (isNotification(options)) {
-      return;
-    } else {
-      return handlerPromise.catch((error) => {
-        console.debug(`Handler returning error response for ${type}`, {
-          error,
-        });
-        return toErrorResponse(
-          type,
-          error ?? new Error("Unknown error in content script handler")
-        );
-      });
-    }
+  if (handlers.has(request.type)) {
+    return handleRequest(request);
   }
 }
 

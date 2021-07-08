@@ -64,6 +64,42 @@ export function allowBackgroundSender(
   );
 }
 
+async function handleRequest(
+  request: RemoteProcedureCallRequest,
+  sender: Runtime.MessageSender
+): Promise<unknown> {
+  const { type, payload, meta } = request;
+  const { handler, options } = handlers.get(type) ?? {};
+
+  const notification = isNotification(options);
+
+  const handlerPromise = new Promise((resolve) => resolve(handler(...payload)));
+
+  if (notification) {
+    handlerPromise.catch((error) => {
+      console.warn(
+        `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
+        error
+      );
+    });
+    return;
+  }
+
+  return handlerPromise
+    .then((value) => {
+      console.debug(
+        `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
+      );
+      return value;
+    })
+    .catch((error) => {
+      console.debug(
+        `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
+      );
+      return toErrorResponse(type, error);
+    });
+}
+
 function backgroundListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
@@ -79,39 +115,8 @@ function backgroundListener(
     return;
   }
 
-  const { type, payload, meta } = request;
-  const { handler, options } = handlers.get(type) ?? {};
-
-  if (handler) {
-    const notification = isNotification(options);
-
-    const handlerPromise = new Promise((resolve) =>
-      resolve(handler(...payload))
-    );
-
-    if (notification) {
-      handlerPromise.catch((error) => {
-        console.warn(
-          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
-          error
-        );
-      });
-      return;
-    }
-
-    return handlerPromise
-      .then((value) => {
-        console.debug(
-          `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
-        );
-        return value;
-      })
-      .catch((error) => {
-        console.debug(
-          `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
-        );
-        return toErrorResponse(type, error);
-      });
+  if (handlers.has(request.type)) {
+    return handleRequest(request, sender);
   }
 }
 
