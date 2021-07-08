@@ -28,7 +28,17 @@ export class ValidationError extends Error {
 }
 
 /**
- * Based class for "Error" of cancelling out of a flow that's in progress
+ * Base class for connection errors between browser extension components
+ */
+export class ConnectionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConnectionError";
+  }
+}
+
+/**
+ * Base class for "Error" of cancelling out of a flow that's in progress
  */
 export class CancelError extends Error {
   constructor(message: string) {
@@ -78,7 +88,7 @@ export class ContextError extends Error {
 
 /**
  * Returns true iff the root cause of the error was a CancelError.
- * @param err the error object
+ * @param error the error object
  */
 export function hasCancelRootCause(error: Error | SerializedError): boolean {
   if (typeof error !== "object") {
@@ -93,7 +103,7 @@ export function hasCancelRootCause(error: Error | SerializedError): boolean {
 
 /**
  * Returns true iff the root cause of the error was a BusinessError.
- * @param err the error object
+ * @param error the error object
  */
 export function hasBusinessRootCause(error: Error | SerializedError): boolean {
   if (typeof error !== "object") {
@@ -123,18 +133,36 @@ function testConnectionErrorPatterns(message: string): boolean {
   return false;
 }
 
+function isPromiseRejectionEvent(
+  event: unknown
+): event is PromiseRejectionEvent {
+  return typeof event === "object" && "reason" in event;
+}
+
+function isErrorEvent(event: unknown): event is ErrorEvent {
+  return typeof event === "object" && "message" in event;
+}
+
+/**
+ * Return true if the proximate of event is an messaging or port error.
+ *
+ * NOTE: does not recursively identify the root cause of the error.
+ */
 export function isConnectionError(
   event: ErrorEvent | PromiseRejectionEvent | unknown
 ): boolean {
   if (typeof event === "string") {
     return testConnectionErrorPatterns(event);
+  } else if (event instanceof ConnectionError) {
+    return true;
   } else if (event != null && typeof event === "object") {
-    if ("reason" in event) {
-      return testConnectionErrorPatterns((event as { reason: string }).reason);
-    } else if ("message" in event) {
-      return testConnectionErrorPatterns(
-        (event as { message: string }).message
+    if (isPromiseRejectionEvent(event)) {
+      return (
+        event.reason instanceof ConnectionError ||
+        testConnectionErrorPatterns(event.reason)
       );
+    } else if (isErrorEvent(event)) {
+      return testConnectionErrorPatterns(event.message);
     }
   }
   return false;

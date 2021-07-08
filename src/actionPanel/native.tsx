@@ -26,8 +26,10 @@ import {
   RendererPayload,
 } from "@/actionPanel/protocol";
 import { FORWARD_FRAME_NOTIFICATION } from "@/background/browserAction";
+import { isBrowser } from "@/helpers";
 
 const SIDEBAR_WIDTH_PX = 400;
+const PANEL_CONTAINER_ID = "pixiebrix-chrome-extension";
 
 type ExtensionRef = {
   extensionId: string;
@@ -38,14 +40,13 @@ type ShowCallback = () => void;
 
 let _showPanel = false;
 const _panels: PanelEntry[] = [];
-const _callbacks: ShowCallback[] = [];
-let _nonce: string = null;
+const _extensionCallbacks: ShowCallback[] = [];
+let _sidebarNonce: string = null;
+let _originalMarginRight: number;
 
 export function registerShowCallback(onShow: ShowCallback): void {
-  _callbacks.push(onShow);
+  _extensionCallbacks.push(onShow);
 }
-
-let _originalMarginRight: number;
 
 function getHTMLElement(): JQuery<HTMLElement> {
   // resolve html tag, which is more dominant than <body>
@@ -75,17 +76,17 @@ function restoreDocumentStyle(): void {
   html.css("margin-right", _originalMarginRight);
 }
 
-function appendActionPanel(): void {
+function insertActionPanel(): void {
   const actionURL = browser.runtime.getURL("action.html");
 
   const $panelContainer = $(
-    `<div id="pixiebrix-chrome-extension" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
+    `<div id="${PANEL_CONTAINER_ID}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
   );
 
-  _nonce = uuidv4();
+  _sidebarNonce = uuidv4();
 
   const $frame = $(
-    `<iframe src="${actionURL}?nonce=${_nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" id="pixiebrix-frame"></iframe>`
+    `<iframe src="${actionURL}?nonce=${_sidebarNonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" id="pixiebrix-frame"></iframe>`
   );
 
   $panelContainer.append($frame);
@@ -94,37 +95,42 @@ function appendActionPanel(): void {
 }
 
 export function showActionPanel(): string {
+  console.debug("Show action panel");
   adjustDocumentStyle();
 
-  if ($("#pixiebrix-chrome-extension").length > 0) {
+  if ($(`#${PANEL_CONTAINER_ID}`).length > 0) {
     console.debug("Action panel already in DOM");
-    if (!_nonce) {
+    if (!_sidebarNonce) {
       throw new Error("nonce not set for action panel on page");
     }
   } else {
-    appendActionPanel();
+    insertActionPanel();
   }
 
-  // run the extension points available on the page
-  for (const callback of _callbacks) {
+  // Run the extension points available on the page. If the action panel is already in the page, running
+  // all the callbacks ensures the content is up to date
+  for (const callback of _extensionCallbacks) {
     try {
-      callback();
+      void callback();
     } catch (error) {
+      // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
+      // the callbacks does not interfere prevent showing the sidebar
       reportError(error);
     }
   }
 
-  return _nonce;
+  return _sidebarNonce;
 }
 
 export function hideActionPanel(): void {
+  console.debug("Hide action panel");
   restoreDocumentStyle();
-  _nonce = null;
+  _sidebarNonce = null;
   $("#pixiebrix-chrome-extension").remove();
   _showPanel = false;
 }
 
-export function toggleActionPanel(): string {
+export function toggleActionPanel(): string | null {
   _showPanel = !_showPanel;
   if (_showPanel) {
     return showActionPanel();
@@ -200,9 +206,6 @@ export function upsertPanel(
   }
   renderPanels();
 }
-
-const isBrowser =
-  typeof window !== "undefined" && typeof window.document !== "undefined";
 
 if (isBrowser) {
   storeOriginalCSS();

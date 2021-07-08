@@ -18,18 +18,20 @@
 import { isBackgroundPage } from "webext-detect-page";
 import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
-import { ensureContentScript } from "@/background/util";
+import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { allowSender } from "@/actionPanel/protocol";
-import { sleep, isPrivatePageError } from "@/utils";
+import { isPrivatePageError, sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
 
-export const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
-
+const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
 export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
 export const SHOW_ACTION_FRAME = `${MESSAGE_PREFIX}/SHOW_ACTION_FRAME`;
 export const HIDE_ACTION_FRAME = `${MESSAGE_PREFIX}/HIDE_ACTION_FRAME`;
+
+// The sidebar is always injected to into the top level frame
+const TOP_LEVEL_FRAME_ID = 0;
 
 /**
  * Mapping from tabId to the nonce for the browser action iframe
@@ -37,25 +39,16 @@ export const HIDE_ACTION_FRAME = `${MESSAGE_PREFIX}/HIDE_ACTION_FRAME`;
 const tabNonces = new Map<number, string>();
 const tabFrames = new Map<number, number>();
 
-async function showErrorInOptions(id: string, tabIndex: number): Promise<void> {
-  const url = new URL(browser.runtime.getURL("options.html"));
-  url.searchParams.set("error", id);
-  await browser.tabs.create({
-    url: url.toString(),
-    index: tabIndex + 1,
-  });
-}
-
 async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
-  // We're either getting a new frame, or getting rid of the existing one. Therefore, forget the old frame
+  // We're either getting a new frame, or getting rid of the existing one. Forget the old frame
   // id so we're not sending messages to a dead frame
   tabFrames.delete(tab.id);
 
   try {
-    await ensureContentScript({ tabId: tab.id, frameId: 0 });
+    await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
     const nonce = await contentScript.toggleActionPanel({
       tabId: tab.id,
-      frameId: 0,
+      frameId: TOP_LEVEL_FRAME_ID,
     });
     tabNonces.set(tab.id, nonce);
   } catch (error: unknown) {
@@ -98,7 +91,7 @@ type ForwardActionFrameNotification = {
   };
 };
 
-const RETRY_INTERVAL_MILLIS = 50;
+const FORWARD_RETRY_INTERVAL_MILLIS = 50;
 
 async function forwardWhenReady(
   tabId: number,
@@ -109,7 +102,7 @@ async function forwardWhenReady(
     frameId = tabFrames.get(tabId);
     if (frameId == null) {
       console.debug(`Action frame not ready for tab ${tabId}, waiting...`);
-      await sleep(RETRY_INTERVAL_MILLIS);
+      await sleep(FORWARD_RETRY_INTERVAL_MILLIS);
     }
   } while (frameId == null);
 
@@ -121,7 +114,7 @@ async function forwardWhenReady(
       return await browser.tabs.sendMessage(tabId, message, { frameId });
     } catch (error) {
       if (error?.message?.includes("Could not establish connection")) {
-        await sleep(RETRY_INTERVAL_MILLIS);
+        await sleep(FORWARD_RETRY_INTERVAL_MILLIS);
       } else {
         throw error;
       }
@@ -129,7 +122,8 @@ async function forwardWhenReady(
   }
 }
 
-async function backgroundListener(
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
+function backgroundMessageListener(
   request:
     | RegisterActionFrameMessage
     | ForwardActionFrameNotification
@@ -137,48 +131,52 @@ async function backgroundListener(
     | HideFrameMessage,
   sender: Runtime.MessageSender
 ): Promise<unknown> | undefined {
-  if (allowSender(sender)) {
-    switch (request.type) {
-      case REGISTER_ACTION_FRAME: {
-        const registerAction = request as RegisterActionFrameMessage;
-        if (tabNonces.get(sender.tab.id) !== registerAction.payload.nonce) {
-          console.warn("Action frame nonce mismatch", {
-            expected: tabNonces.get(sender.tab.id),
-            actual: registerAction.payload.nonce,
-          });
-        }
-        console.debug("Setting action frame metadata", {
-          tabId: sender.tab.id,
-          frameId: sender.frameId,
+  if (!allowSender(sender)) {
+    return;
+  }
+
+  switch (request.type) {
+    case REGISTER_ACTION_FRAME: {
+      const registerAction = request as RegisterActionFrameMessage;
+      if (tabNonces.get(sender.tab.id) !== registerAction.payload.nonce) {
+        console.warn("Action frame nonce mismatch", {
+          expected: tabNonces.get(sender.tab.id),
+          actual: registerAction.payload.nonce,
         });
-        tabFrames.set(sender.tab.id, sender.frameId);
-        return;
       }
-      case FORWARD_FRAME_NOTIFICATION: {
-        const forwardAction = request as ForwardActionFrameNotification;
-        return forwardWhenReady(sender.tab.id, forwardAction.payload).catch(
-          reportError
-        );
-      }
-      case SHOW_ACTION_FRAME: {
-        tabFrames.delete(sender.tab.id);
-        return contentScript
-          .showActionPanel({ tabId: sender.tab.id, frameId: 0 })
-          .then((nonce) => {
-            tabNonces.set(sender.tab.id, nonce);
-          });
-      }
-      case HIDE_ACTION_FRAME: {
-        tabFrames.delete(sender.tab.id);
-        return contentScript
-          .hideActionPanel({ tabId: sender.tab.id, frameId: 0 })
-          .then(() => {
-            tabNonces.delete(sender.tab.id);
-          });
-      }
-      default: {
-        // NOOP
-      }
+      console.debug("Setting action frame metadata", {
+        tabId: sender.tab.id,
+        frameId: sender.frameId,
+      });
+      tabFrames.set(sender.tab.id, sender.frameId);
+      return;
+    }
+    case FORWARD_FRAME_NOTIFICATION: {
+      const forwardAction = request as ForwardActionFrameNotification;
+      return forwardWhenReady(sender.tab.id, forwardAction.payload).catch(
+        reportError
+      );
+    }
+    case SHOW_ACTION_FRAME: {
+      console.debug("Handle %s", SHOW_ACTION_FRAME, { sender });
+      tabFrames.delete(sender.tab.id);
+      return contentScript
+        .showActionPanel({ tabId: sender.tab.id, frameId: TOP_LEVEL_FRAME_ID })
+        .then((nonce) => {
+          tabNonces.set(sender.tab.id, nonce);
+        });
+    }
+    case HIDE_ACTION_FRAME: {
+      console.debug("Handle %s", HIDE_ACTION_FRAME, { sender });
+      tabFrames.delete(sender.tab.id);
+      return contentScript
+        .hideActionPanel({ tabId: sender.tab.id, frameId: TOP_LEVEL_FRAME_ID })
+        .then(() => {
+          tabNonces.delete(sender.tab.id);
+        });
+    }
+    default: {
+      // NOOP
     }
   }
 }
@@ -186,5 +184,5 @@ async function backgroundListener(
 if (isBackgroundPage()) {
   chrome.browserAction.onClicked.addListener(handleBrowserAction);
   console.debug("Installed browserAction click listener");
-  browser.runtime.onMessage.addListener(backgroundListener);
+  browser.runtime.onMessage.addListener(backgroundMessageListener);
 }

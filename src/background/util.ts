@@ -139,3 +139,20 @@ export async function ensureContentScript(target: Target): Promise<void> {
     controller.abort();
   }
 }
+
+/**
+ * Open a new tab for the options page, showing an error message with the given errorId
+ * @param errorId unique identifier for the error message
+ * @param tabIndex index of the source tab, to determine location of new tab
+ */
+export async function showErrorInOptions(
+  errorId: string,
+  tabIndex?: number
+): Promise<void> {
+  const url = new URL(browser.runtime.getURL("options.html"));
+  url.searchParams.set("error", errorId);
+  await browser.tabs.create({
+    url: url.toString(),
+    index: tabIndex == null ? undefined : tabIndex + 1,
+  });
+}

@@ -50,6 +50,7 @@ export function allowSender(sender: Runtime.MessageSender): boolean {
   return sender.id === browser.runtime.id;
 }
 
+// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
 function contentScriptListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
@@ -121,19 +122,22 @@ export function notifyContentScripts(
         tabId ?? "<all>"
       }`
     );
-    const messageOne = (tabId: number) =>
+    const messageOne = async (tabId: number) =>
       browser.tabs.sendMessage(
         tabId,
         { type: fullType, payload: args },
         { frameId: ROOT_FRAME_ID }
       );
     const tabIds = tabId ? [tabId] : await getTabIds();
-    Promise.all(tabIds.map(messageOne)).catch((error) => {
-      console.warn(
-        `An error occurred when broadcasting content script notification ${fullType}`,
-        error
-      );
-    });
+    Promise.all(tabIds.map(async (tabId) => messageOne(tabId))).catch(
+      (error) => {
+        console.warn(
+          `An error occurred when broadcasting content script notification: %s`,
+          fullType,
+          error
+        );
+      }
+    );
     return;
   };
 }

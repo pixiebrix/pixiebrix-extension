@@ -24,7 +24,7 @@ import {
   SHOW_ACTION_FRAME,
 } from "@/background/browserAction";
 
-const noParams: Schema = {
+const NO_PARAMS: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
   type: "object",
   properties: {},
@@ -39,11 +39,13 @@ export class ShowSidebar extends Effect {
     );
   }
 
-  inputSchema: Schema = noParams;
+  inputSchema: Schema = NO_PARAMS;
 
   async effect(): Promise<void> {
+    console.debug("show sidebar");
     await browser.runtime.sendMessage({
       type: SHOW_ACTION_FRAME,
+      payload: {},
     });
   }
 }
@@ -57,11 +59,12 @@ export class HideSidebar extends Effect {
     );
   }
 
-  inputSchema: Schema = noParams;
+  inputSchema: Schema = NO_PARAMS;
 
   async effect(): Promise<void> {
     await browser.runtime.sendMessage({
       type: HIDE_ACTION_FRAME,
+      payload: {},
     });
   }
 }
