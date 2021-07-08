@@ -126,7 +126,6 @@ async function forwardWhenReady(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
 function backgroundMessageListener(
   request:
     | RegisterActionFrameMessage
@@ -134,7 +133,7 @@ function backgroundMessageListener(
     | ShowFrameMessage
     | HideFrameMessage,
   sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
+): Promise<unknown> | void {
   if (!allowSender(sender)) {
     return;
   }

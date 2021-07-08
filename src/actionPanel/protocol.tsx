@@ -69,11 +69,10 @@ export function removeListener(fn: StoreListener): void {
   _listeners = _listeners.filter((x) => x !== fn);
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listeners cannot be use async keyword
 function actionPanelListener(
   request: RenderPanelsMessage,
   sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
+): Promise<unknown> | void {
   if (!allowSender(sender)) {
     return;
   }

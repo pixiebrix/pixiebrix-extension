@@ -50,11 +50,10 @@ export function allowSender(sender: Runtime.MessageSender): boolean {
   return sender.id === browser.runtime.id;
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
 function contentScriptListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
+): Promise<unknown> | void {
   const { type, payload } = request;
   const { handler, options } = handlers.get(type) ?? {};
 

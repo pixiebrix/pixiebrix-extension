@@ -126,11 +126,10 @@ async function waitReady(
   return true;
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
 function backgroundListener(
   request: RunBlockAction | OpenTabAction,
   sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
+): Promise<unknown> | void {
   if (sender.id !== browser.runtime.id) {
     return;
   }

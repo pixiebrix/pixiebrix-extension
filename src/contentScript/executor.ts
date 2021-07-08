@@ -63,11 +63,10 @@ export interface RunBlockAction {
 
 const childTabs = new Set<number>();
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listeners cannot use async keyword
 function runBlockAction(
   request: RunBlockAction | CheckAvailabilityAction,
   sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
+): Promise<unknown> | void {
   const { type } = request;
 
   if (!allowSender(sender)) {
