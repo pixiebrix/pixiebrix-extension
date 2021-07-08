@@ -58,20 +58,21 @@ async function handleRequest(
 
   console.debug(`Handling contentScript action ${type}`);
 
-  const handlerPromise = new Promise((resolve) => resolve(handler(...payload)));
-
   if (isNotification(options)) {
+    handler(...payload);
     return;
-  } else {
-    return handlerPromise.catch((error) => {
-      console.debug(`Handler returning error response for ${type}`, {
-        error,
-      });
-      return toErrorResponse(
-        type,
-        error ?? new Error("Unknown error in content script handler")
-      );
+  }
+
+  try {
+    await handler(...payload);
+  } catch (error) {
+    console.debug(`Handler returning error response for ${type}`, {
+      error,
     });
+    return toErrorResponse(
+      type,
+      error ?? new Error("Unknown error in content script handler")
+    );
   }
 }
 function contentScriptListener(

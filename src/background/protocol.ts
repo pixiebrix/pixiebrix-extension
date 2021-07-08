@@ -71,33 +71,27 @@ async function handleRequest(
   const { type, payload, meta } = request;
   const { handler, options } = handlers.get(type) ?? {};
 
-  const notification = isNotification(options);
+  try {
+    const value = await handler(...payload);
 
-  const handlerPromise = new Promise((resolve) => resolve(handler(...payload)));
-
-  if (notification) {
-    handlerPromise.catch((error) => {
+    console.debug(
+      `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
+    );
+    return value;
+  } catch (error) {
+    if (isNotification(options)) {
       console.warn(
         `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
         error
       );
-    });
-    return;
-  }
+      return;
+    }
 
-  return handlerPromise
-    .then((value) => {
-      console.debug(
-        `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
-      );
-      return value;
-    })
-    .catch((error) => {
-      console.debug(
-        `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
-      );
-      return toErrorResponse(type, error);
-    });
+    console.debug(
+      `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
+    );
+    return toErrorResponse(type, error);
+  }
 }
 
 function backgroundListener(
