@@ -63,40 +63,40 @@ export interface RunBlockAction {
 
 const childTabs = new Set<number>();
 
+const handlers = new Map<string, typeof runBlockAction>([]);
+
+handlers.set(MESSAGE_RUN_BLOCK, async (request) => {
+  const { blockId, blockArgs, options } = (request as RunBlockAction).payload;
+  // FIXME: validate sourceTabId here
+  // if (!childTabs.has(sourceTabId)) {
+  //   return Promise.reject("Unknown source tab id");
+  // }
+  return blockRegistry.lookup(blockId).then(async (block) => {
+    const logger = new BackgroundLogger(options.messageContext);
+    return block.run(blockArgs, {
+      ctxt: options.ctxt,
+      logger,
+      root: document,
+    });
+  });
+});
+
+handlers.set(MESSAGE_CHECK_AVAILABILITY, async (request) => {
+  const { isAvailable } = (request as CheckAvailabilityAction).payload;
+  return checkAvailable(isAvailable);
+});
+
 function runBlockAction(
   request: RunBlockAction | CheckAvailabilityAction,
   sender: Runtime.MessageSender
 ): Promise<unknown> | void {
-  const { type } = request;
-
   if (!allowSender(sender)) {
     return;
   }
 
-  switch (type) {
-    case MESSAGE_RUN_BLOCK: {
-      const {
-        blockId,
-        blockArgs,
-        options,
-      } = (request as RunBlockAction).payload;
-      // FIXME: validate sourceTabId here
-      // if (!childTabs.has(sourceTabId)) {
-      //   return Promise.reject("Unknown source tab id");
-      // }
-      return blockRegistry.lookup(blockId).then(async (block) => {
-        const logger = new BackgroundLogger(options.messageContext);
-        return block.run(blockArgs, {
-          ctxt: options.ctxt,
-          logger,
-          root: document,
-        });
-      });
-    }
-    case MESSAGE_CHECK_AVAILABILITY: {
-      const { isAvailable } = (request as CheckAvailabilityAction).payload;
-      return checkAvailable(isAvailable);
-    }
+  const handler = handlers.get(request.type);
+  if (handler) {
+    return handler(request, sender);
   }
 }
 

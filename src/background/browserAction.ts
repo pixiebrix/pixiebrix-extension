@@ -126,6 +126,53 @@ async function forwardWhenReady(
   }
 }
 
+const handlers = new Map<string, typeof backgroundMessageListener>([]);
+
+handlers.set(REGISTER_ACTION_FRAME, async (request, sender) => {
+  const tabId = sender.tab.id;
+  const action = request as RegisterActionFrameMessage;
+  if (tabNonces.get(tabId) !== action.payload.nonce) {
+    console.warn("Action frame nonce mismatch", {
+      expected: tabNonces.get(tabId),
+      actual: action.payload.nonce,
+    });
+  }
+  console.debug("Setting action frame metadata", {
+    tabId,
+    frameId: sender.frameId,
+  });
+  tabFrames.set(tabId, sender.frameId);
+  return;
+});
+
+handlers.set(FORWARD_FRAME_NOTIFICATION, async (request, sender) => {
+  const tabId = sender.tab.id;
+  const action = request as ForwardActionFrameNotification;
+  return forwardWhenReady(tabId, action.payload).catch(reportError);
+});
+
+handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
+  const tabId = sender.tab.id;
+  tabFrames.delete(tabId);
+  return contentScript
+    .showActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
+    .then((nonce) => {
+      console.debug("Setting action frame nonce", { sender, nonce });
+      tabNonces.set(tabId, nonce);
+    });
+});
+
+handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
+  const tabId = sender.tab.id;
+  tabFrames.delete(tabId);
+  return contentScript
+    .hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
+    .then(() => {
+      console.debug("Clearing action frame nonce", { sender, nonce });
+      tabNonces.delete(tabId);
+    });
+});
+
 function backgroundMessageListener(
   request:
     | RegisterActionFrameMessage
@@ -138,49 +185,9 @@ function backgroundMessageListener(
     return;
   }
 
-  const tabId = sender.tab.id;
-
-  switch (request.type) {
-    case REGISTER_ACTION_FRAME: {
-      const action = request as RegisterActionFrameMessage;
-      if (tabNonces.get(tabId) !== action.payload.nonce) {
-        console.warn("Action frame nonce mismatch", {
-          expected: tabNonces.get(tabId),
-          actual: action.payload.nonce,
-        });
-      }
-      console.debug("Setting action frame metadata", {
-        tabId,
-        frameId: sender.frameId,
-      });
-      tabFrames.set(tabId, sender.frameId);
-      return;
-    }
-    case FORWARD_FRAME_NOTIFICATION: {
-      const action = request as ForwardActionFrameNotification;
-      return forwardWhenReady(tabId, action.payload).catch(reportError);
-    }
-    case SHOW_ACTION_FRAME: {
-      tabFrames.delete(tabId);
-      return contentScript
-        .showActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
-        .then((nonce) => {
-          console.debug("Setting action frame nonce", { sender, nonce });
-          tabNonces.set(tabId, nonce);
-        });
-    }
-    case HIDE_ACTION_FRAME: {
-      tabFrames.delete(tabId);
-      return contentScript
-        .hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
-        .then(() => {
-          console.debug("Clearing action frame nonce", { sender, nonce });
-          tabNonces.delete(tabId);
-        });
-    }
-    default: {
-      // NOOP
-    }
+  const handler = handlers.get(request.type);
+  if (handler) {
+    return handler(request, sender);
   }
 }
 

@@ -69,6 +69,18 @@ export function removeListener(fn: StoreListener): void {
   _listeners = _listeners.filter((x) => x !== fn);
 }
 
+const handlers = new Map<string, typeof actionPanelListener>([]);
+
+handlers.set(RENDER_PANELS_MESSAGE, async (request) => {
+  const renderRequest = request as RenderPanelsMessage;
+  console.debug(
+    `Running render panels listeners for ${_listeners.length} listeners`
+  );
+  for (const listener of _listeners) {
+    listener(renderRequest.payload);
+  }
+});
+
 function actionPanelListener(
   request: RenderPanelsMessage,
   sender: Runtime.MessageSender
@@ -77,20 +89,9 @@ function actionPanelListener(
     return;
   }
 
-  switch (request.type) {
-    case RENDER_PANELS_MESSAGE: {
-      const renderRequest = request as RenderPanelsMessage;
-      console.debug(
-        `Running render panels listeners for ${_listeners.length} listeners`
-      );
-      for (const listener of _listeners) {
-        listener(renderRequest.payload);
-      }
-      return undefined;
-    }
-    default: {
-      // NOP
-    }
+  const handler = handlers.get(request.type);
+  if (handler) {
+    return handler(request, sender);
   }
 }
 
