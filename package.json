@@ -140,7 +140,7 @@
     "@types/json-schema": "^7.0.5",
     "@types/lodash": "^4.14.170",
     "@types/marked": "^2.0.3",
-    "@types/mustache": "^4.1.1",
+    "@types/mustache": "^4.1.2",
     "@types/notifyjs-browser": "0.0.0",
     "@types/nunjucks": "^3.1.4",
     "@types/object-hash": "^2.1.1",
