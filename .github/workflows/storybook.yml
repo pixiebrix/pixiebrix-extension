@@ -13,7 +13,7 @@ jobs:
           node-version: "14"
           cache: npm
       - run: npm ci
-      - run: build-storybook
+      - run: npm run build-storybook
       - uses: actions/upload-artifact@v2
         with:
           name: storybook
