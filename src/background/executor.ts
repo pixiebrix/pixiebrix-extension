@@ -285,11 +285,15 @@ handlers.set(MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, async (request, sender) => {
   return sender;
 });
 
+function allowSender(sender: Runtime.MessageSender): boolean {
+  return sender.id === browser.runtime.id;
+}
+
 function backgroundListener(
   request: RunBlockAction | OpenTabAction,
   sender: Runtime.MessageSender
 ): Promise<unknown> | void {
-  if (sender.id !== browser.runtime.id) {
+  if (!allowSender(sender)) {
     return;
   }
 
