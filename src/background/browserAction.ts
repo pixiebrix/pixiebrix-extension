@@ -37,6 +37,10 @@ const TOP_LEVEL_FRAME_ID = 0;
  * Mapping from tabId to the nonce for the browser action iframe
  */
 const tabNonces = new Map<number, string>();
+
+/**
+ * Mapping from tabId to the browser frame id for the browser action iframe
+ */
 const tabFrames = new Map<number, number>();
 
 async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
@@ -135,44 +139,44 @@ function backgroundMessageListener(
     return;
   }
 
+  const tabId = sender.tab.id;
+
   switch (request.type) {
     case REGISTER_ACTION_FRAME: {
-      const registerAction = request as RegisterActionFrameMessage;
-      if (tabNonces.get(sender.tab.id) !== registerAction.payload.nonce) {
+      const action = request as RegisterActionFrameMessage;
+      if (tabNonces.get(tabId) !== action.payload.nonce) {
         console.warn("Action frame nonce mismatch", {
-          expected: tabNonces.get(sender.tab.id),
-          actual: registerAction.payload.nonce,
+          expected: tabNonces.get(tabId),
+          actual: action.payload.nonce,
         });
       }
       console.debug("Setting action frame metadata", {
-        tabId: sender.tab.id,
+        tabId,
         frameId: sender.frameId,
       });
-      tabFrames.set(sender.tab.id, sender.frameId);
+      tabFrames.set(tabId, sender.frameId);
       return;
     }
     case FORWARD_FRAME_NOTIFICATION: {
-      const forwardAction = request as ForwardActionFrameNotification;
-      return forwardWhenReady(sender.tab.id, forwardAction.payload).catch(
-        reportError
-      );
+      const action = request as ForwardActionFrameNotification;
+      return forwardWhenReady(tabId, action.payload).catch(reportError);
     }
     case SHOW_ACTION_FRAME: {
-      console.debug("Handle %s", SHOW_ACTION_FRAME, { sender });
-      tabFrames.delete(sender.tab.id);
+      tabFrames.delete(tabId);
       return contentScript
-        .showActionPanel({ tabId: sender.tab.id, frameId: TOP_LEVEL_FRAME_ID })
+        .showActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
         .then((nonce) => {
-          tabNonces.set(sender.tab.id, nonce);
+          console.debug("Setting action frame nonce", { sender, nonce });
+          tabNonces.set(tabId, nonce);
         });
     }
     case HIDE_ACTION_FRAME: {
-      console.debug("Handle %s", HIDE_ACTION_FRAME, { sender });
-      tabFrames.delete(sender.tab.id);
+      tabFrames.delete(tabId);
       return contentScript
-        .hideActionPanel({ tabId: sender.tab.id, frameId: TOP_LEVEL_FRAME_ID })
+        .hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
         .then(() => {
-          tabNonces.delete(sender.tab.id);
+          console.debug("Clearing action frame nonce", { sender, nonce });
+          tabNonces.delete(tabId);
         });
     }
     default: {

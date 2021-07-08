@@ -160,5 +160,8 @@ export const isChrome =
   typeof navigator === "object" &&
   navigator.userAgent.toLowerCase().includes("chrome");
 
+/**
+ * True if the script is executing in a web browser context.
+ */
 export const isBrowser =
   typeof window !== "undefined" && typeof window.document !== "undefined";
