@@ -4,8 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- * Adapted from: https://github.com/facebook/react/blob/b438699d3620bff236282b049204e1221b3689e9/packages/react-devtools-shared/src/backend/views/Highlighter/Overlay.js
  */
+
+// Adapted from: https://github.com/facebook/react/blob/b438699d3620bff236282b049204e1221b3689e9/packages/react-devtools-shared/src/backend/views/Highlighter/Overlay.js
 
 type Rect = {
   bottom: number;

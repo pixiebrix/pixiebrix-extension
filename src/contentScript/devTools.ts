@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public
+ * License along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
@@ -137,7 +137,7 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
     };
     for (const framework of FRAMEWORK_ADAPTERS.keys()) {
       // eslint-disable-next-line security/detect-object-injection -- safe because key coming from compile-time constant
-      base[framework] = await read(() =>
+      base[framework] = await read(async () =>
         getComponentData({ framework: framework as Framework, selector })
       );
     }
