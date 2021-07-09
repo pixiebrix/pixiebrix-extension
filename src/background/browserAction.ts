@@ -19,10 +19,10 @@ import { isBackgroundPage } from "webext-detect-page";
 import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
-import { browser, Runtime } from "webextension-polyfill-ts";
-import { allowSender } from "@/actionPanel/protocol";
+import { browser } from "webextension-polyfill-ts";
 import { isPrivatePageError, sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
+import { HandlerMap } from "@/messaging/protocol";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
@@ -73,14 +73,6 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
   }
 }
 
-type ShowFrameMessage = {
-  type: typeof SHOW_ACTION_FRAME;
-};
-
-type HideFrameMessage = {
-  type: typeof HIDE_ACTION_FRAME;
-};
-
 type RegisterActionFrameMessage = {
   type: typeof REGISTER_ACTION_FRAME;
   payload: { nonce: string };
@@ -126,30 +118,34 @@ async function forwardWhenReady(
   }
 }
 
-const handlers = new Map<string, typeof backgroundMessageListener>();
+const handlers = new HandlerMap();
 
-handlers.set(REGISTER_ACTION_FRAME, async (request, sender) => {
-  const tabId = sender.tab.id;
-  const action = request as RegisterActionFrameMessage;
-  if (tabNonces.get(tabId) !== action.payload.nonce) {
-    console.warn("Action frame nonce mismatch", {
-      expected: tabNonces.get(tabId),
-      actual: action.payload.nonce,
+handlers.set(
+  REGISTER_ACTION_FRAME,
+  async (request: RegisterActionFrameMessage, sender) => {
+    const tabId = sender.tab.id;
+    if (tabNonces.get(tabId) !== request.payload.nonce) {
+      console.warn("Action frame nonce mismatch", {
+        expected: tabNonces.get(tabId),
+        actual: request.payload.nonce,
+      });
+    }
+    console.debug("Setting action frame metadata", {
+      tabId,
+      frameId: sender.frameId,
     });
+    tabFrames.set(tabId, sender.frameId);
+    return;
   }
-  console.debug("Setting action frame metadata", {
-    tabId,
-    frameId: sender.frameId,
-  });
-  tabFrames.set(tabId, sender.frameId);
-  return;
-});
+);
 
-handlers.set(FORWARD_FRAME_NOTIFICATION, async (request, sender) => {
-  const tabId = sender.tab.id;
-  const action = request as ForwardActionFrameNotification;
-  return forwardWhenReady(tabId, action.payload).catch(reportError);
-});
+handlers.set(
+  FORWARD_FRAME_NOTIFICATION,
+  async (request: ForwardActionFrameNotification, sender) => {
+    const tabId = sender.tab.id;
+    return forwardWhenReady(tabId, request.payload).catch(reportError);
+  }
+);
 
 handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
   const tabId = sender.tab.id;
@@ -170,26 +166,8 @@ handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
   tabNonces.delete(tabId);
 });
 
-function backgroundMessageListener(
-  request:
-    | RegisterActionFrameMessage
-    | ForwardActionFrameNotification
-    | ShowFrameMessage
-    | HideFrameMessage,
-  sender: Runtime.MessageSender
-): Promise<unknown> | void {
-  if (!allowSender(sender)) {
-    return;
-  }
-
-  const handler = handlers.get(request.type);
-  if (handler) {
-    return handler(request, sender);
-  }
-}
-
 if (isBackgroundPage()) {
   chrome.browserAction.onClicked.addListener(handleBrowserAction);
   console.debug("Installed browserAction click listener");
-  browser.runtime.onMessage.addListener(backgroundMessageListener);
+  browser.runtime.onMessage.addListener(handlers.asListener());
 }

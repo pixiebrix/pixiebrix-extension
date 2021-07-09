@@ -16,6 +16,7 @@
  */
 
 import {
+  allowSender,
   HandlerEntry,
   HandlerOptions,
   isErrorResponse,
@@ -45,10 +46,6 @@ export class ContentScriptActionError extends Error {
 }
 
 const handlers = new Map<string, HandlerEntry>();
-
-export function allowSender(sender: Runtime.MessageSender): boolean {
-  return sender.id === browser.runtime.id;
-}
 
 async function handleRequest(
   request: RemoteProcedureCallRequest

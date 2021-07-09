@@ -31,8 +31,8 @@ export type SchemaProperties = Record<string, SchemaDefinition>;
 
 export type RenderedHTML = string;
 
-export interface Message {
-  type: string;
+export interface Message<Type extends string = string> {
+  type: Type;
   payload?: unknown;
 }
 

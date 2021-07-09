@@ -15,8 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { SerializedError } from "@/core";
+import { Message, SerializedError } from "@/core";
 import { serializeError } from "serialize-error";
+import { browser, Runtime } from "webextension-polyfill-ts";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type SerializableResponse = boolean | string | number | object;
@@ -68,4 +69,46 @@ export function isRemoteProcedureCallRequest(
 ): message is RemoteProcedureCallRequest {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
   return typeof (message as any)?.type === "string";
+}
+
+export type MessageListener = (
+  request: Message,
+  sender: Runtime.MessageSender
+) => Promise<unknown> | void;
+
+export function allowSender(sender: Runtime.MessageSender): boolean {
+  return sender.id === browser.runtime.id;
+}
+
+// https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
+export type MessageTypeOf<M> = M extends Message<infer T> ? T : never;
+
+export class HandlerMap {
+  readonly handlers = new Map<string, MessageListener>();
+
+  // The typing isn't quite right here. The actionType/action correspondence doesn't get enforced at the
+  // call-site because the actionType is just inferred to be string and not the typeof the constant being
+  // passed in.
+  set<M extends Message<T>, T extends string>(
+    actionType: MessageTypeOf<M>,
+    value: (action: M, sender: Runtime.MessageSender) => Promise<unknown> | void
+  ): this {
+    if (this.handlers.has(actionType)) {
+      throw new Error(`Handler for ${actionType} already defined`);
+    }
+    this.handlers.set(actionType, value);
+    return this;
+  }
+
+  asListener(): MessageListener {
+    return (request: Message, sender: Runtime.MessageSender) => {
+      if (!allowSender(sender)) {
+        return;
+      }
+      const handler = this.handlers.get(request.type);
+      if (handler) {
+        return handler(request, sender);
+      }
+    };
+  }
 }

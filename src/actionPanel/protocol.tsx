@@ -17,14 +17,11 @@
 
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { isBrowserActionPanel } from "@/chrome";
+import { allowSender } from "@/messaging/protocol";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
 export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
-
-export function allowSender(sender: Runtime.MessageSender): boolean {
-  return sender.id === browser.runtime.id;
-}
 
 /**
  * Information required to run a renderer
@@ -71,13 +68,12 @@ export function removeListener(fn: StoreListener): void {
 
 const handlers = new Map<string, typeof actionPanelListener>();
 
-handlers.set(RENDER_PANELS_MESSAGE, async (request) => {
-  const renderRequest = request as RenderPanelsMessage;
+handlers.set(RENDER_PANELS_MESSAGE, async (request: RenderPanelsMessage) => {
   console.debug(
     `Running render panels listeners for ${_listeners.length} listeners`
   );
   for (const listener of _listeners) {
-    listener(renderRequest.payload);
+    listener(request.payload);
   }
 });
 

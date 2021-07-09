@@ -21,7 +21,6 @@ import { BackgroundLogger } from "@/background/logging";
 import { MessageContext } from "@/core";
 import {
   MESSAGE_PREFIX,
-  allowSender,
   liftContentScript,
 } from "@/contentScript/backgroundProtocol";
 import { Availability } from "@/blocks/types";
@@ -30,6 +29,7 @@ import { markReady } from "./context";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { expectContentScript } from "@/utils/expectContext";
 import { ConnectionError } from "@/errors";
+import { allowSender } from "@/messaging/protocol";
 
 export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;

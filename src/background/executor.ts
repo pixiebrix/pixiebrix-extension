@@ -34,6 +34,7 @@ import {
   expectBackgroundPage,
   expectContentScript,
 } from "@/utils/expectContext";
+import { allowSender } from "@/messaging/protocol";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -284,10 +285,6 @@ handlers.set(MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, async (request, sender) => {
   });
   return sender;
 });
-
-function allowSender(sender: Runtime.MessageSender): boolean {
-  return sender.id === browser.runtime.id;
-}
 
 function backgroundListener(
   request: RunBlockAction | OpenTabAction,
