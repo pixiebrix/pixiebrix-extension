@@ -15,8 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const fs = require("fs");
 const webdriver = require("selenium-webdriver");
 const chrome = require("selenium-webdriver/chrome");
+
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 
@@ -42,6 +44,10 @@ async function testPixieBrixHomepage(capabilities) {
     builder.usingServer(
       `https://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`
     );
+  } else {
+    builder.setChromeOptions(
+      new chrome.Options().addArguments("load-extension=browsers/dist")
+    );
   }
   builder.withCapabilities({
     ...capabilities,
@@ -50,9 +56,6 @@ async function testPixieBrixHomepage(capabilities) {
     ...(capabilities["browser"] && { browserName: capabilities["browser"] }), // Because NodeJS language binding requires browserName to be defined
   });
 
-  builder.setChromeOptions(
-    new chrome.Options().addArguments("load-extension=browsers/dist")
-  );
   const driver = await builder.build();
   await driver.get("https://www.pixiebrix.com");
   try {
@@ -65,14 +68,31 @@ async function testPixieBrixHomepage(capabilities) {
   await driver.quit();
 }
 
-const capabilities1 = {
-  browser: "chrome",
-  browser_version: "latest",
-  "bstack:options": {
-    os: "Windows",
-    osVersion: "10",
-  },
-  name: "Chrome test",
-};
+async function getExtensionAsCrxInBase64() {
+  let buff = new Buffer.from(
+    fs.readFileSync("web-ext-artifacts/pixiebrix-1.1.12.zip")
+  );
+  return buff.toString("base64");
+}
 
-void testPixieBrixHomepage(capabilities1);
+async function init() {
+  const capabilities1 = {
+    browser: "chrome",
+    browser_version: "latest",
+    "bstack:options": {
+      os: "Windows",
+      osVersion: "10",
+    },
+    name: "Chrome test",
+  };
+
+  if (username) {
+    capabilities1.chromeOptions = {
+      extensions: [await getExtensionAsCrxInBase64()],
+    };
+  }
+
+  void testPixieBrixHomepage(capabilities1);
+}
+
+init();
