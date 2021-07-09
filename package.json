@@ -15,7 +15,7 @@
     "build-storybook": "build-storybook"
   },
   "author": "Todd Schiller",
-  "license": "GPL-3.0",
+  "license": "AGPL-3.0",
   "repository": "https://github.com/pixiebrix/pixiebrix-extension",
   "dependencies": {
     "@cfworker/json-schema": "^1.8.1",
