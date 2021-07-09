@@ -16,9 +16,14 @@
  */
 
 const webdriver = require("selenium-webdriver");
-
+const chrome = require("selenium-webdriver/chrome");
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
+
+if (!username) {
+  console.log("Using local Chrome version");
+  require("chromedriver");
+}
 
 // TODO: install extensions on startup
 // Chrome instructions: https://www.browserstack.com/docs/automate/selenium/add-plugins-extensions-remote-browsers#nodejs
@@ -32,28 +37,30 @@ const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 // Open devtools: https://stackoverflow.com/questions/37683576/how-do-you-automatically-open-the-chrome-devtools-tab-within-selenium-c
 
 async function testPixieBrixHomepage(capabilities) {
-  const driver = new webdriver.Builder()
-    .usingServer(
+  const builder = new webdriver.Builder();
+  if (username) {
+    builder.usingServer(
       `https://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`
-    )
-    .withCapabilities({
-      ...capabilities,
-      // Enable if using local environment
-      // 'browserstack.local': 'true',
-      ...(capabilities["browser"] && { browserName: capabilities["browser"] }), // Because NodeJS language binding requires browserName to be defined
-    })
-    .build();
+    );
+  }
+  builder.withCapabilities({
+    ...capabilities,
+    // Enable if using local environment
+    // 'browserstack.local': 'true',
+    ...(capabilities["browser"] && { browserName: capabilities["browser"] }), // Because NodeJS language binding requires browserName to be defined
+  });
+
+  builder.setChromeOptions(
+    new chrome.Options().addArguments("load-extension=browsers/dist")
+  );
+  const driver = await builder.build();
   await driver.get("https://www.pixiebrix.com");
   try {
     await driver.wait(webdriver.until.titleMatches(/pixiebrix/i), 5000);
     console.log(await driver.getTitle());
-    await driver.executeScript(
-      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"passed","reason": "Title contains PixieBrix!"}}'
-    );
+    await driver.executeScript('console.log("sdasd")');
   } catch {
-    await driver.executeScript(
-      'browserstack_executor: {"action": "setSessionStatus", "arguments": {"status":"failed","reason": "Page could not load in time"}}'
-    );
+    await driver.executeScript('console.log("error")');
   }
   await driver.quit();
 }
@@ -67,26 +74,5 @@ const capabilities1 = {
   },
   name: "Chrome test",
 };
-const capabilities2 = {
-  browser: "firefox",
-  browser_version: "latest",
-  "bstack:options": {
-    os: "Windows",
-    osVersion: "10",
-  },
-  name: "Firefox test",
-};
-
-const capabilities3 = {
-  browser: "safari",
-  browser_version: "latest",
-  "bstack:options": {
-    os: "OS X",
-    osVersion: "Big Sur",
-  },
-  name: "Safari test",
-};
 
 void testPixieBrixHomepage(capabilities1);
-void testPixieBrixHomepage(capabilities2);
-void testPixieBrixHomepage(capabilities3);
