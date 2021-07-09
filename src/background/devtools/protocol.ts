@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { browser, Runtime } from "webextension-polyfill-ts";
+import { browser, Permissions, Runtime } from "webextension-polyfill-ts";
 import * as contentScriptProtocol from "@/contentScript/devTools";
 import * as robotProtocol from "@/contentScript/uipath";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
@@ -32,6 +32,7 @@ import { getTargetState, ensureContentScript } from "@/background/util";
 import { isEmpty } from "lodash";
 import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
+import { liftBackground as liftBackgroundSimple } from "../protocol";
 
 export const registerPort = liftBackground(
   "REGISTER_PORT",
@@ -57,6 +58,12 @@ export const getTabInfo = liftBackground(
       hasPermissions: Boolean(state),
     };
   }
+);
+
+export const containsPermissions = liftBackgroundSimple(
+  "CONTAINS_PERMISSIONS",
+  async (permissions: Permissions.Permissions) =>
+    browser.permissions.contains(permissions)
 );
 
 export const ensureScript = liftBackground(

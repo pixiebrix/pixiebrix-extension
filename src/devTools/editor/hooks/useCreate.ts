@@ -40,6 +40,8 @@ import { reportEvent } from "@/telemetry/events";
 import { removeUndefined } from "@/utils";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { ensureAllPermissions, extensionPermissions } from "@/permissions";
+import { isChrome } from "@/helpers";
+import { containsPermissions } from "@/background/devtools";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -109,7 +111,22 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
     extension,
   });
 
-  // FIXME: Firefox probably won't realize this permissions request is user-initiated
+  if (!isChrome) {
+    const results = await Promise.all(
+      permissions.map(async (permission) => containsPermissions(permission))
+    );
+    if (results.some((granted) => !granted)) {
+      addToast(
+        `Additional permissions are required. Click Grant Permissions to add them`,
+        {
+          appearance: "warning",
+          autoDismiss: true,
+        }
+      );
+    }
+
+    return;
+  }
   const hasPermissions = await ensureAllPermissions(permissions);
 
   if (!hasPermissions) {
