@@ -19,23 +19,26 @@ import React, { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { getTabInfo } from "@/background/devtools";
 import { browser } from "webextension-polyfill-ts";
+import { isChrome } from "@/helpers";
 import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
 import { Button } from "react-bootstrap";
+import { openTab } from "@/background/executor";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { port, connect } = useContext(DevToolsContext);
 
-  const requestPermissions = useCallback(() => {
-    // Firefox browser.permissions.request gets confused by async code. Must use normal promises in the
-    // call path to browser.permissions.request so it knows it was triggered by a user action
-    getTabInfo(port).then(({ url }) => {
-      const requestPromise = browser.permissions.request({ origins: [url] });
-      requestPromise.then(async () => {
-        await sleep(500);
-        await connect();
-      });
-    });
+  const requestPermissions = useCallback(async () => {
+    const { url } = await getTabInfo(port);
+    if (isChrome) {
+      await browser.permissions.request({ origins: [url] });
+    } else {
+      const parameters = new URLSearchParams();
+      parameters.set("requestOrigins", url);
+      await openTab({ url: "options.html?" + parameters.toString() });
+    }
+    await sleep(500);
+    await connect();
   }, [connect, port]);
 
   return (
