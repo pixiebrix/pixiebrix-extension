@@ -83,29 +83,31 @@ export function allowSender(sender: Runtime.MessageSender): boolean {
 // https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
 export type MessageTypeOf<M> = M extends Message<infer T> ? T : never;
 
-export class HandlerMap {
-  readonly handlers = new Map<string, MessageListener>();
-
+export class HandlerMap<
+  ActionType extends string,
+  Action extends Message<ActionType>,
+  Handler extends (
+    request: Action,
+    sender: Runtime.MessageSender
+  ) => Promise<unknown> | void
+> extends Map<ActionType, Handler> {
   // The typing isn't quite right here. The actionType/action correspondence doesn't get enforced at the
   // call-site because the actionType is just inferred to be string and not the typeof the constant being
   // passed in.
-  set<M extends Message<T>, T extends string>(
-    actionType: MessageTypeOf<M>,
-    value: (action: M, sender: Runtime.MessageSender) => Promise<unknown> | void
-  ): this {
-    if (this.handlers.has(actionType)) {
+  set(actionType: ActionType, value: Handler): this {
+    if (this.has(actionType)) {
       throw new Error(`Handler for ${actionType} already defined`);
     }
-    this.handlers.set(actionType, value);
+    super.set(actionType, value);
     return this;
   }
 
   asListener(): MessageListener {
-    return (request: Message, sender: Runtime.MessageSender) => {
+    return (request: Action, sender: Runtime.MessageSender) => {
       if (!allowSender(sender)) {
         return;
       }
-      const handler = this.handlers.get(request.type);
+      const handler = this.get(request.type);
       if (handler) {
         return handler(request, sender);
       }
