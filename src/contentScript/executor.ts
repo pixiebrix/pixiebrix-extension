@@ -20,8 +20,8 @@ import blockRegistry from "@/blocks/registry";
 import { BackgroundLogger } from "@/background/logging";
 import { MessageContext } from "@/core";
 import {
-  MESSAGE_PREFIX,
   liftContentScript,
+  MESSAGE_PREFIX,
 } from "@/contentScript/backgroundProtocol";
 import { Availability } from "@/blocks/types";
 import { checkAvailable } from "@/blocks/available";
@@ -29,7 +29,7 @@ import { markReady } from "./context";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { expectContentScript } from "@/utils/expectContext";
 import { ConnectionError } from "@/errors";
-import { allowSender } from "@/messaging/protocol";
+import { HandlerMap } from "@/messaging/protocol";
 
 export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
@@ -63,10 +63,10 @@ export interface RunBlockAction {
 
 const childTabs = new Set<number>();
 
-const handlers = new Map<string, typeof runBlockAction>();
+const handlers = new HandlerMap();
 
-handlers.set(MESSAGE_RUN_BLOCK, async (request) => {
-  const { blockId, blockArgs, options } = (request as RunBlockAction).payload;
+handlers.set(MESSAGE_RUN_BLOCK, async (request: RunBlockAction) => {
+  const { blockId, blockArgs, options } = request.payload;
   // FIXME: validate sourceTabId here
   // if (!childTabs.has(sourceTabId)) {
   //   return Promise.reject("Unknown source tab id");
@@ -80,24 +80,13 @@ handlers.set(MESSAGE_RUN_BLOCK, async (request) => {
   });
 });
 
-handlers.set(MESSAGE_CHECK_AVAILABILITY, async (request) => {
-  const { isAvailable } = (request as CheckAvailabilityAction).payload;
-  return checkAvailable(isAvailable);
-});
-
-function runBlockAction(
-  request: RunBlockAction | CheckAvailabilityAction,
-  sender: Runtime.MessageSender
-): Promise<unknown> | void {
-  if (!allowSender(sender)) {
-    return;
+handlers.set(
+  MESSAGE_CHECK_AVAILABILITY,
+  async (request: CheckAvailabilityAction) => {
+    const { isAvailable } = request.payload;
+    return checkAvailable(isAvailable);
   }
-
-  const handler = handlers.get(request.type);
-  if (handler) {
-    return handler(request, sender);
-  }
-}
+);
 
 export const linkChildTab = liftContentScript(
   "TAB_OPENED",
@@ -110,7 +99,6 @@ export const linkChildTab = liftContentScript(
 export async function whoAmI(): Promise<Runtime.MessageSender> {
   const sender = await browser.runtime.sendMessage({
     type: MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
-    payload: {},
   });
 
   if (sender == null) {
@@ -119,7 +107,7 @@ export async function whoAmI(): Promise<Runtime.MessageSender> {
     // with the "async" keyword as that prevents the method from returning "undefined" to indicate
     // that it did not handle the message
     throw new ConnectionError(
-      `Received null response for ${MESSAGE_CONTENT_SCRIPT_ECHO_SENDER}`
+      `Internal error: received null response for ${MESSAGE_CONTENT_SCRIPT_ECHO_SENDER}. Check use of async in message listeners`
     );
   }
 
@@ -142,7 +130,7 @@ export async function notifyReady(): Promise<void> {
 function addExecutorListener(): void {
   expectContentScript();
 
-  browser.runtime.onMessage.addListener(runBlockAction);
+  browser.runtime.onMessage.addListener(handlers.asListener());
 }
 
 export default addExecutorListener;

@@ -15,9 +15,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { browser, Runtime } from "webextension-polyfill-ts";
+import { browser } from "webextension-polyfill-ts";
 import { isBrowserActionPanel } from "@/chrome";
-import { allowSender } from "@/messaging/protocol";
+import { HandlerMap } from "@/messaging/protocol";
+import { reportError } from "@/telemetry/logging";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
@@ -66,31 +67,21 @@ export function removeListener(fn: StoreListener): void {
   _listeners = _listeners.filter((x) => x !== fn);
 }
 
-const handlers = new Map<string, typeof actionPanelListener>();
+const handlers = new HandlerMap();
 
 handlers.set(RENDER_PANELS_MESSAGE, async (request: RenderPanelsMessage) => {
   console.debug(
     `Running render panels listeners for ${_listeners.length} listeners`
   );
   for (const listener of _listeners) {
-    listener(request.payload);
+    try {
+      listener(request.payload);
+    } catch (error) {
+      reportError(error);
+    }
   }
 });
 
-function actionPanelListener(
-  request: RenderPanelsMessage,
-  sender: Runtime.MessageSender
-): Promise<unknown> | void {
-  if (!allowSender(sender)) {
-    return;
-  }
-
-  const handler = handlers.get(request.type);
-  if (handler) {
-    return handler(request, sender);
-  }
-}
-
 if (isBrowserActionPanel()) {
-  browser.runtime.onMessage.addListener(actionPanelListener);
+  browser.runtime.onMessage.addListener(handlers.asListener());
 }

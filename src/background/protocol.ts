@@ -69,7 +69,7 @@ async function handleRequest(
   sender: Runtime.MessageSender
 ): Promise<unknown> {
   const { type, payload, meta } = request;
-  const { handler, options } = handlers.get(type) ?? {};
+  const { handler, options } = handlers.get(type);
 
   try {
     const value = await handler(...payload);
@@ -90,27 +90,8 @@ async function handleRequest(
     console.debug(
       `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
     );
+
     return toErrorResponse(type, error);
-  }
-}
-
-function backgroundListener(
-  request: RemoteProcedureCallRequest,
-  sender: Runtime.MessageSender
-): Promise<unknown> | void {
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage
-
-  if (!allowBackgroundSender(sender)) {
-    console.debug(
-      `Ignoring message to background page from unknown sender`,
-      sender
-    );
-    return;
-  }
-
-  if (handlers.has(request.type)) {
-    return handleRequest(request, sender);
   }
 }
 
@@ -222,7 +203,6 @@ export function liftBackground<R extends SerializableResponse>(
     if (handlers.has(fullType)) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
-      // console.debug(`Installed background page handler for ${type}`);
       handlers.set(fullType, { handler: method, options });
     }
   }
@@ -232,9 +212,25 @@ export function liftBackground<R extends SerializableResponse>(
       console.log(`Resolving ${type} immediately from background page`);
       return method(...args);
     }
-
-    return callBackground(fullType, args, options) as any;
+    return callBackground(fullType, args, options) as R;
   };
+}
+
+function backgroundListener(
+  request: RemoteProcedureCallRequest,
+  sender: Runtime.MessageSender
+): Promise<unknown> | void {
+  // Returning "undefined" indicates the message has not been handled
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage
+
+  if (!allowBackgroundSender(sender)) {
+    return;
+  }
+
+  if (handlers.has(request.type)) {
+    return handleRequest(request, sender);
+  }
 }
 
 if (isBackgroundPage()) {

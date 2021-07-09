@@ -28,11 +28,11 @@ import {
   BackgroundEventType,
   HandlerEntry,
   MESSAGE_PREFIX,
-  Meta,
   PORT_NAME,
   PromiseHandler,
   TabId,
   Target,
+  Meta,
 } from "@/background/devtools/contract";
 import { reportError } from "@/telemetry/logging";
 import { isBackgroundPage } from "webext-detect-page";

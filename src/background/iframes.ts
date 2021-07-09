@@ -18,7 +18,7 @@
 import { FORWARD_FRAME_DATA, REQUEST_FRAME_DATA } from "@/messaging/constants";
 type MessageSender = chrome.runtime.MessageSender;
 
-const _frameData: { [key: string]: string } = {};
+const frameHTML = new Map<string, string>();
 
 type Request =
   | {
@@ -39,15 +39,14 @@ function initFrames(): void {
       case FORWARD_FRAME_DATA: {
         console.log("request", { request });
         const { frameId, html } = request.payload;
-        _frameData[frameId] = html;
+        frameHTML.set(frameId, html);
         sendResponse({});
         return true;
       }
       case REQUEST_FRAME_DATA: {
         const { id } = request.payload;
-        console.log(`Frame data for ${id}`, { _frameData });
-        sendResponse({ html: _frameData[id] });
-        delete _frameData[id];
+        sendResponse({ html: frameHTML.get(id) });
+        frameHTML.delete(id);
         return true;
       }
       default: {

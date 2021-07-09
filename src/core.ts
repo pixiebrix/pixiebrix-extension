@@ -31,9 +31,25 @@ export type SchemaProperties = Record<string, SchemaDefinition>;
 
 export type RenderedHTML = string;
 
-export interface Message<Type extends string = string> {
+export type ActionType = string;
+
+export interface Meta {
+  nonce?: string;
+  [index: string]: unknown;
+}
+
+/**
+ * Standard message format for cross-context messaging.
+ *
+ * Inspired by: https://github.com/redux-utilities/flux-standard-action
+ */
+export interface Message<
+  Type extends ActionType = ActionType,
+  TMeta extends Meta = Meta
+> {
   type: Type;
   payload?: unknown;
+  meta?: TMeta;
 }
 
 export interface MessageContext {

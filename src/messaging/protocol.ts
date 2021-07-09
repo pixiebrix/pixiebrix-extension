@@ -15,20 +15,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Message, SerializedError } from "@/core";
+import { ActionType, Message, SerializedError, Meta } from "@/core";
 import { serializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
+import isPromise from "is-promise";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type SerializableResponse = boolean | string | number | object;
 
-interface Meta {
-  nonce?: string;
-}
-
-export interface RemoteProcedureCallRequest<TMeta extends Meta = Meta> {
-  type: string;
-  meta?: TMeta;
+export interface RemoteProcedureCallRequest<TMeta extends Meta = Meta>
+  extends Message<ActionType, TMeta> {
   payload: unknown[];
 }
 
@@ -71,45 +67,60 @@ export function isRemoteProcedureCallRequest(
   return typeof (message as any)?.type === "string";
 }
 
+export function allowSender(sender: Runtime.MessageSender): boolean {
+  return sender.id === browser.runtime.id;
+}
+
 export type MessageListener = (
   request: Message,
   sender: Runtime.MessageSender
 ) => Promise<unknown> | void;
 
-export function allowSender(sender: Runtime.MessageSender): boolean {
-  return sender.id === browser.runtime.id;
-}
+// Unlike MessageListener, the return type of this method means the message has been handled
+type MessageHandler<T extends ActionType> = (
+  request: Message<T>,
+  sender: Runtime.MessageSender
+) => Promise<unknown>;
 
-// https://www.typescriptlang.org/docs/handbook/2/conditional-types.html
-export type MessageTypeOf<M> = M extends Message<infer T> ? T : never;
+export class HandlerMap {
+  readonly handlers = new Map<ActionType, MessageHandler<ActionType>>();
 
-export class HandlerMap<
-  ActionType extends string,
-  Action extends Message<ActionType>,
-  Handler extends (
-    request: Action,
-    sender: Runtime.MessageSender
-  ) => Promise<unknown> | void
-> extends Map<ActionType, Handler> {
-  // The typing isn't quite right here. The actionType/action correspondence doesn't get enforced at the
-  // call-site because the actionType is just inferred to be string and not the typeof the constant being
-  // passed in.
-  set(actionType: ActionType, value: Handler): this {
-    if (this.has(actionType)) {
+  // Our best bet for getting types to match is to write them on the "set" method, as that's where we have
+  // the correspondence between the actionType and the handler.
+  //
+  // There's a way to enforce the correspondence unless we force the call-site to list actionType
+  // twice, once in the type and once for the argument. See discussion of a similar method in redux-toolkit:
+  // https://redux-toolkit.js.org/usage/usage-with-typescript#building-type-safe-reducer-argument-objects
+  //
+  // Another thing to be aware of is how callback types are checked when strictFunctionType is not on:
+  // https://www.typescriptlang.org/tsconfig/strictFunctionTypes.html
+  set<T extends ActionType>(actionType: T, handler: MessageHandler<T>): this {
+    if (this.handlers.has(actionType)) {
       throw new Error(`Handler for ${actionType} already defined`);
     }
-    super.set(actionType, value);
+    this.handlers.set(actionType, handler);
     return this;
   }
 
   asListener(): MessageListener {
-    return (request: Action, sender: Runtime.MessageSender) => {
+    // Cannot use async keyword here because we need to be able to return a pure void/undefined response if the
+    // message is not handled by this listener
+    // eslint-disable-next-line @typescript-eslint/promise-function-async
+    return (request: Message, sender: Runtime.MessageSender) => {
+      // Returning "undefined" indicates the message hasn't been handled by the listener
       if (!allowSender(sender)) {
         return;
       }
-      const handler = this.get(request.type);
+      const handler = this.handlers.get(request.type);
       if (handler) {
-        return handler(request, sender);
+        console.trace("Handling message: %s", request.type);
+        const promise = handler(request, sender);
+        if (!isPromise(promise)) {
+          throw new Error(
+            `Expected promise response from handler ${request.type}`
+          );
+        }
+        return promise;
       }
     };
   }

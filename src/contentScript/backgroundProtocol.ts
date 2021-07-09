@@ -72,18 +72,6 @@ async function handleRequest(
     );
   }
 }
-function contentScriptListener(
-  request: RemoteProcedureCallRequest,
-  sender: Runtime.MessageSender
-): Promise<unknown> | void {
-  if (!allowSender(sender)) {
-    return;
-  }
-
-  if (handlers.has(request.type)) {
-    return handleRequest(request);
-  }
-}
 
 async function getTabIds(): Promise<number[]> {
   const tabs = await browser.tabs.query({});
@@ -258,6 +246,21 @@ export function liftContentScript<R extends SerializableResponse>(
 
     return response;
   };
+}
+
+function contentScriptListener(
+  request: RemoteProcedureCallRequest,
+  sender: Runtime.MessageSender
+): Promise<unknown> | void {
+  // Returning "undefined" indicates that the message has not been handled
+
+  if (!allowSender(sender)) {
+    return;
+  }
+
+  if (handlers.has(request.type)) {
+    return handleRequest(request);
+  }
 }
 
 function addContentScriptListener(): void {
