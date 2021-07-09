@@ -16,6 +16,7 @@
  */
 
 import {
+  allowSender,
   HandlerEntry,
   HandlerOptions,
   isErrorResponse,
@@ -46,38 +47,29 @@ export class ContentScriptActionError extends Error {
 
 const handlers = new Map<string, HandlerEntry>();
 
-export function allowSender(sender: Runtime.MessageSender): boolean {
-  return sender.id === browser.runtime.id;
-}
-
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
-function contentScriptListener(
-  request: RemoteProcedureCallRequest,
-  sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
+async function handleRequest(
+  request: RemoteProcedureCallRequest
+): Promise<unknown> {
   const { type, payload } = request;
   const { handler, options } = handlers.get(type) ?? {};
 
-  if (allowSender(sender) && handler) {
-    console.debug(`Handling contentScript action ${type}`);
+  console.debug(`Handling contentScript action ${type}`);
 
-    const handlerPromise = new Promise((resolve) =>
-      resolve(handler(...payload))
+  if (isNotification(options)) {
+    handler(...payload);
+    return;
+  }
+
+  try {
+    return await handler(...payload);
+  } catch (error) {
+    console.debug(`Handler returning error response for ${type}`, {
+      error,
+    });
+    return toErrorResponse(
+      type,
+      error ?? new Error("Unknown error in content script handler")
     );
-
-    if (isNotification(options)) {
-      return;
-    } else {
-      return handlerPromise.catch((error) => {
-        console.debug(`Handler returning error response for ${type}`, {
-          error,
-        });
-        return toErrorResponse(
-          type,
-          error ?? new Error("Unknown error in content script handler")
-        );
-      });
-    }
   }
 }
 
@@ -254,6 +246,21 @@ export function liftContentScript<R extends SerializableResponse>(
 
     return response;
   };
+}
+
+function contentScriptListener(
+  request: RemoteProcedureCallRequest,
+  sender: Runtime.MessageSender
+): Promise<unknown> | void {
+  // Returning "undefined" indicates that the message has not been handled
+
+  if (!allowSender(sender)) {
+    return;
+  }
+
+  if (handlers.has(request.type)) {
+    return handleRequest(request);
+  }
 }
 
 function addContentScriptListener(): void {

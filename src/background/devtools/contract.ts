@@ -57,4 +57,5 @@ export interface Meta {
   nonce: Nonce;
   tabId: TabId;
   frameId: number;
+  [index: string]: unknown;
 }

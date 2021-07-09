@@ -64,55 +64,34 @@ export function allowBackgroundSender(
   );
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
-function backgroundListener(
+async function handleRequest(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage
-
-  if (!allowBackgroundSender(sender)) {
-    console.debug(
-      `Ignoring message to background page from unknown sender`,
-      sender
-    );
-    return;
-  }
-
+): Promise<unknown> {
   const { type, payload, meta } = request;
-  const { handler, options } = handlers.get(type) ?? {};
+  const { handler, options } = handlers.get(type);
 
-  if (handler) {
-    const notification = isNotification(options);
+  try {
+    const value = await handler(...payload);
 
-    const handlerPromise = new Promise((resolve) =>
-      resolve(handler(...payload))
+    console.debug(
+      `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
     );
-
-    if (notification) {
-      handlerPromise.catch((error) => {
-        console.warn(
-          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
-          error
-        );
-      });
+    return value;
+  } catch (error) {
+    if (isNotification(options)) {
+      console.warn(
+        `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
+        error
+      );
       return;
     }
 
-    return handlerPromise
-      .then((value) => {
-        console.debug(
-          `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
-        );
-        return value;
-      })
-      .catch((error) => {
-        console.debug(
-          `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
-        );
-        return toErrorResponse(type, error);
-      });
+    console.debug(
+      `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
+    );
+
+    return toErrorResponse(type, error);
   }
 }
 
@@ -224,7 +203,6 @@ export function liftBackground<R extends SerializableResponse>(
     if (handlers.has(fullType)) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
-      // console.debug(`Installed background page handler for ${type}`);
       handlers.set(fullType, { handler: method, options });
     }
   }
@@ -234,9 +212,25 @@ export function liftBackground<R extends SerializableResponse>(
       console.log(`Resolving ${type} immediately from background page`);
       return method(...args);
     }
-
-    return callBackground(fullType, args, options) as any;
+    return callBackground(fullType, args, options) as R;
   };
+}
+
+function backgroundListener(
+  request: RemoteProcedureCallRequest,
+  sender: Runtime.MessageSender
+): Promise<unknown> | void {
+  // Returning "undefined" indicates the message has not been handled
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage
+
+  if (!allowBackgroundSender(sender)) {
+    return;
+  }
+
+  if (handlers.has(request.type)) {
+    return handleRequest(request, sender);
+  }
 }
 
 if (isBackgroundPage()) {

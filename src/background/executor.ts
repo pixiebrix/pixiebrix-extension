@@ -17,16 +17,16 @@
 
 import {
   linkChildTab,
+  MESSAGE_CHECK_AVAILABILITY,
+  MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
+  MESSAGE_CONTENT_SCRIPT_READY,
+  MESSAGE_RUN_BLOCK as CONTENT_MESSAGE_RUN_BLOCK,
   RemoteBlockOptions,
   RunBlockAction,
-  MESSAGE_RUN_BLOCK as CONTENT_MESSAGE_RUN_BLOCK,
-  MESSAGE_CONTENT_SCRIPT_READY,
-  MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
-  MESSAGE_CHECK_AVAILABILITY,
 } from "@/contentScript/executor";
-import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
+import { browser, Tabs } from "webextension-polyfill-ts";
 import { MESSAGE_PREFIX } from "@/background/protocol";
-import { RenderedArgs } from "@/core";
+import { ActionType, Message, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
@@ -34,6 +34,7 @@ import {
   expectBackgroundPage,
   expectContentScript,
 } from "@/utils/expectContext";
+import { HandlerMap } from "@/messaging/protocol";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -68,6 +69,11 @@ type OpenTabAction = {
   type: typeof MESSAGE_OPEN_TAB;
   payload: Tabs.CreateCreatePropertiesType;
 };
+
+interface ObjectPayloadMessage<T extends ActionType = ActionType>
+  extends Message<T> {
+  payload: Record<string, unknown>;
+}
 
 async function waitNonceReady(
   nonce: string,
@@ -126,108 +132,49 @@ async function waitReady(
   return true;
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
-function backgroundListener(
-  request: RunBlockAction | OpenTabAction,
-  sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
-  if (sender.id !== browser.runtime.id) {
-    return;
-  }
+const handlers = new HandlerMap();
 
-  switch (request.type) {
-    case MESSAGE_RUN_BLOCK_OPENER: {
-      const opener = tabToOpener.get(sender.tab.id);
+handlers.set(
+  MESSAGE_RUN_BLOCK_OPENER,
+  async (request: ObjectPayloadMessage, sender) => {
+    const opener = tabToOpener.get(sender.tab.id);
 
-      if (!opener) {
-        return Promise.reject(new BusinessError("Sender tab has no opener"));
-      }
+    if (!opener) {
+      throw new BusinessError("Sender tab has no opener");
+    }
 
-      return browser.tabs.sendMessage(
-        opener,
-        {
-          type: CONTENT_MESSAGE_RUN_BLOCK,
-          payload: {
-            sourceTabId: sender.tab.id,
-            ...request.payload,
-          },
+    return browser.tabs.sendMessage(
+      opener,
+      {
+        type: CONTENT_MESSAGE_RUN_BLOCK,
+        payload: {
+          sourceTabId: sender.tab.id,
+          ...request.payload,
         },
-        // for now, only support top-level frame as opener
-        { frameId: TOP_LEVEL_FRAME }
-      );
-    }
-    case MESSAGE_RUN_BLOCK_BROADCAST: {
-      const tabTargets = Object.entries(tabReady).filter(
-        ([tabId, ready]) =>
-          tabId !== String(sender.tab.id) && ready[TOP_LEVEL_FRAME]
-      );
+      },
+      // for now, only support top-level frame as opener
+      { frameId: TOP_LEVEL_FRAME }
+    );
+  }
+);
 
-      console.debug(`Broadcasting to ${tabTargets.length} top-level frames`, {
-        sender: String(sender.tab.id),
-        known: Object.keys(tabReady),
-      });
+handlers.set(
+  MESSAGE_RUN_BLOCK_BROADCAST,
+  async (request: ObjectPayloadMessage, sender) => {
+    const tabTargets = Object.entries(tabReady).filter(
+      ([tabId, ready]) =>
+        tabId !== String(sender.tab.id) && ready[TOP_LEVEL_FRAME]
+    );
 
-      return Promise.allSettled(
-        tabTargets.map(async ([tabId]) => {
-          return browser.tabs.sendMessage(
-            Number.parseInt(tabId, 10),
-            {
-              type: CONTENT_MESSAGE_RUN_BLOCK,
-              payload: {
-                sourceTabId: sender.tab.id,
-                ...request.payload,
-              },
-            },
-            // for now, only support top-level frame as opener
-            { frameId: TOP_LEVEL_FRAME }
-          );
-        })
-      ).then((results) => {
-        return results
-          .filter((x) => x.status === "fulfilled")
-          .map((x) => (x as any).value);
-      });
-    }
-    case MESSAGE_RUN_BLOCK_FRAME_NONCE: {
-      const action = request as RunBlockAction;
-      const { nonce, ...payload } = action.payload;
+    console.debug(`Broadcasting to ${tabTargets.length} top-level frames`, {
+      sender: String(sender.tab.id),
+      known: Object.keys(tabReady),
+    });
 
-      console.debug(`Waiting for frame with nonce ${nonce} to be ready`);
-      return waitNonceReady(nonce, {
-        isAvailable: payload.options.isAvailable,
-      }).then(async () => {
-        const target = nonceToTarget.get(nonce);
-        console.debug(
-          `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
-        );
+    const results = await Promise.allSettled(
+      tabTargets.map(async ([tabId]) => {
         return browser.tabs.sendMessage(
-          target.tabId,
-          {
-            type: CONTENT_MESSAGE_RUN_BLOCK,
-            payload: {
-              sourceTabId: sender.tab.id,
-              ...payload,
-            },
-          },
-          { frameId: target.frameId }
-        );
-      });
-    }
-    case MESSAGE_RUN_BLOCK_TARGET: {
-      const target = tabToTarget.get(sender.tab.id);
-
-      if (!target) {
-        return Promise.reject(new BusinessError("Sender tab has no target"));
-      }
-
-      console.debug(`Waiting for target tab ${target} to be ready`);
-      // for now, only support top-level frame as target
-      return waitReady({ tabId: target, frameId: 0 }).then(async () => {
-        console.debug(
-          `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
-        );
-        return browser.tabs.sendMessage(
-          target,
+          Number.parseInt(tabId, 10),
           {
             type: CONTENT_MESSAGE_RUN_BLOCK,
             payload: {
@@ -235,71 +182,123 @@ function backgroundListener(
               ...request.payload,
             },
           },
-          { frameId: 0 }
+          // for now, only support top-level frame as opener
+          { frameId: TOP_LEVEL_FRAME }
         );
-      });
-    }
-    case MESSAGE_ACTIVATE_TAB: {
-      return (
-        browser.tabs
-          .update(sender.tab.id, {
-            active: true,
-          })
-          // ignore the returned tab
-          .then(() => {})
-      );
-    }
-    case MESSAGE_CLOSE_TAB: {
-      return new Promise<unknown>((resolve) => {
-        browser.tabs.remove(sender.tab.id).then(resolve);
-      });
-    }
-    case MESSAGE_OPEN_TAB: {
-      return browser.tabs
-        .create(request.payload as Tabs.CreateCreatePropertiesType)
-        .then((tab) => {
-          // FIXME: include frame information here
-          tabToTarget.set(sender.tab.id, tab.id);
-          tabToOpener.set(tab.id, sender.tab.id);
-        });
-    }
-    case MESSAGE_CONTENT_SCRIPT_READY: {
-      const tabId = sender.tab.id;
-      const { frameId } = sender;
-      console.debug(`Marked tab ${tabId} (frame: ${frameId}) as ready`, {
-        sender,
-      });
-
-      const url = new URL(sender.url);
-      const nonce = url.searchParams.get("_pb");
-
-      if (nonce) {
-        console.debug(`Marking nonce as ready: ${nonce}`, {
-          nonce,
-          tabId,
-          frameId,
-        });
-        nonceToTarget.set(nonce, { tabId, frameId });
-      }
-
-      if (!tabReady[tabId]) {
-        tabReady[tabId] = {};
-      }
-      tabReady[tabId][frameId] = true;
-      emitDevtools("ContentScriptReady", { tabId, frameId });
-      return Promise.resolve();
-    }
-    case MESSAGE_CONTENT_SCRIPT_ECHO_SENDER: {
-      console.debug("Responding %s", MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, {
-        sender,
-      });
-      return Promise.resolve(sender);
-    }
-    default: {
-      return;
-    }
+      })
+    );
+    return results
+      .filter((x) => x.status === "fulfilled")
+      .map((x) => (x as any).value);
   }
-}
+);
+
+handlers.set(
+  MESSAGE_RUN_BLOCK_FRAME_NONCE,
+  async (request: RunBlockAction, sender) => {
+    const { nonce, ...payload } = request.payload;
+
+    console.debug(`Waiting for frame with nonce ${nonce} to be ready`);
+    await waitNonceReady(nonce, {
+      isAvailable: payload.options.isAvailable,
+    });
+
+    const target = nonceToTarget.get(nonce);
+    console.debug(
+      `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
+    );
+    return browser.tabs.sendMessage(
+      target.tabId,
+      {
+        type: CONTENT_MESSAGE_RUN_BLOCK,
+        payload: {
+          sourceTabId: sender.tab.id,
+          ...payload,
+        },
+      },
+      { frameId: target.frameId }
+    );
+  }
+);
+
+handlers.set(
+  MESSAGE_RUN_BLOCK_TARGET,
+  async (request: ObjectPayloadMessage, sender) => {
+    const target = tabToTarget.get(sender.tab.id);
+
+    if (!target) {
+      throw new BusinessError("Sender tab has no target");
+    }
+
+    console.debug(`Waiting for target tab ${target} to be ready`);
+    // for now, only support top-level frame as target
+    await waitReady({ tabId: target, frameId: 0 });
+    console.debug(
+      `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
+    );
+    return browser.tabs.sendMessage(
+      target,
+      {
+        type: CONTENT_MESSAGE_RUN_BLOCK,
+        payload: {
+          sourceTabId: sender.tab.id,
+          ...request.payload,
+        },
+      },
+      { frameId: 0 }
+    );
+  }
+);
+
+handlers.set(MESSAGE_ACTIVATE_TAB, async (_, sender) => {
+  await browser.tabs.update(sender.tab.id, {
+    active: true,
+  });
+});
+
+handlers.set(MESSAGE_CLOSE_TAB, async (_, sender) => {
+  return browser.tabs.remove(sender.tab.id);
+});
+
+handlers.set(MESSAGE_OPEN_TAB, async (request: OpenTabAction, sender) => {
+  const tab = await browser.tabs.create(request.payload);
+  // FIXME: include frame information here
+  tabToTarget.set(sender.tab.id, tab.id);
+  tabToOpener.set(tab.id, sender.tab.id);
+});
+
+handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (_, sender) => {
+  const tabId = sender.tab.id;
+  const { frameId } = sender;
+  console.debug(`Marked tab ${tabId} (frame: ${frameId}) as ready`, {
+    sender,
+  });
+
+  const url = new URL(sender.url);
+  const nonce = url.searchParams.get("_pb");
+
+  if (nonce) {
+    console.debug(`Marking nonce as ready: ${nonce}`, {
+      nonce,
+      tabId,
+      frameId,
+    });
+    nonceToTarget.set(nonce, { tabId, frameId });
+  }
+
+  if (!tabReady[tabId]) {
+    tabReady[tabId] = {};
+  }
+  tabReady[tabId][frameId] = true;
+  emitDevtools("ContentScriptReady", { tabId, frameId });
+});
+
+handlers.set(MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, async (_, sender) => {
+  console.debug("Responding %s", MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, {
+    sender,
+  });
+  return sender;
+});
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
@@ -317,7 +316,7 @@ function initExecutor(): void {
   expectBackgroundPage();
 
   browser.tabs.onCreated.addListener(linkTabListener);
-  browser.runtime.onMessage.addListener(backgroundListener);
+  browser.runtime.onMessage.addListener(handlers.asListener());
 }
 
 export async function activateTab(): Promise<void> {
