@@ -28,7 +28,7 @@ import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/options/pages/brickEditor/EditPage";
 import MarketplacePage from "@/options/pages/MarketplacePage";
-import Settings from "./pages/Settings";
+import SettingsPage from "@/options/pages/settings/SettingsPage";
 import Navbar from "@/layout/Navbar";
 import Footer from "@/layout/Footer";
 import Sidebar from "@/layout/Sidebar";
@@ -101,7 +101,7 @@ const Layout = () => {
                     path="/:sourcePage/activate/:blueprintId"
                     component={ActivatePage}
                   />
-                  <Route exact path="/settings" component={Settings} />
+                  <Route exact path="/settings" component={SettingsPage} />
                   <Route path="/services/:id?" component={ServicesEditor} />
                   <Route exact path="/workshop" component={ExtensionEditor} />
                   <Route
