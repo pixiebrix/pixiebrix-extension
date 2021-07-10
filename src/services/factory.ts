@@ -107,7 +107,7 @@ class LocalDefinedService<
       // convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
       const baseUrlTemplate = this._definition.authentication.baseURL;
       const baseUrl = mapArgs(baseUrlTemplate, serviceConfig);
-      patterns.push(baseUrl.endsWith("/") ? `${baseUrl}*` : `${baseUrl}/*`);
+      patterns.push(baseUrl + (baseUrl.endsWith("/") ? "*" : "/*"));
     }
 
     if (this.isOAuth2) {

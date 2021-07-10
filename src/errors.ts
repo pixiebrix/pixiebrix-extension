@@ -111,7 +111,7 @@ export function hasBusinessRootCause(error: Error | SerializedError): boolean {
   } else if (error instanceof BusinessError || error.name === "BusinessError") {
     return true;
   } else if (error instanceof ContextError) {
-    return hasCancelRootCause(error.cause);
+    return hasBusinessRootCause(error.cause);
   }
   return false;
 }

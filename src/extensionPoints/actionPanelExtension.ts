@@ -19,7 +19,6 @@ import {
   BlockConfig,
   blockList,
   BlockPipeline,
-  HeadlessModeError,
   makeServiceContext,
   mergeReaders,
   reducePipeline,
@@ -54,6 +53,7 @@ import { reportError } from "@/telemetry/logging";
 import { v4 as uuidv4 } from "uuid";
 import { getErrorMessage } from "@/extensionPoints/helpers";
 import { BusinessError } from "@/errors";
+import { HeadlessModeError } from "@/blocks/errors";
 
 export interface ActionPanelConfig {
   heading: string;
