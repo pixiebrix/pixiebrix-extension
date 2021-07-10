@@ -19,7 +19,7 @@ import sortBy from "lodash/sortBy";
 import { IconOption } from "@/icons/types";
 type RequireContext = __WebpackModuleApi.RequireContext;
 import { IconLibrary, IconConfig } from "@/core";
-import fetchSVG from "./svgElementFromUrl";
+import fetchSVG from "@/icons/svgElementFromUrl";
 
 const filenameRegex = /^\.\/(?<fileName>.*?)\.svg$/i;
 

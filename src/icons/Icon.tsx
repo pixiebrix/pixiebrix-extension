@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { IconLibrary } from "@/core";
 import iconAsSVG from "@/icons/svgIcons";
-import { useState } from "react";
 
 const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
   icon,
