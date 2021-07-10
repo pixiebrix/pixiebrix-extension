@@ -26,6 +26,7 @@ import { Formik } from "formik";
 import Effect from "@/devTools/editor/components/Effect";
 import ElementWizard from "@/devTools/editor/ElementWizard";
 import { useEditable } from "@/devTools/editor/hooks/editorHooks";
+import { LogContextWrapper } from "@/components/logViewer/LogContext";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -66,12 +67,14 @@ const EditorPane: React.FunctionComponent<{
               onChange={syncReduxState}
               delayMillis={CHANGE_DETECT_DELAY_MILLIS}
             />
-            <ElementWizard
-              element={values}
-              editable={editable}
-              installed={installed}
-              toggleChat={toggleChat}
-            />
+            <LogContextWrapper>
+              <ElementWizard
+                element={values}
+                editable={editable}
+                installed={installed}
+                toggleChat={toggleChat}
+              />
+            </LogContextWrapper>
           </>
         )}
       </Formik>

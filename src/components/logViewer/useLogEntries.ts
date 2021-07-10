@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import {
   clearLog,
   getLog,
@@ -23,14 +23,19 @@ import {
   LogEntry,
   MessageLevel,
 } from "@/background/logging";
+import { stubTrue } from "lodash";
 import useAsyncEffect from "use-async-effect";
 import { MessageContext } from "@/core";
+import LogContext from "@/components/logViewer/LogContext";
 
 type Options = {
   context: MessageContext;
   level: MessageLevel;
   page: number;
   perPage: number;
+  /**
+   * Interval in milliseconds to check for new log entries, or null to turn off automatic checks
+   */
   refreshInterval?: number;
 };
 
@@ -52,6 +57,9 @@ export default function useLogEntries({
   refreshInterval,
 }: Options): LogState {
   const [numNew, setNumNew] = useState<number>(0);
+  const [initialized, setInitialized] = useState(false);
+
+  const { setUnread, setRefresh } = useContext(LogContext);
 
   const [{ entries, isLoading }, setLogState] = useState<{
     entries: LogEntry[];
@@ -59,7 +67,7 @@ export default function useLogEntries({
   }>({ entries: [], isLoading: true });
 
   const refresh = useCallback(
-    async (isMounted: () => boolean = () => true) => {
+    async (isMounted = stubTrue) => {
       setLogState({ entries: [], isLoading: true });
       const entries = await getLog(context);
       if (!isMounted()) {
@@ -67,16 +75,23 @@ export default function useLogEntries({
       }
       setLogState({ entries, isLoading: false });
       setNumNew(0);
+      setUnread([]);
+      setInitialized(true);
     },
-    [context]
+    [context, setUnread, setInitialized]
   );
 
   useAsyncEffect(
     async (isMounted) => {
       await refresh(isMounted);
     },
-    [refresh]
+    [refresh, setRefresh]
   );
+
+  useEffect(() => {
+    console.debug("Setting log refresh handler in LogContext");
+    setRefresh(refresh);
+  }, [setRefresh, refresh]);
 
   const filteredEntries = useMemo(
     () =>
@@ -88,6 +103,11 @@ export default function useLogEntries({
     [level, entries]
   );
 
+  const lastTimestamp = useMemo(
+    () => Math.max(...entries.map((x) => Number(x.timestamp))),
+    [entries]
+  );
+
   const [pageEntries, numPages] = useMemo(() => {
     const start = page * perPage;
     const pageEntries = filteredEntries.slice(start, start + perPage);
@@ -95,13 +115,26 @@ export default function useLogEntries({
   }, [perPage, page, filteredEntries]);
 
   const checkNewEntries = useCallback(async () => {
+    if (!initialized) {
+      // wait for the initial set of logs before starting to check for updates
+      return;
+    }
     const newEntries = await getLog(context);
     const filteredNewEntries = (newEntries ?? []).filter(
       // eslint-disable-next-line security/detect-object-injection -- level is from dropdown
       (x) => LOG_LEVELS[x.level] >= LOG_LEVELS[level]
     );
+    setUnread(newEntries.filter((x) => Number(x.timestamp) > lastTimestamp));
     setNumNew(Math.max(0, filteredNewEntries.length - filteredEntries.length));
-  }, [context, filteredEntries, level, setNumNew]);
+  }, [
+    lastTimestamp,
+    setUnread,
+    context,
+    filteredEntries,
+    level,
+    setNumNew,
+    initialized,
+  ]);
 
   const clear = useCallback(async () => {
     return clearLog(context);

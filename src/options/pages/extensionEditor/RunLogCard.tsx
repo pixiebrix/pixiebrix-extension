@@ -41,13 +41,13 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   const [level, setLevel] = useState<MessageLevel>(initialLevel);
   const [page, setPage] = useState(0);
 
-  const context = useMemo(() => ({ extensionPointId, extensionId }), [
+  const messageContext = useMemo(() => ({ extensionPointId, extensionId }), [
     extensionPointId,
     extensionId,
   ]);
 
   const logs = useLogEntries({
-    context,
+    context: messageContext,
     perPage,
     refreshInterval,
     level,
