@@ -94,7 +94,7 @@
     "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
     "unicorn/prefer-set-has": "off", // Not always worth the extra code
     "unicorn/prefer-ternary": "off", // Maybe later
-    "unicorn/require-post-message-target-origin": "off" // Incompatible https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1409
+    "unicorn/require-post-message-target-origin": "off" // Incompatible https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1396
   },
   "ignorePatterns": [
     "node_modules",
