@@ -49,6 +49,7 @@ import { PanelComponent, render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
+import iconAsSVG from "@/icons/svgIcons";
 
 export interface PanelConfig {
   heading?: string;
@@ -285,21 +286,12 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const serviceContext = await makeServiceContext(extension.services);
     const extensionContext = { ...readerContext, ...serviceContext };
 
-    const iconAsSVG = icon
-      ? (
-          await import(
-            /* webpackChunkName: "icons" */
-            "@/icons/svgIcons"
-          )
-        ).default
-      : null;
-
     const $panel = $(
       Mustache.render(this.getTemplate(), {
         heading: Mustache.render(heading, extensionContext),
         // render a placeholder body that we'll fill in async
         body: `<div id="${bodyUUID}"></div>`,
-        icon: iconAsSVG?.(icon),
+        icon: await iconAsSVG?.(icon),
         bodyUUID,
       })
     );

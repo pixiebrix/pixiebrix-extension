@@ -30,7 +30,7 @@ export interface IconOption {
 
 export const iconOptions: IconOption[] = [];
 
-function iconAsSVG(): string {
+async function iconAsSVG(): Promise<string> {
   return "<svg></svg>";
 }
 

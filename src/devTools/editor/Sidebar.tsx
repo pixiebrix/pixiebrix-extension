@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { FormEvent, useContext, useMemo, useState } from "react";
+import React, {
+  FormEvent,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { EditorState, FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
@@ -31,7 +37,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IExtension } from "@/core";
 import { ELEMENT_DEFINITIONS } from "@/devTools/editor/extensionPoints/adapter";
 import hash from "object-hash";
-import logo from "@/icons/custom-icons/favicon.svg";
+import logoUrl from "@/icons/custom-icons/favicon.svg";
 import BeatLoader from "react-spinners/BeatLoader";
 import { openExtensionOptions } from "@/messaging/external";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -40,6 +46,7 @@ import InstalledEntry from "@/devTools/editor/sidebar/InstalledEntry";
 import DynamicEntry from "@/devTools/editor/sidebar/DynamicEntry";
 import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/sidebar/useAddElement";
+import fetchSVG from "@/icons/svgElementFromUrl";
 
 function mapReservedNames(elements: FormState[]): string[] {
   return sortBy(
@@ -147,6 +154,14 @@ const Sidebar: React.FunctionComponent<
   );
 
   const addElement = useAddElement(reservedNames);
+
+  const [logo, setLogo] = useState("");
+
+  useEffect(() => {
+    void fetchSVG(logoUrl).then(($icon) => {
+      setLogo($icon.get(0).outerHTML);
+    });
+  }, []);
 
   return (
     <div className="Sidebar d-flex flex-column vh-100">

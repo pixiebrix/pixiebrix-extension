@@ -15,19 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { IconLibrary } from "@/core";
 import iconAsSVG from "@/icons/svgIcons";
+import { useState } from "react";
 
 const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
   icon,
   library,
-}) => (
-  <span
-    dangerouslySetInnerHTML={{
-      __html: iconAsSVG({ id: icon, library, size: 16 }),
-    }}
-  />
-);
+}) => {
+  const [svg, setSvg] = useState("");
+
+  useEffect(() => {
+    void iconAsSVG({ id: icon, library, size: 16 }).then(setSvg);
+  }, [icon, library]);
+
+  return (
+    <span
+      dangerouslySetInnerHTML={{
+        __html: svg,
+      }}
+    />
+  );
+};
 
 export default Icon;
