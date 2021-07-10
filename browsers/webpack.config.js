@@ -351,21 +351,21 @@ module.exports = (env, options) => ({
         test: /bootstrap-icons\/.*\.svg$/,
         type: "asset/resource",
         generator: {
-          filename: "img/bootstrap-icons/[name][ext]",
+          filename: "user-icons/bootstrap-icons/[name][ext]",
         },
       },
       {
         test: /simple-icons\/.*\.svg$/,
         type: "asset/resource",
         generator: {
-          filename: "img/simple-icons/[name][ext]",
+          filename: "user-icons/simple-icons/[name][ext]",
         },
       },
       {
         test: /custom-icons\/.*\.svg$/,
         type: "asset/resource",
         generator: {
-          filename: "img/custom-icons/[name][ext]",
+          filename: "user-icons/custom-icons/[name][ext]",
         },
       },
       {
