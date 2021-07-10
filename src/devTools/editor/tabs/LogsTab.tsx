@@ -21,9 +21,11 @@ import { Tab } from "react-bootstrap";
 import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
 import { useFormikContext } from "formik";
 
+export const LOGS_EVENT_KEY = "logs";
+
 const LogsTab: React.FunctionComponent<{
   eventKey: string;
-}> = ({ eventKey = "logs" }) => {
+}> = ({ eventKey = LOGS_EVENT_KEY }) => {
   const { values } = useFormikContext<FormState>();
 
   return (

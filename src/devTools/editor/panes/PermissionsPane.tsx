@@ -22,6 +22,8 @@ import { browser } from "webextension-polyfill-ts";
 import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
 import { Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { port, connect } = useContext(DevToolsContext);
@@ -29,9 +31,9 @@ const PermissionsPane: React.FunctionComponent = () => {
   const requestPermissions = useCallback(() => {
     // Firefox browser.permissions.request gets confused by async code. Must use normal promises in the
     // call path to browser.permissions.request so it knows it was triggered by a user action
-    getTabInfo(port).then(({ url }) => {
+    void getTabInfo(port).then(({ url }) => {
       const requestPromise = browser.permissions.request({ origins: [url] });
-      requestPromise.then(async () => {
+      void requestPromise.then(async () => {
         await sleep(500);
         await connect();
       });
@@ -44,11 +46,18 @@ const PermissionsPane: React.FunctionComponent = () => {
         PixieBrix does not have access to the page
       </div>
       <p>
-        <Button onClick={requestPermissions}>Grant permanent access</Button>
+        <Button onClick={requestPermissions}>
+          <FontAwesomeIcon icon={faShieldAlt} /> Grant Permanent Access
+        </Button>
+      </p>
+      <p className="text-info">
+        <FontAwesomeIcon icon={faInfoCircle} /> You can revoke PixieBrix&apos;s
+        access to a site at any time on PixieBrix&apos;s Settings page
       </p>
       <p>
-        Or grant temporary access by 1) clicking on the PixieBrix extension in
-        the extensions dropdown and 2) then refreshing the page
+        Or, grant temporary access by 1) clicking on the PixieBrix extension
+        menu item in your browser&apos;s extensions dropdown, and 2) then
+        refreshing the page
       </p>
     </Centered>
   );

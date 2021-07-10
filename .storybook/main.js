@@ -36,6 +36,8 @@ module.exports = {
       vendors: path.resolve(rootDir, "src/vendors"),
     };
 
+    config.pl;
+
     config.module.rules.push({
       test: /\.scss$/,
       use: [

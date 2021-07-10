@@ -106,14 +106,17 @@ export async function collectPermissions(
   return distinctPermissions([...servicePermissions, ...permissions]);
 }
 
+/**
+ * Return origin permissions required to use a service with the given configuration.
+ */
 export async function serviceOriginPermissions(
   dependency: ServiceAuthPair
 ): Promise<Permissions.Permissions> {
   const localConfig = await locator.locate(dependency.id, dependency.config);
 
   if (localConfig.proxy) {
-    // Don't need permissions to access the pixiebrix api server because they're already granted on
-    // extension install
+    // Don't need permissions to access the pixiebrix API proxy server because they're already granted on
+    // extension install. The proxy server will check isAvailable when making request
     return { origins: [] };
   } else {
     const service = await registry.lookup(dependency.id);
