@@ -19,6 +19,7 @@ import sortBy from "lodash/sortBy";
 import { IconOption } from "@/icons/types";
 type RequireContext = __WebpackModuleApi.RequireContext;
 import { IconLibrary, IconConfig } from "@/core";
+import fetchSVG from "@/icons/svgElementFromUrl";
 
 const filenameRegex = /^\.\/(?<fileName>.*?)\.svg$/i;
 
@@ -60,25 +61,24 @@ export const iconOptions: IconOption[] = sortBy(
   (x) => x.label
 );
 
-function iconAsSVG(config: IconConfig): string {
+async function iconAsSVG(config: IconConfig): Promise<string> {
   const library = iconCache[config.library ?? "bootstrap"];
 
   if (!library) {
     throw new Error(`Unknown icon library: ${config.library}`);
   }
 
-  const $elt = $(library[config.id] ?? library["box"]);
-
-  if ($elt.length === 0) {
+  const iconUrl = library[config.id] ?? library["box"];
+  if (!iconUrl) {
     throw new Error(
       `Could not find icon ${config.id} in icon library ${library}`
     );
   }
 
+  const $elt = await fetchSVG(iconUrl);
   $elt.attr("width", config.size ?? 14);
   $elt.attr("height", config.size ?? 14);
-  $elt.find("path").attr("fill", config.color ?? "#ae87e8");
-
+  $elt.attr("fill", config.color ?? "#ae87e8");
   return $elt.get(0).outerHTML;
 }
 

@@ -348,8 +348,25 @@ module.exports = (env, options) => ({
         },
       },
       {
-        test: /(bootstrap-icons|simple-icons|custom-icons).*\.svg$/,
-        loader: "svg-inline-loader",
+        test: /bootstrap-icons\/.*\.svg$/,
+        type: "asset/resource",
+        generator: {
+          filename: "user-icons/bootstrap-icons/[name][ext]",
+        },
+      },
+      {
+        test: /simple-icons\/.*\.svg$/,
+        type: "asset/resource",
+        generator: {
+          filename: "user-icons/simple-icons/[name][ext]",
+        },
+      },
+      {
+        test: /custom-icons\/.*\.svg$/,
+        type: "asset/resource",
+        generator: {
+          filename: "user-icons/custom-icons/[name][ext]",
+        },
       },
       {
         test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,

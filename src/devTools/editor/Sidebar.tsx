@@ -16,6 +16,7 @@
  */
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
+import useAsyncEffect from "use-async-effect";
 import { EditorState, FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
@@ -31,7 +32,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IExtension } from "@/core";
 import { ELEMENT_DEFINITIONS } from "@/devTools/editor/extensionPoints/adapter";
 import hash from "object-hash";
-import logo from "@/icons/custom-icons/favicon.svg";
+import logoUrl from "@/icons/custom-icons/favicon.svg";
 import BeatLoader from "react-spinners/BeatLoader";
 import { openExtensionOptions } from "@/messaging/external";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
@@ -40,6 +41,7 @@ import InstalledEntry from "@/devTools/editor/sidebar/InstalledEntry";
 import DynamicEntry from "@/devTools/editor/sidebar/DynamicEntry";
 import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/sidebar/useAddElement";
+import fetchSVG from "@/icons/svgElementFromUrl";
 
 function mapReservedNames(elements: FormState[]): string[] {
   return sortBy(
@@ -148,6 +150,19 @@ const Sidebar: React.FunctionComponent<
 
   const addElement = useAddElement(reservedNames);
 
+  const [logo, setLogo] = useState("");
+
+  useAsyncEffect(
+    async (isMounted) => {
+      const $icon = await fetchSVG(logoUrl);
+      if (!isMounted()) {
+        return;
+      }
+      setLogo($icon.get(0).outerHTML);
+    },
+    [setLogo]
+  );
+
   return (
     <div className="Sidebar d-flex flex-column vh-100">
       <div className="Sidebar__actions flex-grow-0">
@@ -155,7 +170,7 @@ const Sidebar: React.FunctionComponent<
           <span
             className="Sidebar__logo"
             dangerouslySetInnerHTML={{ __html: logo }}
-            onClick={() => openExtensionOptions()}
+            onClick={async () => openExtensionOptions()}
           />
           <DropdownButton
             disabled={!!inserting || !hasPermissions}

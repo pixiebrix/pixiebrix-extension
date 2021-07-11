@@ -62,6 +62,7 @@ import {
 import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
 import { PanelDefinition } from "@/extensionPoints/panelExtension";
+import iconAsSVG from "@/icons/svgIcons";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -421,15 +422,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const renderTemplate = engineRenderer(extension.templateEngine);
 
-    const iconAsSVG = icon
-      ? (
-          await import(
-            /* webpackChunkName: "icons" */
-            "@/icons/svgIcons"
-          )
-        ).default
-      : null;
-
     let html: string;
 
     if (extension.config.if) {
@@ -463,12 +455,12 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const extensionContext = { ...ctxt, ...serviceContext };
       html = Mustache.render(this.getTemplate(), {
         caption: renderTemplate(caption, extensionContext),
-        icon: iconAsSVG?.(icon),
+        icon: await iconAsSVG?.(icon),
       });
     } else {
       html = Mustache.render(this.getTemplate(), {
         caption,
-        icon: iconAsSVG?.(icon),
+        icon: await iconAsSVG?.(icon),
       });
     }
 
