@@ -19,6 +19,15 @@ const path = require("path");
 const rootDir = path.resolve(__dirname, "../");
 const webpack = require("webpack");
 
+const { resolve: sharedResolutions } = require("../browsers/resolve.config.js");
+sharedResolutions.alias["@uipath/robot"] = path.resolve(
+  rootDir,
+  "src/__mocks__/robotMock"
+);
+sharedResolutions.fallback = {
+  chokidar: false,
+};
+
 module.exports = {
   mode: "development",
   target: "node",
@@ -37,22 +46,7 @@ module.exports = {
     // https://github.com/yan-foto/electron-reload/issues/71#issuecomment-588988382
     fsevents: "require('fsevents')",
   },
-  resolve: {
-    alias: {
-      "@": path.resolve(rootDir, "src"),
-      "@img": path.resolve(rootDir, "img"),
-      "@contrib": path.resolve(rootDir, "contrib"),
-      "@schemas": path.resolve(rootDir, "schemas"),
-      vendors: path.resolve(rootDir, "src/vendors"),
-      "@uipath/robot": path.resolve(rootDir, "src/__mocks__/robotMock"),
-      // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
-      handlebars: "handlebars/dist/handlebars.js",
-    },
-    extensions: [".ts", ".tsx", ".jsx", ".js"],
-    fallback: {
-      chokidar: false,
-    },
-  },
+  resolve: sharedResolutions,
   plugins: [
     new webpack.ProvidePlugin({
       window: "global/window.js",

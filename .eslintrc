@@ -11,7 +11,7 @@
   "settings": {
     "import/resolver": {
       "webpack": {
-        "config": "./browsers/webpack.config.js"
+        "config": "./browsers/resolve.config.js"
       }
     },
     "react": {
@@ -28,11 +28,11 @@
     "plugin:react-hooks/recommended",
     "plugin:import/typescript",
     "plugin:security/recommended",
-    "plugin:unicorn/recommended"
+    "plugin:unicorn/recommended",
 
-    // TODO: Restore these after https://github.com/benmosher/eslint-plugin-import/issues/1931
+    // TODO: Restore this after linting the codebase
     // "plugin:import/errors",
-    // "plugin:import/warnings",
+    "plugin:import/warnings"
   ],
   "rules": {
     "@typescript-eslint/no-unused-vars": [
