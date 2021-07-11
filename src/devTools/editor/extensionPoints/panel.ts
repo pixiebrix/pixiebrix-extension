@@ -17,7 +17,6 @@
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { PanelFormState, PanelTraits } from "@/devTools/editor/editorSlice";
 import {
   makeBaseState,
   makeExtensionReaders,
@@ -46,7 +45,13 @@ import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
 import * as nativeOperations from "@/background/devtools";
-import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
+import {
+  BaseFormState,
+  ElementConfig,
+} from "@/devTools/editor/extensionPoints/elementConfig";
+import { ElementInfo } from "@/nativeEditor/frameworks";
+import { MenuPosition } from "@/extensionPoints/menuItemExtension";
+import { BlockPipeline } from "@/blocks/combinators";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -63,13 +68,46 @@ export const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
+export type PanelTraits = {
+  style: {
+    mode: "default" | "inherit";
+  };
+};
+
+export interface PanelFormState extends BaseFormState {
+  type: "panel";
+
+  containerInfo: ElementInfo;
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      containerSelector: string;
+      position?: MenuPosition;
+      template: string;
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+    traits: PanelTraits;
+  };
+
+  extension: {
+    heading: string;
+    body: BlockPipeline;
+    collapsible?: boolean;
+    shadowDOM?: boolean;
+  };
+}
+
 const DEFAULT_TRAITS: PanelTraits = {
   style: {
     mode: "inherit",
   },
 };
 
-export function makePanelState(
+function initialFormStateFactory(
   url: string,
   metadata: Metadata,
   panel: PanelSelectionResult,
@@ -102,7 +140,7 @@ export function makePanelState(
   };
 }
 
-export function makePanelExtensionPoint({
+function selectExtensionPoint({
   extensionPoint,
   readers,
 }: PanelFormState): ExtensionPointConfig<PanelDefinition> {
@@ -131,7 +169,7 @@ export function makePanelExtensionPoint({
   };
 }
 
-export function makePanelExtension({
+function selectExtension({
   uuid,
   label,
   extensionPoint,
@@ -150,13 +188,13 @@ export function makePanelExtension({
 function asDynamicElement(element: PanelFormState): DynamicDefinition {
   return {
     type: "panel",
-    extension: makePanelExtension(element),
-    extensionPoint: makePanelExtensionPoint(element),
+    extension: selectExtension(element),
+    extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
 }
 
-export async function makePanelExtensionFormState(
+async function fromExtensionPoint(
   url: string,
   extensionPoint: ExtensionPointConfig<PanelDefinition>
 ): Promise<PanelFormState> {
@@ -198,7 +236,7 @@ export async function makePanelExtensionFormState(
   };
 }
 
-export async function makePanelFormState(
+async function fromExtension(
   config: IExtension<PanelConfig>
 ): Promise<PanelFormState> {
   const extensionPoint = await lookupExtensionPoint<
@@ -243,12 +281,12 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   label: "Panel",
   icon: faWindowMaximize,
   insert: nativeOperations.insertPanel,
-  makeState: makePanelState,
+  initialFormStateFactory,
   asDynamicElement,
-  makeFromExtensionPoint: makePanelExtensionFormState,
-  extensionPoint: makePanelExtensionPoint,
-  extension: makePanelExtension,
-  formState: makePanelFormState,
+  fromExtensionPoint,
+  selectExtensionPoint,
+  selectExtension,
+  fromExtension,
 };
 
 export default config;

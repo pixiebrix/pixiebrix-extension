@@ -14,20 +14,70 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { ElementType, FormState } from "@/devTools/editor/editorSlice";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Runtime } from "webextension-polyfill-ts";
-import { IExtension, Metadata } from "@/core";
+import { IExtension, Metadata, Schema, ServiceDependency } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
+
+export type ElementType =
+  | "menuItem"
+  | "trigger"
+  | "panel"
+  | "contextMenu"
+  | "actionPanel";
+
+export interface ReaderReferenceFormState {
+  metadata: Metadata;
+}
+
+export interface ReaderFormState {
+  _new?: boolean;
+  metadata: Metadata;
+  outputSchema: Schema;
+  definition: {
+    /**
+     * Reader type corresponding to built-in reader factory, e.g., jquery, react.
+     */
+    type: string | null;
+    selector: string | null;
+    selectors: { [field: string]: string };
+    optional: boolean;
+  };
+}
+
+export function isCustomReader(
+  reader: ReaderFormState | ReaderReferenceFormState
+): reader is ReaderFormState {
+  return "definition" in reader;
+}
+
+export interface BaseFormState {
+  readonly uuid: string;
+  readonly type: ElementType;
+
+  installed?: boolean;
+
+  autoReload?: boolean;
+
+  label: string;
+
+  services: ServiceDependency[];
+
+  readers: (ReaderFormState | ReaderReferenceFormState)[];
+
+  extensionPoint: unknown;
+
+  extension: unknown;
+}
 
 /**
  * ExtensionPoint configuration for use with the Page Editor.
  */
 export interface ElementConfig<
   TResult = unknown,
-  TState extends FormState = FormState
+  TState extends BaseFormState = BaseFormState
 > {
   /**
    * The internal element type, e.g., menuItem, contextMenu, etc.
@@ -52,7 +102,7 @@ export interface ElementConfig<
 
   /**
    * Feature flag that indicates whether or not the element type is enabled for the user. `undefined` to indicate
-   * all users should be able to use the element.
+   * all users should be able to create/edit the elements of this type.
    */
   readonly flag?: string;
 
@@ -64,29 +114,47 @@ export interface ElementConfig<
   readonly insert?: (port: Runtime.Port) => Promise<TResult>;
 
   /**
-   * Make the initial page editor form state for a new element
+   * Returns the initial page editor form state for a new element (including new foundation)
    * @param url the URL of the current page
    * @param metadata the initial metadata for the new element
    * @param element the result of the `insert` method
    * @param frameworks the frameworks that PixieBrix has detected on the host page
+   *
+   * @see fromExtensionPoint
    */
-  readonly makeState: (
+  readonly initialFormStateFactory: (
     url: string,
     metadata: Metadata,
     element: TResult,
     frameworks: FrameworkMeta[]
   ) => TState;
 
-  readonly asDynamicElement: (state: TState) => DynamicDefinition;
-
-  readonly makeFromExtensionPoint?: (
+  /**
+   * Returns the initial form state from an existing extension point
+   * @see initialFormStateFactory
+   */
+  readonly fromExtensionPoint?: (
     url: string,
     config: ExtensionPointConfig
   ) => Promise<TState>;
 
-  readonly extensionPoint: (element: TState) => ExtensionPointConfig;
+  /**
+   * Returns a dynamic element definition that the content script can render on the page
+   */
+  readonly asDynamicElement: (state: TState) => DynamicDefinition;
 
-  readonly extension: (element: TState) => IExtension;
+  /**
+   * Returns the FormState corresponding to extension
+   */
+  readonly fromExtension: (extension: IExtension) => Promise<TState>;
 
-  readonly formState: (extension: IExtension) => Promise<TState>;
+  /**
+   * Returns the extension point configuration corresponding to the FormState.
+   */
+  readonly selectExtensionPoint: (element: TState) => ExtensionPointConfig;
+
+  /**
+   * Returns the extension configuration corresponding to the FormState.
+   */
+  readonly selectExtension: (element: TState) => IExtension;
 }

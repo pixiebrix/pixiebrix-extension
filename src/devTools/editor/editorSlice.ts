@@ -16,188 +16,15 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IconConfig, Metadata, Schema, ServiceDependency } from "@/core";
-import { ElementInfo } from "@/nativeEditor/frameworks";
-import { MenuPosition } from "@/extensionPoints/menuItemExtension";
-import { MenuDefaultOptions as ContextMenuDefaultOptions } from "@/extensionPoints/contextMenu";
-import { BlockPipeline } from "@/blocks/combinators";
-import { Trigger } from "@/extensionPoints/triggerExtension";
-import { Menus } from "webextension-polyfill-ts";
-
-export interface ReaderReferenceFormState {
-  metadata: Metadata;
-}
-
-export interface ReaderFormState {
-  _new?: boolean;
-  metadata: Metadata;
-  outputSchema: Schema;
-  definition: {
-    /**
-     * Reader type corresponding to built-in reader factory, e.g., jquery, react.
-     */
-    type: string | null;
-    selector: string | null;
-    selectors: { [field: string]: string };
-    optional: boolean;
-  };
-}
-
-export function isCustomReader(
-  reader: ReaderFormState | ReaderReferenceFormState
-): reader is ReaderFormState {
-  return "definition" in reader;
-}
-
-export type ElementType =
-  | "menuItem"
-  | "trigger"
-  | "panel"
-  | "contextMenu"
-  | "actionPanel";
-
-export interface BaseFormState {
-  readonly uuid: string;
-  readonly type: ElementType;
-
-  installed?: boolean;
-  autoReload?: boolean;
-
-  label: string;
-
-  services: ServiceDependency[];
-
-  readers: (ReaderFormState | ReaderReferenceFormState)[];
-
-  extensionPoint: unknown;
-
-  extension: unknown;
-}
-
-export interface ContextMenuFormState extends BaseFormState {
-  type: "contextMenu";
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      defaultOptions: ContextMenuDefaultOptions;
-      documentUrlPatterns: string[];
-      contexts: Menus.ContextType[];
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
-    };
-  };
-
-  extension: {
-    title: string;
-    action: BlockPipeline;
-  };
-}
-
-export interface TriggerFormState extends BaseFormState {
-  type: "trigger";
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      rootSelector: string | null;
-      trigger: Trigger;
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
-    };
-  };
-
-  extension: {
-    action: BlockPipeline;
-  };
-}
-
-export interface ActionPanelFormState extends BaseFormState {
-  type: "actionPanel";
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
-    };
-  };
-
-  extension: {
-    heading: string;
-    body: BlockPipeline;
-  };
-}
-
-export type PanelTraits = {
-  style: {
-    mode: "default" | "inherit";
-  };
-};
-
-export interface PanelFormState extends BaseFormState {
-  type: "panel";
-
-  containerInfo: ElementInfo;
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      containerSelector: string;
-      position?: MenuPosition;
-      template: string;
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
-    };
-    traits: PanelTraits;
-  };
-
-  extension: {
-    heading: string;
-    body: BlockPipeline;
-    collapsible?: boolean;
-    shadowDOM?: boolean;
-  };
-}
-
-export interface ActionFormState extends BaseFormState {
-  type: "menuItem";
-
-  containerInfo: ElementInfo;
-
-  extensionPoint: {
-    metadata: Metadata;
-    definition: {
-      containerSelector: string;
-      position?: MenuPosition;
-      template: string;
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
-    };
-    traits?: {
-      style: {
-        mode: "default" | "inherit";
-      };
-    };
-  };
-
-  extension: {
-    caption: string;
-    dynamicCaption?: boolean;
-    icon?: IconConfig;
-    action: BlockPipeline;
-  };
-}
+import {
+  ElementType,
+  isCustomReader,
+} from "@/devTools/editor/extensionPoints/elementConfig";
+import { ActionFormState } from "@/devTools/editor/extensionPoints/menuItem";
+import { ActionPanelFormState } from "@/devTools/editor/extensionPoints/actionPanel";
+import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
+import { PanelFormState } from "@/devTools/editor/extensionPoints/panel";
+import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextMenu";
 
 export type FormState =
   | ActionFormState
@@ -208,12 +35,30 @@ export type FormState =
 
 export interface EditorState {
   selectionSeq: number;
+
+  /**
+   * The element type, if the page editor is in "insertion-mode"
+   */
   inserting: ElementType | null;
+
+  /**
+   * The uuid of the active element, or null if no elements are active
+   */
   activeElement: string | null;
+
   error: string | null;
+
   dirty: Record<string, boolean>;
-  knownEditable: string[];
+
+  /**
+   * Unsaved elements
+   */
   readonly elements: FormState[];
+
+  /**
+   * Brick ids (not UUIDs) that are known to be editable by the current user
+   */
+  knownEditable: string[];
 
   /**
    * True if error is because user does not have access to beta features
@@ -297,6 +142,7 @@ export const editorSlice = createSlice({
       } else {
         state.elements.push(actions.payload);
       }
+      // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
       state.dirty[uuid] = false;
       state.error = null;
       state.beta = null;
@@ -347,6 +193,7 @@ export const editorSlice = createSlice({
       // safe b/c generated from findIndex
       // eslint-disable-next-line security/detect-object-injection
       state.elements[index] = action.payload;
+      // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
       state.dirty[uuid] = true;
     },
     removeElement: (state, action: PayloadAction<string>) => {
@@ -358,6 +205,7 @@ export const editorSlice = createSlice({
         state.elements.findIndex((x) => x.uuid === uuid),
         1
       );
+      // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
       delete state.dirty[uuid];
     },
   },

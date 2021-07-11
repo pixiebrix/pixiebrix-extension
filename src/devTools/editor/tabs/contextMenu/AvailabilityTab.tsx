@@ -24,7 +24,6 @@ import {
   useField,
   useFormikContext,
 } from "formik";
-import { ContextMenuFormState } from "@/devTools/editor/editorSlice";
 import { getTabInfo } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { openTab } from "@/background/executor";
@@ -37,6 +36,7 @@ import {
   HTTPS_PATTERN,
   SITES_PATTERN,
 } from "@/permissions/patterns";
+import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextMenu";
 
 const CONTEXTS = [
   "page",
@@ -70,7 +70,7 @@ const ContextSelector: React.FunctionComponent<{
       options={contextOptions}
       value={contextOptions.filter((x) => field.value.includes(x.value))}
       onChange={(values) =>
-        helpers.setValue((values as any).map((x: ContextOption) => x.value))
+        helpers.setValue(values.map((x: ContextOption) => x.value))
       }
     />
   );

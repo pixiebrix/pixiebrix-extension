@@ -26,7 +26,7 @@ import { useDispatch } from "react-redux";
 import { DevToolsContext } from "@/devTools/context";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import { getTabInfo } from "@/background/devtools";
-import { makePanelExtensionFormState } from "@/devTools/editor/extensionPoints/panel";
+import config from "@/devTools/editor/extensionPoints/panel";
 import Centered from "@/devTools/editor/components/Centered";
 import BlockModal from "@/components/fields/BlockModal";
 import { Button } from "react-bootstrap";
@@ -54,7 +54,7 @@ const InsertPanelPane: React.FunctionComponent<{
         );
       }
       const { url } = await getTabInfo(port);
-      const state = await makePanelExtensionFormState(
+      const state = await config.fromExtensionPoint(
         url,
         extensionPoint.rawConfig
       );

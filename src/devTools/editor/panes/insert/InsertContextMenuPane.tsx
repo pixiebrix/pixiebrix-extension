@@ -25,11 +25,11 @@ import { Button } from "react-bootstrap";
 import BlockModal from "@/components/fields/BlockModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { editorSlice } from "@/devTools/editor/editorSlice";
+import config from "@/devTools/editor/extensionPoints/contextMenu";
 import {
   ContextMenuExtensionPoint,
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
-import { makeContextMenuExtensionFormState } from "@/devTools/editor/extensionPoints/contextMenu";
 
 const { addElement } = editorSlice.actions;
 
@@ -52,7 +52,7 @@ const InsertContextMenuPane: React.FunctionComponent<{
         );
       }
       const { url } = await getTabInfo(port);
-      const state = await makeContextMenuExtensionFormState(
+      const state = await config.fromExtensionPoint(
         url,
         extensionPoint.rawConfig
       );

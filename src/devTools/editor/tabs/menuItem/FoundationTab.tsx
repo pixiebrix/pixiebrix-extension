@@ -32,9 +32,9 @@ import {
 import { Alert, Button, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import * as nativeOperations from "@/background/devtools";
-import { ActionFormState, FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { reportError } from "@/telemetry/logging";
+import { ActionFormState } from "@/devTools/editor/extensionPoints/menuItem";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
@@ -45,7 +45,7 @@ const FoundationTab: React.FunctionComponent<{
   );
   const [dragging, setDragging] = useState(false);
   const { port } = useContext(DevToolsContext);
-  const { values, setFieldValue } = useFormikContext<FormState>();
+  const { values, setFieldValue } = useFormikContext<ActionFormState>();
   const templateInput = useRef<HTMLTextAreaElement>(null);
 
   const toggle = useCallback(async () => {
@@ -180,8 +180,7 @@ const FoundationTab: React.FunctionComponent<{
           Position
         </Form.Label>
         <Col sm={10}>
-          {typeof (values as ActionFormState).extensionPoint.definition
-            .position === "string" ? (
+          {typeof values.extensionPoint.definition.position === "string" ? (
             <Field name="extensionPoint.definition.position">
               {({ field }: { field: FieldInputProps<string> }) => (
                 <Form.Control as="select" {...field}>
@@ -197,10 +196,7 @@ const FoundationTab: React.FunctionComponent<{
                 sort
                 name="extensionPoint.definition.position.sibling"
                 selectMode="element"
-                root={
-                  (values as ActionFormState).extensionPoint.definition
-                    .containerSelector
-                }
+                root={values.extensionPoint.definition.containerSelector}
               />
               <Form.Text className="text-muted">
                 Select an element in the container to position the menu item

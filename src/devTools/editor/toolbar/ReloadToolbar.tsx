@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useContext } from "react";
-import { FormState, TriggerFormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { useDebouncedCallback } from "use-debounce";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -24,6 +24,7 @@ import * as nativeOperations from "@/background/devtools";
 import useAsyncEffect from "use-async-effect";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { Button } from "react-bootstrap";
+import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 

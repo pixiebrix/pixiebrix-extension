@@ -17,7 +17,6 @@
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { ContextMenuFormState } from "@/devTools/editor/editorSlice";
 import {
   lookupExtensionPoint,
   makeBaseState,
@@ -37,13 +36,19 @@ import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import {
   ContextMenuConfig,
+  MenuDefaultOptions as ContextMenuDefaultOptions,
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
 import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
 import AvailabilityTab from "@/devTools/editor/tabs/contextMenu/AvailabilityTab";
 import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
+import {
+  BaseFormState,
+  ElementConfig,
+} from "@/devTools/editor/extensionPoints/elementConfig";
+import { Menus } from "webextension-polyfill-ts";
+import { BlockPipeline } from "@/blocks/combinators";
 
 export const wizard: WizardStep[] = [
   { step: "Menu Item", Component: MenuItemTab },
@@ -54,9 +59,32 @@ export const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export function makeContextMenuState(
+export interface ContextMenuFormState extends BaseFormState {
+  type: "contextMenu";
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      defaultOptions: ContextMenuDefaultOptions;
+      documentUrlPatterns: string[];
+      contexts: Menus.ContextType[];
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+  };
+
+  extension: {
+    title: string;
+    action: BlockPipeline;
+  };
+}
+
+function initialFormStateFactory(
   url: string,
   metadata: Metadata,
+  _element: null,
   frameworks: FrameworkMeta[]
 ): ContextMenuFormState {
   const base = makeBaseState(uuidv4(), null, metadata, frameworks);
@@ -88,7 +116,7 @@ export function makeContextMenuState(
   };
 }
 
-export function makeContextMenuExtensionPoint({
+function selectExtensionPoint({
   extensionPoint,
   readers,
 }: ContextMenuFormState): ExtensionPointConfig<MenuDefinition> {
@@ -102,9 +130,10 @@ export function makeContextMenuExtensionPoint({
     kind: "extensionPoint",
     metadata: {
       id: metadata.id,
-      version: "1.0.0",
+      version: metadata.version ?? "1.0.0",
       name: metadata.name,
-      description: "Context Menu created with the Page Editor",
+      description:
+        metadata.description ?? "Context Menu created with the Page Editor",
     },
     definition: {
       type: "contextMenu",
@@ -116,7 +145,7 @@ export function makeContextMenuExtensionPoint({
   };
 }
 
-export function makeContextMenuExtension({
+function selectExtension({
   uuid,
   label,
   extensionPoint,
@@ -132,7 +161,7 @@ export function makeContextMenuExtension({
   };
 }
 
-export async function makeContextMenuFormState(
+async function fromExtension(
   config: IExtension<ContextMenuConfig>
 ): Promise<ContextMenuFormState> {
   const extensionPoint = await lookupExtensionPoint<
@@ -168,7 +197,7 @@ export async function makeContextMenuFormState(
   };
 }
 
-export async function makeContextMenuExtensionFormState(
+async function fromExtensionPoint(
   url: string,
   extensionPoint: ExtensionPointConfig<MenuDefinition>
 ): Promise<ContextMenuFormState> {
@@ -206,8 +235,8 @@ export async function makeContextMenuExtensionFormState(
 function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   return {
     type: "contextMenu",
-    extension: makeContextMenuExtension(element),
-    extensionPoint: makeContextMenuExtensionPoint(element),
+    extension: selectExtension(element),
+    extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
 }
@@ -217,17 +246,12 @@ const config: ElementConfig<never, ContextMenuFormState> = {
   label: "Context Menu",
   insert: undefined,
   icon: faBars,
-  makeState: (
-    url: string,
-    metadata: Metadata,
-    element: unknown,
-    frameworks: FrameworkMeta[]
-  ) => makeContextMenuState(url, metadata, frameworks),
+  initialFormStateFactory,
   asDynamicElement,
-  makeFromExtensionPoint: makeContextMenuExtensionFormState,
-  extensionPoint: makeContextMenuExtensionPoint,
-  extension: makeContextMenuExtension,
-  formState: makeContextMenuFormState,
+  fromExtensionPoint,
+  selectExtensionPoint,
+  selectExtension,
+  fromExtension,
 };
 
 export default config;

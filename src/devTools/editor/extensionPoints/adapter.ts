@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementType, FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { IExtension } from "@/core";
 import { find as findBrick } from "@/registry/localRegistry";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
@@ -24,7 +24,10 @@ import triggerExtension from "@/devTools/editor/extensionPoints/trigger";
 import panelExtension from "@/devTools/editor/extensionPoints/panel";
 import contextMenuExtension from "@/devTools/editor/extensionPoints/contextMenu";
 import actionPanelExtension from "@/devTools/editor/extensionPoints/actionPanel";
-import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
+import {
+  ElementConfig,
+  ElementType,
+} from "@/devTools/editor/extensionPoints/elementConfig";
 
 export const ADAPTERS = new Map<ElementType, ElementConfig>([
   ["trigger", triggerExtension],
@@ -34,7 +37,7 @@ export const ADAPTERS = new Map<ElementType, ElementConfig>([
   ["menuItem", menuItemExtension],
 ]);
 
-export async function getType(extension: IExtension): Promise<ElementType> {
+export async function selectType(extension: IExtension): Promise<ElementType> {
   const brick = await findBrick(extension.extensionPointId);
   if (!brick) {
     console.exception("Cannot find extension point", {
@@ -49,12 +52,13 @@ export async function getType(extension: IExtension): Promise<ElementType> {
 export async function extensionToFormState(
   extension: IExtension
 ): Promise<FormState> {
-  const type = await getType(extension);
-  const { formState } = ADAPTERS.get(type);
-  if (!formState) {
+  const type = await selectType(extension);
+  const { fromExtension } = ADAPTERS.get(type);
+  if (!fromExtension) {
     throw new Error(
       `Editing existing extensions not implemented for type: '${type}'`
     );
   }
-  return formState(extension);
+  // FormState is the sum type of all the extension form states, so OK to cast
+  return fromExtension(extension) as Promise<FormState>;
 }

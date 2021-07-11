@@ -17,12 +17,6 @@
 
 import { IExtension, Metadata, selectMetadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
-import {
-  BaseFormState,
-  isCustomReader,
-  ReaderFormState,
-  ReaderReferenceFormState,
-} from "@/devTools/editor/editorSlice";
 import { castArray, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
@@ -37,6 +31,12 @@ import {
 import { find as findBrick } from "@/registry/localRegistry";
 import React from "react";
 import { createSitePattern, getDomain } from "@/permissions/patterns";
+import {
+  BaseFormState,
+  isCustomReader,
+  ReaderFormState,
+  ReaderReferenceFormState,
+} from "@/devTools/editor/extensionPoints/elementConfig";
 
 export interface WizardStep {
   step: string;

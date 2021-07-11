@@ -17,7 +17,6 @@
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { TriggerFormState } from "@/devTools/editor/editorSlice";
 import {
   lookupExtensionPoint,
   makeBaseState,
@@ -29,6 +28,7 @@ import {
 } from "@/devTools/editor/extensionPoints/base";
 import { v4 as uuidv4 } from "uuid";
 import {
+  Trigger,
   TriggerConfig,
   TriggerDefinition,
 } from "@/extensionPoints/triggerExtension";
@@ -44,7 +44,11 @@ import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
-import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
+import {
+  BaseFormState,
+  ElementConfig,
+} from "@/devTools/editor/extensionPoints/elementConfig";
+import { BlockPipeline } from "@/blocks/combinators";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -56,9 +60,30 @@ export const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export function makeTriggerState(
+export interface TriggerFormState extends BaseFormState {
+  type: "trigger";
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      rootSelector: string | null;
+      trigger: Trigger;
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+  };
+
+  extension: {
+    action: BlockPipeline;
+  };
+}
+
+function initialFormStateFactory(
   url: string,
   metadata: Metadata,
+  _element: null,
   frameworks: FrameworkMeta[]
 ): TriggerFormState {
   return {
@@ -79,7 +104,7 @@ export function makeTriggerState(
   };
 }
 
-export function makeTriggerExtensionPoint({
+function selectExtensionPoint({
   extensionPoint,
   readers,
 }: TriggerFormState): ExtensionPointConfig<TriggerDefinition> {
@@ -107,7 +132,7 @@ export function makeTriggerExtensionPoint({
   };
 }
 
-export function makeTriggerExtension({
+function selectExtension({
   uuid,
   label,
   extensionPoint,
@@ -126,13 +151,13 @@ export function makeTriggerExtension({
 function asDynamicElement(element: TriggerFormState): DynamicDefinition {
   return {
     type: "trigger",
-    extension: makeTriggerExtension(element),
-    extensionPoint: makeTriggerExtensionPoint(element),
+    extension: selectExtension(element),
+    extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
 }
 
-export async function makeTriggerFormState(
+async function fromExtension(
   config: IExtension<TriggerConfig>
 ): Promise<TriggerFormState> {
   const extensionPoint = await lookupExtensionPoint<
@@ -171,16 +196,11 @@ const config: ElementConfig<never, TriggerFormState> = {
   label: "Trigger",
   insert: undefined,
   icon: faBolt,
-  makeState: (
-    url: string,
-    metadata: Metadata,
-    element: unknown,
-    frameworks: FrameworkMeta[]
-  ) => makeTriggerState(url, metadata, frameworks),
+  initialFormStateFactory,
   asDynamicElement,
-  extensionPoint: makeTriggerExtensionPoint,
-  extension: makeTriggerExtension,
-  formState: makeTriggerFormState,
+  selectExtensionPoint,
+  selectExtension,
+  fromExtension,
 };
 
 export default config;

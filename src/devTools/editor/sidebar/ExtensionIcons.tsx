@@ -23,7 +23,7 @@ import {
   faPuzzlePiece,
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
-import { ElementType } from "@/devTools/editor/editorSlice";
+import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export const ExtensionIcon: React.FunctionComponent<{ type: ElementType }> = ({
   type,

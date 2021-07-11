@@ -17,7 +17,6 @@
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { ActionPanelFormState } from "@/devTools/editor/editorSlice";
 import {
   makeBaseState,
   makeExtensionReaders,
@@ -46,7 +45,11 @@ import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { v4 as uuidv4 } from "uuid";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
-import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
+import {
+  BaseFormState,
+  ElementConfig,
+} from "@/devTools/editor/extensionPoints/elementConfig";
+import { BlockPipeline } from "@/blocks/combinators";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -63,7 +66,26 @@ export const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export function makeActionPanelState(
+export interface ActionPanelFormState extends BaseFormState {
+  type: "actionPanel";
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+  };
+
+  extension: {
+    heading: string;
+    body: BlockPipeline;
+  };
+}
+
+function initialFormStateFactory(
   url: string,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
@@ -89,7 +111,7 @@ export function makeActionPanelState(
   };
 }
 
-export function makeActionPanelExtensionPoint({
+function selectExtensionPoint({
   extensionPoint,
   readers,
 }: ActionPanelFormState): ExtensionPointConfig<PanelDefinition> {
@@ -115,7 +137,7 @@ export function makeActionPanelExtensionPoint({
   };
 }
 
-export function makeActionPanelExtension({
+function selectExtension({
   uuid,
   label,
   extensionPoint,
@@ -134,13 +156,13 @@ export function makeActionPanelExtension({
 function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
   return {
     type: "actionPanel",
-    extension: makeActionPanelExtension(element),
-    extensionPoint: makeActionPanelExtensionPoint(element),
+    extension: selectExtension(element),
+    extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
 }
 
-export async function makeActionPanelExtensionFormState(
+export async function fromExtensionPoint(
   url: string,
   extensionPoint: ExtensionPointConfig<PanelDefinition>
 ): Promise<ActionPanelFormState> {
@@ -174,7 +196,7 @@ export async function makeActionPanelExtensionFormState(
   };
 }
 
-export async function makeActionPanelFormState(
+async function fromExtension(
   config: IExtension<ActionPanelConfig>
 ): Promise<ActionPanelFormState> {
   const extensionPoint = await lookupExtensionPoint<
@@ -213,12 +235,12 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   label: "Sidebar",
   insert: undefined,
   icon: faColumns,
-  makeState: makeActionPanelState,
+  initialFormStateFactory,
   asDynamicElement,
-  makeFromExtensionPoint: makeActionPanelExtensionFormState,
-  extensionPoint: makeActionPanelExtensionPoint,
-  extension: makeActionPanelExtension,
-  formState: makeActionPanelFormState,
+  fromExtensionPoint,
+  selectExtensionPoint,
+  selectExtension,
+  fromExtension,
 };
 
 export default config;

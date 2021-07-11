@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
   extensionToFormState,
-  getType,
+  selectType,
 } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/editorSlice";
 import { reportError } from "@/telemetry/logging";
@@ -41,7 +41,7 @@ const InstalledEntry: React.FunctionComponent<{
   activeElement: string | null;
 }> = ({ extension, installedIds, activeElement }) => {
   const dispatch = useDispatch();
-  const [type] = useAsyncState(async () => getType(extension), [
+  const [type] = useAsyncState(async () => selectType(extension), [
     extension.extensionPointId,
   ]);
   const available = installedIds?.includes(extension.extensionPointId);

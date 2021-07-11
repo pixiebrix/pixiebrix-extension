@@ -20,7 +20,7 @@ import { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
-import { actions } from "@/devTools/editor/editorSlice";
+import { actions, FormState } from "@/devTools/editor/editorSlice";
 import { getTabInfo, showBrowserActionPanel } from "@/background/devtools";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
 import * as nativeOperations from "@/background/devtools";
@@ -56,7 +56,7 @@ function useAddElement(reservedNames: string[]): AddElement {
           url,
           reservedNames
         );
-        const initialState = config.makeState(
+        const initialState = config.initialFormStateFactory(
           url,
           metadata,
           element,
@@ -66,7 +66,7 @@ function useAddElement(reservedNames: string[]): AddElement {
           port,
           config.asDynamicElement(initialState)
         );
-        dispatch(actions.addElement(initialState));
+        dispatch(actions.addElement(initialState as FormState));
         reportEvent("PageEditorStart", {
           type: config.elementType,
         });

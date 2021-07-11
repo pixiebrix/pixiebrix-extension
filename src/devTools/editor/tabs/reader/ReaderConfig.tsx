@@ -16,7 +16,7 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import { FormState, isCustomReader } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { compact, isEmpty, mapValues, partial, pick, pickBy } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
@@ -42,6 +42,7 @@ import devtoolFields from "@/devTools/editor/fields/Fields";
 import GenerateSchema from "generate-schema";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import ToggleField from "@/devTools/editor/components/ToggleField";
+import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 
 type ReaderSelector = (options: {
   type: string;
@@ -198,19 +199,19 @@ const FrameworkFields: React.FunctionComponent<{
   );
 };
 
+const JQUERY_FIELD_SCHEMA: Schema = {
+  type: "object",
+  additionalProperties: {
+    type: "string",
+    format: "selector",
+  },
+};
+
 const JQueryFields: React.FunctionComponent<{
   name: string;
   element: FormState;
 }> = ({ name }) => {
-  const schema: Schema = {
-    type: "object",
-    additionalProperties: {
-      type: "string",
-      format: "selector",
-    },
-  };
-
-  const Field = useMemo(() => getDefaultField(schema), []);
+  const Field = useMemo(() => getDefaultField(JQUERY_FIELD_SCHEMA), []);
 
   return (
     <Form.Group as={Row} controlId="readerSelector">
@@ -218,7 +219,10 @@ const JQueryFields: React.FunctionComponent<{
         Selectors
       </Form.Label>
       <Col sm={10}>
-        <Field name={`${name}.definition.selectors`} schema={schema} />
+        <Field
+          name={`${name}.definition.selectors`}
+          schema={JQUERY_FIELD_SCHEMA}
+        />
       </Col>
     </Form.Group>
   );
@@ -319,7 +323,7 @@ const ReaderConfig: React.FunctionComponent<{
     if (debouncedQuery === "" || output == null) {
       return output;
     } else {
-      return searchData(query, output);
+      return searchData(debouncedQuery, output);
     }
   }, [debouncedQuery, output]);
 
