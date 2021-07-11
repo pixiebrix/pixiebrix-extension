@@ -32,21 +32,20 @@ async function onTabClose(tabId: number): Promise<void> {
   });
 }
 
-export const openPopup = liftBackground(
-  "OPEN_POPUP",
-  () => async (url: string) => {
-    console.log("will open", url);
+async function _openPopup(url: string): Promise<void> {
+  console.log("will open", url);
 
-    const window = await browser.windows.create({
-      url: String(url),
-      focused: true,
-      height: WINDOW_HEIGHT,
-      width: WINDOW_WIDTH,
-      top: Math.round((screen.availHeight - WINDOW_HEIGHT) / 2),
-      left: Math.round((screen.availWidth - WINDOW_WIDTH) / 2),
-      type: "popup",
-    });
+  const window = await browser.windows.create({
+    url: String(url),
+    focused: true,
+    height: WINDOW_HEIGHT,
+    width: WINDOW_WIDTH,
+    top: Math.round((screen.availHeight - WINDOW_HEIGHT) / 2),
+    left: Math.round((screen.availWidth - WINDOW_WIDTH) / 2),
+    type: "popup",
+  });
 
-    await onTabClose(window.tabs[0].id);
-  }
-);
+  await onTabClose(window.tabs[0].id);
+}
+
+export const openPopup = liftBackground("OPEN_POPUP", () => _openPopup);
