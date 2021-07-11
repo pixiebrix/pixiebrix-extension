@@ -149,7 +149,7 @@ export function readEmberValueFromCache(
     return value;
   } else if (Array.isArray(value)) {
     // must come before typeof value === "object" check because arrays are objects
-    return value.map(traverse);
+    return value.map((x) => traverse(x));
   } else if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
       return traverse(value.value);
@@ -157,7 +157,7 @@ export function readEmberValueFromCache(
       return traverse(value._cache);
     } else if (Array.isArray(value.content)) {
       // consider arrays a traverse because knowing the property name by itself isn't useful for anything
-      return value.content.map(traverse);
+      return value.content.map((x: any) => traverse(x));
     } else {
       return mapValues(pickExternalProps(value), recurse);
     }

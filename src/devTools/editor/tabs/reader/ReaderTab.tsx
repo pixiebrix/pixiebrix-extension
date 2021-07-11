@@ -19,13 +19,7 @@ import React, { useContext, useState } from "react";
 import { Button, ListGroup, Tab } from "react-bootstrap";
 import { FieldArray, useField, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  FormState,
-  isCustomReader,
-  ReaderFormState,
-  ReaderReferenceFormState,
-  actions,
-} from "@/devTools/editor/editorSlice";
+import { FormState, actions } from "@/devTools/editor/editorSlice";
 import ReaderConfig from "@/devTools/editor/tabs/reader/ReaderConfig";
 import { makeDefaultReader } from "@/devTools/editor/extensionPoints/base";
 import { DevToolsContext } from "@/devTools/context";
@@ -48,6 +42,11 @@ import { ContextMenuReader } from "@/extensionPoints/contextMenu";
 import cx from "classnames";
 import { useToasts } from "react-toast-notifications";
 import { useDispatch } from "react-redux";
+import {
+  isCustomReader,
+  ReaderFormState,
+  ReaderReferenceFormState,
+} from "@/devTools/editor/extensionPoints/elementConfig";
 
 const INCLUDE_TEST_ELEMENT = new Set<string>([
   "@pixiebrix/image/exif",
@@ -246,25 +245,21 @@ const ReaderTab: React.FunctionComponent<{
         <div className="ReaderContent h-100">
           {reader != null && (
             <>
-              {
-                // safe because active is a number
-                // eslint-disable-next-line security/detect-object-injection
-                isCustomReader(reader) ? (
-                  <ReaderConfig
-                    key={`${reader.metadata.id}-${active}`}
-                    editable={editable}
-                    available={available}
-                    readerIndex={active}
-                  />
-                ) : (
-                  <ReaderBlockConfig
-                    key={`${reader.metadata.id}-${active}`}
-                    readerIndex={active}
-                    available={available}
-                    testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
-                  />
-                )
-              }
+              {isCustomReader(reader) ? (
+                <ReaderConfig
+                  key={`${reader.metadata.id}-${active}`}
+                  editable={editable}
+                  available={available}
+                  readerIndex={active}
+                />
+              ) : (
+                <ReaderBlockConfig
+                  key={`${reader.metadata.id}-${active}`}
+                  readerIndex={active}
+                  available={available}
+                  testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
+                />
+              )}
             </>
           )}
           {active === readers.length && formValues.type === "contextMenu" && (

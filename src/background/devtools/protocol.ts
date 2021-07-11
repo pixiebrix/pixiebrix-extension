@@ -34,6 +34,8 @@ import { isEmpty } from "lodash";
 import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
 
+const TOP_LEVEL_FRAME = 0;
+
 export const registerPort = liftBackground(
   "REGISTER_PORT",
   (target: Target, port: Runtime.Port) => async () => {
@@ -44,14 +46,15 @@ export const registerPort = liftBackground(
 export const getTabInfo = liftBackground(
   "CURRENT_URL",
   (target: Target) => async () => {
-    if (target.frameId !== 0) {
+    if (target.frameId !== TOP_LEVEL_FRAME) {
       console.warn(
         `getTabInfo called targeting non top-level frame: ${target.frameId}`
       );
     }
-    const state = await getTargetState({ ...target, frameId: 0 }).catch(
-      () => false
-    );
+    const state = await getTargetState({
+      ...target,
+      frameId: TOP_LEVEL_FRAME,
+    }).catch(() => false);
     const { url } = await browser.tabs.get(target.tabId);
     return {
       url,
@@ -98,7 +101,7 @@ export const selectElement = liftBackground(
     mode = "element",
     framework,
     traverseUp = 0,
-    root = undefined,
+    root,
   }: {
     framework?: Framework;
     mode: nativeSelectionProtocol.SelectMode;
@@ -251,6 +254,8 @@ export const runReader = liftBackground(
 
 export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
+  // false positive - it's the inner method that should be async
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   () => async ({ extensionId }: { extensionId: string }) => {
     return contextMenuProtocol.uninstall(extensionId);
   }

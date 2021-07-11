@@ -359,7 +359,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           if (!menuContainers.includes(element)) {
             const menuUUID = uuidv4();
             this.menus.set(menuUUID, element);
-            return acquireElement(element, this.id, () =>
+            return acquireElement(element, this.id, async () =>
               this.reacquire(menuUUID)
             );
           } else {
@@ -542,7 +542,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if (dependencies.length > 0) {
       const rerun = once(() => {
         console.debug("Dependency changed, re-running extension");
-        this.run([extension.id]);
+        void this.run([extension.id]);
       });
 
       const observer = new MutationObserver(rerun);
@@ -551,6 +551,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       let elementCount = 0;
       for (const dependency of dependencies) {
+        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $dependency = $(document).find(dependency);
         if ($dependency.length > 0) {
           $dependency.each((index, element) => {
@@ -563,7 +564,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } else {
           const [elementPromise, cancel] = awaitElementOnce(dependency);
           cancellers.push(cancel);
-          elementPromise.then(() => {
+          void elementPromise.then(() => {
             rerun();
           });
         }
@@ -735,6 +736,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
     if (typeof position === "object") {
       if (position.sibling) {
+        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $sibling = $menu.find(position.sibling);
         if ($sibling.length > 1) {
           throw new Error(
@@ -786,7 +788,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
     }
   }
 
-  defaultReader() {
+  async defaultReader() {
     return mergeReaders(this._definition.reader);
   }
 

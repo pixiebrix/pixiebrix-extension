@@ -15,19 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser } from "webextension-polyfill-ts";
+import React, { useContext } from "react";
+import AuthContext from "@/auth/AuthContext";
+import { DevToolsContext } from "@/devTools/context";
+import BeatLoader from "react-spinners/BeatLoader";
 
-export default async function fetchSVG(
-  src: string
-): Promise<JQuery<SVGElement>> {
-  const extensionPrefix = browser.runtime.getURL("/");
-  if (!src.startsWith(extensionPrefix)) {
-    throw new Error(
-      "fetchSVG can only be used to fetch icons bundled with the extension"
-    );
-  }
-  const response = await fetch(src);
-  const svg = await response.text();
-  // There might also be comment nodes, so they need to be filtered out
-  return $<SVGElement>(svg).filter("svg");
-}
+const Footer: React.FunctionComponent = () => {
+  const { scope } = useContext(AuthContext);
+  const { connecting } = useContext(DevToolsContext);
+
+  return (
+    <div className="Sidebar__footer flex-grow-0">
+      <div className="d-flex">
+        <div className="flex-grow-1">
+          Scope: <code>{scope}</code>
+        </div>
+        <div>{connecting && <BeatLoader size={7} />}</div>
+      </div>
+    </div>
+  );
+};
+
+export default Footer;
