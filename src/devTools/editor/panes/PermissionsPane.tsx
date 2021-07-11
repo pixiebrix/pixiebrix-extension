@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useCallback, useContext } from "react";
@@ -23,7 +23,8 @@ import { isChrome } from "@/helpers";
 import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
 import { Button } from "react-bootstrap";
-import { openTab } from "@/background/executor";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { port, connect } = useContext(DevToolsContext);
@@ -47,11 +48,18 @@ const PermissionsPane: React.FunctionComponent = () => {
         PixieBrix does not have access to the page
       </div>
       <p>
-        <Button onClick={requestPermissions}>Grant permanent access</Button>
+        <Button onClick={requestPermissions}>
+          <FontAwesomeIcon icon={faShieldAlt} /> Grant Permanent Access
+        </Button>
+      </p>
+      <p className="text-info">
+        <FontAwesomeIcon icon={faInfoCircle} /> You can revoke PixieBrix&apos;s
+        access to a site at any time on PixieBrix&apos;s Settings page
       </p>
       <p>
-        Or grant temporary access by 1) clicking on the PixieBrix extension in
-        the extensions dropdown and 2) then refreshing the page
+        Or, grant temporary access by 1) clicking on the PixieBrix extension
+        menu item in your browser&apos;s extensions dropdown, and 2) then
+        refreshing the page
       </p>
     </Centered>
   );

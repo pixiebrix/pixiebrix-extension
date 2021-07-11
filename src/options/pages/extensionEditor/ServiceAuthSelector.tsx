@@ -1,31 +1,32 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { CSSProperties, useMemo } from "react";
+import React, { CSSProperties, useCallback, useMemo } from "react";
 import { useField } from "formik";
-import Form from "react-bootstrap/Form";
+import { Form } from "react-bootstrap";
 import Select, { StylesConfig } from "react-select";
-import { useSelector } from "react-redux";
-import { RootState } from "@/options/store";
-import { RawServiceConfiguration } from "@/core";
-import { useFetch } from "@/hooks/fetch";
+import useFetch from "@/hooks/useFetch";
 import { SanitizedAuth } from "@/types/contract";
-import { ServicesState } from "@/options/slices";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import {
+  PIXIEBRIX_SERVICE_ID,
+  readRawConfigurations,
+} from "@/services/registry";
+import { useAsyncState } from "@/hooks/common";
+import { RawServiceConfiguration } from "@/core";
 
 export interface AuthOption {
   value: string;
@@ -39,15 +40,19 @@ function defaultLabel(label: string): string {
   return normalized === "" ? "Default" : normalized;
 }
 
-const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
-  Object.values(services.configured);
+export function useAuthOptions(): [AuthOption[], () => Promise<void>] {
+  const [
+    configuredServices,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
+    _localLoading,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
+    _localError,
+    refreshLocal,
+  ] = useAsyncState<RawServiceConfiguration[]>(readRawConfigurations);
 
-export function useAuthOptions(): [AuthOption[]] {
-  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    selectConfiguredServices
-  );
-
-  const remoteAuths = useFetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
+  const { data: remoteAuths, refresh: refreshRemote } = useFetch<
+    SanitizedAuth[]
+  >("/api/services/shared/?meta=1");
 
   const authOptions = useMemo(() => {
     const localOptions = (configuredServices ?? []).map((x) => ({
@@ -69,7 +74,11 @@ export function useAuthOptions(): [AuthOption[]] {
     return [...localOptions, ...sharedOptions];
   }, [remoteAuths, configuredServices]);
 
-  return [authOptions];
+  const refresh = useCallback(async () => {
+    await Promise.all([refreshRemote(), refreshLocal()]);
+  }, [refreshRemote, refreshLocal]);
+
+  return [authOptions, refresh];
 }
 
 // customStyles.js

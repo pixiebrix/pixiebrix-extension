@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { ElementConfig } from "@/devTools/editor/extensionPoints/adapter";
@@ -22,7 +22,7 @@ import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
 import { actions } from "@/devTools/editor/editorSlice";
-import { getTabInfo } from "@/background/devtools";
+import { getTabInfo, showBrowserActionPanel } from "@/background/devtools";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
 import * as nativeOperations from "@/background/devtools";
 import { reportEvent } from "@/telemetry/events";
@@ -70,6 +70,10 @@ function useAddElement(reservedNames: string[]): AddElement {
         reportEvent("PageEditorStart", {
           type: config.elementType,
         });
+
+        if (config.elementType === "actionPanel") {
+          void showBrowserActionPanel(port);
+        }
       } catch (error) {
         if (!error.toString().toLowerCase().includes("selection cancelled")) {
           console.error(error);

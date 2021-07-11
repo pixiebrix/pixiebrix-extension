@@ -1,26 +1,26 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
-import { isEmpty } from "lodash";
+import { isEmpty, groupBy } from "lodash";
 import { checkAvailable } from "@/background/devtools";
-import { Button, Form, Nav, Tab } from "react-bootstrap";
+import { Badge, Button, Form, Nav, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
 import { wizard as triggerWizard } from "./extensionPoints/trigger";
@@ -35,6 +35,8 @@ import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
+import LogContext from "@/components/logViewer/LogContext";
+import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 
 const WIZARD_MAP = {
   menuItem: menuItemWizard,
@@ -44,13 +46,39 @@ const WIZARD_MAP = {
   actionPanel: actionPanelWizard,
 };
 
+// Step names to show lock icon for if the user is using a foundation they don't have edit access for
 const LOCKABLE_STEP_NAMES = ["Foundation", "Availability", "Location"];
+const LOG_STEP_NAME = "Logs";
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
   isLocked: boolean;
   lockableStepNames?: string[];
 }> = ({ step, isLocked, lockableStepNames = LOCKABLE_STEP_NAMES }) => {
+  const { unread } = useContext(LogContext);
+
+  const logBadge = useMemo(() => {
+    if (step.step !== LOG_STEP_NAME) {
+      return null;
+    }
+    const levels = groupBy(unread, (x) => x.level);
+    for (const [level, variant] of [
+      ["error", "danger"],
+      ["warning", "warning"],
+    ]) {
+      // eslint-disable-next-line security/detect-object-injection -- constant levels above
+      const numLevel = levels[level];
+      if (numLevel) {
+        return (
+          <Badge className="mx-1" variant={variant}>
+            {numLevel.length}
+          </Badge>
+        );
+      }
+    }
+    return null;
+  }, [step.step, unread]);
+
   return (
     <Nav.Item>
       <Nav.Link eventKey={step.step}>
@@ -58,6 +86,7 @@ const WizardNavItem: React.FunctionComponent<{
         {lockableStepNames.includes(step.step) && isLocked && (
           <FontAwesomeIcon className="ml-2" icon={faLock} />
         )}
+        {logBadge}
       </Nav.Link>
     </Nav.Item>
   );
@@ -79,10 +108,12 @@ const ElementWizard: React.FunctionComponent<{
     editable &&
     !editable.has(element.extensionPoint.metadata.id);
 
+  const { refresh: refreshLogs } = useContext(LogContext);
+
+  const availableDefinition = element.extensionPoint.definition.isAvailable;
   const [available] = useAsyncState(
-    async () =>
-      checkAvailable(port, element.extensionPoint.definition.isAvailable),
-    [port, element.extensionPoint.definition.isAvailable]
+    async () => checkAvailable(port, availableDefinition),
+    [port, availableDefinition]
   );
 
   const {
@@ -98,6 +129,17 @@ const ElementWizard: React.FunctionComponent<{
     console.warn("Form errors", { errors });
   }
 
+  const selectTabHandler = useCallback(
+    (step: string) => {
+      setStep(step);
+      if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
+        // If user is clicking over to the logs tab, they most likely want to see the most recent logs
+        void refreshLogs();
+      }
+    },
+    [setStep, refreshLogs]
+  );
+
   return (
     <Tab.Container activeKey={step} key={element.uuid}>
       <Form
@@ -107,15 +149,12 @@ const ElementWizard: React.FunctionComponent<{
         onReset={handleReset}
         className="h-100"
       >
-        <Nav
-          variant="pills"
-          activeKey={step}
-          onSelect={(step: string) => setStep(step)}
-        >
+        <Nav variant="pills" activeKey={step} onSelect={selectTabHandler}>
           {wizard.map((step) => (
             <WizardNavItem key={step.step} step={step} isLocked={isLocked} />
           ))}
 
+          {/* spacer */}
           <div className="flex-grow-1" />
 
           <div className="mx-3">
@@ -133,6 +172,7 @@ const ElementWizard: React.FunctionComponent<{
             element={element}
             disabled={isSubmitting || !isValid}
           />
+
           <ActionToolbar
             installed={installed}
             element={element}

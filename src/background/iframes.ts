@@ -1,24 +1,24 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { FORWARD_FRAME_DATA, REQUEST_FRAME_DATA } from "@/messaging/constants";
 type MessageSender = chrome.runtime.MessageSender;
 
-const _frameData: { [key: string]: string } = {};
+const frameHTML = new Map<string, string>();
 
 type Request =
   | {
@@ -39,15 +39,14 @@ function initFrames(): void {
       case FORWARD_FRAME_DATA: {
         console.log("request", { request });
         const { frameId, html } = request.payload;
-        _frameData[frameId] = html;
+        frameHTML.set(frameId, html);
         sendResponse({});
         return true;
       }
       case REQUEST_FRAME_DATA: {
         const { id } = request.payload;
-        console.log(`Frame data for ${id}`, { _frameData });
-        sendResponse({ html: _frameData[id] });
-        delete _frameData[id];
+        sendResponse({ html: frameHTML.get(id) });
+        frameHTML.delete(id);
         return true;
       }
       default: {

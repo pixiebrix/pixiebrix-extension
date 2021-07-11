@@ -1,30 +1,28 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser, Runtime } from "webextension-polyfill-ts";
+import { browser } from "webextension-polyfill-ts";
 import { isBrowserActionPanel } from "@/chrome";
+import { HandlerMap } from "@/messaging/protocol";
+import { reportError } from "@/telemetry/logging";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
 export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
-
-export function allowSender(sender: Runtime.MessageSender): boolean {
-  return sender.id === browser.runtime.id;
-}
 
 /**
  * Information required to run a renderer
@@ -69,32 +67,21 @@ export function removeListener(fn: StoreListener): void {
   _listeners = _listeners.filter((x) => x !== fn);
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listeners cannot be use async keyword
-function actionPanelListener(
-  request: RenderPanelsMessage,
-  sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
-  if (!allowSender(sender)) {
-    return;
-  }
+const handlers = new HandlerMap();
 
-  switch (request.type) {
-    case RENDER_PANELS_MESSAGE: {
-      const renderRequest = request as RenderPanelsMessage;
-      console.debug(
-        `Running render panels listeners for ${_listeners.length} listeners`
-      );
-      for (const listener of _listeners) {
-        listener(renderRequest.payload);
-      }
-      return undefined;
-    }
-    default: {
-      // NOP
+handlers.set(RENDER_PANELS_MESSAGE, async (request: RenderPanelsMessage) => {
+  console.debug(
+    `Running render panels listeners for ${_listeners.length} listeners`
+  );
+  for (const listener of _listeners) {
+    try {
+      listener(request.payload);
+    } catch (error) {
+      reportError(error);
     }
   }
-}
+});
 
 if (isBrowserActionPanel()) {
-  browser.runtime.onMessage.addListener(actionPanelListener);
+  browser.runtime.onMessage.addListener(handlers.asListener());
 }

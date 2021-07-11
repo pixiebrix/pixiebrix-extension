@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import extensionRegistry from "@/extensionPoints/registry";
@@ -106,14 +106,17 @@ export async function collectPermissions(
   return distinctPermissions([...servicePermissions, ...permissions]);
 }
 
+/**
+ * Return origin permissions required to use a service with the given configuration.
+ */
 export async function serviceOriginPermissions(
   dependency: ServiceAuthPair
 ): Promise<Permissions.Permissions> {
   const localConfig = await locator.locate(dependency.id, dependency.config);
 
   if (localConfig.proxy) {
-    // Don't need permissions to access the pixiebrix api server because they're already granted on
-    // extension install
+    // Don't need permissions to access the pixiebrix API proxy server because they're already granted on
+    // extension install. The proxy server will check isAvailable when making request
     return { origins: [] };
   } else {
     const service = await registry.lookup(dependency.id);
