@@ -47,6 +47,9 @@ import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { v4 as uuidv4 } from "uuid";
 import { getDomain } from "@/permissions/patterns";
+import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
+import * as nativeOperations from "@/background/devtools";
+import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -140,15 +143,6 @@ export function makeActionExtension({
   };
 }
 
-export function makeActionConfig(element: ActionFormState): ButtonDefinition {
-  return {
-    type: "menuItem",
-    extension: makeActionExtension(element),
-    extensionPoint: makeMenuExtensionPoint(element),
-    readers: makeExtensionReaders(element),
-  };
-}
-
 export async function makeActionExtensionFormState(
   url: string,
   extensionPoint: ExtensionPointConfig<MenuDefinition>
@@ -222,3 +216,26 @@ export async function makeActionFormState(
     },
   };
 }
+
+function asDynamicElement(element: ActionFormState): ButtonDefinition {
+  return {
+    type: "menuItem",
+    extension: makeActionExtension(element),
+    extensionPoint: makeMenuExtensionPoint(element),
+    readers: makeExtensionReaders(element),
+  };
+}
+
+const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
+  elementType: "menuItem",
+  label: "Button",
+  icon: faMousePointer,
+  insert: nativeOperations.insertButton,
+  makeState: makeActionState,
+  asDynamicElement,
+  extensionPoint: makeMenuExtensionPoint,
+  extension: makeActionExtension,
+  formState: makeActionFormState,
+};
+
+export default config;

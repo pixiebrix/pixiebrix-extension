@@ -83,7 +83,7 @@ const InsertPanelPane: React.FunctionComponent<{
               Add Existing Panel
             </Button>
           )}
-          onSelect={(block) => addExistingPanel(block as PanelWithConfig)}
+          onSelect={async (block) => addExistingPanel(block as PanelWithConfig)}
         />
 
         <Button className="ml-2" variant="danger" onClick={cancel}>

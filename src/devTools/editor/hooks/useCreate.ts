@@ -93,7 +93,7 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
   const {
     extension,
     extensionPoint: extensionPointConfig,
-  } = adapter.definition(element);
+  } = adapter.asDynamicElement(element);
 
   const extensionPoint = await extensionPointFactory(extensionPointConfig);
 

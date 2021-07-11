@@ -59,7 +59,7 @@ const ReloadToolbar: React.FunctionComponent<{
   const { port } = useContext(DevToolsContext);
 
   const run = useCallback(async () => {
-    const { definition: factory } = ADAPTERS.get(element.type);
+    const { asDynamicElement: factory } = ADAPTERS.get(element.type);
     if (disabled) {
       console.warn("Updating dynamic possibly invalid element", {
         element,

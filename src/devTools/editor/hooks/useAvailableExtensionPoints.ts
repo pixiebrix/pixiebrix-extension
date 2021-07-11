@@ -37,7 +37,7 @@ function useAvailableExtensionPoints<
       (x) => x instanceof ctor && (x as TConfig).rawConfig != null
     ) as TConfig[];
     const availability = await Promise.allSettled(
-      validExtensionPoints.map((x) =>
+      validExtensionPoints.map(async (x) =>
         checkAvailable(port, x.rawConfig.definition.isAvailable ?? {})
       )
     );

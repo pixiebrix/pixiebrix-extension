@@ -19,13 +19,13 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { ContextMenuFormState } from "@/devTools/editor/editorSlice";
 import {
+  lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
-  WizardStep,
   selectIsAvailable,
-  lookupExtensionPoint,
+  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { v4 as uuidv4 } from "uuid";
 import { DynamicDefinition } from "@/nativeEditor";
@@ -41,11 +41,12 @@ import {
 } from "@/extensionPoints/contextMenu";
 import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
 import AvailabilityTab from "@/devTools/editor/tabs/contextMenu/AvailabilityTab";
+import { getDomain } from "@/permissions/patterns";
+import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export const wizard: WizardStep[] = [
   { step: "Menu Item", Component: MenuItemTab },
-  // { step: "Name", Component: MetaTab },
-  // { step: "Foundation", Component: FoundationTab },
   { step: "Location", Component: AvailabilityTab },
   { step: "Data", Component: ReaderTab },
   { step: "Integrations", Component: ServicesTab },
@@ -167,9 +168,42 @@ export async function makeContextMenuFormState(
   };
 }
 
-export function makeContextMenuConfig(
-  element: ContextMenuFormState
-): DynamicDefinition {
+export async function makeContextMenuExtensionFormState(
+  url: string,
+  extensionPoint: ExtensionPointConfig<MenuDefinition>
+): Promise<ContextMenuFormState> {
+  if (extensionPoint.definition.type !== "contextMenu") {
+    throw new Error("Expected contextMenu extension point type");
+  }
+
+  return {
+    uuid: uuidv4(),
+    installed: true,
+    type: extensionPoint.definition.type,
+    label: `My ${getDomain(url)} context menu`,
+
+    readers: await makeReaderFormState(extensionPoint),
+    services: [],
+
+    extension: {
+      title: extensionPoint.definition.defaultOptions.title ?? "Custom Action",
+      action: [],
+    },
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      definition: {
+        ...extensionPoint.definition,
+        defaultOptions: extensionPoint.definition.defaultOptions ?? {},
+        documentUrlPatterns:
+          extensionPoint.definition.documentUrlPatterns ?? [],
+        isAvailable: selectIsAvailable(extensionPoint),
+      },
+    },
+  };
+}
+
+function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   return {
     type: "contextMenu",
     extension: makeContextMenuExtension(element),
@@ -177,3 +211,23 @@ export function makeContextMenuConfig(
     readers: makeExtensionReaders(element),
   };
 }
+
+const config: ElementConfig<never, ContextMenuFormState> = {
+  elementType: "contextMenu",
+  label: "Context Menu",
+  insert: undefined,
+  icon: faBars,
+  makeState: (
+    url: string,
+    metadata: Metadata,
+    element: unknown,
+    frameworks: FrameworkMeta[]
+  ) => makeContextMenuState(url, metadata, frameworks),
+  asDynamicElement,
+  makeFromExtensionPoint: makeContextMenuExtensionFormState,
+  extensionPoint: makeContextMenuExtensionPoint,
+  extension: makeContextMenuExtension,
+  formState: makeContextMenuFormState,
+};
+
+export default config;

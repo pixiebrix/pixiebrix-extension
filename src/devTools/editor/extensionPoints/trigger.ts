@@ -43,6 +43,8 @@ import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { getDomain } from "@/permissions/patterns";
+import { faBolt } from "@fortawesome/free-solid-svg-icons";
+import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -121,9 +123,7 @@ export function makeTriggerExtension({
   };
 }
 
-export function makeTriggerConfig(
-  element: TriggerFormState
-): DynamicDefinition {
+function asDynamicElement(element: TriggerFormState): DynamicDefinition {
   return {
     type: "trigger",
     extension: makeTriggerExtension(element),
@@ -165,3 +165,22 @@ export async function makeTriggerFormState(
     },
   };
 }
+
+const config: ElementConfig<never, TriggerFormState> = {
+  elementType: "trigger",
+  label: "Trigger",
+  insert: undefined,
+  icon: faBolt,
+  makeState: (
+    url: string,
+    metadata: Metadata,
+    element: unknown,
+    frameworks: FrameworkMeta[]
+  ) => makeTriggerState(url, metadata, frameworks),
+  asDynamicElement,
+  extensionPoint: makeTriggerExtensionPoint,
+  extension: makeTriggerExtension,
+  formState: makeTriggerFormState,
+};
+
+export default config;

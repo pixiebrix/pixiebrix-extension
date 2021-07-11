@@ -45,6 +45,8 @@ import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { v4 as uuidv4 } from "uuid";
 import { getDomain } from "@/permissions/patterns";
+import { faColumns } from "@fortawesome/free-solid-svg-icons";
+import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -129,9 +131,7 @@ export function makeActionPanelExtension({
   };
 }
 
-export function makeActionPanelConfig(
-  element: ActionPanelFormState
-): DynamicDefinition {
+function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
   return {
     type: "actionPanel",
     extension: makeActionPanelExtension(element),
@@ -207,3 +207,18 @@ export async function makeActionPanelFormState(
     },
   };
 }
+
+const config: ElementConfig<never, ActionPanelFormState> = {
+  elementType: "actionPanel",
+  label: "Sidebar",
+  insert: undefined,
+  icon: faColumns,
+  makeState: makeActionPanelState,
+  asDynamicElement,
+  makeFromExtensionPoint: makeActionPanelExtensionFormState,
+  extensionPoint: makeActionPanelExtensionPoint,
+  extension: makeActionPanelExtension,
+  formState: makeActionPanelFormState,
+};
+
+export default config;

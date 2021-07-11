@@ -44,6 +44,9 @@ import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { v4 as uuidv4 } from "uuid";
 import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
+import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
+import * as nativeOperations from "@/background/devtools";
+import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -144,7 +147,7 @@ export function makePanelExtension({
   };
 }
 
-export function makePanelConfig(element: PanelFormState): DynamicDefinition {
+function asDynamicElement(element: PanelFormState): DynamicDefinition {
   return {
     type: "panel",
     extension: makePanelExtension(element),
@@ -234,3 +237,18 @@ export async function makePanelFormState(
     },
   };
 }
+
+const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
+  elementType: "panel",
+  label: "Panel",
+  icon: faWindowMaximize,
+  insert: nativeOperations.insertPanel,
+  makeState: makePanelState,
+  asDynamicElement,
+  makeFromExtensionPoint: makePanelExtensionFormState,
+  extensionPoint: makePanelExtensionPoint,
+  extension: makePanelExtension,
+  formState: makePanelFormState,
+};
+
+export default config;

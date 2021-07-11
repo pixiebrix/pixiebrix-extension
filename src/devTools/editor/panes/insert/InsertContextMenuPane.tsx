@@ -19,29 +19,27 @@ import React, { useCallback, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { DevToolsContext } from "@/devTools/context";
 import { getTabInfo } from "@/background/devtools";
-import { makeActionExtensionFormState } from "@/devTools/editor/extensionPoints/menuItem";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
-import {
-  MenuDefinition,
-  MenuItemExtensionPoint,
-} from "@/extensionPoints/menuItemExtension";
 import Centered from "@/devTools/editor/components/Centered";
-import { Alert, Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import { Button } from "react-bootstrap";
 import BlockModal from "@/components/fields/BlockModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { editorSlice } from "@/devTools/editor/editorSlice";
+import {
+  ContextMenuExtensionPoint,
+  MenuDefinition,
+} from "@/extensionPoints/contextMenu";
+import { makeContextMenuExtensionFormState } from "@/devTools/editor/extensionPoints/contextMenu";
 
 const { addElement } = editorSlice.actions;
 
-type MenuItemWithConfig = MenuItemExtensionPoint & {
+type MenuItemWithConfig = ContextMenuExtensionPoint & {
   rawConfig: ExtensionPointConfig<MenuDefinition>;
 };
 
-const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
-  cancel,
-}) => {
+const InsertContextMenuPane: React.FunctionComponent<{
+  cancel: () => void;
+}> = ({ cancel }) => {
   const dispatch = useDispatch();
   const { port } = useContext(DevToolsContext);
 
@@ -50,11 +48,11 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
       cancel();
       if (!("rawConfig" in extensionPoint)) {
         throw new Error(
-          "Cannot use menuItem extension point without config in the Page Editor"
+          "Cannot use contextMenu extension point without config in the Page Editor"
         );
       }
       const { url } = await getTabInfo(port);
-      const state = await makeActionExtensionFormState(
+      const state = await makeContextMenuExtensionFormState(
         url,
         extensionPoint.rawConfig
       );
@@ -63,44 +61,41 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
     [port, dispatch, cancel]
   );
 
-  const menuItemExtensionPoints = useAvailableExtensionPoints(
-    MenuItemExtensionPoint
+  const extensionPoints = useAvailableExtensionPoints(
+    ContextMenuExtensionPoint
   );
 
   return (
     <Centered>
-      <div className="PaneTitle">Inserting button</div>
+      <div className="PaneTitle">Add context menu item</div>
 
       <div className="text-left">
         <p>
-          Click on an existing <code>button</code> or button-like element to add
-          a button that that button group. You can also select a menu item or
-          nav link.
+          A context menu item (also called a right-click menu) appears when you
+          right click on a page, text selection, or other content.
         </p>
 
-        <div>
-          <Alert variant="info">
-            <FontAwesomeIcon icon={faInfo} /> <b>Tip:</b> to increase the
-            accuracy of detection, you can Shift+Click one or more buttons in
-            the button group. Click a button without holding Shift to complete
-            placement.
-          </Alert>
-        </div>
+        <p>
+          You can use an existing foundation for your new context menu, or start
+          from scratch to have full control over where the the menu item appears
+        </p>
       </div>
       <div>
         <BlockModal
-          blocks={menuItemExtensionPoints ?? []}
-          caption="Select button foundation"
+          blocks={extensionPoints ?? []}
+          caption="Select context menu foundation"
           renderButton={({ show }) => (
             <Button
               variant="info"
               onClick={show}
-              disabled={!menuItemExtensionPoints?.length}
+              disabled={!extensionPoints?.length}
             >
-              Add Existing Button
+              Use Existing Foundation
             </Button>
           )}
-          onSelect={(block) => addExistingButton(block as MenuItemWithConfig)}
+          onSelect={async (block) =>
+            addExistingButton(block as MenuItemWithConfig)
+          }
         />
 
         <Button variant="danger" className="ml-2" onClick={cancel}>
@@ -111,4 +106,4 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
   );
 };
 
-export default InsertMenuItemPane;
+export default InsertContextMenuPane;

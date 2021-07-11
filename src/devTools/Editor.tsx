@@ -14,15 +14,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Container } from "react-bootstrap";
-import Sidebar from "@/devTools/editor/Sidebar";
+import Sidebar from "@/devTools/editor/sidebar/Sidebar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 import SplitPane from "react-split-pane";
@@ -32,45 +26,27 @@ import { selectInstalledExtensions } from "@/options/selectors";
 import PermissionsPane from "@/devTools/editor/panes/PermissionsPane";
 import BetaPane from "@/devTools/editor/panes/BetaPane";
 import SupportWidget from "@/devTools/editor/panes/SupportWidget";
-import InsertMenuItemPane from "@/devTools/editor/panes/InsertMenuItemPane";
-import InsertPanelPane from "@/devTools/editor/panes/InsertPanelPane";
+import InsertMenuItemPane from "@/devTools/editor/panes/insert/InsertMenuItemPane";
+import InsertPanelPane from "@/devTools/editor/panes/insert/InsertPanelPane";
 import NoExtensionSelectedPane from "@/devTools/editor/panes/NoExtensionsSelectedPane";
 import NoExtensionsPane from "@/devTools/editor/panes/NoExtensionsPane";
 import WelcomePane from "@/devTools/editor/panes/WelcomePane";
 import EditorPane from "@/devTools/editor/panes/EditorPane";
 import useInstallState from "@/devTools/editor/hooks/useInstallState";
+import useEscapeHandler from "@/devTools/editor/hooks/useEscapeHandler";
+import InsertContextMenuPane from "@/devTools/editor/panes/insert/InsertContextMenuPane";
 
-const selectEditor = (x: RootState) => x.editor;
+const selectEditor = ({ editor }: RootState) => editor;
 
-function useEscapeHandler(cancelInsert: () => void, inserting: string) {
-  const escapeHandler = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        event.stopImmediatePropagation();
-        event.stopPropagation();
-        void cancelInsert();
-      }
-    },
-    [cancelInsert]
-  );
-
-  useEffect(() => {
-    // Needs to be the keydown event to prevent Google from opening the drawer
-    if (inserting === "menuItem" || inserting === "panel") {
-      document.addEventListener("keydown", escapeHandler, true);
-    } else {
-      document.removeEventListener("keydown", escapeHandler);
-    }
-    return () => document.removeEventListener("keydown", escapeHandler);
-  }, [inserting, cancelInsert, escapeHandler]);
-}
+const DEFAULT_SIDEBAR_WIDTH_PX = 260;
 
 const Editor: React.FunctionComponent = () => {
   const { tabState, port } = useContext(DevToolsContext);
   const installed = useSelector(selectInstalledExtensions);
 
   const [showChat, setShowChat] = useState<boolean>(false);
+  const showSupport = useCallback(() => setShowChat(true), [setShowChat]);
+  const hideSupport = useCallback(() => setShowChat(false), [setShowChat]);
 
   const {
     selectionSeq,
@@ -81,16 +57,17 @@ const Editor: React.FunctionComponent = () => {
     beta,
   } = useSelector(selectEditor);
 
-  const selectedElement = useMemo(() => {
-    return activeElement
-      ? elements.find((x) => x.uuid === activeElement)
-      : null;
-  }, [elements, activeElement]);
+  const selectedElement = useMemo(
+    () =>
+      activeElement ? elements.find((x) => x.uuid === activeElement) : null,
+    [elements, activeElement]
+  );
 
   const cancelInsert = useCallback(async () => cancelSelectElement(port), [
     port,
   ]);
-  useEscapeHandler(cancelInsert, inserting);
+
+  useEscapeHandler(cancelInsert, inserting != null);
 
   const { availableDynamicIds, unavailableCount } = useInstallState(
     installed,
@@ -102,10 +79,17 @@ const Editor: React.FunctionComponent = () => {
       return <PermissionsPane />;
     } else if (error && beta) {
       return <BetaPane />;
-    } else if (inserting === "menuItem") {
-      return <InsertMenuItemPane cancel={cancelInsert} />;
-    } else if (inserting === "panel") {
-      return <InsertPanelPane cancel={cancelInsert} />;
+    } else if (inserting) {
+      switch (inserting) {
+        case "menuItem":
+          return <InsertMenuItemPane cancel={cancelInsert} />;
+        case "contextMenu":
+          return <InsertContextMenuPane cancel={cancelInsert} />;
+        case "panel":
+          return <InsertPanelPane cancel={cancelInsert} />;
+        default:
+          throw new Error(`No insertion panel defined for ${inserting}`);
+      }
     } else if (error) {
       return (
         <div className="p-2">
@@ -129,11 +113,11 @@ const Editor: React.FunctionComponent = () => {
       return (
         <NoExtensionsPane
           unavailableCount={unavailableCount}
-          showSupport={() => setShowChat(true)}
+          showSupport={showSupport}
         />
       );
     } else {
-      return <WelcomePane showSupport={() => setShowChat(true)} />;
+      return <WelcomePane showSupport={showSupport} />;
     }
   }, [
     beta,
@@ -143,6 +127,7 @@ const Editor: React.FunctionComponent = () => {
     error,
     installed,
     selectionSeq,
+    showSupport,
     availableDynamicIds?.size,
     unavailableCount,
     tabState,
@@ -150,7 +135,12 @@ const Editor: React.FunctionComponent = () => {
 
   return (
     <Container fluid className="h-100">
-      <SplitPane split="vertical" allowResize minSize={260} defaultSize={260}>
+      <SplitPane
+        split="vertical"
+        allowResize
+        minSize={DEFAULT_SIDEBAR_WIDTH_PX}
+        defaultSize={DEFAULT_SIDEBAR_WIDTH_PX}
+      >
         <Sidebar
           installed={installed}
           elements={elements}
@@ -161,7 +151,7 @@ const Editor: React.FunctionComponent = () => {
           <div className="h-100 flex-grow-1">{body}</div>
           {showChat && (
             <div className="SupportPane h-100">
-              <SupportWidget onClose={() => setShowChat(false)} />
+              <SupportWidget onClose={hideSupport} />
             </div>
           )}
         </div>

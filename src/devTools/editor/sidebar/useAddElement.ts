@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementConfig } from "@/devTools/editor/extensionPoints/adapter";
 import { useDispatch } from "react-redux";
 import { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
@@ -27,6 +26,7 @@ import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoint
 import * as nativeOperations from "@/background/devtools";
 import { reportEvent } from "@/telemetry/events";
 import { reportError } from "@/telemetry/logging";
+import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 
 type AddElement = (config: ElementConfig) => void;
 
@@ -64,7 +64,7 @@ function useAddElement(reservedNames: string[]): AddElement {
         );
         await nativeOperations.updateDynamicElement(
           port,
-          config.makeConfig(initialState)
+          config.asDynamicElement(initialState)
         );
         dispatch(actions.addElement(initialState));
         reportEvent("PageEditorStart", {
@@ -72,11 +72,12 @@ function useAddElement(reservedNames: string[]): AddElement {
         });
 
         if (config.elementType === "actionPanel") {
+          // For convenience, open the side panel if it's not already open so that the user doesn't
+          // have to manually toggle it
           void showBrowserActionPanel(port);
         }
       } catch (error) {
         if (!error.toString().toLowerCase().includes("selection cancelled")) {
-          console.error(error);
           reportError(error);
           addToast(
             `Error adding ${config.label.toLowerCase()}: ${error.toString()}`,

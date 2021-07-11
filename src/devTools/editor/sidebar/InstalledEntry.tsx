@@ -31,13 +31,17 @@ import {
   ExtensionIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
 
+/**
+ * A sidebar menu entry corresponding to an installed/saved extension point
+ * @see DynamicEntry
+ */
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
   installedIds: string[];
   activeElement: string | null;
 }> = ({ extension, installedIds, activeElement }) => {
   const dispatch = useDispatch();
-  const [type] = useAsyncState(() => getType(extension), [
+  const [type] = useAsyncState(async () => getType(extension), [
     extension.extensionPointId,
   ]);
   const available = installedIds?.includes(extension.extensionPointId);
@@ -59,7 +63,7 @@ const InstalledEntry: React.FunctionComponent<{
     <ListGroup.Item
       active={extension.id == activeElement}
       key={`installed-${extension.id}`}
-      onClick={() => selectInstalled(extension)}
+      onClick={async () => selectInstalled(extension)}
       style={{ cursor: "pointer" }}
     >
       <ExtensionIcon type={type} /> {extension.label ?? extension.id}
