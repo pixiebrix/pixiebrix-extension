@@ -16,10 +16,9 @@
  */
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
-import useAsyncEffect from "use-async-effect";
-import { EditorState, FormState } from "@/devTools/editor/editorSlice";
+import { EditorState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
-import { sortBy, uniq } from "lodash";
+import { sortBy } from "lodash";
 import {
   Badge,
   Dropdown,
@@ -38,20 +37,10 @@ import useInstallState from "@/devTools/editor/hooks/useInstallState";
 import InstalledEntry from "@/devTools/editor/sidebar/InstalledEntry";
 import DynamicEntry from "@/devTools/editor/sidebar/DynamicEntry";
 import { isExtension } from "@/devTools/editor/sidebar/common";
-import useAddElement from "@/devTools/editor/sidebar/useAddElement";
-import fetchSVG from "@/icons/svgElementFromUrl";
+import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
-
-function mapReservedNames(elements: FormState[]): string[] {
-  return sortBy(
-    uniq(
-      elements.flatMap((x) => [
-        x.extensionPoint.metadata.id,
-        ...x.readers.map((x) => x.metadata.id),
-      ])
-    )
-  );
-}
+import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
+import useSVG from "@/hooks/useSVG";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -124,27 +113,11 @@ const Sidebar: React.FunctionComponent<
     ]
   );
 
-  const nameHash = hash(mapReservedNames(elements));
-  const reservedNames = useMemo(
-    () => mapReservedNames(elements),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- using memo to enforce reference equality for list
-    [nameHash]
-  );
+  const reservedNames = useReservedNames(elements);
 
   const addElement = useAddElement(reservedNames);
 
-  const [logo, setLogo] = useState("");
-
-  useAsyncEffect(
-    async (isMounted) => {
-      const $icon = await fetchSVG(logoUrl);
-      if (!isMounted()) {
-        return;
-      }
-      setLogo($icon.get(0).outerHTML);
-    },
-    [setLogo]
-  );
+  const logo = useSVG(logoUrl);
 
   return (
     <div className="Sidebar d-flex flex-column vh-100">
@@ -163,17 +136,19 @@ const Sidebar: React.FunctionComponent<
             id="add-extension-point"
             className="mr-2 Sidebar__actions__dropdown"
           >
-            {[...ADAPTERS.values()].map((element) => (
-              <DropdownEntry
-                key={element.elementType}
-                caption={element.label}
-                icon={element.icon}
-                beta={element.beta}
-                onClick={() => {
-                  addElement(element);
-                }}
-              />
-            ))}
+            {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
+              (element) => (
+                <DropdownEntry
+                  key={element.elementType}
+                  caption={element.label}
+                  icon={element.icon}
+                  beta={element.beta}
+                  onClick={() => {
+                    addElement(element);
+                  }}
+                />
+              )
+            )}
           </DropdownButton>
           <div className="my-auto">
             <Form.Check

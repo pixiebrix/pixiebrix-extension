@@ -34,6 +34,11 @@ export type FormState =
   | ContextMenuFormState;
 
 export interface EditorState {
+  /**
+   * A sequence number that changes whenever a new element is selected.
+   *
+   * Can use as a React component key to trigger a re-render
+   */
   selectionSeq: number;
 
   /**
@@ -91,6 +96,7 @@ export const editorSlice = createSlice({
     },
     addElement: (state, action: PayloadAction<FormState>) => {
       const element = action.payload;
+      state.inserting = null;
       state.elements.push(element);
       state.error = null;
       state.beta = false;

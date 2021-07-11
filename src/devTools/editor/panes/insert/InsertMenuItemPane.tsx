@@ -28,7 +28,7 @@ import {
 import Centered from "@/devTools/editor/components/Centered";
 import { Alert, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import { faCube, faInfo } from "@fortawesome/free-solid-svg-icons";
 import BlockModal from "@/components/fields/BlockModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { editorSlice } from "@/devTools/editor/editorSlice";
@@ -69,7 +69,7 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
 
   return (
     <Centered>
-      <div className="PaneTitle">Inserting button</div>
+      <div className="PaneTitle">Inserting Button/Menu Item</div>
 
       <div className="text-left">
         <p>
@@ -97,7 +97,7 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
               onClick={show}
               disabled={!menuItemExtensionPoints?.length}
             >
-              Add Existing Button
+              <FontAwesomeIcon icon={faCube} /> Use Existing Button
             </Button>
           )}
           onSelect={async (block) =>

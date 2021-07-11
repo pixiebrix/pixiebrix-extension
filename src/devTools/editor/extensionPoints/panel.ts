@@ -29,7 +29,11 @@ import {
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
-import { PanelConfig, PanelDefinition } from "@/extensionPoints/panelExtension";
+import {
+  PanelConfig,
+  PanelDefinition,
+  PanelExtensionPoint,
+} from "@/extensionPoints/panelExtension";
 import FoundationTab from "@/devTools/editor/tabs/panel/FoundationTab";
 import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
 import PanelTab from "@/devTools/editor/tabs/panel/PanelTab";
@@ -107,7 +111,7 @@ const DEFAULT_TRAITS: PanelTraits = {
   },
 };
 
-function initialFormStateFactory(
+function fromNativeElement(
   url: string,
   metadata: Metadata,
   panel: PanelSelectionResult,
@@ -277,11 +281,13 @@ async function fromExtension(
 }
 
 const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
+  displayOrder: 2,
   elementType: "panel",
   label: "Panel",
   icon: faWindowMaximize,
-  insert: nativeOperations.insertPanel,
-  initialFormStateFactory,
+  baseClass: PanelExtensionPoint,
+  selectNativeElement: nativeOperations.insertPanel,
+  fromNativeElement,
   asDynamicElement,
   fromExtensionPoint,
   selectExtensionPoint,

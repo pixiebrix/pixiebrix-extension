@@ -33,6 +33,7 @@ import {
 import {
   MenuDefinition,
   MenuItemExtensionConfig,
+  MenuItemExtensionPoint,
   MenuPosition,
 } from "@/extensionPoints/menuItemExtension";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
@@ -98,7 +99,7 @@ export interface ActionFormState extends BaseFormState {
   };
 }
 
-function initialFormStateFactory(
+function fromNativeElement(
   url: string,
   metadata: Metadata,
   button: ButtonSelectionResult,
@@ -263,11 +264,13 @@ function asDynamicElement(element: ActionFormState): ButtonDefinition {
 }
 
 const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
+  displayOrder: 0,
   elementType: "menuItem",
   label: "Button",
   icon: faMousePointer,
-  insert: nativeOperations.insertButton,
-  initialFormStateFactory,
+  baseClass: MenuItemExtensionPoint,
+  selectNativeElement: nativeOperations.insertButton,
+  fromNativeElement,
   asDynamicElement,
   selectExtensionPoint,
   selectExtension,

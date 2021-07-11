@@ -29,7 +29,12 @@ import { getTabInfo } from "@/background/devtools";
 import config from "@/devTools/editor/extensionPoints/panel";
 import Centered from "@/devTools/editor/components/Centered";
 import BlockModal from "@/components/fields/BlockModal";
-import { Button } from "react-bootstrap";
+import { Alert, Button } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faCube,
+  faExclamationTriangle,
+} from "@fortawesome/free-solid-svg-icons";
 
 const { addElement } = editorSlice.actions;
 
@@ -65,10 +70,22 @@ const InsertPanelPane: React.FunctionComponent<{
 
   return (
     <Centered>
-      <div className="PaneTitle">Inserting panel</div>
+      <div className="PaneTitle">Inserting Panel</div>
 
       <div className="text-left">
-        <p>Click on a container to insert a panel in that container.</p>
+        <p>
+          Click on a container to insert a panel in that container. Or, click{" "}
+          <span className="text-info">Use Existing Panel</span> to use a panel
+          foundation that already exists for the page
+        </p>
+
+        <div>
+          <Alert variant="warning">
+            <FontAwesomeIcon icon={faExclamationTriangle} /> Automatic panel
+            placement is currently in <b>Alpha</b> and typically requires manual
+            configuration/adjustment
+          </Alert>
+        </div>
       </div>
       <div>
         <BlockModal
@@ -80,7 +97,7 @@ const InsertPanelPane: React.FunctionComponent<{
               onClick={show}
               disabled={!panelExtensionPoints?.length}
             >
-              Add Existing Panel
+              <FontAwesomeIcon icon={faCube} /> Use Existing Panel
             </Button>
           )}
           onSelect={async (block) => addExistingPanel(block as PanelWithConfig)}

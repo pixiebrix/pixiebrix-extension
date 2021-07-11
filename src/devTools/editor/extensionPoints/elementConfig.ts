@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+import React from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Runtime } from "webextension-polyfill-ts";
 import { IExtension, Metadata, Schema, ServiceDependency } from "@/core";
@@ -79,10 +80,15 @@ export interface ElementConfig<
   TResult = unknown,
   TState extends BaseFormState = BaseFormState
 > {
+  readonly displayOrder: number;
+
   /**
    * The internal element type, e.g., menuItem, contextMenu, etc.
    */
   readonly elementType: ElementType;
+
+  // eslint-disable-next-line @typescript-eslint/ban-types -- we want to Ctor here for the extension point
+  readonly baseClass: Function;
 
   /**
    * The human-friendly name to refer to the element type (e.g., Context Menu)
@@ -107,11 +113,11 @@ export interface ElementConfig<
   readonly flag?: string;
 
   /**
-   * Method for the user to select an element from the host page (e.g., placing a menu button). `undefined` for
-   * elements that don't need a reference to the host page to have initial state (e.g., context menus)
+   * Method for the user to select an element from the host page (e.g., placing a menu button).
+   * `undefined` for elements that aren't placed natively in the host page (e.g., context menus)
    * @param port the devtools port with the backend page
    */
-  readonly insert?: (port: Runtime.Port) => Promise<TResult>;
+  readonly selectNativeElement?: (port: Runtime.Port) => Promise<TResult>;
 
   /**
    * Returns the initial page editor form state for a new element (including new foundation)
@@ -122,7 +128,7 @@ export interface ElementConfig<
    *
    * @see fromExtensionPoint
    */
-  readonly initialFormStateFactory: (
+  readonly fromNativeElement: (
     url: string,
     metadata: Metadata,
     element: TResult,
@@ -131,7 +137,7 @@ export interface ElementConfig<
 
   /**
    * Returns the initial form state from an existing extension point
-   * @see initialFormStateFactory
+   * @see fromNativeElement
    */
   readonly fromExtensionPoint?: (
     url: string,
@@ -157,4 +163,9 @@ export interface ElementConfig<
    * Returns the extension configuration corresponding to the FormState.
    */
   readonly selectExtension: (element: TState) => IExtension;
+
+  /**
+   * Help text to show in the generic insertion-mode pane
+   */
+  readonly insertModeHelp?: React.ReactNode;
 }

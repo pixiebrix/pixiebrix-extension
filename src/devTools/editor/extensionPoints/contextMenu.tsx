@@ -36,6 +36,7 @@ import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import {
   ContextMenuConfig,
+  ContextMenuExtensionPoint,
   MenuDefaultOptions as ContextMenuDefaultOptions,
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
@@ -49,6 +50,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Menus } from "webextension-polyfill-ts";
 import { BlockPipeline } from "@/blocks/combinators";
+import React from "react";
 
 export const wizard: WizardStep[] = [
   { step: "Menu Item", Component: MenuItemTab },
@@ -81,10 +83,10 @@ export interface ContextMenuFormState extends BaseFormState {
   };
 }
 
-function initialFormStateFactory(
+function fromNativeElement(
   url: string,
   metadata: Metadata,
-  _element: null,
+  element: null,
   frameworks: FrameworkMeta[]
 ): ContextMenuFormState {
   const base = makeBaseState(uuidv4(), null, metadata, frameworks);
@@ -241,17 +243,32 @@ function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   };
 }
 
-const config: ElementConfig<never, ContextMenuFormState> = {
+const config: ElementConfig<undefined, ContextMenuFormState> = {
+  displayOrder: 1,
   elementType: "contextMenu",
   label: "Context Menu",
-  insert: undefined,
+  baseClass: ContextMenuExtensionPoint,
+  selectNativeElement: undefined,
   icon: faBars,
-  initialFormStateFactory,
+  fromNativeElement,
   asDynamicElement,
   fromExtensionPoint,
   selectExtensionPoint,
   selectExtension,
   fromExtension,
+  insertModeHelp: (
+    <div>
+      <p>
+        A context menu (also called a right-click menu) can be configured to
+        appear when you right click on a page, text selection, or other content
+      </p>
+
+      <p>
+        Use an existing foundation, or start from scratch to have full control
+        over where the the menu item appears
+      </p>
+    </div>
+  ),
 };
 
 export default config;

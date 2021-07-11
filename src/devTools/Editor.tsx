@@ -17,7 +17,7 @@
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { Container } from "react-bootstrap";
 import Sidebar from "@/devTools/editor/sidebar/Sidebar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
 import SplitPane from "react-split-pane";
 import { cancelSelectElement } from "@/background/devtools";
@@ -34,7 +34,10 @@ import WelcomePane from "@/devTools/editor/panes/WelcomePane";
 import EditorPane from "@/devTools/editor/panes/EditorPane";
 import useInstallState from "@/devTools/editor/hooks/useInstallState";
 import useEscapeHandler from "@/devTools/editor/hooks/useEscapeHandler";
-import InsertContextMenuPane from "@/devTools/editor/panes/insert/InsertContextMenuPane";
+import GenericInsertPane from "@/devTools/editor/panes/insert/GenericInsertPane";
+import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
+import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
+import { actions } from "@/devTools/editor/editorSlice";
 
 const selectEditor = ({ editor }: RootState) => editor;
 
@@ -43,6 +46,7 @@ const DEFAULT_SIDEBAR_WIDTH_PX = 260;
 const Editor: React.FunctionComponent = () => {
   const { tabState, port } = useContext(DevToolsContext);
   const installed = useSelector(selectInstalledExtensions);
+  const dispatch = useDispatch();
 
   const [showChat, setShowChat] = useState<boolean>(false);
   const showSupport = useCallback(() => setShowChat(true), [setShowChat]);
@@ -63,11 +67,14 @@ const Editor: React.FunctionComponent = () => {
     [elements, activeElement]
   );
 
-  const cancelInsert = useCallback(async () => cancelSelectElement(port), [
-    port,
-  ]);
+  const cancelInsert = useCallback(async () => {
+    dispatch(actions.toggleInsert(null));
+    await cancelSelectElement(port);
+  }, [port, dispatch]);
 
   useEscapeHandler(cancelInsert, inserting != null);
+
+  const reservedNames = useReservedNames(elements);
 
   const { availableDynamicIds, unavailableCount } = useInstallState(
     installed,
@@ -83,12 +90,16 @@ const Editor: React.FunctionComponent = () => {
       switch (inserting) {
         case "menuItem":
           return <InsertMenuItemPane cancel={cancelInsert} />;
-        case "contextMenu":
-          return <InsertContextMenuPane cancel={cancelInsert} />;
         case "panel":
           return <InsertPanelPane cancel={cancelInsert} />;
         default:
-          throw new Error(`No insertion panel defined for ${inserting}`);
+          return (
+            <GenericInsertPane
+              cancel={cancelInsert}
+              config={ADAPTERS.get(inserting)}
+              reservedNames={reservedNames}
+            />
+          );
       }
     } else if (error) {
       return (
@@ -131,6 +142,7 @@ const Editor: React.FunctionComponent = () => {
     availableDynamicIds?.size,
     unavailableCount,
     tabState,
+    reservedNames,
   ]);
 
   return (

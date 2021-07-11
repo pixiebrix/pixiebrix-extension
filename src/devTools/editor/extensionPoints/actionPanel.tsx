@@ -23,51 +23,57 @@ import {
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
+  PROPERTY_TABLE_BODY,
   selectIsAvailable,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
-import { v4 as uuidv4 } from "uuid";
-import {
-  Trigger,
-  TriggerConfig,
-  TriggerDefinition,
-} from "@/extensionPoints/triggerExtension";
-import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
+import {
+  ActionPanelConfig,
+  ActionPanelExtensionPoint,
+  PanelDefinition,
+} from "@/extensionPoints/actionPanelExtension";
+import FoundationTab from "@/devTools/editor/tabs/actionPanel/FoundationTab";
 import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
+import PanelTab from "@/devTools/editor/tabs/actionPanel/PanelTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import EffectTab from "@/devTools/editor/tabs/EffectTab";
-import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
-import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
+import LogsTab from "@/devTools/editor/tabs/LogsTab";
+import { DynamicDefinition } from "@/nativeEditor";
+import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
+import { v4 as uuidv4 } from "uuid";
 import { getDomain } from "@/permissions/patterns";
-import { faBolt } from "@fortawesome/free-solid-svg-icons";
+import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import {
   BaseFormState,
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { BlockPipeline } from "@/blocks/combinators";
+import React from "react";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
   { step: "Data", Component: ReaderTab },
+  { step: "Panel", Component: PanelTab },
   { step: "Integrations", Component: ServicesTab },
-  { step: "Action", Component: EffectTab },
+  {
+    step: "Content",
+    Component: EffectTab,
+    extraProps: { fieldName: "extension.body" },
+  },
   { step: "Availability", Component: AvailabilityTab },
   { step: "Logs", Component: LogsTab },
 ];
 
-export interface TriggerFormState extends BaseFormState {
-  type: "trigger";
+export interface ActionPanelFormState extends BaseFormState {
+  type: "actionPanel";
 
   extensionPoint: {
     metadata: Metadata;
     definition: {
-      rootSelector: string | null;
-      trigger: Trigger;
       isAvailable: {
         matchPatterns: string;
         selectors: string;
@@ -76,30 +82,34 @@ export interface TriggerFormState extends BaseFormState {
   };
 
   extension: {
-    action: BlockPipeline;
+    heading: string;
+    body: BlockPipeline;
   };
 }
 
-function initialFormStateFactory(
+function fromNativeElement(
   url: string,
   metadata: Metadata,
-  _element: null,
+  element: null,
   frameworks: FrameworkMeta[]
-): TriggerFormState {
+): ActionPanelFormState {
+  const base = makeBaseState(uuidv4(), null, metadata, frameworks);
+
+  const heading = `${getDomain(url)} side panel`;
+
   return {
-    type: "trigger",
-    label: `My ${getDomain(url)} trigger`,
-    ...makeBaseState(uuidv4(), null, metadata, frameworks),
+    type: "actionPanel",
+    label: heading,
+    ...base,
     extensionPoint: {
       metadata,
       definition: {
-        rootSelector: null,
-        trigger: "load",
         isAvailable: makeIsAvailable(url),
       },
     },
     extension: {
-      action: [],
+      heading,
+      body: PROPERTY_TABLE_BODY,
     },
   };
 }
@@ -107,10 +117,10 @@ function initialFormStateFactory(
 function selectExtensionPoint({
   extensionPoint,
   readers,
-}: TriggerFormState): ExtensionPointConfig<TriggerDefinition> {
+}: ActionPanelFormState): ExtensionPointConfig<PanelDefinition> {
   const {
     metadata,
-    definition: { isAvailable, rootSelector, trigger },
+    definition: { isAvailable },
   } = extensionPoint;
 
   return {
@@ -120,14 +130,12 @@ function selectExtensionPoint({
       id: metadata.id,
       version: "1.0.0",
       name: metadata.name,
-      description: "Trigger created with the Page Editor",
+      description: "Side Panel created with the Page Editor",
     },
     definition: {
-      type: "trigger",
+      type: "actionPanel",
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
-      trigger,
-      rootSelector,
     },
   };
 }
@@ -138,7 +146,7 @@ function selectExtension({
   extensionPoint,
   extension,
   services,
-}: TriggerFormState): IExtension<TriggerConfig> {
+}: ActionPanelFormState): IExtension<ActionPanelConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
@@ -148,23 +156,57 @@ function selectExtension({
   };
 }
 
-function asDynamicElement(element: TriggerFormState): DynamicDefinition {
+function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
   return {
-    type: "trigger",
+    type: "actionPanel",
     extension: selectExtension(element),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
 }
 
+export async function fromExtensionPoint(
+  url: string,
+  extensionPoint: ExtensionPointConfig<PanelDefinition>
+): Promise<ActionPanelFormState> {
+  if (extensionPoint.definition.type !== "actionPanel") {
+    throw new Error("Expected actionPanel extension point type");
+  }
+
+  const heading = `${getDomain(url)} side panel`;
+
+  return {
+    uuid: uuidv4(),
+    installed: true,
+    type: extensionPoint.definition.type,
+    label: heading,
+
+    readers: await makeReaderFormState(extensionPoint),
+    services: [],
+
+    extension: {
+      heading: heading,
+      body: PROPERTY_TABLE_BODY,
+    },
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      definition: {
+        ...extensionPoint.definition,
+        isAvailable: selectIsAvailable(extensionPoint),
+      },
+    },
+  };
+}
+
 async function fromExtension(
-  config: IExtension<TriggerConfig>
-): Promise<TriggerFormState> {
+  config: IExtension<ActionPanelConfig>
+): Promise<ActionPanelFormState> {
   const extensionPoint = await lookupExtensionPoint<
-    TriggerDefinition,
-    TriggerConfig,
-    "trigger"
-  >(config, "trigger");
+    PanelDefinition,
+    ActionPanelConfig,
+    "actionPanel"
+  >(config, "actionPanel");
 
   return {
     uuid: config.id,
@@ -177,30 +219,46 @@ async function fromExtension(
 
     extension: {
       ...config.config,
-      action: castArray(config.config.action),
+      heading: config.config.heading,
+      body: castArray(config.config.body),
     },
 
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        rootSelector: extensionPoint.definition.rootSelector,
-        trigger: extensionPoint.definition.trigger,
+        ...extensionPoint.definition,
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
   };
 }
 
-const config: ElementConfig<never, TriggerFormState> = {
-  elementType: "trigger",
-  label: "Trigger",
-  insert: undefined,
-  icon: faBolt,
-  initialFormStateFactory,
+const config: ElementConfig<never, ActionPanelFormState> = {
+  displayOrder: 3,
+  elementType: "actionPanel",
+  label: "Sidebar Panel",
+  baseClass: ActionPanelExtensionPoint,
+  selectNativeElement: undefined,
+  icon: faColumns,
+  fromNativeElement,
   asDynamicElement,
+  fromExtensionPoint,
   selectExtensionPoint,
   selectExtension,
   fromExtension,
+  insertModeHelp: (
+    <div>
+      <p>
+        A sidebar panel can be configured to appear in the PixieBrix sidebar on
+        pages you choose
+      </p>
+
+      <p>
+        Use an existing foundation, or start from scratch to have full control
+        over when the panel appears
+      </p>
+    </div>
+  ),
 };
 
 export default config;

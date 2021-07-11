@@ -21,10 +21,9 @@ import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
 import { actions, FormState } from "@/devTools/editor/editorSlice";
-import { getTabInfo, showBrowserActionPanel } from "@/background/devtools";
-import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
 import * as nativeOperations from "@/background/devtools";
-import { reportEvent } from "@/telemetry/events";
+import { getTabInfo } from "@/background/devtools";
+import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
 import { reportError } from "@/telemetry/logging";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 
@@ -47,35 +46,35 @@ function useAddElement(reservedNames: string[]): AddElement {
 
       dispatch(actions.toggleInsert(config.elementType));
 
+      if (!config.selectNativeElement) {
+        // If the foundation is not for a native element, stop after toggling insertion mode
+        return;
+      }
+
       try {
-        const element = config.insert ? await config.insert(port) : null;
+        const element = await config.selectNativeElement(port);
         const { url } = await getTabInfo(port);
+
         const metadata = await generateExtensionPointMetadata(
           config.label,
           scope,
           url,
           reservedNames
         );
-        const initialState = config.initialFormStateFactory(
+
+        const initialState = config.fromNativeElement(
           url,
           metadata,
           element,
           tabState.meta.frameworks ?? []
         );
+
         await nativeOperations.updateDynamicElement(
           port,
           config.asDynamicElement(initialState)
         );
-        dispatch(actions.addElement(initialState as FormState));
-        reportEvent("PageEditorStart", {
-          type: config.elementType,
-        });
 
-        if (config.elementType === "actionPanel") {
-          // For convenience, open the side panel if it's not already open so that the user doesn't
-          // have to manually toggle it
-          void showBrowserActionPanel(port);
-        }
+        dispatch(actions.addElement(initialState as FormState));
       } catch (error) {
         if (!error.toString().toLowerCase().includes("selection cancelled")) {
           reportError(error);
