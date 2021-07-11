@@ -86,7 +86,7 @@ export const DependencyRow: React.FunctionComponent<{
       <td>
         <Form.Group>
           <Button variant="danger" size="sm" onClick={() => remove(index)}>
-            <FontAwesomeIcon icon={faTrash} />
+            <FontAwesomeIcon icon={faTrash} /> Remove
           </Button>
         </Form.Group>
       </td>

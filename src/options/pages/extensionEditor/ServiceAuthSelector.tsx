@@ -15,17 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { CSSProperties, useMemo } from "react";
+import React, { CSSProperties, useCallback, useMemo } from "react";
 import { useField } from "formik";
-import Form from "react-bootstrap/Form";
+import { Form } from "react-bootstrap";
 import Select, { StylesConfig } from "react-select";
-import { useSelector } from "react-redux";
-import { RootState } from "@/options/store";
-import { RawServiceConfiguration } from "@/core";
-import { useFetch } from "@/hooks/fetch";
+import useFetch from "@/hooks/useFetch";
 import { SanitizedAuth } from "@/types/contract";
-import { ServicesState } from "@/options/slices";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import {
+  PIXIEBRIX_SERVICE_ID,
+  readRawConfigurations,
+} from "@/services/registry";
+import { useAsyncState } from "@/hooks/common";
+import { RawServiceConfiguration } from "@/core";
 
 export interface AuthOption {
   value: string;
@@ -39,15 +40,18 @@ function defaultLabel(label: string): string {
   return normalized === "" ? "Default" : normalized;
 }
 
-const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
-  Object.values(services.configured);
+export function useAuthOptions(): [AuthOption[], () => Promise<void>] {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values are being skipped
+  const [
+    configuredServices,
+    _localLoading,
+    _localError,
+    refreshLocal,
+  ] = useAsyncState<RawServiceConfiguration[]>(readRawConfigurations);
 
-export function useAuthOptions(): [AuthOption[]] {
-  const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
-    selectConfiguredServices
-  );
-
-  const remoteAuths = useFetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
+  const { data: remoteAuths, refresh: refreshRemote } = useFetch<
+    SanitizedAuth[]
+  >("/api/services/shared/?meta=1");
 
   const authOptions = useMemo(() => {
     const localOptions = (configuredServices ?? []).map((x) => ({
@@ -69,7 +73,11 @@ export function useAuthOptions(): [AuthOption[]] {
     return [...localOptions, ...sharedOptions];
   }, [remoteAuths, configuredServices]);
 
-  return [authOptions];
+  const refresh = useCallback(async () => {
+    await Promise.all([refreshRemote(), refreshLocal()]);
+  }, [refreshRemote, refreshLocal]);
+
+  return [authOptions, refresh];
 }
 
 // customStyles.js

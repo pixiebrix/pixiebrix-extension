@@ -120,7 +120,7 @@ const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
                 that PixieBrix has permission to the access the host. If
                 PixieBrix is not showing a Grant Permissions button, ensure that
                 the integration has an{" "}
-                <code className="px-0 mx-0">isAvailable</code> defined
+                <code className="px-0 mx-0">isAvailable</code> section defined
               </li>
               <li>The remote server did not respond. Try the request again</li>
             </ul>
