@@ -17,6 +17,7 @@
 
 import pDefer from "p-defer";
 import { browser } from "webextension-polyfill-ts";
+import { injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
@@ -125,12 +126,15 @@ export async function ensureContentScript(target: Target): Promise<void> {
       );
     } else {
       console.debug(`ensureContentScript: injecting`, target);
-      await browser.tabs.executeScript(target.tabId, {
-        frameId: target.frameId ?? 0,
-        allFrames: false,
-        file: "contentScript.js",
-        runAt: "document_end",
-      });
+      const loadingScripts = chrome.runtime
+        .getManifest()
+        .content_scripts.map(async (script) => {
+          script.all_frames = false;
+          script.run_at = "document_end";
+          return injectContentScript(target, script);
+        });
+
+      await Promise.all(loadingScripts);
     }
 
     await readyNotificationPromise;
