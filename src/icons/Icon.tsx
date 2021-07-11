@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import useAsyncEffect from "use-async-effect";
 import { IconLibrary } from "@/core";
 import iconAsSVG from "@/icons/svgIcons";
 
@@ -25,9 +26,16 @@ const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
 }) => {
   const [svg, setSvg] = useState("");
 
-  useEffect(() => {
-    void iconAsSVG({ id: icon, library, size: 16 }).then(setSvg);
-  }, [icon, library]);
+  useAsyncEffect(
+    async (isMounted) => {
+      const $icon = await iconAsSVG({ id: icon, library, size: 16 });
+      if (!isMounted()) {
+        return;
+      }
+      setSvg($icon);
+    },
+    [icon, library, setSvg]
+  );
 
   return (
     <span

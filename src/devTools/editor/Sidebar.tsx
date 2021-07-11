@@ -15,13 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  FormEvent,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { FormEvent, useContext, useMemo, useState } from "react";
+import useAsyncEffect from "use-async-effect";
 import { EditorState, FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
@@ -157,11 +152,16 @@ const Sidebar: React.FunctionComponent<
 
   const [logo, setLogo] = useState("");
 
-  useEffect(() => {
-    void fetchSVG(logoUrl).then(($icon) => {
+  useAsyncEffect(
+    async (isMounted) => {
+      const $icon = await fetchSVG(logoUrl);
+      if (!isMounted()) {
+        return;
+      }
       setLogo($icon.get(0).outerHTML);
-    });
-  }, []);
+    },
+    [setLogo]
+  );
 
   return (
     <div className="Sidebar d-flex flex-column vh-100">
@@ -170,7 +170,7 @@ const Sidebar: React.FunctionComponent<
           <span
             className="Sidebar__logo"
             dangerouslySetInnerHTML={{ __html: logo }}
-            onClick={() => openExtensionOptions()}
+            onClick={async () => openExtensionOptions()}
           />
           <DropdownButton
             disabled={!!inserting || !hasPermissions}
