@@ -54,7 +54,7 @@ export class SimpleEvent<TValue> implements TabEvent<TValue> {
 }
 
 /**
- * React Hook that calls handler whenever event is emitted for the given tag
+ * React Hook that calls handler whenever event is emitted for the given tab
  * @param tabId the tab to listen to
  * @param event the tab event
  * @param handler the handler to call

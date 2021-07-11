@@ -75,6 +75,7 @@ export async function fetch<TData>(
 /**
  * Hook for fetching information from a URL.
  * @param relativeOrAbsoluteUrl
+ * @deprecated use the useFetch hook, which tracks loading state and errors
  */
 export function useFetch<TData>(
   relativeOrAbsoluteUrl: string
@@ -86,6 +87,7 @@ export function useFetch<TData>(
   useAsyncEffect(
     async (isMounted) => {
       if (host) {
+        // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument here
         setData(undefined);
         try {
           const data = (await fetch(relativeOrAbsoluteUrl)) as TData;

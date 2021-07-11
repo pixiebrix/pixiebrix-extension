@@ -106,7 +106,7 @@ class LazyLocatorFactory {
 
   async refreshRemote(): Promise<void> {
     this.remote = await fetch("/api/services/shared/?meta=1");
-    console.debug(`Fetched ${this.remote.length} remote auths`);
+    console.debug(`Fetched ${this.remote.length} remote service auths`);
     this.makeOptions();
   }
 
@@ -117,9 +117,9 @@ class LazyLocatorFactory {
 
   // TODO: Replace with proper debouncer when one exists https://github.com/sindresorhus/promise-fun/issues/15
   async refresh(): Promise<void> {
-    this._refreshPromise = this._refreshPromise || this._refresh();
+    this._refreshPromise = this._refreshPromise ?? this._refresh();
     await this._refreshPromise;
-    this._refreshPromise = null;
+    this._refreshPromise = undefined;
   }
 
   private async _refresh(): Promise<void> {
@@ -128,7 +128,7 @@ class LazyLocatorFactory {
     this.makeOptions();
     this._initialized = true;
     this.updateTimestamp = timestamp;
-    console.debug(`Refreshed service locator`, {
+    console.debug(`Refreshed service configuration locator`, {
       updateTimestamp: this.updateTimestamp,
     });
   }
@@ -153,7 +153,7 @@ class LazyLocatorFactory {
   }
 
   getLocator(): ServiceLocator {
-    return this.locate.bind(this);
+    return LazyLocatorFactory.prototype.locate.bind(this);
   }
 
   async getLocalConfig(authId: string): Promise<RawServiceConfiguration> {
