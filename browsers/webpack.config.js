@@ -209,6 +209,7 @@ module.exports = (env, options) => ({
     options: path.resolve(rootDir, "src/options"),
     support: path.resolve(rootDir, "src/support"),
     action: path.resolve(rootDir, "src/action"),
+    popup: path.resolve(rootDir, "src/popup"),
   },
   resolve: {
     // Need to set these fields manually as their default values rely on `web` target.

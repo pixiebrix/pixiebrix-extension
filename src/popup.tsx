@@ -15,7 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./internal";
-export { navigationEvent } from "./external";
-export * from "./protocol";
-export * from "@/background/devtools/popup";
+document.querySelector("button").addEventListener("click", async () => {
+  const permissions = new URLSearchParams(location.search);
+  const origin = permissions.get("origin");
+  const accepted = await browser.permissions.request({
+    origins: [origin],
+  });
+
+  if (accepted) {
+    window.close();
+  }
+});
