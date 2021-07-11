@@ -78,7 +78,8 @@ export const runReaderBlock = liftContentScript(
   "RUN_READER_BLOCK",
   async ({ id, rootSelector }: { id: string; rootSelector?: string }) => {
     const root = rootSelector
-      ? $(document).find(rootSelector).get(0)
+      ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
+        $(document).find(rootSelector).get(0)
       : document;
 
     if (id === "@pixiebrix/context-menu-data") {
@@ -119,7 +120,8 @@ export const runReader = liftContentScript(
 
     const root =
       (rootSelector?.trim() ?? "") !== ""
-        ? $(document).find(rootSelector).get(0)
+        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
+          $(document).find(rootSelector).get(0)
         : document;
 
     return makeRead(config)(root);
@@ -137,7 +139,7 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
     };
     for (const framework of FRAMEWORK_ADAPTERS.keys()) {
       // eslint-disable-next-line security/detect-object-injection -- safe because key coming from compile-time constant
-      base[framework] = await read(() =>
+      base[framework] = await read(async () =>
         getComponentData({ framework: framework as Framework, selector })
       );
     }

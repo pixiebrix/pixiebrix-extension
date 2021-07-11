@@ -44,7 +44,9 @@ import {
   isActionPanelVisible,
   registerShowCallback,
   removeExtensionPoint,
+  removeShowCallback,
   reservePanels,
+  ShowCallback,
   updateHeading,
   upsertPanel,
 } from "@/actionPanel/native";
@@ -62,6 +64,7 @@ export interface ActionPanelConfig {
 
 export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPanelConfig> {
   readonly permissions: Permissions.Permissions = {};
+  readonly showCallback: ShowCallback;
 
   protected constructor(
     id: string,
@@ -70,6 +73,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     icon = "faColumns"
   ) {
     super(id, name, description, icon);
+    this.showCallback = ActionPanelExtensionPoint.prototype.run.bind(this);
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -154,6 +158,12 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     }
   }
 
+  public uninstall(): void {
+    this.removeExtensions();
+    removeExtensionPoint(this.id);
+    removeShowCallback(this.showCallback);
+  }
+
   async run(extensionIds?: string[]): Promise<void> {
     if (!(await this.isAvailable())) {
       removeExtensionPoint(this.id);
@@ -214,7 +224,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
     if (available) {
-      registerShowCallback(this.run.bind(this));
+      registerShowCallback(this.showCallback);
     } else {
       removeExtensionPoint(this.id);
     }
@@ -225,20 +235,20 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 export type PanelDefinition = ExtensionPointDefinition;
 
 class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
-  private readonly _definition: PanelDefinition;
+  private readonly definition: PanelDefinition;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
     const { id, name, description } = config.metadata;
     super(id, name, description);
-    this._definition = config.definition;
+    this.definition = config.definition;
   }
 
   async defaultReader(): Promise<IReader> {
-    return mergeReaders(this._definition.reader);
+    return mergeReaders(this.definition.reader);
   }
 
   async isAvailable(): Promise<boolean> {
-    return checkAvailable(this._definition.isAvailable);
+    return checkAvailable(this.definition.isAvailable);
   }
 }
 

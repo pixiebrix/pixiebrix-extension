@@ -22,6 +22,7 @@ import { Framework, FrameworkMeta } from "@/messaging/constants";
 import * as nativeSelectionProtocol from "@/nativeEditor/selector";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
+import * as browserActionProtocol from "@/contentScript/browserAction";
 import { Availability } from "@/blocks/types";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import {
@@ -84,19 +85,6 @@ export const detectFrameworks: (
   }
 );
 
-// export const findComponent = liftBackground(
-//     "FIND_COMPONENT",
-//     (tabId: number) => async ({
-//         selector,
-//         framework
-//       }: {
-//       selector: string
-//       framework: Framework
-//     }) => {
-//       return await nativeSelectionProtocol.findComponent(tabId, { selector, framework });
-//     }
-// )
-
 export const cancelSelectElement = liftBackground(
   "CANCEL_SELECT_ELEMENT",
   (target: Target) => async () => {
@@ -150,6 +138,13 @@ export const insertPanel: (
   "INSERT_PANEL",
   (target: Target) => async () => {
     return nativeEditorProtocol.insertPanel(target);
+  }
+);
+
+export const showBrowserActionPanel = liftBackground(
+  "SHOW_BROWSER_ACTION_PANEL",
+  (target: Target) => async () => {
+    return browserActionProtocol.showActionPanel(target);
   }
 );
 
