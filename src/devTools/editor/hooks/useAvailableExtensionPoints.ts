@@ -33,20 +33,32 @@ function useAvailableExtensionPoints<
 
   const [availableExtensionPoints, , error] = useAsyncState(async () => {
     const all = await extensionPointRegistry.all();
-    const validExtensionPoints = all.filter(
-      (x) => x instanceof ctor && (x as TConfig).rawConfig != null
-    ) as TConfig[];
+
+    const withType = all.filter((x) => x instanceof ctor) as TConfig[];
+
+    // For now, only support extension points defined with YAML/JSON. That's because we want to be able
+    // to show the configuration in the page editor.
+    const withConfig = withType.filter((x) => x.rawConfig != null);
+
     const availability = await Promise.allSettled(
-      validExtensionPoints.map(async (x) =>
+      withConfig.map(async (x) =>
         checkAvailable(port, x.rawConfig.definition.isAvailable ?? {})
       )
     );
+
+    if (withType.length > 0 && withConfig.length === 0) {
+      console.warn(
+        `Internal: found ${withType.length} extension points, but none with a rawConfig. Is there a rawConfig property defined on the class?`
+      );
+    }
+
     console.debug("useAvailableExtensionPoints", {
-      all,
-      validExtensionPoints,
+      withType,
+      withConfig,
       availability,
     });
-    return zip(validExtensionPoints, availability)
+
+    return zip(withConfig, availability)
       .filter(
         ([, availability]) =>
           availability.status === "fulfilled" && availability.value === true
@@ -55,7 +67,7 @@ function useAvailableExtensionPoints<
   }, [port]);
 
   if (error) {
-    console.warn("useAvailableExtensionPoints", { error });
+    console.error("useAvailableExtensionPoints", { error });
   }
 
   return availableExtensionPoints;

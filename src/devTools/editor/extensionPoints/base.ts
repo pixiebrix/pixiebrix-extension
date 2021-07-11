@@ -147,6 +147,7 @@ export async function generateExtensionPointMetadata(
     return false;
   };
 
+  // Find next available foundation id
   for (let index = 1; index < 1000; index++) {
     const id =
       index === 1
@@ -256,7 +257,7 @@ type SimpleAvailability = {
 
 /**
  * Map availability from extension point configuration to state for the page editor.
- * Is subject to the limitations of the page editor interface.
+ * @throws Error if the isAvailable definition use features that aren't supported by the Page Editor
  */
 export function selectIsAvailable(
   extensionPoint: ExtensionPointConfig

@@ -120,9 +120,10 @@ function selectExtensionPoint({
     kind: "extensionPoint",
     metadata: {
       id: metadata.id,
-      version: "1.0.0",
+      version: metadata.version ?? "1.0.0",
       name: metadata.name,
-      description: "Trigger created with the Page Editor",
+      description:
+        metadata.description ?? "Trigger created with the Page Editor",
     },
     definition: {
       type: "trigger",
@@ -156,6 +157,41 @@ function asDynamicElement(element: TriggerFormState): DynamicDefinition {
     extension: selectExtension(element),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
+  };
+}
+
+async function fromExtensionPoint(
+  url: string,
+  extensionPoint: ExtensionPointConfig<TriggerDefinition>
+): Promise<TriggerFormState> {
+  if (extensionPoint.definition.type !== "trigger") {
+    throw new Error("Expected trigger extension point type");
+  }
+
+  const { type, rootSelector, trigger = "load" } = extensionPoint.definition;
+
+  return {
+    uuid: uuidv4(),
+    installed: true,
+    type,
+    label: `My ${getDomain(url)} context menu`,
+
+    readers: await makeReaderFormState(extensionPoint),
+    services: [],
+
+    extension: {
+      action: [],
+    },
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      definition: {
+        ...extensionPoint.definition,
+        rootSelector,
+        trigger,
+        isAvailable: selectIsAvailable(extensionPoint),
+      },
+    },
   };
 }
 
@@ -205,6 +241,7 @@ const config: ElementConfig<never, TriggerFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
+  fromExtensionPoint,
   insertModeHelp: (
     <div>
       <p>

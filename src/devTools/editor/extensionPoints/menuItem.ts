@@ -180,7 +180,7 @@ function selectExtension({
   };
 }
 
-export async function makeActionExtensionFormState(
+async function fromExtensionPoint(
   url: string,
   extensionPoint: ExtensionPointConfig<MenuDefinition>
 ): Promise<ActionFormState> {
@@ -270,6 +270,7 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   icon: faMousePointer,
   baseClass: MenuItemExtensionPoint,
   selectNativeElement: nativeOperations.insertButton,
+  fromExtensionPoint,
   fromNativeElement,
   asDynamicElement,
   selectExtensionPoint,

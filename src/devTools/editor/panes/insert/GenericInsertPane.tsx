@@ -31,6 +31,8 @@ import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import * as nativeOperations from "@/background/devtools";
+import { useToasts } from "react-toast-notifications";
+import { reportError } from "@/telemetry/logging";
 
 const { addElement } = editorSlice.actions;
 
@@ -40,75 +42,95 @@ const GenericInsertPane: React.FunctionComponent<{
   config: ElementConfig;
 }> = ({ cancel, reservedNames, config }) => {
   const dispatch = useDispatch();
+  const { addToast } = useToasts();
   const { scope } = useContext(AuthContext);
   const { port } = useContext(DevToolsContext);
 
   const start = useCallback(
     async (state: FormState) => {
-      dispatch(addElement(state as FormState));
+      try {
+        dispatch(addElement(state as FormState));
 
-      await nativeOperations.updateDynamicElement(
-        port,
-        config.asDynamicElement(state)
-      );
+        await nativeOperations.updateDynamicElement(
+          port,
+          config.asDynamicElement(state)
+        );
 
-      // TODO: report if created new, or using existing foundation
-      reportEvent("PageEditorStart", {
-        type: config.elementType,
-      });
+        // TODO: report if created new, or using existing foundation
+        reportEvent("PageEditorStart", {
+          type: config.elementType,
+        });
 
-      if (config.elementType === "actionPanel") {
-        // For convenience, open the side panel if it's not already open so that the user doesn't
-        // have to manually toggle it
-        void showBrowserActionPanel(port);
+        if (config.elementType === "actionPanel") {
+          // For convenience, open the side panel if it's not already open so that the user doesn't
+          // have to manually toggle it
+          void showBrowserActionPanel(port);
+        }
+      } catch (error) {
+        reportError(error);
+        addToast("Error adding element", {
+          autoDismiss: true,
+          appearance: "error",
+        });
       }
     },
-    [config, port, dispatch]
+    [config, port, dispatch, addToast]
   );
 
   const addExisting = useCallback(
     async (extensionPoint) => {
-      if (!("rawConfig" in extensionPoint)) {
-        throw new Error(
-          `Cannot use ${config.elementType} extension point without config in the Page Editor`
+      try {
+        const { url } = await getTabInfo(port);
+        await start(
+          (await config.fromExtensionPoint(
+            url,
+            extensionPoint.rawConfig
+          )) as FormState
         );
+      } catch (error) {
+        reportError(error);
+        addToast("Error using existing foundation", {
+          autoDismiss: true,
+          appearance: "error",
+        });
       }
-      const { url } = await getTabInfo(port);
-
-      await start(
-        (await config.fromExtensionPoint(
-          url,
-          extensionPoint.rawConfig
-        )) as FormState
-      );
     },
-    [start, config, port]
+    [start, config, port, addToast]
   );
 
   const addNew = useCallback(async () => {
-    const { url } = await getTabInfo(port);
-    const metadata = await generateExtensionPointMetadata(
-      config.label,
-      scope,
-      url,
-      reservedNames
-    );
+    try {
+      const { url } = await getTabInfo(port);
 
-    await start(
-      (await config.fromNativeElement(
+      const metadata = await generateExtensionPointMetadata(
+        config.label,
+        scope,
         url,
-        metadata,
-        undefined,
-        []
-      )) as FormState
-    );
-  }, [start, config, port, scope, reservedNames]);
+        reservedNames
+      );
+
+      await start(
+        (await config.fromNativeElement(
+          url,
+          metadata,
+          undefined,
+          []
+        )) as FormState
+      );
+    } catch (error) {
+      reportError(error);
+      addToast("Error using adding new element", {
+        autoDismiss: true,
+        appearance: error,
+      });
+    }
+  }, [start, config, port, scope, reservedNames, addToast]);
 
   const extensionPoints = useAvailableExtensionPoints(config.baseClass);
 
   return (
     <Centered>
-      <div className="PaneTitle">New {config.label}</div>
+      <div className="PaneTitle">Add {config.label}</div>
       <div className="text-left">{config.insertModeHelp}</div>
       <div>
         <BlockModal

@@ -236,10 +236,12 @@ export type PanelDefinition = ExtensionPointDefinition;
 
 class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
   private readonly definition: PanelDefinition;
+  public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
     const { id, name, description } = config.metadata;
     super(id, name, description);
+    this.rawConfig = config;
     this.definition = config.definition;
   }
 

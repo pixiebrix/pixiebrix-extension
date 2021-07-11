@@ -207,17 +207,23 @@ async function fromExtensionPoint(
     throw new Error("Expected contextMenu extension point type");
   }
 
+  const {
+    defaultOptions = {},
+    documentUrlPatterns = [],
+    type,
+  } = extensionPoint.definition;
+
   return {
     uuid: uuidv4(),
     installed: true,
-    type: extensionPoint.definition.type,
+    type,
     label: `My ${getDomain(url)} context menu`,
 
     readers: await makeReaderFormState(extensionPoint),
     services: [],
 
     extension: {
-      title: extensionPoint.definition.defaultOptions.title ?? "Custom Action",
+      title: defaultOptions.title ?? "Custom Action",
       action: [],
     },
 
@@ -225,9 +231,8 @@ async function fromExtensionPoint(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
-        defaultOptions: extensionPoint.definition.defaultOptions ?? {},
-        documentUrlPatterns:
-          extensionPoint.definition.documentUrlPatterns ?? [],
+        defaultOptions,
+        documentUrlPatterns,
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -251,8 +256,8 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectNativeElement: undefined,
   icon: faBars,
   fromNativeElement,
-  asDynamicElement,
   fromExtensionPoint,
+  asDynamicElement,
   selectExtensionPoint,
   selectExtension,
   fromExtension,

@@ -29,9 +29,12 @@ export type ElementType =
   | "contextMenu"
   | "actionPanel";
 
-export interface ReaderReferenceFormState {
+/**
+ * A reference to an existing reader.
+ */
+export type ReaderReferenceFormState = {
   metadata: Metadata;
-}
+};
 
 export interface ReaderFormState {
   _new?: boolean;
@@ -55,13 +58,30 @@ export function isCustomReader(
 }
 
 export interface BaseFormState {
+  /**
+   * The extension uuid
+   */
   readonly uuid: string;
+
+  /**
+   * The type of the extensionPoint
+   */
   readonly type: ElementType;
 
+  /**
+   * True if the extensionPoint exists in in the registry
+   */
   installed?: boolean;
 
+  /**
+   * True if the extension should be allowed to auto-reload. In general, only extensions that require user
+   * interaction to trigger should be allowed to auto-reload. Otherwise, PixieBrix might end up spamming a API
+   */
   autoReload?: boolean;
 
+  /**
+   * User-provided name to identify the extension
+   */
   label: string;
 
   services: ServiceDependency[];
@@ -80,15 +100,22 @@ export interface ElementConfig<
   TResult = unknown,
   TState extends BaseFormState = BaseFormState
 > {
-  readonly displayOrder: number;
-
   /**
    * The internal element type, e.g., menuItem, contextMenu, etc.
    */
   readonly elementType: ElementType;
 
+  /**
+   * The ExtensionPointConfig class corresponding to the extension point
+   * @see ExtensionPointConfig
+   */
   // eslint-disable-next-line @typescript-eslint/ban-types -- we want to Ctor here for the extension point
   readonly baseClass: Function;
+
+  /**
+   * Order to display this element in the new element dropdown in the sidebar
+   */
+  readonly displayOrder: number;
 
   /**
    * The human-friendly name to refer to the element type (e.g., Context Menu)
@@ -139,7 +166,7 @@ export interface ElementConfig<
    * Returns the initial form state from an existing extension point
    * @see fromNativeElement
    */
-  readonly fromExtensionPoint?: (
+  readonly fromExtensionPoint: (
     url: string,
     config: ExtensionPointConfig
   ) => Promise<TState>;

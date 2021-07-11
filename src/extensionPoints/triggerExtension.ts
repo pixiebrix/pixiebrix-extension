@@ -17,12 +17,12 @@
 
 import { ExtensionPoint } from "@/types";
 import {
-  reducePipeline,
+  BlockConfig,
   blockList,
   BlockPipeline,
-  BlockConfig,
   makeServiceContext,
   mergeReaders,
+  reducePipeline,
 } from "@/blocks/combinators";
 import {
   IBlock,
@@ -38,14 +38,15 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { Permissions } from "webextension-polyfill-ts";
-import { compact, castArray } from "lodash";
+import { castArray, compact } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 import { reportEvent } from "@/telemetry/events";
-// @ts-ignore: using for the EventHandler type below
-import JQuery from "jquery";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 import { notifyError } from "@/contentScript/notify";
+
+// @ts-ignore: using for the EventHandler type below
+import JQuery from "jquery";
 
 export interface TriggerConfig {
   action: BlockPipeline | BlockConfig;
@@ -177,6 +178,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     if (rootSelector) {
       // awaitElementOnce doesn't work with multiple elements. Get what's currently on the page
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
       $root = $(document).find(rootSelector);
     }
 
@@ -186,7 +188,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
     if (this.trigger === "load") {
       const promises = await Promise.allSettled(
-        $root.toArray().flatMap((root) => this.runTrigger(root))
+        $root.toArray().flatMap(async (root) => this.runTrigger(root))
       );
       TriggerExtensionPoint.notifyErrors(promises);
     } else if (this.trigger === "appear") {
@@ -200,7 +202,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       this.observer = new IntersectionObserver(
         (entries) => {
           for (const entry of entries.filter((x) => x.isIntersecting)) {
-            this.runTrigger(entry.target as HTMLElement).then((errors) => {
+            void this.runTrigger(entry.target as HTMLElement).then((errors) => {
               if (errors.length > 0) {
                 console.error("An error occurred while running a trigger", {
                   errors,
@@ -268,6 +270,7 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
 class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
   private readonly _definition: TriggerDefinition;
   public readonly permissions: Permissions.Permissions;
+  public readonly rawConfig: ExtensionPointConfig<TriggerDefinition>;
 
   public get defaultOptions(): {
     [option: string]: string;
@@ -279,6 +282,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
     this._definition = config.definition;
+    this.rawConfig = config;
     const { isAvailable } = config.definition;
     this.permissions = {
       permissions: ["tabs", "webNavigation"],
@@ -294,7 +298,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
     return this._definition.rootSelector;
   }
 
-  defaultReader() {
+  async defaultReader() {
     return mergeReaders(this._definition.reader);
   }
 

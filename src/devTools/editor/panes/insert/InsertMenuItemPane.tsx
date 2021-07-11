@@ -19,7 +19,7 @@ import React, { useCallback, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { DevToolsContext } from "@/devTools/context";
 import { getTabInfo } from "@/background/devtools";
-import { makeActionExtensionFormState } from "@/devTools/editor/extensionPoints/menuItem";
+import config from "@/devTools/editor/extensionPoints/menuItem";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import {
   MenuDefinition,
@@ -32,6 +32,7 @@ import { faCube, faInfo } from "@fortawesome/free-solid-svg-icons";
 import BlockModal from "@/components/fields/BlockModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { editorSlice } from "@/devTools/editor/editorSlice";
+import { reportEvent } from "@/telemetry/events";
 
 const { addElement } = editorSlice.actions;
 
@@ -47,20 +48,25 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
 
   const addExistingButton = useCallback(
     async (extensionPoint: MenuItemWithConfig) => {
-      cancel();
       if (!("rawConfig" in extensionPoint)) {
         throw new Error(
           "Cannot use menuItem extension point without config in the Page Editor"
         );
       }
       const { url } = await getTabInfo(port);
-      const state = await makeActionExtensionFormState(
+      const state = await config.fromExtensionPoint(
         url,
         extensionPoint.rawConfig
       );
+
+      // TODO: report if created new, or using existing foundation
+      reportEvent("PageEditorStart", {
+        type: config.elementType,
+      });
+
       dispatch(addElement(state));
     },
-    [port, dispatch, cancel]
+    [port, dispatch]
   );
 
   const menuItemExtensionPoints = useAvailableExtensionPoints(

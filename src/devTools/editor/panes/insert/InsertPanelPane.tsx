@@ -35,6 +35,7 @@ import {
   faCube,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
+import { reportEvent } from "@/telemetry/events";
 
 const { addElement } = editorSlice.actions;
 
@@ -52,20 +53,20 @@ const InsertPanelPane: React.FunctionComponent<{
 
   const addExistingPanel = useCallback(
     async (extensionPoint: PanelWithConfig) => {
-      cancel();
-      if (!("rawConfig" in extensionPoint)) {
-        throw new Error(
-          "Cannot use panel extension point without config in the Page Editor"
-        );
-      }
       const { url } = await getTabInfo(port);
       const state = await config.fromExtensionPoint(
         url,
         extensionPoint.rawConfig
       );
+
+      // TODO: report if created new, or using existing foundation
+      reportEvent("PageEditorStart", {
+        type: config.elementType,
+      });
+
       dispatch(addElement(state));
     },
-    [port, dispatch, cancel]
+    [port, dispatch]
   );
 
   return (
