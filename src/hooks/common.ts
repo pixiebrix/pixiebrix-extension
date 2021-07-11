@@ -15,39 +15,63 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import useAsyncEffect from "use-async-effect";
 
 type StateFactory<T> = Promise<T> | (() => Promise<T>);
 
+export type AsyncState<T> = [
+  T | undefined,
+  boolean,
+  unknown,
+  () => Promise<void>
+];
+
 export function useAsyncState<T>(
   promiseFactory: StateFactory<T>,
   dependencies: unknown[] = []
-): [T | undefined, boolean, unknown] {
-  const [result, setResult] = useState(undefined);
-  const [isPending, setPending] = useState(true);
-  const [error, setError] = useState(undefined);
+): AsyncState<T> {
+  const [data, setData] = useState<T | undefined>();
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState<unknown>();
+
+  const recalculate = useCallback(async () => {
+    try {
+      const promiseResult = await (typeof promiseFactory === "function"
+        ? promiseFactory()
+        : promiseFactory);
+      setData(promiseResult);
+    } catch (error_) {
+      // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument
+      setData(undefined);
+      setError(error_ ?? "Error producing data");
+    } finally {
+      setLoading(false);
+    }
+  }, [setData, setLoading, setError, promiseFactory]);
 
   useAsyncEffect(async (isMounted) => {
-    setPending(true);
+    setLoading(true);
+    // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument
     setError(undefined);
     try {
       const promiseResult = await (typeof promiseFactory === "function"
         ? promiseFactory()
         : promiseFactory);
       if (!isMounted()) return;
-      setResult(promiseResult);
+      setData(promiseResult);
     } catch (error_) {
       if (isMounted()) {
-        setResult(undefined);
-        setError(error_ ?? "Error calculating data");
+        // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument
+        setData(undefined);
+        setError(error_ ?? "Error producing data");
       }
     } finally {
       if (isMounted()) {
-        setPending(false);
+        setLoading(false);
       }
     }
   }, dependencies);
 
-  return [result, isPending, error];
+  return [data, isLoading, error, recalculate];
 }

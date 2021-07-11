@@ -20,68 +20,50 @@ import { LogEntry } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { ErrorObject } from "serialize-error";
-import JSONTree from "react-json-tree";
-import { jsonTreeTheme as theme } from "@/themes/light";
+import { ContextError } from "@/errors";
+import { isErrorObject } from "@/utils";
+import { InputValidationError } from "@/blocks/errors";
+import { AxiosError } from "axios";
+import InputDetail from "@/components/logViewer/details/InputDetail";
+import InputValidationErrorDetail from "@/components/logViewer/details/InputValidationErrorDetail";
+import NetworkErrorDetail from "@/components/logViewer/details/NetworkErrorDetail";
+import OutputDetail from "@/components/logViewer/details/OutputDetail";
 
 const dateFormat = new Intl.DateTimeFormat("en-US", {
-  dateStyle: "long",
+  dateStyle: "short",
   timeStyle: "short",
 });
+
+function getRootCause(error: ErrorObject): ErrorObject {
+  if (error.name === "ContextError" && (error as ContextError).cause != null) {
+    return getRootCause(error.cause as ErrorObject);
+  }
+  return error;
+}
 
 const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
   entry,
 }) => {
-  const error = entry.error as ErrorObject;
-  return <div style={{ whiteSpace: "pre-wrap" }}>{error.stack}</div>;
-};
+  const detail = useMemo(() => {
+    if (isErrorObject(entry.error)) {
+      const rootCause = getRootCause(entry.error);
+      if (rootCause.name === "InputValidationError") {
+        return (
+          <InputValidationErrorDetail
+            error={(rootCause as unknown) as InputValidationError}
+          />
+        );
+      } else if (rootCause.isAxiosError) {
+        return (
+          <NetworkErrorDetail error={(rootCause as unknown) as AxiosError} />
+        );
+      }
+      return entry.error.stack;
+    }
+    return entry.error.toString();
+  }, [entry.error]);
 
-const InputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
-  entry,
-}) => {
-  return (
-    <div className="row">
-      <div className="col">
-        <span>Template</span>
-        <JSONTree
-          hideRoot
-          data={entry.data.template}
-          theme={theme}
-          invertTheme
-        />
-      </div>
-      <div className="col">
-        <span>Context</span>
-        <JSONTree
-          hideRoot
-          data={entry.data.templateContext}
-          theme={theme}
-          invertTheme
-        />
-      </div>
-      <div className="col">
-        <span>Rendered Args</span>
-        <JSONTree
-          hideRoot
-          data={entry.data.renderedArgs}
-          theme={theme}
-          invertTheme
-        />
-      </div>
-    </div>
-  );
-};
-
-const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
-  entry,
-}) => {
-  return (
-    <div className="row">
-      <div className="col">
-        {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
-        <JSONTree data={entry.data.output} theme={theme} invertTheme />
-      </div>
-    </div>
-  );
+  return <div style={{ whiteSpace: "pre-wrap" }}>{detail}</div>;
 };
 
 const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {

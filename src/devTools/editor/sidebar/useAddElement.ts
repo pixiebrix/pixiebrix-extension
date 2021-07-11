@@ -22,7 +22,7 @@ import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
 import { actions } from "@/devTools/editor/editorSlice";
-import { getTabInfo } from "@/background/devtools";
+import { getTabInfo, showBrowserActionPanel } from "@/background/devtools";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
 import * as nativeOperations from "@/background/devtools";
 import { reportEvent } from "@/telemetry/events";
@@ -70,6 +70,10 @@ function useAddElement(reservedNames: string[]): AddElement {
         reportEvent("PageEditorStart", {
           type: config.elementType,
         });
+
+        if (config.elementType === "actionPanel") {
+          void showBrowserActionPanel(port);
+        }
       } catch (error) {
         if (!error.toString().toLowerCase().includes("selection cancelled")) {
           console.error(error);

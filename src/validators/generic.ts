@@ -17,7 +17,7 @@
 
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useMemo } from "react";
-import { useAsyncState } from "@/hooks/common";
+import { AsyncState, useAsyncState } from "@/hooks/common";
 import { locate } from "@/background/locator";
 import {
   Validator,
@@ -85,7 +85,7 @@ export async function validateKind(
   const finalSchema = await dereference(KIND_SCHEMAS[kind] as Schema);
   const validator = new Validator(finalSchema as any);
 
-  validator.addSchema(draft07 as any);
+  validator.addSchema(draft07 as ValidatorSchema);
 
   return validator.validate(instance);
 }
@@ -199,8 +199,8 @@ async function validateExtension(
 
 export function useExtensionValidator(
   extension: IExtension
-): [ExtensionValidationResult | undefined, boolean, unknown] {
-  const validationPromise = useMemo(() => validateExtension(extension), [
+): AsyncState<ExtensionValidationResult> {
+  const validationPromise = useMemo(async () => validateExtension(extension), [
     extension,
   ]);
   return useAsyncState(validationPromise);

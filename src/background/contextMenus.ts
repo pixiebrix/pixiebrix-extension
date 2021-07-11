@@ -24,8 +24,8 @@ import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
-import { hasCancelRootCause } from "@/errors";
 import { getErrorMessage } from "@/extensionPoints/helpers";
+import { hasCancelRootCause } from "@/errors";
 
 type ExtensionId = string;
 type MenuItemId = number | string;
@@ -103,7 +103,7 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
     typeof info.menuItemId === "string" &&
     info.menuItemId.startsWith(MENU_PREFIX)
   ) {
-    dispatchMenu(info, tab);
+    void dispatchMenu(info, tab);
   } else {
     console.debug(`Ignoring menu item: ${info.menuItemId}`);
   }

@@ -15,29 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import VendorJSONTree from "react-json-tree";
+import { jsonTreeTheme as theme } from "@/themes/light";
 import React from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
-import { Tab } from "react-bootstrap";
-import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
-import { useFormikContext } from "formik";
 
-export const LOGS_EVENT_KEY = "logs";
-
-const LogsTab: React.FunctionComponent<{
-  eventKey: string;
-}> = ({ eventKey = LOGS_EVENT_KEY }) => {
-  const { values } = useFormikContext<FormState>();
-
-  return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
-      <RunLogCard
-        extensionPointId={values.extensionPoint.metadata.id}
-        extensionId={values.uuid}
-        initialLevel="debug"
-        refreshInterval={750}
-      />
-    </Tab.Pane>
-  );
+const JSONTree: React.FunctionComponent<Partial<VendorJSONTree["props"]>> = (
+  props
+) => {
+  return <VendorJSONTree hideRoot theme={theme} invertTheme {...props} />;
 };
 
-export default LogsTab;
+export default JSONTree;

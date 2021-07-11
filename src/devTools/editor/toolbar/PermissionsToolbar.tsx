@@ -55,7 +55,7 @@ const PermissionsToolbar: React.FunctionComponent<{
     trailing: true,
   });
 
-  const run = useCallback(
+  const detectPermissions = useCallback(
     async (element: FormState, disabled: boolean) => {
       if (disabled) {
         return;
@@ -73,6 +73,12 @@ const PermissionsToolbar: React.FunctionComponent<{
         extensionPoint,
         includeExtensionPoint: false,
       });
+
+      console.debug("Checking for extension permissions", {
+        extension,
+        permissions,
+      });
+
       const hasPermissions = await checkPermissions(permissions);
       setState({ permissions, hasPermissions });
     },
@@ -81,7 +87,7 @@ const PermissionsToolbar: React.FunctionComponent<{
 
   useAsyncEffect(async () => {
     if (!disabled) {
-      await run(debouncedElement, disabled);
+      await detectPermissions(debouncedElement, disabled);
     }
   }, [debouncedElement, disabled]);
 
@@ -91,14 +97,20 @@ const PermissionsToolbar: React.FunctionComponent<{
         appearance: "success",
         autoDismiss: true,
       });
-      await run(debouncedElement, disabled);
+      await detectPermissions(debouncedElement, disabled);
     } else {
       addToast("You declined the additional required permissions", {
         appearance: "info",
         autoDismiss: true,
       });
     }
-  }, [addToast, state.permissions, run, debouncedElement, disabled]);
+  }, [
+    addToast,
+    state.permissions,
+    detectPermissions,
+    debouncedElement,
+    disabled,
+  ]);
 
   return (
     <ButtonGroup>

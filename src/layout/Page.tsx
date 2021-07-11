@@ -16,12 +16,13 @@
  */
 
 import React from "react";
-import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { useTitle } from "@/hooks/title";
 
 export const PageTitle: React.FunctionComponent<{
   title: React.ReactNode;
-  icon?: any;
+  icon?: IconProp;
 }> = ({ title, icon }) => (
   <div className="page-header">
     <h3 className="page-title">
@@ -32,15 +33,34 @@ export const PageTitle: React.FunctionComponent<{
       )}
       {title}
     </h3>
-    {/*<nav aria-label="breadcrumb">*/}
-    {/*    <ol className="breadcrumb">*/}
-    {/*        <li className="breadcrumb-item"><a href="!#" onClick={event => event.preventDefault()}>Forms</a></li>*/}
-    {/*        <li className="breadcrumb-item active" aria-current="page">Form elements</li>*/}
-    {/*    </ol>*/}
-    {/*</nav>*/}
   </div>
 );
 
-PageTitle.propTypes = {
-  title: PropTypes.node.isRequired,
+const Page: React.FunctionComponent<{
+  icon: IconProp;
+  title: string;
+  description: string | React.ReactNode;
+  breadcrumb?: React.ReactNode;
+  toolbar?: React.ReactNode;
+  children: React.ReactNode;
+}> = ({ icon, title, breadcrumb, toolbar, description, children }) => {
+  useTitle(title);
+
+  return (
+    <div>
+      <div className="d-flex">
+        <div className="flex-grow-1">
+          <PageTitle icon={icon} title={title} />
+          <div className="pb-4">
+            {description && <p>{description}</p>}
+            {breadcrumb}
+          </div>
+        </div>
+        {toolbar && <div>{toolbar}</div>}
+      </div>
+      {children}
+    </div>
+  );
 };
+
+export default Page;

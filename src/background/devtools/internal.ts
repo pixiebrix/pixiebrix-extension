@@ -173,7 +173,6 @@ export function liftBackground<R extends SerializableResponse>(
     if (backgroundHandlers.has(fullType)) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
-      // console.debug(`Installed background page handler for ${type}`);
       backgroundHandlers.set(fullType, { handler: method, options });
     }
   }

@@ -16,28 +16,21 @@
  */
 
 import React from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
-import { Tab } from "react-bootstrap";
-import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
-import { useFormikContext } from "formik";
+import { LogEntry } from "@/background/logging";
+import { Col, Row } from "react-bootstrap";
+import JSONTree from "@/components/JSONTree";
 
-export const LOGS_EVENT_KEY = "logs";
-
-const LogsTab: React.FunctionComponent<{
-  eventKey: string;
-}> = ({ eventKey = LOGS_EVENT_KEY }) => {
-  const { values } = useFormikContext<FormState>();
-
+const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
+  entry,
+}) => {
   return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
-      <RunLogCard
-        extensionPointId={values.extensionPoint.metadata.id}
-        extensionId={values.uuid}
-        initialLevel="debug"
-        refreshInterval={750}
-      />
-    </Tab.Pane>
+    <Row>
+      <Col>
+        {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
+        <JSONTree data={entry.data.output} />
+      </Col>
+    </Row>
   );
 };
 
-export default LogsTab;
+export default OutputDetail;

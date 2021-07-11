@@ -52,11 +52,11 @@ type ConfiguredHostResult = [ConfiguredHost, (url: string) => Promise<void>];
  * Hook for retrieving/setting the manually configured host.
  */
 export function useConfiguredHost(): ConfiguredHostResult {
-  const [state, setState] = useState(undefined);
+  const [state, setState] = useState<ConfiguredHost>();
 
   useAsyncEffect(
     async (isMounted) => {
-      const configured = await readStorage(SERVICE_STORAGE_KEY);
+      const configured = await readStorage<ConfiguredHost>(SERVICE_STORAGE_KEY);
       if (!isMounted()) return;
       setState(configured);
     },

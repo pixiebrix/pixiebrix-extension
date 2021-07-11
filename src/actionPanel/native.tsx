@@ -37,7 +37,7 @@ type ExtensionRef = {
   extensionPointId: string;
 };
 
-type ShowCallback = () => void;
+export type ShowCallback = () => void;
 
 const panels: PanelEntry[] = [];
 const extensionCallbacks: ShowCallback[] = [];
@@ -45,6 +45,13 @@ let originalMarginRight: number;
 
 export function registerShowCallback(onShow: ShowCallback): void {
   extensionCallbacks.push(onShow);
+}
+
+export function removeShowCallback(onShow: ShowCallback): void {
+  const index = extensionCallbacks.indexOf(onShow);
+  if (index > -1) {
+    extensionCallbacks.splice(index, 1);
+  }
 }
 
 function getHTMLElement(): JQuery<HTMLElement> {

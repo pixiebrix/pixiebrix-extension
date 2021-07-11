@@ -261,7 +261,7 @@ const ExtensionForm: React.FunctionComponent<{
                   eventKey="configuration"
                   fieldName="config"
                 />
-                {extensionId && <NavItem caption="Log Stream" eventKey="log" />}
+                {extensionId && <NavItem caption="Logs" eventKey="log" />}
               </Nav>
             </Card.Header>
 
