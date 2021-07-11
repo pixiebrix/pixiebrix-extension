@@ -41,10 +41,11 @@ function defaultLabel(label: string): string {
 }
 
 export function useAuthOptions(): [AuthOption[], () => Promise<void>] {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values are being skipped
   const [
     configuredServices,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
     _localLoading,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
     _localError,
     refreshLocal,
   ] = useAsyncState<RawServiceConfiguration[]>(readRawConfigurations);
