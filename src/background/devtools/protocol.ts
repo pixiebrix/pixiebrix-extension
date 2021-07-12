@@ -64,6 +64,7 @@ export const getTabInfo = liftBackground(
   }
 );
 
+// It doesn't use the regular `liftBackground` because it's called by a React component that doesn't have access to the port
 export const containsPermissions = liftBackgroundSimple(
   "CONTAINS_PERMISSIONS",
   async (permissions: Permissions.Permissions) =>
