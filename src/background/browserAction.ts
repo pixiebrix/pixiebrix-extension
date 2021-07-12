@@ -135,7 +135,6 @@ handlers.set(
       frameId: sender.frameId,
     });
     tabFrames.set(tabId, sender.frameId);
-    return;
   }
 );
 

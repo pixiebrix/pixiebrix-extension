@@ -106,21 +106,20 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
     return <GridLoader />;
   } else if (!extensionPoint) {
     return <WorkshopPage navigate={navigate} />;
-  } else {
-    return (
-      <ExtensionPointDetail
-        initialValue={{
-          label: extensionConfig?.label,
-          config: extensionConfig?.config,
-          services: extensionConfig?.services ?? [],
-          optionsArgs: extensionConfig?.optionsArgs ?? {},
-        }}
-        extensionId={extensionId}
-        extensionPoint={extensionPoint}
-        onSave={save}
-      />
-    );
   }
+  return (
+    <ExtensionPointDetail
+      initialValue={{
+        label: extensionConfig?.label,
+        config: extensionConfig?.config,
+        services: extensionConfig?.services ?? [],
+        optionsArgs: extensionConfig?.optionsArgs ?? {},
+      }}
+      extensionId={extensionId}
+      extensionPoint={extensionPoint}
+      onSave={save}
+    />
+  );
 };
 
 const mapStateToProps: null = undefined;

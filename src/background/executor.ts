@@ -100,9 +100,8 @@ async function waitNonceReady(
         },
         { frameId: target.frameId }
       );
-    } else {
-      return true;
     }
+    return true;
   };
 
   while (!(await isReady())) {

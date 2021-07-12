@@ -170,14 +170,13 @@ const ServiceDescriptor: React.FunctionComponent<{
         <code className="small p-0">{serviceId}</code>
       </div>
     );
-  } else {
-    return (
-      <div>
-        {config && <span>{config.metadata.name}</span>}
-        <code className="p-0">{serviceId}</code>
-      </div>
-    );
   }
+  return (
+    <div>
+      {config && <span>{config.metadata.name}</span>}
+      <code className="p-0">{serviceId}</code>
+    </div>
+  );
 };
 
 const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {

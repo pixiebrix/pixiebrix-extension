@@ -71,7 +71,6 @@ export async function getAuth(): Promise<AuthState> {
       extension: true,
       flags,
     };
-  } else {
-    return anonAuth;
   }
+  return anonAuth;
 }
