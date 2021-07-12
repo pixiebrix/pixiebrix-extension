@@ -76,9 +76,8 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
       return InputDetail;
     } else if (entry.data?.output != null) {
       return OutputDetail;
-    } else {
-      return null;
     }
+    return null;
   }, [entry]);
 
   const expandable = !!Detail;

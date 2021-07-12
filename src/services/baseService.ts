@@ -37,9 +37,8 @@ export async function getBaseURL(): Promise<string> {
     return withoutTrailingSlash(
       isEmpty(configured) ? DEFAULT_SERVICE_URL : configured
     );
-  } else {
-    return withoutTrailingSlash(DEFAULT_SERVICE_URL);
   }
+  return withoutTrailingSlash(DEFAULT_SERVICE_URL);
 }
 
 export async function setBaseURL(serviceURL: string): Promise<void> {

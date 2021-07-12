@@ -109,9 +109,8 @@ const ActivatePage: React.FunctionComponent = () => {
           </Card.Body>
         </Card>
       );
-    } else {
-      return <GridLoader />;
     }
+    return <GridLoader />;
   }, [blueprintId, blueprint, sourcePage]);
 
   return (

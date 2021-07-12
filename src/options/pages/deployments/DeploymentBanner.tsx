@@ -92,9 +92,8 @@ function useEnsurePermissions(deployments: Deployment[]) {
         autoDismiss: true,
       });
       return false;
-    } else {
-      return true;
     }
+    return true;
   }, [permissions, setEnabled]);
 
   const groupedPermissions = useMemo(() => {

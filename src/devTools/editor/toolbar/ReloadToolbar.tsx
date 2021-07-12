@@ -95,25 +95,24 @@ const ReloadToolbar: React.FunctionComponent<{
 
   if (automaticUpdate) {
     return null;
-  } else {
-    return (
-      <>
-        <label className="AutoRun my-auto mr-1">
-          {isPanel ? "Auto-Render" : "Auto-Run"}
-        </label>
-        <ToggleField name="autoReload" />
-        <Button
-          className="mx-2"
-          disabled={disabled}
-          size="sm"
-          variant="info"
-          onClick={run}
-        >
-          {isPanel ? "Render Panel" : "Run Trigger"}
-        </Button>
-      </>
-    );
   }
+  return (
+    <>
+      <label className="AutoRun my-auto mr-1">
+        {isPanel ? "Auto-Render" : "Auto-Run"}
+      </label>
+      <ToggleField name="autoReload" />
+      <Button
+        className="mx-2"
+        disabled={disabled}
+        size="sm"
+        variant="info"
+        onClick={run}
+      >
+        {isPanel ? "Render Panel" : "Run Trigger"}
+      </Button>
+    </>
+  );
 };
 
 export default ReloadToolbar;

@@ -98,14 +98,13 @@ async function handleRequest(
 export function getExtensionId(): string {
   if (isContentScript() || isOptionsPage() || isBackgroundPage()) {
     return browser.runtime.id;
-  } else {
-    if (chrome.runtime == null) {
-      throw new RuntimeNotFoundError(
-        "Browser runtime is unavailable; is the extension externally connectable?"
-      );
-    }
-    return getChromeExtensionId();
   }
+  if (chrome.runtime == null) {
+    throw new RuntimeNotFoundError(
+      "Browser runtime is unavailable; is the extension externally connectable?"
+    );
+  }
+  return getChromeExtensionId();
 }
 
 export async function callBackground(
@@ -133,7 +132,6 @@ export async function callBackground(
         error
       );
     });
-    return;
   } else {
     console.debug(`Sending background action ${type} (nonce: ${nonce})`, {
       extensionId,

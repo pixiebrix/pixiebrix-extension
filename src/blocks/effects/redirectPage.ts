@@ -64,12 +64,11 @@ function makeURL(
 
   if (spaceEncoding === "plus" || result.search.length === 0) {
     return fullURL;
-  } else {
-    return fullURL.replace(
-      result.search,
-      result.search.replaceAll("+", SPACE_ENCODED_VALUE)
-    );
   }
+  return fullURL.replace(
+    result.search,
+    result.search.replaceAll("+", SPACE_ENCODED_VALUE)
+  );
 }
 
 export class NavigateURLEffect extends Effect {
