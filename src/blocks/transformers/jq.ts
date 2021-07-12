@@ -20,6 +20,8 @@ import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
+import { InputValidationError } from "@/blocks/errors";
+import { OutputUnit } from "@cfworker/json-schema";
 
 export class JQTransformer extends Transformer {
   constructor() {
@@ -49,7 +51,7 @@ export class JQTransformer extends Transformer {
     { filter, data }: BlockArg,
     { ctxt, logger }: BlockOptions
   ): Promise<unknown> {
-    const input = !isNullOrBlank(data) ? data : ctxt;
+    const input = isNullOrBlank(data) ? ctxt : data;
 
     const jq = (
       await import(
@@ -60,7 +62,37 @@ export class JQTransformer extends Transformer {
     ).default;
 
     logger.debug("Running jq transform", { filter, data, ctxt, input });
-    return await jq.promised.json(input, filter);
+    try {
+      return await jq.promised.json(input, filter);
+    } catch (error) {
+      if (error.message.includes("compile error")) {
+        const validationErrors: OutputUnit[] = [
+          {
+            keyword: "filter",
+            keywordLocation: "#/filter",
+            instanceLocation: "#",
+            error: error.stack,
+          },
+        ];
+
+        if (error.stack.includes("unexpected $end")) {
+          throw new InputValidationError(
+            "Unexpected end of jq filter, are you missing a parentheses, brace, and/or quote mark?",
+            this.inputSchema,
+            { filter, data: input },
+            validationErrors
+          );
+        } else {
+          throw new InputValidationError(
+            "Invalid jq filter, see error log for details",
+            this.inputSchema,
+            { filter, data: input },
+            validationErrors
+          );
+        }
+      }
+      throw error;
+    }
   }
 }
 

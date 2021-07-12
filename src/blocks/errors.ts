@@ -32,7 +32,10 @@ export class PipelineConfigurationError extends Error {
 }
 
 /**
- * Error bailing if a renderer component is encountered while running in headless mode
+ * Error bailing if a renderer component is encountered while running in "headless mode"
+ *
+ * Headless mode is used when the content script should run a script, but that the result will be rendered in a
+ * different browser context (e.g., the PixieBrix sidebar)
  */
 export class HeadlessModeError extends Error {
   public readonly blockId: string;
