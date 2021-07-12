@@ -265,7 +265,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         try {
           clear();
         } catch {
-          console.exception("Error cancelling dependency observer");
+          console.error("Error cancelling dependency observer");
         }
       }
       this.cancelDependencyObservers.delete(extension.id);

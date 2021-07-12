@@ -57,7 +57,7 @@ export async function handleRejection(
   token: string,
   error: any
 ): Promise<Error> {
-  console.debug("Google rejected request", { err: error });
+  console.debug("Google rejected request", { error });
   if (error.result == null) {
     return error;
   }

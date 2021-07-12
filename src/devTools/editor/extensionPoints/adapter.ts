@@ -40,7 +40,7 @@ export const ADAPTERS = new Map<ElementType, ElementConfig>([
 export async function selectType(extension: IExtension): Promise<ElementType> {
   const brick = await findBrick(extension.extensionPointId);
   if (!brick) {
-    console.exception("Cannot find extension point", {
+    console.error("Cannot find extension point", {
       extensionPointId: extension.extensionPointId,
     });
     throw new Error("Cannot find extension point");

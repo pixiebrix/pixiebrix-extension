@@ -52,7 +52,7 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
     if (deserializeError(error).name === "ComponentNotFoundError") {
       return "Component not detected";
     }
-    return { error: error };
+    return { error };
   }
 }
 

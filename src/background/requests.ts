@@ -266,7 +266,7 @@ export async function proxyService<TData>(
         throw new RemoteServiceError(error.response.statusText, error.response);
       } else {
         const msg = "No response received; see browser network log for error.";
-        console.exception(msg);
+        console.error(msg);
         throw new RemoteServiceError(msg, null);
       }
     }

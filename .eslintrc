@@ -40,6 +40,7 @@
     "no-else-return": "error",
     "no-negated-condition": "warn",
     "no-useless-return": "error",
+    "prefer-promise-reject-errors": "error",
     "@typescript-eslint/no-implicit-any-catch": "error",
 
     "@typescript-eslint/no-unused-vars": [
