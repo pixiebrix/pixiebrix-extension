@@ -318,8 +318,9 @@ const ReaderConfig: React.FunctionComponent<{
   const searchResults = useMemo(() => {
     if (debouncedQuery === "" || output == null) {
       return output;
+    } else {
+      return searchData(query, output);
     }
-    return searchData(query, output);
   }, [debouncedQuery, output]);
 
   if (locked) {

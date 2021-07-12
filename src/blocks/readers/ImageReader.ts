@@ -58,8 +58,11 @@ class ImageReader extends Reader {
         src: element.src,
         img: getBase64Image(element as HTMLImageElement),
       };
+    } else {
+      throw new Error(
+        `Expected an image, got ${element.tagName ?? "document"}`
+      );
     }
-    throw new Error(`Expected an image, got ${element.tagName ?? "document"}`);
   }
 
   outputSchema: Schema = {

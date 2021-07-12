@@ -68,8 +68,9 @@ const RequireInstall: React.FunctionComponent = ({ children }) => {
   }
   if (mode === "remote" && !token) {
     return <SetupPage />;
+  } else {
+    return <>{children}</>;
   }
-  return <>{children}</>;
 };
 
 const Layout = () => {

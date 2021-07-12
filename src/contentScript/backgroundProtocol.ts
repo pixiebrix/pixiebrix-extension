@@ -130,6 +130,7 @@ export function notifyContentScripts(
         );
       }
     );
+    return;
   };
 }
 
@@ -234,8 +235,9 @@ export function liftContentScript<R extends SerializableResponse>(
 
       if (isNotification(options)) {
         return;
+      } else {
+        throw error;
       }
-      throw error;
     }
 
     if (isErrorResponse(response)) {

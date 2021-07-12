@@ -66,9 +66,10 @@ export async function fetch<TData>(
       throw new Error(`Request error: ${statusText}`);
     }
     return data;
+  } else {
+    const { data } = await axios.get<TData>(url);
+    return data;
   }
-  const { data } = await axios.get<TData>(url);
-  return data;
 }
 
 /**

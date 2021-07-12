@@ -118,10 +118,11 @@ export async function serviceOriginPermissions(
     // Don't need permissions to access the pixiebrix API proxy server because they're already granted on
     // extension install. The proxy server will check isAvailable when making request
     return { origins: [] };
+  } else {
+    const service = await registry.lookup(dependency.id);
+    const matchPatterns = service.getOrigins(localConfig.config);
+    return { origins: matchPatterns };
   }
-  const service = await registry.lookup(dependency.id);
-  const matchPatterns = service.getOrigins(localConfig.config);
-  return { origins: matchPatterns };
 }
 
 /**

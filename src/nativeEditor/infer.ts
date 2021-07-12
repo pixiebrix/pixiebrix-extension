@@ -171,17 +171,19 @@ function removeUnstyledLayout(node: Node): Node | null {
       nonEmptyChildren.length === 1
     ) {
       return removeUnstyledLayout(nonEmptyChildren[0]);
-    }
-    const clone = node.cloneNode(false) as Element;
-    for (const childNode of node.childNodes) {
-      const newChild = removeUnstyledLayout(childNode);
-      if (newChild != null) {
-        clone.append(newChild);
+    } else {
+      const clone = node.cloneNode(false) as Element;
+      for (const childNode of node.childNodes) {
+        const newChild = removeUnstyledLayout(childNode);
+        if (newChild != null) {
+          clone.append(newChild);
+        }
       }
+      return clone;
     }
-    return clone;
+  } else {
+    return node.cloneNode(false);
   }
-  return node.cloneNode(false);
 }
 
 /**
@@ -212,8 +214,9 @@ function commonButtonStructure(
     if (error instanceof SkipElement) {
       // Shouldn't happen at the top level
       return [$(), currentCaptioned];
+    } else {
+      throw error;
     }
-    throw error;
   }
 
   // Heuristic that assumes elements match from the beginning
@@ -516,6 +519,7 @@ export function inferSelectors(
         root,
         error,
       });
+      return;
     }
   };
 
@@ -619,8 +623,9 @@ export function findContainer(
       container,
       selectors: inferSelectors(container),
     };
+  } else {
+    return findContainerForElement(elements[0]);
   }
-  return findContainerForElement(elements[0]);
 }
 
 /**
@@ -670,8 +675,9 @@ export function inferPanelHTML(
   if (selected.length > 1) {
     const children = containerChildren($container, selected);
     return commonPanelHTML(selected[0].tagName, $(children));
+  } else {
+    return inferSinglePanelHTML(container, selected[0]);
   }
-  return inferSinglePanelHTML(container, selected[0]);
 }
 
 export function inferButtonHTML(

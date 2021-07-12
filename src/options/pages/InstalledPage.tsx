@@ -193,12 +193,13 @@ const ExtensionRow: React.FunctionComponent<{
           <FontAwesomeIcon icon={faCheck} /> Active
         </span>
       );
+    } else {
+      return (
+        <Button variant="info" size="sm" onClick={requestPermissions}>
+          Grant Permissions
+        </Button>
+      );
     }
-    return (
-      <Button variant="info" size="sm" onClick={requestPermissions}>
-        Grant Permissions
-      </Button>
-    );
   }, [hasPermissions, requestPermissions, validation]);
 
   return (

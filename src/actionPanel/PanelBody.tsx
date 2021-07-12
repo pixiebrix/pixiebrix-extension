@@ -42,9 +42,10 @@ const BodyComponent: React.FunctionComponent<{
           dangerouslySetInnerHTML={{ __html: body }}
         />
       );
+    } else {
+      const { Component, props } = body;
+      return <Component {...props} />;
     }
-    const { Component, props } = body;
-    return <Component {...props} />;
   }, [body]);
 };
 
@@ -57,22 +58,23 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
     } else if ("error" in panel.payload) {
       const { error } = panel.payload;
       return <div className="text-danger">Error running panel: {error}</div>;
+    } else {
+      const { blockId, ctxt, args } = panel.payload;
+      console.debug("Render panel body", panel.payload);
+      const block = await blockRegistry.lookup(blockId);
+      const body = await block.run(args, {
+        ctxt,
+        root: null,
+        logger: new ConsoleLogger(),
+      });
+      return (
+        <div className="h-100">
+          <ReactShadowRoot>
+            <BodyComponent body={body as PanelComponent} />
+          </ReactShadowRoot>
+        </div>
+      );
     }
-    const { blockId, ctxt, args } = panel.payload;
-    console.debug("Render panel body", panel.payload);
-    const block = await blockRegistry.lookup(blockId);
-    const body = await block.run(args, {
-      ctxt,
-      root: null,
-      logger: new ConsoleLogger(),
-    });
-    return (
-      <div className="h-100">
-        <ReactShadowRoot>
-          <BodyComponent body={body as PanelComponent} />
-        </ReactShadowRoot>
-      </div>
-    );
   }, [panel.payload?.key]);
 
   if (error) {
@@ -83,8 +85,9 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
     );
   } else if (pending || component == null) {
     return <GridLoader />;
+  } else {
+    return component;
   }
-  return component;
 };
 
 export default PanelBody;

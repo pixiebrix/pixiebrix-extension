@@ -88,8 +88,9 @@ async function buildSingleReader(config: ReaderLike): Promise<IReader> {
     return config;
   } else if (isCustomReader(config)) {
     return readerFactory(config);
+  } else {
+    return blockRegistry.lookup(config.metadata.id) as Promise<IReader>;
   }
-  return blockRegistry.lookup(config.metadata.id) as Promise<IReader>;
 }
 
 async function buildReaders(configs: ReaderLike[]): Promise<IReader> {

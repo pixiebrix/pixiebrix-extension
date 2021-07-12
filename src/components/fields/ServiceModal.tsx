@@ -114,8 +114,9 @@ const ServiceModal: React.FunctionComponent<{
         ),
         (x) => x.label
       );
+    } else {
+      return sortBy(serviceOptions, (x) => x.label);
     }
-    return sortBy(serviceOptions, (x) => x.label);
   }, [serviceOptions, debouncedQuery]);
 
   const close = useCallback(() => {

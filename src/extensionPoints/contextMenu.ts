@@ -79,10 +79,12 @@ function guessSelectedElement(): HTMLElement | null {
     const node = getCommonAncestor(start, end);
     if (node instanceof HTMLElement) {
       return node;
+    } else {
+      return null;
     }
+  } else {
     return null;
   }
-  return null;
 }
 
 function installMouseHandlerOnce(): void {

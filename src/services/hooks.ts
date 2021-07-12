@@ -64,8 +64,9 @@ export function useDependency(
       );
       const service = await registry.lookup(dependency.id);
       return { localConfig: localConfig, service };
+    } else {
+      throw new Error("No integration selected");
     }
-    throw new Error("No integration selected");
   }, [dependency?.config]);
 
   const origins = useMemo(() => {
@@ -77,8 +78,9 @@ export function useDependency(
   const [hasPermissions] = useAsyncState(async () => {
     if (origins != null) {
       return checkPermissions([{ origins }]);
+    } else {
+      return false;
     }
-    return false;
   }, [origins]);
 
   useEffect(() => {

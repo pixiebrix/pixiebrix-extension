@@ -43,12 +43,15 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
     // Object URL
     const blob = await fetch(img.src).then((r) => r.blob());
     return await blob.arrayBuffer();
+  } else {
+    const response = await axios.get(img.src, { responseType: "arraybuffer" });
+    if (response.status !== 200) {
+      throw new Error(
+        `Error fetching image ${img.src}: ${response.statusText}`
+      );
+    }
+    return response.data;
   }
-  const response = await axios.get(img.src, { responseType: "arraybuffer" });
-  if (response.status !== 200) {
-    throw new Error(`Error fetching image ${img.src}: ${response.statusText}`);
-  }
-  return response.data;
 }
 
 class ImageEXIFReader extends Reader {
@@ -66,10 +69,11 @@ class ImageEXIFReader extends Reader {
     if (element?.tagName == "IMG") {
       const buffer = await getData(element);
       return ExifReader.load(buffer);
+    } else {
+      throw new Error(
+        `Expected an image element, got ${element.tagName ?? "document"}`
+      );
     }
-    throw new Error(
-      `Expected an image element, got ${element.tagName ?? "document"}`
-    );
   }
 
   outputSchema: Schema = {

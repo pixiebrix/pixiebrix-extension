@@ -88,13 +88,14 @@ const ArrayEntry: React.FunctionComponent<{
         )}
       </ListGroup.Item>
     );
+  } else {
+    return (
+      <ListGroup.Item>
+        <span>{prop}</span>
+        <span className="type">: array of {itemType ?? "unknown"}</span>
+      </ListGroup.Item>
+    );
   }
-  return (
-    <ListGroup.Item>
-      <span>{prop}</span>
-      <span className="type">: array of {itemType ?? "unknown"}</span>
-    </ListGroup.Item>
-  );
 };
 
 const PrimitiveEntry: React.FunctionComponent<{
@@ -148,14 +149,15 @@ export const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
                 key={prop}
               />
             );
+          } else {
+            return (
+              <PrimitiveEntry
+                prop={prop}
+                definition={schemaDefinition}
+                key={prop}
+              />
+            );
           }
-          return (
-            <PrimitiveEntry
-              prop={prop}
-              definition={schemaDefinition}
-              key={prop}
-            />
-          );
         })}
     </ListGroup>
   );
@@ -176,8 +178,9 @@ const DataSourceCard: React.FunctionComponent<{
       return <Card.Body>{error.toString()}</Card.Body>;
     } else if (isEmpty(outputSchema)) {
       return <Card.Body>No schema available</Card.Body>;
+    } else {
+      return <SchemaTree schema={outputSchema} />;
     }
-    return <SchemaTree schema={outputSchema} />;
   }, [error, outputSchema, isPending]);
 
   return <div className="DataSourceCard">{body}</div>;

@@ -135,8 +135,9 @@ export function removeUndefined(obj: unknown): unknown {
       pickBy(obj, (x) => x !== undefined),
       (x) => removeUndefined(x)
     );
+  } else {
+    return obj;
   }
-  return obj;
 }
 
 export function boolean(value: unknown): boolean {
@@ -203,8 +204,9 @@ export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
     return mapValues(value, recurse);
   } else if (typeof value === "function" || typeof value === "symbol") {
     return undefined;
+  } else {
+    return value;
   }
-  return value;
 }
 
 /**
@@ -273,8 +275,9 @@ export function getPropByPath(
     if (value == null) {
       if (coalesce || index === rawParts.length - 1) {
         return null;
+      } else {
+        throw new InvalidPathError(`${path} undefined (missing ${part})`, path);
       }
-      throw new InvalidPathError(`${path} undefined (missing ${part})`, path);
     }
 
     if (typeof value === "function") {
@@ -294,8 +297,9 @@ export function isNullOrBlank(value: unknown): boolean {
     return true;
   } else if (typeof value === "string" && value.trim() === "") {
     return true;
+  } else {
+    return false;
   }
-  return false;
 }
 
 export class PromiseCancelled extends Error {

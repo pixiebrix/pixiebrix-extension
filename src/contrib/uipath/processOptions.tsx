@@ -91,8 +91,9 @@ export function useReleases(): {
         method: "get",
       });
       return response.data.value;
+    } else {
+      return null;
     }
-    return null;
   }, [config, hasPermissions]);
 
   console.debug("releases", { releases, isPending, error });
@@ -109,8 +110,9 @@ function useRobots(): { robots: Robot[]; isPending: boolean; error: unknown } {
         method: "get",
       });
       return response.data.value;
+    } else {
+      return [];
     }
-    return [];
   }, [config, hasPermissions]);
 
   return { robots, isPending, error };
@@ -209,8 +211,9 @@ function toType(type: string) {
     ["Decimal", "Double"].includes(typeName)
   ) {
     return "number";
+  } else {
+    throw new BusinessError(`Unsupported input type: ${type}`);
   }
-  throw new BusinessError(`Unsupported input type: ${type}`);
 }
 
 export function releaseSchema(release: Release): Schema {

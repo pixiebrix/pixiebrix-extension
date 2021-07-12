@@ -114,8 +114,9 @@ export function readerFactory(component: unknown): IReader {
       const doRead = _readerFactories.get(reader.type);
       if (doRead) {
         return doRead(reader as any, root);
+      } else {
+        throw new Error(`Reader type ${reader.type} not implemented`);
       }
-      throw new Error(`Reader type ${reader.type} not implemented`);
     }
   }
 

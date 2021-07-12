@@ -70,8 +70,9 @@ const RequireScope: React.FunctionComponent<{ scope: string | null }> = ({
 
   if (mode !== "local" && (scope === "" || !scope)) {
     return <ScopeSettings />;
+  } else {
+    return <>{children}</>;
   }
-  return <>{children}</>;
 };
 
 const Panel: React.FunctionComponent = () => {

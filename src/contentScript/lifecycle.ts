@@ -71,8 +71,9 @@ async function runExtensionPoint(
         `Skipping ${extensionPoint.id} because user navigated away from the page`
       );
       return;
+    } else {
+      throw error;
     }
-    throw error;
   }
 
   if (!installed) {

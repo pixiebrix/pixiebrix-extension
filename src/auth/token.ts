@@ -64,8 +64,9 @@ export async function getExtensionAuth(): Promise<UserData> {
   if (valueJSON) {
     const { user, email, hostname } = JSON.parse(valueJSON as string);
     return { user, email, hostname };
+  } else {
+    return {};
   }
-  return {};
 }
 
 export async function clearExtensionAuth(): Promise<void> {

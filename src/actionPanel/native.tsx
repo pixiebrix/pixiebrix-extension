@@ -62,8 +62,9 @@ function getHTMLElement(): JQuery<HTMLElement> {
     return $(document.querySelector("html"));
   } else if ($("html").length > -1) {
     return $("html");
+  } else {
+    throw new Error("HTML node not found");
   }
-  throw new Error("HTML node not found");
 }
 
 function storeOriginalCSS() {
@@ -135,8 +136,9 @@ export function toggleActionPanel(): string | null {
   if (isActionPanelVisible()) {
     hideActionPanel();
     return null;
+  } else {
+    return showActionPanel();
   }
-  return showActionPanel();
 }
 
 export function isActionPanelVisible(): boolean {

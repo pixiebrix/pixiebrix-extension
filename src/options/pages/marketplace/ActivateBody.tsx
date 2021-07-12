@@ -91,8 +91,9 @@ export function useEnsurePermissions(
         autoDismiss: true,
       });
       return false;
+    } else {
+      return true;
     }
-    return true;
   }, [permissions, addToast]);
 
   const activate = useCallback(() => {
@@ -104,11 +105,12 @@ export function useEnsurePermissions(
           extensions: extensions.map((x) => x.label),
         });
         return submitForm();
+      } else {
+        reportEvent("MarketplaceRejectPermissions", {
+          blueprintId: blueprint.metadata.id,
+          extensions: extensions.map((x) => x.label),
+        });
       }
-      reportEvent("MarketplaceRejectPermissions", {
-        blueprintId: blueprint.metadata.id,
-        extensions: extensions.map((x) => x.label),
-      });
     });
   }, [extensions, request, submitForm, blueprint.metadata]);
 

@@ -91,57 +91,60 @@ export function configSchemaFactory(
     return Yup.lazy((val) => {
       if (isPlainObject(val)) {
         return Yup.lazy(blockSchemaFactory);
+      } else {
+        return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
       }
-      return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
     });
-  }
-  switch (schema.type) {
-    case "object": {
-      return Yup.lazy((val) => {
-        if (isPlainObject(val)) {
-          return Yup.object().shape(
-            mapValues(schema.properties, (definition, prop) => {
-              if (typeof definition === "boolean") {
-                return wrapRequired(Yup.string());
-              }
-              return configSchemaFactory(definition, {
-                required: (schema.required ?? []).includes(prop),
-              });
-            })
+  } else
+    switch (schema.type) {
+      case "object": {
+        return Yup.lazy((val) => {
+          if (isPlainObject(val)) {
+            return Yup.object().shape(
+              mapValues(schema.properties, (definition, prop) => {
+                if (typeof definition === "boolean") {
+                  return wrapRequired(Yup.string());
+                } else {
+                  return configSchemaFactory(definition, {
+                    required: (schema.required ?? []).includes(prop),
+                  });
+                }
+              })
+            );
+          } else {
+            return Yup.string();
+          }
+        });
+      }
+      case "array": {
+        if (typeof schema.items === "boolean") {
+          throw new TypeError(
+            "Expected schema definition for items, not boolean"
+          );
+        } else if (Array.isArray(schema.items)) {
+          // TODO: implement support for tuples
+          // https://github.com/jquense/yup/issues/528
+          return Yup.lazy((x) =>
+            Array.isArray(x)
+              ? wrapRequired(Yup.array())
+              : wrapRequired(Yup.string())
+          );
+        } else {
+          const items = schema.items as Schema;
+          return Yup.lazy((x) =>
+            Array.isArray(x)
+              ? wrapRequired(Yup.array().of(configSchemaFactory(items)))
+              : wrapRequired(Yup.string())
           );
         }
-        return Yup.string();
-      });
-    }
-    case "array": {
-      if (typeof schema.items === "boolean") {
-        throw new TypeError(
-          "Expected schema definition for items, not boolean"
-        );
-      } else if (Array.isArray(schema.items)) {
-        // TODO: implement support for tuples
-        // https://github.com/jquense/yup/issues/528
-        return Yup.lazy((x) =>
-          Array.isArray(x)
-            ? wrapRequired(Yup.array())
-            : wrapRequired(Yup.string())
-        );
-      } else {
-        const items = schema.items as Schema;
-        return Yup.lazy((x) =>
-          Array.isArray(x)
-            ? wrapRequired(Yup.array().of(configSchemaFactory(items)))
-            : wrapRequired(Yup.string())
-        );
+      }
+      case "boolean": {
+        return Yup.bool();
+      }
+      default: {
+        return wrapRequired(Yup.string());
       }
     }
-    case "boolean": {
-      return Yup.bool();
-    }
-    default: {
-      return wrapRequired(Yup.string());
-    }
-  }
 }
 
 function serviceSchemaFactory(): Yup.Schema<unknown> {
@@ -189,10 +192,11 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
                 return this.createError({
                   message: "Configuration no longer available",
                 });
+              } else {
+                console.exception(
+                  `An error occurred validating service: ${this.parent.id}`
+                );
               }
-              console.exception(
-                `An error occurred validating service: ${this.parent.id}`
-              );
             }
             return true;
           }

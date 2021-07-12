@@ -98,8 +98,9 @@ export function useBlockOptions(
       return (
         registered ?? genericOptionsFactory(inputProperties(block.inputSchema))
       );
+    } else {
+      return null;
     }
-    return null;
   }, [block?.id, block?.inputSchema]);
 
   return [{ block, error }, BlockOptions];

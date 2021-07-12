@@ -61,8 +61,9 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   const Editor = useMemo(() => {
     if (optionsRegistry.has(service.id)) {
       return optionsRegistry.get(service.id);
+    } else {
+      return genericOptionsFactory(service.schema);
     }
-    return genericOptionsFactory(service.schema);
   }, [service]);
 
   const schemaPromise = useMemo(

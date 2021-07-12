@@ -52,8 +52,9 @@ const SharingIcon: React.FunctionComponent<{
     return <FontAwesomeIcon icon={faGlobe} />;
   } else if (organizations) {
     return <FontAwesomeIcon icon={faBuilding} />;
+  } else {
+    return <FontAwesomeIcon icon={faEyeSlash} />;
   }
-  return <FontAwesomeIcon icon={faEyeSlash} />;
 };
 
 export interface EditorValues {

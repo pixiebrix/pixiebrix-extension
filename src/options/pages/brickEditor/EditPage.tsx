@@ -68,8 +68,9 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
         ),
         config: configJSON,
       };
+    } else {
+      return { isBlueprint: false, isInstalled: false, config: configJSON };
     }
-    return { isBlueprint: false, isInstalled: false, config: configJSON };
   }, [config, extensions]);
 }
 

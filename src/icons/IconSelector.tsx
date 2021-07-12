@@ -56,8 +56,9 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
       return iconOptions.find(
         (x) => x.value.library === value.library && x.value.id === value.id
       );
+    } else {
+      return null;
     }
-    return null;
   }, [value]);
 
   return (

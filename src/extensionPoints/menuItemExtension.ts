@@ -362,8 +362,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
             return acquireElement(element, this.id, () =>
               this.reacquire(menuUUID)
             );
+          } else {
+            existingCount++;
           }
-          existingCount++;
         })
         .get()
     );
@@ -780,8 +781,9 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
         throw new Error(`Found no elements for  reader selector: ${selector}`);
       }
       return $elt.get(0);
+    } else {
+      return document;
     }
-    return document;
   }
 
   defaultReader() {

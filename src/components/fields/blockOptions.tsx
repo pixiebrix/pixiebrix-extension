@@ -129,8 +129,9 @@ function extractServiceIds(schema: Schema): string[] {
     return schema.anyOf
       .filter((x) => x != false)
       .flatMap((x) => extractServiceIds(x as Schema));
+  } else {
+    throw new Error("Expected $ref or anyOf in schema for service");
   }
-  throw new Error("Expected $ref or anyOf in schema for service");
 }
 
 export const ServiceField: React.FunctionComponent<
@@ -314,8 +315,9 @@ function getDefaultArrayItem(schema: Schema): unknown {
     return false;
   } else if (findOneOf(schema, textPredicate)) {
     return "";
+  } else {
+    return null;
   }
-  return null;
 }
 
 export function getDefaultField(fieldSchema: Schema): FieldComponent {
@@ -340,9 +342,10 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
     // in the @pixiebrix/http brick.
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return ObjectField;
+  } else {
+    // number, string, other primitives, etc.
+    return TextField;
   }
-  // number, string, other primitives, etc.
-  return TextField;
 }
 
 /**

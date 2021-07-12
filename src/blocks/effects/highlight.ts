@@ -119,12 +119,14 @@ export class HighlightEffect extends Effect {
         for (const element of elements) {
           if (typeof element === "string") {
             $(this).find(element).css({ backgroundColor });
-          } else if (element.condition && boolean(condition)) {
-            const {
-              selector,
-              backgroundColor: elementColor = backgroundColor,
-            } = element;
-            $(this).find(selector).css({ backgroundColor: elementColor });
+          } else {
+            if (element.condition && boolean(condition)) {
+              const {
+                selector,
+                backgroundColor: elementColor = backgroundColor,
+              } = element;
+              $(this).find(selector).css({ backgroundColor: elementColor });
+            }
           }
         }
       } else {

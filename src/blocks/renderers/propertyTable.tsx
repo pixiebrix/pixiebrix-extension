@@ -47,8 +47,9 @@ function richValue(value: unknown): unknown {
         {value}
       </a>
     );
+  } else {
+    return value;
   }
-  return value;
 }
 
 function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
@@ -64,12 +65,13 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
           data: { name, value: null },
           children: shapeData(value, key),
         };
+      } else {
+        return {
+          key,
+          data: { name, value: richValue(value) },
+          children: [],
+        };
       }
-      return {
-        key,
-        data: { name, value: richValue(value) },
-        children: [],
-      };
     });
   } else if (Array.isArray(inputs)) {
     return inputs.map((value, index) => {
@@ -81,21 +83,23 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
           data: { name: `${index}`, value: null },
           children: shapeData(value, key),
         };
+      } else {
+        return {
+          key,
+          data: { name: `${index}`, value: richValue(value) },
+          children: [],
+        };
       }
-      return {
-        key,
-        data: { name: `${index}`, value: richValue(value) },
-        children: [],
-      };
     });
+  } else {
+    return [
+      {
+        key: keyPrefix,
+        data: { name: null, value: inputs as any },
+        children: [],
+      },
+    ];
   }
-  return [
-    {
-      key: keyPrefix,
-      data: { name: null, value: inputs as any },
-      children: [],
-    },
-  ];
 }
 
 export class PropertyTableRenderer extends Renderer {

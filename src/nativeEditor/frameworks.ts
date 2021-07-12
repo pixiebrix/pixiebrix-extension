@@ -75,8 +75,9 @@ export async function elementInfo(
           traverseUp - 1
         ),
       };
+    } else {
+      console.debug(`No component found for ${framework}`);
     }
-    console.debug(`No component found for ${framework}`);
   }
 
   return {

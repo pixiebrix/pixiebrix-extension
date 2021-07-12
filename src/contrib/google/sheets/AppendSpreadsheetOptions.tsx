@@ -43,8 +43,9 @@ const TabField: React.FunctionComponent<
   const [tabNames, tabsPending, tabsError] = useAsyncState(async () => {
     if (doc?.id && port) {
       return devtoolsProtocol.getTabNames(port, doc.id);
+    } else {
+      return [];
     }
-    return [];
   }, [doc?.id, port]);
 
   const sheetOptions = useMemo(() => {
@@ -111,19 +112,21 @@ const PropertiesField: React.FunctionComponent<{
             .map((header) => [header, { type: "string" }])
         ),
       } as Schema;
+    } else {
+      return {
+        type: "object",
+        additionalProperties: true,
+      } as Schema;
     }
-    return {
-      type: "object",
-      additionalProperties: true,
-    } as Schema;
   }, [doc?.id, tabName]);
 
   if (schemaPending) {
     return <GridLoader />;
   } else if (schemaError) {
     return <span className="text-danger">Error fetching column headers</span>;
+  } else {
+    return <ObjectField label="Row Values" name={name} schema={sheetSchema} />;
   }
-  return <ObjectField label="Row Values" name={name} schema={sheetSchema} />;
 };
 
 const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({

@@ -178,8 +178,9 @@ async function read<TComponent>(
     });
     if (optional) {
       return {};
+    } else {
+      throw error;
     }
-    throw error;
   }
 
   let component: TComponent;
