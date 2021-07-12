@@ -11,9 +11,12 @@
   "settings": {
     "import/resolver": {
       "webpack": {
-        "config": "./browsers/webpack.config.js"
+        "config": "./browsers/resolve.config.js"
       }
     },
+    "import/ignore": [
+      "react-select" // For some reason it points to a flow JS file
+    ],
     "react": {
       "version": "detect"
     }
@@ -26,13 +29,10 @@
 
     "plugin:react/recommended",
     "plugin:react-hooks/recommended",
+    "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:security/recommended",
     "plugin:unicorn/recommended"
-
-    // TODO: Restore these after https://github.com/benmosher/eslint-plugin-import/issues/1931
-    // "plugin:import/errors",
-    // "plugin:import/warnings",
   ],
   "rules": {
     "@typescript-eslint/no-unused-vars": [
@@ -54,6 +54,14 @@
       }
     ],
 
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": [
+          "json-schema" // @types-only package
+        ]
+      }
+    ],
     "unicorn/prevent-abbreviations": [
       "error",
       {
@@ -88,6 +96,7 @@
 
     // Disable recommended rules
     "@typescript-eslint/no-empty-function": "off",
+    "import/named": "off", // TypeScript does this natively
     "react/prop-types": "off",
     "unicorn/no-null": "off", // Maybe later
     "unicorn/filename-case": "off", // Contrasts with React
