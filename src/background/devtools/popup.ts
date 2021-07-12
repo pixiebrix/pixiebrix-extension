@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Tabs } from "webextension-polyfill-ts";
 import { liftBackground } from "@/background/devtools/internal";
+import { Target } from "@/background/devtools/contract";
 
 const WINDOW_WIDTH = 420;
 const WINDOW_HEIGHT = 150;
@@ -32,9 +34,14 @@ async function onTabClose(tabId: number): Promise<void> {
   });
 }
 
-async function _openPopup(url: string): Promise<void> {
-  console.log("will open", url);
+async function openTab(url: string, target: Target): Promise<Tabs.Tab> {
+  return browser.tabs.create({
+    url: String(url),
+    openerTabId: target.tabId, // This makes the tab appear right after the target tab
+  });
+}
 
+async function _openPopup(url: string): Promise<Tabs.Tab> {
   const window = await browser.windows.create({
     url: String(url),
     focused: true,
@@ -45,7 +52,27 @@ async function _openPopup(url: string): Promise<void> {
     type: "popup",
   });
 
-  await onTabClose(window.tabs[0].id);
+  return window.tabs[0];
 }
 
-export const openPopup = liftBackground("OPEN_POPUP", () => _openPopup);
+/** Firefox seems to be unable to handle popups in fullscreens, changing the macOS "space" back to the desktop */
+async function arePopupsBuggy(target: Target): Promise<boolean> {
+  if (!navigator.userAgent.includes("Macintosh")) {
+    return false;
+  }
+
+  const currentTab = await browser.tabs.get(target.tabId);
+  const currentWindow = await browser.windows.get(currentTab.windowId);
+  return currentWindow.state === "fullscreen";
+}
+
+async function handleRequest(url: string, target: Target): Promise<void> {
+  const tab = arePopupsBuggy(target)
+    ? await openTab(url, target)
+    : await _openPopup(url);
+  await onTabClose(tab.id);
+}
+export const openPopup = liftBackground(
+  "OPEN_POPUP",
+  (target: Target) => async (url: string) => handleRequest(url, target)
+);
