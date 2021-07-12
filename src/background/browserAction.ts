@@ -1,28 +1,28 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { isBackgroundPage } from "webext-detect-page";
 import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
-import { browser, Runtime } from "webextension-polyfill-ts";
-import { allowSender } from "@/actionPanel/protocol";
+import { browser } from "webextension-polyfill-ts";
 import { isPrivatePageError, sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
+import { HandlerMap } from "@/messaging/protocol";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
@@ -73,14 +73,6 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
   }
 }
 
-type ShowFrameMessage = {
-  type: typeof SHOW_ACTION_FRAME;
-};
-
-type HideFrameMessage = {
-  type: typeof HIDE_ACTION_FRAME;
-};
-
 type RegisterActionFrameMessage = {
   type: typeof REGISTER_ACTION_FRAME;
   payload: { nonce: string };
@@ -126,67 +118,55 @@ async function forwardWhenReady(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
-function backgroundMessageListener(
-  request:
-    | RegisterActionFrameMessage
-    | ForwardActionFrameNotification
-    | ShowFrameMessage
-    | HideFrameMessage,
-  sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
-  if (!allowSender(sender)) {
-    return;
-  }
+const handlers = new HandlerMap();
 
-  const tabId = sender.tab.id;
-
-  switch (request.type) {
-    case REGISTER_ACTION_FRAME: {
-      const action = request as RegisterActionFrameMessage;
-      if (tabNonces.get(tabId) !== action.payload.nonce) {
-        console.warn("Action frame nonce mismatch", {
-          expected: tabNonces.get(tabId),
-          actual: action.payload.nonce,
-        });
-      }
-      console.debug("Setting action frame metadata", {
-        tabId,
-        frameId: sender.frameId,
+handlers.set(
+  REGISTER_ACTION_FRAME,
+  async (request: RegisterActionFrameMessage, sender) => {
+    const tabId = sender.tab.id;
+    if (tabNonces.get(tabId) !== request.payload.nonce) {
+      console.warn("Action frame nonce mismatch", {
+        expected: tabNonces.get(tabId),
+        actual: request.payload.nonce,
       });
-      tabFrames.set(tabId, sender.frameId);
-      return;
     }
-    case FORWARD_FRAME_NOTIFICATION: {
-      const action = request as ForwardActionFrameNotification;
-      return forwardWhenReady(tabId, action.payload).catch(reportError);
-    }
-    case SHOW_ACTION_FRAME: {
-      tabFrames.delete(tabId);
-      return contentScript
-        .showActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
-        .then((nonce) => {
-          console.debug("Setting action frame nonce", { sender, nonce });
-          tabNonces.set(tabId, nonce);
-        });
-    }
-    case HIDE_ACTION_FRAME: {
-      tabFrames.delete(tabId);
-      return contentScript
-        .hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID })
-        .then(() => {
-          console.debug("Clearing action frame nonce", { sender, nonce });
-          tabNonces.delete(tabId);
-        });
-    }
-    default: {
-      // NOOP
-    }
+    console.debug("Setting action frame metadata", {
+      tabId,
+      frameId: sender.frameId,
+    });
+    tabFrames.set(tabId, sender.frameId);
   }
-}
+);
+
+handlers.set(
+  FORWARD_FRAME_NOTIFICATION,
+  async (request: ForwardActionFrameNotification, sender) => {
+    const tabId = sender.tab.id;
+    return forwardWhenReady(tabId, request.payload).catch(reportError);
+  }
+);
+
+handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
+  const tabId = sender.tab.id;
+  tabFrames.delete(tabId);
+  const nonce = await contentScript.showActionPanel({
+    tabId,
+    frameId: TOP_LEVEL_FRAME_ID,
+  });
+  console.debug("Setting action frame nonce", { sender, nonce });
+  tabNonces.set(tabId, nonce);
+});
+
+handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
+  const tabId = sender.tab.id;
+  tabFrames.delete(tabId);
+  await contentScript.hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
+  console.debug("Clearing action frame nonce", { sender, nonce });
+  tabNonces.delete(tabId);
+});
 
 if (isBackgroundPage()) {
   chrome.browserAction.onClicked.addListener(handleBrowserAction);
   console.debug("Installed browserAction click listener");
-  browser.runtime.onMessage.addListener(backgroundMessageListener);
+  browser.runtime.onMessage.addListener(handlers.asListener());
 }

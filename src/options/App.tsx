@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useEffect } from "react";
@@ -28,7 +28,7 @@ import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/options/pages/brickEditor/EditPage";
 import MarketplacePage from "@/options/pages/MarketplacePage";
-import Settings from "./pages/Settings";
+import SettingsPage from "@/options/pages/settings/SettingsPage";
 import Navbar from "@/layout/Navbar";
 import Footer from "@/layout/Footer";
 import Sidebar from "@/layout/Sidebar";
@@ -68,9 +68,8 @@ const RequireInstall: React.FunctionComponent = ({ children }) => {
   }
   if (mode === "remote" && !token) {
     return <SetupPage />;
-  } else {
-    return <>{children}</>;
   }
+  return <>{children}</>;
 };
 
 const Layout = () => {
@@ -101,7 +100,7 @@ const Layout = () => {
                     path="/:sourcePage/activate/:blueprintId"
                     component={ActivatePage}
                   />
-                  <Route exact path="/settings" component={Settings} />
+                  <Route exact path="/settings" component={SettingsPage} />
                   <Route path="/services/:id?" component={ServicesEditor} />
                   <Route exact path="/workshop" component={ExtensionEditor} />
                   <Route

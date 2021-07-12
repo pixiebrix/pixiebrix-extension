@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React from "react";
@@ -25,7 +25,8 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Formik } from "formik";
 import Effect from "@/devTools/editor/components/Effect";
 import ElementWizard from "@/devTools/editor/ElementWizard";
-import { useEditable } from "@/devTools/editor/hooks/editorHooks";
+import useEditable from "@/devTools/editor/hooks/useEditable";
+import { LogContextWrapper } from "@/components/logViewer/LogContext";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but
 // high enough that there isn't an entry lag in the page editor
@@ -66,12 +67,14 @@ const EditorPane: React.FunctionComponent<{
               onChange={syncReduxState}
               delayMillis={CHANGE_DETECT_DELAY_MILLIS}
             />
-            <ElementWizard
-              element={values}
-              editable={editable}
-              installed={installed}
-              toggleChat={toggleChat}
-            />
+            <LogContextWrapper>
+              <ElementWizard
+                element={values}
+                editable={editable}
+                installed={installed}
+                toggleChat={toggleChat}
+              />
+            </LogContextWrapper>
           </>
         )}
       </Formik>

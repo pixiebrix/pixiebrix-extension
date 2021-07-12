@@ -1,21 +1,22 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import {
+  allowSender,
   HandlerEntry,
   HandlerOptions,
   isErrorResponse,
@@ -46,38 +47,29 @@ export class ContentScriptActionError extends Error {
 
 const handlers = new Map<string, HandlerEntry>();
 
-export function allowSender(sender: Runtime.MessageSender): boolean {
-  return sender.id === browser.runtime.id;
-}
-
-// eslint-disable-next-line @typescript-eslint/promise-function-async -- message listener cannot use async keyword
-function contentScriptListener(
-  request: RemoteProcedureCallRequest,
-  sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
+async function handleRequest(
+  request: RemoteProcedureCallRequest
+): Promise<unknown> {
   const { type, payload } = request;
   const { handler, options } = handlers.get(type) ?? {};
 
-  if (allowSender(sender) && handler) {
-    console.debug(`Handling contentScript action ${type}`);
+  console.debug(`Handling contentScript action ${type}`);
 
-    const handlerPromise = new Promise((resolve) =>
-      resolve(handler(...payload))
+  if (isNotification(options)) {
+    handler(...payload);
+    return;
+  }
+
+  try {
+    return await handler(...payload);
+  } catch (error) {
+    console.debug(`Handler returning error response for ${type}`, {
+      error,
+    });
+    return toErrorResponse(
+      type,
+      error ?? new Error("Unknown error in content script handler")
     );
-
-    if (isNotification(options)) {
-      return;
-    } else {
-      return handlerPromise.catch((error) => {
-        console.debug(`Handler returning error response for ${type}`, {
-          error,
-        });
-        return toErrorResponse(
-          type,
-          error ?? new Error("Unknown error in content script handler")
-        );
-      });
-    }
   }
 }
 
@@ -138,7 +130,6 @@ export function notifyContentScripts(
         );
       }
     );
-    return;
   };
 }
 
@@ -243,9 +234,8 @@ export function liftContentScript<R extends SerializableResponse>(
 
       if (isNotification(options)) {
         return;
-      } else {
-        throw error;
       }
+      throw error;
     }
 
     if (isErrorResponse(response)) {
@@ -254,6 +244,21 @@ export function liftContentScript<R extends SerializableResponse>(
 
     return response;
   };
+}
+
+function contentScriptListener(
+  request: RemoteProcedureCallRequest,
+  sender: Runtime.MessageSender
+): Promise<unknown> | void {
+  // Returning "undefined" indicates that the message has not been handled
+
+  if (!allowSender(sender)) {
+    return;
+  }
+
+  if (handlers.has(request.type)) {
+    return handleRequest(request);
+  }
 }
 
 function addContentScriptListener(): void {

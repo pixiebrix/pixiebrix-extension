@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { Schema } from "@/core";
@@ -91,60 +91,57 @@ export function configSchemaFactory(
     return Yup.lazy((val) => {
       if (isPlainObject(val)) {
         return Yup.lazy(blockSchemaFactory);
-      } else {
-        return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
       }
+      return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
     });
-  } else
-    switch (schema.type) {
-      case "object": {
-        return Yup.lazy((val) => {
-          if (isPlainObject(val)) {
-            return Yup.object().shape(
-              mapValues(schema.properties, (definition, prop) => {
-                if (typeof definition === "boolean") {
-                  return wrapRequired(Yup.string());
-                } else {
-                  return configSchemaFactory(definition, {
-                    required: (schema.required ?? []).includes(prop),
-                  });
-                }
-              })
-            );
-          } else {
-            return Yup.string();
-          }
-        });
-      }
-      case "array": {
-        if (typeof schema.items === "boolean") {
-          throw new TypeError(
-            "Expected schema definition for items, not boolean"
-          );
-        } else if (Array.isArray(schema.items)) {
-          // TODO: implement support for tuples
-          // https://github.com/jquense/yup/issues/528
-          return Yup.lazy((x) =>
-            Array.isArray(x)
-              ? wrapRequired(Yup.array())
-              : wrapRequired(Yup.string())
-          );
-        } else {
-          const items = schema.items as Schema;
-          return Yup.lazy((x) =>
-            Array.isArray(x)
-              ? wrapRequired(Yup.array().of(configSchemaFactory(items)))
-              : wrapRequired(Yup.string())
+  }
+  switch (schema.type) {
+    case "object": {
+      return Yup.lazy((val) => {
+        if (isPlainObject(val)) {
+          return Yup.object().shape(
+            mapValues(schema.properties, (definition, prop) => {
+              if (typeof definition === "boolean") {
+                return wrapRequired(Yup.string());
+              }
+              return configSchemaFactory(definition, {
+                required: (schema.required ?? []).includes(prop),
+              });
+            })
           );
         }
-      }
-      case "boolean": {
-        return Yup.bool();
-      }
-      default: {
-        return wrapRequired(Yup.string());
+        return Yup.string();
+      });
+    }
+    case "array": {
+      if (typeof schema.items === "boolean") {
+        throw new TypeError(
+          "Expected schema definition for items, not boolean"
+        );
+      } else if (Array.isArray(schema.items)) {
+        // TODO: implement support for tuples
+        // https://github.com/jquense/yup/issues/528
+        return Yup.lazy((x) =>
+          Array.isArray(x)
+            ? wrapRequired(Yup.array())
+            : wrapRequired(Yup.string())
+        );
+      } else {
+        const items = schema.items as Schema;
+        return Yup.lazy((x) =>
+          Array.isArray(x)
+            ? wrapRequired(Yup.array().of(configSchemaFactory(items)))
+            : wrapRequired(Yup.string())
+        );
       }
     }
+    case "boolean": {
+      return Yup.bool();
+    }
+    default: {
+      return wrapRequired(Yup.string());
+    }
+  }
 }
 
 function serviceSchemaFactory(): Yup.Schema<unknown> {
@@ -192,11 +189,10 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
                 return this.createError({
                   message: "Configuration no longer available",
                 });
-              } else {
-                console.exception(
-                  `An error occurred validating service: ${this.parent.id}`
-                );
               }
+              console.exception(
+                `An error occurred validating service: ${this.parent.id}`
+              );
             }
             return true;
           }

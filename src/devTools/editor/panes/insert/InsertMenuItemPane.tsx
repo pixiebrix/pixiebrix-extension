@@ -1,25 +1,25 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useCallback, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { DevToolsContext } from "@/devTools/context";
 import { getTabInfo } from "@/background/devtools";
-import { makeActionExtensionFormState } from "@/devTools/editor/extensionPoints/menuItem";
+import config from "@/devTools/editor/extensionPoints/menuItem";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import {
   MenuDefinition,
@@ -28,10 +28,11 @@ import {
 import Centered from "@/devTools/editor/components/Centered";
 import { Alert, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfo } from "@fortawesome/free-solid-svg-icons";
+import { faCube, faInfo } from "@fortawesome/free-solid-svg-icons";
 import BlockModal from "@/components/fields/BlockModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { editorSlice } from "@/devTools/editor/editorSlice";
+import { reportEvent } from "@/telemetry/events";
 
 const { addElement } = editorSlice.actions;
 
@@ -47,20 +48,25 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
 
   const addExistingButton = useCallback(
     async (extensionPoint: MenuItemWithConfig) => {
-      cancel();
       if (!("rawConfig" in extensionPoint)) {
         throw new Error(
           "Cannot use menuItem extension point without config in the Page Editor"
         );
       }
       const { url } = await getTabInfo(port);
-      const state = await makeActionExtensionFormState(
+      const state = await config.fromExtensionPoint(
         url,
         extensionPoint.rawConfig
       );
+
+      // TODO: report if created new, or using existing foundation
+      reportEvent("PageEditorStart", {
+        type: config.elementType,
+      });
+
       dispatch(addElement(state));
     },
-    [port, dispatch, cancel]
+    [port, dispatch]
   );
 
   const menuItemExtensionPoints = useAvailableExtensionPoints(
@@ -69,7 +75,7 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
 
   return (
     <Centered>
-      <div className="PaneTitle">Inserting button</div>
+      <div className="PaneTitle">Inserting Button/Menu Item</div>
 
       <div className="text-left">
         <p>
@@ -97,10 +103,12 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
               onClick={show}
               disabled={!menuItemExtensionPoints?.length}
             >
-              Add Existing Button
+              <FontAwesomeIcon icon={faCube} /> Use Existing Button
             </Button>
           )}
-          onSelect={(block) => addExistingButton(block as MenuItemWithConfig)}
+          onSelect={async (block) =>
+            addExistingButton(block as MenuItemWithConfig)
+          }
         />
 
         <Button variant="danger" className="ml-2" onClick={cancel}>

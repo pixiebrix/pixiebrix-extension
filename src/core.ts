@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { JSONSchema7, JSONSchema7Definition } from "json-schema";
@@ -31,9 +31,25 @@ export type SchemaProperties = Record<string, SchemaDefinition>;
 
 export type RenderedHTML = string;
 
-export interface Message {
-  type: string;
+export type ActionType = string;
+
+export interface Meta {
+  nonce?: string;
+  [index: string]: unknown;
+}
+
+/**
+ * Standard message format for cross-context messaging.
+ *
+ * Inspired by: https://github.com/redux-utilities/flux-standard-action
+ */
+export interface Message<
+  Type extends ActionType = ActionType,
+  TMeta extends Meta = Meta
+> {
+  type: Type;
   payload?: unknown;
+  meta?: TMeta;
 }
 
 export interface MessageContext {

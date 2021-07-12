@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { Renderer } from "@/types";
@@ -64,12 +64,11 @@ export class IFrameRenderer extends Renderer {
   }: BlockArg): Promise<string> {
     if (safeMode) {
       return `<iframe src="${url}" title="${title}" height="${height}" width="${width}" style="border:none;" allowfullscreen="false" allowpaymentrequest="false"></iframe>`;
-    } else {
-      // https://transitory.technology/browser-extensions-and-csp-headers/
-      const frameSrc = chrome.extension.getURL("frame.html");
-      const src = `${frameSrc}?url=${encodeURIComponent(url)}`;
-      return `<iframe src="${src}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`;
     }
+    // https://transitory.technology/browser-extensions-and-csp-headers/
+    const frameSrc = chrome.extension.getURL("frame.html");
+    const src = `${frameSrc}?url=${encodeURIComponent(url)}`;
+    return `<iframe src="${src}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`;
   }
 }
 

@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { browser, Permissions, Runtime } from "webextension-polyfill-ts";
@@ -22,6 +22,7 @@ import { Framework, FrameworkMeta } from "@/messaging/constants";
 import * as nativeSelectionProtocol from "@/nativeEditor/selector";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
+import * as browserActionProtocol from "@/contentScript/browserAction";
 import { Availability } from "@/blocks/types";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import {
@@ -34,6 +35,8 @@ import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
 import { liftBackground as liftBackgroundSimple } from "../protocol";
 
+const TOP_LEVEL_FRAME = 0;
+
 export const registerPort = liftBackground(
   "REGISTER_PORT",
   (target: Target, port: Runtime.Port) => async () => {
@@ -44,14 +47,15 @@ export const registerPort = liftBackground(
 export const getTabInfo = liftBackground(
   "CURRENT_URL",
   (target: Target) => async () => {
-    if (target.frameId !== 0) {
+    if (target.frameId !== TOP_LEVEL_FRAME) {
       console.warn(
         `getTabInfo called targeting non top-level frame: ${target.frameId}`
       );
     }
-    const state = await getTargetState({ ...target, frameId: 0 }).catch(
-      () => false
-    );
+    const state = await getTargetState({
+      ...target,
+      frameId: TOP_LEVEL_FRAME,
+    }).catch(() => false);
     const { url } = await browser.tabs.get(target.tabId);
     return {
       url,
@@ -91,19 +95,6 @@ export const detectFrameworks: (
   }
 );
 
-// export const findComponent = liftBackground(
-//     "FIND_COMPONENT",
-//     (tabId: number) => async ({
-//         selector,
-//         framework
-//       }: {
-//       selector: string
-//       framework: Framework
-//     }) => {
-//       return await nativeSelectionProtocol.findComponent(tabId, { selector, framework });
-//     }
-// )
-
 export const cancelSelectElement = liftBackground(
   "CANCEL_SELECT_ELEMENT",
   (target: Target) => async () => {
@@ -117,7 +108,7 @@ export const selectElement = liftBackground(
     mode = "element",
     framework,
     traverseUp = 0,
-    root = undefined,
+    root,
   }: {
     framework?: Framework;
     mode: nativeSelectionProtocol.SelectMode;
@@ -157,6 +148,13 @@ export const insertPanel: (
   "INSERT_PANEL",
   (target: Target) => async () => {
     return nativeEditorProtocol.insertPanel(target);
+  }
+);
+
+export const showBrowserActionPanel = liftBackground(
+  "SHOW_BROWSER_ACTION_PANEL",
+  (target: Target) => async () => {
+    return browserActionProtocol.showActionPanel(target);
   }
 );
 
@@ -263,6 +261,8 @@ export const runReader = liftBackground(
 
 export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
+  // false positive - it's the inner method that should be async
+  // eslint-disable-next-line unicorn/consistent-function-scoping
   () => async ({ extensionId }: { extensionId: string }) => {
     return contextMenuProtocol.uninstall(extensionId);
   }

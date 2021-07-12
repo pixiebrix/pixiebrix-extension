@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { Service } from "@/types";
@@ -107,7 +107,7 @@ class LocalDefinedService<
       // convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
       const baseUrlTemplate = this._definition.authentication.baseURL;
       const baseUrl = mapArgs(baseUrlTemplate, serviceConfig);
-      patterns.push(baseUrl.endsWith("/") ? `${baseUrl}*` : `${baseUrl}/*`);
+      patterns.push(baseUrl + (baseUrl.endsWith("/") ? "*" : "/*"));
     }
 
     if (this.isOAuth2) {
@@ -135,9 +135,8 @@ class LocalDefinedService<
         .authentication as TokenAuthenticationDefinition).token;
       // console.debug("token context", { definition, serviceConfig });
       return mapArgs<TokenContext>(definition, serviceConfig);
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 
   getOAuth2Context(serviceConfig: ServiceConfig): OAuth2Context {
@@ -146,9 +145,8 @@ class LocalDefinedService<
         .authentication as OAuth2AuthenticationDefinition).oauth2;
       console.debug("getOAuth2Context", { definition, serviceConfig });
       return mapArgs<OAuth2Context>(definition, serviceConfig);
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 
   /**

@@ -1,32 +1,31 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ElementConfig } from "@/devTools/editor/extensionPoints/adapter";
 import { useDispatch } from "react-redux";
 import { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
-import { actions } from "@/devTools/editor/editorSlice";
+import { actions, FormState } from "@/devTools/editor/editorSlice";
+import * as nativeOperations from "@/background/devtools";
 import { getTabInfo } from "@/background/devtools";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
-import * as nativeOperations from "@/background/devtools";
-import { reportEvent } from "@/telemetry/events";
 import { reportError } from "@/telemetry/logging";
+import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 
 type AddElement = (config: ElementConfig) => void;
 
@@ -47,32 +46,37 @@ function useAddElement(reservedNames: string[]): AddElement {
 
       dispatch(actions.toggleInsert(config.elementType));
 
+      if (!config.selectNativeElement) {
+        // If the foundation is not for a native element, stop after toggling insertion mode
+        return;
+      }
+
       try {
-        const element = config.insert ? await config.insert(port) : null;
+        const element = await config.selectNativeElement(port);
         const { url } = await getTabInfo(port);
+
         const metadata = await generateExtensionPointMetadata(
           config.label,
           scope,
           url,
           reservedNames
         );
-        const initialState = config.makeState(
+
+        const initialState = config.fromNativeElement(
           url,
           metadata,
           element,
           tabState.meta.frameworks ?? []
         );
+
         await nativeOperations.updateDynamicElement(
           port,
-          config.makeConfig(initialState)
+          config.asDynamicElement(initialState)
         );
-        dispatch(actions.addElement(initialState));
-        reportEvent("PageEditorStart", {
-          type: config.elementType,
-        });
+
+        dispatch(actions.addElement(initialState as FormState));
       } catch (error) {
         if (!error.toString().toLowerCase().includes("selection cancelled")) {
-          console.error(error);
           reportError(error);
           addToast(
             `Error adding ${config.label.toLowerCase()}: ${error.toString()}`,

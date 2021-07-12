@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useCallback, useRef } from "react";
@@ -24,20 +24,22 @@ const MenuItemTab: React.FunctionComponent<{
 }> = ({ eventKey = "menuItem" }) => {
   const captionInput = useRef<HTMLInputElement>(null);
 
-  const labelHelpers = useField<string>("label")[2];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify skipped values
+  const [_labelValue, _labelMeta, labelHelpers] = useField<string>("label");
+
+  const { current: currentCaption } = captionInput;
 
   const insertSnippet = useCallback(
     (snippet) => {
-      const { current } = captionInput;
-      const pos = current.selectionStart;
-      current.setRangeText(snippet, pos, pos);
-      current.focus();
+      const pos = currentCaption.selectionStart;
+      currentCaption.setRangeText(snippet, pos, pos);
+      currentCaption.focus();
 
       // Trigger a DOM 'input' event
       const event = new Event("input", { bubbles: true });
-      current.dispatchEvent(event);
+      currentCaption.dispatchEvent(event);
     },
-    [captionInput.current]
+    [currentCaption]
   );
 
   return (

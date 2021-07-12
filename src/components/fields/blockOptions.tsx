@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useContext, useEffect, useMemo, useState } from "react";
@@ -129,9 +129,8 @@ function extractServiceIds(schema: Schema): string[] {
     return schema.anyOf
       .filter((x) => x != false)
       .flatMap((x) => extractServiceIds(x as Schema));
-  } else {
-    throw new Error("Expected $ref or anyOf in schema for service");
   }
+  throw new Error("Expected $ref or anyOf in schema for service");
 }
 
 export const ServiceField: React.FunctionComponent<
@@ -315,9 +314,8 @@ function getDefaultArrayItem(schema: Schema): unknown {
     return false;
   } else if (findOneOf(schema, textPredicate)) {
     return "";
-  } else {
-    return null;
   }
+  return null;
 }
 
 export function getDefaultField(fieldSchema: Schema): FieldComponent {
@@ -342,10 +340,9 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
     // in the @pixiebrix/http brick.
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return ObjectField;
-  } else {
-    // number, string, other primitives, etc.
-    return TextField;
   }
+  // number, string, other primitives, etc.
+  return TextField;
 }
 
 /**

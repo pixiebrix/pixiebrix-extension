@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { ComponentRef, PanelComponent } from "@/extensionPoints/dom";
@@ -42,10 +42,9 @@ const BodyComponent: React.FunctionComponent<{
           dangerouslySetInnerHTML={{ __html: body }}
         />
       );
-    } else {
-      const { Component, props } = body;
-      return <Component {...props} />;
     }
+    const { Component, props } = body;
+    return <Component {...props} />;
   }, [body]);
 };
 
@@ -58,23 +57,22 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
     } else if ("error" in panel.payload) {
       const { error } = panel.payload;
       return <div className="text-danger">Error running panel: {error}</div>;
-    } else {
-      const { blockId, ctxt, args } = panel.payload;
-      console.debug("Render panel body", panel.payload);
-      const block = await blockRegistry.lookup(blockId);
-      const body = await block.run(args, {
-        ctxt,
-        root: null,
-        logger: new ConsoleLogger(),
-      });
-      return (
-        <div className="h-100">
-          <ReactShadowRoot>
-            <BodyComponent body={body as PanelComponent} />
-          </ReactShadowRoot>
-        </div>
-      );
     }
+    const { blockId, ctxt, args } = panel.payload;
+    console.debug("Render panel body", panel.payload);
+    const block = await blockRegistry.lookup(blockId);
+    const body = await block.run(args, {
+      ctxt,
+      root: null,
+      logger: new ConsoleLogger(),
+    });
+    return (
+      <div className="h-100">
+        <ReactShadowRoot>
+          <BodyComponent body={body as PanelComponent} />
+        </ReactShadowRoot>
+      </div>
+    );
   }, [panel.payload?.key]);
 
   if (error) {
@@ -85,9 +83,8 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
     );
   } else if (pending || component == null) {
     return <GridLoader />;
-  } else {
-    return component;
   }
+  return component;
 };
 
 export default PanelBody;

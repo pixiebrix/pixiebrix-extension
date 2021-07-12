@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useCallback } from "react";
@@ -29,6 +29,10 @@ import {
   UnsavedChangesIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
 
+/**
+ * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
+ * @see InstalledEntry
+ */
 const DynamicEntry: React.FunctionComponent<{
   item: FormState;
   port: Runtime.Port;
@@ -52,8 +56,8 @@ const DynamicEntry: React.FunctionComponent<{
     <ListGroup.Item
       active={item.uuid == activeElement}
       key={`dynamic-${item.uuid}`}
-      onMouseEnter={() => showOverlay(item.uuid, true)}
-      onMouseLeave={() => showOverlay(item.uuid, false)}
+      onMouseEnter={async () => showOverlay(item.uuid, true)}
+      onMouseLeave={async () => showOverlay(item.uuid, false)}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
       style={{ cursor: "pointer" }}
     >

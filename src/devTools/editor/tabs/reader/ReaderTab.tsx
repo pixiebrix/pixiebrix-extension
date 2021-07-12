@@ -1,31 +1,25 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useContext, useState } from "react";
 import { Button, ListGroup, Tab } from "react-bootstrap";
 import { FieldArray, useField, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  FormState,
-  isCustomReader,
-  ReaderFormState,
-  ReaderReferenceFormState,
-  actions,
-} from "@/devTools/editor/editorSlice";
+import { FormState, actions } from "@/devTools/editor/editorSlice";
 import ReaderConfig from "@/devTools/editor/tabs/reader/ReaderConfig";
 import { makeDefaultReader } from "@/devTools/editor/extensionPoints/base";
 import { DevToolsContext } from "@/devTools/context";
@@ -48,6 +42,11 @@ import { ContextMenuReader } from "@/extensionPoints/contextMenu";
 import cx from "classnames";
 import { useToasts } from "react-toast-notifications";
 import { useDispatch } from "react-redux";
+import {
+  isCustomReader,
+  ReaderFormState,
+  ReaderReferenceFormState,
+} from "@/devTools/editor/extensionPoints/elementConfig";
 
 const INCLUDE_TEST_ELEMENT = new Set<string>([
   "@pixiebrix/image/exif",
@@ -246,25 +245,21 @@ const ReaderTab: React.FunctionComponent<{
         <div className="ReaderContent h-100">
           {reader != null && (
             <>
-              {
-                // safe because active is a number
-                // eslint-disable-next-line security/detect-object-injection
-                isCustomReader(reader) ? (
-                  <ReaderConfig
-                    key={`${reader.metadata.id}-${active}`}
-                    editable={editable}
-                    available={available}
-                    readerIndex={active}
-                  />
-                ) : (
-                  <ReaderBlockConfig
-                    key={`${reader.metadata.id}-${active}`}
-                    readerIndex={active}
-                    available={available}
-                    testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
-                  />
-                )
-              }
+              {isCustomReader(reader) ? (
+                <ReaderConfig
+                  key={`${reader.metadata.id}-${active}`}
+                  editable={editable}
+                  available={available}
+                  readerIndex={active}
+                />
+              ) : (
+                <ReaderBlockConfig
+                  key={`${reader.metadata.id}-${active}`}
+                  readerIndex={active}
+                  available={available}
+                  testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
+                />
+              )}
             </>
           )}
           {active === readers.length && formValues.type === "contextMenu" && (

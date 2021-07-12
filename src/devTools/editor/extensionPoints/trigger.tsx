@@ -1,23 +1,22 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { TriggerFormState } from "@/devTools/editor/editorSlice";
 import {
   lookupExtensionPoint,
   makeBaseState,
@@ -29,8 +28,10 @@ import {
 } from "@/devTools/editor/extensionPoints/base";
 import { v4 as uuidv4 } from "uuid";
 import {
+  Trigger,
   TriggerConfig,
   TriggerDefinition,
+  TriggerExtensionPoint,
 } from "@/extensionPoints/triggerExtension";
 import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
@@ -43,6 +44,13 @@ import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { getDomain } from "@/permissions/patterns";
+import { faBolt } from "@fortawesome/free-solid-svg-icons";
+import {
+  BaseFormState,
+  ElementConfig,
+} from "@/devTools/editor/extensionPoints/elementConfig";
+import { BlockPipeline } from "@/blocks/combinators";
+import React from "react";
 
 export const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -54,9 +62,30 @@ export const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export function makeTriggerState(
+export interface TriggerFormState extends BaseFormState {
+  type: "trigger";
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      rootSelector: string | null;
+      trigger: Trigger;
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+  };
+
+  extension: {
+    action: BlockPipeline;
+  };
+}
+
+function fromNativeElement(
   url: string,
   metadata: Metadata,
+  _element: null,
   frameworks: FrameworkMeta[]
 ): TriggerFormState {
   return {
@@ -77,7 +106,7 @@ export function makeTriggerState(
   };
 }
 
-export function makeTriggerExtensionPoint({
+function selectExtensionPoint({
   extensionPoint,
   readers,
 }: TriggerFormState): ExtensionPointConfig<TriggerDefinition> {
@@ -91,9 +120,10 @@ export function makeTriggerExtensionPoint({
     kind: "extensionPoint",
     metadata: {
       id: metadata.id,
-      version: "1.0.0",
+      version: metadata.version ?? "1.0.0",
       name: metadata.name,
-      description: "Trigger created with the Page Editor",
+      description:
+        metadata.description ?? "Trigger created with the Page Editor",
     },
     definition: {
       type: "trigger",
@@ -105,7 +135,7 @@ export function makeTriggerExtensionPoint({
   };
 }
 
-export function makeTriggerExtension({
+function selectExtension({
   uuid,
   label,
   extensionPoint,
@@ -121,18 +151,51 @@ export function makeTriggerExtension({
   };
 }
 
-export function makeTriggerConfig(
-  element: TriggerFormState
-): DynamicDefinition {
+function asDynamicElement(element: TriggerFormState): DynamicDefinition {
   return {
     type: "trigger",
-    extension: makeTriggerExtension(element),
-    extensionPoint: makeTriggerExtensionPoint(element),
+    extension: selectExtension(element),
+    extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
 }
 
-export async function makeTriggerFormState(
+async function fromExtensionPoint(
+  url: string,
+  extensionPoint: ExtensionPointConfig<TriggerDefinition>
+): Promise<TriggerFormState> {
+  if (extensionPoint.definition.type !== "trigger") {
+    throw new Error("Expected trigger extension point type");
+  }
+
+  const { type, rootSelector, trigger = "load" } = extensionPoint.definition;
+
+  return {
+    uuid: uuidv4(),
+    installed: true,
+    type,
+    label: `My ${getDomain(url)} context menu`,
+
+    readers: await makeReaderFormState(extensionPoint),
+    services: [],
+
+    extension: {
+      action: [],
+    },
+
+    extensionPoint: {
+      metadata: extensionPoint.metadata,
+      definition: {
+        ...extensionPoint.definition,
+        rootSelector,
+        trigger,
+        isAvailable: selectIsAvailable(extensionPoint),
+      },
+    },
+  };
+}
+
+async function fromExtension(
   config: IExtension<TriggerConfig>
 ): Promise<TriggerFormState> {
   const extensionPoint = await lookupExtensionPoint<
@@ -165,3 +228,33 @@ export async function makeTriggerFormState(
     },
   };
 }
+
+const config: ElementConfig<never, TriggerFormState> = {
+  displayOrder: 4,
+  elementType: "trigger",
+  label: "Trigger",
+  baseClass: TriggerExtensionPoint,
+  selectNativeElement: undefined,
+  icon: faBolt,
+  fromNativeElement,
+  asDynamicElement,
+  selectExtensionPoint,
+  selectExtension,
+  fromExtension,
+  fromExtensionPoint,
+  insertModeHelp: (
+    <div>
+      <p>
+        A trigger panel can be configured to run an action on page load, when an
+        first element appears, or on user interactions (e.g., click, hover,
+        etc.)
+      </p>
+      <p>
+        Use an existing foundation, or start from scratch to have full control
+        over when the trigger runs
+      </p>
+    </div>
+  ),
+};
+
+export default config;

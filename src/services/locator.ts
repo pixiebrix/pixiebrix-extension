@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { ConfigurableAuth } from "@/types/contract";
@@ -106,7 +106,7 @@ class LazyLocatorFactory {
 
   async refreshRemote(): Promise<void> {
     this.remote = await fetch("/api/services/shared/?meta=1");
-    console.debug(`Fetched ${this.remote.length} remote auths`);
+    console.debug(`Fetched ${this.remote.length} remote service auths`);
     this.makeOptions();
   }
 
@@ -117,9 +117,9 @@ class LazyLocatorFactory {
 
   // TODO: Replace with proper debouncer when one exists https://github.com/sindresorhus/promise-fun/issues/15
   async refresh(): Promise<void> {
-    this._refreshPromise = this._refreshPromise || this._refresh();
+    this._refreshPromise = this._refreshPromise ?? this._refresh();
     await this._refreshPromise;
-    this._refreshPromise = null;
+    this._refreshPromise = undefined;
   }
 
   private async _refresh(): Promise<void> {
@@ -128,7 +128,7 @@ class LazyLocatorFactory {
     this.makeOptions();
     this._initialized = true;
     this.updateTimestamp = timestamp;
-    console.debug(`Refreshed service locator`, {
+    console.debug(`Refreshed service configuration locator`, {
       updateTimestamp: this.updateTimestamp,
     });
   }
@@ -153,7 +153,7 @@ class LazyLocatorFactory {
   }
 
   getLocator(): ServiceLocator {
-    return this.locate.bind(this);
+    return LazyLocatorFactory.prototype.locate.bind(this);
   }
 
   async getLocalConfig(authId: string): Promise<RawServiceConfiguration> {

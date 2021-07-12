@@ -1,25 +1,24 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import {
   BlockConfig,
   blockList,
   BlockPipeline,
-  HeadlessModeError,
   makeServiceContext,
   mergeReaders,
   reducePipeline,
@@ -45,7 +44,9 @@ import {
   isActionPanelVisible,
   registerShowCallback,
   removeExtensionPoint,
+  removeShowCallback,
   reservePanels,
+  ShowCallback,
   updateHeading,
   upsertPanel,
 } from "@/actionPanel/native";
@@ -54,6 +55,7 @@ import { reportError } from "@/telemetry/logging";
 import { v4 as uuidv4 } from "uuid";
 import { getErrorMessage } from "@/extensionPoints/helpers";
 import { BusinessError } from "@/errors";
+import { HeadlessModeError } from "@/blocks/errors";
 
 export interface ActionPanelConfig {
   heading: string;
@@ -62,6 +64,7 @@ export interface ActionPanelConfig {
 
 export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPanelConfig> {
   readonly permissions: Permissions.Permissions = {};
+  readonly showCallback: ShowCallback;
 
   protected constructor(
     id: string,
@@ -70,6 +73,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     icon = "faColumns"
   ) {
     super(id, name, description, icon);
+    this.showCallback = ActionPanelExtensionPoint.prototype.run.bind(this);
   }
 
   inputSchema: Schema = propertiesToSchema(
@@ -154,6 +158,12 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     }
   }
 
+  public uninstall(): void {
+    this.removeExtensions();
+    removeExtensionPoint(this.id);
+    removeShowCallback(this.showCallback);
+  }
+
   async run(extensionIds?: string[]): Promise<void> {
     if (!(await this.isAvailable())) {
       removeExtensionPoint(this.id);
@@ -214,7 +224,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
   async install(): Promise<boolean> {
     const available = await this.isAvailable();
     if (available) {
-      registerShowCallback(this.run.bind(this));
+      registerShowCallback(this.showCallback);
     } else {
       removeExtensionPoint(this.id);
     }
@@ -225,20 +235,22 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 export type PanelDefinition = ExtensionPointDefinition;
 
 class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
-  private readonly _definition: PanelDefinition;
+  private readonly definition: PanelDefinition;
+  public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
     const { id, name, description } = config.metadata;
     super(id, name, description);
-    this._definition = config.definition;
+    this.rawConfig = config;
+    this.definition = config.definition;
   }
 
   async defaultReader(): Promise<IReader> {
-    return mergeReaders(this._definition.reader);
+    return mergeReaders(this.definition.reader);
   }
 
   async isAvailable(): Promise<boolean> {
-    return checkAvailable(this._definition.isAvailable);
+    return checkAvailable(this.definition.isAvailable);
   }
 }
 

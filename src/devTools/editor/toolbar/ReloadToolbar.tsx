@@ -1,22 +1,22 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useCallback, useContext } from "react";
-import { FormState, TriggerFormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { useDebouncedCallback } from "use-debounce";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -24,6 +24,7 @@ import * as nativeOperations from "@/background/devtools";
 import useAsyncEffect from "use-async-effect";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { Button } from "react-bootstrap";
+import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -59,7 +60,7 @@ const ReloadToolbar: React.FunctionComponent<{
   const { port } = useContext(DevToolsContext);
 
   const run = useCallback(async () => {
-    const { definition: factory } = ADAPTERS.get(element.type);
+    const { asDynamicElement: factory } = ADAPTERS.get(element.type);
     if (disabled) {
       console.warn("Updating dynamic possibly invalid element", {
         element,
@@ -94,25 +95,24 @@ const ReloadToolbar: React.FunctionComponent<{
 
   if (automaticUpdate) {
     return null;
-  } else {
-    return (
-      <>
-        <label className="AutoRun my-auto mr-1">
-          {isPanel ? "Auto-Render" : "Auto-Run"}
-        </label>
-        <ToggleField name="autoReload" />
-        <Button
-          className="mx-2"
-          disabled={disabled}
-          size="sm"
-          variant="info"
-          onClick={run}
-        >
-          {isPanel ? "Render Panel" : "Run Trigger"}
-        </Button>
-      </>
-    );
   }
+  return (
+    <>
+      <label className="AutoRun my-auto mr-1">
+        {isPanel ? "Auto-Render" : "Auto-Run"}
+      </label>
+      <ToggleField name="autoReload" />
+      <Button
+        className="mx-2"
+        disabled={disabled}
+        size="sm"
+        variant="info"
+        onClick={run}
+      >
+        {isPanel ? "Render Panel" : "Run Trigger"}
+      </Button>
+    </>
+  );
 };
 
 export default ReloadToolbar;

@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
@@ -51,9 +51,8 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
   } catch (error) {
     if (deserializeError(error).name === "ComponentNotFoundError") {
       return "Component not detected";
-    } else {
-      return { error: error };
     }
+    return { error: error };
   }
 }
 
@@ -78,7 +77,8 @@ export const runReaderBlock = liftContentScript(
   "RUN_READER_BLOCK",
   async ({ id, rootSelector }: { id: string; rootSelector?: string }) => {
     const root = rootSelector
-      ? $(document).find(rootSelector).get(0)
+      ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
+        $(document).find(rootSelector).get(0)
       : document;
 
     if (id === "@pixiebrix/context-menu-data") {
@@ -93,16 +93,14 @@ export const runReaderBlock = liftContentScript(
           srcUrl: root.getAttribute("src"),
           documentUrl: document.location.href,
         };
-      } else {
-        return {
-          selectionText: window.getSelection().toString(),
-          documentUrl: document.location.href,
-        };
       }
-    } else {
-      const reader = (await blockRegistry.lookup(id)) as IReader;
-      return reader.read(root);
+      return {
+        selectionText: window.getSelection().toString(),
+        documentUrl: document.location.href,
+      };
     }
+    const reader = (await blockRegistry.lookup(id)) as IReader;
+    return reader.read(root);
   }
 );
 
@@ -119,7 +117,8 @@ export const runReader = liftContentScript(
 
     const root =
       (rootSelector?.trim() ?? "") !== ""
-        ? $(document).find(rootSelector).get(0)
+        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
+          $(document).find(rootSelector).get(0)
         : document;
 
     return makeRead(config)(root);
@@ -137,14 +136,13 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
     };
     for (const framework of FRAMEWORK_ADAPTERS.keys()) {
       // eslint-disable-next-line security/detect-object-injection -- safe because key coming from compile-time constant
-      base[framework] = await read(() =>
+      base[framework] = await read(async () =>
         getComponentData({ framework: framework as Framework, selector })
       );
     }
     return base;
-  } else {
-    return {
-      error: "No element selected",
-    };
   }
+  return {
+    error: "No element selected",
+  };
 });

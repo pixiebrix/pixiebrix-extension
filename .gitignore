@@ -41,3 +41,6 @@ artifacts
 /scripts/bin/
 headers.json
 report.html
+
+# Storybook artifacts
+storybook-static

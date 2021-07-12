@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import {
@@ -79,12 +79,10 @@ function guessSelectedElement(): HTMLElement | null {
     const node = getCommonAncestor(start, end);
     if (node instanceof HTMLElement) {
       return node;
-    } else {
-      return null;
     }
-  } else {
     return null;
   }
+  return null;
 }
 
 function installMouseHandlerOnce(): void {
@@ -326,11 +324,13 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   public readonly permissions: Permissions.Permissions;
   public readonly documentUrlPatterns: Manifest.MatchPattern[];
   public readonly contexts: Menus.ContextType[];
+  public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
 
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
     this._definition = config.definition;
+    this.rawConfig = config;
     const { isAvailable, documentUrlPatterns, contexts } = config.definition;
     // if documentUrlPatterns not specified show everywhere
     this.documentUrlPatterns = castArray(documentUrlPatterns ?? ["*://*/*"]);

@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import Card from "react-bootstrap/Card";
@@ -88,14 +88,13 @@ const ArrayEntry: React.FunctionComponent<{
         )}
       </ListGroup.Item>
     );
-  } else {
-    return (
-      <ListGroup.Item>
-        <span>{prop}</span>
-        <span className="type">: array of {itemType ?? "unknown"}</span>
-      </ListGroup.Item>
-    );
   }
+  return (
+    <ListGroup.Item>
+      <span>{prop}</span>
+      <span className="type">: array of {itemType ?? "unknown"}</span>
+    </ListGroup.Item>
+  );
 };
 
 const PrimitiveEntry: React.FunctionComponent<{
@@ -149,15 +148,14 @@ export const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
                 key={prop}
               />
             );
-          } else {
-            return (
-              <PrimitiveEntry
-                prop={prop}
-                definition={schemaDefinition}
-                key={prop}
-              />
-            );
           }
+          return (
+            <PrimitiveEntry
+              prop={prop}
+              definition={schemaDefinition}
+              key={prop}
+            />
+          );
         })}
     </ListGroup>
   );
@@ -178,9 +176,8 @@ const DataSourceCard: React.FunctionComponent<{
       return <Card.Body>{error.toString()}</Card.Body>;
     } else if (isEmpty(outputSchema)) {
       return <Card.Body>No schema available</Card.Body>;
-    } else {
-      return <SchemaTree schema={outputSchema} />;
     }
+    return <SchemaTree schema={outputSchema} />;
   }, [error, outputSchema, isPending]);
 
   return <div className="DataSourceCard">{body}</div>;

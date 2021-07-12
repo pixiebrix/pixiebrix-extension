@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { IExtension, IExtensionPoint, IReader } from "@/core";
@@ -37,9 +37,9 @@ import Overlay from "@/nativeEditor/Overlay";
 import { checkAvailable as _checkAvailable } from "@/blocks/available";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
-import { isCustomReader } from "@/devTools/editor/editorSlice";
 import blockRegistry from "@/blocks/registry";
 import { Reader } from "@/types";
+import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export type ElementType =
   | "menuItem"
@@ -88,14 +88,13 @@ async function buildSingleReader(config: ReaderLike): Promise<IReader> {
     return config;
   } else if (isCustomReader(config)) {
     return readerFactory(config);
-  } else {
-    return blockRegistry.lookup(config.metadata.id) as Promise<IReader>;
   }
+  return blockRegistry.lookup(config.metadata.id) as Promise<IReader>;
 }
 
 async function buildReaders(configs: ReaderLike[]): Promise<IReader> {
   const array = await Promise.all(
-    configs.map((config) => buildSingleReader(config))
+    configs.map(async (config) => buildSingleReader(config))
   );
   return new ArrayCompositeReader(array);
 }
@@ -137,6 +136,7 @@ export const toggleOverlay = liftContentScript(
       if (_overlay == null) {
         _overlay = new Overlay();
       }
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive on JQuery method
       const $elt = $(document).find(selector);
       _overlay.inspect($elt.toArray(), null);
     } else if (_overlay != null) {

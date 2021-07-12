@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
@@ -65,12 +65,11 @@ function proxyResponseToAxiosResponse(data: ProxyResponseData) {
       status: data.status_code,
       statusText: data.reason ?? data.message,
     } as AxiosResponse;
-  } else {
-    return {
-      data: data.json,
-      status: data.status_code,
-    } as AxiosResponse;
   }
+  return {
+    data: data.json,
+    status: data.status_code,
+  } as AxiosResponse;
 }
 
 function isErrorResponse(
@@ -104,7 +103,9 @@ const backgroundRequest = liftBackground<AxiosRequestConfig, SanitizedResponse>(
     try {
       return cleanResponse(await axios(config));
     } catch (error) {
-      // Axios offers its own serialization method, but it doesn't include the response
+      // Axios offers its own serialization method, but it doesn't include the response.
+      // By deleting toJSON, the serialize-error library will use its default serialization
+      console.trace("Error performing request from background page", { error });
       delete error.toJSON;
       throw error;
     }
@@ -160,10 +161,9 @@ async function authenticate(
       throw new Error("No auth data found for token authentication");
     }
     return service.authenticateRequest(localConfig.config, request, data);
-  } else {
-    const localConfig = await locator.getLocalConfig(config.id);
-    return service.authenticateRequest(localConfig.config, request);
   }
+  const localConfig = await locator.getLocalConfig(config.id);
+  return service.authenticateRequest(localConfig.config, request);
 }
 
 async function proxyRequest<T>(
@@ -208,6 +208,8 @@ async function proxyRequest<T>(
   }
 }
 
+const UNAUTHORIZED_STATUS_CODES = [401, 403];
+
 const _proxyService = liftBackground(
   "PROXY",
   async (
@@ -215,31 +217,31 @@ const _proxyService = liftBackground(
     requestConfig: AxiosRequestConfig
   ): Promise<RemoteResponse> => {
     if (serviceConfig.proxy) {
+      // Service uses the PixieBrix remote proxy to perform authentication. Proxy the request.
       return proxyRequest(serviceConfig, requestConfig);
-    } else {
-      try {
-        return await backgroundRequest(
-          await authenticate(serviceConfig, requestConfig)
-        );
-      } catch (error) {
-        console.debug(
-          "An error occurred when making a request from the background page",
-          error
-        );
-        if ([401, 403].includes(error.response?.status)) {
-          // try again - have the user login again, or automatically try to get a new token
-          const service = await serviceRegistry.lookup(serviceConfig.serviceId);
-          if (service.isOAuth2 || service.isToken) {
-            await deleteCachedAuthData(serviceConfig.id);
-            return await backgroundRequest(
-              await authenticate(serviceConfig, requestConfig)
-            );
-          }
+    }
+    try {
+      return await backgroundRequest(
+        await authenticate(serviceConfig, requestConfig)
+      );
+    } catch (error) {
+      if (UNAUTHORIZED_STATUS_CODES.includes(error.response?.status)) {
+        // try again - have the user login again, or automatically try to get a new token
+        const service = await serviceRegistry.lookup(serviceConfig.serviceId);
+        if (service.isOAuth2 || service.isToken) {
+          await deleteCachedAuthData(serviceConfig.id);
+          return await backgroundRequest(
+            await authenticate(serviceConfig, requestConfig)
+          );
         }
-        // caught outside to add additional context to the exception
-        // noinspection ExceptionCaughtLocallyJS
-        throw error;
       }
+      console.debug(
+        "Error occurred when making a request from the background page",
+        { error }
+      );
+      // caught outside to add additional context to the exception
+      // noinspection ExceptionCaughtLocallyJS
+      throw error;
     }
   }
 );
@@ -251,6 +253,7 @@ export async function proxyService<TData>(
   if (serviceConfig != null && typeof serviceConfig !== "object") {
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
+    // No service configuration provided. Perform request directly without authentication
     try {
       return (await backgroundRequest(
         requestConfig

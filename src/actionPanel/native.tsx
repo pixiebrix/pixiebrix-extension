@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { browser } from "webextension-polyfill-ts";
@@ -37,7 +37,7 @@ type ExtensionRef = {
   extensionPointId: string;
 };
 
-type ShowCallback = () => void;
+export type ShowCallback = () => void;
 
 const panels: PanelEntry[] = [];
 const extensionCallbacks: ShowCallback[] = [];
@@ -45,6 +45,13 @@ let originalMarginRight: number;
 
 export function registerShowCallback(onShow: ShowCallback): void {
   extensionCallbacks.push(onShow);
+}
+
+export function removeShowCallback(onShow: ShowCallback): void {
+  const index = extensionCallbacks.indexOf(onShow);
+  if (index > -1) {
+    extensionCallbacks.splice(index, 1);
+  }
 }
 
 function getHTMLElement(): JQuery<HTMLElement> {
@@ -55,9 +62,8 @@ function getHTMLElement(): JQuery<HTMLElement> {
     return $(document.querySelector("html"));
   } else if ($("html").length > -1) {
     return $("html");
-  } else {
-    throw new Error("HTML node not found");
   }
+  throw new Error("HTML node not found");
 }
 
 function storeOriginalCSS() {
@@ -129,9 +135,8 @@ export function toggleActionPanel(): string | null {
   if (isActionPanelVisible()) {
     hideActionPanel();
     return null;
-  } else {
-    return showActionPanel();
   }
+  return showActionPanel();
 }
 
 export function isActionPanelVisible(): boolean {

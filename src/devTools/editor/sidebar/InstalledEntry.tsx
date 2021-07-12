@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useCallback } from "react";
@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
   extensionToFormState,
-  getType,
+  selectType,
 } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/editorSlice";
 import { reportError } from "@/telemetry/logging";
@@ -31,13 +31,17 @@ import {
   ExtensionIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
 
+/**
+ * A sidebar menu entry corresponding to an installed/saved extension point
+ * @see DynamicEntry
+ */
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
   installedIds: string[];
   activeElement: string | null;
 }> = ({ extension, installedIds, activeElement }) => {
   const dispatch = useDispatch();
-  const [type] = useAsyncState(() => getType(extension), [
+  const [type] = useAsyncState(async () => selectType(extension), [
     extension.extensionPointId,
   ]);
   const available = installedIds?.includes(extension.extensionPointId);
@@ -59,7 +63,7 @@ const InstalledEntry: React.FunctionComponent<{
     <ListGroup.Item
       active={extension.id == activeElement}
       key={`installed-${extension.id}`}
-      onClick={() => selectInstalled(extension)}
+      onClick={async () => selectInstalled(extension)}
       style={{ cursor: "pointer" }}
     >
       <ExtensionIcon type={type} /> {extension.label ?? extension.id}

@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React from "react";
@@ -47,9 +47,8 @@ function richValue(value: unknown): unknown {
         {value}
       </a>
     );
-  } else {
-    return value;
   }
+  return value;
 }
 
 function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
@@ -65,13 +64,12 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
           data: { name, value: null },
           children: shapeData(value, key),
         };
-      } else {
-        return {
-          key,
-          data: { name, value: richValue(value) },
-          children: [],
-        };
       }
+      return {
+        key,
+        data: { name, value: richValue(value) },
+        children: [],
+      };
     });
   } else if (Array.isArray(inputs)) {
     return inputs.map((value, index) => {
@@ -83,23 +81,21 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
           data: { name: `${index}`, value: null },
           children: shapeData(value, key),
         };
-      } else {
-        return {
-          key,
-          data: { name: `${index}`, value: richValue(value) },
-          children: [],
-        };
       }
-    });
-  } else {
-    return [
-      {
-        key: keyPrefix,
-        data: { name: null, value: inputs as any },
+      return {
+        key,
+        data: { name: `${index}`, value: richValue(value) },
         children: [],
-      },
-    ];
+      };
+    });
   }
+  return [
+    {
+      key: keyPrefix,
+      data: { name: null, value: inputs as any },
+      children: [],
+    },
+  ];
 }
 
 export class PropertyTableRenderer extends Renderer {

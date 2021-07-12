@@ -1,24 +1,25 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import sortBy from "lodash/sortBy";
 import { IconOption } from "@/icons/types";
 type RequireContext = __WebpackModuleApi.RequireContext;
 import { IconLibrary, IconConfig } from "@/core";
+import fetchSVG from "@/icons/svgElementFromUrl";
 
 const filenameRegex = /^\.\/(?<fileName>.*?)\.svg$/i;
 
@@ -60,25 +61,24 @@ export const iconOptions: IconOption[] = sortBy(
   (x) => x.label
 );
 
-function iconAsSVG(config: IconConfig): string {
+async function iconAsSVG(config: IconConfig): Promise<string> {
   const library = iconCache[config.library ?? "bootstrap"];
 
   if (!library) {
     throw new Error(`Unknown icon library: ${config.library}`);
   }
 
-  const $elt = $(library[config.id] ?? library["box"]);
-
-  if ($elt.length === 0) {
+  const iconUrl = library[config.id] ?? library["box"];
+  if (!iconUrl) {
     throw new Error(
       `Could not find icon ${config.id} in icon library ${library}`
     );
   }
 
+  const $elt = await fetchSVG(iconUrl);
   $elt.attr("width", config.size ?? 14);
   $elt.attr("height", config.size ?? 14);
-  $elt.find("path").attr("fill", config.color ?? "#ae87e8");
-
+  $elt.attr("fill", config.color ?? "#ae87e8");
   return $elt.get(0).outerHTML;
 }
 
