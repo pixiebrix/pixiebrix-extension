@@ -30,7 +30,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, isEmpty } = require("lodash");
 const Policy = require("csp-parse");
 
-const { resolve: sharedResolutions } = require("./resolve.config.js");
+const { resolve } = require("./resolve.config.js");
 const rootDir = path.resolve(__dirname, "../");
 
 // Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
@@ -212,7 +212,9 @@ module.exports = (env, options) => ({
     action: path.resolve(rootDir, "src/action"),
   },
   resolve: {
-    ...sharedResolutions,
+    ...resolve,
+    // Need to set these fields manually as their default values rely on `web` target.
+    // See https://v4.webpack.js.org/configuration/resolve/#resolvemainfields
     mainFields: ["browser", "module", "main"],
     aliasFields: ["browser"],
     fallback: {

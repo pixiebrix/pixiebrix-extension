@@ -5,8 +5,6 @@ const rootDir = path.resolve(__dirname, "../");
 
 module.exports = {
   resolve: {
-    // Need to set these fields manually as their default values rely on `web` target.
-    // See https://v4.webpack.js.org/configuration/resolve/#resolvemainfields
     alias: {
       "@": path.resolve(rootDir, "src"),
       "@img": path.resolve(rootDir, "img"),

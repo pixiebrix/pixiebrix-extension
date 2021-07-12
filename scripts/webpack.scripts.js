@@ -15,18 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const { merge } = require("lodash");
 const path = require("path");
 const rootDir = path.resolve(__dirname, "../");
 const webpack = require("webpack");
 
-const { resolve: sharedResolutions } = require("../browsers/resolve.config.js");
-sharedResolutions.alias["@uipath/robot"] = path.resolve(
-  rootDir,
-  "src/__mocks__/robotMock"
-);
-sharedResolutions.fallback = {
-  chokidar: false,
-};
+const { resolve } = require("../browsers/resolve.config.js");
 
 module.exports = {
   mode: "development",
@@ -46,7 +40,14 @@ module.exports = {
     // https://github.com/yan-foto/electron-reload/issues/71#issuecomment-588988382
     fsevents: "require('fsevents')",
   },
-  resolve: sharedResolutions,
+  resolve: merge(resolve, {
+    alias: {
+      "@uipath/robot": path.resolve(rootDir, "src/__mocks__/robotMock"),
+    },
+    fallback: {
+      chokidar: false,
+    },
+  }),
   plugins: [
     new webpack.ProvidePlugin({
       window: "global/window.js",
