@@ -25,6 +25,7 @@ import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import GridLoader from "react-spinners/GridLoader";
 import { clearLogs } from "@/background/logging";
 import { reportError } from "@/telemetry/logging";
+import { getErrorMessage } from "@/errors";
 
 const LoggingSettings: React.FunctionComponent = () => {
   const [config, setConfig] = useLoggingConfig();
@@ -77,15 +78,10 @@ const LoggingSettings: React.FunctionComponent = () => {
               });
             } catch (error) {
               reportError(error);
-              addToast(
-                `Error clearing local logs: ${
-                  error.message?.toString() ?? "Unknown error"
-                }`,
-                {
-                  appearance: "error",
-                  autoDismiss: true,
-                }
-              );
+              addToast(`Error clearing local logs: ${getErrorMessage(error)}`, {
+                appearance: "error",
+                autoDismiss: true,
+              });
             }
           }}
         >

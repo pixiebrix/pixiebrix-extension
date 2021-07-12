@@ -24,8 +24,7 @@ import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
-import { getErrorMessage } from "@/extensionPoints/helpers";
-import { hasCancelRootCause } from "@/errors";
+import { getErrorMessage, hasCancelRootCause } from "@/errors";
 
 type ExtensionId = string;
 type MenuItemId = number | string;

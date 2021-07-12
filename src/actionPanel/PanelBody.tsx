@@ -22,7 +22,6 @@ import GridLoader from "react-spinners/GridLoader";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";
-import { getErrorMessage } from "@/extensionPoints/helpers";
 
 // @ts-ignore: no @types/react-shadow-root
 import ReactShadowRoot from "react-shadow-root";
@@ -30,6 +29,7 @@ import ReactShadowRoot from "react-shadow-root";
 // import the built-in bricks
 import "@/blocks";
 import "@/contrib";
+import { getErrorMessage } from "@/errors";
 
 const BodyComponent: React.FunctionComponent<{
   body: string | ComponentRef;

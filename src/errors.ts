@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext, SerializedError } from "@/core";
+import { MessageContext } from "@/core";
+import { ErrorObject } from "serialize-error";
 
 export class ValidationError extends Error {
   errors: unknown;
@@ -84,6 +85,11 @@ export class ContextError extends Error {
     this.cause = cause;
     this.context = context;
   }
+}
+
+export function isErrorObject(error: unknown): error is ErrorObject {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
+  return typeof (error as any)?.message === "string";
 }
 
 /**
@@ -166,4 +172,30 @@ export function isConnectionError(
     }
   }
   return false;
+}
+
+/**
+ * Some pages are off-limits to extension. This function can find out if an error is due to this limitation.
+ *
+ * Example error messages:
+ * Cannot access a chrome:// URL
+ * Cannot access a chrome-extension:// URL of different extension
+ * Cannot access contents of url "chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/". Extension manifest must request permission to access this host.
+ * The extensions gallery cannot be scripted.
+ *
+ * @param error
+ * @returns
+ */
+export function isPrivatePageError(error: unknown): boolean {
+  return /cannot be scripted|(chrome|about|extension):\/\//.test(
+    getErrorMessage(error)
+  );
+}
+
+export function getErrorMessage(error: unknown): string {
+  if (isErrorObject(error)) {
+    return error.message;
+  }
+
+  return String(error);
 }

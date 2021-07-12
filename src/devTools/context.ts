@@ -32,6 +32,7 @@ import { reportError } from "@/telemetry/logging";
 import { v4 as uuidv4 } from "uuid";
 import { useTabEventListener } from "@/hooks/events";
 import { sleep } from "@/utils";
+import { getErrorMessage } from "@/errors";
 
 interface FrameMeta {
   url: string;
@@ -192,7 +193,7 @@ export function useDevConnection(): Context {
           ...common,
           hasPermissions: true,
           meta: undefined,
-          error: error.message?.toString() ?? error.toString(),
+          error: getErrorMessage(error),
         });
       }
     }

@@ -41,11 +41,11 @@ import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { reactivate } from "@/background/navigation";
-import { isErrorObject, isPrivatePageError } from "@/utils";
 import {
   expectBackgroundPage,
   forbidBackgroundPage,
 } from "@/utils/expectContext";
+import { getErrorMessage, isPrivatePageError } from "@/errors";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -292,7 +292,7 @@ async function attemptTemporaryAccess({
 
     // Side note: Cross-origin iframes lose the `activeTab` after navigation
     // https://github.com/pixiebrix/pixiebrix-extension/pull/661#discussion_r661590847
-    if (isErrorObject(error) && error.message.startsWith("Cannot access")) {
+    if (getErrorMessage(error).startsWith("Cannot access")) {
       console.debug(
         `Skipping attemptTemporaryAccess because no activeTab permissions`,
         { tabId, frameId, url }

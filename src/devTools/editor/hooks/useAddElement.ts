@@ -26,6 +26,7 @@ import { getTabInfo } from "@/background/devtools";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
 import { reportError } from "@/telemetry/logging";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
+import { getErrorMessage } from "@/errors";
 
 type AddElement = (config: ElementConfig) => void;
 
@@ -76,16 +77,20 @@ function useAddElement(reservedNames: string[]): AddElement {
 
         dispatch(actions.addElement(initialState as FormState));
       } catch (error) {
-        if (!error.toString().toLowerCase().includes("selection cancelled")) {
-          reportError(error);
-          addToast(
-            `Error adding ${config.label.toLowerCase()}: ${error.toString()}`,
-            {
-              appearance: "error",
-              autoDismiss: true,
-            }
-          );
+        if (getErrorMessage(error) === "Selection cancelled") {
+          return;
         }
+
+        reportError(error);
+        addToast(
+          `Error adding ${config.label.toLowerCase()}: ${getErrorMessage(
+            error
+          )}`,
+          {
+            appearance: "error",
+            autoDismiss: true,
+          }
+        );
       } finally {
         dispatch(actions.toggleInsert(null));
       }

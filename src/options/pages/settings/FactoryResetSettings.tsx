@@ -21,6 +21,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { optionsSlice, servicesSlice } from "@/options/slices";
 import { useToasts } from "react-toast-notifications";
+import { getErrorMessage } from "@/errors";
 
 const { resetOptions } = optionsSlice.actions;
 const { resetServices } = servicesSlice.actions;
@@ -50,9 +51,9 @@ const FactoryResetSettings: React.FunctionComponent<{
               });
             } catch (error) {
               addToast(
-                `Error resetting options and service configurations: ${
-                  error.message?.toString() ?? "Unknown error"
-                }`,
+                `Error resetting options and service configurations: ${getErrorMessage(
+                  error
+                )}`,
                 {
                   appearance: "error",
                   autoDismiss: true,

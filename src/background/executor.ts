@@ -29,7 +29,7 @@ import { MESSAGE_PREFIX } from "@/background/protocol";
 import { ActionType, Message, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
-import { BusinessError } from "@/errors";
+import { BusinessError, getErrorMessage } from "@/errors";
 import {
   expectBackgroundPage,
   expectContentScript,
@@ -370,7 +370,7 @@ export async function executeForNonce(
         },
       });
     } catch (error) {
-      if (error?.message?.includes("Could not establish connection")) {
+      if (getErrorMessage(error).includes("Could not establish connection")) {
         console.debug(
           `Target not ready for ${blockId}. Retrying in ${
             100 * (retries + 1)
@@ -408,7 +408,7 @@ export async function executeInTarget(
         },
       });
     } catch (error) {
-      if (error?.message?.includes("Could not establish connection")) {
+      if (getErrorMessage(error).includes("Could not establish connection")) {
         console.debug(
           `Target not ready for ${blockId}. Retrying in ${
             100 * (retries + 1)

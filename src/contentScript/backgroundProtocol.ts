@@ -32,6 +32,7 @@ import {
   expectBackgroundPage,
   expectContentScript,
 } from "@/utils/expectContext";
+import { getErrorMessage } from "@/errors";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
 export const ROOT_FRAME_ID = 0;
@@ -216,7 +217,7 @@ export function liftContentScript<R extends SerializableResponse>(
     } catch (error) {
       if (
         isNotification(options) &&
-        error?.message.includes("Receiving end does not exist")
+        getErrorMessage(error).includes("Receiving end does not exist")
       ) {
         // Ignore the content script not being loaded
         return;

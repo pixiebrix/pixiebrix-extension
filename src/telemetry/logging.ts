@@ -22,10 +22,6 @@ import { serializeError } from "serialize-error";
 import { isExtensionContext } from "@/chrome";
 import { isBackgroundPage } from "webext-detect-page";
 
-export function errorMessage(error: SerializedError): string {
-  return typeof error === "object" ? error.message : String(error);
-}
-
 function selectError(error: unknown): SerializedError {
   if (error instanceof PromiseRejectionEvent) {
     // convert the project rejection to an error instance
@@ -42,31 +38,37 @@ function selectError(error: unknown): SerializedError {
 
 /**
  * Report an error for local logs, remote telemetry, etc.
- * @param error the error object
+ * @param originalError the error object
  * @param context optional context for error telemetry
  */
-export function reportError(error: unknown, context?: MessageContext): void {
-  try {
-    if (isExtensionContext()) {
-      if (!isBackgroundPage()) {
-        // Log the error in the context it occurred in, so the developer doesn't have to open the
-        // background page to see the error
-        console.error("An error occurred", { error });
-      }
-      // Add catch, otherwise causes infinite loop on unhandledrejection when messaging the background script
-      recordError(selectError(error), context, null).catch((error_) => {
-        console.error("Another error occurred while reporting an error", {
-          originalError: error,
-          error: error_,
-        });
-      });
-    } else {
-      rollbar.error(toLogArgument(error));
-    }
-  } catch (error_) {
+export function reportError(
+  originalError: unknown,
+  context?: MessageContext
+): void {
+  void _reportError(originalError, context).catch((reportingError: unknown) => {
     console.error("An error occurred when reporting an error", {
-      originalError: error,
-      error: error_,
+      originalError,
+      reportingError,
     });
+  });
+}
+
+// Extracted async function to avoid turning `reportError` into an async function
+// which would trigger `eslint/no-floating-promises` at every `reportError` call
+async function _reportError(
+  error: unknown,
+  context?: MessageContext
+): Promise<void> {
+  if (!isExtensionContext()) {
+    rollbar.error(toLogArgument(error));
+    return;
   }
+
+  if (!isBackgroundPage()) {
+    // Log the error in the context it occurred in, so the developer doesn't have to open the
+    // background page to see the error
+    console.error("An error occurred", { error });
+  }
+
+  await recordError(selectError(error), context, null);
 }

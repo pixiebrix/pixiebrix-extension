@@ -20,9 +20,10 @@ import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import { browser } from "webextension-polyfill-ts";
-import { isPrivatePageError, sleep } from "@/utils";
+import { sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
 import { HandlerMap } from "@/messaging/protocol";
+import { getErrorMessage, isPrivatePageError } from "@/errors";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
@@ -109,7 +110,7 @@ async function forwardWhenReady(
     try {
       return await browser.tabs.sendMessage(tabId, message, { frameId });
     } catch (error) {
-      if (error?.message?.includes("Could not establish connection")) {
+      if (getErrorMessage(error).includes("Could not establish connection")) {
         await sleep(FORWARD_RETRY_INTERVAL_MILLIS);
       } else {
         throw error;

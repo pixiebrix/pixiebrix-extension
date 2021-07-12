@@ -26,6 +26,7 @@ import { uninstallContextMenu } from "@/background/devtools";
 import * as nativeOperations from "@/background/devtools";
 import { optionsSlice } from "@/options/slices";
 import { reportError } from "@/telemetry/logging";
+import { getErrorMessage } from "@/errors";
 
 function useRemove(element: FormState): () => void {
   const { port } = useContext(DevToolsContext);
@@ -76,15 +77,10 @@ function useRemove(element: FormState): () => void {
       dispatch(actions.removeElement(element.uuid));
     } catch (error) {
       reportError(error);
-      addToast(
-        `Error removing element: ${
-          error.message?.toString() ?? "Unknown Error"
-        }`,
-        {
-          appearance: "error",
-          autoDismiss: true,
-        }
-      );
+      addToast(`Error removing element: ${getErrorMessage(error)}`, {
+        appearance: "error",
+        autoDismiss: true,
+      });
     }
   }, [showConfirmation, values, addToast, port, element, dispatch]);
 }
