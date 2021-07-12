@@ -141,6 +141,7 @@ export class GoogleSheetsAppend extends Effect {
       console.debug(
         `Found headers for ${tabName}: ${currentHeaders.join(", ")}`
       );
+      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       logger.warn(`Error retrieving headers: ${error.toString()}`, error);
       if (isAuthError(error)) {

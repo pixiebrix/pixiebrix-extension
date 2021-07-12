@@ -89,7 +89,7 @@ function backgroundMessageListener(
     let responded = false;
 
     if (notification) {
-      handlerPromise.catch((error) => {
+      handlerPromise.catch((error: unknown) => {
         console.warn(
           `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}): ${error}`,
           error
@@ -192,7 +192,7 @@ async function resetTab(tabId: number): Promise<void> {
       { tabId, frameId: TOP_LEVEL_FRAME_ID },
       {}
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn(`Error clearing dynamic elements for tab: %d`, tabId, {
       error,
     });
@@ -285,7 +285,7 @@ async function attemptTemporaryAccess({
 
   try {
     await ensureContentScript({ tabId, frameId });
-  } catch (error) {
+  } catch (error: unknown) {
     if (isPrivatePageError(error)) {
       return;
     }

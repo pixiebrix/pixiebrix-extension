@@ -227,9 +227,9 @@ export async function launchOAuth2Flow(
         "Content-Type": "application/x-www-form-urlencoded",
       },
     });
-  } catch (error_) {
-    console.error(error_);
-    throw new Error(`Error getting OAuth2 token: ${error_}`);
+  } catch (error: unknown) {
+    console.error(error);
+    throw new Error(`Error getting OAuth2 token: ${error}`);
   }
 
   const { data, status, statusText } = tokenResponse;

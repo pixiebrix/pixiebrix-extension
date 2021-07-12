@@ -102,7 +102,7 @@ const RecipeEntry: React.FunctionComponent<{
           appearance: "success",
           autoDismiss: true,
         });
-      } catch (error) {
+      } catch (error: unknown) {
         reportError(error);
       }
     },
@@ -410,7 +410,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     uninstallContextMenu(identifier).catch(() => {
       // noop because this is expected to error for non-context menus
     });
-    reactivate().catch((error) => {
+    reactivate().catch((error: unknown) => {
       console.warn("Error re-activating content scripts", { error });
     });
   },

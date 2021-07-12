@@ -128,6 +128,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         optionsArgs: extension.optionsArgs,
       });
       extensionLogger.info("Successfully ran trigger");
+      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       extensionLogger.error(error);
     }
@@ -144,7 +145,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         });
         try {
           await this.runExtension(readerContext, extension, root);
-        } catch (error) {
+        } catch (error: unknown) {
           void reportError(error, extensionLogger.context);
           return error;
         }

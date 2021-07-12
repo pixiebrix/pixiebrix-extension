@@ -130,7 +130,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
       // noinspection ExceptionCaughtLocallyJS
       throw new BusinessError("No renderer attached to body");
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof HeadlessModeError) {
         upsertPanel(
           { extensionId: extension.id, extensionPointId: this.id },
@@ -204,6 +204,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
       try {
         await this.runExtension(readerContext, extension);
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         errors.push(error);
         this.logger

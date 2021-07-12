@@ -38,16 +38,16 @@ function selectError(error: unknown): SerializedError {
 
 /**
  * Report an error for local logs, remote telemetry, etc.
- * @param originalError the error object
+ * @param error the error object
  * @param context optional context for error telemetry
  */
 export function reportError(
-  originalError: unknown,
+  error: unknown,
   context?: MessageContext
 ): void {
-  void _reportError(originalError, context).catch((reportingError: unknown) => {
+  void _reportError(error, context).catch((reportingError: unknown) => {
     console.error("An error occurred when reporting an error", {
-      originalError,
+      originalError: error,
       reportingError,
     });
   });
@@ -60,6 +60,8 @@ async function _reportError(
   context?: MessageContext
 ): Promise<void> {
   if (!isExtensionContext()) {
+    // This module is also used by the PixieBrix app, so allow this method to be called from
+    // an external context
     rollbar.error(toLogArgument(error));
     return;
   }

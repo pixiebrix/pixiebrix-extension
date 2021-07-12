@@ -140,7 +140,7 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
   try {
     console.debug(`connectToFrame: detecting frameworks on ${url}`);
     frameworks = await runInMillis(() => detectFrameworks(port), 500);
-  } catch (error) {
+  } catch (error: unknown) {
     console.debug(`connectToFrame: error detecting frameworks ${url}`, {
       error,
     });
@@ -180,7 +180,7 @@ export function useDevConnection(): Context {
         hasPermissions: true,
         meta,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof PermissionsError) {
         setCurrent({
           ...common,

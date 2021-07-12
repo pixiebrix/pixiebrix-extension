@@ -99,7 +99,7 @@ export async function callBackground(
   if (isNotification(options)) {
     try {
       port.postMessage(message);
-    } catch (error) {
+    } catch (error: unknown) {
       throw new Error(
         `Error sending devtools notification: ${getErrorMessage(error)}`
       );
@@ -109,7 +109,7 @@ export async function callBackground(
       devtoolsHandlers.set(nonce, [resolve, reject]);
       try {
         port.postMessage(message);
-      } catch (error) {
+      } catch (error: unknown) {
         reject(
           new Error(`Error sending devtools message: ${getErrorMessage(error)}`)
         );

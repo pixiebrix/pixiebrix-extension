@@ -294,12 +294,12 @@ const ReaderConfig: React.FunctionComponent<{
         );
         output = await runReader(port, { config });
         schema = GenerateSchema.json("Inferred Schema", output);
-      } catch (error_) {
+      } catch (error: unknown) {
         if (!isMounted()) return;
         setSchema({
           output: undefined,
           schema: undefined,
-          error: error_.toString(),
+          error: String(error),
         });
         return;
       }

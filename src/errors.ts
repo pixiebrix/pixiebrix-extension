@@ -96,10 +96,12 @@ export function isErrorObject(error: unknown): error is ErrorObject {
  * Returns true iff the root cause of the error was a CancelError.
  * @param error the error object
  */
-export function hasCancelRootCause(error: Error | SerializedError): boolean {
-  if (typeof error !== "object") {
+export function hasCancelRootCause(error: unknown): boolean {
+  if (!isErrorObject(error)) {
     return false;
-  } else if (error instanceof CancelError || error.name === "CancelError") {
+  }
+
+  if (error instanceof CancelError || error.name === "CancelError") {
     return true;
   } else if (error instanceof ContextError) {
     return hasCancelRootCause(error.cause);
@@ -111,10 +113,12 @@ export function hasCancelRootCause(error: Error | SerializedError): boolean {
  * Returns true iff the root cause of the error was a BusinessError.
  * @param error the error object
  */
-export function hasBusinessRootCause(error: Error | SerializedError): boolean {
-  if (typeof error !== "object") {
+export function hasBusinessRootCause(error: unknown): boolean {
+  if (!isErrorObject(error)) {
     return false;
-  } else if (error instanceof BusinessError || error.name === "BusinessError") {
+  }
+
+  if (error instanceof BusinessError || error.name === "BusinessError") {
     return true;
   } else if (error instanceof ContextError) {
     return hasBusinessRootCause(error.cause);

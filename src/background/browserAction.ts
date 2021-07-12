@@ -109,7 +109,7 @@ async function forwardWhenReady(
   while (true) {
     try {
       return await browser.tabs.sendMessage(tabId, message, { frameId });
-    } catch (error) {
+    } catch (error: unknown) {
       if (getErrorMessage(error).includes("Could not establish connection")) {
         await sleep(FORWARD_RETRY_INTERVAL_MILLIS);
       } else {

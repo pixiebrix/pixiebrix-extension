@@ -80,7 +80,7 @@ function initContentScriptListener() {
               send(response);
             }
           })
-          .catch((error) => {
+          .catch((error: unknown) => {
             if (asyncResponse) {
               console.debug(
                 `Handler returning error response for ${type} with nonce ${meta.nonce}`

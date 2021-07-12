@@ -76,7 +76,7 @@ const LoggingSettings: React.FunctionComponent = () => {
                 appearance: "success",
                 autoDismiss: true,
               });
-            } catch (error) {
+            } catch (error: unknown) {
               reportError(error);
               addToast(`Error clearing local logs: ${getErrorMessage(error)}`, {
                 appearance: "error",

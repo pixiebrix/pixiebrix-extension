@@ -63,7 +63,7 @@ async function handleRequest(
 
   try {
     return await handler(...payload);
-  } catch (error) {
+  } catch (error: unknown) {
     console.debug(`Handler returning error response for ${type}`, {
       error,
     });
@@ -214,7 +214,7 @@ export function liftContentScript<R extends SerializableResponse>(
         },
         { frameId: target.frameId ?? ROOT_FRAME_ID }
       );
-    } catch (error) {
+    } catch (error: unknown) {
       if (
         isNotification(options) &&
         getErrorMessage(error).includes("Receiving end does not exist")

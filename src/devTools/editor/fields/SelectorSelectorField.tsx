@@ -168,7 +168,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
 
       console.debug("Setting selector", { selected, firstSelector });
       onSelect(firstSelector);
-    } catch (error) {
+    } catch (error: unknown) {
       reportError(error);
       addToast(`Error selecting element: ${error.toString()} `, {
         appearance: "error",

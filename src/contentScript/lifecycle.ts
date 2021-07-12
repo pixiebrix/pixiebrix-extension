@@ -65,7 +65,7 @@ async function runExtensionPoint(
 
   try {
     installed = await extensionPoint.install();
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof PromiseCancelled) {
       console.debug(
         `Skipping ${extensionPoint.id} because user navigated away from the page`
@@ -191,7 +191,7 @@ async function loadExtensions() {
         // Cleared out _extensionPoints before, so can just push w/o checking if it's already in the array
         _extensionPoints.push(extensionPoint);
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.warn(`Error adding extension point: ${extensionPointId}`, {
         error,
       });
@@ -288,7 +288,7 @@ export async function handleNavigate({
       // Don't await each extension point since the extension point may never appear. For example, an
       // extension point that runs on the contact information page on LinkedIn
       const runPromise = runExtensionPoint(extensionPoint, cancel).catch(
-        (error) => {
+        (error: unknown) => {
           console.error(`Error installing/running: ${extensionPoint.id}`, {
             error,
           });

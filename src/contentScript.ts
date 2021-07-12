@@ -66,7 +66,7 @@ async function init(): Promise<void> {
 
   try {
     await handleNavigate();
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error initializing contentScript", error);
     throw error;
   }
@@ -75,7 +75,7 @@ async function init(): Promise<void> {
     // notify the background script know we're ready to execute remote actions
     await notifyReady();
     console.info(`contentScript ready in ${Date.now() - start}ms`);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error pinging the background script", error);
     throw error;
   }

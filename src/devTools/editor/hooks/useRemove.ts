@@ -52,7 +52,7 @@ function useRemove(element: FormState): () => void {
       if (element.type === "contextMenu") {
         try {
           await uninstallContextMenu(port, { extensionId: element.uuid });
-        } catch (error) {
+        } catch (error: unknown) {
           // The context menu may not currently be registered if it's not on a page that has a contentScript
           // with a pattern that matches
           console.info("Cannot unregister contextMenu", { error });
@@ -62,7 +62,7 @@ function useRemove(element: FormState): () => void {
         await nativeOperations.clearDynamicElements(port, {
           uuid: element.uuid,
         });
-      } catch (error) {
+      } catch (error: unknown) {
         // element might not be on the page anymore
         console.info("Cannot clear dynamic element from page", { error });
       }
@@ -75,7 +75,7 @@ function useRemove(element: FormState): () => void {
         );
       }
       dispatch(actions.removeElement(element.uuid));
-    } catch (error) {
+    } catch (error: unknown) {
       reportError(error);
       addToast(`Error removing element: ${getErrorMessage(error)}`, {
         appearance: "error",

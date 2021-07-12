@@ -51,7 +51,7 @@ export function liftBackground<R extends SerializableResponse>(
 
       try {
         handlerResult = await method(...args);
-      } catch (error) {
+      } catch (error: unknown) {
         console.log(`Error running method ${error}`, error);
         handlerResult = toErrorResponse(fullType, error);
       }

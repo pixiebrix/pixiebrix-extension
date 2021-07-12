@@ -369,7 +369,7 @@ export async function executeForNonce(
           options,
         },
       });
-    } catch (error) {
+    } catch (error: unknown) {
       if (getErrorMessage(error).includes("Could not establish connection")) {
         console.debug(
           `Target not ready for ${blockId}. Retrying in ${
@@ -407,7 +407,7 @@ export async function executeInTarget(
           options,
         },
       });
-    } catch (error) {
+    } catch (error: unknown) {
       if (getErrorMessage(error).includes("Could not establish connection")) {
         console.debug(
           `Target not ready for ${blockId}. Retrying in ${

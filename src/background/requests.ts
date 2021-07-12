@@ -102,6 +102,7 @@ const backgroundRequest = liftBackground<AxiosRequestConfig, SanitizedResponse>(
   async (config: AxiosRequestConfig) => {
     try {
       return cleanResponse(await axios(config));
+      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       // Axios offers its own serialization method, but it doesn't include the response.
       // By deleting toJSON, the serialize-error library will use its default serialization
@@ -224,6 +225,7 @@ const _proxyService = liftBackground(
       return await backgroundRequest(
         await authenticate(serviceConfig, requestConfig)
       );
+      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       if (UNAUTHORIZED_STATUS_CODES.includes(error.response?.status)) {
         // try again - have the user login again, or automatically try to get a new token
@@ -258,6 +260,7 @@ export async function proxyService<TData>(
       return (await backgroundRequest(
         requestConfig
       )) as SanitizedResponse<TData>;
+      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       if (error.response) {
         throw new RemoteServiceError(error.response.statusText, error.response);
@@ -274,6 +277,7 @@ export async function proxyService<TData>(
       serviceConfig,
       requestConfig
     )) as RemoteResponse<TData>;
+    // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     throw new ContextError(error, {
       serviceId: serviceConfig.id,

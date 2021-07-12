@@ -61,7 +61,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
               for (const observer of observers) {
                 try {
                   observer.disconnect();
-                } catch (error) {
+                } catch (error: unknown) {
                   console.warn("Error disconnecting mutation observer", error);
                 }
               }
@@ -79,7 +79,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
     for (const observer of observers) {
       try {
         observer.disconnect();
-      } catch (error) {
+      } catch (error: unknown) {
         console.warn("Error disconnecting mutation observer", error);
       }
     }

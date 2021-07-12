@@ -76,7 +76,7 @@ function useAddElement(reservedNames: string[]): AddElement {
         );
 
         dispatch(actions.addElement(initialState as FormState));
-      } catch (error) {
+      } catch (error: unknown) {
         if (getErrorMessage(error) === "Selection cancelled") {
           return;
         }
