@@ -14,6 +14,9 @@
         "config": "./browsers/resolve.config.js"
       }
     },
+    "import/ignore": [
+      "react-select" // For some reason it points to a flow JS file
+    ],
     "react": {
       "version": "detect"
     }
@@ -30,8 +33,7 @@
     "plugin:security/recommended",
     "plugin:unicorn/recommended",
 
-    // TODO: Restore this after linting the codebase
-    // "plugin:import/errors",
+    "plugin:import/errors",
     "plugin:import/warnings"
   ],
   "rules": {
@@ -54,6 +56,14 @@
       }
     ],
 
+    "import/no-unresolved": [
+      "error",
+      {
+        "ignore": [
+          "json-schema" // @types-only package
+        ]
+      }
+    ],
     "unicorn/prevent-abbreviations": [
       "error",
       {
@@ -88,6 +98,7 @@
 
     // Disable recommended rules
     "@typescript-eslint/no-empty-function": "off",
+    "import/named": "off", // TypeScript does this natively
     "react/prop-types": "off",
     "unicorn/no-null": "off", // Maybe later
     "unicorn/filename-case": "off", // Contrasts with React

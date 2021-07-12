@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./meta";
-export * from "./PageMetadataReader";
-export * from "./PageSemanticReader";
-export * from "./BlankReader";
-export * from "./ImageReader";
-export * from "./ImageEXIFReader";
-export * from "./ElementReader";
+import "./meta";
+import "./PageMetadataReader";
+import "./PageSemanticReader";
+import "./BlankReader";
+import "./ImageReader";
+import "./ImageEXIFReader";
+import "./ElementReader";
 
 // generic readers
-export * from "./frameworkReader";
+import "./frameworkReader";
 export * from "./jquery";
 export * from "./window";
