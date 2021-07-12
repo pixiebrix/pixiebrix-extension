@@ -26,6 +26,7 @@ import {
   PROPERTY_TABLE_BODY,
   selectIsAvailable,
   lookupExtensionPoint,
+  baseSelectExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
@@ -144,24 +145,16 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint({
-  extensionPoint,
-  readers,
-}: PanelFormState): ExtensionPointConfig<PanelDefinition> {
+function selectExtensionPoint(
+  formState: PanelFormState
+): ExtensionPointConfig<PanelDefinition> {
+  const { extensionPoint, readers } = formState;
   const {
-    metadata,
     definition: { isAvailable, position, template, containerSelector },
   } = extensionPoint;
 
   return {
-    apiVersion: "v1",
-    kind: "extensionPoint",
-    metadata: {
-      id: metadata.id,
-      version: "1.0.0",
-      name: metadata.name,
-      description: "Panel created with the Page Editor",
-    },
+    ...baseSelectExtensionPoint(formState),
     definition: {
       type: "panel",
       reader: readers.map((x) => x.metadata.id),
@@ -206,24 +199,25 @@ async function fromExtensionPoint(
     throw new Error("Expected panel extension point type");
   }
 
+  const { heading = "Custom Panel", collapsible = false } =
+    extensionPoint.definition.defaultOptions ?? {};
+
   return {
     uuid: uuidv4(),
     installed: true,
-    type: extensionPoint.definition.type,
+    type: "panel",
     label: `My ${getDomain(url)} panel`,
 
     readers: await makeReaderFormState(extensionPoint),
     services: [],
 
     extension: {
-      heading:
-        extensionPoint.definition.defaultOptions.heading ?? "Custom Panel",
-      collapsible: boolean(
-        extensionPoint.definition.defaultOptions.collapsible ?? false
-      ),
+      heading,
+      collapsible: boolean(collapsible ?? false),
       body: PROPERTY_TABLE_BODY,
     },
 
+    // There's no containerInfo for the page because the user did not select it during the session
     containerInfo: null,
 
     extensionPoint: {

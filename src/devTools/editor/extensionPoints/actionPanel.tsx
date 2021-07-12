@@ -18,6 +18,7 @@
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
+  baseSelectExtensionPoint,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
@@ -114,24 +115,15 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint({
-  extensionPoint,
-  readers,
-}: ActionPanelFormState): ExtensionPointConfig<PanelDefinition> {
+function selectExtensionPoint(
+  formState: ActionPanelFormState
+): ExtensionPointConfig<PanelDefinition> {
+  const { extensionPoint, readers } = formState;
   const {
-    metadata,
     definition: { isAvailable },
   } = extensionPoint;
-
   return {
-    apiVersion: "v1",
-    kind: "extensionPoint",
-    metadata: {
-      id: metadata.id,
-      version: "1.0.0",
-      name: metadata.name,
-      description: "Side Panel created with the Page Editor",
-    },
+    ...baseSelectExtensionPoint(formState),
     definition: {
       type: "actionPanel",
       reader: readers.map((x) => x.metadata.id),

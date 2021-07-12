@@ -29,6 +29,7 @@ import {
   WizardStep,
   selectIsAvailable,
   lookupExtensionPoint,
+  baseSelectExtensionPoint,
 } from "@/devTools/editor/extensionPoints/base";
 import {
   MenuDefinition,
@@ -135,29 +136,20 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint({
-  extensionPoint,
-  readers,
-}: ActionFormState): ExtensionPointConfig<MenuDefinition> {
+function selectExtensionPoint(
+  formState: ActionFormState
+): ExtensionPointConfig<MenuDefinition> {
+  const { extensionPoint, readers } = formState;
   const {
-    metadata,
     definition: { isAvailable, position, template, containerSelector },
   } = extensionPoint;
-
   return {
-    apiVersion: "v1",
-    kind: "extensionPoint",
-    metadata: {
-      id: metadata.id,
-      version: "1.0.0",
-      name: metadata.name,
-      description: "Button created with the Page Editor",
-    },
+    ...baseSelectExtensionPoint(formState),
     definition: {
       type: "menuItem",
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
-      containerSelector: containerSelector,
+      containerSelector,
       position,
       template,
     },
@@ -199,10 +191,11 @@ async function fromExtensionPoint(
 
     extension: {
       caption:
-        extensionPoint.definition.defaultOptions.caption ?? "Custom Action",
+        extensionPoint.definition.defaultOptions?.caption ?? "Custom Action",
       action: [],
     },
 
+    // There's no containerInfo for the page because the user did not select it during the session
     containerInfo: null,
 
     extensionPoint: {

@@ -57,6 +57,16 @@ export function isCustomReader(
   return "definition" in reader;
 }
 
+export interface BaseExtensionPointState {
+  metadata: Metadata;
+  definition: {
+    isAvailable: {
+      matchPatterns: string;
+      selectors: string;
+    };
+  };
+}
+
 export interface BaseFormState {
   /**
    * The extension uuid
@@ -88,7 +98,7 @@ export interface BaseFormState {
 
   readers: (ReaderFormState | ReaderReferenceFormState)[];
 
-  extensionPoint: unknown;
+  extensionPoint: BaseExtensionPointState;
 
   extension: unknown;
 }

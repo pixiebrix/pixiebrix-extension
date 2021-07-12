@@ -115,13 +115,12 @@ export function makeBaseState(
   defaultSelector: string | null,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
-): Omit<BaseFormState, "type" | "label"> {
+): Omit<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
     services: [],
     readers: [makeDefaultReader(metadata, frameworks, { defaultSelector })],
     extension: {},
-    extensionPoint: {},
   };
 }
 
@@ -312,5 +311,22 @@ export async function lookupExtensionPoint<
 
   return extensionPoint as ExtensionPointConfig<TDefinition> & {
     definition: { type: TType };
+  };
+}
+
+export function baseSelectExtensionPoint(
+  formState: BaseFormState
+): Omit<ExtensionPointConfig, "definition"> {
+  const { metadata } = formState.extensionPoint;
+
+  return {
+    apiVersion: "v1",
+    kind: "extensionPoint",
+    metadata: {
+      id: metadata.id,
+      version: metadata.version ?? "1.0.0",
+      name: metadata.name,
+      description: metadata.description,
+    },
   };
 }

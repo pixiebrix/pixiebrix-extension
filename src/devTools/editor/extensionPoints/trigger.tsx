@@ -18,6 +18,7 @@
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
+  baseSelectExtensionPoint,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
@@ -106,25 +107,15 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint({
-  extensionPoint,
-  readers,
-}: TriggerFormState): ExtensionPointConfig<TriggerDefinition> {
+function selectExtensionPoint(
+  formState: TriggerFormState
+): ExtensionPointConfig<TriggerDefinition> {
+  const { extensionPoint, readers } = formState;
   const {
-    metadata,
     definition: { isAvailable, rootSelector, trigger },
   } = extensionPoint;
-
   return {
-    apiVersion: "v1",
-    kind: "extensionPoint",
-    metadata: {
-      id: metadata.id,
-      version: metadata.version ?? "1.0.0",
-      name: metadata.name,
-      description:
-        metadata.description ?? "Trigger created with the Page Editor",
-    },
+    ...baseSelectExtensionPoint(formState),
     definition: {
       type: "trigger",
       reader: readers.map((x) => x.metadata.id),
@@ -174,7 +165,7 @@ async function fromExtensionPoint(
     uuid: uuidv4(),
     installed: true,
     type,
-    label: `My ${getDomain(url)} context menu`,
+    label: `My ${getDomain(url)} ${trigger} trigger`,
 
     readers: await makeReaderFormState(extensionPoint),
     services: [],
@@ -229,7 +220,7 @@ async function fromExtension(
   };
 }
 
-const config: ElementConfig<never, TriggerFormState> = {
+const config: ElementConfig<undefined, TriggerFormState> = {
   displayOrder: 4,
   elementType: "trigger",
   label: "Trigger",
