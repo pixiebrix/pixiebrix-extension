@@ -204,8 +204,6 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
         method: "GET",
       });
       return interfaceToInputSchema(response.data);
-    } else {
-      return;
     }
   }, [fileId, hasPermissions]);
 

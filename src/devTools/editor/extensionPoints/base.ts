@@ -17,12 +17,6 @@
 
 import { IExtension, Metadata, selectMetadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
-import {
-  BaseFormState,
-  isCustomReader,
-  ReaderFormState,
-  ReaderReferenceFormState,
-} from "@/devTools/editor/editorSlice";
 import { castArray, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
@@ -37,6 +31,12 @@ import {
 import { find as findBrick } from "@/registry/localRegistry";
 import React from "react";
 import { createSitePattern, getDomain } from "@/permissions/patterns";
+import {
+  BaseFormState,
+  isCustomReader,
+  ReaderFormState,
+  ReaderReferenceFormState,
+} from "@/devTools/editor/extensionPoints/elementConfig";
 
 export interface WizardStep {
   step: string;
@@ -147,6 +147,7 @@ export async function generateExtensionPointMetadata(
     return false;
   };
 
+  // Find next available foundation id
   for (let index = 1; index < 1000; index++) {
     const id =
       index === 1
@@ -256,7 +257,7 @@ type SimpleAvailability = {
 
 /**
  * Map availability from extension point configuration to state for the page editor.
- * Is subject to the limitations of the page editor interface.
+ * @throws Error if the isAvailable definition use features that aren't supported by the Page Editor
  */
 export function selectIsAvailable(
   extensionPoint: ExtensionPointConfig

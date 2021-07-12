@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
   extensionToFormState,
-  getType,
+  selectType,
 } from "@/devTools/editor/extensionPoints/adapter";
 import { actions } from "@/devTools/editor/editorSlice";
 import { reportError } from "@/telemetry/logging";
@@ -31,13 +31,17 @@ import {
   ExtensionIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
 
+/**
+ * A sidebar menu entry corresponding to an installed/saved extension point
+ * @see DynamicEntry
+ */
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
   installedIds: string[];
   activeElement: string | null;
 }> = ({ extension, installedIds, activeElement }) => {
   const dispatch = useDispatch();
-  const [type] = useAsyncState(() => getType(extension), [
+  const [type] = useAsyncState(async () => selectType(extension), [
     extension.extensionPointId,
   ]);
   const available = installedIds?.includes(extension.extensionPointId);
@@ -59,7 +63,7 @@ const InstalledEntry: React.FunctionComponent<{
     <ListGroup.Item
       active={extension.id == activeElement}
       key={`installed-${extension.id}`}
-      onClick={() => selectInstalled(extension)}
+      onClick={async () => selectInstalled(extension)}
       style={{ cursor: "pointer" }}
     >
       <ExtensionIcon type={type} /> {extension.label ?? extension.id}

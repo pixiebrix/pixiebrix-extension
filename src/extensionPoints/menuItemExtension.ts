@@ -62,6 +62,7 @@ import {
 import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
 import { PanelDefinition } from "@/extensionPoints/panelExtension";
+import iconAsSVG from "@/icons/svgIcons";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -358,12 +359,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           if (!menuContainers.includes(element)) {
             const menuUUID = uuidv4();
             this.menus.set(menuUUID, element);
-            return acquireElement(element, this.id, () =>
+            return acquireElement(element, this.id, async () =>
               this.reacquire(menuUUID)
             );
-          } else {
-            existingCount++;
           }
+          existingCount++;
         })
         .get()
     );
@@ -421,15 +421,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const renderTemplate = engineRenderer(extension.templateEngine);
 
-    const iconAsSVG = icon
-      ? (
-          await import(
-            /* webpackChunkName: "icons" */
-            "@/icons/svgIcons"
-          )
-        ).default
-      : null;
-
     let html: string;
 
     if (extension.config.if) {
@@ -463,12 +454,12 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const extensionContext = { ...ctxt, ...serviceContext };
       html = Mustache.render(this.getTemplate(), {
         caption: renderTemplate(caption, extensionContext),
-        icon: iconAsSVG?.(icon),
+        icon: await iconAsSVG?.(icon),
       });
     } else {
       html = Mustache.render(this.getTemplate(), {
         caption,
-        icon: iconAsSVG?.(icon),
+        icon: await iconAsSVG?.(icon),
       });
     }
 
@@ -550,7 +541,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if (dependencies.length > 0) {
       const rerun = once(() => {
         console.debug("Dependency changed, re-running extension");
-        this.run([extension.id]);
+        void this.run([extension.id]);
       });
 
       const observer = new MutationObserver(rerun);
@@ -559,6 +550,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       let elementCount = 0;
       for (const dependency of dependencies) {
+        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $dependency = $(document).find(dependency);
         if ($dependency.length > 0) {
           $dependency.each((index, element) => {
@@ -571,7 +563,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } else {
           const [elementPromise, cancel] = awaitElementOnce(dependency);
           cancellers.push(cancel);
-          elementPromise.then(() => {
+          void elementPromise.then(() => {
             rerun();
           });
         }
@@ -743,6 +735,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
     if (typeof position === "object") {
       if (position.sibling) {
+        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $sibling = $menu.find(position.sibling);
         if ($sibling.length > 1) {
           throw new Error(
@@ -789,12 +782,11 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
         throw new Error(`Found no elements for  reader selector: ${selector}`);
       }
       return $elt.get(0);
-    } else {
-      return document;
     }
+    return document;
   }
 
-  defaultReader() {
+  async defaultReader() {
     return mergeReaders(this._definition.reader);
   }
 

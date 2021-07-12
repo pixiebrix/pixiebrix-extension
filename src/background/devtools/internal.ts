@@ -72,7 +72,6 @@ function backgroundMessageListener(
       `Ignoring devtools message to background page from unknown sender`,
       port.sender
     );
-    return;
   } else if (handler) {
     const notification = isNotification(options);
 

@@ -25,7 +25,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Formik } from "formik";
 import Effect from "@/devTools/editor/components/Effect";
 import ElementWizard from "@/devTools/editor/ElementWizard";
-import { useEditable } from "@/devTools/editor/hooks/editorHooks";
+import useEditable from "@/devTools/editor/hooks/useEditable";
 import { LogContextWrapper } from "@/components/logViewer/LogContext";
 
 // CHANGE_DETECT_DELAY_MILLIS should be low enough so that sidebar gets updated in a reasonable amount of time, but

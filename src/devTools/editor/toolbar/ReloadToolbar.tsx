@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useContext } from "react";
-import { FormState, TriggerFormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { useDebouncedCallback } from "use-debounce";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -24,6 +24,7 @@ import * as nativeOperations from "@/background/devtools";
 import useAsyncEffect from "use-async-effect";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { Button } from "react-bootstrap";
+import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -59,7 +60,7 @@ const ReloadToolbar: React.FunctionComponent<{
   const { port } = useContext(DevToolsContext);
 
   const run = useCallback(async () => {
-    const { definition: factory } = ADAPTERS.get(element.type);
+    const { asDynamicElement: factory } = ADAPTERS.get(element.type);
     if (disabled) {
       console.warn("Updating dynamic possibly invalid element", {
         element,
@@ -94,25 +95,24 @@ const ReloadToolbar: React.FunctionComponent<{
 
   if (automaticUpdate) {
     return null;
-  } else {
-    return (
-      <>
-        <label className="AutoRun my-auto mr-1">
-          {isPanel ? "Auto-Render" : "Auto-Run"}
-        </label>
-        <ToggleField name="autoReload" />
-        <Button
-          className="mx-2"
-          disabled={disabled}
-          size="sm"
-          variant="info"
-          onClick={run}
-        >
-          {isPanel ? "Render Panel" : "Run Trigger"}
-        </Button>
-      </>
-    );
   }
+  return (
+    <>
+      <label className="AutoRun my-auto mr-1">
+        {isPanel ? "Auto-Render" : "Auto-Run"}
+      </label>
+      <ToggleField name="autoReload" />
+      <Button
+        className="mx-2"
+        disabled={disabled}
+        size="sm"
+        variant="info"
+        onClick={run}
+      >
+        {isPanel ? "Render Panel" : "Run Trigger"}
+      </Button>
+    </>
+  );
 };
 
 export default ReloadToolbar;

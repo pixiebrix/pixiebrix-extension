@@ -32,7 +32,6 @@ export async function getType(
     return "transform";
   } else if ("render" in block) {
     return "renderer";
-  } else {
-    return null;
   }
+  return null;
 }

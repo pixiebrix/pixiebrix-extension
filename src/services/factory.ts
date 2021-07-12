@@ -135,9 +135,8 @@ class LocalDefinedService<
         .authentication as TokenAuthenticationDefinition).token;
       // console.debug("token context", { definition, serviceConfig });
       return mapArgs<TokenContext>(definition, serviceConfig);
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 
   getOAuth2Context(serviceConfig: ServiceConfig): OAuth2Context {
@@ -146,9 +145,8 @@ class LocalDefinedService<
         .authentication as OAuth2AuthenticationDefinition).oauth2;
       console.debug("getOAuth2Context", { definition, serviceConfig });
       return mapArgs<OAuth2Context>(definition, serviceConfig);
-    } else {
-      return undefined;
     }
+    return undefined;
   }
 
   /**

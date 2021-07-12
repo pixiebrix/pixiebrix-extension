@@ -37,9 +37,9 @@ import Overlay from "@/nativeEditor/Overlay";
 import { checkAvailable as _checkAvailable } from "@/blocks/available";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
-import { isCustomReader } from "@/devTools/editor/editorSlice";
 import blockRegistry from "@/blocks/registry";
 import { Reader } from "@/types";
+import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export type ElementType =
   | "menuItem"
@@ -88,14 +88,13 @@ async function buildSingleReader(config: ReaderLike): Promise<IReader> {
     return config;
   } else if (isCustomReader(config)) {
     return readerFactory(config);
-  } else {
-    return blockRegistry.lookup(config.metadata.id) as Promise<IReader>;
   }
+  return blockRegistry.lookup(config.metadata.id) as Promise<IReader>;
 }
 
 async function buildReaders(configs: ReaderLike[]): Promise<IReader> {
   const array = await Promise.all(
-    configs.map((config) => buildSingleReader(config))
+    configs.map(async (config) => buildSingleReader(config))
   );
   return new ArrayCompositeReader(array);
 }
@@ -137,6 +136,7 @@ export const toggleOverlay = liftContentScript(
       if (_overlay == null) {
         _overlay = new Overlay();
       }
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive on JQuery method
       const $elt = $(document).find(selector);
       _overlay.inspect($elt.toArray(), null);
     } else if (_overlay != null) {

@@ -82,9 +82,8 @@ export function toLogArgument(error: unknown): LogArgument {
   } else if (typeof error === "object") {
     // the custom data or error object
     return error;
-  } else {
-    return error.toString();
   }
+  return error.toString();
 }
 
 export async function updateAuth({

@@ -79,12 +79,10 @@ function guessSelectedElement(): HTMLElement | null {
     const node = getCommonAncestor(start, end);
     if (node instanceof HTMLElement) {
       return node;
-    } else {
-      return null;
     }
-  } else {
     return null;
   }
+  return null;
 }
 
 function installMouseHandlerOnce(): void {
@@ -326,11 +324,13 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   public readonly permissions: Permissions.Permissions;
   public readonly documentUrlPatterns: Manifest.MatchPattern[];
   public readonly contexts: Menus.ContextType[];
+  public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
 
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
     this._definition = config.definition;
+    this.rawConfig = config;
     const { isAvailable, documentUrlPatterns, contexts } = config.definition;
     // if documentUrlPatterns not specified show everywhere
     this.documentUrlPatterns = castArray(documentUrlPatterns ?? ["*://*/*"]);

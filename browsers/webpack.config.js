@@ -30,6 +30,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, isEmpty } = require("lodash");
 const Policy = require("csp-parse");
 
+const { resolve } = require("./resolve.config.js");
 const rootDir = path.resolve(__dirname, "../");
 
 // Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
@@ -212,24 +213,11 @@ module.exports = (env, options) => ({
     popup: path.resolve(rootDir, "src/popup"),
   },
   resolve: {
+    ...resolve,
     // Need to set these fields manually as their default values rely on `web` target.
     // See https://v4.webpack.js.org/configuration/resolve/#resolvemainfields
     mainFields: ["browser", "module", "main"],
     aliasFields: ["browser"],
-    alias: {
-      "@": path.resolve(rootDir, "src"),
-      "@img": path.resolve(rootDir, "img"),
-      "@contrib": path.resolve(rootDir, "contrib"),
-      "@schemas": path.resolve(rootDir, "schemas"),
-      vendors: path.resolve(rootDir, "src/vendors"),
-      "@microsoft/applicationinsights-web": path.resolve(
-        rootDir,
-        "src/contrib/uipath/quietLogger"
-      ),
-
-      // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
-      handlebars: "handlebars/dist/handlebars.js",
-    },
     fallback: {
       fs: false,
       crypto: false,
@@ -237,7 +225,6 @@ module.exports = (env, options) => ({
       vm: false,
       path: false,
     },
-    extensions: [".ts", ".tsx", ".jsx", ".js"],
   },
 
   // https://github.com/webpack/webpack/issues/3017#issuecomment-285954512
@@ -349,8 +336,25 @@ module.exports = (env, options) => ({
         },
       },
       {
-        test: /(bootstrap-icons|simple-icons|custom-icons).*\.svg$/,
-        loader: "svg-inline-loader",
+        test: /bootstrap-icons\/.*\.svg$/,
+        type: "asset/resource",
+        generator: {
+          filename: "user-icons/bootstrap-icons/[name][ext]",
+        },
+      },
+      {
+        test: /simple-icons\/.*\.svg$/,
+        type: "asset/resource",
+        generator: {
+          filename: "user-icons/simple-icons/[name][ext]",
+        },
+      },
+      {
+        test: /custom-icons\/.*\.svg$/,
+        type: "asset/resource",
+        generator: {
+          filename: "user-icons/custom-icons/[name][ext]",
+        },
       },
       {
         test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,

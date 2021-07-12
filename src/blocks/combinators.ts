@@ -119,12 +119,11 @@ type SchemaProperties = { [key: string]: Schema };
 function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
   if (schemaOrProperties["type"] && schemaOrProperties["properties"]) {
     return schemaOrProperties as Schema;
-  } else {
-    return {
-      type: "object",
-      properties: schemaOrProperties as SchemaProperties,
-    };
   }
+  return {
+    type: "object",
+    properties: schemaOrProperties as SchemaProperties,
+  };
 }
 
 function excludeUndefined(obj: unknown): unknown {
@@ -133,9 +132,8 @@ function excludeUndefined(obj: unknown): unknown {
       pickBy(obj, (x) => x !== undefined),
       excludeUndefined
     );
-  } else {
-    return obj;
   }
+  return obj;
 }
 
 function isReader(block: IBlock): block is IReader {
@@ -262,9 +260,8 @@ async function runStage(
       });
     } else if (stage.window ?? "self" === "self") {
       return await block.run(blockArgs, { ctxt: args, logger, root, headless });
-    } else {
-      throw new BusinessError(`Unexpected stage window ${stage.window}`);
     }
+    throw new BusinessError(`Unexpected stage window ${stage.window}`);
   } finally {
     progressCallbacks?.hide();
   }
@@ -358,12 +355,10 @@ export async function reducePipeline(
           console.warn(`Effect ${block.id} produced an output`, { output });
           logger.warn(`Ignoring output produced by effect ${block.id}`);
         }
+      } else if (stage.outputKey) {
+        extraContext[`@${stage.outputKey}`] = output;
       } else {
-        if (stage.outputKey) {
-          extraContext[`@${stage.outputKey}`] = output;
-        } else {
-          currentArgs = output as any;
-        }
+        currentArgs = output as any;
       }
     } catch (error) {
       if (error instanceof HeadlessModeError) {
@@ -421,9 +416,8 @@ export async function mergeReaders(
     return new CompositeReader(
       await resolveObj(mapValues(readerConfig, mergeReaders))
     );
-  } else {
-    throw new BusinessError("Unexpected value for readerConfig");
   }
+  throw new BusinessError("Unexpected value for readerConfig");
 }
 
 export type ServiceContext = {

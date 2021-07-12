@@ -16,10 +16,9 @@
  */
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
-import { EditorState, FormState } from "@/devTools/editor/editorSlice";
+import { EditorState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
-import AuthContext from "@/auth/AuthContext";
-import { sortBy, uniq } from "lodash";
+import { sortBy } from "lodash";
 import {
   Badge,
   Dropdown,
@@ -29,28 +28,19 @@ import {
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IExtension } from "@/core";
-import { ELEMENT_DEFINITIONS } from "@/devTools/editor/extensionPoints/adapter";
+import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import hash from "object-hash";
-import logo from "@/icons/custom-icons/favicon.svg";
-import BeatLoader from "react-spinners/BeatLoader";
+import logoUrl from "@/icons/custom-icons/favicon.svg";
 import { openExtensionOptions } from "@/messaging/external";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import useInstallState from "@/devTools/editor/hooks/useInstallState";
 import InstalledEntry from "@/devTools/editor/sidebar/InstalledEntry";
 import DynamicEntry from "@/devTools/editor/sidebar/DynamicEntry";
 import { isExtension } from "@/devTools/editor/sidebar/common";
-import useAddElement from "@/devTools/editor/sidebar/useAddElement";
-
-function mapReservedNames(elements: FormState[]): string[] {
-  return sortBy(
-    uniq(
-      elements.flatMap((x) => [
-        x.extensionPoint.metadata.id,
-        ...x.readers.map((x) => x.metadata.id),
-      ])
-    )
-  );
-}
+import useAddElement from "@/devTools/editor/hooks/useAddElement";
+import Footer from "@/devTools/editor/sidebar/Footer";
+import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
+import useSVG from "@/hooks/useSVG";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -71,22 +61,6 @@ const DropdownEntry: React.FunctionComponent<{
         </>
       )}
     </Dropdown.Item>
-  );
-};
-
-const Footer: React.FunctionComponent = () => {
-  const { scope } = useContext(AuthContext);
-  const { connecting } = useContext(DevToolsContext);
-
-  return (
-    <div className="Sidebar__footer flex-grow-0">
-      <div className="d-flex">
-        <div className="flex-grow-1">
-          Scope: <code>{scope}</code>
-        </div>
-        <div>{connecting && <BeatLoader size={7} />}</div>
-      </div>
-    </div>
   );
 };
 
@@ -139,14 +113,11 @@ const Sidebar: React.FunctionComponent<
     ]
   );
 
-  const nameHash = hash(mapReservedNames(elements));
-  const reservedNames = useMemo(
-    () => mapReservedNames(elements),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- using memo to enforce reference equality for list
-    [nameHash]
-  );
+  const reservedNames = useReservedNames(elements);
 
   const addElement = useAddElement(reservedNames);
+
+  const logo = useSVG(logoUrl);
 
   return (
     <div className="Sidebar d-flex flex-column vh-100">
@@ -155,7 +126,7 @@ const Sidebar: React.FunctionComponent<
           <span
             className="Sidebar__logo"
             dangerouslySetInnerHTML={{ __html: logo }}
-            onClick={() => openExtensionOptions()}
+            onClick={async () => openExtensionOptions()}
           />
           <DropdownButton
             disabled={!!inserting || !hasPermissions}
@@ -165,17 +136,19 @@ const Sidebar: React.FunctionComponent<
             id="add-extension-point"
             className="mr-2 Sidebar__actions__dropdown"
           >
-            {Object.values(ELEMENT_DEFINITIONS).map((element) => (
-              <DropdownEntry
-                key={element.elementType}
-                caption={element.label}
-                icon={element.icon}
-                beta={element.beta}
-                onClick={() => {
-                  addElement(element);
-                }}
-              />
-            ))}
+            {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
+              (element) => (
+                <DropdownEntry
+                  key={element.elementType}
+                  caption={element.label}
+                  icon={element.icon}
+                  beta={element.beta}
+                  onClick={() => {
+                    addElement(element);
+                  }}
+                />
+              )
+            )}
           </DropdownButton>
           <div className="my-auto">
             <Form.Check
@@ -186,8 +159,8 @@ const Sidebar: React.FunctionComponent<
                   : `Show unavailable`
               }
               defaultChecked={showAll}
-              onChange={(e: FormEvent<HTMLInputElement>) => {
-                setShowAll(e.currentTarget.checked);
+              onChange={(event: FormEvent<HTMLInputElement>) => {
+                setShowAll(event.currentTarget.checked);
               }}
             />
           </div>

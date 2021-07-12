@@ -117,15 +117,12 @@ export function mapArgs(
         // if we're returning the root service context, return the service itself
         // @ts-ignore: not sure why the "in" check isn't working
         return prop.__service;
-      } else {
-        return prop;
       }
-    } else {
-      return render(config, ctxt);
+      return prop;
     }
-  } else {
-    return config;
+    return render(config, ctxt);
   }
+  return config;
 }
 
 /**
@@ -151,9 +148,8 @@ export function missingProperties(
 export function inputProperties(inputSchema: Schema): SchemaProperties {
   if (typeof inputSchema === "object" && "properties" in inputSchema) {
     return inputSchema.properties;
-  } else {
-    return inputSchema as SchemaProperties;
   }
+  return inputSchema as SchemaProperties;
 }
 
 export const isChrome =

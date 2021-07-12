@@ -51,9 +51,8 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
   } catch (error) {
     if (deserializeError(error).name === "ComponentNotFoundError") {
       return "Component not detected";
-    } else {
-      return { error: error };
     }
+    return { error: error };
   }
 }
 
@@ -94,16 +93,14 @@ export const runReaderBlock = liftContentScript(
           srcUrl: root.getAttribute("src"),
           documentUrl: document.location.href,
         };
-      } else {
-        return {
-          selectionText: window.getSelection().toString(),
-          documentUrl: document.location.href,
-        };
       }
-    } else {
-      const reader = (await blockRegistry.lookup(id)) as IReader;
-      return reader.read(root);
+      return {
+        selectionText: window.getSelection().toString(),
+        documentUrl: document.location.href,
+      };
     }
+    const reader = (await blockRegistry.lookup(id)) as IReader;
+    return reader.read(root);
   }
 );
 
@@ -144,9 +141,8 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
       );
     }
     return base;
-  } else {
-    return {
-      error: "No element selected",
-    };
   }
+  return {
+    error: "No element selected",
+  };
 });

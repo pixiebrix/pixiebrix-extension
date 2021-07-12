@@ -16,16 +16,18 @@
  */
 
 /**
- * The script that get injected into the page
+ * The script that gets injected into the host page. Shares a JS context with the host page
  */
 
 import { v4 as uuidv4 } from "uuid";
 
+const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
 
 declare global {
   interface Window {
     [PAGESCRIPT_SYMBOL]?: string;
+    [JQUERY_WINDOW_PROP]?: unknown;
   }
 }
 
@@ -107,9 +109,8 @@ attachListener(DETECT_FRAMEWORK_VERSIONS, async () => {
   return detectLibraries();
 });
 
-// needs to be object because we want window to be a valid argument
-// eslint-disable-next-line @typescript-eslint/ban-types
 function readPathSpec(
+  // eslint-disable-next-line @typescript-eslint/ban-types -- object because we need to pass in window
   obj: object,
   pathSpec?: PathSpec,
   proxy: ReadProxy = noopProxy
@@ -130,11 +131,13 @@ function readPathSpec(
   for (const [key, pathOrObj] of Object.entries(pathSpec)) {
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
+      // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
       values[key] = getPropByPath(obj as { [prop: string]: unknown }, path, {
         args: args as object,
         proxy,
       });
     } else {
+      // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
       values[key] = getPropByPath(
         obj as { [prop: string]: unknown },
         pathOrObj,
@@ -148,7 +151,9 @@ function readPathSpec(
 attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
   const factory = () => {
     const values = readPathSpec(window, pathSpec);
-    return Object.values(values).every(isEmpty) ? undefined : values;
+    return Object.values(values).every((value) => isEmpty(value))
+      ? undefined
+      : values;
   };
   return awaitValue(factory, { waitMillis });
 });
@@ -178,9 +183,8 @@ async function read<TComponent>(
     });
     if (optional) {
       return {};
-    } else {
-      throw error;
     }
+    throw error;
   }
 
   let component: TComponent;
@@ -228,9 +232,16 @@ async function read<TComponent>(
 attachListener(
   GET_COMPONENT_DATA,
   async ({ framework, selector, ...options }: ReadPayload) => {
+    if (isEmpty(selector)) {
+      // Just warn here, as there's no harm in returning blank data value (e.g., when a load trigger is first
+      // added via the page editor)
+      console.warn("No selector provided");
+      return {};
+    }
+
     const adapter = adapters.get(framework) as ReadableComponentAdapter;
     if (!adapter) {
-      throw new Error(`No read adapter available for ${framework}`);
+      throw new Error(`No read adapter available for framework: ${framework}`);
     }
     return read(adapter, selector, options);
   }
@@ -239,6 +250,11 @@ attachListener(
 attachListener(
   SET_COMPONENT_DATA,
   ({ framework, selector, valueMap }: WritePayload) => {
+    if (isEmpty(selector)) {
+      // Throw error since this likely indicates a bug in a brick
+      throw new Error("No selector provided");
+    }
+
     const adapter = adapters.get(framework) as WriteableComponentAdapter;
     if (!adapter?.setData) {
       throw new Error(`No write adapter available for ${framework}`);
@@ -279,5 +295,7 @@ setTimeout(function () {
   document.dispatchEvent(new CustomEvent(CONNECT_EXTENSION, {}));
 }, 0);
 
-// Ensure $$jquery is available for testing selectors when debugging PixieBrix errors
-(window as any).$$jquery = jQuery;
+// Ensure jquery is available for testing selectors when debugging PixieBrix errors
+// Cast as any because we don't want to pollute namespace with TypeScript declaration
+// eslint-disable-next-line security/detect-object-injection
+window[JQUERY_WINDOW_PROP] = jQuery;

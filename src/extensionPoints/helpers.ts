@@ -174,9 +174,8 @@ function _initialize(
 ): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (isNativeCssSelector(selector)) {
     return mutationSelector(selector, target);
-  } else {
-    return pollSelector(selector, target, waitMillis);
   }
+  return pollSelector(selector, target, waitMillis);
 }
 
 /**
@@ -229,9 +228,8 @@ export function awaitElementOnce(
     ];
   } else if (rest.length === 0) {
     return [Promise.resolve($element), noop];
-  } else {
-    return awaitElementOnce(rest, $element);
   }
+  return awaitElementOnce(rest, $element);
 }
 
 /**

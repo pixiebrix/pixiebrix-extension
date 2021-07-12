@@ -57,13 +57,12 @@ const Entry: React.FunctionComponent<
           Add
         </Button>
       );
-    } else {
-      return (
-        <Button size="sm" variant="info" {...buttonProps} disabled>
-          Added
-        </Button>
-      );
     }
+    return (
+      <Button size="sm" variant="info" {...buttonProps} disabled>
+        Added
+      </Button>
+    );
   }, [onInstall, installed]);
 
   return (
