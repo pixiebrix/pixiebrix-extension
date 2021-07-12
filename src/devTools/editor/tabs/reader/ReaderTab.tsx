@@ -62,6 +62,7 @@ const ReaderEntry: React.FunctionComponent<{
   isDragDisabled: boolean;
   showDragHandle?: boolean;
   isActive: boolean;
+  isLocked: boolean;
 }> = ({
   reader,
   index,
@@ -70,6 +71,7 @@ const ReaderEntry: React.FunctionComponent<{
   isActive,
   onSelect,
   onRemove,
+  isLocked,
 }) => {
   const meta = "metadata" in reader ? reader.metadata : reader;
 
@@ -97,7 +99,7 @@ const ReaderEntry: React.FunctionComponent<{
             <div className="ReaderList__label">
               <div>{meta.name}</div>
             </div>
-            {onRemove && (
+            {onRemove && !isLocked && (
               <div className="ReaderList__actions">
                 <span role="button" onClick={onRemove} className="text-danger">
                   <FontAwesomeIcon icon={faTimes} />
@@ -127,6 +129,10 @@ const ReaderTab: React.FunctionComponent<{
     (ReaderReferenceFormState | ReaderFormState)[]
   >("readers");
 
+  const locked =
+    formValues.installed &&
+    !editable?.has(formValues.extensionPoint.metadata.id);
+
   const [active, setActive] = useState(0);
 
   const [blocks] = useAsyncState(async () => {
@@ -142,8 +148,7 @@ const ReaderTab: React.FunctionComponent<{
     return annotated.filter((x) => x.type === "reader").map((x) => x.block);
   }, []);
 
-  // safe because active is a number
-  // eslint-disable-next-line security/detect-object-injection
+  // eslint-disable-next-line security/detect-object-injection -- safe because active is a number
   const reader = readers[active];
 
   return (
@@ -169,7 +174,12 @@ const ReaderTab: React.FunctionComponent<{
                   }}
                   blocks={blocks ?? []}
                   renderButton={({ show }) => (
-                    <Button onClick={show} variant="info" size="sm">
+                    <Button
+                      disabled={locked}
+                      onClick={show}
+                      variant="info"
+                      size="sm"
+                    >
                       <FontAwesomeIcon icon={faBookReader} /> Add Existing
                     </Button>
                   )}
@@ -178,6 +188,7 @@ const ReaderTab: React.FunctionComponent<{
                   <Button
                     variant="info"
                     size="sm"
+                    disabled={locked}
                     onClick={() => {
                       const count = readers.length;
                       const reservedIds = readers.map((x) => x.metadata.id);
@@ -221,8 +232,9 @@ const ReaderTab: React.FunctionComponent<{
                             setActive(Math.max(0, index - 1));
                             remove(index);
                           }}
-                          isDragDisabled={readers.length === 1}
+                          isDragDisabled={locked || readers.length === 1}
                           isActive={active === index}
+                          isLocked={locked}
                         />
                       ))}
 
@@ -233,6 +245,7 @@ const ReaderTab: React.FunctionComponent<{
                           reader={CONTEXT_MENU_READER}
                           onSelect={() => setActive(readers.length)}
                           isActive={active === readers.length}
+                          isLocked={locked}
                         />
                       )}
                     </ListGroup>
@@ -251,6 +264,7 @@ const ReaderTab: React.FunctionComponent<{
                   editable={editable}
                   available={available}
                   readerIndex={active}
+                  isLocked={locked}
                 />
               ) : (
                 <ReaderBlockConfig

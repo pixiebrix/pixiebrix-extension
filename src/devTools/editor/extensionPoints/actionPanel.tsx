@@ -54,7 +54,7 @@ import {
 import { BlockPipeline } from "@/blocks/combinators";
 import React from "react";
 
-export const wizard: WizardStep[] = [
+const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
   { step: "Data", Component: ReaderTab },
@@ -238,6 +238,7 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
+  wizard,
   insertModeHelp: (
     <div>
       <p>

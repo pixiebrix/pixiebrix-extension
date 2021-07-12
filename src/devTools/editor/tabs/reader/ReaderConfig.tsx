@@ -232,7 +232,8 @@ const ReaderConfig: React.FunctionComponent<{
   readerIndex: number;
   editable: Set<string>;
   available: boolean;
-}> = ({ readerIndex, editable, available }) => {
+  isLocked: boolean;
+}> = ({ readerIndex, editable, available, isLocked }) => {
   const {
     port,
     tabState: { meta },
@@ -249,8 +250,7 @@ const ReaderConfig: React.FunctionComponent<{
     error: undefined,
   });
 
-  // only passing number in
-  // eslint-disable-next-line security/detect-object-injection
+  // eslint-disable-next-line security/detect-object-injection -- only passing number in
   const reader = values.readers[readerIndex];
 
   if (!isCustomReader(reader)) {
@@ -258,8 +258,8 @@ const ReaderConfig: React.FunctionComponent<{
   }
 
   const locked = useMemo(
-    () => values.installed && !editable?.has(reader.metadata.id),
-    [editable, values.installed, reader.metadata.id]
+    () => (values.installed && !editable?.has(reader.metadata.id)) || isLocked,
+    [editable, values.installed, reader.metadata.id, isLocked]
   );
 
   const labelRenderer = useLabelRenderer();
@@ -391,7 +391,9 @@ const ReaderConfig: React.FunctionComponent<{
                   Extension not available on page
                 </span>
               )}
-              {searchResults !== undefined ? (
+              {searchResults === undefined ? (
+                <GridLoader />
+              ) : (
                 <JSONTree
                   data={searchResults}
                   labelRenderer={labelRenderer}
@@ -400,8 +402,6 @@ const ReaderConfig: React.FunctionComponent<{
                   hideRoot
                   sortObjectKeys
                 />
-              ) : (
-                <GridLoader />
               )}
             </div>
           </Col>
@@ -501,7 +501,9 @@ const ReaderConfig: React.FunctionComponent<{
                     Extension not available on page
                   </span>
                 )}
-                {searchResults !== undefined ? (
+                {searchResults === undefined ? (
+                  <GridLoader />
+                ) : (
                   <JSONTree
                     data={searchResults}
                     labelRenderer={labelRenderer}
@@ -510,18 +512,16 @@ const ReaderConfig: React.FunctionComponent<{
                     hideRoot
                     sortObjectKeys
                   />
-                ) : (
-                  <GridLoader />
                 )}
               </div>
             </Col>
             <Col md={6} className="ReaderData">
               <span>Inferred Schema</span>
               <div className="overflow-auto h-100 w-100">
-                {schema !== undefined ? (
-                  <SchemaTree schema={schema} />
-                ) : (
+                {schema === undefined ? (
                   <GridLoader />
+                ) : (
+                  <SchemaTree schema={schema} />
                 )}
               </div>
             </Col>

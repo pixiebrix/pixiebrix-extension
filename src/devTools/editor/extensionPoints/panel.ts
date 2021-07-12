@@ -58,7 +58,7 @@ import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { BlockPipeline } from "@/blocks/combinators";
 
-export const wizard: WizardStep[] = [
+const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
   { step: "Data", Component: ReaderTab },
@@ -281,6 +281,7 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   icon: faWindowMaximize,
   baseClass: PanelExtensionPoint,
   selectNativeElement: nativeOperations.insertPanel,
+  wizard,
   fromNativeElement,
   asDynamicElement,
   fromExtensionPoint,

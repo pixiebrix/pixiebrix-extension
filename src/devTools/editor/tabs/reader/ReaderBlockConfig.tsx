@@ -77,7 +77,7 @@ export const ReaderBlockForm: React.FunctionComponent<{
       try {
         output = await runReaderBlock(port, {
           id: reader.id,
-          rootSelector: testSelector !== "" ? testSelector : undefined,
+          rootSelector: testSelector === "" ? undefined : testSelector,
         });
         if (!isMounted()) return;
         setOutput({ output, error: undefined });
@@ -98,7 +98,7 @@ export const ReaderBlockForm: React.FunctionComponent<{
     if (debouncedQuery === "" || output == null) {
       return output;
     }
-    return searchData(query, output);
+    return searchData(debouncedQuery, output);
   }, [debouncedQuery, output]);
 
   const copyData = useCallback(() => {
@@ -193,7 +193,9 @@ export const ReaderBlockForm: React.FunctionComponent<{
                   Extension not available on page
                 </span>
               )}
-              {searchResults !== undefined ? (
+              {searchResults === undefined ? (
+                <GridLoader />
+              ) : (
                 <JSONTree
                   data={searchResults}
                   labelRenderer={labelRenderer}
@@ -202,8 +204,6 @@ export const ReaderBlockForm: React.FunctionComponent<{
                   hideRoot
                   sortObjectKeys
                 />
-              ) : (
-                <GridLoader />
               )}
             </div>
           </Col>
@@ -230,8 +230,6 @@ const ReaderBlockConfig: React.FunctionComponent<{
     // eslint-disable-next-line security/detect-object-injection -- readerIndex is a number
     const reader = values.readers[readerIndex];
 
-    // OK to return the promise directly
-    // noinspection ES6MissingAwait
     return blockRegistry.lookup(reader.metadata.id) as Promise<IReader>;
   }, [readerIndex, values.readers]);
 

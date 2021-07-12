@@ -21,6 +21,7 @@ import { IExtension, Metadata, Schema, ServiceDependency } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 
 export type ElementType =
   | "menuItem"
@@ -205,4 +206,6 @@ export interface ElementConfig<
    * Help text to show in the generic insertion-mode pane
    */
   readonly insertModeHelp?: React.ReactNode;
+
+  readonly wizard: WizardStep[];
 }

@@ -53,7 +53,7 @@ import { Menus } from "webextension-polyfill-ts";
 import { BlockPipeline } from "@/blocks/combinators";
 import React from "react";
 
-export const wizard: WizardStep[] = [
+const wizard: WizardStep[] = [
   { step: "Menu Item", Component: MenuItemTab },
   { step: "Location", Component: AvailabilityTab },
   { step: "Data", Component: ReaderTab },
@@ -258,6 +258,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
+  wizard,
   insertModeHelp: (
     <div>
       <p>

@@ -324,9 +324,13 @@ export function baseSelectExtensionPoint(
     kind: "extensionPoint",
     metadata: {
       id: metadata.id,
+      // The server requires the version to save the brick, even though it's not marked as required
+      // in the front-end schemas
       version: metadata.version ?? "1.0.0",
       name: metadata.name,
-      description: metadata.description,
+      // The server requires the description to save the brick, even though it's not marked as required
+      // in the front-end schemas
+      description: metadata.description ?? "Created using the Page Editor",
     },
   };
 }

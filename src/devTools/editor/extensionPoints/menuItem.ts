@@ -58,7 +58,7 @@ import {
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { BlockPipeline } from "@/blocks/combinators";
 
-export const wizard: WizardStep[] = [
+const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
   { step: "Data", Component: ReaderTab },
@@ -263,6 +263,7 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   icon: faMousePointer,
   baseClass: MenuItemExtensionPoint,
   selectNativeElement: nativeOperations.insertButton,
+  wizard,
   fromExtensionPoint,
   fromNativeElement,
   asDynamicElement,

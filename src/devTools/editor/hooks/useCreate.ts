@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormState, editorSlice } from "@/devTools/editor/editorSlice";
+import { editorSlice, FormState } from "@/devTools/editor/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback, useState } from "react";
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import axios, { AxiosError } from "axios";
 import { makeURL } from "@/hooks/fetch";
 import { dump } from "js-yaml";
 import { getExtensionToken } from "@/auth/token";
@@ -46,21 +46,30 @@ export interface EditablePackage {
   name: string;
 }
 
-async function makeRequestConfig(
-  packageUUID: string
-): Promise<AxiosRequestConfig> {
-  if (packageUUID) {
-    return {
-      url: await makeURL(`api/bricks/${packageUUID}/`),
-      method: "put",
-      headers: { Authorization: `Token ${await getExtensionToken()}` },
-    };
-  }
-  return {
-    url: await makeURL("api/bricks/"),
-    method: "post",
+async function upsertConfig(
+  packageUUID: string | null,
+  kind: "reader" | "extensionPoint",
+  config: unknown
+): Promise<void> {
+  const common = {
+    data: { config: configToYaml(config), kind },
     headers: { Authorization: `Token ${await getExtensionToken()}` },
   };
+
+  if (packageUUID) {
+    await axios({
+      url: await makeURL(`api/bricks/${packageUUID}/`),
+      method: "put",
+      ...common,
+    });
+    return;
+  }
+
+  await axios({
+    url: await makeURL("api/bricks/"),
+    method: "post",
+    ...common,
+  });
 }
 
 function selectErrorMessage(error: unknown): string {
@@ -127,6 +136,7 @@ type CreateCallback = (
 export function useCreate(): CreateCallback {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
+  // Which reader ids have been saved in this session. If a reader has been saved,
   const [savedReaders, setSavedReaders] = useState<string[]>([]);
 
   return useCallback(
@@ -154,7 +164,7 @@ export function useCreate(): CreateCallback {
         } catch (error) {
           // continue to allow saving (because there's a workaround)
           reportError(error);
-          console.error("Error  checking/enabling permissions", { error });
+          console.error("Error checking/enabling permissions", { error });
           addToast(
             `An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page`,
             {
@@ -173,76 +183,63 @@ export function useCreate(): CreateCallback {
           }
         );
 
-        // Save the readers first
-        try {
-          const readerConfigs = makeExtensionReaders(element);
-          for (const readerConfig of readerConfigs) {
-            // FIXME: check for userscope here to determine editability?
-            if (isCustomReader(readerConfig)) {
-              console.debug("saving reader", {
-                editablePackages,
-                readerConfig,
-                savedReaders,
-              });
+        const isEditable = editablePackages.some(
+          (x) => x.name === element.extensionPoint.metadata.id
+        );
+        const isLocked = element.installed && !isEditable;
+
+        if (!isLocked) {
+          try {
+            // Save custom readers first because the extension point definition will reference them
+            const customReaders = makeExtensionReaders(
+              element
+            ).filter((reader) => isCustomReader(reader));
+            for (const customReader of customReaders) {
               // savedReaders is to handle case where save failed for the foundation, so subsequent saves needs
               // to update the reader
               const packageId =
                 element.installed ||
-                savedReaders.includes(readerConfig.metadata.id)
-                  ? // bricks endpoint uses "name" instead of id
-                    editablePackages.find(
-                      (x) => x.name === readerConfig.metadata.id
+                savedReaders.includes(customReader.metadata.id)
+                  ? editablePackages.find(
+                      // bricks endpoint uses "name" instead of id
+                      (x) => x.name === customReader.metadata.id
                     )?.id
                   : null;
 
-              await axios({
-                ...(await makeRequestConfig(packageId)),
-                data: { config: configToYaml(readerConfig), kind: "reader" },
-              });
+              await upsertConfig(packageId, "reader", customReader);
 
               setSavedReaders((prev) =>
-                uniq([...prev, readerConfig.metadata.id])
+                uniq([...prev, customReader.metadata.id])
               );
             }
+          } catch (error) {
+            onStepError(error, "saving reader definition");
+            return;
           }
-        } catch (error) {
-          onStepError(error, "saving reader definition");
-          return;
-        }
 
-        // Save the foundation second, which depends on the reader
-        if (
-          !element.installed ||
-          editablePackages.some(
-            (x) => x.name === element.extensionPoint.metadata.id
-          )
-        ) {
           try {
             const extensionPointConfig = adapter.selectExtensionPoint(element);
             const packageId = element.installed
               ? editablePackages.find(
+                  // bricks endpoint uses "name" instead of id
                   (x) => x.name === extensionPointConfig.metadata.id
                 )?.id
               : null;
 
-            console.debug("extensionPointConfig", { extensionPointConfig });
-
-            await axios({
-              ...(await makeRequestConfig(packageId)),
-              data: {
-                config: configToYaml(extensionPointConfig),
-                kind: "extensionPoint",
-              },
-            });
-
-            reportEvent("PageEditorCreate", {
-              type: element.type,
-            });
+            await upsertConfig(
+              packageId,
+              "extensionPoint",
+              extensionPointConfig
+            );
           } catch (error) {
             onStepError(error, "saving foundation");
             return;
           }
         }
+
+        reportEvent("PageEditorCreate", {
+          type: element.type,
+        });
 
         try {
           dispatch(saveExtension(adapter.selectExtension(element)));
@@ -257,8 +254,6 @@ export function useCreate(): CreateCallback {
           return;
         }
 
-        setSubmitting(false);
-
         await Promise.all([
           blockRegistry.fetch(),
           extensionPointRegistry.fetch(),
@@ -270,6 +265,8 @@ export function useCreate(): CreateCallback {
           appearance: "error",
           autoDismiss: true,
         });
+      } finally {
+        setSubmitting(false);
       }
     },
     [dispatch, addToast, setSavedReaders, savedReaders]
