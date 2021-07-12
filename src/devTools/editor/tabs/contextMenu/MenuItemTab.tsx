@@ -24,20 +24,22 @@ const MenuItemTab: React.FunctionComponent<{
 }> = ({ eventKey = "menuItem" }) => {
   const captionInput = useRef<HTMLInputElement>(null);
 
-  const labelHelpers = useField<string>("label")[2];
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify skipped values
+  const [_labelValue, _labelMeta, labelHelpers] = useField<string>("label");
+
+  const { current: currentCaption } = captionInput;
 
   const insertSnippet = useCallback(
     (snippet) => {
-      const { current } = captionInput;
-      const pos = current.selectionStart;
-      current.setRangeText(snippet, pos, pos);
-      current.focus();
+      const pos = currentCaption.selectionStart;
+      currentCaption.setRangeText(snippet, pos, pos);
+      currentCaption.focus();
 
       // Trigger a DOM 'input' event
       const event = new Event("input", { bubbles: true });
-      current.dispatchEvent(event);
+      currentCaption.dispatchEvent(event);
     },
-    [captionInput.current]
+    [currentCaption]
   );
 
   return (

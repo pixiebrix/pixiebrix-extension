@@ -29,6 +29,10 @@ import {
   UnsavedChangesIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
 
+/**
+ * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
+ * @see InstalledEntry
+ */
 const DynamicEntry: React.FunctionComponent<{
   item: FormState;
   port: Runtime.Port;
@@ -52,8 +56,8 @@ const DynamicEntry: React.FunctionComponent<{
     <ListGroup.Item
       active={item.uuid == activeElement}
       key={`dynamic-${item.uuid}`}
-      onMouseEnter={() => showOverlay(item.uuid, true)}
-      onMouseLeave={() => showOverlay(item.uuid, false)}
+      onMouseEnter={async () => showOverlay(item.uuid, true)}
+      onMouseLeave={async () => showOverlay(item.uuid, false)}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
       style={{ cursor: "pointer" }}
     >

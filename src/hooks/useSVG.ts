@@ -15,19 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser } from "webextension-polyfill-ts";
+import { useState } from "react";
+import useAsyncEffect from "use-async-effect";
+import fetchSVG from "@/icons/svgElementFromUrl";
 
-export default async function fetchSVG(
-  src: string
-): Promise<JQuery<SVGElement>> {
-  const extensionPrefix = browser.runtime.getURL("/");
-  if (!src.startsWith(extensionPrefix)) {
-    throw new Error(
-      "fetchSVG can only be used to fetch icons bundled with the extension"
-    );
-  }
-  const response = await fetch(src);
-  const svg = await response.text();
-  // There might also be comment nodes, so they need to be filtered out
-  return $<SVGElement>(svg).filter("svg");
+function useSVG(logoUrl: string): string {
+  const [logo, setLogo] = useState("");
+
+  useAsyncEffect(
+    async (isMounted) => {
+      const $icon = await fetchSVG(logoUrl);
+      if (!isMounted()) {
+        return;
+      }
+      setLogo($icon.get(0).outerHTML);
+    },
+    [setLogo]
+  );
+
+  return logo;
 }
+
+export default useSVG;

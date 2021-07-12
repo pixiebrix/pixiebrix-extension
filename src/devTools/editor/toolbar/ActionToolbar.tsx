@@ -18,11 +18,12 @@
 import React from "react";
 import { IExtension } from "@/core";
 import { FormState } from "@/devTools/editor/editorSlice";
-import { useRemove, useReset } from "@/devTools/editor/hooks/editorHooks";
 import { useFormikContext } from "formik";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHistory, faSave, faTrash } from "@fortawesome/free-solid-svg-icons";
+import useRemove from "@/devTools/editor/hooks/useRemove";
+import useReset from "@/devTools/editor/hooks/useReset";
 
 const ActionToolbar: React.FunctionComponent<{
   installed: IExtension[];
@@ -43,7 +44,7 @@ const ActionToolbar: React.FunctionComponent<{
           <FontAwesomeIcon icon={faHistory} /> Reset
         </Button>
       )}
-      {/* Remove is always available */}
+      {/* Remove is always available and enabled */}
       <Button variant="danger" size="sm" onClick={remove}>
         <FontAwesomeIcon icon={faTrash} /> Remove
       </Button>

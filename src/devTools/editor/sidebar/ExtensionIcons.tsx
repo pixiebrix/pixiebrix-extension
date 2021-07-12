@@ -17,17 +17,18 @@
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ICON_MAP } from "@/devTools/editor/extensionPoints/adapter";
+import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import {
   faEyeSlash,
   faPuzzlePiece,
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
+import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
-export const ExtensionIcon: React.FunctionComponent<{ type: string }> = ({
+export const ExtensionIcon: React.FunctionComponent<{ type: ElementType }> = ({
   type,
 }) => {
-  return <FontAwesomeIcon icon={ICON_MAP.get(type) ?? faPuzzlePiece} />;
+  return <FontAwesomeIcon icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece} />;
 };
 
 export const NotAvailableIcon: React.FunctionComponent = () => (
@@ -35,5 +36,5 @@ export const NotAvailableIcon: React.FunctionComponent = () => (
 );
 
 export const UnsavedChangesIcon: React.FunctionComponent = () => (
-  <FontAwesomeIcon icon={faSave} title="Has unsaved changes" />
+  <FontAwesomeIcon icon={faSave} title="Unsaved changes" />
 );

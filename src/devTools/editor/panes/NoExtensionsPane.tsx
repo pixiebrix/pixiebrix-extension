@@ -38,7 +38,7 @@ const NoExtensionsPane: React.FunctionComponent<{
 
         <p>
           Check the &ldquo;Show {unavailableCount ?? 1} unavailable&rdquo; box
-          to list extensions that are installed but aren&apos;t available for
+          to list extensions that are activated but aren&apos;t available on
           this page.
         </p>
 

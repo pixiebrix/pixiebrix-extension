@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { IBlock } from "@/core";
 import { useFormikContext } from "formik";
-import { ElementType, FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { Card } from "react-bootstrap";
 import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,6 +31,7 @@ import {
   faTable,
   faWindowRestore,
 } from "@fortawesome/free-solid-svg-icons";
+import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
 type Recommendation =
   | {

@@ -33,16 +33,16 @@ import GridLoader from "react-spinners/GridLoader";
 import BlockModal from "@/components/fields/BlockModal";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { BlockType, getType } from "@/blocks/util";
-import { ElementType } from "@/devTools/editor/editorSlice";
 import BlockEntry from "@/devTools/editor/tabs/effect/BlockEntry";
 import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
 import QuickAdd from "@/devTools/editor/tabs/effect/QuickAdd";
+import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
 async function filterBlocks(
   blocks: IBlock[],
   { excludeTypes = [] }: { excludeTypes: BlockType[] }
 ): Promise<IBlock[]> {
-  const types = await Promise.all(blocks.map((block) => getType(block)));
+  const types = await Promise.all(blocks.map(async (block) => getType(block)));
   // exclude null to exclude foundations
   return zip(blocks, types)
     .filter(([, type]) => type != null && !excludeTypes.includes(type))

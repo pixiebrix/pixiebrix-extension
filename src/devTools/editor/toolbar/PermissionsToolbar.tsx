@@ -61,7 +61,7 @@ const PermissionsToolbar: React.FunctionComponent<{
         return;
       }
 
-      const { definition: factory } = ADAPTERS.get(element.type);
+      const { asDynamicElement: factory } = ADAPTERS.get(element.type);
       const { extension, extensionPoint: extensionPointConfig } = factory(
         element
       );
