@@ -71,9 +71,8 @@ export function getEmberApplication(): EmberApplication {
     return namespaces.find(
       (namespace) => namespace instanceof (Ember.Application as any)
     ) as EmberApplication;
-  } else {
-    return undefined;
   }
+  return undefined;
 }
 
 export function getEmberComponentById(componentId: string): EmberObject {
@@ -114,13 +113,11 @@ export function getProp(value: any, prop: string | number): unknown {
       return getProp(value.content, prop);
     } else if (typeof prop === "string" && isGetter(value, prop)) {
       return value[prop]();
-    } else {
-      return value[prop];
     }
-  } else {
-    // ignore functions and symbols
-    return undefined;
+    return value[prop];
   }
+  // ignore functions and symbols
+  return undefined;
 }
 
 function pickExternalProps(obj: object): object {
@@ -158,13 +155,11 @@ export function readEmberValueFromCache(
     } else if (Array.isArray(value.content)) {
       // consider arrays a traverse because knowing the property name by itself isn't useful for anything
       return value.content.map(traverse);
-    } else {
-      return mapValues(pickExternalProps(value), recurse);
     }
-  } else {
-    // ignore functions and symbols
-    return undefined;
+    return mapValues(pickExternalProps(value), recurse);
   }
+  // ignore functions and symbols
+  return undefined;
 }
 
 function isManaged(node: Node): boolean {

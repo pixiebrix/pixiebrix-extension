@@ -58,13 +58,12 @@ async function makeRequestConfig(
       method: "put",
       headers: { Authorization: `Token ${await getExtensionToken()}` },
     };
-  } else {
-    return {
-      url: await makeURL("api/bricks/"),
-      method: "post",
-      headers: { Authorization: `Token ${await getExtensionToken()}` },
-    };
   }
+  return {
+    url: await makeURL("api/bricks/"),
+    method: "post",
+    headers: { Authorization: `Token ${await getExtensionToken()}` },
+  };
 }
 
 function selectErrorMessage(error: unknown): string {

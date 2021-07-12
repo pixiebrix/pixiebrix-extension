@@ -132,9 +132,8 @@ const Editor: React.FunctionComponent = () => {
           showSupport={() => setShowChat(true)}
         />
       );
-    } else {
-      return <WelcomePane showSupport={() => setShowChat(true)} />;
     }
+    return <WelcomePane showSupport={() => setShowChat(true)} />;
   }, [
     beta,
     cancelInsert,

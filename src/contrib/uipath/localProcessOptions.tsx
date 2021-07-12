@@ -156,9 +156,8 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   >(async () => {
     if (robotAvailable) {
       return getUiPathProcesses(port);
-    } else {
-      return [];
     }
+    return [];
   }, [robotAvailable]);
 
   const process = useMemo(() => {

@@ -77,7 +77,6 @@ export async function handleRejection(
       `Permission denied, re-authenticate with Google and try again. Details: ${error.result.error?.message}`,
       status
     );
-  } else {
-    return new Error(error.result.error?.message ?? "Unknown error");
   }
+  return new Error(error.result.error?.message ?? "Unknown error");
 }

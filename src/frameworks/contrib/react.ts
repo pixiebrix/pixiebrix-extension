@@ -116,9 +116,8 @@ export function findReactComponent(node: Node, traverseUp = 0): Fiber {
     const owner = (x: LegacyInstance) => x._currentElement._owner;
     const fiber = traverse(owner, owner(domFiber), traverseUp);
     return fiber._instance as Fiber;
-  } else {
-    return traverse(getComponentFiber, getComponentFiber(domFiber), traverseUp);
   }
+  return traverse(getComponentFiber, getComponentFiber(domFiber), traverseUp);
 }
 
 export class ReactRootVisitor implements RootInstanceVisitor<RootInstance> {

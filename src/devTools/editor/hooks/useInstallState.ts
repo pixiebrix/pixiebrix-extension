@@ -45,9 +45,8 @@ function useInstallState(
   const [installedIds] = useAsyncState(async () => {
     if (meta) {
       return getInstalledExtensionPointIds(port);
-    } else {
-      return [];
     }
+    return [];
   }, [port, navSequence, meta]);
 
   const [availableDynamicIds] = useAsyncState(async () => {
@@ -62,9 +61,8 @@ function useInstallState(
           .filter(([, available]) => available)
           .map(([extension]) => extension.uuid)
       );
-    } else {
-      return new Set<string>();
     }
+    return new Set<string>();
   }, [
     port,
     meta,
@@ -83,12 +81,10 @@ function useInstallState(
         return installed.filter(
           (x) => !installedIds.includes(x.extensionPointId)
         ).length;
-      } else {
-        return null;
       }
-    } else {
-      return installed?.length;
+      return null;
     }
+    return installed?.length;
   }, [installed, installedIds, meta]);
 
   return { installedIds, availableDynamicIds, unavailableCount };
