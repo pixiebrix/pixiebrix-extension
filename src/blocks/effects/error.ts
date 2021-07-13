@@ -15,21 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./logger";
-export * from "./notification";
-export * from "./redirectPage";
-export * from "./clipboard";
-export * from "./forms";
-export * from "./tabs";
-export * from "./highlight";
-export * from "./vue";
-export * from "./event";
-export * from "./wait";
-export * from "./sound";
-export * from "./alert";
-export * from "./pageState";
-export * from "./hide";
-export * from "./exportCSV";
-export * from "./sidebar";
-export * from "./cancel";
-export * from "./error";
+import { Effect } from "@/types";
+import { BlockArg, Schema } from "@/core";
+import { registerBlock } from "@/blocks/registry";
+import { BusinessError } from "@/errors";
+
+export class ErrorEffect extends Effect {
+  constructor() {
+    super(
+      "@pixiebrix/error",
+      "Raises a business error",
+      "Raise a business error to end the flow"
+    );
+  }
+
+  inputSchema: Schema = {
+    type: "object",
+
+    properties: {
+      message: {
+        type: "string",
+        description: "Optional error message",
+      },
+    },
+  };
+
+  async effect({ message }: BlockArg): Promise<void> {
+    throw new BusinessError(message ?? "Unknown business error");
+  }
+}
+
+registerBlock(new ErrorEffect());
