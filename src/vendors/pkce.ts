@@ -50,12 +50,9 @@ export function generateVerifier(prefix?: string): string {
 export function computeChallenge(str: string): PromiseLike<any> {
   var buffer = new TextEncoder().encode(str);
   return crypto.subtle.digest("SHA-256", buffer).then(function (arrayBuffer) {
-    // Works in practice because fromCharCode just needs to be able to iterate over the values
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
-    var hash = String.fromCharCode.apply(
-      null,
-      [...new Uint8Array(arrayBuffer)]
-    );
+    var hash = String.fromCharCode.apply(null, [
+      ...new Uint8Array(arrayBuffer),
+    ]);
     var b64u = stringToBase64Url(hash); // url-safe base64 variant
     return b64u;
   });
