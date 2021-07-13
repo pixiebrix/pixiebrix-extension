@@ -24,8 +24,8 @@ export class ErrorEffect extends Effect {
   constructor() {
     super(
       "@pixiebrix/error",
-      "Raises a business error",
-      "Raise a business error to end the flow"
+      "Raise business error",
+      "Raise/throw a business error"
     );
   }
 
