@@ -22,6 +22,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { InputValidationError } from "@/blocks/errors";
 import { OutputUnit } from "@cfworker/json-schema";
+import { isErrorObject } from "@/errors";
 
 export class JQTransformer extends Transformer {
   constructor() {
@@ -64,8 +65,8 @@ export class JQTransformer extends Transformer {
     logger.debug("Running jq transform", { filter, data, ctxt, input });
     try {
       return await jq.promised.json(input, filter);
-    } catch (error) {
-      if (error.message.includes("compile error")) {
+    } catch (error: unknown) {
+      if (isErrorObject(error) && error.message.includes("compile error")) {
         const validationErrors: OutputUnit[] = [
           {
             keyword: "filter",
