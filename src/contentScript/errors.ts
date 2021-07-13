@@ -20,7 +20,7 @@ import { showConnectionLost } from "@/contentScript/connection";
 import { reportError } from "@/telemetry/logging";
 
 function addErrorListeners(): void {
-  window.addEventListener("error", function (error) {
+  window.addEventListener("error", function (error: any) {
     if (isConnectionError(error)) {
       showConnectionLost();
     } else {
