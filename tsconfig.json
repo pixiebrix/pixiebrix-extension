@@ -6,6 +6,7 @@
     "target": "es2020",
     "jsx": "react",
     "allowJs": false,
+    "strictBindCallApply": true,
     "resolveJsonModule": true,
     "moduleResolution": "Node",
     "noUnusedLocals": true,
