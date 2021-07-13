@@ -75,6 +75,7 @@ it("can handle unauthenticated request error", async () => {
   try {
     await proxyService(null, requestConfig);
     fail("Expected proxyService to throw an error");
+    // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     expect(error).toBeInstanceOf(Error);
     const { status } = error.response;
@@ -110,6 +111,7 @@ it("can proxy remote error", async () => {
   try {
     await proxyService(proxyServiceConfig, requestConfig);
     fail("Expected proxyService to throw an error");
+    // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     expect(error).toBeInstanceOf(Error);
     const { status, statusText } = error.cause.response;
@@ -124,6 +126,7 @@ it("handle proxy error", async () => {
   try {
     await proxyService(proxyServiceConfig, requestConfig);
     fail("Expected proxyService to throw an error");
+    // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     expect(error).toBeInstanceOf(Error);
     expect(error.message).toEqual(

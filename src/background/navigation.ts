@@ -27,7 +27,7 @@ async function historyListener(
       { tabId: details.tabId, frameId: details.frameId },
       {}
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn("Error notifying page navigation", error);
   }
 }

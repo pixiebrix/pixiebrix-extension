@@ -58,7 +58,7 @@ export const createTab = liftBackground(
           ],
         },
       })) as BatchUpdateSpreadsheetResponse;
-    } catch (error) {
+    } catch (error: unknown) {
       throw await handleRejection(token, error);
     }
   }
@@ -78,7 +78,7 @@ export const appendRows = liftBackground(
           values,
         },
       })) as AppendValuesResponse;
-    } catch (error) {
+    } catch (error: unknown) {
       throw await handleRejection(token, error);
     }
   }
@@ -95,7 +95,7 @@ export const batchUpdate = liftBackground(
           requests,
         },
       })) as BatchUpdateSpreadsheetResponse;
-    } catch (error) {
+    } catch (error: unknown) {
       throw await handleRejection(token, error);
     }
   }
@@ -119,7 +119,7 @@ export const batchGet = liftBackground(
           }
         })
       );
-    } catch (error) {
+    } catch (error: unknown) {
       throw await handleRejection(token, error);
     }
   }
@@ -169,7 +169,7 @@ export async function getSheetProperties(
       throw new Error("Unknown error fetching spreadsheet");
     }
     return spreadsheet.properties;
-  } catch (error) {
+  } catch (error: unknown) {
     throw await handleRejection(token, error);
   }
 }
@@ -204,7 +204,7 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
       throw new Error("Unknown error fetching spreadsheet");
     }
     return spreadsheet.sheets.map((x) => x.properties.title);
-  } catch (error) {
+  } catch (error: unknown) {
     throw await handleRejection(token, error);
   }
 }

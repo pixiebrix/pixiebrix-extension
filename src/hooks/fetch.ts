@@ -92,8 +92,8 @@ export function useFetch<TData>(
           const data = (await fetch(relativeOrAbsoluteUrl)) as TData;
           if (!isMounted()) return;
           setData(data);
-        } catch (error) {
-          console.exception(error);
+        } catch (error: unknown) {
+          console.error(error);
           if (isMounted()) {
             addToast(`An error occurred fetching data from the server`, {
               appearance: "error",

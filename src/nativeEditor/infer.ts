@@ -208,7 +208,7 @@ function commonButtonStructure(
 
   try {
     setCommonAttrs($common, $items);
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof SkipElement) {
       // Shouldn't happen at the top level
       return [$(), currentCaptioned];
@@ -509,7 +509,7 @@ export function inferSelectors(
   const makeSelector = (allowed: css_selector_type[]) => {
     try {
       return safeCssSelector(element, allowed, root);
-    } catch (error) {
+    } catch (error: unknown) {
       console.warn("Selector inference failed", {
         element,
         allowed,

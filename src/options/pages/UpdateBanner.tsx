@@ -28,7 +28,7 @@ const UpdateBanner: React.FunctionComponent = () => {
     try {
       const { installed, available } = await getAvailableVersion();
       return available && installed !== available;
-    } catch (error) {
+    } catch (error: unknown) {
       reportError(error);
       return false;
     }

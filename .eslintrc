@@ -40,6 +40,8 @@
     "no-else-return": "error",
     "no-negated-condition": "warn",
     "no-useless-return": "error",
+    "prefer-promise-reject-errors": "error",
+    "@typescript-eslint/no-implicit-any-catch": "error",
 
     "@typescript-eslint/no-unused-vars": [
       "error",
@@ -122,6 +124,12 @@
     "src/support.js"
   ],
   "overrides": [
+    {
+      "files": ["*.js"],
+      "rules": {
+        "@typescript-eslint/no-implicit-any-catch": "off"
+      }
+    },
     {
       "files": [
         "webpack.*.js",

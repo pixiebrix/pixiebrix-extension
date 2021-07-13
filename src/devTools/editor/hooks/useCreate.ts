@@ -161,7 +161,7 @@ export function useCreate(): CreateCallback {
 
         try {
           await ensurePermissions(element, addToast);
-        } catch (error) {
+        } catch (error: unknown) {
           // continue to allow saving (because there's a workaround)
           reportError(error);
           console.error("Error checking/enabling permissions", { error });
@@ -212,7 +212,7 @@ export function useCreate(): CreateCallback {
                 uniq([...prev, customReader.metadata.id])
               );
             }
-          } catch (error) {
+          } catch (error: unknown) {
             onStepError(error, "saving reader definition");
             return;
           }
@@ -231,7 +231,7 @@ export function useCreate(): CreateCallback {
               "extensionPoint",
               extensionPointConfig
             );
-          } catch (error) {
+          } catch (error: unknown) {
             onStepError(error, "saving foundation");
             return;
           }
@@ -249,7 +249,7 @@ export function useCreate(): CreateCallback {
             appearance: "success",
             autoDismiss: true,
           });
-        } catch (error) {
+        } catch (error: unknown) {
           onStepError(error, "saving extension");
           return;
         }
@@ -258,7 +258,7 @@ export function useCreate(): CreateCallback {
           blockRegistry.fetch(),
           extensionPointRegistry.fetch(),
         ]);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error saving extension", { error });
         reportError(error);
         addToast(`Error saving extension: ${error.toString()}`, {

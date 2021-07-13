@@ -245,7 +245,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       this.extensions.map(async (extension) => {
         try {
           await this.registerExtension(extension);
-        } catch (error) {
+        } catch (error: unknown) {
           reportError(error, {
             deploymentId: extension._deployment?.id,
             extensionPointId: extension.extensionPointId,

@@ -16,6 +16,7 @@
  */
 
 import chromeP from "webext-polyfill-kinda";
+import { getErrorMessage } from "@/errors";
 
 export async function ensureAuth(
   scopes: string[],
@@ -35,8 +36,8 @@ export async function ensureAuth(
       gapi.auth.setToken({ access_token: token } as any);
       return token;
     }
-  } catch (error) {
-    throw new Error(`Cannot get Chrome OAuth token: ${error.message}`);
+  } catch (error: unknown) {
+    throw new Error(`Cannot get Chrome OAuth token: ${getErrorMessage(error)}`);
   }
 
   throw new Error(`Cannot get Chrome OAuth token`);
@@ -56,7 +57,7 @@ export async function handleRejection(
   token: string,
   error: any
 ): Promise<Error> {
-  console.debug("Google rejected request", { err: error });
+  console.debug("Google rejected request", { error });
   if (error.result == null) {
     return error;
   }
@@ -74,9 +75,11 @@ export async function handleRejection(
       "Bad Google OAuth token. Removed the auth token from the cache so the user can re-authenticate"
     );
     return new PermissionsError(
-      `Permission denied, re-authenticate with Google and try again. Details: ${error.result.error?.message}`,
+      `Permission denied, re-authenticate with Google and try again. Details: ${getErrorMessage(
+        error.result.error
+      )}`,
       status
     );
   }
-  return new Error(error.result.error?.message ?? "Unknown error");
+  return new Error(getErrorMessage(error.result.error ?? "Unknown error"));
 }

@@ -191,7 +191,7 @@ const ExtensionForm: React.FunctionComponent<{
   const handleExport = useCallback(() => {
     try {
       exportBlueprint(values, extensionPoint);
-    } catch (error) {
+    } catch (error: unknown) {
       reportError(error);
       addToast(`Error exporting as blueprint: ${error}`, {
         appearance: "error",

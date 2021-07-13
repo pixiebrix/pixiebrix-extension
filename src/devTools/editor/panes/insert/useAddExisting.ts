@@ -54,7 +54,7 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
         });
 
         dispatch(addElement(state as FormState));
-      } catch (error) {
+      } catch (error: unknown) {
         reportError(error);
         addToast(`Error adding ${config.label}`, {
           autoDismiss: true,

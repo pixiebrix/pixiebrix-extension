@@ -72,7 +72,7 @@ const FileField: React.FunctionComponent<
         } else {
           onSelect(null);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         if (!isMounted()) return;
         onSelect(null);
         reportError(error);
@@ -131,7 +131,7 @@ const FileField: React.FunctionComponent<
         )
         .build();
       picker.setVisible(true);
-    } catch (error) {
+    } catch (error: unknown) {
       addToast(`Error loading file picker: ${error}`, {
         appearance: "error",
         autoDismiss: true,

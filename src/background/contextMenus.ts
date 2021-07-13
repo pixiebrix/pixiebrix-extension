@@ -24,8 +24,7 @@ import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
-import { getErrorMessage } from "@/extensionPoints/helpers";
-import { hasCancelRootCause } from "@/errors";
+import { getErrorMessage, hasCancelRootCause } from "@/errors";
 
 type ExtensionId = string;
 type MenuItemId = number | string;
@@ -76,7 +75,7 @@ async function dispatchMenu(
       message: "Ran content menu item action",
       className: "success",
     });
-  } catch (error) {
+  } catch (error: unknown) {
     if (hasCancelRootCause(error)) {
       void showNotification(target, {
         message: "The action was cancelled",
@@ -93,7 +92,7 @@ async function dispatchMenu(
 
   try {
     reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn("Error reporting ContextMenuClick event", { error });
   }
 }
@@ -113,7 +112,7 @@ export async function uninstall(extensionId: string): Promise<void> {
   try {
     await browser.contextMenus.remove(makeMenuId(extensionId));
     console.debug(`Uninstalled context menu ${extensionId}`);
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn(`Could not uninstall context menu ${extensionId}: ${error}`);
   } finally {
     extensionMenuItems.delete(extensionId);
@@ -160,7 +159,7 @@ export const ensureContextMenu = liftBackground(
             documentUrlPatterns,
             extensionId,
           });
-        } catch (error) {
+        } catch (error: unknown) {
           console.debug("Cannot update context menu", { error });
           const menuId = browser.contextMenus.create({
             ...createProperties,
@@ -193,7 +192,7 @@ export const ensureContextMenu = liftBackground(
           extensionId,
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Error registering context menu item`, error);
       throw error;
     }

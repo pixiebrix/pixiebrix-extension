@@ -25,6 +25,7 @@ export async function errorBoundary(
 ): Promise<PanelComponent> {
   try {
     return await renderPromise;
+    // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     logger.error(error);
     return `<div>An error occurred: ${error.toString()}</div>`;

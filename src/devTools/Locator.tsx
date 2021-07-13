@@ -43,9 +43,10 @@ function useSearchWindow(query: string) {
         const { results } = await searchWindow(port, query);
         if (!isMounted()) return;
         setResults(results as any);
-      } catch (error_) {
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
+      } catch (error) {
         if (!isMounted()) return;
-        setError(error_);
+        setError(error);
       }
     },
     [query, tabId]
