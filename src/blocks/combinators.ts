@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import blockRegistry from "@/blocks/registry";
@@ -21,33 +21,36 @@ import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { locate } from "@/background/locator";
 import {
-  SanitizedServiceConfiguration,
+  BlockArg,
   IBlock,
   IReader,
   Logger,
+  OptionsArgs,
+  ReaderRoot,
+  RenderedArgs,
+  SanitizedServiceConfiguration,
   Schema,
   ServiceDependency,
   TemplateEngine,
-  RenderedArgs,
-  BlockArg,
-  ReaderRoot,
-  MessageContext,
-  OptionsArgs,
 } from "@/core";
 import { validateInput } from "@/validators/generic";
-import { OutputUnit } from "@cfworker/json-schema";
-import { pickBy, isPlainObject, mapValues, castArray } from "lodash";
+import { castArray, isPlainObject, mapValues, pickBy } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
+  executeInAll,
   executeInOpener,
   executeInTarget,
-  executeInAll,
 } from "@/background/executor";
 import { boolean } from "@/utils";
 import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
 import { serializeError } from "serialize-error";
+import {
+  HeadlessModeError,
+  InputValidationError,
+  PipelineConfigurationError,
+} from "@/blocks/errors";
 
 export type ReaderConfig =
   | string
@@ -86,62 +89,6 @@ export interface BlockConfig {
 
 export type BlockPipeline = BlockConfig[];
 
-class PipelineConfigurationError extends Error {
-  readonly config: BlockPipeline;
-
-  constructor(message: string, config: BlockConfig | BlockPipeline) {
-    super(message);
-    this.name = "PipelineConfigurationError";
-    this.config = castArray(config);
-  }
-}
-
-/**
- * Error bailing if a renderer component is encountered while running in headless mode
- */
-export class HeadlessModeError extends Error {
-  public readonly blockId: string;
-  public readonly args: unknown;
-  public readonly ctxt: unknown;
-  public readonly loggerContext: MessageContext;
-
-  constructor(
-    blockId: string,
-    args: unknown,
-    ctxt: unknown,
-    loggerContext: MessageContext
-  ) {
-    super(`${blockId} is a renderer`);
-    this.name = "HeadlessModeError";
-    this.blockId = blockId;
-    this.args = args;
-    this.ctxt = ctxt;
-    this.loggerContext = loggerContext;
-  }
-}
-
-/**
- * Error indicating input elements to a block did not match the schema.
- */
-export class InputValidationError extends BusinessError {
-  readonly schema: Schema;
-  readonly input: unknown;
-  readonly errors: OutputUnit[];
-
-  constructor(
-    message: string,
-    schema: Schema,
-    input: unknown,
-    errors: OutputUnit[]
-  ) {
-    super(message);
-    this.name = "InputValidationError";
-    this.schema = schema;
-    this.input = input;
-    this.errors = errors;
-  }
-}
-
 /** Return block definitions for all blocks referenced in a pipeline */
 export async function blockList(
   config: BlockConfig | BlockPipeline
@@ -172,12 +119,11 @@ type SchemaProperties = { [key: string]: Schema };
 function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
   if (schemaOrProperties["type"] && schemaOrProperties["properties"]) {
     return schemaOrProperties as Schema;
-  } else {
-    return {
-      type: "object",
-      properties: schemaOrProperties as SchemaProperties,
-    };
   }
+  return {
+    type: "object",
+    properties: schemaOrProperties as SchemaProperties,
+  };
 }
 
 function excludeUndefined(obj: unknown): unknown {
@@ -186,9 +132,8 @@ function excludeUndefined(obj: unknown): unknown {
       pickBy(obj, (x) => x !== undefined),
       excludeUndefined
     );
-  } else {
-    return obj;
   }
+  return obj;
 }
 
 function isReader(block: IBlock): block is IReader {
@@ -315,9 +260,8 @@ async function runStage(
       });
     } else if (stage.window ?? "self" === "self") {
       return await block.run(blockArgs, { ctxt: args, logger, root, headless });
-    } else {
-      throw new BusinessError(`Unexpected stage window ${stage.window}`);
     }
+    throw new BusinessError(`Unexpected stage window ${stage.window}`);
   } finally {
     progressCallbacks?.hide();
   }
@@ -411,13 +355,12 @@ export async function reducePipeline(
           console.warn(`Effect ${block.id} produced an output`, { output });
           logger.warn(`Ignoring output produced by effect ${block.id}`);
         }
+      } else if (stage.outputKey) {
+        extraContext[`@${stage.outputKey}`] = output;
       } else {
-        if (stage.outputKey) {
-          extraContext[`@${stage.outputKey}`] = output;
-        } else {
-          currentArgs = output as any;
-        }
+        currentArgs = output as any;
       }
+      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       if (error instanceof HeadlessModeError) {
         // An "expected" error, let the caller deal with it
@@ -474,9 +417,8 @@ export async function mergeReaders(
     return new CompositeReader(
       await resolveObj(mapValues(readerConfig, mergeReaders))
     );
-  } else {
-    throw new BusinessError("Unexpected value for readerConfig");
   }
+  throw new BusinessError("Unexpected value for readerConfig");
 }
 
 export type ServiceContext = {

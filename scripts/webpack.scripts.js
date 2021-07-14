@@ -1,23 +1,26 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+const { merge } = require("lodash");
 const path = require("path");
 const rootDir = path.resolve(__dirname, "../");
 const webpack = require("webpack");
+
+const { resolve } = require("../browsers/resolve.config.js");
 
 module.exports = {
   mode: "development",
@@ -37,22 +40,14 @@ module.exports = {
     // https://github.com/yan-foto/electron-reload/issues/71#issuecomment-588988382
     fsevents: "require('fsevents')",
   },
-  resolve: {
+  resolve: merge(resolve, {
     alias: {
-      "@": path.resolve(rootDir, "src"),
-      "@img": path.resolve(rootDir, "img"),
-      "@contrib": path.resolve(rootDir, "contrib"),
-      "@schemas": path.resolve(rootDir, "schemas"),
-      vendors: path.resolve(rootDir, "src/vendors"),
       "@uipath/robot": path.resolve(rootDir, "src/__mocks__/robotMock"),
-      // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
-      handlebars: "handlebars/dist/handlebars.js",
     },
-    extensions: [".ts", ".tsx", ".jsx", ".js"],
     fallback: {
       chokidar: false,
     },
-  },
+  }),
   plugins: [
     new webpack.ProvidePlugin({
       window: "global/window.js",

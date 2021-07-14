@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { uniq, compact, sortBy, unary, intersection } from "lodash";
@@ -171,19 +171,17 @@ function removeUnstyledLayout(node: Node): Node | null {
       nonEmptyChildren.length === 1
     ) {
       return removeUnstyledLayout(nonEmptyChildren[0]);
-    } else {
-      const clone = node.cloneNode(false) as Element;
-      for (const childNode of node.childNodes) {
-        const newChild = removeUnstyledLayout(childNode);
-        if (newChild != null) {
-          clone.append(newChild);
-        }
-      }
-      return clone;
     }
-  } else {
-    return node.cloneNode(false);
+    const clone = node.cloneNode(false) as Element;
+    for (const childNode of node.childNodes) {
+      const newChild = removeUnstyledLayout(childNode);
+      if (newChild != null) {
+        clone.append(newChild);
+      }
+    }
+    return clone;
   }
+  return node.cloneNode(false);
 }
 
 /**
@@ -210,13 +208,12 @@ function commonButtonStructure(
 
   try {
     setCommonAttrs($common, $items);
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof SkipElement) {
       // Shouldn't happen at the top level
       return [$(), currentCaptioned];
-    } else {
-      throw error;
     }
+    throw error;
   }
 
   // Heuristic that assumes elements match from the beginning
@@ -512,14 +509,13 @@ export function inferSelectors(
   const makeSelector = (allowed: css_selector_type[]) => {
     try {
       return safeCssSelector(element, allowed, root);
-    } catch (error) {
+    } catch (error: unknown) {
       console.warn("Selector inference failed", {
         element,
         allowed,
         root,
         error,
       });
-      return;
     }
   };
 
@@ -623,9 +619,8 @@ export function findContainer(
       container,
       selectors: inferSelectors(container),
     };
-  } else {
-    return findContainerForElement(elements[0]);
   }
+  return findContainerForElement(elements[0]);
 }
 
 /**
@@ -675,9 +670,8 @@ export function inferPanelHTML(
   if (selected.length > 1) {
     const children = containerChildren($container, selected);
     return commonPanelHTML(selected[0].tagName, $(children));
-  } else {
-    return inferSinglePanelHTML(container, selected[0]);
   }
+  return inferSinglePanelHTML(container, selected[0]);
 }
 
 export function inferButtonHTML(

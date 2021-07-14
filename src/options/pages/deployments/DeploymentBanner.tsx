@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2021 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import React, { useCallback, useMemo, useState } from "react";
 import { Deployment } from "@/types/contract";
 import { Button } from "react-bootstrap";
@@ -59,7 +76,7 @@ function useEnsurePermissions(deployments: Deployment[]) {
 
     try {
       accepted = await ensureAllPermissions(permissions);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       reportError(error);
       addToast(`Error granting permissions: ${error}`, {
@@ -75,9 +92,8 @@ function useEnsurePermissions(deployments: Deployment[]) {
         autoDismiss: true,
       });
       return false;
-    } else {
-      return true;
     }
+    return true;
   }, [permissions, setEnabled]);
 
   const groupedPermissions = useMemo(() => {

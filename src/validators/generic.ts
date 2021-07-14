@@ -1,23 +1,23 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useMemo } from "react";
-import { useAsyncState } from "@/hooks/common";
+import { AsyncState, useAsyncState } from "@/hooks/common";
 import { locate } from "@/background/locator";
 import {
   Validator,
@@ -85,7 +85,7 @@ export async function validateKind(
   const finalSchema = await dereference(KIND_SCHEMAS[kind] as Schema);
   const validator = new Validator(finalSchema as any);
 
-  validator.addSchema(draft07 as any);
+  validator.addSchema(draft07 as ValidatorSchema);
 
   return validator.validate(instance);
 }
@@ -161,7 +161,7 @@ async function validateExtension(
   let validated = true;
   try {
     await extensionValidator.validate(extension);
-  } catch (error) {
+  } catch (error: unknown) {
     validated = false;
     schemaErrors = error;
   }
@@ -174,7 +174,7 @@ async function validateExtension(
       console.debug(`Validating ${extension.id} service ${service.id}`);
       try {
         await locate(service.id, service.config);
-      } catch (error) {
+      } catch (error: unknown) {
         if (error instanceof MissingConfigurationError) {
           missingConfiguration.push(error);
         } else if (error instanceof NotConfiguredError) {
@@ -199,8 +199,8 @@ async function validateExtension(
 
 export function useExtensionValidator(
   extension: IExtension
-): [ExtensionValidationResult | undefined, boolean, unknown] {
-  const validationPromise = useMemo(() => validateExtension(extension), [
+): AsyncState<ExtensionValidationResult> {
+  const validationPromise = useMemo(async () => validateExtension(extension), [
     extension,
   ]);
   return useAsyncState(validationPromise);

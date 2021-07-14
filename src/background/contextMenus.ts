@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import pTimeout from "p-timeout";
@@ -24,8 +24,7 @@ import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
-import { hasCancelRootCause } from "@/errors";
-import { getErrorMessage } from "@/extensionPoints/helpers";
+import { getErrorMessage, hasCancelRootCause } from "@/errors";
 
 type ExtensionId = string;
 type MenuItemId = number | string;
@@ -76,7 +75,7 @@ async function dispatchMenu(
       message: "Ran content menu item action",
       className: "success",
     });
-  } catch (error) {
+  } catch (error: unknown) {
     if (hasCancelRootCause(error)) {
       void showNotification(target, {
         message: "The action was cancelled",
@@ -93,7 +92,7 @@ async function dispatchMenu(
 
   try {
     reportEvent("ContextMenuClick", { extensionId: info.menuItemId });
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn("Error reporting ContextMenuClick event", { error });
   }
 }
@@ -103,7 +102,7 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
     typeof info.menuItemId === "string" &&
     info.menuItemId.startsWith(MENU_PREFIX)
   ) {
-    dispatchMenu(info, tab);
+    void dispatchMenu(info, tab);
   } else {
     console.debug(`Ignoring menu item: ${info.menuItemId}`);
   }
@@ -113,7 +112,7 @@ export async function uninstall(extensionId: string): Promise<void> {
   try {
     await browser.contextMenus.remove(makeMenuId(extensionId));
     console.debug(`Uninstalled context menu ${extensionId}`);
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn(`Could not uninstall context menu ${extensionId}: ${error}`);
   } finally {
     extensionMenuItems.delete(extensionId);
@@ -160,7 +159,7 @@ export const ensureContextMenu = liftBackground(
             documentUrlPatterns,
             extensionId,
           });
-        } catch (error) {
+        } catch (error: unknown) {
           console.debug("Cannot update context menu", { error });
           const menuId = browser.contextMenus.create({
             ...createProperties,
@@ -193,7 +192,7 @@ export const ensureContextMenu = liftBackground(
           extensionId,
         });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(`Error registering context menu item`, error);
       throw error;
     }

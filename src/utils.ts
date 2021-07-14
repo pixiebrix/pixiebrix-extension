@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import {
@@ -33,7 +33,6 @@ import {
   zip,
   pickBy,
 } from "lodash";
-import { ErrorObject } from "serialize-error";
 import { Primitive } from "type-fest";
 
 export function mostCommonElement<T>(items: T[]): T {
@@ -135,9 +134,8 @@ export function removeUndefined(obj: unknown): unknown {
       pickBy(obj, (x) => x !== undefined),
       (x) => removeUndefined(x)
     );
-  } else {
-    return obj;
   }
+  return obj;
 }
 
 export function boolean(value: unknown): boolean {
@@ -204,9 +202,8 @@ export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
     return mapValues(value, recurse);
   } else if (typeof value === "function" || typeof value === "symbol") {
     return undefined;
-  } else {
-    return value;
   }
+  return value;
 }
 
 /**
@@ -275,15 +272,14 @@ export function getPropByPath(
     if (value == null) {
       if (coalesce || index === rawParts.length - 1) {
         return null;
-      } else {
-        throw new InvalidPathError(`${path} undefined (missing ${part})`, path);
       }
+      throw new InvalidPathError(`${path} undefined (missing ${part})`, path);
     }
 
     if (typeof value === "function") {
       try {
         value = value.apply(previous, args);
-      } catch (error) {
+      } catch (error: unknown) {
         throw new Error(`Error running method ${part}: ${error}`);
       }
     }
@@ -297,9 +293,8 @@ export function isNullOrBlank(value: unknown): boolean {
     return true;
   } else if (typeof value === "string" && value.trim() === "") {
     return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 export class PromiseCancelled extends Error {
@@ -320,7 +315,7 @@ export async function rejectOnCancelled<T>(
   let rv: T;
   try {
     rv = await promise;
-  } catch (error) {
+  } catch (error: unknown) {
     if (isCancelled()) {
       throw new PromiseCancelled("Promise was cancelled");
     }
@@ -332,26 +327,8 @@ export async function rejectOnCancelled<T>(
   return rv;
 }
 
-export function isErrorObject(error: unknown): error is ErrorObject {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
-  return typeof (error as any)?.message === "string";
-}
-
-/**
- * Some pages are off-limits to extension. This function can find out if an error is due to this limitation.
- *
- * Example error messages:
- * Cannot access a chrome:// URL
- * Cannot access a chrome-extension:// URL of different extension
- * Cannot access contents of url "chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/". Extension manifest must request permission to access this host.
- * The extensions gallery cannot be scripted.
- *
- * @param error
- * @returns
- */
-export function isPrivatePageError(error: unknown): boolean {
-  return (
-    isErrorObject(error) &&
-    /cannot be scripted|(chrome|about|extension):\/\//.test(error.message)
-  );
+export function evaluableFunction(
+  function_: (...parameters: unknown[]) => unknown
+): string {
+  return "(" + function_.toString() + ")()";
 }

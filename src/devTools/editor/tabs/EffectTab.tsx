@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useCallback, useMemo, useState } from "react";
@@ -33,16 +33,16 @@ import GridLoader from "react-spinners/GridLoader";
 import BlockModal from "@/components/fields/BlockModal";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { BlockType, getType } from "@/blocks/util";
-import { ElementType } from "@/devTools/editor/editorSlice";
 import BlockEntry from "@/devTools/editor/tabs/effect/BlockEntry";
 import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
 import QuickAdd from "@/devTools/editor/tabs/effect/QuickAdd";
+import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
 async function filterBlocks(
   blocks: IBlock[],
   { excludeTypes = [] }: { excludeTypes: BlockType[] }
 ): Promise<IBlock[]> {
-  const types = await Promise.all(blocks.map((block) => getType(block)));
+  const types = await Promise.all(blocks.map(async (block) => getType(block)));
   // exclude null to exclude foundations
   return zip(blocks, types)
     .filter(([, type]) => type != null && !excludeTypes.includes(type))

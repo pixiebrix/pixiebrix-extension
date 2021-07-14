@@ -1,28 +1,22 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { IExtension, Metadata, selectMetadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
-import {
-  BaseFormState,
-  isCustomReader,
-  ReaderFormState,
-  ReaderReferenceFormState,
-} from "@/devTools/editor/editorSlice";
 import { castArray, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
@@ -37,6 +31,12 @@ import {
 import { find as findBrick } from "@/registry/localRegistry";
 import React from "react";
 import { createSitePattern, getDomain } from "@/permissions/patterns";
+import {
+  BaseFormState,
+  isCustomReader,
+  ReaderFormState,
+  ReaderReferenceFormState,
+} from "@/devTools/editor/extensionPoints/elementConfig";
 
 export interface WizardStep {
   step: string;
@@ -115,13 +115,12 @@ export function makeBaseState(
   defaultSelector: string | null,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
-): Omit<BaseFormState, "type" | "label"> {
+): Omit<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
     services: [],
     readers: [makeDefaultReader(metadata, frameworks, { defaultSelector })],
     extension: {},
-    extensionPoint: {},
   };
 }
 
@@ -147,6 +146,7 @@ export async function generateExtensionPointMetadata(
     return false;
   };
 
+  // Find next available foundation id
   for (let index = 1; index < 1000; index++) {
     const id =
       index === 1
@@ -221,7 +221,7 @@ export async function makeReaderFormState(
         try {
           const reader = await brickRegistry.lookup(readerId);
           return { metadata: selectMetadata(reader) };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error("Cannot find reader", { readerId, error });
           throw new Error("Cannot find reader");
         }
@@ -256,7 +256,7 @@ type SimpleAvailability = {
 
 /**
  * Map availability from extension point configuration to state for the page editor.
- * Is subject to the limitations of the page editor interface.
+ * @throws Error if the isAvailable definition use features that aren't supported by the Page Editor
  */
 export function selectIsAvailable(
   extensionPoint: ExtensionPointConfig
@@ -311,5 +311,26 @@ export async function lookupExtensionPoint<
 
   return extensionPoint as ExtensionPointConfig<TDefinition> & {
     definition: { type: TType };
+  };
+}
+
+export function baseSelectExtensionPoint(
+  formState: BaseFormState
+): Omit<ExtensionPointConfig, "definition"> {
+  const { metadata } = formState.extensionPoint;
+
+  return {
+    apiVersion: "v1",
+    kind: "extensionPoint",
+    metadata: {
+      id: metadata.id,
+      // The server requires the version to save the brick, even though it's not marked as required
+      // in the front-end schemas
+      version: metadata.version ?? "1.0.0",
+      name: metadata.name,
+      // The server requires the description to save the brick, even though it's not marked as required
+      // in the front-end schemas
+      description: metadata.description ?? "Created using the Page Editor",
+    },
   };
 }

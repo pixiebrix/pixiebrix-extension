@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import {
@@ -28,11 +28,11 @@ import {
   BackgroundEventType,
   HandlerEntry,
   MESSAGE_PREFIX,
-  Meta,
   PORT_NAME,
   PromiseHandler,
   TabId,
   Target,
+  Meta,
 } from "@/background/devtools/contract";
 import { reportError } from "@/telemetry/logging";
 import { isBackgroundPage } from "webext-detect-page";
@@ -41,11 +41,11 @@ import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { reactivate } from "@/background/navigation";
-import { isErrorObject, isPrivatePageError } from "@/utils";
 import {
   expectBackgroundPage,
   forbidBackgroundPage,
-} from "@/utils/expect-context";
+} from "@/utils/expectContext";
+import { getErrorMessage, isPrivatePageError } from "@/errors";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -72,7 +72,6 @@ function backgroundMessageListener(
       `Ignoring devtools message to background page from unknown sender`,
       port.sender
     );
-    return;
   } else if (handler) {
     const notification = isNotification(options);
 
@@ -90,7 +89,7 @@ function backgroundMessageListener(
     let responded = false;
 
     if (notification) {
-      handlerPromise.catch((error) => {
+      handlerPromise.catch((error: unknown) => {
         console.warn(
           `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}): ${error}`,
           error
@@ -173,7 +172,6 @@ export function liftBackground<R extends SerializableResponse>(
     if (backgroundHandlers.has(fullType)) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
-      // console.debug(`Installed background page handler for ${type}`);
       backgroundHandlers.set(fullType, { handler: method, options });
     }
   }
@@ -194,7 +192,7 @@ async function resetTab(tabId: number): Promise<void> {
       { tabId, frameId: TOP_LEVEL_FRAME_ID },
       {}
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn(`Error clearing dynamic elements for tab: %d`, tabId, {
       error,
     });
@@ -287,14 +285,14 @@ async function attemptTemporaryAccess({
 
   try {
     await ensureContentScript({ tabId, frameId });
-  } catch (error) {
+  } catch (error: unknown) {
     if (isPrivatePageError(error)) {
       return;
     }
 
     // Side note: Cross-origin iframes lose the `activeTab` after navigation
     // https://github.com/pixiebrix/pixiebrix-extension/pull/661#discussion_r661590847
-    if (isErrorObject(error) && error.message.startsWith("Cannot access")) {
+    if (getErrorMessage(error).startsWith("Cannot access")) {
       console.debug(
         `Skipping attemptTemporaryAccess because no activeTab permissions`,
         { tabId, frameId, url }

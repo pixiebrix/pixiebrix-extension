@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -49,6 +49,7 @@ import { PanelComponent, render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
+import iconAsSVG from "@/icons/svgIcons";
 
 export interface PanelConfig {
   heading?: string;
@@ -285,21 +286,12 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const serviceContext = await makeServiceContext(extension.services);
     const extensionContext = { ...readerContext, ...serviceContext };
 
-    const iconAsSVG = icon
-      ? (
-          await import(
-            /* webpackChunkName: "icons" */
-            "@/icons/svgIcons"
-          )
-        ).default
-      : null;
-
     const $panel = $(
       Mustache.render(this.getTemplate(), {
         heading: Mustache.render(heading, extensionContext),
         // render a placeholder body that we'll fill in async
         body: `<div id="${bodyUUID}"></div>`,
-        icon: iconAsSVG?.(icon),
+        icon: await iconAsSVG?.(icon),
         bodyUUID,
       })
     );
@@ -381,6 +373,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
             shadowDOM,
           });
           extensionLogger.debug("Successfully installed panel");
+          // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
         } catch (error) {
           extensionLogger.error(error);
         }
@@ -397,7 +390,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       $toggle.attr("aria-expanded", String(startExpanded));
       $toggle.toggleClass("active", startExpanded);
 
-      $toggle.on("click", () => {
+      $toggle.on("click", async () => {
         $bodyContainers.toggleClass("show");
         const showing = $bodyContainers.hasClass("show");
         $toggle.attr("aria-expanded", String(showing));
@@ -407,7 +400,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
           console.debug(
             `Installing body for collapsible panel: ${extension.id}`
           );
-          installBody();
+          await installBody();
         }
       });
 
@@ -443,6 +436,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
       try {
         await this.runExtension(readerContext, extension);
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         errors.push(error);
         this.logger

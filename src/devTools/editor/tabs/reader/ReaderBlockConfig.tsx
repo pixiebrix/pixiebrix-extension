@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useCallback, useContext, useMemo, useState } from "react";
@@ -77,15 +77,15 @@ export const ReaderBlockForm: React.FunctionComponent<{
       try {
         output = await runReaderBlock(port, {
           id: reader.id,
-          rootSelector: testSelector !== "" ? testSelector : undefined,
+          rootSelector: testSelector === "" ? undefined : testSelector,
         });
         if (!isMounted()) return;
         setOutput({ output, error: undefined });
-      } catch (error_) {
+      } catch (error: unknown) {
         if (!isMounted()) return;
         setOutput({
           output: undefined,
-          error: error_.toString(),
+          error: String(error),
         });
       }
     },
@@ -97,9 +97,8 @@ export const ReaderBlockForm: React.FunctionComponent<{
   const searchResults = useMemo(() => {
     if (debouncedQuery === "" || output == null) {
       return output;
-    } else {
-      return searchData(query, output);
     }
+    return searchData(debouncedQuery, output);
   }, [debouncedQuery, output]);
 
   const copyData = useCallback(() => {
@@ -115,13 +114,13 @@ export const ReaderBlockForm: React.FunctionComponent<{
       <Alert variant="info">
         {reader.id.startsWith("@pixiebrix") ? (
           <>
-            <FontAwesomeIcon icon={faInfoCircle} /> You cannot edit built-in
-            readers
+            <FontAwesomeIcon icon={faInfoCircle} /> Built-in readers cannot be
+            edited
           </>
         ) : (
           <>
-            <FontAwesomeIcon icon={faInfoCircle} /> You cannot edit readers
-            created outside the Page Editor
+            <FontAwesomeIcon icon={faInfoCircle} /> Readers created outside the
+            Page Editor cannot be edited
           </>
         )}
       </Alert>
@@ -194,7 +193,9 @@ export const ReaderBlockForm: React.FunctionComponent<{
                   Extension not available on page
                 </span>
               )}
-              {searchResults !== undefined ? (
+              {searchResults === undefined ? (
+                <GridLoader />
+              ) : (
                 <JSONTree
                   data={searchResults}
                   labelRenderer={labelRenderer}
@@ -203,8 +204,6 @@ export const ReaderBlockForm: React.FunctionComponent<{
                   hideRoot
                   sortObjectKeys
                 />
-              ) : (
-                <GridLoader />
               )}
             </div>
           </Col>
@@ -231,8 +230,6 @@ const ReaderBlockConfig: React.FunctionComponent<{
     // eslint-disable-next-line security/detect-object-injection -- readerIndex is a number
     const reader = values.readers[readerIndex];
 
-    // OK to return the promise directly
-    // noinspection ES6MissingAwait
     return blockRegistry.lookup(reader.metadata.id) as Promise<IReader>;
   }, [readerIndex, values.readers]);
 

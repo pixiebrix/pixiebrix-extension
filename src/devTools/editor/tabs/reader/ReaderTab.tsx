@@ -1,31 +1,25 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useContext, useState } from "react";
 import { Button, ListGroup, Tab } from "react-bootstrap";
 import { FieldArray, useField, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  FormState,
-  isCustomReader,
-  ReaderFormState,
-  ReaderReferenceFormState,
-  actions,
-} from "@/devTools/editor/editorSlice";
+import { FormState, actions } from "@/devTools/editor/editorSlice";
 import ReaderConfig from "@/devTools/editor/tabs/reader/ReaderConfig";
 import { makeDefaultReader } from "@/devTools/editor/extensionPoints/base";
 import { DevToolsContext } from "@/devTools/context";
@@ -48,6 +42,11 @@ import { ContextMenuReader } from "@/extensionPoints/contextMenu";
 import cx from "classnames";
 import { useToasts } from "react-toast-notifications";
 import { useDispatch } from "react-redux";
+import {
+  isCustomReader,
+  ReaderFormState,
+  ReaderReferenceFormState,
+} from "@/devTools/editor/extensionPoints/elementConfig";
 
 const INCLUDE_TEST_ELEMENT = new Set<string>([
   "@pixiebrix/image/exif",
@@ -63,6 +62,7 @@ const ReaderEntry: React.FunctionComponent<{
   isDragDisabled: boolean;
   showDragHandle?: boolean;
   isActive: boolean;
+  isLocked: boolean;
 }> = ({
   reader,
   index,
@@ -71,6 +71,7 @@ const ReaderEntry: React.FunctionComponent<{
   isActive,
   onSelect,
   onRemove,
+  isLocked,
 }) => {
   const meta = "metadata" in reader ? reader.metadata : reader;
 
@@ -98,7 +99,7 @@ const ReaderEntry: React.FunctionComponent<{
             <div className="ReaderList__label">
               <div>{meta.name}</div>
             </div>
-            {onRemove && (
+            {onRemove && !isLocked && (
               <div className="ReaderList__actions">
                 <span role="button" onClick={onRemove} className="text-danger">
                   <FontAwesomeIcon icon={faTimes} />
@@ -128,6 +129,10 @@ const ReaderTab: React.FunctionComponent<{
     (ReaderReferenceFormState | ReaderFormState)[]
   >("readers");
 
+  const locked =
+    formValues.installed &&
+    !editable?.has(formValues.extensionPoint.metadata.id);
+
   const [active, setActive] = useState(0);
 
   const [blocks] = useAsyncState(async () => {
@@ -143,8 +148,7 @@ const ReaderTab: React.FunctionComponent<{
     return annotated.filter((x) => x.type === "reader").map((x) => x.block);
   }, []);
 
-  // safe because active is a number
-  // eslint-disable-next-line security/detect-object-injection
+  // eslint-disable-next-line security/detect-object-injection -- safe because active is a number
   const reader = readers[active];
 
   return (
@@ -170,7 +174,12 @@ const ReaderTab: React.FunctionComponent<{
                   }}
                   blocks={blocks ?? []}
                   renderButton={({ show }) => (
-                    <Button onClick={show} variant="info" size="sm">
+                    <Button
+                      disabled={locked}
+                      onClick={show}
+                      variant="info"
+                      size="sm"
+                    >
                       <FontAwesomeIcon icon={faBookReader} /> Add Existing
                     </Button>
                   )}
@@ -179,6 +188,7 @@ const ReaderTab: React.FunctionComponent<{
                   <Button
                     variant="info"
                     size="sm"
+                    disabled={locked}
                     onClick={() => {
                       const count = readers.length;
                       const reservedIds = readers.map((x) => x.metadata.id);
@@ -222,8 +232,9 @@ const ReaderTab: React.FunctionComponent<{
                             setActive(Math.max(0, index - 1));
                             remove(index);
                           }}
-                          isDragDisabled={readers.length === 1}
+                          isDragDisabled={locked || readers.length === 1}
                           isActive={active === index}
+                          isLocked={locked}
                         />
                       ))}
 
@@ -234,6 +245,7 @@ const ReaderTab: React.FunctionComponent<{
                           reader={CONTEXT_MENU_READER}
                           onSelect={() => setActive(readers.length)}
                           isActive={active === readers.length}
+                          isLocked={locked}
                         />
                       )}
                     </ListGroup>
@@ -246,25 +258,22 @@ const ReaderTab: React.FunctionComponent<{
         <div className="ReaderContent h-100">
           {reader != null && (
             <>
-              {
-                // safe because active is a number
-                // eslint-disable-next-line security/detect-object-injection
-                isCustomReader(reader) ? (
-                  <ReaderConfig
-                    key={`${reader.metadata.id}-${active}`}
-                    editable={editable}
-                    available={available}
-                    readerIndex={active}
-                  />
-                ) : (
-                  <ReaderBlockConfig
-                    key={`${reader.metadata.id}-${active}`}
-                    readerIndex={active}
-                    available={available}
-                    testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
-                  />
-                )
-              }
+              {isCustomReader(reader) ? (
+                <ReaderConfig
+                  key={`${reader.metadata.id}-${active}`}
+                  editable={editable}
+                  available={available}
+                  readerIndex={active}
+                  isLocked={locked}
+                />
+              ) : (
+                <ReaderBlockConfig
+                  key={`${reader.metadata.id}-${active}`}
+                  readerIndex={active}
+                  available={available}
+                  testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
+                />
+              )}
             </>
           )}
           {active === readers.length && formValues.type === "contextMenu" && (

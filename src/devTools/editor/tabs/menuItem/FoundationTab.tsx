@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, {
@@ -32,9 +32,9 @@ import {
 import { Alert, Button, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import * as nativeOperations from "@/background/devtools";
-import { ActionFormState, FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { reportError } from "@/telemetry/logging";
+import { ActionFormState } from "@/devTools/editor/extensionPoints/menuItem";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
@@ -45,7 +45,7 @@ const FoundationTab: React.FunctionComponent<{
   );
   const [dragging, setDragging] = useState(false);
   const { port } = useContext(DevToolsContext);
-  const { values, setFieldValue } = useFormikContext<FormState>();
+  const { values, setFieldValue } = useFormikContext<ActionFormState>();
   const templateInput = useRef<HTMLTextAreaElement>(null);
 
   const toggle = useCallback(async () => {
@@ -70,7 +70,7 @@ const FoundationTab: React.FunctionComponent<{
           true
         );
       }
-    } catch (error) {
+    } catch (error: unknown) {
       // can continue, because it won't have any effect on the form values, so the user can just try again
       // noinspection ES6MissingAwait
       reportError(error);
@@ -180,8 +180,7 @@ const FoundationTab: React.FunctionComponent<{
           Position
         </Form.Label>
         <Col sm={10}>
-          {typeof (values as ActionFormState).extensionPoint.definition
-            .position === "string" ? (
+          {typeof values.extensionPoint.definition.position === "string" ? (
             <Field name="extensionPoint.definition.position">
               {({ field }: { field: FieldInputProps<string> }) => (
                 <Form.Control as="select" {...field}>
@@ -197,10 +196,7 @@ const FoundationTab: React.FunctionComponent<{
                 sort
                 name="extensionPoint.definition.position.sibling"
                 selectMode="element"
-                root={
-                  (values as ActionFormState).extensionPoint.definition
-                    .containerSelector
-                }
+                root={values.extensionPoint.definition.containerSelector}
               />
               <Form.Text className="text-muted">
                 Select an element in the container to position the menu item

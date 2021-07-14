@@ -42,7 +42,8 @@
     "action.css",
     "devtoolsPanel.css",
     "script.js",
-    "audio/*"
+    "audio/*",
+    "user-icons/*"
   ],
   "browser_action": {
     "default_title": "PixieBrix"

@@ -1,27 +1,29 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import pDefer from "p-defer";
 import { browser } from "webextension-polyfill-ts";
+import { injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
-import { expectBackgroundPage } from "@/utils/expect-context";
+import { expectBackgroundPage } from "@/utils/expectContext";
+import { evaluableFunction } from "@/utils";
 
 export type Target = {
   tabId: number;
@@ -49,11 +51,11 @@ export async function getTargetState(target: Target): Promise<TargetState> {
 
   const [state] = await browser.tabs.executeScript(target.tabId, {
     // This imitates the new chrome.scripting API by wrapping a function in a IIFE
-    code: `(${() => ({
+    code: evaluableFunction(() => ({
       url: location.href,
       installed: Symbol.for("pixiebrix-content-script") in window,
       ready: Symbol.for("pixiebrix-content-script-ready") in window,
-    })})()`,
+    })),
     frameId: target.frameId,
   });
   return state;
@@ -124,12 +126,15 @@ export async function ensureContentScript(target: Target): Promise<void> {
       );
     } else {
       console.debug(`ensureContentScript: injecting`, target);
-      await browser.tabs.executeScript(target.tabId, {
-        frameId: target.frameId ?? 0,
-        allFrames: false,
-        file: "contentScript.js",
-        runAt: "document_end",
-      });
+      const loadingScripts = chrome.runtime
+        .getManifest()
+        .content_scripts.map(async (script) => {
+          script.all_frames = false;
+          script.run_at = "document_end";
+          return injectContentScript(target, script);
+        });
+
+      await Promise.all(loadingScripts);
     }
 
     await readyNotificationPromise;
@@ -137,4 +142,21 @@ export async function ensureContentScript(target: Target): Promise<void> {
     console.debug(`ensureContentScript: ready`, target);
     controller.abort();
   }
+}
+
+/**
+ * Open a new tab for the options page, showing an error message with the given errorId
+ * @param errorId unique identifier for the error message
+ * @param tabIndex index of the source tab, to determine location of new tab
+ */
+export async function showErrorInOptions(
+  errorId: string,
+  tabIndex?: number
+): Promise<void> {
+  const url = new URL(browser.runtime.getURL("options.html"));
+  url.searchParams.set("error", errorId);
+  await browser.tabs.create({
+    url: url.toString(),
+    index: tabIndex == null ? undefined : tabIndex + 1,
+  });
 }

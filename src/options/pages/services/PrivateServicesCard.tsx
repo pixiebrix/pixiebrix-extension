@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { useSelector } from "react-redux";
@@ -23,7 +23,7 @@ import { RootState } from "../../store";
 import { v4 as uuidv4 } from "uuid";
 import { ServiceDefinition } from "@/types/definitions";
 import ServiceModal from "@/components/fields/ServiceModal";
-import { useFetch } from "@/hooks/fetch";
+import useFetch from "@/hooks/useFetch";
 import { faEyeSlash, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
@@ -32,14 +32,14 @@ import { deleteCachedAuth } from "@/background/requests";
 import { reportError } from "@/telemetry/logging";
 import { ServicesState } from "@/options/slices";
 
+const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
+  Object.values(services.configured);
+
 interface OwnProps {
   services: IService[];
   navigate: (x: string) => void;
   onCreate: (x: RawServiceConfiguration) => void;
 }
-
-const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
-  Object.values(services.configured);
 
 const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
@@ -49,7 +49,9 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   const { addToast } = useToasts();
   const { isLoggedIn } = useContext(AuthContext);
 
-  const serviceConfigs = useFetch("/api/services/") as ServiceDefinition[];
+  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
+    "/api/services/"
+  );
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     selectConfiguredServices
@@ -63,7 +65,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           appearance: "success",
           autoDismiss: true,
         });
-      } catch (error) {
+      } catch (error: unknown) {
         reportError(error);
         addToast("Error resetting login for integration", {
           appearance: "error",
@@ -75,11 +77,11 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   );
 
   const onSelect = useCallback(
-    (x: ServiceDefinition) => {
+    (definition: ServiceDefinition) => {
       onCreate({
         id: uuidv4(),
         label: undefined,
-        serviceId: x.metadata.id,
+        serviceId: definition.metadata.id,
         config: {} as ServiceConfig,
       } as RawServiceConfiguration);
     },
@@ -161,7 +163,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                     <Button
                       size="sm"
                       variant="dark"
-                      onClick={() => resetAuth(configuredService.id)}
+                      onClick={async () => resetAuth(configuredService.id)}
                     >
                       <FontAwesomeIcon icon={faSignOutAlt} /> Reset Token
                     </Button>

@@ -1,37 +1,38 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { ActionPanelFormState } from "@/devTools/editor/editorSlice";
 import {
+  baseSelectExtensionPoint,
+  lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
-  WizardStep,
   PROPERTY_TABLE_BODY,
   selectIsAvailable,
-  lookupExtensionPoint,
+  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
 import {
   ActionPanelConfig,
+  ActionPanelExtensionPoint,
   PanelDefinition,
 } from "@/extensionPoints/actionPanelExtension";
 import FoundationTab from "@/devTools/editor/tabs/actionPanel/FoundationTab";
@@ -45,8 +46,15 @@ import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { v4 as uuidv4 } from "uuid";
 import { getDomain } from "@/permissions/patterns";
+import { faColumns } from "@fortawesome/free-solid-svg-icons";
+import {
+  BaseFormState,
+  ElementConfig,
+} from "@/devTools/editor/extensionPoints/elementConfig";
+import { BlockPipeline } from "@/blocks/combinators";
+import React from "react";
 
-export const wizard: WizardStep[] = [
+const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
   { step: "Foundation", Component: FoundationTab },
   { step: "Data", Component: ReaderTab },
@@ -61,9 +69,29 @@ export const wizard: WizardStep[] = [
   { step: "Logs", Component: LogsTab },
 ];
 
-export function makeActionPanelState(
+export interface ActionPanelFormState extends BaseFormState {
+  type: "actionPanel";
+
+  extensionPoint: {
+    metadata: Metadata;
+    definition: {
+      isAvailable: {
+        matchPatterns: string;
+        selectors: string;
+      };
+    };
+  };
+
+  extension: {
+    heading: string;
+    body: BlockPipeline;
+  };
+}
+
+function fromNativeElement(
   url: string,
   metadata: Metadata,
+  element: null,
   frameworks: FrameworkMeta[]
 ): ActionPanelFormState {
   const base = makeBaseState(uuidv4(), null, metadata, frameworks);
@@ -87,24 +115,15 @@ export function makeActionPanelState(
   };
 }
 
-export function makeActionPanelExtensionPoint({
-  extensionPoint,
-  readers,
-}: ActionPanelFormState): ExtensionPointConfig<PanelDefinition> {
+function selectExtensionPoint(
+  formState: ActionPanelFormState
+): ExtensionPointConfig<PanelDefinition> {
+  const { extensionPoint, readers } = formState;
   const {
-    metadata,
     definition: { isAvailable },
   } = extensionPoint;
-
   return {
-    apiVersion: "v1",
-    kind: "extensionPoint",
-    metadata: {
-      id: metadata.id,
-      version: "1.0.0",
-      name: metadata.name,
-      description: "Side Panel created with the Page Editor",
-    },
+    ...baseSelectExtensionPoint(formState),
     definition: {
       type: "actionPanel",
       reader: readers.map((x) => x.metadata.id),
@@ -113,7 +132,7 @@ export function makeActionPanelExtensionPoint({
   };
 }
 
-export function makeActionPanelExtension({
+function selectExtension({
   uuid,
   label,
   extensionPoint,
@@ -129,18 +148,16 @@ export function makeActionPanelExtension({
   };
 }
 
-export function makeActionPanelConfig(
-  element: ActionPanelFormState
-): DynamicDefinition {
+function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
   return {
     type: "actionPanel",
-    extension: makeActionPanelExtension(element),
-    extensionPoint: makeActionPanelExtensionPoint(element),
+    extension: selectExtension(element),
+    extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
 }
 
-export async function makeActionPanelExtensionFormState(
+export async function fromExtensionPoint(
   url: string,
   extensionPoint: ExtensionPointConfig<PanelDefinition>
 ): Promise<ActionPanelFormState> {
@@ -174,7 +191,7 @@ export async function makeActionPanelExtensionFormState(
   };
 }
 
-export async function makeActionPanelFormState(
+async function fromExtension(
   config: IExtension<ActionPanelConfig>
 ): Promise<ActionPanelFormState> {
   const extensionPoint = await lookupExtensionPoint<
@@ -207,3 +224,34 @@ export async function makeActionPanelFormState(
     },
   };
 }
+
+const config: ElementConfig<never, ActionPanelFormState> = {
+  displayOrder: 3,
+  elementType: "actionPanel",
+  label: "Sidebar Panel",
+  baseClass: ActionPanelExtensionPoint,
+  selectNativeElement: undefined,
+  icon: faColumns,
+  fromNativeElement,
+  asDynamicElement,
+  fromExtensionPoint,
+  selectExtensionPoint,
+  selectExtension,
+  fromExtension,
+  wizard,
+  insertModeHelp: (
+    <div>
+      <p>
+        A sidebar panel can be configured to appear in the PixieBrix sidebar on
+        pages you choose
+      </p>
+
+      <p>
+        Use an existing foundation, or start from scratch to have full control
+        over when the panel appears
+      </p>
+    </div>
+  ),
+};
+
+export default config;

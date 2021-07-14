@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 /**
@@ -23,31 +23,10 @@ import { liftBackground } from "@/background/protocol";
 import { liftExternal } from "@/contentScript/externalProtocol";
 
 import { browser } from "webextension-polyfill-ts";
-import { SerializableResponse } from "@/messaging/protocol";
 import { reportEvent } from "@/telemetry/events";
 import { isChrome } from "@/helpers";
 
-function lift<R extends SerializableResponse = SerializableResponse>(
-  type: string,
-  method: (...args: unknown[]) => Promise<R>
-): (...args: unknown[]) => Promise<R> {
-  const backgroundMethod: (...args: unknown[]) => Promise<R> = liftBackground(
-    type,
-    method
-  );
-  const contentScriptMethod: (...args: unknown[]) => Promise<R> = liftExternal(
-    type,
-    method
-  );
-
-  return async (...args: unknown[]) => {
-    if (isChrome) {
-      return backgroundMethod(...args);
-    }
-
-    return contentScriptMethod(...args);
-  };
-}
+const lift = isChrome ? liftBackground : liftExternal;
 
 export const connectPage = lift("CONNECT_PAGE", async () => {
   return browser.runtime.getManifest();

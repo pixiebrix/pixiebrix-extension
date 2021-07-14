@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import {
@@ -31,7 +31,8 @@ import {
 import { browser, Runtime, WebNavigation } from "webextension-polyfill-ts";
 import { v4 as uuidv4 } from "uuid";
 import { SimpleEvent } from "@/hooks/events";
-import { forbidBackgroundPage } from "@/utils/expect-context";
+import { forbidBackgroundPage } from "@/utils/expectContext";
+import { getErrorMessage } from "@/errors";
 
 const devtoolsHandlers = new Map<Nonce, PromiseHandler>();
 
@@ -98,16 +99,20 @@ export async function callBackground(
   if (isNotification(options)) {
     try {
       port.postMessage(message);
-    } catch (error) {
-      throw new Error(`Error sending devtools notification: ${error.message}`);
+    } catch (error: unknown) {
+      throw new Error(
+        `Error sending devtools notification: ${getErrorMessage(error)}`
+      );
     }
   } else {
     return new Promise((resolve, reject) => {
       devtoolsHandlers.set(nonce, [resolve, reject]);
       try {
         port.postMessage(message);
-      } catch (error) {
-        reject(new Error(`Error sending devtools message: ${error.message}`));
+      } catch (error: unknown) {
+        reject(
+          new Error(`Error sending devtools message: ${getErrorMessage(error)}`)
+        );
       }
     });
   }

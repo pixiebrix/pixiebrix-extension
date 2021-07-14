@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useContext, useEffect, useMemo, useState } from "react";
@@ -24,7 +24,7 @@ import { ObjectField } from "@/components/fields/FieldTable";
 import { FieldArray, useField, useFormikContext } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select, { OptionsType } from "react-select";
-import { uniq, sortBy, isEmpty, identity } from "lodash";
+import { uniq, sortBy, isEmpty, compact } from "lodash";
 import Creatable from "react-select/creatable";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 
@@ -129,9 +129,8 @@ function extractServiceIds(schema: Schema): string[] {
     return schema.anyOf
       .filter((x) => x != false)
       .flatMap((x) => extractServiceIds(x as Schema));
-  } else {
-    throw new Error("Expected $ref or anyOf in schema for service");
   }
+  throw new Error("Expected $ref or anyOf in schema for service");
 }
 
 export const ServiceField: React.FunctionComponent<
@@ -315,9 +314,8 @@ function getDefaultArrayItem(schema: Schema): unknown {
     return false;
   } else if (findOneOf(schema, textPredicate)) {
     return "";
-  } else {
-    return null;
   }
+  return null;
 }
 
 export function getDefaultField(fieldSchema: Schema): FieldComponent {
@@ -328,7 +326,8 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
   } else if (fieldSchema.type === "object") {
     return ObjectField;
   } else if (booleanPredicate(fieldSchema)) {
-    // should this be a TextField so it can be dynamically determined?
+    // Should this be a TextField so it can be dynamically determined?
+    // see https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return BooleanField;
   } else if (textPredicate(fieldSchema)) {
     return TextField;
@@ -336,17 +335,27 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
     return makeOneOfField(findOneOf(fieldSchema, booleanPredicate));
   } else if (findOneOf(fieldSchema, textPredicate)) {
     return makeOneOfField(findOneOf(fieldSchema, textPredicate));
-  } else {
-    // number, string, other primitives, etc.
-    return TextField;
+  } else if (isEmpty(fieldSchema)) {
+    // An empty field schema supports any value. For now, provide an object field since this just shows up
+    // in the @pixiebrix/http brick.
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/709
+    return ObjectField;
   }
+  // number, string, other primitives, etc.
+  return TextField;
 }
 
+/**
+ * A form field, including label, error message, etc.
+ */
 type CustomRenderer = {
   match: (fieldSchema: Schema) => boolean;
   Component: FieldComponent;
 };
 
+/**
+ * An individual form control (excluding label, error message, etc.)
+ */
 type CustomControl = {
   match: (fieldSchema: Schema) => boolean;
   Component: FieldComponent;
@@ -381,6 +390,11 @@ export interface BlockOptionProps {
   showOutputKey?: boolean;
 }
 
+const OUTPUT_KEY_SCHEMA: Schema = {
+  type: "string",
+  description: "A key to refer to this brick in subsequent bricks",
+};
+
 function genericOptionsFactory(
   schema: Schema,
   uiSchema?: UiSchema
@@ -397,7 +411,7 @@ function genericOptionsFactory(
         return (
           <FieldRenderer
             key={prop}
-            name={[name, configKey, prop].filter(identity).join(".")}
+            name={compact([name, configKey, prop]).join(".")}
             schema={fieldSchema}
             uiSchema={propUiSchema}
           />
@@ -407,17 +421,14 @@ function genericOptionsFactory(
         <FieldRenderer
           name={`${name}.outputKey`}
           label="Output Variable"
-          schema={{
-            type: "string",
-            description: "A key to refer to this brick in subsequent bricks",
-          }}
+          schema={OUTPUT_KEY_SCHEMA}
         />
       )}
       {isEmpty(schema) && <div>No options available</div>}
     </>
   );
 
-  element.displayName = `Options Field`;
+  element.displayName = "Options Field";
   return element;
 }
 

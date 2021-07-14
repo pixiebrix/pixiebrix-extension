@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { useState } from "react";
@@ -66,15 +66,15 @@ export async function fetch<TData>(
       throw new Error(`Request error: ${statusText}`);
     }
     return data;
-  } else {
-    const { data } = await axios.get<TData>(url);
-    return data;
   }
+  const { data } = await axios.get<TData>(url);
+  return data;
 }
 
 /**
  * Hook for fetching information from a URL.
  * @param relativeOrAbsoluteUrl
+ * @deprecated use the useFetch hook, which tracks loading state and errors
  */
 export function useFetch<TData>(
   relativeOrAbsoluteUrl: string
@@ -86,13 +86,14 @@ export function useFetch<TData>(
   useAsyncEffect(
     async (isMounted) => {
       if (host) {
+        // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument here
         setData(undefined);
         try {
           const data = (await fetch(relativeOrAbsoluteUrl)) as TData;
           if (!isMounted()) return;
           setData(data);
-        } catch (error) {
-          console.exception(error);
+        } catch (error: unknown) {
+          console.error(error);
           if (isMounted()) {
             addToast(`An error occurred fetching data from the server`, {
               appearance: "error",

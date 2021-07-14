@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useCallback } from "react";
@@ -20,12 +20,14 @@ import { Formik, FormikBag, FormikValues, useField } from "formik";
 import { Form, Button, Row, Col, Alert } from "react-bootstrap";
 import * as Yup from "yup";
 import { useToasts } from "react-toast-notifications";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { mapValues, castArray } from "lodash";
 import { makeURL } from "@/hooks/fetch";
 import { getExtensionToken } from "@/auth/token";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { reportError } from "@/telemetry/logging";
+import { StatusCodes } from "http-status-codes";
 
 interface Profile {
   scope: string | null;
@@ -79,6 +81,15 @@ const TextField: React.FunctionComponent<FieldProps> = ({
   );
 };
 
+const VALIDATION_SCHEMA = Yup.object({
+  scope: Yup.string()
+    .matches(
+      SCOPE_REGEX,
+      "Your account alias must start with @ followed by lowercase letters and numbers"
+    )
+    .required(),
+});
+
 const ScopeSettings: React.FunctionComponent = () => {
   const { addToast } = useToasts();
 
@@ -87,40 +98,41 @@ const ScopeSettings: React.FunctionComponent = () => {
       values: FormikValues,
       { setErrors }: FormikBag<unknown, Profile>
     ) => {
-      let response: AxiosResponse<unknown>;
       try {
-        response = await axios.patch(await makeURL("/api/settings/"), values, {
+        await axios.patch(await makeURL("/api/settings/"), values, {
           headers: { Authorization: `Token ${await getExtensionToken()}` },
         });
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
-        if (error.response.status === 401) {
-          addToast("Could not authenticate with PixieBrix", {
-            appearance: "error",
-            autoDismiss: true,
-          });
-        } else if (error.response.status === 400) {
-          setErrors(mapValues(error.response.data, (xs) => castArray(xs)[0]));
-        } else {
-          console.error(response.data);
-          addToast("Error updating account alias", {
-            appearance: "error",
-            autoDismiss: true,
-          });
+        switch (error.response.status) {
+          case StatusCodes.UNAUTHORIZED: {
+            addToast("Could not authenticate with PixieBrix", {
+              appearance: "error",
+              autoDismiss: true,
+            });
+            return;
+          }
+          case StatusCodes.BAD_REQUEST: {
+            setErrors(mapValues(error.response.data, (xs) => castArray(xs)[0]));
+            return;
+          }
+          default: {
+            reportError(error);
+            addToast("Error updating account alias", {
+              appearance: "error",
+              autoDismiss: true,
+            });
+          }
         }
-        return;
       }
-      addToast("Set account alias", {
-        appearance: "success",
-        autoDismiss: true,
-      });
       location.reload();
     },
     [addToast]
   );
 
   return (
-    <Row>
-      <Col md={8} lg={6} className="mx-auto">
+    <Row className="vh-100">
+      <Col md={8} lg={6} className="mx-auto vh-100 overflow-auto">
         <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
 
         <div className="font-weight-bold">
@@ -147,14 +159,7 @@ const ScopeSettings: React.FunctionComponent = () => {
           onSubmit={submit}
           enableReinitialize
           initialValues={{ scope: "" }}
-          validationSchema={Yup.object({
-            scope: Yup.string()
-              .matches(
-                SCOPE_REGEX,
-                "Your account alias must start with @ followed by lowercase letters and numbers"
-              )
-              .required(),
-          })}
+          validationSchema={VALIDATION_SCHEMA}
         >
           {({ handleSubmit, isSubmitting, isValid }) => (
             <Form noValidate onSubmit={handleSubmit} className="mt-2">
@@ -162,7 +167,7 @@ const ScopeSettings: React.FunctionComponent = () => {
                 placeholder="@peter-parker"
                 name="scope"
                 description="Your @alias for publishing bricks, e.g., @peter-parker"
-                label="Scope"
+                label="Account Alias"
               />
               <Button type="submit" disabled={isSubmitting || !isValid}>
                 Set My Account Alias

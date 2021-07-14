@@ -1,56 +1,60 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { isBackgroundPage } from "webext-detect-page";
-import { toggleActionPanel } from "@/contentScript/browserAction";
+import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
-import { ensureContentScript } from "@/background/util";
-import { browser, Runtime } from "webextension-polyfill-ts";
-import { allowSender } from "@/actionPanel/protocol";
-import { sleep, isPrivatePageError } from "@/utils";
+import { ensureContentScript, showErrorInOptions } from "@/background/util";
+import { browser } from "webextension-polyfill-ts";
+import { sleep } from "@/utils";
+import { JsonObject, JsonValue } from "type-fest";
+import { HandlerMap } from "@/messaging/protocol";
+import { getErrorMessage, isPrivatePageError } from "@/errors";
 
-export const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
-
+const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
 export const FORWARD_FRAME_NOTIFICATION = `${MESSAGE_PREFIX}/FORWARD_ACTION_FRAME_NOTIFICATION`;
+export const SHOW_ACTION_FRAME = `${MESSAGE_PREFIX}/SHOW_ACTION_FRAME`;
+export const HIDE_ACTION_FRAME = `${MESSAGE_PREFIX}/HIDE_ACTION_FRAME`;
+
+// The sidebar is always injected to into the top level frame
+const TOP_LEVEL_FRAME_ID = 0;
 
 /**
  * Mapping from tabId to the nonce for the browser action iframe
  */
 const tabNonces = new Map<number, string>();
+
+/**
+ * Mapping from tabId to the browser frame id for the browser action iframe
+ */
 const tabFrames = new Map<number, number>();
 
-async function showErrorInOptions(id: string, tabIndex: number): Promise<void> {
-  const url = new URL(browser.runtime.getURL("options.html"));
-  url.searchParams.set("error", id);
-  await browser.tabs.create({
-    url: url.toString(),
-    index: tabIndex + 1,
-  });
-}
-
 async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
-  // We're either getting a new frame, or getting rid of the existing one. Therefore, forget the old frame
+  // We're either getting a new frame, or getting rid of the existing one. Forget the old frame
   // id so we're not sending messages to a dead frame
   tabFrames.delete(tab.id);
 
   try {
-    await ensureContentScript({ tabId: tab.id, frameId: 0 });
-    const nonce = await toggleActionPanel({ tabId: tab.id, frameId: 0 });
+    await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
+    const nonce = await contentScript.toggleActionPanel({
+      tabId: tab.id,
+      frameId: TOP_LEVEL_FRAME_ID,
+    });
     tabNonces.set(tab.id, nonce);
   } catch (error: unknown) {
     if (isPrivatePageError(error)) {
@@ -79,12 +83,12 @@ type ForwardActionFrameNotification = {
   type: typeof FORWARD_FRAME_NOTIFICATION;
   payload: {
     type: string;
-    meta?: object;
-    payload: unknown;
+    meta?: JsonObject;
+    payload: JsonValue;
   };
 };
 
-const RETRY_INTERVAL_MILLIS = 50;
+const FORWARD_RETRY_INTERVAL_MILLIS = 50;
 
 async function forwardWhenReady(
   tabId: number,
@@ -95,7 +99,7 @@ async function forwardWhenReady(
     frameId = tabFrames.get(tabId);
     if (frameId == null) {
       console.debug(`Action frame not ready for tab ${tabId}, waiting...`);
-      await sleep(RETRY_INTERVAL_MILLIS);
+      await sleep(FORWARD_RETRY_INTERVAL_MILLIS);
     }
   } while (frameId == null);
 
@@ -105,9 +109,9 @@ async function forwardWhenReady(
   while (true) {
     try {
       return await browser.tabs.sendMessage(tabId, message, { frameId });
-    } catch (error) {
-      if (error?.message?.includes("Could not establish connection")) {
-        await sleep(RETRY_INTERVAL_MILLIS);
+    } catch (error: unknown) {
+      if (getErrorMessage(error).includes("Could not establish connection")) {
+        await sleep(FORWARD_RETRY_INTERVAL_MILLIS);
       } else {
         throw error;
       }
@@ -115,42 +119,55 @@ async function forwardWhenReady(
   }
 }
 
-function backgroundListener(
-  request: RegisterActionFrameMessage | ForwardActionFrameNotification,
-  sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
-  if (allowSender(sender)) {
-    switch (request.type) {
-      case REGISTER_ACTION_FRAME: {
-        const registerAction = request as RegisterActionFrameMessage;
-        if (tabNonces.get(sender.tab.id) !== registerAction.payload.nonce) {
-          console.warn("Action frame nonce mismatch", {
-            expected: tabNonces.get(sender.tab.id),
-            actual: registerAction.payload.nonce,
-          });
-        }
-        console.debug("Setting action frame metadata", {
-          tabId: sender.tab.id,
-          frameId: sender.frameId,
-        });
-        tabFrames.set(sender.tab.id, sender.frameId);
-        return;
-      }
-      case FORWARD_FRAME_NOTIFICATION: {
-        const forwardAction = request as ForwardActionFrameNotification;
-        return forwardWhenReady(sender.tab.id, forwardAction.payload).catch(
-          reportError
-        );
-      }
-      default: {
-        // NOOP
-      }
+const handlers = new HandlerMap();
+
+handlers.set(
+  REGISTER_ACTION_FRAME,
+  async (request: RegisterActionFrameMessage, sender) => {
+    const tabId = sender.tab.id;
+    if (tabNonces.get(tabId) !== request.payload.nonce) {
+      console.warn("Action frame nonce mismatch", {
+        expected: tabNonces.get(tabId),
+        actual: request.payload.nonce,
+      });
     }
+    console.debug("Setting action frame metadata", {
+      tabId,
+      frameId: sender.frameId,
+    });
+    tabFrames.set(tabId, sender.frameId);
   }
-}
+);
+
+handlers.set(
+  FORWARD_FRAME_NOTIFICATION,
+  async (request: ForwardActionFrameNotification, sender) => {
+    const tabId = sender.tab.id;
+    return forwardWhenReady(tabId, request.payload).catch(reportError);
+  }
+);
+
+handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
+  const tabId = sender.tab.id;
+  tabFrames.delete(tabId);
+  const nonce = await contentScript.showActionPanel({
+    tabId,
+    frameId: TOP_LEVEL_FRAME_ID,
+  });
+  console.debug("Setting action frame nonce", { sender, nonce });
+  tabNonces.set(tabId, nonce);
+});
+
+handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
+  const tabId = sender.tab.id;
+  tabFrames.delete(tabId);
+  await contentScript.hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
+  console.debug("Clearing action frame nonce", { sender, nonce });
+  tabNonces.delete(tabId);
+});
 
 if (isBackgroundPage()) {
   chrome.browserAction.onClicked.addListener(handleBrowserAction);
   console.debug("Installed browserAction click listener");
-  browser.runtime.onMessage.addListener(backgroundListener);
+  browser.runtime.onMessage.addListener(handlers.asListener());
 }

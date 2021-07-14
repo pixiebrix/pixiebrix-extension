@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -62,6 +62,7 @@ import {
 import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
 import { PanelDefinition } from "@/extensionPoints/panelExtension";
+import iconAsSVG from "@/icons/svgIcons";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -202,7 +203,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     for (const cancelObserver of this.cancelPending) {
       try {
         cancelObserver?.();
-      } catch (error) {
+      } catch (error: unknown) {
         // try to proceed as normal
         reportError(error, this.logger.context);
       }
@@ -252,6 +253,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         this.removeExtensions(extensions.map((x) => x.id));
         // release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         this.logger.error(error);
       }
@@ -263,7 +265,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         try {
           clear();
         } catch {
-          console.exception("Error cancelling dependency observer");
+          console.error("Error cancelling dependency observer");
         }
       }
       this.cancelDependencyObservers.delete(extension.id);
@@ -358,12 +360,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           if (!menuContainers.includes(element)) {
             const menuUUID = uuidv4();
             this.menus.set(menuUUID, element);
-            return acquireElement(element, this.id, () =>
+            return acquireElement(element, this.id, async () =>
               this.reacquire(menuUUID)
             );
-          } else {
-            existingCount++;
           }
+          existingCount++;
         })
         .get()
     );
@@ -421,15 +422,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const renderTemplate = engineRenderer(extension.templateEngine);
 
-    const iconAsSVG = icon
-      ? (
-          await import(
-            /* webpackChunkName: "icons" */
-            "@/icons/svgIcons"
-          )
-        ).default
-      : null;
-
     let html: string;
 
     if (extension.config.if) {
@@ -463,12 +455,12 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const extensionContext = { ...ctxt, ...serviceContext };
       html = Mustache.render(this.getTemplate(), {
         caption: renderTemplate(caption, extensionContext),
-        icon: iconAsSVG?.(icon),
+        icon: await iconAsSVG?.(icon),
       });
     } else {
       html = Mustache.render(this.getTemplate(), {
         caption,
-        icon: iconAsSVG?.(icon),
+        icon: await iconAsSVG?.(icon),
       });
     }
 
@@ -500,6 +492,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           extension.id,
           mergeConfig(onSuccess, DEFAULT_ACTION_RESULTS.success)
         );
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         if (hasCancelRootCause(error)) {
           notifyResult(
@@ -550,7 +543,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if (dependencies.length > 0) {
       const rerun = once(() => {
         console.debug("Dependency changed, re-running extension");
-        this.run([extension.id]);
+        void this.run([extension.id]);
       });
 
       const observer = new MutationObserver(rerun);
@@ -559,6 +552,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       let elementCount = 0;
       for (const dependency of dependencies) {
+        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $dependency = $(document).find(dependency);
         if ($dependency.length > 0) {
           $dependency.each((index, element) => {
@@ -571,7 +565,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } else {
           const [elementPromise, cancel] = awaitElementOnce(dependency);
           cancellers.push(cancel);
-          elementPromise.then(() => {
+          void elementPromise.then(() => {
             rerun();
           });
         }
@@ -584,14 +578,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.cancelDependencyObservers.set(extension.id, () => {
         try {
           observer.disconnect();
-        } catch (error) {
-          console.exception("Error cancelling mutation observer", error);
+        } catch (error: unknown) {
+          console.error("Error cancelling mutation observer", error);
         }
         for (const cancel of cancellers) {
           try {
             cancel();
-          } catch (error) {
-            console.exception("Error cancelling dependency observer", error);
+          } catch (error: unknown) {
+            console.error("Error cancelling dependency observer", error);
           }
         }
       });
@@ -653,7 +647,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         try {
           await this.runExtension(menu, ctxtPromise, extension);
-        } catch (error) {
+        } catch (error: unknown) {
           if (error instanceof PromiseCancelled) {
             console.debug(
               `menuItemExtension run promise cancelled for extension: ${extension.id}`
@@ -743,6 +737,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
     if (typeof position === "object") {
       if (position.sibling) {
+        // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $sibling = $menu.find(position.sibling);
         if ($sibling.length > 1) {
           throw new Error(
@@ -789,12 +784,11 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
         throw new Error(`Found no elements for  reader selector: ${selector}`);
       }
       return $elt.get(0);
-    } else {
-      return document;
     }
+    return document;
   }
 
-  defaultReader() {
+  async defaultReader() {
     return mergeReaders(this._definition.reader);
   }
 

@@ -1,22 +1,22 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import { FormState, isCustomReader } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { compact, isEmpty, mapValues, partial, pick, pickBy } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
@@ -42,6 +42,7 @@ import devtoolFields from "@/devTools/editor/fields/Fields";
 import GenerateSchema from "generate-schema";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import ToggleField from "@/devTools/editor/components/ToggleField";
+import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 
 type ReaderSelector = (options: {
   type: string;
@@ -198,19 +199,19 @@ const FrameworkFields: React.FunctionComponent<{
   );
 };
 
+const JQUERY_FIELD_SCHEMA: Schema = {
+  type: "object",
+  additionalProperties: {
+    type: "string",
+    format: "selector",
+  },
+};
+
 const JQueryFields: React.FunctionComponent<{
   name: string;
   element: FormState;
 }> = ({ name }) => {
-  const schema: Schema = {
-    type: "object",
-    additionalProperties: {
-      type: "string",
-      format: "selector",
-    },
-  };
-
-  const Field = useMemo(() => getDefaultField(schema), []);
+  const Field = useMemo(() => getDefaultField(JQUERY_FIELD_SCHEMA), []);
 
   return (
     <Form.Group as={Row} controlId="readerSelector">
@@ -218,7 +219,10 @@ const JQueryFields: React.FunctionComponent<{
         Selectors
       </Form.Label>
       <Col sm={10}>
-        <Field name={`${name}.definition.selectors`} schema={schema} />
+        <Field
+          name={`${name}.definition.selectors`}
+          schema={JQUERY_FIELD_SCHEMA}
+        />
       </Col>
     </Form.Group>
   );
@@ -228,7 +232,8 @@ const ReaderConfig: React.FunctionComponent<{
   readerIndex: number;
   editable: Set<string>;
   available: boolean;
-}> = ({ readerIndex, editable, available }) => {
+  isLocked: boolean;
+}> = ({ readerIndex, editable, available, isLocked }) => {
   const {
     port,
     tabState: { meta },
@@ -245,8 +250,7 @@ const ReaderConfig: React.FunctionComponent<{
     error: undefined,
   });
 
-  // only passing number in
-  // eslint-disable-next-line security/detect-object-injection
+  // eslint-disable-next-line security/detect-object-injection -- only passing number in
   const reader = values.readers[readerIndex];
 
   if (!isCustomReader(reader)) {
@@ -254,8 +258,8 @@ const ReaderConfig: React.FunctionComponent<{
   }
 
   const locked = useMemo(
-    () => values.installed && !editable?.has(reader.metadata.id),
-    [editable, values.installed, reader.metadata.id]
+    () => (values.installed && !editable?.has(reader.metadata.id)) || isLocked,
+    [editable, values.installed, reader.metadata.id, isLocked]
   );
 
   const labelRenderer = useLabelRenderer();
@@ -290,12 +294,12 @@ const ReaderConfig: React.FunctionComponent<{
         );
         output = await runReader(port, { config });
         schema = GenerateSchema.json("Inferred Schema", output);
-      } catch (error_) {
+      } catch (error: unknown) {
         if (!isMounted()) return;
         setSchema({
           output: undefined,
           schema: undefined,
-          error: error_.toString(),
+          error: String(error),
         });
         return;
       }
@@ -318,9 +322,8 @@ const ReaderConfig: React.FunctionComponent<{
   const searchResults = useMemo(() => {
     if (debouncedQuery === "" || output == null) {
       return output;
-    } else {
-      return searchData(query, output);
     }
+    return searchData(debouncedQuery, output);
   }, [debouncedQuery, output]);
 
   if (locked) {
@@ -388,7 +391,9 @@ const ReaderConfig: React.FunctionComponent<{
                   Extension not available on page
                 </span>
               )}
-              {searchResults !== undefined ? (
+              {searchResults === undefined ? (
+                <GridLoader />
+              ) : (
                 <JSONTree
                   data={searchResults}
                   labelRenderer={labelRenderer}
@@ -397,8 +402,6 @@ const ReaderConfig: React.FunctionComponent<{
                   hideRoot
                   sortObjectKeys
                 />
-              ) : (
-                <GridLoader />
               )}
             </div>
           </Col>
@@ -498,7 +501,9 @@ const ReaderConfig: React.FunctionComponent<{
                     Extension not available on page
                   </span>
                 )}
-                {searchResults !== undefined ? (
+                {searchResults === undefined ? (
+                  <GridLoader />
+                ) : (
                   <JSONTree
                     data={searchResults}
                     labelRenderer={labelRenderer}
@@ -507,18 +512,16 @@ const ReaderConfig: React.FunctionComponent<{
                     hideRoot
                     sortObjectKeys
                   />
-                ) : (
-                  <GridLoader />
                 )}
               </div>
             </Col>
             <Col md={6} className="ReaderData">
               <span>Inferred Schema</span>
               <div className="overflow-auto h-100 w-100">
-                {schema !== undefined ? (
-                  <SchemaTree schema={schema} />
-                ) : (
+                {schema === undefined ? (
                   <GridLoader />
+                ) : (
+                  <SchemaTree schema={schema} />
                 )}
               </div>
             </Col>

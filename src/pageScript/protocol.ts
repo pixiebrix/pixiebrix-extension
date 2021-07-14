@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { createSendScriptMessage } from "@/messaging/chrome";
@@ -88,7 +88,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
     try {
       // Chrome will drop the whole detail if it contains non-serializable values, e.g., methods
       cleanResult = cleanValue(result ?? null);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Cannot serialize result", { result, error });
       throw new Error(`Cannot serialize result for result ${type}`);
     }
@@ -103,7 +103,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
         detail,
       })
     );
-  } catch (error) {
+  } catch (error: unknown) {
     try {
       const detail = {
         id: meta.id,
@@ -115,7 +115,7 @@ async function messageHandler(event: MessageEvent): Promise<void> {
           detail,
         })
       );
-    } catch (error_) {
+    } catch (error_: unknown) {
       console.error(
         "An error occurred while dispatching an error for %s",
         type,

@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2021 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { browser } from "webextension-polyfill-ts";
@@ -26,26 +26,33 @@ import {
   RendererPayload,
 } from "@/actionPanel/protocol";
 import { FORWARD_FRAME_NOTIFICATION } from "@/background/browserAction";
+import { isBrowser } from "@/helpers";
 
 const SIDEBAR_WIDTH_PX = 400;
+const PANEL_CONTAINER_ID = "pixiebrix-chrome-extension";
+const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
 
 type ExtensionRef = {
   extensionId: string;
   extensionPointId: string;
 };
 
-type ShowCallback = () => void;
+export type ShowCallback = () => void;
 
-let _showPanel = false;
-const _panels: PanelEntry[] = [];
-const _callbacks: ShowCallback[] = [];
-let _nonce: string = null;
+const panels: PanelEntry[] = [];
+const extensionCallbacks: ShowCallback[] = [];
+let originalMarginRight: number;
 
 export function registerShowCallback(onShow: ShowCallback): void {
-  _callbacks.push(onShow);
+  extensionCallbacks.push(onShow);
 }
 
-let _originalMarginRight: number;
+export function removeShowCallback(onShow: ShowCallback): void {
+  const index = extensionCallbacks.indexOf(onShow);
+  if (index > -1) {
+    extensionCallbacks.splice(index, 1);
+  }
+}
 
 function getHTMLElement(): JQuery<HTMLElement> {
   // resolve html tag, which is more dominant than <body>
@@ -55,102 +62,106 @@ function getHTMLElement(): JQuery<HTMLElement> {
     return $(document.querySelector("html"));
   } else if ($("html").length > -1) {
     return $("html");
-  } else {
-    throw new Error("HTML node not found");
   }
+  throw new Error("HTML node not found");
 }
 
 function storeOriginalCSS() {
   const $html = getHTMLElement();
-  _originalMarginRight = Number.parseFloat($html.css("margin-right"));
+  originalMarginRight = Number.parseFloat($html.css("margin-right"));
 }
 
 function adjustDocumentStyle(): void {
   const $html = getHTMLElement();
-  $html.css("margin-right", `${_originalMarginRight + SIDEBAR_WIDTH_PX}px`);
+  $html.css("margin-right", `${originalMarginRight + SIDEBAR_WIDTH_PX}px`);
 }
 
 function restoreDocumentStyle(): void {
-  const html = getHTMLElement();
-  html.css("margin-right", _originalMarginRight);
+  const $html = getHTMLElement();
+  $html.css("margin-right", originalMarginRight);
 }
 
-export function showActionPanel(): string {
-  adjustDocumentStyle();
-
-  if ($("#pixiebrix-chrome-extension").length > 0) {
-    console.warn("Action panel already in DOM");
-    return;
-  }
+function insertActionPanel(): string {
+  const nonce = uuidv4();
 
   const actionURL = browser.runtime.getURL("action.html");
 
   const $panelContainer = $(
-    `<div id="pixiebrix-chrome-extension" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
+    `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
   );
 
-  _nonce = uuidv4();
-
   const $frame = $(
-    `<iframe src="${actionURL}?nonce=${_nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" id="pixiebrix-frame"></iframe>`
+    `<iframe id="pixiebrix-frame" src="${actionURL}?nonce=${nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" ></iframe>`
   );
 
   $panelContainer.append($frame);
 
   $("body").append($panelContainer);
 
-  // run the extension points available on the page
-  for (const callback of _callbacks) {
+  return nonce;
+}
+
+export function showActionPanel(): string {
+  adjustDocumentStyle();
+
+  const container: HTMLElement = document.querySelector(
+    PANEL_CONTAINER_SELECTOR
+  );
+
+  const nonce = container?.dataset?.nonce ?? insertActionPanel();
+
+  // Run the extension points available on the page. If the action panel is already in the page, running
+  // all the callbacks ensures the content is up to date
+  for (const callback of extensionCallbacks) {
     try {
-      callback();
-    } catch (error) {
+      void callback();
+    } catch (error: unknown) {
+      // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
+      // the callbacks does not interfere prevent showing the sidebar
       reportError(error);
     }
   }
 
-  return _nonce;
+  return nonce;
 }
 
 export function hideActionPanel(): void {
+  console.debug("Hide action panel");
   restoreDocumentStyle();
-  _nonce = null;
-  $("#pixiebrix-chrome-extension").remove();
-  _showPanel = false;
+  $(PANEL_CONTAINER_SELECTOR).remove();
 }
 
-export function toggleActionPanel(): string {
-  _showPanel = !_showPanel;
-  if (_showPanel) {
-    return showActionPanel();
-  } else {
+export function toggleActionPanel(): string | null {
+  if (isActionPanelVisible()) {
     hideActionPanel();
     return null;
   }
+  return showActionPanel();
 }
 
 export function isActionPanelVisible(): boolean {
-  return _showPanel;
+  return document.querySelector(PANEL_CONTAINER_SELECTOR) != null;
 }
 
 export function getStore(): ActionPanelStore {
-  return { panels: _panels };
+  return { panels };
 }
 
 function renderPanels() {
-  if (_showPanel) {
+  if (isActionPanelVisible()) {
     void browser.runtime.sendMessage({
       type: FORWARD_FRAME_NOTIFICATION,
       payload: {
         type: RENDER_PANELS_MESSAGE,
-        payload: { panels: _panels },
+        payload: { panels },
       },
     });
   }
 }
 
 export function removeExtensionPoint(extensionPointId: string): void {
-  const current = _panels.splice(0, _panels.length);
-  _panels.push(
+  const current = panels.splice(0, panels.length);
+  panels.push(
     ...current.filter((x) => x.extensionPointId !== extensionPointId)
   );
   renderPanels();
@@ -159,9 +170,9 @@ export function removeExtensionPoint(extensionPointId: string): void {
 export function reservePanels(refs: ExtensionRef[]): void {
   if (refs.length > 0) {
     for (const { extensionId, extensionPointId } of refs) {
-      const entry = _panels.find((x) => x.extensionId === extensionId);
+      const entry = panels.find((x) => x.extensionId === extensionId);
       if (!entry) {
-        _panels.push({
+        panels.push({
           extensionId,
           extensionPointId,
           heading: null,
@@ -174,7 +185,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
 }
 
 export function updateHeading(extensionId: string, heading: string): void {
-  const entry = _panels.find((x) => x.extensionId === extensionId);
+  const entry = panels.find((x) => x.extensionId === extensionId);
   if (entry) {
     entry.heading = heading;
     renderPanels();
@@ -186,17 +197,14 @@ export function upsertPanel(
   heading: string,
   payload: RendererPayload | RendererError
 ): void {
-  const entry = _panels.find((x) => x.extensionId === extensionId);
+  const entry = panels.find((x) => x.extensionId === extensionId);
   if (entry) {
     entry.payload = payload;
   } else {
-    _panels.push({ extensionId, extensionPointId, heading, payload });
+    panels.push({ extensionId, extensionPointId, heading, payload });
   }
   renderPanels();
 }
-
-const isBrowser =
-  typeof window !== "undefined" && typeof window.document !== "undefined";
 
 if (isBrowser) {
   storeOriginalCSS();

@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { Form, Row, Col } from "react-bootstrap";
@@ -41,7 +41,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
       ? uniq([...created, ...values]).map((x) => ({ value: x, label: x }))
       : [];
     return [schema?.enum == null, options];
-  }, [schema?.examples, schema?.enum]);
+  }, [created, schema?.examples, schema?.enum]);
 
   let control;
 
@@ -52,7 +52,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         options={options}
         onCreateOption={(value) => setCreated(uniq([...created, value]))}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => helpers.setValue(option?.value)}
       />
     );
   } else if (options.length > 0 && !creatable) {
@@ -61,7 +61,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         isClearable
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => helpers.setValue(option?.value)}
       />
     );
   } else if (schema.format === "markdown") {

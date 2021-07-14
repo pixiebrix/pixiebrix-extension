@@ -1,21 +1,22 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { MessageContext, SerializedError } from "@/core";
+import { MessageContext } from "@/core";
+import { ErrorObject } from "serialize-error";
 
 export class ValidationError extends Error {
   errors: unknown;
@@ -28,7 +29,17 @@ export class ValidationError extends Error {
 }
 
 /**
- * Based class for "Error" of cancelling out of a flow that's in progress
+ * Base class for connection errors between browser extension components
+ */
+export class ConnectionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ConnectionError";
+  }
+}
+
+/**
+ * Base class for "Error" of cancelling out of a flow that's in progress
  */
 export class CancelError extends Error {
   constructor(message: string) {
@@ -76,14 +87,21 @@ export class ContextError extends Error {
   }
 }
 
+export function isErrorObject(error: unknown): error is ErrorObject {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- This is a type guard function and it uses ?.
+  return typeof (error as any)?.message === "string";
+}
+
 /**
  * Returns true iff the root cause of the error was a CancelError.
- * @param err the error object
+ * @param error the error object
  */
-export function hasCancelRootCause(error: Error | SerializedError): boolean {
-  if (typeof error !== "object") {
+export function hasCancelRootCause(error: unknown): boolean {
+  if (!isErrorObject(error)) {
     return false;
-  } else if (error instanceof CancelError || error.name === "CancelError") {
+  }
+
+  if (error instanceof CancelError || error.name === "CancelError") {
     return true;
   } else if (error instanceof ContextError) {
     return hasCancelRootCause(error.cause);
@@ -93,15 +111,17 @@ export function hasCancelRootCause(error: Error | SerializedError): boolean {
 
 /**
  * Returns true iff the root cause of the error was a BusinessError.
- * @param err the error object
+ * @param error the error object
  */
-export function hasBusinessRootCause(error: Error | SerializedError): boolean {
-  if (typeof error !== "object") {
+export function hasBusinessRootCause(error: unknown): boolean {
+  if (!isErrorObject(error)) {
     return false;
-  } else if (error instanceof BusinessError || error.name === "BusinessError") {
+  }
+
+  if (error instanceof BusinessError || error.name === "BusinessError") {
     return true;
   } else if (error instanceof ContextError) {
-    return hasCancelRootCause(error.cause);
+    return hasBusinessRootCause(error.cause);
   }
   return false;
 }
@@ -123,19 +143,63 @@ function testConnectionErrorPatterns(message: string): boolean {
   return false;
 }
 
+function isPromiseRejectionEvent(
+  event: unknown
+): event is PromiseRejectionEvent {
+  return typeof event === "object" && "reason" in event;
+}
+
+function isErrorEvent(event: unknown): event is ErrorEvent {
+  return typeof event === "object" && "message" in event;
+}
+
+/**
+ * Return true if the proximate of event is an messaging or port error.
+ *
+ * NOTE: does not recursively identify the root cause of the error.
+ */
 export function isConnectionError(
   event: ErrorEvent | PromiseRejectionEvent | unknown
 ): boolean {
   if (typeof event === "string") {
     return testConnectionErrorPatterns(event);
+  } else if (event instanceof ConnectionError) {
+    return true;
   } else if (event != null && typeof event === "object") {
-    if ("reason" in event) {
-      return testConnectionErrorPatterns((event as { reason: string }).reason);
-    } else if ("message" in event) {
-      return testConnectionErrorPatterns(
-        (event as { message: string }).message
+    if (isPromiseRejectionEvent(event)) {
+      return (
+        event.reason instanceof ConnectionError ||
+        testConnectionErrorPatterns(event.reason)
       );
+    } else if (isErrorEvent(event)) {
+      return testConnectionErrorPatterns(event.message);
     }
   }
   return false;
+}
+
+/**
+ * Some pages are off-limits to extension. This function can find out if an error is due to this limitation.
+ *
+ * Example error messages:
+ * Cannot access a chrome:// URL
+ * Cannot access a chrome-extension:// URL of different extension
+ * Cannot access contents of url "chrome-extension://mpjjildhmpddojocokjkgmlkkkfjnepo/options.html#/". Extension manifest must request permission to access this host.
+ * The extensions gallery cannot be scripted.
+ *
+ * @param error
+ * @returns
+ */
+export function isPrivatePageError(error: unknown): boolean {
+  return /cannot be scripted|(chrome|about|extension):\/\//.test(
+    getErrorMessage(error)
+  );
+}
+
+export function getErrorMessage(error: unknown): string {
+  if (isErrorObject(error)) {
+    return error.message;
+  }
+
+  return String(error);
 }

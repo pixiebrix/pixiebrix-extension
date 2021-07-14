@@ -1,18 +1,18 @@
 /*
- * Copyright (C) 2020 Pixie Brix, LLC
+ * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * GNU Affero General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 import { v4 as uuidv4 } from "uuid";
@@ -53,7 +53,7 @@ const handlers: Map<string, HandlerEntry> = new Map();
 export function allowBackgroundSender(
   sender: ChromeMessageSender | Runtime.MessageSender
 ): boolean {
-  if (!sender) {
+  if (sender == null) {
     return false;
   }
   const { externally_connectable } = chrome.runtime.getManifest();
@@ -64,68 +64,47 @@ export function allowBackgroundSender(
   );
 }
 
-function backgroundListener(
+async function handleRequest(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
-): Promise<unknown> | undefined {
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage
-  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage
-
-  if (!allowBackgroundSender(sender)) {
-    console.debug(
-      `Ignoring message to background page from unknown sender`,
-      sender
-    );
-    return;
-  }
-
+): Promise<unknown> {
   const { type, payload, meta } = request;
-  const { handler, options } = handlers.get(type) ?? {};
+  const { handler, options } = handlers.get(type);
 
-  if (handler) {
-    const notification = isNotification(options);
+  try {
+    const value = await handler(...payload);
 
-    const handlerPromise = new Promise((resolve) =>
-      resolve(handler(...payload))
+    console.debug(
+      `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
     );
-
-    if (notification) {
-      handlerPromise.catch((error) => {
-        console.warn(
-          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
-          error
-        );
-      });
+    return value;
+  } catch (error: unknown) {
+    if (isNotification(options)) {
+      console.warn(
+        `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
+        error
+      );
       return;
     }
 
-    return handlerPromise
-      .then((value) => {
-        console.debug(
-          `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
-        );
-        return value;
-      })
-      .catch((error) => {
-        console.debug(
-          `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
-        );
-        return toErrorResponse(type, error);
-      });
+    console.debug(
+      `Handler REJECTED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
+    );
+
+    return toErrorResponse(type, error);
   }
 }
 
 export function getExtensionId(): string {
   if (isContentScript() || isOptionsPage() || isBackgroundPage()) {
     return browser.runtime.id;
-  } else {
-    if (chrome.runtime == null) {
-      throw new RuntimeNotFoundError(
-        "Browser runtime is unavailable; is the extension externally connectable?"
-      );
-    }
-    return getChromeExtensionId();
   }
+  if (chrome.runtime == null) {
+    throw new RuntimeNotFoundError(
+      "Browser runtime is unavailable; is the extension externally connectable?"
+    );
+  }
+  return getChromeExtensionId();
 }
 
 export async function callBackground(
@@ -147,13 +126,12 @@ export async function callBackground(
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
       extensionId,
     });
-    sendMessage(extensionId, message, {}).catch((error) => {
+    sendMessage(extensionId, message, {}).catch((error: unknown) => {
       console.warn(
         `An error occurred processing background notification ${type} (nonce: ${nonce})`,
         error
       );
     });
-    return;
   } else {
     console.debug(`Sending background action ${type} (nonce: ${nonce})`, {
       extensionId,
@@ -161,7 +139,7 @@ export async function callBackground(
     let response;
     try {
       response = await sendMessage(extensionId, message, {});
-    } catch (error) {
+    } catch (error: unknown) {
       console.debug(
         `Error sending background action ${type} (nonce: ${nonce})`,
         { extensionId, error }
@@ -223,7 +201,6 @@ export function liftBackground<R extends SerializableResponse>(
     if (handlers.has(fullType)) {
       console.warn(`Handler already registered for ${fullType}`);
     } else {
-      // console.debug(`Installed background page handler for ${type}`);
       handlers.set(fullType, { handler: method, options });
     }
   }
@@ -233,9 +210,25 @@ export function liftBackground<R extends SerializableResponse>(
       console.log(`Resolving ${type} immediately from background page`);
       return method(...args);
     }
-
-    return callBackground(fullType, args, options) as any;
+    return callBackground(fullType, args, options) as R;
   };
+}
+
+function backgroundListener(
+  request: RemoteProcedureCallRequest,
+  sender: Runtime.MessageSender
+): Promise<unknown> | void {
+  // Returning "undefined" indicates the message has not been handled
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage
+
+  if (!allowBackgroundSender(sender)) {
+    return;
+  }
+
+  if (handlers.has(request.type)) {
+    return handleRequest(request, sender);
+  }
 }
 
 if (isBackgroundPage()) {
