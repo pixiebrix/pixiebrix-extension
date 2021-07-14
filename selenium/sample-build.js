@@ -15,9 +15,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+const zipdir = require("zip-dir");
 const fs = require("fs");
 const webdriver = require("selenium-webdriver");
 const chrome = require("selenium-webdriver/chrome");
+const extensionLocation = require("../package.json").webExt.sourceDir;
+const path = require("path");
+
+const manifestPath = path.resolve(extensionLocation, "manifest.json");
+console.assert(
+  fs.existsSync(manifestPath),
+  `Extension not found:` + manifestPath
+);
 
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -44,9 +53,12 @@ async function testPixieBrixHomepage(capabilities) {
     builder.usingServer(
       `https://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`
     );
+    builder.setChromeOptions(
+      new chrome.Options().addArguments("auto-open-devtools-for-tabs")
+    );
   } else {
     builder.setChromeOptions(
-      new chrome.Options().addArguments("load-extension=browsers/dist")
+      new chrome.Options().addArguments("load-extension=" + extensionLocation)
     );
   }
   builder.withCapabilities({
@@ -68,13 +80,6 @@ async function testPixieBrixHomepage(capabilities) {
   await driver.quit();
 }
 
-async function getExtensionAsCrxInBase64() {
-  let buff = new Buffer.from(
-    fs.readFileSync("web-ext-artifacts/pixiebrix-1.1.12.zip")
-  );
-  return buff.toString("base64");
-}
-
 async function init() {
   const capabilities1 = {
     browser: "chrome",
@@ -87,12 +92,19 @@ async function init() {
   };
 
   if (username) {
+    console.log(`Will zip extension for Browserstack`);
+    const zippedExtension = await zipdir(extensionLocation);
+    console.log(
+      `Will upload extension to Browserstack ${Math.round(
+        (Buffer.byteLength(zippedExtension) / 1024 / 1024) * 1.3
+      )} MB`
+    );
     capabilities1.chromeOptions = {
-      extensions: [await getExtensionAsCrxInBase64()],
+      extensions: [zippedExtension.toString("base64")],
     };
   }
 
   void testPixieBrixHomepage(capabilities1);
 }
 
-init();
+void init();

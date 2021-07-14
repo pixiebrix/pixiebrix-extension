@@ -215,7 +215,8 @@
     "webpack-cli": "^4.7.2",
     "webpack-target-webextension": "^0.4.3",
     "yaml-jest-transform": "^1.0.0",
-    "yaml-loader": "^0.6.0"
+    "yaml-loader": "^0.6.0",
+    "zip-dir": "^2.0.0"
   },
   "jest": {
     "testEnvironment": "jest-environment-jsdom",
