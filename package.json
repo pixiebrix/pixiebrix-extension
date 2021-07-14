@@ -81,7 +81,7 @@
     "react": "^16.13.1",
     "react-ace": "^9.4.1",
     "react-beautiful-dnd": "^13.1.0",
-    "react-bootstrap": "^1.4.3",
+    "react-bootstrap": "^1.6.1",
     "react-dom": "^16.13.1",
     "react-hotkeys": "^2.0.0",
     "react-json-tree": "^0.15.0",
