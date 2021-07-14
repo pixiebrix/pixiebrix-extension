@@ -121,7 +121,8 @@
     "scripts/bin",
     "src/vendors",
     "src/nativeEditor/Overlay.tsx",
-    "src/support.js"
+    "src/support.js",
+    "sample-build.js"
   ],
   "overrides": [
     {
