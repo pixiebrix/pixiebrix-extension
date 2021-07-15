@@ -31,13 +31,14 @@ console.assert(
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 
-if (!username) {
+const isBrowserstack = Boolean(username);
+
+if (!isBrowserstack) {
   console.log("Using local Chrome version");
-  require("chromedriver");
+  require("geckodriver");
 }
 
 // TODO: install extensions on startup
-// Chrome instructions: https://www.browserstack.com/docs/automate/selenium/add-plugins-extensions-remote-browsers#nodejs
 // Firefox instructions (not verified to work on browserstack): https://stackoverflow.com/questions/7477959/selenium-how-to-start-firefox-with-addons
 // Can web-ext package it? https://github.com/mozilla/web-ext/issues/119
 
@@ -47,28 +48,7 @@ if (!username) {
 // Using Jest with Selenium: https://www.lambdatest.com/blog/jest-tutorial-for-selenium-javascript-testing-with-examples/
 // Open devtools: https://stackoverflow.com/questions/37683576/how-do-you-automatically-open-the-chrome-devtools-tab-within-selenium-c
 
-async function testPixieBrixHomepage(capabilities) {
-  const builder = new webdriver.Builder();
-  if (username) {
-    builder.usingServer(
-      `https://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`
-    );
-    builder.setChromeOptions(
-      new chrome.Options().addArguments("auto-open-devtools-for-tabs")
-    );
-  } else {
-    builder.setChromeOptions(
-      new chrome.Options().addArguments("load-extension=" + extensionLocation)
-    );
-  }
-  builder.withCapabilities({
-    ...capabilities,
-    // Enable if using local environment
-    // 'browserstack.local': 'true',
-    ...(capabilities["browser"] && { browserName: capabilities["browser"] }), // Because NodeJS language binding requires browserName to be defined
-  });
-
-  const driver = await builder.build();
+async function testPixieBrixHomepage(driver) {
   await driver.get("https://www.pixiebrix.com");
   try {
     await driver.wait(webdriver.until.titleMatches(/pixiebrix/i), 5000);
@@ -77,34 +57,72 @@ async function testPixieBrixHomepage(capabilities) {
   } catch {
     await driver.executeScript('console.log("error")');
   }
-  await driver.quit();
 }
 
-async function init() {
-  const capabilities1 = {
-    browser: "chrome",
-    browser_version: "latest",
-    "bstack:options": {
-      os: "Windows",
-      osVersion: "10",
-    },
-    name: "Chrome test",
-  };
+function getBuilder() {
+  const builder = new webdriver.Builder();
+  if (isBrowserstack) {
+    builder.usingServer(
+      `https://${username}:${accessKey}@hub-cloud.browserstack.com/wd/hub`
+    );
+  }
 
-  if (username) {
-    console.log(`Will zip extension for Browserstack`);
-    const zippedExtension = await zipdir(extensionLocation);
+  return builder;
+}
+
+let zippedExtension;
+async function getZippedExtensionAsBuffer() {
+  if (!zippedExtension) {
+    console.log(`Will zip extension`);
+    zippedExtension = await zipdir(extensionLocation);
     console.log(
-      `Will upload extension to Browserstack ${Math.round(
+      `Zipped extension weighs ${Math.round(
         (Buffer.byteLength(zippedExtension) / 1024 / 1024) * 1.3
       )} MB`
     );
-    capabilities1.chromeOptions = {
-      extensions: [zippedExtension.toString("base64")],
-    };
   }
 
-  void testPixieBrixHomepage(capabilities1);
+  return zippedExtension;
+}
+
+async function getChromeOptions() {
+  require("chromedriver");
+  const chromeOptions = new chrome.Options();
+  chromeOptions.addArguments("auto-open-devtools-for-tabs");
+  if (isBrowserstack) {
+    chromeOptions.setOptions({
+      extensions: [await getZippedExtensionAsBuffer()],
+    });
+  } else {
+    chromeOptions.addArguments("load-extension=" + extensionLocation);
+  }
+  return chromeOptions;
+}
+
+const configurations = new Map();
+configurations.set("chrome", {
+  browser: "chrome",
+  browserName: "chrome",
+  browser_version: "latest",
+  "bstack:options": {
+    os: "Windows",
+    osVersion: "10",
+  },
+  name: "chrome test",
+});
+
+async function init() {
+  for (const [browser, configuration] of configurations) {
+    const builder = getBuilder();
+    builder.withCapabilities(configuration);
+    if (browser === "chrome") {
+      builder.setChromeOptions(getChromeOptions());
+    }
+
+    const driver = await builder.build();
+    await testPixieBrixHomepage(driver);
+    await driver.quit();
+  }
 }
 
 void init();
