@@ -98,6 +98,7 @@ const getZippedExtensionAsBuffer = onetime(async function () {
   return zippedExtension;
 });
 
+// Arguments list: https://peter.sh/experiments/chromium-command-line-switches/
 async function getChromeOptions() {
   const options = new chrome.Options();
   options.addArguments("auto-open-devtools-for-tabs");
@@ -111,6 +112,7 @@ async function getChromeOptions() {
   return options;
 }
 
+// https://www.browserstack.com/automate/capabilities
 const configurations = new Map();
 configurations.set("chrome", {
   browser: "chrome",
