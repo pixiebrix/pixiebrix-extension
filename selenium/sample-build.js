@@ -75,6 +75,8 @@ function getBuilder() {
   return builder;
 }
 
+// Only paths are accepted in Firefox
+// https://github.com/SeleniumHQ/selenium/issues/8357
 const getZippedExtensionAsPath = onetime(async function () {
   const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "pixie-"));
   const tempZippedFile = path.join(tempDirectory, "extension.zip");
