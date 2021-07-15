@@ -17,10 +17,16 @@
 
 const zipdir = require("zip-dir");
 const fs = require("fs");
+const os = require("os");
+const onetime = require("onetime");
 const webdriver = require("selenium-webdriver");
 const chrome = require("selenium-webdriver/chrome");
+const firefox = require("selenium-webdriver/firefox");
 const extensionLocation = require("../package.json").webExt.sourceDir;
 const path = require("path");
+
+const useFirefox = process.argv.includes("--firefox");
+const useChrome = process.argv.includes("--chrome");
 
 const manifestPath = path.resolve(extensionLocation, "manifest.json");
 console.assert(
@@ -34,8 +40,7 @@ const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 const isBrowserstack = Boolean(username);
 
 if (!isBrowserstack) {
-  console.log("Using local Chrome version");
-  require("geckodriver");
+  console.log("Using local WebDriver");
 }
 
 // TODO: install extensions on startup
@@ -70,33 +75,40 @@ function getBuilder() {
   return builder;
 }
 
-let zippedExtension;
-async function getZippedExtensionAsBuffer() {
-  if (!zippedExtension) {
-    console.log(`Will zip extension`);
-    zippedExtension = await zipdir(extensionLocation);
-    console.log(
-      `Zipped extension weighs ${Math.round(
-        (Buffer.byteLength(zippedExtension) / 1024 / 1024) * 1.3
-      )} MB`
-    );
-  }
+const getZippedExtensionAsPath = onetime(async function () {
+  const tempDirectory = fs.mkdtempSync(path.join(os.tmpdir(), "pixie-"));
+  const tempZippedFile = path.join(tempDirectory, "extension.zip");
+  console.log("Storing zip in", tempZippedFile);
+  await fs.promises.writeFile(
+    tempZippedFile,
+    await getZippedExtensionAsBuffer()
+  );
+  return tempZippedFile;
+});
 
+const getZippedExtensionAsBuffer = onetime(async function () {
+  console.log(`Will zip extension`);
+  const zippedExtension = await zipdir(extensionLocation);
+
+  console.log(
+    `Zipped extension weighs ${Math.round(
+      (Buffer.byteLength(zippedExtension) / 1024 / 1024) * 1.3
+    )} MB`
+  );
   return zippedExtension;
-}
+});
 
 async function getChromeOptions() {
-  require("chromedriver");
-  const chromeOptions = new chrome.Options();
-  chromeOptions.addArguments("auto-open-devtools-for-tabs");
+  const options = new chrome.Options();
+  options.addArguments("auto-open-devtools-for-tabs");
   if (isBrowserstack) {
-    chromeOptions.setOptions({
+    options.setOptions({
       extensions: [await getZippedExtensionAsBuffer()],
     });
   } else {
-    chromeOptions.addArguments("load-extension=" + extensionLocation);
+    options.addArguments("load-extension=" + extensionLocation);
   }
-  return chromeOptions;
+  return options;
 }
 
 const configurations = new Map();
@@ -110,19 +122,40 @@ configurations.set("chrome", {
   },
   name: "chrome test",
 });
+configurations.set("firefox", {
+  browser: "firefox",
+  browserName: "firefox",
+  browser_version: "latest",
+  "bstack:options": {
+    os: "Windows",
+    osVersion: "10",
+  },
+  name: "firefox test",
+});
 
-async function init() {
-  for (const [browser, configuration] of configurations) {
-    const builder = getBuilder();
-    builder.withCapabilities(configuration);
-    if (browser === "chrome") {
-      builder.setChromeOptions(getChromeOptions());
-    }
-
-    const driver = await builder.build();
-    await testPixieBrixHomepage(driver);
-    await driver.quit();
+async function runInBrowser(browser) {
+  const builder = getBuilder();
+  builder.withCapabilities(configurations.get(browser));
+  if (browser === "chrome") {
+    require("chromedriver");
+    builder.setChromeOptions(getChromeOptions());
   }
+  if (browser === "firefox") {
+    require("geckodriver");
+  }
+
+  const driver = await builder.build();
+  if (browser === "firefox") {
+    await driver.installAddon(await getZippedExtensionAsPath());
+  }
+  await testPixieBrixHomepage(driver);
+  await driver.quit();
 }
 
-void init();
+if (useChrome) {
+  void runInBrowser("chrome");
+}
+
+if (useFirefox) {
+  void runInBrowser("firefox");
+}
