@@ -1,6 +1,9 @@
 # Documentation
 # https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
+# Updates can be also requested manually by clicking "Last checked 3 days ago" on the page
+# https://github.com/pixiebrix/pixiebrix-extension/network/updates
+
 version: 2
 updates:
   - package-ecosystem: "npm"
