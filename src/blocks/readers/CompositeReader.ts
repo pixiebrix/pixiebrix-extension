@@ -23,6 +23,7 @@ import fromPairs from "lodash/fromPairs";
 
 class CompositeReader extends Reader {
   public readonly outputSchema: Schema;
+
   private readonly _readers: { [key: string]: IReader };
 
   constructor(readers: { [key: string]: IReader }) {

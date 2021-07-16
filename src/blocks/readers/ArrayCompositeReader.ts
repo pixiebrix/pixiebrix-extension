@@ -21,6 +21,7 @@ import { identity, zip } from "lodash";
 
 class ArrayCompositeReader extends Reader {
   public readonly outputSchema: Schema;
+
   private readonly _readers: IReader[];
 
   constructor(readers: IReader[]) {

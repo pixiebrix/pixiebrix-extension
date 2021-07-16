@@ -169,8 +169,11 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   public readonly syncInstall: boolean = true;
+
   abstract getBaseReader(): Promise<IReader>;
+
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
+
   abstract readonly contexts: Menus.ContextType[];
 
   inputSchema: Schema = propertiesToSchema(
@@ -325,9 +328,13 @@ export interface MenuDefinition extends ExtensionPointDefinition {
 
 class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   private readonly _definition: MenuDefinition;
+
   public readonly permissions: Permissions.Permissions;
+
   public readonly documentUrlPatterns: Manifest.MatchPattern[];
+
   public readonly contexts: Menus.ContextType[];
+
   public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
 
   constructor(config: ExtensionPointConfig<MenuDefinition>) {

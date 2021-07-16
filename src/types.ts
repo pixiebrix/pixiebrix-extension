@@ -47,12 +47,19 @@ export abstract class Service<
   TOAuth extends AuthData = AuthData
 > implements IService<TConfig> {
   id: string;
+
   name: string;
+
   description?: string;
+
   icon?: BlockIcon;
+
   abstract schema: Schema;
+
   abstract hasAuth: boolean;
+
   abstract isOAuth2: boolean;
+
   abstract isToken: boolean;
 
   protected constructor(
@@ -85,13 +92,21 @@ export abstract class Service<
 export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   implements IExtensionPoint {
   public readonly id: string;
+
   public readonly name: string;
+
   public readonly description: string;
+
   public readonly icon: BlockIcon;
+
   protected readonly extensions: IExtension<TConfig>[] = [];
+
   protected readonly template?: string;
+
   public abstract readonly inputSchema: Schema;
+
   protected readonly logger: Logger;
+
   public readonly syncInstall: boolean = false;
 
   /**
@@ -171,14 +186,19 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
 
 export abstract class Block implements IBlock {
   readonly id: string;
+
   readonly name: string;
+
   readonly description: string;
+
   readonly icon: BlockIcon;
 
   abstract readonly inputSchema: Schema;
+
   readonly outputSchema?: Schema = undefined;
 
   readonly permissions = {};
+
   readonly defaultOptions = {};
 
   protected constructor(

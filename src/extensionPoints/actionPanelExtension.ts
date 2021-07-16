@@ -63,6 +63,7 @@ export interface ActionPanelConfig {
 
 export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPanelConfig> {
   readonly permissions: Permissions.Permissions = {};
+
   readonly showCallback: ShowCallback;
 
   protected constructor(
@@ -237,6 +238,7 @@ export type PanelDefinition = ExtensionPointDefinition;
 
 class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
   private readonly definition: PanelDefinition;
+
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {

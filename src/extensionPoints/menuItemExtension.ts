@@ -713,7 +713,9 @@ export interface MenuDefinition extends ExtensionPointDefinition {
 
 class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   private readonly _definition: MenuDefinition;
+
   public readonly permissions: Permissions.Permissions;
+
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   public get defaultOptions(): {

@@ -50,7 +50,9 @@ class LocalDefinedService<
   TDefinition extends ServiceDefinition = ServiceDefinition
 > extends Service {
   private readonly _definition: TDefinition;
+
   public readonly schema: Schema;
+
   public readonly hasAuth: boolean;
 
   constructor(definition: TDefinition) {

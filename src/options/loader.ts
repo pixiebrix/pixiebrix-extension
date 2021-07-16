@@ -16,9 +16,8 @@
  */
 
 import { Metadata, ServiceDependency } from "@/core";
-import { Permissions } from "webextension-polyfill-ts";
+import { Permissions, browser } from "webextension-polyfill-ts";
 import { Primitive } from "type-fest";
-import { browser } from "webextension-polyfill-ts";
 
 const STORAGE_KEY = "persist:extensionOptions";
 const INITIAL_STATE = JSON.stringify({});

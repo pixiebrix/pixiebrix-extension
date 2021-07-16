@@ -232,6 +232,7 @@ export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
  */
 export class InvalidPathError extends Error {
   public readonly path: string;
+
   readonly input: unknown;
 
   constructor(message: string, path: string) {

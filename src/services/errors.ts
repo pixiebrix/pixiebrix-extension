@@ -26,6 +26,7 @@ export class IncompatibleServiceError extends Error {
 
 export class MissingConfigurationError extends Error {
   serviceId: string;
+
   id: string;
 
   constructor(message: string, serviceId: string, id?: string) {
@@ -38,6 +39,7 @@ export class MissingConfigurationError extends Error {
 
 export class NotConfiguredError extends Error {
   serviceId: string;
+
   missingProperties: string[];
 
   constructor(

@@ -60,7 +60,9 @@ export class BusinessError extends Error {
 
 export class PropError extends Error {
   public readonly blockId: string;
+
   public readonly prop: string;
+
   public readonly value: unknown;
 
   constructor(message: string, blockId: string, prop: string, value: unknown) {
@@ -77,6 +79,7 @@ export class PropError extends Error {
  */
 export class ContextError extends Error {
   public readonly cause?: Error;
+
   public readonly context?: MessageContext;
 
   constructor(cause: Error, context?: MessageContext, message?: string) {

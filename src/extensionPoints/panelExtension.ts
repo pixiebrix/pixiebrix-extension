@@ -90,10 +90,15 @@ function detectLoop(timestamps: Date[]): void {
  */
 export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   protected template?: string;
+
   protected $container: JQuery;
+
   private readonly collapsedExtensions: { [key: string]: boolean };
+
   private readonly cancelPending: Set<() => void>;
+
   private uninstalled = false;
+
   private readonly cancelRemovalMonitor: Map<string, () => void>;
 
   private readonly renderTimestamps: Map<string, Date[]>;
@@ -480,7 +485,9 @@ export interface PanelDefinition extends ExtensionPointDefinition {
 
 class RemotePanelExtensionPoint extends PanelExtensionPoint {
   private readonly _definition: PanelDefinition;
+
   public readonly permissions: Permissions.Permissions;
+
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {

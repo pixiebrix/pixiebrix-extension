@@ -42,9 +42,13 @@ export class DoesNotExistError extends Error {
 
 export class Registry<TItem extends RegistryItem> {
   private cache: { [key: string]: TItem };
+
   private remote: Set<string>;
+
   private readonly remoteResourcePath: string;
+
   public readonly kinds: Set<Kind>;
+
   private readonly deserialize: (raw: unknown) => TItem;
 
   constructor(

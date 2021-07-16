@@ -71,7 +71,9 @@ function validateBlockDefinition(
 
 class ExternalBlock extends Block {
   private component: ComponentConfig;
+
   readonly inputSchema: Schema;
+
   readonly defaultOptions: { [key: string]: any };
 
   constructor(component: ComponentConfig) {

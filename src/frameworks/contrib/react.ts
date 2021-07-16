@@ -124,6 +124,7 @@ export function findReactComponent(node: Node, traverseUp = 0): Fiber {
 
 export class ReactRootVisitor implements RootInstanceVisitor<RootInstance> {
   public rootInstances: RootInstance[] = [];
+
   visit(node: Element | Node): boolean {
     if ("_reactRootContainer" in node) {
       this.rootInstances.push(node);

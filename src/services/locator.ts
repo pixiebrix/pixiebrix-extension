@@ -88,10 +88,15 @@ let wasInitialized = false;
 
 class LazyLocatorFactory {
   private remote: ConfigurableAuth[] = [];
+
   private local: RawServiceConfiguration[] = [];
+
   private options: Option[];
+
   private _initialized = false;
+
   private _refreshPromise: Promise<void>;
+
   private updateTimestamp: number = undefined;
 
   constructor() {

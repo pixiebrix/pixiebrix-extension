@@ -78,7 +78,9 @@ interface VueHTMLElement {
 
 export class VueRootVisitor implements RootInstanceVisitor<Instance> {
   public rootInstances: Instance[] = [];
+
   private inFragment = false;
+
   private currentFragment: Instance = null;
 
   private processInstance(instance: Instance): boolean {

@@ -58,8 +58,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   abstract get trigger(): Trigger;
 
   private handler: JQuery.EventHandler<unknown> | undefined;
+
   private observer: IntersectionObserver | undefined;
+
   private $installedRoot: JQuery<HTMLElement | Document> | undefined;
+
   private installedEvents: Set<string> = new Set();
 
   protected constructor(
@@ -272,7 +275,9 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
 
 class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
   private readonly _definition: TriggerDefinition;
+
   public readonly permissions: Permissions.Permissions;
+
   public readonly rawConfig: ExtensionPointConfig<TriggerDefinition>;
 
   public get defaultOptions(): {

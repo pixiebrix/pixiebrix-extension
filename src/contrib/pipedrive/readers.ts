@@ -33,9 +33,11 @@ export async function checkRoute(expectedRoute: string): Promise<boolean> {
 
 class PipedriveReader extends Reader {
   private readonly ROOT_PATH = "app.router.currentView.model.attributes";
+
   public readonly outputSchema: Schema;
 
   resourceType: string;
+
   pathSpec: PathSpec;
 
   constructor(resourceType: string, pathSpec: PathSpec) {
