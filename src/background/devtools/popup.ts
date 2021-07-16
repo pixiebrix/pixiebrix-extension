@@ -21,8 +21,8 @@ import { Target } from "@/background/devtools/contract";
 import { expectBackgroundPage } from "@/utils/expectContext";
 import { isChrome } from "@/helpers";
 
-const WINDOW_WIDTH_PX = 420;
-const WINDOW_HEIGHT_PX = 150;
+const WINDOW_WIDTH_PX = 470;
+const WINDOW_HEIGHT_PX = 230; // Includes titlebar height
 
 async function onTabClose(tabId: number): Promise<void> {
   return new Promise((resolve) => {
@@ -81,7 +81,7 @@ async function detectPopupSupport(target: Target): Promise<boolean> {
 export const openPopupPrompt = liftBackground(
   "OPEN_POPUP_PROMPT",
   (target: Target) => async (url: string) => {
-    const tab = detectPopupSupport(target)
+    const tab = (await detectPopupSupport(target))
       ? await createPopup(url)
       : await openTab(url, target);
     await onTabClose(tab.id);

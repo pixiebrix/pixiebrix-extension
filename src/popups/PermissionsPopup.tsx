@@ -78,7 +78,7 @@ const PermissionsPopup: React.FC = () => {
       <div>Grant PixieBrix to access to the following page/host?</div>
 
       <div className="card bg-light p-3 my-3">
-        <p className="mb-0">{origin}</p>
+        <p className="mb-0">{new URL(origin).host}</p>
       </div>
 
       <div>
