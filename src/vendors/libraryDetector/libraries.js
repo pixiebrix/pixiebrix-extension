@@ -8,7 +8,7 @@ export default {
     icon: "gwt",
     url: "http://www.gwtproject.org/",
     test: function (win) {
-      // Pretty complicated, many possible tell tales
+      // pretty complicated, many possible tell tales
       var doc = win.document,
         hasHistFrame = doc.getElementById("__gwt_historyFrame"),
         hasGwtUid = doc.gwt_uid,
@@ -21,7 +21,7 @@ export default {
           win.__gwt_stylesLoaded ||
           win.__gwt_activeModules;
 
-      // Use the many possible indicators
+      // use the many possible indicators
       if (
         hasHistFrame ||
         hasGwtUid ||
@@ -31,13 +31,13 @@ export default {
         hasJsonP ||
         hasRootWinApp
       ) {
-        // Carefully look at frames, but only if certain is GWT frame
+        // carefully look at frames, but only if certain is GWT frame
         var frames = doc.getElementsByTagName("iframe"),
           gwtVersion = UNKNOWN_VERSION;
         for (var n = 0; n < frames.length; n++) {
-          // Catch security access errors
+          // catch security access errors
           try {
-            var hasNegativeTabIndex = frames[n].tabIndex < 0; // On for GWT
+            var hasNegativeTabIndex = frames[n].tabIndex < 0; // on for GWT
             if (
               hasNegativeTabIndex &&
               frames[n].contentWindow &&
@@ -55,7 +55,6 @@ export default {
 
         return { version: gwtVersion };
       }
-
       return false;
     },
   },
@@ -68,7 +67,6 @@ export default {
       if (win.Ink && win.Ink.createModule) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -81,7 +79,6 @@ export default {
       if (win.vaadin && win.vaadin.registerWidgetset) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -91,7 +88,7 @@ export default {
     icon: "bootstrap",
     url: "http://getbootstrap.com/",
     npm: "bootstrap",
-    // Look for a function Boostrap has added to jQuery - regex for BS 2 & 3
+    // look for a function Boostrap has added to jQuery - regex for BS 2 & 3
     test: function (win) {
       var jQueryAvailable = win.$ && win.$.fn,
         RE_PREFIX_V2 = "\\$this\\.data\\((?:'|\")",
@@ -123,9 +120,7 @@ export default {
               bootstrapVersion = win.$.fn[component].Constructor.VERSION;
               return true;
               // Bootstrap >= 2.0.0 and <= 3.1.0 detection
-            }
-
-            if (
+            } else if (
               new RegExp(RE_PREFIX_V3 + component).test(
                 win.$.fn[component].toString()
               )
@@ -133,9 +128,7 @@ export default {
               bootstrapVersion = ">= 3.0.0 & <= 3.1.1";
               return true;
               // Bootstrap < 3.1.0 detection
-            }
-
-            if (
+            } else if (
               new RegExp(RE_PREFIX_V2 + component).test(
                 win.$.fn[component].toString()
               )
@@ -166,7 +159,6 @@ export default {
       if (win.Foundation && win.Foundation.Toggler) {
         return { version: win.Foundation.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -180,7 +172,6 @@ export default {
       if (win.Polymer && win.Polymer.dom) {
         return { version: win.Polymer.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -198,7 +189,6 @@ export default {
         );
         return { version: versions[versions.length - 1] };
       }
-
       return false;
     },
   },
@@ -212,7 +202,6 @@ export default {
       if (win.Highcharts && win.Highcharts.Point) {
         return { version: win.Highcharts.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -225,7 +214,6 @@ export default {
       if (win.$jit && win.$jit.PieChart) {
         return { version: win.$jit.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -239,7 +227,6 @@ export default {
       if (win.$ && win.$.plot) {
         return { version: win.$.plot.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -251,9 +238,8 @@ export default {
     npm: "createjs",
     test: function (win) {
       if (win.createjs && win.createjs.promote) {
-        return { version: UNKNOWN_VERSION }; // No version info available
+        return { version: UNKNOWN_VERSION }; // no version info available
       }
-
       return false;
     },
   },
@@ -266,7 +252,6 @@ export default {
       if (win.google && win.google.maps) {
         return { version: win.google.maps.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -283,7 +268,6 @@ export default {
           version: jq.fn.jquery.replace(/[^\d+\.+]/g, "") || UNKNOWN_VERSION,
         };
       }
-
       return false;
     },
   },
@@ -298,7 +282,6 @@ export default {
       if (jq && jq.fn) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -321,13 +304,11 @@ export default {
               plugins[i].substr(0, 1).toUpperCase() + plugins[i].substr(1)
             );
         }
-
         return {
           version: jq.ui.version || UNKNOWN_VERSION,
           details: concat.length ? "Plugins used: " + concat.join(",") : "",
         };
       }
-
       return false;
     },
   },
@@ -347,7 +328,6 @@ export default {
           details: "Details: " + (win.dijit ? "Uses Dijit" : "none"),
         };
       }
-
       return false;
     },
   },
@@ -360,7 +340,6 @@ export default {
       if (win.Prototype && win.Prototype.BrowserFeatures) {
         return { version: win.Prototype.Version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -373,7 +352,6 @@ export default {
       if (win.Scriptaculous && win.Scriptaculous.load) {
         return { version: win.Scriptaculous.Version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -386,7 +364,6 @@ export default {
       if (win.MooTools && win.MooTools.build) {
         return { version: win.MooTools.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -399,7 +376,6 @@ export default {
       if (win.Spry && win.Spry.Data) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -412,7 +388,6 @@ export default {
       if (win.YAHOO && win.YAHOO.util) {
         return { version: win.YAHOO.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -426,7 +401,6 @@ export default {
       if (win.YUI && win.YUI.Env) {
         return { version: win.YUI.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -440,7 +414,6 @@ export default {
       if (win.qx && win.qx.Bootstrap) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -452,12 +425,9 @@ export default {
     test: function (win) {
       if (win.Ext && win.Ext.versions) {
         return { version: win.Ext.versions.core.version };
-      }
-
-      if (win.Ext) {
+      } else if (win.Ext) {
         return { version: win.Ext.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -470,7 +440,6 @@ export default {
       if (win.base2 && win.base2.dom) {
         return { version: win.base2.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -484,7 +453,6 @@ export default {
       if (win.goog && win.goog.provide) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -497,7 +465,6 @@ export default {
       if (win.Raphael && win.Raphael.circle) {
         return { version: win.Raphael.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -511,13 +478,11 @@ export default {
       function isMatch(node) {
         return node != null && node._reactRootContainer != null;
       }
-
       function nodeFilter(node) {
         return isMatch(node)
           ? NodeFilter.FILTER_ACCEPT
           : NodeFilter.FILTER_SKIP;
       }
-
       var reactRoot = document.getElementById("react-root");
       var altHasReact = document.querySelector("*[data-reactroot]");
       var bodyReactRoot =
@@ -535,7 +500,6 @@ export default {
       ) {
         return { version: (win.React && win.React.version) || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -549,7 +513,6 @@ export default {
       function isMatch(node) {
         return node != null && node._reactRootContainer != null;
       }
-
       var reactRoot = document.getElementById("react-root");
       var altHasReact = document.querySelector("*[data-reactroot]");
       var hasReactRoot =
@@ -557,7 +520,6 @@ export default {
       if (hasReactRoot || reactRoot || altHasReact || win.React) {
         return { version: (win.React && win.React.version) || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -573,7 +535,6 @@ export default {
           version: (window.next && window.next.version) || UNKNOWN_VERSION,
         };
       }
-
       return false;
     },
   },
@@ -587,7 +548,6 @@ export default {
       if (win.__NEXT_DATA__) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -604,24 +564,20 @@ export default {
         if ("__k" in node && "props" in node.__k && "type" in node.__k) {
           return true;
         }
-
         return (
           "_component" in node ||
           "__preactattr_" in node ||
           (expando && node[expando] != null)
         );
       }
-
       function getMatch(node) {
         return node != null && isMatch(node) && node;
       }
-
       function nodeFilter(node) {
         return isMatch(node)
           ? NodeFilter.FILTER_ACCEPT
           : NodeFilter.FILTER_SKIP;
       }
-
       var preactRoot =
         getMatch(document.body) || getMatch(document.body.firstElementChild);
       if (!preactRoot) {
@@ -629,26 +585,21 @@ export default {
           .createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, nodeFilter)
           .nextNode();
       }
-
       if (preactRoot || win.preact) {
         var version = UNKNOWN_VERSION;
         if (preactRoot) {
           if ("__k" in preactRoot) {
             version = "10";
           }
-
           if ("__preactattr_" in preactRoot) {
             version = "8";
           }
-
           if (expando && preactRoot[expando] != null) {
             version = "7";
           }
         }
-
         return { version: version };
       }
-
       return false;
     },
   },
@@ -665,20 +616,16 @@ export default {
           version = "10";
           return true;
         }
-
         return node._component != null || node.__preactattr_ != null;
       }
-
       function getMatch(node) {
         return node != null && isMatch(node);
       }
-
       var preactRoot =
         getMatch(document.body) || getMatch(document.body.firstElementChild);
       if (preactRoot || win.preact) {
         return { version: version };
       }
-
       return false;
     },
   },
@@ -692,7 +639,6 @@ export default {
       if (win.Modernizr && win.Modernizr.addTest) {
         return { version: win.Modernizr._version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -706,7 +652,6 @@ export default {
       if (win.Processing && win.Processing.box) {
         return { version: Processing.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -720,7 +665,6 @@ export default {
       if (win.Backbone && win.Backbone.Model.extend) {
         return { version: win.Backbone.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -735,7 +679,6 @@ export default {
       if (win.L && win.L.GeoJSON && (win.L.marker || win.L.Marker)) {
         return { version: win.L.version || win.L.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -749,7 +692,6 @@ export default {
       if (win.L && win.L.mapbox && win.L.mapbox.geocoder) {
         return { version: win.L.mapbox.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -773,7 +715,6 @@ export default {
       if (_ && wrapper.__wrapped__) {
         return { version: _.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -793,7 +734,6 @@ export default {
       ) {
         return { version: win._.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -806,7 +746,6 @@ export default {
       if (win.Sammy && win.Sammy.Application.curry) {
         return { version: win.Sammy.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -819,7 +758,6 @@ export default {
       if (win.Rico && window.Rico.checkIfComplete) {
         return { version: win.Rico.Version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -832,7 +770,6 @@ export default {
       if (win.MochiKit && win.MochiKit.Base.module) {
         return { version: MochiKit.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -845,7 +782,6 @@ export default {
       if (win.Raphael && win.Raphael.fn.g) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -857,31 +793,25 @@ export default {
     test: function (win) {
       if (win.gloader && win.gloader.getRequests) {
         return { version: UNKNOWN_VERSION };
-      }
-
-      if (win.glow && win.glow.dom) {
+      } else if (win.glow && win.glow.dom) {
         return { version: win.glow.VERSION || UNKNOWN_VERSION };
-      }
-
-      if (win.Glow) {
+      } else if (win.Glow) {
         return { version: win.Glow.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
 
   "Socket.IO": {
     id: "socketio",
-    icon: "socketio", // Currently has no icon
+    icon: "socketio", // currently has no icon
     url: "https://socket.io/",
     npm: "socket.io",
     test: function (win) {
-      // Version 0.6.2 uses only io.Socket; more recent versions also have io.sockets
+      // version 0.6.2 uses only io.Socket; more recent versions also have io.sockets
       if (win.io && (win.io.sockets || win.io.Socket)) {
         return { version: win.io.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -895,21 +825,19 @@ export default {
       if (win.Mustache && win.Mustache.to_html) {
         return { version: win.Mustache.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
 
   "Fabric.js": {
     id: "fabricjs",
-    icon: "icon38", // Currently has no icon
+    icon: "icon38", // currently has no icon
     url: "http://fabricjs.com/",
     npm: "fabric",
     test: function (win) {
       if (win.fabric && win.fabric.util) {
         return { version: win.fabric.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -923,21 +851,19 @@ export default {
       if (win.Fuse) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
 
   "Tween.js": {
     id: "tweenjs",
-    icon: "icon38", // Currently has no icon
+    icon: "icon38", // currently has no icon
     url: "https://github.com/tweenjs/tween.js",
     npm: "tween.js",
     test: function (win) {
       if (win.TWEEN && win.TWEEN.Easing) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -950,7 +876,6 @@ export default {
       if (win.SC && win.SC.Application) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -964,25 +889,21 @@ export default {
       if (win.Zepto && win.Zepto.fn) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
 
   "three.js": {
     id: "threejs",
-    icon: "icon38", // Currently has no icon
+    icon: "icon38", // currently has no icon
     url: "https://threejs.org/",
     npm: "three",
     test: function (win) {
       if (win.THREE && win.THREE.REVISION) {
         return { version: "r" + win.THREE.REVISION };
-      }
-
-      if (win.THREE) {
+      } else if (win.THREE) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -996,7 +917,6 @@ export default {
       if (win.PhiloGL && win.PhiloGL.Camera) {
         return { version: win.PhiloGL.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1009,12 +929,9 @@ export default {
     test: function (win) {
       if (win.Caman && win.Caman.version) {
         return { version: win.Caman.version.release };
-      }
-
-      if (win.Caman) {
+      } else if (win.Caman) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1027,7 +944,6 @@ export default {
       if (win.yepnope && win.yepnope.injectJs) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1040,7 +956,6 @@ export default {
       if (win.$LAB && win.$LAB.setOptions) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1054,7 +969,6 @@ export default {
       if (win.head && win.head.js) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1067,7 +981,6 @@ export default {
       if (win.CJS && win.CJS.start) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1089,7 +1002,6 @@ export default {
       ) {
         return { version: req.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1102,7 +1014,6 @@ export default {
       if (win.RightJS && win.RightJS.isNode) {
         return { version: win.RightJS.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1116,7 +1027,6 @@ export default {
       if (jq && jq.tools) {
         return { version: jq.tools.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1130,7 +1040,6 @@ export default {
       if (win.Pusher && win.Pusher.Channel) {
         return { version: win.Pusher.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1144,7 +1053,6 @@ export default {
       if (win.paper && win.paper.Point) {
         return { version: win.paper.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1157,7 +1065,6 @@ export default {
       if (win.swiffy && win.swiffy.Stage) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1171,7 +1078,6 @@ export default {
       if (win.move && win.move.compile) {
         return { version: win.move.version() || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1185,7 +1091,6 @@ export default {
       if (win.amplify && win.amplify.publish) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1198,7 +1103,6 @@ export default {
       if (win.Popcorn && win.Popcorn.Events) {
         return { version: win.Popcorn.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1212,7 +1116,6 @@ export default {
       if (win.d3 && win.d3.select) {
         return { version: win.d3.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1226,7 +1129,6 @@ export default {
       if (win.Handlebars && win.Handlebars.compile) {
         return { version: win.Handlebars.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1240,7 +1142,6 @@ export default {
       if (win.ko && win.ko.applyBindings) {
         return { version: win.ko.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1253,7 +1154,6 @@ export default {
       if (win.Spine && win.Spine.Controller) {
         return { version: win.Spine.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1268,7 +1168,6 @@ export default {
       if (jq && jq.fn && jq.fn.jquery && jq.mobile) {
         return { version: jq.mobile.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1282,7 +1181,6 @@ export default {
       if (win.WebFont && win.WebFont.load) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1298,12 +1196,9 @@ export default {
         return {
           version: ngVersion.getAttribute("ng-version") || UNKNOWN_VERSION,
         };
-      }
-
-      if (win.ng && win.ng.probe instanceof Function) {
+      } else if (win.ng && win.ng.probe instanceof Function) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1317,12 +1212,9 @@ export default {
       var ng = win.angular;
       if (ng && ng.version && ng.version.full) {
         return { version: ng.version.full };
-      }
-
-      if (ng) {
+      } else if (ng) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1337,7 +1229,6 @@ export default {
       if (ember && ember.GUID_KEY) {
         return { version: ember.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1352,7 +1243,6 @@ export default {
         // Hammer.VERSION available in 1.0.10+
         return { version: win.Hammer.VERSION || "&lt; 1.0.10" };
       }
-
       return false;
     },
   },
@@ -1366,7 +1256,6 @@ export default {
       if (win.Visibility && win.Visibility.every) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1389,12 +1278,9 @@ export default {
             "." +
             velocity.version.patch,
         };
-      }
-
-      if (velocity && velocity.RegisterEffect) {
+      } else if (velocity && velocity.RegisterEffect) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1409,7 +1295,6 @@ export default {
       if (iv && iv.__ceGUID === "ifvisible.object.event.identifier") {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1421,10 +1306,9 @@ export default {
     test: function (win) {
       var px = win.PIXI;
       if (px && px.WebGLRenderer && px.VERSION) {
-        // Version 4.4.3 returns simply "4.4.3"; version 1.5.2 returns "v1.5.2"
+        // version 4.4.3 returns simply "4.4.3"; version 1.5.2 returns "v1.5.2"
         return { version: px.VERSION.replace("v", "") || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1438,7 +1322,6 @@ export default {
       if (dc && dc.registerChart) {
         return { version: dc.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1451,7 +1334,6 @@ export default {
       if (win.TweenMax && win.TweenMax.pauseAll) {
         return { version: win.TweenMax.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1464,7 +1346,6 @@ export default {
       if (win.FastClick && win.FastClick.notNeeded) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1477,7 +1358,6 @@ export default {
       if (win.Isotope || (win.$ != null && win.$.Isotope)) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1490,7 +1370,6 @@ export default {
       if (win.Marionette && win.Marionette.Application) {
         return { version: win.Marionette.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1503,7 +1382,6 @@ export default {
       if (win.can && win.can.Construct) {
         return { version: win.can.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1518,7 +1396,6 @@ export default {
           ? NodeFilter.FILTER_ACCEPT
           : NodeFilter.FILTER_SKIP;
       }
-
       var hasVueNode =
         document
           .createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT, isVueNode)
@@ -1526,7 +1403,6 @@ export default {
       if (hasVueNode || win.Vue) {
         return { version: (win.Vue && win.Vue.version) || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1539,7 +1415,6 @@ export default {
       if (win.Vue) {
         return { version: (win.Vue && win.Vue.version) || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1552,7 +1427,6 @@ export default {
       if ((win.__NUXT__ && win.__NUXT__.data != null) || win.$nuxt) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1565,7 +1439,6 @@ export default {
       if (win.__NUXT__ || win.$nuxt) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1578,7 +1451,6 @@ export default {
       if (win.Two && win.Two.Utils) {
         return { version: win.Two.Version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1591,7 +1463,6 @@ export default {
       if (win.BREWSER && win.BREWSER.ua) {
         return { version: BREWSER.VERSION || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1604,7 +1475,6 @@ export default {
       if (win.componentHandler && win.componentHandler.upgradeElement) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1617,7 +1487,6 @@ export default {
       if (win.kendo && win.kendo.View && win.kendo.View.extend) {
         return { version: win.kendo.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1630,7 +1499,6 @@ export default {
       if (win.Matter && win.Matter.Engine) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1643,7 +1511,6 @@ export default {
       if (win.riot && win.riot.mixin) {
         return { version: win.riot.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1656,7 +1523,6 @@ export default {
       if (win.seajs && win.seajs.use) {
         return { version: win.seajs.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1667,10 +1533,9 @@ export default {
     npm: "moment",
     test: function (win) {
       if (win.moment && (win.moment.isMoment || win.moment.lang)) {
-        // Version 1.0.0 has neither "isMoment" nor "version"
+        // version 1.0.0 has neither "isMoment" nor "version"
         return { version: win.moment.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1683,7 +1548,6 @@ export default {
       if (win.moment && win.moment.tz) {
         return { version: win.moment.tz.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1696,31 +1560,27 @@ export default {
       if (win.ScrollMagic && win.ScrollMagic.Controller) {
         return { version: ScrollMagic.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
   SWFObject: {
     id: "swfobject",
-    icon: "icon38", // Currently has no icon
+    icon: "icon38", // currently has no icon
     url: "https://github.com/swfobject/swfobject",
     test: function (win) {
       if (win.swfobject && win.swfobject.embedSWF) {
         // 2.x - exact version only for 2.3
         return { version: win.swfobject.version || UNKNOWN_VERSION };
-      }
-
-      if (win.deconcept && win.deconcept.SWFObject) {
+      } else if (win.deconcept && win.deconcept.SWFObject) {
         // 1.x
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
   FlexSlider: {
     id: "flexslider",
-    icon: "icon38", // Currently has no icon
+    icon: "icon38", // currently has no icon
     url: "https://woocommerce.com/flexslider/",
     npm: "flexslider",
     test: function (win) {
@@ -1728,46 +1588,42 @@ export default {
       if (jq && jq.fn && jq.fn.jquery && jq.flexslider) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
   SPF: {
     id: "spf",
-    icon: "icon38", // Currently has no icon
+    icon: "icon38", // currently has no icon
     url: "https://youtube.github.io/spfjs/",
     npm: "spf",
     test: function (win) {
       if (win.spf && win.spf.init) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
   "Numeral.js": {
     id: "numeraljs",
-    icon: "icon38", // Currently has no icon
+    icon: "icon38", // currently has no icon
     url: "http://numeraljs.com/",
     npm: "numeraljs",
     test: function (win) {
       if (win.numeral && win.isNumeral) {
         return { version: win.numeral.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
   "boomerang.js": {
     id: "boomerangjs",
-    icon: "icon38", // Currently has no icon
+    icon: "icon38", // currently has no icon
     url: "https://soasta.github.io/boomerang/",
     npm: "boomerangjs",
     test: function (win) {
       if (win.BOOMR && win.BOOMR.utils && win.BOOMR.init) {
         return { version: win.BOOMR.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1780,7 +1636,6 @@ export default {
       if (win.Framer && win.Framer.Layer) {
         return { version: win.Framer.Version.build || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1795,7 +1650,6 @@ export default {
       if (markoElement) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1818,7 +1672,6 @@ export default {
       if (document.getElementById("___gatsby")) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1831,7 +1684,6 @@ export default {
       if (win.Shopify && win.Shopify.shop) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1886,7 +1738,6 @@ export default {
       if (win.wixBiSession) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1932,10 +1783,8 @@ export default {
                 ) {
                   version = matches[1];
                 }
-
                 return { version: version };
               }
-
               return false;
             });
         });
@@ -1959,7 +1808,6 @@ export default {
       if (win.WIZ_global_data) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1972,7 +1820,6 @@ export default {
       if (document.__wizdispatcher) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -1993,12 +1840,9 @@ export default {
                 .join("; ")
             : UNKNOWN_VERSION,
         };
-      }
-
-      if (core) {
+      } else if (core) {
         return { version: core.version || UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -2096,7 +1940,6 @@ export default {
       if (win.__GUESS__ && win.__GUESS__.guess) {
         return { version: UNKNOWN_VERSION };
       }
-
       return false;
     },
   },
@@ -2150,9 +1993,7 @@ export default {
         return {
           version: generatorMeta.getAttribute("content").replace(/^\w+\s/, ""),
         };
-      }
-
-      if (win.Joomla || hasJoomlaBootstrap) {
+      } else if (win.Joomla || hasJoomlaBootstrap) {
         return { version: UNKNOWN_VERSION };
       }
 
