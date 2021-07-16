@@ -15,7 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./internal";
-export { navigationEvent } from "./external";
-export * from "./protocol";
-export * from "@/background/devtools/popup";
+import "@/extensionContext";
+
+// init rollbar early so we get error reporting on the other initialization
+import "@/telemetry/rollbar";
+import PermissionsPopup from "@/popups/PermissionsPopup";
+
+import ReactDOM from "react-dom";
+import React from "react";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+
+ReactDOM.render(<PermissionsPopup />, document.querySelector("#container"));

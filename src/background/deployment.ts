@@ -214,7 +214,7 @@ async function updateDeployments() {
   }
 }
 
-export function initDeploymentUpdater(): void {
+function initDeploymentUpdater(): void {
   setInterval(updateDeployments, UPDATE_INTERVAL_MS);
   void updateDeployments();
 }
