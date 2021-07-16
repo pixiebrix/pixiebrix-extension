@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./internal";
-export { navigationEvent } from "./external";
-export * from "./protocol";
-export * from "@/background/popup";
+import { liftBackground } from "@/background/protocol";
+import { Permissions, browser } from "webextension-polyfill-ts";
+
+export const containsPermissions = liftBackground(
+  "CONTAINS_PERMISSIONS",
+  async (permissions: Permissions.Permissions) =>
+    browser.permissions.contains(permissions)
+);

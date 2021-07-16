@@ -24,7 +24,7 @@ import {
   ExtensionPointDefinition,
   RecipeDefinition,
 } from "@/types/definitions";
-import { Permissions, browser } from "webextension-polyfill-ts";
+import { Permissions, browser, Manifest } from "webextension-polyfill-ts";
 import { sortBy, castArray, groupBy, uniq, every, compact } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";
@@ -237,4 +237,13 @@ export function useExtensionPermissions(
   }, [extension]);
 
   return [enabled, request];
+}
+
+export function selectOptionalPermissions(
+  permissions: string[]
+): Manifest.OptionalPermission[] {
+  const { optional_permissions } = chrome.runtime.getManifest();
+  return permissions.filter((requestedPermission) =>
+    optional_permissions.includes(requestedPermission)
+  ) as Manifest.OptionalPermission[];
 }
