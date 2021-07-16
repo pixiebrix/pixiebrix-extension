@@ -77,8 +77,8 @@ const PermissionsPopup: React.FC = () => {
   return (
     <Centered>
       <p>
-        Additional permissions may be required, you will be asked to confirm one
-        more time.
+        Additional permissions are required, the browser will prompt you to
+        accept permissions.
       </p>
 
       <p>
