@@ -15,14 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-document.querySelector("button").addEventListener("click", async () => {
-  const permissions = new URLSearchParams(location.search);
-  const origin = permissions.get("origin");
-  const accepted = await browser.permissions.request({
-    origins: [origin],
-  });
+import "@/extensionContext";
 
-  if (accepted) {
-    window.close();
-  }
-});
+// init rollbar early so we get error reporting on the other initialization
+import "@/telemetry/rollbar";
+import PermissionsPopup from "@/popups/PermissionsPopup";
+
+import ReactDOM from "react-dom";
+import React from "react";
+
+import "bootstrap/dist/css/bootstrap.min.css";
+
+ReactDOM.render(<PermissionsPopup />, document.querySelector("#container"));

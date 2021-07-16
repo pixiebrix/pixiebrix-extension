@@ -15,19 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Tabs } from "webextension-polyfill-ts";
+import { browser, Tabs } from "webextension-polyfill-ts";
 import { liftBackground } from "@/background/devtools/internal";
 import { Target } from "@/background/devtools/contract";
+import { expectBackgroundPage } from "@/utils/expectContext";
+import { isChrome } from "@/helpers";
 
-const WINDOW_WIDTH = 420;
-const WINDOW_HEIGHT = 150;
+const WINDOW_WIDTH_PX = 420;
+const WINDOW_HEIGHT_PX = 150;
 
 async function onTabClose(tabId: number): Promise<void> {
   return new Promise((resolve) => {
     const handlePossibleClosure = (closeTabId: number) => {
       if (closeTabId === tabId) {
-        resolve();
+        // remove listener first to ensure it's removed even if resolve throws
         browser.tabs.onRemoved.removeListener(handlePossibleClosure);
+        resolve();
       }
     };
     browser.tabs.onRemoved.addListener(handlePossibleClosure);
@@ -41,38 +44,46 @@ async function openTab(url: string, target: Target): Promise<Tabs.Tab> {
   });
 }
 
-async function _openPopup(url: string): Promise<Tabs.Tab> {
+async function createPopup(url: string | URL): Promise<Tabs.Tab> {
   const window = await browser.windows.create({
     url: String(url),
     focused: true,
-    height: WINDOW_HEIGHT,
-    width: WINDOW_WIDTH,
-    top: Math.round((screen.availHeight - WINDOW_HEIGHT) / 2),
-    left: Math.round((screen.availWidth - WINDOW_WIDTH) / 2),
+    height: WINDOW_HEIGHT_PX,
+    width: WINDOW_WIDTH_PX,
+    top: Math.round((screen.availHeight - WINDOW_HEIGHT_PX) / 2),
+    left: Math.round((screen.availWidth - WINDOW_WIDTH_PX) / 2),
     type: "popup",
   });
 
   return window.tabs[0];
 }
 
-/** Firefox seems to be unable to handle popups in fullscreens, changing the macOS "space" back to the desktop */
-async function arePopupsBuggy(target: Target): Promise<boolean> {
-  if (!navigator.userAgent.includes("Macintosh")) {
-    return false;
+/**
+ * Return true if popups are expected to work properly for the user agent / operating system.
+ */
+async function detectPopupSupport(target: Target): Promise<boolean> {
+  expectBackgroundPage();
+
+  if (isChrome || !navigator.userAgent.includes("Macintosh")) {
+    return true;
   }
 
+  // Firefox on Mac seems to be unable to handle popups in fullscreen mode, changing the macOS "space"
+  // back to the desktop
   const currentTab = await browser.tabs.get(target.tabId);
   const currentWindow = await browser.windows.get(currentTab.windowId);
-  return currentWindow.state === "fullscreen";
+  return currentWindow.state !== "fullscreen";
 }
 
-async function handleRequest(url: string, target: Target): Promise<void> {
-  const tab = arePopupsBuggy(target)
-    ? await openTab(url, target)
-    : await _openPopup(url);
-  await onTabClose(tab.id);
-}
-export const openPopup = liftBackground(
-  "OPEN_POPUP",
-  (target: Target) => async (url: string) => handleRequest(url, target)
+/**
+ * Show a popup prompt and await the popup closing
+ */
+export const openPopupPrompt = liftBackground(
+  "OPEN_POPUP_PROMPT",
+  (target: Target) => async (url: string) => {
+    const tab = detectPopupSupport(target)
+      ? await createPopup(url)
+      : await openTab(url, target);
+    await onTabClose(tab.id);
+  }
 );

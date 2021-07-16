@@ -36,6 +36,7 @@ import "./background/contextMenus";
 import "./background/dataStore";
 import "./background/devtools";
 import "./background/browserAction";
+import "./background/devtools/popup";
 
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";
