@@ -182,9 +182,8 @@ function init($) {
   var find = function (elem, selector) {
     if (elem.is(selector)) {
       return elem;
-    } else {
-      return elem.find(selector);
     }
+    return elem.find(selector);
   };
 
   var pluginOptions = {
@@ -263,9 +262,11 @@ function init($) {
   var realign = function (alignment, inner, outer) {
     if (alignment === "l" || alignment === "t") {
       return 0;
-    } else if (alignment === "c" || alignment === "m") {
+    }
+    if (alignment === "c" || alignment === "m") {
       return outer / 2 - inner / 2;
-    } else if (alignment === "r" || alignment === "b") {
+    }
+    if (alignment === "r" || alignment === "b") {
       return outer - inner;
     }
     throw "Invalid alignment";
@@ -543,7 +544,8 @@ function init($) {
     if (this.container && !data) {
       this.show(false);
       return;
-    } else if (!this.container && !data) {
+    }
+    if (!this.container && !data) {
       return;
     }
     datas = {};

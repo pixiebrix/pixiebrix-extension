@@ -142,14 +142,16 @@ async function authenticate(
       ({ apiKey } as unknown) as ServiceConfig,
       { ...request, url: absoluteURL }
     );
-  } else if (service.isOAuth2) {
+  }
+  if (service.isOAuth2) {
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
     if (isEmpty(data)) {
       data = await launchOAuth2Flow(service, localConfig);
     }
     return service.authenticateRequest(localConfig.config, request, data);
-  } else if (service.isToken) {
+  }
+  if (service.isToken) {
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
     if (isEmpty(data)) {

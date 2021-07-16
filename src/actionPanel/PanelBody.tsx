@@ -54,7 +54,8 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
   const [component, pending, error] = useAsyncState(async () => {
     if (!panel.payload) {
       return null;
-    } else if ("error" in panel.payload) {
+    }
+    if ("error" in panel.payload) {
       const { error } = panel.payload;
       return <div className="text-danger">Error running panel: {error}</div>;
     }
@@ -81,7 +82,8 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
         Error rendering panel: {getErrorMessage(error as Error)}
       </div>
     );
-  } else if (pending || component == null) {
+  }
+  if (pending || component == null) {
     return <GridLoader />;
   }
   return component;

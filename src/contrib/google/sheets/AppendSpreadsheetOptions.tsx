@@ -120,7 +120,8 @@ const PropertiesField: React.FunctionComponent<{
 
   if (schemaPending) {
     return <GridLoader />;
-  } else if (schemaError) {
+  }
+  if (schemaError) {
     return <span className="text-danger">Error fetching column headers</span>;
   }
   return <ObjectField label="Row Values" name={name} schema={sheetSchema} />;

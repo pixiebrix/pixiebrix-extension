@@ -55,19 +55,26 @@ export function defaultFieldRenderer(
 ): React.FunctionComponent<FieldProps<unknown>> {
   if (booleanPredicate(schema)) {
     return BooleanField;
-  } else if (textPredicate(schema)) {
+  }
+  if (textPredicate(schema)) {
     return TextField;
-  } else if (blockPredicate(schema)) {
+  }
+  if (blockPredicate(schema)) {
     return BlockField;
-  } else if (schema["$ref"] === "https://app.pixiebrix.com/schemas/icon#") {
+  }
+  if (schema["$ref"] === "https://app.pixiebrix.com/schemas/icon#") {
     return IconField;
-  } else if (findOneOf(schema, blockPredicate)) {
+  }
+  if (findOneOf(schema, blockPredicate)) {
     return BlockField;
-  } else if (findOneOf(schema, textPredicate)) {
+  }
+  if (findOneOf(schema, textPredicate)) {
     return makeOneOfField(findOneOf(schema, textPredicate));
-  } else if (findOneOf(schema, booleanPredicate)) {
+  }
+  if (findOneOf(schema, booleanPredicate)) {
     return makeOneOfField(findOneOf(schema, booleanPredicate));
-  } else if (schema["$ref"] && !schema.type) {
+  }
+  if (schema["$ref"] && !schema.type) {
     throw new Error(`Unexpected $ref ${schema["$ref"]}`);
   } else {
     // Not using reportError here because we generally know about this, and it generates an error every render

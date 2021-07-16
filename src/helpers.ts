@@ -103,14 +103,16 @@ export function mapArgs(
 ): unknown {
   if (Array.isArray(config)) {
     return config.map((x) => mapArgs(x, ctxt, render));
-  } else if (isPlainObject(config)) {
+  }
+  if (isPlainObject(config)) {
     return pickBy(
       mapValues(config as object, (subConfig) =>
         mapArgs(subConfig, ctxt, render)
       ),
       (x) => x != null
     );
-  } else if (typeof config === "string") {
+  }
+  if (typeof config === "string") {
     if (isSimplePath(config, ctxt)) {
       const prop = getPropByPath(ctxt as { [prop: string]: unknown }, config);
       if (prop && typeof prop === "object" && "__service" in prop) {

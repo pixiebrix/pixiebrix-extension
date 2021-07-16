@@ -172,7 +172,8 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         </span>
       </div>
     );
-  } else if (!robotAvailable) {
+  }
+  if (!robotAvailable) {
     return (
       <div>
         <span className="text-danger">

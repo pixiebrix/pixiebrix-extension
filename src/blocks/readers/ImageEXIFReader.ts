@@ -39,7 +39,8 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
   if (/^data:/i.test(img.src)) {
     // Data URI
     return base64ToArrayBuffer(img.src);
-  } else if (/^blob:/i.test(img.src)) {
+  }
+  if (/^blob:/i.test(img.src)) {
     // Object URL
     const blob = await fetch(img.src).then((r) => r.blob());
     return await blob.arrayBuffer();

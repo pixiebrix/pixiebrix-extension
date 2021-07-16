@@ -74,13 +74,17 @@ export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
 
   if (block instanceof TriggerExtensionPoint) {
     return faBolt;
-  } else if (block instanceof MenuItemExtensionPoint) {
+  }
+  if (block instanceof MenuItemExtensionPoint) {
     return faMousePointer;
-  } else if (block instanceof ContextMenuExtensionPoint) {
+  }
+  if (block instanceof ContextMenuExtensionPoint) {
     return faBars;
-  } else if (block instanceof PanelExtensionPoint) {
+  }
+  if (block instanceof PanelExtensionPoint) {
     return faWindowMaximize;
-  } else if (block instanceof ActionPanelExtensionPoint) {
+  }
+  if (block instanceof ActionPanelExtensionPoint) {
     return faColumns;
   }
 

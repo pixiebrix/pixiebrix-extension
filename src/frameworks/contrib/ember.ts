@@ -99,19 +99,24 @@ function isMutableCell(cell: unknown): cell is MutableCell {
 export function getProp(value: any, prop: string | number): unknown {
   if (isPrimitive(value)) {
     return undefined;
-  } else if (Array.isArray(value)) {
+  }
+  if (Array.isArray(value)) {
     if (typeof prop !== "number") {
       throw new TypeError("Expected number for prop for array value");
     }
     return value[prop];
-  } else if (typeof value === "object") {
+  }
+  if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
       return getProp(value.value, prop);
-    } else if ("_cache" in value) {
+    }
+    if ("_cache" in value) {
       return getProp(value._cache, prop);
-    } else if (Array.isArray(value.content)) {
+    }
+    if (Array.isArray(value.content)) {
       return getProp(value.content, prop);
-    } else if (typeof prop === "string" && isGetter(value, prop)) {
+    }
+    if (typeof prop === "string" && isGetter(value, prop)) {
       return value[prop]();
     }
     return value[prop];
@@ -142,17 +147,22 @@ export function readEmberValueFromCache(
 
   if (depth >= maxDepth) {
     return undefined;
-  } else if (isPrimitive(value)) {
+  }
+  if (isPrimitive(value)) {
     return value;
-  } else if (Array.isArray(value)) {
+  }
+  if (Array.isArray(value)) {
     // must come before typeof value === "object" check because arrays are objects
     return value.map((x) => traverse(x));
-  } else if (typeof value === "object") {
+  }
+  if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
       return traverse(value.value);
-    } else if ("_cache" in value) {
+    }
+    if ("_cache" in value) {
       return traverse(value._cache);
-    } else if (Array.isArray(value.content)) {
+    }
+    if (Array.isArray(value.content)) {
       // consider arrays a traverse because knowing the property name by itself isn't useful for anything
       return value.content.map((x: any) => traverse(x));
     }

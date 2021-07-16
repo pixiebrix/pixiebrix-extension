@@ -150,7 +150,8 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         });
         setSubmitting(false);
         return;
-      } else if (missingServiceIds.length > 0) {
+      }
+      if (missingServiceIds.length > 0) {
         addToast(
           `You must select a configuration for each service: ${missingServiceIds.join(
             ", "
@@ -162,7 +163,8 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         );
         setSubmitting(false);
         return;
-      } else if (!enabled) {
+      }
+      if (!enabled) {
         addToast("You must grant browser permissions for the selected bricks", {
           appearance: "error",
           autoDismiss: true,

@@ -71,7 +71,8 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
         children: [],
       };
     });
-  } else if (Array.isArray(inputs)) {
+  }
+  if (Array.isArray(inputs)) {
     return inputs.map((value, index) => {
       const key = `${keyPrefix}-${index}`;
 

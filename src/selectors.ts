@@ -42,7 +42,8 @@ export function useExtension(
 
     if (!extensionId) {
       return null;
-    } else if (extensionPointId) {
+    }
+    if (extensionPointId) {
       config = options.extensions[extensionPointId][extensionId];
     } else {
       for (const pointExtensions of Object.values(options.extensions)) {
@@ -66,7 +67,8 @@ export function useExtension(
   const [extensionPoint, isPending] = useAsyncState(async () => {
     if (extensionConfig) {
       return extensionPointRegistry.lookup(extensionConfig.extensionPointId);
-    } else if (extensionPointId) {
+    }
+    if (extensionPointId) {
       return extensionPointRegistry.lookup(extensionPointId);
     }
     return null;

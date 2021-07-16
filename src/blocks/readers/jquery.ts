@@ -185,7 +185,8 @@ async function select(
     }
 
     return normalizedSelector.multi ? [] : undefined;
-  } else if ($elt.length > 1 && !normalizedSelector.multi) {
+  }
+  if ($elt.length > 1 && !normalizedSelector.multi) {
     throw new BusinessError(
       `Multiple elements found for ${normalizedSelector.selector}. To return a list of values, supply multi=true`
     );

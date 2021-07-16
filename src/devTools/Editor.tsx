@@ -84,9 +84,11 @@ const Editor: React.FunctionComponent = () => {
   const body = useMemo(() => {
     if (tabState.hasPermissions === false) {
       return <PermissionsPane />;
-    } else if (error && beta) {
+    }
+    if (error && beta) {
       return <BetaPane />;
-    } else if (inserting) {
+    }
+    if (inserting) {
       switch (inserting) {
         case "menuItem":
           return <InsertMenuItemPane cancel={cancelInsert} />;

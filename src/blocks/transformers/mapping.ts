@@ -59,13 +59,16 @@ export class MappingTransformer extends Transformer {
   }: BlockArg): Promise<unknown> {
     if (key == null || key === "") {
       return null;
-    } else if (Object.prototype.hasOwnProperty.call(mapping, key)) {
+    }
+    if (Object.prototype.hasOwnProperty.call(mapping, key)) {
       // checking for hasOwnProperty
       // eslint-disable-next-line security/detect-object-injection
       return mapping[key];
-    } else if (missing === "null" || missing === null) {
+    }
+    if (missing === "null" || missing === null) {
       return null;
-    } else if (missing === "ignore") {
+    }
+    if (missing === "ignore") {
       return key;
     }
     throw new BusinessError(`Key ${key} not found in the mapping`);

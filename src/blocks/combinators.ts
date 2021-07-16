@@ -248,17 +248,20 @@ async function runStage(
         ctxt: args,
         messageContext: logger.context,
       });
-    } else if (stage.window === "target") {
+    }
+    if (stage.window === "target") {
       return await executeInTarget(stage.id, blockArgs, {
         ctxt: args,
         messageContext: logger.context,
       });
-    } else if (stage.window === "broadcast") {
+    }
+    if (stage.window === "broadcast") {
       return await executeInAll(stage.id, blockArgs, {
         ctxt: args,
         messageContext: logger.context,
       });
-    } else if (stage.window ?? "self" === "self") {
+    }
+    if (stage.window ?? "self" === "self") {
       return await block.run(blockArgs, { ctxt: args, logger, root, headless });
     }
     throw new BusinessError(`Unexpected stage window ${stage.window}`);
@@ -409,11 +412,13 @@ export async function mergeReaders(
 ): Promise<IReader> {
   if (typeof readerConfig === "string") {
     return blockRegistry.lookup(readerConfig) as Promise<IReader>;
-  } else if (Array.isArray(readerConfig)) {
+  }
+  if (Array.isArray(readerConfig)) {
     return new ArrayCompositeReader(
       await Promise.all(readerConfig.map(mergeReaders))
     );
-  } else if (isPlainObject(readerConfig)) {
+  }
+  if (isPlainObject(readerConfig)) {
     return new CompositeReader(
       await resolveObj(mapValues(readerConfig, mergeReaders))
     );

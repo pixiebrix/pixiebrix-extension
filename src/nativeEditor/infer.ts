@@ -159,7 +159,8 @@ function ignoreDivChildNode(node: Node): boolean {
 function removeUnstyledLayout(node: Node): Node | null {
   if ([Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType)) {
     return null;
-  } else if (node.nodeType === Node.ELEMENT_NODE) {
+  }
+  if (node.nodeType === Node.ELEMENT_NODE) {
     const element = node as HTMLElement;
     const nonEmptyChildren = [...node.childNodes].filter(
       (x) => !ignoreDivChildNode(x)

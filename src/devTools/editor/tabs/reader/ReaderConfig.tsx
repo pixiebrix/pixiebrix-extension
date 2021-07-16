@@ -130,7 +130,8 @@ export function searchData(query: string, data: unknown): unknown {
   const normalized = normalize(query);
   if (data == null) {
     return null;
-  } else if (typeof data === "object") {
+  }
+  if (typeof data === "object") {
     const values = mapValues(data, (value, key) =>
       normalize(key).includes(query) ? value : searchData(query, value)
     );
@@ -142,7 +143,8 @@ export function searchData(query: string, data: unknown): unknown {
           : value != null;
       return keyMatch || valueMatch;
     });
-  } else if (Array.isArray(data)) {
+  }
+  if (Array.isArray(data)) {
     return compact(data.map(partial(searchData, query)));
   }
   return normalize(data).includes(normalized) ? data : undefined;

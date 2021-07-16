@@ -104,7 +104,8 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
 
   if (isPending) {
     return <GridLoader />;
-  } else if (!extensionPoint) {
+  }
+  if (!extensionPoint) {
     return <WorkshopPage navigate={navigate} />;
   }
   return (

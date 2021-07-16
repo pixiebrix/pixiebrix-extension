@@ -79,7 +79,8 @@ export function toLogArgument(error: unknown): LogArgument {
     // the function argument for rollbar.log is a callback to call once the error has been reported, drop
     // these prevent accidentally calling the callback
     return undefined;
-  } else if (typeof error === "object") {
+  }
+  if (typeof error === "object") {
     // the custom data or error object
     return error;
   }

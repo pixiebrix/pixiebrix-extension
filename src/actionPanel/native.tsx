@@ -58,9 +58,11 @@ function getHTMLElement(): JQuery<HTMLElement> {
   // resolve html tag, which is more dominant than <body>
   if (document.documentElement) {
     return $(document.documentElement);
-  } else if (document.querySelector("html")) {
+  }
+  if (document.querySelector("html")) {
     return $(document.querySelector("html"));
-  } else if ($("html").length > -1) {
+  }
+  if ($("html").length > -1) {
     return $("html");
   }
   throw new Error("HTML node not found");

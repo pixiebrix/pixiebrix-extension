@@ -174,7 +174,8 @@ class LazyLocatorFactory {
     if (serviceId === PIXIEBRIX_SERVICE_ID) {
       // HACK: for now use the separate storage for the extension key
       return pixieServiceFactory();
-    } else if (!authId) {
+    }
+    if (!authId) {
       throw new NotConfiguredError(
         `No configuration selected for ${serviceId}`,
         serviceId

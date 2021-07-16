@@ -213,7 +213,8 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     if (this.$container.length === 0) {
       return false;
-    } else if (this.$container.length > 1) {
+    }
+    if (this.$container.length > 1) {
       console.error(`Multiple containers found for selector: ${selector}`);
       this.logger.error(`Multiple containers found: ${this.$container.length}`);
       return false;

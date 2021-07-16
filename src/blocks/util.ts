@@ -24,13 +24,17 @@ export async function getType(
 ): Promise<BlockType | null> {
   if ("inferType" in block) {
     return await (block as any).inferType();
-  } else if ("read" in block) {
+  }
+  if ("read" in block) {
     return "reader";
-  } else if ("effect" in block) {
+  }
+  if ("effect" in block) {
     return "effect";
-  } else if ("transform" in block) {
+  }
+  if ("transform" in block) {
     return "transform";
-  } else if ("render" in block) {
+  }
+  if ("render" in block) {
     return "renderer";
   }
   return null;

@@ -127,9 +127,11 @@ export function isPrimitive(val: unknown): val is Primitive {
 export function removeUndefined(obj: unknown): unknown {
   if (obj === undefined) {
     return null;
-  } else if (Array.isArray(obj)) {
+  }
+  if (Array.isArray(obj)) {
     return obj.map((x) => removeUndefined(x));
-  } else if (typeof obj === "object") {
+  }
+  if (typeof obj === "object") {
     return mapValues(
       pickBy(obj, (x) => x !== undefined),
       (x) => removeUndefined(x)
@@ -143,9 +145,11 @@ export function boolean(value: unknown): boolean {
     return ["true", "t", "yes", "y", "on", "1"].includes(
       value.trim().toLowerCase()
     );
-  } else if (typeof value === "number") {
+  }
+  if (typeof value === "number") {
     return value !== 0;
-  } else if (typeof value === "boolean") {
+  }
+  if (typeof value === "boolean") {
     return value;
   }
   return false;
@@ -196,11 +200,14 @@ export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
 
   if (depth > maxDepth) {
     return undefined;
-  } else if (Array.isArray(value)) {
+  }
+  if (Array.isArray(value)) {
     return value.map(recurse);
-  } else if (typeof value === "object" && value != null) {
+  }
+  if (typeof value === "object" && value != null) {
     return mapValues(value, recurse);
-  } else if (typeof value === "function" || typeof value === "symbol") {
+  }
+  if (typeof value === "function" || typeof value === "symbol") {
     return undefined;
   }
   return value;
@@ -291,7 +298,8 @@ export function getPropByPath(
 export function isNullOrBlank(value: unknown): boolean {
   if (value == null) {
     return true;
-  } else if (typeof value === "string" && value.trim() === "") {
+  }
+  if (typeof value === "string" && value.trim() === "") {
     return true;
   }
   return false;

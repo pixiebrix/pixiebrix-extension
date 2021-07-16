@@ -120,7 +120,8 @@ export default {
               bootstrapVersion = win.$.fn[component].Constructor.VERSION;
               return true;
               // Bootstrap >= 2.0.0 and <= 3.1.0 detection
-            } else if (
+            }
+            if (
               new RegExp(RE_PREFIX_V3 + component).test(
                 win.$.fn[component].toString()
               )
@@ -128,7 +129,8 @@ export default {
               bootstrapVersion = ">= 3.0.0 & <= 3.1.1";
               return true;
               // Bootstrap < 3.1.0 detection
-            } else if (
+            }
+            if (
               new RegExp(RE_PREFIX_V2 + component).test(
                 win.$.fn[component].toString()
               )
@@ -425,7 +427,8 @@ export default {
     test: function (win) {
       if (win.Ext && win.Ext.versions) {
         return { version: win.Ext.versions.core.version };
-      } else if (win.Ext) {
+      }
+      if (win.Ext) {
         return { version: win.Ext.version || UNKNOWN_VERSION };
       }
       return false;
@@ -793,9 +796,11 @@ export default {
     test: function (win) {
       if (win.gloader && win.gloader.getRequests) {
         return { version: UNKNOWN_VERSION };
-      } else if (win.glow && win.glow.dom) {
+      }
+      if (win.glow && win.glow.dom) {
         return { version: win.glow.VERSION || UNKNOWN_VERSION };
-      } else if (win.Glow) {
+      }
+      if (win.Glow) {
         return { version: win.Glow.version || UNKNOWN_VERSION };
       }
       return false;
@@ -901,7 +906,8 @@ export default {
     test: function (win) {
       if (win.THREE && win.THREE.REVISION) {
         return { version: "r" + win.THREE.REVISION };
-      } else if (win.THREE) {
+      }
+      if (win.THREE) {
         return { version: UNKNOWN_VERSION };
       }
       return false;
@@ -929,7 +935,8 @@ export default {
     test: function (win) {
       if (win.Caman && win.Caman.version) {
         return { version: win.Caman.version.release };
-      } else if (win.Caman) {
+      }
+      if (win.Caman) {
         return { version: UNKNOWN_VERSION };
       }
       return false;
@@ -1196,7 +1203,8 @@ export default {
         return {
           version: ngVersion.getAttribute("ng-version") || UNKNOWN_VERSION,
         };
-      } else if (win.ng && win.ng.probe instanceof Function) {
+      }
+      if (win.ng && win.ng.probe instanceof Function) {
         return { version: UNKNOWN_VERSION };
       }
       return false;
@@ -1212,7 +1220,8 @@ export default {
       var ng = win.angular;
       if (ng && ng.version && ng.version.full) {
         return { version: ng.version.full };
-      } else if (ng) {
+      }
+      if (ng) {
         return { version: UNKNOWN_VERSION };
       }
       return false;
@@ -1278,7 +1287,8 @@ export default {
             "." +
             velocity.version.patch,
         };
-      } else if (velocity && velocity.RegisterEffect) {
+      }
+      if (velocity && velocity.RegisterEffect) {
         return { version: UNKNOWN_VERSION };
       }
       return false;
@@ -1571,7 +1581,8 @@ export default {
       if (win.swfobject && win.swfobject.embedSWF) {
         // 2.x - exact version only for 2.3
         return { version: win.swfobject.version || UNKNOWN_VERSION };
-      } else if (win.deconcept && win.deconcept.SWFObject) {
+      }
+      if (win.deconcept && win.deconcept.SWFObject) {
         // 1.x
         return { version: UNKNOWN_VERSION };
       }
@@ -1840,7 +1851,8 @@ export default {
                 .join("; ")
             : UNKNOWN_VERSION,
         };
-      } else if (core) {
+      }
+      if (core) {
         return { version: core.version || UNKNOWN_VERSION };
       }
       return false;
@@ -1993,7 +2005,8 @@ export default {
         return {
           version: generatorMeta.getAttribute("content").replace(/^\w+\s/, ""),
         };
-      } else if (win.Joomla || hasJoomlaBootstrap) {
+      }
+      if (win.Joomla || hasJoomlaBootstrap) {
         return { version: UNKNOWN_VERSION };
       }
 

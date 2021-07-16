@@ -90,7 +90,8 @@ const Panel: React.FunctionComponent = () => {
         <Button onClick={() => location.reload()}>Reload Editor</Button>
       </Centered>
     );
-  } else if (context.portError || context.tabState.error) {
+  }
+  if (context.portError || context.tabState.error) {
     return (
       <Centered>
         <div className="PaneTitle">
@@ -102,7 +103,8 @@ const Panel: React.FunctionComponent = () => {
         </div>
       </Centered>
     );
-  } else if (!context.port) {
+  }
+  if (!context.port) {
     return (
       <Centered>
         <p>Initializing connection...</p>

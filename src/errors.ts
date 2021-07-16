@@ -103,9 +103,12 @@ export function hasCancelRootCause(error: unknown): boolean {
 
   if (error instanceof CancelError || error.name === "CancelError") {
     return true;
-  } else if (error instanceof ContextError) {
+  }
+
+  if (error instanceof ContextError) {
     return hasCancelRootCause(error.cause);
   }
+
   return false;
 }
 
@@ -120,9 +123,12 @@ export function hasBusinessRootCause(error: unknown): boolean {
 
   if (error instanceof BusinessError || error.name === "BusinessError") {
     return true;
-  } else if (error instanceof ContextError) {
+  }
+
+  if (error instanceof ContextError) {
     return hasBusinessRootCause(error.cause);
   }
+
   return false;
 }
 
@@ -135,11 +141,13 @@ function testConnectionErrorPatterns(message: string): boolean {
   if (typeof message !== "string") {
     return;
   }
+
   for (const pattern of CONNECTION_ERROR_PATTERNS) {
     if ((message ?? "").includes(pattern)) {
       return true;
     }
   }
+
   return false;
 }
 
@@ -163,18 +171,25 @@ export function isConnectionError(
 ): boolean {
   if (typeof event === "string") {
     return testConnectionErrorPatterns(event);
-  } else if (event instanceof ConnectionError) {
+  }
+
+  if (event instanceof ConnectionError) {
     return true;
-  } else if (event != null && typeof event === "object") {
+  }
+
+  if (event != null && typeof event === "object") {
     if (isPromiseRejectionEvent(event)) {
       return (
         event.reason instanceof ConnectionError ||
         testConnectionErrorPatterns(event.reason)
       );
-    } else if (isErrorEvent(event)) {
+    }
+
+    if (isErrorEvent(event)) {
       return testConnectionErrorPatterns(event.message);
     }
   }
+
   return false;
 }
 

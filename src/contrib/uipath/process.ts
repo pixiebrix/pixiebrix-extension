@@ -151,7 +151,8 @@ export class RunProcess extends Transformer {
 
         if (resultData.value[0].State === "Successful") {
           return JSON.parse(resultData.value[0].OutputArguments);
-        } else if (resultData.value[0].State === "Faulted") {
+        }
+        if (resultData.value[0].State === "Faulted") {
           logger.error(`UiPath job failed: ${resultData.value[0].Info}`);
           throw new BusinessError("UiPath job failed");
         }

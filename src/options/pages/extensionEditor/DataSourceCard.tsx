@@ -140,7 +140,8 @@ export const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
                 key={prop}
               />
             );
-          } else if (type === "array") {
+          }
+          if (type === "array") {
             return (
               <ArrayEntry
                 prop={prop}
@@ -172,9 +173,11 @@ const DataSourceCard: React.FunctionComponent<{
   const body = useMemo(() => {
     if (isPending) {
       return <GridLoader />;
-    } else if (error) {
+    }
+    if (error) {
       return <Card.Body>{error.toString()}</Card.Body>;
-    } else if (isEmpty(outputSchema)) {
+    }
+    if (isEmpty(outputSchema)) {
       return <Card.Body>No schema available</Card.Body>;
     }
     return <SchemaTree schema={outputSchema} />;

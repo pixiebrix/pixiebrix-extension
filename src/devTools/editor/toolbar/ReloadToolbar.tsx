@@ -85,7 +85,8 @@ const ReloadToolbar: React.FunctionComponent<{
     if (disabled) {
       // don't automatically re-run if in an invalid state
       return;
-    } else if (!automaticUpdate && !element.autoReload) {
+    }
+    if (!automaticUpdate && !element.autoReload) {
       // by default, don't automatically trigger (because it might be doing expensive
       // operations such as hitting an API)
       return;

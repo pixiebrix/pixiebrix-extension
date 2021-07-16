@@ -80,7 +80,8 @@ async function runExtensionPoint(
       `Skipping ${extensionPoint.id} because it was not installed on the page`
     );
     return;
-  } else if (isCancelled()) {
+  }
+  if (isCancelled()) {
     console.debug(
       `Skipping ${extensionPoint.id} because user navigated away from the page`
     );

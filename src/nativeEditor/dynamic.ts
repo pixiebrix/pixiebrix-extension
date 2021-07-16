@@ -86,7 +86,8 @@ type ReaderLike = ReaderConfig | ReaderReference | Reader;
 async function buildSingleReader(config: ReaderLike): Promise<IReader> {
   if (config instanceof Reader) {
     return config;
-  } else if (isCustomReader(config)) {
+  }
+  if (isCustomReader(config)) {
     return readerFactory(config);
   }
   return blockRegistry.lookup(config.metadata.id) as Promise<IReader>;

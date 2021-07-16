@@ -226,7 +226,8 @@ export function awaitElementOnce(
         innerCancel();
       },
     ];
-  } else if (rest.length === 0) {
+  }
+  if (rest.length === 0) {
     return [Promise.resolve($element), noop];
   }
   return awaitElementOnce(rest, $element);

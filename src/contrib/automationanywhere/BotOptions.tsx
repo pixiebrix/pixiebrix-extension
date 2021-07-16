@@ -216,7 +216,8 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
         </p>
       </div>
     );
-  } else if (!hasPermissions) {
+  }
+  if (!hasPermissions) {
     return (
       <div className="my-2">
         <p>

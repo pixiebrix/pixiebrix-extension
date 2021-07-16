@@ -417,9 +417,8 @@ function getNestedBoundingClientRect(
     }
 
     return mergeRectOffsets(rects);
-  } else {
-    return node.getBoundingClientRect();
   }
+  return node.getBoundingClientRect();
 }
 
 // Get the window object for the document that a node belongs to,

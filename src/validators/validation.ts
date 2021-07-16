@@ -177,7 +177,8 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
                 });
               }
               return true;
-            } else if (value == null) {
+            }
+            if (value == null) {
               return this.createError({
                 message: "Select a service configuration",
               });

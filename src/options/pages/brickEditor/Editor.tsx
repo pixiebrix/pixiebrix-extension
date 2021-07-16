@@ -50,7 +50,8 @@ const SharingIcon: React.FunctionComponent<{
 }> = ({ isPublic, organizations }) => {
   if (isPublic) {
     return <FontAwesomeIcon icon={faGlobe} />;
-  } else if (organizations) {
+  }
+  if (organizations) {
     return <FontAwesomeIcon icon={faBuilding} />;
   }
   return <FontAwesomeIcon icon={faEyeSlash} />;

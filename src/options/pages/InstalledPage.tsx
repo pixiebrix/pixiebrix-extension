@@ -180,14 +180,16 @@ const ExtensionRow: React.FunctionComponent<{
   const statusElt = useMemo(() => {
     if (hasPermissions == null || validation == null) {
       return <BeatLoader />;
-    } else if (validation && !validation.valid) {
+    }
+    if (validation && !validation.valid) {
       return (
         <span className="text-danger text-wrap">
           <FontAwesomeIcon icon={faExclamation} />{" "}
           {validationMessage(validation)}
         </span>
       );
-    } else if (hasPermissions) {
+    }
+    if (hasPermissions) {
       return (
         <span>
           <FontAwesomeIcon icon={faCheck} /> Active

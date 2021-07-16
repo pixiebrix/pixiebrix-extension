@@ -125,7 +125,8 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
 function extractServiceIds(schema: Schema): string[] {
   if ("$ref" in schema) {
     return [schema.$ref.slice(SERVICE_BASE_SCHEMA.length)];
-  } else if ("anyOf" in schema) {
+  }
+  if ("anyOf" in schema) {
     return schema.anyOf
       .filter((x) => x != false)
       .flatMap((x) => extractServiceIds(x as Schema));
@@ -306,13 +307,17 @@ function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
 function getDefaultArrayItem(schema: Schema): unknown {
   if (schema.default) {
     return schema.default;
-  } else if (textPredicate(schema)) {
+  }
+  if (textPredicate(schema)) {
     return "";
-  } else if (schema.type === "object") {
+  }
+  if (schema.type === "object") {
     return {};
-  } else if (findOneOf(schema, booleanPredicate)) {
+  }
+  if (findOneOf(schema, booleanPredicate)) {
     return false;
-  } else if (findOneOf(schema, textPredicate)) {
+  }
+  if (findOneOf(schema, textPredicate)) {
     return "";
   }
   return null;
@@ -321,21 +326,28 @@ function getDefaultArrayItem(schema: Schema): unknown {
 export function getDefaultField(fieldSchema: Schema): FieldComponent {
   if (fieldSchema.$ref?.startsWith(SERVICE_BASE_SCHEMA)) {
     return ServiceField;
-  } else if (fieldSchema.type === "array") {
+  }
+  if (fieldSchema.type === "array") {
     return ArrayField;
-  } else if (fieldSchema.type === "object") {
+  }
+  if (fieldSchema.type === "object") {
     return ObjectField;
-  } else if (booleanPredicate(fieldSchema)) {
+  }
+  if (booleanPredicate(fieldSchema)) {
     // Should this be a TextField so it can be dynamically determined?
     // see https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return BooleanField;
-  } else if (textPredicate(fieldSchema)) {
+  }
+  if (textPredicate(fieldSchema)) {
     return TextField;
-  } else if (findOneOf(fieldSchema, booleanPredicate)) {
+  }
+  if (findOneOf(fieldSchema, booleanPredicate)) {
     return makeOneOfField(findOneOf(fieldSchema, booleanPredicate));
-  } else if (findOneOf(fieldSchema, textPredicate)) {
+  }
+  if (findOneOf(fieldSchema, textPredicate)) {
     return makeOneOfField(findOneOf(fieldSchema, textPredicate));
-  } else if (isEmpty(fieldSchema)) {
+  }
+  if (isEmpty(fieldSchema)) {
     // An empty field schema supports any value. For now, provide an object field since this just shows up
     // in the @pixiebrix/http brick.
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709

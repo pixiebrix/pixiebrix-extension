@@ -184,7 +184,8 @@ export class GoogleBigQueryQuery extends Transformer {
           x.f.map(({ v }) => v)
         )
       );
-    } else if (totalRows === 0) {
+    }
+    if (totalRows === 0) {
       throw new Error("No results returned");
     }
     return zipObject(
