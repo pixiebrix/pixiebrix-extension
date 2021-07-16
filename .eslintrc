@@ -44,8 +44,6 @@
     "@typescript-eslint/no-implicit-any-catch": "error",
     "capitalized-comments": "error",
     "spaced-comment": "error",
-    "@typescript-eslint/lines-between-class-members": "error",
-    "padding-line-between-statements": "error",
 
     "@typescript-eslint/no-unused-vars": [
       "error",
