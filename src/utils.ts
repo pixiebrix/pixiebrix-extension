@@ -245,7 +245,7 @@ export function getPropByPath(
     proxy = noopProxy,
   }: { args?: object; proxy?: ReadProxy } | undefined = {}
 ): unknown {
-  // consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
+  // Consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
 
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
 
@@ -255,7 +255,7 @@ export function getPropByPath(
   for (const [index, rawPart] of rawParts.entries()) {
     const previous = value;
 
-    // handle null coalescing syntax
+    // Handle null coalescing syntax
     let part: string | number = rawPart;
     let coalesce = false;
     let numeric = false;

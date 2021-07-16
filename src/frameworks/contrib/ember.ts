@@ -126,7 +126,7 @@ export function getProp(value: any, prop: string | number): unknown {
 }
 
 function pickExternalProps(obj: object): object {
-  // lodash's pickby was having issues with some getters
+  // Lodash's pickby was having issues with some getters
   return fromPairs(
     Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
   );
@@ -152,7 +152,7 @@ export function readEmberValueFromCache(
     return value;
   }
   if (Array.isArray(value)) {
-    // must come before typeof value === "object" check because arrays are objects
+    // Must come before typeof value === "object" check because arrays are objects
     return value.map((x) => traverse(x));
   }
   if (typeof value === "object") {
@@ -163,7 +163,7 @@ export function readEmberValueFromCache(
       return traverse(value._cache);
     }
     if (Array.isArray(value.content)) {
-      // consider arrays a traverse because knowing the property name by itself isn't useful for anything
+      // Consider arrays a traverse because knowing the property name by itself isn't useful for anything
       return value.content.map((x: any) => traverse(x));
     }
     return mapValues(pickExternalProps(value), recurse);
@@ -221,7 +221,7 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );
-    // safe because the prop names are coming from getAllPropertyNames
+    // Safe because the prop names are coming from getAllPropertyNames
     // eslint-disable-next-line security/detect-object-injection
     return fromPairs(props.map((x) => [x, target[x]]));
   },

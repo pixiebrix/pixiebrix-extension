@@ -230,7 +230,7 @@ const _proxyService = liftBackground(
       // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       if (UNAUTHORIZED_STATUS_CODES.includes(error.response?.status)) {
-        // try again - have the user login again, or automatically try to get a new token
+        // Try again - have the user login again, or automatically try to get a new token
         const service = await serviceRegistry.lookup(serviceConfig.serviceId);
         if (service.isOAuth2 || service.isToken) {
           await deleteCachedAuthData(serviceConfig.id);
@@ -243,7 +243,7 @@ const _proxyService = liftBackground(
         "Error occurred when making a request from the background page",
         { error }
       );
-      // caught outside to add additional context to the exception
+      // Caught outside to add additional context to the exception
       // noinspection ExceptionCaughtLocallyJS
       throw error;
     }

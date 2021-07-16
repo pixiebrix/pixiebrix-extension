@@ -33,7 +33,7 @@ async function historyListener(
 }
 
 function initNavigation(): void {
-  // updates from the history API
+  // Updates from the history API
   browser.webNavigation.onHistoryStateUpdated.addListener(historyListener);
 }
 

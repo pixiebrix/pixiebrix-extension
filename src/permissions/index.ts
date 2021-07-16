@@ -94,7 +94,7 @@ export async function collectPermissions(
   const permissions = await Promise.all(
     extensionPoints.map(
       async ({ id, permissions = {} }: ExtensionPointDefinition) => {
-        // console.debug(`Extra permissions for ${id}`, permissions);
+        // Console.debug(`Extra permissions for ${id}`, permissions);
         const extensionPoint = await extensionRegistry.lookup(id);
         return mergePermissions(
           [extensionPoint.permissions, permissions].map((x) => normalize(x))

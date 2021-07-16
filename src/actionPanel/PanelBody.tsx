@@ -26,7 +26,7 @@ import ConsoleLogger from "@/tests/ConsoleLogger";
 // @ts-ignore: no @types/react-shadow-root
 import ReactShadowRoot from "react-shadow-root";
 
-// import the built-in bricks
+// Import the built-in bricks
 import "@/blocks";
 import "@/contrib";
 import { getErrorMessage } from "@/errors";

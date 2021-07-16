@@ -240,11 +240,11 @@ export default class Overlay {
 
   constructor() {
     // Find the root window, because overlays are positioned relative to it.
-    const currentWindow = window; // window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
+    const currentWindow = window; // Window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
     this.window = window;
 
     // When opened in shells/dev, the tooltip should be bound by the app iframe, not by the topmost window.
-    const tipBoundsWindow = window; // window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
+    const tipBoundsWindow = window; // Window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
     this.tipBoundsWindow = tipBoundsWindow;
 
     const doc = currentWindow.document;
@@ -315,7 +315,7 @@ export default class Overlay {
 
     if (!name) {
       name = elements[0].nodeName.toLowerCase();
-      // const ownerName = getOwnerDisplayName(elements[0]);
+      // Const ownerName = getOwnerDisplayName(elements[0]);
       // if (ownerName) {
       //     name += ' (in ' + ownerName + ')';
       // }

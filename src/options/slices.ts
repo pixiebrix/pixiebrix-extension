@@ -256,7 +256,7 @@ export const optionsSlice = createSlice({
         optionsArgs,
         services,
       } = payload;
-      // support both extensionId and id to keep the API consistent with the shape of the stored extension
+      // Support both extensionId and id to keep the API consistent with the shape of the stored extension
       if (extensionId == null && id == null) {
         throw new Error("extensionId is required");
       } else if (extensionPointId == null) {
@@ -280,7 +280,7 @@ export const optionsSlice = createSlice({
       const { extensionPointId, extensionId } = payload;
       const extensions = state.extensions[extensionPointId] ?? {};
       if (!extensions[extensionId]) {
-        // it's already removed
+        // It's already removed
         console.debug(
           `Extension id ${extensionId} does not exist for extension point ${extensionPointId}`
         );

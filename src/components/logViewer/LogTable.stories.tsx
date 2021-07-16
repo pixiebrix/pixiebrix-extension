@@ -68,7 +68,7 @@ const ERROR_MESSAGE: LogEntry = {
   message: "Sample error running brick message",
   level: "error",
   context: {
-    // just the context that will show up in the table
+    // Just the context that will show up in the table
     blockId: "@pixiebrix/system/notification",
   },
   error: serializeError(new Error("Simple error")),
@@ -103,7 +103,7 @@ const CONTEXT_ERROR_MESSAGE: LogEntry = {
   message: "Invalid inputs for block",
   level: "error",
   context: {
-    // just the context that will show up in the table
+    // Just the context that will show up in the table
     blockId: "@pixiebrix/system/notification",
   },
   error: serializeError(

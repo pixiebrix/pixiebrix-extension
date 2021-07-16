@@ -204,7 +204,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       try {
         cancelObserver?.();
       } catch (error: unknown) {
-        // try to proceed as normal
+        // Try to proceed as normal
         reportError(error, this.logger.context);
       }
     }
@@ -217,7 +217,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.id,
       { extensionIds }
     );
-    // can't use this.menus.values() here b/c because it may have already been cleared
+    // Can't use this.menus.values() here b/c because it may have already been cleared
     for (const extensionId of extensionIds) {
       const $item = $(document).find(`[${DATA_ATTR}="${extensionId}"]`);
       if ($item.length === 0) {
@@ -232,7 +232,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const menus = [...this.menus.values()];
 
-    // clear so they don't get re-added by the onNodeRemoved mechanism
+    // Clear so they don't get re-added by the onNodeRemoved mechanism
     const extensions = this.extensions.splice(0, this.extensions.length);
     this.menus.clear();
 
@@ -251,7 +251,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     for (const element of menus) {
       try {
         this.removeExtensions(extensions.map((x) => x.id));
-        // release the menu element
+        // Release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
         // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
@@ -425,7 +425,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     let html: string;
 
     if (extension.config.if) {
-      // read latest state at the time of the action
+      // Read latest state at the time of the action
       const ctxt = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
 
@@ -475,7 +475,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       reportEvent("MenuItemClick", { extensionId: extension.id });
 
       try {
-        // read latest state at the time of the action
+        // Read latest state at the time of the action
         const reader = await this.defaultReader();
         const ctxt = await reader.read(this.getReaderRoot($menu));
         const serviceContext = await makeServiceContext(extension.services);
@@ -534,7 +534,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   watchDependencies(extension: IExtension<MenuItemExtensionConfig>): void {
     const { dependencies = [] } = extension.config;
 
-    // clean up old observers
+    // Clean up old observers
     if (this.cancelDependencyObservers.has(extension.id)) {
       this.cancelDependencyObservers.get(extension.id)();
       this.cancelDependencyObservers.delete(extension.id);
@@ -690,7 +690,7 @@ export type MenuPosition =
   | "append"
   | "prepend"
   | {
-      // element to insert the menu item before, selector is relative to the container
+      // Element to insert the menu item before, selector is relative to the container
       sibling: string | null;
     };
 
@@ -746,18 +746,18 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
         } else if ($sibling.length === 1) {
           $sibling.before($menuItem);
         } else {
-          // didn't find the sibling, so just try inserting it at the end
+          // Didn't find the sibling, so just try inserting it at the end
           $menu.append($menuItem);
         }
       } else {
-        // no element to insert the item before, so insert it at the end.
+        // No element to insert the item before, so insert it at the end.
         $menu.append($menuItem);
       }
     } else {
       switch (position) {
         case "prepend":
         case "append": {
-          // safe because we're checking the value in the case statements
+          // Safe because we're checking the value in the case statements
           // eslint-disable-next-line security/detect-object-injection
           $menu[position]($menuItem);
           break;

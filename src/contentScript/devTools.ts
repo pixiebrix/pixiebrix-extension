@@ -31,7 +31,7 @@ import {
   selectedElement,
 } from "@/devTools/getSelectedElement";
 
-// install handlers
+// Install handlers
 import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";

@@ -139,7 +139,7 @@ export async function generateExtensionPointMetadata(
       try {
         await brickRegistry.lookup(id);
       } catch {
-        // name doesn't exist yet
+        // Name doesn't exist yet
         return true;
       }
     }

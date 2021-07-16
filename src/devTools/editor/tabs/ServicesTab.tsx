@@ -88,7 +88,7 @@ const ServicesTab: React.FunctionComponent<{
                         )
                       )?.value,
                     });
-                    // reset value in dropdown
+                    // Reset value in dropdown
                     setKey((k) => k + 1);
                   }}
                 />

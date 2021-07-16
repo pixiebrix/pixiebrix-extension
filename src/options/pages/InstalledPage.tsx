@@ -209,7 +209,7 @@ const ExtensionRow: React.FunctionComponent<{
       <td>
         <Link to={`/workshop/extensions/${id}`}>{label ?? id}</Link>
       </td>
-      {/*<td>2 weeks</td>*/}
+      {/* <td>2 weeks</td> */}
       <td className="text-wrap">{statusElt}</td>
       <td>
         <Button
@@ -251,7 +251,7 @@ const InstalledTable: React.FunctionComponent<{
               <tr>
                 <th>&nbsp;</th>
                 <th>Name</th>
-                {/*<th>Last Used</th>*/}
+                {/* <th>Last Used</th> */}
                 <th>Status</th>
                 <th>Uninstall</th>
               </tr>
@@ -410,7 +410,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension(identifier));
     uninstallContextMenu(identifier).catch(() => {
-      // noop because this is expected to error for non-context menus
+      // Noop because this is expected to error for non-context menus
     });
     reactivate().catch((error: unknown) => {
       console.warn("Error re-activating content scripts", { error });

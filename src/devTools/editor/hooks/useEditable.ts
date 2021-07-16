@@ -40,7 +40,7 @@ function useEditable(): Set<string> {
   }, []);
 
   return useMemo<Set<string>>(() => {
-    // set union
+    // Set union
     const rv = new Set<string>(initialEditable ?? new Set());
     for (const x of knownEditable) {
       rv.add(x);

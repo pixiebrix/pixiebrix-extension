@@ -178,7 +178,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     let $root = await rootPromise;
 
     if (rootSelector) {
-      // awaitElementOnce doesn't work with multiple elements. Get what's currently on the page
+      // AwaitElementOnce doesn't work with multiple elements. Get what's currently on the page
       // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
       $root = $(document).find(rootSelector);
     }
@@ -215,7 +215,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         },
         {
           root: null,
-          // rootMargin: "0px",
+          // RootMargin: "0px",
           threshold: 0.2,
         }
       );

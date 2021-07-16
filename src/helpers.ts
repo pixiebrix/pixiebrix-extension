@@ -39,7 +39,7 @@ export function engineRenderer(
       return Mustache.render;
     }
     case "nunjucks": {
-      // convert top level data from kebab case to snake case in order to be valid identifiers
+      // Convert top level data from kebab case to snake case in order to be valid identifiers
       return (template, ctxt) => {
         const snakeCased = mapKeys(ctxt, (value, key) =>
           key.replace(hyphenRegex, "_")
@@ -59,7 +59,7 @@ export function engineRenderer(
   }
 }
 
-// first part of the path can be global context with a @
+// First part of the path can be global context with a @
 const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;
 
 /**
@@ -116,7 +116,7 @@ export function mapArgs(
     if (isSimplePath(config, ctxt)) {
       const prop = getPropByPath(ctxt as { [prop: string]: unknown }, config);
       if (prop && typeof prop === "object" && "__service" in prop) {
-        // if we're returning the root service context, return the service itself
+        // If we're returning the root service context, return the service itself
         // @ts-ignore: not sure why the "in" check isn't working
         return prop.__service;
       }

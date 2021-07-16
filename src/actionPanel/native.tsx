@@ -55,7 +55,7 @@ export function removeShowCallback(onShow: ShowCallback): void {
 }
 
 function getHTMLElement(): JQuery<HTMLElement> {
-  // resolve html tag, which is more dominant than <body>
+  // Resolve html tag, which is more dominant than <body>
   if (document.documentElement) {
     return $(document.documentElement);
   }

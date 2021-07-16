@@ -52,7 +52,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
       const callback = callbacks.get(id);
 
       if (callback != null) {
-        // clean up callbacks
+        // Clean up callbacks
         fulfillmentCallbacks.delete(id);
         rejectionCallbacks.delete(id);
 

@@ -56,7 +56,7 @@ export function excludeSecrets(
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
     // @ts-ignore: ts doesn't think $ref can be on SchemaDefinition
     if (!REF_SECRETS.includes(type["$ref"])) {
-      // safe because we're getting from Object.entries
+      // Safe because we're getting from Object.entries
       // eslint-disable-next-line security/detect-object-injection
       result[key] = config[key];
     }
@@ -69,7 +69,7 @@ export async function pixieServiceFactory(): Promise<SanitizedServiceConfigurati
     _sanitizedServiceConfigurationBrand: undefined,
     id: undefined,
     serviceId: PIXIEBRIX_SERVICE_ID,
-    // don't need to proxy requests to our own service
+    // Don't need to proxy requests to our own service
     proxy: false,
     config: {} as SanitizedConfig,
   };

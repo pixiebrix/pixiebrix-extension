@@ -187,7 +187,7 @@ export interface IExtensionPoint extends Metadata {
   isAvailable: () => Promise<boolean>;
 
   /**
-   * true iff the extension point must be installed before the page can be considered ready
+   * True iff the extension point must be installed before the page can be considered ready
    */
   syncInstall: boolean;
 
@@ -256,17 +256,17 @@ export interface KeyedConfig {
 }
 
 export interface SanitizedConfig extends KeyedConfig {
-  // nominal typing to distinguish from ServiceConfig
+  // Nominal typing to distinguish from ServiceConfig
   _sanitizedConfigBrand: null;
 }
 
 export interface ServiceConfig extends KeyedConfig {
-  // nominal typing to distinguish from SanitizedConfig
+  // Nominal typing to distinguish from SanitizedConfig
   _serviceConfigBrand: null;
 }
 
 export interface AuthData {
-  // nominal typing to distinguish from SanitizedConfig and ServiceConfig
+  // Nominal typing to distinguish from SanitizedConfig and ServiceConfig
   _oauth: null;
   [key: string]: string | null;
 }
@@ -287,7 +287,7 @@ export interface OAuth2Context {
 
 /** Service configuration provided by a user. */
 export interface RawServiceConfiguration {
-  // nominal typing to distinguish from SanitizedServiceConfiguration
+  // Nominal typing to distinguish from SanitizedServiceConfiguration
   _rawServiceConfigurationBrand: null;
 
   /**
@@ -306,7 +306,7 @@ export interface RawServiceConfiguration {
 }
 
 export interface SanitizedServiceConfiguration {
-  // nominal typing to distinguish from RawServiceConfiguration
+  // Nominal typing to distinguish from RawServiceConfiguration
   _sanitizedServiceConfigurationBrand: null;
 
   /**
@@ -322,7 +322,7 @@ export interface SanitizedServiceConfiguration {
   config: SanitizedConfig;
 
   /**
-   * true if the service must be proxied for remote configs, e.g., because it has a secret it needs
+   * True if the service must be proxied for remote configs, e.g., because it has a secret it needs
    * to use to authenticate.
    */
   proxy: boolean;

@@ -59,7 +59,7 @@ export class RegexTransformer extends Transformer {
         return null;
       }
       const match = compiled.exec(x);
-      // console.debug(`Search for ${regex} in ${x}`, match);
+      // Console.debug(`Search for ${regex} in ${x}`, match);
       return match?.groups ?? {};
     };
 

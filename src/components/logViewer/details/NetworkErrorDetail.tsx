@@ -80,7 +80,7 @@ const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
   const cleanResponse = useMemo(() => {
     if (error.response) {
       const { request, config, data, ...rest } = error.response;
-      // don't include request, since we're showing it the other column
+      // Don't include request, since we're showing it the other column
       return {
         ...rest,
         data: tryParse(data),

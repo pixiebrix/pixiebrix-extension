@@ -69,7 +69,7 @@ export interface NotificationCallbacks {
 }
 
 export function notifyError(message: string): void {
-  // call getErrorMessage on err and include in the details
+  // Call getErrorMessage on err and include in the details
   $.notify(message, {
     className: "error",
   });

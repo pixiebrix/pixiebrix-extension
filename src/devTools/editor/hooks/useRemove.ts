@@ -63,7 +63,7 @@ function useRemove(element: FormState): () => void {
           uuid: element.uuid,
         });
       } catch (error: unknown) {
-        // element might not be on the page anymore
+        // Element might not be on the page anymore
         console.info("Cannot clear dynamic element from page", { error });
       }
       if (values.installed) {

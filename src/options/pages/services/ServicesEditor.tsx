@@ -85,7 +85,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
         autoDismiss: true,
       });
 
-      // wait 1000ms to allow changes to propagate to storage (via redux persist)
+      // Wait 1000ms to allow changes to propagate to storage (via redux persist)
       void sleep(1000).then(async () => {
         try {
           await refreshServices();
@@ -115,7 +115,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
         autoDismiss: true,
       });
 
-      // don't need to wait before navigating, as this window has the updated state immediately
+      // Don't need to wait before navigating, as this window has the updated state immediately
       void sleep(1000).then(async () => {
         try {
           await refreshServices();

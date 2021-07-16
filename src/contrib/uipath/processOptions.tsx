@@ -70,7 +70,7 @@ interface Release {
   Description: string;
   Name: string;
   Arguments: {
-    // serialized input dict
+    // Serialized input dict
     Input: string | null;
     Output: string | null;
   };

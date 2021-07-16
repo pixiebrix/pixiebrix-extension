@@ -39,7 +39,7 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
   return useCallback(
     async (extensionPoint: T) => {
       try {
-        // cancel out of insert mode
+        // Cancel out of insert mode
         cancel();
 
         const { url } = await getTabInfo(port);

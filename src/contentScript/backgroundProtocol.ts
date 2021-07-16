@@ -98,7 +98,7 @@ export function notifyContentScripts(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
-    // addContentScriptListener logs to console when the handler is installed on the window. So it would be confusing
+    // AddContentScriptListener logs to console when the handler is installed on the window. So it would be confusing
     // to include a console.debug statement here
     handlers.set(fullType, {
       // HandlerEntry's Handler field has a return value, not void
@@ -184,7 +184,7 @@ export function liftContentScript<R extends SerializableResponse>(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
-    // addContentScriptListener logs to console when the handler is installed on the window. So it would be confusing
+    // AddContentScriptListener logs to console when the handler is installed on the window. So it would be confusing
     // to include a console.debug statement here
     handlers.set(fullType, { handler: method, options });
   }

@@ -178,7 +178,7 @@ const ServiceModal: React.FunctionComponent<{
                           service={x.service}
                           onSelect={() => {
                             onSelect(x.service);
-                            // reset the query for the next time it opens
+                            // Reset the query for the next time it opens
                             setQuery("");
                             close();
                           }}

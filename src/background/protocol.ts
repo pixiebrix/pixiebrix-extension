@@ -147,7 +147,7 @@ export async function callBackground(
       throw error;
     }
 
-    // console.debug(
+    // Console.debug(
     //   `Content script received response for ${type} (nonce: ${nonce})`,
     //   response
     // );

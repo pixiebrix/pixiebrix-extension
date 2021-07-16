@@ -8,7 +8,7 @@ export default {
     icon: "gwt",
     url: "http://www.gwtproject.org/",
     test: function (win) {
-      // pretty complicated, many possible tell tales
+      // Pretty complicated, many possible tell tales
       var doc = win.document,
         hasHistFrame = doc.getElementById("__gwt_historyFrame"),
         hasGwtUid = doc.gwt_uid,
@@ -21,7 +21,7 @@ export default {
           win.__gwt_stylesLoaded ||
           win.__gwt_activeModules;
 
-      // use the many possible indicators
+      // Use the many possible indicators
       if (
         hasHistFrame ||
         hasGwtUid ||
@@ -31,13 +31,13 @@ export default {
         hasJsonP ||
         hasRootWinApp
       ) {
-        // carefully look at frames, but only if certain is GWT frame
+        // Carefully look at frames, but only if certain is GWT frame
         var frames = doc.getElementsByTagName("iframe"),
           gwtVersion = UNKNOWN_VERSION;
         for (var n = 0; n < frames.length; n++) {
-          // catch security access errors
+          // Catch security access errors
           try {
-            var hasNegativeTabIndex = frames[n].tabIndex < 0; // on for GWT
+            var hasNegativeTabIndex = frames[n].tabIndex < 0; // On for GWT
             if (
               hasNegativeTabIndex &&
               frames[n].contentWindow &&
@@ -88,7 +88,7 @@ export default {
     icon: "bootstrap",
     url: "http://getbootstrap.com/",
     npm: "bootstrap",
-    // look for a function Boostrap has added to jQuery - regex for BS 2 & 3
+    // Look for a function Boostrap has added to jQuery - regex for BS 2 & 3
     test: function (win) {
       var jQueryAvailable = win.$ && win.$.fn,
         RE_PREFIX_V2 = "\\$this\\.data\\((?:'|\")",
@@ -240,7 +240,7 @@ export default {
     npm: "createjs",
     test: function (win) {
       if (win.createjs && win.createjs.promote) {
-        return { version: UNKNOWN_VERSION }; // no version info available
+        return { version: UNKNOWN_VERSION }; // No version info available
       }
       return false;
     },
@@ -809,11 +809,11 @@ export default {
 
   "Socket.IO": {
     id: "socketio",
-    icon: "socketio", // currently has no icon
+    icon: "socketio", // Currently has no icon
     url: "https://socket.io/",
     npm: "socket.io",
     test: function (win) {
-      // version 0.6.2 uses only io.Socket; more recent versions also have io.sockets
+      // Version 0.6.2 uses only io.Socket; more recent versions also have io.sockets
       if (win.io && (win.io.sockets || win.io.Socket)) {
         return { version: win.io.version || UNKNOWN_VERSION };
       }
@@ -836,7 +836,7 @@ export default {
 
   "Fabric.js": {
     id: "fabricjs",
-    icon: "icon38", // currently has no icon
+    icon: "icon38", // Currently has no icon
     url: "http://fabricjs.com/",
     npm: "fabric",
     test: function (win) {
@@ -862,7 +862,7 @@ export default {
 
   "Tween.js": {
     id: "tweenjs",
-    icon: "icon38", // currently has no icon
+    icon: "icon38", // Currently has no icon
     url: "https://github.com/tweenjs/tween.js",
     npm: "tween.js",
     test: function (win) {
@@ -900,7 +900,7 @@ export default {
 
   "three.js": {
     id: "threejs",
-    icon: "icon38", // currently has no icon
+    icon: "icon38", // Currently has no icon
     url: "https://threejs.org/",
     npm: "three",
     test: function (win) {
@@ -1316,7 +1316,7 @@ export default {
     test: function (win) {
       var px = win.PIXI;
       if (px && px.WebGLRenderer && px.VERSION) {
-        // version 4.4.3 returns simply "4.4.3"; version 1.5.2 returns "v1.5.2"
+        // Version 4.4.3 returns simply "4.4.3"; version 1.5.2 returns "v1.5.2"
         return { version: px.VERSION.replace("v", "") || UNKNOWN_VERSION };
       }
       return false;
@@ -1543,7 +1543,7 @@ export default {
     npm: "moment",
     test: function (win) {
       if (win.moment && (win.moment.isMoment || win.moment.lang)) {
-        // version 1.0.0 has neither "isMoment" nor "version"
+        // Version 1.0.0 has neither "isMoment" nor "version"
         return { version: win.moment.version || UNKNOWN_VERSION };
       }
       return false;
@@ -1575,7 +1575,7 @@ export default {
   },
   SWFObject: {
     id: "swfobject",
-    icon: "icon38", // currently has no icon
+    icon: "icon38", // Currently has no icon
     url: "https://github.com/swfobject/swfobject",
     test: function (win) {
       if (win.swfobject && win.swfobject.embedSWF) {
@@ -1591,7 +1591,7 @@ export default {
   },
   FlexSlider: {
     id: "flexslider",
-    icon: "icon38", // currently has no icon
+    icon: "icon38", // Currently has no icon
     url: "https://woocommerce.com/flexslider/",
     npm: "flexslider",
     test: function (win) {
@@ -1604,7 +1604,7 @@ export default {
   },
   SPF: {
     id: "spf",
-    icon: "icon38", // currently has no icon
+    icon: "icon38", // Currently has no icon
     url: "https://youtube.github.io/spfjs/",
     npm: "spf",
     test: function (win) {
@@ -1616,7 +1616,7 @@ export default {
   },
   "Numeral.js": {
     id: "numeraljs",
-    icon: "icon38", // currently has no icon
+    icon: "icon38", // Currently has no icon
     url: "http://numeraljs.com/",
     npm: "numeraljs",
     test: function (win) {
@@ -1628,7 +1628,7 @@ export default {
   },
   "boomerang.js": {
     id: "boomerangjs",
-    icon: "icon38", // currently has no icon
+    icon: "icon38", // Currently has no icon
     url: "https://soasta.github.io/boomerang/",
     npm: "boomerangjs",
     test: function (win) {

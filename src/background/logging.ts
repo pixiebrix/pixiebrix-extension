@@ -163,7 +163,7 @@ function buildContext(
     const currentContext =
       typeof error.context === "object" ? error.context : {};
     const innerContext = buildContext(error.cause as SerializedError, context);
-    // prefer the inner context
+    // Prefer the inner context
     return { ...context, ...innerContext, ...currentContext };
   }
   return context;

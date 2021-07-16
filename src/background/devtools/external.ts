@@ -119,7 +119,7 @@ export async function callBackground(
 }
 
 export function installPortListeners(port: Runtime.Port): void {
-  // can't use isDevtoolsPage since this will be called from the pane and other places
+  // Can't use isDevtoolsPage since this will be called from the pane and other places
   forbidBackgroundPage(
     "installPortListeners should only be called from the devtools"
   );

@@ -31,15 +31,15 @@ declare global {
   }
 }
 
-// false positive: using constant symbol defined above
+// False positive: using constant symbol defined above
 // eslint-disable-next-line security/detect-object-injection
 if (!window[PAGESCRIPT_SYMBOL]) {
-  // false positive: using constant symbol defined above
+  // False positive: using constant symbol defined above
   // eslint-disable-next-line security/detect-object-injection
   window[PAGESCRIPT_SYMBOL] = uuidv4();
 } else {
   throw new Error(
-    // false positive: using constant symbol defined above
+    // False positive: using constant symbol defined above
     // eslint-disable-next-line security/detect-object-injection
     `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`
   );
@@ -213,7 +213,7 @@ async function read<TComponent>(
     adapter.proxy
   );
 
-  // if (process.env.DEBUG) {
+  // If (process.env.DEBUG) {
   //   const clonedData = cloneDeep(readData);
   //   console.debug(`Read ${selector}`, {
   //     target,
@@ -276,7 +276,7 @@ attachListener(
     framework?: Framework;
 
     /**
-     * traverseUp controls how many ancestor elements to also return
+     * TraverseUp controls how many ancestor elements to also return
      */
     traverseUp: number;
   }) => {

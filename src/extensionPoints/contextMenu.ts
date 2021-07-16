@@ -90,9 +90,9 @@ function installMouseHandlerOnce(): void {
     selectionHandlerInstalled = true;
     // https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
     document.addEventListener("mousedown", setActiveElement, {
-      // handle it first in case a target beneath it cancels the event
+      // Handle it first in case a target beneath it cancels the event
       capture: true,
-      // for performance, indicate we won't call preventDefault
+      // For performance, indicate we won't call preventDefault
       passive: true,
     });
   }
@@ -195,7 +195,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   uninstall({ global = false }: { global?: boolean }): void {
-    // don't uninstall the mouse handler because other context menus need it
+    // Don't uninstall the mouse handler because other context menus need it
     const extensions = this.extensions.splice(0, this.extensions.length);
     if (global) {
       for (const extension of extensions) {
@@ -209,7 +209,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   async install(): Promise<boolean> {
-    // always install the mouse handler in case a context menu is added later
+    // Always install the mouse handler in case a context menu is added later
     installMouseHandlerOnce();
     const available = await this.isAvailable();
     await this.registerExtensions();
@@ -283,9 +283,9 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
       const ctxt = {
         ...(await reader.read(targetElement)),
-        // clickData provides the data from schema defined above in ContextMenuReader
+        // ClickData provides the data from schema defined above in ContextMenuReader
         ...clickData,
-        // add some additional data that people will generally want
+        // Add some additional data that people will generally want
         documentUrl: document.location.href,
       };
 
@@ -332,7 +332,7 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
     this._definition = config.definition;
     this.rawConfig = config;
     const { isAvailable, documentUrlPatterns, contexts } = config.definition;
-    // if documentUrlPatterns not specified show everywhere
+    // If documentUrlPatterns not specified show everywhere
     this.documentUrlPatterns = castArray(documentUrlPatterns ?? ["*://*/*"]);
     this.contexts = castArray(contexts);
     this.permissions = {

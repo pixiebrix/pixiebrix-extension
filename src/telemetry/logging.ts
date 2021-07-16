@@ -24,7 +24,7 @@ import { isBackgroundPage } from "webext-detect-page";
 
 function selectError(error: unknown): SerializedError {
   if (error instanceof PromiseRejectionEvent) {
-    // convert the project rejection to an error instance
+    // Convert the project rejection to an error instance
     if (error.reason instanceof Error) {
       error = error.reason;
     } else if (typeof error.reason === "string") {
@@ -41,10 +41,7 @@ function selectError(error: unknown): SerializedError {
  * @param error the error object
  * @param context optional context for error telemetry
  */
-export function reportError(
-  error: unknown,
-  context?: MessageContext
-): void {
+export function reportError(error: unknown, context?: MessageContext): void {
   void _reportError(error, context).catch((reportingError: unknown) => {
     console.error("An error occurred when reporting an error", {
       originalError: error,

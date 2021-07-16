@@ -129,7 +129,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
     );
     this.removeExtensions(removed.map((x) => x.id));
 
-    // clear extensions and re-populate with updated extensions
+    // Clear extensions and re-populate with updated extensions
     this.extensions.splice(0, this.extensions.length);
     this.extensions.push(...extensions);
 
@@ -146,7 +146,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
       console.warn(
         `Extension ${extension.id} already registered for the extension point ${this.id}`
       );
-      // index is guaranteed to be a number, and this.extensions is an array
+      // Index is guaranteed to be a number, and this.extensions is an array
       // eslint-disable-next-line security/detect-object-injection
       this.extensions[index] = extension;
     } else {

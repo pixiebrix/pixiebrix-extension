@@ -225,7 +225,7 @@ const BooleanField: React.FunctionComponent<FieldProps<boolean>> = ({
   );
 };
 
-// ok to use object here since we don't have any key-specific logic
+// Ok to use object here since we don't have any key-specific logic
 // eslint-disable-next-line @typescript-eslint/ban-types
 const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
   schema,
@@ -353,7 +353,7 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return ObjectField;
   }
-  // number, string, other primitives, etc.
+  // Number, string, other primitives, etc.
   return TextField;
 }
 
@@ -417,7 +417,7 @@ function genericOptionsFactory(
         if (typeof fieldSchema === "boolean") {
           throw new TypeError("Expected schema for input property type");
         }
-        // fine because coming from Object.entries for the schema
+        // Fine because coming from Object.entries for the schema
         // eslint-disable-next-line security/detect-object-injection
         const propUiSchema = uiSchema?.[prop];
         return (

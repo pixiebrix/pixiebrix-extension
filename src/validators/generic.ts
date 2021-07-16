@@ -206,7 +206,7 @@ export function useExtensionValidator(
   return useAsyncState(validationPromise);
 }
 
-// const PIXIEBRIX_SCHEMA = /^https:\/\/app.pixiebrix\.com\/schemas\//i;
+// Const PIXIEBRIX_SCHEMA = /^https:\/\/app.pixiebrix\.com\/schemas\//i;
 
 const pixieResolver: ResolverOptions = {
   order: 1,

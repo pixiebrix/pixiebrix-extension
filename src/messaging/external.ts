@@ -36,7 +36,7 @@ const _reload = liftBackground("BACKGROUND_RELOAD", async () => {
   browser.runtime.reload();
 });
 
-// called by PixieBrix app
+// Called by PixieBrix app
 export const setExtensionAuth = lift(
   "SET_EXTENSION_AUTH",
   async (auth: AuthData) => {
@@ -52,7 +52,7 @@ export const setExtensionAuth = lift(
   }
 );
 
-// chrome.runtime.openOptionsPage only available from the background page
+// Chrome.runtime.openOptionsPage only available from the background page
 const _openOptions = liftBackground("BACKGROUND_OPEN_OPTIONS", async () => {
   await browser.runtime.openOptionsPage();
   return true;

@@ -90,10 +90,10 @@ export function readReactProps(fiber: Fiber): { [prop: string]: unknown } {
 }
 
 function getComponentFiber(fiber: Fiber): Fiber {
-  // return fiber._debugOwner; // this also works, but is __DEV__ only
+  // Return fiber._debugOwner; // this also works, but is __DEV__ only
   let parentFiber = fiber.return;
   while (typeof parentFiber.type === "string") {
-    // string for HTML nodes, so traverse
+    // String for HTML nodes, so traverse
     parentFiber = parentFiber.return;
   }
   return parentFiber;

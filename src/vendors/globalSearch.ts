@@ -3,7 +3,7 @@ export function globalSearch(
   value: unknown,
   returnFirstResult = false
 ): unknown[] {
-  // adapted from: https://stackoverflow.com/a/12103127/402560
+  // Adapted from: https://stackoverflow.com/a/12103127/402560
   if (startObject == null) {
     throw Error("startObject cannot be null");
   }

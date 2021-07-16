@@ -10,7 +10,7 @@ var combinators = [" ", ">", "+", "~"]; // https://developer.mozilla.org/en-US/d
 var fraternisers = ["+", "~"]; // These combinators involve siblings.
 var complexTypes = ["ATTR", "PSEUDO", "ID", "CLASS"]; // These selectors are based upon attributes.
 
-//Check if browser supports "matches" function
+// Check if browser supports "matches" function
 if (typeof Element !== "undefined" && !Element.prototype.matches) {
   Element.prototype.matches =
     Element.prototype.matchesSelector ||

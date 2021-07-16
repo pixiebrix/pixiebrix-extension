@@ -71,7 +71,7 @@ interface VueHTMLElement {
   __vue__: Instance;
 }
 
-// interface VNode {
+// Interface VNode {
 //   _isVue: boolean;
 //   $el: HTMLElement;
 // }

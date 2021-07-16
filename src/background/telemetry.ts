@@ -168,7 +168,7 @@ async function _init(): Promise<void> {
   }
 }
 
-// up to every 30 min
+// Up to every 30 min
 const throttledInit = throttle(_init, 30 * 60 * 1000, {
   leading: true,
   trailing: true,

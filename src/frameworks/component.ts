@@ -31,7 +31,7 @@ export function traverse<T = unknown>(
   return current;
 }
 
-// object required for WeakSet
+// Object required for WeakSet
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function traverseUntil<T extends object>(
   src: T,
@@ -40,7 +40,7 @@ export function traverseUntil<T extends object>(
   maxTraverse?: number
 ): T | null {
   let current = src;
-  // detect cycles
+  // Detect cycles
   const visited = new WeakSet<T>();
   let cnt = 0;
   while (

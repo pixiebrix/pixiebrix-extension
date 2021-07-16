@@ -254,7 +254,7 @@ export const runReader = liftBackground(
 
 export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
-  // false positive - it's the inner method that should be async
+  // False positive - it's the inner method that should be async
   // eslint-disable-next-line unicorn/consistent-function-scoping
   () => async ({ extensionId }: { extensionId: string }) => {
     return contextMenuProtocol.uninstall(extensionId);

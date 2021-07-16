@@ -200,7 +200,7 @@ export function useDevConnection(): Context {
     setConnecting(false);
   }, [port, setCurrent]);
 
-  // automatically connect on when background port connected, and on future navigations
+  // Automatically connect on when background port connected, and on future navigations
   useAsyncEffect(async () => {
     if (port) {
       await connect();

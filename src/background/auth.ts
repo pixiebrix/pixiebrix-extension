@@ -77,7 +77,7 @@ export async function deleteCachedAuthData(key: string): Promise<void> {
       `deleteCachedAuthData: No cached auth data exists for key: ${key}`
     );
   }
-  // replace with updated object
+  // Replace with updated object
   await setStorage(OAUTH2_STORAGE_KEY, JSON.stringify(current));
 }
 
@@ -114,7 +114,7 @@ export async function launchOAuth2Flow(
   service: IService,
   auth: RawServiceConfiguration
 ): Promise<AuthData> {
-  // reference: https://github.com/kylpo/salesforce-chrome-oauth/blob/master/index.js
+  // Reference: https://github.com/kylpo/salesforce-chrome-oauth/blob/master/index.js
   if (!service.isOAuth2) {
     throw new Error(`Service ${service.id} is not an OAuth2 service`);
   }
@@ -137,7 +137,7 @@ export async function launchOAuth2Flow(
 
   const redirect_uri = browser.identity.getRedirectURL("oauth2");
 
-  // console.debug("OAuth2 context", {redirect_uri, context: oauth2});
+  // Console.debug("OAuth2 context", {redirect_uri, context: oauth2});
 
   const authorizeURL = new URL(rawAuthorizeUrl);
   for (const [key, value] of Object.entries({
@@ -169,7 +169,7 @@ export async function launchOAuth2Flow(
     );
   }
 
-  // console.debug("OAuth2 context", {
+  // Console.debug("OAuth2 context", {
   //   authorizeURL,
   //   oauth2,
   // });
@@ -185,7 +185,7 @@ export async function launchOAuth2Flow(
 
   const authResponse = new URL(responseUrl);
 
-  // console.debug("OAuth authorize response", authResponse);
+  // Console.debug("OAuth authorize response", authResponse);
 
   const error = authResponse.searchParams.get("error");
   if (error) {

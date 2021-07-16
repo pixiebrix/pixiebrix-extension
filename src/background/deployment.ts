@@ -93,7 +93,7 @@ function installDeployment(
     }
   }
 
-  // install the blueprint with the service definition
+  // Install the blueprint with the service definition
   returnState = reducer(
     returnState,
     actions.installRecipe({
@@ -188,7 +188,7 @@ async function updateDeployments() {
         try {
           let currentOptions = await loadOptions();
           for (const { deployment } of automatic) {
-            // clear existing installs of the blueprint
+            // Clear existing installs of the blueprint
             currentOptions = installDeployment(currentOptions, deployment);
           }
           await saveOptions(currentOptions);

@@ -45,7 +45,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
   const nodes = new WeakSet<Node>(ancestors);
   const observers = new Set<MutationObserver>();
 
-  // make sure we're only calling once
+  // Make sure we're only calling once
   const wrappedCallback = once(callback);
 
   // Observe the whole path to the node. A node is removed if any of its ancestors are removed. Observe individual
@@ -198,11 +198,11 @@ export function awaitElementOnce(
     return [Promise.resolve($root), noop];
   }
 
-  // console.debug("Awaiting selectors", selectors);
+  // Console.debug("Awaiting selectors", selectors);
 
   const [nextSelector, ...rest] = selectors;
 
-  // find immediately, or wait for it to be initialized
+  // Find immediately, or wait for it to be initialized
   const $element: JQuery<HTMLElement | Document> = $root.find(nextSelector);
 
   if ($element.length === 0) {

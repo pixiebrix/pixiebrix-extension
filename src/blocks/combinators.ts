@@ -212,7 +212,7 @@ async function runStage(
       excludeUndefined(blockArgs)
     );
     if (!validationResult.valid) {
-      // don't need to check logValues here because this is logging to the console, not the provided logger
+      // Don't need to check logValues here because this is logging to the console, not the provided logger
       // so the values won't be persisted
       console.debug("Invalid inputs for block", {
         errors: validationResult.errors,
@@ -441,7 +441,7 @@ export async function makeServiceContext(
   for (const dependency of dependencies) {
     const configuredService = await locate(dependency.id, dependency.config);
     ctxt[`@${dependency.outputKey}`] = {
-      // our JSON validator gets mad at undefined values
+      // Our JSON validator gets mad at undefined values
       ...pickBy(configuredService.config, (x) => x !== undefined),
       __service: configuredService,
     };

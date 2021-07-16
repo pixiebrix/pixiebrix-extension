@@ -225,7 +225,7 @@ const BlockModal: React.FunctionComponent<{
                           block={x.block}
                           onSelect={() => {
                             onSelect(x.block);
-                            // reset the query for the next time it opens
+                            // Reset the query for the next time it opens
                             setQuery("");
                             close();
                           }}

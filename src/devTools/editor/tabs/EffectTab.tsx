@@ -43,7 +43,7 @@ async function filterBlocks(
   { excludeTypes = [] }: { excludeTypes: BlockType[] }
 ): Promise<IBlock[]> {
   const types = await Promise.all(blocks.map(async (block) => getType(block)));
-  // exclude null to exclude foundations
+  // Exclude null to exclude foundations
   return zip(blocks, types)
     .filter(([, type]) => type != null && !excludeTypes.includes(type))
     .map(([block]) => block);

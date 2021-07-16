@@ -248,7 +248,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       throw new Error("panelExtension has already been destroyed");
     }
 
-    // initialize render timestamps for extension
+    // Initialize render timestamps for extension
     let renderTimestamps = this.renderTimestamps.get(extension.id);
     if (renderTimestamps == null) {
       this.renderTimestamps.set(extension.id, []);
@@ -279,7 +279,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const collapsible = boolean(rawCollapsible);
     const shadowDOM = boolean(rawShadowDOM);
 
-    // start collapsed
+    // Start collapsed
     if (collapsible && cnt == 1) {
       this.collapsedExtensions[extension.id] = true;
     }
@@ -290,7 +290,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const $panel = $(
       Mustache.render(this.getTemplate(), {
         heading: Mustache.render(heading, extensionContext),
-        // render a placeholder body that we'll fill in async
+        // Render a placeholder body that we'll fill in async
         body: `<div id="${bodyUUID}"></div>`,
         icon: await iconAsSVG?.(icon),
         bodyUUID,
@@ -303,7 +303,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       `[${PIXIEBRIX_DATA_ATTR}="${extension.id}"]`
     );
 
-    // clean up removal monitor, otherwise it will be re-triggered during replaceWith
+    // Clean up removal monitor, otherwise it will be re-triggered during replaceWith
     const cancelCurrent = this.cancelRemovalMonitor.get(extension.id);
     if (cancelCurrent) {
       console.debug(`Cancelling removal monitor for ${extension.id}`);
@@ -464,7 +464,7 @@ type PanelPosition =
   | "append"
   | "prepend"
   | {
-      // element to insert the panel item before, selector is relative to the container
+      // Element to insert the panel item before, selector is relative to the container
       sibling: string | null;
     };
 
@@ -517,7 +517,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
     switch (position) {
       case "prepend":
       case "append": {
-        // safe because we're casing the method name
+        // Safe because we're casing the method name
         // eslint-disable-next-line security/detect-object-injection
         this.$container[position]($panel);
         break;

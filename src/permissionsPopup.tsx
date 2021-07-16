@@ -17,7 +17,7 @@
 
 import "@/extensionContext";
 
-// init rollbar early so we get error reporting on the other initialization
+// Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/rollbar";
 import PermissionsPopup from "@/popups/PermissionsPopup";
 

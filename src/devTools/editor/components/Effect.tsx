@@ -49,7 +49,7 @@ const Effect: React.FunctionComponent<{
     [setPrev, debounced, onChange]
   );
 
-  // don't render a react node
+  // Don't render a react node
   return null;
 };
 

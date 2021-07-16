@@ -223,7 +223,7 @@ async function fromExtensionPoint(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       traits: {
-        // we don't provide a way to set style anywhere yet so this doesn't apply yet
+        // We don't provide a way to set style anywhere yet so this doesn't apply yet
         style: { mode: "inherit" },
       },
       definition: {
@@ -263,7 +263,7 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       traits: {
-        // we don't provide a way to set style anywhere yet so this doesn't apply yet
+        // We don't provide a way to set style anywhere yet so this doesn't apply yet
         style: { mode: "inherit" },
       },
       definition: {

@@ -33,7 +33,7 @@ const _frameHref: Map<number, string> = new Map();
 let _extensionPoints: IExtensionPoint[];
 let _navSequence = 1;
 const _installedExtensionPoints: IExtensionPoint[] = [];
-// reload extension definitions on next navigation
+// Reload extension definitions on next navigation
 let _reloadOnNextNavigate = false;
 
 const WAIT_LOADED_INTERVAL_MS = 25;
@@ -320,6 +320,6 @@ export const queueReactivate = notifyContentScripts(
 
 export const reactivate = notifyContentScripts("REACTIVATE", async () => {
   await loadExtensions();
-  // force navigate event even though the href hasn't changed
+  // Force navigate event even though the href hasn't changed
   await handleNavigate({ force: true });
 });

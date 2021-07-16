@@ -55,7 +55,7 @@ const FileField: React.FunctionComponent<
       const spreadsheetId = field.value;
 
       if (doc?.id === spreadsheetId) {
-        // already up to date
+        // Already up to date
         return;
       }
       try {

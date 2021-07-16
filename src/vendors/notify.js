@@ -1,6 +1,6 @@
 /* Notify.js - http://notifyjs.com/ Copyright (c) 2015 MIT */
 function init($) {
-  //IE8 indexOf polyfill
+  // IE8 indexOf polyfill
   var indexOf =
     [].indexOf ||
     function (item) {
@@ -110,7 +110,7 @@ function init($) {
     if (!def.html) {
       throw "Missing Style HTML";
     }
-    //remove existing style
+    // Remove existing style
     var existing = styles[name];
     if (existing && existing.cssElem) {
       if (window.console) {
@@ -622,7 +622,7 @@ function init($) {
     insertCSS: insertCSS,
   });
 
-  //always include the default bootstrap style
+  // Always include the default bootstrap style
   addStyle("bootstrap", {
     html: "<div>\n<span data-notify-text></span>\n</div>",
     classes: {

@@ -122,7 +122,7 @@ function setCommonAttrs(
 
   // Find the common attributes between the elements
   for (const attrIndex in Object.keys(attributes)) {
-    // safe because we're getting from Object.keys
+    // Safe because we're getting from Object.keys
     // eslint-disable-next-line security/detect-object-injection
     const attrName = attributes[attrIndex].name;
 
@@ -487,7 +487,7 @@ export function safeCssSelector(
     selectors: selectors ?? DEFAULT_SELECTOR_PRIORITIES,
     combineWithinSelector: true,
     combineBetweenSelectors: true,
-    // convert null to undefined, because getCssSelector bails otherwise
+    // Convert null to undefined, because getCssSelector bails otherwise
     root: root ?? undefined,
   });
 
@@ -685,7 +685,7 @@ export function inferButtonHTML(
     throw new Error("one or more prototype button-like elements required");
   } else if (selected.length > 1) {
     const children = containerChildren($container, selected);
-    // vote on the root tag
+    // Vote on the root tag
     const tag = mostCommonElement(selected.map((x) => x.tagName)).toLowerCase();
     return commonButtonHTML(tag, $(children));
   } else {

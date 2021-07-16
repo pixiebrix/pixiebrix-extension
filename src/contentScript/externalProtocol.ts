@@ -107,7 +107,7 @@ function initExternalPageListener() {
   window.addEventListener("message", function (event: MessageEvent) {
     const { type, meta, error, payload } = event.data;
     if (
-      // check isResponseType to make sure we're not handling the messages from the content script
+      // Check isResponseType to make sure we're not handling the messages from the content script
       event.source === document.defaultView &&
       isResponseType(type) &&
       meta?.nonce
@@ -168,7 +168,7 @@ export function liftExternal<R extends SerializableResponse>(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
-    // console.debug(`Installed content script handler for ${type}`);
+    // Console.debug(`Installed content script handler for ${type}`);
     contentScriptHandlers.set(fullType, { handler: method, options });
     return method;
   }

@@ -152,7 +152,7 @@ export class GoogleBigQueryQuery extends Transformer {
       useQueryCache: true,
       queryParameters: queryParameters.map(
         ({ name, parameterType, parameterValue }: ScalarParameter) => ({
-          // simplify passing scalar parameters for now
+          // Simplify passing scalar parameters for now
           name,
           parameterType: { type: parameterType },
           parameterValue: { value: parameterValue },

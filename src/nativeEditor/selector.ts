@@ -142,7 +142,7 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
 
 export type SelectMode = "element" | "container";
 
-// export const findComponent = liftContentScript(
+// Export const findComponent = liftContentScript(
 //     "SELECT_COMPONENT",
 //     async ({ selector, framework }: { selector: string, framework: Framework }) => {
 //     }
@@ -194,7 +194,7 @@ export const selectElement = liftContentScript(
 
         console.debug(`Generated selector: ${selector}`);
 
-        // double-check we have a valid selector
+        // Double-check we have a valid selector
         requireSingleElement(selector);
 
         return pageScript.getElementInfo({

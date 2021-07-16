@@ -89,9 +89,9 @@ const ConfigureRow: React.FunctionComponent<{
           <span className="text-muted">Ignore</span>
         )}
       </td>
-      {/*<td>*/}
-      {/*  <code className="pl-0">{definition.id}</code>*/}
-      {/*</td>*/}
+      {/* <td> */}
+      {/*  <code className="pl-0">{definition.id}</code> */}
+      {/* </td> */}
       <td>{definition.label ?? "No label provided"}</td>
     </tr>
   );
@@ -136,7 +136,7 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         <thead>
           <tr>
             <th colSpan={2}>Selected?</th>
-            {/*<th>Foundation</th>*/}
+            {/* <th>Foundation</th> */}
             <th className="w-100">Name/Description</th>
           </tr>
         </thead>

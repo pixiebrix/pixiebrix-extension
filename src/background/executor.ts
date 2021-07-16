@@ -151,7 +151,7 @@ handlers.set(
           ...request.payload,
         },
       },
-      // for now, only support top-level frame as opener
+      // For now, only support top-level frame as opener
       { frameId: TOP_LEVEL_FRAME }
     );
   }
@@ -181,7 +181,7 @@ handlers.set(
               ...request.payload,
             },
           },
-          // for now, only support top-level frame as opener
+          // For now, only support top-level frame as opener
           { frameId: TOP_LEVEL_FRAME }
         );
       })
@@ -230,7 +230,7 @@ handlers.set(
     }
 
     console.debug(`Waiting for target tab ${target} to be ready`);
-    // for now, only support top-level frame as target
+    // For now, only support top-level frame as target
     await waitReady({ tabId: target, frameId: 0 });
     console.debug(
       `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
