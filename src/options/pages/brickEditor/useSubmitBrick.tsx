@@ -114,7 +114,7 @@ function useSubmitBrick({
 
         refreshPromise
           .then(() => reactivate())
-          .catch((error) => {
+          .catch((error: unknown) => {
             reportError(error);
             console.warn("An error occurred when re-activating bricks", error);
             addToast(`Error re-activating bricks: ${error}`, {
@@ -129,6 +129,7 @@ function useSubmitBrick({
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);
         }
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         console.debug("Got validation error", error);
         if (isPlainObject(error.response?.data)) {

@@ -21,6 +21,7 @@ import { IExtension, Metadata, Schema, ServiceDependency } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 
 export type ElementType =
   | "menuItem"
@@ -57,6 +58,16 @@ export function isCustomReader(
   return "definition" in reader;
 }
 
+export interface BaseExtensionPointState {
+  metadata: Metadata;
+  definition: {
+    isAvailable: {
+      matchPatterns: string;
+      selectors: string;
+    };
+  };
+}
+
 export interface BaseFormState {
   /**
    * The extension uuid
@@ -88,7 +99,7 @@ export interface BaseFormState {
 
   readers: (ReaderFormState | ReaderReferenceFormState)[];
 
-  extensionPoint: unknown;
+  extensionPoint: BaseExtensionPointState;
 
   extension: unknown;
 }
@@ -195,4 +206,6 @@ export interface ElementConfig<
    * Help text to show in the generic insertion-mode pane
    */
   readonly insertModeHelp?: React.ReactNode;
+
+  readonly wizard: WizardStep[];
 }

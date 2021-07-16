@@ -41,10 +41,10 @@ export function useAsyncState<T>(
         ? promiseFactory()
         : promiseFactory);
       setData(promiseResult);
-    } catch (error_) {
+    } catch (error: unknown) {
       // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument
       setData(undefined);
-      setError(error_ ?? "Error producing data");
+      setError(error ?? "Error producing data");
     } finally {
       setLoading(false);
     }
@@ -60,11 +60,11 @@ export function useAsyncState<T>(
         : promiseFactory);
       if (!isMounted()) return;
       setData(promiseResult);
-    } catch (error_) {
+    } catch (error: unknown) {
       if (isMounted()) {
         // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument
         setData(undefined);
-        setError(error_ ?? "Error producing data");
+        setError(error ?? "Error producing data");
       }
     } finally {
       if (isMounted()) {

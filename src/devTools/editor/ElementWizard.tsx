@@ -22,11 +22,6 @@ import { isEmpty, groupBy } from "lodash";
 import { checkAvailable } from "@/background/devtools";
 import { Badge, Button, Form, Nav, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/editorSlice";
-import { wizard as menuItemWizard } from "./extensionPoints/menuItem";
-import { wizard as triggerWizard } from "./extensionPoints/trigger";
-import { wizard as panelWizard } from "./extensionPoints/panel";
-import { wizard as actionPanelWizard } from "./extensionPoints/actionPanel";
-import { wizard as contextMenuWizard } from "./extensionPoints/contextMenu";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCommentAlt, faLock } from "@fortawesome/free-solid-svg-icons";
@@ -37,17 +32,10 @@ import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
 import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
-
-const WIZARD_MAP = {
-  menuItem: menuItemWizard,
-  trigger: triggerWizard,
-  panel: panelWizard,
-  contextMenu: contextMenuWizard,
-  actionPanel: actionPanelWizard,
-};
+import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 
 // Step names to show lock icon for if the user is using a foundation they don't have edit access for
-const LOCKABLE_STEP_NAMES = ["Foundation", "Availability", "Location"];
+const LOCKABLE_STEP_NAMES = ["Foundation", "Availability", "Location", "Data"];
 const LOG_STEP_NAME = "Logs";
 
 const WizardNavItem: React.FunctionComponent<{
@@ -100,7 +88,9 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable, installed, toggleChat }) => {
   const { port } = useContext(DevToolsContext);
 
-  const wizard = useMemo(() => WIZARD_MAP[element.type], [element.type]);
+  const wizard = useMemo(() => ADAPTERS.get(element.type).wizard, [
+    element.type,
+  ]);
   const [step, setStep] = useState(wizard[0].step);
 
   const isLocked =

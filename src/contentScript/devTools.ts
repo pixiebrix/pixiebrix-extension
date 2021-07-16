@@ -48,11 +48,11 @@ if (isContentScript()) {
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
     return await factory();
-  } catch (error) {
+  } catch (error: unknown) {
     if (deserializeError(error).name === "ComponentNotFoundError") {
       return "Component not detected";
     }
-    return { error: error };
+    return { error };
   }
 }
 

@@ -23,6 +23,8 @@ import fetchSVG from "@/icons/svgElementFromUrl";
 
 const filenameRegex = /^\.\/(?<fileName>.*?)\.svg$/i;
 
+const DEFAULT_ICON_CONFIG: IconConfig = { library: "bootstrap", id: "box" };
+
 const iconCache: { [libraryKey in IconLibrary]: { [key: string]: string } } = {
   bootstrap: {},
   custom: {},
@@ -61,7 +63,9 @@ export const iconOptions: IconOption[] = sortBy(
   (x) => x.label
 );
 
-async function iconAsSVG(config: IconConfig): Promise<string> {
+async function iconAsSVG(
+  config: IconConfig = DEFAULT_ICON_CONFIG
+): Promise<string> {
   const library = iconCache[config.library ?? "bootstrap"];
 
   if (!library) {

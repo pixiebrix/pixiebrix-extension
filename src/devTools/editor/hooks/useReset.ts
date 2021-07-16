@@ -42,7 +42,7 @@ function useReset(installed: IExtension[], element: FormState): () => void {
       const extension = installed.find((x) => x.id === element.uuid);
       const state = await extensionToFormState(extension);
       dispatch(actions.resetInstalled(state));
-    } catch (error) {
+    } catch (error: unknown) {
       reportError(error);
       dispatch(actions.adapterError({ uuid: element.uuid, error }));
     }

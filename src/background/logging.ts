@@ -30,9 +30,9 @@ import {
   hasBusinessRootCause,
   hasCancelRootCause,
   isConnectionError,
+  getErrorMessage,
 } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
-import { errorMessage } from "@/telemetry/logging";
 import { expectBackgroundPage } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
@@ -177,7 +177,7 @@ export const recordError = liftBackground(
     data: JsonObject | undefined
   ): Promise<void> => {
     try {
-      const message = errorMessage(error);
+      const message = getErrorMessage(error);
 
       if (!(await _getDNT())) {
         // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the

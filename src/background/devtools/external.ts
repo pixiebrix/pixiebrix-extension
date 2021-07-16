@@ -32,6 +32,7 @@ import { browser, Runtime, WebNavigation } from "webextension-polyfill-ts";
 import { v4 as uuidv4 } from "uuid";
 import { SimpleEvent } from "@/hooks/events";
 import { forbidBackgroundPage } from "@/utils/expectContext";
+import { getErrorMessage } from "@/errors";
 
 const devtoolsHandlers = new Map<Nonce, PromiseHandler>();
 
@@ -98,16 +99,20 @@ export async function callBackground(
   if (isNotification(options)) {
     try {
       port.postMessage(message);
-    } catch (error) {
-      throw new Error(`Error sending devtools notification: ${error.message}`);
+    } catch (error: unknown) {
+      throw new Error(
+        `Error sending devtools notification: ${getErrorMessage(error)}`
+      );
     }
   } else {
     return new Promise((resolve, reject) => {
       devtoolsHandlers.set(nonce, [resolve, reject]);
       try {
         port.postMessage(message);
-      } catch (error) {
-        reject(new Error(`Error sending devtools message: ${error.message}`));
+      } catch (error: unknown) {
+        reject(
+          new Error(`Error sending devtools message: ${getErrorMessage(error)}`)
+        );
       }
     });
   }

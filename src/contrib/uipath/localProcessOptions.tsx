@@ -146,7 +146,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       const { available, consentCode } = await initUiPathRobot(port);
       setConsentCode(consentCode);
       setRobotAvailable(available);
-    } catch (error) {
+    } catch (error: unknown) {
       setInitError(error);
     }
   }, [port, setConsentCode, setRobotAvailable, setInitError]);

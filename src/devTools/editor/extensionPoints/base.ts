@@ -115,13 +115,12 @@ export function makeBaseState(
   defaultSelector: string | null,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
-): Omit<BaseFormState, "type" | "label"> {
+): Omit<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
     services: [],
     readers: [makeDefaultReader(metadata, frameworks, { defaultSelector })],
     extension: {},
-    extensionPoint: {},
   };
 }
 
@@ -222,7 +221,7 @@ export async function makeReaderFormState(
         try {
           const reader = await brickRegistry.lookup(readerId);
           return { metadata: selectMetadata(reader) };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error("Cannot find reader", { readerId, error });
           throw new Error("Cannot find reader");
         }
@@ -312,5 +311,26 @@ export async function lookupExtensionPoint<
 
   return extensionPoint as ExtensionPointConfig<TDefinition> & {
     definition: { type: TType };
+  };
+}
+
+export function baseSelectExtensionPoint(
+  formState: BaseFormState
+): Omit<ExtensionPointConfig, "definition"> {
+  const { metadata } = formState.extensionPoint;
+
+  return {
+    apiVersion: "v1",
+    kind: "extensionPoint",
+    metadata: {
+      id: metadata.id,
+      // The server requires the version to save the brick, even though it's not marked as required
+      // in the front-end schemas
+      version: metadata.version ?? "1.0.0",
+      name: metadata.name,
+      // The server requires the description to save the brick, even though it's not marked as required
+      // in the front-end schemas
+      description: metadata.description ?? "Created using the Page Editor",
+    },
   };
 }

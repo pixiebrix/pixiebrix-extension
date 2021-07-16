@@ -154,7 +154,7 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
           async (value) => {
             try {
               await serviceRegistry.lookup(value);
-            } catch (error) {
+            } catch (error: unknown) {
               if (error instanceof DoesNotExistError) {
                 return false;
               }
@@ -184,13 +184,13 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
             }
             try {
               await locate(this.parent.id, value);
-            } catch (error) {
+            } catch (error: unknown) {
               if (error instanceof MissingConfigurationError) {
                 return this.createError({
                   message: "Configuration no longer available",
                 });
               }
-              console.exception(
+              console.error(
                 `An error occurred validating service: ${this.parent.id}`
               );
             }

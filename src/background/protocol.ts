@@ -78,7 +78,7 @@ async function handleRequest(
       `Handler FULFILLED action ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`
     );
     return value;
-  } catch (error) {
+  } catch (error: unknown) {
     if (isNotification(options)) {
       console.warn(
         `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}, tab: ${sender.tab?.id}, frame: ${sender.frameId})`,
@@ -126,7 +126,7 @@ export async function callBackground(
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
       extensionId,
     });
-    sendMessage(extensionId, message, {}).catch((error) => {
+    sendMessage(extensionId, message, {}).catch((error: unknown) => {
       console.warn(
         `An error occurred processing background notification ${type} (nonce: ${nonce})`,
         error
@@ -139,7 +139,7 @@ export async function callBackground(
     let response;
     try {
       response = await sendMessage(extensionId, message, {});
-    } catch (error) {
+    } catch (error: unknown) {
       console.debug(
         `Error sending background action ${type} (nonce: ${nonce})`,
         { extensionId, error }

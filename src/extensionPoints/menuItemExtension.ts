@@ -203,7 +203,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     for (const cancelObserver of this.cancelPending) {
       try {
         cancelObserver?.();
-      } catch (error) {
+      } catch (error: unknown) {
         // try to proceed as normal
         reportError(error, this.logger.context);
       }
@@ -253,6 +253,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         this.removeExtensions(extensions.map((x) => x.id));
         // release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         this.logger.error(error);
       }
@@ -264,7 +265,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         try {
           clear();
         } catch {
-          console.exception("Error cancelling dependency observer");
+          console.error("Error cancelling dependency observer");
         }
       }
       this.cancelDependencyObservers.delete(extension.id);
@@ -491,6 +492,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           extension.id,
           mergeConfig(onSuccess, DEFAULT_ACTION_RESULTS.success)
         );
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         if (hasCancelRootCause(error)) {
           notifyResult(
@@ -576,14 +578,14 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.cancelDependencyObservers.set(extension.id, () => {
         try {
           observer.disconnect();
-        } catch (error) {
-          console.exception("Error cancelling mutation observer", error);
+        } catch (error: unknown) {
+          console.error("Error cancelling mutation observer", error);
         }
         for (const cancel of cancellers) {
           try {
             cancel();
-          } catch (error) {
-            console.exception("Error cancelling dependency observer", error);
+          } catch (error: unknown) {
+            console.error("Error cancelling dependency observer", error);
           }
         }
       });
@@ -645,7 +647,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
         try {
           await this.runExtension(menu, ctxtPromise, extension);
-        } catch (error) {
+        } catch (error: unknown) {
           if (error instanceof PromiseCancelled) {
             console.debug(
               `menuItemExtension run promise cancelled for extension: ${extension.id}`

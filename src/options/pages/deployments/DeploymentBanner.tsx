@@ -76,7 +76,7 @@ function useEnsurePermissions(deployments: Deployment[]) {
 
     try {
       accepted = await ensureAllPermissions(permissions);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error(error);
       reportError(error);
       addToast(`Error granting permissions: ${error}`, {

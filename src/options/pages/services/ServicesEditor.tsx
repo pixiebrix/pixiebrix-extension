@@ -89,7 +89,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       void sleep(1000).then(async () => {
         try {
           await refreshServices();
-        } catch (error) {
+        } catch (error: unknown) {
           reportError(error);
           addToast(
             `Error refreshing service configurations, restart the PixieBrix extension`,
@@ -119,7 +119,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
       void sleep(1000).then(async () => {
         try {
           await refreshServices();
-        } catch (error) {
+        } catch (error: unknown) {
           addToast(
             `Error refreshing service configurations, restart the PixieBrix extension`,
             {

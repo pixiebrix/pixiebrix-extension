@@ -161,7 +161,7 @@ async function validateExtension(
   let validated = true;
   try {
     await extensionValidator.validate(extension);
-  } catch (error) {
+  } catch (error: unknown) {
     validated = false;
     schemaErrors = error;
   }
@@ -174,7 +174,7 @@ async function validateExtension(
       console.debug(`Validating ${extension.id} service ${service.id}`);
       try {
         await locate(service.id, service.config);
-      } catch (error) {
+      } catch (error: unknown) {
         if (error instanceof MissingConfigurationError) {
           missingConfiguration.push(error);
         } else if (error instanceof NotConfiguredError) {

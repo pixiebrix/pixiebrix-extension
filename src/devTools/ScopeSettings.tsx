@@ -102,6 +102,7 @@ const ScopeSettings: React.FunctionComponent = () => {
         await axios.patch(await makeURL("/api/settings/"), values, {
           headers: { Authorization: `Token ${await getExtensionToken()}` },
         });
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         switch (error.response.status) {
           case StatusCodes.UNAUTHORIZED: {

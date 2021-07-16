@@ -31,3 +31,5 @@ export * from "./pageState";
 export * from "./hide";
 export * from "./exportCSV";
 export * from "./sidebar";
+export * from "./cancel";
+export * from "./error";
