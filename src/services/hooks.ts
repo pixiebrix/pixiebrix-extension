@@ -120,7 +120,7 @@ export function useDependency(
           listener();
         }
       }
-    } catch (error) {
+    } catch (error: unknown) {
       setGrantedPermissions(false);
       reportError(error);
       addToast(`Error granting permissions: ${error.toString()}`, {

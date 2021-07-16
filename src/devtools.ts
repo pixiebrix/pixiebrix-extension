@@ -47,7 +47,7 @@ function initSidebarListeners(
 
     try {
       await sidebar.setObject(await readSelectedElement(port));
-    } catch (error) {
+    } catch (error: unknown) {
       await sidebar.setObject({ error: error ?? "Unknown error" });
     }
   }
@@ -74,7 +74,7 @@ async function initialize() {
     await ensureScript(port);
 
     // clear out any dynamic stuff from any previous devtools sessions
-    await clearDynamicElements(port, {}).catch((error) => {
+    await clearDynamicElements(port, {}).catch((error: unknown) => {
       console.warn(
         "Error clearing dynamic elements from previous devtools sessions",
         {
@@ -82,7 +82,7 @@ async function initialize() {
         }
       );
     });
-  } catch (error) {
+  } catch (error: unknown) {
     // We could install without having content script on the page; they just won't do much
     console.error("Could not inject contentScript for devtools", {
       error,

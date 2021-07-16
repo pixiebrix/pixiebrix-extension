@@ -42,8 +42,8 @@ export function useRefresh(
     async (isMounted: () => boolean = () => true) => {
       try {
         await refreshRegistries();
-      } catch (error) {
-        console.exception(error);
+      } catch (error: unknown) {
+        console.error(error);
         if (!isMounted()) {
           return;
         }

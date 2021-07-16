@@ -18,6 +18,7 @@
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
+  baseSelectExtensionPoint,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
@@ -52,7 +53,7 @@ import { Menus } from "webextension-polyfill-ts";
 import { BlockPipeline } from "@/blocks/combinators";
 import React from "react";
 
-export const wizard: WizardStep[] = [
+const wizard: WizardStep[] = [
   { step: "Menu Item", Component: MenuItemTab },
   { step: "Location", Component: AvailabilityTab },
   { step: "Data", Component: ReaderTab },
@@ -118,29 +119,19 @@ function fromNativeElement(
   };
 }
 
-function selectExtensionPoint({
-  extensionPoint,
-  readers,
-}: ContextMenuFormState): ExtensionPointConfig<MenuDefinition> {
+function selectExtensionPoint(
+  formState: ContextMenuFormState
+): ExtensionPointConfig<MenuDefinition> {
+  const { extensionPoint, readers } = formState;
   const {
-    metadata,
-    definition: { isAvailable, documentUrlPatterns },
+    definition: { isAvailable, documentUrlPatterns, contexts = ["all"] },
   } = extensionPoint;
-
   return {
-    apiVersion: "v1",
-    kind: "extensionPoint",
-    metadata: {
-      id: metadata.id,
-      version: metadata.version ?? "1.0.0",
-      name: metadata.name,
-      description:
-        metadata.description ?? "Context Menu created with the Page Editor",
-    },
+    ...baseSelectExtensionPoint(formState),
     definition: {
       type: "contextMenu",
-      documentUrlPatterns: documentUrlPatterns,
-      contexts: ["all"],
+      documentUrlPatterns,
+      contexts,
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
     },
@@ -173,10 +164,16 @@ async function fromExtension(
   >(config, "contextMenu");
   const extensionConfig = config.config;
 
+  const {
+    documentUrlPatterns,
+    defaultOptions,
+    contexts,
+  } = extensionPoint.definition;
+
   return {
     uuid: config.id,
     installed: true,
-    type: extensionPoint.definition.type,
+    type: "contextMenu",
     label: config.label,
 
     readers: await makeReaderFormState(extensionPoint),
@@ -190,9 +187,9 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        documentUrlPatterns: extensionPoint.definition.documentUrlPatterns,
-        defaultOptions: extensionPoint.definition.defaultOptions,
-        contexts: extensionPoint.definition.contexts,
+        documentUrlPatterns,
+        defaultOptions,
+        contexts,
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -261,6 +258,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtensionPoint,
   selectExtension,
   fromExtension,
+  wizard,
   insertModeHelp: (
     <div>
       <p>

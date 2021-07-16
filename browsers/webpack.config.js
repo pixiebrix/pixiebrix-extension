@@ -210,6 +210,7 @@ module.exports = (env, options) => ({
     options: path.resolve(rootDir, "src/options"),
     support: path.resolve(rootDir, "src/support"),
     action: path.resolve(rootDir, "src/action"),
+    permissionsPopup: path.resolve(rootDir, "src/permissionsPopup"),
   },
   resolve: {
     ...resolve,

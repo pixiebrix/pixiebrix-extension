@@ -76,7 +76,7 @@ handlers.set(RENDER_PANELS_MESSAGE, async (request: RenderPanelsMessage) => {
   for (const listener of _listeners) {
     try {
       listener(request.payload);
-    } catch (error) {
+    } catch (error: unknown) {
       reportError(error);
     }
   }

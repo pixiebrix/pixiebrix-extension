@@ -360,6 +360,7 @@ export async function reducePipeline(
       } else {
         currentArgs = output as any;
       }
+      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       if (error instanceof HeadlessModeError) {
         // An "expected" error, let the caller deal with it

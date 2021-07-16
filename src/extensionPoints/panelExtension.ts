@@ -373,6 +373,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
             shadowDOM,
           });
           extensionLogger.debug("Successfully installed panel");
+          // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
         } catch (error) {
           extensionLogger.error(error);
         }
@@ -435,6 +436,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
       try {
         await this.runExtension(readerContext, extension);
+        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
         errors.push(error);
         this.logger

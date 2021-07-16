@@ -110,7 +110,7 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
 
     function cancel() {
       stopInspectingNative();
-      reject("Selection cancelled");
+      reject(new Error("Selection cancelled"));
     }
 
     function registerListenersOnWindow(window: Window) {

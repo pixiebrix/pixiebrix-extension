@@ -25,6 +25,7 @@ import { ActionPanelFormState } from "@/devTools/editor/extensionPoints/actionPa
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 import { PanelFormState } from "@/devTools/editor/extensionPoints/panel";
 import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextMenu";
+import { getErrorMessage } from "@/errors";
 
 export type FormState =
   | ActionFormState
@@ -113,11 +114,7 @@ export const editorSlice = createSlice({
       action: PayloadAction<{ uuid: string; error: unknown }>
     ) => {
       const { uuid, error } = action.payload;
-      if (error instanceof Error) {
-        state.error = error.message ?? "Unknown error";
-      } else {
-        state.error = error.toString() ?? "Unknown error";
-      }
+      state.error = getErrorMessage(error);
       state.beta = false;
       state.activeElement = uuid;
       state.selectionSeq++;

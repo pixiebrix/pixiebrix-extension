@@ -24,6 +24,7 @@ import { Card } from "react-bootstrap";
 import { ContextError } from "@/errors";
 import { InputValidationError } from "@/blocks/errors";
 import { Schema } from "@/core";
+import { LogEntry } from "@/background/logging";
 
 export default {
   title: "Common/LogTable",
@@ -51,7 +52,7 @@ NoEntriesForLevel.args = {
   pageEntries: [],
 };
 
-const DEBUG_MESSAGE = {
+const DEBUG_MESSAGE: LogEntry = {
   uuid: uuidv4(),
   timestamp: Date.now().toString(),
   message: "Sample debug message",
@@ -61,7 +62,7 @@ const DEBUG_MESSAGE = {
   },
 };
 
-const ERROR_MESSAGE = {
+const ERROR_MESSAGE: LogEntry = {
   uuid: uuidv4(),
   timestamp: Date.now().toString(),
   message: "Sample error running brick message",
@@ -96,7 +97,7 @@ const validationError = new InputValidationError(
   ]
 );
 
-const CONTEXT_ERROR_MESSAGE = {
+const CONTEXT_ERROR_MESSAGE: LogEntry = {
   uuid: uuidv4(),
   timestamp: Date.now().toString(),
   message: "Invalid inputs for block",

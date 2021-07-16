@@ -193,7 +193,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         dispatch(
           push(sourcePage === "templates" ? "/templates" : "/installed")
         );
-      } catch (error) {
+      } catch (error: unknown) {
         console.error(`Error installing ${recipe.metadata.name}`, error);
         addToast(`Error installing ${recipe.metadata.name}`, {
           appearance: "error",

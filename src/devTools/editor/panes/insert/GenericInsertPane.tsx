@@ -66,7 +66,7 @@ const GenericInsertPane: React.FunctionComponent<{
           // have to manually toggle it
           void showBrowserActionPanel(port);
         }
-      } catch (error) {
+      } catch (error: unknown) {
         reportError(error);
         addToast("Error adding element", {
           autoDismiss: true,
@@ -87,7 +87,7 @@ const GenericInsertPane: React.FunctionComponent<{
             extensionPoint.rawConfig
           )) as FormState
         );
-      } catch (error) {
+      } catch (error: unknown) {
         reportError(error);
         addToast("Error using existing foundation", {
           autoDismiss: true,
@@ -117,11 +117,11 @@ const GenericInsertPane: React.FunctionComponent<{
           []
         )) as FormState
       );
-    } catch (error) {
+    } catch (error: unknown) {
       reportError(error);
       addToast("Error using adding new element", {
         autoDismiss: true,
-        appearance: error,
+        appearance: "error",
       });
     }
   }, [start, config, port, scope, reservedNames, addToast]);

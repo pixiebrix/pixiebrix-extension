@@ -76,9 +76,9 @@ export function useEnsurePermissions(
 
     try {
       accepted = await ensureAllPermissions(permissions ?? []);
-    } catch (error_) {
-      console.error(error_);
-      addToast(`Error granting permissions: ${error_}`, {
+    } catch (error: unknown) {
+      console.error(error);
+      addToast(`Error granting permissions: ${error}`, {
         appearance: "error",
         autoDismiss: true,
       });

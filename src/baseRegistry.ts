@@ -130,7 +130,7 @@ export class Registry<TItem extends RegistryItem> {
   private parse(raw: unknown): TItem | undefined {
     try {
       return this.deserialize(raw);
-    } catch (error) {
+    } catch (error: unknown) {
       console.warn(`Error de-serializing item: ${error}`, raw);
       return undefined;
     }

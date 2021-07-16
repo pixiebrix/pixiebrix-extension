@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext } from "react";
-import { useDispatch } from "react-redux";
-import { DevToolsContext } from "@/devTools/context";
-import { getTabInfo } from "@/background/devtools";
+import React from "react";
 import config from "@/devTools/editor/extensionPoints/menuItem";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import {
@@ -31,10 +28,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faInfo } from "@fortawesome/free-solid-svg-icons";
 import BlockModal from "@/components/fields/BlockModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { editorSlice } from "@/devTools/editor/editorSlice";
-import { reportEvent } from "@/telemetry/events";
-
-const { addElement } = editorSlice.actions;
+import useAddExisting from "@/devTools/editor/panes/insert/useAddExisting";
 
 type MenuItemWithConfig = MenuItemExtensionPoint & {
   rawConfig: ExtensionPointConfig<MenuDefinition>;
@@ -43,35 +37,11 @@ type MenuItemWithConfig = MenuItemExtensionPoint & {
 const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
   cancel,
 }) => {
-  const dispatch = useDispatch();
-  const { port } = useContext(DevToolsContext);
-
-  const addExistingButton = useCallback(
-    async (extensionPoint: MenuItemWithConfig) => {
-      if (!("rawConfig" in extensionPoint)) {
-        throw new Error(
-          "Cannot use menuItem extension point without config in the Page Editor"
-        );
-      }
-      const { url } = await getTabInfo(port);
-      const state = await config.fromExtensionPoint(
-        url,
-        extensionPoint.rawConfig
-      );
-
-      // TODO: report if created new, or using existing foundation
-      reportEvent("PageEditorStart", {
-        type: config.elementType,
-      });
-
-      dispatch(addElement(state));
-    },
-    [port, dispatch]
-  );
-
   const menuItemExtensionPoints = useAvailableExtensionPoints(
     MenuItemExtensionPoint
   );
+
+  const addExisting = useAddExisting(config, cancel);
 
   return (
     <Centered>
@@ -106,9 +76,7 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
               <FontAwesomeIcon icon={faCube} /> Use Existing Button
             </Button>
           )}
-          onSelect={async (block) =>
-            addExistingButton(block as MenuItemWithConfig)
-          }
+          onSelect={async (block) => addExisting(block as MenuItemWithConfig)}
         />
 
         <Button variant="danger" className="ml-2" onClick={cancel}>

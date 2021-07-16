@@ -90,7 +90,7 @@ const SetupPage: React.FunctionComponent = () => {
   // have to click the button
   useAsyncState(async () => {
     if (accountTab) {
-      connectApp().catch((error) => {
+      connectApp().catch((error: unknown) => {
         reportError(error);
         console.error(
           "Error automatically opening application tab to link account",

@@ -40,7 +40,7 @@ async function preload(extensions: PreloadOptions[]): Promise<void> {
         await extensionPoint.ensureMenu(
           (definition as unknown) as PreloadOptions<ContextMenuConfig>
         );
-      } catch (error) {
+      } catch (error: unknown) {
         reportError(error);
       }
     }

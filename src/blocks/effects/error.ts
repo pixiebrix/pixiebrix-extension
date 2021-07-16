@@ -15,19 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Logger } from "@/core";
-import { PanelComponent } from "@/extensionPoints/dom";
+import { Effect } from "@/types";
+import { BlockArg, Schema } from "@/core";
+import { registerBlock } from "@/blocks/registry";
+import { BusinessError } from "@/errors";
 
-/** An error boundary for renderers */
-export async function errorBoundary(
-  renderPromise: Promise<PanelComponent>,
-  logger: Logger
-): Promise<PanelComponent> {
-  try {
-    return await renderPromise;
-    // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-  } catch (error) {
-    logger.error(error);
-    return `<div>An error occurred: ${error.toString()}</div>`;
+export class ErrorEffect extends Effect {
+  constructor() {
+    super(
+      "@pixiebrix/error",
+      "Raise business error",
+      "Raise/throw a business error"
+    );
+  }
+
+  inputSchema: Schema = {
+    type: "object",
+
+    properties: {
+      message: {
+        type: "string",
+        description: "Optional error message",
+      },
+    },
+  };
+
+  async effect({ message }: BlockArg): Promise<void> {
+    throw new BusinessError(message ?? "Unknown business error");
   }
 }
+
+registerBlock(new ErrorEffect());

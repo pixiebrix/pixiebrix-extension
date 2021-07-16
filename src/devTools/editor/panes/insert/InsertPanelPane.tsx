@@ -15,29 +15,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { editorSlice } from "@/devTools/editor/editorSlice";
 import {
   PanelDefinition,
   PanelExtensionPoint,
 } from "@/extensionPoints/panelExtension";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import React, { useCallback, useContext } from "react";
-import { useDispatch } from "react-redux";
-import { DevToolsContext } from "@/devTools/context";
+import React from "react";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
-import { getTabInfo } from "@/background/devtools";
-import config from "@/devTools/editor/extensionPoints/panel";
 import Centered from "@/devTools/editor/components/Centered";
 import BlockModal from "@/components/fields/BlockModal";
 import { Alert, Button } from "react-bootstrap";
+import config from "@/devTools/editor/extensionPoints/panel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCube,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-import { reportEvent } from "@/telemetry/events";
-
-const { addElement } = editorSlice.actions;
+import useAddExisting from "@/devTools/editor/panes/insert/useAddExisting";
 
 type PanelWithConfig = PanelExtensionPoint & {
   rawConfig: ExtensionPointConfig<PanelDefinition>;
@@ -46,28 +40,8 @@ type PanelWithConfig = PanelExtensionPoint & {
 const InsertPanelPane: React.FunctionComponent<{
   cancel: () => void;
 }> = ({ cancel }) => {
-  const dispatch = useDispatch();
-  const { port } = useContext(DevToolsContext);
-
   const panelExtensionPoints = useAvailableExtensionPoints(PanelExtensionPoint);
-
-  const addExistingPanel = useCallback(
-    async (extensionPoint: PanelWithConfig) => {
-      const { url } = await getTabInfo(port);
-      const state = await config.fromExtensionPoint(
-        url,
-        extensionPoint.rawConfig
-      );
-
-      // TODO: report if created new, or using existing foundation
-      reportEvent("PageEditorStart", {
-        type: config.elementType,
-      });
-
-      dispatch(addElement(state));
-    },
-    [port, dispatch]
-  );
+  const addExistingPanel = useAddExisting(config, cancel);
 
   return (
     <Centered>

@@ -40,8 +40,8 @@ function useFetch<TData>(relativeOrAbsoluteUrl: string): FetchState<TData> {
     try {
       const data = await fetch<TData>(relativeOrAbsoluteUrl);
       setData(data);
-    } catch (error_) {
-      setError(error_);
+    } catch (error: unknown) {
+      setError(error);
       addToast(`An error occurred fetching data from the server`, {
         appearance: "error",
         autoDismiss: true,
@@ -59,9 +59,9 @@ function useFetch<TData>(relativeOrAbsoluteUrl: string): FetchState<TData> {
           const data = await fetch<TData>(relativeOrAbsoluteUrl);
           if (!isMounted()) return;
           setData(data);
-        } catch (error_) {
+        } catch (error: unknown) {
           if (!isMounted()) return;
-          setError(error_);
+          setError(error);
           addToast(`An error occurred fetching data from the server`, {
             appearance: "error",
             autoDismiss: true,

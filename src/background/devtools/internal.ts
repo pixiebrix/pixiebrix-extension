@@ -41,11 +41,11 @@ import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { reactivate } from "@/background/navigation";
-import { isErrorObject, isPrivatePageError } from "@/utils";
 import {
   expectBackgroundPage,
   forbidBackgroundPage,
 } from "@/utils/expectContext";
+import { getErrorMessage, isPrivatePageError } from "@/errors";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -89,7 +89,7 @@ function backgroundMessageListener(
     let responded = false;
 
     if (notification) {
-      handlerPromise.catch((error) => {
+      handlerPromise.catch((error: unknown) => {
         console.warn(
           `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}): ${error}`,
           error
@@ -192,7 +192,7 @@ async function resetTab(tabId: number): Promise<void> {
       { tabId, frameId: TOP_LEVEL_FRAME_ID },
       {}
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.warn(`Error clearing dynamic elements for tab: %d`, tabId, {
       error,
     });
@@ -285,14 +285,14 @@ async function attemptTemporaryAccess({
 
   try {
     await ensureContentScript({ tabId, frameId });
-  } catch (error) {
+  } catch (error: unknown) {
     if (isPrivatePageError(error)) {
       return;
     }
 
     // Side note: Cross-origin iframes lose the `activeTab` after navigation
     // https://github.com/pixiebrix/pixiebrix-extension/pull/661#discussion_r661590847
-    if (isErrorObject(error) && error.message.startsWith("Cannot access")) {
+    if (getErrorMessage(error).startsWith("Cannot access")) {
       console.debug(
         `Skipping attemptTemporaryAccess because no activeTab permissions`,
         { tabId, frameId, url }

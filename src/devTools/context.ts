@@ -32,6 +32,7 @@ import { reportError } from "@/telemetry/logging";
 import { v4 as uuidv4 } from "uuid";
 import { useTabEventListener } from "@/hooks/events";
 import { sleep } from "@/utils";
+import { getErrorMessage } from "@/errors";
 
 interface FrameMeta {
   url: string;
@@ -139,7 +140,7 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
   try {
     console.debug(`connectToFrame: detecting frameworks on ${url}`);
     frameworks = await runInMillis(() => detectFrameworks(port), 500);
-  } catch (error) {
+  } catch (error: unknown) {
     console.debug(`connectToFrame: error detecting frameworks ${url}`, {
       error,
     });
@@ -179,7 +180,7 @@ export function useDevConnection(): Context {
         hasPermissions: true,
         meta,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof PermissionsError) {
         setCurrent({
           ...common,
@@ -192,7 +193,7 @@ export function useDevConnection(): Context {
           ...common,
           hasPermissions: true,
           meta: undefined,
-          error: error.message?.toString() ?? error.toString(),
+          error: getErrorMessage(error),
         });
       }
     }

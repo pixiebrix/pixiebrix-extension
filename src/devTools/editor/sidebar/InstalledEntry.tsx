@@ -51,7 +51,7 @@ const InstalledEntry: React.FunctionComponent<{
       try {
         const state = await extensionToFormState(extension);
         dispatch(actions.selectInstalled(state));
-      } catch (error) {
+      } catch (error: unknown) {
         reportError(error);
         dispatch(actions.adapterError({ uuid: extension.id, error }));
       }
