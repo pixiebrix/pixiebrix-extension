@@ -22,7 +22,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { Button } from "react-bootstrap";
 import Centered from "@/devTools/editor/components/Centered";
 import { reportError } from "@/telemetry/logging";
-import { browser, Manifest } from "webextension-polyfill-ts";
+import { browser, Permissions } from "webextension-polyfill-ts";
 import { getErrorMessage } from "@/errors";
 import { selectOptionalPermissions } from "@/permissions";
 
@@ -30,26 +30,19 @@ const PermissionsPopup: React.FC = () => {
   const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string>();
 
-  const origins = useMemo<string[]>(
-    () => new URLSearchParams(location.search).getAll("origin"),
-    []
-  );
-  const permissions = useMemo<Manifest.OptionalPermission[]>(
-    () =>
-      selectOptionalPermissions(
-        new URLSearchParams(location.search).getAll("permission")
-      ),
-    []
-  );
+  const permissions = useMemo<Permissions.Permissions>(() => {
+    const params = new URLSearchParams(location.search);
+    return {
+      origins: params.getAll("origin"),
+      permissions: selectOptionalPermissions(params.getAll("permission")),
+    };
+  }, []);
 
   const request = useCallback(async () => {
     try {
       setRejected(false);
 
-      const accepted = await browser.permissions.request({
-        origins,
-        permissions,
-      });
+      const accepted = await browser.permissions.request(permissions);
 
       if (accepted) {
         window.close();
@@ -61,9 +54,9 @@ const PermissionsPopup: React.FC = () => {
       reportError(error);
       setError(getErrorMessage(error));
     }
-  }, [origins, permissions, setRejected]);
+  }, [permissions, setRejected]);
 
-  if (origins.length + permissions.length === 0) {
+  if (permissions.origins.length + permissions.permissions.length === 0) {
     return (
       <div>
         <div className="text-danger">Error: no permission requested</div>
