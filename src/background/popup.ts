@@ -16,13 +16,12 @@
  */
 
 import { browser, Tabs } from "webextension-polyfill-ts";
-import { liftBackground } from "@/background/devtools/internal";
-import { Target } from "@/background/devtools/contract";
 import { expectBackgroundPage } from "@/utils/expectContext";
 import { isChrome } from "@/helpers";
+import { liftBackground } from "@/background/protocol";
 
-const WINDOW_WIDTH_PX = 470;
-const WINDOW_HEIGHT_PX = 230; // Includes titlebar height
+const WINDOW_WIDTH_PX = 400; // Makes the native prompt appear centered
+const WINDOW_HEIGHT_PX = 215; // Includes titlebar height, must fit the content and error to avoid scrollbars
 
 async function onTabClose(tabId: number): Promise<void> {
   return new Promise((resolve) => {
@@ -37,10 +36,10 @@ async function onTabClose(tabId: number): Promise<void> {
   });
 }
 
-async function openTab(url: string, target: Target): Promise<Tabs.Tab> {
+async function openTab(url: string, tabId: number): Promise<Tabs.Tab> {
   return browser.tabs.create({
     url: String(url),
-    openerTabId: target.tabId, // This makes the tab appear right after the target tab
+    openerTabId: tabId, // This makes the tab appear right after the target tab
   });
 }
 
@@ -61,7 +60,7 @@ async function createPopup(url: string | URL): Promise<Tabs.Tab> {
 /**
  * Return true if popups are expected to work properly for the user agent / operating system.
  */
-async function detectPopupSupport(target: Target): Promise<boolean> {
+async function detectPopupSupport(tabId: number): Promise<boolean> {
   expectBackgroundPage();
 
   if (isChrome || !navigator.userAgent.includes("Macintosh")) {
@@ -70,7 +69,7 @@ async function detectPopupSupport(target: Target): Promise<boolean> {
 
   // Firefox on Mac seems to be unable to handle popups in fullscreen mode, changing the macOS "space"
   // back to the desktop
-  const currentTab = await browser.tabs.get(target.tabId);
+  const currentTab = await browser.tabs.get(tabId);
   const currentWindow = await browser.windows.get(currentTab.windowId);
   return currentWindow.state !== "fullscreen";
 }
@@ -80,10 +79,10 @@ async function detectPopupSupport(target: Target): Promise<boolean> {
  */
 export const openPopupPrompt = liftBackground(
   "OPEN_POPUP_PROMPT",
-  (target: Target) => async (url: string) => {
-    const tab = (await detectPopupSupport(target))
+  async (openerTabId: number, url: string) => {
+    const tab = (await detectPopupSupport(openerTabId))
       ? await createPopup(url)
-      : await openTab(url, target);
+      : await openTab(url, openerTabId);
     await onTabClose(tab.id);
   }
 );

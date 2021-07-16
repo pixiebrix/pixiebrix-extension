@@ -22,24 +22,33 @@ import AsyncButton from "@/components/AsyncButton";
 import { Button } from "react-bootstrap";
 import Centered from "@/devTools/editor/components/Centered";
 import { reportError } from "@/telemetry/logging";
-import { browser } from "webextension-polyfill-ts";
+import { browser, Manifest } from "webextension-polyfill-ts";
 import { getErrorMessage } from "@/errors";
+import { selectOptionalPermissions } from "@/permissions";
 
 const PermissionsPopup: React.FC = () => {
   const [rejected, setRejected] = useState(false);
   const [error, setError] = useState<string>();
 
-  const origin = useMemo(() => {
-    const permissions = new URLSearchParams(location.search);
-    return permissions.get("origin");
-  }, []);
+  const origins = useMemo<string[]>(
+    () => new URLSearchParams(location.search).getAll("origin"),
+    []
+  );
+  const permissions = useMemo<Manifest.OptionalPermission[]>(
+    () =>
+      selectOptionalPermissions(
+        new URLSearchParams(location.search).getAll("permission")
+      ),
+    []
+  );
 
   const request = useCallback(async () => {
     try {
       setRejected(false);
 
       const accepted = await browser.permissions.request({
-        origins: [origin],
+        origins,
+        permissions,
       });
 
       if (accepted) {
@@ -52,12 +61,12 @@ const PermissionsPopup: React.FC = () => {
       reportError(error);
       setError(getErrorMessage(error));
     }
-  }, [origin, setRejected]);
+  }, [origins, permissions, setRejected]);
 
-  if (origin == null) {
+  if (origins.length + permissions.length === 0) {
     return (
       <div>
-        <div className="text-danger">Error: no origin requested</div>
+        <div className="text-danger">Error: no permission requested</div>
 
         <div>
           <Button
@@ -74,23 +83,20 @@ const PermissionsPopup: React.FC = () => {
 
   return (
     <Centered>
-      <div>Grant PixieBrix to access to the following page/host?</div>
+      <p>
+        Additional permissions may be required, you will be asked to confirm one
+        more time.
+      </p>
 
-      <div className="card bg-light p-3 my-3">
-        <p className="mb-0">{new URL(origin).host}</p>
-      </div>
-
-      <div>
+      <p>
         <AsyncButton onClick={request}>
-          <FontAwesomeIcon icon={faShieldAlt} /> Grant Permanent Access
+          <FontAwesomeIcon icon={faShieldAlt} /> Grant Permissions
         </AsyncButton>
-      </div>
+      </p>
 
-      {error && <div className="text-danger">Error: {error}</div>}
+      {error && <p className="text-danger">Error: {error}</p>}
 
-      {rejected && (
-        <div className="text-danger">You declined the permissions</div>
-      )}
+      {rejected && <p className="text-danger">You declined the permissions</p>}
     </Centered>
   );
 };

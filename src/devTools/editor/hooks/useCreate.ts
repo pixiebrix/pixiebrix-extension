@@ -35,10 +35,15 @@ import { reactivate } from "@/background/navigation";
 import { reportEvent } from "@/telemetry/events";
 import { removeUndefined } from "@/utils";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { ensureAllPermissions, extensionPermissions } from "@/permissions";
-import { isChrome } from "@/helpers";
-import { containsPermissions } from "@/background/devtools";
+import {
+  containsPermissions,
+  ensureAllPermissions,
+  extensionPermissions,
+} from "@/permissions";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
+import { Permissions } from "webextension-polyfill-ts";
+import { openPopupPrompt } from "@/background/devtools";
+import { mergePermissions } from "@/blocks/available";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -86,11 +91,37 @@ function selectErrorMessage(error: unknown): string {
   return error.toString();
 }
 
+// TODO: Move to permissions/index.ts (but it requires access to the current tabId)
+async function ensureAllPermissionsFromDevTools(
+  permissions: Permissions.Permissions[]
+): Promise<boolean> {
+  if ("permissions" in browser) {
+    return ensureAllPermissions(permissions);
+  }
+
+  // TODO: Merge permissions ASAP; no function should accept an array and handle it every time
+  const mergedPermissions = await mergePermissions(permissions);
+  if (await containsPermissions(mergedPermissions)) {
+    return true;
+  }
+
+  const page = new URL(browser.runtime.getURL("popups/permissionsPopup.html"));
+  for (const origin of mergedPermissions.origins) {
+    page.searchParams.append("origin", origin);
+  }
+  for (const origin of mergedPermissions.permissions) {
+    page.searchParams.append("permission", origin);
+  }
+
+  const tabId = browser.devtools.inspectedWindow.tabId;
+  await openPopupPrompt(tabId, page.toString());
+  return containsPermissions(mergedPermissions);
+}
+
 /**
  * Dump to YAML, removing keys with undefined values.
  */
 export function configToYaml(content: unknown): string {
-  // As of js-yaml 4, dump is safe by default
   return dump(removeUndefined(content));
 }
 
@@ -116,23 +147,7 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
     extension,
   });
 
-  if (!isChrome) {
-    const results = await Promise.all(
-      permissions.map(async (permission) => containsPermissions(permission))
-    );
-    if (results.some((granted) => !granted)) {
-      addToast(
-        `Additional permissions are required. Click Grant Permissions to add them`,
-        {
-          appearance: "warning",
-          autoDismiss: true,
-        }
-      );
-    }
-
-    return;
-  }
-  const hasPermissions = await ensureAllPermissions(permissions);
+  const hasPermissions = await ensureAllPermissionsFromDevTools(permissions);
 
   if (!hasPermissions) {
     addToast(

@@ -25,7 +25,7 @@ import Centered from "@/devTools/editor/components/Centered";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-import { openPopupPrompt } from "@/background/devtools/popup";
+import { openPopupPrompt } from "@/background/popup";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { port, connect } = useContext(DevToolsContext);
@@ -39,7 +39,9 @@ const PermissionsPane: React.FunctionComponent = () => {
         browser.runtime.getURL("popups/permissionsPopup.html")
       );
       page.searchParams.set("origin", url);
-      await openPopupPrompt(port, String(page));
+
+      const tabId = browser.devtools.inspectedWindow.tabId;
+      await openPopupPrompt(tabId, page.toString());
     }
     await sleep(500);
     await connect();

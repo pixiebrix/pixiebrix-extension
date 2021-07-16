@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser, Permissions, Runtime } from "webextension-polyfill-ts";
+import { browser, Runtime } from "webextension-polyfill-ts";
 import * as contentScriptProtocol from "@/contentScript/devTools";
 import * as robotProtocol from "@/contentScript/uipath";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
@@ -33,7 +33,6 @@ import { getTargetState, ensureContentScript } from "@/background/util";
 import { isEmpty } from "lodash";
 import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
-import { liftBackground as liftBackgroundSimple } from "../protocol";
 
 const TOP_LEVEL_FRAME = 0;
 
@@ -62,13 +61,6 @@ export const getTabInfo = liftBackground(
       hasPermissions: Boolean(state),
     };
   }
-);
-
-// It doesn't use the regular `liftBackground` because it's called by a React component that doesn't have access to the port
-export const containsPermissions = liftBackgroundSimple(
-  "CONTAINS_PERMISSIONS",
-  async (permissions: Permissions.Permissions) =>
-    browser.permissions.contains(permissions)
 );
 
 export const ensureScript = liftBackground(
