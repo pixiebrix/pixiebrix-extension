@@ -101,6 +101,7 @@ export async function blockList(
           config
         );
       }
+
       return blockRegistry.lookup(id);
     })
   );
@@ -120,6 +121,7 @@ function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
   if (schemaOrProperties["type"] && schemaOrProperties["properties"]) {
     return schemaOrProperties as Schema;
   }
+
   return {
     type: "object",
     properties: schemaOrProperties as SchemaProperties,
@@ -133,6 +135,7 @@ function excludeUndefined(obj: unknown): unknown {
       excludeUndefined
     );
   }
+
   return obj;
 }
 
@@ -249,21 +252,25 @@ async function runStage(
         messageContext: logger.context,
       });
     }
+
     if (stage.window === "target") {
       return await executeInTarget(stage.id, blockArgs, {
         ctxt: args,
         messageContext: logger.context,
       });
     }
+
     if (stage.window === "broadcast") {
       return await executeInAll(stage.id, blockArgs, {
         ctxt: args,
         messageContext: logger.context,
       });
     }
+
     if (stage.window ?? "self" === "self") {
       return await block.run(blockArgs, { ctxt: args, logger, root, headless });
     }
+
     throw new BusinessError(`Unexpected stage window ${stage.window}`);
   } finally {
     progressCallbacks?.hide();
@@ -354,6 +361,7 @@ export async function reducePipeline(
         if (stage.outputKey) {
           logger.warn(`Ignoring output key for effect ${block.id}`);
         }
+
         if (output != null) {
           console.warn(`Effect ${block.id} produced an output`, { output });
           logger.warn(`Ignoring output produced by effect ${block.id}`);
@@ -384,6 +392,7 @@ export async function reducePipeline(
           console.warn("Can only send alert from deployment context");
         }
       }
+
       throw new ContextError(
         error,
         stageContext,
@@ -403,6 +412,7 @@ async function resolveObj<T>(
     // eslint-disable-next-line security/detect-object-injection -- safe because we're using Object.entries
     result[key] = await promise;
   }
+
   return result;
 }
 
@@ -413,16 +423,19 @@ export async function mergeReaders(
   if (typeof readerConfig === "string") {
     return blockRegistry.lookup(readerConfig) as Promise<IReader>;
   }
+
   if (Array.isArray(readerConfig)) {
     return new ArrayCompositeReader(
       await Promise.all(readerConfig.map(mergeReaders))
     );
   }
+
   if (isPlainObject(readerConfig)) {
     return new CompositeReader(
       await resolveObj(mapValues(readerConfig, mergeReaders))
     );
   }
+
   throw new BusinessError("Unexpected value for readerConfig");
 }
 
@@ -446,5 +459,6 @@ export async function makeServiceContext(
       __service: configuredService,
     };
   }
+
   return ctxt;
 }

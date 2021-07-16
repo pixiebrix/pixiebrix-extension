@@ -71,6 +71,7 @@ const RequireScope: React.FunctionComponent<{ scope: string | null }> = ({
   if (mode !== "local" && (scope === "" || !scope)) {
     return <ScopeSettings />;
   }
+
   return <>{children}</>;
 };
 
@@ -91,6 +92,7 @@ const Panel: React.FunctionComponent = () => {
       </Centered>
     );
   }
+
   if (context.portError || context.tabState.error) {
     return (
       <Centered>
@@ -104,6 +106,7 @@ const Panel: React.FunctionComponent = () => {
       </Centered>
     );
   }
+
   if (!context.port) {
     return (
       <Centered>

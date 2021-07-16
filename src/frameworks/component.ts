@@ -28,6 +28,7 @@ export function traverse<T = unknown>(
   for (let i = 0; i < count && current; i++) {
     current = next(current);
   }
+
   return current;
 }
 
@@ -53,6 +54,7 @@ export function traverseUntil<T extends object>(
     current = next(current);
     cnt++;
   }
+
   return current;
 }
 

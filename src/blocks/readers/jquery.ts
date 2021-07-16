@@ -104,6 +104,7 @@ function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
         "Invalid contents argument, must be either 'text' or 'comment'"
       );
     }
+
     // https://stackoverflow.com/questions/14248519/jquery-text-equivalent-that-converts-br-tags-to-whitespace
     value = cleanValue(
       $elt
@@ -125,6 +126,7 @@ function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
   } else {
     value = cleanValue($elt.text());
   }
+
   return castValue(value, selector.type);
 }
 
@@ -154,6 +156,7 @@ async function select(
           "'selector' required if not nested within a 'find' block"
         );
       }
+
       $elt = $(document).find(normalizedSelector.selector);
     }
 
@@ -186,6 +189,7 @@ async function select(
 
     return normalizedSelector.multi ? [] : undefined;
   }
+
   if ($elt.length > 1 && !normalizedSelector.multi) {
     throw new BusinessError(
       `Multiple elements found for ${normalizedSelector.selector}. To return a list of values, supply multi=true`
@@ -203,6 +207,7 @@ async function select(
     if ($elt === $(document)) {
       throw new Error("Cannot process document as an element");
     }
+
     const values = $elt
       .map(function () {
         return processElement(
@@ -224,6 +229,7 @@ async function read(
   if ($root.length === 0) {
     throw new Error("JQuery reader requires the document or element(s)");
   }
+
   return asyncMapValues(selectors, (selector) => select(selector, $root));
 }
 

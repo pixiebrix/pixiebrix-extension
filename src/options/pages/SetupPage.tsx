@@ -82,6 +82,7 @@ const SetupPage: React.FunctionComponent = () => {
         active: true,
       });
     }
+
     // Close the browser extension tab
     window.close();
   }, [accountTab]);

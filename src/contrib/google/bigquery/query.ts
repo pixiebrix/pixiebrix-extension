@@ -178,6 +178,7 @@ export class GoogleBigQueryQuery extends Transformer {
       if (totalRows > result.rows.length) {
         throw new Error("Support for multi-page results not implemented");
       }
+
       return result.rows.map((x) =>
         zipObject(
           fieldNames,
@@ -185,9 +186,11 @@ export class GoogleBigQueryQuery extends Transformer {
         )
       );
     }
+
     if (totalRows === 0) {
       throw new Error("No results returned");
     }
+
     return zipObject(
       fieldNames,
       result.rows[0].f.map(({ v }) => v)

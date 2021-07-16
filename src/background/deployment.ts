@@ -191,6 +191,7 @@ async function updateDeployments() {
             // Clear existing installs of the blueprint
             currentOptions = installDeployment(currentOptions, deployment);
           }
+
           await saveOptions(currentOptions);
           void queueReactivate();
           console.info(

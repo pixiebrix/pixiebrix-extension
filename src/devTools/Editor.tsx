@@ -85,9 +85,11 @@ const Editor: React.FunctionComponent = () => {
     if (tabState.hasPermissions === false) {
       return <PermissionsPane />;
     }
+
     if (error && beta) {
       return <BetaPane />;
     }
+
     if (inserting) {
       switch (inserting) {
         case "menuItem":

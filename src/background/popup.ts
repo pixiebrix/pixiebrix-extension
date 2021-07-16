@@ -32,6 +32,7 @@ async function onTabClose(tabId: number): Promise<void> {
         resolve();
       }
     };
+
     browser.tabs.onRemoved.addListener(handlePossibleClosure);
   });
 }

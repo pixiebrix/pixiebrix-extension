@@ -120,6 +120,7 @@ function initExternalPageListener() {
         console.warn(`Ignoring message with unknown nonce: ${meta.nonce}`);
         return;
       }
+
       try {
         const response = isErrorResponse(payload)
           ? deserializeError(payload.$$error)
@@ -179,6 +180,7 @@ export function liftExternal<R extends SerializableResponse>(
     if (isExtensionContext()) {
       throw new ContentScriptActionError("Expected call from external page");
     }
+
     // Wait for the extension to load before sending the message
     if (!document.documentElement.hasAttribute(PIXIEBRIX_READY_ATTRIBUTE)) {
       await Promise.race([

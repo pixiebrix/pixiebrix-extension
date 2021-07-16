@@ -44,6 +44,7 @@ export function generateVerifier(prefix?: string): string {
     verifier =
       verifier + getRandomString(MIN_VERIFIER_LENGTH - verifier.length);
   }
+
   return encodeURIComponent(verifier).slice(0, MAX_VERIFIER_LENGTH);
 }
 

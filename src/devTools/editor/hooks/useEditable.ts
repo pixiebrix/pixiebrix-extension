@@ -45,6 +45,7 @@ function useEditable(): Set<string> {
     for (const x of knownEditable) {
       rv.add(x);
     }
+
     return rv;
   }, [initialEditable, knownEditable]);
 }

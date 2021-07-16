@@ -162,6 +162,7 @@ export const servicesSlice = createSlice({
       if (!state.configured[id]) {
         throw new Error(`Service configuration ${id} does not exist`);
       }
+
       delete state.configured[id];
       return state;
     },
@@ -209,9 +210,11 @@ export const optionsSlice = createSlice({
         if (extensionPointId == null) {
           throw new Error("extensionPointId is required");
         }
+
         if (state.extensions[extensionPointId] == null) {
           state.extensions[extensionPointId] = {};
         }
+
         reportEvent("ExtensionActivate", {
           extensionId,
           blueprintId: recipe.metadata.id,
@@ -262,9 +265,11 @@ export const optionsSlice = createSlice({
       } else if (extensionPointId == null) {
         throw new Error("extensionPointId is required");
       }
+
       if (state.extensions[extensionPointId] == null) {
         state.extensions[extensionPointId] = {};
       }
+
       state.extensions[extensionPointId][extensionId ?? id] = {
         id: extensionId ?? id,
         extensionPointId,

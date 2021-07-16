@@ -138,6 +138,7 @@ export class RunProcess extends Transformer {
       if (startData.value.length > 1) {
         throw new Error("Awaiting response of multiple jobs not supported");
       }
+
       do {
         const { data: resultData } = await proxyService<JobsResponse>(uipath, {
           url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
@@ -152,12 +153,15 @@ export class RunProcess extends Transformer {
         if (resultData.value[0].State === "Successful") {
           return JSON.parse(resultData.value[0].OutputArguments);
         }
+
         if (resultData.value[0].State === "Faulted") {
           logger.error(`UiPath job failed: ${resultData.value[0].Info}`);
           throw new BusinessError("UiPath job failed");
         }
+
         await sleep(POLL_MILLIS);
       } while (Date.now() - start < MAX_WAIT_MILLIS);
+
       throw new BusinessError(
         `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
       );

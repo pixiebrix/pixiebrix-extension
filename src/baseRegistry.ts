@@ -114,6 +114,7 @@ export class Registry<TItem extends RegistryItem> {
         }
       }
     }
+
     return Object.values(this.cache);
   }
 
@@ -123,6 +124,7 @@ export class Registry<TItem extends RegistryItem> {
         console.warn(`Skipping item with no id`, item);
         continue;
       }
+
       this.cache[item.id] = item;
     }
   }

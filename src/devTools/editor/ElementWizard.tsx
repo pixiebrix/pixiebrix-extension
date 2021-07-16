@@ -49,6 +49,7 @@ const WizardNavItem: React.FunctionComponent<{
     if (step.step !== LOG_STEP_NAME) {
       return null;
     }
+
     const levels = groupBy(unread, (x) => x.level);
     for (const [level, variant] of [
       ["error", "danger"],
@@ -64,6 +65,7 @@ const WizardNavItem: React.FunctionComponent<{
         );
       }
     }
+
     return null;
   }, [step.step, unread]);
 

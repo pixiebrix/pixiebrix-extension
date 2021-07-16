@@ -48,6 +48,7 @@ export const setExtensionAuth = lift(
         await _reload();
       }, 100);
     }
+
     return updated;
   }
 );

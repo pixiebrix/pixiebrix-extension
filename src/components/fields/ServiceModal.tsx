@@ -115,6 +115,7 @@ const ServiceModal: React.FunctionComponent<{
         (x) => x.label
       );
     }
+
     return sortBy(serviceOptions, (x) => x.label);
   }, [serviceOptions, debouncedQuery]);
 

@@ -37,6 +37,7 @@ function getRootCause(error: ErrorObject): ErrorObject {
   if (error.name === "ContextError" && (error as ContextError).cause != null) {
     return getRootCause(error.cause as ErrorObject);
   }
+
   return error;
 }
 
@@ -53,13 +54,16 @@ const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
           />
         );
       }
+
       if (rootCause.isAxiosError) {
         return (
           <NetworkErrorDetail error={(rootCause as unknown) as AxiosError} />
         );
       }
+
       return entry.error.stack;
     }
+
     return entry.error.toString();
   }, [entry.error]);
 
@@ -73,12 +77,15 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
     if (typeof entry.error === "object" && entry.error) {
       return ErrorDetail;
     }
+
     if (entry.data?.renderedArgs != null) {
       return InputDetail;
     }
+
     if (entry.data?.output != null) {
       return OutputDetail;
     }
+
     return null;
   }, [entry]);
 

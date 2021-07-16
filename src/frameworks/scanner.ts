@@ -39,6 +39,7 @@ export function walk(node: Node | Element, visitor: Visitor): void {
       }
     }
   }
+
   // Also walk shadow DOM
   if (node instanceof Element && node.shadowRoot) {
     walk(node.shadowRoot, visitor);

@@ -76,6 +76,7 @@ function useSubmitBrick({
       });
       return;
     }
+
     addToast("Deleted brick", {
       appearance: "success",
       autoDismiss: true,

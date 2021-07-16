@@ -24,6 +24,7 @@ export function globalSearch(
       if (returnFirstResult) {
         return [{ path: address, value }];
       }
+
       found.push({ path: address, value });
     }
 
@@ -47,5 +48,6 @@ export function globalSearch(
       searched.push(obj);
     }
   }
+
   return Array.from(found);
 }

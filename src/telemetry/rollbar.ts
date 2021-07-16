@@ -80,10 +80,12 @@ export function toLogArgument(error: unknown): LogArgument {
     // these prevent accidentally calling the callback
     return undefined;
   }
+
   if (typeof error === "object") {
     // The custom data or error object
     return error;
   }
+
   return error.toString();
 }
 

@@ -54,8 +54,10 @@ export function getAllPropertyNames(obj: object): string[] {
     for (const name of Object.getOwnPropertyNames(current)) {
       props.add(name);
     }
+
     current = Object.getPrototypeOf(current);
   }
+
   return [...props.values()];
 }
 
@@ -111,6 +113,7 @@ export async function awaitValue<T>(
     if (predicate(value)) {
       return value;
     }
+
     await sleep(retryMillis);
   } while (Date.now() - start < waitMillis);
 
@@ -121,6 +124,7 @@ export function isPrimitive(val: unknown): val is Primitive {
   if (typeof val === "object") {
     return val === null;
   }
+
   return typeof val !== "function";
 }
 
@@ -128,15 +132,18 @@ export function removeUndefined(obj: unknown): unknown {
   if (obj === undefined) {
     return null;
   }
+
   if (Array.isArray(obj)) {
     return obj.map((x) => removeUndefined(x));
   }
+
   if (typeof obj === "object") {
     return mapValues(
       pickBy(obj, (x) => x !== undefined),
       (x) => removeUndefined(x)
     );
   }
+
   return obj;
 }
 
@@ -146,12 +153,15 @@ export function boolean(value: unknown): boolean {
       value.trim().toLowerCase()
     );
   }
+
   if (typeof value === "number") {
     return value !== 0;
   }
+
   if (typeof value === "boolean") {
     return value;
   }
+
   return false;
 }
 
@@ -201,15 +211,19 @@ export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
   if (depth > maxDepth) {
     return undefined;
   }
+
   if (Array.isArray(value)) {
     return value.map(recurse);
   }
+
   if (typeof value === "object" && value != null) {
     return mapValues(value, recurse);
   }
+
   if (typeof value === "function" || typeof value === "symbol") {
     return undefined;
   }
+
   return value;
 }
 
@@ -280,6 +294,7 @@ export function getPropByPath(
       if (coalesce || index === rawParts.length - 1) {
         return null;
       }
+
       throw new InvalidPathError(`${path} undefined (missing ${part})`, path);
     }
 
@@ -299,9 +314,11 @@ export function isNullOrBlank(value: unknown): boolean {
   if (value == null) {
     return true;
   }
+
   if (typeof value === "string" && value.trim() === "") {
     return true;
   }
+
   return false;
 }
 
@@ -327,11 +344,14 @@ export async function rejectOnCancelled<T>(
     if (isCancelled()) {
       throw new PromiseCancelled("Promise was cancelled");
     }
+
     throw error;
   }
+
   if (isCancelled()) {
     throw new PromiseCancelled("Promise was cancelled");
   }
+
   return rv;
 }
 

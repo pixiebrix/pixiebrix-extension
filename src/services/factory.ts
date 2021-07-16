@@ -136,6 +136,7 @@ class LocalDefinedService<
       // Console.debug("token context", { definition, serviceConfig });
       return mapArgs<TokenContext>(definition, serviceConfig);
     }
+
     return undefined;
   }
 
@@ -146,6 +147,7 @@ class LocalDefinedService<
       console.debug("getOAuth2Context", { definition, serviceConfig });
       return mapArgs<OAuth2Context>(definition, serviceConfig);
     }
+
     return undefined;
   }
 
@@ -178,6 +180,7 @@ class LocalDefinedService<
         `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`
       );
     }
+
     const {
       baseURL,
       headers = {},

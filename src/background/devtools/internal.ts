@@ -107,6 +107,7 @@ function backgroundMessageListener(
             payload: value,
           });
         }
+
         responded = true;
       },
       (error) => {
@@ -117,6 +118,7 @@ function backgroundMessageListener(
             payload: toErrorResponse(type, error),
           });
         }
+
         responded = true;
       }
     );
@@ -135,6 +137,7 @@ function backgroundMessageListener(
           );
         }
       }
+
       responded = true;
     });
   } else {
@@ -182,6 +185,7 @@ export function liftBackground<R extends SerializableResponse>(
     if (!port) {
       throw new Error("Devtools port is required");
     }
+
     return callBackground(port, fullType, args, options) as Promise<R>;
   };
 }
@@ -198,6 +202,7 @@ async function resetTab(tabId: number): Promise<void> {
     });
     reportError(error);
   }
+
   console.info(`Removed dynamic elements for tab: %d`, tabId);
 
   // Re-activate the content script so any saved extensions are added to the page as "permanent" extensions
@@ -264,6 +269,7 @@ export function registerPort(tabId: TabId, port: Runtime.Port): void {
   if (connections.has(tabId) && connections.get(tabId) !== port) {
     console.warn(`Devtools connection already exists for tab: ${tabId}`);
   }
+
   connections.set(tabId, port);
 }
 

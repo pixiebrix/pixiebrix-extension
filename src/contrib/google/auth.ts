@@ -70,6 +70,7 @@ export async function handleRejection(
       status
     );
   }
+
   if ([403, 401].includes(status)) {
     await chromeP.identity.removeCachedAuthToken({ token });
     console.debug(
@@ -82,5 +83,6 @@ export async function handleRejection(
       status
     );
   }
+
   return new Error(getErrorMessage(error.result.error ?? "Unknown error"));
 }

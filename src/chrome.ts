@@ -165,5 +165,6 @@ export async function setStorage(
   if (typeof value !== "string") {
     throw new TypeError("Expected string value");
   }
+
   await browser.storage[storageType].set({ [storageKey]: value });
 }

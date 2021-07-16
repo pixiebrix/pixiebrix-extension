@@ -88,6 +88,7 @@ const ActivatePage: React.FunctionComponent = () => {
     if (blueprint?.config?.extensionPoints != null) {
       return <ActivateWizard blueprint={blueprint.config} />;
     }
+
     if (blueprint != null) {
       return (
         <Card>
@@ -111,6 +112,7 @@ const ActivatePage: React.FunctionComponent = () => {
         </Card>
       );
     }
+
     return <GridLoader />;
   }, [blueprintId, blueprint, sourcePage]);
 

@@ -43,12 +43,14 @@ function initFrames(): void {
         sendResponse({});
         return true;
       }
+
       case REQUEST_FRAME_DATA: {
         const { id } = request.payload;
         sendResponse({ html: frameHTML.get(id) });
         frameHTML.delete(id);
         return true;
       }
+
       default: {
         return false;
       }

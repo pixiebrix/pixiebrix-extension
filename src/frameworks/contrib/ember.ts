@@ -72,6 +72,7 @@ export function getEmberApplication(): EmberApplication {
       (namespace) => namespace instanceof (Ember.Application as any)
     ) as EmberApplication;
   }
+
   return undefined;
 }
 
@@ -80,6 +81,7 @@ export function getEmberComponentById(componentId: string): EmberObject {
   if (!app) {
     throw new FrameworkNotFound("Ember application not found");
   }
+
   return app.__container__.lookup("-view-registry:main")[componentId];
 }
 
@@ -100,27 +102,35 @@ export function getProp(value: any, prop: string | number): unknown {
   if (isPrimitive(value)) {
     return undefined;
   }
+
   if (Array.isArray(value)) {
     if (typeof prop !== "number") {
       throw new TypeError("Expected number for prop for array value");
     }
+
     return value[prop];
   }
+
   if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
       return getProp(value.value, prop);
     }
+
     if ("_cache" in value) {
       return getProp(value._cache, prop);
     }
+
     if (Array.isArray(value.content)) {
       return getProp(value.content, prop);
     }
+
     if (typeof prop === "string" && isGetter(value, prop)) {
       return value[prop]();
     }
+
     return value[prop];
   }
+
   // ignore functions and symbols
   return undefined;
 }
@@ -148,26 +158,33 @@ export function readEmberValueFromCache(
   if (depth >= maxDepth) {
     return undefined;
   }
+
   if (isPrimitive(value)) {
     return value;
   }
+
   if (Array.isArray(value)) {
     // Must come before typeof value === "object" check because arrays are objects
     return value.map((x) => traverse(x));
   }
+
   if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
       return traverse(value.value);
     }
+
     if ("_cache" in value) {
       return traverse(value._cache);
     }
+
     if (Array.isArray(value.content)) {
       // Consider arrays a traverse because knowing the property name by itself isn't useful for anything
       return value.content.map((x: any) => traverse(x));
     }
+
     return mapValues(pickExternalProps(value), recurse);
   }
+
   // ignore functions and symbols
   return undefined;
 }
@@ -177,6 +194,7 @@ function isManaged(node: Node): boolean {
   if (!elt) {
     throw new Error("Could not get DOM HTMLElement for node");
   }
+
   return !!ignoreNotFound(() => getEmberComponentById(elt.id));
 }
 
@@ -206,6 +224,7 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
     if (!elt) {
       throw new Error("No DOM HTMLElement for node");
     }
+
     return ignoreNotFound(() => getEmberComponentById(elt.id));
   },
   getParent: (instance) => instance.parentView,

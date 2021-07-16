@@ -61,6 +61,7 @@ export function excludeSecrets(
       result[key] = config[key];
     }
   }
+
   return result;
 }
 
@@ -97,6 +98,7 @@ class LazyLocatorFactory {
     if (wasInitialized) {
       throw new Error("LazyLocatorFactory is a singleton class");
     }
+
     wasInitialized = true;
   }
 
@@ -160,6 +162,7 @@ class LazyLocatorFactory {
     if (!this.initialized) {
       await this.refresh();
     }
+
     return this.local.find((x) => x.id === authId);
   }
 
@@ -175,6 +178,7 @@ class LazyLocatorFactory {
       // HACK: for now use the separate storage for the extension key
       return pixieServiceFactory();
     }
+
     if (!authId) {
       throw new NotConfiguredError(
         `No configuration selected for ${serviceId}`,

@@ -65,6 +65,7 @@ export class GetAPITransformer extends Transformer {
         service
       );
     }
+
     const { data } = await proxyService(
       !isNullOrBlank(service) ? service : null,
       {

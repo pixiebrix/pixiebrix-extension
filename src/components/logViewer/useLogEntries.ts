@@ -73,6 +73,7 @@ export default function useLogEntries({
       if (!isMounted()) {
         return;
       }
+
       setLogState({ entries, isLoading: false });
       setNumNew(0);
       setUnread([]);
@@ -119,6 +120,7 @@ export default function useLogEntries({
       // Wait for the initial set of logs before starting to check for updates
       return;
     }
+
     const newEntries = await getLog(context);
     const filteredNewEntries = (newEntries ?? []).filter(
       // eslint-disable-next-line security/detect-object-injection -- level is from dropdown

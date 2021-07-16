@@ -171,6 +171,7 @@ function findTipPos(dims: any, bounds: any, tipSize: any) {
   if (dims.left < bounds.left) {
     left = bounds.left + margin;
   }
+
   if (dims.left + tipWidth > bounds.left + bounds.width) {
     left = bounds.left + bounds.width - tipWidth - margin;
   }
@@ -262,6 +263,7 @@ export default class Overlay {
     for (const rect of this.rects) {
       rect.remove();
     }
+
     this.rects.length = 0;
     if (this.container.parentNode) {
       this.container.remove();
@@ -279,6 +281,7 @@ export default class Overlay {
       const rect = this.rects.pop();
       rect.remove();
     }
+
     if (elements.length === 0) {
       return;
     }
@@ -408,6 +411,7 @@ function getNestedBoundingClientRect(
       if (onlyOneMore) {
         break;
       }
+
       // We don't want to calculate iframe offsets upwards beyond
       // the iframe containing the boundaryWindow, but we
       // need to calculate the offset relative to the boundaryWindow.
@@ -418,6 +422,7 @@ function getNestedBoundingClientRect(
 
     return mergeRectOffsets(rects);
   }
+
   return node.getBoundingClientRect();
 }
 
@@ -428,6 +433,7 @@ function getOwnerWindow(node: HTMLElement): typeof window | null {
   if (!node.ownerDocument) {
     return null;
   }
+
   return node.ownerDocument.defaultView;
 }
 
@@ -438,5 +444,6 @@ function getOwnerIframe(node: HTMLElement): HTMLElement | null {
   if (nodeWindow) {
     return nodeWindow.frameElement as HTMLElement;
   }
+
   return null;
 }

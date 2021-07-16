@@ -131,6 +131,7 @@ handlers.set(
         actual: request.payload.nonce,
       });
     }
+
     console.debug("Setting action frame metadata", {
       tabId,
       frameId: sender.frameId,

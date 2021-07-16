@@ -119,6 +119,7 @@ export async function serviceOriginPermissions(
     // extension install. The proxy server will check isAvailable when making request
     return { origins: [] };
   }
+
   const service = await registry.lookup(dependency.id);
   const matchPatterns = service.getOrigins(localConfig.config);
   return { origins: matchPatterns };

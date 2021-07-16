@@ -56,24 +56,31 @@ export function defaultFieldRenderer(
   if (booleanPredicate(schema)) {
     return BooleanField;
   }
+
   if (textPredicate(schema)) {
     return TextField;
   }
+
   if (blockPredicate(schema)) {
     return BlockField;
   }
+
   if (schema["$ref"] === "https://app.pixiebrix.com/schemas/icon#") {
     return IconField;
   }
+
   if (findOneOf(schema, blockPredicate)) {
     return BlockField;
   }
+
   if (findOneOf(schema, textPredicate)) {
     return makeOneOfField(findOneOf(schema, textPredicate));
   }
+
   if (findOneOf(schema, booleanPredicate)) {
     return makeOneOfField(findOneOf(schema, booleanPredicate));
   }
+
   if (schema["$ref"] && !schema.type) {
     throw new Error(`Unexpected $ref ${schema["$ref"]}`);
   } else {

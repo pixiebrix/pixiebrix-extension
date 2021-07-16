@@ -33,6 +33,7 @@ const ErrorBanner: React.FunctionComponent = () => {
   if (message) {
     return <div className="error-banner w-100">{message}</div>;
   }
+
   return null;
 };
 

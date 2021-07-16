@@ -160,6 +160,7 @@ function removeUnstyledLayout(node: Node): Node | null {
   if ([Node.COMMENT_NODE, Node.CDATA_SECTION_NODE].includes(node.nodeType)) {
     return null;
   }
+
   if (node.nodeType === Node.ELEMENT_NODE) {
     const element = node as HTMLElement;
     const nonEmptyChildren = [...node.childNodes].filter(
@@ -173,6 +174,7 @@ function removeUnstyledLayout(node: Node): Node | null {
     ) {
       return removeUnstyledLayout(nonEmptyChildren[0]);
     }
+
     const clone = node.cloneNode(false) as Element;
     for (const childNode of node.childNodes) {
       const newChild = removeUnstyledLayout(childNode);
@@ -180,8 +182,10 @@ function removeUnstyledLayout(node: Node): Node | null {
         clone.append(newChild);
       }
     }
+
     return clone;
   }
+
   return node.cloneNode(false);
 }
 
@@ -214,6 +218,7 @@ function commonButtonStructure(
       // Shouldn't happen at the top level
       return [$(), currentCaptioned];
     }
+
     throw error;
   }
 
@@ -455,6 +460,7 @@ function commonPanelHTML(tag: string, $items: JQuery<HTMLElement>): string {
   if (!bodyInserted) {
     console.warn("No body detected for panel");
   }
+
   if (!headingInserted) {
     console.warn("No heading detected for panel");
   }
@@ -554,6 +560,7 @@ export function getCommonAncestor(...args: Node[]): Node {
     if (otherNodes.every((x) => currentNode.contains(x))) {
       return currentNode;
     }
+
     currentNode = currentNode?.parentNode;
   }
 
@@ -616,11 +623,13 @@ export function findContainer(
     if (!container) {
       throw new Error("Selected elements have no common ancestors");
     }
+
     return {
       container,
       selectors: inferSelectors(container),
     };
   }
+
   return findContainerForElement(elements[0]);
 }
 
@@ -672,6 +681,7 @@ export function inferPanelHTML(
     const children = containerChildren($container, selected);
     return commonPanelHTML(selected[0].tagName, $(children));
   }
+
   return inferSinglePanelHTML(container, selected[0]);
 }
 
@@ -703,6 +713,7 @@ export function inferButtonHTML(
             : commonType;
           return `<input type="${inputType}" value="{{{ caption }}}" />`;
         }
+
         return commonButtonHTML(buttonTag, $items);
       }
     }

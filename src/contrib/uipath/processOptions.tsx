@@ -92,6 +92,7 @@ export function useReleases(): {
       });
       return response.data.value;
     }
+
     return null;
   }, [config, hasPermissions]);
 
@@ -110,6 +111,7 @@ function useRobots(): { robots: Robot[]; isPending: boolean; error: unknown } {
       });
       return response.data.value;
     }
+
     return [];
   }, [config, hasPermissions]);
 
@@ -198,18 +200,22 @@ function toType(type: string) {
   if (namespace === "System" && typeName === "String") {
     return "string";
   }
+
   if (namespace === "System" && typeName === "Boolean") {
     return "boolean";
   }
+
   if (
     namespace === "System" &&
     ["Int64", "Int32", "Int16", "UInt64", "UInt32", "UInt16"].includes(typeName)
   ) {
     return "integer";
   }
+
   if (namespace === "System" && ["Decimal", "Double"].includes(typeName)) {
     return "number";
   }
+
   throw new BusinessError(`Unsupported input type: ${type}`);
 }
 
@@ -247,6 +253,7 @@ export const InputArgumentsField: React.FunctionComponent<
                     "Expected schema for input property type"
                   );
                 }
+
                 return (
                   <FieldRenderer
                     key={prop}

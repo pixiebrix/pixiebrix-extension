@@ -217,6 +217,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       </div>
     );
   }
+
   if (!hasPermissions) {
     return (
       <div className="my-2">
@@ -261,6 +262,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                         "Expected schema for input property type"
                       );
                     }
+
                     return (
                       <FieldRenderer
                         key={prop}

@@ -279,6 +279,7 @@ const KindIcon: React.FunctionComponent<{ brick: EnhancedBrick }> = ({
   } else if (kind === "Blueprint") {
     icon = faStoreAlt;
   }
+
   return <FontAwesomeIcon icon={icon} fixedWidth />;
 };
 

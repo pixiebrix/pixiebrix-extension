@@ -38,6 +38,7 @@ export function engineRenderer(
     case "mustache": {
       return Mustache.render;
     }
+
     case "nunjucks": {
       // Convert top level data from kebab case to snake case in order to be valid identifiers
       return (template, ctxt) => {
@@ -47,12 +48,14 @@ export function engineRenderer(
         return nunjucks.renderString(template, snakeCased);
       };
     }
+
     case "handlebars": {
       return (template, ctxt) => {
         const compiledTemplate = Handlebars.compile(template);
         return compiledTemplate(ctxt);
       };
     }
+
     default: {
       return undefined;
     }
@@ -71,6 +74,7 @@ export function isSimplePath(maybePath: string, ctxt: object): boolean {
   if (!pathRegex.test(maybePath)) {
     return false;
   }
+
   const [head] = maybePath.split(".");
   const path = head.endsWith("?") ? head.slice(0, -1) : head;
   return ctxt ? Object.prototype.hasOwnProperty.call(ctxt, path) : false;
@@ -104,6 +108,7 @@ export function mapArgs(
   if (Array.isArray(config)) {
     return config.map((x) => mapArgs(x, ctxt, render));
   }
+
   if (isPlainObject(config)) {
     return pickBy(
       mapValues(config as object, (subConfig) =>
@@ -112,6 +117,7 @@ export function mapArgs(
       (x) => x != null
     );
   }
+
   if (typeof config === "string") {
     if (isSimplePath(config, ctxt)) {
       const prop = getPropByPath(ctxt as { [prop: string]: unknown }, config);
@@ -120,10 +126,13 @@ export function mapArgs(
         // @ts-ignore: not sure why the "in" check isn't working
         return prop.__service;
       }
+
       return prop;
     }
+
     return render(config, ctxt);
   }
+
   return config;
 }
 
@@ -144,6 +153,7 @@ export function missingProperties(
       }
     }
   }
+
   return acc;
 }
 
@@ -151,6 +161,7 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
   if (typeof inputSchema === "object" && "properties" in inputSchema) {
     return inputSchema.properties;
   }
+
   return inputSchema as SchemaProperties;
 }
 

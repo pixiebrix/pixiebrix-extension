@@ -182,6 +182,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       if ($item.length === 0) {
         console.debug(`Panel for ${extension.id} was not in the menu`);
       }
+
       $item.remove();
     }
 
@@ -214,6 +215,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     if (this.$container.length === 0) {
       return false;
     }
+
     if (this.$container.length > 1) {
       console.error(`Multiple containers found for selector: ${selector}`);
       this.logger.error(`Multiple containers found: ${this.$container.length}`);
@@ -318,6 +320,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       if (this.cancelRemovalMonitor.get(extension.id) != null) {
         throw new Error("Removal monitor still attached for panel");
       }
+
       console.debug(`Replacing existing panel for ${extension.id}`);
       $existingPanel.replaceWith($panel);
     } else {
@@ -522,6 +525,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
         this.$container[position]($panel);
         break;
       }
+
       default: {
         throw new Error(`Unexpected position: ${position}`);
       }
@@ -549,5 +553,6 @@ export function fromJS(
   if (type !== "panel") {
     throw new Error(`Expected type=panel, got ${type}`);
   }
+
   return new RemotePanelExtensionPoint(config);
 }

@@ -77,6 +77,7 @@ export async function deleteCachedAuthData(key: string): Promise<void> {
       `deleteCachedAuthData: No cached auth data exists for key: ${key}`
     );
   }
+
   // Replace with updated object
   await setStorage(OAUTH2_STORAGE_KEY, JSON.stringify(current));
 }
@@ -210,6 +211,7 @@ export async function launchOAuth2Flow(
   if (client_secret) {
     tokenBody.client_secret = client_secret;
   }
+
   if (code_verifier) {
     tokenBody.code_verifier = code_verifier;
   }
@@ -247,15 +249,18 @@ export async function launchOAuth2Flow(
         "Expected application/x-www-form-urlencoded data for response"
       );
     }
+
     if (parsed.get("error")) {
       throw new Error(parsed.get("error_description") ?? parsed.get("error"));
     }
+
     const json: Record<string, string> = {};
     for (const [key, value] of parsed.entries()) {
       // Coming from the URL search parameter so will be safe
       // eslint-disable-next-line security/detect-object-injection
       json[key] = value;
     }
+
     await setCachedAuthData(auth.id, json);
     return json as AuthData;
   } else if (typeof data === "object") {

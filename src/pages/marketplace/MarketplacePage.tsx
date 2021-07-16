@@ -52,6 +52,7 @@ const Entry: React.FunctionComponent<
     if (!onInstall) {
       return null;
     }
+
     if (!installed) {
       return (
         <Button size="sm" variant="info" {...buttonProps} onClick={onInstall}>
@@ -59,6 +60,7 @@ const Entry: React.FunctionComponent<
         </Button>
       );
     }
+
     return (
       <Button size="sm" variant="info" {...buttonProps} disabled>
         Added

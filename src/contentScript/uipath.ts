@@ -70,6 +70,7 @@ export const getProcesses = liftContentScript(
     if (!_robot) {
       throw new Error("UiPath not initialized");
     }
+
     return _robot.getProcesses();
   }
 );

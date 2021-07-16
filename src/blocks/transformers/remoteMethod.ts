@@ -74,6 +74,7 @@ export class RemoteMethod extends Transformer {
         service
       );
     }
+
     const { data } = await proxyService(service, requestConfig);
     return data;
   }

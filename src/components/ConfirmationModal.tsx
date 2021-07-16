@@ -84,6 +84,7 @@ export const ModalProvider: React.FunctionComponent<{
           resolve(submit);
           setCallback(undefined);
         };
+
         setCallback((_prevState: Callback) => newCallback);
       });
     },

@@ -58,6 +58,7 @@ export function getComponent(node: Node): AngularElement | null {
   if (!window.angular) {
     throw new FrameworkNotFound("Angular not found");
   }
+
   return window.angular.element(node);
 }
 

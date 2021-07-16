@@ -66,9 +66,11 @@ const RequireInstall: React.FunctionComponent = ({ children }) => {
   if (isPending && mode === "remote") {
     return null;
   }
+
   if (mode === "remote" && !token) {
     return <SetupPage />;
   }
+
   return <>{children}</>;
 };
 

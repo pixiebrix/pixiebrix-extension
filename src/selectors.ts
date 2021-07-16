@@ -43,6 +43,7 @@ export function useExtension(
     if (!extensionId) {
       return null;
     }
+
     if (extensionPointId) {
       config = options.extensions[extensionPointId][extensionId];
     } else {
@@ -54,6 +55,7 @@ export function useExtension(
         }
       }
     }
+
     if (!config) {
       throw new Error(
         `Could not locate configuration for extension ${extensionId} (extension point: ${
@@ -61,6 +63,7 @@ export function useExtension(
         })`
       );
     }
+
     return config;
   }, [options, extensionId, extensionPointId]);
 
@@ -68,9 +71,11 @@ export function useExtension(
     if (extensionConfig) {
       return extensionPointRegistry.lookup(extensionConfig.extensionPointId);
     }
+
     if (extensionPointId) {
       return extensionPointRegistry.lookup(extensionPointId);
     }
+
     return null;
   }, [extensionPointRegistry, extensionConfig, extensionPointId]);
 

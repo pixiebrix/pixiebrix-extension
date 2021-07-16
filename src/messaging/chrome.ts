@@ -46,6 +46,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
           `Handler for ${type} did not provide a detail property`
         );
       }
+
       const { id } = event.detail;
       // This listener also receives it's own FULFILLED/REJECTED messages it sends back to the content
       // script. So if you add any logging outside of the if, the logs are confusing.

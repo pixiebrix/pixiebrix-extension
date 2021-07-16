@@ -236,6 +236,7 @@ export function liftContentScript<R extends SerializableResponse>(
       if (isNotification(options)) {
         return;
       }
+
       throw error;
     }
 

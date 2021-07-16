@@ -43,6 +43,7 @@ const BodyComponent: React.FunctionComponent<{
         />
       );
     }
+
     const { Component, props } = body;
     return <Component {...props} />;
   }, [body]);
@@ -55,10 +56,12 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
     if (!panel.payload) {
       return null;
     }
+
     if ("error" in panel.payload) {
       const { error } = panel.payload;
       return <div className="text-danger">Error running panel: {error}</div>;
     }
+
     const { blockId, ctxt, args } = panel.payload;
     console.debug("Render panel body", panel.payload);
     const block = await blockRegistry.lookup(blockId);
@@ -83,9 +86,11 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
       </div>
     );
   }
+
   if (pending || component == null) {
     return <GridLoader />;
   }
+
   return component;
 };
 

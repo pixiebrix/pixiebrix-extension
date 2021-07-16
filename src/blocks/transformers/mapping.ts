@@ -60,17 +60,21 @@ export class MappingTransformer extends Transformer {
     if (key == null || key === "") {
       return null;
     }
+
     if (Object.prototype.hasOwnProperty.call(mapping, key)) {
       // Checking for hasOwnProperty
       // eslint-disable-next-line security/detect-object-injection
       return mapping[key];
     }
+
     if (missing === "null" || missing === null) {
       return null;
     }
+
     if (missing === "ignore") {
       return key;
     }
+
     throw new BusinessError(`Key ${key} not found in the mapping`);
   }
 }

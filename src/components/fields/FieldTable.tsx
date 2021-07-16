@@ -88,6 +88,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
     if (isComplex) {
       return ComplexObjectValue;
     }
+
     const { Component } = customControls.find((x) => x.match(schema)) ?? {};
     return Component ?? SimpleValue;
   }, [isComplex, customControls, schema]);
@@ -133,6 +134,7 @@ function freshPropertyName(obj: { [key: string]: unknown }) {
   while (Object.prototype.hasOwnProperty.call(obj, `property${x}`)) {
     x++;
   }
+
   return `property${x}`;
 }
 

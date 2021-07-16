@@ -69,6 +69,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
       if (!extensionPoint) {
         return;
       }
+
       try {
         const isNew = !extensionConfig?.id;
         const extensionId = extensionConfig?.id ?? uuidv4();
@@ -105,9 +106,11 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   if (isPending) {
     return <GridLoader />;
   }
+
   if (!extensionPoint) {
     return <WorkshopPage navigate={navigate} />;
   }
+
   return (
     <ExtensionPointDetail
       initialValue={{

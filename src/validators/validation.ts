@@ -92,9 +92,11 @@ export function configSchemaFactory(
       if (isPlainObject(val)) {
         return Yup.lazy(blockSchemaFactory);
       }
+
       return Yup.array().of(Yup.lazy(blockSchemaFactory)).min(1);
     });
   }
+
   switch (schema.type) {
     case "object": {
       return Yup.lazy((val) => {
@@ -104,15 +106,18 @@ export function configSchemaFactory(
               if (typeof definition === "boolean") {
                 return wrapRequired(Yup.string());
               }
+
               return configSchemaFactory(definition, {
                 required: (schema.required ?? []).includes(prop),
               });
             })
           );
         }
+
         return Yup.string();
       });
     }
+
     case "array": {
       if (typeof schema.items === "boolean") {
         throw new TypeError(
@@ -135,9 +140,11 @@ export function configSchemaFactory(
         );
       }
     }
+
     case "boolean": {
       return Yup.bool();
     }
+
     default: {
       return wrapRequired(Yup.string());
     }
@@ -159,6 +166,7 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
                 return false;
               }
             }
+
             return true;
           }
         ),
@@ -176,13 +184,16 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
                   message: "PixieBrix service configuration should be blank",
                 });
               }
+
               return true;
             }
+
             if (value == null) {
               return this.createError({
                 message: "Select a service configuration",
               });
             }
+
             try {
               await locate(this.parent.id, value);
             } catch (error: unknown) {
@@ -191,10 +202,12 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
                   message: "Configuration no longer available",
                 });
               }
+
               console.error(
                 `An error occurred validating service: ${this.parent.id}`
               );
             }
+
             return true;
           }
         ),

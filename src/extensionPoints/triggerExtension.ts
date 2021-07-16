@@ -149,6 +149,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           void reportError(error, extensionLogger.context);
           return error;
         }
+
         reportEvent("TriggerRun", {
           extensionId: extension.id,
         });
@@ -245,6 +246,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         ]);
         TriggerExtensionPoint.notifyErrors(compact(promises));
       };
+
       this.$installedRoot = $root;
       this.installedEvents.add(this.trigger);
 
@@ -315,5 +317,6 @@ export function fromJS(
   if (type !== "trigger") {
     throw new Error(`Expected type=trigger, got ${type}`);
   }
+
   return new RemoteTriggerExtensionPoint(config);
 }

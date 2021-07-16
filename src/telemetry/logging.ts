@@ -33,6 +33,7 @@ function selectError(error: unknown): SerializedError {
       error = new Error(error.reason?.message ?? "Uncaught error in promise");
     }
   }
+
   return serializeError(error);
 }
 

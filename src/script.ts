@@ -93,6 +93,7 @@ function requireSingleElement(selector: string): HTMLElement {
       `Multiple elements found for selector: '${selector}'`
     );
   }
+
   return $elt.get(0);
 }
 
@@ -145,6 +146,7 @@ function readPathSpec(
       );
     }
   }
+
   return values;
 }
 
@@ -155,6 +157,7 @@ attachListener(READ_WINDOW, async ({ pathSpec, waitMillis }) => {
       ? undefined
       : values;
   };
+
   return awaitValue(factory, { waitMillis });
 });
 
@@ -184,6 +187,7 @@ async function read<TComponent>(
     if (optional) {
       return {};
     }
+
     throw error;
   }
 
@@ -202,6 +206,7 @@ async function read<TComponent>(
       );
       return {};
     }
+
     throw error;
   }
 
@@ -243,6 +248,7 @@ attachListener(
     if (!adapter) {
       throw new Error(`No read adapter available for framework: ${framework}`);
     }
+
     return read(adapter, selector, options);
   }
 );
@@ -259,6 +265,7 @@ attachListener(
     if (!adapter?.setData) {
       throw new Error(`No write adapter available for ${framework}`);
     }
+
     const element = requireSingleElement(selector);
     const component = adapter.getComponent(element);
     adapter.setData(component, valueMap);

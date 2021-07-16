@@ -85,6 +85,7 @@ function selectErrorMessage(error: unknown): string {
       "No response from PixieBrix server"
     );
   }
+
   return error.toString();
 }
 
@@ -106,6 +107,7 @@ async function ensureAllPermissionsFromDevTools(
   for (const origin of mergedPermissions.origins) {
     page.searchParams.append("origin", origin);
   }
+
   for (const origin of mergedPermissions.permissions) {
     page.searchParams.append("permission", origin);
   }

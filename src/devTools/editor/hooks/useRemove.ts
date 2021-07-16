@@ -58,6 +58,7 @@ function useRemove(element: FormState): () => void {
           console.info("Cannot unregister contextMenu", { error });
         }
       }
+
       try {
         await nativeOperations.clearDynamicElements(port, {
           uuid: element.uuid,
@@ -66,6 +67,7 @@ function useRemove(element: FormState): () => void {
         // Element might not be on the page anymore
         console.info("Cannot clear dynamic element from page", { error });
       }
+
       if (values.installed) {
         dispatch(
           optionsSlice.actions.removeExtension({
@@ -74,6 +76,7 @@ function useRemove(element: FormState): () => void {
           })
         );
       }
+
       dispatch(actions.removeElement(element.uuid));
     } catch (error: unknown) {
       reportError(error);

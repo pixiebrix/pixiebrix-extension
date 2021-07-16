@@ -79,6 +79,7 @@ function validationMessage(validation: ExtensionValidationResult) {
   } else {
     console.debug("Validation result", validation);
   }
+
   return message;
 }
 
@@ -98,6 +99,7 @@ const RecipeEntry: React.FunctionComponent<{
         for (const { id: extensionId, extensionPointId } of extensions) {
           onRemove({ extensionId, extensionPointId });
         }
+
         addToast(`Uninstalled ${name}`, {
           appearance: "success",
           autoDismiss: true,
@@ -181,6 +183,7 @@ const ExtensionRow: React.FunctionComponent<{
     if (hasPermissions == null || validation == null) {
       return <BeatLoader />;
     }
+
     if (validation && !validation.valid) {
       return (
         <span className="text-danger text-wrap">
@@ -189,6 +192,7 @@ const ExtensionRow: React.FunctionComponent<{
         </span>
       );
     }
+
     if (hasPermissions) {
       return (
         <span>
@@ -196,6 +200,7 @@ const ExtensionRow: React.FunctionComponent<{
         </span>
       );
     }
+
     return (
       <Button variant="info" size="sm" onClick={requestPermissions}>
         Grant Permissions

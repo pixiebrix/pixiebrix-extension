@@ -215,6 +215,7 @@ const pixieResolver: ResolverOptions = {
     if (SCHEMA_URLS[file.url]) {
       return SCHEMA_URLS[file.url] as any;
     }
+
     throw new Error(`Unknown file ${file.url}`);
   },
 };

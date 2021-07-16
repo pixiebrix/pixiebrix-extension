@@ -96,6 +96,7 @@ function getComponentFiber(fiber: Fiber): Fiber {
     // String for HTML nodes, so traverse
     parentFiber = parentFiber.return;
   }
+
   return parentFiber;
 }
 
@@ -117,6 +118,7 @@ export function findReactComponent(node: Node, traverseUp = 0): Fiber {
     const fiber = traverse(owner, owner(domFiber), traverseUp);
     return fiber._instance as Fiber;
   }
+
   return traverse(getComponentFiber, getComponentFiber(domFiber), traverseUp);
 }
 
@@ -127,6 +129,7 @@ export class ReactRootVisitor implements RootInstanceVisitor<RootInstance> {
       this.rootInstances.push(node);
       return false;
     }
+
     return true;
   }
 }

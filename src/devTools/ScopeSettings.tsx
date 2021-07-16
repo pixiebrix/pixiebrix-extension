@@ -112,10 +112,12 @@ const ScopeSettings: React.FunctionComponent = () => {
             });
             return;
           }
+
           case StatusCodes.BAD_REQUEST: {
             setErrors(mapValues(error.response.data, (xs) => castArray(xs)[0]));
             return;
           }
+
           default: {
             reportError(error);
             addToast("Error updating account alias", {
@@ -125,6 +127,7 @@ const ScopeSettings: React.FunctionComponent = () => {
           }
         }
       }
+
       location.reload();
     },
     [addToast]

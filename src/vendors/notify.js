@@ -9,6 +9,7 @@ function init($) {
           return i;
         }
       }
+
       return -1;
     };
 
@@ -95,6 +96,7 @@ function init($) {
     if (!name) {
       throw "Missing Style name";
     }
+
     if (styles[name]) {
       delete styles[name];
     }
@@ -104,20 +106,25 @@ function init($) {
     if (!name) {
       throw "Missing Style name";
     }
+
     if (!def) {
       throw "Missing Style definition";
     }
+
     if (!def.html) {
       throw "Missing Style HTML";
     }
+
     // Remove existing style
     var existing = styles[name];
     if (existing && existing.cssElem) {
       if (window.console) {
         console.warn(pluginName + ": overwriting style '" + name + "'");
       }
+
       styles[name].cssElem.remove();
     }
+
     def.name = name;
     styles[name] = def;
     var cssText = "";
@@ -131,18 +138,22 @@ function init($) {
               return (cssText += "	" + prefix + name + ": " + val + ";\n");
             });
           }
+
           return (cssText += "	" + name + ": " + val + ";\n");
         });
         return (cssText += "}\n");
       });
     }
+
     if (def.css) {
       cssText += "/* styles for " + def.name + " */\n" + def.css;
     }
+
     if (cssText) {
       def.cssElem = insertCSS(cssText);
       def.cssElem.attr("id", "notify-" + def.name);
     }
+
     var fields = {};
     var elem = $(def.html);
     findFields("html", elem, fields);
@@ -160,6 +171,7 @@ function init($) {
     } catch {
       elem[0].styleSheet.cssText = cssText;
     }
+
     return elem;
   };
 
@@ -168,6 +180,7 @@ function init($) {
     if (type !== "html") {
       type = "text";
     }
+
     attr = "data-notify-" + type;
     return find(elem, "[" + attr + "]").each(function () {
       var name;
@@ -175,6 +188,7 @@ function init($) {
       if (!name) {
         name = blankFieldName;
       }
+
       fields[name] = type;
     });
   };
@@ -183,6 +197,7 @@ function init($) {
     if (elem.is(selector)) {
       return elem;
     }
+
     return elem.find(selector);
   };
 
@@ -232,6 +247,7 @@ function init($) {
         });
       element = radios.first();
     }
+
     return element;
   };
 
@@ -242,20 +258,24 @@ function init($) {
     } else if (typeof val !== "number") {
       return;
     }
+
     if (isNaN(val)) {
       return;
     }
+
     opp = positions[opposites[pos.charAt(0)]];
     temp = pos;
     if (obj[opp] !== undefined) {
       pos = positions[opp.charAt(0)];
       val = -val;
     }
+
     if (obj[pos] === undefined) {
       obj[pos] = val;
     } else {
       obj[pos] += val;
     }
+
     return null;
   };
 
@@ -263,12 +283,15 @@ function init($) {
     if (alignment === "l" || alignment === "t") {
       return 0;
     }
+
     if (alignment === "c" || alignment === "m") {
       return outer / 2 - inner / 2;
     }
+
     if (alignment === "r" || alignment === "b") {
       return outer - inner;
     }
+
     throw "Invalid alignment";
   };
 
@@ -283,6 +306,7 @@ function init($) {
         className: options,
       };
     }
+
     this.options = inherit(
       pluginOptions,
       $.isPlainObject(options) ? options : {}
@@ -292,6 +316,7 @@ function init($) {
     if (this.options.clickToHide) {
       this.wrapper.addClass(pluginClassName + "-hidable");
     }
+
     this.wrapper.data(pluginClassName, this);
     this.arrow = this.wrapper.find("." + pluginClassName + "-arrow");
     this.container = this.wrapper.find("." + pluginClassName + "-container");
@@ -303,6 +328,7 @@ function init($) {
       this.elem.data(pluginClassName, this);
       this.elem.before(this.wrapper);
     }
+
     this.container.hide();
     this.run(data);
   }
@@ -321,6 +347,7 @@ function init($) {
         if (!show && !_this.elem) {
           _this.destroy();
         }
+
         if (userCallback) {
           return userCallback();
         }
@@ -342,6 +369,7 @@ function init($) {
     } else {
       return callback();
     }
+
     args.push(callback);
     return elems[fn].apply(elems, args);
   };
@@ -365,9 +393,11 @@ function init($) {
       } else {
         css[align] = 0;
       }
+
       anchor.css(css).addClass(pluginClassName + "-corner");
       $("body").append(anchor);
     }
+
     return anchor.prepend(this.wrapper);
   };
 
@@ -428,6 +458,7 @@ function init($) {
         incr(css, pos, margin);
       }
     }
+
     gap = Math.max(
       0,
       this.options.gap - (this.options.arrowShow ? arrowSize : 0)
@@ -449,14 +480,17 @@ function init($) {
         if (pos === opp) {
           continue;
         }
+
         color = posFull === mainFull ? arrowColor : "transparent";
         arrowCss["border-" + posFull] = arrowSize + "px solid " + color;
       }
+
       incr(css, positions[opp], arrowSize);
       if (indexOf.call(mainPositions, pAlign) >= 0) {
         incr(arrowCss, positions[pAlign], arrowSize * 2);
       }
     }
+
     if (indexOf.call(vAligns, pMain) >= 0) {
       incr(css, "left", realign(pAlign, contW, elemW));
       if (arrowCss) {
@@ -468,9 +502,11 @@ function init($) {
         incr(arrowCss, "top", realign(pAlign, arrowSize, elemIH));
       }
     }
+
     if (this.container.is(":visible")) {
       css.display = "block";
     }
+
     this.container.removeAttr("style").css(css);
     if (arrowCss) {
       return this.arrow.removeAttr("style").css(arrowCss);
@@ -486,9 +522,11 @@ function init($) {
     if (pos.length === 0) {
       pos[0] = "b";
     }
+
     if (((ref = pos[0]), indexOf.call(mainPositions, ref) < 0)) {
       throw "Must be one of [" + mainPositions + "]";
     }
+
     if (
       pos.length === 1 ||
       (((ref1 = pos[0]), indexOf.call(vAligns, ref1) >= 0) &&
@@ -498,9 +536,11 @@ function init($) {
     ) {
       pos[1] = ((ref5 = pos[0]), indexOf.call(hAligns, ref5) >= 0) ? "m" : "l";
     }
+
     if (pos.length === 2) {
       pos[2] = pos[1];
     }
+
     return pos;
   };
 
@@ -509,13 +549,16 @@ function init($) {
     if (!name) {
       name = this.options.style;
     }
+
     if (!name) {
       name = "default";
     }
+
     style = styles[name];
     if (!style) {
       throw "Missing style: " + name;
     }
+
     return style;
   };
 
@@ -527,6 +570,7 @@ function init($) {
     } else if (this.options.className) {
       classes.push(this.options.className);
     }
+
     style = this.getStyle();
     classes = $.map(classes, function (n) {
       return pluginClassName + "-" + style.name + "-" + n;
@@ -541,40 +585,48 @@ function init($) {
     } else if ($.type(options) === "string") {
       this.options.className = options;
     }
+
     if (this.container && !data) {
       this.show(false);
       return;
     }
+
     if (!this.container && !data) {
       return;
     }
+
     datas = {};
     if ($.isPlainObject(data)) {
       datas = data;
     } else {
       datas[blankFieldName] = data;
     }
+
     for (name in datas) {
       d = datas[name];
       type = this.userFields[name];
       if (!type) {
         continue;
       }
+
       if (type === "text") {
         d = encode(d);
         if (this.options.breakNewLines) {
           d = d.replace(/\n/g, "<br/>");
         }
       }
+
       value = name === blankFieldName ? "" : "=" + name;
       find(this.userContainer, "[data-notify-" + type + value + "]").html(d);
     }
+
     this.updateClasses();
     if (this.elem) {
       this.setElementPosition();
     } else {
       this.setGlobalPosition();
     }
+
     this.show(true);
     if (this.options.autoHide) {
       clearTimeout(this.autohideTimer);
@@ -599,6 +651,7 @@ function init($) {
       const notification = new Notification(null, data, options);
       return notification.wrapper;
     }
+
     return elem;
   };
 
@@ -608,6 +661,7 @@ function init($) {
       if (prev) {
         prev.destroy();
       }
+
       var curr = new Notification($(this), data, options);
     });
     return this;

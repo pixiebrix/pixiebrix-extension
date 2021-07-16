@@ -93,6 +93,7 @@ function useEnsurePermissions(deployments: Deployment[]) {
       });
       return false;
     }
+
     return true;
   }, [permissions, setEnabled]);
 
@@ -173,6 +174,7 @@ function useDeployments() {
             deployment: deployment.id,
           });
         }
+
         void queueReactivate();
         addToast("Activated team bricks", {
           appearance: "success",

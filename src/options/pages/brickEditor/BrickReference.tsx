@@ -68,16 +68,19 @@ function makeArgumentYaml(schema: Schema): string {
             result += `# ${line} \n`;
           }
         }
+
         if (value.enum) {
           result += "# valid values:\n";
           for (const line of value.enum) {
             result += `# - ${line} \n`;
           }
         }
+
         result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
       }
     }
   }
+
   return result;
 }
 

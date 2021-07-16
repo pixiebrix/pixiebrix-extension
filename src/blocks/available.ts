@@ -68,10 +68,12 @@ export async function checkAvailable({
     // );
     return false;
   }
+
   if (selectors.length > 0 && !selectors.some(testSelector)) {
     // Console.debug("Page doesn't match any selectors", selectors);
     return false;
   }
+
   return true;
 }
 

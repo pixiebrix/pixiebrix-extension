@@ -75,15 +75,19 @@ export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
   if (block instanceof TriggerExtensionPoint) {
     return faBolt;
   }
+
   if (block instanceof MenuItemExtensionPoint) {
     return faMousePointer;
   }
+
   if (block instanceof ContextMenuExtensionPoint) {
     return faBars;
   }
+
   if (block instanceof PanelExtensionPoint) {
     return faWindowMaximize;
   }
+
   if (block instanceof ActionPanelExtensionPoint) {
     return faColumns;
   }
@@ -147,6 +151,7 @@ function searchBlocks(query: string, options: BlockOption[]): BlockOption[] {
         (x.block.description ?? "").toLowerCase().includes(normalizedQuery)
     );
   }
+
   return sortBy(filtered, (x) => x.label);
 }
 

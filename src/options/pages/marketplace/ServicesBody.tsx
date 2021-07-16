@@ -171,6 +171,7 @@ const ServiceDescriptor: React.FunctionComponent<{
       </div>
     );
   }
+
   return (
     <div>
       {config && <span>{config.metadata.name}</span>}

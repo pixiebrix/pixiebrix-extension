@@ -54,6 +54,7 @@ async function installScriptOnce(): Promise<void> {
       });
     });
   }
+
   return _scriptPromise;
 }
 
@@ -72,6 +73,7 @@ async function runExtensionPoint(
       );
       return;
     }
+
     throw error;
   }
 
@@ -81,6 +83,7 @@ async function runExtensionPoint(
     );
     return;
   }
+
   if (isCancelled()) {
     console.debug(
       `Skipping ${extensionPoint.id} because user navigated away from the page`
@@ -115,6 +118,7 @@ export function clearDynamic(uuid?: string): void {
       _installedExtensionPoints.splice(index, 1);
     }
   };
+
   if (uuid) {
     if (_dynamic.has(uuid)) {
       console.debug(`clearDynamic: ${uuid}`);
@@ -130,6 +134,7 @@ export function clearDynamic(uuid?: string): void {
       extensionPoint.uninstall({ global: true });
       markUninstalled(extensionPoint.id);
     }
+
     _dynamic.clear();
   }
 }
@@ -151,6 +156,7 @@ export async function runDynamic(
   if (_dynamic.has(uuid)) {
     _dynamic.get(uuid).uninstall();
   }
+
   _dynamic.set(uuid, extensionPoint);
   await runExtensionPoint(extensionPoint, makeCancelOnNavigate());
 }
@@ -208,6 +214,7 @@ async function loadExtensionsOnce(): Promise<IExtensionPoint[]> {
     _reloadOnNextNavigate = false;
     await loadExtensions();
   }
+
   return _extensionPoints;
 }
 
@@ -231,6 +238,7 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
       if (cancel()) {
         return;
       }
+
       console.debug(
         `Custom navigation rule detected that page is still loading: ${url}`
       );

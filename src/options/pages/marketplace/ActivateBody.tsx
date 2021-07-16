@@ -92,6 +92,7 @@ export function useEnsurePermissions(
       });
       return false;
     }
+
     return true;
   }, [permissions, addToast]);
 
@@ -105,6 +106,7 @@ export function useEnsurePermissions(
         });
         return submitForm();
       }
+
       reportEvent("MarketplaceRejectPermissions", {
         blueprintId: blueprint.metadata.id,
         extensions: extensions.map((x) => x.label),

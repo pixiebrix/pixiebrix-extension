@@ -208,6 +208,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         reportError(error, this.logger.context);
       }
     }
+
     this.cancelPending.clear();
   }
 
@@ -223,6 +224,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       if ($item.length === 0) {
         console.warn(`Item for ${extensionId} was not in the menu`);
       }
+
       $item.remove();
     }
   }
@@ -268,6 +270,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           console.error("Error cancelling dependency observer");
         }
       }
+
       this.cancelDependencyObservers.delete(extension.id);
     }
   }
@@ -304,6 +307,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       );
       return;
     }
+
     const alreadyRemoved = this.removed.has(uuid);
     this.removed.add(uuid);
     if (!alreadyRemoved) {
@@ -364,6 +368,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
               this.reacquire(menuUUID)
             );
           }
+
           existingCount++;
         })
         .get()
@@ -381,6 +386,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if (!isAvailable) {
       return false;
     }
+
     return this.installMenus();
   }
 
@@ -581,6 +587,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } catch (error: unknown) {
           console.error("Error cancelling mutation observer", error);
         }
+
         for (const cancel of cancellers) {
           try {
             cancel();
@@ -762,6 +769,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
           $menu[position]($menuItem);
           break;
         }
+
         default: {
           throw new Error(`Unexpected position ${position}`);
         }
@@ -775,6 +783,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
       if ($containerElement.length > 1) {
         console.warn("getReaderRoot called with multiple containerElements");
       }
+
       const $elt = $containerElement.parents(selector);
       if ($elt.length > 1) {
         throw new Error(
@@ -783,8 +792,10 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
       } else if ($elt.length === 0) {
         throw new Error(`Found no elements for  reader selector: ${selector}`);
       }
+
       return $elt.get(0);
     }
+
     return document;
   }
 
@@ -832,5 +843,6 @@ export function fromJS(
   if (type !== "menuItem") {
     throw new Error(`Expected type=menuItem, got ${type}`);
   }
+
   return new RemoteMenuItemExtensionPoint(config);
 }

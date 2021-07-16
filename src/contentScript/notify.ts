@@ -61,6 +61,7 @@ export function mergeConfig(
   if (custom == null) {
     return defaults;
   }
+
   return merge({}, defaults, custom);
 }
 

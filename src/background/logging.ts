@@ -152,6 +152,7 @@ export async function getLog(
       entries.push(cursor.value);
     }
   }
+
   return sortBy(reverse(entries), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
@@ -166,6 +167,7 @@ function buildContext(
     // Prefer the inner context
     return { ...context, ...innerContext, ...currentContext };
   }
+
   return context;
 }
 
@@ -297,6 +299,7 @@ export async function _getLoggingConfig(): Promise<LoggingConfig> {
   if (_config != null) {
     return _config;
   }
+
   const raw = await readStorage<string>(LOG_CONFIG_STORAGE_KEY);
   _config = raw ? JSON.parse(raw) : {};
   return _config;

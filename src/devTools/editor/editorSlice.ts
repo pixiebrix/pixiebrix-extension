@@ -130,6 +130,7 @@ export const editorSlice = createSlice({
       } else {
         state.elements.push(actions.payload);
       }
+
       state.error = null;
       state.beta = null;
       state.activeElement = actions.payload.uuid;
@@ -145,6 +146,7 @@ export const editorSlice = createSlice({
       } else {
         state.elements.push(actions.payload);
       }
+
       // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
       state.dirty[uuid] = false;
       state.error = null;
@@ -156,6 +158,7 @@ export const editorSlice = createSlice({
       if (!state.elements.some((x) => action.payload === x.uuid)) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
+
       state.error = null;
       state.beta = null;
       state.activeElement = action.payload;
@@ -166,6 +169,7 @@ export const editorSlice = createSlice({
       if (!element) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
+
       if (!element.installed) {
         state.knownEditable.push(
           element.extensionPoint.metadata.id,
@@ -193,6 +197,7 @@ export const editorSlice = createSlice({
       if (index < 0) {
         throw new Error(`Unknown dynamic element: ${uuid}`);
       }
+
       // Safe b/c generated from findIndex
       // eslint-disable-next-line security/detect-object-injection
       state.elements[index] = action.payload;
@@ -204,6 +209,7 @@ export const editorSlice = createSlice({
       if (state.activeElement === uuid) {
         state.activeElement = null;
       }
+
       state.elements.splice(
         state.elements.findIndex((x) => x.uuid === uuid),
         1

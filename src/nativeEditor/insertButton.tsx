@@ -69,6 +69,7 @@ function dragPromise(uuid: string): Promise<DragResult | null> {
       if (!resolved) {
         resolve(null);
       }
+
       drake.destroy();
     });
 

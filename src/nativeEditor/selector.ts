@@ -74,6 +74,7 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
                 "One or more selected elements are not contained with the root container"
               );
             }
+
             resolve(result);
           }
         } finally {
@@ -179,6 +180,7 @@ export const selectElement = liftContentScript(
         if (root) {
           throw new Error(`root selector not implemented for mode: ${mode}`);
         }
+
         const { selectors } = findContainer(elements);
 
         requireSingleElement(selectors[0]);
@@ -189,6 +191,7 @@ export const selectElement = liftContentScript(
           traverseUp,
         });
       }
+
       case "element": {
         const selector = safeCssSelector(elements[0], [], rootElement);
 
@@ -203,6 +206,7 @@ export const selectElement = liftContentScript(
           traverseUp,
         });
       }
+
       default: {
         throw new Error(`Unexpected mode: ${mode}`);
       }

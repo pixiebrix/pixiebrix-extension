@@ -89,6 +89,7 @@ const ArrayEntry: React.FunctionComponent<{
       </ListGroup.Item>
     );
   }
+
   return (
     <ListGroup.Item>
       <span>{prop}</span>
@@ -141,6 +142,7 @@ export const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
               />
             );
           }
+
           if (type === "array") {
             return (
               <ArrayEntry
@@ -150,6 +152,7 @@ export const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
               />
             );
           }
+
           return (
             <PrimitiveEntry
               prop={prop}
@@ -174,12 +177,15 @@ const DataSourceCard: React.FunctionComponent<{
     if (isPending) {
       return <GridLoader />;
     }
+
     if (error) {
       return <Card.Body>{error.toString()}</Card.Body>;
     }
+
     if (isEmpty(outputSchema)) {
       return <Card.Body>No schema available</Card.Body>;
     }
+
     return <SchemaTree schema={outputSchema} />;
   }, [error, outputSchema, isPending]);
 

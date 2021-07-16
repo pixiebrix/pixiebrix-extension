@@ -80,8 +80,10 @@ function guessSelectedElement(): HTMLElement | null {
     if (node instanceof HTMLElement) {
       return node;
     }
+
     return null;
   }
+
   return null;
 }
 
@@ -165,6 +167,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   ) {
     super(id, name, description, icon);
   }
+
   public readonly syncInstall: boolean = true;
   abstract getBaseReader(): Promise<IReader>;
   abstract readonly documentUrlPatterns: Manifest.MatchPattern[];
@@ -304,6 +307,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
       );
       return;
     }
+
     await this.registerExtensions();
   }
 }
@@ -373,5 +377,6 @@ export function fromJS(
   if (type !== "contextMenu") {
     throw new Error(`Expected type=contextMenu, got ${type}`);
   }
+
   return new RemoteContextMenuExtensionPoint(config);
 }

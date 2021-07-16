@@ -68,6 +68,7 @@ class ArrayCompositeReader extends Reader {
       console.debug(`ArrayCompositeReader:${reader.name}`, readerResult);
       result = { ...result, ...readerResult };
     }
+
     return result;
   }
 }

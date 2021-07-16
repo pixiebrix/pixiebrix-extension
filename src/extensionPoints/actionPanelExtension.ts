@@ -228,6 +228,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     } else {
       removeExtensionPoint(this.id);
     }
+
     return available;
   }
 }
@@ -261,5 +262,6 @@ export function fromJS(
   if (type !== "actionPanel") {
     throw new Error(`Expected type=actionPanel, got ${type}`);
   }
+
   return new RemotePanelExtensionPoint(config);
 }

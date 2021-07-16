@@ -126,11 +126,13 @@ function extractServiceIds(schema: Schema): string[] {
   if ("$ref" in schema) {
     return [schema.$ref.slice(SERVICE_BASE_SCHEMA.length)];
   }
+
   if ("anyOf" in schema) {
     return schema.anyOf
       .filter((x) => x != false)
       .flatMap((x) => extractServiceIds(x as Schema));
   }
+
   throw new Error("Expected $ref or anyOf in schema for service");
 }
 
@@ -239,6 +241,7 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
   } else if (typeof schema.items === "boolean") {
     throw new TypeError("Schema required for items");
   }
+
   const schemaItems = schema.items as Schema;
 
   return (
@@ -308,18 +311,23 @@ function getDefaultArrayItem(schema: Schema): unknown {
   if (schema.default) {
     return schema.default;
   }
+
   if (textPredicate(schema)) {
     return "";
   }
+
   if (schema.type === "object") {
     return {};
   }
+
   if (findOneOf(schema, booleanPredicate)) {
     return false;
   }
+
   if (findOneOf(schema, textPredicate)) {
     return "";
   }
+
   return null;
 }
 
@@ -327,32 +335,40 @@ export function getDefaultField(fieldSchema: Schema): FieldComponent {
   if (fieldSchema.$ref?.startsWith(SERVICE_BASE_SCHEMA)) {
     return ServiceField;
   }
+
   if (fieldSchema.type === "array") {
     return ArrayField;
   }
+
   if (fieldSchema.type === "object") {
     return ObjectField;
   }
+
   if (booleanPredicate(fieldSchema)) {
     // Should this be a TextField so it can be dynamically determined?
     // see https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return BooleanField;
   }
+
   if (textPredicate(fieldSchema)) {
     return TextField;
   }
+
   if (findOneOf(fieldSchema, booleanPredicate)) {
     return makeOneOfField(findOneOf(fieldSchema, booleanPredicate));
   }
+
   if (findOneOf(fieldSchema, textPredicate)) {
     return makeOneOfField(findOneOf(fieldSchema, textPredicate));
   }
+
   if (isEmpty(fieldSchema)) {
     // An empty field schema supports any value. For now, provide an object field since this just shows up
     // in the @pixiebrix/http brick.
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return ObjectField;
   }
+
   // Number, string, other primitives, etc.
   return TextField;
 }
@@ -417,6 +433,7 @@ function genericOptionsFactory(
         if (typeof fieldSchema === "boolean") {
           throw new TypeError("Expected schema for input property type");
         }
+
         // Fine because coming from Object.entries for the schema
         // eslint-disable-next-line security/detect-object-injection
         const propUiSchema = uiSchema?.[prop];

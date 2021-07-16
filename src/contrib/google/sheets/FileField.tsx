@@ -58,6 +58,7 @@ const FileField: React.FunctionComponent<
         // Already up to date
         return;
       }
+
       try {
         if (!isNullOrBlank(field.value) && doc?.id !== spreadsheetId) {
           setSheetError(null);
@@ -122,6 +123,7 @@ const FileField: React.FunctionComponent<
             if (doc.mimeType !== "application/vnd.google-apps.spreadsheet") {
               throw new Error(`${doc.name} is not a spreadsheet`);
             }
+
             helpers.setValue(data.docs[0].id);
             onSelect(doc);
           }

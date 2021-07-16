@@ -32,6 +32,7 @@ const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
       if (!isMounted()) {
         return;
       }
+
       setSvg($icon);
     },
     [icon, library, setSvg]

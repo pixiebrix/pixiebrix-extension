@@ -59,12 +59,15 @@ function getHTMLElement(): JQuery<HTMLElement> {
   if (document.documentElement) {
     return $(document.documentElement);
   }
+
   if (document.querySelector("html")) {
     return $(document.querySelector("html"));
   }
+
   if ($("html").length > -1) {
     return $("html");
   }
+
   throw new Error("HTML node not found");
 }
 
@@ -138,6 +141,7 @@ export function toggleActionPanel(): string | null {
     hideActionPanel();
     return null;
   }
+
   return showActionPanel();
 }
 
@@ -182,6 +186,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
         });
       }
     }
+
     renderPanels();
   }
 }
@@ -205,6 +210,7 @@ export function upsertPanel(
   } else {
     panels.push({ extensionId, extensionPointId, heading, payload });
   }
+
   renderPanels();
 }
 

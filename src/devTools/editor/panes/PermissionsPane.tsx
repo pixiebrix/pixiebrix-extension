@@ -43,6 +43,7 @@ const PermissionsPane: React.FunctionComponent = () => {
       const tabId = browser.devtools.inspectedWindow.tabId;
       await openPopupPrompt(tabId, page.toString());
     }
+
     await sleep(500);
     await connect();
   }, [connect, port]);

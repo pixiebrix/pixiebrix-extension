@@ -51,9 +51,11 @@ const SharingIcon: React.FunctionComponent<{
   if (isPublic) {
     return <FontAwesomeIcon icon={faGlobe} />;
   }
+
   if (organizations) {
     return <FontAwesomeIcon icon={faBuilding} />;
   }
+
   return <FontAwesomeIcon icon={faEyeSlash} />;
 };
 

@@ -33,6 +33,7 @@ export class SimpleEvent<TValue> implements TabEvent<TValue> {
     if (!this.listeners.has(tabId)) {
       this.listeners.set(tabId, []);
     }
+
     this.listeners.get(tabId).push(handler);
   }
 

@@ -51,6 +51,7 @@ export const getTabInfo = liftBackground(
         `getTabInfo called targeting non top-level frame: ${target.frameId}`
       );
     }
+
     const state = await getTargetState({
       ...target,
       frameId: TOP_LEVEL_FRAME,
@@ -117,6 +118,7 @@ export const selectElement = liftBackground(
     if (isEmpty(element)) {
       throw new Error("selectElement returned an empty element");
     }
+
     return element;
   }
 );

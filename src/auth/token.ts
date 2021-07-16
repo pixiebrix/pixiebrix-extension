@@ -65,6 +65,7 @@ export async function getExtensionAuth(): Promise<UserData> {
     const { user, email, hostname } = JSON.parse(valueJSON as string);
     return { user, email, hostname };
   }
+
   return {};
 }
 
@@ -86,6 +87,7 @@ export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
     } catch {
       // Pass
     }
+
     console.debug(`Setting extension auth for ${auth.email}`, auth);
     await updateRollbarAuth({
       userId: auth.user,
@@ -95,5 +97,6 @@ export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
     await setStorage(STORAGE_EXTENSION_KEY, JSON.stringify(auth));
     return !equal(auth, previous);
   }
+
   return false;
 }

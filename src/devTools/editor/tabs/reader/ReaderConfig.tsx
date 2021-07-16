@@ -131,6 +131,7 @@ export function searchData(query: string, data: unknown): unknown {
   if (data == null) {
     return null;
   }
+
   if (typeof data === "object") {
     const values = mapValues(data, (value, key) =>
       normalize(key).includes(query) ? value : searchData(query, value)
@@ -144,9 +145,11 @@ export function searchData(query: string, data: unknown): unknown {
       return keyMatch || valueMatch;
     });
   }
+
   if (Array.isArray(data)) {
     return compact(data.map(partial(searchData, query)));
   }
+
   return normalize(data).includes(normalized) ? data : undefined;
 }
 
@@ -287,6 +290,7 @@ const ReaderConfig: React.FunctionComponent<{
         });
         return;
       }
+
       const option = readerOptions.find((x) => x.value === type);
       let output;
       let schema;
@@ -325,6 +329,7 @@ const ReaderConfig: React.FunctionComponent<{
     if (debouncedQuery === "" || output == null) {
       return output;
     }
+
     return searchData(debouncedQuery, output);
   }, [debouncedQuery, output]);
 

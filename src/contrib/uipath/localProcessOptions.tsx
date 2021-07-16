@@ -107,6 +107,7 @@ function useReleaseSchema(releaseKey: string) {
         return releaseSchema(release);
       }
     }
+
     return null;
   }, [releaseKey, releases]);
 
@@ -142,6 +143,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       );
       return;
     }
+
     try {
       const { available, consentCode } = await initUiPathRobot(port);
       setConsentCode(consentCode);
@@ -157,6 +159,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     if (robotAvailable) {
       return getUiPathProcesses(port);
     }
+
     return [];
   }, [robotAvailable]);
 
@@ -173,6 +176,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       </div>
     );
   }
+
   if (!robotAvailable) {
     return (
       <div>

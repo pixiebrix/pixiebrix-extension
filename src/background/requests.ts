@@ -66,6 +66,7 @@ function proxyResponseToAxiosResponse(data: ProxyResponseData) {
       statusText: data.reason ?? data.message,
     } as AxiosResponse;
   }
+
   return {
     data: data.json,
     status: data.status_code,
@@ -143,14 +144,17 @@ async function authenticate(
       { ...request, url: absoluteURL }
     );
   }
+
   if (service.isOAuth2) {
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
     if (isEmpty(data)) {
       data = await launchOAuth2Flow(service, localConfig);
     }
+
     return service.authenticateRequest(localConfig.config, request, data);
   }
+
   if (service.isToken) {
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
@@ -160,11 +164,14 @@ async function authenticate(
       );
       data = await getToken(service, localConfig);
     }
+
     if (isEmpty(data)) {
       throw new Error("No auth data found for token authentication");
     }
+
     return service.authenticateRequest(localConfig.config, request, data);
   }
+
   const localConfig = await locator.getLocalConfig(config.id);
   return service.authenticateRequest(localConfig.config, request);
 }
@@ -223,6 +230,7 @@ const _proxyService = liftBackground(
       // Service uses the PixieBrix remote proxy to perform authentication. Proxy the request.
       return proxyRequest(serviceConfig, requestConfig);
     }
+
     try {
       return await backgroundRequest(
         await authenticate(serviceConfig, requestConfig)
@@ -239,6 +247,7 @@ const _proxyService = liftBackground(
           );
         }
       }
+
       console.debug(
         "Error occurred when making a request from the background page",
         { error }

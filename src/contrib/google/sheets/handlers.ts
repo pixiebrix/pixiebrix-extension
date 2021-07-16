@@ -134,6 +134,7 @@ function columnToLetter(column: number): string {
     letter = String.fromCharCode(temp + 65) + letter;
     column = (column - temp - 1) / 26;
   }
+
   return letter;
 }
 
@@ -162,12 +163,14 @@ export async function getSheetProperties(
             )
           );
         }
+
         resolve(r.result);
       })
     );
     if (!spreadsheet) {
       throw new Error("Unknown error fetching spreadsheet");
     }
+
     return spreadsheet.properties;
   } catch (error: unknown) {
     throw await handleRejection(token, error);
@@ -197,12 +200,14 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
             )
           );
         }
+
         resolve(r.result);
       })
     );
     if (!spreadsheet) {
       throw new Error("Unknown error fetching spreadsheet");
     }
+
     return spreadsheet.sheets.map((x) => x.properties.title);
   } catch (error: unknown) {
     throw await handleRejection(token, error);

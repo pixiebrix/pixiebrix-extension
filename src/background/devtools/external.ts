@@ -73,6 +73,7 @@ function devtoolsMessageListener(response: BackgroundResponse) {
     if (isErrorResponse(payload)) {
       reject(deserializeError(payload.$$error));
     }
+
     return resolve(payload);
   }
 }

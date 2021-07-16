@@ -25,17 +25,22 @@ export async function getType(
   if ("inferType" in block) {
     return await (block as any).inferType();
   }
+
   if ("read" in block) {
     return "reader";
   }
+
   if ("effect" in block) {
     return "effect";
   }
+
   if ("transform" in block) {
     return "transform";
   }
+
   if ("render" in block) {
     return "renderer";
   }
+
   return null;
 }

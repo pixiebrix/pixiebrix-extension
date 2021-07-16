@@ -133,6 +133,7 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
     console.debug(`connectToFrame: no access to ${url}`);
     throw new PermissionsError(`No access to URL: ${url}`);
   }
+
   console.debug(`connectToFrame: ensuring contentScript for ${url}`);
   await pTimeout(ensureScript(port), 4000, "contentScript not ready in 4s");
 
@@ -166,6 +167,7 @@ export function useDevConnection(): Context {
     if (!port) {
       throw new Error("background port not initialized");
     }
+
     const uuid = uuidv4();
     const common = { frameId: 0, navSequence: uuid };
     try {
@@ -197,6 +199,7 @@ export function useDevConnection(): Context {
         });
       }
     }
+
     setConnecting(false);
   }, [port, setCurrent]);
 

@@ -99,6 +99,7 @@ export function useBlockOptions(
         registered ?? genericOptionsFactory(inputProperties(block.inputSchema))
       );
     }
+
     return null;
   }, [block?.id, block?.inputSchema]);
 
