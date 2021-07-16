@@ -22,8 +22,8 @@ import AsyncButton from "@/components/AsyncButton";
 import { Button } from "react-bootstrap";
 import Centered from "@/devTools/editor/components/Centered";
 import { reportError } from "@/telemetry/logging";
-import { getErrorMessage } from "@/extensionPoints/helpers";
 import { browser } from "webextension-polyfill-ts";
+import { getErrorMessage } from "@/errors";
 
 const PermissionsPopup: React.FC = () => {
   const [rejected, setRejected] = useState(false);
@@ -48,8 +48,7 @@ const PermissionsPopup: React.FC = () => {
       }
 
       setRejected(true);
-    } catch (error) {
-      // FIXME: this needs to be rebased against main to get the error updates
+    } catch (error: unknown) {
       reportError(error);
       setError(getErrorMessage(error));
     }
