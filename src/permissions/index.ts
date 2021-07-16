@@ -28,7 +28,6 @@ import { Permissions, browser, Manifest } from "webextension-polyfill-ts";
 import { sortBy, castArray, groupBy, uniq, every, compact } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";
-import { liftBackground } from "@/background/protocol";
 
 const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
 
@@ -239,12 +238,6 @@ export function useExtensionPermissions(
 
   return [enabled, request];
 }
-
-export const containsPermissions = liftBackground(
-  "CONTAINS_PERMISSIONS",
-  async (permissions: Permissions.Permissions) =>
-    browser.permissions.contains(permissions)
-);
 
 export function selectOptionalPermissions(
   permissions: string[]

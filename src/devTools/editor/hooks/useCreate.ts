@@ -35,11 +35,8 @@ import { reactivate } from "@/background/navigation";
 import { reportEvent } from "@/telemetry/events";
 import { removeUndefined } from "@/utils";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import {
-  containsPermissions,
-  ensureAllPermissions,
-  extensionPermissions,
-} from "@/permissions";
+import { ensureAllPermissions, extensionPermissions } from "@/permissions";
+import { containsPermissions } from "@/background/permissions";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Permissions } from "webextension-polyfill-ts";
 import { openPopupPrompt } from "@/background/devtools";
