@@ -171,7 +171,6 @@ function findTipPos(dims: any, bounds: any, tipSize: any) {
   if (dims.left < bounds.left) {
     left = bounds.left + margin;
   }
-
   if (dims.left + tipWidth > bounds.left + bounds.width) {
     left = bounds.left + bounds.width - tipWidth - margin;
   }
@@ -241,11 +240,11 @@ export default class Overlay {
 
   constructor() {
     // Find the root window, because overlays are positioned relative to it.
-    const currentWindow = window; // Window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
+    const currentWindow = window; // window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
     this.window = window;
 
     // When opened in shells/dev, the tooltip should be bound by the app iframe, not by the topmost window.
-    const tipBoundsWindow = window; // Window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
+    const tipBoundsWindow = window; // window.__REACT_DEVTOOLS_TARGET_WINDOW__ || window;
     this.tipBoundsWindow = tipBoundsWindow;
 
     const doc = currentWindow.document;
@@ -263,7 +262,6 @@ export default class Overlay {
     for (const rect of this.rects) {
       rect.remove();
     }
-
     this.rects.length = 0;
     if (this.container.parentNode) {
       this.container.remove();
@@ -281,7 +279,6 @@ export default class Overlay {
       const rect = this.rects.pop();
       rect.remove();
     }
-
     if (elements.length === 0) {
       return;
     }
@@ -318,7 +315,7 @@ export default class Overlay {
 
     if (!name) {
       name = elements[0].nodeName.toLowerCase();
-      // Const ownerName = getOwnerDisplayName(elements[0]);
+      // const ownerName = getOwnerDisplayName(elements[0]);
       // if (ownerName) {
       //     name += ' (in ' + ownerName + ')';
       // }
@@ -411,7 +408,6 @@ function getNestedBoundingClientRect(
       if (onlyOneMore) {
         break;
       }
-
       // We don't want to calculate iframe offsets upwards beyond
       // the iframe containing the boundaryWindow, but we
       // need to calculate the offset relative to the boundaryWindow.
@@ -421,9 +417,9 @@ function getNestedBoundingClientRect(
     }
 
     return mergeRectOffsets(rects);
+  } else {
+    return node.getBoundingClientRect();
   }
-
-  return node.getBoundingClientRect();
 }
 
 // Get the window object for the document that a node belongs to,
@@ -433,7 +429,6 @@ function getOwnerWindow(node: HTMLElement): typeof window | null {
   if (!node.ownerDocument) {
     return null;
   }
-
   return node.ownerDocument.defaultView;
 }
 
@@ -444,6 +439,5 @@ function getOwnerIframe(node: HTMLElement): HTMLElement | null {
   if (nodeWindow) {
     return nodeWindow.frameElement as HTMLElement;
   }
-
   return null;
 }
