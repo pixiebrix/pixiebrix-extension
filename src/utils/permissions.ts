@@ -44,7 +44,7 @@ export function mergePermissions(
 
 /**
  * @deprecated The logic of grouping permissions by origin doesn't actually make sense
- * as we don't have any way to enforce this.
+ * as we don't currently have any way to enforce permissions on a per-origin basis.
  * https://github.com/pixiebrix/pixiebrix-extension/pull/828#discussion_r671703130
  */
 export function distinctPermissions(
