@@ -302,10 +302,10 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
               activeKey={stepKey}
               onSelect={(step: string) => setStep(step)}
             >
-              {blueprintSteps.map((x, i) => (
-                <Nav.Item key={x.key} className="flex-grow-1">
-                  <Nav.Link eventKey={x.key}>
-                    {i + 1}. {x.label}
+              {blueprintSteps.map((step, index) => (
+                <Nav.Item key={step.key} className="flex-grow-1">
+                  <Nav.Link eventKey={step.key}>
+                    {index + 1}. {step.label}
                   </Nav.Link>
                 </Nav.Item>
               ))}

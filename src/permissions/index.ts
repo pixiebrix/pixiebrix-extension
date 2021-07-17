@@ -26,7 +26,7 @@ import {
 import { Permissions } from "webextension-polyfill-ts";
 import { castArray, compact, groupBy, sortBy, uniq } from "lodash";
 import { locator } from "@/background/locator";
-import registry from "@/services/registry";
+import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import {
   containsPermissions,
   distinctPermissions,
@@ -89,7 +89,6 @@ export async function collectPermissions(
   const permissions = await Promise.all(
     extensionPoints.map(
       async ({ id, permissions = {} }: ExtensionPointDefinition) => {
-        // Console.debug(`Extra permissions for ${id}`, permissions);
         const extensionPoint = await extensionRegistry.lookup(id);
         return mergePermissions(
           [extensionPoint.permissions, permissions].map((x) => normalize(x))
@@ -107,6 +106,11 @@ export async function collectPermissions(
 export async function serviceOriginPermissions(
   dependency: ServiceAuthPair
 ): Promise<Permissions.Permissions> {
+  if (dependency.id === PIXIEBRIX_SERVICE_ID) {
+    // Already included in the required permissions for the extension
+    return { origins: [] };
+  }
+
   const localConfig = await locator.locate(dependency.id, dependency.config);
 
   if (localConfig.proxy) {
@@ -116,8 +120,8 @@ export async function serviceOriginPermissions(
   }
 
   const service = await registry.lookup(dependency.id);
-  const matchPatterns = service.getOrigins(localConfig.config);
-  return { origins: matchPatterns };
+  const origins = service.getOrigins(localConfig.config);
+  return { origins };
 }
 
 /**

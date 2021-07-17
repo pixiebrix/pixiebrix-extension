@@ -18,7 +18,7 @@
 import { ExtensionOptions, loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
 import { browser, Permissions } from "webextension-polyfill-ts";
-import { partition, fromPairs, uniqBy } from "lodash";
+import { fromPairs, partition, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
@@ -99,10 +99,10 @@ function installDeployment(
     actions.installRecipe({
       recipe: deployment.package.config,
       extensionPoints: deployment.package.config.extensionPoints,
+      deployment,
       services: fromPairs(
         deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
       ),
-      deployment,
     })
   );
 
@@ -112,6 +112,21 @@ function installDeployment(
   });
 
   return returnState;
+}
+
+function makeDeploymentTimestampLookup(extensions: ExtensionOptions[]) {
+  const timestamps = new Map<string, Date>();
+
+  for (const extension of extensions) {
+    if (extension._deployment?.id) {
+      timestamps.set(
+        extension._deployment?.id,
+        new Date(extension._deployment?.timestamp)
+      );
+    }
+  }
+
+  return timestamps;
 }
 
 async function updateDeployments() {
@@ -126,92 +141,95 @@ async function updateDeployments() {
     extensionPointConfigs
   ).flatMap(([, xs]) => Object.values(xs));
 
-  if (extensions.some((x) => x._deployment?.id)) {
-    const timestamps = new Map<string, Date>();
-
-    for (const extension of extensions) {
-      if (extension._deployment?.id) {
-        timestamps.set(
-          extension._deployment?.id,
-          new Date(extension._deployment?.timestamp)
-        );
-      }
-    }
-
-    const { data: deployments } = await axios.post<Deployment[]>(
-      `${await getBaseURL()}/api/deployments/`,
-      {
-        uid: await getUID(),
-        version: await getExtensionVersion(),
-        active: activeDeployments(extensions),
-      },
-      {
-        headers: { Authorization: `Token ${token}` },
-      }
-    );
-
-    const updatedDeployments = deployments.filter(
-      (x: Deployment) =>
-        !timestamps.has(x.id) || new Date(x.updated_at) > timestamps.get(x.id)
-    );
-
-    if (updatedDeployments.length > 0) {
-      try {
-        // Get the current brick definitions, which will have the current permissions
-        await refreshRegistries();
-      } catch (error: unknown) {
-        reportError(error);
-        await browser.runtime.openOptionsPage();
-      }
-
-      const deploymentRequirements = await Promise.all(
-        updatedDeployments.map(async (deployment) => ({
-          deployment,
-          hasPermissions: await checkPermissions(
-            await deploymentPermissions(deployment)
-          ),
-        }))
-      );
-
-      const [automatic, manual] = partition(
-        deploymentRequirements,
-        (x) => x.hasPermissions
-      );
-
-      let automaticError = false;
-
-      if (automatic.length > 0) {
-        console.debug(
-          `Applying automatic updates for ${automatic.length} deployment(s)`
-        );
-
-        try {
-          let currentOptions = await loadOptions();
-          for (const { deployment } of automatic) {
-            // Clear existing installs of the blueprint
-            currentOptions = installDeployment(currentOptions, deployment);
-          }
-
-          await saveOptions(currentOptions);
-          void queueReactivate();
-          console.info(
-            `Applied automatic updates for ${automatic.length} deployment(s)`
-          );
-        } catch (error: unknown) {
-          console.warn(error);
-          reportError(error);
-          automaticError = true;
-        }
-      }
-
-      if (manual.length > 0 || automaticError) {
-        await browser.runtime.openOptionsPage();
-      }
-    } else {
-      console.debug("No deployment updates found");
-    }
-  } else {
+  if (!extensions.some((x) => x._deployment?.id)) {
     console.debug("No deployments installed");
+    return;
+  }
+
+  const { data: deployments } = await axios.post<Deployment[]>(
+    `${await getBaseURL()}/api/deployments/`,
+    {
+      uid: await getUID(),
+      version: await getExtensionVersion(),
+      active: activeDeployments(extensions),
+    },
+    {
+      headers: { Authorization: `Token ${token}` },
+    }
+  );
+
+  const timestamps = makeDeploymentTimestampLookup(extensions);
+
+  const updatedDeployments = deployments.filter(
+    (x: Deployment) =>
+      !timestamps.has(x.id) || new Date(x.updated_at) > timestamps.get(x.id)
+  );
+
+  if (updatedDeployments.length === 0) {
+    console.debug("No deployment updates found");
+    return;
+  }
+
+  // Fetch the current brick definitions, which will have the current permissions
+  try {
+    await refreshRegistries();
+  } catch (error: unknown) {
+    reportError(error);
+    await browser.runtime.openOptionsPage();
+    // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user the to
+    // manually install the deployments via the banner
+    return;
+  }
+
+  const deploymentRequirements = await Promise.all(
+    updatedDeployments.map(async (deployment) => ({
+      deployment,
+      hasPermissions: await checkPermissions(
+        await deploymentPermissions(deployment)
+      ),
+    }))
+  );
+
+  const [automatic, manual] = partition(
+    deploymentRequirements,
+    (x) => x.hasPermissions
+  );
+
+  let automaticError: unknown;
+
+  if (automatic.length > 0) {
+    console.debug(
+      `Applying automatic updates for ${automatic.length} deployment(s)`
+    );
+
+    try {
+      let currentOptions = await loadOptions();
+      for (const { deployment } of automatic) {
+        // Clear existing installs of the blueprint
+        currentOptions = installDeployment(currentOptions, deployment);
+      }
+
+      await saveOptions(currentOptions);
+      void queueReactivate();
+      console.info(
+        `Applied automatic updates for ${automatic.length} deployment(s)`
+      );
+    } catch (error: unknown) {
+      reportError(error);
+      automaticError = error;
+    }
+  }
+
+  // We only want to call openOptionsPage a single time
+  if (manual.length > 0 || automaticError != null) {
+    console.debug(
+      "Opening options page for user to manually activate updated deployment(s)",
+      {
+        manual,
+        automaticError,
+      }
+    );
+    await browser.runtime.openOptionsPage();
   }
 }
 
