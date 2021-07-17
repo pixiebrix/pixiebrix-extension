@@ -44,9 +44,9 @@ const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
 export async function ensureAllPermissions(
   permissionsList: Permissions.Permissions[]
 ): Promise<boolean> {
-  // TODO: use mergePermission as soon as possible, don't expect every permission
-  // function to accept an array. Then ensureAllPermissions can just be replaced
-  // with requestPermissions
+  // TODO: Instead of passing around `Array<Permission>`, merge them into a regular `Permission`
+  // as early in the code as possible (e.g. in the hook that generates the array).
+  // This way we don't need to call `mergePermissions` or loop the array every time.
   return requestPermissions(mergePermissions(permissionsList));
 }
 

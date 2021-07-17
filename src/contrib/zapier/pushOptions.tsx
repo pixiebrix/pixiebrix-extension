@@ -25,7 +25,7 @@ import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
-import { Button, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
@@ -36,6 +36,7 @@ import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
 import { ObjectField } from "@/components/fields/FieldTable";
 import { checkPermissions } from "@/permissions";
 import { requestPermissions } from "@/utils/permissions";
+import AsyncButton from "@/components/AsyncButton";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -111,10 +112,9 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const { hooks, error } = useHooks();
 
-  const requestPermissionsCallback = useCallback(() => {
-    requestPermissions(ZAPIER_PERMISSIONS).then((result) => {
-      setGrantedPermissions(result);
-    });
+  const onRequestPermissions = useCallback(async () => {
+    const result = await requestPermissions(ZAPIER_PERMISSIONS);
+    setGrantedPermissions(result);
   }, [setGrantedPermissions]);
 
   const hook = useMemo(() => {
@@ -128,7 +128,9 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
           You must grant permissions for you browser to send information to
           Zapier.
         </p>
-        <Button onClick={requestPermissionsCallback}>Grant Permissions</Button>
+        <AsyncButton onClick={onRequestPermissions}>
+          Grant Permissions
+        </AsyncButton>
       </div>
     );
   }

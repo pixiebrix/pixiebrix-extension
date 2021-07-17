@@ -42,6 +42,11 @@ export function mergePermissions(
   };
 }
 
+/**
+ * @deprecated The logic of grouping permissions by origin doesn't actually make sense
+ * as we don't have any way to enforce this.
+ * https://github.com/pixiebrix/pixiebrix-extension/pull/828#discussion_r671703130
+ */
 export function distinctPermissions(
   permissions: Permissions.Permissions[]
 ): Permissions.Permissions[] {
@@ -70,7 +75,7 @@ export async function containsPermissions(
 }
 
 // TODO: Make it work in content scripts as well, or any context that doesn't have the API
-/** A permissions.request() alternative API that works in Firefox’ Dev Tools */
+/** An alternative API to permissions.request() that works in Firefox’ Dev Tools */
 export async function requestPermissions(
   permissions: Permissions.Permissions
 ): Promise<boolean> {
@@ -90,6 +95,8 @@ export async function requestPermissions(
     page.searchParams.append("permission", origin);
   }
 
+  // TODO: This only works in the Dev Tools; We should query the current or front-most window
+  // when this is missing in order to make it work in other contexts as well
   const tabId = browser.devtools.inspectedWindow.tabId;
   await openPopupPrompt(tabId, page.toString());
   return containsPermissions(permissions);

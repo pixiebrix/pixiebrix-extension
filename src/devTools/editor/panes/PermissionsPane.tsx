@@ -20,15 +20,15 @@ import { DevToolsContext } from "@/devTools/context";
 import { getTabInfo } from "@/background/devtools";
 import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
-import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { requestPermissions } from "@/utils/permissions";
+import AsyncButton from "@/components/AsyncButton";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { port, connect } = useContext(DevToolsContext);
 
-  const requestPermissionsHandler = useCallback(async () => {
+  const onRequestPermission = useCallback(async () => {
     const { url } = await getTabInfo(port);
     await requestPermissions({ origins: [url] });
     await sleep(500);
@@ -41,9 +41,9 @@ const PermissionsPane: React.FunctionComponent = () => {
         PixieBrix does not have access to the page
       </div>
       <p>
-        <Button onClick={requestPermissionsHandler}>
+        <AsyncButton onClick={onRequestPermission}>
           <FontAwesomeIcon icon={faShieldAlt} /> Grant Permanent Access
-        </Button>
+        </AsyncButton>
       </p>
       <p className="text-info">
         <FontAwesomeIcon icon={faInfoCircle} /> You can revoke PixieBrix&apos;s
