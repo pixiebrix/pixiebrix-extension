@@ -31,7 +31,7 @@ const iframe = document.createElement("iframe");
 iframe.src = url.toString();
 document.body.append(iframe);
 
-// import {REQUEST_FRAME_DATA} from "@/messaging/constants";
+// Import {REQUEST_FRAME_DATA} from "@/messaging/constants";
 // import {sendMessage} from "@/chrome";
 //
 // const id = new URLSearchParams(window.location.search).get('id');

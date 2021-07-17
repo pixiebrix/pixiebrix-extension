@@ -66,6 +66,7 @@ function proxyResponseToAxiosResponse(data: ProxyResponseData) {
       statusText: data.reason ?? data.message,
     } as AxiosResponse;
   }
+
   return {
     data: data.json,
     status: data.status_code,
@@ -142,14 +143,19 @@ async function authenticate(
       ({ apiKey } as unknown) as ServiceConfig,
       { ...request, url: absoluteURL }
     );
-  } else if (service.isOAuth2) {
+  }
+
+  if (service.isOAuth2) {
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
     if (isEmpty(data)) {
       data = await launchOAuth2Flow(service, localConfig);
     }
+
     return service.authenticateRequest(localConfig.config, request, data);
-  } else if (service.isToken) {
+  }
+
+  if (service.isToken) {
     const localConfig = await locator.getLocalConfig(config.id);
     let data = await getCachedAuthData(config.id);
     if (isEmpty(data)) {
@@ -158,11 +164,14 @@ async function authenticate(
       );
       data = await getToken(service, localConfig);
     }
+
     if (isEmpty(data)) {
       throw new Error("No auth data found for token authentication");
     }
+
     return service.authenticateRequest(localConfig.config, request, data);
   }
+
   const localConfig = await locator.getLocalConfig(config.id);
   return service.authenticateRequest(localConfig.config, request);
 }
@@ -221,6 +230,7 @@ const _proxyService = liftBackground(
       // Service uses the PixieBrix remote proxy to perform authentication. Proxy the request.
       return proxyRequest(serviceConfig, requestConfig);
     }
+
     try {
       return await backgroundRequest(
         await authenticate(serviceConfig, requestConfig)
@@ -228,7 +238,7 @@ const _proxyService = liftBackground(
       // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
       if (UNAUTHORIZED_STATUS_CODES.includes(error.response?.status)) {
-        // try again - have the user login again, or automatically try to get a new token
+        // Try again - have the user login again, or automatically try to get a new token
         const service = await serviceRegistry.lookup(serviceConfig.serviceId);
         if (service.isOAuth2 || service.isToken) {
           await deleteCachedAuthData(serviceConfig.id);
@@ -237,11 +247,12 @@ const _proxyService = liftBackground(
           );
         }
       }
+
       console.debug(
         "Error occurred when making a request from the background page",
         { error }
       );
-      // caught outside to add additional context to the exception
+      // Caught outside to add additional context to the exception
       // noinspection ExceptionCaughtLocallyJS
       throw error;
     }

@@ -73,7 +73,7 @@ async function initialize() {
   try {
     await ensureScript(port);
 
-    // clear out any dynamic stuff from any previous devtools sessions
+    // Clear out any dynamic stuff from any previous devtools sessions
     await clearDynamicElements(port, {}).catch((error: unknown) => {
       console.warn(
         "Error clearing dynamic elements from previous devtools sessions",

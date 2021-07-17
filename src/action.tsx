@@ -17,7 +17,7 @@
 
 import "@/extensionContext";
 
-// init rollbar early so we get error reporting on the other initialization
+// Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/rollbar";
 
 import App from "./actionPanel/ActionPanelApp";
@@ -28,7 +28,7 @@ import { browser } from "webextension-polyfill-ts";
 import { REGISTER_ACTION_FRAME } from "@/background/browserAction";
 import "@/actionPanel/protocol";
 
-// keep in order so precedence is preserved
+// Keep in order so precedence is preserved
 import "vendors/theme/app/app.scss";
 import "./action.scss";
 import "@/vendors/overrides.scss";

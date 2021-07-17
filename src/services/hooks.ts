@@ -53,6 +53,7 @@ export function useDependency(
     if (configuredServices.length > 1) {
       throw new Error("Multiple matching services configured");
     }
+
     return head(configuredServices);
   }, [values.services]);
 
@@ -65,6 +66,7 @@ export function useDependency(
       const service = await registry.lookup(dependency.id);
       return { localConfig: localConfig, service };
     }
+
     throw new Error("No integration selected");
   }, [dependency?.config]);
 
@@ -78,6 +80,7 @@ export function useDependency(
     if (origins != null) {
       return checkPermissions([{ origins }]);
     }
+
     return false;
   }, [origins]);
 

@@ -55,14 +55,19 @@ export function removeShowCallback(onShow: ShowCallback): void {
 }
 
 function getHTMLElement(): JQuery<HTMLElement> {
-  // resolve html tag, which is more dominant than <body>
+  // Resolve html tag, which is more dominant than <body>
   if (document.documentElement) {
     return $(document.documentElement);
-  } else if (document.querySelector("html")) {
+  }
+
+  if (document.querySelector("html")) {
     return $(document.querySelector("html"));
-  } else if ($("html").length > -1) {
+  }
+
+  if ($("html").length > -1) {
     return $("html");
   }
+
   throw new Error("HTML node not found");
 }
 
@@ -136,6 +141,7 @@ export function toggleActionPanel(): string | null {
     hideActionPanel();
     return null;
   }
+
   return showActionPanel();
 }
 
@@ -180,6 +186,7 @@ export function reservePanels(refs: ExtensionRef[]): void {
         });
       }
     }
+
     renderPanels();
   }
 }
@@ -203,6 +210,7 @@ export function upsertPanel(
   } else {
     panels.push({ extensionId, extensionPointId, heading, payload });
   }
+
   renderPanels();
 }
 

@@ -98,6 +98,7 @@ export const ReaderBlockForm: React.FunctionComponent<{
     if (debouncedQuery === "" || output == null) {
       return output;
     }
+
     return searchData(debouncedQuery, output);
   }, [debouncedQuery, output]);
 

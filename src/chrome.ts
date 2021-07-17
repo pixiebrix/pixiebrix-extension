@@ -66,7 +66,7 @@ export function isDevtoolsPage(): boolean {
     return false;
   }
 
-  // make sure dev tools are installed
+  // Make sure dev tools are installed
   const { devtools_page } = chrome.runtime.getManifest();
   if (typeof devtools_page !== "string") {
     return false;
@@ -165,5 +165,6 @@ export async function setStorage(
   if (typeof value !== "string") {
     throw new TypeError("Expected string value");
   }
+
   await browser.storage[storageType].set({ [storageKey]: value });
 }

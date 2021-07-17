@@ -80,6 +80,7 @@ export function makeRead(
   if (!doRead) {
     throw new Error(`Reader type ${config.type} not implemented`);
   }
+
   return (root: ReaderRoot) => doRead(config, root);
 }
 
@@ -115,6 +116,7 @@ export function readerFactory(component: unknown): IReader {
       if (doRead) {
         return doRead(reader as any, root);
       }
+
       throw new Error(`Reader type ${reader.type} not implemented`);
     }
   }

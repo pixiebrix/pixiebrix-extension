@@ -57,6 +57,7 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
         (x) => x.value.library === value.library && x.value.id === value.id
       );
     }
+
     return null;
   }, [value]);
 
@@ -66,7 +67,7 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
       value={selectedOption}
       options={iconOptions}
       onChange={onChange}
-      // react-select-virtualized doesn't support styling the elements in the dropdown, so can't show
+      // React-select-virtualized doesn't support styling the elements in the dropdown, so can't show
       // the icons in the actual dropdown
       components={{ SingleValue: customSingleValue }}
     />

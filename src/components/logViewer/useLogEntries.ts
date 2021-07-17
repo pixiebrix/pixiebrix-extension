@@ -73,6 +73,7 @@ export default function useLogEntries({
       if (!isMounted()) {
         return;
       }
+
       setLogState({ entries, isLoading: false });
       setNumNew(0);
       setUnread([]);
@@ -96,7 +97,7 @@ export default function useLogEntries({
   const filteredEntries = useMemo(
     () =>
       (entries ?? []).filter(
-        // level is coming from the dropdown
+        // Level is coming from the dropdown
         // eslint-disable-next-line security/detect-object-injection
         (entry) => LOG_LEVELS[entry.level] >= LOG_LEVELS[level]
       ),
@@ -116,9 +117,10 @@ export default function useLogEntries({
 
   const checkNewEntries = useCallback(async () => {
     if (!initialized) {
-      // wait for the initial set of logs before starting to check for updates
+      // Wait for the initial set of logs before starting to check for updates
       return;
     }
+
     const newEntries = await getLog(context);
     const filteredNewEntries = (newEntries ?? []).filter(
       // eslint-disable-next-line security/detect-object-injection -- level is from dropdown

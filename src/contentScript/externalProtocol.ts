@@ -107,7 +107,7 @@ function initExternalPageListener() {
   window.addEventListener("message", function (event: MessageEvent) {
     const { type, meta, error, payload } = event.data;
     if (
-      // check isResponseType to make sure we're not handling the messages from the content script
+      // Check isResponseType to make sure we're not handling the messages from the content script
       event.source === document.defaultView &&
       isResponseType(type) &&
       meta?.nonce
@@ -120,6 +120,7 @@ function initExternalPageListener() {
         console.warn(`Ignoring message with unknown nonce: ${meta.nonce}`);
         return;
       }
+
       try {
         const response = isErrorResponse(payload)
           ? deserializeError(payload.$$error)
@@ -168,7 +169,7 @@ export function liftExternal<R extends SerializableResponse>(
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
-    // console.debug(`Installed content script handler for ${type}`);
+    // Console.debug(`Installed content script handler for ${type}`);
     contentScriptHandlers.set(fullType, { handler: method, options });
     return method;
   }
@@ -179,6 +180,7 @@ export function liftExternal<R extends SerializableResponse>(
     if (isExtensionContext()) {
       throw new ContentScriptActionError("Expected call from external page");
     }
+
     // Wait for the extension to load before sending the message
     if (!document.documentElement.hasAttribute(PIXIEBRIX_READY_ATTRIBUTE)) {
       await Promise.race([

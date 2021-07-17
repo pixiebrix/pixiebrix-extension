@@ -58,8 +58,11 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   abstract get trigger(): Trigger;
 
   private handler: JQuery.EventHandler<unknown> | undefined;
+
   private observer: IntersectionObserver | undefined;
+
   private $installedRoot: JQuery<HTMLElement | Document> | undefined;
+
   private installedEvents: Set<string> = new Set();
 
   protected constructor(
@@ -149,6 +152,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           void reportError(error, extensionLogger.context);
           return error;
         }
+
         reportEvent("TriggerRun", {
           extensionId: extension.id,
         });
@@ -178,7 +182,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     let $root = await rootPromise;
 
     if (rootSelector) {
-      // awaitElementOnce doesn't work with multiple elements. Get what's currently on the page
+      // AwaitElementOnce doesn't work with multiple elements. Get what's currently on the page
       // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
       $root = $(document).find(rootSelector);
     }
@@ -215,7 +219,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         },
         {
           root: null,
-          // rootMargin: "0px",
+          // RootMargin: "0px",
           threshold: 0.2,
         }
       );
@@ -245,6 +249,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         ]);
         TriggerExtensionPoint.notifyErrors(compact(promises));
       };
+
       this.$installedRoot = $root;
       this.installedEvents.add(this.trigger);
 
@@ -270,7 +275,9 @@ export interface TriggerDefinition extends ExtensionPointDefinition {
 
 class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
   private readonly _definition: TriggerDefinition;
+
   public readonly permissions: Permissions.Permissions;
+
   public readonly rawConfig: ExtensionPointConfig<TriggerDefinition>;
 
   public get defaultOptions(): {
@@ -315,5 +322,6 @@ export function fromJS(
   if (type !== "trigger") {
     throw new Error(`Expected type=trigger, got ${type}`);
   }
+
   return new RemoteTriggerExtensionPoint(config);
 }

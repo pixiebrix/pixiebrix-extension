@@ -103,6 +103,7 @@ function normalizeConfig(
     }
     /* eslint-enable security/detect-object-injection */
   }
+
   return result;
 }
 

@@ -99,6 +99,7 @@ export function useBlockOptions(
         registered ?? genericOptionsFactory(inputProperties(block.inputSchema))
       );
     }
+
     return null;
   }, [block?.id, block?.inputSchema]);
 
@@ -189,7 +190,7 @@ const BlockCard: React.FunctionComponent<{
 
 interface BlockConfig {
   id: string;
-  // optionally, a name to store the output to
+  // Optionally, a name to store the output to
   outputKey?: string;
   config: ConfigValue;
   templateEngine?: "mustache" | "handlebars" | "nunjucks";

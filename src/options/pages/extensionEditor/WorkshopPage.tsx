@@ -96,7 +96,7 @@ function useEnrichBricks(bricks: Brick[]): EnhancedBrick[] {
           timestamp: recent.get(brick.id),
         };
       }),
-      // show recently accessed first
+      // Show recently accessed first
       [(x) => x.timestamp ?? -1, (x) => x.verbose_name],
       ["desc", "asc"]
     );
@@ -279,6 +279,7 @@ const KindIcon: React.FunctionComponent<{ brick: EnhancedBrick }> = ({
   } else if (kind === "Blueprint") {
     icon = faStoreAlt;
   }
+
   return <FontAwesomeIcon icon={icon} fixedWidth />;
 };
 

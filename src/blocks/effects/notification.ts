@@ -41,7 +41,7 @@ export class ShowNotificationEffect extends Effect {
       type: "string",
       description: "Main notification content.",
     },
-    // contextMessage: {
+    // ContextMessage: {
     //   type: "string",
     //   description: "Alternate notification content with a lower-weight font.",
     // },

@@ -148,6 +148,7 @@ export class FormFill extends Effect {
       if ($input.length === 0) {
         logger.warn(`Could not find input ${name} on the form`);
       }
+
       setValue($input, value, { dispatchEvent: true });
     }
 
@@ -158,6 +159,7 @@ export class FormFill extends Effect {
           `Could not find input with selector ${selector} on the form`
         );
       }
+
       setValue($input, value, { dispatchEvent: true });
     }
 
@@ -168,6 +170,7 @@ export class FormFill extends Effect {
             `Can only submit a form element, got tag ${$form.get(0).tagName}`
           );
         }
+
         $form.trigger("submit");
       }
     } else if (typeof submit === "string") {
@@ -179,6 +182,7 @@ export class FormFill extends Effect {
           `Found multiple elements for the submit selector ${submit} in the form`
         );
       }
+
       $submit.trigger("click");
     } else {
       throw new BusinessError("Unexpected argument for property submit");

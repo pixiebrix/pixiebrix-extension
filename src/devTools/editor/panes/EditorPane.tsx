@@ -54,7 +54,7 @@ const EditorPane: React.FunctionComponent<{
     { trailing: true, leading: false }
   );
 
-  // key to force reload of component when user selects a different element from the sidebar
+  // Key to force reload of component when user selects a different element from the sidebar
   const key = `${selectedElement.uuid}-${selectedElement.installed}-${selectionSeq}`;
 
   return (

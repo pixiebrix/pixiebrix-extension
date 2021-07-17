@@ -70,7 +70,7 @@ interface Release {
   Description: string;
   Name: string;
   Arguments: {
-    // serialized input dict
+    // Serialized input dict
     Input: string | null;
     Output: string | null;
   };
@@ -92,6 +92,7 @@ export function useReleases(): {
       });
       return response.data.value;
     }
+
     return null;
   }, [config, hasPermissions]);
 
@@ -110,6 +111,7 @@ function useRobots(): { robots: Robot[]; isPending: boolean; error: unknown } {
       });
       return response.data.value;
     }
+
     return [];
   }, [config, hasPermissions]);
 
@@ -197,19 +199,23 @@ function toType(type: string) {
   // https://docs.microsoft.com/en-us/dotnet/api/system.valuetype?view=net-5.0
   if (namespace === "System" && typeName === "String") {
     return "string";
-  } else if (namespace === "System" && typeName === "Boolean") {
+  }
+
+  if (namespace === "System" && typeName === "Boolean") {
     return "boolean";
-  } else if (
+  }
+
+  if (
     namespace === "System" &&
     ["Int64", "Int32", "Int16", "UInt64", "UInt32", "UInt16"].includes(typeName)
   ) {
     return "integer";
-  } else if (
-    namespace === "System" &&
-    ["Decimal", "Double"].includes(typeName)
-  ) {
+  }
+
+  if (namespace === "System" && ["Decimal", "Double"].includes(typeName)) {
     return "number";
   }
+
   throw new BusinessError(`Unsupported input type: ${type}`);
 }
 
@@ -247,6 +253,7 @@ export const InputArgumentsField: React.FunctionComponent<
                     "Expected schema for input property type"
                   );
                 }
+
                 return (
                   <FieldRenderer
                     key={prop}

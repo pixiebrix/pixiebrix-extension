@@ -48,7 +48,7 @@ export interface ButtonSelectionResult {
 
 export interface DragResult {
   target: ElementInfo;
-  // element to place the button before
+  // Element to place the button before
   sibling: string[] | null;
 }
 
@@ -69,6 +69,7 @@ function dragPromise(uuid: string): Promise<DragResult | null> {
       if (!resolved) {
         resolve(null);
       }
+
       drake.destroy();
     });
 
@@ -114,7 +115,7 @@ export const dragButton = liftContentScript(
 export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
   let selected = await userSelectElement();
 
-  // anchor is an inline element, so if the structure in a > span, the user has no way of
+  // Anchor is an inline element, so if the structure in a > span, the user has no way of
   // selecting the outer anchor unless there's padding/margin involved.
   //
   // if the parent is BUTTON, the user probably just selected the wrong thing

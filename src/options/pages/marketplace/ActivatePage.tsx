@@ -87,7 +87,9 @@ const ActivatePage: React.FunctionComponent = () => {
   const body = useMemo(() => {
     if (blueprint?.config?.extensionPoints != null) {
       return <ActivateWizard blueprint={blueprint.config} />;
-    } else if (blueprint != null) {
+    }
+
+    if (blueprint != null) {
       return (
         <Card>
           <Card.Header>Invalid Blueprint</Card.Header>
@@ -110,6 +112,7 @@ const ActivatePage: React.FunctionComponent = () => {
         </Card>
       );
     }
+
     return <GridLoader />;
   }, [blueprintId, blueprint, sourcePage]);
 

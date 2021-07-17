@@ -26,7 +26,7 @@ import ConsoleLogger from "@/tests/ConsoleLogger";
 // @ts-ignore: no @types/react-shadow-root
 import ReactShadowRoot from "react-shadow-root";
 
-// import the built-in bricks
+// Import the built-in bricks
 import "@/blocks";
 import "@/contrib";
 import { getErrorMessage } from "@/errors";
@@ -43,6 +43,7 @@ const BodyComponent: React.FunctionComponent<{
         />
       );
     }
+
     const { Component, props } = body;
     return <Component {...props} />;
   }, [body]);
@@ -54,10 +55,13 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
   const [component, pending, error] = useAsyncState(async () => {
     if (!panel.payload) {
       return null;
-    } else if ("error" in panel.payload) {
+    }
+
+    if ("error" in panel.payload) {
       const { error } = panel.payload;
       return <div className="text-danger">Error running panel: {error}</div>;
     }
+
     const { blockId, ctxt, args } = panel.payload;
     console.debug("Render panel body", panel.payload);
     const block = await blockRegistry.lookup(blockId);
@@ -81,9 +85,12 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
         Error rendering panel: {getErrorMessage(error as Error)}
       </div>
     );
-  } else if (pending || component == null) {
+  }
+
+  if (pending || component == null) {
     return <GridLoader />;
   }
+
   return component;
 };
 

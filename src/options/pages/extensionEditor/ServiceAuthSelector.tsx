@@ -81,7 +81,7 @@ export function useAuthOptions(): [AuthOption[], () => Promise<void>] {
   return [authOptions, refresh];
 }
 
-// customStyles.js
+// CustomStyles.js
 const colors = {
   error: "#dc3545",
   divider: "#ebedf2",

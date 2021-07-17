@@ -59,18 +59,22 @@ export class SetPageState extends Transformer {
         _pageState = cloned;
         break;
       }
+
       case "deep": {
         _pageState = merge(_pageState, cloned);
         break;
       }
+
       case "shallow": {
         _pageState = { ..._pageState, ...cloned };
         break;
       }
+
       default: {
         throw new BusinessError(`Unknown merge strategy: ${mergeStrategy}`);
       }
     }
+
     return _pageState;
   }
 }

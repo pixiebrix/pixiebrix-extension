@@ -81,6 +81,7 @@ function unrollValues(elementInfo: ElementInfo): OptionValue[] {
   if (!elementInfo) {
     return [];
   }
+
   return [
     ...(elementInfo.selectors ?? []).map((value) => ({ value, elementInfo })),
     ...compact([elementInfo.parent]).flatMap(unrollValues),

@@ -37,11 +37,18 @@
   "rules": {
     // Enable a few more rules
     "no-lonely-if": "error",
-    "no-else-return": "error",
-    "no-negated-condition": "warn",
+    "no-else-return": [
+      "error",
+      {
+        "allowElseIf": false
+      }
+    ],
+    "no-negated-condition": "off",
     "no-useless-return": "error",
     "prefer-promise-reject-errors": "error",
+    "padding-line-between-statements": "error",
     "@typescript-eslint/no-implicit-any-catch": "error",
+    "@typescript-eslint/lines-between-class-members": "error",
 
     "@typescript-eslint/no-unused-vars": [
       "error",
@@ -99,6 +106,33 @@
       {
         "ignoreVoid": true, // Prepend a function call with `void` to mark it as not needing to be await'ed, which silences this rule.
         "ignoreIIFE": true
+      }
+    ],
+
+    // Config copied from https://github.com/xojs/eslint-config-xo/blob/main/index.js#L275
+    "capitalized-comments": [
+      "error",
+      "always",
+      {
+        "ignorePattern": "pragma|ignore|prettier-ignore|webpack",
+        "ignoreInlineComments": true,
+        "ignoreConsecutiveComments": true
+      }
+    ],
+
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        "line": {
+          "exceptions": ["-", "+", "*"],
+          "markers": ["!", "/", "=>"]
+        },
+        "block": {
+          "exceptions": ["-", "+", "*"],
+          "markers": ["!", "*"],
+          "balanced": true
+        }
       }
     ],
 

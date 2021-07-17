@@ -63,6 +63,7 @@ export interface ActionPanelConfig {
 
 export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPanelConfig> {
   readonly permissions: Permissions.Permissions = {};
+
   readonly showCallback: ShowCallback;
 
   protected constructor(
@@ -228,6 +229,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     } else {
       removeExtensionPoint(this.id);
     }
+
     return available;
   }
 }
@@ -236,6 +238,7 @@ export type PanelDefinition = ExtensionPointDefinition;
 
 class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
   private readonly definition: PanelDefinition;
+
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
@@ -261,5 +264,6 @@ export function fromJS(
   if (type !== "actionPanel") {
     throw new Error(`Expected type=actionPanel, got ${type}`);
   }
+
   return new RemotePanelExtensionPoint(config);
 }

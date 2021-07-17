@@ -65,6 +65,7 @@ function makeURL(
   if (spaceEncoding === "plus" || result.search.length === 0) {
     return fullURL;
   }
+
   return fullURL.replace(
     result.search,
     result.search.replaceAll("+", SPACE_ENCODED_VALUE)

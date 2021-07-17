@@ -46,6 +46,7 @@ function useInstallState(
     if (meta) {
       return getInstalledExtensionPointIds(port);
     }
+
     return [];
   }, [port, navSequence, meta]);
 
@@ -62,6 +63,7 @@ function useInstallState(
           .map(([extension]) => extension.uuid)
       );
     }
+
     return new Set<string>();
   }, [
     port,
@@ -82,8 +84,10 @@ function useInstallState(
           (x) => !installedIds.includes(x.extensionPointId)
         ).length;
       }
+
       return null;
     }
+
     return installed?.length;
   }, [installed, installedIds, meta]);
 

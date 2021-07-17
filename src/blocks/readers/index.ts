@@ -23,7 +23,7 @@ import "./ImageReader";
 import "./ImageEXIFReader";
 import "./ElementReader";
 
-// generic readers
+// Generic readers
 import "./frameworkReader";
 export * from "./jquery";
 export * from "./window";

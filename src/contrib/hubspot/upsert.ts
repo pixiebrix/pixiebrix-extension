@@ -121,6 +121,7 @@ export class AddUpdateContact extends Effect {
           "firstname and lastname are required if an email is not provided"
         );
       }
+
       // @ts-ignore: come back and define types for the hubspot API
       const { contacts } = await proxyHubspot({
         url: "https://api.hubapi.com/contacts/v1/search/query",

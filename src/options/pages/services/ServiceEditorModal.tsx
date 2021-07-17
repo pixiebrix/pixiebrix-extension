@@ -62,6 +62,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
     if (optionsRegistry.has(service.id)) {
       return optionsRegistry.get(service.id);
     }
+
     return genericOptionsFactory(service.schema);
   }, [service]);
 
@@ -89,6 +90,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
     if (!schema) {
       return Yup.object();
     }
+
     try {
       return buildYup(schema, {});
     } catch (error: unknown) {

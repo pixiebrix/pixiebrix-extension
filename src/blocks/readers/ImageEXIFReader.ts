@@ -22,7 +22,7 @@ import axios from "axios";
 import * as ExifReader from "exifreader";
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
-  // adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L343
+  // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L343
   base64 = base64.replace(/^data:([^;]+);base64,/gim, "");
   const binary = atob(base64);
   const len = binary.length;
@@ -31,23 +31,28 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
   for (let i = 0; i < len; i++) {
     view[i] = binary.charCodeAt(i);
   }
+
   return buffer;
 }
 
 async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
-  // adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L384
+  // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L384
   if (/^data:/i.test(img.src)) {
     // Data URI
     return base64ToArrayBuffer(img.src);
-  } else if (/^blob:/i.test(img.src)) {
+  }
+
+  if (/^blob:/i.test(img.src)) {
     // Object URL
     const blob = await fetch(img.src).then((r) => r.blob());
     return await blob.arrayBuffer();
   }
+
   const response = await axios.get(img.src, { responseType: "arraybuffer" });
   if (response.status !== 200) {
     throw new Error(`Error fetching image ${img.src}: ${response.statusText}`);
   }
+
   return response.data;
 }
 
@@ -67,6 +72,7 @@ class ImageEXIFReader extends Reader {
       const buffer = await getData(element);
       return ExifReader.load(buffer);
     }
+
     throw new Error(
       `Expected an image element, got ${element.tagName ?? "document"}`
     );

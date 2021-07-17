@@ -56,11 +56,12 @@ export function excludeSecrets(
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
     // @ts-ignore: ts doesn't think $ref can be on SchemaDefinition
     if (!REF_SECRETS.includes(type["$ref"])) {
-      // safe because we're getting from Object.entries
+      // Safe because we're getting from Object.entries
       // eslint-disable-next-line security/detect-object-injection
       result[key] = config[key];
     }
   }
+
   return result;
 }
 
@@ -69,7 +70,7 @@ export async function pixieServiceFactory(): Promise<SanitizedServiceConfigurati
     _sanitizedServiceConfigurationBrand: undefined,
     id: undefined,
     serviceId: PIXIEBRIX_SERVICE_ID,
-    // don't need to proxy requests to our own service
+    // Don't need to proxy requests to our own service
     proxy: false,
     config: {} as SanitizedConfig,
   };
@@ -87,16 +88,22 @@ let wasInitialized = false;
 
 class LazyLocatorFactory {
   private remote: ConfigurableAuth[] = [];
+
   private local: RawServiceConfiguration[] = [];
+
   private options: Option[];
+
   private _initialized = false;
+
   private _refreshPromise: Promise<void>;
+
   private updateTimestamp: number = undefined;
 
   constructor() {
     if (wasInitialized) {
       throw new Error("LazyLocatorFactory is a singleton class");
     }
+
     wasInitialized = true;
   }
 
@@ -160,6 +167,7 @@ class LazyLocatorFactory {
     if (!this.initialized) {
       await this.refresh();
     }
+
     return this.local.find((x) => x.id === authId);
   }
 
@@ -174,7 +182,9 @@ class LazyLocatorFactory {
     if (serviceId === PIXIEBRIX_SERVICE_ID) {
       // HACK: for now use the separate storage for the extension key
       return pixieServiceFactory();
-    } else if (!authId) {
+    }
+
+    if (!authId) {
       throw new NotConfiguredError(
         `No configuration selected for ${serviceId}`,
         serviceId

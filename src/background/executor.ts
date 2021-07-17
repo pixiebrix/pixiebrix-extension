@@ -86,6 +86,7 @@ async function waitNonceReady(
     if (target == null) {
       return false;
     }
+
     const frameReady = tabReady[target.tabId]?.[target.frameId] != null;
     if (!frameReady) {
       return false;
@@ -101,6 +102,7 @@ async function waitNonceReady(
         { frameId: target.frameId }
       );
     }
+
     return true;
   };
 
@@ -110,8 +112,10 @@ async function waitNonceReady(
         `Nonce ${nonce} was not ready after ${maxWaitMillis}ms`
       );
     }
+
     await sleep(50);
   }
+
   return true;
 }
 
@@ -126,8 +130,10 @@ async function waitReady(
         `Tab ${tabId} was not ready after ${maxWaitMillis}ms`
       );
     }
+
     await sleep(50);
   }
+
   return true;
 }
 
@@ -151,7 +157,7 @@ handlers.set(
           ...request.payload,
         },
       },
-      // for now, only support top-level frame as opener
+      // For now, only support top-level frame as opener
       { frameId: TOP_LEVEL_FRAME }
     );
   }
@@ -181,7 +187,7 @@ handlers.set(
               ...request.payload,
             },
           },
-          // for now, only support top-level frame as opener
+          // For now, only support top-level frame as opener
           { frameId: TOP_LEVEL_FRAME }
         );
       })
@@ -230,7 +236,7 @@ handlers.set(
     }
 
     console.debug(`Waiting for target tab ${target} to be ready`);
-    // for now, only support top-level frame as target
+    // For now, only support top-level frame as target
     await waitReady({ tabId: target, frameId: 0 });
     console.debug(
       `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
@@ -288,6 +294,7 @@ handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (_, sender) => {
   if (!tabReady[tabId]) {
     tabReady[tabId] = {};
   }
+
   tabReady[tabId][frameId] = true;
   emitDevtools("ContentScriptReady", { tabId, frameId });
 });
@@ -381,6 +388,7 @@ export async function executeForNonce(
         throw error;
       }
     }
+
     retries++;
   }
 
@@ -419,6 +427,7 @@ export async function executeInTarget(
         throw error;
       }
     }
+
     retries++;
   }
 

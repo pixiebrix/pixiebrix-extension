@@ -27,11 +27,12 @@ async function onTabClose(tabId: number): Promise<void> {
   return new Promise((resolve) => {
     const handlePossibleClosure = (closeTabId: number) => {
       if (closeTabId === tabId) {
-        // remove listener first to ensure it's removed even if resolve throws
+        // Remove listener first to ensure it's removed even if resolve throws
         browser.tabs.onRemoved.removeListener(handlePossibleClosure);
         resolve();
       }
     };
+
     browser.tabs.onRemoved.addListener(handlePossibleClosure);
   });
 }

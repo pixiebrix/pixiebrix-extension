@@ -124,12 +124,13 @@ export const editorSlice = createSlice({
         (x) => x.uuid === actions.payload.uuid
       );
       if (index >= 0) {
-        // safe because we're getting it from findIndex
+        // Safe because we're getting it from findIndex
         // eslint-disable-next-line security/detect-object-injection
         state.elements[index] = actions.payload;
       } else {
         state.elements.push(actions.payload);
       }
+
       state.error = null;
       state.beta = null;
       state.activeElement = actions.payload.uuid;
@@ -139,12 +140,13 @@ export const editorSlice = createSlice({
       const { uuid } = actions.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
       if (index >= 0) {
-        // safe because we're getting it from findIndex
+        // Safe because we're getting it from findIndex
         // eslint-disable-next-line security/detect-object-injection
         state.elements[index] = actions.payload;
       } else {
         state.elements.push(actions.payload);
       }
+
       // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
       state.dirty[uuid] = false;
       state.error = null;
@@ -156,6 +158,7 @@ export const editorSlice = createSlice({
       if (!state.elements.some((x) => action.payload === x.uuid)) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
+
       state.error = null;
       state.beta = null;
       state.activeElement = action.payload;
@@ -166,6 +169,7 @@ export const editorSlice = createSlice({
       if (!element) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
+
       if (!element.installed) {
         state.knownEditable.push(
           element.extensionPoint.metadata.id,
@@ -183,17 +187,18 @@ export const editorSlice = createSlice({
 
       element.installed = true;
       state.dirty[element.uuid] = false;
-      // force a reload so the _new flags are correct on the readers
+      // Force a reload so the _new flags are correct on the readers
       state.selectionSeq++;
     },
-    // sync the redux state with the form state
+    // Sync the redux state with the form state
     updateElement: (state, action: PayloadAction<FormState>) => {
       const { uuid } = action.payload;
       const index = state.elements.findIndex((x) => x.uuid === uuid);
       if (index < 0) {
         throw new Error(`Unknown dynamic element: ${uuid}`);
       }
-      // safe b/c generated from findIndex
+
+      // Safe b/c generated from findIndex
       // eslint-disable-next-line security/detect-object-injection
       state.elements[index] = action.payload;
       // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
@@ -204,6 +209,7 @@ export const editorSlice = createSlice({
       if (state.activeElement === uuid) {
         state.activeElement = null;
       }
+
       state.elements.splice(
         state.elements.findIndex((x) => x.uuid === uuid),
         1

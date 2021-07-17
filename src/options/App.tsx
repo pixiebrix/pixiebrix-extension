@@ -52,7 +52,7 @@ import { initTelemetry } from "@/telemetry/events";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 
-// import the built-in bricks
+// Import the built-in bricks
 import "@/blocks";
 import "@/contrib";
 import "@/contrib/editors";
@@ -66,9 +66,11 @@ const RequireInstall: React.FunctionComponent = ({ children }) => {
   if (isPending && mode === "remote") {
     return null;
   }
+
   if (mode === "remote" && !token) {
     return <SetupPage />;
   }
+
   return <>{children}</>;
 };
 

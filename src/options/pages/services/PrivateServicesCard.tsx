@@ -132,6 +132,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
             if (!service) {
               throw new Error(`Unknown service ${configuredService.serviceId}`);
             }
+
             return (
               <tr
                 key={`${configuredService.serviceId}-${configuredService.id}`}

@@ -206,7 +206,7 @@ export function useExtensionValidator(
   return useAsyncState(validationPromise);
 }
 
-// const PIXIEBRIX_SCHEMA = /^https:\/\/app.pixiebrix\.com\/schemas\//i;
+// Const PIXIEBRIX_SCHEMA = /^https:\/\/app.pixiebrix\.com\/schemas\//i;
 
 const pixieResolver: ResolverOptions = {
   order: 1,
@@ -215,6 +215,7 @@ const pixieResolver: ResolverOptions = {
     if (SCHEMA_URLS[file.url]) {
       return SCHEMA_URLS[file.url] as any;
     }
+
     throw new Error(`Unknown file ${file.url}`);
   },
 };

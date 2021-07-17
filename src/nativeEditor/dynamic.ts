@@ -86,9 +86,12 @@ type ReaderLike = ReaderConfig | ReaderReference | Reader;
 async function buildSingleReader(config: ReaderLike): Promise<IReader> {
   if (config instanceof Reader) {
     return config;
-  } else if (isCustomReader(config)) {
+  }
+
+  if (isCustomReader(config)) {
     return readerFactory(config);
   }
+
   return blockRegistry.lookup(config.metadata.id) as Promise<IReader>;
 }
 
@@ -136,6 +139,7 @@ export const toggleOverlay = liftContentScript(
       if (_overlay == null) {
         _overlay = new Overlay();
       }
+
       // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive on JQuery method
       const $elt = $(document).find(selector);
       _overlay.inspect($elt.toArray(), null);

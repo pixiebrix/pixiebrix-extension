@@ -21,6 +21,7 @@ import { identity, zip } from "lodash";
 
 class ArrayCompositeReader extends Reader {
   public readonly outputSchema: Schema;
+
   private readonly _readers: IReader[];
 
   constructor(readers: IReader[]) {
@@ -68,6 +69,7 @@ class ArrayCompositeReader extends Reader {
       console.debug(`ArrayCompositeReader:${reader.name}`, readerResult);
       result = { ...result, ...readerResult };
     }
+
     return result;
   }
 }

@@ -24,7 +24,7 @@ import { BusinessError } from "@/errors";
 import { mapArgs } from "@/helpers";
 import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
 
-// type ColumnDefinition = {
+// Type ColumnDefinition = {
 //   label: string;
 //   property: string;
 //   href: string;
@@ -84,7 +84,7 @@ export class Table extends Renderer {
 
     return table(ctxt);
 
-    // const makeLinkTemplate = ({
+    // Const makeLinkTemplate = ({
     //   property,
     //   href,
     // }: {

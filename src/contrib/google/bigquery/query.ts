@@ -152,7 +152,7 @@ export class GoogleBigQueryQuery extends Transformer {
       useQueryCache: true,
       queryParameters: queryParameters.map(
         ({ name, parameterType, parameterValue }: ScalarParameter) => ({
-          // simplify passing scalar parameters for now
+          // Simplify passing scalar parameters for now
           name,
           parameterType: { type: parameterType },
           parameterValue: { value: parameterValue },
@@ -178,15 +178,19 @@ export class GoogleBigQueryQuery extends Transformer {
       if (totalRows > result.rows.length) {
         throw new Error("Support for multi-page results not implemented");
       }
+
       return result.rows.map((x) =>
         zipObject(
           fieldNames,
           x.f.map(({ v }) => v)
         )
       );
-    } else if (totalRows === 0) {
+    }
+
+    if (totalRows === 0) {
       throw new Error("No results returned");
     }
+
     return zipObject(
       fieldNames,
       result.rows[0].f.map(({ v }) => v)

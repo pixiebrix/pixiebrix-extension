@@ -91,7 +91,7 @@ function fromNativeElement(
   frameworks: FrameworkMeta[]
 ): ContextMenuFormState {
   const base = makeBaseState(uuidv4(), null, metadata, frameworks);
-  // don't include a reader since in most cases can't use a selection reader
+  // Don't include a reader since in most cases can't use a selection reader
   base.readers = [];
 
   const isAvailable = makeIsAvailable(url);
@@ -100,7 +100,7 @@ function fromNativeElement(
 
   return {
     type: "contextMenu",
-    // to simplify the interface, this is kept in sync with the caption
+    // To simplify the interface, this is kept in sync with the caption
     label: title,
     ...base,
     extensionPoint: {

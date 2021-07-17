@@ -51,13 +51,16 @@ const Entry: React.FunctionComponent<
   const installButton = useMemo(() => {
     if (!onInstall) {
       return null;
-    } else if (!installed) {
+    }
+
+    if (!installed) {
       return (
         <Button size="sm" variant="info" {...buttonProps} onClick={onInstall}>
           Add
         </Button>
       );
     }
+
     return (
       <Button size="sm" variant="info" {...buttonProps} disabled>
         Added

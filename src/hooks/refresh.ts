@@ -47,6 +47,7 @@ export function useRefresh(
         if (!isMounted()) {
           return;
         }
+
         addToast(`Error refreshing bricks from server: ${error}`, {
           appearance: "error",
           autoDismiss: true,

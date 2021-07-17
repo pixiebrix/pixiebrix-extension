@@ -58,6 +58,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
     if (config == null) {
       return { isBlueprint: false, isInstalled: false, config: undefined };
     }
+
     const configJSON = yaml.load(config) as RawConfig;
     const isBlueprint = configJSON.kind === "recipe";
     if (isBlueprint) {
@@ -69,6 +70,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
         config: configJSON,
       };
     }
+
     return { isBlueprint: false, isInstalled: false, config: configJSON };
   }, [config, extensions]);
 }
@@ -106,17 +108,21 @@ function useLogContext(config: string | null): MessageContext | null {
         case "service": {
           return { serviceId: json.metadata.id };
         }
+
         case "extensionPoint": {
           return { extensionPointId: json.metadata.id };
         }
+
         case "component":
         case "reader": {
           return { blockId: json.metadata.id };
         }
+
         case "recipe": {
           const extensionId = blueprintMap.get(json.metadata.id);
           return extensionId ? { extensionId } : null;
         }
+
         default: {
           return null;
         }

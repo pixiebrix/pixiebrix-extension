@@ -35,6 +35,7 @@ export function useLoggingConfig(): [
       if (!isMounted()) {
         return;
       }
+
       setConfig(config);
     },
     [setConfig]
