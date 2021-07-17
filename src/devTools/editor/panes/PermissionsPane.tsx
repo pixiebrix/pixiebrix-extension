@@ -23,7 +23,6 @@ import Centered from "@/devTools/editor/components/Centered";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-
 import { requestPermissions } from "@/utils/permissions";
 
 const PermissionsPane: React.FunctionComponent = () => {

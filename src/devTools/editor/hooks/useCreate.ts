@@ -115,7 +115,7 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
   });
 
   const hasPermissions = await requestPermissions(
-    await mergePermissions(permissions)
+    mergePermissions(permissions)
   );
 
   if (!hasPermissions) {

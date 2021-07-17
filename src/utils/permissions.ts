@@ -21,8 +21,8 @@ import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import { liftBackground } from "@/background/protocol";
 import { openPopupPrompt } from "@/background/popup";
-import { expectBackgroundPage } from "@/utils/expectContext";
 
+/** Filters out any permissions that are not part of `optional_permissions` */
 export function selectOptionalPermissions(
   permissions: string[]
 ): Manifest.OptionalPermission[] {
@@ -32,10 +32,7 @@ export function selectOptionalPermissions(
   ) as Manifest.OptionalPermission[];
 }
 
-/**
- * Merge a list of permissions into a single permissions object.
- * @param permissions
- */
+/** Merge a list of permissions into a single permissions object */
 export function mergePermissions(
   permissions: Permissions.Permissions[] = []
 ): Permissions.Permissions {
@@ -56,7 +53,7 @@ export function distinctPermissions(
   }));
 }
 
-const _containsPermissions = liftBackground(
+const containsPermissionsInBackground = liftBackground(
   "CONTAINS_PERMISSIONS",
   async (permissions: Permissions.AnyPermissions) =>
     browser.permissions.contains(permissions)
@@ -69,10 +66,11 @@ export async function containsPermissions(
     return browser.permissions.contains(permissions);
   }
 
-  return _containsPermissions(permissions);
+  return containsPermissionsInBackground(permissions);
 }
 
-// TODO: Make it work outside the dev tools as well
+// TODO: Make it work in content scripts as well, or any context that doesn't have the API
+/** A permissions.request() alternative API that works in Firefox’ Dev Tools */
 export async function requestPermissions(
   permissions: Permissions.Permissions
 ): Promise<boolean> {
@@ -85,18 +83,14 @@ export async function requestPermissions(
   }
 
   const page = new URL(browser.runtime.getURL("popups/permissionsPopup.html"));
-  for (const origin of permissions.origins) {
+  for (const origin of permissions.origins ?? []) {
     page.searchParams.append("origin", origin);
   }
-  for (const origin of permissions.permissions) {
+  for (const origin of permissions.permissions ?? []) {
     page.searchParams.append("permission", origin);
   }
 
   const tabId = browser.devtools.inspectedWindow.tabId;
   await openPopupPrompt(tabId, page.toString());
   return containsPermissions(permissions);
-}
-
-export function registerPermissionPolyfillHandlers() {
-  expectBackgroundPage();
 }

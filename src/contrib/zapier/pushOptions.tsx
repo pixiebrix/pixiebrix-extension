@@ -35,7 +35,7 @@ import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
 import { ObjectField } from "@/components/fields/FieldTable";
 import { checkPermissions } from "@/permissions";
-import { browser } from "webextension-polyfill-ts";
+import { requestPermissions } from "@/utils/permissions";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -111,9 +111,9 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   const { hooks, error } = useHooks();
 
-  const requestPermissions = useCallback(() => {
-    browser.permissions.request(ZAPIER_PERMISSIONS).then(() => {
-      setGrantedPermissions(true);
+  const requestPermissionsCallback = useCallback(() => {
+    requestPermissions(ZAPIER_PERMISSIONS).then((result) => {
+      setGrantedPermissions(result);
     });
   }, [setGrantedPermissions]);
 
@@ -128,7 +128,7 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
           You must grant permissions for you browser to send information to
           Zapier.
         </p>
-        <Button onClick={requestPermissions}>Grant Permissions</Button>
+        <Button onClick={requestPermissionsCallback}>Grant Permissions</Button>
       </div>
     );
   }
