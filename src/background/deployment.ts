@@ -195,7 +195,7 @@ async function updateDeployments() {
     (x) => x.hasPermissions
   );
 
-  let automaticError = false;
+  let automaticError: unknown;
 
   if (automatic.length > 0) {
     console.debug(
@@ -216,12 +216,19 @@ async function updateDeployments() {
       );
     } catch (error: unknown) {
       reportError(error);
-      automaticError = true;
+      automaticError = error;
     }
   }
 
   // We only want to call openOptionsPage a single time
-  if (manual.length > 0 || automaticError) {
+  if (manual.length > 0 || automaticError != null) {
+    console.debug(
+      "Opening options page for user to manually activate updated deployment(s)",
+      {
+        manual,
+        automaticError,
+      }
+    );
     await browser.runtime.openOptionsPage();
   }
 }
