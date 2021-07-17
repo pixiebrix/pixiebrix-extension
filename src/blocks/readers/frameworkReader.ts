@@ -35,7 +35,7 @@ async function asyncFastCssSelector(element: HTMLElement): Promise<string> {
   // generating headers
   const getCssSelector = (await import("css-selector-generator")).default;
   return getCssSelector(element, {
-    // prefer speed over robust/readable selectors
+    // Prefer speed over robust/readable selectors
     combineWithinSelector: false,
     combineBetweenSelectors: false,
   });
@@ -72,6 +72,7 @@ function makeRead(framework: Framework): Read<FrameworkConfig> {
         : pathSpec,
     });
   }
+
   return read;
 }
 

@@ -98,6 +98,7 @@ export class HandlerMap {
     if (this.handlers.has(actionType)) {
       throw new Error(`Handler for ${actionType} already defined`);
     }
+
     this.handlers.set(actionType, handler);
     return this;
   }
@@ -111,6 +112,7 @@ export class HandlerMap {
       if (!allowSender(sender)) {
         return;
       }
+
       const handler = this.handlers.get(request.type);
       if (handler) {
         console.trace("Handling message: %s", request.type);
@@ -120,6 +122,7 @@ export class HandlerMap {
             `Expected promise response from handler ${request.type}`
           );
         }
+
         return promise;
       }
     };

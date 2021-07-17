@@ -24,8 +24,10 @@ export function findElement(node: Node): Element | null {
   while (current && !(current instanceof Element)) {
     current = current.parentNode;
   }
+
   if (current instanceof Element) {
     return current;
   }
+
   return null;
 }

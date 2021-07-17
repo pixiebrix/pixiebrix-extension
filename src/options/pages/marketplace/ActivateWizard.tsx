@@ -66,9 +66,11 @@ function selectAuths(
     } else if (configs.length > 1) {
       throw new Error(`Service ${id} has multiple configurations`);
     }
+
     // eslint-disable-next-line security/detect-object-injection -- safe because it's from Object.entries
     result[id] = configs[0];
   }
+
   return result;
 }
 
@@ -150,7 +152,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         });
         setSubmitting(false);
         return;
-      } else if (missingServiceIds.length > 0) {
+      }
+
+      if (missingServiceIds.length > 0) {
         addToast(
           `You must select a configuration for each service: ${missingServiceIds.join(
             ", "
@@ -162,7 +166,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         );
         setSubmitting(false);
         return;
-      } else if (!enabled) {
+      }
+
+      if (!enabled) {
         addToast("You must grant browser permissions for the selected bricks", {
           appearance: "error",
           autoDismiss: true,
@@ -255,9 +261,11 @@ function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
             (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
           );
         }
+
         case "options": {
           return !isEmpty(blueprint.options?.schema);
         }
+
         default: {
           return true;
         }

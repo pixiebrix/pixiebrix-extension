@@ -28,6 +28,7 @@ function useSVG(logoUrl: string): string {
       if (!isMounted()) {
         return;
       }
+
       setLogo($icon.get(0).outerHTML);
     },
     [setLogo]

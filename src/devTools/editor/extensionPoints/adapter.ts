@@ -45,6 +45,7 @@ export async function selectType(extension: IExtension): Promise<ElementType> {
     });
     throw new Error("Cannot find extension point");
   }
+
   const extensionPoint = (brick.config as unknown) as ExtensionPointConfig;
   return extensionPoint.definition.type;
 }
@@ -59,6 +60,7 @@ export async function extensionToFormState(
       `Editing existing extensions not implemented for type: '${type}'`
     );
   }
+
   // FormState is the sum type of all the extension form states, so OK to cast
   return fromExtension(extension) as Promise<FormState>;
 }

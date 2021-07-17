@@ -42,7 +42,9 @@ export function useExtension(
 
     if (!extensionId) {
       return null;
-    } else if (extensionPointId) {
+    }
+
+    if (extensionPointId) {
       config = options.extensions[extensionPointId][extensionId];
     } else {
       for (const pointExtensions of Object.values(options.extensions)) {
@@ -53,6 +55,7 @@ export function useExtension(
         }
       }
     }
+
     if (!config) {
       throw new Error(
         `Could not locate configuration for extension ${extensionId} (extension point: ${
@@ -60,15 +63,19 @@ export function useExtension(
         })`
       );
     }
+
     return config;
   }, [options, extensionId, extensionPointId]);
 
   const [extensionPoint, isPending] = useAsyncState(async () => {
     if (extensionConfig) {
       return extensionPointRegistry.lookup(extensionConfig.extensionPointId);
-    } else if (extensionPointId) {
+    }
+
+    if (extensionPointId) {
       return extensionPointRegistry.lookup(extensionPointId);
     }
+
     return null;
   }, [extensionPointRegistry, extensionConfig, extensionPointId]);
 

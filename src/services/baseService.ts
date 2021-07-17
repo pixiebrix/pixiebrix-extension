@@ -38,6 +38,7 @@ export async function getBaseURL(): Promise<string> {
       isEmpty(configured) ? DEFAULT_SERVICE_URL : configured
     );
   }
+
   return withoutTrailingSlash(DEFAULT_SERVICE_URL);
 }
 

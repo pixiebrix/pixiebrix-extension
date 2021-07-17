@@ -48,6 +48,7 @@ function richValue(value: unknown): unknown {
       </a>
     );
   }
+
   return value;
 }
 
@@ -65,13 +66,16 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
           children: shapeData(value, key),
         };
       }
+
       return {
         key,
         data: { name, value: richValue(value) },
         children: [],
       };
     });
-  } else if (Array.isArray(inputs)) {
+  }
+
+  if (Array.isArray(inputs)) {
     return inputs.map((value, index) => {
       const key = `${keyPrefix}-${index}`;
 
@@ -82,6 +86,7 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
           children: shapeData(value, key),
         };
       }
+
       return {
         key,
         data: { name: `${index}`, value: richValue(value) },
@@ -89,6 +94,7 @@ function shapeData(inputs: unknown, keyPrefix = "root"): Item[] {
       };
     });
   }
+
   return [
     {
       key: keyPrefix,

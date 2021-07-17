@@ -26,6 +26,7 @@ export default async function fetchSVG(
       "fetchSVG can only be used to fetch icons bundled with the extension"
     );
   }
+
   const response = await fetch(src);
   const svg = await response.text();
   // There might also be comment nodes, so they need to be filtered out

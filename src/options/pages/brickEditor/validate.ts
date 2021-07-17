@@ -66,5 +66,6 @@ export async function validateSchema(value: string): Promise<any> {
       config: validation.errors.map((x) => `${x.instanceLocation}: ${x.error}`),
     };
   }
+
   return {};
 }

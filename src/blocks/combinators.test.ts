@@ -19,7 +19,7 @@ test("dummy test", async () => {
   console.warn("combinator tests are disabled");
 });
 
-// import {
+// Import {
 //   InputValidationError,
 //   reducePipeline,
 //   mergeReaders,

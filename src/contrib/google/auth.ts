@@ -69,7 +69,9 @@ export async function handleRejection(
       "Cannot locate the Google drive resource. Have you been granted access?",
       status
     );
-  } else if ([403, 401].includes(status)) {
+  }
+
+  if ([403, 401].includes(status)) {
     await chromeP.identity.removeCachedAuthToken({ token });
     console.debug(
       "Bad Google OAuth token. Removed the auth token from the cache so the user can re-authenticate"
@@ -81,5 +83,6 @@ export async function handleRejection(
       status
     );
   }
+
   return new Error(getErrorMessage(error.result.error ?? "Unknown error"));
 }

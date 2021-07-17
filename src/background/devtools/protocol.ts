@@ -51,6 +51,7 @@ export const getTabInfo = liftBackground(
         `getTabInfo called targeting non top-level frame: ${target.frameId}`
       );
     }
+
     const state = await getTargetState({
       ...target,
       frameId: TOP_LEVEL_FRAME,
@@ -117,6 +118,7 @@ export const selectElement = liftBackground(
     if (isEmpty(element)) {
       throw new Error("selectElement returned an empty element");
     }
+
     return element;
   }
 );
@@ -254,7 +256,7 @@ export const runReader = liftBackground(
 
 export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
-  // false positive - it's the inner method that should be async
+  // False positive - it's the inner method that should be async
   // eslint-disable-next-line unicorn/consistent-function-scoping
   () => async ({ extensionId }: { extensionId: string }) => {
     return contextMenuProtocol.uninstall(extensionId);

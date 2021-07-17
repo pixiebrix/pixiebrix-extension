@@ -82,11 +82,12 @@ const SetupPage: React.FunctionComponent = () => {
         active: true,
       });
     }
+
     // Close the browser extension tab
     window.close();
   }, [accountTab]);
 
-  // try to automatically open the web app to sync the credentials so that the user doesn't
+  // Try to automatically open the web app to sync the credentials so that the user doesn't
   // have to click the button
   useAsyncState(async () => {
     if (accountTab) {

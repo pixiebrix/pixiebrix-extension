@@ -90,12 +90,13 @@ export function readReactProps(fiber: Fiber): { [prop: string]: unknown } {
 }
 
 function getComponentFiber(fiber: Fiber): Fiber {
-  // return fiber._debugOwner; // this also works, but is __DEV__ only
+  // Return fiber._debugOwner; // this also works, but is __DEV__ only
   let parentFiber = fiber.return;
   while (typeof parentFiber.type === "string") {
-    // string for HTML nodes, so traverse
+    // String for HTML nodes, so traverse
     parentFiber = parentFiber.return;
   }
+
   return parentFiber;
 }
 
@@ -117,16 +118,19 @@ export function findReactComponent(node: Node, traverseUp = 0): Fiber {
     const fiber = traverse(owner, owner(domFiber), traverseUp);
     return fiber._instance as Fiber;
   }
+
   return traverse(getComponentFiber, getComponentFiber(domFiber), traverseUp);
 }
 
 export class ReactRootVisitor implements RootInstanceVisitor<RootInstance> {
   public rootInstances: RootInstance[] = [];
+
   visit(node: Element | Node): boolean {
     if ("_reactRootContainer" in node) {
       this.rootInstances.push(node);
       return false;
     }
+
     return true;
   }
 }

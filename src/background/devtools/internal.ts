@@ -107,6 +107,7 @@ function backgroundMessageListener(
             payload: value,
           });
         }
+
         responded = true;
       },
       (error) => {
@@ -117,6 +118,7 @@ function backgroundMessageListener(
             payload: toErrorResponse(type, error),
           });
         }
+
         responded = true;
       }
     );
@@ -135,6 +137,7 @@ function backgroundMessageListener(
           );
         }
       }
+
       responded = true;
     });
   } else {
@@ -182,6 +185,7 @@ export function liftBackground<R extends SerializableResponse>(
     if (!port) {
       throw new Error("Devtools port is required");
     }
+
     return callBackground(port, fullType, args, options) as Promise<R>;
   };
 }
@@ -198,6 +202,7 @@ async function resetTab(tabId: number): Promise<void> {
     });
     reportError(error);
   }
+
   console.info(`Removed dynamic elements for tab: %d`, tabId);
 
   // Re-activate the content script so any saved extensions are added to the page as "permanent" extensions
@@ -229,7 +234,7 @@ function connectDevtools(port: Runtime.Port): void {
   expectBackgroundPage();
 
   if (allowBackgroundSender(port.sender) && port.name === PORT_NAME) {
-    // sender.tab won't be available if we don't have permissions for it yet
+    // Sender.tab won't be available if we don't have permissions for it yet
     console.debug(
       `Adding devtools listeners for port ${port.name} for tab: ${
         port.sender.tab?.id ?? "[[no permissions for tab]]"
@@ -241,7 +246,7 @@ function connectDevtools(port: Runtime.Port): void {
       type: "DEVTOOLS_RUNTIME_CONNECTION_CONFIRMED",
     });
 
-    // add/cleanup listener
+    // Add/cleanup listener
     numOpenConnections++;
     port.onMessage.addListener(backgroundMessageListener);
     port.onDisconnect.addListener(() => {
@@ -260,10 +265,11 @@ function connectDevtools(port: Runtime.Port): void {
 }
 
 export function registerPort(tabId: TabId, port: Runtime.Port): void {
-  // can't register the port in connectDevtools because we might know the tab at that point
+  // Can't register the port in connectDevtools because we might know the tab at that point
   if (connections.has(tabId) && connections.get(tabId) !== port) {
     console.warn(`Devtools connection already exists for tab: ${tabId}`);
   }
+
   connections.set(tabId, port);
 }
 

@@ -46,6 +46,7 @@ function initGoogle(): void {
     );
     return;
   }
+
   if (!API_KEY) {
     console.info("Google API not enabled because the API key is not available");
     return;

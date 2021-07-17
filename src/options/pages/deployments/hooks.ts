@@ -87,6 +87,7 @@ export function useEnsurePermissions(deployments: Deployment[]) {
       });
       return false;
     }
+
     return true;
   }, [permissions, setEnabled]);
 
@@ -118,11 +119,11 @@ export function useDeployments() {
   const { request } = useEnsurePermissions(updated);
 
   const update = useCallback(() => {
-    // can't use async here because Firefox loses track of trusted UX event
+    // Can't use async here because Firefox loses track of trusted UX event
     request().then((accepted: boolean) => {
       if (accepted) {
         for (const deployment of deployments) {
-          // clear existing installs of the blueprint
+          // Clear existing installs of the blueprint
           for (const extension of installed) {
             if (extension._recipe.id === deployment.package.package_id) {
               dispatch(
@@ -134,7 +135,7 @@ export function useDeployments() {
             }
           }
 
-          // install the blueprint with the service definition
+          // Install the blueprint with the service definition
           dispatch(
             actions.installRecipe({
               recipe: deployment.package.config,
@@ -149,6 +150,7 @@ export function useDeployments() {
             deployment: deployment.id,
           });
         }
+
         addToast("Activated team bricks", {
           appearance: "success",
           autoDismiss: true,

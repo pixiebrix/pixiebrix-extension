@@ -17,7 +17,7 @@
 
 import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { isBackgroundPage } from "webext-detect-page";
 
@@ -32,7 +32,6 @@ jest.mock("@/auth/token");
 jest.mock("webext-detect-page");
 
 import * as token from "@/auth/token";
-import { AxiosRequestConfig } from "axios";
 
 import { proxyService } from "./requests";
 

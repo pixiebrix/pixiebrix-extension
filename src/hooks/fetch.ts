@@ -65,8 +65,10 @@ export async function fetch<TData>(
     } else if (status >= 300) {
       throw new Error(`Request error: ${statusText}`);
     }
+
     return data;
   }
+
   const { data } = await axios.get<TData>(url);
   return data;
 }

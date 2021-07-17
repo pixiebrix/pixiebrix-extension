@@ -31,7 +31,7 @@ import {
   selectedElement,
 } from "@/devTools/getSelectedElement";
 
-// install handlers
+// Install handlers
 import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
@@ -52,6 +52,7 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
     if (deserializeError(error).name === "ComponentNotFoundError") {
       return "Component not detected";
     }
+
     return { error };
   }
 }
@@ -94,11 +95,13 @@ export const runReaderBlock = liftContentScript(
           documentUrl: document.location.href,
         };
       }
+
       return {
         selectionText: window.getSelection().toString(),
         documentUrl: document.location.href,
       };
     }
+
     const reader = (await blockRegistry.lookup(id)) as IReader;
     return reader.read(root);
   }
@@ -140,8 +143,10 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
         getComponentData({ framework: framework as Framework, selector })
       );
     }
+
     return base;
   }
+
   return {
     error: "No element selected",
   };

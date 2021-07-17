@@ -85,6 +85,7 @@ function selectErrorMessage(error: unknown): string {
       "No response from PixieBrix server"
     );
   }
+
   return error.toString();
 }
 
@@ -106,6 +107,7 @@ async function ensureAllPermissionsFromDevTools(
   for (const origin of mergedPermissions.origins) {
     page.searchParams.append("origin", origin);
   }
+
   for (const origin of mergedPermissions.permissions) {
     page.searchParams.append("permission", origin);
   }
@@ -191,7 +193,7 @@ export function useCreate(): CreateCallback {
         try {
           await ensurePermissions(element, addToast);
         } catch (error: unknown) {
-          // continue to allow saving (because there's a workaround)
+          // Continue to allow saving (because there's a workaround)
           reportError(error);
           console.error("Error checking/enabling permissions", { error });
           addToast(
@@ -224,13 +226,13 @@ export function useCreate(): CreateCallback {
               element
             ).filter((reader) => isCustomReader(reader));
             for (const customReader of customReaders) {
-              // savedReaders is to handle case where save failed for the foundation, so subsequent saves needs
+              // SavedReaders is to handle case where save failed for the foundation, so subsequent saves needs
               // to update the reader
               const packageId =
                 element.installed ||
                 savedReaders.includes(customReader.metadata.id)
                   ? editablePackages.find(
-                      // bricks endpoint uses "name" instead of id
+                      // Bricks endpoint uses "name" instead of id
                       (x) => x.name === customReader.metadata.id
                     )?.id
                   : null;
@@ -250,7 +252,7 @@ export function useCreate(): CreateCallback {
             const extensionPointConfig = adapter.selectExtensionPoint(element);
             const packageId = element.installed
               ? editablePackages.find(
-                  // bricks endpoint uses "name" instead of id
+                  // Bricks endpoint uses "name" instead of id
                   (x) => x.name === extensionPointConfig.metadata.id
                 )?.id
               : null;

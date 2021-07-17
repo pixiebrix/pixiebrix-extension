@@ -79,6 +79,7 @@ function validationMessage(validation: ExtensionValidationResult) {
   } else {
     console.debug("Validation result", validation);
   }
+
   return message;
 }
 
@@ -98,6 +99,7 @@ const RecipeEntry: React.FunctionComponent<{
         for (const { id: extensionId, extensionPointId } of extensions) {
           onRemove({ extensionId, extensionPointId });
         }
+
         addToast(`Uninstalled ${name}`, {
           appearance: "success",
           autoDismiss: true,
@@ -180,20 +182,25 @@ const ExtensionRow: React.FunctionComponent<{
   const statusElt = useMemo(() => {
     if (hasPermissions == null || validation == null) {
       return <BeatLoader />;
-    } else if (validation && !validation.valid) {
+    }
+
+    if (validation && !validation.valid) {
       return (
         <span className="text-danger text-wrap">
           <FontAwesomeIcon icon={faExclamation} />{" "}
           {validationMessage(validation)}
         </span>
       );
-    } else if (hasPermissions) {
+    }
+
+    if (hasPermissions) {
       return (
         <span>
           <FontAwesomeIcon icon={faCheck} /> Active
         </span>
       );
     }
+
     return (
       <Button variant="info" size="sm" onClick={requestPermissions}>
         Grant Permissions
@@ -207,7 +214,7 @@ const ExtensionRow: React.FunctionComponent<{
       <td>
         <Link to={`/workshop/extensions/${id}`}>{label ?? id}</Link>
       </td>
-      {/*<td>2 weeks</td>*/}
+      {/* <td>2 weeks</td> */}
       <td className="text-wrap">{statusElt}</td>
       <td>
         <Button
@@ -249,7 +256,7 @@ const InstalledTable: React.FunctionComponent<{
               <tr>
                 <th>&nbsp;</th>
                 <th>Name</th>
-                {/*<th>Last Used</th>*/}
+                {/* <th>Last Used</th> */}
                 <th>Status</th>
                 <th>Uninstall</th>
               </tr>
@@ -408,7 +415,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension(identifier));
     uninstallContextMenu(identifier).catch(() => {
-      // noop because this is expected to error for non-context menus
+      // Noop because this is expected to error for non-context menus
     });
     reactivate().catch((error: unknown) => {
       console.warn("Error re-activating content scripts", { error });

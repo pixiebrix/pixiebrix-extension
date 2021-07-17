@@ -30,6 +30,7 @@ export function useRegistry<T extends RegistryItem>(
       if (!isMounted) {
         return;
       }
+
       setResult(result);
     },
     [registry, id]

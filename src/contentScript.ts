@@ -72,7 +72,7 @@ async function init(): Promise<void> {
   }
 
   try {
-    // notify the background script know we're ready to execute remote actions
+    // Notify the background script know we're ready to execute remote actions
     await notifyReady();
     console.info(`contentScript ready in ${Date.now() - start}ms`);
   } catch (error: unknown) {

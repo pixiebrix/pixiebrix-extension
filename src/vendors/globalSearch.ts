@@ -3,7 +3,7 @@ export function globalSearch(
   value: unknown,
   returnFirstResult = false
 ): unknown[] {
-  // adapted from: https://stackoverflow.com/a/12103127/402560
+  // Adapted from: https://stackoverflow.com/a/12103127/402560
   if (startObject == null) {
     throw Error("startObject cannot be null");
   }
@@ -24,6 +24,7 @@ export function globalSearch(
       if (returnFirstResult) {
         return [{ path: address, value }];
       }
+
       found.push({ path: address, value });
     }
 
@@ -47,5 +48,6 @@ export function globalSearch(
       searched.push(obj);
     }
   }
+
   return Array.from(found);
 }

@@ -91,7 +91,7 @@ const FrameworkSelector: React.FunctionComponent<{
   name: string;
   frameworks: FrameworkMeta[];
 }> = ({ name, frameworks = [] }) => {
-  // console.debug("Frameworks", { frameworks });
+  // Console.debug("Frameworks", { frameworks });
 
   const frameworkOptions: FrameworkOption[] = useMemo(
     () =>
@@ -130,7 +130,9 @@ export function searchData(query: string, data: unknown): unknown {
   const normalized = normalize(query);
   if (data == null) {
     return null;
-  } else if (typeof data === "object") {
+  }
+
+  if (typeof data === "object") {
     const values = mapValues(data, (value, key) =>
       normalize(key).includes(query) ? value : searchData(query, value)
     );
@@ -142,9 +144,12 @@ export function searchData(query: string, data: unknown): unknown {
           : value != null;
       return keyMatch || valueMatch;
     });
-  } else if (Array.isArray(data)) {
+  }
+
+  if (Array.isArray(data)) {
     return compact(data.map(partial(searchData, query)));
   }
+
   return normalize(data).includes(normalized) ? data : undefined;
 }
 
@@ -242,7 +247,7 @@ const ReaderConfig: React.FunctionComponent<{
   const [query, setQuery] = useState("");
   const { values, setFieldValue } = useFormikContext<FormState>();
 
-  // console.debug("reader form state", { readerIndex, readers: values.readers });
+  // Console.debug("reader form state", { readerIndex, readers: values.readers });
 
   const [{ output, schema, error }, setSchema] = useState({
     output: undefined,
@@ -285,6 +290,7 @@ const ReaderConfig: React.FunctionComponent<{
         });
         return;
       }
+
       const option = readerOptions.find((x) => x.value === type);
       let output;
       let schema;
@@ -323,6 +329,7 @@ const ReaderConfig: React.FunctionComponent<{
     if (debouncedQuery === "" || output == null) {
       return output;
     }
+
     return searchData(debouncedQuery, output);
   }, [debouncedQuery, output]);
 

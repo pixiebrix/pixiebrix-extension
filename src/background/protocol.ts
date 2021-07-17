@@ -56,6 +56,7 @@ export function allowBackgroundSender(
   if (sender == null) {
     return false;
   }
+
   const { externally_connectable } = chrome.runtime.getManifest();
   return (
     sender.id === browser.runtime.id ||
@@ -99,11 +100,13 @@ export function getExtensionId(): string {
   if (isContentScript() || isOptionsPage() || isBackgroundPage()) {
     return browser.runtime.id;
   }
+
   if (chrome.runtime == null) {
     throw new RuntimeNotFoundError(
       "Browser runtime is unavailable; is the extension externally connectable?"
     );
   }
+
   return getChromeExtensionId();
 }
 
@@ -147,7 +150,7 @@ export async function callBackground(
       throw error;
     }
 
-    // console.debug(
+    // Console.debug(
     //   `Content script received response for ${type} (nonce: ${nonce})`,
     //   response
     // );
@@ -155,6 +158,7 @@ export async function callBackground(
     if (isErrorResponse(response)) {
       throw deserializeError(response.$$error);
     }
+
     return response;
   }
 }
@@ -210,6 +214,7 @@ export function liftBackground<R extends SerializableResponse>(
       console.log(`Resolving ${type} immediately from background page`);
       return method(...args);
     }
+
     return callBackground(fullType, args, options) as R;
   };
 }

@@ -92,6 +92,7 @@ export class JQTransformer extends Transformer {
           );
         }
       }
+
       throw error;
     }
   }

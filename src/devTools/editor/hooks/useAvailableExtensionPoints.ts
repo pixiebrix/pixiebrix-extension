@@ -26,7 +26,7 @@ import { zip } from "lodash";
 
 function useAvailableExtensionPoints<
   TConfig extends IExtensionPoint & { rawConfig: ExtensionPointConfig }
-  // we want Function to pass in the CTOR
+  // We want Function to pass in the CTOR
   // eslint-disable-next-line @typescript-eslint/ban-types
 >(ctor: Function): TConfig[] | null {
   const { port } = useContext(DevToolsContext);

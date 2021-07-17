@@ -76,13 +76,16 @@ export const rollbar: Rollbar = Rollbar.init({
  */
 export function toLogArgument(error: unknown): LogArgument {
   if (typeof error === "function") {
-    // the function argument for rollbar.log is a callback to call once the error has been reported, drop
+    // The function argument for rollbar.log is a callback to call once the error has been reported, drop
     // these prevent accidentally calling the callback
     return undefined;
-  } else if (typeof error === "object") {
-    // the custom data or error object
+  }
+
+  if (typeof error === "object") {
+    // The custom data or error object
     return error;
   }
+
   return error.toString();
 }
 

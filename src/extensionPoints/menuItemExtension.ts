@@ -204,10 +204,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       try {
         cancelObserver?.();
       } catch (error: unknown) {
-        // try to proceed as normal
+        // Try to proceed as normal
         reportError(error, this.logger.context);
       }
     }
+
     this.cancelPending.clear();
   }
 
@@ -217,12 +218,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       this.id,
       { extensionIds }
     );
-    // can't use this.menus.values() here b/c because it may have already been cleared
+    // Can't use this.menus.values() here b/c because it may have already been cleared
     for (const extensionId of extensionIds) {
       const $item = $(document).find(`[${DATA_ATTR}="${extensionId}"]`);
       if ($item.length === 0) {
         console.warn(`Item for ${extensionId} was not in the menu`);
       }
+
       $item.remove();
     }
   }
@@ -232,7 +234,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const menus = [...this.menus.values()];
 
-    // clear so they don't get re-added by the onNodeRemoved mechanism
+    // Clear so they don't get re-added by the onNodeRemoved mechanism
     const extensions = this.extensions.splice(0, this.extensions.length);
     this.menus.clear();
 
@@ -251,7 +253,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     for (const element of menus) {
       try {
         this.removeExtensions(extensions.map((x) => x.id));
-        // release the menu element
+        // Release the menu element
         element.removeAttribute(EXTENSION_POINT_DATA_ATTR);
         // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
       } catch (error) {
@@ -268,6 +270,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           console.error("Error cancelling dependency observer");
         }
       }
+
       this.cancelDependencyObservers.delete(extension.id);
     }
   }
@@ -304,6 +307,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       );
       return;
     }
+
     const alreadyRemoved = this.removed.has(uuid);
     this.removed.add(uuid);
     if (!alreadyRemoved) {
@@ -364,6 +368,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
               this.reacquire(menuUUID)
             );
           }
+
           existingCount++;
         })
         .get()
@@ -381,6 +386,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     if (!isAvailable) {
       return false;
     }
+
     return this.installMenus();
   }
 
@@ -425,7 +431,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     let html: string;
 
     if (extension.config.if) {
-      // read latest state at the time of the action
+      // Read latest state at the time of the action
       const ctxt = await ctxtPromise;
       const serviceContext = await makeServiceContext(extension.services);
 
@@ -475,7 +481,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       reportEvent("MenuItemClick", { extensionId: extension.id });
 
       try {
-        // read latest state at the time of the action
+        // Read latest state at the time of the action
         const reader = await this.defaultReader();
         const ctxt = await reader.read(this.getReaderRoot($menu));
         const serviceContext = await makeServiceContext(extension.services);
@@ -534,7 +540,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   watchDependencies(extension: IExtension<MenuItemExtensionConfig>): void {
     const { dependencies = [] } = extension.config;
 
-    // clean up old observers
+    // Clean up old observers
     if (this.cancelDependencyObservers.has(extension.id)) {
       this.cancelDependencyObservers.get(extension.id)();
       this.cancelDependencyObservers.delete(extension.id);
@@ -581,6 +587,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         } catch (error: unknown) {
           console.error("Error cancelling mutation observer", error);
         }
+
         for (const cancel of cancellers) {
           try {
             cancel();
@@ -690,7 +697,7 @@ export type MenuPosition =
   | "append"
   | "prepend"
   | {
-      // element to insert the menu item before, selector is relative to the container
+      // Element to insert the menu item before, selector is relative to the container
       sibling: string | null;
     };
 
@@ -706,7 +713,9 @@ export interface MenuDefinition extends ExtensionPointDefinition {
 
 class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   private readonly _definition: MenuDefinition;
+
   public readonly permissions: Permissions.Permissions;
+
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   public get defaultOptions(): {
@@ -746,22 +755,23 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
         } else if ($sibling.length === 1) {
           $sibling.before($menuItem);
         } else {
-          // didn't find the sibling, so just try inserting it at the end
+          // Didn't find the sibling, so just try inserting it at the end
           $menu.append($menuItem);
         }
       } else {
-        // no element to insert the item before, so insert it at the end.
+        // No element to insert the item before, so insert it at the end.
         $menu.append($menuItem);
       }
     } else {
       switch (position) {
         case "prepend":
         case "append": {
-          // safe because we're checking the value in the case statements
+          // Safe because we're checking the value in the case statements
           // eslint-disable-next-line security/detect-object-injection
           $menu[position]($menuItem);
           break;
         }
+
         default: {
           throw new Error(`Unexpected position ${position}`);
         }
@@ -775,6 +785,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
       if ($containerElement.length > 1) {
         console.warn("getReaderRoot called with multiple containerElements");
       }
+
       const $elt = $containerElement.parents(selector);
       if ($elt.length > 1) {
         throw new Error(
@@ -783,8 +794,10 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
       } else if ($elt.length === 0) {
         throw new Error(`Found no elements for  reader selector: ${selector}`);
       }
+
       return $elt.get(0);
     }
+
     return document;
   }
 
@@ -832,5 +845,6 @@ export function fromJS(
   if (type !== "menuItem") {
     throw new Error(`Expected type=menuItem, got ${type}`);
   }
+
   return new RemoteMenuItemExtensionPoint(config);
 }

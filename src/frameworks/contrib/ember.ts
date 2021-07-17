@@ -72,6 +72,7 @@ export function getEmberApplication(): EmberApplication {
       (namespace) => namespace instanceof (Ember.Application as any)
     ) as EmberApplication;
   }
+
   return undefined;
 }
 
@@ -80,6 +81,7 @@ export function getEmberComponentById(componentId: string): EmberObject {
   if (!app) {
     throw new FrameworkNotFound("Ember application not found");
   }
+
   return app.__container__.lookup("-view-registry:main")[componentId];
 }
 
@@ -99,29 +101,42 @@ function isMutableCell(cell: unknown): cell is MutableCell {
 export function getProp(value: any, prop: string | number): unknown {
   if (isPrimitive(value)) {
     return undefined;
-  } else if (Array.isArray(value)) {
+  }
+
+  if (Array.isArray(value)) {
     if (typeof prop !== "number") {
       throw new TypeError("Expected number for prop for array value");
     }
-    return value[prop];
-  } else if (typeof value === "object") {
-    if (isMutableCell(value) && "value" in value) {
-      return getProp(value.value, prop);
-    } else if ("_cache" in value) {
-      return getProp(value._cache, prop);
-    } else if (Array.isArray(value.content)) {
-      return getProp(value.content, prop);
-    } else if (typeof prop === "string" && isGetter(value, prop)) {
-      return value[prop]();
-    }
+
     return value[prop];
   }
+
+  if (typeof value === "object") {
+    if (isMutableCell(value) && "value" in value) {
+      return getProp(value.value, prop);
+    }
+
+    if ("_cache" in value) {
+      return getProp(value._cache, prop);
+    }
+
+    if (Array.isArray(value.content)) {
+      return getProp(value.content, prop);
+    }
+
+    if (typeof prop === "string" && isGetter(value, prop)) {
+      return value[prop]();
+    }
+
+    return value[prop];
+  }
+
   // ignore functions and symbols
   return undefined;
 }
 
 function pickExternalProps(obj: object): object {
-  // lodash's pickby was having issues with some getters
+  // Lodash's pickby was having issues with some getters
   return fromPairs(
     Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
   );
@@ -142,22 +157,34 @@ export function readEmberValueFromCache(
 
   if (depth >= maxDepth) {
     return undefined;
-  } else if (isPrimitive(value)) {
+  }
+
+  if (isPrimitive(value)) {
     return value;
-  } else if (Array.isArray(value)) {
-    // must come before typeof value === "object" check because arrays are objects
+  }
+
+  if (Array.isArray(value)) {
+    // Must come before typeof value === "object" check because arrays are objects
     return value.map((x) => traverse(x));
-  } else if (typeof value === "object") {
+  }
+
+  if (typeof value === "object") {
     if (isMutableCell(value) && "value" in value) {
       return traverse(value.value);
-    } else if ("_cache" in value) {
+    }
+
+    if ("_cache" in value) {
       return traverse(value._cache);
-    } else if (Array.isArray(value.content)) {
-      // consider arrays a traverse because knowing the property name by itself isn't useful for anything
+    }
+
+    if (Array.isArray(value.content)) {
+      // Consider arrays a traverse because knowing the property name by itself isn't useful for anything
       return value.content.map((x: any) => traverse(x));
     }
+
     return mapValues(pickExternalProps(value), recurse);
   }
+
   // ignore functions and symbols
   return undefined;
 }
@@ -167,6 +194,7 @@ function isManaged(node: Node): boolean {
   if (!elt) {
     throw new Error("Could not get DOM HTMLElement for node");
   }
+
   return !!ignoreNotFound(() => getEmberComponentById(elt.id));
 }
 
@@ -196,6 +224,7 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
     if (!elt) {
       throw new Error("No DOM HTMLElement for node");
     }
+
     return ignoreNotFound(() => getEmberComponentById(elt.id));
   },
   getParent: (instance) => instance.parentView,
@@ -211,7 +240,7 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );
-    // safe because the prop names are coming from getAllPropertyNames
+    // Safe because the prop names are coming from getAllPropertyNames
     // eslint-disable-next-line security/detect-object-injection
     return fromPairs(props.map((x) => [x, target[x]]));
   },

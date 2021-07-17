@@ -94,7 +94,7 @@ const Sidebar: React.FunctionComponent = () => {
         {flags.includes("workshop") && (
           <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
         )}
-        {/*<ConnectedNavLink route="build" title="Build Brick" icon={faTools} />*/}
+        {/* <ConnectedNavLink route="build" title="Build Brick" icon={faTools} /> */}
         <SidebarLink route="/services" title="Integrations" icon={faCloud} />
         <SidebarLink route="/settings" title="Settings" icon={faCogs} />
         <li className={cx("nav-item")}>

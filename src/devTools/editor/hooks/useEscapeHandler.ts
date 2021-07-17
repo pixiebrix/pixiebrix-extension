@@ -28,6 +28,7 @@ export default function useEscapeHandler(
     } else {
       document.removeEventListener("keydown", escapeHandler);
     }
+
     return () => document.removeEventListener("keydown", escapeHandler);
   }, [active, cancel, escapeHandler]);
 }

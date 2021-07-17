@@ -72,12 +72,14 @@ export function makeReaderId(
   if (!excludeIds.includes(base)) {
     return base;
   }
+
   let num = 1;
   let id: string;
   do {
     num++;
     id = `${base}-${num}`;
   } while (excludeIds.includes(id));
+
   return id;
 }
 
@@ -139,10 +141,11 @@ export async function generateExtensionPointMetadata(
       try {
         await brickRegistry.lookup(id);
       } catch {
-        // name doesn't exist yet
+        // Name doesn't exist yet
         return true;
       }
     }
+
     return false;
   };
 
@@ -164,6 +167,7 @@ export async function generateExtensionPointMetadata(
       };
     }
   }
+
   throw new Error("Could not find available id");
 }
 
