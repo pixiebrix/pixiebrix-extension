@@ -62,20 +62,22 @@ const PersistLoader: React.FunctionComponent = () => {
   );
 };
 
-const RequireScope: React.FunctionComponent<{ scope: string | null }> = ({
-  scope,
-  children,
-}) => {
+const RequireScope: React.FunctionComponent<{
+  scope: string | null;
+  isPending: boolean;
+}> = ({ scope, isPending, children }) => {
   const mode = useSelector<RootState, string>(({ settings }) => settings.mode);
 
-  if (mode !== "local" && (scope === "" || !scope)) {
+  // Fetching scope currently performs a network request. Optimistically show the main interface while the scope is being fetched.
+  if (mode !== "local" && !isPending && (scope === "" || !scope)) {
     return <ScopeSettings />;
   }
+
   return <>{children}</>;
 };
 
 const Panel: React.FunctionComponent = () => {
-  const [authState, , authError] = useAsyncState(getAuth);
+  const [authState, authIsPending, authError] = useAsyncState(getAuth);
   const context = useDevConnection();
 
   useAsyncEffect(async () => {
@@ -123,7 +125,10 @@ const Panel: React.FunctionComponent = () => {
                 <ErrorBoundary>
                   <Router>
                     <Container fluid className="DevToolsContainer">
-                      <RequireScope scope={authState?.scope}>
+                      <RequireScope
+                        scope={authState?.scope}
+                        isPending={authIsPending}
+                      >
                         <Editor />
                       </RequireScope>
                     </Container>
