@@ -44,7 +44,7 @@ const selectEditor = ({ editor }: RootState) => editor;
 const DEFAULT_SIDEBAR_WIDTH_PX = 260;
 
 const Editor: React.FunctionComponent = () => {
-  const { tabState, port } = useContext(DevToolsContext);
+  const { tabState, port, connecting } = useContext(DevToolsContext);
   const installed = useSelector(selectInstalledExtensions);
   const dispatch = useDispatch();
 
@@ -82,7 +82,8 @@ const Editor: React.FunctionComponent = () => {
   );
 
   const body = useMemo(() => {
-    if (tabState.hasPermissions === false) {
+    if (tabState.hasPermissions === false && !connecting) {
+      // Check `connecting` to optimistically show the main interface while the devtools are connecting to the page.
       return <PermissionsPane />;
     }
 
@@ -135,6 +136,7 @@ const Editor: React.FunctionComponent = () => {
       return <WelcomePane showSupport={showSupport} />;
     }
   }, [
+    connecting,
     beta,
     cancelInsert,
     inserting,
