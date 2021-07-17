@@ -20,12 +20,12 @@ import { Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { registerBlock } from "@/blocks/registry";
 
-export class HideEffect extends Effect {
+export class ShowEffect extends Effect {
   constructor() {
     super(
-      "@pixiebrix/hide",
-      "Hide",
-      "Hide or remove one or more elements on a page"
+      "@pixiebrix/show",
+      "Show",
+      "Show one or more elements that are currently hidden on the page"
     );
   }
 
@@ -35,29 +35,15 @@ export class HideEffect extends Effect {
         type: "string",
         format: "selector",
       },
-      mode: {
-        type: "string",
-        enum: ["hide", "remove"],
-      },
     },
     ["selector"]
   );
 
-  async effect({
-    selector,
-    mode = "hide",
-  }: {
-    selector: string;
-    mode?: "hide" | "remove";
-  }): Promise<void> {
+  async effect({ selector }: { selector: string }): Promise<void> {
     // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
     const $elt = $(document).find(selector);
-    if (mode === "hide") {
-      $elt.hide();
-    } else {
-      $elt.remove();
-    }
+    $elt.show();
   }
 }
 
-registerBlock(new HideEffect());
+registerBlock(new ShowEffect());
