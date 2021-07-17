@@ -165,18 +165,20 @@ async function updateDeployments() {
       !timestamps.has(x.id) || new Date(x.updated_at) > timestamps.get(x.id)
   );
 
-  console.debug("No deployment updates found");
-
   if (updatedDeployments.length === 0) {
+    console.debug("No deployment updates found");
     return;
   }
 
+  // Fetch the current brick definitions, which will have the current permissions
   try {
-    // Get the current brick definitions, which will have the current permissions
     await refreshRegistries();
   } catch (error: unknown) {
     reportError(error);
     await browser.runtime.openOptionsPage();
+    // Bail and open the main options page, which 1) fetches the latest bricks, and 2) will prompt the user the to
+    // manually install the deployments via the banner
+    return;
   }
 
   const deploymentRequirements = await Promise.all(
@@ -192,6 +194,8 @@ async function updateDeployments() {
     deploymentRequirements,
     (x) => x.hasPermissions
   );
+
+  let automaticError = false;
 
   if (automatic.length > 0) {
     console.debug(
@@ -212,9 +216,12 @@ async function updateDeployments() {
       );
     } catch (error: unknown) {
       reportError(error);
-      await browser.runtime.openOptionsPage();
+      automaticError = true;
     }
-  } else if (manual.length > 0) {
+  }
+
+  // We only want to call openOptionsPage a single time
+  if (manual.length > 0 || automaticError) {
     await browser.runtime.openOptionsPage();
   }
 }
