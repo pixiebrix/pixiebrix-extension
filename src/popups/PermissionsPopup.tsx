@@ -24,7 +24,7 @@ import Centered from "@/devTools/editor/components/Centered";
 import { reportError } from "@/telemetry/logging";
 import { browser, Permissions } from "webextension-polyfill-ts";
 import { getErrorMessage } from "@/errors";
-import { selectOptionalPermissions } from "@/permissions";
+import { selectOptionalPermissions } from "@/utils/permissions";
 
 const PermissionsPopup: React.FC = () => {
   const [rejected, setRejected] = useState(false);

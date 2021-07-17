@@ -18,32 +18,19 @@
 import React, { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { getTabInfo } from "@/background/devtools";
-import { browser } from "webextension-polyfill-ts";
-import { isChrome } from "@/helpers";
 import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
-import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
-import { openPopupPrompt } from "@/background/popup";
+import { requestPermissions } from "@/utils/permissions";
+import AsyncButton from "@/components/AsyncButton";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { port, connect } = useContext(DevToolsContext);
 
-  const requestPermissions = useCallback(async () => {
+  const onRequestPermission = useCallback(async () => {
     const { url } = await getTabInfo(port);
-    if (isChrome) {
-      await browser.permissions.request({ origins: [url] });
-    } else {
-      const page = new URL(
-        browser.runtime.getURL("popups/permissionsPopup.html")
-      );
-      page.searchParams.set("origin", url);
-
-      const tabId = browser.devtools.inspectedWindow.tabId;
-      await openPopupPrompt(tabId, page.toString());
-    }
-
+    await requestPermissions({ origins: [url] });
     await sleep(500);
     await connect();
   }, [connect, port]);
@@ -54,9 +41,9 @@ const PermissionsPane: React.FunctionComponent = () => {
         PixieBrix does not have access to the page
       </div>
       <p>
-        <Button onClick={requestPermissions}>
+        <AsyncButton onClick={onRequestPermission}>
           <FontAwesomeIcon icon={faShieldAlt} /> Grant Permanent Access
-        </Button>
+        </AsyncButton>
       </p>
       <p className="text-info">
         <FontAwesomeIcon icon={faInfoCircle} /> You can revoke PixieBrix&apos;s

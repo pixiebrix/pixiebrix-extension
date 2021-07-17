@@ -17,11 +17,7 @@
 
 import { patternToRegex } from "webext-patterns";
 import castArray from "lodash/castArray";
-import groupBy from "lodash/groupBy";
-import sortBy from "lodash/sortBy";
-import uniq from "lodash/uniq";
 import { Availability } from "@/blocks/types";
-import { Permissions } from "webextension-polyfill-ts";
 import { BusinessError } from "@/errors";
 
 export function testMatchPatterns(
@@ -75,28 +71,4 @@ export async function checkAvailable({
   }
 
   return true;
-}
-
-/**
- * Merge a list of permissions into a single permissions object.
- * @param permissions
- */
-export function mergePermissions(
-  permissions: Permissions.Permissions[] = []
-): Permissions.Permissions {
-  return {
-    origins: uniq(permissions.flatMap((x) => x.origins ?? [])),
-    permissions: uniq(permissions.flatMap((x) => x.permissions ?? [])),
-  };
-}
-
-export function distinctPermissions(
-  permissions: Permissions.Permissions[]
-): Permissions.Permissions[] {
-  return Object.values(
-    groupBy(permissions, (x) => JSON.stringify(sortBy(x.origins)))
-  ).map((perms) => ({
-    permissions: uniq(perms.flatMap((x) => x.permissions || [])),
-    origins: perms[0].origins,
-  }));
 }

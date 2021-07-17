@@ -18,7 +18,6 @@
 import { useAsyncState } from "@/hooks/common";
 import { checkPermissions } from "@/permissions";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { browser } from "webextension-polyfill-ts";
 import { reportError } from "@/telemetry/logging";
 import { useToasts } from "react-toast-notifications";
 import { useFormikContext } from "formik";
@@ -27,6 +26,7 @@ import { head, castArray } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";
 import { Service } from "@/types";
+import { requestPermissions } from "@/utils/permissions";
 
 type Listener = () => void;
 
@@ -106,11 +106,11 @@ export function useDependency(
     hasPermissions,
   ]);
 
-  const requestPermissions = useCallback(async () => {
+  const requestPermissionCallback = useCallback(async () => {
     const permissions = { origins };
     console.debug("requesting origins", { permissions });
     try {
-      const result = await browser.permissions.request(permissions);
+      const result = await requestPermissions(permissions);
       setGrantedPermissions(result);
       if (!result) {
         addToast("You must accept the permissions request", {
@@ -144,6 +144,6 @@ export function useDependency(
     config: serviceResult?.localConfig,
     service: serviceResult?.service,
     hasPermissions: hasPermissions || grantedPermissions,
-    requestPermissions,
+    requestPermissions: requestPermissionCallback,
   };
 }
