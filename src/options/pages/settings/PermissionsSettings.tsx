@@ -18,12 +18,28 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { useToasts } from "react-toast-notifications";
 import { getAdditionalPermissions } from "webext-additional-permissions";
-import { browser } from "webextension-polyfill-ts";
+import { browser, Manifest } from "webextension-polyfill-ts";
 import { sortBy } from "lodash";
 import useAsyncEffect from "use-async-effect";
 import { Button, Card, ListGroup } from "react-bootstrap";
-
+type OptionalPermission = Manifest.OptionalPermission;
 type Permissions = chrome.permissions.Permissions;
+
+const PermissionRow: React.FunctionComponent<{
+  value: string;
+  remove: (value: string) => void;
+}> = ({ value, remove }) => {
+  return (
+    <ListGroup.Item className="d-flex">
+      <div className="flex-grow-1 align-self-center">{value}</div>
+      <div className="align-self-center">
+        <Button variant="danger" size="sm" onClick={async () => remove(value)}>
+          Revoke
+        </Button>{" "}
+      </div>
+    </ListGroup.Item>
+  );
+};
 
 const PermissionsSettings: React.FunctionComponent = () => {
   const { addToast } = useToasts();
@@ -33,10 +49,24 @@ const PermissionsSettings: React.FunctionComponent = () => {
     setPermissions(await getAdditionalPermissions());
   }, [setPermissions]);
 
-  const remove = useCallback(
+  const removeOrigin = useCallback(
     async (origin: string) => {
       await browser.permissions.remove({ origins: [origin] });
       addToast(`Removed permission for ${origin}`, {
+        appearance: "success",
+        autoDismiss: true,
+      });
+      await refresh();
+    },
+    [refresh, addToast]
+  );
+
+  const removePermission = useCallback(
+    async (permission: string) => {
+      await browser.permissions.remove({
+        permissions: [permission as OptionalPermission],
+      });
+      addToast(`Removed ${permission}`, {
         appearance: "success",
         autoDismiss: true,
       });
@@ -49,27 +79,27 @@ const PermissionsSettings: React.FunctionComponent = () => {
     return sortBy(permissions?.origins ?? []);
   }, [permissions]);
 
+  const extraPermissions = useMemo(() => {
+    return sortBy(permissions?.permissions ?? []);
+  }, [permissions]);
+
   useAsyncEffect(async () => refresh(), []);
 
   return (
     <Card>
       <Card.Header>Additional Permissions</Card.Header>
       <ListGroup variant="flush">
-        {origins.map((origin) => (
-          <ListGroup.Item key={origin} className="d-flex">
-            <div className="flex-grow-1 align-self-center">{origin}</div>
-            <div className="align-self-center">
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={async () => remove(origin)}
-              >
-                Revoke
-              </Button>{" "}
-            </div>
-          </ListGroup.Item>
+        {extraPermissions.map((permission) => (
+          <PermissionRow
+            key={permission}
+            value={permission}
+            remove={removePermission}
+          />
         ))}
-        {origins.length === 0 && (
+        {origins.map((origin) => (
+          <PermissionRow key={origin} value={origin} remove={removeOrigin} />
+        ))}
+        {origins.length + extraPermissions.length === 0 && (
           <ListGroup.Item>No active permissions</ListGroup.Item>
         )}
       </ListGroup>
