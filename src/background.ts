@@ -52,4 +52,4 @@ initGoogle();
 initFrames();
 preload();
 initDeploymentUpdater();
-initFirefoxCompat();
+void initFirefoxCompat();
