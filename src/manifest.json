@@ -1,6 +1,8 @@
 {
   "manifest_version": 2,
+  "author": "Pixie Brix, LLC",
   "name": "PixieBrix",
+  "short_name": "PixieBrix",
   "description": "Integrate and extend your favorite SaaS apps without writing a line of code!",
   "homepage_url": "https://www.pixiebrix.com",
   "minimum_chrome_version": "80.0",
