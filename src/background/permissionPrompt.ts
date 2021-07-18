@@ -47,25 +47,17 @@ async function openPopup(
   url: string,
   opener: browser.windows.Window
 ): Promise<Tabs.Tab> {
-  // `top` and `left are ignored in .create on Firefox, but attempt anyway
+  // `top` and `left are ignored in .create on Firefox, but attempt anyway.
+  // If present, the popup will be centered on screen rather than on the window.
   // https://bugzilla.mozilla.org/show_bug.cgi?id=1396881
-  const top = Math.round(opener.top + (opener.height - POPUP_HEIGHT_PX) / 2);
-  const left = Math.round(opener.left + (opener.width - POPUP_WIDTH_PX) / 2);
   const window = await browser.windows.create({
     url,
-    top,
-    left,
-    focused: false,
+    focused: true,
+    top: Math.round(opener.top + (opener.height - POPUP_HEIGHT_PX) / 2),
+    left: Math.round(opener.left + (opener.width - POPUP_WIDTH_PX) / 2),
     height: POPUP_HEIGHT_PX,
     width: POPUP_WIDTH_PX,
     type: "popup",
-  });
-
-  // Aforementioned Firefox bug workaround
-  await browser.windows.update(window.id, {
-    focused: true,
-    top,
-    left,
   });
 
   return window.tabs[0];
