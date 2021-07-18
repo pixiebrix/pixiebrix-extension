@@ -35,6 +35,7 @@ webpack-stats.json
 assets/bundles
 browsers/**/bundles/**
 browsers/dist
+dist
 
 # Other artifacts
 artifacts

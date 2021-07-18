@@ -23,11 +23,5 @@
     },
     "lib": ["dom", "es2019", "es2020", "DOM.Iterable"]
   },
-  "exclude": [
-    "node_modules",
-    "venv",
-    "**/bundles/**",
-    "**/node_modules/**",
-    "node_modules/**"
-  ]
+  "exclude": ["venv", "dist", "node_modules"]
 }

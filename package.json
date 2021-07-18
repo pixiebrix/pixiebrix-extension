@@ -2,13 +2,12 @@
   "name": "@pixiebrix/extension",
   "version": "1.2.2",
   "description": "PixieBrix Browser Extension",
-  "main": "index.js",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watchAll",
     "lint": "eslint src",
-    "watch": "ENV_FILE='.env.development' webpack --mode development --config browsers/webpack.config.js --watch",
-    "build": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production --config browsers/webpack.config.js",
+    "watch": "ENV_FILE='.env.development' webpack --mode development --watch",
+    "build": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
     "build:scripts": "webpack --mode production --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
     "storybook": "start-storybook -p 6006",
@@ -121,8 +120,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.14.6",
-    "@babel/plugin-proposal-class-properties": "^7.14.5",
-    "@babel/plugin-transform-modules-commonjs": "^7.14.5",
     "@babel/preset-env": "^7.14.7",
     "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "^7.14.5",
@@ -253,6 +250,6 @@
     }
   },
   "webExt": {
-    "sourceDir": "browsers/dist"
+    "sourceDir": "dist"
   }
 }

@@ -41,7 +41,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build-staging
-          path: browsers/dist
+          path: dist
           retention-days: 5
           if-no-files-found: error
       - uses: actions/upload-artifact@v2
