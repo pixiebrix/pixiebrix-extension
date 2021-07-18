@@ -20,7 +20,7 @@ import uniq from "lodash/uniq";
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import { liftBackground } from "@/background/protocol";
-import { openPopupPrompt } from "@/background/popup";
+import { openPopupPrompt } from "@/background/permissionPrompt";
 
 /** Filters out any permissions that are not part of `optional_permissions` */
 export function selectOptionalPermissions(
