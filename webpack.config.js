@@ -29,9 +29,7 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, isEmpty } = require("lodash");
 const Policy = require("csp-parse");
-
 const { resolve } = require("./resolve.config.js");
-const rootDir = path.resolve(__dirname, "../");
 
 // Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
 const defaults = {
@@ -44,7 +42,7 @@ const defaults = {
 };
 
 dotenv.config({
-  path: path.resolve(__dirname, process.env.ENV_FILE ?? ".env"),
+  path: process.env.ENV_FILE ?? ".env",
 });
 
 for (const [env, defaultValue] of Object.entries(defaults)) {
@@ -86,23 +84,23 @@ function rollbarPlugins() {
         publicPath: process.env.ROLLBAR_PUBLIC_PATH,
       }),
     ];
-  } else {
-    console.warn("ROLLBAR_POST_SERVER_ITEM_TOKEN not configured");
-    return [];
   }
+
+  console.warn("ROLLBAR_POST_SERVER_ITEM_TOKEN not configured");
+  return [];
 }
 
 function getVersionName(isProduction) {
   if (process.env.ENVIRONMENT === "staging") {
-    // staging builds (i.e., from CI) are production builds, so check ENVIRONMENT first
+    // Staging builds (i.e., from CI) are production builds, so check ENVIRONMENT first
     return `${process.env.npm_package_version}-alpha+${process.env.SOURCE_VERSION}`;
-  } else if (isProduction) {
-    return process.env.npm_package_version;
-  } else {
-    return `${
-      process.env.npm_package_version
-    }-local+${new Date().toISOString()}`;
   }
+
+  if (isProduction) {
+    return process.env.npm_package_version;
+  }
+
+  return `${process.env.npm_package_version}-local+${new Date().toISOString()}`;
 }
 
 function getConditionalPlugins(isProduction) {
@@ -110,7 +108,7 @@ function getConditionalPlugins(isProduction) {
     return [
       new BundleAnalyzerPlugin({
         analyzerMode: "static",
-        reportFilename: path.join(rootDir, "report.html"),
+        reportFilename: path.resolve("report.html"),
       }),
       ...rollbarPlugins(),
     ];
@@ -175,7 +173,7 @@ function customizeManifest(manifest, isProduction) {
   if (process.env.GOOGLE_OAUTH_CLIENT_ID) {
     manifest.oauth2 = {
       client_id: process.env.GOOGLE_OAUTH_CLIENT_ID,
-      // don't ask for any scopes up front, instead ask when they're required, e.g., when the user
+      // Don't ask for any scopes up front, instead ask when they're required, e.g., when the user
       // installs a brick for google sheets
       scopes: [""],
     };
@@ -183,7 +181,6 @@ function customizeManifest(manifest, isProduction) {
 }
 
 module.exports = (env, options) => ({
-  context: rootDir,
   node: nodeConfig,
 
   // https://stackoverflow.com/a/57460886/402560
@@ -195,23 +192,26 @@ module.exports = (env, options) => ({
   },
 
   output: {
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve("dist"),
     globalObject: "window",
     chunkFilename: "bundles/[name].bundle.js",
   },
-  entry: {
-    background: path.resolve(rootDir, "src/background"),
-    contentScript: path.resolve(rootDir, "src/contentScript"),
-    devtools: path.resolve(rootDir, "src/devtools"),
-    devtoolsPanel: path.resolve(rootDir, "src/devtoolsPanel"),
-    // the script that gets injected into the host page
-    script: path.resolve(rootDir, "src/script"),
-    frame: path.resolve(rootDir, "src/frame"),
-    options: path.resolve(rootDir, "src/options"),
-    support: path.resolve(rootDir, "src/support"),
-    action: path.resolve(rootDir, "src/action"),
-    permissionsPopup: path.resolve(rootDir, "src/permissionsPopup"),
-  },
+  entry: Object.fromEntries(
+    [
+      "background",
+      "contentScript",
+      "devtools",
+      "devtoolsPanel",
+      // The script that gets injected into the host page
+      "script",
+      "frame",
+      "options",
+      "support",
+      "action",
+      "permissionsPopup",
+    ].map((name) => [name, `./src/${name}`])
+  ),
+
   resolve: {
     ...resolve,
     // Need to set these fields manually as their default values rely on `web` target.
@@ -291,8 +291,7 @@ module.exports = (env, options) => ({
     new CopyPlugin({
       patterns: [
         {
-          from: path.resolve(__dirname, "manifest.json"),
-          to: "manifest.json",
+          from: "src/manifest.json",
           transform: (jsonString) => {
             const manifest = JSON.parse(jsonString);
             customizeManifest(manifest, isProd(options));
@@ -300,8 +299,10 @@ module.exports = (env, options) => ({
           },
         },
         {
-          from: path.resolve(__dirname, "src"),
+          from: "*.{css,html}",
+          context: "src",
         },
+        "static",
       ],
     }),
   ],

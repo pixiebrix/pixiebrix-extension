@@ -15,10 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// Resolve-only webpack configuration for ESlint
+
+const path = require("path");
+
 module.exports = {
-  presets: [
-    ["@babel/preset-env", { targets: { node: "current" } }],
-    "@babel/preset-react",
-    "@babel/preset-typescript",
-  ],
+  resolve: {
+    alias: {
+      "@": path.resolve("src"),
+      "@img": path.resolve("img"),
+      "@contrib": path.resolve("contrib"),
+      "@schemas": path.resolve("schemas"),
+      vendors: path.resolve("src/vendors"),
+      "@microsoft/applicationinsights-web": path.resolve(
+        "src/contrib/uipath/quietLogger"
+      ),
+
+      // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
+      handlebars: "handlebars/dist/handlebars.js",
+    },
+    extensions: [".ts", ".tsx", ".jsx", ".js"],
+  },
 };
