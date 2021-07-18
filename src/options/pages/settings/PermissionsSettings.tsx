@@ -41,6 +41,10 @@ const PermissionRow: React.FunctionComponent<{
   );
 };
 
+// `devtools` is actually a required permission that gets added automatically
+// https://github.com/fregante/webext-additional-permissions/issues/6
+const HIDE_EXTRA_PERMISSIONS = ["devtools"];
+
 const PermissionsSettings: React.FunctionComponent = () => {
   const { addToast } = useToasts();
   const [permissions, setPermissions] = useState<Permissions>();
@@ -80,7 +84,9 @@ const PermissionsSettings: React.FunctionComponent = () => {
   }, [permissions]);
 
   const extraPermissions = useMemo(() => {
-    return sortBy(permissions?.permissions ?? []);
+    return sortBy(permissions?.permissions ?? []).filter(
+      (x) => !HIDE_EXTRA_PERMISSIONS.includes(x)
+    );
   }, [permissions]);
 
   useAsyncEffect(async () => refresh(), []);

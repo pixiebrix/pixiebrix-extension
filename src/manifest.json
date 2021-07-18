@@ -26,7 +26,6 @@
     "storage",
     "identity",
     "tabs",
-    "devtools",
     "webNavigation",
     "contextMenus"
   ],
