@@ -47,7 +47,8 @@ async function openPopup(
   url: string,
   opener: browser.windows.Window
 ): Promise<Tabs.Tab> {
-  // Ignored in .create, but attempt anyway
+  // `top` and `left are ignored in .create on Firefox, but attempt anyway
+  // https://bugzilla.mozilla.org/show_bug.cgi?id=1396881
   const top = Math.round(opener.top + (opener.height - POPUP_HEIGHT_PX) / 2);
   const left = Math.round(opener.left + (opener.width - POPUP_WIDTH_PX) / 2);
   const window = await browser.windows.create({
