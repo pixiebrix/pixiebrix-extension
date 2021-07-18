@@ -16,12 +16,11 @@
  */
 
 import { browser, Tabs } from "webextension-polyfill-ts";
-import { expectBackgroundPage } from "@/utils/expectContext";
-import { isChrome } from "@/helpers";
+import { isFirefox } from "@/helpers";
 import { liftBackground } from "@/background/protocol";
 
-const WINDOW_WIDTH_PX = 400; // Makes the native prompt appear centered
-const WINDOW_HEIGHT_PX = 215; // Includes titlebar height, must fit the content and error to avoid scrollbars
+const POPUP_WIDTH_PX = 400; // Makes the native prompt appear centered
+const POPUP_HEIGHT_PX = 215; // Includes titlebar height, must fit the content and error to avoid scrollbars
 
 async function onTabClose(tabId: number): Promise<void> {
   return new Promise((resolve) => {
@@ -37,22 +36,35 @@ async function onTabClose(tabId: number): Promise<void> {
   });
 }
 
-async function openTab(url: string, tabId: number): Promise<Tabs.Tab> {
+async function openTab(url: string, openerTabId: number): Promise<Tabs.Tab> {
   return browser.tabs.create({
-    url: String(url),
-    openerTabId: tabId, // This makes the tab appear right after the target tab
+    url,
+    openerTabId, // Makes the new tab appear right after the opener
   });
 }
 
-async function createPopup(url: string | URL): Promise<Tabs.Tab> {
+async function openPopup(
+  url: string,
+  opener: browser.windows.Window
+): Promise<Tabs.Tab> {
+  // Ignored in .create, but attempt anyway
+  const top = Math.round(opener.top + (opener.height - POPUP_HEIGHT_PX) / 2);
+  const left = Math.round(opener.left + (opener.width - POPUP_WIDTH_PX) / 2);
   const window = await browser.windows.create({
-    url: String(url),
-    focused: true,
-    height: WINDOW_HEIGHT_PX,
-    width: WINDOW_WIDTH_PX,
-    top: Math.round((screen.availHeight - WINDOW_HEIGHT_PX) / 2),
-    left: Math.round((screen.availWidth - WINDOW_WIDTH_PX) / 2),
+    url,
+    top,
+    left,
+    focused: false,
+    height: POPUP_HEIGHT_PX,
+    width: POPUP_WIDTH_PX,
     type: "popup",
+  });
+
+  // Aforementioned Firefox bug workaround
+  await browser.windows.update(window.id, {
+    focused: true,
+    top,
+    left,
   });
 
   return window.tabs[0];
@@ -61,18 +73,16 @@ async function createPopup(url: string | URL): Promise<Tabs.Tab> {
 /**
  * Return true if popups are expected to work properly for the user agent / operating system.
  */
-async function detectPopupSupport(tabId: number): Promise<boolean> {
-  expectBackgroundPage();
-
-  if (isChrome || !navigator.userAgent.includes("Macintosh")) {
-    return true;
-  }
-
+async function detectPopupSupport(
+  currentWindow: browser.windows.Window
+): Promise<boolean> {
   // Firefox on Mac seems to be unable to handle popups in fullscreen mode, changing the macOS "space"
   // back to the desktop
-  const currentTab = await browser.tabs.get(tabId);
-  const currentWindow = await browser.windows.get(currentTab.windowId);
-  return currentWindow.state !== "fullscreen";
+  const isBuggy =
+    isFirefox &&
+    navigator.userAgent.includes("Macintosh") &&
+    currentWindow.state === "fullscreen";
+  return !isBuggy;
 }
 
 /**
@@ -81,9 +91,13 @@ async function detectPopupSupport(tabId: number): Promise<boolean> {
 export const openPopupPrompt = liftBackground(
   "OPEN_POPUP_PROMPT",
   async (openerTabId: number, url: string) => {
-    const tab = (await detectPopupSupport(openerTabId))
-      ? await createPopup(url)
+    const { windowId } = await browser.tabs.get(openerTabId);
+    const openerWindow = await browser.windows.get(windowId);
+
+    const popupTab = (await detectPopupSupport(openerWindow))
+      ? await openPopup(url, openerWindow)
       : await openTab(url, openerTabId);
-    await onTabClose(tab.id);
+
+    await onTabClose(popupTab.id);
   }
 );
