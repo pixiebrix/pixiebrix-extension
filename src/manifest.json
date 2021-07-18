@@ -40,8 +40,6 @@
     "frame.css",
     "action.html",
     "action.css",
-    "popups/*",
-    "permissionsPopup.css",
     "devtoolsPanel.css",
     "script.js",
     "audio/*",

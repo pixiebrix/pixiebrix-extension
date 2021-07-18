@@ -18,7 +18,6 @@
 import React, { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { getTabInfo } from "@/background/devtools";
-import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
@@ -30,9 +29,9 @@ const PermissionsPane: React.FunctionComponent = () => {
 
   const onRequestPermission = useCallback(async () => {
     const { url } = await getTabInfo(port);
-    await requestPermissions({ origins: [url] });
-    await sleep(500);
-    await connect();
+    if (await requestPermissions({ origins: [url] })) {
+      await connect();
+    }
   }, [connect, port]);
 
   return (
