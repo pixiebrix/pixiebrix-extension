@@ -18,4 +18,4 @@
 import "./internal";
 export { navigationEvent } from "./external";
 export * from "./protocol";
-export * from "@/background/popup";
+export * from "@/background/permissionPrompt";

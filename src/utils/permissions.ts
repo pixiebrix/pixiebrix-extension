@@ -20,7 +20,7 @@ import uniq from "lodash/uniq";
 import groupBy from "lodash/groupBy";
 import sortBy from "lodash/sortBy";
 import { liftBackground } from "@/background/protocol";
-import { openPopupPrompt } from "@/background/popup";
+import { openPopupPrompt } from "@/background/permissionPrompt";
 
 /** Filters out any permissions that are not part of `optional_permissions` */
 export function selectOptionalPermissions(
@@ -67,7 +67,7 @@ const containsPermissionsInBackground = liftBackground(
 export async function containsPermissions(
   permissions: Permissions.AnyPermissions
 ): Promise<boolean> {
-  if ("permissions" in browser) {
+  if (browser.permissions) {
     return browser.permissions.contains(permissions);
   }
 
@@ -79,7 +79,7 @@ export async function containsPermissions(
 export async function requestPermissions(
   permissions: Permissions.Permissions
 ): Promise<boolean> {
-  if ("permissions" in browser) {
+  if (browser.permissions) {
     return browser.permissions.request(permissions);
   }
 
@@ -87,12 +87,12 @@ export async function requestPermissions(
     return true;
   }
 
-  const page = new URL(browser.runtime.getURL("popups/permissionsPopup.html"));
+  const page = new URL(browser.runtime.getURL("permissionsPopup.html"));
   for (const origin of permissions.origins ?? []) {
     page.searchParams.append("origin", origin);
   }
-  for (const origin of permissions.permissions ?? []) {
-    page.searchParams.append("permission", origin);
+  for (const permission of permissions.permissions ?? []) {
+    page.searchParams.append("permission", permission);
   }
 
   // TODO: This only works in the Dev Tools; We should query the current or front-most window
