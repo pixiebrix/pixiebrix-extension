@@ -11,7 +11,7 @@
   "settings": {
     "import/resolver": {
       "webpack": {
-        "config": "./browsers/resolve.config.js"
+        "config": "./resolve.config.js"
       }
     },
     "import/ignore": [
@@ -150,7 +150,7 @@
   "ignorePatterns": [
     "node_modules",
     ".idea",
-    "browsers/dist",
+    "dist",
     "artifacts",
     "scripts/bin",
     "src/vendors",

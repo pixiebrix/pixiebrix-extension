@@ -27,7 +27,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build-for-store
-          path: browsers/dist
+          path: dist
           retention-days: 5
 
   build:
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: build-production
-          path: browsers/dist
+          path: dist
           retention-days: 5
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2

@@ -20,7 +20,7 @@ const path = require("path");
 const rootDir = path.resolve(__dirname, "../");
 const webpack = require("webpack");
 
-const { resolve } = require("../browsers/resolve.config.js");
+const { resolve } = require("../resolve.config.js");
 
 module.exports = {
   mode: "development",
