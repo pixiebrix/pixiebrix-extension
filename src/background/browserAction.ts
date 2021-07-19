@@ -163,7 +163,7 @@ handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
   const tabId = sender.tab.id;
   tabFrames.delete(tabId);
   await contentScript.hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
-  console.debug("Clearing action frame nonce", { sender, nonce });
+  console.debug("Clearing action frame nonce", { sender });
   tabNonces.delete(tabId);
 });
 
