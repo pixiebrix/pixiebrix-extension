@@ -44,6 +44,7 @@ import initNavigation from "@/background/navigation";
 import initExecutor from "@/background/executor";
 import preload from "@/background/preload";
 import initDeploymentUpdater from "@/background/deployment";
+import initFirefoxCompat from "@/background/firefoxCompat";
 
 initNavigation();
 initExecutor();
@@ -51,3 +52,4 @@ initGoogle();
 initFrames();
 preload();
 initDeploymentUpdater();
+void initFirefoxCompat();
