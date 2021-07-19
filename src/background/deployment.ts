@@ -31,6 +31,7 @@ import { refreshRegistries } from "@/hooks/refresh";
 import { liftBackground } from "@/background/protocol";
 import * as contentScript from "@/contentScript/lifecycle";
 import { selectInstalledExtensions } from "@/options/selectors";
+import { uninstallContextMenu } from "@/background/contextMenus";
 
 const { reducer, actions } = optionsSlice;
 
@@ -83,13 +84,16 @@ function installDeployment(
 
   for (const extension of installed) {
     if (extension._recipe.id === deployment.package.package_id) {
-      returnState = reducer(
-        returnState,
-        actions.removeExtension({
-          extensionPointId: extension.extensionPointId,
-          extensionId: extension.id,
-        })
-      );
+      const identifier = {
+        extensionPointId: extension.extensionPointId,
+        extensionId: extension.id,
+      };
+
+      void uninstallContextMenu(identifier).catch((error) => {
+        reportError(error);
+      });
+
+      returnState = reducer(returnState, actions.removeExtension(identifier));
     }
   }
 
