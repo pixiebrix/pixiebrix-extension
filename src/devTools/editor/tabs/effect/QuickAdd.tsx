@@ -25,6 +25,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconDefinition } from "@fortawesome/fontawesome-common-types";
 import {
   faCloud,
+  faGlobe,
   faHighlighter,
   faKeyboard,
   faListOl,
@@ -70,7 +71,7 @@ const RECOMMENDED_BRICKS = new Map<ElementType, Recommendation[]>([
     "panel",
     [
       { id: "@pixiebrix/property-table", icon: faListOl },
-      { id: "@pixiebrix/table", icon: faTable },
+      { id: "@pixiebrix/iframe", icon: faGlobe },
       { id: "@pixiebrix/get", icon: faCloud },
     ],
   ],
@@ -78,7 +79,7 @@ const RECOMMENDED_BRICKS = new Map<ElementType, Recommendation[]>([
     "actionPanel",
     [
       { id: "@pixiebrix/property-table", icon: faListOl },
-      { id: "@pixiebrix/table", icon: faTable },
+      { id: "@pixiebrix/iframe", icon: faGlobe },
       { id: "@pixiebrix/get", icon: faCloud },
     ],
   ],

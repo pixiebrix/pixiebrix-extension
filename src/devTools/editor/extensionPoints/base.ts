@@ -241,13 +241,6 @@ export async function makeReaderFormState(
   );
 }
 
-export const PROPERTY_TABLE_BODY = [
-  {
-    id: "@pixiebrix/property-table",
-    config: {},
-  },
-];
-
 /**
  * Availability with single matchPattern and selector.
  * The page editor UI currently doesn't support multiple patterns/selectors

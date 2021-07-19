@@ -59,7 +59,9 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
 
     if ("error" in panel.payload) {
       const { error } = panel.payload;
-      return <div className="text-danger">Error running panel: {error}</div>;
+      return (
+        <div className="text-danger p-3">Error running panel: {error}</div>
+      );
     }
 
     const { blockId, ctxt, args } = panel.payload;
