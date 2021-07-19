@@ -174,7 +174,7 @@
     "compass-mixins": "^0.12.10",
     "copy-webpack-plugin": "^9.0.1",
     "csp-parse": "0.0.2",
-    "css-loader": "^5.2.0",
+    "css-loader": "^6.1.0",
     "css-minimizer-webpack-plugin": "^3.0.2",
     "dotenv": "^10.0.0",
     "eslint": "^7.30.0",
