@@ -40,12 +40,13 @@ import { getExtensionToken } from "@/auth/token";
 import { reportError } from "@/telemetry/logging";
 import { activeDeployments, queueReactivate } from "@/background/deployment";
 import { selectInstalledExtensions } from "@/options/selectors";
+import { uninstallContextMenu } from "@/background/contextMenus";
 
 const { actions } = optionsSlice;
 
 function useEnsurePermissions(deployments: Deployment[]) {
   const { addToast } = useToasts();
-  const [enabled, setEnabled] = useState<boolean>(undefined);
+  const [enabled, setEnabled] = useState<boolean | undefined>();
 
   const blueprints = useMemo(() => {
     return deployments.map((x) => x.package.config);
@@ -95,7 +96,7 @@ function useEnsurePermissions(deployments: Deployment[]) {
     }
 
     return true;
-  }, [permissions, setEnabled]);
+  }, [addToast, permissions]);
 
   const groupedPermissions = useMemo(() => {
     return originPermissions(permissions ?? []);
@@ -141,7 +142,7 @@ function useDeployments() {
 
   const update = useCallback(() => {
     // Can't use async here because Firefox loses track of trusted UX event
-    request().then((accepted: boolean) => {
+    void request().then((accepted: boolean) => {
       if (accepted) {
         for (const deployment of deployments) {
           // Clear existing installs of the blueprint
@@ -150,12 +151,16 @@ function useDeployments() {
               extension._recipe != null &&
               extension._recipe.id === deployment.package.package_id
             ) {
-              dispatch(
-                actions.removeExtension({
-                  extensionPointId: extension.extensionPointId,
-                  extensionId: extension.id,
-                })
-              );
+              const identifier = {
+                extensionPointId: extension.extensionPointId,
+                extensionId: extension.id,
+              };
+
+              void uninstallContextMenu(identifier).catch((error) => {
+                reportError(error);
+              });
+
+              dispatch(actions.removeExtension(identifier));
             }
           }
 
@@ -176,6 +181,7 @@ function useDeployments() {
         }
 
         void queueReactivate();
+
         addToast("Activated team bricks", {
           appearance: "success",
           autoDismiss: true,
@@ -184,7 +190,7 @@ function useDeployments() {
         reportEvent("DeploymentRejectPermissions", {});
       }
     });
-  }, [request, updated, addToast, installed]);
+  }, [deployments, dispatch, request, addToast, installed]);
 
   return { hasUpdate: updated?.length > 0, update };
 }

@@ -205,7 +205,11 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     const extensions = this.extensions.splice(0, this.extensions.length);
     if (global) {
       for (const extension of extensions) {
-        void uninstallContextMenu({ extensionId: extension.id });
+        void uninstallContextMenu({ extensionId: extension.id }).catch(
+          (error) => {
+            reportError(error);
+          }
+        );
       }
     }
   }

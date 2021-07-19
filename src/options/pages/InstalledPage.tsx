@@ -54,6 +54,8 @@ import {
   selectInstalledExtensions,
 } from "@/options/selectors";
 import { useTitle } from "@/hooks/title";
+import AsyncButton from "@/components/AsyncButton";
+import { getErrorMessage } from "@/errors";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -88,9 +90,10 @@ const RecipeEntry: React.FunctionComponent<{
   extensions: InstalledExtension[];
   onRemove: RemoveAction;
 }> = ({ recipeId, extensions, onRemove }) => {
-  const [expanded, setExpanded] = useState<boolean>(true);
+  const [expanded, setExpanded] = useState(true);
   const { addToast } = useToasts();
 
+  // Only consider to be a deployment if none of the extensions have been modified
   const isDeployment = extensions.every((x) => x._deployment != null);
 
   const removeMany = useCallback(
@@ -106,6 +109,11 @@ const RecipeEntry: React.FunctionComponent<{
         });
       } catch (error: unknown) {
         reportError(error);
+
+        addToast(`Error uninstalling ${name}: ${getErrorMessage(error)}`, {
+          appearance: "error",
+          autoDismiss: true,
+        });
       }
     },
     [addToast, onRemove]
@@ -141,15 +149,15 @@ const RecipeEntry: React.FunctionComponent<{
             </th>
           )}
           <th>
-            <Button
+            <AsyncButton
               variant="danger"
               size="sm"
-              onClick={() =>
+              onClick={async () =>
                 removeMany(extensions, extensions[0]._recipe?.name)
               }
             >
               Uninstall
-            </Button>
+            </AsyncButton>
           </th>
         </tr>
       )}
@@ -256,7 +264,6 @@ const InstalledTable: React.FunctionComponent<{
               <tr>
                 <th>&nbsp;</th>
                 <th>Name</th>
-                {/* <th>Last Used</th> */}
                 <th>Status</th>
                 <th>Uninstall</th>
               </tr>
@@ -414,10 +421,10 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     });
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension(identifier));
-    uninstallContextMenu(identifier).catch(() => {
-      // Noop because this is expected to error for non-context menus
+    void uninstallContextMenu(identifier).catch((error) => {
+      reportError(error);
     });
-    reactivate().catch((error: unknown) => {
+    void reactivate().catch((error: unknown) => {
       console.warn("Error re-activating content scripts", { error });
     });
   },

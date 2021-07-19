@@ -108,21 +108,30 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
   }
 }
 
-export async function uninstall(extensionId: string): Promise<void> {
+/**
+ * Uninstall contextMenu for `extensionId`. Returns true if the contextMenu was removed, or false if the contextMenu was
+ * not found.
+ */
+export async function uninstall(extensionId: string): Promise<boolean> {
   try {
+    extensionMenuItems.delete(extensionId);
     await browser.contextMenus.remove(makeMenuId(extensionId));
     console.debug(`Uninstalled context menu ${extensionId}`);
+    return true;
   } catch (error: unknown) {
-    console.warn(`Could not uninstall context menu ${extensionId}: ${error}`);
-  } finally {
-    extensionMenuItems.delete(extensionId);
+    // Will throw if extensionId doesn't refer to a context menu. The callers don't have an easy way to check the type
+    // without having to resolve the extensionPointId. So instead we'll just expect some of the calls to fail.
+    console.debug(`Could not uninstall context menu %s`, extensionId, {
+      error,
+    });
+    return false;
   }
 }
 
 export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
   async ({ extensionId }: { extensionId: string }) => {
-    await uninstall(extensionId);
+    return await uninstall(extensionId);
   }
 );
 
