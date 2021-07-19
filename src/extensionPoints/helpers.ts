@@ -36,6 +36,7 @@ function getAncestors(node: Node): Node[] {
     ancestors.push(currentNode);
     currentNode = currentNode.parentNode;
   }
+
   return ancestors;
 }
 
@@ -45,7 +46,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
   const nodes = new WeakSet<Node>(ancestors);
   const observers = new Set<MutationObserver>();
 
-  // make sure we're only calling once
+  // Make sure we're only calling once
   const wrappedCallback = once(callback);
 
   // Observe the whole path to the node. A node is removed if any of its ancestors are removed. Observe individual
@@ -65,6 +66,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
                   console.warn("Error disconnecting mutation observer", error);
                 }
               }
+
               wrappedCallback();
               break;
             }
@@ -83,6 +85,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
         console.warn("Error disconnecting mutation observer", error);
       }
     }
+
     observers.clear();
   };
 }
@@ -116,12 +119,15 @@ async function _wait<T>(
     if (isCancelled()) {
       throw new PromiseCancelled("Cancelled waiting for element");
     }
+
     if (waitMillis != null) {
       await sleep(waitMillis);
     }
+
     await waitAnimationFrame();
     value = factory();
   }
+
   return value;
 }
 
@@ -175,6 +181,7 @@ function _initialize(
   if (isNativeCssSelector(selector)) {
     return mutationSelector(selector, target);
   }
+
   return pollSelector(selector, target, waitMillis);
 }
 
@@ -198,11 +205,11 @@ export function awaitElementOnce(
     return [Promise.resolve($root), noop];
   }
 
-  // console.debug("Awaiting selectors", selectors);
+  // Console.debug("Awaiting selectors", selectors);
 
   const [nextSelector, ...rest] = selectors;
 
-  // find immediately, or wait for it to be initialized
+  // Find immediately, or wait for it to be initialized
   const $element: JQuery<HTMLElement | Document> = $root.find(nextSelector);
 
   if ($element.length === 0) {
@@ -226,9 +233,12 @@ export function awaitElementOnce(
         innerCancel();
       },
     ];
-  } else if (rest.length === 0) {
+  }
+
+  if (rest.length === 0) {
     return [Promise.resolve($element), noop];
   }
+
   return awaitElementOnce(rest, $element);
 }
 
@@ -251,10 +261,12 @@ export function acquireElement(
       );
       return null;
     }
+
     console.debug(
       `acquireElement: re-acquiring element for ${extensionPointId}`
     );
   }
+
   element.setAttribute(EXTENSION_POINT_DATA_ATTR, extensionPointId);
   return onNodeRemoved(element, onRemove);
 }

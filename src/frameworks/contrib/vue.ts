@@ -71,14 +71,16 @@ interface VueHTMLElement {
   __vue__: Instance;
 }
 
-// interface VNode {
+// Interface VNode {
 //   _isVue: boolean;
 //   $el: HTMLElement;
 // }
 
 export class VueRootVisitor implements RootInstanceVisitor<Instance> {
   public rootInstances: Instance[] = [];
+
   private inFragment = false;
+
   private currentFragment: Instance = null;
 
   private processInstance(instance: Instance): boolean {
@@ -86,19 +88,24 @@ export class VueRootVisitor implements RootInstanceVisitor<Instance> {
       if (!this.rootInstances.includes(instance.$root)) {
         instance = instance.$root;
       }
+
       if (instance._isFragment) {
         this.inFragment = true;
         this.currentFragment = instance;
       }
+
       let baseVue = instance.constructor;
       while (baseVue.super) {
         baseVue = baseVue.super;
       }
+
       if (baseVue.config) {
         this.rootInstances.push(instance);
       }
+
       return true;
     }
+
     return false;
   }
 
@@ -108,8 +115,10 @@ export class VueRootVisitor implements RootInstanceVisitor<Instance> {
         this.inFragment = false;
         this.currentFragment = null;
       }
+
       return true;
     }
+
     const instance = (node as any).__vue__;
     return this.processInstance(instance);
   }
@@ -130,6 +139,7 @@ export function findRelatedComponent(el: HTMLElement): Instance | null {
   while (!isManaged(el) && el.parentElement) {
     el = el.parentElement;
   }
+
   return isManaged(el) ? el.__vue__ : null;
 }
 

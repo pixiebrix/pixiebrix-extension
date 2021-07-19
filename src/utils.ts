@@ -54,8 +54,10 @@ export function getAllPropertyNames(obj: object): string[] {
     for (const name of Object.getOwnPropertyNames(current)) {
       props.add(name);
     }
+
     current = Object.getPrototypeOf(current);
   }
+
   return [...props.values()];
 }
 
@@ -111,6 +113,7 @@ export async function awaitValue<T>(
     if (predicate(value)) {
       return value;
     }
+
     await sleep(retryMillis);
   } while (Date.now() - start < waitMillis);
 
@@ -121,20 +124,26 @@ export function isPrimitive(val: unknown): val is Primitive {
   if (typeof val === "object") {
     return val === null;
   }
+
   return typeof val !== "function";
 }
 
 export function removeUndefined(obj: unknown): unknown {
   if (obj === undefined) {
     return null;
-  } else if (Array.isArray(obj)) {
+  }
+
+  if (Array.isArray(obj)) {
     return obj.map((x) => removeUndefined(x));
-  } else if (typeof obj === "object") {
+  }
+
+  if (typeof obj === "object") {
     return mapValues(
       pickBy(obj, (x) => x !== undefined),
       (x) => removeUndefined(x)
     );
   }
+
   return obj;
 }
 
@@ -143,11 +152,16 @@ export function boolean(value: unknown): boolean {
     return ["true", "t", "yes", "y", "on", "1"].includes(
       value.trim().toLowerCase()
     );
-  } else if (typeof value === "number") {
+  }
+
+  if (typeof value === "number") {
     return value !== 0;
-  } else if (typeof value === "boolean") {
+  }
+
+  if (typeof value === "boolean") {
     return value;
   }
+
   return false;
 }
 
@@ -196,13 +210,20 @@ export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
 
   if (depth > maxDepth) {
     return undefined;
-  } else if (Array.isArray(value)) {
+  }
+
+  if (Array.isArray(value)) {
     return value.map(recurse);
-  } else if (typeof value === "object" && value != null) {
+  }
+
+  if (typeof value === "object" && value != null) {
     return mapValues(value, recurse);
-  } else if (typeof value === "function" || typeof value === "symbol") {
+  }
+
+  if (typeof value === "function" || typeof value === "symbol") {
     return undefined;
   }
+
   return value;
 }
 
@@ -211,6 +232,7 @@ export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
  */
 export class InvalidPathError extends Error {
   public readonly path: string;
+
   readonly input: unknown;
 
   constructor(message: string, path: string) {
@@ -238,7 +260,7 @@ export function getPropByPath(
     proxy = noopProxy,
   }: { args?: object; proxy?: ReadProxy } | undefined = {}
 ): unknown {
-  // consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
+  // Consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
 
   const { toJS = noopProxy.toJS, get = noopProxy.get } = proxy;
 
@@ -248,7 +270,7 @@ export function getPropByPath(
   for (const [index, rawPart] of rawParts.entries()) {
     const previous = value;
 
-    // handle null coalescing syntax
+    // Handle null coalescing syntax
     let part: string | number = rawPart;
     let coalesce = false;
     let numeric = false;
@@ -273,6 +295,7 @@ export function getPropByPath(
       if (coalesce || index === rawParts.length - 1) {
         return null;
       }
+
       throw new InvalidPathError(`${path} undefined (missing ${part})`, path);
     }
 
@@ -291,9 +314,12 @@ export function getPropByPath(
 export function isNullOrBlank(value: unknown): boolean {
   if (value == null) {
     return true;
-  } else if (typeof value === "string" && value.trim() === "") {
+  }
+
+  if (typeof value === "string" && value.trim() === "") {
     return true;
   }
+
   return false;
 }
 
@@ -319,11 +345,14 @@ export async function rejectOnCancelled<T>(
     if (isCancelled()) {
       throw new PromiseCancelled("Promise was cancelled");
     }
+
     throw error;
   }
+
   if (isCancelled()) {
     throw new PromiseCancelled("Promise was cancelled");
   }
+
   return rv;
 }
 

@@ -35,8 +35,9 @@ import { reactivate } from "@/background/navigation";
 import { reportEvent } from "@/telemetry/events";
 import { removeUndefined } from "@/utils";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
-import { ensureAllPermissions, extensionPermissions } from "@/permissions";
+import { extensionPermissions } from "@/permissions";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
+import { mergePermissions, requestPermissions } from "@/utils/permissions";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -81,6 +82,7 @@ function selectErrorMessage(error: unknown): string {
       "No response from PixieBrix server"
     );
   }
+
   return error.toString();
 }
 
@@ -88,7 +90,6 @@ function selectErrorMessage(error: unknown): string {
  * Dump to YAML, removing keys with undefined values.
  */
 export function configToYaml(content: unknown): string {
-  // As of js-yaml 4, dump is safe by default
   return dump(removeUndefined(content));
 }
 
@@ -114,8 +115,9 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
     extension,
   });
 
-  // FIXME: Firefox probably won't realize this permissions request is user-initiated
-  const hasPermissions = await ensureAllPermissions(permissions);
+  const hasPermissions = await requestPermissions(
+    mergePermissions(permissions)
+  );
 
   if (!hasPermissions) {
     addToast(
@@ -162,7 +164,7 @@ export function useCreate(): CreateCallback {
         try {
           await ensurePermissions(element, addToast);
         } catch (error: unknown) {
-          // continue to allow saving (because there's a workaround)
+          // Continue to allow saving (because there's a workaround)
           reportError(error);
           console.error("Error checking/enabling permissions", { error });
           addToast(
@@ -195,13 +197,13 @@ export function useCreate(): CreateCallback {
               element
             ).filter((reader) => isCustomReader(reader));
             for (const customReader of customReaders) {
-              // savedReaders is to handle case where save failed for the foundation, so subsequent saves needs
+              // SavedReaders is to handle case where save failed for the foundation, so subsequent saves needs
               // to update the reader
               const packageId =
                 element.installed ||
                 savedReaders.includes(customReader.metadata.id)
                   ? editablePackages.find(
-                      // bricks endpoint uses "name" instead of id
+                      // Bricks endpoint uses "name" instead of id
                       (x) => x.name === customReader.metadata.id
                     )?.id
                   : null;
@@ -221,7 +223,7 @@ export function useCreate(): CreateCallback {
             const extensionPointConfig = adapter.selectExtensionPoint(element);
             const packageId = element.installed
               ? editablePackages.find(
-                  // bricks endpoint uses "name" instead of id
+                  // Bricks endpoint uses "name" instead of id
                   (x) => x.name === extensionPointConfig.metadata.id
                 )?.id
               : null;

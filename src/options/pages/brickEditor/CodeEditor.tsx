@@ -119,8 +119,8 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
           editorProps={{ $blockScrolling: true }}
           commands={[
             {
-              name: "save", //name for the key binding.
-              bindKey: { win: "Ctrl-S", mac: "Command-S" }, //key combination used for the command.
+              name: "save", // Name for the key binding.
+              bindKey: { win: "Ctrl-S", mac: "Command-S" }, // Key combination used for the command.
               exec: () => {
                 void submitForm();
               },

@@ -68,16 +68,19 @@ function makeArgumentYaml(schema: Schema): string {
             result += `# ${line} \n`;
           }
         }
+
         if (value.enum) {
           result += "# valid values:\n";
           for (const line of value.enum) {
             result += `# - ${line} \n`;
           }
         }
+
         result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
       }
     }
   }
+
   return result;
 }
 
@@ -207,7 +210,7 @@ const BrickReference: React.FunctionComponent<{
 
   const fuse: Fuse<IBlock | IService> = useMemo(() => {
     return new Fuse(sortedBlocks, {
-      // prefer name, then id
+      // Prefer name, then id
       keys: ["name", "id"],
     });
   }, [sortedBlocks]);
@@ -218,7 +221,7 @@ const BrickReference: React.FunctionComponent<{
         ? sortedBlocks
         : fuse.search(query).map((x) => x.item);
 
-    // if a brick is selected, have it show up at the top of the list
+    // If a brick is selected, have it show up at the top of the list
     if (selected && selected.id === initialSelected?.id) {
       matches = [selected, ...matches.filter((x) => x.id !== selected.id)];
     }

@@ -19,7 +19,7 @@
 // ensure the webpack path is correct
 import "@/extensionContext";
 
-// init rollbar early so we get error reporting on the other initialization
+// Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/rollbar";
 
 import "webpack-target-webextension/lib/background";
@@ -36,6 +36,7 @@ import "./background/contextMenus";
 import "./background/dataStore";
 import "./background/devtools";
 import "./background/browserAction";
+import "./background/permissionPrompt";
 
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";

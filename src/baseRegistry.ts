@@ -42,9 +42,13 @@ export class DoesNotExistError extends Error {
 
 export class Registry<TItem extends RegistryItem> {
   private cache: { [key: string]: TItem };
+
   private remote: Set<string>;
+
   private readonly remoteResourcePath: string;
+
   public readonly kinds: Set<Kind>;
+
   private readonly deserialize: (raw: unknown) => TItem;
 
   constructor(
@@ -114,6 +118,7 @@ export class Registry<TItem extends RegistryItem> {
         }
       }
     }
+
     return Object.values(this.cache);
   }
 
@@ -123,6 +128,7 @@ export class Registry<TItem extends RegistryItem> {
         console.warn(`Skipping item with no id`, item);
         continue;
       }
+
       this.cache[item.id] = item;
     }
   }

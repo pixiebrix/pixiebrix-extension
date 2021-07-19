@@ -125,11 +125,14 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
 function extractServiceIds(schema: Schema): string[] {
   if ("$ref" in schema) {
     return [schema.$ref.slice(SERVICE_BASE_SCHEMA.length)];
-  } else if ("anyOf" in schema) {
+  }
+
+  if ("anyOf" in schema) {
     return schema.anyOf
       .filter((x) => x != false)
       .flatMap((x) => extractServiceIds(x as Schema));
   }
+
   throw new Error("Expected $ref or anyOf in schema for service");
 }
 
@@ -224,7 +227,7 @@ const BooleanField: React.FunctionComponent<FieldProps<boolean>> = ({
   );
 };
 
-// ok to use object here since we don't have any key-specific logic
+// Ok to use object here since we don't have any key-specific logic
 // eslint-disable-next-line @typescript-eslint/ban-types
 const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
   schema,
@@ -238,6 +241,7 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
   } else if (typeof schema.items === "boolean") {
     throw new TypeError("Schema required for items");
   }
+
   const schemaItems = schema.items as Schema;
 
   return (
@@ -306,42 +310,66 @@ function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
 function getDefaultArrayItem(schema: Schema): unknown {
   if (schema.default) {
     return schema.default;
-  } else if (textPredicate(schema)) {
-    return "";
-  } else if (schema.type === "object") {
-    return {};
-  } else if (findOneOf(schema, booleanPredicate)) {
-    return false;
-  } else if (findOneOf(schema, textPredicate)) {
+  }
+
+  if (textPredicate(schema)) {
     return "";
   }
+
+  if (schema.type === "object") {
+    return {};
+  }
+
+  if (findOneOf(schema, booleanPredicate)) {
+    return false;
+  }
+
+  if (findOneOf(schema, textPredicate)) {
+    return "";
+  }
+
   return null;
 }
 
 export function getDefaultField(fieldSchema: Schema): FieldComponent {
   if (fieldSchema.$ref?.startsWith(SERVICE_BASE_SCHEMA)) {
     return ServiceField;
-  } else if (fieldSchema.type === "array") {
+  }
+
+  if (fieldSchema.type === "array") {
     return ArrayField;
-  } else if (fieldSchema.type === "object") {
+  }
+
+  if (fieldSchema.type === "object") {
     return ObjectField;
-  } else if (booleanPredicate(fieldSchema)) {
+  }
+
+  if (booleanPredicate(fieldSchema)) {
     // Should this be a TextField so it can be dynamically determined?
     // see https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return BooleanField;
-  } else if (textPredicate(fieldSchema)) {
+  }
+
+  if (textPredicate(fieldSchema)) {
     return TextField;
-  } else if (findOneOf(fieldSchema, booleanPredicate)) {
+  }
+
+  if (findOneOf(fieldSchema, booleanPredicate)) {
     return makeOneOfField(findOneOf(fieldSchema, booleanPredicate));
-  } else if (findOneOf(fieldSchema, textPredicate)) {
+  }
+
+  if (findOneOf(fieldSchema, textPredicate)) {
     return makeOneOfField(findOneOf(fieldSchema, textPredicate));
-  } else if (isEmpty(fieldSchema)) {
+  }
+
+  if (isEmpty(fieldSchema)) {
     // An empty field schema supports any value. For now, provide an object field since this just shows up
     // in the @pixiebrix/http brick.
     // https://github.com/pixiebrix/pixiebrix-extension/issues/709
     return ObjectField;
   }
-  // number, string, other primitives, etc.
+
+  // Number, string, other primitives, etc.
   return TextField;
 }
 
@@ -405,7 +433,8 @@ function genericOptionsFactory(
         if (typeof fieldSchema === "boolean") {
           throw new TypeError("Expected schema for input property type");
         }
-        // fine because coming from Object.entries for the schema
+
+        // Fine because coming from Object.entries for the schema
         // eslint-disable-next-line security/detect-object-injection
         const propUiSchema = uiSchema?.[prop];
         return (

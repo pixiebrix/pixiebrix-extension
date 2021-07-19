@@ -48,6 +48,7 @@ export class Markdown extends Renderer {
     if (!this.DOMPurify) {
       this.DOMPurify = createDOMPurify(window);
     }
+
     return this.DOMPurify.sanitize(marked(markdown));
   }
 }

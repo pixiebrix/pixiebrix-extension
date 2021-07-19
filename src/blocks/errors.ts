@@ -39,8 +39,11 @@ export class PipelineConfigurationError extends Error {
  */
 export class HeadlessModeError extends Error {
   public readonly blockId: string;
+
   public readonly args: unknown;
+
   public readonly ctxt: unknown;
+
   public readonly loggerContext: MessageContext;
 
   constructor(
@@ -63,7 +66,9 @@ export class HeadlessModeError extends Error {
  */
 export class InputValidationError extends BusinessError {
   readonly schema: Schema;
+
   readonly input: unknown;
+
   readonly errors: OutputUnit[];
 
   constructor(

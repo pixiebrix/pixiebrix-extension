@@ -39,6 +39,7 @@ async function detectLibraries(): Promise<Library[]> {
       );
     }
   }
+
   return detectedLibraries;
 }
 

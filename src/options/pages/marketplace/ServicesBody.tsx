@@ -35,7 +35,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useFetch } from "@/hooks/fetch";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { useAsyncState } from "@/hooks/common";
-import registry from "@/services/registry";
+import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import { RawServiceConfiguration } from "@/core";
 import { servicesSlice } from "@/options/slices";
 import { useDispatch } from "react-redux";
@@ -92,15 +92,8 @@ const AuthWidget: React.FunctionComponent<{
         autoDismiss: true,
       });
 
-      // Don't need to track changes locally - they'll automatically flow through via the redux selectors
-      // setCreated(draft => {
-      //     draft.push({
-      //         value: id,
-      //         serviceId: serviceId,
-      //         label: values.label ?? "New Configuration",
-      //         local: true,
-      //     })
-      // })
+      // Don't need to track changes locally via setCreated; the new auth automatically flows
+      // through via the redux selectors
 
       helpers.setValue(id);
 
@@ -171,6 +164,7 @@ const ServiceDescriptor: React.FunctionComponent<{
       </div>
     );
   }
+
   return (
     <div>
       {config && <span>{config.metadata.name}</span>}
@@ -186,8 +180,13 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
 
   const serviceConfigs = useFetch<ServiceDefinition[]>("/api/services/");
 
-  const services = useMemo(
-    () => uniq(selected.flatMap((x) => Object.values(x.services ?? {}))),
+  const serviceIds = useMemo(
+    // The PixieBrix service gets automatically configured, so don't need to show it. If the PixieBrix service is
+    // the only service, the wizard won't render the ServicesBody component at all
+    () =>
+      uniq(selected.flatMap((x) => Object.values(x.services ?? {}))).filter(
+        (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
+      ),
     [selected]
   );
 
@@ -218,7 +217,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           </tr>
         </thead>
         <tbody>
-          {services.map((serviceId) => (
+          {serviceIds.map((serviceId) => (
             <tr key={serviceId}>
               <td>
                 <ServiceDescriptor
@@ -231,7 +230,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
               </td>
             </tr>
           ))}
-          {services.length === 0 && (
+          {serviceIds.length === 0 && (
             <tr>
               <td colSpan={2}>No services to configure</td>
             </tr>

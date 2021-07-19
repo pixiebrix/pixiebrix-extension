@@ -16,18 +16,23 @@
  */
 
 import extensionRegistry from "@/extensionPoints/registry";
-import { distinctPermissions, mergePermissions } from "@/blocks/available";
 import { useAsyncEffect } from "use-async-effect";
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
 import { IExtension, IExtensionPoint } from "@/core";
 import {
   ExtensionPointDefinition,
   RecipeDefinition,
 } from "@/types/definitions";
-import { Permissions, browser } from "webextension-polyfill-ts";
-import { sortBy, castArray, groupBy, uniq, every, compact } from "lodash";
+import { Permissions } from "webextension-polyfill-ts";
+import { castArray, compact, groupBy, sortBy, uniq } from "lodash";
 import { locator } from "@/background/locator";
-import registry from "@/services/registry";
+import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import {
+  containsPermissions,
+  distinctPermissions,
+  mergePermissions,
+  requestPermissions,
+} from "@/utils/permissions";
 
 const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
 
@@ -39,20 +44,10 @@ const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
 export async function ensureAllPermissions(
   permissionsList: Permissions.Permissions[]
 ): Promise<boolean> {
-  return browser.permissions.request(mergePermissions(permissionsList));
-  // On FF can't check if we already have the permission because promise chains break it's detection of
-  // whether or not we're in a user-triggered event. That also prevents making multiple permissions requests
-  // for a single button click
-  // https://stackoverflow.com/a/47729896/402560
-  // for (const permissions of permissionsList) {
-  //   if (!(await browser.permissions.contains(permissions))) {
-  //     const granted = await browser.permissions.request(permissions);
-  //     if (!granted) {
-  //       return false;
-  //     }
-  //   }
-  // }
-  // return true;
+  // TODO: Instead of passing around `Array<Permission>`, merge them into a regular `Permission`
+  // as early in the code as possible (e.g. in the hook that generates the array).
+  // This way we don't need to call `mergePermissions` or loop the array every time.
+  return requestPermissions(mergePermissions(permissionsList));
 }
 
 export type ServiceAuthPair = {
@@ -94,7 +89,6 @@ export async function collectPermissions(
   const permissions = await Promise.all(
     extensionPoints.map(
       async ({ id, permissions = {} }: ExtensionPointDefinition) => {
-        // console.debug(`Extra permissions for ${id}`, permissions);
         const extensionPoint = await extensionRegistry.lookup(id);
         return mergePermissions(
           [extensionPoint.permissions, permissions].map((x) => normalize(x))
@@ -112,6 +106,11 @@ export async function collectPermissions(
 export async function serviceOriginPermissions(
   dependency: ServiceAuthPair
 ): Promise<Permissions.Permissions> {
+  if (dependency.id === PIXIEBRIX_SERVICE_ID) {
+    // Already included in the required permissions for the extension
+    return { origins: [] };
+  }
+
   const localConfig = await locator.locate(dependency.id, dependency.config);
 
   if (localConfig.proxy) {
@@ -119,9 +118,10 @@ export async function serviceOriginPermissions(
     // extension install. The proxy server will check isAvailable when making request
     return { origins: [] };
   }
+
   const service = await registry.lookup(dependency.id);
-  const matchPatterns = service.getOrigins(localConfig.config);
-  return { origins: matchPatterns };
+  const origins = service.getOrigins(localConfig.config);
+  return { origins };
 }
 
 /**
@@ -167,13 +167,8 @@ export async function extensionPermissions(
 export async function checkPermissions(
   permissionsList: Permissions.Permissions[]
 ): Promise<boolean> {
-  return every(
-    await Promise.all(
-      permissionsList.map(async (permissions) =>
-        browser.permissions.contains(permissions)
-      )
-    )
-  );
+  const merged = mergePermissions(permissionsList);
+  return containsPermissions(merged);
 }
 
 export async function permissionsEnabled(

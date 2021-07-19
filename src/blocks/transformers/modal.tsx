@@ -70,6 +70,7 @@ export class ModalTransformer extends Transformer {
         if (typeof value !== "string") {
           throw new BusinessError("Invalid containerAttr");
         }
+
         container.setAttribute(attr, value);
       }
     }

@@ -76,6 +76,7 @@ export async function elementInfo(
         ),
       };
     }
+
     console.debug(`No component found for ${framework}`);
   }
 

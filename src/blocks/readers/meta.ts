@@ -41,6 +41,7 @@ class ChromeProfileReader extends Reader {
     if (!chrome.identity) {
       throw new Error("No access to the Chrome Identity API");
     }
+
     const userInfo = await chromeP.identity.getProfileUserInfo();
     return { ...userInfo };
   }

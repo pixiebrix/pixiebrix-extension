@@ -33,7 +33,7 @@ const _frameHref: Map<number, string> = new Map();
 let _extensionPoints: IExtensionPoint[];
 let _navSequence = 1;
 const _installedExtensionPoints: IExtensionPoint[] = [];
-// reload extension definitions on next navigation
+// Reload extension definitions on next navigation
 let _reloadOnNextNavigate = false;
 
 const WAIT_LOADED_INTERVAL_MS = 25;
@@ -54,6 +54,7 @@ async function installScriptOnce(): Promise<void> {
       });
     });
   }
+
   return _scriptPromise;
 }
 
@@ -72,6 +73,7 @@ async function runExtensionPoint(
       );
       return;
     }
+
     throw error;
   }
 
@@ -80,7 +82,9 @@ async function runExtensionPoint(
       `Skipping ${extensionPoint.id} because it was not installed on the page`
     );
     return;
-  } else if (isCancelled()) {
+  }
+
+  if (isCancelled()) {
     console.debug(
       `Skipping ${extensionPoint.id} because user navigated away from the page`
     );
@@ -114,6 +118,7 @@ export function clearDynamic(uuid?: string): void {
       _installedExtensionPoints.splice(index, 1);
     }
   };
+
   if (uuid) {
     if (_dynamic.has(uuid)) {
       console.debug(`clearDynamic: ${uuid}`);
@@ -129,6 +134,7 @@ export function clearDynamic(uuid?: string): void {
       extensionPoint.uninstall({ global: true });
       markUninstalled(extensionPoint.id);
     }
+
     _dynamic.clear();
   }
 }
@@ -150,6 +156,7 @@ export async function runDynamic(
   if (_dynamic.has(uuid)) {
     _dynamic.get(uuid).uninstall();
   }
+
   _dynamic.set(uuid, extensionPoint);
   await runExtensionPoint(extensionPoint, makeCancelOnNavigate());
 }
@@ -207,6 +214,7 @@ async function loadExtensionsOnce(): Promise<IExtensionPoint[]> {
     _reloadOnNextNavigate = false;
     await loadExtensions();
   }
+
   return _extensionPoints;
 }
 
@@ -230,6 +238,7 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
       if (cancel()) {
         return;
       }
+
       console.debug(
         `Custom navigation rule detected that page is still loading: ${url}`
       );
@@ -319,6 +328,6 @@ export const queueReactivate = notifyContentScripts(
 
 export const reactivate = notifyContentScripts("REACTIVATE", async () => {
   await loadExtensions();
-  // force navigate event even though the href hasn't changed
+  // Force navigate event even though the href hasn't changed
   await handleNavigate({ force: true });
 });

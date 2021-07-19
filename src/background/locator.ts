@@ -30,18 +30,31 @@ export const locate = liftBackground(
   async (serviceId: string, id: string | null) => locator.locate(serviceId, id)
 );
 
-export const refresh: (options?: {
+type RefreshOptions = {
   local: boolean;
   remote: boolean;
-}) => Promise<unknown> = liftBackground(
+};
+
+export const refresh: (
+  options?: RefreshOptions
+) => Promise<unknown> = liftBackground(
   "REFRESH_SERVICES",
-  async ({ local = true, remote = true }) => {
+  async (options: RefreshOptions) => {
+    const { local, remote } = Object.assign(
+      {},
+      { local: true, remote: true },
+      options
+    );
+
     if (remote && local) {
       await locator.refresh();
     } else if (remote) {
       await locator.refreshRemote();
     } else if (local) {
       await locator.refreshLocal();
+    } else {
+      // Prevent buggy call sites from silently causing issues
+      throw new Error("Either local or remote must be set to true");
     }
   },
   {

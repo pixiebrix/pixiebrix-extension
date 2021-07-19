@@ -44,7 +44,7 @@ export function render(
       $(root).html(body);
     }
   } else {
-    // consider using https://github.com/Wildhoney/ReactShadow or similar if we have problems with events
+    // Consider using https://github.com/Wildhoney/ReactShadow or similar if we have problems with events
     const { Component, props } = body;
     if (shadowDOM) {
       const shadowRoot = root.attachShadow({ mode: "closed" });

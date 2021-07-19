@@ -51,11 +51,13 @@ async function uid(): Promise<string> {
   if (_uid != null) {
     return _uid;
   }
+
   let uuid: string = await readStorage<string>(UUID_STORAGE_KEY);
   if (!uuid || typeof uuid !== "string") {
     uuid = uuidv4();
     await setStorage(UUID_STORAGE_KEY, uuid);
   }
+
   _uid = uuid;
   return _uid;
 }
@@ -70,6 +72,7 @@ export async function _getDNT(): Promise<boolean> {
   if (_dnt != null) {
     return _dnt;
   }
+
   _dnt = boolean(
     (await readStorage<boolean | string>(DNT_STORAGE_KEY)) ?? process.env.DEBUG
   );
@@ -168,7 +171,7 @@ async function _init(): Promise<void> {
   }
 }
 
-// up to every 30 min
+// Up to every 30 min
 const throttledInit = throttle(_init, 30 * 60 * 1000, {
   leading: true,
   trailing: true,
@@ -214,6 +217,7 @@ export const sendDeploymentAlert = liftBackground(
     if (!token) {
       throw new Error("Extension not linked to PixieBrix server");
     }
+
     await axios.post(url, data, {
       headers: { Authorization: `Token ${token}` },
     });

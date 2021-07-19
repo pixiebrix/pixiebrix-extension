@@ -92,11 +92,12 @@ export function useEnsurePermissions(
       });
       return false;
     }
+
     return true;
   }, [permissions, addToast]);
 
   const activate = useCallback(() => {
-    // can't use async here because Firefox loses track of trusted UX event
+    // Can't use async here because Firefox loses track of trusted UX event
     request().then((accepted: boolean) => {
       if (accepted) {
         reportEvent("MarketplaceActivate", {
@@ -105,6 +106,7 @@ export function useEnsurePermissions(
         });
         return submitForm();
       }
+
       reportEvent("MarketplaceRejectPermissions", {
         blueprintId: blueprint.metadata.id,
         extensions: extensions.map((x) => x.label),

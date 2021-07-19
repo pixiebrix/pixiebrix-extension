@@ -18,26 +18,20 @@
 import React, { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { getTabInfo } from "@/background/devtools";
-import { browser } from "webextension-polyfill-ts";
-import { sleep } from "@/utils";
 import Centered from "@/devTools/editor/components/Centered";
-import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
+import { requestPermissions } from "@/utils/permissions";
+import AsyncButton from "@/components/AsyncButton";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { port, connect } = useContext(DevToolsContext);
 
-  const requestPermissions = useCallback(() => {
-    // Firefox browser.permissions.request gets confused by async code. Must use normal promises in the
-    // call path to browser.permissions.request so it knows it was triggered by a user action
-    void getTabInfo(port).then(({ url }) => {
-      const requestPromise = browser.permissions.request({ origins: [url] });
-      void requestPromise.then(async () => {
-        await sleep(500);
-        await connect();
-      });
-    });
+  const onRequestPermission = useCallback(async () => {
+    const { url } = await getTabInfo(port);
+    if (await requestPermissions({ origins: [url] })) {
+      await connect();
+    }
   }, [connect, port]);
 
   return (
@@ -46,9 +40,9 @@ const PermissionsPane: React.FunctionComponent = () => {
         PixieBrix does not have access to the page
       </div>
       <p>
-        <Button onClick={requestPermissions}>
+        <AsyncButton onClick={onRequestPermission}>
           <FontAwesomeIcon icon={faShieldAlt} /> Grant Permanent Access
-        </Button>
+        </AsyncButton>
       </p>
       <p className="text-info">
         <FontAwesomeIcon icon={faInfoCircle} /> You can revoke PixieBrix&apos;s

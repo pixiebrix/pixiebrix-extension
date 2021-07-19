@@ -115,20 +115,22 @@ export class HighlightEffect extends Effect {
     }
 
     $roots.each(function () {
-      if (elements != null) {
+      if (elements == null) {
+        $(this).css({ backgroundColor });
+      } else {
         for (const element of elements) {
           if (typeof element === "string") {
+            // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
             $(this).find(element).css({ backgroundColor });
           } else if (element.condition && boolean(condition)) {
             const {
               selector,
               backgroundColor: elementColor = backgroundColor,
             } = element;
+            // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
             $(this).find(selector).css({ backgroundColor: elementColor });
           }
         }
-      } else {
-        $(this).css({ backgroundColor });
       }
     });
   }

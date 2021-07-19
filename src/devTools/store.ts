@@ -55,7 +55,7 @@ export interface RootState {
 
 const middleware = [];
 if (process.env.NODE_ENV === "development") {
-  // allow tree shaking of logger in production
+  // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
   middleware.push(createLogger());
 }

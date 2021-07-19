@@ -50,6 +50,7 @@ export class HideEffect extends Effect {
     selector: string;
     mode?: "hide" | "remove";
   }): Promise<void> {
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
     const $elt = $(document).find(selector);
     if (mode === "hide") {
       $elt.hide();

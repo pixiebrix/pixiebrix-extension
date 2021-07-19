@@ -65,6 +65,7 @@ const AdvancedSettings: React.FunctionComponent = () => {
       if (newURL === serviceURL || (isEmpty(newURL) && isEmpty(serviceURL))) {
         return;
       }
+
       await setServiceURL(newURL);
       addToast("Updated the service URL", {
         appearance: "success",

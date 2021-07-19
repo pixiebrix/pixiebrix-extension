@@ -17,11 +17,7 @@
 
 import { patternToRegex } from "webext-patterns";
 import castArray from "lodash/castArray";
-import groupBy from "lodash/groupBy";
-import sortBy from "lodash/sortBy";
-import uniq from "lodash/uniq";
 import { Availability } from "@/blocks/types";
-import { Permissions } from "webextension-polyfill-ts";
 import { BusinessError } from "@/errors";
 
 export function testMatchPatterns(
@@ -60,41 +56,19 @@ export async function checkAvailable({
   const matchPatterns = rawPatterns ? castArray(rawPatterns) : [];
   const selectors = rawSelectors ? castArray(rawSelectors) : [];
 
-  // check matchPatterns first b/c they'll be faster
+  // Check matchPatterns first b/c they'll be faster
   if (matchPatterns.length > 0 && !testMatchPatterns(matchPatterns)) {
-    // console.debug(
+    // Console.debug(
     //   `Location doesn't match any pattern: ${document.location.href}`,
     //   matchPatterns
     // );
     return false;
   }
+
   if (selectors.length > 0 && !selectors.some(testSelector)) {
-    // console.debug("Page doesn't match any selectors", selectors);
+    // Console.debug("Page doesn't match any selectors", selectors);
     return false;
   }
+
   return true;
-}
-
-/**
- * Merge a list of permissions into a single permissions object.
- * @param permissions
- */
-export function mergePermissions(
-  permissions: Permissions.Permissions[] = []
-): Permissions.Permissions {
-  return {
-    origins: uniq(permissions.flatMap((x) => x.origins ?? [])),
-    permissions: uniq(permissions.flatMap((x) => x.permissions ?? [])),
-  };
-}
-
-export function distinctPermissions(
-  permissions: Permissions.Permissions[]
-): Permissions.Permissions[] {
-  return Object.values(
-    groupBy(permissions, (x) => JSON.stringify(sortBy(x.origins)))
-  ).map((perms) => ({
-    permissions: uniq(perms.flatMap((x) => x.permissions || [])),
-    origins: perms[0].origins,
-  }));
 }

@@ -71,7 +71,7 @@ const FoundationTab: React.FunctionComponent<{
         );
       }
     } catch (error: unknown) {
-      // can continue, because it won't have any effect on the form values, so the user can just try again
+      // Can continue, because it won't have any effect on the form values, so the user can just try again
       // noinspection ES6MissingAwait
       reportError(error);
     } finally {
@@ -207,21 +207,21 @@ const FoundationTab: React.FunctionComponent<{
         </Col>
       </Form.Group>
 
-      {/*<Form.Group as={Row} controlId="formStyle">*/}
-      {/*  <Form.Label column sm={2}>*/}
-      {/*    Style*/}
-      {/*  </Form.Label>*/}
-      {/*  <Col sm={10}>*/}
-      {/*    <Field name="extensionPoint.traits.style.mode">*/}
-      {/*      {({ field }: { field: FieldInputProps<string> }) => (*/}
-      {/*        <Form.Control as="select" {...field}>*/}
-      {/*          <option value="inherit">Inherit</option>*/}
-      {/*          <option value="default">Default</option>*/}
-      {/*        </Form.Control>*/}
-      {/*      )}*/}
-      {/*    </Field>*/}
-      {/*  </Col>*/}
-      {/*</Form.Group>*/}
+      {/* <Form.Group as={Row} controlId="formStyle"> */}
+      {/*  <Form.Label column sm={2}> */}
+      {/*    Style */}
+      {/*  </Form.Label> */}
+      {/*  <Col sm={10}> */}
+      {/*    <Field name="extensionPoint.traits.style.mode"> */}
+      {/*      {({ field }: { field: FieldInputProps<string> }) => ( */}
+      {/*        <Form.Control as="select" {...field}> */}
+      {/*          <option value="inherit">Inherit</option> */}
+      {/*          <option value="default">Default</option> */}
+      {/*        </Form.Control> */}
+      {/*      )} */}
+      {/*    </Field> */}
+      {/*  </Col> */}
+      {/* </Form.Group> */}
 
       <Form.Group as={Row} controlId="formTemplate" className="pb-4">
         <Form.Label column sm={2}>

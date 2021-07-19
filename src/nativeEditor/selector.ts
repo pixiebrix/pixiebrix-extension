@@ -74,6 +74,7 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
                 "One or more selected elements are not contained with the root container"
               );
             }
+
             resolve(result);
           }
         } finally {
@@ -142,7 +143,7 @@ export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
 
 export type SelectMode = "element" | "container";
 
-// export const findComponent = liftContentScript(
+// Export const findComponent = liftContentScript(
 //     "SELECT_COMPONENT",
 //     async ({ selector, framework }: { selector: string, framework: Framework }) => {
 //     }
@@ -179,6 +180,7 @@ export const selectElement = liftContentScript(
         if (root) {
           throw new Error(`root selector not implemented for mode: ${mode}`);
         }
+
         const { selectors } = findContainer(elements);
 
         requireSingleElement(selectors[0]);
@@ -189,12 +191,13 @@ export const selectElement = liftContentScript(
           traverseUp,
         });
       }
+
       case "element": {
         const selector = safeCssSelector(elements[0], [], rootElement);
 
         console.debug(`Generated selector: ${selector}`);
 
-        // double-check we have a valid selector
+        // Double-check we have a valid selector
         requireSingleElement(selector);
 
         return pageScript.getElementInfo({
@@ -203,6 +206,7 @@ export const selectElement = liftContentScript(
           traverseUp,
         });
       }
+
       default: {
         throw new Error(`Unexpected mode: ${mode}`);
       }

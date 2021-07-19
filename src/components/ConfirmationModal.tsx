@@ -75,7 +75,7 @@ export const ModalProvider: React.FunctionComponent<{
 
   const showConfirmation = useCallback(
     async (modalProps: ModalProps) => {
-      // cancel any previous modal that was showing
+      // Cancel any previous modal that was showing
       callback?.(false);
       return new Promise<boolean>((resolve) => {
         setModalProps(modalProps);
@@ -84,6 +84,7 @@ export const ModalProvider: React.FunctionComponent<{
           resolve(submit);
           setCallback(undefined);
         };
+
         setCallback((_prevState: Callback) => newCallback);
       });
     },

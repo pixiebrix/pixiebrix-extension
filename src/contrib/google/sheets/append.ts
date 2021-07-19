@@ -92,6 +92,7 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
       row.push(null);
     }
   }
+
   const unmatched = rowValues
     .map((x) => x.header)
     .filter((x) => !matched.has(x));
@@ -100,6 +101,7 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
       `${unmatched.length} field(s) were unmatched: ${unmatched.join(", ")}`
     );
   }
+
   return row;
 }
 
@@ -147,6 +149,7 @@ export class GoogleSheetsAppend extends Effect {
       if (isAuthError(error)) {
         throw error;
       }
+
       logger.info(`Creating tab ${tabName}`);
       await createTab(spreadsheetId, tabName);
     }

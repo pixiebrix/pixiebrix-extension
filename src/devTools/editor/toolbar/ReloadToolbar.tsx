@@ -66,6 +66,7 @@ const ReloadToolbar: React.FunctionComponent<{
         element,
       });
     }
+
     await nativeOperations.updateDynamicElement(port, factory(element));
   }, [element, port, disabled]);
 
@@ -83,19 +84,23 @@ const ReloadToolbar: React.FunctionComponent<{
 
   useAsyncEffect(async () => {
     if (disabled) {
-      // don't automatically re-run if in an invalid state
+      // Don't automatically re-run if in an invalid state
       return;
-    } else if (!automaticUpdate && !element.autoReload) {
-      // by default, don't automatically trigger (because it might be doing expensive
+    }
+
+    if (!automaticUpdate && !element.autoReload) {
+      // By default, don't automatically trigger (because it might be doing expensive
       // operations such as hitting an API)
       return;
     }
+
     await debouncedRun();
   }, [debouncedRun, port, automaticUpdate, element, disabled]);
 
   if (automaticUpdate) {
     return null;
   }
+
   return (
     <>
       <label className="AutoRun my-auto mr-1">

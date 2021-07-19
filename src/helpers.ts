@@ -38,8 +38,9 @@ export function engineRenderer(
     case "mustache": {
       return Mustache.render;
     }
+
     case "nunjucks": {
-      // convert top level data from kebab case to snake case in order to be valid identifiers
+      // Convert top level data from kebab case to snake case in order to be valid identifiers
       return (template, ctxt) => {
         const snakeCased = mapKeys(ctxt, (value, key) =>
           key.replace(hyphenRegex, "_")
@@ -47,19 +48,21 @@ export function engineRenderer(
         return nunjucks.renderString(template, snakeCased);
       };
     }
+
     case "handlebars": {
       return (template, ctxt) => {
         const compiledTemplate = Handlebars.compile(template);
         return compiledTemplate(ctxt);
       };
     }
+
     default: {
       return undefined;
     }
   }
 }
 
-// first part of the path can be global context with a @
+// First part of the path can be global context with a @
 const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;
 
 /**
@@ -71,6 +74,7 @@ export function isSimplePath(maybePath: string, ctxt: object): boolean {
   if (!pathRegex.test(maybePath)) {
     return false;
   }
+
   const [head] = maybePath.split(".");
   const path = head.endsWith("?") ? head.slice(0, -1) : head;
   return ctxt ? Object.prototype.hasOwnProperty.call(ctxt, path) : false;
@@ -103,25 +107,32 @@ export function mapArgs(
 ): unknown {
   if (Array.isArray(config)) {
     return config.map((x) => mapArgs(x, ctxt, render));
-  } else if (isPlainObject(config)) {
+  }
+
+  if (isPlainObject(config)) {
     return pickBy(
       mapValues(config as object, (subConfig) =>
         mapArgs(subConfig, ctxt, render)
       ),
       (x) => x != null
     );
-  } else if (typeof config === "string") {
+  }
+
+  if (typeof config === "string") {
     if (isSimplePath(config, ctxt)) {
       const prop = getPropByPath(ctxt as { [prop: string]: unknown }, config);
       if (prop && typeof prop === "object" && "__service" in prop) {
-        // if we're returning the root service context, return the service itself
+        // If we're returning the root service context, return the service itself
         // @ts-ignore: not sure why the "in" check isn't working
         return prop.__service;
       }
+
       return prop;
     }
+
     return render(config, ctxt);
   }
+
   return config;
 }
 
@@ -142,6 +153,7 @@ export function missingProperties(
       }
     }
   }
+
   return acc;
 }
 
@@ -149,12 +161,17 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
   if (typeof inputSchema === "object" && "properties" in inputSchema) {
     return inputSchema.properties;
   }
+
   return inputSchema as SchemaProperties;
 }
 
 export const isChrome =
   typeof navigator === "object" &&
   navigator.userAgent.toLowerCase().includes("chrome");
+
+export const isFirefox =
+  typeof navigator === "object" &&
+  navigator.userAgent.toLowerCase().includes("firefox");
 
 /**
  * True if the script is executing in a web browser context.

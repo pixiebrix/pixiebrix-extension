@@ -33,7 +33,7 @@ export class GetAPITransformer extends Transformer {
       url: {
         type: "string",
         description: "The API URL",
-        // can't use uri here because we want to support relative URLs when the using a service with a base URL
+        // Can't use uri here because we want to support relative URLs when the using a service with a base URL
         format: "string",
       },
       service: {
@@ -65,6 +65,7 @@ export class GetAPITransformer extends Transformer {
         service
       );
     }
+
     const { data } = await proxyService(
       !isNullOrBlank(service) ? service : null,
       {

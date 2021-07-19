@@ -11,7 +11,7 @@
   "settings": {
     "import/resolver": {
       "webpack": {
-        "config": "./browsers/resolve.config.js"
+        "config": "./resolve.config.js"
       }
     },
     "import/ignore": [
@@ -37,11 +37,18 @@
   "rules": {
     // Enable a few more rules
     "no-lonely-if": "error",
-    "no-else-return": "error",
-    "no-negated-condition": "warn",
+    "no-else-return": [
+      "error",
+      {
+        "allowElseIf": false
+      }
+    ],
+    "no-negated-condition": "off",
     "no-useless-return": "error",
     "prefer-promise-reject-errors": "error",
+    "padding-line-between-statements": "error",
     "@typescript-eslint/no-implicit-any-catch": "error",
+    "@typescript-eslint/lines-between-class-members": "error",
 
     "@typescript-eslint/no-unused-vars": [
       "error",
@@ -102,6 +109,33 @@
       }
     ],
 
+    // Config copied from https://github.com/xojs/eslint-config-xo/blob/main/index.js#L275
+    "capitalized-comments": [
+      "error",
+      "always",
+      {
+        "ignorePattern": "pragma|ignore|prettier-ignore|webpack",
+        "ignoreInlineComments": true,
+        "ignoreConsecutiveComments": true
+      }
+    ],
+
+    "spaced-comment": [
+      "error",
+      "always",
+      {
+        "line": {
+          "exceptions": ["-", "+", "*"],
+          "markers": ["!", "/", "=>"]
+        },
+        "block": {
+          "exceptions": ["-", "+", "*"],
+          "markers": ["!", "*"],
+          "balanced": true
+        }
+      }
+    ],
+
     // Disable recommended rules
     "@typescript-eslint/no-empty-function": "off",
     "import/named": "off", // TypeScript does this natively
@@ -116,7 +150,7 @@
   "ignorePatterns": [
     "node_modules",
     ".idea",
-    "browsers/dist",
+    "dist",
     "artifacts",
     "scripts/bin",
     "src/vendors",

@@ -76,6 +76,7 @@ function useSubmitBrick({
       });
       return;
     }
+
     addToast("Deleted brick", {
       appearance: "success",
       autoDismiss: true,
@@ -123,7 +124,7 @@ function useSubmitBrick({
             });
           });
 
-        // reset initial values of the form so dirty=false
+        // Reset initial values of the form so dirty=false
         resetForm({ values });
 
         if (create) {

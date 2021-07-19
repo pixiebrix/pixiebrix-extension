@@ -50,7 +50,9 @@ class LocalDefinedService<
   TDefinition extends ServiceDefinition = ServiceDefinition
 > extends Service {
   private readonly _definition: TDefinition;
+
   public readonly schema: Schema;
+
   public readonly hasAuth: boolean;
 
   constructor(definition: TDefinition) {
@@ -104,7 +106,7 @@ class LocalDefinedService<
       this._definition.authentication != null &&
       "baseURL" in this._definition.authentication
     ) {
-      // convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
+      // Convert into a real match pattern: https://developer.chrome.com/docs/extensions/mv3/match_patterns/
       const baseUrlTemplate = this._definition.authentication.baseURL;
       const baseUrl = mapArgs(baseUrlTemplate, serviceConfig);
       patterns.push(baseUrl + (baseUrl.endsWith("/") ? "*" : "/*"));
@@ -133,9 +135,10 @@ class LocalDefinedService<
     if (this.isToken) {
       const definition: TokenContext = (this._definition
         .authentication as TokenAuthenticationDefinition).token;
-      // console.debug("token context", { definition, serviceConfig });
+      // Console.debug("token context", { definition, serviceConfig });
       return mapArgs<TokenContext>(definition, serviceConfig);
     }
+
     return undefined;
   }
 
@@ -146,6 +149,7 @@ class LocalDefinedService<
       console.debug("getOAuth2Context", { definition, serviceConfig });
       return mapArgs<OAuth2Context>(definition, serviceConfig);
     }
+
     return undefined;
   }
 
@@ -178,6 +182,7 @@ class LocalDefinedService<
         `Service ${this.id} cannot be used to authenticate requests to ${requestConfig.url}`
       );
     }
+
     const {
       baseURL,
       headers = {},

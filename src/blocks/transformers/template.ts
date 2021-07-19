@@ -59,6 +59,7 @@ export class TemplateTransformer extends Transformer {
         "Only 'mustache' is currently supported for templateEngine"
       );
     }
+
     return Mustache.render(template, ctxt);
   }
 }

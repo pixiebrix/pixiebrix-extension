@@ -24,5 +24,6 @@ export function requireSingleElement(selector: string): HTMLElement {
   } else if ($elt.length > 1) {
     throw new Error(`Multiple elements found for selector: '${selector}'`);
   }
+
   return $elt.get(0);
 }
