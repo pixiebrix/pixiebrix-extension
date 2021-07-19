@@ -22,7 +22,6 @@ import { expectBackgroundPage } from "@/utils/expectContext";
 const FIREFOX_OPTIONS_MENU_ID = "PIXIEBRIX_FIREFOX_OPTIONS";
 
 function onContextMenuClick({ menuItemId }: browser.contextMenus.OnClickData) {
-  console.log("YO");
   if (menuItemId === FIREFOX_OPTIONS_MENU_ID) {
     void browser.runtime.openOptionsPage();
   }
@@ -34,11 +33,10 @@ export default async function initFirefoxCompat(): Promise<void> {
     return;
   }
 
+  browser.contextMenus.onClicked.addListener(onContextMenuClick);
   await browser.contextMenus.create({
     id: FIREFOX_OPTIONS_MENU_ID,
     title: "Options",
     contexts: ["browser_action"],
   });
-
-  browser.contextMenus.onClicked.addListener(onContextMenuClick);
 }
