@@ -22,7 +22,6 @@ import { useToasts } from "react-toast-notifications";
 import { useFormikContext } from "formik";
 import { useDispatch } from "react-redux";
 import { useModals } from "@/components/ConfirmationModal";
-import { uninstallContextMenu } from "@/background/devtools";
 import * as nativeOperations from "@/background/devtools";
 import { optionsSlice } from "@/options/slices";
 import { reportError } from "@/telemetry/logging";
@@ -63,13 +62,10 @@ function useRemove(element: FormState): () => void {
         dispatch(optionsSlice.actions.removeExtension(target));
       }
 
-      if (element.type === "contextMenu") {
-        try {
-          await uninstallContextMenu(port, target);
-        } catch (error: unknown) {
-          console.warn("Error uninstalling contextMenu", { error });
-        }
-      }
+      void Promise.allSettled([
+        nativeOperations.uninstallContextMenu(port, target),
+        nativeOperations.uninstallActionPanelPanel(port, target),
+      ]);
 
       // Remove from page editor
       dispatch(actions.removeElement(element.uuid));

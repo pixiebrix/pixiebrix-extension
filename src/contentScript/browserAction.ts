@@ -34,3 +34,8 @@ export const hideActionPanel = liftContentScript(
   "HIDE_ACTION_PANEL",
   async () => native.hideActionPanel()
 );
+
+export const removeActionPanelPanel = liftContentScript(
+  "REMOVE_ACTION_PANEL_PANEL",
+  async (extensionId: string) => native.removeExtension(extensionId)
+);

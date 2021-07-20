@@ -171,6 +171,15 @@ function renderPanels() {
   }
 }
 
+export function removeExtension(extensionId: string): void {
+  expectContentScript();
+
+  // `panels` is const, so replace the contents
+  const current = panels.splice(0, panels.length);
+  panels.push(...current.filter((x) => x.extensionId !== extensionId));
+  renderPanels();
+}
+
 export function removeExtensionPoint(extensionPointId: string): void {
   expectContentScript();
 
