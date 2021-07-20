@@ -76,9 +76,9 @@ function useEnsurePermissions(deployments: Deployment[]) {
     let accepted = false;
 
     try {
+      console.debug("Ensuring permissions for deployments", { permissions });
       accepted = await ensureAllPermissions(permissions);
     } catch (error: unknown) {
-      console.error(error);
       reportError(error);
       addToast(`Error granting permissions: ${error}`, {
         appearance: "error",
@@ -88,7 +88,7 @@ function useEnsurePermissions(deployments: Deployment[]) {
     }
 
     if (!accepted) {
-      addToast(`You declined the permissions`, {
+      addToast("You declined the permissions", {
         appearance: "error",
         autoDismiss: true,
       });
