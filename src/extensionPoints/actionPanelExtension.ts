@@ -103,6 +103,12 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     this.extensions.splice(0, this.extensions.length);
   }
 
+  public uninstall(): void {
+    this.removeExtensions();
+    removeExtensionPoint(this.id);
+    removeShowCallback(this.showCallback);
+  }
+
   private async runExtension(
     readerContext: ReaderOutput,
     extension: IExtension<ActionPanelConfig>
@@ -132,36 +138,24 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       // noinspection ExceptionCaughtLocallyJS
       throw new BusinessError("No renderer brick attached to body");
     } catch (error: unknown) {
+      const ref = { extensionId: extension.id, extensionPointId: this.id };
+
       if (error instanceof HeadlessModeError) {
-        upsertPanel(
-          { extensionId: extension.id, extensionPointId: this.id },
-          heading,
-          {
-            blockId: error.blockId,
-            key: uuidv4(),
-            ctxt: error.ctxt,
-            args: error.args,
-          }
-        );
+        upsertPanel(ref, heading, {
+          blockId: error.blockId,
+          key: uuidv4(),
+          ctxt: error.ctxt,
+          args: error.args,
+        });
       } else {
-        upsertPanel(
-          { extensionId: extension.id, extensionPointId: this.id },
-          heading,
-          {
-            key: uuidv4(),
-            error: getErrorMessage(error as Error),
-          }
-        );
+        upsertPanel(ref, heading, {
+          key: uuidv4(),
+          error: getErrorMessage(error as Error),
+        });
         reportError(error);
         throw error;
       }
     }
-  }
-
-  public uninstall(): void {
-    this.removeExtensions();
-    removeExtensionPoint(this.id);
-    removeShowCallback(this.showCallback);
   }
 
   async run(extensionIds?: string[]): Promise<void> {

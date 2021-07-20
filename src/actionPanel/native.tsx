@@ -27,6 +27,8 @@ import {
 } from "@/actionPanel/protocol";
 import { FORWARD_FRAME_NOTIFICATION } from "@/background/browserAction";
 import { isBrowser } from "@/helpers";
+import { reportEvent } from "@/telemetry/events";
+import { expectContentScript } from "@/utils/expectContext";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-chrome-extension";
@@ -64,8 +66,9 @@ function getHTMLElement(): JQuery<HTMLElement> {
     return $(document.querySelector("html"));
   }
 
-  if ($("html").length > -1) {
-    return $("html");
+  const $html = $("html");
+  if ($html.length > 0) {
+    return $html;
   }
 
   throw new Error("HTML node not found");
@@ -107,6 +110,8 @@ function insertActionPanel(): string {
 }
 
 export function showActionPanel(): string {
+  reportEvent("SidePanelShow");
+
   adjustDocumentStyle();
 
   const container: HTMLElement = document.querySelector(
@@ -131,7 +136,7 @@ export function showActionPanel(): string {
 }
 
 export function hideActionPanel(): void {
-  console.debug("Hide action panel");
+  reportEvent("SidePanelHide");
   restoreDocumentStyle();
   $(PANEL_CONTAINER_SELECTOR).remove();
 }
@@ -141,7 +146,6 @@ export function toggleActionPanel(): string | null {
     hideActionPanel();
     return null;
   }
-
   return showActionPanel();
 }
 
@@ -154,6 +158,8 @@ export function getStore(): ActionPanelStore {
 }
 
 function renderPanels() {
+  expectContentScript();
+
   if (isActionPanelVisible()) {
     void browser.runtime.sendMessage({
       type: FORWARD_FRAME_NOTIFICATION,
@@ -166,6 +172,9 @@ function renderPanels() {
 }
 
 export function removeExtensionPoint(extensionPointId: string): void {
+  expectContentScript();
+
+  // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
   panels.push(
     ...current.filter((x) => x.extensionPointId !== extensionPointId)
@@ -173,22 +182,27 @@ export function removeExtensionPoint(extensionPointId: string): void {
   renderPanels();
 }
 
+/**
+ * Create placeholder panels showing loading indicators
+ */
 export function reservePanels(refs: ExtensionRef[]): void {
-  if (refs.length > 0) {
-    for (const { extensionId, extensionPointId } of refs) {
-      const entry = panels.find((x) => x.extensionId === extensionId);
-      if (!entry) {
-        panels.push({
-          extensionId,
-          extensionPointId,
-          heading: null,
-          payload: null,
-        });
-      }
-    }
-
-    renderPanels();
+  if (refs.length === 0) {
+    return;
   }
+
+  const current = new Set(panels.map((x) => x.extensionId));
+  for (const { extensionId, extensionPointId } of refs) {
+    if (!current.has(extensionId)) {
+      panels.push({
+        extensionId,
+        extensionPointId,
+        heading: null,
+        payload: null,
+      });
+    }
+  }
+
+  renderPanels();
 }
 
 export function updateHeading(extensionId: string, heading: string): void {
@@ -196,6 +210,11 @@ export function updateHeading(extensionId: string, heading: string): void {
   if (entry) {
     entry.heading = heading;
     renderPanels();
+  } else {
+    console.warn(
+      `updateHeading: No panel exists for extension %s`,
+      extensionId
+    );
   }
 }
 

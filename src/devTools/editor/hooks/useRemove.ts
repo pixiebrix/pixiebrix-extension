@@ -28,6 +28,10 @@ import { optionsSlice } from "@/options/slices";
 import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
 
+/**
+ * Remove the current element from the page and installed extensions
+ * @param element the current Page Editor state
+ */
 function useRemove(element: FormState): () => void {
   const { port } = useContext(DevToolsContext);
   const { addToast } = useToasts();
@@ -48,17 +52,29 @@ function useRemove(element: FormState): () => void {
       return;
     }
 
+    const target = {
+      extensionPointId: values.extensionPoint.metadata.id,
+      extensionId: values.uuid,
+    };
+
     try {
+      // Remove from storage first so it doesn't get re-added by any subsequent steps
+      if (values.installed) {
+        dispatch(optionsSlice.actions.removeExtension(target));
+      }
+
       if (element.type === "contextMenu") {
         try {
-          await uninstallContextMenu(port, { extensionId: element.uuid });
+          await uninstallContextMenu(port, target);
         } catch (error: unknown) {
-          // The context menu may not currently be registered if it's not on a page that has a contentScript
-          // with a pattern that matches
-          console.info("Cannot unregister contextMenu", { error });
+          console.warn("Error uninstalling contextMenu", { error });
         }
       }
 
+      // Remove from page editor
+      dispatch(actions.removeElement(element.uuid));
+
+      // Remove from the host page
       try {
         await nativeOperations.clearDynamicElements(port, {
           uuid: element.uuid,
@@ -67,17 +83,6 @@ function useRemove(element: FormState): () => void {
         // Element might not be on the page anymore
         console.info("Cannot clear dynamic element from page", { error });
       }
-
-      if (values.installed) {
-        dispatch(
-          optionsSlice.actions.removeExtension({
-            extensionPointId: values.extensionPoint.metadata.id,
-            extensionId: values.uuid,
-          })
-        );
-      }
-
-      dispatch(actions.removeElement(element.uuid));
     } catch (error: unknown) {
       reportError(error);
       addToast(`Error removing element: ${getErrorMessage(error)}`, {

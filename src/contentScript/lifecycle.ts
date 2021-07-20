@@ -101,6 +101,15 @@ export function getInstalledIds(): string[] {
   return _installedExtensionPoints.map((x) => x.id);
 }
 
+function markUninstalled(id: string) {
+  // Remove from _installedExtensionPoints so they'll be re-added on a call to loadExtensions
+  const index = _installedExtensionPoints.findIndex((x) => x.id === id);
+  if (index >= 0) {
+    console.debug(`Extension point needs to be re-loaded: ${id}`);
+    _installedExtensionPoints.splice(index, 1);
+  }
+}
+
 /**
  * Remove a dynamic extension from the page.
  *
@@ -110,15 +119,6 @@ export function getInstalledIds(): string[] {
  * @param uuid the uuid of the dynamic extension, or undefined to clear all dynamic extensions
  */
 export function clearDynamic(uuid?: string): void {
-  const markUninstalled = (id: string) => {
-    // Remove from _installedExtensionPoints so they'll be re-added on a call to loadExtensions
-    const index = _installedExtensionPoints.findIndex((x) => x.id === id);
-    if (index >= 0) {
-      console.debug(`Extension point needs to be re-loaded: ${id}`);
-      _installedExtensionPoints.splice(index, 1);
-    }
-  };
-
   if (uuid) {
     if (_dynamic.has(uuid)) {
       console.debug(`clearDynamic: ${uuid}`);
@@ -231,6 +231,7 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
     while (
       rules.some((rule) =>
         rule.loadingSelectors.some(
+          // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
           (selector) => $document.find(selector).length > 0
         )
       )
@@ -313,7 +314,7 @@ export async function handleNavigate({
 
 export const notifyNavigation = liftContentScript(
   "NAVIGATE",
-  ({ openerTabId }: { openerTabId?: number; frameId?: number }) =>
+  async ({ openerTabId }: { openerTabId?: number; frameId?: number }) =>
     handleNavigate({ openerTabId }),
   { asyncResponse: false }
 );

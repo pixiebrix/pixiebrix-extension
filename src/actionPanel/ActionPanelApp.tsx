@@ -77,7 +77,7 @@ const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
 };
 
 const ActionPanelApp: React.FunctionComponent = () => {
-  const [{ panels }, setStoreState] = useState<ActionPanelStore>(getStore());
+  const [{ panels }, setStoreState] = useState(getStore());
 
   const syncPanels = useCallback(
     (store: ActionPanelStore) => {

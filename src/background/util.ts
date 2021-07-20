@@ -45,7 +45,10 @@ interface TargetState {
   ready: boolean;
 }
 
-/** Fetches the URL from a tab/frame. It will throw if we don't have permission to access it */
+/**
+ * Fetches the URL and content script state from a frame on a tab
+ * @throws Error if background page doesn't have permission to access the tab
+ * */
 export async function getTargetState(target: Target): Promise<TargetState> {
   expectBackgroundPage();
 
@@ -78,16 +81,18 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
   browser.runtime.onMessage.addListener(onMessage);
   signal.addEventListener("abort", resolve);
 
-  await readyNotification;
-
-  browser.runtime.onMessage.removeListener(onMessage);
-  signal.removeEventListener("abort", resolve);
+  try {
+    await readyNotification;
+  } finally {
+    browser.runtime.onMessage.removeListener(onMessage);
+    signal.removeEventListener("abort", resolve);
+  }
 }
 
 /**
  * Ensures that the contentScript is ready on the specified page, regardless of its status.
- * If it's not expected to be injected automatically, it also injects it into the page.
- * If it's been injected, it will resolve once the content script is ready.
+ * - If it's not expected to be injected automatically, it also injects it into the page.
+ * - If it's been injected, it will resolve once the content script is ready.
  */
 export async function ensureContentScript(target: Target): Promise<void> {
   expectBackgroundPage();

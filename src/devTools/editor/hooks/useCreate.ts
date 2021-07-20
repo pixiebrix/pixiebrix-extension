@@ -121,7 +121,7 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
 
   if (!hasPermissions) {
     addToast(
-      `You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions`,
+      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions",
       {
         appearance: "warning",
         autoDismiss: true,
@@ -168,7 +168,7 @@ export function useCreate(): CreateCallback {
           reportError(error);
           console.error("Error checking/enabling permissions", { error });
           addToast(
-            `An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page`,
+            "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
             {
               appearance: "warning",
               autoDismiss: true,

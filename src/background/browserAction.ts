@@ -90,23 +90,46 @@ type ForwardActionFrameNotification = {
 
 const FORWARD_RETRY_INTERVAL_MILLIS = 50;
 
-async function forwardWhenReady(
-  tabId: number,
-  message: unknown
-): Promise<void> {
+const FORWARD_RETRY_MAX_WAIT_MILLIS = 3000;
+
+/**
+ * Wait for the frame to register itself with the background page
+ */
+async function waitFrameId(tabId: number): Promise<number> {
+  const start = Date.now();
   let frameId: number;
   do {
     frameId = tabFrames.get(tabId);
     if (frameId == null) {
-      console.debug(`Action frame not ready for tab ${tabId}, waiting...`);
+      if (Date.now() - start > FORWARD_RETRY_MAX_WAIT_MILLIS) {
+        throw new Error(
+          `Action frame not ready for tab ${tabId} after ${FORWARD_RETRY_MAX_WAIT_MILLIS}ms`
+        );
+      }
       await sleep(FORWARD_RETRY_INTERVAL_MILLIS);
     }
   } while (frameId == null);
+  return frameId;
+}
 
-  console.debug(`Forwarding message to action frame for tab: ${tabId}`);
+/**
+ * Send a message to the action frame (sidebar) for a page when it's ready
+ * @param tabId the tab containing the action frame
+ * @param message the serializable message
+ */
+async function forwardWhenReady(
+  tabId: number,
+  message: { type: string }
+): Promise<void> {
+  const frameId = await waitFrameId(tabId);
 
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  console.debug(
+    `Forwarding message %s to action frame for tab: ${tabId}`,
+    message.type
+  );
+
+  const start = Date.now();
+  while (Date.now() - start < FORWARD_RETRY_MAX_WAIT_MILLIS) {
     try {
       return await browser.tabs.sendMessage(tabId, message, { frameId });
     } catch (error: unknown) {
@@ -117,6 +140,9 @@ async function forwardWhenReady(
       }
     }
   }
+  throw new Error(
+    `Action frame for tab ${tabId} not ready in ${FORWARD_RETRY_MAX_WAIT_MILLIS}ms`
+  );
 }
 
 const handlers = new HandlerMap();
@@ -125,9 +151,10 @@ handlers.set(
   REGISTER_ACTION_FRAME,
   async (request: RegisterActionFrameMessage, sender) => {
     const tabId = sender.tab.id;
-    if (tabNonces.get(tabId) !== request.payload.nonce) {
+    const expected = tabNonces.get(tabId);
+    if (expected != null && expected !== request.payload.nonce) {
       console.warn("Action frame nonce mismatch", {
-        expected: tabNonces.get(tabId),
+        expected,
         actual: request.payload.nonce,
       });
     }
