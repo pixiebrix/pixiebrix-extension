@@ -29,7 +29,6 @@ import {
   faHighlighter,
   faKeyboard,
   faListOl,
-  faTable,
   faWindowRestore,
 } from "@fortawesome/free-solid-svg-icons";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
