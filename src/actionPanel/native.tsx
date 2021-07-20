@@ -34,6 +34,8 @@ const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-chrome-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
 
+let renderSequenceNumber = 0;
+
 type ExtensionRef = {
   extensionId: string;
   extensionPointId: string;
@@ -98,6 +100,9 @@ function insertActionPanel(): string {
     `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
   );
 
+  // CSS approach not well supported? https://stackoverflow.com/questions/15494568/html-iframe-disable-scroll
+  // eslint-disable-next-line capitalized-comments -- suppressing the IntelliJ warning 🐢
+  // noinspection HtmlDeprecatedAttribute
   const $frame = $(
     `<iframe id="pixiebrix-frame" src="${actionURL}?nonce=${nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" ></iframe>`
   );
@@ -161,13 +166,21 @@ function renderPanels() {
   expectContentScript();
 
   if (isActionPanelVisible()) {
+    const seqNum = renderSequenceNumber;
+    renderSequenceNumber++;
+
     void browser.runtime.sendMessage({
       type: FORWARD_FRAME_NOTIFICATION,
+      meta: { $seq: seqNum },
       payload: {
         type: RENDER_PANELS_MESSAGE,
         payload: { panels },
       },
     });
+  } else {
+    console.debug(
+      "Skipping renderPanels because the action panel is not visible"
+    );
   }
 }
 
@@ -202,12 +215,21 @@ export function reservePanels(refs: ExtensionRef[]): void {
   const current = new Set(panels.map((x) => x.extensionId));
   for (const { extensionId, extensionPointId } of refs) {
     if (!current.has(extensionId)) {
-      panels.push({
+      const entry: PanelEntry = {
         extensionId,
         extensionPointId,
         heading: null,
         payload: null,
-      });
+      };
+
+      console.debug(
+        "reservePanels: reserve panel %s for %s",
+        extensionId,
+        extensionPointId,
+        { ...entry }
+      );
+
+      panels.push(entry);
     }
   }
 
@@ -218,6 +240,12 @@ export function updateHeading(extensionId: string, heading: string): void {
   const entry = panels.find((x) => x.extensionId === extensionId);
   if (entry) {
     entry.heading = heading;
+    console.debug(
+      "updateHeading: update heading for panel %s for %s",
+      extensionId,
+      entry.extensionPointId,
+      { ...entry }
+    );
     renderPanels();
   } else {
     console.warn(
@@ -232,10 +260,28 @@ export function upsertPanel(
   heading: string,
   payload: RendererPayload | RendererError
 ): void {
-  const entry = panels.find((x) => x.extensionId === extensionId);
+  const entry = panels.find((panel) => panel.extensionId === extensionId);
   if (entry) {
+    // XXX: should we update the heading here too?
     entry.payload = payload;
+    console.debug(
+      "upsertPanel: update existing panel %s for %s",
+      extensionId,
+      extensionPointId,
+      { ...entry }
+    );
   } else {
+    console.debug(
+      "upsertPanel: add new panel %s for %s",
+      extensionId,
+      extensionPointId,
+      {
+        entry,
+        extensionPointId,
+        heading,
+        payload,
+      }
+    );
     panels.push({ extensionId, extensionPointId, heading, payload });
   }
 

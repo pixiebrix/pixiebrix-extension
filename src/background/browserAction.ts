@@ -35,6 +35,12 @@ export const HIDE_ACTION_FRAME = `${MESSAGE_PREFIX}/HIDE_ACTION_FRAME`;
 const TOP_LEVEL_FRAME_ID = 0;
 
 /**
+ * Mapping from tabId to the message sequence number for forwarding. Reset/delete whenever the panel is shown/hidden.
+ * Messages with a sequence number lower than the value are dropped/skipped.
+ */
+const tabSeqNumber = new Map<number, number>();
+
+/**
  * Mapping from tabId to the nonce for the browser action iframe
  */
 const tabNonces = new Map<number, string>();
@@ -48,6 +54,7 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
   // We're either getting a new frame, or getting rid of the existing one. Forget the old frame
   // id so we're not sending messages to a dead frame
   tabFrames.delete(tab.id);
+  tabSeqNumber.delete(tab.id);
 
   try {
     await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
@@ -81,6 +88,7 @@ type RegisterActionFrameMessage = {
 
 type ForwardActionFrameNotification = {
   type: typeof FORWARD_FRAME_NOTIFICATION;
+  meta: { $seq: number };
   payload: {
     type: string;
     meta?: JsonObject;
@@ -115,23 +123,70 @@ async function waitFrameId(tabId: number): Promise<number> {
 /**
  * Send a message to the action frame (sidebar) for a page when it's ready
  * @param tabId the tab containing the action frame
+ * @param seqNum sequence number of the message, to ensure they're sent in the correct order despite non-determinism
+ * in when waitFrameId and content script ready are resolved
  * @param message the serializable message
  */
 async function forwardWhenReady(
   tabId: number,
-  message: { type: string }
+  seqNum: number,
+  message: { type: string; meta?: JsonObject }
 ): Promise<void> {
+  // `waitFrameId` and the `browser.tabs.sendMessage` loop cause non-determinism is what order the promises are
+  // resolved. Therefore, we need to use a sequence number to ensure the messages get sent in the correct order.
+
+  // Key assumption we're making: we're just forwarding render panel messages, which are safe to drop because the panel
+  // should always just be showing the values of the latest message
+
   const frameId = await waitFrameId(tabId);
 
+  const curSeqNum = tabSeqNumber.get(tabId);
+  if (curSeqNum != null && curSeqNum > seqNum) {
+    console.warn(
+      "Skipping stale message (current: %d, message: %d)",
+      curSeqNum,
+      seqNum
+    );
+    return;
+  }
+
+  const messageWithSequenceNumber = {
+    ...message,
+    meta: { ...(message.meta ?? {}), $seq: seqNum },
+  };
+
   console.debug(
-    `Forwarding message %s to action frame for tab: ${tabId}`,
-    message.type
+    `Forwarding message %s to action frame for tab: %d (seq: %d)`,
+    message.type,
+    tabId,
+    seqNum
   );
 
   const start = Date.now();
   while (Date.now() - start < FORWARD_RETRY_MAX_WAIT_MILLIS) {
+    const curSeqNum = tabSeqNumber.get(tabId);
+    if (curSeqNum != null && curSeqNum > seqNum) {
+      console.warn(
+        "Skipping stale message (current: %d, message: %d)",
+        curSeqNum,
+        seqNum
+      );
+      return;
+    }
+
     try {
-      return await browser.tabs.sendMessage(tabId, message, { frameId });
+      await browser.tabs.sendMessage(tabId, messageWithSequenceNumber, {
+        frameId,
+      });
+      console.debug(
+        `Forwarded message %s to action frame for tab: %d (seq: %d)`,
+        message.type,
+        tabId,
+        seqNum
+      );
+      // Message successfully received, so record latest sequence number for tab
+      tabSeqNumber.set(tabId, seqNum);
+      return;
     } catch (error: unknown) {
       if (getErrorMessage(error).includes("Could not establish connection")) {
         await sleep(FORWARD_RETRY_INTERVAL_MILLIS);
@@ -164,6 +219,7 @@ handlers.set(
       frameId: sender.frameId,
     });
     tabFrames.set(tabId, sender.frameId);
+    tabSeqNumber.delete(tabId);
   }
 );
 
@@ -171,7 +227,11 @@ handlers.set(
   FORWARD_FRAME_NOTIFICATION,
   async (request: ForwardActionFrameNotification, sender) => {
     const tabId = sender.tab.id;
-    return forwardWhenReady(tabId, request.payload).catch(reportError);
+    return forwardWhenReady(
+      tabId,
+      request.meta.$seq,
+      request.payload
+    ).catch((error) => reportError(error));
   }
 );
 
@@ -184,6 +244,7 @@ handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
   });
   console.debug("Setting action frame nonce", { sender, nonce });
   tabNonces.set(tabId, nonce);
+  tabSeqNumber.delete(tabId);
 });
 
 handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
@@ -192,6 +253,7 @@ handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
   await contentScript.hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
   console.debug("Clearing action frame nonce", { sender });
   tabNonces.delete(tabId);
+  tabSeqNumber.delete(tabId);
 });
 
 if (isBackgroundPage()) {

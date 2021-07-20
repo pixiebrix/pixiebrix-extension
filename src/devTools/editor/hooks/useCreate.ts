@@ -243,10 +243,18 @@ export function useCreate(): CreateCallback {
           type: element.type,
         });
 
+        // Make sure the page has the latest blocks/etc. for when we reactivate below
+        await Promise.all([
+          blockRegistry.fetch(),
+          extensionPointRegistry.fetch(),
+        ]);
+
         try {
           dispatch(saveExtension(adapter.selectExtension(element)));
           dispatch(markSaved(element.uuid));
+
           void reactivate();
+
           addToast("Saved extension", {
             appearance: "success",
             autoDismiss: true,
@@ -255,11 +263,6 @@ export function useCreate(): CreateCallback {
           onStepError(error, "saving extension");
           return;
         }
-
-        await Promise.all([
-          blockRegistry.fetch(),
-          extensionPointRegistry.fetch(),
-        ]);
       } catch (error: unknown) {
         console.error("Error saving extension", { error });
         reportError(error);

@@ -166,19 +166,23 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
     if (this.extensions.length === 0) {
       console.debug(
-        `actionPanel extension point ${this.id} has no installed extension`
+        `actionPanel extension point %s has no installed extensions`,
+        this.id
       );
       return;
     }
 
     if (!isActionPanelVisible()) {
-      console.debug(`actionPanel is not visible`);
+      console.debug(
+        `Skipping run for %s because actionPanel is not visible`,
+        this.id
+      );
       return;
     }
 
     reservePanels(
-      this.extensions.map((x) => ({
-        extensionId: x.id,
+      this.extensions.map((extension) => ({
+        extensionId: extension.id,
         extensionPointId: this.id,
       }))
     );
