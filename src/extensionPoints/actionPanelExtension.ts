@@ -130,7 +130,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       });
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
       // noinspection ExceptionCaughtLocallyJS
-      throw new BusinessError("No renderer attached to body");
+      throw new BusinessError("No renderer brick attached to body");
     } catch (error: unknown) {
       if (error instanceof HeadlessModeError) {
         upsertPanel(

@@ -18,13 +18,38 @@
 import { Logger } from "@/core";
 import { PanelComponent } from "@/extensionPoints/dom";
 
+function isRendererOutput(value: unknown): boolean {
+  if (typeof value === "string") {
+    return true;
+  }
+
+  if (value != null && typeof value === "object") {
+    const keys = Object.keys(value);
+    return (
+      keys.length > 0 &&
+      keys.every((key) => ["Component", "props"].includes(key))
+    );
+  }
+
+  return false;
+}
+
 /** An error boundary for renderers */
 export async function errorBoundary(
   renderPromise: Promise<PanelComponent>,
   logger: Logger
 ): Promise<PanelComponent> {
   try {
-    return await renderPromise;
+    const value = await renderPromise;
+
+    if (!isRendererOutput(value)) {
+      logger.warn("Expected a renderer brick");
+      return `<div style="color: red;">Expected a renderer brick</div>`;
+    }
+
+    // TODO: validate the shape of the value returned
+    return value;
+
     // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     logger.error(error);
