@@ -263,6 +263,15 @@ export const uninstallContextMenu = liftBackground(
   }
 );
 
+export const uninstallActionPanelPanel = liftBackground(
+  "UNINSTALL_ACTION_PANEL_PANEL",
+  // False positive - it's the inner method that should be async
+  // eslint-disable-next-line unicorn/consistent-function-scoping
+  (target) => async ({ extensionId }: { extensionId: string }) => {
+    return browserActionProtocol.removeActionPanelPanel(target, extensionId);
+  }
+);
+
 export const initUiPathRobot = liftBackground(
   "UIPATH_INIT",
   (target: Target) => async () => {

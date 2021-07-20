@@ -19,8 +19,9 @@ import { recordEvent, initUID } from "@/background/telemetry";
 import { JsonObject } from "type-fest";
 
 export function reportEvent(event: string, data: JsonObject = {}): void {
+  console.debug(event);
   void recordEvent({ event, data }).catch((error: unknown) => {
-    console.warn("Error reporting event", { error });
+    console.warn("Error reporting event %s", event, { error });
   });
 }
 

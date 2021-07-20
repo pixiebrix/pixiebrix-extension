@@ -121,16 +121,26 @@ export function notifyContentScripts(
         { type: fullType, payload: args },
         { frameId: ROOT_FRAME_ID }
       );
+
     const tabIds = tabId ? [tabId] : await getTabIds();
-    Promise.all(tabIds.map(async (tabId) => messageOne(tabId))).catch(
-      (error) => {
-        console.warn(
-          `An error occurred when broadcasting content script notification: %s`,
-          fullType,
-          error
-        );
-      }
+    // `notifyContentScripts` should never throw an error due to connectivity with content scripts. Some tabs are
+    // expected to fail, because getTabIds will return tab ids that PixieBrix does not have access to
+    const results = await Promise.allSettled(
+      tabIds.map(async (tabId) => messageOne(tabId))
     );
+
+    const failed = results.filter(
+      (x) => x.status === "rejected"
+    ) as PromiseRejectedResult[];
+    if (failed.length > 0) {
+      console.warn(
+        `${failed.length} error(s) broadcasting content script notification: %s`,
+        fullType,
+        {
+          errors: failed.map((x) => x.reason),
+        }
+      );
+    }
   };
 }
 

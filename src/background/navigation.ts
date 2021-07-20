@@ -40,6 +40,7 @@ function initNavigation(): void {
 export const reactivate = liftBackground(
   "REACTIVATE",
   async () => {
+    console.debug("contentScript.reactivate on all tabs");
     await contentScript.reactivate(null);
   },
   { asyncResponse: false }

@@ -415,13 +415,13 @@ const mapStateToProps = (state: { options: OptionsState }) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  onRemove: (identifier: ExtensionIdentifier) => {
+  onRemove: (ref: ExtensionIdentifier) => {
     reportEvent("ExtensionRemove", {
-      extensionId: identifier.extensionId,
+      extensionId: ref.extensionId,
     });
     // Remove from storage first so it doesn't get re-added in reactivate step below
-    dispatch(removeExtension(identifier));
-    void uninstallContextMenu(identifier).catch((error) => {
+    dispatch(removeExtension(ref));
+    void uninstallContextMenu(ref).catch((error) => {
       reportError(error);
     });
     void reactivate().catch((error: unknown) => {
