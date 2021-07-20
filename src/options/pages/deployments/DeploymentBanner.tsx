@@ -41,6 +41,8 @@ import { reportError } from "@/telemetry/logging";
 import { activeDeployments, queueReactivate } from "@/background/deployment";
 import { selectInstalledExtensions } from "@/options/selectors";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import { refreshRegistries } from "@/hooks/refresh";
+import { getErrorMessage } from "@/errors";
 
 const { actions } = optionsSlice;
 
@@ -138,59 +140,73 @@ function useDeployments() {
     });
   }, [installed, deployments]);
 
-  const { request } = useEnsurePermissions(updated);
+  const { request: ensurePermissions } = useEnsurePermissions(updated);
 
-  const update = useCallback(() => {
-    // Can't use async here because Firefox loses track of trusted UX event
-    void request().then((accepted: boolean) => {
-      if (accepted) {
-        for (const deployment of deployments) {
-          // Clear existing installs of the blueprint
-          for (const extension of installed) {
-            if (
-              extension._recipe != null &&
-              extension._recipe.id === deployment.package.package_id
-            ) {
-              const identifier = {
-                extensionPointId: extension.extensionPointId,
-                extensionId: extension.id,
-              };
+  const update = useCallback(async () => {
+    const accepted = ensurePermissions();
 
-              void uninstallContextMenu(identifier).catch((error) => {
-                reportError(error);
-              });
+    if (!accepted) {
+      reportEvent("DeploymentRejectPermissions", {});
+      return;
+    }
 
-              dispatch(actions.removeExtension(identifier));
-            }
-          }
-
-          // Install the blueprint with the service definition
-          dispatch(
-            actions.installRecipe({
-              recipe: deployment.package.config,
-              extensionPoints: deployment.package.config.extensionPoints,
-              services: fromPairs(
-                deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
-              ),
-              deployment,
-            })
-          );
-          reportEvent("DeploymentActivate", {
-            deployment: deployment.id,
-          });
-        }
-
-        void queueReactivate();
-
-        addToast("Activated team bricks", {
-          appearance: "success",
+    // Get the latest brick definitions. There's a couple problems with the current call here, but it's a better than
+    // nothing
+    // - It should be called prior to ensurePermissions, so we have the latest permission requirements
+    // - It needs to be broadcast to the content scripts to they get the updated brick definition content
+    try {
+      await refreshRegistries();
+    } catch (error: unknown) {
+      reportError(error);
+      addToast(
+        `Error fetching latest bricks from server: ${getErrorMessage(error)}`,
+        {
+          appearance: "warning",
           autoDismiss: true,
-        });
-      } else {
-        reportEvent("DeploymentRejectPermissions", {});
+        }
+      );
+    }
+
+    for (const deployment of deployments) {
+      // Clear existing installs of the blueprint
+      for (const extension of installed) {
+        if (extension._recipe?.id === deployment.package.package_id) {
+          const identifier = {
+            extensionPointId: extension.extensionPointId,
+            extensionId: extension.id,
+          };
+
+          void uninstallContextMenu(identifier).catch((error) => {
+            reportError(error);
+          });
+
+          dispatch(actions.removeExtension(identifier));
+        }
       }
+
+      // Install the blueprint with the service definition
+      dispatch(
+        actions.installRecipe({
+          recipe: deployment.package.config,
+          extensionPoints: deployment.package.config.extensionPoints,
+          services: fromPairs(
+            deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
+          ),
+          deployment,
+        })
+      );
+      reportEvent("DeploymentActivate", {
+        deployment: deployment.id,
+      });
+    }
+
+    void queueReactivate();
+
+    addToast("Activated team bricks", {
+      appearance: "success",
+      autoDismiss: true,
     });
-  }, [deployments, dispatch, request, addToast, installed]);
+  }, [deployments, dispatch, ensurePermissions, addToast, installed]);
 
   return { hasUpdate: updated?.length > 0, update };
 }

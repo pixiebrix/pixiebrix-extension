@@ -141,6 +141,11 @@ export interface DeploymentContext {
   timestamp: string;
 }
 
+export type ExtensionIdentifier = {
+  extensionId: string;
+  extensionPointId: string;
+};
+
 export interface IExtension<
   T extends BaseExtensionConfig = BaseExtensionConfig
 > {
