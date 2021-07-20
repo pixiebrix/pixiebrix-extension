@@ -22,7 +22,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import GridLoader from "react-spinners/GridLoader";
 import Container from "react-bootstrap/Container";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import InstalledPage from "@/options/pages/InstalledPage";
+import InstalledPage from "@/options/pages/installed/InstalledPage";
 import ExtensionEditor from "@/options/pages/extensionEditor/ExtensionEditor";
 import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
