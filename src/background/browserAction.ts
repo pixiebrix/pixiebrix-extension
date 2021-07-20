@@ -138,6 +138,10 @@ async function forwardWhenReady(
   // Key assumption we're making: we're just forwarding render panel messages, which are safe to drop because the panel
   // should always just be showing the values of the latest message
 
+  // We _might_ be able to have forwardWhenReady handle the seqNum itself instead of passing an internal value. However
+  // I'm worried there would still some non-determinism because the source method calling forward from the content
+  // script uses `void browser.runtime.sendMessage`, so the messages are not guaranteed to be ordered
+
   const frameId = await waitFrameId(tabId);
 
   const curSeqNum = tabSeqNumber.get(tabId);
