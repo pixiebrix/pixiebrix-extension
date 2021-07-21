@@ -134,12 +134,12 @@ function useSubmitBrick({
       } catch (error) {
         console.debug("Got validation error", error);
         if (isPlainObject(error.response?.data)) {
-          castArray(error.response.data.__all__ ?? []).map((message) => {
+          for (const message of castArray(error.response.data.__all__ ?? [])) {
             addToast(`Error: ${message} `, {
               appearance: "error",
               autoDismiss: true,
             });
-          });
+          }
           setErrors(error.response.data);
         } else {
           addToast(error.toString(), {

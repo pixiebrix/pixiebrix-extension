@@ -120,7 +120,7 @@ export function useDeployments() {
 
   const update = useCallback(() => {
     // Can't use async here because Firefox loses track of trusted UX event
-    request().then((accepted: boolean) => {
+    void request().then((accepted: boolean) => {
       if (accepted) {
         for (const deployment of deployments) {
           // Clear existing installs of the blueprint

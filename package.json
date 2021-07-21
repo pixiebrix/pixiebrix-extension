@@ -5,7 +5,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "lint": "eslint src",
+    "lint": "eslint src --ext js,jsx,ts,tsx",
     "watch": "ENV_FILE='.env.development' webpack --mode development --watch",
     "build": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
     "build:scripts": "webpack --mode production --config scripts/webpack.scripts.js",
@@ -179,6 +179,9 @@
     "css-minimizer-webpack-plugin": "^3.0.2",
     "dotenv": "^10.0.0",
     "eslint": "^7.30.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-xo": "^0.37.0",
+    "eslint-config-xo-typescript": "^0.43.0",
     "eslint-import-resolver-webpack": "^0.13.1",
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-react": "^7.24.0",

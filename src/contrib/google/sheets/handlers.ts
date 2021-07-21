@@ -127,8 +127,8 @@ export const batchGet = liftBackground(
 
 function columnToLetter(column: number): string {
   // https://stackoverflow.com/a/21231012/402560
-  let temp,
-    letter = "";
+  let temp;
+  let letter = "";
   while (column > 0) {
     temp = (column - 1) % 26;
     letter = String.fromCharCode(temp + 65) + letter;

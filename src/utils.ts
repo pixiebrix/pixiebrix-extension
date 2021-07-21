@@ -281,7 +281,7 @@ export function getPropByPath(
     }
 
     if (/^\d+$/.test(part) && Array.isArray(value)) {
-      part = Number.parseInt(part, 0);
+      part = Number.parseInt(part, 10);
       numeric = true;
     }
 

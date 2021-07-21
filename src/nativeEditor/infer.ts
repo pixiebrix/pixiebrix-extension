@@ -121,16 +121,12 @@ function setCommonAttrs(
   const attributes = proto.attributes;
 
   // Find the common attributes between the elements
-  for (const attrIndex in Object.keys(attributes)) {
-    // Safe because we're getting from Object.keys
-    // eslint-disable-next-line security/detect-object-injection
-    const attrName = attributes[attrIndex].name;
-
-    if (ATTR_EXCLUDE_PATTERNS.some((x) => x.test(attrName))) {
+  for (const { name } of attributes) {
+    if (ATTR_EXCLUDE_PATTERNS.some((x) => x.test(name))) {
       continue;
     }
 
-    const value = commonAttr($items, attrName);
+    const value = commonAttr($items, name);
     if (value != null) {
       if (
         value
@@ -144,7 +140,7 @@ function setCommonAttrs(
         );
       }
 
-      $common.attr(attrName, value);
+      $common.attr(name, value);
     }
   }
 }

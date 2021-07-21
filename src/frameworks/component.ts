@@ -40,6 +40,10 @@ export function traverseUntil<T extends object>(
   next: (current: T) => T | null,
   maxTraverse?: number
 ): T | null {
+  if (maxTraverse == null) {
+    return src;
+  }
+
   let current = src;
   // Detect cycles
   const visited = new WeakSet<T>();
@@ -48,7 +52,7 @@ export function traverseUntil<T extends object>(
     current != null &&
     !match(current) &&
     !visited.has(current) &&
-    (maxTraverse == null || cnt <= maxTraverse)
+    cnt <= maxTraverse
   ) {
     visited.add(current);
     current = next(current);

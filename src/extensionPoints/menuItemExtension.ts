@@ -358,6 +358,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const cancelObservers = compact(
       $menuContainers
+        // eslint-disable-next-line array-callback-return -- `compact()` takes care of undefined items
         .map((index, element) => {
           // Only acquire new menu items, otherwise we end up with duplicate entries in this.menus which causes
           // repeat evaluation of menus in this.run

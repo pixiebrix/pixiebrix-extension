@@ -48,7 +48,7 @@ function renderRow<TRow extends Row>(
 function makeDataTable<TRow extends {}>(
   columns: ColumnDefinition<TRow>[]
 ): (ctxt: unknown) => string {
-  return function drawTable(ctxt: unknown): string {
+  return (ctxt: unknown): string => {
     if (!Array.isArray(ctxt)) {
       throw new BusinessError("makeDataTable expected an array of data");
     }
