@@ -52,12 +52,11 @@ const Page: React.FunctionComponent<{
         <div className="flex-grow-1">
           <PageTitle icon={icon} title={title} />
           <div className="pb-4">
-            {description &&
-              (description instanceof String ? (
-                <p>{description}</p>
-              ) : (
-                description
-              ))}
+            {typeof description === "string" ? (
+              <p>{description}</p>
+            ) : (
+              description
+            )}
             {breadcrumb}
           </div>
         </div>
