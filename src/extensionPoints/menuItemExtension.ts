@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, compact, once, debounce } from "lodash";
+import { castArray, once, debounce } from "lodash";
 import { engineRenderer } from "@/helpers";
 import {
   reducePipeline,
@@ -356,24 +356,20 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     let existingCount = 0;
 
-    const cancelObservers = compact(
-      $menuContainers
-        // eslint-disable-next-line array-callback-return -- `compact()` takes care of undefined items
-        .map((index, element) => {
-          // Only acquire new menu items, otherwise we end up with duplicate entries in this.menus which causes
-          // repeat evaluation of menus in this.run
-          if (!menuContainers.includes(element)) {
-            const menuUUID = uuidv4();
-            this.menus.set(menuUUID, element);
-            return acquireElement(element, this.id, async () =>
-              this.reacquire(menuUUID)
-            );
-          }
-
-          existingCount++;
-        })
-        .get()
-    );
+    const cancelObservers = [];
+    for (const element of $menuContainers) {
+      // Only acquire new menu items, otherwise we end up with duplicate entries in this.menus which causes
+      // repeat evaluation of menus in this.run
+      if (menuContainers.includes(element)) {
+        existingCount++;
+      } else {
+        const menuUUID = uuidv4();
+        this.menus.set(menuUUID, element);
+        cancelObservers.push(
+          acquireElement(element, this.id, async () => this.reacquire(menuUUID))
+        );
+      }
+    }
 
     for (const cancelObserver of cancelObservers) {
       this.cancelPending.add(cancelObserver);
