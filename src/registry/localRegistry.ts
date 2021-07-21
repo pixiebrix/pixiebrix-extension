@@ -131,13 +131,13 @@ export const syncRemote = liftBackground(
     let deleteCnt = 0;
     for (const obj of current) {
       if (obj.kind === kind && obj.scope !== LOCAL_SCOPE) {
-        tx.store.delete(getKey(obj));
+        void tx.store.delete(getKey(obj));
         deleteCnt++;
       }
     }
 
     for (const obj of objs) {
-      tx.store.put(obj);
+      void tx.store.put(obj);
     }
 
     await tx.done;

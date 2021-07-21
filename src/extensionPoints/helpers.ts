@@ -32,7 +32,7 @@ export function isHost(hostname: string): boolean {
 function getAncestors(node: Node): Node[] {
   const ancestors = [node];
   let currentNode: Node = node;
-  while (currentNode && currentNode != document) {
+  while (currentNode && currentNode !== document) {
     ancestors.push(currentNode);
     currentNode = currentNode.parentNode;
   }

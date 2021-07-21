@@ -181,7 +181,7 @@ export const initUID = liftBackground(
   "INIT_UID",
   async (): Promise<void> => {
     if (!(await _getDNT())) {
-      throttledInit();
+      void throttledInit();
     }
   },
   { asyncResponse: false }
@@ -203,7 +203,7 @@ export const recordEvent = liftBackground(
         timestamp: Date.now(),
         data,
       });
-      debouncedFlush();
+      void debouncedFlush();
     }
   },
   { asyncResponse: false }

@@ -102,7 +102,7 @@ const ServiceModal: React.FunctionComponent<{
   );
 
   const filteredOptions = useMemo(() => {
-    if (debouncedQuery.trim() != "") {
+    if (debouncedQuery.trim() !== "") {
       const normalQuery = debouncedQuery.toLowerCase();
       return sortBy(
         serviceOptions.filter(

@@ -129,7 +129,7 @@ function extractServiceIds(schema: Schema): string[] {
 
   if ("anyOf" in schema) {
     return schema.anyOf
-      .filter((x) => x != false)
+      .filter((x) => x !== false)
       .flatMap((x) => extractServiceIds(x as Schema));
   }
 

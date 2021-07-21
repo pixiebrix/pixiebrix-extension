@@ -98,7 +98,7 @@ export function useEnsurePermissions(
 
   const activate = useCallback(() => {
     // Can't use async here because Firefox loses track of trusted UX event
-    request().then((accepted: boolean) => {
+    void request().then((accepted: boolean) => {
       if (accepted) {
         reportEvent("MarketplaceActivate", {
           blueprintId: blueprint.metadata.id,
