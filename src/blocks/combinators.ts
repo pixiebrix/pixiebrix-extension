@@ -192,10 +192,13 @@ async function runStage(
     }
   } else {
     // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
-    const renderer = await engineRenderer(stage.templateEngine);
 
     blockArgs = isPlainObject(args)
-      ? mapArgs(stageConfig, argContext, renderer)
+      ? mapArgs(
+          stageConfig,
+          argContext,
+          await engineRenderer(stage.templateEngine)
+        )
       : stageConfig;
 
     if (logValues) {
