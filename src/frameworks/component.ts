@@ -38,12 +38,8 @@ export function traverseUntil<T extends object>(
   src: T,
   match: (element: T) => boolean,
   next: (current: T) => T | null,
-  maxTraverse?: number
+  maxTraverse: number = Number.POSITIVE_INFINITY
 ): T | null {
-  if (maxTraverse == null) {
-    return src;
-  }
-
   let current = src;
   // Detect cycles
   const visited = new WeakSet<T>();
