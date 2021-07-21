@@ -48,6 +48,8 @@
         }
       }
     ],
+    // smart allows for != null. See: https://github.com/pixiebrix/pixiebrix-extension/pull/887#pullrequestreview-711873690
+    "eqeqeq": ["error", "smart"],
 
     // Soft-enable some rules, maybe enforce them later
     "@typescript-eslint/ban-types": "warn",
@@ -61,7 +63,8 @@
     "unicorn/prefer-switch": "warn",
 
     // Disable recommended rules
-    "no-eq-null": "off", // It's fine https://github.com/pixiebrix/pixiebrix-extension/pull/887#pullrequestreview-711873690
+    // It's fine because eqeqeq covers it. See https://github.com/pixiebrix/pixiebrix-extension/pull/887#pullrequestreview-711873690
+    "no-eq-null": "off",
     "import/named": "off", // TypeScript does this natively
     "react/prop-types": "off",
     "unicorn/filename-case": "off", // Contrasts with React
@@ -75,7 +78,6 @@
     "padding-line-between-statements": "off",
 
     // Temporarily disable rules
-    "eqeqeq": ["warn", "smart"],
     "no-await-in-loop": "warn",
     "no-negated-condition": "warn",
     "no-implicit-coercion": "warn",

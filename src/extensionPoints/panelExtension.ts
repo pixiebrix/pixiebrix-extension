@@ -287,7 +287,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const shadowDOM = boolean(rawShadowDOM);
 
     // Start collapsed
-    if (collapsible && cnt == 1) {
+    if (collapsible && cnt === 1) {
       this.collapsedExtensions[extension.id] = true;
     }
 

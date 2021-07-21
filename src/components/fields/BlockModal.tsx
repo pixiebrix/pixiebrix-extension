@@ -142,7 +142,7 @@ type BlockOption = {
 
 function searchBlocks(query: string, options: BlockOption[]): BlockOption[] {
   let filtered = options;
-  if (query?.trim() != "") {
+  if (query?.trim() !== "") {
     const normalizedQuery = query.toLowerCase();
     filtered = options.filter(
       (x) =>

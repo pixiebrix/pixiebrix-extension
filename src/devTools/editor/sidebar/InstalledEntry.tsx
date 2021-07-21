@@ -61,7 +61,7 @@ const InstalledEntry: React.FunctionComponent<{
 
   return (
     <ListGroup.Item
-      active={extension.id == activeElement}
+      active={extension.id === activeElement}
       key={`installed-${extension.id}`}
       onClick={async () => selectInstalled(extension)}
       style={{ cursor: "pointer" }}
