@@ -29,7 +29,7 @@ import { isChrome } from "@/helpers";
 const lift = isChrome ? liftBackground : liftExternal;
 
 export const connectPage = lift("CONNECT_PAGE", async () => {
-  return browser.runtime.getManifest();
+  return chrome.runtime.getManifest();
 });
 
 const _reload = liftBackground("BACKGROUND_RELOAD", async () => {

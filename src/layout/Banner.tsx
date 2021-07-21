@@ -21,6 +21,8 @@ import "./Banner.scss";
 import { getExtensionAuth } from "@/auth/token";
 import useAsyncEffect from "use-async-effect";
 import AuthContext from "@/auth/AuthContext";
+import { isExtensionContext } from "@/chrome";
+import { connectPage } from "@/messaging/external";
 
 const environment = process.env.ENVIRONMENT;
 
@@ -45,15 +47,27 @@ function useSyncedHostname() {
   return hostname;
 }
 
+function useVersionName() {
+  const [versionName, setVersionName] = useState<string>();
+
+  useAsyncEffect(async () => {
+    const manifest = isExtensionContext()
+      ? chrome.runtime.getManifest()
+      : await connectPage();
+    setVersionName(manifest.version_name);
+  }, []);
+
+  return versionName;
+}
+
 const Banner: React.FunctionComponent = () => {
   const { extension } = useContext(AuthContext);
   const hostname = useSyncedHostname();
+  const versionName = useVersionName();
 
   if (environment === "production") {
     return null;
   }
-
-  const versionName = chrome.runtime.getManifest().version_name;
 
   const syncText = hostname
     ? `synced with ${hostname}`
