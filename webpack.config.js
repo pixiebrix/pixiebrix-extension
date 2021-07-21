@@ -53,7 +53,10 @@ for (const [env, defaultValue] of Object.entries(defaults)) {
 
 if (true) {
   console.warn("Mocking icons for development build");
-  resolve.alias["@/icons/svgIcons"] = path.resolve("src/__mocks__/iconsMock");
+  resolve.alias = {
+    "@/icons/svgIcons": path.resolve("src/__mocks__/iconsMock"),
+    ...resolve.alias,
+  };
   console.info(resolve.alias);
 }
 
