@@ -17,29 +17,18 @@
 
 import { TemplateEngine } from "@/core";
 import Mustache from "mustache";
-import mapKeys from "lodash/mapKeys";
+import { mapKeys, once } from "lodash";
 
 const hyphenRegex = /-/gi;
 
+// eslint-disable-next-line @typescript-eslint/ban-types -- we don't need key logic
 export type Renderer = (template: string, context: object) => string;
 
-let _nunjucks: any;
-let _handlebars: any;
-
-async function ensureNunjucks() {
-  if (_nunjucks == null) {
-    _nunjucks = (await import("nunjucks")).default;
-    _nunjucks.configure({ autoescape: true });
-  }
-  return _nunjucks;
-}
-
-async function ensureHandlebars() {
-  if (!_handlebars == null) {
-    _handlebars = (await import("handlebars")).default;
-  }
-  return _handlebars;
-}
+const ensureNunjucks = once(async () => {
+  const { default: nunjucks } = await import("nunjucks");
+  nunjucks.configure({ autoescape: true });
+  return nunjucks;
+});
 
 export async function engineRenderer(
   templateEngine: TemplateEngine = "mustache"
@@ -61,7 +50,7 @@ export async function engineRenderer(
     }
 
     case "handlebars": {
-      const handlebars = await ensureHandlebars();
+      const handlebars = (await import("handlebars")).default;
       return (template, ctxt) => {
         const compiledTemplate = handlebars.compile(template);
         return compiledTemplate(ctxt);
