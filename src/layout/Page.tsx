@@ -58,6 +58,7 @@ const Page: React.FunctionComponent<{
               ) : (
                 description
               ))}
+            {breadcrumb}
           </div>
         </div>
         {toolbar && <div>{toolbar}</div>}
