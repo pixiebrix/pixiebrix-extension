@@ -20,7 +20,6 @@ import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
 import { castArray, compact, once, debounce } from "lodash";
-import { engineRenderer } from "@/helpers";
 import {
   reducePipeline,
   mergeReaders,
@@ -63,6 +62,7 @@ import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
 import { PanelDefinition } from "@/extensionPoints/panelExtension";
 import iconAsSVG from "@/icons/svgIcons";
+import { engineRenderer } from "@/utils/renderers";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -426,7 +426,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       icon = { id: "box", size: 18 },
     } = extension.config;
 
-    const renderTemplate = engineRenderer(extension.templateEngine);
+    const renderTemplate = await engineRenderer(extension.templateEngine);
 
     let html: string;
 

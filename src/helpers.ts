@@ -16,51 +16,10 @@
  */
 
 import Mustache from "mustache";
-import nunjucks from "nunjucks";
-import isPlainObject from "lodash/isPlainObject";
-import mapValues from "lodash/mapValues";
-import pickBy from "lodash/pickBy";
-import mapKeys from "lodash/mapKeys";
-import { TemplateEngine, Schema, SchemaProperties } from "@/core";
-import Handlebars from "handlebars";
+import { mapValues, pickBy, isPlainObject } from "lodash";
+import { Schema, SchemaProperties } from "@/core";
 import { getPropByPath } from "@/utils";
-
-nunjucks.configure({ autoescape: true });
-
-const hyphenRegex = /-/gi;
-
-type Renderer = (template: string, context: object) => string;
-
-export function engineRenderer(
-  templateEngine: TemplateEngine = "mustache"
-): Renderer | undefined {
-  switch (templateEngine.toLowerCase()) {
-    case "mustache": {
-      return Mustache.render;
-    }
-
-    case "nunjucks": {
-      // Convert top level data from kebab case to snake case in order to be valid identifiers
-      return (template, ctxt) => {
-        const snakeCased = mapKeys(ctxt, (value, key) =>
-          key.replace(hyphenRegex, "_")
-        );
-        return nunjucks.renderString(template, snakeCased);
-      };
-    }
-
-    case "handlebars": {
-      return (template, ctxt) => {
-        const compiledTemplate = Handlebars.compile(template);
-        return compiledTemplate(ctxt);
-      };
-    }
-
-    default: {
-      return undefined;
-    }
-  }
-}
+import { Renderer } from "@/utils/renderers";
 
 // First part of the path can be global context with a @
 const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;
