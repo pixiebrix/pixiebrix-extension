@@ -51,6 +51,12 @@ for (const [env, defaultValue] of Object.entries(defaults)) {
   }
 }
 
+if (true) {
+  console.warn("Mocking icons for development build");
+  resolve.alias["@/icons/svgIcons"] = path.resolve("src/__mocks__/iconsMock");
+  console.info(resolve.alias);
+}
+
 console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
