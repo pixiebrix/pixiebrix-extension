@@ -61,6 +61,7 @@
     "unicorn/prefer-switch": "warn",
 
     // Disable recommended rules
+    "no-eq-null": "off", // It's fine https://github.com/pixiebrix/pixiebrix-extension/pull/887#pullrequestreview-711873690
     "import/named": "off", // TypeScript does this natively
     "react/prop-types": "off",
     "unicorn/filename-case": "off", // Contrasts with React
@@ -74,8 +75,7 @@
     "padding-line-between-statements": "off",
 
     // Temporarily disable rules
-    "eqeqeq": "warn",
-    "no-eq-null": "warn",
+    "eqeqeq": ["warn", "smart"],
     "no-await-in-loop": "warn",
     "no-negated-condition": "warn",
     "no-implicit-coercion": "warn",
