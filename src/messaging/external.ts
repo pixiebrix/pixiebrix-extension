@@ -16,12 +16,11 @@
  */
 
 /**
- * API for PixieBrix app to talk to the browser extension.
+ * API for the PixieBrix app to talk to the browser extension.
  */
 import { AuthData, updateExtensionAuth } from "@/auth/token";
 import { liftBackground } from "@/background/protocol";
 import { liftExternal } from "@/contentScript/externalProtocol";
-
 import { browser } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { isChrome } from "@/helpers";
@@ -29,7 +28,8 @@ import { isChrome } from "@/helpers";
 const lift = isChrome ? liftBackground : liftExternal;
 
 export const connectPage = lift("CONNECT_PAGE", async () => {
-  return browser.runtime.getManifest();
+  // `browser.runtimes`'s types don't include the whole manifest. Use the chrome namespace to get the full type
+  return chrome.runtime.getManifest();
 });
 
 const _reload = liftBackground("BACKGROUND_RELOAD", async () => {
