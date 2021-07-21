@@ -17,10 +17,18 @@
 
 import React from "react";
 import Page from "@/layout/Page";
+import { faMusic } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   component: Page,
-  title: "Page",
+  title: "Layout/Page",
 };
 
 const Template = (args) => <Page {...args} />;
+
+export const Default = Template.bind({});
+Default.args = {
+  icon: { faMusic },
+  title: "Example page",
+  description: "Welcome to an example page! Have a look around.",
+};
