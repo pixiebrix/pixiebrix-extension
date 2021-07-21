@@ -27,7 +27,7 @@ let _nunjucks: any;
 let _handlebars: any;
 
 async function ensureNunjucks() {
-  if (!_nunjucks) {
+  if (_nunjucks == null) {
     _nunjucks = (await import("nunjucks")).default;
     _nunjucks.configure({ autoescape: true });
   }
@@ -35,7 +35,7 @@ async function ensureNunjucks() {
 }
 
 async function ensureHandlebars() {
-  if (_handlebars) {
+  if (!_handlebars == null) {
     _handlebars = (await import("handlebars")).default;
   }
   return _handlebars;
