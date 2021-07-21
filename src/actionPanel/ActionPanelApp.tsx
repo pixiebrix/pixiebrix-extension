@@ -21,7 +21,11 @@ import { openExtensionOptions } from "@/messaging/external";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPuzzlePiece, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPuzzlePiece,
+  faSpinner,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import { getStore } from "@/actionPanel/native";
 import {
   ActionPanelStore,
@@ -97,6 +101,10 @@ const ActionPanelApp: React.FunctionComponent = () => {
         <ToastProvider>
           <div className="d-flex flex-column" style={{ height: "100vh" }}>
             <div className="d-flex mb-2" style={{ flex: "none" }}>
+              <Button size="sm" variant="link" style={{ color: "#6562aa" }}>
+                <FontAwesomeIcon icon={faChevronRight} />
+                <FontAwesomeIcon icon={faChevronRight} />
+              </Button>
               <div className="align-self-center">
                 <img
                   src={logo}
