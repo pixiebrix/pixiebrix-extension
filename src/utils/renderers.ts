@@ -50,7 +50,7 @@ export async function engineRenderer(
     }
 
     case "handlebars": {
-      const handlebars = (await import("handlebars")).default;
+      const { default: handlebars } = await import("handlebars");
       return (template, ctxt) => {
         const compiledTemplate = handlebars.compile(template);
         return compiledTemplate(ctxt);
