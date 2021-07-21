@@ -52,8 +52,12 @@ const Page: React.FunctionComponent<{
         <div className="flex-grow-1">
           <PageTitle icon={icon} title={title} />
           <div className="pb-4">
-            {description && <p>{description}</p>}
-            {breadcrumb}
+            {description &&
+              (description instanceof String ? (
+                <p>{description}</p>
+              ) : (
+                description
+              ))}
           </div>
         </div>
         {toolbar && <div>{toolbar}</div>}
