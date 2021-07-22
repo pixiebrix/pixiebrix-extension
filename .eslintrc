@@ -48,6 +48,15 @@
         }
       }
     ],
+    "unicorn/filename-case": [
+      "error",
+      {
+        "cases": {
+          "camelCase": true,
+          "pascalCase": true
+        }
+      }
+    ],
     // smart allows for != null. See: https://github.com/pixiebrix/pixiebrix-extension/pull/887#pullrequestreview-711873690
     "eqeqeq": ["error", "smart"],
 
@@ -67,7 +76,6 @@
     "no-eq-null": "off",
     "import/named": "off", // TypeScript does this natively
     "react/prop-types": "off",
-    "unicorn/filename-case": "off", // Contrasts with React
     "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
     "unicorn/prefer-set-has": "off", // Not always worth the extra code
     "unicorn/require-post-message-target-origin": "off", // Incompatible https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1396
