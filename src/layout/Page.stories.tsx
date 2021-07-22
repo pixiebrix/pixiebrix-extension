@@ -17,13 +17,14 @@
 
 import React from "react";
 import Page from "@/layout/Page";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
 
 export default {
   component: Page,
   title: "Layout/Page",
-};
+} as ComponentMeta<typeof Page>;
 
-const Template = (args) => <Page {...args} />;
+const Template: ComponentStory<typeof Page> = (args) => <Page {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
