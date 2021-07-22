@@ -41,6 +41,7 @@ import { useAsyncState } from "@/hooks/common";
 import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reportEvent } from "@/telemetry/events";
+import { getErrorMessage } from "@/errors";
 
 interface ActivateProps {
   blueprint: RecipeDefinition;
@@ -78,7 +79,7 @@ export function useEnsurePermissions(
       accepted = await ensureAllPermissions(permissions ?? []);
     } catch (error: unknown) {
       console.error(error);
-      addToast(`Error granting permissions: ${error}`, {
+      addToast(`Error granting permissions: ${getErrorMessage(error)}`, {
         appearance: "error",
         autoDismiss: true,
       });
@@ -98,6 +99,7 @@ export function useEnsurePermissions(
 
   const activate = useCallback(() => {
     // Can't use async here because Firefox loses track of trusted UX event
+    // eslint-disable-next-line @typescript-eslint/promise-function-async
     void request().then((accepted: boolean) => {
       if (accepted) {
         reportEvent("MarketplaceActivate", {

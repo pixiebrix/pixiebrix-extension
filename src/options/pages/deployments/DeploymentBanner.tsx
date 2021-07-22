@@ -82,7 +82,7 @@ function useEnsurePermissions(deployments: Deployment[]) {
       accepted = await ensureAllPermissions(permissions);
     } catch (error: unknown) {
       reportError(error);
-      addToast(`Error granting permissions: ${error}`, {
+      addToast(`Error granting permissions: ${getErrorMessage(error)}`, {
         appearance: "error",
         autoDismiss: true,
       });
@@ -143,7 +143,7 @@ function useDeployments() {
   const { request: ensurePermissions } = useEnsurePermissions(updated);
 
   const update = useCallback(async () => {
-    const accepted = ensurePermissions();
+    const accepted = await ensurePermissions();
 
     if (!accepted) {
       reportEvent("DeploymentRejectPermissions", {});

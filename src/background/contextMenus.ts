@@ -130,9 +130,7 @@ export async function uninstall(extensionId: string): Promise<boolean> {
 
 export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
-  async ({ extensionId }: { extensionId: string }) => {
-    return await uninstall(extensionId);
-  }
+  async ({ extensionId }: { extensionId: string }) => uninstall(extensionId)
 );
 
 export const ensureContextMenu = liftBackground(

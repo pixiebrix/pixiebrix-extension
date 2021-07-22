@@ -58,7 +58,7 @@ export function removeShowCallback(onShow: ShowCallback): void {
   }
 }
 
-function getHTMLElement(): JQuery<HTMLElement> {
+function getHTMLElement(): JQuery {
   // Resolve html tag, which is more dominant than <body>
   if (document.documentElement) {
     return $(document.documentElement);
@@ -101,7 +101,6 @@ function insertActionPanel(): string {
   );
 
   // CSS approach not well supported? https://stackoverflow.com/questions/15494568/html-iframe-disable-scroll
-  // eslint-disable-next-line capitalized-comments -- suppressing the IntelliJ warning 🐢
   // noinspection HtmlDeprecatedAttribute
   const $frame = $(
     `<iframe id="pixiebrix-frame" src="${actionURL}?nonce=${nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" ></iframe>`
@@ -129,7 +128,7 @@ export function showActionPanel(): string {
   // all the callbacks ensures the content is up to date
   for (const callback of extensionCallbacks) {
     try {
-      void callback();
+      callback();
     } catch (error: unknown) {
       // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
       // the callbacks does not interfere prevent showing the sidebar
@@ -262,8 +261,8 @@ export function upsertPanel(
 ): void {
   const entry = panels.find((panel) => panel.extensionId === extensionId);
   if (entry) {
-    // XXX: should we update the heading here too?
     entry.payload = payload;
+    entry.heading = heading;
     console.debug(
       "upsertPanel: update existing panel %s for %s",
       extensionId,
