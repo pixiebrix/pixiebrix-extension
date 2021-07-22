@@ -41,6 +41,15 @@ import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
 import GridLoader from "react-spinners/GridLoader";
 import { PersistGate } from "redux-persist/integration/react";
+import { browser } from "webextension-polyfill-ts";
+import { HIDE_ACTION_FRAME } from "@/background/browserAction";
+
+const closeSidebar = async () => {
+  await browser.runtime.sendMessage({
+    type: HIDE_ACTION_FRAME,
+    payload: {},
+  });
+};
 
 const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
   panels,
@@ -101,7 +110,12 @@ const ActionPanelApp: React.FunctionComponent = () => {
         <ToastProvider>
           <div className="d-flex flex-column" style={{ height: "100vh" }}>
             <div className="d-flex mb-2" style={{ flex: "none" }}>
-              <Button size="sm" variant="link" style={{ color: "#6562aa" }}>
+              <Button
+                onClick={closeSidebar}
+                size="sm"
+                variant="link"
+                style={{ color: "#6562aa" }}
+              >
                 <FontAwesomeIcon icon={faChevronRight} />
                 <FontAwesomeIcon icon={faChevronRight} />
               </Button>
