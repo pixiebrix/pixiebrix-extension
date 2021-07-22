@@ -63,6 +63,7 @@ import { rejectOnCancelled, PromiseCancelled } from "@/utils";
 import { PanelDefinition } from "@/extensionPoints/panelExtension";
 import iconAsSVG from "@/icons/svgIcons";
 import { engineRenderer } from "@/utils/renderers";
+import { selectEventData } from "@/telemetry/deployments";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -202,7 +203,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     );
     for (const cancelObserver of this.cancelPending) {
       try {
-        cancelObserver?.();
+        if (cancelObserver) {
+          cancelObserver();
+        }
       } catch (error: unknown) {
         // Try to proceed as normal
         reportError(error, this.logger.context);
@@ -310,7 +313,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
     const alreadyRemoved = this.removed.has(uuid);
     this.removed.add(uuid);
-    if (!alreadyRemoved) {
+    if (alreadyRemoved) {
+      console.warn(
+        `${this.instanceId}: menu ${uuid} removed from DOM multiple times for ${this.id}`
+      );
+    } else {
       console.debug(
         `${this.instanceId}: menu ${uuid} removed from DOM for ${this.id}`
       );
@@ -318,10 +325,6 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       // Re-install the menus (will wait for the menu selector to re-appear)
       await this.installMenus();
       await this.run();
-    } else {
-      console.warn(
-        `${this.instanceId}: menu ${uuid} removed from DOM multiple times for ${this.id}`
-      );
     }
   }
 
@@ -342,15 +345,16 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     const selector = this.getContainerSelector();
 
     console.debug(
-      `${this.instanceId}: awaiting menu container for ${this.id}: ${selector}`
+      `${this.instanceId}: awaiting menu container for ${this.id}`,
+      {
+        selector,
+      }
     );
 
     const [menuPromise, cancelWait] = awaitElementOnce(selector);
     this.cancelPending.add(cancelWait);
 
-    const $menuContainers = (await cancelOnNavigation(
-      menuPromise
-    )) as JQuery<HTMLElement>;
+    const $menuContainers = (await cancelOnNavigation(menuPromise)) as JQuery;
 
     const menuContainers = [...this.menus.values()];
 
@@ -390,7 +394,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   protected abstract makeItem(
     html: string,
     extension: IExtension<MenuItemExtensionConfig>
-  ): JQuery<HTMLElement>;
+  ): JQuery;
 
   private async runExtension(
     menu: HTMLElement,
@@ -475,7 +479,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       console.debug(`Run menu item`, this.logger.context);
 
-      reportEvent("MenuItemClick", { extensionId: extension.id });
+      reportEvent("MenuItemClick", selectEventData(extension));
 
       try {
         // Read latest state at the time of the action
@@ -551,7 +555,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
       const observer = new MutationObserver(rerun);
 
-      const cancellers: (() => void)[] = [];
+      const cancellers: Array<() => void> = [];
 
       let elementCount = 0;
       for (const dependency of dependencies) {
@@ -768,9 +772,8 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
           $menu[position]($menuItem);
           break;
         }
-
         default: {
-          throw new Error(`Unexpected position ${position}`);
+          throw new Error(`Unexpected position ${String(position)}`);
         }
       }
     }
@@ -813,8 +816,8 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   protected makeItem(
     html: string,
     extension: IExtension<MenuItemExtensionConfig>
-  ): JQuery<HTMLElement> {
-    let $root: JQuery<HTMLElement>;
+  ): JQuery {
+    let $root: JQuery;
 
     if (this._definition.shadowDOM) {
       const root = document.createElement(this._definition.shadowDOM.tag);
@@ -840,7 +843,7 @@ export function fromJS(
 ): IExtensionPoint {
   const { type } = config.definition;
   if (type !== "menuItem") {
-    throw new Error(`Expected type=menuItem, got ${type}`);
+    throw new Error(`Expected type=menuItem, got ${String(type)}`);
   }
 
   return new RemoteMenuItemExtensionPoint(config);

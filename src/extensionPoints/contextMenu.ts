@@ -50,6 +50,8 @@ import { reportError } from "@/telemetry/logging";
 import { Manifest } from "webextension-polyfill-ts/lib/manifest";
 import { getCommonAncestor } from "@/nativeEditor/infer";
 import { notifyError } from "@/contentScript/notify";
+import { reportEvent } from "@/telemetry/events";
+import { selectEventData } from "@/telemetry/deployments";
 
 export interface ContextMenuConfig {
   title: string;
@@ -168,6 +170,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     super(id, name, description, icon);
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-literal-property-style -- has to match parent type
   public readonly syncInstall: boolean = true;
 
   abstract getBaseReader(): Promise<IReader>;
@@ -285,6 +288,8 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     });
 
     registerHandler(extension.id, async (clickData) => {
+      reportEvent("HandleContextMenu", selectEventData(extension));
+
       const reader = await this.getBaseReader();
       const serviceContext = await makeServiceContext(extension.services);
 
@@ -358,12 +363,13 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   }
 
   async isAvailable(): Promise<boolean> {
-    return (
-      (await checkAvailable(this._definition.isAvailable)) ||
-      (await checkAvailable({
-        matchPatterns: this._definition.documentUrlPatterns,
-      }))
-    );
+    if (await checkAvailable(this._definition.isAvailable)) {
+      return true;
+    }
+
+    return checkAvailable({
+      matchPatterns: this._definition.documentUrlPatterns,
+    });
   }
 
   async getBaseReader() {

@@ -53,7 +53,7 @@ type ActiveDeployment = {
 };
 
 export function activeDeployments(
-  extensions: Pick<ExtensionOptions, "_deployment" | "_recipe">[]
+  extensions: Array<Pick<ExtensionOptions, "_deployment" | "_recipe">>
 ): ActiveDeployment[] {
   return uniqBy(
     extensions
