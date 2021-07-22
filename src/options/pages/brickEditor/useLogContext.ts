@@ -16,10 +16,9 @@
  */
 
 import { useDebounce } from "use-debounce";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import yaml from "js-yaml";
 import { MessageContext, RawConfig } from "@/core";
-import useAsyncEffect from "use-async-effect";
 
 const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 250;
 
@@ -34,7 +33,7 @@ function useLogContext(config: string | null): MessageContext | undefined {
     LOG_MESSAGE_CONTEXT_DEBOUNCE_MS
   );
 
-  useAsyncEffect(async () => {
+  useEffect(() => {
     let json: RawConfig;
     try {
       json = yaml.load(debouncedConfig) as RawConfig;

@@ -19,7 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { liftBackground } from "@/background/protocol";
 import { rollbar } from "@/telemetry/rollbar";
 import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
-import { JsonObject } from "type-fest";
+import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
 import { reverse, sortBy } from "lodash";
@@ -37,6 +37,7 @@ import { expectBackgroundPage } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
+const DB_VERSION_NUMBER = 2;
 
 export type MessageLevel = "trace" | "debug" | "info" | "warn" | "error";
 
@@ -65,38 +66,46 @@ interface LogDB extends DBSchema {
     indexes: {
       extensionPointId: string;
       extensionId: string;
+      blueprintId: string;
       blockId: string;
       serviceId: string;
       authId: string;
-      context: [string, string, string, string, string];
+      context: [string, string, string, string, string, string];
     };
   };
 }
 
-const indexKeys = [
+const indexKeys: Array<keyof Except<MessageContext, "deploymentId">> = [
   "extensionPointId",
   "extensionId",
+  "blueprintId",
   "blockId",
   "serviceId",
   "authId",
 ];
 
 async function getDB() {
-  return openDB<LogDB>(STORAGE_KEY, 1, {
+  return openDB<LogDB>(STORAGE_KEY, DB_VERSION_NUMBER, {
     upgrade(db) {
+      try {
+        // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
+        // cases for looking at historic local logs
+        db.deleteObjectStore(ENTRY_OBJECT_STORE);
+      } catch {
+        // Not sure what will happen if the store doesn't exist (i.e., on initial install, so just NOP it
+      }
+
       // Create a store of objects
       const store = db.createObjectStore(ENTRY_OBJECT_STORE, {
         keyPath: "uuid",
       });
-      store.createIndex("extensionPointId", "context.extensionPointId", {
-        unique: false,
-      });
-      store.createIndex("extensionId", "context.extensionId", {
-        unique: false,
-      });
-      store.createIndex("blockId", "context.blockId", { unique: false });
-      store.createIndex("serviceId", "context.serviceId", { unique: false });
-      store.createIndex("authId", "context.authId", { unique: false });
+      // Create individual indexes
+      for (const indexKey of indexKeys) {
+        store.createIndex(indexKey, `context.${indexKey}`, {
+          unique: false,
+        });
+      }
+      // Create the joint index
       store.createIndex(
         "context",
         indexKeys.map((x) => `context.${x}`),
@@ -108,15 +117,17 @@ async function getDB() {
 
 export async function appendEntry(entry: LogEntry): Promise<void> {
   const db = await getDB();
-  await db.add("entries", entry);
+  await db.add(ENTRY_OBJECT_STORE, entry);
 }
 
 function makeMatchEntry(context: MessageContext): (entry: LogEntry) => boolean {
   return (entry: LogEntry) =>
-    Object.entries(context ?? {}).every(
-      ([key, value]) =>
-        (entry.context ?? {})[key as keyof MessageContext] === value
-    );
+    indexKeys.every((key) => {
+      // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+      const value = context[key];
+      // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
+      return value == null || entry.context[key] === context[key];
+    });
 }
 
 export async function clearLogs(): Promise<void> {
@@ -146,14 +157,15 @@ export async function getLog(
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
   const match = makeMatchEntry(context);
 
-  const entries = [];
+  const matches = [];
   for await (const cursor of tx.store) {
     if (match(cursor.value)) {
-      entries.push(cursor.value);
+      matches.push(cursor.value);
     }
   }
 
-  return sortBy(reverse(entries), (x) => -Number.parseInt(x.timestamp, 10));
+  // IIRC, we're using both reverse and sortBy since we want insertion order if there's a tie in the timestamp
+  return sortBy(reverse(matches), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
 function buildContext(
@@ -272,7 +284,7 @@ export class BackgroundLogger implements ILogger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    console.error(`An error occurred: ${error}`, {
+    console.error(`An error occurred: %s`, getErrorMessage(error), {
       error,
       context: this.context,
       data,
