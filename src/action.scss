@@ -45,6 +45,10 @@ body {
   padding: 4px;
   margin: 4px 12px 4px 12px;
 
+  svg:last-child {
+    margin-left: -3px;
+  }
+
   &:hover {
     background-color: #d1c2d7;
   }

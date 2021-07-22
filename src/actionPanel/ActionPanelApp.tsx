@@ -21,7 +21,11 @@ import { openExtensionOptions } from "@/messaging/external";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPuzzlePiece, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPuzzlePiece,
+  faSpinner,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import { getStore } from "@/actionPanel/native";
 import {
   ActionPanelStore,
@@ -39,7 +43,6 @@ import GridLoader from "react-spinners/GridLoader";
 import { PersistGate } from "redux-persist/integration/react";
 import { browser } from "webextension-polyfill-ts";
 import { HIDE_ACTION_FRAME } from "@/background/browserAction";
-import doubleChevronRight from "bootstrap-icons/icons/chevron-double-right.svg";
 
 const closeSidebar = async () => {
   await browser.runtime.sendMessage({
@@ -114,35 +117,19 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 variant="link"
                 style={{ color: "#6562aa" }}
               >
-                {/* <img src={doubleChevronRight}></img> */}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  fill="currentColor"
-                  className="bi bi-chevron-double-right"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M3.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L9.293 8 3.646 2.354a.5.5 0 0 1 0-.708z"
-                  />
-                  <path
-                    fill-rule="evenodd"
-                    d="M7.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L13.293 8 7.646 2.354a.5.5 0 0 1 0-.708z"
-                  />
-                </svg>
+                <FontAwesomeIcon icon={faChevronRight} />
+                <FontAwesomeIcon icon={faChevronRight} />
               </Button>
+              {/* spacer */}
+              <div className="flex-grow-1" />
               <div className="align-self-center">
                 <img
                   src={logo}
                   alt="PixieBrix logo"
                   height={20}
-                  className="px-2"
+                  className="px-4"
                 />
               </div>
-              {/* spacer */}
-              <div className="flex-grow-1" />
               <div className="ActionPanelToolbar">
                 <Button
                   onClick={async () => openExtensionOptions()}
