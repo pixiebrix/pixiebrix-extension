@@ -15,20 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "vendors/theme/app/app.scss";
-import "@/vendors/overrides.scss";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { faMusic } from "@fortawesome/free-solid-svg-icons";
+import React from "react";
+import Page from "@/layout/Page";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-// https://github.com/storybookjs/storybook/issues/3798
-library.add(faMusic);
+export default {
+  component: Page,
+  title: "Layout/Page",
+} as ComponentMeta<typeof Page>;
 
-export const parameters = {
-  actions: { argTypesRegex: "^on[A-Z].*" },
-  controls: {
-    matchers: {
-      color: /(background|color)$/i,
-      date: /Date$/,
-    },
-  },
+const Template: ComponentStory<typeof Page> = (args) => (
+  <Page {...args}>Hello world!</Page>
+);
+
+export const Default = Template.bind({});
+Default.args = {
+  icon: "music",
+  title: "Example page",
+  description: "Welcome to an example page! Have a look around.",
 };
