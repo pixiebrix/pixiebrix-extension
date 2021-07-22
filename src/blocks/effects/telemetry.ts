@@ -16,10 +16,11 @@
  */
 
 import { Effect } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
 import { PropError } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
+import { getDNT } from "@/background/telemetry";
 
 export class TelemetryEffect extends Effect {
   constructor() {
@@ -48,7 +49,10 @@ export class TelemetryEffect extends Effect {
     required: ["eventName"],
   };
 
-  async effect({ eventName, data = {} }: BlockArg): Promise<void> {
+  async effect(
+    { eventName, data = {} }: BlockArg,
+    { logger }: BlockOptions
+  ): Promise<void> {
     if ("$eventName" in data) {
       throw new PropError(
         "$eventName is a reserved value for eventName",
@@ -57,6 +61,15 @@ export class TelemetryEffect extends Effect {
         eventName
       );
     }
+
+    if (await getDNT()) {
+      const message = `Event ${
+        eventName as string
+      } will not be reported because the user has DNT enabled`;
+      console.warn(message);
+      logger.warn(message);
+    }
+
     reportEvent("CustomUserEvent", {
       $eventName: eventName,
       ...data,
