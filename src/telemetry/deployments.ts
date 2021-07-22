@@ -1,8 +1,8 @@
 import { IExtension, Metadata } from "@/core";
 import { JsonObject } from "type-fest";
 
-// HACK: we have inconsistent typing of extensions, e.g., IExtension, InstalledExtension, ExtensionOptions. So handle
-// the common shape without referencing those modules
+// FIXME: we have inconsistent typing of extensions, e.g., IExtension, InstalledExtension, ExtensionOptions. So handle
+//  common shape without referencing those modules: https://github.com/pixiebrix/pixiebrix-extension/issues/893
 type Extension = IExtension & { _recipe?: Metadata };
 
 /**

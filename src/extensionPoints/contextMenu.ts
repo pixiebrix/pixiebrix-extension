@@ -52,6 +52,8 @@ import { getCommonAncestor } from "@/nativeEditor/infer";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { getErrorMessage, isErrorObject } from "@/errors";
 
 export interface ContextMenuConfig {
   title: string;
@@ -282,33 +284,42 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     await this.ensureMenu(extension);
 
-    const extensionLogger = this.logger.childLogger({
-      deploymentId: extension._deployment?.id,
-      extensionId: extension.id,
-    });
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
 
     registerHandler(extension.id, async (clickData) => {
       reportEvent("HandleContextMenu", selectEventData(extension));
 
-      const reader = await this.getBaseReader();
-      const serviceContext = await makeServiceContext(extension.services);
+      try {
+        const reader = await this.getBaseReader();
+        const serviceContext = await makeServiceContext(extension.services);
 
-      const targetElement =
-        clickedElement ?? guessSelectedElement() ?? document;
+        const targetElement =
+          clickedElement ?? guessSelectedElement() ?? document;
 
-      const ctxt = {
-        ...(await reader.read(targetElement)),
-        // ClickData provides the data from schema defined above in ContextMenuReader
-        ...clickData,
-        // Add some additional data that people will generally want
-        documentUrl: document.location.href,
-      };
+        const ctxt = {
+          ...(await reader.read(targetElement)),
+          // ClickData provides the data from schema defined above in ContextMenuReader
+          ...clickData,
+          // Add some additional data that people will generally want
+          documentUrl: document.location.href,
+        };
 
-      await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
-        validate: true,
-        serviceArgs: serviceContext,
-        optionsArgs: extension.optionsArgs,
-      });
+        await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
+          validate: true,
+          serviceArgs: serviceContext,
+          optionsArgs: extension.optionsArgs,
+        });
+      } catch (error: unknown) {
+        if (isErrorObject(error)) {
+          reportError(error);
+          extensionLogger.error(error);
+        } else {
+          extensionLogger.warn(getErrorMessage(error));
+        }
+        throw error;
+      }
     });
   }
 

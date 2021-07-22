@@ -52,8 +52,13 @@ export interface Message<
   meta?: TMeta;
 }
 
+/**
+ * Log event metadata for the extensions internal logging infrastructure.
+ * @see Logger
+ */
 export interface MessageContext {
   readonly deploymentId?: string;
+  readonly blueprintId?: string;
   readonly extensionPointId?: string;
   readonly blockId?: string;
   readonly extensionId?: string;
@@ -86,7 +91,7 @@ export interface BlockOptions {
   // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
   // the inputs using yup/jsonschema, so the types should match what's expected.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ctxt: { [key: string]: any };
+  ctxt: Record<string, any>;
   logger: Logger;
   root: ReaderRoot;
   headless?: boolean;
@@ -95,7 +100,7 @@ export interface BlockOptions {
 // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
 // the inputs using jsonschema, so the types should match what's expected.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BlockArg = { [key: string]: any };
+export type BlockArg = Record<string, any>;
 
 export interface IOption {
   value: string | number | boolean;
@@ -185,7 +190,7 @@ export interface IExtensionPoint extends Metadata {
 
   permissions: Permissions.Permissions;
 
-  defaultOptions: { [key: string]: unknown };
+  defaultOptions: Record<string, unknown>;
 
   defaultReader: () => Promise<IReader>;
 
@@ -229,7 +234,7 @@ export interface IBlock extends Metadata {
   /** An optional a JSON schema for the output of the block */
   outputSchema?: Schema;
 
-  defaultOptions: { [key: string]: unknown };
+  defaultOptions: Record<string, unknown>;
 
   /**
    * Returns the optional permissions required to run this block
@@ -256,6 +261,7 @@ export interface IReader extends IBlock {
 
 type ServiceId = string;
 
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- we're extending to get nominal typing
 export interface KeyedConfig {
   [key: string]: string | null;
 }

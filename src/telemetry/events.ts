@@ -18,6 +18,10 @@
 import { recordEvent, initUID } from "@/background/telemetry";
 import { JsonObject } from "type-fest";
 
+/**
+ * Report an event to the PixieBrix telemetry service, if the user doesn't have DNT set.
+ * @see selectEventData
+ */
 export function reportEvent(event: string, data: JsonObject = {}): void {
   console.debug(event, data);
   void recordEvent({ event, data }).catch((error: unknown) => {

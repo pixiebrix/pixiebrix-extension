@@ -34,6 +34,7 @@ import {
   acquireElement,
   onNodeRemoved,
   EXTENSION_POINT_DATA_ATTR,
+  selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import {
   ExtensionPointConfig,
@@ -203,6 +204,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     );
     for (const cancelObserver of this.cancelPending) {
       try {
+        // `cancelObserver` should always be defined given it's type. But check just in case since we don't have
+        // strictNullChecks on
         if (cancelObserver) {
           cancelObserver();
         }
@@ -406,15 +409,15 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       return;
     }
 
-    const extensionLogger = this.logger.childLogger({
-      deploymentId: extension._deployment?.id,
-      extensionId: extension.id,
-    });
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
 
     console.debug(
       `${this.instanceId}: running menuItem extension ${extension.id}`
     );
 
+    // Safe because menu is an HTMLElement, not a string
     const $menu = $(menu);
 
     const {
@@ -843,7 +846,8 @@ export function fromJS(
 ): IExtensionPoint {
   const { type } = config.definition;
   if (type !== "menuItem") {
-    throw new Error(`Expected type=menuItem, got ${String(type)}`);
+    // `type` is `never` here due to the if-statement
+    throw new Error(`Expected type=menuItem, got ${type as string}`);
   }
 
   return new RemoteMenuItemExtensionPoint(config);
