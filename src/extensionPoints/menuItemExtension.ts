@@ -204,6 +204,8 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     );
     for (const cancelObserver of this.cancelPending) {
       try {
+        // `cancelObserver` should always be defined given it's type. But check just in case since we don't have
+        // strictNullChecks on
         if (cancelObserver) {
           cancelObserver();
         }
@@ -844,7 +846,8 @@ export function fromJS(
 ): IExtensionPoint {
   const { type } = config.definition;
   if (type !== "menuItem") {
-    throw new Error(`Expected type=menuItem, got ${String(type)}`);
+    // `type` is `never` here due to the if-statement
+    throw new Error(`Expected type=menuItem, got ${type as string}`);
   }
 
   return new RemoteMenuItemExtensionPoint(config);
