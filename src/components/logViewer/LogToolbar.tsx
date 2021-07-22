@@ -15,16 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Button, Form, Pagination } from "react-bootstrap";
+import { Form, Pagination } from "react-bootstrap";
 import { MessageLevel } from "@/background/logging";
 import { range } from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
+import React, { useCallback } from "react";
 import { useToasts } from "react-toast-notifications";
+import AsyncButton from "@/components/AsyncButton";
 
 const LogToolbar: React.FunctionComponent<{
   level: MessageLevel;
+  levelOptions?: MessageLevel[];
   setLevel: (level: MessageLevel) => void;
   page: number;
   setPage: (page: number) => void;
@@ -43,8 +45,34 @@ const LogToolbar: React.FunctionComponent<{
   numNew,
   clear,
   refresh,
+  // Don't support "trace" by default
+  levelOptions = ["debug", "info", "warn", "error"],
 }) => {
   const { addToast } = useToasts();
+
+  const onClear = useCallback(async () => {
+    try {
+      await clear();
+      addToast("Cleared the log entries for this extension", {
+        appearance: "success",
+        autoDismiss: true,
+      });
+      await refresh();
+    } catch {
+      addToast("Error clearing log entries for extension", {
+        appearance: "error",
+        autoDismiss: true,
+      });
+    }
+  }, [clear, refresh, addToast]);
+
+  const onRefresh = useCallback(async () => {
+    await refresh();
+    addToast("Refreshed the log entries", {
+      appearance: "success",
+      autoDismiss: true,
+    });
+  }, [refresh, addToast]);
 
   return (
     <div className="px-3 pt-2">
@@ -61,27 +89,29 @@ const LogToolbar: React.FunctionComponent<{
               setLevel(x.target.value as MessageLevel);
             }}
           >
-            {["debug", "info", "warn", "error"].map((x) => (
-              <option key={x} value={x}>
-                {x.toUpperCase()}
+            {levelOptions.map((level) => (
+              <option key={level} value={level}>
+                {level.toUpperCase()}
               </option>
             ))}
           </Form.Control>
         </Form.Group>
         <Form.Group className="ml-4">
-          {numPages ? (
+          {numPages > 0 && (
             <Pagination className="my-0">
-              {range(numPages).map((x) => (
+              {range(numPages).map((pageIndex) => (
                 <Pagination.Item
-                  key={x}
-                  active={x === page}
-                  onClick={() => setPage(x)}
+                  key={pageIndex}
+                  active={pageIndex === page}
+                  onClick={() => {
+                    setPage(pageIndex);
+                  }}
                 >
-                  {x + 1}
+                  {pageIndex + 1}
                 </Pagination.Item>
               ))}
             </Pagination>
-          ) : null}
+          )}
         </Form.Group>
         <Form.Group className="ml-auto">
           {numNew > 0 && (
@@ -89,41 +119,17 @@ const LogToolbar: React.FunctionComponent<{
               {numNew} new {numNew > 1 ? "entries" : "entry"}
             </span>
           )}
-          <Button
-            size="sm"
-            variant="info"
-            onClick={async () => {
-              await refresh();
-              addToast("Refreshed the log entries", {
-                appearance: "success",
-                autoDismiss: true,
-              });
-            }}
-          >
+          <AsyncButton size="sm" variant="info" onClick={onRefresh}>
             <FontAwesomeIcon icon={faSync} /> Refresh
-          </Button>
-          <Button
+          </AsyncButton>
+          <AsyncButton
             size="sm"
             disabled={!hasEntries}
             variant="danger"
-            onClick={async () => {
-              try {
-                await clear();
-                addToast("Cleared the log entries for this extension", {
-                  appearance: "success",
-                  autoDismiss: true,
-                });
-                await refresh();
-              } catch {
-                addToast("Error clearing log entries for extension", {
-                  appearance: "error",
-                  autoDismiss: true,
-                });
-              }
-            }}
+            onClick={onClear}
           >
             <FontAwesomeIcon icon={faTrash} /> Clear
-          </Button>
+          </AsyncButton>
         </Form.Group>
       </div>
     </div>

@@ -34,6 +34,7 @@ import {
   acquireElement,
   onNodeRemoved,
   EXTENSION_POINT_DATA_ATTR,
+  selectExtensionContext,
 } from "@/extensionPoints/helpers";
 import {
   ExtensionPointConfig,
@@ -406,15 +407,15 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       return;
     }
 
-    const extensionLogger = this.logger.childLogger({
-      deploymentId: extension._deployment?.id,
-      extensionId: extension.id,
-    });
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
 
     console.debug(
       `${this.instanceId}: running menuItem extension ${extension.id}`
     );
 
+    // Safe because menu is an HTMLElement, not a string
     const $menu = $(menu);
 
     const {

@@ -24,20 +24,13 @@ import LogTable from "@/components/logViewer/LogTable";
 import useLogEntries from "@/components/logViewer/useLogEntries";
 import LogToolbar from "@/components/logViewer/LogToolbar";
 
-interface OwnProps {
+const BrickLogs: React.FunctionComponent<{
   initialLevel?: MessageLevel;
   context: MessageContext;
   perPage?: number;
   refreshInterval?: number;
-}
-
-const BrickLogs: React.FunctionComponent<OwnProps> = ({
-  context,
-  initialLevel = "debug",
-  perPage = 10,
-  refreshInterval,
-}) => {
-  const [level, setLevel] = useState<MessageLevel>(initialLevel);
+}> = ({ context, initialLevel = "debug", perPage = 10, refreshInterval }) => {
+  const [level, setLevel] = useState(initialLevel);
   const [page, setPage] = useState(0);
 
   const logs = useLogEntries({

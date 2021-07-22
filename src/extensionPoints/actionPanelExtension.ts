@@ -55,6 +55,7 @@ import { reportError } from "@/telemetry/logging";
 import { v4 as uuidv4 } from "uuid";
 import { BusinessError, getErrorMessage } from "@/errors";
 import { HeadlessModeError } from "@/blocks/errors";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
 
 export interface ActionPanelConfig {
   heading: string;
@@ -113,10 +114,9 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     readerContext: ReaderOutput,
     extension: IExtension<ActionPanelConfig>
   ) {
-    const extensionLogger = this.logger.childLogger({
-      deploymentId: extension._deployment?.id,
-      extensionId: extension.id,
-    });
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
 
     const serviceContext = await makeServiceContext(extension.services);
     const extensionContext = { ...readerContext, ...serviceContext };

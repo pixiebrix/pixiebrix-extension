@@ -19,6 +19,7 @@ import { castArray, noop, once } from "lodash";
 // @ts-ignore: no type definitions
 import initialize from "vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
+import { IExtension, MessageContext, Metadata } from "@/core";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
@@ -121,9 +122,11 @@ async function _wait<T>(
     }
 
     if (waitMillis != null) {
+      // eslint-disable-next-line no-await-in-loop -- intentionally running sequentially
       await sleep(waitMillis);
     }
 
+    // eslint-disable-next-line no-await-in-loop -- intentionally running sequentially
     await waitAnimationFrame();
     value = factory();
   }
@@ -135,12 +138,13 @@ function pollSelector(
   selector: string,
   target: HTMLElement | Document,
   waitMillis = 100
-): [Promise<JQuery<HTMLElement>>, () => void] {
+): [Promise<JQuery>, () => void] {
   console.debug(`Polling for selector ${selector}`);
   let cancelled = false;
   const $target = $(target);
-  const promise = _wait<JQuery<HTMLElement>>(
+  const promise = _wait<JQuery>(
     () => {
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- JQuery false positive
       const $elt = $target.find(selector);
       return $elt.length > 0 ? $elt : null;
     },
@@ -158,10 +162,9 @@ function pollSelector(
 function mutationSelector(
   selector: string,
   target?: HTMLElement | Document
-): [Promise<JQuery<HTMLElement>>, () => void] {
+): [Promise<JQuery>, () => void] {
   let observer: MutationObserver;
-  const promise = new Promise<JQuery<HTMLElement>>((resolve) => {
-    // @ts-ignore: no type signatures
+  const promise = new Promise<JQuery>((resolve) => {
     observer = initialize(
       selector,
       function () {
@@ -210,6 +213,7 @@ export function awaitElementOnce(
   const [nextSelector, ...rest] = selectors;
 
   // Find immediately, or wait for it to be initialized
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- JQuery false positive
   const $element: JQuery<HTMLElement | Document> = $root.find(nextSelector);
 
   if ($element.length === 0) {
@@ -223,7 +227,7 @@ export function awaitElementOnce(
     );
     let innerCancel = noop;
     return [
-      nextElementPromise.then(($nextElement) => {
+      nextElementPromise.then(async ($nextElement) => {
         const [innerPromise, inner] = awaitElementOnce(rest, $nextElement);
         innerCancel = inner;
         return innerPromise;
@@ -269,4 +273,17 @@ export function acquireElement(
 
   element.setAttribute(EXTENSION_POINT_DATA_ATTR, extensionPointId);
   return onNodeRemoved(element, onRemove);
+}
+
+// HACK: we have inconsistent typing of extensions, e.g., IExtension, InstalledExtension, ExtensionOptions. So handle
+// the common shape without referencing those modules
+type Extension = IExtension & { _recipe?: Metadata };
+
+export function selectExtensionContext(extension: Extension): MessageContext {
+  return {
+    extensionId: extension.id,
+    deploymentId: extension._deployment?.id,
+    extensionPointId: extension.extensionPointId,
+    blueprintId: extension._recipe?.id,
+  };
 }

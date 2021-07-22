@@ -56,7 +56,7 @@ export default function useLogEntries({
   perPage,
   refreshInterval,
 }: Options): LogState {
-  const [numNew, setNumNew] = useState<number>(0);
+  const [numNew, setNumNew] = useState(0);
   const [initialized, setInitialized] = useState(false);
 
   const { setUnread, setRefresh } = useContext(LogContext);
@@ -145,7 +145,9 @@ export default function useLogEntries({
   useEffect(() => {
     if (refreshInterval) {
       const interval = setInterval(checkNewEntries, refreshInterval);
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+      };
     }
   }, [checkNewEntries, refreshInterval, entries, level]);
 

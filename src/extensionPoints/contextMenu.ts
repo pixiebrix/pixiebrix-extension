@@ -52,6 +52,7 @@ import { getCommonAncestor } from "@/nativeEditor/infer";
 import { notifyError } from "@/contentScript/notify";
 import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
 
 export interface ContextMenuConfig {
   title: string;
@@ -282,10 +283,9 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     await this.ensureMenu(extension);
 
-    const extensionLogger = this.logger.childLogger({
-      deploymentId: extension._deployment?.id,
-      extensionId: extension.id,
-    });
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
 
     registerHandler(extension.id, async (clickData) => {
       reportEvent("HandleContextMenu", selectEventData(extension));
