@@ -53,7 +53,7 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
   // Observe the whole path to the node. A node is removed if any of its ancestors are removed. Observe individual
   // nodes instead of the subtree on the document for efficiency on wide trees
   for (const ancestor of ancestors) {
-    if (ancestor && ancestor.parentNode) {
+    if (ancestor?.parentNode) {
       // https://stackoverflow.com/a/50397148/
       const removalObserver = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
@@ -275,15 +275,15 @@ export function acquireElement(
   return onNodeRemoved(element, onRemove);
 }
 
-// HACK: we have inconsistent typing of extensions, e.g., IExtension, InstalledExtension, ExtensionOptions. So handle
-// the common shape without referencing those modules
+// FIXME: we have inconsistent typing of extensions, e.g., IExtension, InstalledExtension, ExtensionOptions. So handle
+//  common shape without referencing those modules: https://github.com/pixiebrix/pixiebrix-extension/issues/893
 type Extension = IExtension & { _recipe?: Metadata };
 
 export function selectExtensionContext(extension: Extension): MessageContext {
   return {
     extensionId: extension.id,
-    deploymentId: extension._deployment?.id,
     extensionPointId: extension.extensionPointId,
+    deploymentId: extension._deployment?.id,
     blueprintId: extension._recipe?.id,
   };
 }

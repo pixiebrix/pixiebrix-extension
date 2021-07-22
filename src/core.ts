@@ -52,6 +52,10 @@ export interface Message<
   meta?: TMeta;
 }
 
+/**
+ * Log event metadata for the extensions internal logging infrastructure.
+ * @see Logger
+ */
 export interface MessageContext {
   readonly deploymentId?: string;
   readonly blueprintId?: string;
