@@ -19,6 +19,7 @@ import "vendors/theme/app/app.scss";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faMusic } from "@fortawesome/free-solid-svg-icons";
 
+// https://github.com/storybookjs/storybook/issues/3798
 library.add(faMusic);
 
 export const parameters = {
