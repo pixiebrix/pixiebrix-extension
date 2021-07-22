@@ -22,7 +22,7 @@ import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import { reverse, sortBy } from "lodash";
+import { reverse, sortBy, isEmpty } from "lodash";
 import { _getDNT } from "@/background/telemetry";
 import { isContentScript } from "webext-detect-page";
 import { readStorage, setStorage } from "@/chrome";
@@ -91,6 +91,10 @@ async function getDB() {
         // For now, just clear local logs whenever we need to upgrade the log database structure. There's no real use
         // cases for looking at historic local logs
         db.deleteObjectStore(ENTRY_OBJECT_STORE);
+        console.warn(
+          "Deleting object store %s for upgrade",
+          ENTRY_OBJECT_STORE
+        );
       } catch {
         // Not sure what will happen if the store doesn't exist (i.e., on initial install, so just NOP it
       }
@@ -120,13 +124,15 @@ export async function appendEntry(entry: LogEntry): Promise<void> {
   await db.add(ENTRY_OBJECT_STORE, entry);
 }
 
-function makeMatchEntry(context: MessageContext): (entry: LogEntry) => boolean {
+function makeMatchEntry(
+  context: MessageContext = {}
+): (entry: LogEntry) => boolean {
   return (entry: LogEntry) =>
     indexKeys.every((key) => {
       // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-      const value = context[key];
+      const toMatch = context[key];
       // eslint-disable-next-line security/detect-object-injection -- indexKeys is compile-time constant
-      return value == null || entry.context[key] === context[key];
+      return toMatch == null || entry.context?.[key] === toMatch;
     });
 }
 
@@ -141,8 +147,13 @@ export async function clearLog(context: MessageContext = {}): Promise<void> {
   const db = await getDB();
 
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
-  const match = makeMatchEntry(context);
 
+  if (isEmpty(context)) {
+    await tx.store.clear();
+    return;
+  }
+
+  const match = makeMatchEntry(context);
   for await (const cursor of tx.store) {
     if (match(cursor.value)) {
       await cursor.delete();
@@ -164,7 +175,7 @@ export async function getLog(
     }
   }
 
-  // IIRC, we're using both reverse and sortBy since we want insertion order if there's a tie in the timestamp
+  // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
   return sortBy(reverse(matches), (x) => -Number.parseInt(x.timestamp, 10));
 }
 

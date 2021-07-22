@@ -69,6 +69,7 @@ export default function useLogEntries({
   const refresh = useCallback(
     async (isMounted = stubTrue) => {
       setLogState({ entries: [], isLoading: true });
+      console.debug("Refreshing logs", { context });
       const entries = await getLog(context);
       if (!isMounted()) {
         return;

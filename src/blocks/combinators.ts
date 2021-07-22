@@ -316,7 +316,8 @@ export async function reducePipeline(
 
     try {
       const $stageRoot = stage.root
-        ? $(root ?? document).find(stage.root)
+        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
+          $(root ?? document).find(stage.root)
         : $(root ?? document);
 
       if ($stageRoot.length > 1) {
@@ -353,8 +354,8 @@ export async function reducePipeline(
         root: stageRoot,
         context: extraContext,
         logValues,
-        validate: validate,
-        headless: headless,
+        validate,
+        headless,
         logger: stageLogger,
       });
 
@@ -434,7 +435,7 @@ export async function mergeReaders(
 
   if (Array.isArray(readerConfig)) {
     return new ArrayCompositeReader(
-      await Promise.all(readerConfig.map(mergeReaders))
+      await Promise.all(readerConfig.map(async (x) => mergeReaders(x)))
     );
   }
 
@@ -447,6 +448,8 @@ export async function mergeReaders(
   throw new BusinessError("Unexpected value for readerConfig");
 }
 
+// Using indexed object to make it clear they key is an outputKey
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export type ServiceContext = {
   [outputKey: string]: {
     __service: SanitizedServiceConfiguration;

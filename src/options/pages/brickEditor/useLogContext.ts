@@ -16,11 +16,12 @@
  */
 
 import { useDebounce } from "use-debounce";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import yaml from "js-yaml";
 import { MessageContext, RawConfig } from "@/core";
+import useAsyncEffect from "use-async-effect";
 
-const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 250;
+const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 350;
 
 /**
  * Hook that returns the log message MessageContext corresponding to a YAML brick config.
@@ -33,7 +34,8 @@ function useLogContext(config: string | null): MessageContext | undefined {
     LOG_MESSAGE_CONTEXT_DEBOUNCE_MS
   );
 
-  useEffect(() => {
+  // Use async so we don't block the main render loop (is that actually needed?)
+  useAsyncEffect(async () => {
     let json: RawConfig;
     try {
       json = yaml.load(debouncedConfig) as RawConfig;
