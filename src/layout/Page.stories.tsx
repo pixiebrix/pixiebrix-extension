@@ -18,14 +18,15 @@
 import React from "react";
 import Page from "@/layout/Page";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import "@/vendors/overrides.scss";
 
 export default {
   component: Page,
   title: "Layout/Page",
 } as ComponentMeta<typeof Page>;
 
-const Template: ComponentStory<typeof Page> = (args) => <Page {...args} />;
+const Template: ComponentStory<typeof Page> = (args) => (
+  <Page {...args}>Hello world!</Page>
+);
 
 export const Default = Template.bind({});
 Default.args = {
