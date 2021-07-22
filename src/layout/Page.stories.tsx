@@ -18,6 +18,7 @@
 import React from "react";
 import Page from "@/layout/Page";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
+import "@/vendors/overrides.scss";
 
 export default {
   component: Page,
