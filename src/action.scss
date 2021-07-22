@@ -41,6 +41,15 @@ body {
   }
 }
 
+.action-panel-close-button {
+  padding: 4px;
+  margin: 4px 12px 4px 12px;
+
+  &:hover {
+    background-color: #d1c2d7;
+  }
+}
+
 .ActionPanelToolbar {
   .btn {
     border-radius: 0;

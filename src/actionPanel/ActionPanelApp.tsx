@@ -108,7 +108,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
           <div className="d-flex flex-column" style={{ height: "100vh" }}>
             <div className="d-flex mb-2" style={{ flex: "none" }}>
               <Button
-                id="closeSidebarButton"
+                className="action-panel-close-button"
                 onClick={closeSidebar}
                 size="sm"
                 variant="link"
