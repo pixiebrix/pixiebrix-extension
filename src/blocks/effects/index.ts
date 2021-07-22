@@ -34,3 +34,4 @@ export * from "./sidebar";
 export * from "./cancel";
 export * from "./error";
 export * from "./show";
+export * from "./telemetry";
