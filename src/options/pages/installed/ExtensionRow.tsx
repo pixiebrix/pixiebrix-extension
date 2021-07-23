@@ -18,7 +18,6 @@
 import React, { useMemo } from "react";
 import { ExtensionIdentifier, IExtension } from "@/core";
 import { useToasts } from "react-toast-notifications";
-import { useExtensionPermissions } from "@/permissions";
 import {
   ExtensionValidationResult,
   useExtensionValidator,
@@ -29,6 +28,7 @@ import { faCheck, faExclamation } from "@fortawesome/free-solid-svg-icons";
 import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import AsyncButton from "@/components/AsyncButton";
+import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 
 type RemoveAction = (identifier: ExtensionIdentifier) => void;
 
@@ -102,7 +102,6 @@ const ExtensionRow: React.FunctionComponent<{
       <td>
         <Link to={`/workshop/extensions/${id}`}>{label ?? id}</Link>
       </td>
-      {/* <td>2 weeks</td> */}
       <td className="text-wrap">{statusElt}</td>
       <td>
         <Button

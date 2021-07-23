@@ -69,31 +69,23 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       );
 
       if (selected.length === 0) {
-        notify.error("Select at least one brick to activate", {
-          report: false,
-        });
+        notify.userError("Select at least one brick to activate");
         setSubmitting(false);
         return;
       }
 
       if (missingServiceIds.length > 0) {
         const missing = missingServiceIds.join(", ");
-        notify.error(
-          `You must select a configuration for each service: ${missing}`,
-          {
-            report: false,
-          }
+        notify.userError(
+          `You must select a configuration for each service: ${missing}`
         );
         setSubmitting(false);
         return;
       }
 
       if (!enabled) {
-        notify.error(
-          "You must grant browser permissions for the selected bricks",
-          {
-            report: false,
-          }
+        notify.userError(
+          "You must accept browser permissions for the selected bricks"
         );
         setSubmitting(false);
         return;
@@ -109,7 +101,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           })
         );
 
-        notify.success(`Installed ${recipe.metadata.name}`);
+        notify.success(`Installed ${recipe.metadata.name}`, {
+          event: "InstallBlueprint",
+        });
 
         setSubmitting(false);
 

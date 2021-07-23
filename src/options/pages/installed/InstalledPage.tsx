@@ -98,7 +98,12 @@ const InstalledPage: React.FunctionComponent<{
       <Row>
         <Col>
           <div className="pb-4">
-            {!isEmpty(extensions) ? (
+            {isEmpty(extensions) ? (
+              <p>
+                Once you&apos;ve activated templates or created your own bricks,
+                you&apos;ll be able to manage them here
+              </p>
+            ) : (
               <p>
                 Here&apos;s a list of bricks you currently have activated.{" "}
                 {flags.includes("marketplace") ? (
@@ -122,19 +127,14 @@ const InstalledPage: React.FunctionComponent<{
                   </>
                 )}
               </p>
-            ) : (
-              <p>
-                Once you&apos;ve activated templates or created your own bricks,
-                you&apos;ll be able to manage them here
-              </p>
             )}
           </div>
         </Col>
       </Row>
-      {!isEmpty(extensions) ? (
-        <InstalledTable extensions={extensions} onRemove={onRemove} />
-      ) : (
+      {isEmpty(extensions) ? (
         <NoExtensionsPage />
+      ) : (
+        <InstalledTable extensions={extensions} onRemove={onRemove} />
       )}
     </div>
   );

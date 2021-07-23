@@ -16,26 +16,27 @@
  */
 
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { useAsyncEffect } from "use-async-effect";
-import { useCallback, useState } from "react";
 import { IExtension, IExtensionPoint, ServiceAuthPair } from "@/core";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { Permissions } from "webextension-polyfill-ts";
-import { castArray, compact, groupBy, sortBy, uniq, flatten } from "lodash";
+import { castArray, compact, groupBy, sortBy, uniq } from "lodash";
 import { locator } from "@/background/locator";
 import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import {
-  containsPermissions,
   distinctPermissions,
   mergePermissions,
   requestPermissions,
 } from "@/utils/permissions";
+import { Deployment } from "@/types/contract";
 
+// Copied from the permissions section of manifest.json
 const MANDATORY_PERMISSIONS = new Set([
+  "activeTab",
   "storage",
   "identity",
   "tabs",
   "webNavigation",
+  "contextMenus",
 ]);
 
 /**
@@ -67,43 +68,69 @@ function normalizeOptionalPermissions(
   };
 }
 
+/**
+ * Convenience method for getting permissions required to activate a deployment.
+ * @see blueprintPermissions
+ * @see collectPermissions
+ */
+export async function deploymentPermissions(
+  deployment: Deployment
+): Promise<Permissions.Permissions> {
+  // Don't need to worry about service permissions because for deployments they all go through the API proxy
+  return blueprintPermissions(deployment.package.config);
+}
+
+/**
+ * Convenience method for getting permissions required to activate a blueprint.
+ * @see collectPermissions
+ */
 export async function blueprintPermissions(
   blueprint: RecipeDefinition
 ): Promise<Permissions.Permissions> {
-  const permissions = await Promise.all(
-    blueprint.extensionPoints.map(
-      async ({ id, permissions = {} }: ExtensionPointConfig) => {
-        const extensionPoint = await extensionPointRegistry.lookup(id);
-
-        // TODO: check extension permissions
-        return [extensionPoint.permissions, permissions];
-      }
-    )
-  );
-
-  return mergePermissions(flatten(permissions));
+  const permissions = await collectPermissions(blueprint.extensionPoints, []);
+  return mergePermissions(permissions);
 }
 
 export async function collectPermissions(
   extensionPoints: ExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
 ): Promise<Permissions.Permissions[]> {
-  const servicePermissions = await Promise.all(
-    serviceAuths.map(async (serviceAuth) =>
-      serviceOriginPermissions(serviceAuth)
-    )
+  const servicePromises = serviceAuths.map(async (serviceAuth) =>
+    serviceOriginPermissions(serviceAuth)
   );
 
-  const permissions = await Promise.all(
-    extensionPoints.map(
-      async ({ id, permissions = {} }: ExtensionPointConfig) => {
-        const extensionPoint = await extensionPointRegistry.lookup(id);
-        return mergePermissions([extensionPoint.permissions, permissions]);
+  const extensionPointPromises = extensionPoints.map(
+    async ({ id, permissions = {}, config }: ExtensionPointConfig) => {
+      const extensionPoint = await extensionPointRegistry.lookup(id);
+
+      let inner: Permissions.Permissions = {};
+      try {
+        // XXX: we don't have the types right now to type ExtensionPointConfig. In practice, the config as-is should
+        //  provide the structure required by getBlocks. Really, the argument of extensionPermissions should be changed
+        //  to not depend on irrelevant information, e.g., the uuid of the extension. This will also involve changing
+        //  the type of getBlocks on the ExtensionPoint interface
+        inner = await extensionPermissions(
+          ({ config } as unknown) as IExtension,
+          {
+            extensionPoint,
+          }
+        );
+      } catch (error: unknown) {
+        console.warn(`Error getting blocks for extensionPoint %s`, id, {
+          error,
+          config,
+        });
       }
-    )
+      return mergePermissions([extensionPoint.permissions, permissions, inner]);
+    }
   );
 
-  return distinctPermissions([...servicePermissions, ...permissions]);
+  const permissionsList = await Promise.all([
+    ...servicePromises,
+    ...extensionPointPromises,
+  ]);
+
+  return distinctPermissions(permissionsList);
 }
 
 /**
@@ -185,20 +212,6 @@ export async function extensionPermissions(
   );
 }
 
-export async function permissionsEnabled(
-  extension: IExtension
-): Promise<boolean> {
-  const permissions = await extensionPermissions(extension);
-  return containsPermissions(permissions);
-}
-
-export async function ensureExtensionPermissions(
-  extension: IExtension
-): Promise<boolean> {
-  const permissions = await extensionPermissions(extension);
-  return ensureAllPermissions(permissions);
-}
-
 /**
  * Return permissions grouped by origin.
  * @deprecated The logic of grouping permissions by origin doesn't actually make sense as we don't currently have any
@@ -222,31 +235,4 @@ export function originPermissions(
   );
 
   return sortBy(grouped, (x) => x.origins[0]);
-}
-
-export function useExtensionPermissions(
-  extension: IExtension
-): [boolean | undefined, () => Promise<void>] {
-  const [enabled, setEnabled] = useState<boolean | undefined>();
-
-  useAsyncEffect(
-    async (isMounted) => {
-      try {
-        const result = await permissionsEnabled(extension);
-        if (!isMounted()) return;
-        setEnabled(result);
-      } catch {
-        // If there's an error checking permissions, just assume they're OK. The use will
-        // need to fix the configuration before we can check permissions.
-        setEnabled(true);
-      }
-    },
-    [extension]
-  );
-
-  const request = useCallback(async () => {
-    setEnabled(await ensureExtensionPermissions(extension));
-  }, [extension]);
-
-  return [enabled, request];
 }

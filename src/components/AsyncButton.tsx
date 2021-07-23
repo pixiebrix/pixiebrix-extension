@@ -25,6 +25,7 @@ interface ExtraProps {
 const AsyncButton: React.FunctionComponent<ButtonProps & ExtraProps> = ({
   onClick,
   children,
+  disabled: manualDisabled = false,
   ...buttonProps
 }) => {
   const mounted = useRef(false);
@@ -50,7 +51,11 @@ const AsyncButton: React.FunctionComponent<ButtonProps & ExtraProps> = ({
   }, [onClick]);
 
   return (
-    <Button disabled={pending} {...buttonProps} onClick={handleClick}>
+    <Button
+      disabled={manualDisabled || pending}
+      {...buttonProps}
+      onClick={handleClick}
+    >
       {children}
     </Button>
   );

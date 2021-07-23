@@ -51,7 +51,7 @@ function selectAuths(
   return result;
 }
 
-export function useReinstall(): Reinstall {
+function useReinstall(): Reinstall {
   const dispatch = useDispatch();
   const extensions = useSelector(selectExtensions);
 

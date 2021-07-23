@@ -34,7 +34,7 @@ import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { activeDeployments } from "@/background/deployment";
-import { refreshRegistries } from "@/hooks/refresh";
+import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill-ts";
@@ -144,16 +144,16 @@ function useDeployments(): DeploymentState {
       return;
     }
 
-    // Get the latest brick definitions so we have the latest permission requirements
-    // XXX: is this being broadcast to the content scripts so they get the updated brick definition content?
     try {
       notify.info("Fetching latest brick definitions");
+      // Get the latest brick definitions so we have the latest permission requirements
+      // XXX: is this being broadcast to the content scripts so they get the updated brick definition content?
       await refreshRegistries();
     } catch (error: unknown) {
       // Try to proceed if we can't refresh the brick definitions
       notify.warning(
         `Error fetching latest bricks from server: ${getErrorMessage(error)}`,
-        { error }
+        { error, report: true }
       );
     }
 
@@ -170,8 +170,9 @@ function useDeployments(): DeploymentState {
     }
 
     if (!accepted) {
-      reportEvent("DeploymentRejectPermissions");
-      notify.warning("You declined the permissions");
+      notify.warning("You declined the permissions", {
+        event: "DeploymentRejectPermissions",
+      });
       return;
     }
 

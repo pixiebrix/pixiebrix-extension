@@ -34,6 +34,7 @@ import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { useTitle } from "@/hooks/title";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import useInstall from "@/pages/marketplace/useInstall";
+import AsyncButton from "@/components/AsyncButton";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -64,9 +65,9 @@ const ActivateButton: React.FunctionComponent<{
   );
 
   return (
-    <Button size="sm" disabled={isPending} onClick={activate}>
+    <AsyncButton size="sm" disabled={isPending} onClick={activate}>
       Activate
-    </Button>
+    </AsyncButton>
   );
 };
 
