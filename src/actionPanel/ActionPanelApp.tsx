@@ -145,7 +145,6 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 onClick={closeSidebar}
                 size="sm"
                 variant="link"
-                style={{ color: "#6562aa" }}
               >
                 <FontAwesomeIcon icon={faChevronRight} />
                 <FontAwesomeIcon icon={faChevronRight} />
