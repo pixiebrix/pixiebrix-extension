@@ -30,12 +30,13 @@ import yaml from "js-yaml";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import "./EditPage.scss";
 import { useDispatch, useSelector } from "react-redux";
-import { MessageContext, RawConfig } from "@/core";
-import { useDebounce } from "use-debounce";
+import { RawConfig } from "@/core";
 import { selectExtensions } from "@/options/selectors";
 import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";
 import { workshopSlice } from "@/options/slices";
+import useLogContext from "@/options/pages/brickEditor/useLogContext";
+
 const { touchBrick } = workshopSlice.actions;
 
 interface BrickData {
@@ -84,54 +85,12 @@ const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
       onlabel=" "
       offlabel=" "
       checked={field.value}
-      onChange={(value) => helpers.setValue(value)}
+      onChange={(value) => {
+        helpers.setValue(value);
+      }}
     />
   );
 };
-
-function useLogContext(config: string | null): MessageContext | null {
-  const [debouncedConfig] = useDebounce(config, 250);
-  const installed = useSelector(selectExtensions);
-
-  const blueprintMap = useMemo(() => {
-    return new Map<string, string>(
-      installed
-        .filter((x) => x._recipe != null)
-        .map((x) => [x._recipe.id, x.id])
-    );
-  }, [installed]);
-
-  return useMemo(() => {
-    try {
-      const json = yaml.load(debouncedConfig) as RawConfig;
-      switch (json.kind) {
-        case "service": {
-          return { serviceId: json.metadata.id };
-        }
-
-        case "extensionPoint": {
-          return { extensionPointId: json.metadata.id };
-        }
-
-        case "component":
-        case "reader": {
-          return { blockId: json.metadata.id };
-        }
-
-        case "recipe": {
-          const extensionId = blueprintMap.get(json.metadata.id);
-          return extensionId ? { extensionId } : null;
-        }
-
-        default: {
-          return null;
-        }
-      }
-    } catch {
-      return null;
-    }
-  }, [debouncedConfig, blueprintMap]);
-}
 
 const LoadingBody: React.FunctionComponent = () => {
   return (

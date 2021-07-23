@@ -41,6 +41,9 @@ import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
 import GridLoader from "react-spinners/GridLoader";
 import { PersistGate } from "redux-persist/integration/react";
+import { reportEvent } from "@/telemetry/events";
+import useExtensionMeta from "@/hooks/useExtensionMeta";
+import { selectEventData } from "@/telemetry/deployments";
 import { browser } from "webextension-polyfill-ts";
 import { HIDE_ACTION_FRAME } from "@/background/browserAction";
 
@@ -54,13 +57,38 @@ const closeSidebar = async () => {
 const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
   panels,
 }) => {
-  const [key, setKey] = useState(panels[0]?.extensionId);
+  const initialKey = panels[0]?.extensionId;
+  const [key, setKey] = useState(initialKey);
+  const { lookup } = useExtensionMeta();
+
+  const onSelect = useCallback(
+    (extensionId: string) => {
+      reportEvent("ViewSidePanelPanel", {
+        ...selectEventData(lookup.get(extensionId)),
+        initialLoad: false,
+      });
+      setKey(extensionId);
+    },
+    [setKey, lookup]
+  );
+
+  useEffect(
+    () => {
+      reportEvent("ViewSidePanelPanel", {
+        ...selectEventData(lookup.get(initialKey)),
+        initialLoad: true,
+      });
+    },
+    // Only run on initial mount, other views are handled by onSelect
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   return (
     <Tab.Container id="panel-container" defaultActiveKey={key}>
       <Card className="h-100">
         <Card.Header>
-          <Nav variant="tabs" onSelect={setKey}>
+          <Nav variant="tabs" onSelect={onSelect}>
             {panels.map((panel) => (
               <Nav.Link key={panel.extensionId} eventKey={panel.extensionId}>
                 {panel.heading ?? <FontAwesomeIcon icon={faSpinner} />}
@@ -101,7 +129,9 @@ const ActionPanelApp: React.FunctionComponent = () => {
 
   useEffect(() => {
     addListener(syncPanels);
-    return () => removeListener(syncPanels);
+    return () => {
+      removeListener(syncPanels);
+    };
   }, [syncPanels]);
 
   return (

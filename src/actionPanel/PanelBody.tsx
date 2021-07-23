@@ -22,8 +22,7 @@ import GridLoader from "react-spinners/GridLoader";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";
-
-// @ts-ignore: no @types/react-shadow-root
+// @ts-expect-error -- no type definitions exist for react-shadow-root
 import ReactShadowRoot from "react-shadow-root";
 
 // Import the built-in bricks

@@ -34,12 +34,13 @@ import { optionsSlice } from "@/options/slices";
 
 import { reportError } from "@/telemetry/logging";
 import { selectInstalledExtensions } from "@/options/selectors";
+import { getErrorMessage } from "@/errors";
 
 const { actions } = optionsSlice;
 
 export function useEnsurePermissions(deployments: Deployment[]) {
   const { addToast } = useToasts();
-  const [enabled, setEnabled] = useState<boolean>(undefined);
+  const [enabled, setEnabled] = useState<boolean | undefined>();
 
   const blueprints = useMemo(() => {
     return deployments.map((x) => x.package.config);
@@ -71,9 +72,8 @@ export function useEnsurePermissions(deployments: Deployment[]) {
     try {
       accepted = await ensureAllPermissions(permissions);
     } catch (error: unknown) {
-      console.error(error);
       reportError(error);
-      addToast(`Error granting permissions: ${error}`, {
+      addToast(`Error granting permissions: ${getErrorMessage(error)}`, {
         appearance: "error",
         autoDismiss: true,
       });
@@ -89,7 +89,7 @@ export function useEnsurePermissions(deployments: Deployment[]) {
     }
 
     return true;
-  }, [permissions, setEnabled]);
+  }, [addToast, permissions]);
 
   const groupedPermissions = useMemo(() => {
     return originPermissions(permissions ?? []);
@@ -156,7 +156,7 @@ export function useDeployments() {
           autoDismiss: true,
         });
       } else {
-        reportEvent("DeploymentRejectPermissions", {});
+        reportEvent("DeploymentRejectPermissions");
       }
     });
   }, [deployments, dispatch, request, addToast, installed]);

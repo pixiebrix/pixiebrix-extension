@@ -63,10 +63,10 @@ type StoreListener = (store: ActionPanelStore) => void;
 const listeners: StoreListener[] = [];
 
 export function addListener(fn: StoreListener): void {
-  if (!listeners.includes(fn)) {
-    listeners.push(fn);
-  } else {
+  if (listeners.includes(fn)) {
     console.warn("Listener already registered for action panel");
+  } else {
+    listeners.push(fn);
   }
 }
 

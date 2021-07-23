@@ -49,7 +49,7 @@ const GenericInsertPane: React.FunctionComponent<{
   const start = useCallback(
     async (state: FormState) => {
       try {
-        dispatch(addElement(state as FormState));
+        dispatch(addElement(state));
 
         await nativeOperations.updateDynamicElement(
           port,

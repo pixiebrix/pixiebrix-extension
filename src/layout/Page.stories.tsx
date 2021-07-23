@@ -15,23 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./logger";
-export * from "./notification";
-export * from "./redirectPage";
-export * from "./clipboard";
-export * from "./forms";
-export * from "./tabs";
-export * from "./highlight";
-export * from "./vue";
-export * from "./event";
-export * from "./wait";
-export * from "./sound";
-export * from "./alert";
-export * from "./pageState";
-export * from "./hide";
-export * from "./exportCSV";
-export * from "./sidebar";
-export * from "./cancel";
-export * from "./error";
-export * from "./show";
-export * from "./telemetry";
+import React from "react";
+import Page from "@/layout/Page";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
+
+export default {
+  component: Page,
+  title: "Layout/Page",
+} as ComponentMeta<typeof Page>;
+
+const Template: ComponentStory<typeof Page> = (args) => (
+  <Page {...args}>Hello world!</Page>
+);
+
+export const Default = Template.bind({});
+Default.args = {
+  icon: "music",
+  title: "Example page",
+  description: "Welcome to an example page! Have a look around.",
+};

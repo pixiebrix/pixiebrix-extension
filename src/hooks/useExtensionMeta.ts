@@ -15,23 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./logger";
-export * from "./notification";
-export * from "./redirectPage";
-export * from "./clipboard";
-export * from "./forms";
-export * from "./tabs";
-export * from "./highlight";
-export * from "./vue";
-export * from "./event";
-export * from "./wait";
-export * from "./sound";
-export * from "./alert";
-export * from "./pageState";
-export * from "./hide";
-export * from "./exportCSV";
-export * from "./sidebar";
-export * from "./cancel";
-export * from "./error";
-export * from "./show";
-export * from "./telemetry";
+import { useSelector } from "react-redux";
+import {
+  InstalledExtension,
+  selectInstalledExtensions,
+} from "@/options/selectors";
+import { useMemo } from "react";
+
+function useExtensionMeta(): { lookup: Map<string, InstalledExtension> } {
+  const extensions = useSelector(selectInstalledExtensions);
+  const lookup = useMemo(() => new Map(extensions.map((x) => [x.id, x])), [
+    extensions,
+  ]);
+  return { lookup };
+}
+
+export default useExtensionMeta;
