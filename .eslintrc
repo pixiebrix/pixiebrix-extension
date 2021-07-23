@@ -29,7 +29,7 @@
     "plugin:unicorn/recommended"
   ],
   "rules": {
-    "filenames/match-exported": 2,
+    "filenames/match-exported": "warn",
     // Customize some rules
     "import/no-unresolved": [
       "error",
