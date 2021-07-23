@@ -21,7 +21,11 @@ import { openExtensionOptions } from "@/messaging/external";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPuzzlePiece, faSpinner } from "@fortawesome/free-solid-svg-icons";
+import {
+  faPuzzlePiece,
+  faSpinner,
+  faChevronRight,
+} from "@fortawesome/free-solid-svg-icons";
 import { getStore } from "@/actionPanel/native";
 import {
   ActionPanelStore,
@@ -40,6 +44,15 @@ import { PersistGate } from "redux-persist/integration/react";
 import { reportEvent } from "@/telemetry/events";
 import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { selectEventData } from "@/telemetry/deployments";
+import { browser } from "webextension-polyfill-ts";
+import { HIDE_ACTION_FRAME } from "@/background/browserAction";
+
+const closeSidebar = async () => {
+  await browser.runtime.sendMessage({
+    type: HIDE_ACTION_FRAME,
+    payload: {},
+  });
+};
 
 const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
   panels,
@@ -127,16 +140,25 @@ const ActionPanelApp: React.FunctionComponent = () => {
         <ToastProvider>
           <div className="d-flex flex-column" style={{ height: "100vh" }}>
             <div className="d-flex mb-2" style={{ flex: "none" }}>
+              <Button
+                className="action-panel-close-button"
+                onClick={closeSidebar}
+                size="sm"
+                variant="link"
+              >
+                <FontAwesomeIcon icon={faChevronRight} />
+                <FontAwesomeIcon icon={faChevronRight} />
+              </Button>
+              {/* spacer */}
+              <div className="flex-grow-1" />
               <div className="align-self-center">
                 <img
                   src={logo}
                   alt="PixieBrix logo"
                   height={20}
-                  className="px-2"
+                  className="px-4"
                 />
               </div>
-              {/* spacer */}
-              <div className="flex-grow-1" />
               <div className="ActionPanelToolbar">
                 <Button
                   onClick={async () => openExtensionOptions()}
