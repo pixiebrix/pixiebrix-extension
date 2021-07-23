@@ -18,7 +18,7 @@
 import { Deployment } from "@/types/contract";
 import { useCallback, useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
-import { collectPermissions, ensureAllPermissions } from "@/permissions";
+import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
 import { fromPairs } from "lodash";
 import { reportEvent } from "@/telemetry/events";
@@ -36,17 +36,21 @@ import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { activeDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/refresh";
 import { Dispatch } from "redux";
+import { mergePermissions } from "@/utils/permissions";
+import { Permissions } from "webextension-polyfill-ts";
 
 const { actions } = optionsSlice;
 
-async function selectDeploymentPermissions(deployments: Deployment[]) {
+async function selectDeploymentPermissions(
+  deployments: Deployment[]
+): Promise<Permissions.Permissions> {
   const blueprints = deployments.map((x) => x.package.config);
   // Deployments can only use proxied services, so there's no additional permissions to request for the
   // the serviceAuths.
-  return collectPermissions(
-    blueprints.flatMap((x) => x.extensionPoints),
-    []
+  const permissions = await Promise.all(
+    blueprints.map(async (x) => blueprintPermissions(x))
   );
+  return mergePermissions(permissions);
 }
 
 async function fetchDeployments(

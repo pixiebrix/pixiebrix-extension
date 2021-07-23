@@ -20,7 +20,7 @@ import {
   BlockOptionProps,
   FieldRenderer,
 } from "@/components/fields/blockOptions";
-import { identity } from "lodash";
+import { compact } from "lodash";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
@@ -34,9 +34,9 @@ import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
 import { ObjectField } from "@/components/fields/FieldTable";
-import { checkPermissions } from "@/permissions";
-import { requestPermissions } from "@/utils/permissions";
+import { containsPermissions, requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
+import { getErrorMessage } from "@/errors";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -78,14 +78,16 @@ export const ZapField: React.FunctionComponent<
       <Select
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => {
+          helpers.setValue(option?.value);
+        }}
       />
       {schema.description && (
         <Form.Text className="text-muted">The Zap to run</Form.Text>
       )}
       {error && (
         <span className="text-danger small">
-          Error fetching Zaps: {error.toString()}
+          Error fetching Zaps: {getErrorMessage(error)}
         </span>
       )}
       {meta.touched && meta.error && (
@@ -100,11 +102,11 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
   configKey,
   showOutputKey,
 }) => {
-  const basePath = [name, configKey].filter(identity).join(".");
+  const basePath = compact([name, configKey]).join(".");
 
   const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
   const [hasPermissions] = useAsyncState(
-    () => checkPermissions([ZAPIER_PERMISSIONS]),
+    async () => containsPermissions(ZAPIER_PERMISSIONS),
     []
   );
 
@@ -140,7 +142,7 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
       <ZapField
         label="Zap"
         name={`${basePath}.pushKey`}
-        schema={ZAPIER_PROPERTIES["pushKey"] as Schema}
+        schema={ZAPIER_PROPERTIES.pushKey as Schema}
         hooks={hooks}
         error={error}
       />

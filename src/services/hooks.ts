@@ -16,17 +16,17 @@
  */
 
 import { useAsyncState } from "@/hooks/common";
-import { checkPermissions } from "@/permissions";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { reportError } from "@/telemetry/logging";
 import { useToasts } from "react-toast-notifications";
 import { useFormikContext } from "formik";
 import { SanitizedServiceConfiguration, ServiceDependency } from "@/core";
-import { head, castArray } from "lodash";
+import { castArray, head } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";
 import { Service } from "@/types";
-import { requestPermissions } from "@/utils/permissions";
+import { containsPermissions, requestPermissions } from "@/utils/permissions";
+import { getErrorMessage } from "@/errors";
 
 type Listener = () => void;
 
@@ -44,7 +44,7 @@ export function useDependency(
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
   const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
 
-  const serviceIds = castArray(serviceId);
+  const serviceIds = useMemo(() => castArray(serviceId), [serviceId]);
 
   const dependency: ServiceDependency = useMemo(() => {
     const configuredServices = (values.services ?? []).filter((service) =>
@@ -55,7 +55,7 @@ export function useDependency(
     }
 
     return head(configuredServices);
-  }, [values.services]);
+  }, [serviceIds, values.services]);
 
   const [serviceResult] = useAsyncState(async () => {
     if (dependency.config) {
@@ -64,7 +64,7 @@ export function useDependency(
         dependency.config
       );
       const service = await registry.lookup(dependency.id);
-      return { localConfig: localConfig, service };
+      return { localConfig, service };
     }
 
     throw new Error("No integration selected");
@@ -74,11 +74,11 @@ export function useDependency(
     return serviceResult?.service
       ? serviceResult.service.getOrigins(serviceResult.localConfig.config)
       : null;
-  }, [serviceResult?.service]);
+  }, [serviceResult.localConfig.config, serviceResult?.service]);
 
   const [hasPermissions] = useAsyncState(async () => {
     if (origins != null) {
-      return checkPermissions([{ origins }]);
+      return containsPermissions({ origins });
     }
 
     return false;
@@ -87,7 +87,9 @@ export function useDependency(
   useEffect(() => {
     if (dependency?.config && !hasPermissions) {
       const key = `${dependency.id}:${dependency.config}`;
-      const listener = () => setGrantedPermissions(true);
+      const listener = () => {
+        setGrantedPermissions(true);
+      };
       permissionsListeners.set(key, [
         ...(permissionsListeners.get(key) ?? []),
         listener,
@@ -112,27 +114,26 @@ export function useDependency(
     try {
       const result = await requestPermissions(permissions);
       setGrantedPermissions(result);
-      if (!result) {
-        addToast("You must accept the permissions request", {
-          appearance: "warning",
-          autoDismiss: true,
-        });
-      } else {
+      if (result) {
         const key = `${dependency.id}:${dependency.config}`;
         for (const listener of permissionsListeners.get(key)) {
           listener();
         }
+      } else {
+        addToast("You must accept the permissions request", {
+          appearance: "warning",
+          autoDismiss: true,
+        });
       }
     } catch (error: unknown) {
       setGrantedPermissions(false);
       reportError(error);
-      addToast(`Error granting permissions: ${error.toString()}`, {
+      addToast(`Error granting permissions: ${getErrorMessage(error)}`, {
         appearance: "error",
         autoDismiss: true,
       });
     }
   }, [
-    serviceResult,
     addToast,
     setGrantedPermissions,
     origins,

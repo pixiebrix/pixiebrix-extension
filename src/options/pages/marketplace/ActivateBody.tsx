@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  ExtensionPointDefinition,
-  RecipeDefinition,
-} from "@/types/definitions";
+import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import React, { useCallback } from "react";
 import { useFormikContext } from "formik";
 import { Button, Card, Table } from "react-bootstrap";
@@ -27,13 +24,10 @@ import {
   useSelectedAuths,
   useSelectedExtensions,
 } from "@/options/pages/marketplace/ConfigureBody";
-import { useToasts } from "react-toast-notifications";
 import {
-  checkPermissions,
   collectPermissions,
   ensureAllPermissions,
   originPermissions as groupOriginPermissions,
-  ServiceAuthPair,
 } from "@/permissions";
 import { locator } from "@/background/locator";
 import GridLoader from "react-spinners/GridLoader";
@@ -42,6 +36,9 @@ import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors";
+import { containsPermissions, mergePermissions } from "@/utils/permissions";
+import { ServiceAuthPair } from "@/core";
+import useNotifications from "@/hooks/useNotifications";
 
 interface ActivateProps {
   blueprint: RecipeDefinition;
@@ -49,16 +46,16 @@ interface ActivateProps {
 
 export function useEnsurePermissions(
   blueprint: RecipeDefinition,
-  extensions: ExtensionPointDefinition[],
+  extensions: ExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
 ) {
-  const { addToast } = useToasts();
+  const notify = useNotifications();
   const { submitForm } = useFormikContext();
 
   const [permissionState, isPending, error] = useAsyncState(async () => {
     await locator.refreshLocal();
     const permissions = await collectPermissions(extensions, serviceAuths);
-    const enabled = await checkPermissions(permissions);
+    const enabled = await containsPermissions(mergePermissions(permissions));
     return {
       enabled,
       permissions,
@@ -76,26 +73,23 @@ export function useEnsurePermissions(
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissions(permissions ?? []);
+      accepted = await ensureAllPermissions(
+        mergePermissions(permissions ?? [])
+      );
     } catch (error: unknown) {
-      console.error(error);
-      addToast(`Error granting permissions: ${getErrorMessage(error)}`, {
-        appearance: "error",
-        autoDismiss: true,
+      notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
+        error,
       });
       return false;
     }
 
     if (!accepted) {
-      addToast(`You declined the permissions`, {
-        appearance: "error",
-        autoDismiss: true,
-      });
+      notify.warning("You declined the permissions");
       return false;
     }
 
     return true;
-  }, [permissions, addToast]);
+  }, [permissions, notify]);
 
   const activate = useCallback(() => {
     // Can't use async here because Firefox loses track of trusted UX event

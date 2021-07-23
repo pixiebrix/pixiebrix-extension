@@ -24,7 +24,7 @@ import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
-import { checkPermissions, collectPermissions } from "@/permissions";
+import { blueprintPermissions } from "@/permissions";
 import { optionsSlice, OptionsState } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/refresh";
@@ -32,6 +32,7 @@ import { liftBackground } from "@/background/protocol";
 import * as contentScript from "@/contentScript/lifecycle";
 import { selectInstalledExtensions } from "@/options/selectors";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import { containsPermissions } from "@/utils/permissions";
 
 const { reducer, actions } = optionsSlice;
 
@@ -39,11 +40,11 @@ const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
 
 async function deploymentPermissions(
   deployment: Deployment
-): Promise<Permissions.Permissions[]> {
+): Promise<Permissions.Permissions> {
   const blueprint = deployment.package.config;
   // Deployments can only use proxied services, so there's no additional permissions to request for the
   // the serviceAuths.
-  return collectPermissions(blueprint, []);
+  return blueprintPermissions(blueprint);
 }
 
 type ActiveDeployment = {
@@ -188,7 +189,7 @@ async function updateDeployments() {
   const deploymentRequirements = await Promise.all(
     updatedDeployments.map(async (deployment) => ({
       deployment,
-      hasPermissions: await checkPermissions(
+      hasPermissions: await containsPermissions(
         await deploymentPermissions(deployment)
       ),
     }))

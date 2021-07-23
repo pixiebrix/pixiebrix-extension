@@ -15,202 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
-import { ExtensionOptions, optionsSlice } from "@/options/slices";
-import { useToasts } from "react-toast-notifications";
-import { groupBy, uniq, pickBy, isEmpty, mapValues, truncate } from "lodash";
-import { useDispatch, useSelector } from "react-redux";
-import { push } from "connected-react-router";
+import { isEmpty, mapValues, truncate, uniq } from "lodash";
 import "./ActivateWizard.scss";
-import { Formik, FormikHelpers } from "formik";
+import { Formik } from "formik";
 import ConfigureBody, {
-  selectedExtensions,
   useSelectedAuths,
   useSelectedExtensions,
 } from "./ConfigureBody";
 import ServicesBody from "./ServicesBody";
 import { WizardValues } from "./wizard";
-import { checkPermissions, collectPermissions } from "@/permissions";
-import { uninstallContextMenu } from "@/background/contextMenus";
 import ActivateBody, {
   useEnsurePermissions,
 } from "@/options/pages/marketplace/ActivateBody";
-import { reactivate } from "@/background/navigation";
-import { useParams } from "react-router";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
-import { selectExtensions } from "@/options/selectors";
 import { useTitle } from "@/hooks/title";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
-
-const { installRecipe, removeExtension } = optionsSlice.actions;
-
-type InstallRecipe = (
-  values: WizardValues,
-  helpers: FormikHelpers<WizardValues>
-) => Promise<void>;
-
-function selectAuths(
-  extensions: ExtensionOptions[]
-): { [serviceId: string]: string } {
-  const serviceAuths = groupBy(
-    extensions.flatMap((x) => x.services),
-    (x) => x.id
-  );
-  const result: { [serviceId: string]: string } = {};
-  for (const [id, auths] of Object.entries(serviceAuths)) {
-    const configs = uniq(auths.map(({ config }) => config));
-    if (configs.length === 0) {
-      throw new Error(`Service ${id} is not configured`);
-    } else if (configs.length > 1) {
-      throw new Error(`Service ${id} has multiple configurations`);
-    }
-
-    // eslint-disable-next-line security/detect-object-injection -- safe because it's from Object.entries
-    result[id] = configs[0];
-  }
-
-  return result;
-}
-
-type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
-
-export function useReinstall(): Reinstall {
-  const dispatch = useDispatch();
-  const extensions = useSelector(selectExtensions);
-
-  return useCallback(
-    async (recipe: RecipeDefinition) => {
-      const recipeExtensions = extensions.filter(
-        (x) => x._recipeId === recipe.metadata.id
-      );
-
-      if (recipeExtensions.length === 0) {
-        throw new Error(`No bricks to re-activate for ${recipe.metadata.id}`);
-      }
-
-      const currentAuths = selectAuths(recipeExtensions);
-
-      // Uninstall first to avoid duplicates
-      for (const extension of recipeExtensions) {
-        await uninstallContextMenu({ extensionId: extension.id });
-        dispatch(
-          removeExtension({
-            extensionPointId: extension.extensionPointId,
-            extensionId: extension.id,
-          })
-        );
-      }
-
-      dispatch(
-        installRecipe({
-          recipe,
-          extensionPoints: recipe.extensionPoints,
-          services: currentAuths,
-        })
-      );
-    },
-    [dispatch, extensions]
-  );
-}
-
-function useInstall(recipe: RecipeDefinition): InstallRecipe {
-  const dispatch = useDispatch();
-  const { sourcePage } = useParams<{ sourcePage: string }>();
-  const { addToast } = useToasts();
-
-  return useCallback(
-    async (values, { setSubmitting }: FormikHelpers<WizardValues>) => {
-      console.debug("Wizard form values", values);
-
-      const selected = selectedExtensions(values, recipe.extensionPoints);
-      const requiredServiceIds = uniq(
-        selected
-          .flatMap((x) => Object.values(x.services ?? {}))
-          .filter((x) => x !== PIXIEBRIX_SERVICE_ID)
-      );
-      const missingServiceIds = Object.keys(
-        pickBy(
-          values.services,
-          (v, k) => requiredServiceIds.includes(k) && v == null
-        )
-      );
-
-      const configuredAuths = Object.entries(values.services)
-        .filter((x) => x[1])
-        .map(([id, config]) => ({ id, config }));
-
-      const enabled = await checkPermissions(
-        await collectPermissions(selected, configuredAuths)
-      );
-
-      if (selected.length === 0) {
-        addToast(`Select at least one brick to activate`, {
-          appearance: "error",
-          autoDismiss: true,
-        });
-        setSubmitting(false);
-        return;
-      }
-
-      if (missingServiceIds.length > 0) {
-        addToast(
-          `You must select a configuration for each service: ${missingServiceIds.join(
-            ", "
-          )}`,
-          {
-            appearance: "error",
-            autoDismiss: true,
-          }
-        );
-        setSubmitting(false);
-        return;
-      }
-
-      if (!enabled) {
-        addToast("You must grant browser permissions for the selected bricks", {
-          appearance: "error",
-          autoDismiss: true,
-        });
-        setSubmitting(false);
-        return;
-      }
-
-      try {
-        dispatch(
-          installRecipe({
-            recipe,
-            extensionPoints: selected,
-            services: values.services,
-            optionsArgs: values.optionsArgs,
-          })
-        );
-
-        addToast(`Installed ${recipe.metadata.name}`, {
-          appearance: "success",
-          autoDismiss: true,
-        });
-
-        setSubmitting(false);
-
-        void reactivate();
-
-        dispatch(
-          push(sourcePage === "templates" ? "/templates" : "/installed")
-        );
-      } catch (error: unknown) {
-        console.error(`Error installing ${recipe.metadata.name}`, error);
-        addToast(`Error installing ${recipe.metadata.name}`, {
-          appearance: "error",
-          autoDismiss: true,
-        });
-        setSubmitting(false);
-      }
-    },
-    [addToast, dispatch, sourcePage, recipe]
-  );
-}
+import useInstall from "@/pages/marketplace/useInstall";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -300,7 +123,9 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
             <Nav
               variant="pills"
               activeKey={stepKey}
-              onSelect={(step: string) => setStep(step)}
+              onSelect={(step: string) => {
+                setStep(step);
+              }}
             >
               {blueprintSteps.map((step, index) => (
                 <Nav.Item key={step.key} className="flex-grow-1">
@@ -322,7 +147,9 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                           size="sm"
                           variant="outline-primary"
                           disabled={index === 0}
-                          onClick={() => setStep(blueprintSteps[index - 1].key)}
+                          onClick={() => {
+                            setStep(blueprintSteps[index - 1].key);
+                          }}
                         >
                           Previous
                         </Button>
@@ -330,9 +157,9 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                         {index < blueprintSteps.length - 1 ? (
                           <Button
                             size="sm"
-                            onClick={() =>
-                              setStep(blueprintSteps[index + 1].key)
-                            }
+                            onClick={() => {
+                              setStep(blueprintSteps[index + 1].key);
+                            }}
                           >
                             Next Step
                           </Button>

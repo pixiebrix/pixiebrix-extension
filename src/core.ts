@@ -141,6 +141,11 @@ export type ServiceLocator = (
   id?: string
 ) => Promise<SanitizedServiceConfiguration>;
 
+export type ServiceAuthPair = {
+  id: string;
+  config: string;
+};
+
 export interface DeploymentContext {
   id: string;
   timestamp: string;
