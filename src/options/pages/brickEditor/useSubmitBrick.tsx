@@ -27,11 +27,11 @@ import { EditorValues } from "./Editor";
 import { validateSchema } from "./validate";
 import axios from "axios";
 import { getExtensionToken } from "@/auth/token";
-import { useRefresh } from "@/hooks/refresh";
+import useRefresh from "@/hooks/useRefresh";
 import { reactivate } from "@/background/navigation";
-import { useReinstall } from "@/options/pages/marketplace/ActivateWizard";
 import { RecipeDefinition, Definition } from "@/types/definitions";
 import { reportError } from "@/telemetry/logging";
+import useReinstall from "@/pages/marketplace/useReinstall";
 
 interface SubmitOptions {
   create: boolean;

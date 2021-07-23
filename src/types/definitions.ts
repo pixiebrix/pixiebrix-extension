@@ -19,11 +19,22 @@ import { Metadata, Schema } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 import { UiSchema } from "@rjsf/core";
 
-export interface ExtensionPointDefinition {
+export interface ExtensionPointConfig {
+  /**
+   * The id of the ExtensionPoint
+   */
   id: string;
+
   label: string;
+
+  /**
+   * Additional permissions required by the configured extension. This section will generally be missing/blank unless
+   * the permissions need to be declared to account for dynamic URLs accessed by the extension.
+   */
   permissions?: Permissions.Permissions;
+
   services?: Record<string, string>;
+
   config: Record<string, unknown>;
 }
 
@@ -44,14 +55,14 @@ export interface Definition {
 
 export interface RecipeDefinition extends Definition {
   kind: "recipe";
-  extensionPoints: ExtensionPointDefinition[];
+  extensionPoints: ExtensionPointConfig[];
   options?: OptionsDefinition;
 }
 
 export interface KeyAuthenticationDefinition {
   baseURL?: string;
-  headers?: { [header: string]: string };
-  params?: { [param: string]: string };
+  headers?: Record<string, string>;
+  params?: Record<string, string>;
 }
 
 export interface TokenAuthenticationDefinition {
@@ -60,7 +71,7 @@ export interface TokenAuthenticationDefinition {
     url: string;
     data: Record<string, unknown>;
   };
-  headers: { [header: string]: string };
+  headers: Record<string, string>;
 }
 
 export interface OAuth2AuthenticationDefinition {

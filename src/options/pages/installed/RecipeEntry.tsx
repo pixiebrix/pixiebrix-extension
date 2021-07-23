@@ -15,9 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { InstalledExtension } from "@/options/selectors";
-import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
 import cx from "classnames";
@@ -30,6 +29,8 @@ import {
 import AsyncButton from "@/components/AsyncButton";
 import { ExtensionIdentifier } from "@/core";
 import ExtensionRow from "@/options/pages/installed/ExtensionRow";
+import useNotifications from "@/hooks/useNotifications";
+import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 
 type RemoveAction = (identifier: ExtensionIdentifier) => void;
 
@@ -38,11 +39,15 @@ const RecipeEntry: React.FunctionComponent<{
   extensions: InstalledExtension[];
   onRemove: RemoveAction;
 }> = ({ recipeId, extensions, onRemove }) => {
+  const notify = useNotifications();
   const [expanded, setExpanded] = useState(true);
-  const { addToast } = useToasts();
 
   // Only consider to be a deployment if none of the extensions have been modified
   const isDeployment = extensions.every((x) => x._deployment != null);
+
+  const [hasPermissions, requestPermissions] = useExtensionPermissions(
+    extensions
+  );
 
   const removeMany = useCallback(
     async (extensions: InstalledExtension[], name: string) => {
@@ -50,59 +55,73 @@ const RecipeEntry: React.FunctionComponent<{
         for (const { id: extensionId, extensionPointId } of extensions) {
           onRemove({ extensionId, extensionPointId });
         }
-
-        addToast(`Uninstalled ${name}`, {
-          appearance: "success",
-          autoDismiss: true,
-        });
+        notify.success(`Uninstalled ${name}`);
       } catch (error: unknown) {
         reportError(error);
-
-        addToast(`Error uninstalling ${name}: ${getErrorMessage(error)}`, {
-          appearance: "error",
-          autoDismiss: true,
+        notify.error(`Error uninstalling ${name}: ${getErrorMessage(error)}`, {
+          error,
         });
       }
     },
-    [addToast, onRemove]
+    [notify, onRemove]
   );
+
+  const status = useMemo(() => {
+    if (!hasPermissions) {
+      return (
+        <AsyncButton
+          variant="info"
+          size="sm"
+          onClick={async () => {
+            await requestPermissions();
+          }}
+        >
+          Grant Permissions
+        </AsyncButton>
+      );
+    }
+
+    if (isDeployment) {
+      return (
+        <>
+          <FontAwesomeIcon icon={faCheck} /> Managed
+        </>
+      );
+    }
+
+    return null;
+  }, [isDeployment, hasPermissions, requestPermissions]);
+
+  const recipe = extensions[0]._recipe;
+  const label = recipe?.name ?? recipeId;
 
   return (
     <tbody key={recipeId}>
       {recipeId !== "" && (
         <tr
           className={cx("ActiveBricksCard__blueprint", { isDeployment })}
-          onClick={() => setExpanded((prev: boolean) => !prev)}
+          onClick={() => {
+            setExpanded((prev: boolean) => !prev);
+          }}
         >
           <th>
             {!isDeployment && (
+              // Deployments cannot be expanded
               <FontAwesomeIcon
                 icon={expanded ? faCaretDown : faCaretRight}
-                onClick={() => setExpanded((prev: boolean) => !prev)}
+                onClick={() => {
+                  setExpanded((prev: boolean) => !prev);
+                }}
               />
             )}
           </th>
-          {isDeployment ? (
-            <>
-              <th className="py-2">
-                {extensions[0]._recipe?.name ?? recipeId}
-              </th>
-              <th className="py-2">
-                <FontAwesomeIcon icon={faCheck} /> Managed
-              </th>
-            </>
-          ) : (
-            <th colSpan={2} className="py-2">
-              {extensions[0]._recipe?.name ?? recipeId}
-            </th>
-          )}
+          <th className="py-2">{label}</th>
+          <th className="py-2">{status}</th>
           <th>
             <AsyncButton
               variant="danger"
               size="sm"
-              onClick={async () =>
-                removeMany(extensions, extensions[0]._recipe?.name)
-              }
+              onClick={async () => removeMany(extensions, recipe?.name)}
             >
               Uninstall
             </AsyncButton>

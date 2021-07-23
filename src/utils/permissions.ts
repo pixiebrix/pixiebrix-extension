@@ -35,7 +35,7 @@ export function selectOptionalPermissions(
 /** Merge a list of permissions into a single permissions object */
 export function mergePermissions(
   permissions: Permissions.Permissions[] = []
-): Permissions.Permissions {
+): Required<Permissions.Permissions> {
   return {
     origins: uniq(permissions.flatMap((x) => x.origins ?? [])),
     permissions: uniq(permissions.flatMap((x) => x.permissions ?? [])),

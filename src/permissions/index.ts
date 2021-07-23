@@ -15,89 +15,122 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import extensionRegistry from "@/extensionPoints/registry";
-import { useAsyncEffect } from "use-async-effect";
-import { useCallback, useState } from "react";
-import { IExtension, IExtensionPoint } from "@/core";
-import {
-  ExtensionPointDefinition,
-  RecipeDefinition,
-} from "@/types/definitions";
+import extensionPointRegistry from "@/extensionPoints/registry";
+import { IExtension, IExtensionPoint, ServiceAuthPair } from "@/core";
+import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { Permissions } from "webextension-polyfill-ts";
 import { castArray, compact, groupBy, sortBy, uniq } from "lodash";
 import { locator } from "@/background/locator";
 import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import {
-  containsPermissions,
   distinctPermissions,
   mergePermissions,
   requestPermissions,
 } from "@/utils/permissions";
+import { Deployment } from "@/types/contract";
 
-const MANDATORY_PERMISSIONS = ["storage", "identity", "tabs", "webNavigation"];
+// Copied from the permissions section of manifest.json
+const MANDATORY_PERMISSIONS = new Set([
+  "activeTab",
+  "storage",
+  "identity",
+  "tabs",
+  "webNavigation",
+  "contextMenus",
+]);
 
 /**
  * Request any permissions the user has not already granted
- * @param permissionsList
- * @returns {Promise<boolean>}
+ * @returns {Promise<boolean>} true iff the the all the permissions already existed, or if the user accepted
+ * the new permissions.
  */
 export async function ensureAllPermissions(
-  permissionsList: Permissions.Permissions[]
+  permissions: Permissions.Permissions
 ): Promise<boolean> {
-  // TODO: Instead of passing around `Array<Permission>`, merge them into a regular `Permission`
-  // as early in the code as possible (e.g. in the hook that generates the array).
-  // This way we don't need to call `mergePermissions` or loop the array every time.
-  return requestPermissions(mergePermissions(permissionsList));
+  // `normalize` to ensure the request will succeed on Firefox. See normalize
+  return requestPermissions(normalizeOptionalPermissions(permissions));
 }
 
-export type ServiceAuthPair = {
-  id: string;
-  config: string;
-};
+/**
+ * Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request a permission
+ * that's in the permissions, but not the optional_permissions
+ */
+function normalizeOptionalPermissions(
+  permissions: Permissions.Permissions
+): Required<Permissions.Permissions> {
+  return {
+    origins: uniq(castArray(permissions.origins ?? [])),
+    permissions: uniq(
+      castArray(permissions.permissions ?? []).filter(
+        (permission) => !MANDATORY_PERMISSIONS.has(permission)
+      )
+    ),
+  };
+}
+
+/**
+ * Convenience method for getting permissions required to activate a deployment.
+ * @see blueprintPermissions
+ * @see collectPermissions
+ */
+export async function deploymentPermissions(
+  deployment: Deployment
+): Promise<Permissions.Permissions> {
+  // Don't need to worry about service permissions because for deployments they all go through the API proxy
+  return blueprintPermissions(deployment.package.config);
+}
+
+/**
+ * Convenience method for getting permissions required to activate a blueprint.
+ * @see collectPermissions
+ */
+export async function blueprintPermissions(
+  blueprint: RecipeDefinition
+): Promise<Permissions.Permissions> {
+  const permissions = await collectPermissions(blueprint.extensionPoints, []);
+  return mergePermissions(permissions);
+}
 
 export async function collectPermissions(
-  recipe: RecipeDefinition,
-  serviceAuths: ServiceAuthPair[]
-): Promise<Permissions.Permissions[]>;
-export async function collectPermissions(
-  extensionPoints: ExtensionPointDefinition[],
-  serviceAuths: ServiceAuthPair[]
-): Promise<Permissions.Permissions[]>;
-export async function collectPermissions(
-  recipeOrExtensionPoints: RecipeDefinition | ExtensionPointDefinition[],
+  extensionPoints: ExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
 ): Promise<Permissions.Permissions[]> {
-  const normalize = (x: Permissions.Permissions) => ({
-    origins: castArray(x.origins ?? []),
-    // Exclude MANDATORY_PERMISSIONS that were already granted on install. Firefox errors when you request
-    // a permission that's in the permissions, but not the optional_permissions
-    permissions: castArray(x.permissions ?? []).filter(
-      (permission) => !MANDATORY_PERMISSIONS.includes(permission)
-    ),
-  });
-
-  const extensionPoints = Array.isArray(recipeOrExtensionPoints)
-    ? recipeOrExtensionPoints
-    : recipeOrExtensionPoints.extensionPoints;
-
-  const servicePermissions = await Promise.all(
-    serviceAuths.map(async (serviceAuth) =>
-      serviceOriginPermissions(serviceAuth)
-    )
+  const servicePromises = serviceAuths.map(async (serviceAuth) =>
+    serviceOriginPermissions(serviceAuth)
   );
 
-  const permissions = await Promise.all(
-    extensionPoints.map(
-      async ({ id, permissions = {} }: ExtensionPointDefinition) => {
-        const extensionPoint = await extensionRegistry.lookup(id);
-        return mergePermissions(
-          [extensionPoint.permissions, permissions].map((x) => normalize(x))
+  const extensionPointPromises = extensionPoints.map(
+    async ({ id, permissions = {}, config }: ExtensionPointConfig) => {
+      const extensionPoint = await extensionPointRegistry.lookup(id);
+
+      let inner: Permissions.Permissions = {};
+      try {
+        // XXX: we don't have the types right now to type ExtensionPointConfig. In practice, the config as-is should
+        //  provide the structure required by getBlocks. Really, the argument of extensionPermissions should be changed
+        //  to not depend on irrelevant information, e.g., the uuid of the extension. This will also involve changing
+        //  the type of getBlocks on the ExtensionPoint interface
+        inner = await extensionPermissions(
+          ({ config } as unknown) as IExtension,
+          {
+            extensionPoint,
+          }
         );
+      } catch (error: unknown) {
+        console.warn(`Error getting blocks for extensionPoint %s`, id, {
+          error,
+          config,
+        });
       }
-    )
+      return mergePermissions([extensionPoint.permissions, permissions, inner]);
+    }
   );
 
-  return distinctPermissions([...servicePermissions, ...permissions]);
+  const permissionsList = await Promise.all([
+    ...servicePromises,
+    ...extensionPointPromises,
+  ]);
+
+  return distinctPermissions(permissionsList);
 }
 
 /**
@@ -124,28 +157,41 @@ export async function serviceOriginPermissions(
   return { origins };
 }
 
+type PermissionOptions = {
+  /**
+   * If provided, used instead of the registry version of the referenced extensionPoint.
+   */
+  extensionPoint?: IExtensionPoint;
+
+  /**
+   * True to include permissions for permissions declared on the extension point and it's default reader.
+   */
+  includeExtensionPoint?: boolean;
+
+  /**
+   * True to include permissions for services referenced by the extension.
+   */
+  includeServices?: boolean;
+};
+
 /**
- * Return distinct browser permissions required to run the extensions
+ * Returns browser permissions required to run the extension
  * - Extension point
  * - Blocks
  * - Services
  */
 export async function extensionPermissions(
   extension: IExtension,
-  options?: {
-    extensionPoint?: IExtensionPoint;
-    includeExtensionPoint?: boolean;
-    includeServices?: boolean;
-  }
-): Promise<Permissions.Permissions[]> {
-  const opts = Object.assign(
-    {},
-    { includeExtensionPoint: true, includeServices: true },
-    options
-  );
+  options: PermissionOptions = {}
+): Promise<Permissions.Permissions> {
+  const opts = {
+    includeExtensionPoint: true,
+    includeServices: true,
+    ...options,
+  };
   const extensionPoint =
     opts.extensionPoint ??
-    (await extensionRegistry.lookup(extension.extensionPointId));
+    (await extensionPointRegistry.lookup(extension.extensionPointId));
   const services = await Promise.all(
     extension.services
       .filter((x) => x.config)
@@ -155,37 +201,21 @@ export async function extensionPermissions(
   );
   const blocks = await extensionPoint.getBlocks(extension);
   const blockPermissions = blocks.map((x) => x.permissions);
-  return distinctPermissions(
-    compact([
-      opts.includeExtensionPoint ? extensionPoint.permissions : null,
-      ...(opts.includeServices ? services : []),
-      ...blockPermissions,
-    ])
+  return mergePermissions(
+    distinctPermissions(
+      compact([
+        opts.includeExtensionPoint ? extensionPoint.permissions : null,
+        ...(opts.includeServices ? services : []),
+        ...blockPermissions,
+      ])
+    )
   );
 }
 
-export async function checkPermissions(
-  permissionsList: Permissions.Permissions[]
-): Promise<boolean> {
-  const merged = mergePermissions(permissionsList);
-  return containsPermissions(merged);
-}
-
-export async function permissionsEnabled(
-  extension: IExtension
-): Promise<boolean> {
-  return checkPermissions(await extensionPermissions(extension));
-}
-
-export async function ensureExtensionPermissions(
-  extension: IExtension
-): Promise<boolean> {
-  const permissions = await extensionPermissions(extension);
-  return ensureAllPermissions(permissions);
-}
-
 /**
- * Return permissions grouped by origin
+ * Return permissions grouped by origin.
+ * @deprecated The logic of grouping permissions by origin doesn't actually make sense as we don't currently have any
+ * way to enforce permissions on a per-origin basis. https://github.com/pixiebrix/pixiebrix-extension/pull/828#discussion_r671703130
  */
 export function originPermissions(
   permissions: Permissions.Permissions[]
@@ -205,31 +235,4 @@ export function originPermissions(
   );
 
   return sortBy(grouped, (x) => x.origins[0]);
-}
-
-export function useExtensionPermissions(
-  extension: IExtension
-): [boolean | undefined, () => Promise<void>] {
-  const [enabled, setEnabled] = useState<boolean | undefined>();
-
-  useAsyncEffect(
-    async (isMounted) => {
-      try {
-        const result = await permissionsEnabled(extension);
-        if (!isMounted()) return;
-        setEnabled(result);
-      } catch {
-        // If there's an error checking permissions, just assume they're OK. The use will
-        // need to fix the configuration before we can check permissions.
-        setEnabled(true);
-      }
-    },
-    [extension]
-  );
-
-  const request = useCallback(async () => {
-    setEnabled(await ensureExtensionPermissions(extension));
-  }, [extension]);
-
-  return [enabled, request];
 }

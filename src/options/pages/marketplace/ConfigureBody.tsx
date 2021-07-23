@@ -19,17 +19,14 @@ import React, { useMemo } from "react";
 import { useField, useFormikContext } from "formik";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { Card, Table } from "react-bootstrap";
-import {
-  ExtensionPointDefinition,
-  RecipeDefinition,
-} from "@/types/definitions";
+import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import pickBy from "lodash/pickBy";
 import identity from "lodash/identity";
 import { WizardValues } from "@/options/pages/marketplace/wizard";
-import { ServiceAuthPair } from "@/permissions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { ServiceAuthPair } from "@/core";
 
 export function selectedAuths(values: WizardValues): ServiceAuthPair[] {
   return Object.entries(values.services)
@@ -39,8 +36,8 @@ export function selectedAuths(values: WizardValues): ServiceAuthPair[] {
 
 export function selectedExtensions(
   values: WizardValues,
-  extensions: ExtensionPointDefinition[]
-): ExtensionPointDefinition[] {
+  extensions: ExtensionPointConfig[]
+): ExtensionPointConfig[] {
   const indexes = Object.keys(pickBy(values.extensions, identity)).map((x) =>
     Number.parseInt(x, 10)
   );
@@ -57,8 +54,8 @@ export function useSelectedAuths(): ServiceAuthPair[] {
 }
 
 export function useSelectedExtensions(
-  extensions: ExtensionPointDefinition[]
-): ExtensionPointDefinition[] {
+  extensions: ExtensionPointConfig[]
+): ExtensionPointConfig[] {
   const { values } = useFormikContext<WizardValues>();
   return useMemo(() => selectedExtensions(values, extensions), [
     extensions,
@@ -67,7 +64,7 @@ export function useSelectedExtensions(
 }
 
 const ConfigureRow: React.FunctionComponent<{
-  definition: ExtensionPointDefinition;
+  definition: ExtensionPointConfig;
   name: string;
 }> = ({ definition, name }) => {
   const [field, , helpers] = useField(name);
@@ -79,7 +76,9 @@ const ConfigureRow: React.FunctionComponent<{
           offlabel=" "
           onstyle="info"
           checked={field.value}
-          onChange={(checked) => helpers.setValue(checked)}
+          onChange={(checked) => {
+            helpers.setValue(checked);
+          }}
         />
       </td>
       <td>
@@ -89,9 +88,6 @@ const ConfigureRow: React.FunctionComponent<{
           <span className="text-muted">Ignore</span>
         )}
       </td>
-      {/* <td> */}
-      {/*  <code className="pl-0">{definition.id}</code> */}
-      {/* </td> */}
       <td>{definition.label ?? "No label provided"}</td>
     </tr>
   );
@@ -136,7 +132,6 @@ const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
         <thead>
           <tr>
             <th colSpan={2}>Selected?</th>
-            {/* <th>Foundation</th> */}
             <th className="w-100">Name/Description</th>
           </tr>
         </thead>

@@ -17,34 +17,26 @@
 
 import { ExtensionOptions, loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
-import { browser, Permissions } from "webextension-polyfill-ts";
+import { browser } from "webextension-polyfill-ts";
 import { fromPairs, partition, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
-import { checkPermissions, collectPermissions } from "@/permissions";
 import { optionsSlice, OptionsState } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
-import { refreshRegistries } from "@/hooks/refresh";
+import { refreshRegistries } from "@/hooks/useRefresh";
 import { liftBackground } from "@/background/protocol";
 import * as contentScript from "@/contentScript/lifecycle";
 import { selectInstalledExtensions } from "@/options/selectors";
 import { uninstallContextMenu } from "@/background/contextMenus";
+import { containsPermissions } from "@/utils/permissions";
+import { deploymentPermissions } from "@/permissions";
 
 const { reducer, actions } = optionsSlice;
 
 const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
-
-async function deploymentPermissions(
-  deployment: Deployment
-): Promise<Permissions.Permissions[]> {
-  const blueprint = deployment.package.config;
-  // Deployments can only use proxied services, so there's no additional permissions to request for the
-  // the serviceAuths.
-  return collectPermissions(blueprint, []);
-}
 
 type ActiveDeployment = {
   deployment: string;
@@ -188,7 +180,7 @@ async function updateDeployments() {
   const deploymentRequirements = await Promise.all(
     updatedDeployments.map(async (deployment) => ({
       deployment,
-      hasPermissions: await checkPermissions(
+      hasPermissions: await containsPermissions(
         await deploymentPermissions(deployment)
       ),
     }))
