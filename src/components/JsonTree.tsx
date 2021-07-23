@@ -15,26 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
-import useAsyncEffect from "use-async-effect";
-import fetchSVG from "@/icons/svgElementFromUrl";
+import VendorJSONTree from "react-json-tree";
+import { jsonTreeTheme as theme } from "@/themes/light";
+import React from "react";
 
-function useSVG(logoUrl: string): string {
-  const [logo, setLogo] = useState("");
+const JsonTree: React.FunctionComponent<Partial<VendorJSONTree["props"]>> = (
+  props
+) => {
+  return <VendorJSONTree hideRoot theme={theme} invertTheme {...props} />;
+};
 
-  useAsyncEffect(
-    async (isMounted) => {
-      const $icon = await fetchSVG(logoUrl);
-      if (!isMounted()) {
-        return;
-      }
-
-      setLogo($icon.get(0).outerHTML);
-    },
-    [setLogo]
-  );
-
-  return logo;
-}
-
-export default useSVG;
+export default JsonTree;

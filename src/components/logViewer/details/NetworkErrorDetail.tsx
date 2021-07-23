@@ -25,7 +25,7 @@ import {
   faCheck,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-import JSONTree from "@/components/JSONTree";
+import JsonTree from "@/components/JsonTree";
 import { isAbsoluteURL } from "@/hooks/fetch";
 import urljoin from "url-join";
 import { getReasonPhrase } from "http-status-codes";
@@ -127,12 +127,12 @@ const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
             </ul>
           </div>
         ) : (
-          <JSONTree data={cleanResponse} />
+          <JsonTree data={cleanResponse} />
         )}
       </Col>
       <Col>
         <span>Request Config</span>
-        <JSONTree data={cleanConfig} />
+        <JsonTree data={cleanConfig} />
       </Col>
     </Row>
   );
