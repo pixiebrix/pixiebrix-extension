@@ -45,7 +45,7 @@ export class CopyToClipboard extends Effect {
   };
 
   async effect({ text }: BlockArg): Promise<void> {
-    copy(text);
+    copy(String(text));
   }
 }
 
