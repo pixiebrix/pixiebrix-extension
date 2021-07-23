@@ -39,7 +39,7 @@ export class CopyToClipboard extends Effect {
     type: "object",
     properties: {
       text: {
-        type: "string",
+        type: ["string", "boolean"],
       },
     },
   };
