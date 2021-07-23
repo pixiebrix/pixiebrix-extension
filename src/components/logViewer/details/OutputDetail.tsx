@@ -18,7 +18,7 @@
 import React from "react";
 import { LogEntry } from "@/background/logging";
 import { Col, Row } from "react-bootstrap";
-import JSONTree from "@/components/JSONTree";
+import JsonTree from "@/components/JsonTree";
 
 const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
   entry,
@@ -27,7 +27,7 @@ const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
     <Row>
       <Col>
         {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
-        <JSONTree data={entry.data.output} />
+        <JsonTree data={entry.data.output} />
       </Col>
     </Row>
   );

@@ -56,7 +56,7 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
   return response.data;
 }
 
-class ImageEXIFReader extends Reader {
+class ImageExifReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/image/exif",
@@ -90,4 +90,4 @@ class ImageEXIFReader extends Reader {
   }
 }
 
-registerBlock(new ImageEXIFReader());
+registerBlock(new ImageExifReader());

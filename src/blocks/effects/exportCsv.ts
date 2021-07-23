@@ -20,7 +20,7 @@ import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 
-export class ExportCSV extends Effect {
+export class ExportCsv extends Effect {
   constructor() {
     super(
       "@pixiebrix/export/csv",
@@ -77,4 +77,4 @@ export class ExportCSV extends Effect {
   }
 }
 
-registerBlock(new ExportCSV());
+registerBlock(new ExportCsv());

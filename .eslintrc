@@ -16,6 +16,7 @@
       "version": "detect"
     }
   },
+  "plugins": ["filenames"],
   "extends": [
     "xo", // Full config: https://github.com/xojs/eslint-config-xo/blob/main/index.js
     "xo-typescript", // Full config: https://github.com/xojs/eslint-config-xo-typescript/blob/main/index.js
@@ -28,6 +29,7 @@
     "plugin:unicorn/recommended"
   ],
   "rules": {
+    "filenames/match-exported": "warn",
     // Customize some rules
     "import/no-unresolved": [
       "error",
@@ -45,6 +47,15 @@
           "err": {
             "error": true
           }
+        }
+      }
+    ],
+    "unicorn/filename-case": [
+      "error",
+      {
+        "cases": {
+          "camelCase": true,
+          "pascalCase": true
         }
       }
     ],
@@ -67,7 +78,6 @@
     "no-eq-null": "off",
     "import/named": "off", // TypeScript does this natively
     "react/prop-types": "off",
-    "unicorn/filename-case": "off", // Contrasts with React
     "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
     "unicorn/prefer-set-has": "off", // Not always worth the extra code
     "unicorn/require-post-message-target-origin": "off", // Incompatible https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1396
