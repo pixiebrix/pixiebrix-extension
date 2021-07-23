@@ -239,7 +239,7 @@
       "node_modules/(?!@cfworker|idb|webext-|p-timeout|p-defer)"
     ],
     "setupFiles": [
-      "<rootDir>/src/test-env.js",
+      "<rootDir>/src/testEnv.js",
       "jest-webextension-mock",
       "fake-indexeddb/auto"
     ],
