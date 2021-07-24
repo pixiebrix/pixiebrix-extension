@@ -25,7 +25,6 @@ import {
   faClipboardCheck,
   faExternalLinkAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { openExtensionOptions } from "@/messaging/external";
 import { selectInstalledExtensions } from "@/options/selectors";
 
 const OnboardingContent: React.FunctionComponent = () => {
@@ -40,7 +39,11 @@ const OnboardingContent: React.FunctionComponent = () => {
             </span>{" "}
             Activate a pre-made template from the Templates page.
           </p>
-          <Button onClick={async () => openExtensionOptions()} variant="info">
+          <Button
+            href="/options.html#/templates"
+            target="_blank"
+            variant="info"
+          >
             View Templates&nbsp;
             <FontAwesomeIcon icon={faClipboardCheck} />
           </Button>
