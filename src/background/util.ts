@@ -19,7 +19,10 @@ import pDefer from "p-defer";
 import { browser } from "webextension-polyfill-ts";
 import { injectContentScript } from "webext-content-scripts";
 import { getAdditionalPermissions } from "webext-additional-permissions";
-import { patternToRegex } from "webext-patterns";
+import {
+  patternToRegex,
+  allStarsRegex as acceptableOriginsRegex,
+} from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectBackgroundPage } from "@/utils/expectContext";
@@ -121,6 +124,15 @@ export async function ensureContentScript(target: Target): Promise<void> {
 
     if (result.ready) {
       console.debug(`ensureContentScript: already exists and is ready`, target);
+      return;
+    }
+
+    if (!acceptableOriginsRegex.test(result.url)) {
+      console.debug(
+        "ensureContentScript: not allowed on this page",
+        result.url,
+        target
+      );
       return;
     }
 
