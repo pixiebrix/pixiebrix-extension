@@ -21,7 +21,7 @@ import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { useToasts } from "react-toast-notifications";
-import { isExtensionContext } from "@/chrome";
+import { isExtensionContext } from "webext-detect-page";
 import { getExtensionToken } from "@/auth/token";
 
 export function isAbsoluteURL(url: string): boolean {

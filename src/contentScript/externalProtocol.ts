@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isExtensionContext } from "@/chrome";
+import { isExtensionContext } from "webext-detect-page";
 import { v4 as uuidv4 } from "uuid";
 import {
   HandlerEntry,

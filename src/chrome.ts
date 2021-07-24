@@ -19,11 +19,6 @@ import isEmpty from "lodash/isEmpty";
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
 import { browser, Runtime } from "webextension-polyfill-ts";
-import {
-  isBackgroundPage,
-  isContentScript,
-  isOptionsPage,
-} from "webext-detect-page";
 import { forbidBackgroundPage } from "./utils/expectContext";
 
 export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
@@ -75,15 +70,6 @@ export function isDevtoolsPage(): boolean {
   const url = new URL("devtoolsPanel.html", location.origin);
 
   return url.pathname === location.pathname && url.origin === location.origin;
-}
-
-export function isExtensionContext(): boolean {
-  return (
-    isContentScript() ||
-    isOptionsPage() ||
-    isBackgroundPage() ||
-    isDevtoolsPage()
-  );
 }
 
 export function setChromeExtensionId(extensionId: string): void {

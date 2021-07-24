@@ -18,7 +18,7 @@
 import React from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { isExtensionContext } from "@/chrome";
+import { isExtensionContext } from "webext-detect-page";
 import { AuthState } from "@/core";
 
 if (!isExtensionContext()) {
