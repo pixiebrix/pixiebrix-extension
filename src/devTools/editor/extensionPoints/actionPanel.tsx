@@ -24,7 +24,6 @@ import {
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
-  PROPERTY_TABLE_BODY,
   selectIsAvailable,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
@@ -110,7 +109,7 @@ function fromNativeElement(
     },
     extension: {
       heading,
-      body: PROPERTY_TABLE_BODY,
+      body: [],
     },
   };
 }
@@ -178,7 +177,7 @@ export async function fromExtensionPoint(
 
     extension: {
       heading: heading,
-      body: PROPERTY_TABLE_BODY,
+      body: [],
     },
 
     extensionPoint: {

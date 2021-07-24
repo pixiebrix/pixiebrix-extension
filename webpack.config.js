@@ -34,6 +34,7 @@ const { resolve } = require("./resolve.config.js");
 // Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
 const defaults = {
   DEV_NOTIFY: "true",
+  DEV_SLIM: "false",
   CHROME_EXTENSION_ID: "mpjjildhmpddojocokjkgmlkkkfjnepo",
   ROLLBAR_PUBLIC_PATH: "extension://dynamichost",
 
@@ -178,6 +179,18 @@ function customizeManifest(manifest, isProduction) {
       scopes: [""],
     };
   }
+}
+
+if (process.env.DEV_SLIM.toLowerCase() === "true") {
+  console.warn(
+    "Mocking dependencies for development build: svgIcons, uipath/robot"
+  );
+  resolve.alias = {
+    // Webpack resolves aliases in order, so our overrides need to be first
+    "@/icons/svgIcons": path.resolve("src/__mocks__/iconsMock"),
+    "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
+    ...resolve.alias,
+  };
 }
 
 module.exports = (env, options) => ({

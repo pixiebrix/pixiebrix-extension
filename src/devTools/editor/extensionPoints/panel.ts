@@ -23,7 +23,6 @@ import {
   makeIsAvailable,
   makeReaderFormState,
   WizardStep,
-  PROPERTY_TABLE_BODY,
   selectIsAvailable,
   lookupExtensionPoint,
   baseSelectExtensionPoint,
@@ -140,7 +139,7 @@ function fromNativeElement(
       heading: panel.panel.heading,
       collapsible: panel.panel.collapsible ?? false,
       shadowDOM: panel.panel.shadowDOM ?? true,
-      body: PROPERTY_TABLE_BODY,
+      body: [],
     },
   };
 }
@@ -214,7 +213,7 @@ async function fromExtensionPoint(
     extension: {
       heading,
       collapsible: boolean(collapsible ?? false),
-      body: PROPERTY_TABLE_BODY,
+      body: [],
     },
 
     // There's no containerInfo for the page because the user did not select it during the session

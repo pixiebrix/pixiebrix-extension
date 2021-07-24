@@ -22,7 +22,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import GridLoader from "react-spinners/GridLoader";
 import Container from "react-bootstrap/Container";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import InstalledPage from "@/options/pages/InstalledPage";
+import InstalledPage from "@/options/pages/installed/InstalledPage";
 import ExtensionEditor from "@/options/pages/extensionEditor/ExtensionEditor";
 import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
@@ -42,7 +42,7 @@ import Banner from "@/layout/Banner";
 import ErrorBanner from "@/layout/ErrorBanner";
 import ActivatePage from "@/options/pages/marketplace/ActivatePage";
 import { getAuth } from "@/hooks/auth";
-import { useRefresh } from "@/hooks/refresh";
+import useRefresh from "@/hooks/useRefresh";
 import { SettingsState } from "@/options/slices";
 import { getExtensionToken } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
@@ -75,6 +75,8 @@ const RequireInstall: React.FunctionComponent = ({ children }) => {
 };
 
 const Layout = () => {
+  // Get the latest brick definitions. Currently in Layout to ensure the Redux store has been hydrated by the time
+  // refresh is called.
   useRefresh();
 
   return (

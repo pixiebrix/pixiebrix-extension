@@ -18,7 +18,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-import AsyncButton from "./AsyncButton";
+import AsyncButton from "@/components/AsyncButton";
 
 export default {
   title: "Common/AsyncButton",
@@ -26,14 +26,14 @@ export default {
   argTypes: {
     onClick: { action: "clicked" },
     variant: {
+      options: ["primary", "secondary", "info", "warning", "danger"],
       control: {
-        options: ["primary", "secondary", "info", "warning", "danger"],
         type: "select",
       },
     },
     size: {
+      options: ["lg", "md", "sm"],
       control: {
-        options: ["lg", "md", "sm"],
         type: "select",
       },
     },

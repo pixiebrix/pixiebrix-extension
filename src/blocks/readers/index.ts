@@ -20,7 +20,7 @@ import "./PageMetadataReader";
 import "./PageSemanticReader";
 import "./BlankReader";
 import "./ImageReader";
-import "./ImageEXIFReader";
+import "./ImageExifReader";
 import "./ElementReader";
 
 // Generic readers

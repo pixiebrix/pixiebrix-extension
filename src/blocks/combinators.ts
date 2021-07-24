@@ -16,7 +16,7 @@
  */
 
 import blockRegistry from "@/blocks/registry";
-import { engineRenderer, mapArgs } from "@/helpers";
+import { mapArgs } from "@/helpers";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import CompositeReader from "@/blocks/readers/CompositeReader";
 import { locate } from "@/background/locator";
@@ -51,6 +51,7 @@ import {
   InputValidationError,
   PipelineConfigurationError,
 } from "@/blocks/errors";
+import { engineRenderer } from "@/utils/renderers";
 
 export type ReaderConfig =
   | string
@@ -191,8 +192,13 @@ async function runStage(
     }
   } else {
     // HACK: hack to avoid applying a list to the config for blocks that pass a list to the next block
+
     blockArgs = isPlainObject(args)
-      ? mapArgs(stageConfig, argContext, engineRenderer(stage.templateEngine))
+      ? mapArgs(
+          stageConfig,
+          argContext,
+          await engineRenderer(stage.templateEngine)
+        )
       : stageConfig;
 
     if (logValues) {
@@ -310,7 +316,8 @@ export async function reducePipeline(
 
     try {
       const $stageRoot = stage.root
-        ? $(root ?? document).find(stage.root)
+        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
+          $(root ?? document).find(stage.root)
         : $(root ?? document);
 
       if ($stageRoot.length > 1) {
@@ -326,10 +333,12 @@ export async function reducePipeline(
       const stageRoot = $stageRoot.get(0);
 
       if ("if" in stage) {
+        const renderer = await engineRenderer(stage.templateEngine);
+
         const { if: condition } = mapArgs(
           { if: stage.if },
           { ...extraContext, ...currentArgs },
-          engineRenderer(stage.templateEngine)
+          renderer
         );
         if (!boolean(condition)) {
           logger.debug(
@@ -345,8 +354,8 @@ export async function reducePipeline(
         root: stageRoot,
         context: extraContext,
         logValues,
-        validate: validate,
-        headless: headless,
+        validate,
+        headless,
         logger: stageLogger,
       });
 
@@ -426,7 +435,7 @@ export async function mergeReaders(
 
   if (Array.isArray(readerConfig)) {
     return new ArrayCompositeReader(
-      await Promise.all(readerConfig.map(mergeReaders))
+      await Promise.all(readerConfig.map(async (x) => mergeReaders(x)))
     );
   }
 
@@ -439,6 +448,8 @@ export async function mergeReaders(
   throw new BusinessError("Unexpected value for readerConfig");
 }
 
+// Using indexed object to make it clear they key is an outputKey
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
 export type ServiceContext = {
   [outputKey: string]: {
     __service: SanitizedServiceConfiguration;

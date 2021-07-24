@@ -55,6 +55,7 @@ import { reportError } from "@/telemetry/logging";
 import { v4 as uuidv4 } from "uuid";
 import { BusinessError, getErrorMessage } from "@/errors";
 import { HeadlessModeError } from "@/blocks/errors";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
 
 export interface ActionPanelConfig {
   heading: string;
@@ -103,14 +104,19 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     this.extensions.splice(0, this.extensions.length);
   }
 
+  public uninstall(): void {
+    this.removeExtensions();
+    removeExtensionPoint(this.id);
+    removeShowCallback(this.showCallback);
+  }
+
   private async runExtension(
     readerContext: ReaderOutput,
     extension: IExtension<ActionPanelConfig>
   ) {
-    const extensionLogger = this.logger.childLogger({
-      deploymentId: extension._deployment?.id,
-      extensionId: extension.id,
-    });
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
 
     const serviceContext = await makeServiceContext(extension.services);
     const extensionContext = { ...readerContext, ...serviceContext };
@@ -130,38 +136,26 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       });
       // We're expecting a HeadlessModeError (or other error) to be thrown in the line above
       // noinspection ExceptionCaughtLocallyJS
-      throw new BusinessError("No renderer attached to body");
+      throw new BusinessError("No renderer brick attached to body");
     } catch (error: unknown) {
+      const ref = { extensionId: extension.id, extensionPointId: this.id };
+
       if (error instanceof HeadlessModeError) {
-        upsertPanel(
-          { extensionId: extension.id, extensionPointId: this.id },
-          heading,
-          {
-            blockId: error.blockId,
-            key: uuidv4(),
-            ctxt: error.ctxt,
-            args: error.args,
-          }
-        );
+        upsertPanel(ref, heading, {
+          blockId: error.blockId,
+          key: uuidv4(),
+          ctxt: error.ctxt,
+          args: error.args,
+        });
       } else {
-        upsertPanel(
-          { extensionId: extension.id, extensionPointId: this.id },
-          heading,
-          {
-            key: uuidv4(),
-            error: getErrorMessage(error as Error),
-          }
-        );
+        upsertPanel(ref, heading, {
+          key: uuidv4(),
+          error: getErrorMessage(error as Error),
+        });
         reportError(error);
         throw error;
       }
     }
-  }
-
-  public uninstall(): void {
-    this.removeExtensions();
-    removeExtensionPoint(this.id);
-    removeShowCallback(this.showCallback);
   }
 
   async run(extensionIds?: string[]): Promise<void> {
@@ -172,19 +166,23 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
     if (this.extensions.length === 0) {
       console.debug(
-        `actionPanel extension point ${this.id} has no installed extension`
+        `actionPanel extension point %s has no installed extensions`,
+        this.id
       );
       return;
     }
 
     if (!isActionPanelVisible()) {
-      console.debug(`actionPanel is not visible`);
+      console.debug(
+        `Skipping run for %s because actionPanel is not visible`,
+        this.id
+      );
       return;
     }
 
     reservePanels(
-      this.extensions.map((x) => ({
-        extensionId: x.id,
+      this.extensions.map((extension) => ({
+        extensionId: extension.id,
         extensionPointId: this.id,
       }))
     );

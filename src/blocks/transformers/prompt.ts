@@ -47,6 +47,7 @@ export class Prompt extends Transformer {
 
   async transform({ message, defaultValue }: BlockArg): Promise<unknown> {
     return {
+      // eslint-disable-next-line no-alert
       value: window.prompt(message, defaultValue),
     };
   }

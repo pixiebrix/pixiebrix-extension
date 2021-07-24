@@ -50,6 +50,10 @@ import { reportError } from "@/telemetry/logging";
 import { Manifest } from "webextension-polyfill-ts/lib/manifest";
 import { getCommonAncestor } from "@/nativeEditor/infer";
 import { notifyError } from "@/contentScript/notify";
+import { reportEvent } from "@/telemetry/events";
+import { selectEventData } from "@/telemetry/deployments";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { getErrorMessage, isErrorObject } from "@/errors";
 
 export interface ContextMenuConfig {
   title: string;
@@ -168,6 +172,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     super(id, name, description, icon);
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-literal-property-style -- has to match parent type
   public readonly syncInstall: boolean = true;
 
   abstract getBaseReader(): Promise<IReader>;
@@ -205,7 +210,11 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     const extensions = this.extensions.splice(0, this.extensions.length);
     if (global) {
       for (const extension of extensions) {
-        void uninstallContextMenu({ extensionId: extension.id });
+        void uninstallContextMenu({ extensionId: extension.id }).catch(
+          (error) => {
+            reportError(error);
+          }
+        );
       }
     }
   }
@@ -275,31 +284,42 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
 
     await this.ensureMenu(extension);
 
-    const extensionLogger = this.logger.childLogger({
-      deploymentId: extension._deployment?.id,
-      extensionId: extension.id,
-    });
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
 
     registerHandler(extension.id, async (clickData) => {
-      const reader = await this.getBaseReader();
-      const serviceContext = await makeServiceContext(extension.services);
+      reportEvent("HandleContextMenu", selectEventData(extension));
 
-      const targetElement =
-        clickedElement ?? guessSelectedElement() ?? document;
+      try {
+        const reader = await this.getBaseReader();
+        const serviceContext = await makeServiceContext(extension.services);
 
-      const ctxt = {
-        ...(await reader.read(targetElement)),
-        // ClickData provides the data from schema defined above in ContextMenuReader
-        ...clickData,
-        // Add some additional data that people will generally want
-        documentUrl: document.location.href,
-      };
+        const targetElement =
+          clickedElement ?? guessSelectedElement() ?? document;
 
-      await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
-        validate: true,
-        serviceArgs: serviceContext,
-        optionsArgs: extension.optionsArgs,
-      });
+        const ctxt = {
+          ...(await reader.read(targetElement)),
+          // ClickData provides the data from schema defined above in ContextMenuReader
+          ...clickData,
+          // Add some additional data that people will generally want
+          documentUrl: document.location.href,
+        };
+
+        await reducePipeline(actionConfig, ctxt, extensionLogger, document, {
+          validate: true,
+          serviceArgs: serviceContext,
+          optionsArgs: extension.optionsArgs,
+        });
+      } catch (error: unknown) {
+        if (isErrorObject(error)) {
+          reportError(error);
+          extensionLogger.error(error);
+        } else {
+          extensionLogger.warn(getErrorMessage(error));
+        }
+        throw error;
+      }
     });
   }
 
@@ -354,12 +374,13 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   }
 
   async isAvailable(): Promise<boolean> {
-    return (
-      (await checkAvailable(this._definition.isAvailable)) ||
-      (await checkAvailable({
-        matchPatterns: this._definition.documentUrlPatterns,
-      }))
-    );
+    if (await checkAvailable(this._definition.isAvailable)) {
+      return true;
+    }
+
+    return checkAvailable({
+      matchPatterns: this._definition.documentUrlPatterns,
+    });
   }
 
   async getBaseReader() {

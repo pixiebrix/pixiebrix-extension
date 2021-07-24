@@ -30,7 +30,11 @@ import {
   makeServiceContext,
 } from "@/blocks/combinators";
 import { boolean } from "@/utils";
-import { awaitElementOnce, acquireElement } from "@/extensionPoints/helpers";
+import {
+  awaitElementOnce,
+  acquireElement,
+  selectExtensionContext,
+} from "@/extensionPoints/helpers";
 import {
   IBlock,
   IconConfig,
@@ -270,10 +274,9 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     detectLoop(renderTimestamps);
 
     const bodyUUID = uuidv4();
-    const extensionLogger = this.logger.childLogger({
-      deploymentId: extension._deployment?.id,
-      extensionId: extension.id,
-    });
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
 
     const {
       body,
@@ -287,7 +290,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     const shadowDOM = boolean(rawShadowDOM);
 
     // Start collapsed
-    if (collapsible && cnt == 1) {
+    if (collapsible && cnt === 1) {
       this.collapsedExtensions[extension.id] = true;
     }
 

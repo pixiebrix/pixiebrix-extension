@@ -37,7 +37,8 @@ import { removeUndefined } from "@/utils";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { extensionPermissions } from "@/permissions";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
-import { mergePermissions, requestPermissions } from "@/utils/permissions";
+import { requestPermissions } from "@/utils/permissions";
+import { getErrorMessage } from "@/errors";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -74,16 +75,16 @@ async function upsertConfig(
 }
 
 function selectErrorMessage(error: unknown): string {
+  // FIXME: should this logic be in getErrorMessage?
   if (typeof error === "object" && (error as AxiosError).isAxiosError) {
     const error_ = error as AxiosError;
     return (
-      error_.response?.data["config"]?.toString() ??
+      error_.response?.data.config?.toString() ??
       error_.response?.statusText ??
       "No response from PixieBrix server"
     );
   }
-
-  return error.toString();
+  return getErrorMessage(error);
 }
 
 /**
@@ -101,7 +102,7 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
     extensionPoint: extensionPointConfig,
   } = adapter.asDynamicElement(element);
 
-  const extensionPoint = await extensionPointFactory(extensionPointConfig);
+  const extensionPoint = extensionPointFactory(extensionPointConfig);
 
   // Pass the extensionPoint in directly because the foundation will not have been saved/added to the
   // registry at this point when called from useCreate
@@ -115,13 +116,11 @@ async function ensurePermissions(element: FormState, addToast: AddToast) {
     extension,
   });
 
-  const hasPermissions = await requestPermissions(
-    mergePermissions(permissions)
-  );
+  const hasPermissions = await requestPermissions(permissions);
 
   if (!hasPermissions) {
     addToast(
-      `You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions`,
+      "You declined the additional required permissions. This brick won't work on other tabs until you grant the permissions",
       {
         appearance: "warning",
         autoDismiss: true,
@@ -136,6 +135,11 @@ type CreateCallback = (
 ) => Promise<void>;
 
 export function useCreate(): CreateCallback {
+  // XXX: Some users have problems when saving from the Page Editor that seem to indicate the sequence of events doesn't
+  //  occur in the correct order on slower (CPU or network?) machines. Therefore, await all promises. We also have to
+  //  make `reactivate` behave deterministically if we're still having problems (right now it's implemented as a
+  //  fire-and-forget notification).
+
   const dispatch = useDispatch();
   const { addToast } = useToasts();
   // Which reader ids have been saved in this session. If a reader has been saved,
@@ -168,7 +172,7 @@ export function useCreate(): CreateCallback {
           reportError(error);
           console.error("Error checking/enabling permissions", { error });
           addToast(
-            `An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page`,
+            "An error occurred checking/enabling permissions. Grant permissions on the Active Bricks page",
             {
               appearance: "warning",
               autoDismiss: true,
@@ -244,26 +248,53 @@ export function useCreate(): CreateCallback {
         });
 
         try {
+          // Make sure the pages have the latest blocks/etc (e.g., the saved reader). for when we reactivate below
+          await Promise.all([
+            blockRegistry.fetch(),
+            extensionPointRegistry.fetch(),
+          ]);
+        } catch (error: unknown) {
+          reportError(error);
+          addToast(
+            `Error fetching remote bricks: ${selectErrorMessage(error)}`,
+            {
+              appearance: "warning",
+              autoDismiss: true,
+            }
+          );
+        }
+
+        try {
           dispatch(saveExtension(adapter.selectExtension(element)));
           dispatch(markSaved(element.uuid));
-          void reactivate();
-          addToast("Saved extension", {
-            appearance: "success",
-            autoDismiss: true,
-          });
         } catch (error: unknown) {
           onStepError(error, "saving extension");
           return;
         }
 
-        await Promise.all([
-          blockRegistry.fetch(),
-          extensionPointRegistry.fetch(),
-        ]);
+        try {
+          await reactivate();
+        } catch (error: unknown) {
+          reportError(error);
+          addToast(
+            `Error re-activating bricks on page(s): ${selectErrorMessage(
+              error
+            )}`,
+            {
+              appearance: "warning",
+              autoDismiss: true,
+            }
+          );
+        }
+
+        addToast("Saved extension", {
+          appearance: "success",
+          autoDismiss: true,
+        });
       } catch (error: unknown) {
         console.error("Error saving extension", { error });
         reportError(error);
-        addToast(`Error saving extension: ${error.toString()}`, {
+        addToast(`Error saving extension: ${getErrorMessage(error)}`, {
           appearance: "error",
           autoDismiss: true,
         });

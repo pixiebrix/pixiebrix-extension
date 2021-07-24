@@ -15,26 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
-import useAsyncEffect from "use-async-effect";
-import fetchSVG from "@/icons/svgElementFromUrl";
+import { useSelector } from "react-redux";
+import {
+  InstalledExtension,
+  selectInstalledExtensions,
+} from "@/options/selectors";
+import { useMemo } from "react";
 
-function useSVG(logoUrl: string): string {
-  const [logo, setLogo] = useState("");
-
-  useAsyncEffect(
-    async (isMounted) => {
-      const $icon = await fetchSVG(logoUrl);
-      if (!isMounted()) {
-        return;
-      }
-
-      setLogo($icon.get(0).outerHTML);
-    },
-    [setLogo]
-  );
-
-  return logo;
+function useExtensionMeta(): { lookup: Map<string, InstalledExtension> } {
+  const extensions = useSelector(selectInstalledExtensions);
+  const lookup = useMemo(() => new Map(extensions.map((x) => [x.id, x])), [
+    extensions,
+  ]);
+  return { lookup };
 }
 
-export default useSVG;
+export default useExtensionMeta;

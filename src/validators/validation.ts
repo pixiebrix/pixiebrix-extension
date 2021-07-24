@@ -178,7 +178,7 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
           "is-config",
           "Invalid service configuration",
           async function (value) {
-            if (this.parent.id == PIXIEBRIX_SERVICE_ID) {
+            if (this.parent.id === PIXIEBRIX_SERVICE_ID) {
               if (value != null) {
                 return this.createError({
                   message: "PixieBrix service configuration should be blank",

@@ -38,7 +38,7 @@ export function traverseUntil<T extends object>(
   src: T,
   match: (element: T) => boolean,
   next: (current: T) => T | null,
-  maxTraverse?: number
+  maxTraverse: number = Number.POSITIVE_INFINITY
 ): T | null {
   let current = src;
   // Detect cycles
@@ -48,7 +48,7 @@ export function traverseUntil<T extends object>(
     current != null &&
     !match(current) &&
     !visited.has(current) &&
-    (maxTraverse == null || cnt <= maxTraverse)
+    cnt <= maxTraverse
   ) {
     visited.add(current);
     current = next(current);

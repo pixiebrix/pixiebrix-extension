@@ -24,6 +24,8 @@ export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
 export const RENDER_PANELS_MESSAGE = `${MESSAGE_PREFIX}RENDER_PANELS`;
 
+let seqNumber = -1;
+
 /**
  * Information required to run a renderer
  */
@@ -48,6 +50,7 @@ export type PanelEntry = {
 
 type RenderPanelsMessage = {
   type: typeof RENDER_PANELS_MESSAGE;
+  meta: { $seq: number };
   payload: { panels: PanelEntry[] };
 };
 
@@ -57,25 +60,45 @@ export type ActionPanelStore = {
 
 type StoreListener = (store: ActionPanelStore) => void;
 
-let _listeners: StoreListener[] = [];
+const listeners: StoreListener[] = [];
 
 export function addListener(fn: StoreListener): void {
-  _listeners.push(fn);
+  if (listeners.includes(fn)) {
+    console.warn("Listener already registered for action panel");
+  } else {
+    listeners.push(fn);
+  }
 }
 
 export function removeListener(fn: StoreListener): void {
-  _listeners = _listeners.filter((x) => x !== fn);
+  listeners.splice(0, listeners.length, ...listeners.filter((x) => x !== fn));
 }
 
 const handlers = new HandlerMap();
 
-handlers.set(RENDER_PANELS_MESSAGE, async (request: RenderPanelsMessage) => {
+handlers.set(RENDER_PANELS_MESSAGE, async (message: RenderPanelsMessage) => {
+  const messageSeq = message.meta.$seq;
+
+  if (messageSeq < seqNumber) {
+    console.debug(
+      `Skipping stale message (seq: %d, current: %d)`,
+      seqNumber,
+      messageSeq,
+      message
+    );
+    return;
+  }
+  seqNumber = messageSeq;
+
   console.debug(
-    `Running render panels listeners for ${_listeners.length} listeners`
+    `Running ${listeners.length} listener(s) for %s`,
+    RENDER_PANELS_MESSAGE,
+    { message }
   );
-  for (const listener of _listeners) {
+
+  for (const listener of listeners) {
     try {
-      listener(request.payload);
+      listener(message.payload);
     } catch (error: unknown) {
       reportError(error);
     }

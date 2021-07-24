@@ -38,6 +38,7 @@ export class AlertEffect extends Effect {
   });
 
   async effect({ message }: BlockArg): Promise<void> {
+    // eslint-disable-next-line no-alert
     window.alert(message);
   }
 }

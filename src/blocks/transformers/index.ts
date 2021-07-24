@@ -23,7 +23,7 @@ export * from "./regex";
 export * from "./mapping";
 export * from "./identity";
 export * from "./FormData";
-export * from "./parseURL";
+export * from "./parseUrl";
 export * from "./prompt";
 export * from "./detect";
 export * from "./modal";

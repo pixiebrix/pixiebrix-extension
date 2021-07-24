@@ -54,7 +54,7 @@ const DynamicEntry: React.FunctionComponent<{
 
   return (
     <ListGroup.Item
-      active={item.uuid == activeElement}
+      active={item.uuid === activeElement}
       key={`dynamic-${item.uuid}`}
       onMouseEnter={async () => showOverlay(item.uuid, true)}
       onMouseLeave={async () => showOverlay(item.uuid, false)}

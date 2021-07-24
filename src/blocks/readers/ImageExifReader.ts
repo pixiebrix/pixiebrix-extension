@@ -44,8 +44,8 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
 
   if (/^blob:/i.test(img.src)) {
     // Object URL
-    const blob = await fetch(img.src).then((r) => r.blob());
-    return await blob.arrayBuffer();
+    const blob = await fetch(img.src).then(async (r) => r.blob());
+    return blob.arrayBuffer();
   }
 
   const response = await axios.get(img.src, { responseType: "arraybuffer" });
@@ -56,7 +56,7 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
   return response.data;
 }
 
-class ImageEXIFReader extends Reader {
+class ImageExifReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/image/exif",
@@ -68,7 +68,7 @@ class ImageEXIFReader extends Reader {
   async read(elementOrDocument: HTMLElement | Document) {
     const element = elementOrDocument as HTMLImageElement;
 
-    if (element?.tagName == "IMG") {
+    if (element?.tagName === "IMG") {
       const buffer = await getData(element);
       return ExifReader.load(buffer);
     }
@@ -90,4 +90,4 @@ class ImageEXIFReader extends Reader {
   }
 }
 
-registerBlock(new ImageEXIFReader());
+registerBlock(new ImageExifReader());

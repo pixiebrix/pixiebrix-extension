@@ -18,7 +18,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { v4 as uuidv4 } from "uuid";
-import LogTable from "./LogTable";
+import LogTable from "@/components/logViewer/LogTable";
 import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
 import { ContextError } from "@/errors";

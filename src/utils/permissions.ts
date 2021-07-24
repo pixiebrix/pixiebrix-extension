@@ -35,7 +35,7 @@ export function selectOptionalPermissions(
 /** Merge a list of permissions into a single permissions object */
 export function mergePermissions(
   permissions: Permissions.Permissions[] = []
-): Permissions.Permissions {
+): Required<Permissions.Permissions> {
   return {
     origins: uniq(permissions.flatMap((x) => x.origins ?? [])),
     permissions: uniq(permissions.flatMap((x) => x.permissions ?? [])),
@@ -96,7 +96,7 @@ export async function requestPermissions(
   }
 
   // TODO: This only works in the Dev Tools; We should query the current or front-most window
-  // when this is missing in order to make it work in other contexts as well
+  //  when this is missing in order to make it work in other contexts as well
   const tabId = browser.devtools.inspectedWindow.tabId;
   await openPopupPrompt(tabId, page.toString());
   return containsPermissions(permissions);

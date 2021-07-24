@@ -19,10 +19,13 @@ import useAsyncEffect from "use-async-effect";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
+import { stubTrue } from "lodash";
 import { refresh as refreshLocator } from "@/background/locator";
 import { useCallback, useState } from "react";
+import { getErrorMessage } from "@/errors";
 
 export async function refreshRegistries(): Promise<void> {
+  // TODO: clarify in which contexts (e.g., current page, the background, etc.) this method refreshes the registries in
   console.debug("Refreshing bricks from the server");
   await Promise.all([
     extensionPointRegistry.fetch(),
@@ -32,14 +35,12 @@ export async function refreshRegistries(): Promise<void> {
   ]);
 }
 
-export function useRefresh(
-  refreshOnMount = true
-): [boolean, () => Promise<void>] {
+function useRefresh(refreshOnMount = true): [boolean, () => Promise<void>] {
   const [loaded, setLoaded] = useState(false);
   const { addToast } = useToasts();
 
   const refresh = useCallback(
-    async (isMounted: () => boolean = () => true) => {
+    async (isMounted = stubTrue) => {
       try {
         await refreshRegistries();
       } catch (error: unknown) {
@@ -48,10 +49,13 @@ export function useRefresh(
           return;
         }
 
-        addToast(`Error refreshing bricks from server: ${error}`, {
-          appearance: "error",
-          autoDismiss: true,
-        });
+        addToast(
+          `Error refreshing bricks from server: ${getErrorMessage(error)}`,
+          {
+            appearance: "error",
+            autoDismiss: true,
+          }
+        );
       } finally {
         if (isMounted()) {
           setLoaded(true);
@@ -72,3 +76,5 @@ export function useRefresh(
 
   return [loaded, refresh];
 }
+
+export default useRefresh;

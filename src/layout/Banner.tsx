@@ -15,13 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import cx from "classnames";
 import "./Banner.scss";
 import { getExtensionAuth } from "@/auth/token";
-import useAsyncEffect from "use-async-effect";
 import AuthContext from "@/auth/AuthContext";
+import { isExtensionContext } from "@/chrome";
+import { connectPage } from "@/messaging/external";
+import { useAsyncState } from "@/hooks/common";
 
+// TODO: don't use process.env here so that we can use the same JS app bundle for all environments
+//  see https://github.com/pixiebrix/pixiebrix-app/issues/259
 const environment = process.env.ENVIRONMENT;
 
 const classMap = new Map([
@@ -31,29 +35,20 @@ const classMap = new Map([
   ["staging", "staging"],
 ]);
 
-function useSyncedHostname() {
+const EnvironmentBanner: React.FunctionComponent = () => {
   const { extension } = useContext(AuthContext);
-  const [hostname, setHostname] = useState<string>();
 
-  useAsyncEffect(async () => {
-    if (extension) {
-      const { hostname } = await getExtensionAuth();
-      setHostname(hostname);
-    }
+  const [hostname] = useAsyncState(async () => {
+    const { hostname } = await getExtensionAuth();
+    return hostname;
   }, [extension]);
 
-  return hostname;
-}
-
-const Banner: React.FunctionComponent = () => {
-  const { extension } = useContext(AuthContext);
-  const hostname = useSyncedHostname();
-
-  if (environment === "production") {
-    return null;
-  }
-
-  const versionName = chrome.runtime.getManifest().version_name;
+  const [versionName] = useAsyncState(async () => {
+    const manifest = isExtensionContext()
+      ? chrome.runtime.getManifest()
+      : await connectPage();
+    return manifest.version_name;
+  }, [extension]);
 
   const syncText = hostname
     ? `synced with ${hostname}`
@@ -66,9 +61,17 @@ const Banner: React.FunctionComponent = () => {
       })}
     >
       You are using {extension ? "extension" : "server"}{" "}
-      {environment ?? "unknown"} build {versionName} {extension && syncText}
+      {environment ?? "unknown"} build {versionName ?? "unknown version"}{" "}
+      {extension && syncText}
     </div>
   );
+};
+
+const Banner: React.FunctionComponent = () => {
+  if (environment === "production") {
+    return null;
+  }
+  return <EnvironmentBanner />;
 };
 
 export default Banner;

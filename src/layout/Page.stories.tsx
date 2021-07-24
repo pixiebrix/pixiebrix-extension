@@ -15,8 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import $ from "jquery";
+import React from "react";
+import Page from "@/layout/Page";
+import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-global.$ = global.jQuery = $;
+export default {
+  component: Page,
+  title: "Layout/Page",
+} as ComponentMeta<typeof Page>;
 
-process.env.SERVICE_URL = "https://app.pixiebrix.com";
+const Template: ComponentStory<typeof Page> = (args) => (
+  <Page {...args}>Hello world!</Page>
+);
+
+export const Default = Template.bind({});
+Default.args = {
+  icon: "music",
+  title: "Example page",
+  description: "Welcome to an example page! Have a look around.",
+};

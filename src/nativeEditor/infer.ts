@@ -58,11 +58,7 @@ const VALUE_EXCLUDE_PATTERNS = new Map<string, RegExp[]>([
   ["class", [/^ember-view$/]],
 ]);
 
-class SkipElement extends Error {
-  constructor(msg: string) {
-    super(msg);
-  }
-}
+class SkipElement extends Error {}
 
 function outerHTML($element: JQuery<HTMLElement | Text>): string {
   // Trick to get the HTML of the actual element
@@ -116,21 +112,15 @@ function setCommonAttrs(
   $common: JQuery<HTMLElement>,
   $items: JQuery<HTMLElement>
 ) {
-  const proto = $items.get(0);
-
-  const attributes = proto.attributes;
+  const { attributes } = $items.get(0);
 
   // Find the common attributes between the elements
-  for (const attrIndex in Object.keys(attributes)) {
-    // Safe because we're getting from Object.keys
-    // eslint-disable-next-line security/detect-object-injection
-    const attrName = attributes[attrIndex].name;
-
-    if (ATTR_EXCLUDE_PATTERNS.some((x) => x.test(attrName))) {
+  for (const { name } of attributes) {
+    if (ATTR_EXCLUDE_PATTERNS.some((x) => x.test(name))) {
       continue;
     }
 
-    const value = commonAttr($items, attrName);
+    const value = commonAttr($items, name);
     if (value != null) {
       if (
         value
@@ -144,7 +134,7 @@ function setCommonAttrs(
         );
       }
 
-      $common.attr(attrName, value);
+      $common.attr(name, value);
     }
   }
 }
@@ -544,6 +534,7 @@ export function inferSelectors(
  * Returns true if selector uniquely identifies an element on the page
  */
 function isUniqueSelector(selector: string): boolean {
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
   return $(document).find(selector).length === 1;
 }
 
@@ -589,7 +580,7 @@ export function findContainerForElement(
   const extra: string[] = [];
 
   if (container !== element) {
-    const descendent = level == 1 ? ">" : "> * >";
+    const descendent = level === 1 ? ">" : "> * >";
 
     if (element.tagName === "INPUT") {
       extra.push(
@@ -609,7 +600,7 @@ export function findContainerForElement(
   return {
     container,
     selectors: uniq([
-      ...extra.filter(isUniqueSelector),
+      ...extra.filter((selector) => isUniqueSelector(selector)),
       ...inferSelectors(container),
     ]),
   };

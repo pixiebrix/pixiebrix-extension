@@ -22,8 +22,7 @@ import GridLoader from "react-spinners/GridLoader";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";
-
-// @ts-ignore: no @types/react-shadow-root
+// @ts-expect-error -- no type definitions exist for react-shadow-root
 import ReactShadowRoot from "react-shadow-root";
 
 // Import the built-in bricks
@@ -59,7 +58,9 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
 
     if ("error" in panel.payload) {
       const { error } = panel.payload;
-      return <div className="text-danger">Error running panel: {error}</div>;
+      return (
+        <div className="text-danger p-3">Error running panel: {error}</div>
+      );
     }
 
     const { blockId, ctxt, args } = panel.payload;

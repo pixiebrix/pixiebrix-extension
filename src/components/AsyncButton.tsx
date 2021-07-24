@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Button, { ButtonProps } from "react-bootstrap/Button";
 
 interface ExtraProps {
@@ -25,21 +25,37 @@ interface ExtraProps {
 const AsyncButton: React.FunctionComponent<ButtonProps & ExtraProps> = ({
   onClick,
   children,
+  disabled: manualDisabled = false,
   ...buttonProps
 }) => {
+  const mounted = useRef(false);
   const [pending, setPending] = useState(false);
+
+  useEffect(() => {
+    // https://stackoverflow.com/a/66555159/402560
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   const handleClick = useCallback(async () => {
     setPending(true);
     try {
       await onClick();
     } finally {
-      // FIXME: the component with the button might be unmounted at this point
-      setPending(false);
+      if (mounted.current) {
+        setPending(false);
+      }
     }
   }, [onClick]);
 
   return (
-    <Button disabled={pending} {...buttonProps} onClick={handleClick}>
+    <Button
+      disabled={manualDisabled || pending}
+      {...buttonProps}
+      onClick={handleClick}
+    >
       {children}
     </Button>
   );

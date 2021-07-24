@@ -28,6 +28,7 @@ import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { preloadMenus } from "@/background/preload";
 import { Primitive } from "type-fest";
+import { selectEventData } from "@/telemetry/deployments";
 
 type InstallMode = "local" | "remote";
 
@@ -50,7 +51,7 @@ export const settingsSlice = createSlice({
 });
 
 export interface ServicesState {
-  configured: { [id: string]: RawServiceConfiguration };
+  configured: Record<string, RawServiceConfiguration>;
 }
 
 const initialServicesState: ServicesState = {
@@ -215,11 +216,6 @@ export const optionsSlice = createSlice({
           state.extensions[extensionPointId] = {};
         }
 
-        reportEvent("ExtensionActivate", {
-          extensionId,
-          blueprintId: recipe.metadata.id,
-        });
-
         const extensionConfig: ExtensionOptions = {
           id: extensionId,
           _deployment: deployment
@@ -243,6 +239,8 @@ export const optionsSlice = createSlice({
           active: true,
           config,
         };
+
+        reportEvent("ExtensionActivate", selectEventData(extensionConfig));
 
         state.extensions[extensionPointId][extensionId] = extensionConfig;
 
@@ -284,13 +282,13 @@ export const optionsSlice = createSlice({
     removeExtension(state, { payload }) {
       const { extensionPointId, extensionId } = payload;
       const extensions = state.extensions[extensionPointId] ?? {};
-      if (!extensions[extensionId]) {
+      if (extensions[extensionId]) {
+        delete extensions[extensionId];
+      } else {
         // It's already removed
         console.debug(
           `Extension id ${extensionId} does not exist for extension point ${extensionPointId}`
         );
-      } else {
-        delete extensions[extensionId];
       }
     },
   },

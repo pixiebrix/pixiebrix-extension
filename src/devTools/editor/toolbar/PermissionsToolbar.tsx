@@ -21,20 +21,17 @@ import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import {
-  checkPermissions,
-  ensureAllPermissions,
-  extensionPermissions,
-} from "@/permissions";
+import { ensureAllPermissions, extensionPermissions } from "@/permissions";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { Permissions } from "webextension-polyfill-ts";
 import useAsyncEffect from "use-async-effect";
 import { useDebounce } from "use-debounce";
 import { useToasts } from "react-toast-notifications";
+import { containsPermissions } from "@/utils/permissions";
 
 type PermissionsState = {
   hasPermissions: boolean;
-  permissions: Permissions.Permissions[];
+  permissions: Permissions.Permissions;
 };
 
 const PERMISSION_UPDATE_MILLIS = 200;
@@ -47,7 +44,7 @@ const PermissionsToolbar: React.FunctionComponent<{
 
   const [state, setState] = useState<PermissionsState>({
     hasPermissions: true,
-    permissions: [],
+    permissions: {},
   });
 
   const [debouncedElement] = useDebounce(element, PERMISSION_UPDATE_MILLIS, {
@@ -65,7 +62,7 @@ const PermissionsToolbar: React.FunctionComponent<{
       const { extension, extensionPoint: extensionPointConfig } = factory(
         element
       );
-      const extensionPoint = await extensionPointFactory(extensionPointConfig);
+      const extensionPoint = extensionPointFactory(extensionPointConfig);
 
       // We don't want the extension point availability because we already have access to it on the page
       // because the user is using the devtools. We can request additional permissions on save
@@ -79,7 +76,7 @@ const PermissionsToolbar: React.FunctionComponent<{
         permissions,
       });
 
-      const hasPermissions = await checkPermissions(permissions);
+      const hasPermissions = await containsPermissions(permissions);
       setState({ permissions, hasPermissions });
     },
     [setState]

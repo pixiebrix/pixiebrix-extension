@@ -27,10 +27,14 @@ import {
 } from "@/actionPanel/protocol";
 import { FORWARD_FRAME_NOTIFICATION } from "@/background/browserAction";
 import { isBrowser } from "@/helpers";
+import { reportEvent } from "@/telemetry/events";
+import { expectContentScript } from "@/utils/expectContext";
 
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-chrome-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
+
+let renderSequenceNumber = 0;
 
 type ExtensionRef = {
   extensionId: string;
@@ -54,7 +58,7 @@ export function removeShowCallback(onShow: ShowCallback): void {
   }
 }
 
-function getHTMLElement(): JQuery<HTMLElement> {
+function getHTMLElement(): JQuery {
   // Resolve html tag, which is more dominant than <body>
   if (document.documentElement) {
     return $(document.documentElement);
@@ -64,8 +68,9 @@ function getHTMLElement(): JQuery<HTMLElement> {
     return $(document.querySelector("html"));
   }
 
-  if ($("html").length > -1) {
-    return $("html");
+  const $html = $("html");
+  if ($html.length > 0) {
+    return $html;
   }
 
   throw new Error("HTML node not found");
@@ -95,6 +100,8 @@ function insertActionPanel(): string {
     `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
   );
 
+  // CSS approach not well supported? https://stackoverflow.com/questions/15494568/html-iframe-disable-scroll
+  // noinspection HtmlDeprecatedAttribute
   const $frame = $(
     `<iframe id="pixiebrix-frame" src="${actionURL}?nonce=${nonce}" style="height: 100%; width: ${SIDEBAR_WIDTH_PX}px" allowtransparency="false" frameborder="0" scrolling="no" ></iframe>`
   );
@@ -107,6 +114,8 @@ function insertActionPanel(): string {
 }
 
 export function showActionPanel(): string {
+  reportEvent("SidePanelShow");
+
   adjustDocumentStyle();
 
   const container: HTMLElement = document.querySelector(
@@ -119,7 +128,7 @@ export function showActionPanel(): string {
   // all the callbacks ensures the content is up to date
   for (const callback of extensionCallbacks) {
     try {
-      void callback();
+      callback();
     } catch (error: unknown) {
       // The callbacks should each have their own error handling. But wrap in a try-catch to ensure running
       // the callbacks does not interfere prevent showing the sidebar
@@ -131,7 +140,7 @@ export function showActionPanel(): string {
 }
 
 export function hideActionPanel(): void {
-  console.debug("Hide action panel");
+  reportEvent("SidePanelHide");
   restoreDocumentStyle();
   $(PANEL_CONTAINER_SELECTOR).remove();
 }
@@ -141,7 +150,6 @@ export function toggleActionPanel(): string | null {
     hideActionPanel();
     return null;
   }
-
   return showActionPanel();
 }
 
@@ -154,18 +162,40 @@ export function getStore(): ActionPanelStore {
 }
 
 function renderPanels() {
+  expectContentScript();
+
   if (isActionPanelVisible()) {
+    const seqNum = renderSequenceNumber;
+    renderSequenceNumber++;
+
     void browser.runtime.sendMessage({
       type: FORWARD_FRAME_NOTIFICATION,
+      meta: { $seq: seqNum },
       payload: {
         type: RENDER_PANELS_MESSAGE,
         payload: { panels },
       },
     });
+  } else {
+    console.debug(
+      "Skipping renderPanels because the action panel is not visible"
+    );
   }
 }
 
+export function removeExtension(extensionId: string): void {
+  expectContentScript();
+
+  // `panels` is const, so replace the contents
+  const current = panels.splice(0, panels.length);
+  panels.push(...current.filter((x) => x.extensionId !== extensionId));
+  renderPanels();
+}
+
 export function removeExtensionPoint(extensionPointId: string): void {
+  expectContentScript();
+
+  // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
   panels.push(
     ...current.filter((x) => x.extensionPointId !== extensionPointId)
@@ -173,29 +203,54 @@ export function removeExtensionPoint(extensionPointId: string): void {
   renderPanels();
 }
 
+/**
+ * Create placeholder panels showing loading indicators
+ */
 export function reservePanels(refs: ExtensionRef[]): void {
-  if (refs.length > 0) {
-    for (const { extensionId, extensionPointId } of refs) {
-      const entry = panels.find((x) => x.extensionId === extensionId);
-      if (!entry) {
-        panels.push({
-          extensionId,
-          extensionPointId,
-          heading: null,
-          payload: null,
-        });
-      }
-    }
-
-    renderPanels();
+  if (refs.length === 0) {
+    return;
   }
+
+  const current = new Set(panels.map((x) => x.extensionId));
+  for (const { extensionId, extensionPointId } of refs) {
+    if (!current.has(extensionId)) {
+      const entry: PanelEntry = {
+        extensionId,
+        extensionPointId,
+        heading: null,
+        payload: null,
+      };
+
+      console.debug(
+        "reservePanels: reserve panel %s for %s",
+        extensionId,
+        extensionPointId,
+        { ...entry }
+      );
+
+      panels.push(entry);
+    }
+  }
+
+  renderPanels();
 }
 
 export function updateHeading(extensionId: string, heading: string): void {
   const entry = panels.find((x) => x.extensionId === extensionId);
   if (entry) {
     entry.heading = heading;
+    console.debug(
+      "updateHeading: update heading for panel %s for %s",
+      extensionId,
+      entry.extensionPointId,
+      { ...entry }
+    );
     renderPanels();
+  } else {
+    console.warn(
+      `updateHeading: No panel exists for extension %s`,
+      extensionId
+    );
   }
 }
 
@@ -204,10 +259,28 @@ export function upsertPanel(
   heading: string,
   payload: RendererPayload | RendererError
 ): void {
-  const entry = panels.find((x) => x.extensionId === extensionId);
+  const entry = panels.find((panel) => panel.extensionId === extensionId);
   if (entry) {
     entry.payload = payload;
+    entry.heading = heading;
+    console.debug(
+      "upsertPanel: update existing panel %s for %s",
+      extensionId,
+      extensionPointId,
+      { ...entry }
+    );
   } else {
+    console.debug(
+      "upsertPanel: add new panel %s for %s",
+      extensionId,
+      extensionPointId,
+      {
+        entry,
+        extensionPointId,
+        heading,
+        payload,
+      }
+    );
     panels.push({ extensionId, extensionPointId, heading, payload });
   }
 

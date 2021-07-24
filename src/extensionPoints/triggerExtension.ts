@@ -42,7 +42,10 @@ import { castArray, compact } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 import { reportEvent } from "@/telemetry/events";
-import { awaitElementOnce } from "@/extensionPoints/helpers";
+import {
+  awaitElementOnce,
+  selectExtensionContext,
+} from "@/extensionPoints/helpers";
 import { notifyError } from "@/contentScript/notify";
 
 // @ts-ignore: using for the EventHandler type below
@@ -63,7 +66,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   private $installedRoot: JQuery<HTMLElement | Document> | undefined;
 
-  private installedEvents: Set<string> = new Set();
+  private readonly installedEvents: Set<string> = new Set();
 
   protected constructor(
     id: string,
@@ -116,9 +119,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     extension: IExtension<TriggerConfig>,
     root: ReaderRoot
   ) {
-    const extensionLogger = this.logger.childLogger({
-      extensionId: extension.id,
-    });
+    const extensionLogger = this.logger.childLogger(
+      selectExtensionContext(extension)
+    );
 
     const { action: actionConfig } = extension.config;
 
@@ -142,14 +145,13 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     const readerContext = await reader.read(root);
     const errors = await Promise.all(
       this.extensions.map(async (extension) => {
-        const extensionLogger = this.logger.childLogger({
-          deploymentId: extension._deployment?.id,
-          extensionId: extension.id,
-        });
+        const extensionLogger = this.logger.childLogger(
+          selectExtensionContext(extension)
+        );
         try {
           await this.runExtension(readerContext, extension, root);
         } catch (error: unknown) {
-          void reportError(error, extensionLogger.context);
+          reportError(error, extensionLogger.context);
           return error;
         }
 
@@ -161,7 +163,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     return compact(errors);
   }
 
-  static notifyErrors(results: PromiseSettledResult<unknown[]>[]): void {
+  static notifyErrors(results: Array<PromiseSettledResult<unknown[]>>): void {
     const errors = compact(
       results.flatMap((x) => (x.status === "fulfilled" ? x.value : [x.reason]))
     );
@@ -234,7 +236,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         );
       }
 
-      const $rootElement = $root as JQuery<HTMLElement>;
+      const $rootElement = $root as JQuery;
 
       if (this.handler) {
         console.debug(
@@ -263,9 +265,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
   }
 }
 
-interface TriggerDefinitionOptions {
-  [option: string]: string;
-}
+type TriggerDefinitionOptions = Record<string, string>;
 
 export interface TriggerDefinition extends ExtensionPointDefinition {
   defaultOptions?: TriggerDefinitionOptions;
@@ -280,9 +280,7 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
 
   public readonly rawConfig: ExtensionPointConfig<TriggerDefinition>;
 
-  public get defaultOptions(): {
-    [option: string]: string;
-  } {
+  public get defaultOptions(): Record<string, string> {
     return this._definition.defaultOptions ?? {};
   }
 

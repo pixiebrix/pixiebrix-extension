@@ -53,7 +53,7 @@ class ImageReader extends Reader {
   async read(elementOrDocument: HTMLElement | Document) {
     const element = elementOrDocument as HTMLImageElement;
 
-    if (element?.tagName == "IMG") {
+    if (element?.tagName === "IMG") {
       return {
         src: element.src,
         img: getBase64Image(element as HTMLImageElement),
