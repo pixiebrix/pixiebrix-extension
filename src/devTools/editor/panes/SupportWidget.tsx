@@ -27,56 +27,53 @@ import ChatWidget from "@/components/ChatWidget";
 
 const SupportWidget: React.FunctionComponent<{ onClose: () => void }> = ({
   onClose,
-}) => {
-  return (
-    <div className="d-flex flex-column h-100">
-      <div className="d-flex pl-2">
-        <div className="flex-grow-1">
-          <div className="small">
-            <span className="text-muted">
-              <FontAwesomeIcon icon={faPhone} />
-            </span>{" "}
-            <a
-              href="#"
-              onClick={async () =>
-                openTab({
-                  url:
-                    "https://calendly.com/pixiebrix-todd/live-support-session",
-                  active: true,
-                })
-              }
-            >
-              Schedule FREE Zoom session
-            </a>
-          </div>
-          <div className="small">
-            <span className="text-muted">
-              <FontAwesomeIcon icon={faExternalLinkAlt} />{" "}
-            </span>
-            <a
-              href="#"
-              onClick={async () =>
-                openTab({
-                  url: "https://docs.pixiebrix.com/",
-                  active: true,
-                })
-              }
-            >
-              Open Documentation
-            </a>
-          </div>
+}) => (
+  <div className="d-flex flex-column h-100">
+    <div className="d-flex pl-2">
+      <div className="flex-grow-1">
+        <div className="small">
+          <span className="text-muted">
+            <FontAwesomeIcon icon={faPhone} />
+          </span>{" "}
+          <a
+            href="#"
+            onClick={async () =>
+              openTab({
+                url: "https://calendly.com/pixiebrix-todd/live-support-session",
+                active: true,
+              })
+            }
+          >
+            Schedule FREE Zoom session
+          </a>
         </div>
-        <div className="pr-2 text-muted">
-          <span onClick={() => onClose()} role="button">
-            <FontAwesomeIcon icon={faTimes} />
+        <div className="small">
+          <span className="text-muted">
+            <FontAwesomeIcon icon={faExternalLinkAlt} />{" "}
           </span>
+          <a
+            href="#"
+            onClick={async () =>
+              openTab({
+                url: "https://docs.pixiebrix.com/",
+                active: true,
+              })
+            }
+          >
+            Open Documentation
+          </a>
         </div>
       </div>
-      <div className="flex-grow-1">
-        <ChatWidget />
+      <div className="pr-2 text-muted">
+        <span onClick={() => onClose()} role="button">
+          <FontAwesomeIcon icon={faTimes} />
+        </span>
       </div>
     </div>
-  );
-};
+    <div className="flex-grow-1">
+      <ChatWidget />
+    </div>
+  </div>
+);
 
 export default SupportWidget;

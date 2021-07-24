@@ -32,27 +32,25 @@ const primereact = require("!!raw-loader!primereact/resources/primereact.min.css
 const primeicons = require("!!raw-loader!primeicons/primeicons.css?esModule=false")
   .default;
 
-const PropertyTree: React.FunctionComponent<{ value: any }> = ({ value }) => {
-  return (
-    <React.Fragment>
-      <style
-        type="text/css"
-        dangerouslySetInnerHTML={{ __html: theme.toString() }}
-      />
-      <style
-        type="text/css"
-        dangerouslySetInnerHTML={{ __html: primereact.toString() }}
-      />
-      <style
-        type="text/css"
-        dangerouslySetInnerHTML={{ __html: primeicons.toString() }}
-      />
-      <TreeTable value={value}>
-        <Column field="name" header="Property" expander />
-        <Column field="value" header="Value" />
-      </TreeTable>
-    </React.Fragment>
-  );
-};
+const PropertyTree: React.FunctionComponent<{ value: any }> = ({ value }) => (
+  <React.Fragment>
+    <style
+      type="text/css"
+      dangerouslySetInnerHTML={{ __html: theme.toString() }}
+    />
+    <style
+      type="text/css"
+      dangerouslySetInnerHTML={{ __html: primereact.toString() }}
+    />
+    <style
+      type="text/css"
+      dangerouslySetInnerHTML={{ __html: primeicons.toString() }}
+    />
+    <TreeTable value={value}>
+      <Column field="name" header="Property" expander />
+      <Column field="value" header="Value" />
+    </TreeTable>
+  </React.Fragment>
+);
 
 export default PropertyTree;

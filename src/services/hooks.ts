@@ -70,11 +70,13 @@ export function useDependency(
     throw new Error("No integration selected");
   }, [dependency?.config]);
 
-  const origins = useMemo(() => {
-    return serviceResult?.service
-      ? serviceResult.service.getOrigins(serviceResult.localConfig.config)
-      : null;
-  }, [serviceResult.localConfig.config, serviceResult?.service]);
+  const origins = useMemo(
+    () =>
+      serviceResult?.service
+        ? serviceResult.service.getOrigins(serviceResult.localConfig.config)
+        : null,
+    [serviceResult.localConfig.config, serviceResult?.service]
+  );
 
   const [hasPermissions] = useAsyncState(async () => {
     if (origins != null) {
@@ -90,6 +92,7 @@ export function useDependency(
       const listener = () => {
         setGrantedPermissions(true);
       };
+
       permissionsListeners.set(key, [
         ...(permissionsListeners.get(key) ?? []),
         listener,

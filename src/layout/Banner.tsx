@@ -71,6 +71,7 @@ const Banner: React.FunctionComponent = () => {
   if (environment === "production") {
     return null;
   }
+
   return <EnvironmentBanner />;
 };
 

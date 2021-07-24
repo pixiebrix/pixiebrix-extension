@@ -60,12 +60,10 @@ export const hasAppAccount = liftBackground("CHECK_APP_ACCOUNT", async () => {
 
 export const getAvailableVersion = liftBackground(
   "GET_AVAILABLE_VERSION",
-  async () => {
-    return {
-      installed: browser.runtime.getManifest().version,
-      available: _availableVersion,
-    };
-  }
+  async () => ({
+    installed: browser.runtime.getManifest().version,
+    available: _availableVersion,
+  })
 );
 
 async function setUninstallURL(): Promise<void> {

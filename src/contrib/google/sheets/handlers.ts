@@ -217,15 +217,11 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
 export const devtoolsProtocol = {
   getTabNames: liftDevtools(
     "GET_TAB_NAMES",
-    () => async (spreadsheetId: string) => {
-      return getTabNames(spreadsheetId);
-    }
+    () => async (spreadsheetId: string) => getTabNames(spreadsheetId)
   ),
   getSheetProperties: liftDevtools(
     "GET_SHEET_PROPERTIES",
-    () => async (spreadsheetId: string) => {
-      return getSheetProperties(spreadsheetId);
-    }
+    () => async (spreadsheetId: string) => getSheetProperties(spreadsheetId)
   ),
   getHeaders: liftDevtools(
     "GET_HEADERS",
@@ -235,9 +231,7 @@ export const devtoolsProtocol = {
     }: {
       spreadsheetId: string;
       tabName: string;
-    }) => {
-      return getHeaders(spreadsheetId, tabName);
-    }
+    }) => getHeaders(spreadsheetId, tabName)
   ),
 };
 

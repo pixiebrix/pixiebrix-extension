@@ -39,43 +39,39 @@ const TEMPLATES_PAGE_PART = "templates";
 
 const TemplateHeader: React.FunctionComponent<{
   blueprint: BlueprintResponse;
-}> = ({ blueprint }) => {
-  return (
-    <>
-      <PageTitle
-        icon={faClipboardCheck}
-        title={
-          blueprint
-            ? `Activate: ${blueprint.config.metadata.name}`
-            : "Activate Blueprint"
-        }
-      />
-      <div className="pb-4">
-        <p>Configure and activate a pre-made template</p>
-      </div>
-    </>
-  );
-};
+}> = ({ blueprint }) => (
+  <>
+    <PageTitle
+      icon={faClipboardCheck}
+      title={
+        blueprint
+          ? `Activate: ${blueprint.config.metadata.name}`
+          : "Activate Blueprint"
+      }
+    />
+    <div className="pb-4">
+      <p>Configure and activate a pre-made template</p>
+    </div>
+  </>
+);
 
 const MarketplaceHeader: React.FunctionComponent<{
   blueprint: BlueprintResponse;
-}> = ({ blueprint }) => {
-  return (
-    <>
-      <PageTitle
-        icon={faStoreAlt}
-        title={
-          blueprint
-            ? `Activate: ${blueprint.config.metadata.name}`
-            : "Activate Blueprint"
-        }
-      />
-      <div className="pb-4">
-        <p>Configure and activate a blueprint from the marketplace</p>
-      </div>
-    </>
-  );
-};
+}> = ({ blueprint }) => (
+  <>
+    <PageTitle
+      icon={faStoreAlt}
+      title={
+        blueprint
+          ? `Activate: ${blueprint.config.metadata.name}`
+          : "Activate Blueprint"
+      }
+    />
+    <div className="pb-4">
+      <p>Configure and activate a blueprint from the marketplace</p>
+    </div>
+  </>
+);
 
 const ActivatePage: React.FunctionComponent = () => {
   const { blueprintId, sourcePage } = useParams<{

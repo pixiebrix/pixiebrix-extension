@@ -71,6 +71,7 @@ function useNotifications(): Notifications {
       if (event) {
         reportEvent(event);
       }
+
       addToast(content, {
         appearance: "success",
         autoDismiss: true,
@@ -103,9 +104,11 @@ function useNotifications(): Notifications {
       if (report) {
         reportError(error ?? content);
       }
+
       if (event) {
         reportEvent(event);
       }
+
       addToast(content, {
         appearance,
         autoDismiss,

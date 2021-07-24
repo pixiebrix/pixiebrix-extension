@@ -18,16 +18,14 @@
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
 
-const Centered: React.FunctionComponent = ({ children }) => {
-  return (
-    <Container fluid>
-      <Row>
-        <Col className="mx-auto mt-4 text-center" md={8} lg={5} sm={11}>
-          {children}
-        </Col>
-      </Row>
-    </Container>
-  );
-};
+const Centered: React.FunctionComponent = ({ children }) => (
+  <Container fluid>
+    <Row>
+      <Col className="mx-auto mt-4 text-center" md={8} lg={5} sm={11}>
+        {children}
+      </Col>
+    </Row>
+  </Container>
+);
 
 export default Centered;

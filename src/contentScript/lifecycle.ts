@@ -49,7 +49,7 @@ async function installScriptOnce(): Promise<void> {
       const script = document.createElement("script");
       script.src = chrome.extension.getURL("script.js");
       (document.head || document.documentElement).append(script);
-      script.addEventListener("load", function () {
+      script.addEventListener("load", () => {
         script.remove();
         console.debug("Installed page script");
         resolve();
@@ -145,6 +145,7 @@ export function clearDynamic(extensionId?: string): void {
         reportError(error);
       }
     }
+
     _dynamic.clear();
   }
 }

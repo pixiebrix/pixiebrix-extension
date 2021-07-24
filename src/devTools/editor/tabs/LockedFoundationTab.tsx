@@ -20,26 +20,24 @@ import { Field, FieldInputProps } from "formik";
 
 const LockedFoundationTab: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey }) => {
-  return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
-      <Alert variant="info">
-        You do not have edit permissions for this foundation
-      </Alert>
-      <Form.Group as={Row} controlId="formExtensionPointId">
-        <Form.Label column sm={2}>
-          Foundation Id
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="extensionPoint.metadata.id">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} disabled />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-    </Tab.Pane>
-  );
-};
+}> = ({ eventKey }) => (
+  <Tab.Pane eventKey={eventKey} className="h-100">
+    <Alert variant="info">
+      You do not have edit permissions for this foundation
+    </Alert>
+    <Form.Group as={Row} controlId="formExtensionPointId">
+      <Form.Label column sm={2}>
+        Foundation Id
+      </Form.Label>
+      <Col sm={10}>
+        <Field name="extensionPoint.metadata.id">
+          {({ field }: { field: FieldInputProps<string> }) => (
+            <Form.Control type="text" {...field} disabled />
+          )}
+        </Field>
+      </Col>
+    </Form.Group>
+  </Tab.Pane>
+);
 
 export default LockedFoundationTab;

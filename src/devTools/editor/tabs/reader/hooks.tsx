@@ -31,27 +31,25 @@ export function useLabelRenderer() {
       [key, ...rest]: (string | number)[],
       nodeType: string,
       expanded: boolean
-    ) => {
-      return (
-        <span>
-          <span>{key}</span>
-          {!expanded && ": "}
-          <span
-            className="ReaderTree__copy-path"
-            aria-label="copy path"
-            onClick={() => {
-              copy(reverse([key, ...rest]).join("."));
-              addToast("Copied property path to the clipboard", {
-                appearance: "info",
-                autoDismiss: true,
-              });
-            }}
-          >
-            <FontAwesomeIcon icon={faCopy} aria-hidden />
-          </span>
+    ) => (
+      <span>
+        <span>{key}</span>
+        {!expanded && ": "}
+        <span
+          className="ReaderTree__copy-path"
+          aria-label="copy path"
+          onClick={() => {
+            copy(reverse([key, ...rest]).join("."));
+            addToast("Copied property path to the clipboard", {
+              appearance: "info",
+              autoDismiss: true,
+            });
+          }}
+        >
+          <FontAwesomeIcon icon={faCopy} aria-hidden />
         </span>
-      );
-    },
+      </span>
+    ),
     [addToast]
   );
 }

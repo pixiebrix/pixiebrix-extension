@@ -140,6 +140,7 @@ function useSubmitBrick({
               autoDismiss: true,
             });
           }
+
           setErrors(error.response.data);
         } else {
           addToast(error.toString(), {

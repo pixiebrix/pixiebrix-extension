@@ -130,40 +130,36 @@ const TemplateGroup: React.FunctionComponent<GroupProps> = ({
 
 const TemplateEntry: React.FunctionComponent<
   FeaturedRecipeDefinition & { installed: boolean; onAdd: () => void }
-> = ({ feature, metadata, installed, onAdd }) => {
-  return (
-    <ListGroup.Item className="TemplateEntry">
-      <div className="d-flex align-items-center">
-        <div>
-          {installed ? (
-            <Button size="sm" variant="info" disabled>
-              Added
-            </Button>
-          ) : (
-            <Button size="sm" variant="info" onClick={onAdd}>
-              Add
-            </Button>
-          )}
-        </div>
-        <div className="ml-3">{feature.shortName ?? metadata.name}</div>
+> = ({ feature, metadata, installed, onAdd }) => (
+  <ListGroup.Item className="TemplateEntry">
+    <div className="d-flex align-items-center">
+      <div>
+        {installed ? (
+          <Button size="sm" variant="info" disabled>
+            Added
+          </Button>
+        ) : (
+          <Button size="sm" variant="info" onClick={onAdd}>
+            Add
+          </Button>
+        )}
       </div>
-    </ListGroup.Item>
-  );
-};
+      <div className="ml-3">{feature.shortName ?? metadata.name}</div>
+    </div>
+  </ListGroup.Item>
+);
 
 const SharedWithMe: React.FunctionComponent<{
   active?: boolean;
   onSelect: () => void;
-}> = ({ active, onSelect }) => {
-  return (
-    <Card className={cx("CategoryCard", { active })} onClick={onSelect}>
-      <Card.Body>
-        <div className="CategoryCard__title">Shared with Me</div>
-        <div className="CategoryCard__subtitle">Custom</div>
-      </Card.Body>
-    </Card>
-  );
-};
+}> = ({ active, onSelect }) => (
+  <Card className={cx("CategoryCard", { active })} onClick={onSelect}>
+    <Card.Body>
+      <div className="CategoryCard__title">Shared with Me</div>
+      <div className="CategoryCard__subtitle">Custom</div>
+    </Card.Body>
+  </Card>
+);
 
 const Category: React.FunctionComponent<{
   active?: boolean;
@@ -171,24 +167,22 @@ const Category: React.FunctionComponent<{
   title: string;
   subtitle: string;
   onSelect?: () => void;
-}> = ({ title, subtitle, active, inviteOnly, onSelect = noop }) => {
-  return (
-    <Card
-      className={cx("CategoryCard", { active, inviteOnly })}
-      onClick={onSelect}
-    >
-      <Card.Body>
-        {inviteOnly && (
-          <div className="ribbon">
-            <span>Invite-Only</span>
-          </div>
-        )}
-        <div className="CategoryCard__title">{title}</div>
-        <div className="CategoryCard__subtitle">{subtitle}</div>
-      </Card.Body>
-    </Card>
-  );
-};
+}> = ({ title, subtitle, active, inviteOnly, onSelect = noop }) => (
+  <Card
+    className={cx("CategoryCard", { active, inviteOnly })}
+    onClick={onSelect}
+  >
+    <Card.Body>
+      {inviteOnly && (
+        <div className="ribbon">
+          <span>Invite-Only</span>
+        </div>
+      )}
+      <div className="CategoryCard__title">{title}</div>
+      <div className="CategoryCard__subtitle">{subtitle}</div>
+    </Card.Body>
+  </Card>
+);
 
 const ContextMenuTemplates: React.FunctionComponent<{
   installedRecipes: Set<string>;

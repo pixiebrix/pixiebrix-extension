@@ -43,56 +43,50 @@ export const DependencyRow: React.FunctionComponent<{
   dependency: ServiceDependency;
   index: number;
   remove: (x: number) => void;
-}> = ({ field, authOptions, index, remove, dependency }) => {
-  return (
-    <tr>
-      <td style={{ width: 250 }}>
-        <Field name={`${field.name}.${index}.outputKey`}>
-          {/* @ts-ignore: not sure what's going on with the type definition for this */}
-          {({ field, meta }) => (
-            <Form.Group>
-              <Form.Control
-                {...field}
-                size="default"
-                isInvalid={!!meta.error}
-              />
-              {meta.touched && meta.error && (
-                <Form.Control.Feedback type="invalid">
-                  {meta.error}
-                </Form.Control.Feedback>
-              )}
-            </Form.Group>
-          )}
-        </Field>
-      </td>
-      <td>
-        <Form.Group>
-          {/* TODO: indicate if the service no longer exists */}
-          <input
-            type="hidden"
-            name={`${field.name}.${index}.id`}
-            value={dependency.id}
-          />
-          <code>{dependency.id}</code>
-        </Form.Group>
-      </td>
-      <td style={{ width: 350 }}>
-        <ServiceAuthSelector
-          name={`${field.name}.${index}.config`}
-          serviceId={dependency.id}
-          authOptions={authOptions}
+}> = ({ field, authOptions, index, remove, dependency }) => (
+  <tr>
+    <td style={{ width: 250 }}>
+      <Field name={`${field.name}.${index}.outputKey`}>
+        {/* @ts-ignore: not sure what's going on with the type definition for this */}
+        {({ field, meta }) => (
+          <Form.Group>
+            <Form.Control {...field} size="default" isInvalid={!!meta.error} />
+            {meta.touched && meta.error && (
+              <Form.Control.Feedback type="invalid">
+                {meta.error}
+              </Form.Control.Feedback>
+            )}
+          </Form.Group>
+        )}
+      </Field>
+    </td>
+    <td>
+      <Form.Group>
+        {/* TODO: indicate if the service no longer exists */}
+        <input
+          type="hidden"
+          name={`${field.name}.${index}.id`}
+          value={dependency.id}
         />
-      </td>
-      <td>
-        <Form.Group>
-          <Button variant="danger" size="sm" onClick={() => remove(index)}>
-            <FontAwesomeIcon icon={faTrash} /> Remove
-          </Button>
-        </Form.Group>
-      </td>
-    </tr>
-  );
-};
+        <code>{dependency.id}</code>
+      </Form.Group>
+    </td>
+    <td style={{ width: 350 }}>
+      <ServiceAuthSelector
+        name={`${field.name}.${index}.config`}
+        serviceId={dependency.id}
+        authOptions={authOptions}
+      />
+    </td>
+    <td>
+      <Form.Group>
+        <Button variant="danger" size="sm" onClick={() => remove(index)}>
+          <FontAwesomeIcon icon={faTrash} /> Remove
+        </Button>
+      </Form.Group>
+    </td>
+  </tr>
+);
 
 const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
   ...props

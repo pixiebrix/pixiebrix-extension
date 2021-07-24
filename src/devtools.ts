@@ -27,12 +27,12 @@ import {
 import { reportError } from "@/telemetry/logging";
 import { updateSelectedElement } from "./devTools/getSelectedElement";
 
-window.addEventListener("error", function (e) {
+window.addEventListener("error", (e) => {
   reportError(e);
   return false;
 });
 
-window.addEventListener("unhandledrejection", function (e) {
+window.addEventListener("unhandledrejection", (e) => {
   reportError(e);
 });
 

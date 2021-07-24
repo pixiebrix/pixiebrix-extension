@@ -29,33 +29,31 @@ type Request =
 
 function initFrames(): void {
   // Save data to pass along to iframes
-  chrome.runtime.onMessage.addListener(function (
-    request: Request,
-    sender: MessageSender,
-    sendResponse
-  ) {
-    // Messages from content scripts should have sender.tab set
-    switch (request.type) {
-      case FORWARD_FRAME_DATA: {
-        console.log("request", { request });
-        const { frameId, html } = request.payload;
-        frameHTML.set(frameId, html);
-        sendResponse({});
-        return true;
-      }
+  chrome.runtime.onMessage.addListener(
+    (request: Request, sender: MessageSender, sendResponse) => {
+      // Messages from content scripts should have sender.tab set
+      switch (request.type) {
+        case FORWARD_FRAME_DATA: {
+          console.log("request", { request });
+          const { frameId, html } = request.payload;
+          frameHTML.set(frameId, html);
+          sendResponse({});
+          return true;
+        }
 
-      case REQUEST_FRAME_DATA: {
-        const { id } = request.payload;
-        sendResponse({ html: frameHTML.get(id) });
-        frameHTML.delete(id);
-        return true;
-      }
+        case REQUEST_FRAME_DATA: {
+          const { id } = request.payload;
+          sendResponse({ html: frameHTML.get(id) });
+          frameHTML.delete(id);
+          return true;
+        }
 
-      default: {
-        return false;
+        default: {
+          return false;
+        }
       }
     }
-  });
+  );
 }
 
 export default initFrames;

@@ -52,9 +52,10 @@ const ServicesTab: React.FunctionComponent<{
     ServiceDefinition[]
   >("/api/services/");
 
-  const refresh = useCallback(async () => {
-    return Promise.all([refreshServices(), refreshAuths()]);
-  }, [refreshAuths, refreshServices]);
+  const refresh = useCallback(
+    async () => Promise.all([refreshServices(), refreshAuths()]),
+    [refreshAuths, refreshServices]
+  );
 
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">

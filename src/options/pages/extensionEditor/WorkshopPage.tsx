@@ -104,24 +104,32 @@ function useEnrichBricks(bricks: Brick[]): EnhancedBrick[] {
 }
 
 function useSearchOptions(bricks: EnhancedBrick[]) {
-  const scopeOptions = useMemo(() => {
-    return sortBy(uniq((bricks ?? []).map((x) => x.scope))).map((value) => ({
-      value,
-      label: value ?? "[No Scope]",
-    }));
-  }, [bricks]);
+  const scopeOptions = useMemo(
+    () =>
+      sortBy(uniq((bricks ?? []).map((x) => x.scope))).map((value) => ({
+        value,
+        label: value ?? "[No Scope]",
+      })),
+    [bricks]
+  );
 
-  const collectionOptions = useMemo(() => {
-    return sortBy(
-      uniq((bricks ?? []).map((x) => x.collection))
-    ).map((value) => ({ value, label: value ?? "[No Collection]" }));
-  }, [bricks]);
+  const collectionOptions = useMemo(
+    () =>
+      sortBy(uniq((bricks ?? []).map((x) => x.collection))).map((value) => ({
+        value,
+        label: value ?? "[No Collection]",
+      })),
+    [bricks]
+  );
 
-  const kindOptions = useMemo(() => {
-    return sortBy(
-      compact(uniq((bricks ?? []).map((x) => x.kind)))
-    ).map((value) => ({ value, label: value }));
-  }, [bricks]);
+  const kindOptions = useMemo(
+    () =>
+      sortBy(compact(uniq((bricks ?? []).map((x) => x.kind)))).map((value) => ({
+        value,
+        label: value,
+      })),
+    [bricks]
+  );
 
   return {
     scopeOptions,
@@ -146,11 +154,13 @@ const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
 
   const filtered = !isEmpty(scopes) || !isEmpty(collections) || !isEmpty(kinds);
 
-  const fuse: Fuse<EnhancedBrick> = useMemo(() => {
-    return new Fuse(bricks, {
-      keys: ["verbose_name", "name"],
-    });
-  }, [bricks]);
+  const fuse: Fuse<EnhancedBrick> = useMemo(
+    () =>
+      new Fuse(bricks, {
+        keys: ["verbose_name", "name"],
+      }),
+    [bricks]
+  );
 
   const sortedBricks = useMemo(() => {
     const results =
@@ -285,55 +295,53 @@ const KindIcon: React.FunctionComponent<{ brick: EnhancedBrick }> = ({
 
 const CustomBricksCard: React.FunctionComponent<
   OwnProps & { bricks: EnhancedBrick[]; maxRows?: number }
-> = ({ navigate, bricks, maxRows = 10 }) => {
-  return (
-    <Card>
-      <Card.Header>Custom Bricks</Card.Header>
-      <Table className="WorkshopPage__BrickTable">
-        <thead>
-          <tr>
-            <th>&nbsp;</th>
-            <th>Name</th>
-            <th>Collection</th>
-            <th>Type</th>
-            <th>Version</th>
+> = ({ navigate, bricks, maxRows = 10 }) => (
+  <Card>
+    <Card.Header>Custom Bricks</Card.Header>
+    <Table className="WorkshopPage__BrickTable">
+      <thead>
+        <tr>
+          <th>&nbsp;</th>
+          <th>Name</th>
+          <th>Collection</th>
+          <th>Type</th>
+          <th>Version</th>
+        </tr>
+      </thead>
+      <tbody>
+        {bricks.slice(0, maxRows).map((brick) => (
+          <tr
+            key={brick.id}
+            onClick={() => navigate(`/workshop/bricks/${brick.id}`)}
+          >
+            <td className="text-right text-muted px-1">
+              <KindIcon brick={brick} />
+            </td>
+            <td>
+              <div>{brick.verbose_name}</div>
+              <div className="mt-1">
+                <code className="p-0" style={{ fontSize: "0.8rem" }}>
+                  {brick.name}
+                </code>
+              </div>
+            </td>
+            <td>{brick.collection}</td>
+            <td>{brick.kind}</td>
+            <td>{brick.version}</td>
           </tr>
-        </thead>
-        <tbody>
-          {bricks.slice(0, maxRows).map((brick) => (
-            <tr
-              key={brick.id}
-              onClick={() => navigate(`/workshop/bricks/${brick.id}`)}
-            >
-              <td className="text-right text-muted px-1">
-                <KindIcon brick={brick} />
-              </td>
-              <td>
-                <div>{brick.verbose_name}</div>
-                <div className="mt-1">
-                  <code className="p-0" style={{ fontSize: "0.8rem" }}>
-                    {brick.name}
-                  </code>
-                </div>
-              </td>
-              <td>{brick.collection}</td>
-              <td>{brick.kind}</td>
-              <td>{brick.version}</td>
-            </tr>
-          ))}
-          {bricks.length >= maxRows && (
-            <tr className="WorkshopPage__BrickTable__more">
-              <td colSpan={5} className="text-info text-center">
-                <FontAwesomeIcon icon={faInfoCircle} />{" "}
-                {bricks.length - maxRows} more entries not shown
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
-    </Card>
-  );
-};
+        ))}
+        {bricks.length >= maxRows && (
+          <tr className="WorkshopPage__BrickTable__more">
+            <td colSpan={5} className="text-info text-center">
+              <FontAwesomeIcon icon={faInfoCircle} /> {bricks.length - maxRows}{" "}
+              more entries not shown
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </Table>
+  </Card>
+);
 
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
   useTitle("Workshop");

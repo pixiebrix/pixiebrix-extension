@@ -21,23 +21,21 @@ import { Col, Form, Row, Tab } from "react-bootstrap";
 
 const PanelTab: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey = "panelBody" }) => {
-  return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Heading
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="extension.heading">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
-    </Tab.Pane>
-  );
-};
+}> = ({ eventKey = "panelBody" }) => (
+  <Tab.Pane eventKey={eventKey} className="h-100">
+    <Form.Group as={Row} controlId="formCaption">
+      <Form.Label column sm={2}>
+        Heading
+      </Form.Label>
+      <Col sm={10}>
+        <Field name="extension.heading">
+          {({ field }: { field: FieldInputProps<string> }) => (
+            <Form.Control type="text" {...field} />
+          )}
+        </Field>
+      </Col>
+    </Form.Group>
+  </Tab.Pane>
+);
 
 export default PanelTab;

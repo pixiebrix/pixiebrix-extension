@@ -109,6 +109,7 @@ async function getDB() {
           unique: false,
         });
       }
+
       // Create the joint index
       store.createIndex(
         "context",
@@ -335,16 +336,11 @@ export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
   _config = config;
 }
 
-export const getLoggingConfig = liftBackground(
-  "GET_LOGGING_CONFIG",
-  async () => {
-    return _getLoggingConfig();
-  }
+export const getLoggingConfig = liftBackground("GET_LOGGING_CONFIG", async () =>
+  _getLoggingConfig()
 );
 
 export const setLoggingConfig = liftBackground(
   "SET_LOGGING_CONFIG",
-  async (config: LoggingConfig) => {
-    return _setLoggingConfig(config);
-  }
+  async (config: LoggingConfig) => _setLoggingConfig(config)
 );

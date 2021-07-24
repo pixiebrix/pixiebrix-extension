@@ -59,9 +59,7 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
 
 export const detectFrameworks = liftContentScript(
   "DETECT_FRAMEWORKS",
-  async () => {
-    return withDetectFrameworkVersions(null);
-  }
+  async () => withDetectFrameworkVersions(null)
 );
 
 export const searchWindow: (
@@ -69,9 +67,7 @@ export const searchWindow: (
   query: string
 ) => Promise<{ results: unknown[] }> = liftContentScript(
   "SEARCH_WINDOW",
-  async (query: string) => {
-    return withSearchWindow({ query });
-  }
+  async (query: string) => withSearchWindow({ query })
 );
 
 export const runReaderBlock = liftContentScript(

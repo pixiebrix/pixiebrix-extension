@@ -28,18 +28,16 @@ type Permissions = chrome.permissions.Permissions;
 const PermissionRow: React.FunctionComponent<{
   value: string;
   remove: (value: string) => void;
-}> = ({ value, remove }) => {
-  return (
-    <ListGroup.Item className="d-flex">
-      <div className="flex-grow-1 align-self-center">{value}</div>
-      <div className="align-self-center">
-        <Button variant="danger" size="sm" onClick={async () => remove(value)}>
-          Revoke
-        </Button>{" "}
-      </div>
-    </ListGroup.Item>
-  );
-};
+}> = ({ value, remove }) => (
+  <ListGroup.Item className="d-flex">
+    <div className="flex-grow-1 align-self-center">{value}</div>
+    <div className="align-self-center">
+      <Button variant="danger" size="sm" onClick={async () => remove(value)}>
+        Revoke
+      </Button>{" "}
+    </div>
+  </ListGroup.Item>
+);
 
 // `devtools` is actually a required permission that gets added automatically
 // https://github.com/fregante/webext-additional-permissions/issues/6
@@ -79,15 +77,17 @@ const PermissionsSettings: React.FunctionComponent = () => {
     [refresh, addToast]
   );
 
-  const origins = useMemo(() => {
-    return sortBy(permissions?.origins ?? []);
-  }, [permissions]);
+  const origins = useMemo(() => sortBy(permissions?.origins ?? []), [
+    permissions,
+  ]);
 
-  const extraPermissions = useMemo(() => {
-    return sortBy(permissions?.permissions ?? []).filter(
-      (x) => !HIDE_EXTRA_PERMISSIONS.includes(x)
-    );
-  }, [permissions]);
+  const extraPermissions = useMemo(
+    () =>
+      sortBy(permissions?.permissions ?? []).filter(
+        (x) => !HIDE_EXTRA_PERMISSIONS.includes(x)
+      ),
+    [permissions]
+  );
 
   useAsyncEffect(async () => refresh(), []);
 

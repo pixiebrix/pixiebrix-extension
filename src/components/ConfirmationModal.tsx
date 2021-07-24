@@ -40,24 +40,22 @@ export const ModalContext = React.createContext<ModalContextProps>(
 
 const ConfirmationModal: React.FunctionComponent<
   ModalProps & { onCancel: () => void; onSubmit: () => void }
-> = ({ title, message, submitCaption, onCancel, onSubmit }) => {
-  return (
-    <Modal show onHide={onCancel} backdrop="static" keyboard={false}>
-      <Modal.Header closeButton>
-        <Modal.Title>{title ?? "Confirm?"}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>{message}</Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button variant="danger" onClick={onSubmit}>
-          {submitCaption ?? "Continue"}
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
-};
+> = ({ title, message, submitCaption, onCancel, onSubmit }) => (
+  <Modal show onHide={onCancel} backdrop="static" keyboard={false}>
+    <Modal.Header closeButton>
+      <Modal.Title>{title ?? "Confirm?"}</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>{message}</Modal.Body>
+    <Modal.Footer>
+      <Button variant="secondary" onClick={onCancel}>
+        Cancel
+      </Button>
+      <Button variant="danger" onClick={onSubmit}>
+        {submitCaption ?? "Continue"}
+      </Button>
+    </Modal.Footer>
+  </Modal>
+);
 
 type Callback = (submit: boolean) => void;
 
@@ -67,11 +65,12 @@ export const ModalProvider: React.FunctionComponent<{
   const [modalProps, setModalProps] = useState<ModalProps>();
   const [callback, setCallback] = useState<Callback>();
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       callback?.(false);
-    };
-  }, [callback]);
+    },
+    [callback]
+  );
 
   const showConfirmation = useCallback(
     async (modalProps: ModalProps) => {

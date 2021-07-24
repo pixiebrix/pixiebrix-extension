@@ -47,64 +47,61 @@ const pageRejectedCallbacks = new Map<string, (response: unknown) => void>();
 function initContentScriptListener() {
   const targetOrigin = document.defaultView.origin;
 
-  document.defaultView.addEventListener(
-    "message",
-    function (event: MessageEvent) {
-      const { type, meta, payload } = event.data;
-      const { handler, options: { asyncResponse } = { asyncResponse: true } } =
-        contentScriptHandlers.get(type) ?? {};
+  document.defaultView.addEventListener("message", (event: MessageEvent) => {
+    const { type, meta, payload } = event.data;
+    const { handler, options: { asyncResponse } = { asyncResponse: true } } =
+      contentScriptHandlers.get(type) ?? {};
 
-      if (event.source === document.defaultView && handler) {
-        const handlerPromise = new Promise((resolve) =>
-          resolve(handler(...payload))
+    if (event.source === document.defaultView && handler) {
+      const handlerPromise = new Promise((resolve) =>
+        resolve(handler(...payload))
+      );
+
+      const send = (data: unknown, error = false) => {
+        document.defaultView.postMessage(
+          {
+            type: `${type}${error ? rejectedSuffix : fulfilledSuffix}`,
+            error,
+            meta: { nonce: meta.nonce },
+            payload: data,
+          },
+          targetOrigin
         );
+      };
 
-        const send = (data: unknown, error = false) => {
-          document.defaultView.postMessage(
-            {
-              type: `${type}${error ? rejectedSuffix : fulfilledSuffix}`,
-              error,
-              meta: { nonce: meta.nonce },
-              payload: data,
-            },
-            targetOrigin
-          );
-        };
-
-        handlerPromise
-          .then((response) => {
-            if (asyncResponse) {
-              console.debug(
-                `Handler returning success response for ${type} with nonce ${meta.nonce}`
-              );
-              send(response);
-            }
-          })
-          .catch((error: unknown) => {
-            if (asyncResponse) {
-              console.debug(
-                `Handler returning error response for ${type} with nonce ${meta.nonce}`
-              );
-              send(toErrorResponse(type, error), true);
-            } else {
-              console.warn(
-                "An error occurred while processing notification %s",
-                type,
-                error
-              );
-            }
-          });
-        return asyncResponse;
-      }
+      handlerPromise
+        .then((response) => {
+          if (asyncResponse) {
+            console.debug(
+              `Handler returning success response for ${type} with nonce ${meta.nonce}`
+            );
+            send(response);
+          }
+        })
+        .catch((error: unknown) => {
+          if (asyncResponse) {
+            console.debug(
+              `Handler returning error response for ${type} with nonce ${meta.nonce}`
+            );
+            send(toErrorResponse(type, error), true);
+          } else {
+            console.warn(
+              "An error occurred while processing notification %s",
+              type,
+              error
+            );
+          }
+        });
+      return asyncResponse;
     }
-  );
+  });
 }
 
 /**
  * Listener on the external webpage to listen for responses from the contentScript.
  */
 function initExternalPageListener() {
-  window.addEventListener("message", function (event: MessageEvent) {
+  window.addEventListener("message", (event: MessageEvent) => {
     const { type, meta, error, payload } = event.data;
     if (
       // Check isResponseType to make sure we're not handling the messages from the content script

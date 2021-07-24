@@ -87,9 +87,7 @@ const EffectTab: React.FunctionComponent<{
     actions.length > 0 ? 0 : null
   );
 
-  const [blocks] = useAsyncState(async () => {
-    return blockRegistry.all();
-  }, []);
+  const [blocks] = useAsyncState(async () => blockRegistry.all(), []);
 
   const [relevantBlocks] = useAsyncState(async () => {
     const excludeTypes: BlockType[] = ["actionPanel", "panel"].includes(type)
@@ -100,11 +98,8 @@ const EffectTab: React.FunctionComponent<{
 
   const actionsHash = hash(actions.map((x) => x.id));
   const resolvedBlocks = useMemo(
-    () => {
-      return actions.map(({ id }) =>
-        (blocks ?? []).find((block) => block.id === id)
-      );
-    },
+    () =>
+      actions.map(({ id }) => (blocks ?? []).find((block) => block.id === id)),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using actionsHash since we only use the actions ids
     [blocks, actionsHash]
   );

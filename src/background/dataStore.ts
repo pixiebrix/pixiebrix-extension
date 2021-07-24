@@ -40,9 +40,7 @@ async function _setRecord(uuid: string, value: JsonObject): Promise<void> {
 
 export const getRecord = liftBackground(
   "GET_DATA_STORE",
-  async (uuid: string) => {
-    return _getRecord(uuid);
-  }
+  async (uuid: string) => _getRecord(uuid)
 );
 
 export const setRecord = liftBackground(

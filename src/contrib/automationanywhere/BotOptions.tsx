@@ -108,9 +108,10 @@ const RobotField: React.FunctionComponent<FieldProps<string>> = ({
 
   const { bots, error } = useBots();
 
-  const options = useMemo(() => {
-    return (bots ?? []).map((bot) => ({ value: bot.id, label: bot.name, bot }));
-  }, [bots]);
+  const options = useMemo(
+    () => (bots ?? []).map((bot) => ({ value: bot.id, label: bot.name, bot })),
+    [bots]
+  );
 
   return (
     <Form.Group>
@@ -149,13 +150,15 @@ const DeviceField: React.FunctionComponent<FieldProps<string>> = ({
 
   const { devices, error } = useDevices();
 
-  const options = useMemo(() => {
-    return (devices ?? []).map((device) => ({
-      value: device.id,
-      label: `${device.nickname} (${device.hostName})`,
-      device,
-    }));
-  }, [devices]);
+  const options = useMemo(
+    () =>
+      (devices ?? []).map((device) => ({
+        value: device.id,
+        label: `${device.nickname} (${device.hostName})`,
+        device,
+      })),
+    [devices]
+  );
 
   return (
     <Form.Group>

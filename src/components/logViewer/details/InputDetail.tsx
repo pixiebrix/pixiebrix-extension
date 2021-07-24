@@ -22,23 +22,21 @@ import JsonTree from "@/components/JsonTree";
 
 const InputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
   entry,
-}) => {
-  return (
-    <Row>
-      <Col>
-        <span>Template</span>
-        <JsonTree data={entry.data.template} />
-      </Col>
-      <Col>
-        <span>Context</span>
-        <JsonTree data={entry.data.templateContext} />
-      </Col>
-      <Col>
-        <span>Rendered Args</span>
-        <JsonTree data={entry.data.renderedArgs} />
-      </Col>
-    </Row>
-  );
-};
+}) => (
+  <Row>
+    <Col>
+      <span>Template</span>
+      <JsonTree data={entry.data.template} />
+    </Col>
+    <Col>
+      <span>Context</span>
+      <JsonTree data={entry.data.templateContext} />
+    </Col>
+    <Col>
+      <span>Rendered Args</span>
+      <JsonTree data={entry.data.renderedArgs} />
+    </Col>
+  </Row>
+);
 
 export default InputDetail;

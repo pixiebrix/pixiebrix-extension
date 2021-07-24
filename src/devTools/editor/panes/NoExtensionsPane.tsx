@@ -25,59 +25,57 @@ import { faCommentAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
 const NoExtensionsPane: React.FunctionComponent<{
   unavailableCount: number;
   showSupport: () => void;
-}> = ({ unavailableCount, showSupport }) => {
-  return (
-    <Centered>
-      <div className="PaneTitle">No custom extensions on the page</div>
+}> = ({ unavailableCount, showSupport }) => (
+  <Centered>
+    <div className="PaneTitle">No custom extensions on the page</div>
 
-      <div className="text-left">
-        <p>
-          Click <span className="text-info">Add</span> in the sidebar to add an
-          element to the page.
-        </p>
+    <div className="text-left">
+      <p>
+        Click <span className="text-info">Add</span> in the sidebar to add an
+        element to the page.
+      </p>
 
-        <p>
-          Check the &ldquo;Show {unavailableCount ?? 1} unavailable&rdquo; box
-          to list extensions that are activated but aren&apos;t available on
-          this page.
-        </p>
+      <p>
+        Check the &ldquo;Show {unavailableCount ?? 1} unavailable&rdquo; box to
+        list extensions that are activated but aren&apos;t available on this
+        page.
+      </p>
 
-        <p>
-          Learn how to use the Page Editor in our{" "}
-          <a
-            href="#"
-            onClick={async () =>
-              openTab({
-                url: "https://docs.pixiebrix.com/quick-start-guide",
-                active: true,
-              })
-            }
-          >
-            Quick Start Guide
-          </a>
-        </p>
+      <p>
+        Learn how to use the Page Editor in our{" "}
+        <a
+          href="#"
+          onClick={async () =>
+            openTab({
+              url: "https://docs.pixiebrix.com/quick-start-guide",
+              active: true,
+            })
+          }
+        >
+          Quick Start Guide
+        </a>
+      </p>
 
-        <div className="text-center">
-          <Button variant="info" onClick={showSupport}>
-            <FontAwesomeIcon icon={faCommentAlt} /> Live Chat Support
-          </Button>
+      <div className="text-center">
+        <Button variant="info" onClick={showSupport}>
+          <FontAwesomeIcon icon={faCommentAlt} /> Live Chat Support
+        </Button>
 
-          <Button
-            className="ml-2"
-            variant="info"
-            onClick={async () =>
-              openTab({
-                url: "https://calendly.com/pixiebrix-todd/live-support-session",
-                active: true,
-              })
-            }
-          >
-            <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom Session
-          </Button>
-        </div>
+        <Button
+          className="ml-2"
+          variant="info"
+          onClick={async () =>
+            openTab({
+              url: "https://calendly.com/pixiebrix-todd/live-support-session",
+              active: true,
+            })
+          }
+        >
+          <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom Session
+        </Button>
       </div>
-    </Centered>
-  );
-};
+    </div>
+  </Centered>
+);
 
 export default NoExtensionsPane;
