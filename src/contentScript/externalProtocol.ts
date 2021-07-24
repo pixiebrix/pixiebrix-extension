@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isExtensionContext } from "webext-detect-page";
 import { v4 as uuidv4 } from "uuid";
 import {
   HandlerEntry,
@@ -25,7 +24,7 @@ import {
   toErrorResponse,
 } from "@/messaging/protocol";
 import oneMutation from "one-mutation";
-import { isContentScript } from "webext-detect-page";
+import { isContentScript, isExtensionContext } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
 import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";

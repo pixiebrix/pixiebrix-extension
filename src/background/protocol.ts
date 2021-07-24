@@ -115,7 +115,6 @@ export async function callBackground(
   const nonce = uuidv4();
   const message = { type, payload: args, meta: { nonce } };
 
-  console.log("isExtensionContext()", isExtensionContext());
   // `browser.*` APIs are not polyfilled outside the extension context (`externally_connectable` pages)
   // https://github.com/mozilla/webextension-polyfill/issues/326
   const sendMessage = isExtensionContext()
@@ -209,7 +208,7 @@ export function liftBackground<R extends SerializableResponse>(
 
   return async (...args: unknown[]) => {
     if (isBackgroundPage()) {
-      console.trace(`Resolving ${type} immediately from background page`);
+      console.log(`Resolving ${type} immediately from background page`);
       return method(...args);
     }
 
@@ -221,7 +220,6 @@ function backgroundListener(
   request: RemoteProcedureCallRequest,
   sender: Runtime.MessageSender
 ): Promise<unknown> | void {
-  console.log("got request", request);
   // Returning "undefined" indicates the message has not been handled
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/sendMessage
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/runtime/onMessage
