@@ -17,79 +17,58 @@
 
 // https://developer.chrome.com/extensions/devtools
 
-import { browser, DevtoolsPanels, Runtime } from "webextension-polyfill-ts";
+import { browser } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
-import {
-  clearDynamicElements,
-  ensureScript,
-  readSelectedElement,
-} from "@/background/devtools";
+import { readSelectedElement } from "@/background/devtools";
 import { reportError } from "@/telemetry/logging";
 import { updateSelectedElement } from "./devTools/getSelectedElement";
+import { once } from "lodash";
+import { serializeError } from "serialize-error";
 
-window.addEventListener("error", function (e) {
-  reportError(e);
-  return false;
-});
+// TODO: Ensure that reportError can handle ErrorEvent
+window.addEventListener("error", reportError);
+window.addEventListener("unhandledrejection", reportError);
 
-window.addEventListener("unhandledrejection", function (e) {
-  reportError(e);
-});
-
-function initSidebarListeners(
-  sidebar: DevtoolsPanels.ExtensionSidebarPane,
-  port: Runtime.Port
-): void {
-  async function updateElementProperties(): Promise<void> {
-    updateSelectedElement();
-
-    void sidebar.setObject({ state: "loading..." });
-
-    try {
-      await sidebar.setObject(await readSelectedElement(port));
-    } catch (error: unknown) {
-      await sidebar.setObject({ error: error ?? "Unknown error" });
-    }
+async function updateElementProperties(): Promise<void> {
+  const { sidebar, port } = await connectSidebarPane();
+  void sidebar.setObject({ state: "loading..." });
+  try {
+    await updateSelectedElement();
+    await sidebar.setObject(await readSelectedElement(port));
+  } catch (error: unknown) {
+    await sidebar.setObject({ error: serializeError(error) });
   }
+}
+
+function onSidebarShow() {
+  chrome.devtools.panels.elements.onSelectionChanged.addListener(
+    updateElementProperties
+  );
 
   void updateElementProperties();
+}
 
-  chrome.devtools.panels.elements.onSelectionChanged.addListener(
+function onSidebarHide() {
+  chrome.devtools.panels.elements.onSelectionChanged.removeListener(
     updateElementProperties
   );
 }
 
-async function initialize() {
-  // Add panel and sidebar components/elements first so their tabs appear quickly
-  const [sidebar, , port] = await Promise.all([
+// This only ever needs to run once per devtools load. Sidebar and port will be constant throughout
+const connectSidebarPane = once(async () => {
+  const [sidebar, port] = await Promise.all([
     browser.devtools.panels.elements.createSidebarPane("PixieBrix Data Viewer"),
-    browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html"),
     connectDevtools(),
   ]);
 
-  // Attach elements
-  initSidebarListeners(sidebar, port);
+  sidebar.onShown.addListener(onSidebarShow);
+  sidebar.onHidden.addListener(onSidebarHide);
 
-  try {
-    await ensureScript(port);
-
-    // Clear out any dynamic stuff from any previous devtools sessions
-    await clearDynamicElements(port, {}).catch((error: unknown) => {
-      console.warn(
-        "Error clearing dynamic elements from previous devtools sessions",
-        {
-          error,
-        }
-      );
-    });
-  } catch (error: unknown) {
-    // We could install without having content script on the page; they just won't do much
-    console.error("Could not inject contentScript for devtools", {
-      error,
-    });
-  }
-}
+  console.debug("DevTools sidebar ready");
+  return { sidebar, port };
+});
 
 if (browser.devtools.inspectedWindow.tabId) {
-  void initialize();
+  void browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html");
+  void connectSidebarPane();
 }
