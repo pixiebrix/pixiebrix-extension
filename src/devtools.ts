@@ -29,7 +29,10 @@ import { serializeError } from "serialize-error";
 window.addEventListener("error", reportError);
 window.addEventListener("unhandledrejection", reportError);
 
+const { onSelectionChanged } = browser.devtools.panels.elements;
+
 async function updateElementProperties(): Promise<void> {
+  // This call is instant because sidebar and port has connected earlier
   const { sidebar, port } = await connectSidebarPane();
   void sidebar.setObject({ state: "loading..." });
   try {
@@ -41,17 +44,12 @@ async function updateElementProperties(): Promise<void> {
 }
 
 function onSidebarShow() {
-  chrome.devtools.panels.elements.onSelectionChanged.addListener(
-    updateElementProperties
-  );
-
+  onSelectionChanged.addListener(updateElementProperties);
   void updateElementProperties();
 }
 
 function onSidebarHide() {
-  chrome.devtools.panels.elements.onSelectionChanged.removeListener(
-    updateElementProperties
-  );
+  onSelectionChanged.removeListener(updateElementProperties);
 }
 
 // This only ever needs to run once per devtools load. Sidebar and port will be constant throughout
@@ -69,6 +67,7 @@ const connectSidebarPane = once(async () => {
 });
 
 if (browser.devtools.inspectedWindow.tabId) {
+  // Add panel and sidebar as early as possible so they appear quickly
   void browser.devtools.panels.create("PixieBrix", "", "devtoolsPanel.html");
   void connectSidebarPane();
 }
