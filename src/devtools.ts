@@ -25,9 +25,14 @@ import { updateSelectedElement } from "./devTools/getSelectedElement";
 import { once } from "lodash";
 import { serializeError } from "serialize-error";
 
-// TODO: Ensure that reportError can handle ErrorEvent
-window.addEventListener("error", reportError);
-window.addEventListener("unhandledrejection", reportError);
+window.addEventListener("error", function (e) {
+  reportError(e);
+  return false;
+});
+
+window.addEventListener("unhandledrejection", function (e) {
+  reportError(e);
+});
 
 const { onSelectionChanged } = browser.devtools.panels.elements;
 
