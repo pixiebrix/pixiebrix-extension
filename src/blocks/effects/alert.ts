@@ -32,14 +32,14 @@ export class AlertEffect extends Effect {
 
   inputSchema: Schema = propertiesToSchema({
     message: {
-      type: "string",
+      type: ["string", "number", "boolean"],
       description: "A string you want to display in the alert dialog",
     },
   });
 
   async effect({ message }: BlockArg): Promise<void> {
     // eslint-disable-next-line no-alert
-    window.alert(message);
+    window.alert(String(message));
   }
 }
 
