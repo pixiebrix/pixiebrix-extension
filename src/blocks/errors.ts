@@ -87,6 +87,9 @@ export class InputValidationError extends BusinessError {
 
 /**
  * Error indicating output elements of a block did not match the schema.
+ *
+ * In practice, this error should be logged, not thrown. Checking brick post-conditions is helpful for fault
+ * localization, but we optimistically try to proceed with brick execution.
  */
 export class OutputValidationError extends BusinessError {
   readonly schema: Schema;
@@ -98,13 +101,13 @@ export class OutputValidationError extends BusinessError {
   constructor(
     message: string,
     schema: Schema,
-    input: unknown,
+    instance: unknown,
     errors: OutputUnit[]
   ) {
     super(message);
     this.name = "OutputValidationError";
     this.schema = schema;
-    this.instance = input;
+    this.instance = instance;
     this.errors = errors;
   }
 }
