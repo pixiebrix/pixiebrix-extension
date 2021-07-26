@@ -16,15 +16,12 @@
  */
 
 import { v4 as uuidv4 } from "uuid";
-import {
-  getChromeExtensionId,
-  isExtensionContext,
-  RuntimeNotFoundError,
-} from "@/chrome";
+import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { patternToRegex } from "webext-patterns";
 import chromeP from "webext-polyfill-kinda";
 import {
+  isExtensionContext,
   isBackgroundPage,
   isContentScript,
   isOptionsPage,
