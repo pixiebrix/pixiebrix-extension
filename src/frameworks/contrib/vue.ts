@@ -159,9 +159,7 @@ const adapter: WriteableComponentAdapter<Instance> = {
   getComponent: findRelatedComponent,
   getNode: (instance: Instance) => instance.$el,
   getParent: (instance: Instance) => instance.$parent,
-  hasData: (instance: Instance) => {
-    return !isEmpty(instance);
-  },
+  hasData: (instance: Instance) => !isEmpty(instance),
   getData: readVueData,
   setData: (instance: Instance, data) => {
     for (const [key, value] of Object.entries(data)) {

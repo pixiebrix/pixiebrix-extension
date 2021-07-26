@@ -47,22 +47,20 @@ const DropdownEntry: React.FunctionComponent<{
   icon: IconProp;
   onClick: () => void;
   beta?: boolean;
-}> = ({ beta, icon, caption, onClick }) => {
-  return (
-    <Dropdown.Item onClick={onClick}>
-      <FontAwesomeIcon icon={icon} />
-      &nbsp;{caption}
-      {beta && (
-        <>
-          {" "}
-          <Badge variant="success" pill>
-            Beta
-          </Badge>
-        </>
-      )}
-    </Dropdown.Item>
-  );
-};
+}> = ({ beta, icon, caption, onClick }) => (
+  <Dropdown.Item onClick={onClick}>
+    <FontAwesomeIcon icon={icon} />
+    &nbsp;{caption}
+    {beta && (
+      <>
+        {" "}
+        <Badge variant="success" pill>
+          Beta
+        </Badge>
+      </>
+    )}
+  </Dropdown.Item>
+);
 
 const Sidebar: React.FunctionComponent<
   Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {

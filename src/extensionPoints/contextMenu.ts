@@ -318,6 +318,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
         } else {
           extensionLogger.warn(getErrorMessage(error));
         }
+
         throw error;
       }
     });

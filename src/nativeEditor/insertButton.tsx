@@ -54,12 +54,8 @@ export interface DragResult {
 
 function dragPromise(uuid: string): Promise<DragResult | null> {
   const drake = dragula({
-    isContainer: (el?: Element) => {
-      return ["DIV", "SECTION"].includes(el.tagName);
-    },
-    moves: (el?: Element) => {
-      return el.getAttribute(DATA_ATTR) === uuid;
-    },
+    isContainer: (el?: Element) => ["DIV", "SECTION"].includes(el.tagName),
+    moves: (el?: Element) => el.getAttribute(DATA_ATTR) === uuid,
   });
 
   let resolved = false;
@@ -107,9 +103,7 @@ function dragPromise(uuid: string): Promise<DragResult | null> {
 
 export const dragButton = liftContentScript(
   "DRAG_BUTTON",
-  async ({ uuid }: { uuid: string }) => {
-    return dragPromise(uuid);
-  }
+  async ({ uuid }: { uuid: string }) => dragPromise(uuid)
 );
 
 export const insertButton = liftContentScript("INSERT_BUTTON", async () => {

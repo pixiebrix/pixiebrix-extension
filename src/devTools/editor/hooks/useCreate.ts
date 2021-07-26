@@ -84,6 +84,7 @@ function selectErrorMessage(error: unknown): string {
       "No response from PixieBrix server"
     );
   }
+
   return getErrorMessage(error);
 }
 

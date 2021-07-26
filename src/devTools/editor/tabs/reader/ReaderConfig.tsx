@@ -156,53 +156,51 @@ export function searchData(query: string, data: unknown): unknown {
 const FrameworkFields: React.FunctionComponent<{
   name: string;
   element: FormState;
-}> = ({ element, name }) => {
-  return (
-    <>
-      <Form.Group as={Row} controlId="readerSelector">
-        <Form.Label column sm={2}>
-          Selector
-        </Form.Label>
-        <Col sm={10}>
-          <SelectorSelectorField
-            isClearable
-            name={`${name}.definition.selector`}
-            initialElement={
-              "containerInfo" in element ? element.containerInfo : null
-            }
-            traverseUp={5}
-          />
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="readerOptional">
-        <Form.Label column sm={2}>
-          Optional
-        </Form.Label>
-        <Col sm={10}>
-          <ToggleField name={`${name}.definition.optional`} />
-          <Form.Text className="text-muted">
-            Toggle on if the selector might not always be available
-          </Form.Text>
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="readerTraverseUp">
-        <Form.Label column sm={2}>
-          Traverse Up
-        </Form.Label>
-        <Col sm={10}>
-          <Field name={`${name}.definition.traverseUp`}>
-            {({ field }: { field: FieldInputProps<number> }) => (
-              <Form.Control type="number" {...field} min={0} max={10} />
-            )}
-          </Field>
-          <Form.Text className="text-muted">
-            Traverse non-visible framework elements
-          </Form.Text>
-        </Col>
-      </Form.Group>
-    </>
-  );
-};
+}> = ({ element, name }) => (
+  <>
+    <Form.Group as={Row} controlId="readerSelector">
+      <Form.Label column sm={2}>
+        Selector
+      </Form.Label>
+      <Col sm={10}>
+        <SelectorSelectorField
+          isClearable
+          name={`${name}.definition.selector`}
+          initialElement={
+            "containerInfo" in element ? element.containerInfo : null
+          }
+          traverseUp={5}
+        />
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row} controlId="readerOptional">
+      <Form.Label column sm={2}>
+        Optional
+      </Form.Label>
+      <Col sm={10}>
+        <ToggleField name={`${name}.definition.optional`} />
+        <Form.Text className="text-muted">
+          Toggle on if the selector might not always be available
+        </Form.Text>
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row} controlId="readerTraverseUp">
+      <Form.Label column sm={2}>
+        Traverse Up
+      </Form.Label>
+      <Col sm={10}>
+        <Field name={`${name}.definition.traverseUp`}>
+          {({ field }: { field: FieldInputProps<number> }) => (
+            <Form.Control type="number" {...field} min={0} max={10} />
+          )}
+        </Field>
+        <Form.Text className="text-muted">
+          Traverse non-visible framework elements
+        </Form.Text>
+      </Col>
+    </Form.Group>
+  </>
+);
 
 const JQUERY_FIELD_SCHEMA: Schema = {
   type: "object",

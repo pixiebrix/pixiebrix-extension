@@ -18,26 +18,24 @@
 import Centered from "@/devTools/editor/components/Centered";
 import React from "react";
 
-const BetaPane: React.FunctionComponent = () => {
-  return (
-    <Centered>
-      <div className="PaneTitle">
-        This Page Editor feature is currently in private beta
-      </div>
+const BetaPane: React.FunctionComponent = () => (
+  <Centered>
+    <div className="PaneTitle">
+      This Page Editor feature is currently in private beta
+    </div>
 
-      <div className="text-left">
-        <p>
-          To request access, contact{" "}
-          <a href="mailto:support@pixiebrix.com">support@pixiebrix.com</a>
-        </p>
+    <div className="text-left">
+      <p>
+        To request access, contact{" "}
+        <a href="mailto:support@pixiebrix.com">support@pixiebrix.com</a>
+      </p>
 
-        <p>
-          In the meantime, you can create extensions that depend on this feature
-          in the Workshop.
-        </p>
-      </div>
-    </Centered>
-  );
-};
+      <p>
+        In the meantime, you can create extensions that depend on this feature
+        in the Workshop.
+      </p>
+    </div>
+  </Centered>
+);
 
 export default BetaPane;

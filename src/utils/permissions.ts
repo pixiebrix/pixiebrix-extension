@@ -91,6 +91,7 @@ export async function requestPermissions(
   for (const origin of permissions.origins ?? []) {
     page.searchParams.append("origin", origin);
   }
+
   for (const permission of permissions.permissions ?? []) {
     page.searchParams.append("permission", permission);
   }

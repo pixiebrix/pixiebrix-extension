@@ -139,9 +139,7 @@ export default function useLogEntries({
     initialized,
   ]);
 
-  const clear = useCallback(async () => {
-    return clearLog(context);
-  }, [context]);
+  const clear = useCallback(async () => clearLog(context), [context]);
 
   useEffect(() => {
     if (refreshInterval) {

@@ -101,26 +101,18 @@ const debouncedFlush = debounce(flush, EVENT_BUFFER_DEBOUNCE_MS, {
   maxWait: EVENT_BUFFER_MAX_MS,
 });
 
-export const getDNT = liftBackground("GET_DNT", async () => {
-  return _getDNT();
-});
+export const getDNT = liftBackground("GET_DNT", async () => _getDNT());
 
-export const getUID = liftBackground("GET_UID", async () => {
-  return uid();
-});
+export const getUID = liftBackground("GET_UID", async () => uid());
 
 export const getExtensionVersion = liftBackground(
   "GET_EXTENSION_VERSION",
-  async () => {
-    return browser.runtime.getManifest().version;
-  }
+  async () => browser.runtime.getManifest().version
 );
 
 export const toggleDNT = liftBackground(
   "TOGGLE_DNT",
-  async (enabled: boolean) => {
-    return _toggleDNT(enabled);
-  }
+  async (enabled: boolean) => _toggleDNT(enabled)
 );
 
 async function userSummary() {

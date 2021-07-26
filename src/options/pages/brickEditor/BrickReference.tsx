@@ -46,14 +46,12 @@ export type ReferenceEntry = IBlock | IExtensionPoint | IService;
 const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
   children,
-}) => {
-  return (
-    <div className="my-4">
-      <div className="font-weight-bold">{title}</div>
-      <div className="py-2">{children}</div>
-    </div>
-  );
-};
+}) => (
+  <div className="my-4">
+    <div className="font-weight-bold">{title}</div>
+    <div className="py-2">{children}</div>
+  </div>
+);
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -194,13 +192,15 @@ const BrickReference: React.FunctionComponent<{
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ReferenceEntry>(initialSelected);
 
-  const sortedBlocks = useMemo(() => {
-    return sortBy(
-      blocks ?? [],
-      (x) => (isOfficial(x) ? 0 : 1),
-      (x) => x.name
-    );
-  }, [blocks]);
+  const sortedBlocks = useMemo(
+    () =>
+      sortBy(
+        blocks ?? [],
+        (x) => (isOfficial(x) ? 0 : 1),
+        (x) => x.name
+      ),
+    [blocks]
+  );
 
   useEffect(() => {
     if (sortedBlocks.length > 0 && selected == null) {
@@ -208,12 +208,14 @@ const BrickReference: React.FunctionComponent<{
     }
   }, [sortedBlocks, selected, setSelected]);
 
-  const fuse: Fuse<IBlock | IService> = useMemo(() => {
-    return new Fuse(sortedBlocks, {
-      // Prefer name, then id
-      keys: ["name", "id"],
-    });
-  }, [sortedBlocks]);
+  const fuse: Fuse<IBlock | IService> = useMemo(
+    () =>
+      new Fuse(sortedBlocks, {
+        // Prefer name, then id
+        keys: ["name", "id"],
+      }),
+    [sortedBlocks]
+  );
 
   const results = useMemo(() => {
     let matches =

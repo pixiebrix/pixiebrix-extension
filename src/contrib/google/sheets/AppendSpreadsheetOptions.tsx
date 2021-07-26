@@ -48,12 +48,14 @@ const TabField: React.FunctionComponent<
     return [];
   }, [doc?.id, port]);
 
-  const sheetOptions = useMemo(() => {
-    return uniq(compact([...(tabNames ?? []), field.value])).map((value) => ({
-      label: value,
-      value,
-    }));
-  }, [tabNames, field.value]);
+  const sheetOptions = useMemo(
+    () =>
+      uniq(compact([...(tabNames ?? []), field.value])).map((value) => ({
+        label: value,
+        value,
+      })),
+    [tabNames, field.value]
+  );
 
   return (
     <Form.Group>

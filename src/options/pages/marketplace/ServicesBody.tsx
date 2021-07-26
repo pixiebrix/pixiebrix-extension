@@ -60,9 +60,10 @@ const AuthWidget: React.FunctionComponent<{
 
   const [showModal, setShow] = useState(false);
 
-  const [serviceDefinition, isPending, error] = useAsyncState(async () => {
-    return (await registry.all()).find((x) => x.id === serviceId);
-  }, [serviceId]);
+  const [serviceDefinition, isPending, error] = useAsyncState(
+    async () => (await registry.all()).find((x) => x.id === serviceId),
+    [serviceId]
+  );
 
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
@@ -102,13 +103,15 @@ const AuthWidget: React.FunctionComponent<{
     [helpers, addToast, dispatch, setShow, serviceId]
   );
 
-  const initialConfiguration: RawServiceConfiguration = useMemo(() => {
-    return {
-      serviceId,
-      label: "New Configuration",
-      config: {},
-    } as RawServiceConfiguration;
-  }, [serviceId]);
+  const initialConfiguration: RawServiceConfiguration = useMemo(
+    () =>
+      ({
+        serviceId,
+        label: "New Configuration",
+        config: {},
+      } as RawServiceConfiguration),
+    [serviceId]
+  );
 
   return (
     <>
@@ -152,9 +155,10 @@ const ServiceDescriptor: React.FunctionComponent<{
   serviceConfigs: ServiceDefinition[];
   serviceId: string;
 }> = ({ serviceId, serviceConfigs }) => {
-  const config = useMemo(() => {
-    return serviceConfigs?.find((x) => x.metadata.id === serviceId);
-  }, [serviceId, serviceConfigs]);
+  const config = useMemo(
+    () => serviceConfigs?.find((x) => x.metadata.id === serviceId),
+    [serviceId, serviceConfigs]
+  );
 
   if (config) {
     return (

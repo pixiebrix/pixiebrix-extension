@@ -138,12 +138,10 @@ const ReaderTab: React.FunctionComponent<{
   const [blocks] = useAsyncState(async () => {
     const all = await blockRegistry.all();
     const annotated = await Promise.all(
-      all.map(async (block: IBlock) => {
-        return {
-          type: await getType(block),
-          block,
-        };
-      })
+      all.map(async (block: IBlock) => ({
+        type: await getType(block),
+        block,
+      }))
     );
     return annotated.filter((x) => x.type === "reader").map((x) => x.block);
   }, []);

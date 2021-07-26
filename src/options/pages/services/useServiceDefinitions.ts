@@ -46,26 +46,32 @@ function useServiceDefinitions(): ServiceDefinitions {
 
   const showZapier = configurationId === ZAPIER_SLUG;
 
-  const [serviceDefinitions, isPending, error] = useAsyncState(async () => {
-    return sortBy(
-      (await registry.all()).filter((x) => x.id !== PIXIEBRIX_SERVICE_ID),
-      (x) => x.id
-    );
-  }, []);
+  const [serviceDefinitions, isPending, error] = useAsyncState(
+    async () =>
+      sortBy(
+        (await registry.all()).filter((x) => x.id !== PIXIEBRIX_SERVICE_ID),
+        (x) => x.id
+      ),
+    []
+  );
 
-  const activeConfiguration = useMemo(() => {
-    return configurationId && configurationId !== ZAPIER_SLUG
-      ? configuredServices.find((x) => x.id === configurationId)
-      : null;
-  }, [configuredServices, configurationId]);
+  const activeConfiguration = useMemo(
+    () =>
+      configurationId && configurationId !== ZAPIER_SLUG
+        ? configuredServices.find((x) => x.id === configurationId)
+        : null,
+    [configuredServices, configurationId]
+  );
 
-  const activeService = useMemo(() => {
-    return activeConfiguration
-      ? (serviceDefinitions ?? []).find(
-          (x) => x.id === activeConfiguration.serviceId
-        )
-      : null;
-  }, [serviceDefinitions, activeConfiguration]);
+  const activeService = useMemo(
+    () =>
+      activeConfiguration
+        ? (serviceDefinitions ?? []).find(
+            (x) => x.id === activeConfiguration.serviceId
+          )
+        : null,
+    [serviceDefinitions, activeConfiguration]
+  );
 
   if (error) {
     throw error;

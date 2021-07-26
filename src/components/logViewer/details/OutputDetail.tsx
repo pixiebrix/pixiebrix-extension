@@ -22,15 +22,13 @@ import JsonTree from "@/components/JsonTree";
 
 const OutputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
   entry,
-}) => {
-  return (
-    <Row>
-      <Col>
-        {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
-        <JsonTree data={entry.data.output} />
-      </Col>
-    </Row>
-  );
-};
+}) => (
+  <Row>
+    <Col>
+      {entry.data.outputKey && <code>{entry.data.outputKey}</code>}
+      <JsonTree data={entry.data.output} />
+    </Col>
+  </Row>
+);
 
 export default OutputDetail;

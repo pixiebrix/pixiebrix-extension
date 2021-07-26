@@ -23,42 +23,40 @@ import ToggleField from "@/devTools/editor/components/ToggleField";
 
 const MenuItemTab: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey = "menuItem" }) => {
-  return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Caption
-        </Form.Label>
-        <Col sm={10}>
-          <FastField name="extension.caption">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </FastField>
-          <Form.Text className="text-muted">
-            The button caption, which can use data from the reader
-          </Form.Text>
-        </Col>
-      </Form.Group>
+}> = ({ eventKey = "menuItem" }) => (
+  <Tab.Pane eventKey={eventKey} className="h-100">
+    <Form.Group as={Row} controlId="formCaption">
+      <Form.Label column sm={2}>
+        Caption
+      </Form.Label>
+      <Col sm={10}>
+        <FastField name="extension.caption">
+          {({ field }: { field: FieldInputProps<string> }) => (
+            <Form.Control type="text" {...field} />
+          )}
+        </FastField>
+        <Form.Text className="text-muted">
+          The button caption, which can use data from the reader
+        </Form.Text>
+      </Col>
+    </Form.Group>
 
-      <Form.Group as={Row} controlId="formDynamicCaption">
-        <Form.Label column sm={2}>
-          Dynamic Caption
-        </Form.Label>
-        <Col sm={10}>
-          <ToggleField name="extension.dynamicCaption" />
-          <Form.Text className="text-muted">
-            Toggle on to enabling templates in the caption. Turning dynamic
-            captions on may slow down menu rendering if your menu reads a lot of
-            data
-          </Form.Text>
-        </Col>
-      </Form.Group>
+    <Form.Group as={Row} controlId="formDynamicCaption">
+      <Form.Label column sm={2}>
+        Dynamic Caption
+      </Form.Label>
+      <Col sm={10}>
+        <ToggleField name="extension.dynamicCaption" />
+        <Form.Text className="text-muted">
+          Toggle on to enabling templates in the caption. Turning dynamic
+          captions on may slow down menu rendering if your menu reads a lot of
+          data
+        </Form.Text>
+      </Col>
+    </Form.Group>
 
-      <IconField label="Icon" name="extension.icon" schema={iconSchema} />
-    </Tab.Pane>
-  );
-};
+    <IconField label="Icon" name="extension.icon" schema={iconSchema} />
+  </Tab.Pane>
+);
 
 export default MenuItemTab;

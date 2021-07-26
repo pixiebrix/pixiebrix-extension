@@ -150,6 +150,7 @@ export function toggleActionPanel(): string | null {
     hideActionPanel();
     return null;
   }
+
   return showActionPanel();
 }
 

@@ -213,9 +213,11 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
         ),
       })
     )
-    .test("unique-keys", "Services must have unique keys", function (value) {
-      return value.length === uniq(value.map((x) => x.outputKey)).length;
-    });
+    .test(
+      "unique-keys",
+      "Services must have unique keys",
+      (value) => value.length === uniq(value.map((x) => x.outputKey)).length
+    );
 }
 
 export function extensionValidatorFactory(schema: Schema): Yup.Schema<unknown> {

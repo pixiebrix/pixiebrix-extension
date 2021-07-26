@@ -38,23 +38,21 @@ const Step: React.FunctionComponent<{
   number: number;
   completed?: boolean;
   active?: boolean;
-}> = ({ number, completed, active, children }) => {
-  return (
-    <ListGroup.Item className={cx("OnboardingStep", { current: active })}>
-      <div className="d-flex">
-        <div className="OnboardingStep__status">
-          {completed && (
-            <span>
-              <FontAwesomeIcon icon={faCheck} />
-            </span>
-          )}
-        </div>
-        <div className="OnboardingStep__step">Step {number}</div>
-        <div className="OnboardingStep__content">{children}</div>
+}> = ({ number, completed, active, children }) => (
+  <ListGroup.Item className={cx("OnboardingStep", { current: active })}>
+    <div className="d-flex">
+      <div className="OnboardingStep__status">
+        {completed && (
+          <span>
+            <FontAwesomeIcon icon={faCheck} />
+          </span>
+        )}
       </div>
-    </ListGroup.Item>
-  );
-};
+      <div className="OnboardingStep__step">Step {number}</div>
+      <div className="OnboardingStep__content">{children}</div>
+    </div>
+  </ListGroup.Item>
+);
 
 const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");

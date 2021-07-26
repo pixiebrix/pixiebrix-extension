@@ -38,34 +38,32 @@ const CustomFormComponent: React.FunctionComponent<{
   uiSchema: UiSchema;
   formData: JsonObject;
   onSubmit: (values: JsonObject) => Promise<void>;
-}> = ({ schema, uiSchema, formData, onSubmit }) => {
-  return (
-    <div className="CustomForm">
-      <style
-        type="text/css"
-        dangerouslySetInnerHTML={{ __html: theme.toString() }}
-      />
-      <style
-        type="text/css"
-        dangerouslySetInnerHTML={{ __html: custom.toString() }}
-      />
-      <Form
-        schema={schema}
-        uiSchema={uiSchema}
-        formData={formData}
-        onSubmit={async ({ formData }) => {
-          await onSubmit(formData);
-        }}
-      >
-        <div>
-          <button className="btn btn-primary" type="submit">
-            Save
-          </button>
-        </div>
-      </Form>
-    </div>
-  );
-};
+}> = ({ schema, uiSchema, formData, onSubmit }) => (
+  <div className="CustomForm">
+    <style
+      type="text/css"
+      dangerouslySetInnerHTML={{ __html: theme.toString() }}
+    />
+    <style
+      type="text/css"
+      dangerouslySetInnerHTML={{ __html: custom.toString() }}
+    />
+    <Form
+      schema={schema}
+      uiSchema={uiSchema}
+      formData={formData}
+      onSubmit={async ({ formData }) => {
+        await onSubmit(formData);
+      }}
+    >
+      <div>
+        <button className="btn btn-primary" type="submit">
+          Save
+        </button>
+      </div>
+    </Form>
+  </div>
+);
 
 export class CustomForm extends Renderer {
   constructor() {

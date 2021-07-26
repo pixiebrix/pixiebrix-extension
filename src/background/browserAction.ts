@@ -114,9 +114,11 @@ async function waitFrameId(tabId: number): Promise<number> {
           `Action frame not ready for tab ${tabId} after ${FORWARD_RETRY_MAX_WAIT_MILLIS}ms`
         );
       }
+
       await sleep(FORWARD_RETRY_INTERVAL_MILLIS);
     }
   } while (frameId == null);
+
   return frameId;
 }
 
@@ -199,6 +201,7 @@ async function forwardWhenReady(
       }
     }
   }
+
   throw new Error(
     `Action frame for tab ${tabId} not ready in ${FORWARD_RETRY_MAX_WAIT_MILLIS}ms`
   );
