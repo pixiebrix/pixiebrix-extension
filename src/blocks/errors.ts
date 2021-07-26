@@ -84,3 +84,27 @@ export class InputValidationError extends BusinessError {
     this.errors = errors;
   }
 }
+
+/**
+ * Error indicating output elements of a block did not match the schema.
+ */
+export class OutputValidationError extends BusinessError {
+  readonly schema: Schema;
+
+  readonly instance: unknown;
+
+  readonly errors: OutputUnit[];
+
+  constructor(
+    message: string,
+    schema: Schema,
+    input: unknown,
+    errors: OutputUnit[]
+  ) {
+    super(message);
+    this.name = "OutputValidationError";
+    this.schema = schema;
+    this.instance = input;
+    this.errors = errors;
+  }
+}

@@ -19,6 +19,7 @@ import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { CancelError } from "@/errors";
 
 export class Prompt extends Transformer {
   constructor() {
@@ -45,10 +46,23 @@ export class Prompt extends Transformer {
     ["message"]
   );
 
+  outputSchema: Schema = propertiesToSchema({
+    value: {
+      type: "string",
+      description: "The user-provided value",
+    },
+  });
+
   async transform({ message, defaultValue }: BlockArg): Promise<unknown> {
+    // eslint-disable-next-line no-alert -- purpose of this brick is to show an alert
+    const value = window.prompt(message, defaultValue);
+
+    if (value == null) {
+      throw new CancelError("User cancelled the prompt");
+    }
+
     return {
-      // eslint-disable-next-line no-alert
-      value: window.prompt(message, defaultValue),
+      value,
     };
   }
 }

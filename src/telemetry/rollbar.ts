@@ -50,18 +50,15 @@ export const rollbar: Rollbar = Rollbar.init({
     },
     environment: process.env.ENVIRONMENT,
   },
-  transform: function (payload: Payload) {
+  transform: (payload: Payload) => {
     // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
     // https://docs.rollbar.com/docs/source-maps#section-using-source-maps-on-many-domains
-    const trace = payload.body.trace;
-    if (trace && trace.frames) {
-      for (const frame of trace.frames) {
-        if (frame.filename?.includes(process.env.CHROME_EXTENSION_ID)) {
-          frame.filename = frame.filename.replace(
-            location.origin,
-            process.env.ROLLBAR_PUBLIC_PATH
-          );
-        }
+    for (const frame of payload.body.trace?.frames ?? []) {
+      if (frame.filename?.includes(process.env.CHROME_EXTENSION_ID)) {
+        frame.filename = frame.filename.replace(
+          location.origin,
+          process.env.ROLLBAR_PUBLIC_PATH
+        );
       }
     }
   },
@@ -86,7 +83,7 @@ export function toLogArgument(error: unknown): LogArgument {
     return error;
   }
 
-  return error.toString();
+  return String(error);
 }
 
 export async function updateAuth({
@@ -112,7 +109,7 @@ export async function updateAuth({
       }
     } else {
       rollbar.configure({
-        payload: { person: { id: userId, organizationId: organizationId } },
+        payload: { person: { id: userId, organizationId } },
       });
     }
   }
