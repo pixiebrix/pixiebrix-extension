@@ -40,7 +40,7 @@ export const ModalContext = React.createContext<ModalContextProps>(
 
 const ConfirmationModal: React.FunctionComponent<
   ModalProps & { onCancel: () => void; onSubmit: () => void }
-> = ({ title, message, submitCaption, onCancel, onSubmit }) => (
+> = ({ title, message, submitCaption, cancelCaption, onCancel, onSubmit }) => (
   <Modal show onHide={onCancel} backdrop="static" keyboard={false}>
     <Modal.Header closeButton>
       <Modal.Title>{title ?? "Confirm?"}</Modal.Title>
@@ -48,7 +48,7 @@ const ConfirmationModal: React.FunctionComponent<
     <Modal.Body>{message}</Modal.Body>
     <Modal.Footer>
       <Button variant="secondary" onClick={onCancel}>
-        Cancel
+        {cancelCaption ?? "Cancel"}
       </Button>
       <Button variant="danger" onClick={onSubmit}>
         {submitCaption ?? "Continue"}
