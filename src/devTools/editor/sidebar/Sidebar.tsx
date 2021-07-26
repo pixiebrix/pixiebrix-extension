@@ -31,7 +31,6 @@ import { IExtension } from "@/core";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import hash from "object-hash";
 import logoUrl from "@/icons/custom-icons/favicon.svg";
-import { openExtensionOptions } from "@/messaging/external";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import useInstallState from "@/devTools/editor/hooks/useInstallState";
 import InstalledEntry from "@/devTools/editor/sidebar/InstalledEntry";
@@ -121,10 +120,11 @@ const Sidebar: React.FunctionComponent<
     <div className="Sidebar d-flex flex-column vh-100">
       <div className="Sidebar__actions flex-grow-0">
         <div className="d-inline-flex flex-wrap">
-          <span
+          <a
             className="Sidebar__logo"
             dangerouslySetInnerHTML={{ __html: logo }}
-            onClick={async () => openExtensionOptions()}
+            href="/options.html"
+            target="_blank"
           />
           <DropdownButton
             disabled={!!inserting || !hasPermissions}
