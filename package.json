@@ -126,7 +126,7 @@
     "@storybook/addon-actions": "^6.3.4",
     "@storybook/addon-essentials": "^6.3.6",
     "@storybook/addon-links": "^6.3.4",
-    "@storybook/builder-webpack5": "^6.3.4",
+    "@storybook/builder-webpack5": "^6.3.6",
     "@storybook/manager-webpack5": "^6.3.6",
     "@storybook/react": "^6.3.4",
     "@types/chrome": "0.0.147",
