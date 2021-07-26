@@ -17,60 +17,13 @@
 
 import { Effect } from "@/types";
 import { registerBlock } from "@/blocks/registry";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg } from "@/core";
 import { openTab } from "@/background/executor";
-
-const SPACE_ENCODING_DEFAULT = "plus";
-const SPACE_ENCODED_VALUE = "%20";
-
-const URL_INPUT_SPEC: Schema = {
-  $schema: "https://json-schema.org/draft/2019-09/schema#",
-  type: "object",
-  properties: {
-    url: {
-      type: "string",
-      description: "The URL",
-      format: "uri",
-    },
-    params: {
-      type: "object",
-      description: "URL parameters, will be automatically encoded",
-      additionalProperties: { type: "string" },
-    },
-    spaceEncoding: {
-      type: "string",
-      description: "Encode space using %20 vs. +",
-      default: SPACE_ENCODING_DEFAULT,
-      enum: ["percent", "plus"],
-    },
-  },
-  required: ["url"],
-};
-
-function makeURL(
-  url: string,
-  params: { [key: string]: string } | undefined = {},
-  spaceEncoding: "plus" | "percent" = SPACE_ENCODING_DEFAULT
-): string {
-  // https://javascript.info/url#searchparams
-  const result = new URL(url);
-  for (const [name, value] of Object.entries(params ?? {})) {
-    if ((value ?? "") !== "") {
-      result.searchParams.append(name, value);
-    }
-  }
-
-  const fullURL = result.toString();
-
-  if (spaceEncoding === "plus" || result.search.length === 0) {
-    return fullURL;
-  }
-
-  return fullURL.replace(
-    result.search,
-    result.search.replaceAll("+", SPACE_ENCODED_VALUE)
-  );
-}
+import {
+  makeURL,
+  SPACE_ENCODING_DEFAULT,
+  URL_INPUT_SPEC,
+} from "@/blocks/transformers/url";
 
 export class NavigateURLEffect extends Effect {
   constructor() {
