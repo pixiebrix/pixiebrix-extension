@@ -106,9 +106,7 @@ attachListener(SEARCH_WINDOW, ({ query }) => {
   };
 });
 
-attachListener(DETECT_FRAMEWORK_VERSIONS, async () => {
-  return detectLibraries();
-});
+attachListener(DETECT_FRAMEWORK_VERSIONS, async () => detectLibraries());
 
 function readPathSpec(
   // eslint-disable-next-line @typescript-eslint/ban-types -- object because we need to pass in window
@@ -298,7 +296,7 @@ attachListener(
 console.debug(`DISPATCH: ${SCRIPT_LOADED} (Injected Script Run)`);
 document.dispatchEvent(new CustomEvent(SCRIPT_LOADED));
 
-setTimeout(function () {
+setTimeout(() => {
   document.dispatchEvent(new CustomEvent(CONNECT_EXTENSION, {}));
 }, 0);
 

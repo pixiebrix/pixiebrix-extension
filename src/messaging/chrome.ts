@@ -40,7 +40,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
     callbacks: CallbackMap,
     prop: "result" | "error"
   ) => {
-    document.addEventListener(type, function (event: CustomEvent) {
+    document.addEventListener(type, (event: CustomEvent) => {
       if (!event.detail) {
         throw new Error(
           `Handler for ${type} did not provide a detail property`

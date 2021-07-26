@@ -19,8 +19,7 @@ import { recordError } from "@/background/logging";
 import { rollbar, toLogArgument } from "@/telemetry/rollbar";
 import { MessageContext, SerializedError } from "@/core";
 import { serializeError } from "serialize-error";
-import { isExtensionContext } from "@/chrome";
-import { isBackgroundPage } from "webext-detect-page";
+import { isExtensionContext, isBackgroundPage } from "webext-detect-page";
 
 function selectError(error: unknown): SerializedError {
   if (error instanceof PromiseRejectionEvent) {

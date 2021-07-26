@@ -44,6 +44,7 @@ function selectAuths(
     } else if (configs.length > 1) {
       throw new Error(`Service ${id} has multiple configurations`);
     }
+
     // eslint-disable-next-line security/detect-object-injection -- safe because it's from Object.entries
     result[id] = configs[0];
   }

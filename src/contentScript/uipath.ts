@@ -60,9 +60,9 @@ async function _initRobot(): Promise<InitResponse> {
   });
 }
 
-export const initRobot = liftContentScript("UIPATH_INIT", async () => {
-  return _initRobot();
-});
+export const initRobot = liftContentScript("UIPATH_INIT", async () =>
+  _initRobot()
+);
 
 export const getProcesses = liftContentScript(
   "UIPATH_GET_PROCESSES",

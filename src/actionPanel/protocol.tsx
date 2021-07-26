@@ -88,6 +88,7 @@ handlers.set(RENDER_PANELS_MESSAGE, async (message: RenderPanelsMessage) => {
     );
     return;
   }
+
   seqNumber = messageSeq;
 
   console.debug(

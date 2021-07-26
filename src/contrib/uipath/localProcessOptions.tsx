@@ -62,13 +62,15 @@ export const ProcessField: React.FunctionComponent<
 > = ({ label, schema, processes, fetchError, isPending, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
 
-  const options = useMemo(() => {
-    return (processes ?? []).map((x) => ({
-      value: x.id,
-      label: x.name,
-      process: x,
-    }));
-  }, [processes]);
+  const options = useMemo(
+    () =>
+      (processes ?? []).map((x) => ({
+        value: x.id,
+        label: x.name,
+        process: x,
+      })),
+    [processes]
+  );
 
   return (
     <Form.Group>
@@ -163,9 +165,10 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     return [];
   }, [robotAvailable]);
 
-  const process = useMemo(() => {
-    return processes?.find((x) => x.id === releaseKey);
-  }, [processes, releaseKey]);
+  const process = useMemo(() => processes?.find((x) => x.id === releaseKey), [
+    processes,
+    releaseKey,
+  ]);
 
   if (!port) {
     return (

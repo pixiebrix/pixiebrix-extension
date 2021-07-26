@@ -21,41 +21,39 @@ import { Field, FieldInputProps } from "formik";
 
 const MetaTab: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey = "meta" }) => {
-  return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
-      <Form.Group as={Row} controlId="extensionName">
-        <Form.Label column sm={2}>
-          Name
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="label">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-          <Form.Text className="text-muted">
-            A name for this extension so that you can find it later
-          </Form.Text>
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="extensionId">
-        <Form.Label column sm={2}>
-          UUID
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="uuid">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} disabled />
-            )}
-          </Field>
-          <Form.Text className="text-muted">
-            An automatically generated unique identifier for this extension
-          </Form.Text>
-        </Col>
-      </Form.Group>
-    </Tab.Pane>
-  );
-};
+}> = ({ eventKey = "meta" }) => (
+  <Tab.Pane eventKey={eventKey} className="h-100">
+    <Form.Group as={Row} controlId="extensionName">
+      <Form.Label column sm={2}>
+        Name
+      </Form.Label>
+      <Col sm={10}>
+        <Field name="label">
+          {({ field }: { field: FieldInputProps<string> }) => (
+            <Form.Control type="text" {...field} />
+          )}
+        </Field>
+        <Form.Text className="text-muted">
+          A name for this extension so that you can find it later
+        </Form.Text>
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row} controlId="extensionId">
+      <Form.Label column sm={2}>
+        UUID
+      </Form.Label>
+      <Col sm={10}>
+        <Field name="uuid">
+          {({ field }: { field: FieldInputProps<string> }) => (
+            <Form.Control type="text" {...field} disabled />
+          )}
+        </Field>
+        <Form.Text className="text-muted">
+          An automatically generated unique identifier for this extension
+        </Form.Text>
+      </Col>
+    </Form.Group>
+  </Tab.Pane>
+);
 
 export default MetaTab;

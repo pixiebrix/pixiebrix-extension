@@ -16,7 +16,7 @@
  */
 
 import Rollbar, { LogArgument } from "rollbar";
-import { isExtensionContext } from "@/chrome";
+import { isExtensionContext } from "webext-detect-page";
 import { getUID } from "@/background/telemetry";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;

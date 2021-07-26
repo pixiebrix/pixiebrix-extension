@@ -76,9 +76,7 @@ export const clear = liftContentScript(
 
 export const getInstalledExtensionPointIds = liftContentScript(
   "INSTALLED_EXTENSIONS",
-  async () => {
-    return getInstalledIds();
-  }
+  async () => getInstalledIds()
 );
 
 type ReaderLike = ReaderConfig | ReaderReference | Reader;

@@ -20,7 +20,7 @@ import cx from "classnames";
 import "./Banner.scss";
 import { getExtensionAuth } from "@/auth/token";
 import AuthContext from "@/auth/AuthContext";
-import { isExtensionContext } from "@/chrome";
+import { isExtensionContext } from "webext-detect-page";
 import { connectPage } from "@/messaging/external";
 import { useAsyncState } from "@/hooks/common";
 
@@ -71,6 +71,7 @@ const Banner: React.FunctionComponent = () => {
   if (environment === "production") {
     return null;
   }
+
   return <EnvironmentBanner />;
 };
 

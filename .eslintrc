@@ -82,11 +82,6 @@
     "unicorn/prefer-set-has": "off", // Not always worth the extra code
     "unicorn/require-post-message-target-origin": "off", // Incompatible https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1396
 
-    // Large diffs, autofix later together
-    "arrow-body-style": "off",
-    "prefer-arrow-callback": "off",
-    "padding-line-between-statements": "off",
-
     // Temporarily disable rules
     "no-await-in-loop": "warn",
     "no-negated-condition": "warn",

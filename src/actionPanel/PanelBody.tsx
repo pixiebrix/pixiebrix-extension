@@ -32,8 +32,8 @@ import { getErrorMessage } from "@/errors";
 
 const BodyComponent: React.FunctionComponent<{
   body: string | ComponentRef;
-}> = ({ body }) => {
-  return useMemo(() => {
+}> = ({ body }) =>
+  useMemo(() => {
     if (typeof body === "string") {
       return (
         <div
@@ -46,7 +46,6 @@ const BodyComponent: React.FunctionComponent<{
     const { Component, props } = body;
     return <Component {...props} />;
   }, [body]);
-};
 
 const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
   panel,

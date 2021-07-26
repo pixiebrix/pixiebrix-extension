@@ -127,9 +127,10 @@ const RobotsField: React.FunctionComponent<FieldProps<number[]>> = ({
 
   const { robots, error } = useRobots();
 
-  const options = useMemo(() => {
-    return (robots ?? []).map((x) => ({ value: x.Id, label: x.Id }));
-  }, [robots]);
+  const options = useMemo(
+    () => (robots ?? []).map((x) => ({ value: x.Id, label: x.Id })),
+    [robots]
+  );
 
   return (
     <Form.Group>
@@ -163,13 +164,15 @@ export const ReleaseField: React.FunctionComponent<
 > = ({ label, schema, releases, fetchError, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
 
-  const options = useMemo(() => {
-    return (releases ?? []).map((x) => ({
-      value: x.Key,
-      label: `${x.Name} - ${x.ProcessVersion}`,
-      release: x,
-    }));
-  }, [releases]);
+  const options = useMemo(
+    () =>
+      (releases ?? []).map((x) => ({
+        value: x.Key,
+        label: `${x.Name} - ${x.ProcessVersion}`,
+        release: x,
+      })),
+    [releases]
+  );
 
   return (
     <Form.Group>
@@ -238,36 +241,30 @@ export function releaseSchema(release: Release): Schema {
 
 export const InputArgumentsField: React.FunctionComponent<
   FieldProps<object>
-> = ({ name, schema, label }) => {
-  return (
-    <Form.Group>
-      <Form.Label>inputArguments</Form.Label>
-      <Card>
-        <Card.Header>{label}</Card.Header>
-        <Card.Body>
-          {schema &&
-            Object.entries(inputProperties(schema)).map(
-              ([prop, fieldSchema]) => {
-                if (typeof fieldSchema === "boolean") {
-                  throw new TypeError(
-                    "Expected schema for input property type"
-                  );
-                }
+> = ({ name, schema, label }) => (
+  <Form.Group>
+    <Form.Label>inputArguments</Form.Label>
+    <Card>
+      <Card.Header>{label}</Card.Header>
+      <Card.Body>
+        {schema &&
+          Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
+            if (typeof fieldSchema === "boolean") {
+              throw new TypeError("Expected schema for input property type");
+            }
 
-                return (
-                  <FieldRenderer
-                    key={prop}
-                    name={`${name}.${prop}`}
-                    schema={schema}
-                  />
-                );
-              }
-            )}
-        </Card.Body>
-      </Card>
-    </Form.Group>
-  );
-};
+            return (
+              <FieldRenderer
+                key={prop}
+                name={`${name}.${prop}`}
+                schema={schema}
+              />
+            );
+          })}
+      </Card.Body>
+    </Card>
+  </Form.Group>
+);
 
 const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,

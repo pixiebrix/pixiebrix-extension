@@ -27,10 +27,10 @@ import { isChrome } from "@/helpers";
 
 const lift = isChrome ? liftBackground : liftExternal;
 
-export const connectPage = lift("CONNECT_PAGE", async () => {
+export const connectPage = lift("CONNECT_PAGE", async () =>
   // `browser.runtimes`'s types don't include the whole manifest. Use the chrome namespace to get the full type
-  return chrome.runtime.getManifest();
-});
+  chrome.runtime.getManifest()
+);
 
 const _reload = liftBackground("BACKGROUND_RELOAD", async () => {
   browser.runtime.reload();
@@ -147,25 +147,19 @@ const _openActivate = liftBackground(
 
 export const openActivateBlueprint = lift(
   "OPEN_ACTIVATE_BLUEPRINT",
-  async (options: ActivateBlueprintOptions) => {
-    return _openActivate(options);
-  }
+  async (options: ActivateBlueprintOptions) => _openActivate(options)
 );
 
-export const openExtensionOptions = lift("OPEN_OPTIONS", async () => {
-  return _openOptions();
-});
+export const openExtensionOptions = lift("OPEN_OPTIONS", async () =>
+  _openOptions()
+);
 
 export const openMarketplace = lift(
   "OPEN_MARKETPLACE",
-  async (options: OpenOptionsOptions = {}) => {
-    return _openMarketplace(options);
-  }
+  async (options: OpenOptionsOptions = {}) => _openMarketplace(options)
 );
 
 export const openTemplates = lift(
   "OPEN_TEMPLATES",
-  async (options: OpenOptionsOptions = {}) => {
-    return _openTemplates(options);
-  }
+  async (options: OpenOptionsOptions = {}) => _openTemplates(options)
 );

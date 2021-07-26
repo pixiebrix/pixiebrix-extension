@@ -775,6 +775,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
           $menu[position]($menuItem);
           break;
         }
+
         default: {
           throw new Error(`Unexpected position ${String(position)}`);
         }

@@ -341,9 +341,10 @@ const ExtensionPointDetail: React.FunctionComponent<OwnProps> = ({
     ]
   );
 
-  const validationSchema = useMemo(() => {
-    return extensionValidatorFactory(extensionPoint.inputSchema);
-  }, [extensionPoint]);
+  const validationSchema = useMemo(
+    () => extensionValidatorFactory(extensionPoint.inputSchema),
+    [extensionPoint]
+  );
 
   return (
     <HotKeys keyMap={keyMap}>

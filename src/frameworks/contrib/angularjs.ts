@@ -81,9 +81,7 @@ const adapter: ReadableComponentAdapter<AngularElement, Scope> = {
   getComponent: (node) => ignoreNotFound(() => getComponent(node)),
   getParent: (instance) => instance.parent(),
   getNode: (instance) => instance[0],
-  hasData: (instance) => {
-    return !isEmpty(getAngularData(instance));
-  },
+  hasData: (instance) => !isEmpty(getAngularData(instance)),
   getData: getAngularData,
 };
 

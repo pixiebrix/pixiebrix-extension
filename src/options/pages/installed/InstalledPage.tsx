@@ -47,12 +47,14 @@ const InstalledTable: React.FunctionComponent<{
   extensions: InstalledExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const recipeExtensions = useMemo(() => {
-    return sortBy(
-      Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
-      (x) => (x[0] === "" ? 0 : 1)
-    );
-  }, [extensions]);
+  const recipeExtensions = useMemo(
+    () =>
+      sortBy(
+        Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
+        (x) => (x[0] === "" ? 0 : 1)
+      ),
+    [extensions]
+  );
 
   return (
     <Row>

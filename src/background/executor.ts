@@ -177,8 +177,8 @@ handlers.set(
     });
 
     const results = await Promise.allSettled(
-      tabTargets.map(async ([tabId]) => {
-        return browser.tabs.sendMessage(
+      tabTargets.map(async ([tabId]) =>
+        browser.tabs.sendMessage(
           Number.parseInt(tabId, 10),
           {
             type: CONTENT_MESSAGE_RUN_BLOCK,
@@ -189,8 +189,8 @@ handlers.set(
           },
           // For now, only support top-level frame as opener
           { frameId: TOP_LEVEL_FRAME }
-        );
-      })
+        )
+      )
     );
     return results
       .filter((x) => x.status === "fulfilled")
@@ -261,9 +261,9 @@ handlers.set(MESSAGE_ACTIVATE_TAB, async (_, sender) => {
   });
 });
 
-handlers.set(MESSAGE_CLOSE_TAB, async (_, sender) => {
-  return browser.tabs.remove(sender.tab.id);
-});
+handlers.set(MESSAGE_CLOSE_TAB, async (_, sender) =>
+  browser.tabs.remove(sender.tab.id)
+);
 
 handlers.set(MESSAGE_OPEN_TAB, async (request: OpenTabAction, sender) => {
   const tab = await browser.tabs.create(request.payload);

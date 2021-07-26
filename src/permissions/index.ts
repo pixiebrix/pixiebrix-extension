@@ -121,6 +121,7 @@ export async function collectPermissions(
           config,
         });
       }
+
       return mergePermissions([extensionPoint.permissions, permissions, inner]);
     }
   );

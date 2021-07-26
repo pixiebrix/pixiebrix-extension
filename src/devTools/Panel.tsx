@@ -52,15 +52,13 @@ const defaultState: AuthState = {
   flags: [],
 };
 
-const PersistLoader: React.FunctionComponent = () => {
-  return (
-    <Centered>
-      <div className="d-flex justify-content-center">
-        <GridLoader />
-      </div>
-    </Centered>
-  );
-};
+const PersistLoader: React.FunctionComponent = () => (
+  <Centered>
+    <div className="d-flex justify-content-center">
+      <GridLoader />
+    </div>
+  </Centered>
+);
 
 const RequireScope: React.FunctionComponent<{
   scope: string | null;

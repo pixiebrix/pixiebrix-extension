@@ -55,6 +55,7 @@ const RecipeEntry: React.FunctionComponent<{
         for (const { id: extensionId, extensionPointId } of extensions) {
           onRemove({ extensionId, extensionPointId });
         }
+
         notify.success(`Uninstalled ${name}`);
       } catch (error: unknown) {
         reportError(error);

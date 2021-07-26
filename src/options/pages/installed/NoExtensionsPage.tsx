@@ -24,70 +24,68 @@ import {
   faExternalLinkAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
-const NoExtensionsPage: React.FunctionComponent = () => {
-  return (
-    <>
-      <Row>
-        <Col className="VideoCard">
-          <Card>
-            <Card.Header>Activate Bricks</Card.Header>
-            <Card.Body>
-              <Row>
-                <Col>
-                  <h4>Activate an Official Template</h4>
-                  <p>
-                    <span className="text-primary">
-                      The easiest way to start using PixieBrix!
-                    </span>{" "}
-                    Activate a pre-made template from the Templates page.
-                  </p>
-                  <Link to={"/templates"} className="btn btn-info">
-                    View Templates&nbsp;
-                    <FontAwesomeIcon icon={faClipboardCheck} />
-                  </Link>
-                </Col>
-                <Col>
-                  <h4>Create your Own</h4>
-                  <p>
-                    Follow the Quickstart Guide in our documentation area to
-                    start creating your own bricks in minutes.
-                  </p>
-                  <a
-                    className="btn btn-info"
-                    href="https://docs.pixiebrix.com/quick-start-guide"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Open Quickstart Guide&nbsp;
-                    <FontAwesomeIcon icon={faExternalLinkAlt} />
-                  </a>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <Row>
-        <Col className="VideoCard mt-3">
-          <Card>
-            <Card.Header>Video Tour</Card.Header>
-            <Card.Body className="mx-auto">
-              <div>
-                <iframe
-                  src="https://player.vimeo.com/video/514828533"
-                  width="640"
-                  height="400"
-                  frameBorder="0"
-                  allow="fullscreen; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </>
-  );
-};
+const NoExtensionsPage: React.FunctionComponent = () => (
+  <>
+    <Row>
+      <Col className="VideoCard">
+        <Card>
+          <Card.Header>Activate Bricks</Card.Header>
+          <Card.Body>
+            <Row>
+              <Col>
+                <h4>Activate an Official Template</h4>
+                <p>
+                  <span className="text-primary">
+                    The easiest way to start using PixieBrix!
+                  </span>{" "}
+                  Activate a pre-made template from the Templates page.
+                </p>
+                <Link to={"/templates"} className="btn btn-info">
+                  View Templates&nbsp;
+                  <FontAwesomeIcon icon={faClipboardCheck} />
+                </Link>
+              </Col>
+              <Col>
+                <h4>Create your Own</h4>
+                <p>
+                  Follow the Quickstart Guide in our documentation area to start
+                  creating your own bricks in minutes.
+                </p>
+                <a
+                  className="btn btn-info"
+                  href="https://docs.pixiebrix.com/quick-start-guide"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Open Quickstart Guide&nbsp;
+                  <FontAwesomeIcon icon={faExternalLinkAlt} />
+                </a>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Card>
+      </Col>
+    </Row>
+    <Row>
+      <Col className="VideoCard mt-3">
+        <Card>
+          <Card.Header>Video Tour</Card.Header>
+          <Card.Body className="mx-auto">
+            <div>
+              <iframe
+                src="https://player.vimeo.com/video/514828533"
+                width="640"
+                height="400"
+                frameBorder="0"
+                allow="fullscreen; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </Card.Body>
+        </Card>
+      </Col>
+    </Row>
+  </>
+);
 
 export default NoExtensionsPage;

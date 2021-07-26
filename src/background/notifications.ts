@@ -20,8 +20,7 @@ import { browser, Notifications } from "webextension-polyfill-ts";
 
 export const createNotification = liftBackground(
   "CREATE_NOTIFICATION",
-  async (options: Notifications.CreateNotificationOptions) => {
+  async (options: Notifications.CreateNotificationOptions) =>
     // Generate id automatically
-    return browser.notifications.create(undefined, options);
-  }
+    browser.notifications.create(undefined, options)
 );
