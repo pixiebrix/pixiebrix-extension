@@ -168,7 +168,7 @@
     "@types/webpack-env": "^1.16.2",
     "@types/yup": "^0.29.13",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
-    "@typescript-eslint/parser": "^4.28.3",
+    "@typescript-eslint/parser": "^4.28.4",
     "axios-mock-adapter": "^1.19.0",
     "babel-jest": "^27.0.6",
     "babel-loader": "^8.2.2",
