@@ -83,6 +83,11 @@ export class UrlCreator extends Transformer {
 
   inputSchema: Schema = URL_INPUT_SPEC;
 
+  outputSchema: Schema = {
+    type: "string",
+    format: "uri",
+  };
+
   async transform({
     url,
     params,
