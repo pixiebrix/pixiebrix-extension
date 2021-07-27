@@ -34,7 +34,7 @@ export const URL_INPUT_SPEC: Schema = {
     params: {
       type: "object",
       description: "URL parameters, will be automatically encoded",
-      additionalProperties: { type: ["string", "number"] },
+      additionalProperties: { type: ["string", "number", "boolean"] },
     },
     spaceEncoding: {
       type: "string",
@@ -48,7 +48,7 @@ export const URL_INPUT_SPEC: Schema = {
 
 export function makeURL(
   url: string,
-  params: Record<string, string | number> | undefined = {},
+  params: Record<string, string | number | boolean> | undefined = {},
   spaceEncoding: "plus" | "percent" = SPACE_ENCODING_DEFAULT
 ): string {
   // https://javascript.info/url#searchparams
@@ -71,12 +71,12 @@ export function makeURL(
   );
 }
 
-export class UrlCreator extends Transformer {
+export class UrlParams extends Transformer {
   constructor() {
     super(
-      "@pixiebrix/url",
+      "@pixiebrix/url-params",
       "Construct URL",
-      "Construct a URL with optional search params",
+      "Construct a URL with encoded search parameter",
       "faCode"
     );
   }
@@ -84,17 +84,26 @@ export class UrlCreator extends Transformer {
   inputSchema: Schema = URL_INPUT_SPEC;
 
   outputSchema: Schema = {
-    type: "string",
-    format: "uri",
+    type: "object",
+    $schema: "https://json-schema.org/draft/2019-09/schema#",
+    properties: {
+      url: {
+        type: "string",
+        format: "uri",
+      },
+    },
+    required: ["url"],
   };
 
   async transform({
     url,
     params,
     spaceEncoding = SPACE_ENCODING_DEFAULT,
-  }: BlockArg): Promise<string> {
-    return makeURL(url, params, spaceEncoding);
+  }: BlockArg): Promise<{ url: string }> {
+    return {
+      url: makeURL(url, params, spaceEncoding),
+    };
   }
 }
 
-registerBlock(new UrlCreator());
+registerBlock(new UrlParams());
