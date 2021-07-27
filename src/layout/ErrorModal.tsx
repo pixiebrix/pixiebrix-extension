@@ -17,9 +17,10 @@
 
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useCallback } from "react";
 import { useState } from "react";
 import { Button, Modal, ModalBody } from "react-bootstrap";
+import { useHistory } from "react-router";
 
 const errorMessages = new Map([
   [
@@ -31,12 +32,17 @@ const errorMessages = new Map([
 
 const ErrorModal: React.FunctionComponent = () => {
   const [show, setShow] = useState(true);
+  const history = useHistory();
   const message = errorMessages.get(
     new URLSearchParams(location.search).get("error")
   );
-  const handleClose = () => {
+
+  const handleClose = useCallback(() => {
     setShow(false);
-  };
+    const params = new URLSearchParams(location.search);
+    params.delete("error");
+    history.replace({ search: params.toString() });
+  }, [history]);
 
   if (message) {
     return (
@@ -48,7 +54,7 @@ const ErrorModal: React.FunctionComponent = () => {
           </Modal.Title>
         </Modal.Header>
         <ModalBody>
-          <p className="text-danger">{message}</p>
+          <p>{message}</p>
         </ModalBody>
         <Modal.Footer>
           <Button variant="danger" onClick={handleClose}>
