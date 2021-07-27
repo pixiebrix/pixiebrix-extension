@@ -45,6 +45,7 @@ export class FormData extends Transformer {
   async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
     const result: Record<string, unknown> = {};
     $(document)
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
       .find(selector)
       .find(":input")
       .each(function () {
