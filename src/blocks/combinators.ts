@@ -33,8 +33,8 @@ import {
   ServiceDependency,
   TemplateEngine,
 } from "@/core";
-import { validateInput } from "@/validators/generic";
-import { castArray, isPlainObject, mapValues, pickBy } from "lodash";
+import { validateInput, validateOutput } from "@/validators/generic";
+import { castArray, isPlainObject, mapValues, pickBy, isEmpty } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
   executeInAll,
@@ -49,12 +49,15 @@ import { serializeError } from "serialize-error";
 import {
   HeadlessModeError,
   InputValidationError,
+  OutputValidationError,
   PipelineConfigurationError,
 } from "@/blocks/errors";
 import { engineRenderer } from "@/utils/renderers";
 
 export type ReaderConfig =
   | string
+  // Can't use Record syntax because generics can't reference themselves
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
 
@@ -364,6 +367,25 @@ export async function reducePipeline(
           output,
           outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
         });
+      }
+
+      if (validate && !isEmpty(block.outputSchema)) {
+        const validationResult = await validateOutput(
+          castSchema(block.outputSchema),
+          excludeUndefined(output)
+        );
+        if (!validationResult.valid) {
+          // For now, don't halt execution on output schema violation. If the output is malformed in a way that
+          // prevents the next block from executing, the input validation check will fail
+          logger.error(
+            new OutputValidationError(
+              "Invalid outputs for block",
+              block.outputSchema,
+              output,
+              validationResult.errors
+            )
+          );
+        }
       }
 
       if (isEffectBlock(block)) {

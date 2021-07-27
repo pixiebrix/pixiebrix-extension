@@ -18,6 +18,7 @@
 import yaml from "js-yaml";
 import { KIND_SCHEMAS, validateKind } from "@/validators/generic";
 import { ValidationResult } from "@cfworker/json-schema";
+import { getErrorMessage } from "@/errors";
 
 interface PartialSchema {
   kind?: string;
@@ -36,7 +37,7 @@ export async function validateSchema(value: string): Promise<any> {
     json = yaml.load(value) as PartialSchema;
   } catch (error: unknown) {
     return {
-      config: [`Invalid YAML: ${error}`],
+      config: [`Invalid YAML: ${getErrorMessage(error)}`],
     };
   }
 
@@ -52,7 +53,7 @@ export async function validateSchema(value: string): Promise<any> {
 
   try {
     validation = await validateKind(
-      json,
+      json as Record<string, unknown>,
       json.kind as keyof typeof KIND_SCHEMAS
     );
   } catch (error: unknown) {
