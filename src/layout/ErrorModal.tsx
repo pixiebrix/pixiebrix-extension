@@ -17,8 +17,7 @@
 
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useCallback } from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button, Modal, ModalBody } from "react-bootstrap";
 import { useHistory } from "react-router";
 
@@ -37,12 +36,12 @@ const ErrorModal: React.FunctionComponent = () => {
     new URLSearchParams(location.search).get("error")
   );
 
-  const handleClose = useCallback(() => {
+  const handleClose = () => {
     setShow(false);
     const params = new URLSearchParams(location.search);
     params.delete("error");
     history.replace({ search: params.toString() });
-  }, [history]);
+  };
 
   if (message) {
     return (
