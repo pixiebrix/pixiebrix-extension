@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import "./Banner.scss";
+import { useState } from "react";
+import { Button, Modal, ModalBody } from "react-bootstrap";
 
 const errorMessages = new Map([
   [
@@ -26,15 +29,37 @@ const errorMessages = new Map([
   ["ERR_BROWSER_ACTION_TOGGLE", "PixieBrix could not run on the page"],
 ]);
 
-const ErrorBanner: React.FunctionComponent = () => {
+const ErrorModal: React.FunctionComponent = () => {
+  const [show, setShow] = useState(true);
   const message = errorMessages.get(
     new URLSearchParams(location.search).get("error")
   );
+  const handleClose = () => {
+    setShow(false);
+  };
+
   if (message) {
-    return <div className="error-banner w-100">{message}</div>;
+    return (
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title className="text-danger">
+            <FontAwesomeIcon icon={faExclamationCircle} className="mr-1" />
+            Error
+          </Modal.Title>
+        </Modal.Header>
+        <ModalBody>
+          <p className="text-danger">{message}</p>
+        </ModalBody>
+        <Modal.Footer>
+          <Button variant="danger" onClick={handleClose}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    );
   }
 
   return null;
 };
 
-export default ErrorBanner;
+export default ErrorModal;
