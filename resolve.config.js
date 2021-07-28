@@ -31,7 +31,7 @@ module.exports = {
         "src/contrib/uipath/quietLogger"
       ),
       // `lodash-es` is a build of lodash using es6 modules. It also avoids an import error loading lodash methods we
-      // were seeing on https://www.cbssports.com/fantasy/football/players/2258303/aj-brown/
+      // were seeing: https://github.com/pixiebrix/pixiebrix-extension/issues/943
       lodash: "lodash-es",
       // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
       handlebars: "handlebars/dist/handlebars.js",
