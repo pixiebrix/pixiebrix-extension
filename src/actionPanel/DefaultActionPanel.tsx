@@ -66,7 +66,7 @@ const OnboardingContent: React.FunctionComponent = () => (
 
     <Row>
       <Col className="text-center">
-        <img src={marketplaceImage} alt="Marketplace image" width={300} />
+        <img src={marketplaceImage} alt="Marketplace" width={300} />
       </Col>
     </Row>
   </Container>
@@ -82,7 +82,7 @@ const NoAvailablePanelsContent: React.FunctionComponent = () => (
 
     <Row>
       <Col className="text-center">
-        <img src={workshopImage} alt="Workshop image" width={300} />
+        <img src={workshopImage} alt="Workshop" width={300} />
       </Col>
     </Row>
   </Container>

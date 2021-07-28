@@ -16,7 +16,7 @@
       "version": "detect"
     }
   },
-  "plugins": ["filenames"],
+  "plugins": ["filenames", "jsx-a11y"],
   "extends": [
     "xo", // Full config: https://github.com/xojs/eslint-config-xo/blob/main/index.js
     "xo-typescript", // Full config: https://github.com/xojs/eslint-config-xo-typescript/blob/main/index.js
@@ -26,7 +26,8 @@
     "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:security/recommended",
-    "plugin:unicorn/recommended"
+    "plugin:unicorn/recommended",
+    "plugin:jsx-a11y/recommended"
   ],
   "rules": {
     "filenames/match-exported": "warn",
@@ -135,7 +136,15 @@
     "unicorn/no-null": "off",
     "unicorn/prefer-ternary": "off",
     "@typescript-eslint/member-ordering": "off",
-    "@typescript-eslint/no-empty-function": "off"
+    "@typescript-eslint/no-empty-function": "off",
+
+    // `a11y` rules we'll eventually want to treat as errors. Include as warning for now to avoid new issues being
+    // introduced to the codebase
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "jsx-a11y/interactive-supports-focus": "warn",
+    "jsx-a11y/iframe-has-title": "warn"
   },
   "ignorePatterns": [
     "node_modules",
