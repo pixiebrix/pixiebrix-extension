@@ -159,7 +159,7 @@ export async function showErrorInOptions(
   tabIndex?: number
 ): Promise<void> {
   await browser.tabs.create({
-    url: `options.html/#?error=${errorId}`,
+    url: `options.html#/?error=${errorId}`,
     index: tabIndex == null ? undefined : tabIndex + 1,
   });
 }
