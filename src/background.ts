@@ -46,6 +46,7 @@ import preload from "@/background/preload";
 import initDeploymentUpdater from "@/background/deployment";
 import initFirefoxCompat from "@/background/firefoxCompat";
 
+console.log("hello!!!");
 initNavigation();
 initExecutor();
 initGoogle();

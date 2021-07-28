@@ -17,9 +17,9 @@
 
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Button, Modal, ModalBody } from "react-bootstrap";
-import { useHistory } from "react-router";
+import { useHistory, useLocation } from "react-router";
 
 const errorMessages = new Map([
   [
@@ -32,15 +32,18 @@ const errorMessages = new Map([
 const ErrorModal: React.FunctionComponent = () => {
   const [show, setShow] = useState(true);
   const history = useHistory();
-  const message = errorMessages.get(
-    new URLSearchParams(location.search).get("error")
-  );
+  const location = useLocation();
+
+  const message = useMemo(() => {
+    console.log(location);
+    return errorMessages.get(new URLSearchParams(location.search).get("error"));
+  }, [location]);
 
   const handleClose = () => {
     setShow(false);
-    const params = new URLSearchParams(location.search);
-    params.delete("error");
-    history.replace({ search: params.toString() });
+    // This won't preserve url params upon modal close. For the time being
+    // we assume that error modal will only be used at the extension root url
+    history.replace(location.pathname);
   };
 
   if (message) {
@@ -56,7 +59,7 @@ const ErrorModal: React.FunctionComponent = () => {
           <p>{message}</p>
         </ModalBody>
         <Modal.Footer>
-          <Button variant="danger" onClick={handleClose}>
+          <Button variant="primary" onClick={handleClose}>
             Close
           </Button>
         </Modal.Footer>
