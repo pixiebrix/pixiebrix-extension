@@ -50,9 +50,11 @@ export class ParseCsv extends Transformer {
   });
 
   async transform({ content }: BlockArg): Promise<unknown> {
-    const { default: neatCsv } = await import("neat-csv");
+    const { default: Papa } = await import("papaparse");
+    const { data } = await Papa.parse(content);
+
     return {
-      data: neatCsv(content),
+      data,
     };
   }
 }
