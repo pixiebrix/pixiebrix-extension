@@ -16,7 +16,7 @@
       "version": "detect"
     }
   },
-  "plugins": ["filenames"],
+  "plugins": ["filenames", "jsx-a11y"],
   "extends": [
     "xo", // Full config: https://github.com/xojs/eslint-config-xo/blob/main/index.js
     "xo-typescript", // Full config: https://github.com/xojs/eslint-config-xo-typescript/blob/main/index.js
@@ -26,7 +26,8 @@
     "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:security/recommended",
-    "plugin:unicorn/recommended"
+    "plugin:unicorn/recommended",
+    "plugin:jsx-a11y/recommended"
   ],
   "rules": {
     "filenames/match-exported": "warn",
