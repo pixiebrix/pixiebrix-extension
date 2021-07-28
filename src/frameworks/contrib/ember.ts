@@ -18,7 +18,10 @@
 // Resources:
 // https://github.com/emberjs/ember-inspector/blob/d4f1fbb1ee30d178f81ce03bf8f037722bd4b166/ember_debug/object-inspector.js
 
-import { mapValues, partial, unary, fromPairs } from "lodash";
+import { mapValues, partial, fromPairs } from "lodash";
+// Destructured `lodash` imports seem to be broken on https://www.cbssports.com pages, e.g., https://www.cbssports.com/fantasy/football/players/2258303/aj-brown/
+// Import separately so the page script can load. We'll get an error though if any method that uses lodash is called
+import unary from "lodash/unary";
 import { getAllPropertyNames, isGetter, isPrimitive } from "@/utils";
 import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
