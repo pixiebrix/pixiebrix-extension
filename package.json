@@ -63,7 +63,7 @@
     "json-schema-ref-parser": "^9.0.9",
     "jsonpath-plus": "^6.0.1",
     "jsonschema": "^1.4.0",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "marked": "^2.0.1",
     "mustache": "^4.2.0",
     "notifyjs-browser": "^0.4.2",

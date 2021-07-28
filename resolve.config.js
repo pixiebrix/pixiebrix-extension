@@ -30,7 +30,9 @@ module.exports = {
       "@microsoft/applicationinsights-web": path.resolve(
         "src/contrib/uipath/quietLogger"
       ),
-
+      // `lodash-es` is a build of lodash using es6 modules. It also avoids an import error loading lodash methods we
+      // were seeing on https://www.cbssports.com/fantasy/football/players/2258303/aj-brown/
+      lodash: "lodash-es",
       // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
       handlebars: "handlebars/dist/handlebars.js",
     },
