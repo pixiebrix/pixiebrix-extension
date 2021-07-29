@@ -18,7 +18,7 @@
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useCallback, useMemo } from "react";
-import { Button, Modal, ModalBody } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
 import { useHistory, useLocation } from "react-router";
 
 const errorMessages = new Map([
@@ -53,9 +53,9 @@ const ErrorModal: React.FunctionComponent = () => {
             Error
           </Modal.Title>
         </Modal.Header>
-        <ModalBody>
+        <Modal.Body>
           <p>{message}</p>
-        </ModalBody>
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" onClick={handleClose}>
             Close
