@@ -159,6 +159,8 @@ export async function showErrorInOptions(
   tabIndex?: number
 ): Promise<void> {
   await browser.tabs.create({
+    // The Options application uses a hash-based history, so put error param after the hash so it's found by useLocation
+    // and useHistory.
     url: `options.html#/?error=${errorId}`,
     index: tabIndex == null ? undefined : tabIndex + 1,
   });
