@@ -40,7 +40,7 @@ export function liftBackground<
 ): (...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
-  return async (...args: unknown[]) => {
+  return async (...args: TArguments) => {
     console.debug(`running fake ${fullType}`, { fullType, args });
 
     if (!asyncResponse) {
@@ -53,7 +53,7 @@ export function liftBackground<
       let handlerResult: unknown;
 
       try {
-        handlerResult = await method(...(args as TArguments));
+        handlerResult = await method(...args);
       } catch (error: unknown) {
         console.log(`Error running method ${error}`, error);
         handlerResult = toErrorResponse(fullType, error);
