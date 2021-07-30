@@ -23,7 +23,6 @@ import {
   SerializableResponse,
   toErrorResponse,
 } from "@/messaging/protocol";
-import pDefer from "p-defer";
 import oneMutation from "one-mutation";
 import { isContentScript, isExtensionContext } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
@@ -119,16 +118,15 @@ async function onLifterMessage(
 
 /** Set up listener for specific message via nonce */
 async function oneResponse<R>(nonce: string): Promise<R> {
-  const response = pDefer<R>();
-  const onMessage = (event: MessageEvent) => {
-    if (event.data?.meta?.nonce === nonce) {
-      response.resolve(event.data.payload);
-      document.defaultView.removeEventListener("message", onMessage);
+  return new Promise((resolve) => {
+    function onMessage(event: MessageEvent) {
+      if (event.data?.meta?.nonce === nonce) {
+        resolve(event.data.payload);
+        document.defaultView.removeEventListener("message", onMessage);
+      }
     }
-  };
-
-  document.defaultView.addEventListener("message", onMessage);
-  return response.promise;
+    document.defaultView.addEventListener("message", onMessage);
+  });
 }
 
 export function liftExternal<
