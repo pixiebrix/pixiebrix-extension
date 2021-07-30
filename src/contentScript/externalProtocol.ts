@@ -29,106 +29,114 @@ import { deserializeError } from "serialize-error";
 import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
 import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
 import { sleep } from "@/utils";
+import { expectContentScript } from "@/utils/expectContext";
+import pTimeout from "p-timeout";
 
 const POLL_READY_TIMEOUT = 2000;
+const RESPONSE_TIMEOUT = 2000; // XXX: Might need to be longer
 const MESSAGE_PREFIX = "@@pixiebrix/external/";
-const fulfilledSuffix = "_FULFILLED";
-const rejectedSuffix = "_REJECTED";
 
-function isResponseType(type = ""): boolean {
-  return type.endsWith(fulfilledSuffix) || type.endsWith(rejectedSuffix);
+interface PostedMessage {
+  type: string;
+  meta: {
+    nonce: string;
+  };
+  payload: unknown[];
+}
+
+interface MessageResponse<R> {
+  meta: {
+    nonce: string;
+  };
+  isResponse: true;
+  payload: R;
 }
 
 const contentScriptHandlers = new Map<string, HandlerEntry>();
-const pageFulfilledCallbacks = new Map<string, (response: unknown) => void>();
-const pageRejectedCallbacks = new Map<string, (response: unknown) => void>();
 
-function initContentScriptListener() {
-  const targetOrigin = document.defaultView.origin;
+async function waitExtensionLoaded(): Promise<void> {
+  // Wait for the extension to load before sending the message
+  if (document.documentElement.hasAttribute(PIXIEBRIX_READY_ATTRIBUTE)) {
+    return;
+  }
 
-  document.defaultView.addEventListener("message", (event: MessageEvent) => {
-    const { type, meta, payload } = event.data;
-    const { handler, options: { asyncResponse } = { asyncResponse: true } } =
-      contentScriptHandlers.get(type) ?? {};
+  await Promise.race([
+    oneMutation(document.documentElement, {
+      attributes: true,
+      attributeFilter: [PIXIEBRIX_READY_ATTRIBUTE],
+    }),
 
-    if (event.source === document.defaultView && handler) {
-      const handlerPromise = new Promise((resolve) =>
-        resolve(handler(...payload))
-      );
-
-      const send = (data: unknown, error = false) => {
-        document.defaultView.postMessage(
-          {
-            type: `${type}${error ? rejectedSuffix : fulfilledSuffix}`,
-            error,
-            meta: { nonce: meta.nonce },
-            payload: data,
-          },
-          targetOrigin
-        );
-      };
-
-      handlerPromise
-        .then((response) => {
-          if (asyncResponse) {
-            console.debug(
-              `Handler returning success response for ${type} with nonce ${meta.nonce}`
-            );
-            send(response);
-          }
-        })
-        .catch((error: unknown) => {
-          if (asyncResponse) {
-            console.debug(
-              `Handler returning error response for ${type} with nonce ${meta.nonce}`
-            );
-            send(toErrorResponse(type, error), true);
-          } else {
-            console.warn(
-              "An error occurred while processing notification %s",
-              type,
-              error
-            );
-          }
-        });
-      return asyncResponse;
-    }
-  });
+    // TODO: Replace `sleep` with `p-timeout`
+    // Timeouts are temporarily being let through just for backwards compatibility.
+    sleep(POLL_READY_TIMEOUT),
+  ]);
 }
 
-/**
- * Listener on the external webpage to listen for responses from the contentScript.
- */
-function initExternalPageListener() {
-  window.addEventListener("message", (event: MessageEvent) => {
-    const { type, meta, error, payload } = event.data;
-    if (
-      // Check isResponseType to make sure we're not handling the messages from the content script
-      event.source === document.defaultView &&
-      isResponseType(type) &&
-      meta?.nonce
-    ) {
-      const callback = (error
-        ? pageRejectedCallbacks
-        : pageFulfilledCallbacks
-      ).get(meta.nonce);
-      if (!callback) {
-        console.warn(`Ignoring message with unknown nonce: ${meta.nonce}`);
-        return;
-      }
+function sendMessageToOtherSide(
+  message: PostedMessage | MessageResponse<unknown>
+) {
+  document.defaultView.postMessage(message, document.defaultView.origin);
+}
 
-      try {
-        const response = isErrorResponse(payload)
-          ? deserializeError(payload.$$error)
-          : payload;
-        callback(response);
-      } finally {
-        pageFulfilledCallbacks.delete(meta.nonce);
-        pageRejectedCallbacks.delete(meta.nonce);
+/** Content script handler for messages from app */
+async function onLifterMessage(
+  event: MessageEvent<PostedMessage>
+): Promise<void> {
+  expectContentScript();
+
+  // Ignore messages coming from other views (PB does not send these)
+  if (event.source !== document.defaultView) {
+    return;
+  }
+
+  const { type, meta, payload } = event.data;
+  const { handler, options } = contentScriptHandlers.get(type) ?? {};
+
+  if (!handler) {
+    return;
+  }
+
+  if (!options.asyncResponse) {
+    sendMessageToOtherSide({
+      meta,
+      payload: null,
+      isResponse: true,
+    });
+    void handler(...payload).catch((error: unknown) => {
+      console.warn(`${type}: Notification error`, error);
+    });
+
+    return;
+  }
+
+  try {
+    sendMessageToOtherSide({
+      meta,
+      payload: await handler(...payload),
+      isResponse: true,
+    });
+    console.debug(`${type}: ${meta.nonce}: Handler success`);
+  } catch (error: unknown) {
+    sendMessageToOtherSide({
+      meta,
+      payload: toErrorResponse(type, error),
+      isResponse: true,
+    });
+    console.debug(`${type}: ${meta.nonce}: Handler error`);
+  }
+}
+
+/** Set up listener for specific message via nonce */
+async function oneResponse<R>(nonce: string): Promise<R> {
+  return new Promise((resolve) => {
+    function onMessage(event: MessageEvent) {
+      if (event.data?.isResponse && event.data?.meta?.nonce === nonce) {
+        resolve(event.data.payload);
+        document.defaultView.removeEventListener("message", onMessage);
       }
-    } else if (type) {
-      console.debug("Ignoring message: %s", type, event);
     }
+
+    document.defaultView.addEventListener("message", onMessage);
   });
 }
 
@@ -138,63 +146,51 @@ export function liftExternal<
 >(
   type: string,
   method: (...args: TArguments) => Promise<R>,
-  options?: HandlerOptions
+  options: HandlerOptions = {}
 ): (...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
+  // Set defaults
+  options = {
+    asyncResponse: true,
+    ...options,
+  };
 
   if (isContentScript()) {
-    // Console.debug(`Installed content script handler for ${type}`);
+    // Register global handler; Automatically deduplicated
+    document.defaultView.addEventListener("message", onLifterMessage);
+
     contentScriptHandlers.set(fullType, { handler: method, options });
+    console.debug(`${fullType}: Installed content script handler`);
     return method;
   }
-
-  const targetOrigin = document.defaultView.origin;
 
   return async (...args: TArguments) => {
     if (isExtensionContext()) {
       throw new ContentScriptActionError("Expected call from external page");
     }
 
-    // Wait for the extension to load before sending the message
-    if (!document.documentElement.hasAttribute(PIXIEBRIX_READY_ATTRIBUTE)) {
-      await Promise.race([
-        oneMutation(document.documentElement, {
-          attributes: true,
-          attributeFilter: [PIXIEBRIX_READY_ATTRIBUTE],
-        }),
+    await waitExtensionLoaded();
 
-        // TODO: Replace `sleep` with `p-timeout`
-        // Timeouts are temporarily being let through just for backwards compatibility.
-        sleep(POLL_READY_TIMEOUT),
-      ]);
+    const nonce = uuidv4();
+    const message: PostedMessage = {
+      type: fullType,
+      payload: args,
+      meta: { nonce },
+    };
+
+    console.debug(`${fullType}: Sending from app`, message);
+    sendMessageToOtherSide(message);
+
+    // Communication is completely asynchronous; This sets up response for the specific nonce
+    const payload = await pTimeout(oneResponse<R>(nonce), RESPONSE_TIMEOUT);
+
+    if (isErrorResponse(payload)) {
+      throw deserializeError(payload.$$error);
     }
 
-    return new Promise((resolve, reject) => {
-      const nonce = uuidv4();
-      pageFulfilledCallbacks.set(nonce, resolve);
-      pageRejectedCallbacks.set(nonce, reject);
-      const message = {
-        type: fullType,
-        payload: args,
-        error: false,
-        meta: { nonce },
-      };
-      console.debug("Sending message from page to content script", message);
-      document.defaultView.postMessage(message, targetOrigin);
-    });
+    return payload;
   };
 }
 
-function addExternalListener(): void {
-  if (isContentScript()) {
-    initContentScriptListener();
-  } else if (!isExtensionContext()) {
-    initExternalPageListener();
-  } else {
-    throw new Error(
-      "addExternalListener can only be called from the content script or an external page"
-    );
-  }
-}
-
-export default addExternalListener;
+/** @deprecated The registration now happens automatically */
+export default () => {};
