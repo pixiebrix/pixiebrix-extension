@@ -5,7 +5,7 @@
 import libraryTests from "./libraries";
 import { zip } from "lodash";
 
-interface Library {
+export interface Library {
   id: string;
   version: string | null;
 }

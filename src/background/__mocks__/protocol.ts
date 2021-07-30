@@ -30,11 +30,14 @@ import { deserializeError } from "serialize-error";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background-mock/";
 
-export function liftBackground<R extends SerializableResponse>(
+export function liftBackground<
+  TArguments extends unknown[],
+  R extends SerializableResponse
+>(
   type: string,
-  method: ((...args: unknown[]) => R) | ((...args: unknown[]) => Promise<R>),
+  method: (...args: TArguments) => Promise<R>,
   { asyncResponse = true }: HandlerOptions = {}
-): (...args: unknown[]) => Promise<R> {
+): (...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   return async (...args: unknown[]) => {
@@ -50,7 +53,7 @@ export function liftBackground<R extends SerializableResponse>(
       let handlerResult: unknown;
 
       try {
-        handlerResult = await method(...args);
+        handlerResult = await method(...(args as TArguments));
       } catch (error: unknown) {
         console.log(`Error running method ${error}`, error);
         handlerResult = toErrorResponse(fullType, error);

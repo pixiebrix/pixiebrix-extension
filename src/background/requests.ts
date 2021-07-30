@@ -98,7 +98,7 @@ function cleanResponse<T>(response: AxiosResponse<T>): SanitizedResponse<T> {
   );
 }
 
-const backgroundRequest = liftBackground<AxiosRequestConfig, SanitizedResponse>(
+const backgroundRequest = liftBackground(
   "HTTP_REQUEST",
   async (config: AxiosRequestConfig) => {
     try {
