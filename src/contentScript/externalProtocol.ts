@@ -125,6 +125,7 @@ async function oneResponse<R>(nonce: string): Promise<R> {
         document.defaultView.removeEventListener("message", onMessage);
       }
     }
+
     document.defaultView.addEventListener("message", onMessage);
   });
 }
