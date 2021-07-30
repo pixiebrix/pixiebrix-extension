@@ -166,36 +166,14 @@ export async function callBackground(
  * @param method the method to lift
  * @param options background action handler options
  */
-export function liftBackground<R extends SerializableResponse>(
+export function liftBackground<
+  TArguments extends unknown[],
+  R extends SerializableResponse
+>(
   type: string,
-  method: () => R | Promise<R>,
+  method: (...args: TArguments) => Promise<R>,
   options?: HandlerOptions
-): () => Promise<R>;
-export function liftBackground<T, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T) => R | Promise<R>,
-  options?: HandlerOptions
-): (a0: T) => Promise<R>;
-export function liftBackground<T0, T1, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1) => R | Promise<R>,
-  options?: HandlerOptions
-): (a0: T0, a1: T1) => Promise<R>;
-export function liftBackground<T0, T1, T2, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1, a2: T2) => R | Promise<R>,
-  options?: HandlerOptions
-): (a0: T0, a1: T1, a2: T2) => Promise<R>;
-export function liftBackground<T0, T1, T2, T3, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1, a2: T2, a3: T3) => R | Promise<R>,
-  options?: HandlerOptions
-): (a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>;
-export function liftBackground<R extends SerializableResponse>(
-  type: string,
-  method: (...args: unknown[]) => R | Promise<R>,
-  options?: HandlerOptions
-): (...args: unknown[]) => Promise<R> {
+): (...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isBackgroundPage()) {
@@ -204,16 +182,12 @@ export function liftBackground<R extends SerializableResponse>(
     } else {
       handlers.set(fullType, { handler: method, options });
     }
+
+    return method;
   }
 
-  return async (...args: unknown[]) => {
-    if (isBackgroundPage()) {
-      console.log(`Resolving ${type} immediately from background page`);
-      return method(...args);
-    }
-
-    return callBackground(fullType, args, options) as R;
-  };
+  return async (...args: TArguments) =>
+    callBackground(fullType, args, options) as R;
 }
 
 function backgroundListener(

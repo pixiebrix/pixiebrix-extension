@@ -151,24 +151,18 @@ function backgroundMessageListener(
  * @param method the method to lift
  * @param options background action handler options
  */
-export function liftBackground<R extends SerializableResponse>(
-  type: string,
-  method: (target: Target, port: Runtime.Port) => () => R | Promise<R>,
-  options?: HandlerOptions
-): (port: Runtime.Port) => Promise<R>;
-export function liftBackground<T, R extends SerializableResponse>(
-  type: string,
-  method: (target: Target, port: Runtime.Port) => (a0: T) => R | Promise<R>,
-  options?: HandlerOptions
-): (port: Runtime.Port, a0: T) => Promise<R>;
-export function liftBackground<R extends SerializableResponse>(
+
+export function liftBackground<
+  TArguments extends unknown[],
+  R extends SerializableResponse
+>(
   type: string,
   method: (
     target: Target,
     port: Runtime.Port
-  ) => (...args: unknown[]) => R | Promise<R>,
+  ) => (...args: TArguments) => Promise<R>,
   options?: HandlerOptions
-): (port: Runtime.Port, ...args: unknown[]) => Promise<R> {
+): (port: Runtime.Port, ...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isBackgroundPage()) {

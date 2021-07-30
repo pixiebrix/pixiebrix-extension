@@ -21,6 +21,7 @@ import {
   READ_WINDOW,
   SEARCH_WINDOW,
 } from "./messaging/constants";
+import type { Library } from "vendors/libraryDetector/detect";
 
 type ReadSpec = <T extends Record<string, string>>(arg: {
   pathSpec: T;
@@ -35,6 +36,6 @@ export const withSearchWindow = createSendScriptMessage<{ results: unknown[] }>(
   SEARCH_WINDOW
 );
 
-export const withDetectFrameworkVersions = createSendScriptMessage(
+export const withDetectFrameworkVersions = createSendScriptMessage<Library[]>(
   DETECT_FRAMEWORK_VERSIONS
 );
