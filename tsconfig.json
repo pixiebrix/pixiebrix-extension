@@ -18,8 +18,7 @@
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
       "@contrib/*": ["contrib/*"],
-      "@schemas/*": ["schemas/*"],
-      "vendors/*": ["src/vendors/*"]
+      "@schemas/*": ["schemas/*"]
     },
     "lib": ["dom", "es2019", "es2020", "DOM.Iterable"]
   },

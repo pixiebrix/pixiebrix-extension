@@ -26,7 +26,6 @@ module.exports = {
       "@img": path.resolve("img"),
       "@contrib": path.resolve("contrib"),
       "@schemas": path.resolve("schemas"),
-      vendors: path.resolve("src/vendors"),
       "@microsoft/applicationinsights-web": path.resolve(
         "src/contrib/uipath/quietLogger"
       ),
