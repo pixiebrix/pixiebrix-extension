@@ -21,7 +21,7 @@ import {
   READ_WINDOW,
   SEARCH_WINDOW,
 } from "./messaging/constants";
-import type { Library } from "vendors/libraryDetector/detect";
+import type { Library } from "@/vendors/libraryDetector/detect";
 
 type ReadSpec = <T extends Record<string, string>>(arg: {
   pathSpec: T;

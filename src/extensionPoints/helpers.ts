@@ -17,7 +17,7 @@
 
 import { castArray, noop, once } from "lodash";
 // @ts-ignore: no type definitions
-import initialize from "vendors/initialize";
+import initialize from "@/vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
 import { IExtension, MessageContext, Metadata } from "@/core";
 

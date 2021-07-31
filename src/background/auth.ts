@@ -23,7 +23,7 @@ import {
   computeChallenge,
   generateVerifier,
   getRandomString,
-} from "vendors/pkce";
+} from "@/vendors/pkce";
 import { BusinessError } from "@/errors";
 import { expectBackgroundPage } from "@/utils/expectContext";
 
