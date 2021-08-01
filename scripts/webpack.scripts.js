@@ -23,7 +23,7 @@ const mergeWithShared = require("../webpack.shared-config.js");
 module.exports = mergeWithShared({
   mode: "development",
   target: "node",
-  devtool: "eval",
+  devtool: "inline-source-map",
   entry: {
     headers: path.resolve(rootDir, "src/headers"),
   },

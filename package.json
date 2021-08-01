@@ -8,7 +8,7 @@
     "lint": "eslint src --ext js,jsx,ts,tsx",
     "watch": "ENV_FILE='.env.development' webpack --mode development --watch",
     "build": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
-    "build:scripts": "webpack --mode production --config scripts/webpack.scripts.js",
+    "build:scripts": "webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
