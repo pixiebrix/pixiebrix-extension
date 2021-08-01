@@ -5,9 +5,7 @@
   },
   "settings": {
     "import/resolver": {
-      "webpack": {
-        "config": "./resolve.config.js"
-      }
+      "typescript": {}
     },
     "import/ignore": [
       "react-select" // For some reason it points to a flow JS file

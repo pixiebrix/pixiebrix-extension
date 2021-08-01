@@ -13,12 +13,19 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
       "@contrib/*": ["contrib/*"],
-      "@schemas/*": ["schemas/*"]
+      "@schemas/*": ["schemas/*"],
+      "@microsoft/applicationinsights-web/*": [
+        "src/contrib/uipath/quietLogger/*"
+      ],
+
+      // Silently improve tree-shakeability and AMD-related errors like #943
+      "lodash": ["node_modules/lodash-es"]
     },
     "lib": ["dom", "es2019", "es2020", "DOM.Iterable"]
   },

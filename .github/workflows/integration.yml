@@ -62,7 +62,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:scripts
-      - run: node scripts/bin/headers.js
+      - run: npm run generate:headers
       - uses: actions/upload-artifact@v2
         with:
           name: brick-headers
