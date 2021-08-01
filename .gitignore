@@ -36,6 +36,7 @@ assets/bundles
 browsers/**/bundles/**
 browsers/dist
 dist
+.transpiled
 
 # Other artifacts
 artifacts
