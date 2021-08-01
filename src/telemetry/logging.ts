@@ -17,24 +17,10 @@
 
 import { recordError } from "@/background/logging";
 import { rollbar, toLogArgument } from "@/telemetry/rollbar";
-import { MessageContext, SerializedError } from "@/core";
+import { MessageContext } from "@/core";
 import { serializeError } from "serialize-error";
-import { isExtensionContext, isBackgroundPage } from "webext-detect-page";
-
-function selectError(error: unknown): SerializedError {
-  if (error instanceof PromiseRejectionEvent) {
-    // Convert the project rejection to an error instance
-    if (error.reason instanceof Error) {
-      error = error.reason;
-    } else if (typeof error.reason === "string") {
-      error = new Error(error.reason);
-    } else {
-      error = new Error(error.reason?.message ?? "Uncaught error in promise");
-    }
-  }
-
-  return serializeError(error);
-}
+import { isBackgroundPage, isExtensionContext } from "webext-detect-page";
+import { selectError } from "@/errors";
 
 /**
  * Report an error for local logs, remote telemetry, etc.
@@ -57,17 +43,16 @@ async function _reportError(
   context?: MessageContext
 ): Promise<void> {
   if (!isExtensionContext()) {
-    // This module is also used by the PixieBrix app, so allow this method to be called from
-    // an external context
-    rollbar.error(toLogArgument(error));
+    // This module is also used by the PixieBrix app, so allow this method to be called from an external context
+    rollbar.error(toLogArgument(selectError(error)));
     return;
   }
 
   if (!isBackgroundPage()) {
-    // Log the error in the context it occurred in, so the developer doesn't have to open the
-    // background page to see the error
+    // Log the error in the context it occurred in, so the developer doesn't have to open the background page to
+    // see the error
     console.error("An error occurred", { error });
   }
 
-  await recordError(selectError(error), context, null);
+  await recordError(serializeError(selectError(error)), context, null);
 }

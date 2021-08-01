@@ -18,6 +18,7 @@
 import { uniq, compact, sortBy, unary, intersection } from "lodash";
 import getCssSelector, { css_selector_type } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement } from "@/utils";
+import { BusinessError } from "@/errors";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -683,7 +684,9 @@ export function inferButtonHTML(
   const $container = $(container);
 
   if (selected.length === 0) {
-    throw new Error("one or more prototype button-like elements required");
+    throw new BusinessError(
+      "One or more prototype button-like elements required"
+    );
   } else if (selected.length > 1) {
     const children = containerChildren($container, selected);
     // Vote on the root tag
@@ -709,7 +712,7 @@ export function inferButtonHTML(
       }
     }
 
-    throw new Error(
+    throw new BusinessError(
       `Did not find any button-like tags in container ${container.tagName}`
     );
   }

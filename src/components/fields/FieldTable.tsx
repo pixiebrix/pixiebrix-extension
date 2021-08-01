@@ -28,9 +28,9 @@ import { useField, useFormikContext } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import produce from "immer";
+import { produce } from "immer";
 
-interface PropertyRow {
+interface PropertyRowProps {
   name: string;
   showActions?: boolean;
   readOnly: boolean;
@@ -39,7 +39,16 @@ interface PropertyRow {
   onRename: (newName: string) => void;
 }
 
-const CompositePropertyRow: React.FunctionComponent<PropertyRow> = ({
+interface RowProps {
+  parentSchema: Schema;
+  name: string;
+  property: string;
+  defined: boolean;
+  onDelete: (prop: string) => void;
+  onRename: (oldProp: string, newProp: string) => void;
+}
+
+const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   name,
   schema,
   showActions,
@@ -65,12 +74,12 @@ const SimpleValue: React.FunctionComponent<FieldProps<unknown>> = (props) => {
       type="text"
       {...props}
       value={field.value ?? ""}
-      isInvalid={!!meta.error}
+      isInvalid={meta.error != null}
     />
   );
 };
 
-const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
+const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   readOnly,
   onDelete,
   onRename,
@@ -129,7 +138,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   );
 };
 
-function freshPropertyName(obj: { [key: string]: unknown }) {
+function freshPropertyName(obj: Record<string, unknown>) {
   let x = 1;
   while (Object.prototype.hasOwnProperty.call(obj, `property${x}`)) {
     x++;
@@ -138,19 +147,10 @@ function freshPropertyName(obj: { [key: string]: unknown }) {
   return `property${x}`;
 }
 
-interface RowProps {
-  parentSchema: Schema;
-  name: string;
-  property: string;
-  defined: boolean;
-  onDelete: (prop: string) => void;
-  onRename: (oldProp: string, newProp: string) => void;
-}
-
 const BOOLEAN_SCHEMA: Schema = { type: "string" };
 const FALLBACK_SCHEMA: Schema = { type: "string" };
 
-const PropertyRow: React.FunctionComponent<RowProps> = ({
+const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
   parentSchema,
   defined,
   name,
@@ -168,27 +168,33 @@ const PropertyRow: React.FunctionComponent<RowProps> = ({
       : rawSchema ?? FALLBACK_SCHEMA;
   }, [property, defined, parentSchema]);
 
-  const PropertyRow = useMemo(() => getPropertyRow(propertySchema), [
+  const PropertyRowComponent = useMemo(() => getPropertyRow(propertySchema), [
     propertySchema,
   ]);
-  const deleteProp = useCallback(() => onDelete(property), [
-    property,
-    onDelete,
-  ]);
+
+  const deleteProp = useCallback(() => {
+    onDelete(property);
+  }, [property, onDelete]);
+
   const renameProp = useCallback(
-    (newProp: string) => onRename(property, newProp),
+    (newProp: string) => {
+      onRename(property, newProp);
+    },
     [property, onRename]
   );
 
   return (
-    <PropertyRow
+    <PropertyRowComponent
       key={property}
       name={name}
-      readOnly={!!defined}
+      readOnly={defined}
       schema={propertySchema}
-      showActions={!!parentSchema.additionalProperties}
-      onDelete={!defined ? deleteProp : undefined}
-      onRename={!defined ? renameProp : undefined}
+      showActions={
+        parentSchema.additionalProperties === true ||
+        typeof parentSchema.additionalProperties === "object"
+      }
+      onDelete={defined ? undefined : deleteProp}
+      onRename={defined ? undefined : renameProp}
     />
   );
 };
@@ -228,7 +234,9 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
       setFieldValue(
         name,
         produce(fieldRef.current.value, (draft: ObjectValue) => {
-          delete draft[property];
+          if (draft != null) {
+            delete draft[property];
+          }
         })
       );
     },
@@ -280,7 +288,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
         </thead>
         <tbody>
           {properties.map((property) => (
-            <PropertyRow
+            <ObjectFieldRow
               key={property}
               parentSchema={schema}
               name={[field.name, property].join(".")}
@@ -304,7 +312,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
 export function getPropertyRow(
   schema: Schema
-): React.FunctionComponent<PropertyRow> {
+): React.FunctionComponent<PropertyRowProps> {
   switch (schema?.type) {
     case "array":
     case "object":

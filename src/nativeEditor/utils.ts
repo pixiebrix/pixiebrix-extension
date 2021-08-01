@@ -16,13 +16,21 @@
  */
 
 import jQuery from "jquery";
+import { MultipleElementsFoundError, NoElementsFoundError } from "@/errors";
 
+/**
+ * Returns exactly one HTMLElement corresponding to the given selector.
+ * @param selector the JQuery selector
+ * @throws NoElementsFoundError if not elements are found
+ * @throws MultipleElementsFoundError if multiple elements are found
+ */
 export function requireSingleElement(selector: string): HTMLElement {
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
   const $elt = jQuery(document).find(selector);
   if ($elt.length === 0) {
-    throw new Error(`No elements found for selector: '${selector}'`);
+    throw new NoElementsFoundError(selector);
   } else if ($elt.length > 1) {
-    throw new Error(`Multiple elements found for selector: '${selector}'`);
+    throw new MultipleElementsFoundError(selector);
   }
 
   return $elt.get(0);
