@@ -150,7 +150,7 @@ async function runInBrowser(browser) {
 
   const driver = await builder.build();
   if (browser === "firefox") {
-    await driver.installAddon(await getZippedExtensionAsPath());
+    await driver.installAddon(await getZippedExtensionAsPath(), true);
   }
   await testPixieBrixHomepage(driver);
   await driver.quit();
