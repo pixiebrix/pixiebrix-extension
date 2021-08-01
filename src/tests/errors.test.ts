@@ -19,6 +19,7 @@ function nest(error: Error, level = 1): Error {
   if (level === 0) {
     return error;
   }
+
   return nest(new ContextError(error), level - 1);
 }
 
