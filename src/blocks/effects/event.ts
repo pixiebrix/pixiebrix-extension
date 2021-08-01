@@ -75,12 +75,15 @@ export class ElementEvent extends Effect {
     { selector, event }: BlockArg,
     { logger }: BlockOptions
   ): Promise<void> {
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
     const $element = $(document).find(selector);
 
     if ($element.length === 0) {
-      logger.debug(`Element not found for selector: ${selector}`);
+      logger.debug(`Element not found for selector: ${selector as string}`);
     } else if ($element.length > 1) {
-      logger.debug(`Multiple elements found for selector: ${selector}`);
+      logger.debug(
+        `Multiple elements found for selector: ${selector as string}`
+      );
     }
 
     // Triggers the event. NOTE: the event is not "trusted" as being a user action

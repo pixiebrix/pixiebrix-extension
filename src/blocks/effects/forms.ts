@@ -20,12 +20,13 @@ import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { boolean } from "@/utils";
 import { BusinessError } from "@/errors";
+import { requireSingleElement } from "@/nativeEditor/utils";
 
 /**
  * Set the value of an input, doing the right thing for check boxes, etc.
  */
 function setValue(
-  $input: JQuery<HTMLElement>,
+  $input: JQuery,
   value: unknown,
   { dispatchEvent = true }: { dispatchEvent?: boolean } = {}
 ) {
@@ -133,26 +134,19 @@ export class FormFill extends Effect {
     }: BlockArg,
     { logger }: BlockOptions
   ): Promise<void> {
-    const $form = $(document).find(formSelector);
-
-    if ($form.length === 0) {
-      throw new BusinessError(`Form not found for selector: ${formSelector}`);
-    } else if ($form.length > 1) {
-      throw new BusinessError(
-        `Selector found ${$form.length} forms: ${formSelector}`
-      );
-    }
+    const $form = $(requireSingleElement(formSelector));
 
     for (const [name, value] of Object.entries(fieldNames)) {
       const $input = $form.find(`[name="${name}"]`);
       if ($input.length === 0) {
-        logger.warn(`Could not find input ${name} on the form`);
+        logger.warn(`No input ${name} exists in the form`);
       }
 
       setValue($input, value, { dispatchEvent: true });
     }
 
     for (const [selector, value] of Object.entries(fieldSelectors)) {
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
       const $input = $form.find(selector);
       if ($input.length === 0) {
         logger.warn(
@@ -174,15 +168,7 @@ export class FormFill extends Effect {
         $form.trigger("submit");
       }
     } else if (typeof submit === "string") {
-      const $submit = $form.find(submit);
-      if ($submit.length === 0) {
-        throw new BusinessError(`Did not find selector ${submit} in the form`);
-      } else if ($submit.length > 1) {
-        throw new BusinessError(
-          `Found multiple elements for the submit selector ${submit} in the form`
-        );
-      }
-
+      const $submit = $(requireSingleElement(submit));
       $submit.trigger("click");
     } else {
       throw new BusinessError("Unexpected argument for property submit");

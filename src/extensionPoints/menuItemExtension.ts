@@ -51,7 +51,11 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
-import { hasCancelRootCause } from "@/errors";
+import {
+  hasCancelRootCause,
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+} from "@/errors";
 import {
   DEFAULT_ACTION_RESULTS,
   mergeConfig,
@@ -792,11 +796,15 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
       const $elt = $containerElement.parents(selector);
       if ($elt.length > 1) {
-        throw new Error(
-          `Found multiple elements for reader selector: ${selector}`
+        throw new MultipleElementsFoundError(
+          selector,
+          `Multiple elements found for reader selector`
         );
       } else if ($elt.length === 0) {
-        throw new Error(`Found no elements for  reader selector: ${selector}`);
+        throw new NoElementsFoundError(
+          selector,
+          `No elements found for reader selector`
+        );
       }
 
       return $elt.get(0);

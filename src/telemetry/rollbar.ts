@@ -18,6 +18,7 @@
 import Rollbar, { LogArgument } from "rollbar";
 import { isExtensionContext } from "webext-detect-page";
 import { getUID } from "@/background/telemetry";
+import { getErrorMessage } from "@/errors";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
 
@@ -67,7 +68,7 @@ export const rollbar: Rollbar = Rollbar.init({
 /**
  * Convert a message or value into a rollbar logging argument.
  *
- * Convert functions/callbacks to `unknown` so they're ignored by rollbar.
+ * Convert functions/callbacks to `undefined` so they're ignored by rollbar.
  *
  * @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
  */
@@ -83,7 +84,7 @@ export function toLogArgument(error: unknown): LogArgument {
     return error;
   }
 
-  return String(error);
+  return getErrorMessage(error);
 }
 
 export async function updateAuth({

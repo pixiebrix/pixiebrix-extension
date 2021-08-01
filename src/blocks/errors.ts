@@ -17,11 +17,11 @@
 
 import { castArray } from "lodash";
 import { MessageContext, Schema } from "@/core";
+import { BlockConfig, BlockPipeline } from "@/blocks/combinators";
 import { BusinessError } from "@/errors";
 import { OutputUnit } from "@cfworker/json-schema";
-import { BlockConfig, BlockPipeline } from "@/blocks/combinators";
 
-export class PipelineConfigurationError extends Error {
+export class PipelineConfigurationError extends BusinessError {
   readonly config: BlockPipeline;
 
   constructor(message: string, config: BlockConfig | BlockPipeline) {

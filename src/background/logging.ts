@@ -206,9 +206,11 @@ export const recordError = liftBackground(
       const message = getErrorMessage(error);
 
       if (!(await _getDNT())) {
-        // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the
-        // object is the custom payload data
-        // https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+        // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the object is the custom
+        // payload data. WARNING: the prototype chain is lost during deserialization, so make sure any predicate you
+        // call here also handles deserialized errors properly.
+        // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+        // See https://github.com/sindresorhus/serialize-error/issues/48
         const errorObj = deserializeError(error);
 
         if (hasCancelRootCause(error)) {
