@@ -30,13 +30,21 @@ export type Target = {
   frameId: number;
 };
 
-/** Checks whether a URL has permanent permissions and therefore whether `webext-dynamic-content-scripts` already registered the scripts */
+/** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
+  // Injected by the browser
+  const manifestScriptsOrigins = chrome.runtime
+    .getManifest()
+    .content_scripts.flatMap((script) => script.matches);
+
+  // Inejcted by `webext-dynamic-content-scripts`
   const { origins } = await getAdditionalPermissions({
     strictOrigins: false,
   });
 
-  return patternToRegex(...origins).test(url);
+  // Do not replace the 2 calls above with `permissions.getAll` because it might also
+  //  include hosts that are permitted by the manifest but have no content script registered.
+  return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
 }
 
 interface TargetState {
