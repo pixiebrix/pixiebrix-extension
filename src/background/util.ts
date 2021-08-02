@@ -98,6 +98,7 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
   }
 }
 
+// TODO: Use https://github.com/sindresorhus/p-memoize/issues/20 to avoid multiple concurrent calls for every target
 /**
  * Ensures that the contentScript is ready on the specified page, regardless of its status.
  * - If it's not expected to be injected automatically, it also injects it into the page.
