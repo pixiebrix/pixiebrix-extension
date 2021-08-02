@@ -63,10 +63,6 @@ if (!process.env.SOURCE_VERSION) {
     .trim();
 }
 
-const nodeConfig = {
-  global: true,
-};
-
 function rollbarPlugins() {
   console.log(
     "ROLLBAR_BROWSER_ACCESS_TOKEN:",
@@ -197,7 +193,9 @@ function mockHeavyDependencies() {
 
 module.exports = (env, options) =>
   mergeWithShared({
-    node: nodeConfig,
+    node: {
+      global: true,
+    },
 
     // https://stackoverflow.com/a/57460886/402560
     devtool: isProd(options) ? "nosources-source-map" : "inline-source-map",
@@ -264,7 +262,7 @@ module.exports = (env, options) =>
       ...getConditionalPlugins(isProd(options)),
 
       new NodePolyfillPlugin(),
-      new WebExtensionTarget(nodeConfig),
+      new WebExtensionTarget(),
       new webpack.ProvidePlugin({
         $: "jquery",
         jQuery: "jquery",
