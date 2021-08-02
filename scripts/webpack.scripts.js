@@ -62,6 +62,11 @@ module.exports = mergeWithShared({
           ? "global"
           : "window"
       ),
+      self: webpack.DefinePlugin.runtimeValue((ctx) =>
+        ctx.module.resource.includes("css-selector-generator")
+          ? "global"
+          : "self"
+      ),
     }),
   ],
 });
