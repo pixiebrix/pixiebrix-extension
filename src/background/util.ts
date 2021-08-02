@@ -24,6 +24,7 @@ import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectBackgroundPage } from "@/utils/expectContext";
 import { evaluableFunction } from "@/utils";
+import pTimeout from "p-timeout";
 
 export type Target = {
   tabId: number;
@@ -158,7 +159,11 @@ export async function ensureContentScript(target: Target): Promise<void> {
       await Promise.all(loadingScripts);
     }
 
-    await readyNotificationPromise;
+    await pTimeout(
+      readyNotificationPromise,
+      4000,
+      "contentScript not ready in 4s"
+    );
     console.debug(`ensureContentScript: ready`, target);
   } finally {
     controller.abort();
