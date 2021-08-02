@@ -159,8 +159,8 @@ export async function ensureContentScript(target: Target): Promise<void> {
     }
 
     await readyNotificationPromise;
-  } finally {
     console.debug(`ensureContentScript: ready`, target);
+  } finally {
     controller.abort();
   }
 }
