@@ -132,6 +132,14 @@ export async function ensureContentScript(target: Target): Promise<void> {
       return;
     }
 
+    if (!result.url.startsWith("http")) {
+      console.warn(
+        "ensureContentScript: can’t be injected on this URL, #801",
+        result.url
+      );
+      return;
+    }
+
     if (result.installed || (await isContentScriptRegistered(result.url))) {
       console.debug(
         `ensureContentScript: already exists or will be injected automatically`,
