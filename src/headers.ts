@@ -21,8 +21,6 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import "@/blocks";
 import "@/contrib";
 
-// Avoid silent failures
-process.on("uncaughtException", console.error);
 Error.stackTraceLimit = Number.POSITIVE_INFINITY;
 
 console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
