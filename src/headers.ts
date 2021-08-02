@@ -21,6 +21,8 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import "@/blocks";
 import "@/contrib";
 
+// Avoid silent failures
+process.on("uncaughtException", console.error);
 Error.stackTraceLimit = Number.POSITIVE_INFINITY;
 
 console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
@@ -40,6 +42,8 @@ const blockDefinitions = blockRegistry.cached().map((block) => ({
   outputSchema: block.outputSchema,
 }));
 
+console.log("got blockDefinitions:", blockDefinitions.length);
+
 const extensionPointDefinitions = extensionPointRegistry
   .cached()
   .map((block) => ({
@@ -56,7 +60,12 @@ const extensionPointDefinitions = extensionPointRegistry
     inputSchema: block.inputSchema,
   }));
 
-fs.writeFileSync(
-  "headers.json",
-  JSON.stringify([...blockDefinitions, ...extensionPointDefinitions])
-);
+console.log("got extensionPointDefinitions:", extensionPointDefinitions.length);
+
+const content = JSON.stringify([
+  ...blockDefinitions,
+  ...extensionPointDefinitions,
+]);
+fs.writeFileSync("headers.json", content);
+
+console.log(`headers.json written to disk: ${content.length} bytes`);
