@@ -40,6 +40,8 @@ const blockDefinitions = blockRegistry.cached().map((block) => ({
   outputSchema: block.outputSchema,
 }));
 
+console.log("got blockDefinitions:", blockDefinitions.length);
+
 const extensionPointDefinitions = extensionPointRegistry
   .cached()
   .map((block) => ({
@@ -56,7 +58,12 @@ const extensionPointDefinitions = extensionPointRegistry
     inputSchema: block.inputSchema,
   }));
 
-fs.writeFileSync(
-  "headers.json",
-  JSON.stringify([...blockDefinitions, ...extensionPointDefinitions])
-);
+console.log("got extensionPointDefinitions:", extensionPointDefinitions.length);
+
+const content = JSON.stringify([
+  ...blockDefinitions,
+  ...extensionPointDefinitions,
+]);
+fs.writeFileSync("headers.json", content);
+
+console.log(`headers.json written to disk: ${content.length} bytes`);

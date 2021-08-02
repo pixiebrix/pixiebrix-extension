@@ -23,7 +23,7 @@ const mergeWithShared = require("../webpack.shared-config.js");
 module.exports = mergeWithShared({
   mode: "development",
   target: "node",
-  devtool: "inline-source-map",
+  devtool: "nosources-source-map",
   entry: {
     headers: path.resolve(rootDir, "src/headers"),
   },
@@ -31,10 +31,9 @@ module.exports = mergeWithShared({
     path: path.resolve(rootDir, "scripts", "bin"),
   },
   externals: {
-    // https://github.com/Automattic/node-canvas/issues/1314#issuecomment-443068600
-    canvas: "commonjs canvas",
-    // https://github.com/yan-foto/electron-reload/issues/71#issuecomment-588988382
-    fsevents: "require('fsevents')",
+    // Exclude some troublesome/unnecessary dependencies
+    "webextension-polyfill": "{}",
+    rollbar: "{init(){}}",
   },
   resolve: {
     alias: {
@@ -47,22 +46,27 @@ module.exports = mergeWithShared({
     //  WARNING in ./node_modules/nunjucks/src/node-loaders.js 155:17-38
     //  Critical dependency: the request of a dependency is an expression
     new webpack.IgnorePlugin({
-      resourceRegExp: /loaders/,
+      resourceRegExp: /node-loaders/,
       contextRegExp: /nunjucks/,
     }),
     new webpack.ProvidePlugin({
-      window: "global/window.js",
-      document: "global/document.js",
+      document: "min-document",
     }),
     new webpack.EnvironmentPlugin({
       NPM_PACKAGE_VERSION: process.env.npm_package_version,
     }),
     new webpack.DefinePlugin({
-      chrome: {
-        runtime: {
-          id: 42,
-        },
-      },
+      // Patch browser variable selectively to avoid environment misdetection in React
+      window: webpack.DefinePlugin.runtimeValue((ctx) =>
+        ctx.module.resource.includes("css-selector-generator")
+          ? "global"
+          : "window"
+      ),
+      self: webpack.DefinePlugin.runtimeValue((ctx) =>
+        ctx.module.resource.includes("css-selector-generator")
+          ? "global"
+          : "self"
+      ),
     }),
   ],
 });
