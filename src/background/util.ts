@@ -24,19 +24,28 @@ import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectBackgroundPage } from "@/utils/expectContext";
 import { evaluableFunction } from "@/utils";
+import pTimeout from "p-timeout";
 
 export type Target = {
   tabId: number;
   frameId: number;
 };
 
-/** Checks whether a URL has permanent permissions and therefore whether `webext-dynamic-content-scripts` already registered the scripts */
+/** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
+  // Injected by the browser
+  const manifestScriptsOrigins = chrome.runtime
+    .getManifest()
+    .content_scripts.flatMap((script) => script.matches);
+
+  // Inejcted by `webext-dynamic-content-scripts`
   const { origins } = await getAdditionalPermissions({
     strictOrigins: false,
   });
 
-  return patternToRegex(...origins).test(url);
+  // Do not replace the 2 calls above with `permissions.getAll` because it might also
+  // include hosts that are permitted by the manifest but have no content script registered.
+  return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
 }
 
 interface TargetState {
@@ -89,6 +98,7 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
   }
 }
 
+// TODO: Use https://github.com/sindresorhus/p-memoize/issues/20 to avoid multiple concurrent calls for every target
 /**
  * Ensures that the contentScript is ready on the specified page, regardless of its status.
  * - If it's not expected to be injected automatically, it also injects it into the page.
@@ -124,6 +134,14 @@ export async function ensureContentScript(target: Target): Promise<void> {
       return;
     }
 
+    if (!result.url.startsWith("http")) {
+      console.warn(
+        "ensureContentScript: can’t be injected on this URL, #801",
+        result.url
+      );
+      return;
+    }
+
     if (result.installed || (await isContentScriptRegistered(result.url))) {
       console.debug(
         `ensureContentScript: already exists or will be injected automatically`,
@@ -142,9 +160,13 @@ export async function ensureContentScript(target: Target): Promise<void> {
       await Promise.all(loadingScripts);
     }
 
-    await readyNotificationPromise;
-  } finally {
+    await pTimeout(
+      readyNotificationPromise,
+      4000,
+      "contentScript not ready in 4s"
+    );
     console.debug(`ensureContentScript: ready`, target);
+  } finally {
     controller.abort();
   }
 }
