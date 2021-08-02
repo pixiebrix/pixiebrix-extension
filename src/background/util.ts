@@ -44,7 +44,7 @@ export async function isContentScriptRegistered(url: string): Promise<boolean> {
   });
 
   // Do not replace the 2 calls above with `permissions.getAll` because it might also
-  //  include hosts that are permitted by the manifest but have no content script registered.
+  // include hosts that are permitted by the manifest but have no content script registered.
   return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
 }
 
