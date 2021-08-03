@@ -14,7 +14,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+@import "theme/app/app";
 
 span.page-title-icon {
   line-height: 36px;
+}
+
+.navbar {
+  .navbar-toggler {
+    margin-top: 5px;
+  }
+  .navbar-menu-wrapper {
+    @media (min-width: 992px) {
+      padding-left: 0;
+    }
+  }
+  .navbar-brand-wrapper {
+    &.navbar-toggler-wrapper {
+      @media (max-width: 991px) {
+        width: 100px;
+      }
+    }
+    .navbar-toggler {
+      color: $navbar-menu-color;
+      height: $navbar-height;
+      padding-left: 0;
+      @media (min-width: 992px) {
+        display: none;
+      }
+    }
+  }
 }

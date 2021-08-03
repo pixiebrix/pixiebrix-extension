@@ -29,7 +29,7 @@ import AuthContext from "@/auth/AuthContext";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import logo from "@img/logo.svg";
-import logoSmall from "@img/logo-small.svg";
+import logoSmall from "@img/logo-small-rounded.svg";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { getExtensionToken } from "@/auth/token";
@@ -41,18 +41,27 @@ const Navbar: React.FunctionComponent = () => {
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+      <div className="text-center navbar-brand-wrapper navbar-toggler-wrapper d-flex align-items-center justify-content-center">
         <Link className="navbar-brand brand-logo" to="/">
           <img src={logo} alt="PixieBrix logo" />
         </Link>
         <Link className="navbar-brand brand-logo-mini" to="/">
           <img src={logoSmall} alt="PixieBrix mini logo" />
         </Link>
+        {(token != null || tokenPending) && (
+          <button
+            className="navbar-toggler"
+            type="button"
+            onClick={() => document.querySelector("#sidebar").classList.toggle("active")}
+          >
+            <FontAwesomeIcon icon={faBars} />
+          </button>
+        )}
       </div>
       <div className="navbar-menu-wrapper d-flex align-items-stretch">
         {(token != null || tokenPending) && (
           <button
-            className="navbar-toggler navbar-toggler align-self-center"
+            className="navbar-toggler align-self-center"
             type="button"
             onClick={() => document.body.classList.toggle("sidebar-icon-only")}
           >
