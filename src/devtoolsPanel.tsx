@@ -21,6 +21,7 @@ import React from "react";
 import Panel from "@/devTools/Panel";
 
 import "bootstrap/dist/css/bootstrap.min.css";
+import "@/vendors/overrides.scss";
 import "@/devTools/Panel.scss";
 import { reportError } from "@/telemetry/logging";
 
