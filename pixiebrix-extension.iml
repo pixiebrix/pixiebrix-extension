@@ -7,7 +7,6 @@
       <excludeFolder url="file://$MODULE_DIR$/browsers/chrome/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/browsers/firefox/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/scripts/bin" />
-      <excludeFolder url="file://$MODULE_DIR$/src/vendors" />
       <excludeFolder url="file://$MODULE_DIR$/dist" />
       <excludeFolder url="file://$MODULE_DIR$/browsers/dist" />
     </content>
