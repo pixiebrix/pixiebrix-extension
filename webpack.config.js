@@ -87,10 +87,18 @@ function rollbarPlugins() {
   return [];
 }
 
+function getVersion() {
+  // `manifest.json` only supports numbers in the version, so use the semver
+  const match = /^(?<version>\d+\.\d+\.\d+)/.exec(
+    process.env.npm_package_version
+  );
+  return match.groups.version;
+}
+
 function getVersionName(isProduction) {
   if (process.env.ENVIRONMENT === "staging") {
     // Staging builds (i.e., from CI) are production builds, so check ENVIRONMENT first
-    return `${process.env.npm_package_version}-alpha+${process.env.SOURCE_VERSION}`;
+    return `${getVersion()}-alpha+${process.env.SOURCE_VERSION}`;
   }
 
   if (isProduction) {
@@ -127,7 +135,7 @@ function getConditionalPlugins(isProduction) {
 const isProd = (options) => options.mode === "production";
 
 function customizeManifest(manifest, isProduction) {
-  manifest.version = process.env.npm_package_version;
+  manifest.version = getVersion();
   manifest.version_name = getVersionName(isProduction);
 
   if (!isProduction) {
