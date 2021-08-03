@@ -27,7 +27,7 @@ export class RemoteMethod extends Transformer {
     super(
       "@pixiebrix/http",
       "HTTP Request",
-      "Send an HTTP request, i.e., GET, PUT, POST, PATCH, DELETE"
+      "Send an RESTful HTTP request, i.e., GET, PUT, POST, PATCH, DELETE"
     );
   }
 
@@ -51,6 +51,7 @@ export class RemoteMethod extends Transformer {
       },
       params: {
         type: "object",
+        description: "Search/query params",
         additionalProperties: { type: "string" },
       },
       headers: {
@@ -61,8 +62,7 @@ export class RemoteMethod extends Transformer {
       // Match anything, as valid values are determined by the API being called
       data: {},
     },
-    // XXX: data should not be required for GET/DELETE requests
-    ["url", "data"]
+    ["url"]
   );
 
   async transform({ service, ...requestConfig }: BlockArg): Promise<unknown> {
