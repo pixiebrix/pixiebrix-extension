@@ -33,11 +33,18 @@ import logoSmall from "@img/logo-small-rounded.svg";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { getExtensionToken } from "@/auth/token";
+import { useSelector } from "react-redux";
+import { SettingsState } from "@/options/slices";
 
 const Navbar: React.FunctionComponent = () => {
   const { email, extension } = useContext(AuthContext);
   const [serviceURL] = useAsyncState<string>(getBaseURL);
   const [token, tokenPending] = useAsyncState(getExtensionToken);
+  const mode = useSelector<{ settings: SettingsState }, string>(
+    ({ settings }) => settings.mode
+  );
+
+  const showNavbarToggle = mode === "local" || token != null || tokenPending;
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -48,7 +55,7 @@ const Navbar: React.FunctionComponent = () => {
         <Link className="navbar-brand brand-logo-mini" to="/">
           <img src={logoSmall} alt="PixieBrix mini logo" />
         </Link>
-        {(token != null || tokenPending) && (
+        {showNavbarToggle && (
           <button
             className="navbar-toggler"
             type="button"
@@ -59,7 +66,7 @@ const Navbar: React.FunctionComponent = () => {
         )}
       </div>
       <div className="navbar-menu-wrapper d-flex align-items-stretch">
-        {(token != null || tokenPending) && (
+        {showNavbarToggle && (
           <button
             className="navbar-toggler align-self-center"
             type="button"
