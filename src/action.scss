@@ -41,22 +41,11 @@ body {
   }
 }
 
-.action-panel-close-button {
-  padding: 4px;
-  margin: 4px 12px 4px 12px;
+.action-panel-button {
   color: #6562aa;
 
-  svg:last-child {
-    margin-left: -3px;
-  }
-
   &:hover {
+    color: #4d4b8b;
     background-color: #d1c2d7;
-  }
-}
-
-.ActionPanelToolbar {
-  .btn {
-    border-radius: 0;
   }
 }
