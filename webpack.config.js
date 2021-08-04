@@ -148,7 +148,13 @@ function customizeManifest(manifest, isProduction) {
 
   const internal = isProduction
     ? []
-    : ["http://127.0.0.1/*", "http://localhost/*"];
+    : // The port is part of the origin: https://developer.mozilla.org/en-US/docs/Web/API/URL/origin
+      [
+        "http://127.0.0.1:8000/*",
+        "http://127.0.0.1/*",
+        "http://localhost/*",
+        "http://localhost:8000/*",
+      ];
 
   const policy = new Policy(manifest.content_security_policy);
 
