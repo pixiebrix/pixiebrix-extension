@@ -21,7 +21,7 @@ import {
   FieldRenderer,
   ServiceField,
 } from "@/components/fields/blockOptions";
-import { fromPairs, identity, isEmpty } from "lodash";
+import { fromPairs, isEmpty, compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
 import { Schema } from "@/core";
 import { useField } from "formik";
@@ -33,7 +33,7 @@ import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
 import GridLoader from "react-spinners/GridLoader";
-import { useDependency } from "@/services/hooks";
+import useDependency from "@/services/useDependency";
 import {
   Bot,
   BOT_TYPE,
@@ -41,8 +41,14 @@ import {
   Interface,
   ListResponse,
 } from "@/contrib/automationanywhere/contract";
+import { getErrorMessage } from "@/errors";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = "automation-anywhere/control-room";
+
+const OUTPUT_KEY_SCHEMA: Schema = {
+  type: "string",
+  description: "A name to refer to this brick in subsequent bricks",
+};
 
 function useBots(): {
   bots: Bot[];
@@ -52,6 +58,10 @@ function useBots(): {
   const { config } = useDependency(AUTOMATION_ANYWHERE_SERVICE_ID);
 
   const [bots, isPending, error] = useAsyncState(async () => {
+    if (!config) {
+      return [];
+    }
+
     const response = await proxyService<ListResponse<Bot>>(config, {
       url: `/v2/repository/folders/${config.config.folderId}/list`,
       method: "POST",
@@ -71,6 +81,10 @@ function useDevices(): {
   const { config } = useDependency(AUTOMATION_ANYWHERE_SERVICE_ID);
 
   const [devices, isPending, error] = useAsyncState(async () => {
+    if (!config) {
+      return [];
+    }
+
     const response = await proxyService<ListResponse<Device>>(config, {
       url: "/v2/devices/list",
       method: "POST",
@@ -121,7 +135,7 @@ const RobotField: React.FunctionComponent<FieldProps<string>> = ({
         value={options.find((x) => value === x.value)}
         onChange={(option) => {
           console.debug("Selected bot option", { option });
-          helpers.setValue((option as any).value);
+          helpers.setValue(option.value);
         }}
       />
       {schema.description && (
@@ -131,7 +145,7 @@ const RobotField: React.FunctionComponent<FieldProps<string>> = ({
       )}
       {error && (
         <span className="text-danger small">
-          Error fetching robots: {error.toString()}
+          Error fetching robots: {getErrorMessage(error)}
         </span>
       )}
       {meta.touched && meta.error && (
@@ -168,7 +182,7 @@ const DeviceField: React.FunctionComponent<FieldProps<string>> = ({
         value={options.find((x) => value === x.value)}
         onChange={(option) => {
           console.debug("Selected device option", { option });
-          helpers.setValue((option as any).value);
+          helpers.setValue(option.value);
         }}
       />
       {schema.description && (
@@ -178,7 +192,7 @@ const DeviceField: React.FunctionComponent<FieldProps<string>> = ({
       )}
       {error && (
         <span className="text-danger small">
-          Error fetching devices: {error.toString()}
+          Error fetching devices: {getErrorMessage(error)}
         </span>
       )}
       {meta.touched && meta.error && (
@@ -193,7 +207,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   configKey,
   showOutputKey,
 }) => {
-  const basePath = [name, configKey].filter(identity).join(".");
+  const basePath = compact([name, configKey]).join(".");
   const { hasPermissions, requestPermissions, config } = useDependency(
     AUTOMATION_ANYWHERE_SERVICE_ID
   );
@@ -208,7 +222,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       });
       return interfaceToInputSchema(response.data);
     }
-  }, [fileId, hasPermissions]);
+  }, [config, fileId, hasPermissions]);
 
   if (!config) {
     return (
@@ -269,9 +283,9 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
                     return (
                       <FieldRenderer
                         key={prop}
-                        name={[name, configKey, "data", prop]
-                          .filter(identity)
-                          .join(".")}
+                        name={compact([name, configKey, "data", prop]).join(
+                          "."
+                        )}
                         schema={fieldSchema}
                       />
                     );
@@ -283,7 +297,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               {schemaPending && <GridLoader />}
               {schemaError && (
                 <span className="text-danger">
-                  Error fetching schema: {schemaError.toString()}
+                  Error fetching schema: {getErrorMessage(schemaError)}
                 </span>
               )}
             </Card.Body>
@@ -293,12 +307,9 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 
       {showOutputKey && (
         <FieldRenderer
-          name={`${name}.outputKey`}
+          name={[name, "outputKey"].join(".")}
           label="Output Variable"
-          schema={{
-            type: "string",
-            description: "A name to refer to this brick in subsequent bricks",
-          }}
+          schema={OUTPUT_KEY_SCHEMA}
         />
       )}
     </div>
