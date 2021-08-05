@@ -96,8 +96,6 @@ export function useReleases(): {
     return null;
   }, [config, hasPermissions]);
 
-  console.debug("releases", { releases, isPending, error });
-
   return { releases, isPending, error, hasConfig: config != null };
 }
 

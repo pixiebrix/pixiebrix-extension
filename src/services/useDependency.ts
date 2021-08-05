@@ -38,6 +38,10 @@ type Dependency = {
 
 const permissionsListeners = new Map<string, Listener[]>();
 
+function listenerKey(dependency: ServiceDependency) {
+  return `${dependency.id}:${dependency.config}`;
+}
+
 function useDependency(serviceId: string | string[]): Dependency {
   const notify = useNotifications();
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
@@ -76,8 +80,8 @@ function useDependency(serviceId: string | string[]): Dependency {
   }, [dependency?.config]);
 
   useEffect(() => {
-    if (dependency?.config && !serviceResult?.hasPermissions) {
-      const key = `${dependency.id}:${dependency.config}`;
+    if (dependency != null && !serviceResult?.hasPermissions) {
+      const key = listenerKey(dependency);
       const listener = () => {
         setGrantedPermissions(true);
       };
@@ -93,12 +97,7 @@ function useDependency(serviceId: string | string[]): Dependency {
         );
       };
     }
-  }, [
-    dependency?.id,
-    dependency?.config,
-    setGrantedPermissions,
-    serviceResult,
-  ]);
+  }, [dependency, setGrantedPermissions, serviceResult]);
 
   const requestPermissionCallback = useCallback(async () => {
     const permissions = { origins: serviceResult?.origins ?? [] };
@@ -106,12 +105,12 @@ function useDependency(serviceId: string | string[]): Dependency {
     try {
       const result = await requestPermissions(permissions);
       setGrantedPermissions(result);
-      if (result) {
-        const key = `${dependency.id}:${dependency.config}`;
+      if (result && dependency != null) {
+        const key = listenerKey(dependency);
         for (const listener of permissionsListeners.get(key)) {
           listener();
         }
-      } else {
+      } else if (!result) {
         notify.warning("You must accept the permissions request");
       }
     } catch (error: unknown) {
@@ -120,13 +119,7 @@ function useDependency(serviceId: string | string[]): Dependency {
         error,
       });
     }
-  }, [
-    notify,
-    setGrantedPermissions,
-    serviceResult?.origins,
-    dependency?.id,
-    dependency?.config,
-  ]);
+  }, [notify, setGrantedPermissions, serviceResult?.origins, dependency]);
 
   return {
     config: serviceResult?.localConfig,
