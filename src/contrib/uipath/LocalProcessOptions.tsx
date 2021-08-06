@@ -29,7 +29,6 @@ import { Button, Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
-import { openTab } from "@/background/executor";
 import { useAsyncEffect } from "use-async-effect";
 import {
   getUiPathProcesses,
@@ -188,17 +187,13 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       <div>
         <span className="text-danger">
           UiPath Assistant not found. Don&apos;t have the UiPath Assistant?{" "}
-          <Button
-            variant="link"
-            onClick={async () => {
-              await openTab({
-                url: "https://robotjs.uipath.com/download",
-                active: true,
-              });
-            }}
+          <a
+            href="https://robotjs.uipath.com/download"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Get it now.
-          </Button>
+          </a>
         </span>
       </div>
     );
@@ -219,7 +214,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         schema={UIPATH_PROPERTIES.releaseKey as Schema}
         isPending={processesPending}
         processes={processes}
-        fetchError={initError?.toString() ?? getErrorMessage(processesError)}
+        fetchError={initError ?? processesError}
       />
 
       {!remoteConfig && (
