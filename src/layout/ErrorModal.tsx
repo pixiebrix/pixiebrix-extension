@@ -46,7 +46,7 @@ const ErrorModal: React.FunctionComponent = () => {
 
   if (message) {
     return (
-      <Modal show onHide={handleClose}>
+      <Modal show onHide={handleClose} animation={false}>
         <Modal.Header closeButton>
           <Modal.Title className="text-danger">
             <FontAwesomeIcon icon={faExclamationCircle} className="mr-1" />
@@ -57,7 +57,8 @@ const ErrorModal: React.FunctionComponent = () => {
           <p>{message}</p>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleClose}>
+          {/* eslint-disable-next-line jsx-a11y/no-autofocus -- It's a modal, autofocus improves a11y */}
+          <Button variant="primary" onClick={handleClose} autoFocus>
             Close
           </Button>
         </Modal.Footer>
