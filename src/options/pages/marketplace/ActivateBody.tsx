@@ -18,7 +18,7 @@
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import React, { useCallback } from "react";
 import { useFormikContext } from "formik";
-import { Button, Card, Table } from "react-bootstrap";
+import { Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
   useSelectedAuths,
@@ -126,13 +126,11 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
 }) => {
   const selectedExtensions = useSelectedExtensions(blueprint.extensionPoints);
   const selectedAuths = useSelectedAuths();
-  const {
-    enabled,
-    activate,
-    isPending,
-    permissions,
-    error,
-  } = useEnsurePermissions(blueprint, selectedExtensions, selectedAuths);
+  const { enabled, isPending, permissions, error } = useEnsurePermissions(
+    blueprint,
+    selectedExtensions,
+    selectedAuths
+  );
 
   if (error) {
     console.error(error);
@@ -153,8 +151,6 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
             </u>
           </Link>
         </p>
-
-        <Button onClick={activate}>Activate</Button>
       </Card.Body>
 
       <Card.Body className="p-3">

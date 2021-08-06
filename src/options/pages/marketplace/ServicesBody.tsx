@@ -135,16 +135,19 @@ const AuthWidget: React.FunctionComponent<{
           </div>
         )}
         <div>
-          <Button
-            variant={options.length > 0 ? "info" : "primary"}
-            size="sm"
-            style={{ height: "36px", marginTop: "1px" }}
-            onClick={() => setShow(true)}
-            disabled={isPending || error != null}
-          >
-            <FontAwesomeIcon icon={faPlus} />{" "}
-            {options.length > 0 ? "Add New" : "Configure"}
-          </Button>
+          {options.length <= 0 && (
+            <Button
+              variant={options.length > 0 ? "info" : "primary"}
+              size="sm"
+              style={{ height: "36px", marginTop: "1px" }}
+              onClick={() => {
+                setShow(true);
+              }}
+              disabled={isPending || error != null}
+            >
+              <FontAwesomeIcon icon={faPlus} /> Configure
+            </Button>
+          )}
         </div>
       </div>
     </>
