@@ -71,7 +71,8 @@ export class RunLocalProcess extends Transformer {
 
         const process = processes.find((x) => x.id === releaseKey);
         if (!process) {
-          logger.error(`Cannot find UiPath release: ${releaseKey}`);
+          // `releaseKey`'s type is checked in the inputSchema
+          logger.error(`Cannot find UiPath release: ${releaseKey as string}`);
           throw new BusinessError(`Cannot find UiPath release`);
         }
 
