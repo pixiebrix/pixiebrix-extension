@@ -21,7 +21,7 @@ import { browser, Runtime } from "webextension-polyfill-ts";
 import { connectDevtools } from "@/devTools/protocol";
 import {
   detectFrameworks,
-  getTabInfo,
+  checkTargetPermissions,
   ensureScript,
   navigationEvent,
 } from "@/background/devtools/index";
@@ -33,6 +33,7 @@ import { v4 as uuidv4 } from "uuid";
 import { useTabEventListener } from "@/hooks/events";
 import { sleep } from "@/utils";
 import { getErrorMessage } from "@/errors";
+import { getCurrentURL } from "@/devTools/utils";
 
 interface FrameMeta {
   url: string;
@@ -128,7 +129,11 @@ async function runInMillis<TResult>(
 
 async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
   // TODO: drop the next few lines and just let ensureScript throw
-  const { url, hasPermissions } = await getTabInfo(port);
+
+  const [hasPermissions, url] = await Promise.all([
+    checkTargetPermissions(port),
+    getCurrentURL(),
+  ]);
   if (!hasPermissions) {
     console.debug(`connectToFrame: no access to ${url}`);
     throw new PermissionsError(`No access to URL: ${url}`);

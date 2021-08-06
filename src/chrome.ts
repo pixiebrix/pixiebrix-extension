@@ -51,7 +51,7 @@ export function isBrowserActionPanel(): boolean {
   return url.pathname === location.pathname && url.origin === location.origin;
 }
 
-export function isDevtoolsPage(): boolean {
+export function isDevtoolsPanel(): boolean {
   const isExtensionContext =
     typeof chrome === "object" &&
     chrome &&
