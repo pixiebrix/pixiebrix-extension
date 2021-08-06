@@ -82,7 +82,8 @@ const PermissionsPopup: React.FC = () => {
       </p>
 
       <p>
-        <AsyncButton onClick={request}>
+        {/* eslint-disable-next-line jsx-a11y/no-autofocus -- It's a modal, autofocus improves a11y */}
+        <AsyncButton onClick={request} autoFocus>
           <FontAwesomeIcon icon={faShieldAlt} /> Grant Permissions
         </AsyncButton>
       </p>

@@ -20,6 +20,7 @@ import Button, { ButtonProps } from "react-bootstrap/Button";
 
 interface ExtraProps {
   onClick: (() => Promise<void>) | (() => void);
+  autoFocus?: boolean;
 }
 
 const AsyncButton: React.FunctionComponent<ButtonProps & ExtraProps> = ({
