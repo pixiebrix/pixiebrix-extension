@@ -33,6 +33,10 @@ export async function getCurrentURL(): Promise<string> {
   const [response, error] = await browser.devtools.inspectedWindow.eval(
     "location.href"
   );
+
+  // Handle Dev Tools API error response
+  // https://developer.chrome.com/docs/extensions/reference/devtools_inspectedWindow/#method-eval
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/999#discussion_r684370643
   if (!response && error?.isError) {
     throw new Error(printf(error.description, error.details));
   }
