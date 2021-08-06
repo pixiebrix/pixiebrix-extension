@@ -148,22 +148,18 @@ const Sidebar: React.FunctionComponent<
               )
             )}
           </DropdownButton>
-          {unavailableCount === 0 ? null : (
+          {unavailableCount ? (
             <div className="my-auto">
               <Form.Check
                 type="checkbox"
-                label={
-                  unavailableCount != null
-                    ? `Show ${unavailableCount} unavailable`
-                    : `Show unavailable`
-                }
+                label={`Show ${unavailableCount} unavailable`}
                 defaultChecked={showAll}
                 onChange={(event: FormEvent<HTMLInputElement>) => {
                   setShowAll(event.currentTarget.checked);
                 }}
               />
             </div>
-          )}
+          ) : null}
         </div>
       </div>
       <div className="Sidebar__extensions flex-grow-1">
