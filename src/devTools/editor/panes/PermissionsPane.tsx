@@ -44,14 +44,13 @@ const PermissionsPane: React.FunctionComponent = () => {
           <FontAwesomeIcon icon={faShieldAlt} /> Grant Permanent Access
         </AsyncButton>
       </p>
-      <p className="text-info">
-        <FontAwesomeIcon icon={faInfoCircle} /> You can revoke PixieBrix&apos;s
-        access to a site at any time on PixieBrix&apos;s Settings page
-      </p>
       <p>
-        Or, grant temporary access by 1) clicking on the PixieBrix extension
-        menu item in your browser&apos;s extensions dropdown, and 2) then
-        refreshing the page
+        Or grant temporary access by clicking on the PixieBrix extension menu
+        item in your browser&apos;s extensions dropdown.
+      </p>
+      <p className="text-info">
+        <FontAwesomeIcon icon={faInfoCircle} /> You can revoke access to a site
+        at any time on PixieBrix&apos;s Settings page
       </p>
     </Centered>
   );

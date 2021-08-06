@@ -24,6 +24,7 @@ import { sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
 import { HandlerMap } from "@/messaging/protocol";
 import { getErrorMessage, isPrivatePageError } from "@/errors";
+import { emitDevtools } from "@/background/devtools/internal";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
@@ -63,6 +64,12 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
       frameId: TOP_LEVEL_FRAME_ID,
     });
     tabNonces.set(tab.id, nonce);
+
+    // Inform editor that it now has the ActiveTab permission, if it's open
+    emitDevtools("HistoryStateUpdate", {
+      tabId: tab.id,
+      frameId: TOP_LEVEL_FRAME_ID,
+    });
   } catch (error: unknown) {
     if (isPrivatePageError(error)) {
       void showErrorInOptions(
