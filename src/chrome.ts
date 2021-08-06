@@ -51,27 +51,6 @@ export function isBrowserActionPanel(): boolean {
   return url.pathname === location.pathname && url.origin === location.origin;
 }
 
-export function isDevtoolsPage(): boolean {
-  const isExtensionContext =
-    typeof chrome === "object" &&
-    chrome &&
-    typeof chrome.extension === "object";
-
-  if (!isExtensionContext || !chrome?.runtime?.getManifest) {
-    return false;
-  }
-
-  // Make sure dev tools are installed
-  const { devtools_page } = chrome.runtime.getManifest();
-  if (typeof devtools_page !== "string") {
-    return false;
-  }
-
-  const url = new URL("devtoolsPanel.html", location.origin);
-
-  return url.pathname === location.pathname && url.origin === location.origin;
-}
-
 export function setChromeExtensionId(extensionId: string): void {
   if (isEmpty(extensionId)) {
     localStorage.removeItem(CHROME_EXTENSION_STORAGE_KEY);

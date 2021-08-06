@@ -17,18 +17,18 @@
 
 import React, { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
-import { getTabInfo } from "@/background/devtools";
 import Centered from "@/devTools/editor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
+import { getCurrentURL } from "@/devTools/utils";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { port, connect } = useContext(DevToolsContext);
 
   const onRequestPermission = useCallback(async () => {
-    const { url } = await getTabInfo(port);
+    const url = await getCurrentURL();
     if (await requestPermissions({ origins: [url] })) {
       await connect();
     }
