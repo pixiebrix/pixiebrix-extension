@@ -19,7 +19,7 @@
 // https://github.com/vuejs/vue-devtools/blob/6d8fee4d058716fe72825c9ae22cf831ef8f5172/packages/app-backend/src/index.js#L185
 // https://github.com/vuejs/vue-devtools/blob/dev/packages/app-backend/src/utils.js
 
-import { pickBy, isEmpty } from "lodash";
+import { pickBy, isEmpty, set } from "lodash";
 import { RootInstanceVisitor } from "@/frameworks/scanner";
 import { WriteableComponentAdapter } from "@/frameworks/component";
 
@@ -162,8 +162,8 @@ const adapter: WriteableComponentAdapter<Instance> = {
   hasData: (instance: Instance) => !isEmpty(instance),
   getData: readVueData,
   setData: (instance: Instance, data) => {
-    for (const [key, value] of Object.entries(data)) {
-      (instance as any)[key] = value;
+    for (const [path, value] of Object.entries(data)) {
+      set(instance, path, value);
     }
   },
 };

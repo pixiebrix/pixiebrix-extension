@@ -34,6 +34,7 @@ import {
   pickBy,
 } from "lodash";
 import { Primitive } from "type-fest";
+import { getErrorMessage } from "@/errors";
 
 export function mostCommonElement<T>(items: T[]): T {
   // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
@@ -63,7 +64,9 @@ export function getAllPropertyNames(obj: object): string[] {
 
 export async function waitAnimationFrame(): Promise<void> {
   return new Promise((resolve) => {
-    window.requestAnimationFrame(() => resolve());
+    window.requestAnimationFrame(() => {
+      resolve();
+    });
   });
 }
 
@@ -76,7 +79,7 @@ export async function asyncMapValues<T, TResult>(
 ): Promise<{ [K in keyof T]: TResult }> {
   const entries = Object.entries(mapping);
   const values = await Promise.all(
-    entries.map(([key, value]) => func(value, key, mapping))
+    entries.map(async ([key, value]) => func(value, key, mapping))
   );
   return fromPairs(
     zip(entries, values).map(([[key], value]) => [key, value])
@@ -113,6 +116,7 @@ export async function awaitValue<T>(
       return value;
     }
 
+    // eslint-disable-next-line no-await-in-loop -- intentionally blocking the loop
     await sleep(retryMillis);
   } while (Date.now() - start < waitMillis);
 
@@ -193,12 +197,10 @@ export function cleanValue(
   depth?: number
 ): unknown[];
 export function cleanValue(
-  value: {
-    [key: string]: unknown;
-  },
+  value: Record<string, unknown>,
   maxDepth?: number,
   depth?: number
-): { [key: string]: unknown };
+): Record<string, unknown>;
 export function cleanValue(
   value: unknown,
   maxDepth?: number,
@@ -212,7 +214,7 @@ export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
   }
 
   if (Array.isArray(value)) {
-    return value.map(recurse);
+    return value.map((x) => recurse(x));
   }
 
   if (typeof value === "object" && value != null) {
@@ -302,7 +304,9 @@ export function getPropByPath(
       try {
         value = value.apply(previous, args);
       } catch (error: unknown) {
-        throw new Error(`Error running method ${part}: ${error}`);
+        throw new Error(
+          `Error running method ${part}: ${getErrorMessage(error)}`
+        );
       }
     }
   }
@@ -315,11 +319,7 @@ export function isNullOrBlank(value: unknown): boolean {
     return true;
   }
 
-  if (typeof value === "string" && value.trim() === "") {
-    return true;
-  }
-
-  return false;
+  return typeof value === "string" && value.trim() === "";
 }
 
 export class PromiseCancelled extends Error {

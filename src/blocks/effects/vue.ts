@@ -35,9 +35,12 @@ export class SetVueValues extends Effect {
     properties: {
       component: {
         type: "string",
+        description: "JQuery selector for the Vue.js component",
       },
       values: {
         type: "object",
+        description:
+          "Mapping from property path to new value (see https://lodash.com/docs/4.17.15#set)",
         minProperties: 1,
         additionalProperties: true,
       },
