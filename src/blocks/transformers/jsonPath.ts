@@ -44,6 +44,7 @@ export class JSONPathTransformer extends Transformer {
     { path }: BlockArg,
     { ctxt }: BlockOptions
   ): Promise<unknown> {
+    // eslint-disable-next-line new-cap -- export from a library
     return JSONPath({ preventEval: true, path, json: ctxt });
   }
 }
