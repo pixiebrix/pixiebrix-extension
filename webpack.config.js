@@ -244,6 +244,7 @@ module.exports = (env, options) =>
       alias: {
         ...mockHeavyDependencies(),
 
+        "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
         // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
         handlebars: "handlebars/dist/handlebars.js",
       },
