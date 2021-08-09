@@ -117,10 +117,13 @@ const ServiceAuthSelector: React.FunctionComponent<{
     [authOptions, serviceId]
   );
 
-  const value = useMemo(
-    () => authOptions.filter((x) => x.value === field.value),
-    [field.value, authOptions]
-  );
+  const value = useMemo(() => {
+    if (authOptions.length === 1) {
+      return authOptions[0];
+    }
+
+    return authOptions.filter((x) => x.value === field.value);
+  }, [field.value, authOptions]);
 
   if (serviceId === PIXIEBRIX_SERVICE_ID) {
     return (
