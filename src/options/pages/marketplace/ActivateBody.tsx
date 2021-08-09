@@ -18,7 +18,7 @@
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import React, { useCallback, useMemo } from "react";
 import { useFormikContext } from "formik";
-import { Card, Table } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
   useSelectedAuths,
@@ -137,12 +137,22 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
       return [];
     }
 
-    return []
-      .concat(...permissions.map((x) => x.permissions))
+    const access_urls = permissions.map((x) => {
+      if (x.origins.length > 0) {
+        return x.origins.join(", ");
+      }
+
+      return "Any URL";
+    });
+
+    const control_permissions = permissions
+      .flatMap((x) => x.permissions)
       .filter((permission, index, self) => {
         // get a list of only unique permissions
         return self.indexOf(permission) === index;
       });
+
+    return [...control_permissions, ...access_urls];
   }, [permissions]);
 
   if (error) {
@@ -153,7 +163,6 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
     <>
       <Card.Body className="mb-0 p-3">
         <Card.Title>Review Permissions & Activate</Card.Title>
-
         <p className="text-info">
           <FontAwesomeIcon icon={faInfoCircle} /> You can de-activate bricks at
           any time on the{" "}
@@ -167,7 +176,7 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
       </Card.Body>
 
       <Card.Body className="p-3">
-        <Card.Subtitle>Permissions</Card.Subtitle>
+        <Card.Subtitle>Permissions & URLs</Card.Subtitle>
 
         {enabled == null || !enabled ? (
           <Card.Text>
@@ -180,60 +189,23 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
             you&apos;ve selected
           </Card.Text>
         )}
-      </Card.Body>
-      <Table>
-        <tbody>
-          {isPending && (
-            <tr>
-              <td colSpan={2}>
-                <GridLoader />
-              </td>
-            </tr>
-          )}
+
+        {isPending && <GridLoader />}
+        <ul>
           {error && (
-            <tr>
-              <td colSpan={2} className="text-danger">
-                An error occurred while determining the permissions
-              </td>
-            </tr>
+            <li className="text-danger">
+              An error occurred while determining the permissions
+            </li>
           )}
-          {
-            permissions?.length > 0 &&
-              uniquePermissions.map((permission, i) => {
-                return (
-                  <tr key={i}>
-                    <td>{permission}</td>
-                  </tr>
-                );
-              })
-            // permissions.map((x, i) => {
-            //   const additional = x.permissions.filter(
-            //     (x) => !["tabs", "webNavigation"].includes(x)
-            //   );
-            //   return (
-            //     <tr key={i}>
-            //       <td>
-            //         {x.origins.length > 0 ? x.origins.join(", ") : "Any URL"}
-            //       </td>
-            //       <td>
-            //         <ul className="mb-0">
-            //           <li>Read/write information and detect page navigation</li>
-            //           {additional.map((x) => (
-            //             <li key={x}>{x}</li>
-            //           ))}
-            //         </ul>
-            //       </td>
-            //     </tr>
-            //   );
-            // })
-          }
+          {permissions?.length > 0 &&
+            uniquePermissions.map((permission) => {
+              return <li>{permission}</li>;
+            })}
           {permissions?.length === 0 && (
-            <tr>
-              <td colSpan={2}>No special permissions required</td>
-            </tr>
+            <li>No special permissions required</li>
           )}
-        </tbody>
-      </Table>
+        </ul>
+      </Card.Body>
     </>
   );
 };
