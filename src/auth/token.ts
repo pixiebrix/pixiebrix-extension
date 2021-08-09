@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readStorage, setStorage } from "@/chrome";
-import equal from "fast-deep-equal";
 import { browser } from "webextension-polyfill-ts";
 import Cookies from "js-cookie";
 import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
+import { isEqual } from "lodash";
 
 const STORAGE_EXTENSION_KEY = "extensionKey";
 
@@ -54,19 +53,31 @@ export function readAuthFromWebsite(): AuthData {
   };
 }
 
-export async function getExtensionToken(): Promise<string | null> {
-  const valueJSON = await readStorage(STORAGE_EXTENSION_KEY);
-  return valueJSON ? JSON.parse(valueJSON as string).token : undefined;
+async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
+  const storage = await browser.storage.local.get({
+    [STORAGE_EXTENSION_KEY]: {},
+  });
+  // eslint-disable-next-line security/detect-object-injection -- Local constant
+  const data = storage[STORAGE_EXTENSION_KEY];
+
+  // TODO: Migration only; Drop at some point (Added August 18th 2021)
+  if (typeof data === "string") {
+    const parsed = JSON.parse(data);
+    await browser.storage.local.set({ [STORAGE_EXTENSION_KEY]: parsed });
+    return parsed;
+  }
+
+  return data;
+}
+
+export async function getExtensionToken(): Promise<string | undefined> {
+  const { token } = await readAuthData();
+  return token;
 }
 
 export async function getExtensionAuth(): Promise<UserData> {
-  const valueJSON = await readStorage(STORAGE_EXTENSION_KEY);
-  if (valueJSON) {
-    const { user, email, hostname } = JSON.parse(valueJSON as string);
-    return { user, email, hostname };
-  }
-
-  return {};
+  const { user, email, hostname } = await readAuthData();
+  return { user, email, hostname };
 }
 
 export async function clearExtensionAuth(): Promise<void> {
@@ -76,27 +87,28 @@ export async function clearExtensionAuth(): Promise<void> {
 }
 
 /**
- * Refresh the Chrome extensions auth (user, email, token, hostname), and return true iff it was updated.
+ * Refresh the Chrome extensions auth (user, email, token, hostname), and return true if it was updated.
  */
 export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
-  if (auth) {
-    let previous;
-    try {
-      const valueJSON = await readStorage(STORAGE_EXTENSION_KEY);
-      previous = JSON.parse(valueJSON as string);
-    } catch {
-      // Pass
-    }
-
-    console.debug(`Setting extension auth for ${auth.email}`, auth);
-    await updateRollbarAuth({
-      userId: auth.user,
-      email: auth.email,
-      organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
-    });
-    await setStorage(STORAGE_EXTENSION_KEY, JSON.stringify(auth));
-    return !equal(auth, previous);
+  if (!auth) {
+    return false;
   }
 
-  return false;
+  void updateRollbarAuth({
+    userId: auth.user,
+    email: auth.email,
+    organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
+  });
+
+  // Note: `auth` is a `Object.create(null)` object, which for some `isEqual` implementations
+  // isn't deeply equal to `{}`.  _.isEqual is fine, `fast-deep-equal` isn't
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/1016
+  if (isEqual(auth, await readAuthData())) {
+    // The auth hasn't changed
+    return false;
+  }
+
+  console.debug(`Setting extension auth for ${auth.email}`, auth);
+  await browser.storage.local.set({ [STORAGE_EXTENSION_KEY]: auth });
+  return true;
 }
