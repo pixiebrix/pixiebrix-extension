@@ -31,7 +31,7 @@ import { reportEvent } from "@/telemetry/events";
 import { expectContentScript } from "@/utils/expectContext";
 
 const SIDEBAR_WIDTH_PX = 400;
-const PANEL_CONTAINER_ID = "pixiebrix-chrome-extension";
+const PANEL_CONTAINER_ID = "pixiebrix-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
 
 let renderSequenceNumber = 0;

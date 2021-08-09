@@ -51,7 +51,7 @@ const tabNonces = new Map<number, string>();
  */
 const tabFrames = new Map<number, number>();
 
-async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
+async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
   // We're either getting a new frame, or getting rid of the existing one. Forget the old frame
   // id so we're not sending messages to a dead frame
   tabFrames.delete(tab.id);
@@ -272,7 +272,7 @@ handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
 });
 
 if (isBackgroundPage()) {
-  chrome.browserAction.onClicked.addListener(handleBrowserAction);
+  browser.browserAction.onClicked.addListener(handleBrowserAction);
   console.debug("Installed browserAction click listener");
   browser.runtime.onMessage.addListener(handlers.asListener());
 }

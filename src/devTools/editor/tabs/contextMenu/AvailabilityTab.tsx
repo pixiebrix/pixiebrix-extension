@@ -178,7 +178,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 })
               }
             >
-              Chrome Documentation
+              Patterns Documentation
             </a>{" "}
             for examples
           </Form.Text>
