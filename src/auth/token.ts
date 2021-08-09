@@ -100,8 +100,11 @@ export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
     organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
   });
 
-  // Check if it has changed
+  // Note: `auth` is a `Object.create(null)` object, which for some `isEqual` implementations
+  // isn't deeply equal to `{}`.  _.isEqual is fine, `fast-deep-equal` isn't
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/1016
   if (isEqual(auth, await readAuthData())) {
+    // The auth hasn't changed
     return false;
   }
 
