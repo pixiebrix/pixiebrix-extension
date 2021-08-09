@@ -16,7 +16,7 @@
  */
 
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useFormikContext } from "formik";
 import { Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -132,6 +132,19 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
     selectedAuths
   );
 
+  const uniquePermissions = useMemo(() => {
+    if (permissions === null || permissions?.length <= 0) {
+      return [];
+    }
+
+    return []
+      .concat(...permissions.map((x) => x.permissions))
+      .filter((permission, index, self) => {
+        // get a list of only unique permissions
+        return self.indexOf(permission) === index;
+      });
+  }, [permissions]);
+
   if (error) {
     console.error(error);
   }
@@ -169,12 +182,6 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
         )}
       </Card.Body>
       <Table>
-        <thead>
-          <tr>
-            <th>URL</th>
-            <th className="w-100">Permissions</th>
-          </tr>
-        </thead>
         <tbody>
           {isPending && (
             <tr>
@@ -190,27 +197,36 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
               </td>
             </tr>
           )}
-          {permissions?.length > 0 &&
-            permissions.map((x, i) => {
-              const additional = x.permissions.filter(
-                (x) => !["tabs", "webNavigation"].includes(x)
-              );
-              return (
-                <tr key={i}>
-                  <td>
-                    {x.origins.length > 0 ? x.origins.join(", ") : "Any URL"}
-                  </td>
-                  <td>
-                    <ul className="mb-0">
-                      <li>Read/write information and detect page navigation</li>
-                      {additional.map((x) => (
-                        <li key={x}>{x}</li>
-                      ))}
-                    </ul>
-                  </td>
-                </tr>
-              );
-            })}
+          {
+            permissions?.length > 0 &&
+              uniquePermissions.map((permission, i) => {
+                return (
+                  <tr key={i}>
+                    <td>{permission}</td>
+                  </tr>
+                );
+              })
+            // permissions.map((x, i) => {
+            //   const additional = x.permissions.filter(
+            //     (x) => !["tabs", "webNavigation"].includes(x)
+            //   );
+            //   return (
+            //     <tr key={i}>
+            //       <td>
+            //         {x.origins.length > 0 ? x.origins.join(", ") : "Any URL"}
+            //       </td>
+            //       <td>
+            //         <ul className="mb-0">
+            //           <li>Read/write information and detect page navigation</li>
+            //           {additional.map((x) => (
+            //             <li key={x}>{x}</li>
+            //           ))}
+            //         </ul>
+            //       </td>
+            //     </tr>
+            //   );
+            // })
+          }
           {permissions?.length === 0 && (
             <tr>
               <td colSpan={2}>No special permissions required</td>
