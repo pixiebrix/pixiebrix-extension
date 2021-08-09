@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ComponentType, useCallback, useMemo, useState } from "react";
 import ServiceAuthSelector, {
   AuthOption,
   useAuthOptions,
@@ -131,6 +131,7 @@ const AuthWidget: React.FunctionComponent<{
               name={`services.${serviceId}`}
               serviceId={serviceId}
               authOptions={options}
+              customOptionComponent={OptionsWithAddConfigOption}
             />
           </div>
         )}
@@ -153,6 +154,16 @@ const AuthWidget: React.FunctionComponent<{
     </>
   );
 };
+
+const OptionsWithAddConfigOption: ComponentType = ({
+  children,
+  // ...props
+}) => (
+  <div>
+    {children}
+    <a href="#">+ Add new</a>
+  </div>
+);
 
 const ServiceDescriptor: React.FunctionComponent<{
   serviceConfigs: ServiceDefinition[];
