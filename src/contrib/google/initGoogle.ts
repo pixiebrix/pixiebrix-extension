@@ -19,7 +19,7 @@ const API_KEY = process.env.GOOGLE_API_KEY;
 
 import { DISCOVERY_DOCS as SHEETS_DOCS } from "./sheets/handlers";
 import { DISCOVERY_DOCS as BIGQUERY_DOCS } from "./bigquery/handlers";
-import { isChrome } from "@/helpers";
+import { isChrome } from "webext-detect-page";
 
 declare global {
   interface Window {
@@ -39,7 +39,7 @@ async function onGAPILoad(): Promise<void> {
 }
 
 function initGoogle(): void {
-  if (!isChrome) {
+  if (!isChrome()) {
     // TODO: Use feature detection instead of sniffing the user agent
     console.info(
       "Google API not enabled because it's not supported by this browser"
