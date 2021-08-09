@@ -31,12 +31,10 @@ async function openInstallPage() {
 function install({ reason }: Runtime.OnInstalledDetailsType) {
   if (reason === "install") {
     void openInstallPage();
-    initTelemetry();
     reportEvent("PixieBrixInstall", {
       version: browser.runtime.getManifest().version,
     });
   } else if (reason === "update") {
-    initTelemetry();
     reportEvent("PixieBrixUpdate", {
       version: browser.runtime.getManifest().version,
     });
@@ -45,10 +43,6 @@ function install({ reason }: Runtime.OnInstalledDetailsType) {
 
 function onUpdateAvailable({ version }: Runtime.OnUpdateAvailableDetailsType) {
   _availableVersion = version;
-}
-
-function init() {
-  initTelemetry();
 }
 
 export const getAvailableVersion = liftBackground(
@@ -73,7 +67,7 @@ async function setUninstallURL(): Promise<void> {
 
 browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
 browser.runtime.onInstalled.addListener(install);
-browser.runtime.onStartup.addListener(init);
+browser.runtime.onStartup.addListener(initTelemetry);
 
 browser.storage.onChanged.addListener((changes) => {
   if (DNT_STORAGE_KEY in changes) {
