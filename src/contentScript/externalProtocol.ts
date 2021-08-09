@@ -23,14 +23,13 @@ import {
   SerializableResponse,
   toErrorResponse,
 } from "@/messaging/protocol";
+import pTimeout from "p-timeout";
 import oneMutation from "one-mutation";
 import { isContentScript, isExtensionContext } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
 import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
-import { sleep } from "@/utils";
 import { expectContentScript } from "@/utils/expectContext";
-import pTimeout from "p-timeout";
 
 const POLL_READY_TIMEOUT = 2000;
 const RESPONSE_TIMEOUT = 2000; // XXX: Might need to be longer
@@ -55,21 +54,18 @@ interface MessageResponse<R> {
 const contentScriptHandlers = new Map<string, HandlerEntry>();
 
 async function waitExtensionLoaded(): Promise<void> {
-  // Wait for the extension to load before sending the message
   if (document.documentElement.hasAttribute(PIXIEBRIX_READY_ATTRIBUTE)) {
     return;
   }
 
-  await Promise.race([
+  await pTimeout(
     oneMutation(document.documentElement, {
       attributes: true,
       attributeFilter: [PIXIEBRIX_READY_ATTRIBUTE],
     }),
-
-    // TODO: Replace `sleep` with `p-timeout`
-    // Timeouts are temporarily being let through just for backwards compatibility.
-    sleep(POLL_READY_TIMEOUT),
-  ]);
+    POLL_READY_TIMEOUT,
+    `The extension did not load within ${POLL_READY_TIMEOUT / 1000}s`
+  );
 }
 
 function sendMessageToOtherSide(
