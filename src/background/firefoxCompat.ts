@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isFirefox } from "@/helpers";
+import { isFirefox } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
 import { expectBackgroundPage } from "@/utils/expectContext";
 
@@ -29,7 +29,7 @@ function onContextMenuClick({ menuItemId }: browser.contextMenus.OnClickData) {
 
 export default async function initFirefoxCompat(): Promise<void> {
   expectBackgroundPage();
-  if (!isFirefox) {
+  if (!isFirefox()) {
     return;
   }
 
