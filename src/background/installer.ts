@@ -17,11 +17,9 @@
 
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { liftBackground } from "@/background/protocol";
-import urljoin from "url-join";
 import { reportEvent, initTelemetry } from "@/telemetry/events";
 import { DNT_STORAGE_KEY, getDNT, getUID } from "@/background/telemetry";
 
-const SERVICE_URL = process.env.SERVICE_URL;
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
 let _availableVersion: string | null = null;
@@ -52,11 +50,6 @@ function onUpdateAvailable({ version }: Runtime.OnUpdateAvailableDetailsType) {
 function init() {
   initTelemetry();
 }
-
-export const hasAppAccount = liftBackground("CHECK_APP_ACCOUNT", async () => {
-  const tabs = await browser.tabs.query({ url: urljoin(SERVICE_URL, "setup") });
-  return tabs.length > 0 ? { id: tabs[0].id } : null;
-});
 
 export const getAvailableVersion = liftBackground(
   "GET_AVAILABLE_VERSION",

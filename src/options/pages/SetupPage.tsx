@@ -25,13 +25,12 @@ import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
-import { hasAppAccount } from "@/background/installer";
 import GridLoader from "react-spinners/GridLoader";
 
 import "./SetupPage.scss";
-import { reportError } from "@/telemetry/logging";
 import { useTitle } from "@/hooks/title";
 
+const SERVICE_URL = process.env.SERVICE_URL;
 const { setMode } = settingsSlice.actions;
 
 const Step: React.FunctionComponent<{
@@ -58,50 +57,26 @@ const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
 
   const dispatch = useDispatch();
-  const [accountTab, accountPending] = useAsyncState(() => hasAppAccount(), []);
+  const [accountTab, accountPending] = useAsyncState(async () => {
+    const accountTabs = await browser.tabs.query({
+      url: new URL("setup", SERVICE_URL).toString(),
+    });
+
+    // Close previous tab(s) in the app, if found
+    await browser.tabs.remove(accountTabs.map((tab) => tab.id));
+    return accountTabs.length > 0;
+  }, []);
+  const [installURL, installURLPending] = useAsyncState(async () => {
+    const url = new URL(await getBaseURL());
+    url.searchParams.set("install", "1");
+    return url.toString();
+  }, []);
 
   const setLocal = useCallback(() => {
     dispatch(setMode({ mode: "local" }));
   }, [dispatch]);
 
-  const connectApp = useCallback(async () => {
-    const url = new URL(await getBaseURL());
-    url.searchParams.set("install", "1");
-
-    if (accountTab) {
-      // Try to do everything in the setup tab
-      await browser.tabs.update(accountTab.id, {
-        url: url.toString(),
-        active: true,
-      });
-    } else {
-      await browser.tabs.create({
-        url: url.toString(),
-        active: true,
-      });
-    }
-
-    // Close the browser extension tab
-    window.close();
-  }, [accountTab]);
-
-  // Try to automatically open the web app to sync the credentials so that the user doesn't
-  // have to click the button
-  useAsyncState(async () => {
-    if (accountTab) {
-      connectApp().catch((error: unknown) => {
-        reportError(error);
-        console.error(
-          "Error automatically opening application tab to link account",
-          {
-            error,
-          }
-        );
-      });
-    }
-  }, [connectApp, accountTab]);
-
-  if (accountPending) {
+  if (accountPending || installURLPending) {
     return (
       <Row className="w-100 mx-0">
         <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
@@ -116,19 +91,19 @@ const SetupPage: React.FunctionComponent = () => {
     );
   }
 
+  // Don't render anything, just visit app
+  if (accountTab) {
+    location.replace(installURL);
+    return null;
+  }
+
   return (
     <Row className="w-100 mx-0">
       <Col className="mt-5 col-md-10 col-lg-7 col-sm-12 mx-auto">
         <Card className="OnboardingCard">
           <Card.Header>PixieBrix Setup Steps</Card.Header>
           <ListGroup className="list-group-flush">
-            {accountTab && (
-              <Step number={1} completed>
-                Create an account
-              </Step>
-            )}
-
-            <Step number={accountTab ? 2 : 1} completed>
+            <Step number={1} completed>
               Install the PixieBrix browser extension
               <div>
                 <span className="text-muted">
@@ -137,44 +112,28 @@ const SetupPage: React.FunctionComponent = () => {
                 </span>
               </div>
             </Step>
+            <Step number={2} active>
+              <div>Link the extension to a PixieBrix account</div>
+              <div>
+                <Button
+                  role="button"
+                  className="btn btn-primary mt-2"
+                  href={installURL}
+                >
+                  <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix
+                  account
+                </Button>
+              </div>
 
-            {accountTab ? (
-              <Step number={3} active>
-                <div>Link the extension to your account</div>
-                <div>
-                  <Button
-                    role="button"
-                    className="btn btn-primary mt-2"
-                    onClick={connectApp}
-                  >
-                    <FontAwesomeIcon icon={faLink} /> Link PixieBrix account
-                  </Button>
-                </div>
-              </Step>
-            ) : (
-              <Step number={2} active>
-                <div>Link the extension to a PixieBrix account</div>
-                <div>
-                  <Button
-                    role="button"
-                    className="btn btn-primary mt-2"
-                    onClick={connectApp}
-                  >
-                    <FontAwesomeIcon icon={faLink} /> Create/link PixieBrix
-                    account
-                  </Button>
-                </div>
-
-                <div className="mt-2">
-                  <span className="text-muted">
-                    Alternatively, you can use the extension in{" "}
-                    <a href="#" onClick={setLocal}>
-                      local-only mode
-                    </a>
-                  </span>
-                </div>
-              </Step>
-            )}
+              <div className="mt-2">
+                <span className="text-muted">
+                  Alternatively, you can use the extension in{" "}
+                  <a href="#" onClick={setLocal}>
+                    local-only mode
+                  </a>
+                </span>
+              </div>
+            </Step>
           </ListGroup>
         </Card>
       </Col>
