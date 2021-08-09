@@ -53,7 +53,7 @@ export const setExtensionAuth = lift(
   }
 );
 
-// Chrome.runtime.openOptionsPage only available from the background page
+// `runtime.openOptionsPage` is only available in the background page
 const _openOptions = liftBackground("BACKGROUND_OPEN_OPTIONS", async () => {
   await browser.runtime.openOptionsPage();
   return true;

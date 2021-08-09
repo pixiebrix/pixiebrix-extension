@@ -57,7 +57,7 @@ export const rollbar: Rollbar = (() => {
         // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
         // https://docs.rollbar.com/docs/source-maps#section-using-source-maps-on-many-domains
         for (const frame of payload.body.trace?.frames ?? []) {
-          if (frame.filename?.includes(process.env.CHROME_EXTENSION_ID)) {
+          if (frame.filename && !frame.filename.startsWith("http")) {
             frame.filename = frame.filename.replace(
               location.origin,
               process.env.ROLLBAR_PUBLIC_PATH

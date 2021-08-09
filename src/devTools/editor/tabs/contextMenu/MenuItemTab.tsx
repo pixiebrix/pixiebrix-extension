@@ -82,8 +82,8 @@ const MenuItemTab: React.FunctionComponent<{
           </FastField>
           <Form.Text className="text-muted">
             The context menu item caption. Use the <code>%s</code> placeholder
-            to have Chrome dynamically insert the current selection in the menu
-            caption
+            to have the browser dynamically insert the current selection in the
+            menu caption
           </Form.Text>
         </Col>
       </Form.Group>

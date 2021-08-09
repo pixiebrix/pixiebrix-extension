@@ -28,6 +28,7 @@ import { PromiseCancelled, sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
+import { browser } from "webextension-polyfill-ts";
 
 let _scriptPromise: Promise<void>;
 const _dynamic: Map<string, IExtensionPoint> = new Map();
@@ -47,7 +48,7 @@ async function installScriptOnce(): Promise<void> {
     console.debug("Installing page script");
     _scriptPromise = new Promise((resolve) => {
       const script = document.createElement("script");
-      script.src = chrome.extension.getURL("script.js");
+      script.src = browser.runtime.getURL("script.js");
       (document.head || document.documentElement).append(script);
       script.addEventListener("load", () => {
         script.remove();
