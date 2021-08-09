@@ -110,11 +110,9 @@ const ServiceAuthSelector: React.FunctionComponent<{
   serviceId: string;
   authOptions: AuthOption[];
   // TODO: write type for customOptionComponent
-  customOptionComponent?: any;
-}> = ({ authOptions, serviceId, customOptionComponent, ...props }) => {
+  customOptionMenu?: any;
+}> = ({ authOptions, serviceId, customOptionMenu, ...props }) => {
   const [field, meta, helpers] = useField(props);
-
-  console.log(customOptionComponent);
 
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
@@ -150,7 +148,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
         options={options}
         value={value}
         error={!!meta.error}
-        components={{ Menu: customOptionComponent }}
+        components={{ MenuList: customOptionMenu }}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
           helpers.setValue(x.value);

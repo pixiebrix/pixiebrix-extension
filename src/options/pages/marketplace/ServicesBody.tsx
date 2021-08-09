@@ -103,6 +103,26 @@ const AuthWidget: React.FunctionComponent<{
     [helpers, addToast, dispatch, setShow, serviceId]
   );
 
+  const customMenu = useMemo(() => {
+    const AuthMenuWithAddConfig: ComponentType = ({ children }) => (
+      <div>
+        {children}
+        <div className="text-center">
+          <Button
+            size="sm"
+            variant="link"
+            onClick={() => {
+              setShow(true);
+            }}
+          >
+            + Add new
+          </Button>
+        </div>
+      </div>
+    );
+    return AuthMenuWithAddConfig;
+  }, [setShow]);
+
   const initialConfiguration: RawServiceConfiguration = useMemo(
     () =>
       ({
@@ -131,7 +151,7 @@ const AuthWidget: React.FunctionComponent<{
               name={`services.${serviceId}`}
               serviceId={serviceId}
               authOptions={options}
-              customOptionComponent={OptionsWithAddConfigOption}
+              customOptionMenu={customMenu}
             />
           </div>
         )}
@@ -154,16 +174,6 @@ const AuthWidget: React.FunctionComponent<{
     </>
   );
 };
-
-const OptionsWithAddConfigOption: ComponentType = ({
-  children,
-  // ...props
-}) => (
-  <div>
-    {children}
-    <a href="#">+ Add new</a>
-  </div>
-);
 
 const ServiceDescriptor: React.FunctionComponent<{
   serviceConfigs: ServiceDefinition[];
