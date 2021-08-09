@@ -23,9 +23,9 @@ import { liftBackground } from "@/background/protocol";
 import { liftExternal } from "@/contentScript/externalProtocol";
 import { browser } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
-import { isFirefox } from "webext-detect-page";
+import { isChrome } from "@/helpers";
 
-const lift = isFirefox() ? liftExternal : liftBackground;
+const lift = isChrome ? liftBackground : liftExternal;
 
 export const connectPage = lift("CONNECT_PAGE", async () =>
   // `browser.runtimes`'s types don't include the whole manifest. Use the chrome namespace to get the full type
