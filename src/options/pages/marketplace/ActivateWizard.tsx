@@ -35,6 +35,8 @@ import { useTitle } from "@/hooks/title";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import useInstall from "@/pages/marketplace/useInstall";
 import AsyncButton from "@/components/AsyncButton";
+import { faMagic } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -66,7 +68,7 @@ const ActivateButton: React.FunctionComponent<{
 
   return (
     <AsyncButton size="sm" disabled={isPending} onClick={activate}>
-      Activate
+      <FontAwesomeIcon icon={faMagic} /> Activate
     </AsyncButton>
   );
 };

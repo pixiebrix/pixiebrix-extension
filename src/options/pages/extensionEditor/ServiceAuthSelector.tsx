@@ -15,10 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { CSSProperties, useCallback, useMemo } from "react";
+import React, {
+  ComponentType,
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
-import Select, { StylesConfig } from "react-select";
+import Select, {
+  GroupTypeBase,
+  MenuListComponentProps,
+  StylesConfig,
+} from "react-select";
 import useFetch from "@/hooks/useFetch";
 import { SanitizedAuth } from "@/types/contract";
 import {
@@ -109,18 +119,25 @@ const ServiceAuthSelector: React.FunctionComponent<{
   name: string;
   serviceId: string;
   authOptions: AuthOption[];
-}> = ({ authOptions, serviceId, ...props }) => {
+  CustomMenuList?: ComponentType<
+    MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
+  >;
+}> = ({ authOptions, serviceId, CustomMenuList, ...props }) => {
   const [field, meta, helpers] = useField(props);
-
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
     [authOptions, serviceId]
   );
 
-  const value = useMemo(
-    () => authOptions.filter((x) => x.value === field.value),
-    [field.value, authOptions]
-  );
+  useEffect(() => {
+    if (authOptions.length === 1) {
+      helpers.setValue(authOptions[0].value);
+    }
+  }, [authOptions]);
+
+  const value = useMemo(() => {
+    return authOptions.filter((x) => x.value === field.value);
+  }, [field.value, authOptions]);
 
   if (serviceId === PIXIEBRIX_SERVICE_ID) {
     return (
@@ -143,6 +160,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
         options={options}
         value={value}
         error={!!meta.error}
+        components={{ MenuList: CustomMenuList }}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
           helpers.setValue(x.value);

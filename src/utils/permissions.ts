@@ -17,8 +17,6 @@
 
 import { browser, Manifest, Permissions } from "webextension-polyfill-ts";
 import uniq from "lodash/uniq";
-import groupBy from "lodash/groupBy";
-import sortBy from "lodash/sortBy";
 import { liftBackground } from "@/background/protocol";
 import { openPopupPrompt } from "@/background/permissionPrompt";
 
@@ -42,22 +40,6 @@ export function mergePermissions(
     origins: uniq(permissions.flatMap((x) => x.origins ?? [])),
     permissions: uniq(permissions.flatMap((x) => x.permissions ?? [])),
   };
-}
-
-/**
- * @deprecated The logic of grouping permissions by origin doesn't actually make sense
- * as we don't currently have any way to enforce permissions on a per-origin basis.
- * https://github.com/pixiebrix/pixiebrix-extension/pull/828#discussion_r671703130
- */
-export function distinctPermissions(
-  permissions: Permissions.Permissions[]
-): Permissions.Permissions[] {
-  return Object.values(
-    groupBy(permissions, (x) => JSON.stringify(sortBy(x.origins)))
-  ).map((perms) => ({
-    permissions: uniq(perms.flatMap((x) => x.permissions || [])),
-    origins: perms[0].origins,
-  }));
 }
 
 const containsPermissionsInBackground = liftBackground(
