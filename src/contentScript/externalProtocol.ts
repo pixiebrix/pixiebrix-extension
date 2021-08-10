@@ -31,8 +31,21 @@ import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
 import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
 import { expectContentScript } from "@/utils/expectContext";
 
+// Context for this protocol:
+// - Implemented and explained in https://github.com/pixiebrix/pixiebrix-extension/pull/1019
+// - It's only one-way from the app to the content scripts
+// - The communication happens via posted messages
+// - Messages **are received by both ends**, so they use the `type` property as a differentiator
+// - The app sends messages with a `type` property
+// - The content script responds without `type` property
+
+// TODO: The content script should load within 200ms, but when the devtools are open it could take 4-5 seconds.
+//  Find out why https://github.com/pixiebrix/pixiebrix-extension/pull/1019#discussion_r684894579
 const POLL_READY_TIMEOUT =
   process.env.ENVIRONMENT === "development" ? 6000 : 2000;
+
+// TODO: Some handlers could take longer, so it needs to be refactored.
+//  https://github.com/pixiebrix/pixiebrix-extension/issues/1015
 const RESPONSE_TIMEOUT_MS = 2000;
 
 const MESSAGE_PREFIX = "@@pixiebrix/external/";
@@ -62,6 +75,11 @@ async function waitExtensionLoaded(): Promise<void> {
   );
 }
 
+/**
+ * The message is also received by the same context, so it must detect that and
+ * ignore its own messages. Currently it uses the `type` property as a differentiator:
+ * The lack of it means it's a response from the content script
+ */
 function sendMessageToOtherSide(message: PostedMessage) {
   document.defaultView.postMessage(message, document.defaultView.origin);
 }
@@ -72,18 +90,20 @@ async function onContentScriptReceiveMessage(
 ): Promise<void> {
   expectContentScript();
 
-  // Ignore messages coming from other views (PB does not send these)
   if (event.source !== document.defaultView) {
+    // The message comes from other views (PB does not send these)
     return;
   }
 
   const { type, meta, payload } = event.data;
   if (!type || !Array.isArray(payload)) {
+    // It might be a response that `onContentScriptReceiveMessage` itself sent
     return;
   }
 
   const { handler, options } = contentScriptHandlers.get(type) ?? {};
   if (!handler) {
+    // Handler not registered, it might be handled elsewhere
     return;
   }
 
@@ -106,6 +126,7 @@ async function onContentScriptReceiveMessage(
   }
 
   sendMessageToOtherSide({
+    // Responses *must not* include a `type` or else they'll be handled by `onContentScriptReceiveMessage` again
     meta,
     payload: response,
   });
@@ -115,6 +136,7 @@ async function onContentScriptReceiveMessage(
 async function oneResponse<R>(nonce: string): Promise<R> {
   return new Promise((resolve) => {
     function onMessage(event: MessageEvent) {
+      // Responses *must not* have a `type`, but just a `nonce` and `payload`
       if (!event.data?.type && event.data?.meta?.nonce === nonce) {
         resolve(event.data.payload);
         document.defaultView.removeEventListener("message", onMessage);
