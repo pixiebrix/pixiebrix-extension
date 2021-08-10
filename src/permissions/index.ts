@@ -22,11 +22,7 @@ import { Permissions } from "webextension-polyfill-ts";
 import { castArray, compact, groupBy, sortBy, uniq } from "lodash";
 import { locator } from "@/background/locator";
 import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
-import {
-  distinctPermissions,
-  mergePermissions,
-  requestPermissions,
-} from "@/utils/permissions";
+import { mergePermissions, requestPermissions } from "@/utils/permissions";
 import { Deployment } from "@/types/contract";
 
 // Copied from the permissions section of manifest.json
@@ -131,7 +127,7 @@ export async function collectPermissions(
     ...extensionPointPromises,
   ]);
 
-  return distinctPermissions(permissionsList);
+  return mergePermissions(permissionsList);
 }
 
 /**
@@ -203,13 +199,11 @@ export async function extensionPermissions(
   const blocks = await extensionPoint.getBlocks(extension);
   const blockPermissions = blocks.map((x) => x.permissions);
   return mergePermissions(
-    distinctPermissions(
-      compact([
-        opts.includeExtensionPoint ? extensionPoint.permissions : null,
-        ...(opts.includeServices ? services : []),
-        ...blockPermissions,
-      ])
-    )
+    compact([
+      opts.includeExtensionPoint ? extensionPoint.permissions : null,
+      ...(opts.includeServices ? services : []),
+      ...blockPermissions,
+    ])
   );
 }
 
