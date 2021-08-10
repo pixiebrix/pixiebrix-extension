@@ -31,23 +31,17 @@ import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
 import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
 import { expectContentScript } from "@/utils/expectContext";
 
-const POLL_READY_TIMEOUT = 2000;
-const RESPONSE_TIMEOUT = 2000; // XXX: Might need to be longer
+const POLL_READY_TIMEOUT =
+  process.env.ENVIRONMENT === "development" ? 6000 : 2000;
+const RESPONSE_TIMEOUT_MS = 2000;
+
 const MESSAGE_PREFIX = "@@pixiebrix/external/";
 
-interface PostedMessage {
-  type: string;
+interface PostedMessage<R = unknown> {
+  type?: string; // Responses *must not* include a `type`
   meta: {
     nonce: string;
   };
-  payload: unknown[];
-}
-
-interface MessageResponse<R> {
-  meta: {
-    nonce: string;
-  };
-  isResponse: true;
   payload: R;
 }
 
@@ -68,14 +62,12 @@ async function waitExtensionLoaded(): Promise<void> {
   );
 }
 
-function sendMessageToOtherSide(
-  message: PostedMessage | MessageResponse<unknown>
-) {
+function sendMessageToOtherSide(message: PostedMessage) {
   document.defaultView.postMessage(message, document.defaultView.origin);
 }
 
 /** Content script handler for messages from app */
-async function onLifterMessage(
+async function onContentScriptReceiveMessage(
   event: MessageEvent<PostedMessage>
 ): Promise<void> {
   expectContentScript();
@@ -86,47 +78,44 @@ async function onLifterMessage(
   }
 
   const { type, meta, payload } = event.data;
-  const { handler, options } = contentScriptHandlers.get(type) ?? {};
+  if (!type || !Array.isArray(payload)) {
+    return;
+  }
 
+  const { handler, options } = contentScriptHandlers.get(type) ?? {};
   if (!handler) {
     return;
   }
 
-  if (!options.asyncResponse) {
-    sendMessageToOtherSide({
-      meta,
-      payload: null,
-      isResponse: true,
-    });
-    void handler(...payload).catch((error: unknown) => {
-      console.warn(`${type}: Notification error`, error);
-    });
-
-    return;
-  }
-
+  let response;
   try {
-    sendMessageToOtherSide({
-      meta,
-      payload: await handler(...payload),
-      isResponse: true,
-    });
-    console.debug(`${type}: ${meta.nonce}: Handler success`);
+    response = await handler(...payload);
+    if (options.asyncResponse) {
+      console.debug(`${type}: ${meta.nonce}: Handler success`);
+    } else {
+      response = null;
+    }
   } catch (error: unknown) {
-    sendMessageToOtherSide({
-      meta,
-      payload: toErrorResponse(type, error),
-      isResponse: true,
-    });
-    console.debug(`${type}: ${meta.nonce}: Handler error`);
+    response = toErrorResponse(type, error);
+    console.warn(
+      `${type}: ${meta.nonce}: ${
+        options.asyncResponse ? "Handler error" : "Notification error"
+      }`,
+      error
+    );
   }
+
+  sendMessageToOtherSide({
+    meta,
+    payload: response,
+  });
 }
 
 /** Set up listener for specific message via nonce */
 async function oneResponse<R>(nonce: string): Promise<R> {
   return new Promise((resolve) => {
     function onMessage(event: MessageEvent) {
-      if (event.data?.isResponse && event.data?.meta?.nonce === nonce) {
+      if (!event.data?.type && event.data?.meta?.nonce === nonce) {
         resolve(event.data.payload);
         document.defaultView.removeEventListener("message", onMessage);
       }
@@ -153,7 +142,10 @@ export function liftExternal<
 
   if (isContentScript()) {
     // Register global handler; Automatically deduplicated
-    document.defaultView.addEventListener("message", onLifterMessage);
+    document.defaultView.addEventListener(
+      "message",
+      onContentScriptReceiveMessage
+    );
 
     contentScriptHandlers.set(fullType, { handler: method, options });
     console.debug(`${fullType}: Installed content script handler`);
@@ -178,7 +170,7 @@ export function liftExternal<
     sendMessageToOtherSide(message);
 
     // Communication is completely asynchronous; This sets up response for the specific nonce
-    const payload = await pTimeout(oneResponse<R>(nonce), RESPONSE_TIMEOUT);
+    const payload = await pTimeout(oneResponse<R>(nonce), RESPONSE_TIMEOUT_MS);
 
     if (isErrorResponse(payload)) {
       throw deserializeError(payload.$$error);
