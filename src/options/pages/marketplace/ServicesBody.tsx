@@ -104,7 +104,7 @@ const AuthWidget: React.FunctionComponent<{
     [helpers, addToast, dispatch, setShow, serviceId]
   );
 
-  const customMenuList = useMemo(() => {
+  const CustomMenuList = useMemo(() => {
     const MenuListWithAddButton: ComponentType<
       MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
     > = ({ children }) => (
@@ -154,7 +154,7 @@ const AuthWidget: React.FunctionComponent<{
               name={`services.${serviceId}`}
               serviceId={serviceId}
               authOptions={options}
-              customMenuList={customMenuList}
+              CustomMenuList={CustomMenuList}
             />
           </div>
         )}

@@ -118,10 +118,10 @@ const ServiceAuthSelector: React.FunctionComponent<{
   name: string;
   serviceId: string;
   authOptions: AuthOption[];
-  customMenuList?: ComponentType<
+  CustomMenuList?: ComponentType<
     MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
   >;
-}> = ({ authOptions, serviceId, customMenuList, ...props }) => {
+}> = ({ authOptions, serviceId, CustomMenuList, ...props }) => {
   const [field, meta, helpers] = useField(props);
 
   const options = useMemo(
@@ -158,7 +158,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
         options={options}
         value={value}
         error={!!meta.error}
-        components={{ MenuList: customMenuList }}
+        components={{ MenuList: CustomMenuList }}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
           helpers.setValue(x.value);
