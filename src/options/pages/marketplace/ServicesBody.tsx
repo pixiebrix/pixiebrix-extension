@@ -159,7 +159,7 @@ const AuthWidget: React.FunctionComponent<{
           </div>
         )}
         <div>
-          {options.length <= 0 && (
+          {options.length === 0 && (
             <Button
               variant={options.length > 0 ? "info" : "primary"}
               size="sm"
