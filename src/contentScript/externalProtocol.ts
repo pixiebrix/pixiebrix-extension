@@ -50,12 +50,19 @@ const RESPONSE_TIMEOUT_MS = 2000;
 
 const MESSAGE_PREFIX = "@@pixiebrix/external/";
 
-interface PostedMessage<R = unknown> {
-  type?: string; // Responses *must not* include a `type`
+interface Message<R = unknown> {
+  type: string;
+  payload: R;
   meta: {
     nonce: string;
   };
+}
+
+interface Response<R = unknown> {
   payload: R;
+  meta: {
+    nonce: string;
+  };
 }
 
 const contentScriptHandlers = new Map<string, HandlerEntry>();
@@ -80,13 +87,13 @@ async function waitExtensionLoaded(): Promise<void> {
  * ignore its own messages. Currently it uses the `type` property as a differentiator:
  * The lack of it means it's a response from the content script
  */
-function sendMessageToOtherSide(message: PostedMessage) {
+function sendMessageToOtherSide(message: Message | Response) {
   document.defaultView.postMessage(message, document.defaultView.origin);
 }
 
 /** Content script handler for messages from app */
 async function onContentScriptReceiveMessage(
-  event: MessageEvent<PostedMessage>
+  event: MessageEvent<Message>
 ): Promise<void> {
   expectContentScript();
 
@@ -107,29 +114,25 @@ async function onContentScriptReceiveMessage(
     return;
   }
 
-  let response;
-  try {
-    response = await handler(...payload);
-    if (options.asyncResponse) {
-      console.debug(`${type}: ${meta.nonce}: Handler success`);
-    } else {
-      response = null;
-    }
-  } catch (error: unknown) {
-    response = toErrorResponse(type, error);
-    console.warn(
-      `${type}: ${meta.nonce}: ${
-        options.asyncResponse ? "Handler error" : "Notification error"
-      }`,
-      error
-    );
+  if (!options.asyncResponse) {
+    void handler(...payload).catch((error: unknown) => {
+      console.warn(`${type}: ${meta.nonce}: Notification error`, error);
+    });
   }
 
-  sendMessageToOtherSide({
-    // Responses *must not* include a `type` or else they'll be handled by `onContentScriptReceiveMessage` again
+  const response: Response = {
     meta,
-    payload: response,
-  });
+    payload: null,
+  };
+  try {
+    response.payload = await handler(...payload);
+    console.debug(`${type}: ${meta.nonce}: Handler success`);
+  } catch (error: unknown) {
+    response.payload = toErrorResponse(type, error);
+    console.warn(`${type}: ${meta.nonce}: Handler error`, error);
+  }
+
+  sendMessageToOtherSide(response);
 }
 
 /** Set up listener for specific message via nonce */
@@ -138,8 +141,8 @@ async function oneResponse<R>(nonce: string): Promise<R> {
     function onMessage(event: MessageEvent) {
       // Responses *must not* have a `type`, but just a `nonce` and `payload`
       if (!event.data?.type && event.data?.meta?.nonce === nonce) {
-        resolve(event.data.payload);
         document.defaultView.removeEventListener("message", onMessage);
+        resolve(event.data.payload);
       }
     }
 
@@ -182,7 +185,7 @@ export function liftExternal<
     await waitExtensionLoaded();
 
     const nonce = uuidv4();
-    const message: PostedMessage = {
+    const message: Message = {
       type: fullType,
       payload: args,
       meta: { nonce },
