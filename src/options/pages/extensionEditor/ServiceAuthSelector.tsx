@@ -130,14 +130,15 @@ const ServiceAuthSelector: React.FunctionComponent<{
   );
 
   useEffect(() => {
-    if (authOptions.length === 1) {
+    if (authOptions.length === 1 && field.value == null) {
       helpers.setValue(authOptions[0].value);
     }
-  }, [authOptions]);
+  }, [helpers, authOptions, field.value]);
 
-  const value = useMemo(() => {
-    return authOptions.filter((x) => x.value === field.value);
-  }, [field.value, authOptions]);
+  const value = useMemo(
+    () => authOptions.filter((x) => x.value === field.value),
+    [field.value, authOptions]
+  );
 
   if (serviceId === PIXIEBRIX_SERVICE_ID) {
     return (
@@ -159,7 +160,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
         name={field.name}
         options={options}
         value={value}
-        error={!!meta.error}
+        error={Boolean(meta.error)}
         components={{ MenuList: CustomMenuList }}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
