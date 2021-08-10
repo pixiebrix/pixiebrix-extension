@@ -292,7 +292,7 @@ async function attemptTemporaryAccess({
 
     // Side note: Cross-origin iframes lose the `activeTab` after navigation
     // https://github.com/pixiebrix/pixiebrix-extension/pull/661#discussion_r661590847
-    if (getErrorMessage(error).startsWith("Cannot access")) {
+    if (/Cannot access|missing host permission/.test(getErrorMessage(error))) {
       console.debug(
         `Skipping attemptTemporaryAccess because no activeTab permissions`,
         { tabId, frameId, url }

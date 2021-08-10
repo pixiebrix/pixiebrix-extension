@@ -26,44 +26,50 @@ const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
  *  @see https://docs.rollbar.com/docs/javascript
  *  @see https://docs.rollbar.com/docs/rollbarjs-configuration-reference
  */
-export const rollbar: Rollbar = Rollbar.init({
-  enabled: accessToken && accessToken !== "undefined",
-  accessToken,
-  captureUncaught: true,
-  captureIp: "anonymize",
-  captureUnhandledRejections: true,
-  codeVersion: process.env.SOURCE_VERSION,
-  // https://docs.rollbar.com/docs/rollbarjs-telemetry
-  // disable autoInstrument until we can set up scrubbing rules
-  autoInstrument: false,
-  // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
-  ignoredMessages: [
-    "ResizeObserver loop limit exceeded",
-    "Promise was cancelled",
-    "Uncaught Error: PixieBrix contentScript already installed",
-  ],
-  payload: {
-    client: {
-      javascript: {
-        code_version: process.env.SOURCE_VERSION,
-        source_map_enabled: true,
+export const rollbar: Rollbar = (() => {
+  try {
+    return Rollbar.init({
+      enabled: accessToken && accessToken !== "undefined",
+      accessToken,
+      captureUncaught: true,
+      captureIp: "anonymize",
+      captureUnhandledRejections: true,
+      codeVersion: process.env.SOURCE_VERSION,
+      // https://docs.rollbar.com/docs/rollbarjs-telemetry
+      // disable autoInstrument until we can set up scrubbing rules
+      autoInstrument: false,
+      // https://docs.rollbar.com/docs/reduce-noisy-javascript-errors#ignore-certain-types-of-messages
+      ignoredMessages: [
+        "ResizeObserver loop limit exceeded",
+        "Promise was cancelled",
+        "Uncaught Error: PixieBrix contentScript already installed",
+      ],
+      payload: {
+        client: {
+          javascript: {
+            code_version: process.env.SOURCE_VERSION,
+            source_map_enabled: true,
+          },
+        },
+        environment: process.env.ENVIRONMENT,
       },
-    },
-    environment: process.env.ENVIRONMENT,
-  },
-  transform: (payload: Payload) => {
-    // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
-    // https://docs.rollbar.com/docs/source-maps#section-using-source-maps-on-many-domains
-    for (const frame of payload.body.trace?.frames ?? []) {
-      if (frame.filename?.includes(process.env.CHROME_EXTENSION_ID)) {
-        frame.filename = frame.filename.replace(
-          location.origin,
-          process.env.ROLLBAR_PUBLIC_PATH
-        );
-      }
-    }
-  },
-});
+      transform: (payload: Payload) => {
+        // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
+        // https://docs.rollbar.com/docs/source-maps#section-using-source-maps-on-many-domains
+        for (const frame of payload.body.trace?.frames ?? []) {
+          if (frame.filename && !frame.filename.startsWith("http")) {
+            frame.filename = frame.filename.replace(
+              location.origin,
+              process.env.ROLLBAR_PUBLIC_PATH
+            );
+          }
+        }
+      },
+    });
+  } catch (error: unknown) {
+    console.error("Error during rollbar init", { error });
+  }
+})();
 
 /**
  * Convert a message or value into a rollbar logging argument.

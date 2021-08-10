@@ -18,6 +18,7 @@
 import isEmpty from "lodash/isEmpty";
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
+import { isExtensionContext } from "webext-detect-page";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { forbidBackgroundPage } from "./utils/expectContext";
 
@@ -37,39 +38,7 @@ export class RequestError extends Error {
 }
 
 export function isBrowserActionPanel(): boolean {
-  const isExtensionContext =
-    typeof chrome === "object" &&
-    chrome &&
-    typeof chrome.extension === "object";
-
-  if (!isExtensionContext) {
-    return false;
-  }
-
-  const url = new URL("action.html", location.origin);
-
-  return url.pathname === location.pathname && url.origin === location.origin;
-}
-
-export function isDevtoolsPage(): boolean {
-  const isExtensionContext =
-    typeof chrome === "object" &&
-    chrome &&
-    typeof chrome.extension === "object";
-
-  if (!isExtensionContext || !chrome?.runtime?.getManifest) {
-    return false;
-  }
-
-  // Make sure dev tools are installed
-  const { devtools_page } = chrome.runtime.getManifest();
-  if (typeof devtools_page !== "string") {
-    return false;
-  }
-
-  const url = new URL("devtoolsPanel.html", location.origin);
-
-  return url.pathname === location.pathname && url.origin === location.origin;
+  return isExtensionContext() && location.pathname === "/action.html";
 }
 
 export function setChromeExtensionId(extensionId: string): void {

@@ -135,11 +135,11 @@ export async function ensureContentScript(target: Target): Promise<void> {
     }
 
     if (!result.url.startsWith("http")) {
-      console.warn(
-        "ensureContentScript: can’t be injected on this URL, #801",
+      console.debug(
+        "ensureContentScript: PixieBrix can’t run on this page",
         result.url
       );
-      return;
+      throw new Error("PixieBrix can’t run on this page");
     }
 
     if (result.installed || (await isContentScriptRegistered(result.url))) {

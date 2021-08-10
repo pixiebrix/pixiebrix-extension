@@ -91,7 +91,8 @@ function activateDeployments(
   for (const deployment of deployments) {
     // Clear existing installs of the blueprint
     for (const extension of installed) {
-      if (extension._recipe.id === deployment.package.package_id) {
+      // Extension won't have recipe if it was locally created by a developer
+      if (extension._recipe?.id === deployment.package.package_id) {
         dispatch(
           actions.removeExtension({
             extensionPointId: extension.extensionPointId,
@@ -133,10 +134,10 @@ function useDeployments(): DeploymentState {
     installed,
   ]);
 
-  const updatedDeployments = useMemo(
-    () => (deployments ?? []).filter(makeUpdatedFilter(installed)),
-    [installed, deployments]
-  );
+  const updatedDeployments = useMemo(() => {
+    const isUpdated = makeUpdatedFilter(installed);
+    return (deployments ?? []).filter((x) => isUpdated(x));
+  }, [installed, deployments]);
 
   const handleUpdate = useCallback(async () => {
     if (!deployments) {
