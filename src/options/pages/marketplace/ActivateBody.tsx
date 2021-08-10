@@ -18,7 +18,6 @@
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import React, { useCallback, useMemo } from "react";
 import { useFormikContext } from "formik";
-import { Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
   useSelectedAuths,
@@ -32,10 +31,15 @@ import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors";
-import { containsPermissions } from "@/utils/permissions";
+import {
+  containsPermissions,
+  selectOptionalPermissions,
+} from "@/utils/permissions";
 import { ServiceAuthPair } from "@/core";
 import useNotifications from "@/hooks/useNotifications";
 import { uniq } from "lodash";
+import { Card, Table } from "react-bootstrap";
+import useReportError from "@/hooks/useReportError";
 
 interface ActivateProps {
   blueprint: RecipeDefinition;
@@ -125,17 +129,53 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
     selectedAuths
   );
 
+  useReportError(error);
+
   const permissionsList = useMemo(() => {
     if (permissions == null) {
       return [];
     }
 
-    return uniq([...permissions.permissions, ...permissions.origins]);
+    // `selectOptionalPermissions` never returns any origins because we request *://*
+    return uniq([
+      ...selectOptionalPermissions(permissions.permissions),
+      ...permissions.origins,
+    ]);
   }, [permissions]);
 
-  if (error) {
-    console.error(error);
-  }
+  const helpText = useMemo(() => {
+    if (isPending) {
+      return <GridLoader />;
+    }
+
+    if (error) {
+      return (
+        <Card.Text className="text-danger">
+          An error occurred determining additional permissions
+        </Card.Text>
+      );
+    }
+
+    if (permissionsList.length === 0) {
+      return <Card.Text>No special permissions required</Card.Text>;
+    }
+
+    if (enabled) {
+      return (
+        <Card.Text>
+          PixieBrix already has the permissions required for the bricks
+          you&apos;ve selected
+        </Card.Text>
+      );
+    }
+
+    return (
+      <Card.Text>
+        Your browser will prompt to you approve any permissions you haven&apos;t
+        granted yet
+      </Card.Text>
+    );
+  }, [permissionsList, enabled, error, isPending]);
 
   return (
     <>
@@ -155,35 +195,20 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
 
       <Card.Body className="p-3">
         <Card.Subtitle>Permissions & URLs</Card.Subtitle>
-
-        {enabled == null || !enabled ? (
-          <Card.Text>
-            Your browser will prompt to you approve any permissions you
-            haven&apos;t granted yet
-          </Card.Text>
-        ) : (
-          <Card.Text>
-            PixieBrix already has the permissions required for the bricks
-            you&apos;ve selected
-          </Card.Text>
-        )}
-
-        {isPending && <GridLoader />}
-        <ul>
-          {error && (
-            <li className="text-danger">
-              An error occurred while determining the permissions
-            </li>
-          )}
-          {permissionsList?.length > 0 &&
-            permissionsList.map((permission, i) => (
-              <li key={i}>{permission}</li>
-            ))}
-          {permissionsList?.length === 0 && (
-            <li>No special permissions required</li>
-          )}
-        </ul>
+        {helpText}
       </Card.Body>
+      {permissionsList.length > 0 && (
+        // Use Table single column table instead of ListGroup to more closely match style on other wizard tabs
+        <Table variant="flush">
+          <tbody>
+            {permissionsList.map((permission) => (
+              <tr key={permission}>
+                <td>{permission}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
     </>
   );
 };
