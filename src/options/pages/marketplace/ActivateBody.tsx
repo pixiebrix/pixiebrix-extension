@@ -24,11 +24,7 @@ import {
   useSelectedAuths,
   useSelectedExtensions,
 } from "@/options/pages/marketplace/ConfigureBody";
-import {
-  collectPermissions,
-  ensureAllPermissions,
-  originPermissions as groupOriginPermissions,
-} from "@/permissions";
+import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { locator } from "@/background/locator";
 import GridLoader from "react-spinners/GridLoader";
 import { useAsyncState } from "@/hooks/common";
@@ -36,7 +32,7 @@ import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors";
-import { containsPermissions, mergePermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/utils/permissions";
 import { ServiceAuthPair } from "@/core";
 import useNotifications from "@/hooks/useNotifications";
 
@@ -55,27 +51,23 @@ export function useEnsurePermissions(
   const [permissionState, isPending, error] = useAsyncState(async () => {
     await locator.refreshLocal();
     const permissions = await collectPermissions(extensions, serviceAuths);
-    const enabled = await containsPermissions(mergePermissions(permissions));
+    const enabled = await containsPermissions(permissions);
     return {
       enabled,
       permissions,
-      originPermissions: groupOriginPermissions(permissions),
     };
   }, [extensions, serviceAuths]);
 
-  const { enabled, permissions, originPermissions } = permissionState ?? {
+  const { enabled, permissions } = permissionState ?? {
     enabled: false,
     permissions: null,
-    originPermissions: null,
   };
 
   const request = useCallback(async () => {
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissions(
-        mergePermissions(permissions ?? [])
-      );
+      accepted = await ensureAllPermissions(permissions);
     } catch (error: unknown) {
       notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
         error,
@@ -113,7 +105,7 @@ export function useEnsurePermissions(
   return {
     enabled,
     request,
-    permissions: originPermissions,
+    permissions,
     activate,
     isPending,
     extensions,
@@ -132,27 +124,22 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
     selectedAuths
   );
 
-  const uniquePermissions = useMemo(() => {
-    if (permissions === null || permissions?.length <= 0) {
+  console.log(permissions);
+
+  const permissionsList = useMemo(() => {
+    if (permissions === null) {
       return [];
     }
 
-    const access_urls = permissions.map((x) => {
-      if (x.origins.length > 0) {
-        return x.origins.join(", ");
-      }
-
-      return "Any URL";
-    });
-
-    const control_permissions = permissions
-      .flatMap((x) => x.permissions)
-      .filter((permission, index, self) => {
+    const accessUrls = permissions.origins;
+    const controlPermissions = permissions.permissions.filter(
+      (permission, index, self) => {
         // get a list of only unique permissions
         return self.indexOf(permission) === index;
-      });
+      }
+    );
 
-    return [...control_permissions, ...access_urls];
+    return [...controlPermissions, ...accessUrls];
   }, [permissions]);
 
   if (error) {
@@ -197,11 +184,11 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
               An error occurred while determining the permissions
             </li>
           )}
-          {permissions?.length > 0 &&
-            uniquePermissions.map((permission) => {
-              return <li>{permission}</li>;
-            })}
-          {permissions?.length === 0 && (
+          {permissionsList?.length > 0 &&
+            permissionsList.map((permission, i) => (
+              <li key={i}>{permission}</li>
+            ))}
+          {permissionsList?.length === 0 && (
             <li>No special permissions required</li>
           )}
         </ul>
