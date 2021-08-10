@@ -19,6 +19,7 @@ import React, {
   ComponentType,
   CSSProperties,
   useCallback,
+  useEffect,
   useMemo,
 } from "react";
 import { useField } from "formik";
@@ -128,6 +129,12 @@ const ServiceAuthSelector: React.FunctionComponent<{
     () => authOptions.filter((x) => x.serviceId === serviceId),
     [authOptions, serviceId]
   );
+
+  useEffect(() => {
+    if (authOptions.length === 1) {
+      helpers.setValue(authOptions[0]);
+    }
+  }, []);
 
   const value = useMemo(() => {
     if (authOptions.length === 1) {

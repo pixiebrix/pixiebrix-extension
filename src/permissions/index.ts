@@ -54,6 +54,10 @@ export async function ensureAllPermissions(
 function normalizeOptionalPermissions(
   permissions: Permissions.Permissions
 ): Required<Permissions.Permissions> {
+  if (permissions == null) {
+    return { origins: [], permissions: [] };
+  }
+
   return {
     origins: uniq(castArray(permissions.origins ?? [])),
     permissions: uniq(
