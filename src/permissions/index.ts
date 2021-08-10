@@ -83,9 +83,7 @@ export async function deploymentPermissions(
 export async function blueprintPermissions(
   blueprint: RecipeDefinition
 ): Promise<Permissions.Permissions> {
-  //const permissions = await collectPermissions(blueprint.extensionPoints, []);
   return collectPermissions(blueprint.extensionPoints, []);
-  //return mergePermissions(permissions);
 }
 
 export async function collectPermissions(
