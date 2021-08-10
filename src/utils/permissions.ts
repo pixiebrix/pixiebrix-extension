@@ -28,7 +28,9 @@ export function selectOptionalPermissions(
 ): Manifest.OptionalPermission[] {
   const { optional_permissions } = chrome.runtime.getManifest();
   return permissions.filter((requestedPermission) =>
-    optional_permissions.includes(requestedPermission)
+    optional_permissions.includes(
+      requestedPermission as chrome.runtime.ManifestPermissions
+    )
   ) as Manifest.OptionalPermission[];
 }
 
