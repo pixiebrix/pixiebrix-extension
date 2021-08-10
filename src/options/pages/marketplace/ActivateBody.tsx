@@ -35,6 +35,7 @@ import { getErrorMessage } from "@/errors";
 import { containsPermissions } from "@/utils/permissions";
 import { ServiceAuthPair } from "@/core";
 import useNotifications from "@/hooks/useNotifications";
+import { uniq } from "lodash";
 
 interface ActivateProps {
   blueprint: RecipeDefinition;
@@ -131,15 +132,7 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
       return [];
     }
 
-    const accessUrls = permissions.origins;
-    const controlPermissions = permissions.permissions.filter(
-      (permission, index, self) => {
-        // get a list of only unique permissions
-        return self.indexOf(permission) === index;
-      }
-    );
-
-    return [...controlPermissions, ...accessUrls];
+    return uniq([...permissions.permissions, ...permissions.origins]);
   }, [permissions]);
 
   if (error) {
