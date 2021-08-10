@@ -43,6 +43,7 @@ import { useToasts } from "react-toast-notifications";
 import { useField } from "formik";
 import { persistor } from "@/options/store";
 import { refresh as refreshBackgroundLocator } from "@/background/locator";
+import { GroupTypeBase, MenuListComponentProps } from "react-select";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -103,8 +104,10 @@ const AuthWidget: React.FunctionComponent<{
     [helpers, addToast, dispatch, setShow, serviceId]
   );
 
-  const customMenu = useMemo(() => {
-    const AuthMenuWithAddConfig: ComponentType = ({ children }) => (
+  const customMenuList = useMemo(() => {
+    const MenuListWithAddButton: ComponentType<
+      MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
+    > = ({ children }) => (
       <div>
         {children}
         <div className="text-center">
@@ -120,7 +123,7 @@ const AuthWidget: React.FunctionComponent<{
         </div>
       </div>
     );
-    return AuthMenuWithAddConfig;
+    return MenuListWithAddButton;
   }, [setShow]);
 
   const initialConfiguration: RawServiceConfiguration = useMemo(
@@ -151,7 +154,7 @@ const AuthWidget: React.FunctionComponent<{
               name={`services.${serviceId}`}
               serviceId={serviceId}
               authOptions={options}
-              customOptionMenu={customMenu}
+              customMenuList={customMenuList}
             />
           </div>
         )}

@@ -15,10 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { CSSProperties, useCallback, useMemo } from "react";
+import React, {
+  ComponentType,
+  CSSProperties,
+  useCallback,
+  useMemo,
+} from "react";
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
-import Select, { StylesConfig } from "react-select";
+import Select, {
+  GroupTypeBase,
+  MenuListComponentProps,
+  StylesConfig,
+} from "react-select";
 import useFetch from "@/hooks/useFetch";
 import { SanitizedAuth } from "@/types/contract";
 import {
@@ -109,9 +118,10 @@ const ServiceAuthSelector: React.FunctionComponent<{
   name: string;
   serviceId: string;
   authOptions: AuthOption[];
-  // TODO: write type for customOptionComponent
-  customOptionMenu?: any;
-}> = ({ authOptions, serviceId, customOptionMenu, ...props }) => {
+  customMenuList?: ComponentType<
+    MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
+  >;
+}> = ({ authOptions, serviceId, customMenuList, ...props }) => {
   const [field, meta, helpers] = useField(props);
 
   const options = useMemo(
@@ -148,7 +158,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
         options={options}
         value={value}
         error={!!meta.error}
-        components={{ MenuList: customOptionMenu }}
+        components={{ MenuList: customMenuList }}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
           helpers.setValue(x.value);
