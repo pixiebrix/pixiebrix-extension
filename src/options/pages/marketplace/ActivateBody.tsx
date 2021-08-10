@@ -126,7 +126,7 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
   );
 
   const permissionsList = useMemo(() => {
-    if (permissions === null) {
+    if (permissions == null) {
       return [];
     }
 
