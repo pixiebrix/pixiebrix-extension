@@ -65,7 +65,7 @@ const TextField: React.FunctionComponent<FieldProps> = ({
             placeholder={placeholder}
             value={value ?? ""}
             {...field}
-            isInvalid={!!meta.error}
+            isInvalid={Boolean(meta.error)}
           />
         )}
         {description && (

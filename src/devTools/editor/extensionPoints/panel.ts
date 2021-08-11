@@ -158,7 +158,7 @@ function selectExtensionPoint(
       type: "panel",
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
-      containerSelector: containerSelector,
+      containerSelector,
       position,
       template,
     },

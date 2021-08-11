@@ -82,7 +82,7 @@ export async function requestPermissions(
 
   // TODO: This only works in the Dev Tools; We should query the current or front-most window
   //  when this is missing in order to make it work in other contexts as well
-  const tabId = browser.devtools.inspectedWindow.tabId;
+  const { tabId } = browser.devtools.inspectedWindow;
   await openPopupPrompt(tabId, page.toString());
   return containsPermissions(permissions);
 }

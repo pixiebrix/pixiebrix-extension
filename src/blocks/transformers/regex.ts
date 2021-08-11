@@ -51,7 +51,9 @@ export class RegexTransformer extends Transformer {
   async transform({
     regex,
     input,
-  }: BlockArg): Promise<Record<string, string> | Record<string, string>[]> {
+  }: BlockArg): Promise<
+    Record<string, string> | Array<Record<string, string>>
+  > {
     const compiled = new RegExp(regex);
 
     const extract = (x: string | null) => {

@@ -111,12 +111,7 @@ const GenericInsertPane: React.FunctionComponent<{
       );
 
       await start(
-        (await config.fromNativeElement(
-          url,
-          metadata,
-          undefined,
-          []
-        )) as FormState
+        config.fromNativeElement(url, metadata, undefined, []) as FormState
       );
     } catch (error: unknown) {
       reportError(error);

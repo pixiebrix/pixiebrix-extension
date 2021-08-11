@@ -126,7 +126,7 @@ const ReaderTab: React.FunctionComponent<{
 
   const { values: formValues } = useFormikContext<FormState>();
   const [{ value: readers }] = useField<
-    (ReaderReferenceFormState | ReaderFormState)[]
+    Array<ReaderReferenceFormState | ReaderFormState>
   >("readers");
 
   const locked =

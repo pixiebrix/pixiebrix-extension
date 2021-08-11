@@ -21,6 +21,7 @@ import urljoin from "url-join";
 import { reportEvent, initTelemetry } from "@/telemetry/events";
 import { DNT_STORAGE_KEY, getDNT, getUID } from "@/background/telemetry";
 
+// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
