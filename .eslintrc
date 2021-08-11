@@ -91,7 +91,6 @@
     "no-promise-executor-return": "warn",
     "no-useless-concat": "warn",
     "new-cap": "warn",
-    "prefer-object-spread": "warn",
     "no-self-compare": "warn",
 
     "@typescript-eslint/no-confusing-void-expression": "warn",
