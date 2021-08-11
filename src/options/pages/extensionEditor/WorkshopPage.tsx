@@ -186,7 +186,9 @@ const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
                 id="query"
                 placeholder="Start typing to find results"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                }}
               />
             </InputGroup>
           </Form>
@@ -312,7 +314,9 @@ const CustomBricksCard: React.FunctionComponent<
         {bricks.slice(0, maxRows).map((brick) => (
           <tr
             key={brick.id}
-            onClick={() => navigate(`/workshop/bricks/${brick.id}`)}
+            onClick={() => {
+              navigate(`/workshop/bricks/${brick.id}`);
+            }}
           >
             <td className="text-right text-muted px-1">
               <KindIcon brick={brick} />
@@ -381,7 +385,9 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
             <Button
               className="ml-3"
               variant="info"
-              onClick={() => navigate(`/workshop/create/`)}
+              onClick={() => {
+                navigate(`/workshop/create/`);
+              }}
             >
               <FontAwesomeIcon icon={faPlus} /> Create New Brick
             </Button>

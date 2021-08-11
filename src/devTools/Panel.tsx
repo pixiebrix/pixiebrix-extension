@@ -87,7 +87,13 @@ const Panel: React.FunctionComponent = () => {
       <Centered>
         <div className="PaneTitle">Error authenticating account</div>
         <div>{authError?.toString() ?? "Unknown error"}</div>
-        <Button onClick={() => location.reload()}>Reload Editor</Button>
+        <Button
+          onClick={() => {
+            location.reload();
+          }}
+        >
+          Reload Editor
+        </Button>
       </Centered>
     );
   }
@@ -100,7 +106,13 @@ const Panel: React.FunctionComponent = () => {
         </div>
         <div>{context.portError ?? context.tabState?.error}</div>
         <div className="mt-2">
-          <Button onClick={() => location.reload()}>Reload Editor</Button>
+          <Button
+            onClick={() => {
+              location.reload();
+            }}
+          >
+            Reload Editor
+          </Button>
         </div>
       </Centered>
     );

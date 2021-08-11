@@ -230,7 +230,9 @@ const ContextMenuTemplates: React.FunctionComponent<{
                     id="query"
                     placeholder="Start typing to filter templates"
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                    }}
                   />
                 </InputGroup>
               </Form>
@@ -359,12 +361,16 @@ const TemplatesPage: React.FunctionComponent<
             {flags.includes("templates-shared") && (
               <SharedWithMe
                 active={activeKey === "shared"}
-                onSelect={() => setActiveKey("shared")}
+                onSelect={() => {
+                  setActiveKey("shared");
+                }}
               />
             )}
             <Category
               active={activeKey === "contextmenu-search"}
-              onSelect={() => setActiveKey("contextmenu-search")}
+              onSelect={() => {
+                setActiveKey("contextmenu-search");
+              }}
               title="Context Menus"
               subtitle="Search"
             />

@@ -92,7 +92,9 @@ const Locator: React.FunctionComponent = () => {
           placeholder="Expression"
           aria-label="Expression"
           defaultValue={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+          }}
           aria-describedby="search-addon"
         />
       </InputGroup>

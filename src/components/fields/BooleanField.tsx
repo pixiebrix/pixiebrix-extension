@@ -41,7 +41,9 @@ const BooleanField: FunctionComponent<FieldProps<string>> = ({
           onlabel="On"
           offlabel="Off"
           checked={value ?? false}
-          onChange={(value) => helpers.setValue(value)}
+          onChange={(value) => {
+            helpers.setValue(value);
+          }}
         />
         {schema.description && (
           <Form.Text className="text-muted">{schema.description}</Form.Text>

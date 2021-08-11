@@ -63,7 +63,9 @@ const TabField: React.FunctionComponent<
       <Select
         value={sheetOptions?.filter((x) => x.value === field.value)}
         options={sheetOptions ?? []}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => {
+          helpers.setValue((option as any)?.value);
+        }}
       />
       <Form.Text className="text-muted">The spreadsheet tab</Form.Text>
 

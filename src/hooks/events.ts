@@ -73,7 +73,9 @@ export function useTabEventListener<TValue>(
 
   useEffect(() => {
     // Create event listener that calls handler function stored in ref
-    const listener = (x: TValue) => savedHandler.current(x);
+    const listener = (x: TValue) => {
+      savedHandler.current(x);
+    };
 
     event.addListener(tabId, listener);
 

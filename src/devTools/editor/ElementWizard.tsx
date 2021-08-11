@@ -150,7 +150,13 @@ const ElementWizard: React.FunctionComponent<{
           <div className="flex-grow-1" />
 
           <div className="mx-3">
-            <Button size="sm" variant="info" onClick={() => toggleChat(true)}>
+            <Button
+              size="sm"
+              variant="info"
+              onClick={() => {
+                toggleChat(true);
+              }}
+            >
               <FontAwesomeIcon icon={faCommentAlt} /> Live Support
             </Button>
           </div>

@@ -142,7 +142,9 @@ const AuthWidget: React.FunctionComponent<{
         <ServiceEditorModal
           configuration={initialConfiguration}
           service={serviceDefinition}
-          onClose={() => setShow(false)}
+          onClose={() => {
+            setShow(false);
+          }}
           onSave={save}
         />
       )}

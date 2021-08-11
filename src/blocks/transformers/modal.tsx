@@ -113,9 +113,9 @@ export class ModalTransformer extends Transformer {
                       <button
                         className="btn btn-link"
                         type="button"
-                        onClick={() =>
-                          reject(new CancelError("You cancelled the form"))
-                        }
+                        onClick={() => {
+                          reject(new CancelError("You cancelled the form"));
+                        }}
                       >
                         Cancel
                       </button>
@@ -128,9 +128,9 @@ export class ModalTransformer extends Transformer {
         </React.Fragment>
       );
       ReactDOM.render(form, shadowRoot);
-      $(`#${id}`).on("hide.bs.modal", () =>
-        reject(new CancelError("You cancelled the form"))
-      );
+      $(`#${id}`).on("hide.bs.modal", () => {
+        reject(new CancelError("You cancelled the form"));
+      });
     });
 
     let data;
