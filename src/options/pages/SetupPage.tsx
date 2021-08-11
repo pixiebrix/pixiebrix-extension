@@ -58,7 +58,10 @@ const SetupPage: React.FunctionComponent = () => {
   useTitle("Setup");
 
   const dispatch = useDispatch();
-  const [accountTab, accountPending] = useAsyncState(() => hasAppAccount(), []);
+  const [accountTab, accountPending] = useAsyncState(
+    async () => hasAppAccount(),
+    []
+  );
 
   const setLocal = useCallback(() => {
     dispatch(setMode({ mode: "local" }));

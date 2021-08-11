@@ -125,7 +125,9 @@ const BlockCard: React.FunctionComponent<{
     <Card className={cx("BlockCard", { invalid: !isValid })}>
       <Card.Header className={cx({ "bg-danger": !isValid })}>
         <div
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={() => {
+            setCollapsed(!collapsed);
+          }}
           style={{ cursor: "pointer" }}
           className="d-flex"
         >
@@ -239,7 +241,9 @@ const BlockField: React.FunctionComponent<
                         }
                         config={blockConfig}
                         showOutputKey={index < numBlocks - 1}
-                        onRemove={() => remove(index)}
+                        onRemove={() => {
+                          remove(index);
+                        }}
                       />
                     </ErrorBoundary>
                   ))}

@@ -214,7 +214,9 @@ const BlockModal: React.FunctionComponent<{
                       <Form.Control
                         placeholder="Start typing to find results"
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
+                        onChange={(e) => {
+                          setQuery(e.target.value);
+                        }}
                       />
                     </InputGroup>
                   </Form>
@@ -246,9 +248,18 @@ const BlockModal: React.FunctionComponent<{
       )}
 
       {renderButton ? (
-        renderButton({ show: () => setShow(true) })
+        renderButton({
+          show: () => {
+            setShow(true);
+          },
+        })
       ) : (
-        <Button variant="info" onClick={() => setShow(true)}>
+        <Button
+          variant="info"
+          onClick={() => {
+            setShow(true);
+          }}
+        >
           {caption}
         </Button>
       )}

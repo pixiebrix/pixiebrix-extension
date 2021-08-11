@@ -86,7 +86,7 @@ export async function asyncMapValues<T, TResult>(
   ) as any;
 }
 
-export const sleep = (milliseconds: number): Promise<void> =>
+export const sleep = async (milliseconds: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 export class TimeoutError extends Error {

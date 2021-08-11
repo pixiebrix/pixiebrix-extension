@@ -55,7 +55,11 @@ class ErrorBoundary extends React.Component<{}, State> {
             <p>{this.state.errorMessage}</p>
           </div>
           <div>
-            <Button onClick={() => location.reload()}>
+            <Button
+              onClick={() => {
+                location.reload();
+              }}
+            >
               <FontAwesomeIcon icon={faRedo} /> Reload the Page
             </Button>
           </div>

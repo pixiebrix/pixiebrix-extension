@@ -102,7 +102,7 @@ export const RecipeList: React.FunctionComponent<
         {...x}
         buttonProps={buttonProps}
         key={x.metadata.id}
-        onInstall={() => installRecipe(x)}
+        onInstall={async () => installRecipe(x)}
         installed={installedRecipes.has(x.metadata.id)}
       />
     ))}
@@ -155,7 +155,9 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
                 id="query"
                 placeholder="Start typing to filter blueprints"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                }}
               />
             </InputGroup>
           </Form>

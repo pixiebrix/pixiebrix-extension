@@ -203,7 +203,7 @@ async function select(
   } else if ("find" in normalizedSelector) {
     const values = await Promise.all(
       $elt
-        .map(function () {
+        .map(async function () {
           return processFind($(this), normalizedSelector);
         })
         .toArray()

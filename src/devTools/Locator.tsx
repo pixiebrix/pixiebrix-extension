@@ -60,7 +60,7 @@ const Locator: React.FunctionComponent = () => {
   const { port } = useContext(DevToolsContext);
 
   const [query, setQuery] = useState("");
-  const [frameworks] = useAsyncState(() => detectFrameworks(port), [
+  const [frameworks] = useAsyncState(async () => detectFrameworks(port), [
     port,
     tabId,
   ]);
@@ -92,7 +92,9 @@ const Locator: React.FunctionComponent = () => {
           placeholder="Expression"
           aria-label="Expression"
           defaultValue={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+          }}
           aria-describedby="search-addon"
         />
       </InputGroup>

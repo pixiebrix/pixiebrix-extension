@@ -242,11 +242,9 @@ handlers.set(
   FORWARD_FRAME_NOTIFICATION,
   async (request: ForwardActionFrameNotification, sender) => {
     const tabId = sender.tab.id;
-    return forwardWhenReady(
-      tabId,
-      request.meta.$seq,
-      request.payload
-    ).catch((error) => reportError(error));
+    return forwardWhenReady(tabId, request.meta.$seq, request.payload).catch(
+      reportError
+    );
   }
 );
 

@@ -65,7 +65,12 @@ const SupportWidget: React.FunctionComponent<{ onClose: () => void }> = ({
         </div>
       </div>
       <div className="pr-2 text-muted">
-        <span onClick={() => onClose()} role="button">
+        <span
+          onClick={() => {
+            onClose();
+          }}
+          role="button"
+        >
           <FontAwesomeIcon icon={faTimes} />
         </span>
       </div>

@@ -52,7 +52,7 @@ export interface DragResult {
   sibling: string[] | null;
 }
 
-function dragPromise(uuid: string): Promise<DragResult | null> {
+async function dragPromise(uuid: string): Promise<DragResult | null> {
   const drake = dragula({
     isContainer: (el?: Element) => ["DIV", "SECTION"].includes(el.tagName),
     moves: (el?: Element) => el.getAttribute(DATA_ATTR) === uuid,

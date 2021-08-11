@@ -74,7 +74,12 @@ const ServicesTab: React.FunctionComponent<{
                   caption="Add Integration"
                   services={services}
                   renderButton={({ setShow }) => (
-                    <Button variant="primary" onClick={() => setShow(true)}>
+                    <Button
+                      variant="primary"
+                      onClick={() => {
+                        setShow(true);
+                      }}
+                    >
                       <FontAwesomeIcon icon={faPlus} /> Add Integration
                     </Button>
                   )}

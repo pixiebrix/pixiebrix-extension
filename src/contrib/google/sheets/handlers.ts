@@ -110,15 +110,15 @@ export const batchGet = liftBackground(
         spreadsheetId,
         ranges,
       });
-      return await new Promise<BatchGetValuesResponse>((resolve, reject) =>
+      return await new Promise<BatchGetValuesResponse>((resolve, reject) => {
         sheetRequest.execute((r) => {
           if (r.status >= 300 || (r as any).code >= 300) {
             reject(r);
           } else {
             resolve(r.result);
           }
-        })
-      );
+        });
+      });
     } catch (error: unknown) {
       throw await handleRejection(token, error);
     }
@@ -152,7 +152,7 @@ export async function getSheetProperties(
       spreadsheetId,
       fields: "properties",
     });
-    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) =>
+    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);
@@ -165,8 +165,8 @@ export async function getSheetProperties(
         }
 
         resolve(r.result);
-      })
-    );
+      });
+    });
     if (!spreadsheet) {
       throw new Error("Unknown error fetching spreadsheet");
     }
@@ -189,7 +189,7 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
       spreadsheetId,
       fields: "sheets.properties",
     });
-    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) =>
+    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);
@@ -202,8 +202,8 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
         }
 
         resolve(r.result);
-      })
-    );
+      });
+    });
     if (!spreadsheet) {
       throw new Error("Unknown error fetching spreadsheet");
     }

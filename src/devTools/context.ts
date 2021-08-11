@@ -145,7 +145,7 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
   let frameworks: FrameworkMeta[] = [];
   try {
     console.debug(`connectToFrame: detecting frameworks on ${url}`);
-    frameworks = await runInMillis(() => detectFrameworks(port), 500);
+    frameworks = await runInMillis(async () => detectFrameworks(port), 500);
   } catch (error: unknown) {
     console.debug(`connectToFrame: error detecting frameworks ${url}`, {
       error,

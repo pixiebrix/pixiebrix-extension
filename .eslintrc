@@ -64,7 +64,6 @@
     // Soft-enable some rules, maybe enforce them later
     "@typescript-eslint/ban-types": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/promise-function-async": "warn",
     "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
     "unicorn/no-useless-undefined": "warn", // Buggy with React
     "unicorn/no-nested-ternary": "warn", // Sometimes it conflicts with Prettier

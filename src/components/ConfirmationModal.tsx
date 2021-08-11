@@ -95,8 +95,12 @@ export const ModalProvider: React.FunctionComponent<{
       {modalProps && (
         <ConfirmationModal
           {...modalProps}
-          onSubmit={() => callback(true)}
-          onCancel={() => callback(false)}
+          onSubmit={() => {
+            callback(true);
+          }}
+          onCancel={() => {
+            callback(false);
+          }}
         />
       )}
       {children}

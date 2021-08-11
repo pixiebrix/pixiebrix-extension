@@ -74,7 +74,7 @@ function devtoolsMessageListener(response: BackgroundResponse) {
       reject(deserializeError(payload.$$error));
     }
 
-    return resolve(payload);
+    resolve(payload);
   }
 }
 

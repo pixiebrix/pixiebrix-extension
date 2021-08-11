@@ -60,7 +60,10 @@ const CustomOption: ComponentType<OptionProps<OptionValue, false>> = ({
 
   return (
     <components.Option {...props}>
-      <div onMouseEnter={() => toggle(true)} onMouseLeave={() => toggle(false)}>
+      <div
+        onMouseEnter={async () => toggle(true)}
+        onMouseLeave={async () => toggle(false)}
+      >
         {props.data.elementInfo?.tagName && (
           <Badge variant="dark" className="mr-1 pb-1">
             {props.data.elementInfo.tagName}
