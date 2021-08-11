@@ -173,7 +173,7 @@ export async function generateExtensionPointMetadata(
 
 export function makeExtensionReaders({
   readers,
-}: BaseFormState): (ReaderConfig | ReaderReference)[] {
+}: BaseFormState): Array<ReaderConfig | ReaderReference> {
   return readers.map((reader) => {
     if (!isCustomReader(reader)) {
       return { metadata: reader.metadata };
@@ -202,7 +202,7 @@ export function makeExtensionReaders({
 
 export async function makeReaderFormState(
   extensionPoint: ExtensionPointConfig
-): Promise<(ReaderFormState | ReaderReferenceFormState)[]> {
+): Promise<Array<ReaderFormState | ReaderReferenceFormState>> {
   const readerId = extensionPoint.definition.reader;
 
   let readerIds: string[];

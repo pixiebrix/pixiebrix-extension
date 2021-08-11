@@ -101,7 +101,6 @@
     "@typescript-eslint/no-unnecessary-type-arguments": "warn",
     "@typescript-eslint/prefer-ts-expect-error": "warn",
     "@typescript-eslint/dot-notation": "warn",
-    "@typescript-eslint/array-type": "warn",
     "@typescript-eslint/non-nullable-type-assertion-style": "warn",
     "@typescript-eslint/no-unnecessary-type-assertion": "warn",
     "@typescript-eslint/consistent-type-assertions": "warn",
