@@ -195,7 +195,7 @@ function isManaged(node: Node): boolean {
     throw new Error("Could not get DOM HTMLElement for node");
   }
 
-  return !!ignoreNotFound(() => getEmberComponentById(elt.id));
+  return Boolean(ignoreNotFound(() => getEmberComponentById(elt.id)));
 }
 
 const EMBER_INTERNAL_PROPS = new Set([

@@ -42,7 +42,7 @@ type TypePredicate = (schema: Schema) => boolean;
 const textPredicate = (schema: Schema) => schema.type === "string";
 const booleanPredicate = (schema: Schema) => schema.type === "boolean";
 const blockPredicate = (schema: Schema) =>
-  !!SCHEMA_TYPE_TO_BLOCK_PROPERTY[schema.$ref];
+  Boolean(SCHEMA_TYPE_TO_BLOCK_PROPERTY[schema.$ref]);
 
 function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
   return schema.oneOf?.find(

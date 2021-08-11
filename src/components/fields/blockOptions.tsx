@@ -92,7 +92,7 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         as="textarea"
         value={value ?? ""}
         {...field}
-        isInvalid={!!meta.error}
+        isInvalid={Boolean(meta.error)}
       />
     );
   } else {
@@ -101,7 +101,7 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         type="text"
         value={value ?? ""}
         {...field}
-        isInvalid={!!meta.error}
+        isInvalid={Boolean(meta.error)}
       />
     );
   }

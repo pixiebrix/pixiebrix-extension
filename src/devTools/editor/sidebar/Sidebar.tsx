@@ -127,7 +127,7 @@ const Sidebar: React.FunctionComponent<
             target="_blank"
           />
           <DropdownButton
-            disabled={!!inserting || !hasPermissions}
+            disabled={Boolean(inserting) || !hasPermissions}
             variant="info"
             size="sm"
             title="Add"
