@@ -220,7 +220,7 @@ export function useDevConnection(): Context {
   return {
     port,
     connecting,
-    connect: connect,
+    connect,
     portError: portError?.toString(),
     tabState: current,
   };

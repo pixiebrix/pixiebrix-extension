@@ -176,7 +176,7 @@ export async function fromExtensionPoint(
     services: [],
 
     extension: {
-      heading: heading,
+      heading,
       body: [],
     },
 

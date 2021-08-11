@@ -220,7 +220,7 @@ class LazyLocatorFactory {
     return {
       _sanitizedServiceConfigurationBrand: undefined,
       id: authId,
-      serviceId: serviceId,
+      serviceId,
       proxy: service.hasAuth && !match.local,
       config: excludeSecrets(service, match.config),
     };

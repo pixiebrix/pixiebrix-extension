@@ -86,7 +86,6 @@
     "no-negated-condition": "warn",
     "no-implicit-coercion": "warn",
     "prefer-destructuring": "warn",
-    "object-shorthand": "warn",
     "no-return-await": "warn",
     "no-promise-executor-return": "warn",
     "no-useless-concat": "warn",

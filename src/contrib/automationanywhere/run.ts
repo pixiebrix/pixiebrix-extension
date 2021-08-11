@@ -74,7 +74,7 @@ export class RunBot extends Effect {
       url: `/v2/automations/deploy`,
       method: "post",
       data: {
-        fileId: fileId,
+        fileId,
         botInput: mapValues(data, (x) => ({ type: "STRING", string: x })),
         rdpEnabled: false,
         runElevated: false,
