@@ -74,7 +74,7 @@ function isBrickSchema(schema: Schema): boolean {
   //   },
   // ],
   return (
-    !!BRICK_RUN_METHODS[schema.$ref] ||
+    Boolean(BRICK_RUN_METHODS[schema.$ref]) ||
     (schema.oneOf ?? []).some(
       (x) => typeof x === "object" && BRICK_RUN_METHODS[x.$ref]
     )

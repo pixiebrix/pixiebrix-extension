@@ -63,7 +63,7 @@ export function getComponent(node: Node): AngularElement | null {
 }
 
 export function isManaged(element: HTMLElement): boolean {
-  return !!ignoreNotFound(() => getComponent(element));
+  return Boolean(ignoreNotFound(() => getComponent(element)));
 }
 
 function getAngularData(instance: AngularElement): Scope {

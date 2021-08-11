@@ -97,7 +97,7 @@ export interface BaseFormState {
 
   services: ServiceDependency[];
 
-  readers: (ReaderFormState | ReaderReferenceFormState)[];
+  readers: Array<ReaderFormState | ReaderReferenceFormState>;
 
   extensionPoint: BaseExtensionPointState;
 

@@ -34,7 +34,7 @@ export default async function initFirefoxCompat(): Promise<void> {
   }
 
   browser.contextMenus.onClicked.addListener(onContextMenuClick);
-  await browser.contextMenus.create({
+  browser.contextMenus.create({
     id: FIREFOX_OPTIONS_MENU_ID,
     title: "Options",
     contexts: ["browser_action"],

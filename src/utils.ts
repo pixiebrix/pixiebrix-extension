@@ -42,7 +42,7 @@ export function mostCommonElement<T>(items: T[]): T {
 }
 
 export function isGetter(obj: object, prop: string): boolean {
-  return !!Object.getOwnPropertyDescriptor(obj, prop)?.["get"];
+  return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
 }
 
 /**

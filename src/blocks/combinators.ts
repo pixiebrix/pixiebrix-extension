@@ -122,7 +122,7 @@ interface ReduceOptions {
 type SchemaProperties = { [key: string]: Schema };
 
 function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
-  if (schemaOrProperties["type"] && schemaOrProperties["properties"]) {
+  if (schemaOrProperties.type && schemaOrProperties.properties) {
     return schemaOrProperties as Schema;
   }
 

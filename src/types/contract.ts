@@ -145,12 +145,12 @@ export interface Deployment {
     version: string;
     config: RecipeDefinition;
   };
-  bindings: {
+  bindings: Array<{
     id: string;
     auth: {
       id: string;
       service_id: string;
       label: string;
     };
-  }[];
+  }>;
 }

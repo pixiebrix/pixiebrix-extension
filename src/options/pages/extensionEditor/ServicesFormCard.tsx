@@ -50,7 +50,11 @@ export const DependencyRow: React.FunctionComponent<{
         {/* @ts-ignore: not sure what's going on with the type definition for this */}
         {({ field, meta }) => (
           <Form.Group>
-            <Form.Control {...field} size="default" isInvalid={!!meta.error} />
+            <Form.Control
+              {...field}
+              size="default"
+              isInvalid={Boolean(meta.error)}
+            />
             {meta.touched && meta.error && (
               <Form.Control.Feedback type="invalid">
                 {meta.error}

@@ -274,7 +274,7 @@ export async function handleNavigate({
     return;
   }
 
-  const href = location.href;
+  const { href } = location;
 
   if (!force && _frameHref.get(context.frameId) === href) {
     console.debug(

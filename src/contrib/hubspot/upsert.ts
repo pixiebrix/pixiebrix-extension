@@ -27,7 +27,7 @@ function makeProperties(
   propertyKey = "property"
 ) {
   return Object.entries(obj)
-    .filter(([, value]) => !!value)
+    .filter(([, value]) => Boolean(value))
     .map(([property, value]) => ({
       [propertyKey]: property,
       value,

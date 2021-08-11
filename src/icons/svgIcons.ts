@@ -72,7 +72,7 @@ async function iconAsSVG(
     throw new Error(`Unknown icon library: ${config.library}`);
   }
 
-  const iconUrl = library[config.id] ?? library["box"];
+  const iconUrl = library[config.id] ?? library.box;
   if (!iconUrl) {
     throw new Error(
       `Could not find icon ${config.id} in icon library ${library}`

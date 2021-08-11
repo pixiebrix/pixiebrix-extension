@@ -27,7 +27,7 @@ interface TabEvent<TValue> {
 }
 
 export class SimpleEvent<TValue> implements TabEvent<TValue> {
-  private listeners = new Map<number, GenericHandler<TValue>[]>();
+  private listeners = new Map<number, Array<GenericHandler<TValue>>>();
 
   addListener(tabId: number, handler: GenericHandler<TValue>): void {
     if (!this.listeners.has(tabId)) {

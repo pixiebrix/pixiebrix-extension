@@ -29,18 +29,18 @@ test("can read yaml fixture", () => {
 });
 
 test("can read yaml fixture", async () => {
-  const block = await fromJS(nytimes);
+  const block = fromJS(nytimes);
   expect(block.id).toBe("nytimes/organization-articles");
 });
 
 test("can read trello reader", async () => {
-  const block = await fromJS(trelloReader);
+  const block = fromJS(trelloReader);
   expect(block.id).toBe("trello/card");
 });
 
 test("reject invalid fixture fixture", async () => {
   try {
-    await fromJS({ foo: "bar" });
+    fromJS({ foo: "bar" });
   } catch (error) {
     expect(error).toBeInstanceOf(ValidationError);
   }

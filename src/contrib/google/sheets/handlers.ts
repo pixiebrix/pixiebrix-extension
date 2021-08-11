@@ -45,7 +45,7 @@ export const createTab = liftBackground(
     const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
     try {
       return (await gapi.client.sheets.spreadsheets.batchUpdate({
-        spreadsheetId: spreadsheetId,
+        spreadsheetId,
         resource: {
           requests: [
             {
@@ -70,7 +70,7 @@ export const appendRows = liftBackground(
     const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
     try {
       return (await gapi.client.sheets.spreadsheets.values.append({
-        spreadsheetId: spreadsheetId,
+        spreadsheetId,
         range: tabName,
         valueInputOption: "USER_ENTERED",
         resource: {
@@ -90,7 +90,7 @@ export const batchUpdate = liftBackground(
     const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
     try {
       return (await gapi.client.sheets.spreadsheets.batchUpdate({
-        spreadsheetId: spreadsheetId,
+        spreadsheetId,
         resource: {
           requests,
         },
@@ -107,7 +107,7 @@ export const batchGet = liftBackground(
     const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
     try {
       const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
-        spreadsheetId: spreadsheetId,
+        spreadsheetId,
         ranges,
       });
       return await new Promise<BatchGetValuesResponse>((resolve, reject) =>
@@ -149,7 +149,7 @@ export async function getSheetProperties(
 
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.get({
-      spreadsheetId: spreadsheetId,
+      spreadsheetId,
       fields: "properties",
     });
     const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) =>
@@ -186,7 +186,7 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
 
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.get({
-      spreadsheetId: spreadsheetId,
+      spreadsheetId,
       fields: "sheets.properties",
     });
     const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) =>

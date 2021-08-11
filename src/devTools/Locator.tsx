@@ -30,7 +30,7 @@ import { isEmpty } from "lodash";
 
 function useSearchWindow(query: string) {
   const { port } = useContext(DevToolsContext);
-  const tabId = browser.devtools.inspectedWindow.tabId;
+  const { tabId } = browser.devtools.inspectedWindow;
   const [results, setResults] = useState([]);
   const [error, setError] = useState();
 
@@ -56,7 +56,7 @@ function useSearchWindow(query: string) {
 }
 
 const Locator: React.FunctionComponent = () => {
-  const tabId = browser.devtools.inspectedWindow.tabId;
+  const { tabId } = browser.devtools.inspectedWindow;
   const { port } = useContext(DevToolsContext);
 
   const [query, setQuery] = useState("");
