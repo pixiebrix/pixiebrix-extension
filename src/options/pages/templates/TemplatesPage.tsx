@@ -113,7 +113,7 @@ const TemplateGroup: React.FunctionComponent<GroupProps> = ({
             <TemplateEntry
               key={recipe.metadata.id}
               installed={installedRecipes.has(recipe.metadata.id)}
-              onAdd={() => install(recipe)}
+              onAdd={async () => install(recipe)}
               {...recipe}
             />
           ))}

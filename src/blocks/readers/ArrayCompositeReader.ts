@@ -55,7 +55,7 @@ class ArrayCompositeReader extends Reader {
 
   async isAvailable(): Promise<boolean> {
     const availability = await Promise.all(
-      this._readers.map((x) => x.isAvailable())
+      this._readers.map(async (x) => x.isAvailable())
     );
     return availability.every(identity);
   }
@@ -63,7 +63,7 @@ class ArrayCompositeReader extends Reader {
   async read(root: HTMLElement | Document): Promise<ReaderOutput> {
     let result = {};
     const readResults = await Promise.all(
-      this._readers.map((x) => x.read(root))
+      this._readers.map(async (x) => x.read(root))
     );
     for (const [reader, readerResult] of zip(this._readers, readResults)) {
       console.debug(`ArrayCompositeReader:${reader.name}`, readerResult);

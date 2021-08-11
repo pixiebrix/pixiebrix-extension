@@ -27,7 +27,7 @@ import { fieldLabel } from "@/components/fields/fieldUtils";
 import { IconConfig, Schema } from "@/core";
 
 const IconSelector = React.lazy(
-  () =>
+  async () =>
     import(
       /* webpackChunkName: "icons" */
       "@/icons/IconSelector"

@@ -60,7 +60,7 @@ const Locator: React.FunctionComponent = () => {
   const { port } = useContext(DevToolsContext);
 
   const [query, setQuery] = useState("");
-  const [frameworks] = useAsyncState(() => detectFrameworks(port), [
+  const [frameworks] = useAsyncState(async () => detectFrameworks(port), [
     port,
     tabId,
   ]);

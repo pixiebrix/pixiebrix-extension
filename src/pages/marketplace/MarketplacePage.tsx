@@ -102,7 +102,7 @@ export const RecipeList: React.FunctionComponent<
         {...x}
         buttonProps={buttonProps}
         key={x.metadata.id}
-        onInstall={() => installRecipe(x)}
+        onInstall={async () => installRecipe(x)}
         installed={installedRecipes.has(x.metadata.id)}
       />
     ))}

@@ -67,7 +67,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   }, [service]);
 
   const schemaPromise = useMemo(
-    () =>
+    async () =>
       dereference({
         type: "object",
         properties: {
