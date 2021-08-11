@@ -240,7 +240,6 @@ module.exports = (env, options) =>
     ),
 
     resolve: {
-      extensions: [".ts", ".tsx", ".jsx", ".js"],
       alias: {
         ...mockHeavyDependencies(),
 

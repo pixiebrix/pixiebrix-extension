@@ -6,13 +6,21 @@
     "test": "jest",
     "test:watch": "jest --watchAll",
     "lint": "eslint src --ext js,jsx,ts,tsx",
-    "watch": "ENV_FILE='.env.development' webpack --mode development --watch",
-    "build": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
+    "prepublishOnly": "npm run build:types",
+    "watch": "run-p 'watch:*'",
+    "watch:webpack": "ENV_FILE='.env.development' webpack --mode development --watch",
+    "watch:typescript": "npm run build:typescript -- --watch",
+    "build": "run-p build:webpack build:typescript",
+    "build:webpack": "NODE_OPTIONS=--max_old_space_size=8192 webpack --mode production",
+    "build:typescript": "tsc --outDir .transpiled --declaration",
     "build:scripts": "webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
+  "files": [
+    ".transpiled"
+  ],
   "engine-strict": true,
   "engines": {
     "node": "16.x",
@@ -201,6 +209,7 @@
     "mini-css-extract-plugin": "~2.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "node-sass": "^6.0.1",
+    "npm-run-all": "^4.1.5",
     "raw-loader": "^4.0.1",
     "rollbar-sourcemap-webpack-plugin": "^3.3.0",
     "sass-loader": "^12.1.0",
