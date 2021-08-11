@@ -258,7 +258,7 @@ type SimpleAvailability = {
 export function selectIsAvailable(
   extensionPoint: ExtensionPointConfig
 ): SimpleAvailability {
-  const isAvailable = extensionPoint.definition.isAvailable;
+  const { isAvailable } = extensionPoint.definition;
   const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
   const selectors = castArray(isAvailable.selectors ?? []);
 

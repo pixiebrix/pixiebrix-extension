@@ -84,7 +84,6 @@
     // Temporarily disable rules
     "no-await-in-loop": "warn",
     "no-negated-condition": "warn",
-    "prefer-destructuring": "warn",
     "no-return-await": "warn",
     "no-promise-executor-return": "warn",
     "no-useless-concat": "warn",

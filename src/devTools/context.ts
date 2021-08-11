@@ -157,7 +157,7 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
 }
 
 export function useDevConnection(): Context {
-  const tabId = browser.devtools.inspectedWindow.tabId;
+  const { tabId } = browser.devtools.inspectedWindow;
 
   const [connecting, setConnecting] = useState(false);
 
