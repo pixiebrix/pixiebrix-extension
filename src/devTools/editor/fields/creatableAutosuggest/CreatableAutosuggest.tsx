@@ -25,15 +25,15 @@ import Autosuggest, {
 import cx from "classnames";
 
 export interface SuggestionTypeBase {
-  value: string
+  value: string;
 }
 
-class CreateNew implements SuggestionTypeBase {
-  value: string
+interface CreateNew extends SuggestionTypeBase {
+  isNew: boolean;
+}
 
-  constructor(value: string) {
-    this.value = value;
-  }
+function isNew<T extends SuggestionTypeBase>(suggestion: T | CreateNew): suggestion is CreateNew {
+  return suggestion && "isNew" in suggestion;
 }
 
 export interface Props<SuggestionType extends SuggestionTypeBase> {
@@ -72,7 +72,7 @@ export interface Props<SuggestionType extends SuggestionTypeBase> {
   onCreateNew?: (inputValue: string) => SuggestionType,
 }
 
-const filterSuggestions = (suggestions: SuggestionTypeBase[], value: string) => {
+const filterSuggestions = <T extends SuggestionTypeBase>(suggestions: T[], value: string) => {
   const input = value.trim().toLowerCase();
   return input.length === 0
     ? []
@@ -102,22 +102,22 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
   const [createdSuggestions, setCreatedSuggestions] = useState<SuggestionType[]>([]);
 
   const getSuggestions = useCallback(({ value }: { value: string }) => {
-    const newSuggestions = filterSuggestions([...suggestions, ...createdSuggestions], value);
+    const newSuggestions: Array<SuggestionType | CreateNew> = filterSuggestions([...suggestions, ...createdSuggestions], value);
     if (!newSuggestions.some(item => item.value === value) && renderCreateNew !== undefined) {
-      newSuggestions.unshift(new CreateNew(value));
+      newSuggestions.unshift({ value, isNew: true});
     }
 
     setCurrentSuggestions(newSuggestions);
   }, [renderCreateNew, suggestions, createdSuggestions]);
 
   const renderSuggestionWithCreateNew = useCallback((suggestion: SuggestionType | CreateNew) =>
-    suggestion instanceof CreateNew
+    isNew(suggestion)
       ? renderCreateNew(`Create "${suggestion.value}"`)
       : renderSuggestion(suggestion),
   [renderCreateNew, renderSuggestion]);
 
   const onHighlighted = useCallback(({ suggestion }: { suggestion: SuggestionType | CreateNew | null }) => {
-    if (suggestion instanceof CreateNew) return;
+    if (isNew(suggestion)) return;
     onSuggestionHighlighted(suggestion);
   }, [onSuggestionHighlighted]);
 
@@ -132,7 +132,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
 
   const nativeOnSuggestionSelected: OnSuggestionSelected<SuggestionType | CreateNew> =
     (event, data) => {
-      if (data.suggestion instanceof CreateNew) {
+      if (isNew(data.suggestion)) {
         const newSuggestion = onCreateNew(data.suggestionValue);
         setCreatedSuggestions(existing => [...existing, newSuggestion]);
         onSuggestionSelected(newSuggestion)
