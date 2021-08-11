@@ -50,15 +50,6 @@ jobs:
           path: report.html
           retention-days: 5
           if-no-files-found: error
-  types:
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "16"
-          cache: npm
-      - run: npm ci
-      - run: npm run build:typescript
 
   generate-headers:
     runs-on: ubuntu-latest
@@ -78,6 +69,18 @@ jobs:
           path: headers.json
           retention-days: 5
           if-no-files-found: error
+
+  types:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run build:typescript
 
   lint:
     runs-on: ubuntu-latest
