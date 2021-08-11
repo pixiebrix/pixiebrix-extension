@@ -42,7 +42,7 @@ type TypePredicate = (schema: Schema) => boolean;
 const textPredicate = (schema: Schema) => schema.type === "string";
 const booleanPredicate = (schema: Schema) => schema.type === "boolean";
 const blockPredicate = (schema: Schema) =>
-  !!SCHEMA_TYPE_TO_BLOCK_PROPERTY[schema["$ref"]];
+  !!SCHEMA_TYPE_TO_BLOCK_PROPERTY[schema.$ref];
 
 function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
   return schema.oneOf?.find(
@@ -65,7 +65,7 @@ export function defaultFieldRenderer(
     return BlockField;
   }
 
-  if (schema["$ref"] === "https://app.pixiebrix.com/schemas/icon#") {
+  if (schema.$ref === "https://app.pixiebrix.com/schemas/icon#") {
     return IconField;
   }
 
@@ -81,8 +81,8 @@ export function defaultFieldRenderer(
     return makeOneOfField(findOneOf(schema, booleanPredicate));
   }
 
-  if (schema["$ref"] && !schema.type) {
-    throw new Error(`Unexpected $ref ${schema["$ref"]}`);
+  if (schema.$ref && !schema.type) {
+    throw new Error(`Unexpected $ref ${schema.$ref}`);
   } else {
     // Not using reportError here because we generally know about this, and it generates an error every render
     // reportError(`Unsupported field type: ${schema.type ?? "<No type found>"}`);
