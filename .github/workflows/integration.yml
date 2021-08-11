@@ -25,7 +25,7 @@ jobs:
           node-version: "16"
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npm run build:webpack
         env:
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
@@ -50,6 +50,15 @@ jobs:
           path: report.html
           retention-days: 5
           if-no-files-found: error
+  types:
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run build:typescript
 
   generate-headers:
     runs-on: ubuntu-latest
