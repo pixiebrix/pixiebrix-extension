@@ -65,10 +65,6 @@ const baseArgs = {
   isDisabled: false,
   suggestions,
   renderSuggestion,
-  onSuggestionHighlighted: (suggestion?: Suggestion) => {
-    console.log(`${suggestion?.value ?? "(null)"} highlighted`)
-  },
-  onSuggestionsClosed: () => { console.log("suggestions closed") },
   onSuggestionSelected: (suggestion: Suggestion) => {
     console.log(`${suggestion.value} selected`)
   },
