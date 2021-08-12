@@ -24,6 +24,7 @@ import { Permissions } from "webextension-polyfill-ts";
 import { pick } from "lodash";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
+// Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 export type SchemaDefinition = JSONSchema7Definition;
