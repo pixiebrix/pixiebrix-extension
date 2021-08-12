@@ -47,10 +47,10 @@ export interface Props<SuggestionType extends SuggestionTypeBase> {
   suggestions: SuggestionType[],
 
   // Optional initial selected suggestion
-  initialSuggestion?: SuggestionType | null,
+  initialSuggestion?: SuggestionType,
 
   // Placeholder for the input field
-  inputPlaceholder: string,
+  inputPlaceholder?: string,
 
   // How the suggestion should be displayed
   renderSuggestion: (suggestion: SuggestionType) => React.ReactNode,
@@ -60,16 +60,19 @@ export interface Props<SuggestionType extends SuggestionTypeBase> {
 
   // Called when a suggestion is highlighted by mouseover or arrow keys,
   //  also is called with null when nothing is highlighted
-  onSuggestionHighlighted?: (suggestion?: SuggestionType) => void,
+  onSuggestionHighlighted?: (suggestion: SuggestionType | null) => void,
 
   // Callback when the suggestions list is closed
   onSuggestionsClosed?: () => void,
 
   // Callback for value change event
-  onSuggestionSelected: (suggestion: SuggestionType) => void,
+  onSuggestionSelected?: (suggestion: SuggestionType) => void,
 
   // Callback for when the create option is selected
   onCreateNew?: (inputValue: string) => SuggestionType,
+
+  // Callback for input text changes, from both user typing and selecting suggestions
+  onTextChanged?: (value: string) => void,
 }
 
 const filterSuggestions = <T extends SuggestionTypeBase>(suggestions: T[], value: string) => {
@@ -88,13 +91,14 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
     isDisabled = false,
     suggestions,
     initialSuggestion,
-    inputPlaceholder,
+    inputPlaceholder = "",
     renderSuggestion,
     renderCreateNew,
-    onSuggestionHighlighted,
-    onSuggestionsClosed,
-    onSuggestionSelected,
-    onCreateNew
+    onSuggestionHighlighted = (_) => {},
+    onSuggestionsClosed = () => {},
+    onSuggestionSelected = (_) => {},
+    onCreateNew,
+    onTextChanged = (_) => {},
   }: Props<SuggestionType>
 ) => {
   const [currentValue, setCurrentValue] = useState(initialSuggestion?.value ?? "");
@@ -128,7 +132,8 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
 
   const handleChange = useCallback((event: FormEvent<HTMLElement>, params: ChangeEvent) => {
     setCurrentValue(params.newValue);
-  }, []);
+    onTextChanged(params.newValue);
+  }, [onTextChanged]);
 
   const nativeOnSuggestionSelected: OnSuggestionSelected<SuggestionType | CreateNew> =
     (event, data) => {

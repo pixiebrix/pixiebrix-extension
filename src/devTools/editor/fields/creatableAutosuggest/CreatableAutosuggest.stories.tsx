@@ -31,7 +31,7 @@ const Story: ComponentStory<typeof CreatableAutosuggest> = (args) => (
   <div style={{ height: 200 }}>
     <CreatableAutosuggest {...args} />
   </div>
-)
+);
 
 interface Suggestion {
   icon: IconDefinition,
@@ -65,10 +65,7 @@ const baseArgs = {
   isDisabled: false,
   suggestions,
   renderSuggestion,
-  onSuggestionSelected: (suggestion: Suggestion) => {
-    console.log(`${suggestion.value} selected`)
-  },
-  onCreateNew: getNewSuggestion
+  onCreateNew: getNewSuggestion,
 }
 
 export const Default = Story.bind({});
