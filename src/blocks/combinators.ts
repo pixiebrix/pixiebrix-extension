@@ -24,6 +24,9 @@ import {
   BlockArg,
   IBlock,
   IReader,
+  isEffectBlock,
+  isReader,
+  isRendererBlock,
   Logger,
   OptionsArgs,
   ReaderRoot,
@@ -148,20 +151,6 @@ function excludeUndefined(obj: unknown): unknown {
   }
 
   return obj;
-}
-
-function isReader(block: IBlock): block is IReader {
-  return "read" in block;
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
-function isRendererBlock(block: IBlock & { render?: Function }): boolean {
-  return typeof block.render === "function";
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
-function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
-  return typeof block.effect === "function";
 }
 
 type StageOptions = {

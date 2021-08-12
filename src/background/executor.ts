@@ -35,6 +35,8 @@ import {
   expectContentScript,
 } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
+import { sleep } from "@/utils";
+import { partition } from "lodash";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -55,10 +57,6 @@ const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
 const tabReady: { [tabId: string]: { [frameId: string]: boolean } } = {};
 const nonceToTarget = new Map<string, Target>();
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 interface WaitOptions {
   maxWaitMillis?: number;
@@ -106,6 +104,7 @@ async function waitNonceReady(
     return true;
   };
 
+  // eslint-disable-next-line no-await-in-loop -- retry loop
   while (!(await isReady())) {
     if (Date.now() - startTime > maxWaitMillis) {
       throw new BusinessError(
@@ -113,6 +112,7 @@ async function waitNonceReady(
       );
     }
 
+    // eslint-disable-next-line no-await-in-loop -- retry loop
     await sleep(50);
   }
 
@@ -131,6 +131,7 @@ async function waitReady(
       );
     }
 
+    // eslint-disable-next-line no-await-in-loop -- retry loop
     await sleep(50);
   }
 
@@ -192,9 +193,19 @@ handlers.set(
         )
       )
     );
-    return results
-      .filter((x) => x.status === "fulfilled")
-      .map((x) => (x as any).value);
+
+    const [fulfilled, rejected] = partition(
+      results,
+      (x) => x.status === "fulfilled"
+    );
+
+    if (rejected.length > 0) {
+      console.warn(`Broadcast rejected for ${rejected.length} tabs`, {
+        rejected: rejected.map((x: PromiseRejectedResult) => x.reason),
+      });
+    }
+
+    return fulfilled.map((x: PromiseFulfilledResult<unknown>) => x.value);
   }
 );
 
@@ -354,35 +365,20 @@ export async function openTab(
 
 const DEFAULT_MAX_RETRIES = 5;
 
-export async function executeForNonce(
-  nonce: string,
-  blockId: string,
-  blockArgs: RenderedArgs,
-  options: RemoteBlockOptions
-): Promise<unknown> {
-  console.debug(`Running ${blockId} in content script with nonce ${nonce}`);
-
-  const { maxRetries = DEFAULT_MAX_RETRIES } = options;
+async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
+  send: T,
+  maxRetries = DEFAULT_MAX_RETRIES
+) {
   let retries = 0;
 
   while (retries < maxRetries) {
     try {
-      return await browser.runtime.sendMessage({
-        type: MESSAGE_RUN_BLOCK_FRAME_NONCE,
-        payload: {
-          nonce,
-          blockId,
-          blockArgs,
-          options,
-        },
-      });
+      // eslint-disable-next-line no-await-in-loop -- retry loop
+      return await send();
     } catch (error: unknown) {
       if (getErrorMessage(error).includes("Could not establish connection")) {
-        console.debug(
-          `Target not ready for ${blockId}. Retrying in ${
-            100 * (retries + 1)
-          }ms`
-        );
+        console.debug(`Target not ready. Retrying in ${100 * (retries + 1)}ms`);
+        // eslint-disable-next-line no-await-in-loop -- retry loop
         await sleep(250 * (retries + 1));
       } else {
         throw error;
@@ -392,7 +388,32 @@ export async function executeForNonce(
     retries++;
   }
 
-  throw new Error(`Unable to run ${blockId} after ${maxRetries} retries`);
+  throw new Error("Could not establish connection");
+}
+
+export async function executeForNonce(
+  nonce: string,
+  blockId: string,
+  blockArgs: RenderedArgs,
+  options: RemoteBlockOptions
+): Promise<unknown> {
+  console.debug(`Running ${blockId} in content script with nonce ${nonce}`);
+
+  const { maxRetries = DEFAULT_MAX_RETRIES } = options;
+
+  return retrySend(
+    async () =>
+      browser.runtime.sendMessage({
+        type: MESSAGE_RUN_BLOCK_FRAME_NONCE,
+        payload: {
+          nonce,
+          blockId,
+          blockArgs,
+          options,
+        },
+      }),
+    maxRetries
+  );
 }
 
 export async function executeInTarget(
@@ -403,35 +424,19 @@ export async function executeInTarget(
   console.debug(`Running ${blockId} in the target tab`);
 
   const { maxRetries = DEFAULT_MAX_RETRIES } = options;
-  let retries = 0;
 
-  while (retries < maxRetries) {
-    try {
-      return await browser.runtime.sendMessage({
+  return retrySend(
+    async () =>
+      browser.runtime.sendMessage({
         type: MESSAGE_RUN_BLOCK_TARGET,
         payload: {
           blockId,
           blockArgs,
           options,
         },
-      });
-    } catch (error: unknown) {
-      if (getErrorMessage(error).includes("Could not establish connection")) {
-        console.debug(
-          `Target not ready for ${blockId}. Retrying in ${
-            100 * (retries + 1)
-          }ms`
-        );
-        await sleep(250 * (retries + 1));
-      } else {
-        throw error;
-      }
-    }
-
-    retries++;
-  }
-
-  throw new Error(`Unable to run ${blockId} after ${maxRetries} retries`);
+      }),
+    maxRetries
+  );
 }
 
 export async function executeInAll(
