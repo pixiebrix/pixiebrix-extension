@@ -71,6 +71,17 @@ export async function waitAnimationFrame(): Promise<void> {
 }
 
 /**
+ * Returns a new object with all the values from the original resolved
+ */
+export async function resolveObj<T>(
+  obj: Record<string, Promise<T>>
+): Promise<Record<string, T>> {
+  return fromPairs(
+    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
+  );
+}
+
+/**
  * Same as lodash mapValues but supports promises
  */
 export async function asyncMapValues<T, TResult>(
@@ -87,7 +98,9 @@ export async function asyncMapValues<T, TResult>(
 }
 
 export const sleep = async (milliseconds: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, milliseconds));
+  new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
 
 export class TimeoutError extends Error {
   constructor(message: string) {

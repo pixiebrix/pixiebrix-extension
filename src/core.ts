@@ -24,6 +24,7 @@ import { Permissions } from "webextension-polyfill-ts";
 import { pick } from "lodash";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
+// Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 export type SchemaDefinition = JSONSchema7Definition;
@@ -388,7 +389,7 @@ export interface OptionsArgs {
 }
 
 export interface RenderedArgs {
-  // FIXME: enforcing nominal typing will require helper methods to product the RenderedArgs
+  // FIXME: enforcing nominal typing will require helper methods to produce the RenderedArgs
   // _renderedArgsBrand: null;
   [prop: string]: unknown;
 }
@@ -414,3 +415,19 @@ export type RawConfig = {
   kind: "service" | "extensionPoint" | "component" | "reader" | "recipe";
   metadata: Metadata;
 };
+
+export function isReader(block: IBlock): block is IReader {
+  return "read" in block;
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
+export function isRendererBlock(
+  block: IBlock & { render?: Function }
+): boolean {
+  return typeof block.render === "function";
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
+export function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
+  return typeof block.effect === "function";
+}
