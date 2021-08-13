@@ -55,6 +55,14 @@ function getSuggestionsForElement(elementInfo: ElementInfo | undefined): Element
   , (suggestion) => suggestion.value);
 }
 
+function renderSuggestion(suggestion: ElementSuggestion): React.ReactNode {
+  return <SelectorListItem
+    value={suggestion.value}
+    hasData={suggestion.elementInfo.hasData}
+    tag={suggestion.elementInfo.tagName}
+  />
+}
+
 interface CommonProps {
   initialElement?: ElementInfo;
   framework?: Framework;
@@ -93,14 +101,6 @@ export const SelectorSelectorControl: React.FunctionComponent<
     return sort ? sortBy(raw, (x) => x.value.length) : raw;
   }, [element, sort]);
 
-  const renderSuggestion = useCallback((suggestion: ElementSuggestion) => (
-    <SelectorListItem
-      value={suggestion.value}
-      hasData={suggestion.elementInfo.hasData}
-      tag={suggestion.elementInfo.tagName}
-    />
-  ), []);
-
   const enableSelector = useCallback((selector: string) => {
     try {
       void nativeOperations.toggleSelector(port, { selector });
@@ -120,10 +120,6 @@ export const SelectorSelectorControl: React.FunctionComponent<
       disableSelector();
     }
   }, [enableSelector, disableSelector]);
-
-  const onTextChanged = useCallback((value: string) => {
-    onSelect(value);
-  }, [onSelect]);
 
   const select = useCallback(async () => {
     setSelecting(true);
@@ -198,7 +194,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
           renderSuggestion={renderSuggestion}
           onSuggestionHighlighted={onHighlighted}
           onSuggestionsClosed={disableSelector}
-          onTextChanged={onTextChanged}
+          onTextChanged={onSelect}
         />
       </div>
     </div>
