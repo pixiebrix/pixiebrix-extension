@@ -48,7 +48,7 @@ function getSuggestionsForElement(elementInfo: ElementInfo | undefined): Element
 
   return uniqBy(
     compact([
-      ...elementInfo.selectors.map((value) => ({ value, elementInfo })),
+      ...(elementInfo.selectors ?? []).map((value) => ({ value, elementInfo })),
       ...getSuggestionsForElement(elementInfo.parent)
     ]).filter((suggestion) => suggestion.value && suggestion.value.trim() !== "")
   , (suggestion) => suggestion.value);
