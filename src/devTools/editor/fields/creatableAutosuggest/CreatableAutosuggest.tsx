@@ -170,7 +170,6 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
       suggestions={currentSuggestions}
       focusInputOnSuggestionClick
       getSuggestionValue={getSuggestionValue}
-      highlightFirstSuggestion
       inputProps={inputProps}
       onSuggestionHighlighted={onHighlighted}
       onSuggestionsFetchRequested={getSuggestions}
