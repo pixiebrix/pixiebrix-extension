@@ -47,6 +47,9 @@ export interface Props<SuggestionType extends SuggestionTypeBase> {
   // List of suggestions for the autosuggest
   suggestions: SuggestionType[],
 
+  // Should we only show suggestions that start with the current input value?
+  filterSuggestionsByValue?: boolean,
+
   // Text value of the input
   inputValue?: string,
 
@@ -91,6 +94,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
     isClearable = true,
     isDisabled = false,
     suggestions,
+    filterSuggestionsByValue = false,
     inputValue,
     inputPlaceholder = "",
     renderSuggestion,
@@ -107,13 +111,17 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
   const [createdSuggestions, setCreatedSuggestions] = useState<SuggestionType[]>([]);
 
   const getSuggestions = useCallback(({ value }: { value: string }) => {
-    const newSuggestions: Array<SuggestionType | CreateNew> = filterSuggestions([...suggestions, ...createdSuggestions], value);
+    let newSuggestions: Array<SuggestionType | CreateNew> = [...suggestions, ...createdSuggestions];
+    if (filterSuggestionsByValue) {
+      newSuggestions = filterSuggestions(newSuggestions, value);
+    }
+
     if (!newSuggestions.some(item => item.value === value) && renderCreateNew !== undefined) {
       newSuggestions.unshift({ value, isNew: true});
     }
 
     setCurrentSuggestions(newSuggestions);
-  }, [renderCreateNew, suggestions, createdSuggestions]);
+  }, [filterSuggestionsByValue, renderCreateNew, suggestions, createdSuggestions]);
 
   const renderSuggestionWithCreateNew = useCallback((suggestion: SuggestionType | CreateNew) =>
     isNew(suggestion)
