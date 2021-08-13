@@ -72,7 +72,7 @@ function validateBlockDefinition(
 }
 
 class ExternalBlock extends Block {
-  private readonly component: ComponentConfig;
+  public readonly component: ComponentConfig;
 
   readonly inputSchema: Schema;
 

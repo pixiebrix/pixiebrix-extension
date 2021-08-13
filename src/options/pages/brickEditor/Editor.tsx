@@ -28,7 +28,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
 import SharingTable from "./Sharing";
-import { sortBy } from "lodash";
+import { sortBy, flatten } from "lodash";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext } from "@/core";
 import BrickReference, {
@@ -83,16 +83,16 @@ function useOpenEditorTab() {
     async (id: string) => {
       const available = await fetch<Brick[]>("/api/bricks/");
       const brick = available.find((x) => x.name === id);
-      if (!brick) {
-        addToast(`You cannot edit brick: ${id}`, {
-          appearance: "warning",
-          autoDismiss: true,
-        });
-      } else {
+      if (brick) {
         console.debug("Open editor for brick: %s", id, { brick });
         const url = browser.runtime.getURL("options.html");
         // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
         window.open(`${url}#/workshop/bricks/${brick.id}`);
+      } else {
+        addToast(`You cannot edit brick: ${id}`, {
+          appearance: "warning",
+          autoDismiss: true,
+        });
       }
     },
     [addToast]
@@ -111,18 +111,22 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const { errors, values, dirty } = useFormikContext<EditorValues>();
 
   const [blocks] = useAsyncState(async () => {
-    const [extensionPoints, blocks, services] = await Promise.all([
+    const items: ReferenceEntry[][] = await Promise.all([
       extensionPointRegistry.all(),
       blockRegistry.all(),
       serviceRegistry.all(),
     ]);
-    return [...extensionPoints, ...blocks, ...services];
+    return flatten(items);
   }, []);
 
   const openReference = useCallback(
     (id: string) => {
       const block = blocks?.find((x) => x.id === id);
-      if (!block) {
+      if (block) {
+        console.debug("Open reference for block: %s", block.id, { block });
+        setSelectedReference(block);
+        setTab("reference");
+      } else {
         console.debug("Known bricks", {
           blocks: sortBy(blocks.map((x) => x.id)),
         });
@@ -130,10 +134,6 @@ const Editor: React.FunctionComponent<OwnProps> = ({
           appearance: "warning",
           autoDismiss: true,
         });
-      } else {
-        console.debug("Open reference for block: %s", block.id, { block });
-        setSelectedReference(block);
-        setTab("reference");
       }
     },
     [setTab, blocks, setSelectedReference, addToast]

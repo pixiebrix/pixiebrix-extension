@@ -31,6 +31,7 @@ import Fuse from "fuse.js";
 import { isEmpty, sortBy } from "lodash";
 import copy from "copy-to-clipboard";
 import { BlockType, getType } from "@/blocks/util";
+import AceEditor from "@/vendors/AceEditor";
 import useAsyncEffect from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
@@ -38,8 +39,8 @@ import cx from "classnames";
 import "./BrickReference.scss";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
-import { useToasts } from "react-toast-notifications";
 import GridLoader from "react-spinners/GridLoader";
+import useUserAction from "@/hooks/useUserAction";
 
 export type ReferenceEntry = IBlock | IExtensionPoint | IService;
 
@@ -52,6 +53,10 @@ const DetailSection: React.FunctionComponent<{ title: string }> = ({
     <div className="py-2">{children}</div>
   </div>
 );
+
+function isOfficial(block: ReferenceEntry): boolean {
+  return block.id.startsWith("@pixiebrix/");
+}
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -85,9 +90,18 @@ function makeArgumentYaml(schema: Schema): string {
 const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
   brick,
 }) => {
-  const { addToast } = useToasts();
-
   const schema = "schema" in brick ? brick.schema : brick.inputSchema;
+
+  const copyHandler = useUserAction(
+    async () => {
+      copy(makeArgumentYaml(schema));
+    },
+    {
+      successMessage: "Copied input argument YAML to clipboard",
+      errorMessage: "Error copying YAML to clipboard",
+    },
+    [schema]
+  );
 
   return (
     <div>
@@ -103,58 +117,48 @@ const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
       </DetailSection>
 
       <DetailSection title="Input Schema">
-        {!isEmpty(schema) ? (
+        {isEmpty(schema) ? (
+          <div className="text-muted">No input schema provided</div>
+        ) : (
           <div>
-            <Button
-              className="p-0"
-              variant="link"
-              onClick={() => {
-                try {
-                  copy(makeArgumentYaml(schema));
-                  addToast("Copied input argument YAML to clipboard", {
-                    appearance: "success",
-                    autoDismiss: true,
-                  });
-                } catch {
-                  addToast("Error copying YAML to clipboard", {
-                    appearance: "error",
-                    autoDismiss: true,
-                  });
-                }
-              }}
-            >
+            <Button className="p-0" variant="link" onClick={copyHandler}>
               <FontAwesomeIcon icon={faClipboard} /> Copy Argument YAML
             </Button>
             <SchemaTree schema={schema} />
           </div>
-        ) : (
-          <div className="text-muted">No input schema provided</div>
         )}
       </DetailSection>
 
       {"outputSchema" in brick && (
         <DetailSection title="Output Schema">
-          {!isEmpty(brick.outputSchema) ? (
-            <SchemaTree schema={brick.outputSchema} />
-          ) : (
+          {isEmpty(brick.outputSchema) ? (
             <div className="text-muted">No output schema provided</div>
+          ) : (
+            <SchemaTree schema={brick.outputSchema} />
           )}
+        </DetailSection>
+      )}
+
+      {"component" in brick && (
+        <DetailSection title="Configuration">
+          <AceEditor
+            value={
+              // `rawConfig` is added by External(Block|Reader) etc.
+              JSON.stringify((brick as any).component)
+            }
+          />
         </DetailSection>
       )}
     </div>
   );
 };
 
-function isOfficial(block: ReferenceEntry): boolean {
-  return block.id.startsWith("@pixiebrix/");
-}
-
 const BlockResult: React.FunctionComponent<{
   block: ReferenceEntry;
   active?: boolean;
   onSelect: () => void;
 }> = ({ block, onSelect, active }) => {
-  const [type, setType] = useState<BlockType>(null);
+  const [type, setType] = useState<BlockType | null>(null);
 
   useAsyncEffect(async () => {
     setType(await getType(block));
