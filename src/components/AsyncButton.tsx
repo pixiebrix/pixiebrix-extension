@@ -18,7 +18,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Button, { ButtonProps } from "react-bootstrap/Button";
 
-export interface ExtraProps {
+interface ExtraProps {
   onClick: (() => Promise<void>) | (() => void);
   autoFocus?: boolean;
 }
