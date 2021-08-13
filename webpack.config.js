@@ -30,7 +30,6 @@ const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, isEmpty } = require("lodash");
 const Policy = require("csp-parse");
 const mergeWithShared = require("./webpack.shared-config.js");
-const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
 
 // Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
 const defaults = {
@@ -277,7 +276,6 @@ module.exports = (env, options) =>
     },
     plugins: [
       ...getConditionalPlugins(isProd(options)),
-      new ForkTsCheckerWebpackPlugin(),
 
       new NodePolyfillPlugin(),
       new WebExtensionTarget(),
