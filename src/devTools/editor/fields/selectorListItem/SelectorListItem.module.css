@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export {
-  clear,
-  enableOverlay,
-  disableOverlay,
-  updateDynamicElement,
-  checkAvailable,
-  getInstalledExtensionPointIds,
-  DynamicDefinition,
-} from "./dynamic";
-export { insertButton, dragButton } from "./insertButton";
-export { insertPanel } from "./insertPanel";
+.container {
+  cursor: default;
+  padding-right: 10px;
+  align-items: center;
+}
+
+.badge {
+  margin-right: 0.25rem;
+  padding: 0.25rem;
+}

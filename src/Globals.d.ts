@@ -15,14 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export {
-  clear,
-  enableOverlay,
-  disableOverlay,
-  updateDynamicElement,
-  checkAvailable,
-  getInstalledExtensionPointIds,
-  DynamicDefinition,
-} from "./dynamic";
-export { insertButton, dragButton } from "./insertButton";
-export { insertPanel } from "./insertPanel";
+declare module "*.module.css" {
+  const classes: Record<string, string>;
+  export default classes;
+}
+declare module "*.module.scss" {
+  const classes: Record<string, string>;
+  export default classes;
+}
