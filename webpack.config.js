@@ -224,20 +224,36 @@ module.exports = (env, options) =>
       globalObject: "window",
       chunkFilename: "bundles/[name].bundle.js",
     },
-    entry: Object.fromEntries(
-      [
-        "background",
-        "contentScript",
-        "devtools",
-        "devtoolsPanel",
-        "script", // The script that gets injected into the host page
-        "frame",
-        "options",
-        "support",
-        "action",
-        "permissionsPopup",
-      ].map((name) => [name, `./src/${name}`])
-    ),
+    entry: {
+      ...Object.fromEntries(
+        [
+          "background",
+          "contentScript",
+          "devtools",
+          "devtoolsPanel",
+          "frame",
+          "options",
+          "support",
+          "action",
+          "permissionsPopup",
+        ].map((name) => [
+          name,
+          { import: `./src/${name}`, dependOn: "vendors" },
+        ])
+      ),
+      vendors: [
+        "react",
+        "react-dom",
+        "webextension-polyfill",
+        "jquery",
+        "lodash-es",
+        "js-beautify",
+        "css-selector-generator",
+        "@fortawesome/free-solid-svg-icons",
+      ],
+      // The script that gets injected into the host page should not have a vendor chunk
+      script: "./src/script",
+    },
 
     resolve: {
       extensions: [".ts", ".tsx", ".jsx", ".js"],
