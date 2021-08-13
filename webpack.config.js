@@ -225,6 +225,7 @@ module.exports = (env, options) =>
       chunkFilename: "bundles/[name].bundle.js",
     },
     entry: {
+      // All of these entries require the `vendors.js` file to be included first
       ...Object.fromEntries(
         [
           "background",
@@ -241,6 +242,8 @@ module.exports = (env, options) =>
           { import: `./src/${name}`, dependOn: "vendors" },
         ])
       ),
+
+      // This creates a `vendors.js` file that must be included together with the bundles generated above
       vendors: [
         "react",
         "react-dom",
