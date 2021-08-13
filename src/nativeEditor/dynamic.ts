@@ -130,22 +130,27 @@ export const updateDynamicElement = liftContentScript(
   }
 );
 
-export const toggleOverlay = liftContentScript(
-  "TOGGLE_OVERLAY",
-  async ({ selector, on = true }: { selector?: string; on?: boolean }) => {
-    if (on) {
-      if (!selector) {
-        return;
-      }
+export const enableOverlay = liftContentScript(
+  "ENABLE_OVERLAY",
+  async (selector: string) => {
+    if (!selector) {
+      throw new Error(`Selector not found: ${selector}`);
+    }
 
-      if (_overlay == null) {
-        _overlay = new Overlay();
-      }
+    if (_overlay == null) {
+      _overlay = new Overlay();
+    }
 
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive on JQuery method
-      const $elt = $(document).find(selector);
-      _overlay.inspect($elt.toArray(), null);
-    } else if (_overlay != null) {
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive on JQuery method
+    const $elt = $(document).find(selector);
+    _overlay.inspect($elt.toArray(), null);
+  }
+);
+
+export const disableOverlay = liftContentScript(
+  "DISABLE_OVERLAY",
+  async () => {
+    if (_overlay != null) {
       _overlay.remove();
       _overlay = null;
     }

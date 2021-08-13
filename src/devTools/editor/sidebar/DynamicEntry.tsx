@@ -46,18 +46,25 @@ const DynamicEntry: React.FunctionComponent<{
   );
 
   const showOverlay = useCallback(
-    async (uuid: string, on: boolean) => {
-      await nativeOperations.toggleOverlay(port, { uuid, on });
+    async (uuid: string) => {
+      await nativeOperations.enableOverlay(port, uuid);
     },
     [port]
   );
+
+  const hideOverlay = useCallback(
+    async () => {
+      await nativeOperations.disableOverlay(port);
+    },
+    [port]
+  )
 
   return (
     <ListGroup.Item
       active={item.uuid === activeElement}
       key={`dynamic-${item.uuid}`}
-      onMouseEnter={async () => showOverlay(item.uuid, true)}
-      onMouseLeave={async () => showOverlay(item.uuid, false)}
+      onMouseEnter={async () => showOverlay(item.uuid)}
+      onMouseLeave={async () => hideOverlay()}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
       style={{ cursor: "pointer" }}
     >

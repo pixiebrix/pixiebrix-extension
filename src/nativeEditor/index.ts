@@ -17,7 +17,8 @@
 
 export {
   clear,
-  toggleOverlay,
+  enableOverlay,
+  disableOverlay,
   updateDynamicElement,
   checkAvailable,
   getInstalledExtensionPointIds,

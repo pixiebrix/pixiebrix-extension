@@ -103,16 +103,16 @@ export const SelectorSelectorControl: React.FunctionComponent<
 
   const enableSelector = useCallback((selector: string) => {
     try {
-      void nativeOperations.toggleSelector(port, { selector });
+      void nativeOperations.enableSelector(port, selector);
     } catch {
-      // The toggleSelector function throws errors on invalid selector
-      // values, so we're eating everything here since this fires as
-      // the user types in the input.
+      // The enableSelector function throws errors on invalid selector
+      // values, so we're eating everything here since this fires any
+      // time the user types in the input.
     }
   },[port]);
 
   const disableSelector = useCallback(() => {
-    void nativeOperations.toggleSelector(port, { on: false });
+    void nativeOperations.disableSelector(port);
   },[port]);
 
   const onHighlighted = useCallback((suggestion: ElementSuggestion | null) => {
