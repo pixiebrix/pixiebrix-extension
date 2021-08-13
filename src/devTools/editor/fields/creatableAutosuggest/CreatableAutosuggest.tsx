@@ -102,6 +102,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
     onTextChanged = noop,
   }: Props<SuggestionType>
 ) => {
+  const [currentValue, setCurrentValue] = useState(inputValue ?? "");
   const [currentSuggestions, setCurrentSuggestions] = useState<Array<SuggestionType | CreateNew>>([]);
   const [createdSuggestions, setCreatedSuggestions] = useState<SuggestionType[]>([]);
 
@@ -132,7 +133,8 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
 
   const handleChange = useCallback((event: FormEvent<HTMLElement>, params: ChangeEvent) => {
     onTextChanged(params.newValue);
-  }, [onTextChanged]);
+    setCurrentValue(params.newValue);
+  }, [onTextChanged, setCurrentValue]);
 
   const nativeOnSuggestionSelected: OnSuggestionSelected<SuggestionType | CreateNew> =
     (event, data) => {
@@ -150,11 +152,11 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
 
   const inputProps: InputProps<SuggestionType> = useMemo(() => ({
     type: 'search',
-    value: inputValue ?? "",
+    value: inputValue ?? currentValue,
     onChange: handleChange,
     placeholder: inputPlaceholder,
     disabled: isDisabled
-  }), [inputValue, handleChange, inputPlaceholder, isDisabled]);
+  }), [inputValue, currentValue, handleChange, inputPlaceholder, isDisabled]);
 
   const theme = useMemo(() => ({
     input: cx("form-control", styles.input, {
