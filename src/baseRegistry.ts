@@ -25,6 +25,7 @@ import {
 } from "@/registry/localRegistry";
 import { groupBy } from "lodash";
 import { RegistryPackage } from "@/types/contract";
+import { getErrorMessage } from "@/errors";
 
 export interface RegistryItem {
   id: string;
@@ -41,9 +42,9 @@ export class DoesNotExistError extends Error {
 }
 
 export class Registry<TItem extends RegistryItem> {
-  private cache: { [key: string]: TItem };
+  private readonly cache = new Map<string, TItem>();
 
-  private remote: Set<string>;
+  private readonly remote: Set<string>;
 
   private readonly remoteResourcePath: string;
 
@@ -56,7 +57,6 @@ export class Registry<TItem extends RegistryItem> {
     remoteResourcePath: string,
     deserialize: (raw: unknown) => TItem
   ) {
-    this.cache = {};
     this.remote = new Set<string>();
     this.kinds = new Set(kinds);
     this.remoteResourcePath = remoteResourcePath;
@@ -64,10 +64,7 @@ export class Registry<TItem extends RegistryItem> {
   }
 
   async exists(id: string): Promise<boolean> {
-    return (
-      Object.prototype.hasOwnProperty.call(this.cache, id) ||
-      (await find(id)) != null
-    );
+    return this.cache.has(id) || (await find(id)) != null;
   }
 
   async lookup(id: string): Promise<TItem> {
@@ -75,7 +72,7 @@ export class Registry<TItem extends RegistryItem> {
       throw new Error("id is required");
     }
 
-    const cached = this.cache[id];
+    const cached = this.cache.get(id);
 
     if (cached) {
       return cached;
@@ -91,7 +88,10 @@ export class Registry<TItem extends RegistryItem> {
     const item = this.parse(raw.config);
 
     if (!item) {
-      throw new Error(`Unable to parse block ${item}`);
+      console.debug("Unable to parse block", {
+        config: raw.config,
+      });
+      throw new Error("Unable to parse block");
     }
 
     this.register(item);
@@ -110,26 +110,27 @@ export class Registry<TItem extends RegistryItem> {
    * @deprecated requires all data to be parsed
    */
   async all(): Promise<TItem[]> {
-    for (const kind of this.kinds.values()) {
-      for (const raw of await getKind(kind)) {
-        const parsed = this.parse(raw.config);
-        if (parsed) {
-          this.register(parsed);
+    await Promise.allSettled(
+      [...this.kinds.values()].map(async (kind) => {
+        for (const raw of await getKind(kind)) {
+          const parsed = this.parse(raw.config);
+          if (parsed) {
+            this.register(parsed);
+          }
         }
-      }
-    }
-
+      })
+    );
     return Object.values(this.cache);
   }
 
   register(...items: TItem[]): void {
     for (const item of items) {
       if (item.id == null) {
-        console.warn(`Skipping item with no id`, item);
+        console.warn("Skipping item with no id", item);
         continue;
       }
 
-      this.cache[item.id] = item;
+      this.cache.set(item.id, item);
     }
   }
 
@@ -137,7 +138,11 @@ export class Registry<TItem extends RegistryItem> {
     try {
       return this.deserialize(raw);
     } catch (error: unknown) {
-      console.warn(`Error de-serializing item: ${error}`, raw);
+      console.warn(
+        `Error de-serializing item: %s`,
+        getErrorMessage(error),
+        raw
+      );
       return undefined;
     }
   }
@@ -163,7 +168,7 @@ export class Registry<TItem extends RegistryItem> {
         .split(".")
         .map((x) => Number.parseInt(x, 10));
 
-      const match = item.metadata.id.match(PACKAGE_NAME_REGEX);
+      const match = PACKAGE_NAME_REGEX.exec(item.metadata.id);
 
       if (!this.kinds.has(item.kind)) {
         console.warn(
@@ -173,7 +178,7 @@ export class Registry<TItem extends RegistryItem> {
         );
       }
 
-      delete this.cache[item.metadata.id];
+      this.cache.delete(item.metadata.id);
 
       packages.push({
         id: item.metadata.id,
@@ -188,15 +193,17 @@ export class Registry<TItem extends RegistryItem> {
       this.remote.add(item.metadata.id);
     }
 
-    for (const [kind, kindPackages] of Object.entries(
-      groupBy(packages, (x) => x.kind)
-    )) {
-      await syncRemote(kind as Kind, kindPackages);
-    }
+    await Promise.all(
+      Object.entries(groupBy(packages, (x) => x.kind)).map(
+        async ([kind, kindPackages]) => {
+          await syncRemote(kind as Kind, kindPackages);
+        }
+      )
+    );
   }
 
   clear(): void {
-    this.cache = {};
+    this.cache.clear();
   }
 }
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ConfigurableAuth } from "@/types/contract";
+import { SanitizedAuth } from "@/types/contract";
 import {
   SanitizedServiceConfiguration,
   IService,
@@ -23,6 +23,7 @@ import {
   ServiceConfig,
   ServiceLocator,
   SanitizedConfig,
+  KeyedConfig,
 } from "@/core";
 import { sortBy, isEmpty } from "lodash";
 import registry, {
@@ -50,11 +51,12 @@ enum ServiceLevel {
 /** Return config excluding any secrets/keys. */
 export function excludeSecrets(
   service: IService,
-  config: ServiceConfig
+  config: KeyedConfig
 ): SanitizedConfig {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- cast required for nominal typing
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
-    // @ts-ignore: ts doesn't think $ref can be on SchemaDefinition
+    // @ts-expect-error: ts doesn't think $ref can be on SchemaDefinition
     if (!REF_SECRETS.includes(type.$ref)) {
       // Safe because we're getting from Object.entries
       // eslint-disable-next-line security/detect-object-injection
@@ -72,6 +74,7 @@ export async function pixieServiceFactory(): Promise<SanitizedServiceConfigurati
     serviceId: PIXIEBRIX_SERVICE_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- cast required for nominal subtyping
     config: {} as SanitizedConfig,
   };
 }
@@ -81,13 +84,13 @@ type Option = {
   serviceId: string;
   level: ServiceLevel;
   local: boolean;
-  config: ServiceConfig;
+  config: ServiceConfig | SanitizedConfig;
 };
 
 let wasInitialized = false;
 
 class LazyLocatorFactory {
-  private remote: ConfigurableAuth[] = [];
+  private remote: SanitizedAuth[] = [];
 
   private local: RawServiceConfiguration[] = [];
 
@@ -112,7 +115,7 @@ class LazyLocatorFactory {
   }
 
   async refreshRemote(): Promise<void> {
-    this.remote = await fetch("/api/services/shared/?meta=1");
+    this.remote = await fetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
     console.debug(`Fetched ${this.remote.length} remote service auths`);
     this.makeOptions();
   }

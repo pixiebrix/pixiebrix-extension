@@ -42,7 +42,7 @@ export function joinURL(host: string, relativeUrl: string): string {
   return `${cleanHost}/${cleanPath}`;
 }
 
-export async function fetch<TData>(
+export async function fetch<TData = unknown>(
   relativeOrAbsoluteUrl: string
 ): Promise<TData> {
   const absolute = isAbsoluteURL(relativeOrAbsoluteUrl);

@@ -142,6 +142,7 @@
     "artifacts",
     "scripts/bin",
     "src/vendors",
+    "src/types/swagger.ts",
     "src/nativeEditor/Overlay.tsx",
     "src/support.js"
   ],

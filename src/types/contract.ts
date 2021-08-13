@@ -18,139 +18,49 @@
 /**
  * Type contract between the backend and front-end.
  */
-import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
-import { ServiceConfig, Metadata } from "@/core";
+import { RecipeDefinition } from "@/types/definitions";
+import { ServiceConfig, SanitizedConfig, Metadata } from "@/core";
+
+import { components } from "@/types/swagger";
 
 export enum MemberRole {
   Member = 1,
   Admin = 2,
 }
 
-export interface User {
+export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
+
+export type Invitation = components["schemas"]["Invitation"];
+
+export type Organization = components["schemas"]["Organization"];
+
+export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
+  // XXX: update serialize to required id in response type
   id: string;
-  name: string;
-  email: string;
-}
+  // Specialized to `SanitizedConfig` to get nominal typing
+  config: SanitizedConfig;
+  // XXX: update serializer to include proper metadata child serializer
+  service: { config: { metadata: Metadata } };
+};
 
-export interface Member {
-  id: string;
-  role: MemberRole;
-  user: User;
-}
-
-export interface Invitation {
-  id: string;
-  role: MemberRole;
-  email: string;
-}
-
-export interface Organization {
-  id: string;
-  name: string;
-  members: Member[];
-  invitations: Invitation[];
-  scope: string | null;
-}
-
-export interface PendingInvitation {
-  id: string;
-  inviter: User;
-  organization: Organization;
-}
-
-export interface RemoteService {
-  /**
-   * Internal UUID on PixieBrix backend.
-   */
-  id: string;
-
-  /**
-   * Unique identifier, including scope and collection.
-   */
-  name: string;
-
-  config: ServiceDefinition;
-}
-
-export interface OrganizationMeta {
-  id: string;
-  name: string;
-}
-
-export interface SanitizedAuth {
-  /**
-   * UUID of the auth configuration
-   */
-  id: string;
-
-  organization: OrganizationMeta | undefined;
-
-  label: string | undefined;
-
-  /**
-   * True if the user has edit-permissions for the configuration
-   */
-  editable: boolean;
-
-  /**
-   * Configuration excluding any secrets/keys.
-   */
-  config: SanitizedAuth;
-
-  /**
-   * Service definition.
-   */
-  service: RemoteService;
-}
-
-export interface Brick {
-  id: string;
-  name: string;
-  verbose_name: string;
-  version: string;
-  kind: string;
-}
-
-export interface ConfigurableAuth {
-  id: string;
-  editable?: boolean;
-  label: string | undefined;
-  organization?: string;
+export type ConfigurableAuth = components["schemas"]["EditableAuth"] & {
+  // Specialized to `ServiceConfig` to get nominal typing
   config: ServiceConfig;
-  service: RemoteService;
-}
+};
 
-export interface ReadOnlyAuth {
-  id: string;
-  organization?: string;
-  service: RemoteService;
-}
+export type Deployment = components["schemas"]["DeploymentDetail"] & {
+  package: { config: RecipeDefinition };
+};
 
-type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
-
-export interface RegistryPackage extends Record<string, unknown> {
+export type Brick = components["schemas"]["PackageMeta"] & {
   kind: Kind;
-  metadata: Metadata;
-}
+};
 
-export interface Deployment {
-  id: string;
-  name: string;
-  created_at: string;
-  updated_at: string;
-  package: {
-    id: string;
-    package_id: string;
-    name: string;
-    version: string;
-    config: RecipeDefinition;
-  };
-  bindings: Array<{
-    id: string;
-    auth: {
-      id: string;
-      service_id: string;
-      label: string;
-    };
-  }>;
-}
+export type RegistryPackage = Pick<
+  components["schemas"]["PackageConfigList"],
+  "kind" | "metadata"
+> & {
+  // XXX: update serializer to include proper child serializer
+  metadata: Metadata;
+  kind: Kind;
+};
