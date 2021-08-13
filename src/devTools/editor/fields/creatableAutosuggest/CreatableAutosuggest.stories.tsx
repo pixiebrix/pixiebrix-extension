@@ -77,7 +77,7 @@ Default.args = {
 export const InitialValue = Story.bind({});
 InitialValue.args = {
   ...baseArgs,
-  initialSuggestion: suggestions[0],
+  inputValue: suggestions[0].value,
   inputPlaceholder: 'Choose after InitialValue cleared...',
 };
 

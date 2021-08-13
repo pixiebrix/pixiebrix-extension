@@ -46,8 +46,8 @@ export interface Props<SuggestionType extends SuggestionTypeBase> {
   // List of suggestions for the autosuggest
   suggestions: SuggestionType[],
 
-  // Optional initial selected suggestion
-  initialSuggestion?: SuggestionType,
+  // Text value of the input
+  inputValue?: string,
 
   // Placeholder for the input field
   inputPlaceholder?: string,
@@ -90,7 +90,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
     isClearable = true,
     isDisabled = false,
     suggestions,
-    initialSuggestion,
+    inputValue,
     inputPlaceholder = "",
     renderSuggestion,
     renderCreateNew,
@@ -101,7 +101,6 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
     onTextChanged = (_) => {},
   }: Props<SuggestionType>
 ) => {
-  const [currentValue, setCurrentValue] = useState(initialSuggestion?.value ?? "");
   const [currentSuggestions, setCurrentSuggestions] = useState<Array<SuggestionType | CreateNew>>([]);
   const [createdSuggestions, setCreatedSuggestions] = useState<SuggestionType[]>([]);
 
@@ -131,7 +130,6 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
   }, [onSuggestionsClosed]);
 
   const handleChange = useCallback((event: FormEvent<HTMLElement>, params: ChangeEvent) => {
-    setCurrentValue(params.newValue);
     onTextChanged(params.newValue);
   }, [onTextChanged]);
 
@@ -151,11 +149,11 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
 
   const inputProps: InputProps<SuggestionType> = useMemo(() => ({
     type: 'search',
-    value: currentValue,
+    value: inputValue ?? "",
     onChange: handleChange,
     placeholder: inputPlaceholder,
     disabled: isDisabled
-  }), [currentValue, handleChange, inputPlaceholder, isDisabled]);
+  }), [inputValue, handleChange, inputPlaceholder, isDisabled]);
 
   const theme = useMemo(() => ({
     input: cx("form-control", styles.input, {
@@ -184,4 +182,4 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
   );
 };
 
-export default CreatableAutosuggest;
+export default React.memo(CreatableAutosuggest);

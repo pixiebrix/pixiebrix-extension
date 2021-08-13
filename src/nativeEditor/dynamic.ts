@@ -132,8 +132,12 @@ export const updateDynamicElement = liftContentScript(
 
 export const toggleOverlay = liftContentScript(
   "TOGGLE_OVERLAY",
-  async ({ selector, on = true }: { selector: string; on: boolean }) => {
+  async ({ selector, on = true }: { selector?: string; on?: boolean }) => {
     if (on) {
+      if (!selector) {
+        return;
+      }
+
       if (_overlay == null) {
         _overlay = new Overlay();
       }

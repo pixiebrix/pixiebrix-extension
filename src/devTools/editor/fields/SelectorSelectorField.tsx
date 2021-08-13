@@ -16,17 +16,14 @@
  */
 
 import React, {
-  ComponentType,
   useCallback,
   useContext,
   useMemo,
   useState,
 } from "react";
 import { useField } from "formik";
-import { components, OptionsType } from "react-select";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
-import Creatable from "react-select/creatable";
-import { Badge, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import * as nativeOperations from "@/background/devtools";
@@ -36,69 +33,26 @@ import { SelectMode } from "@/nativeEditor/selector";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { Framework } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
-import { OptionProps } from "react-select/src/components/Option";
 import { useToasts } from "react-toast-notifications";
+import CreatableAutosuggest, { SuggestionTypeBase } from "@/devTools/editor/fields/creatableAutosuggest/CreatableAutosuggest";
+import SelectorListItem from "@/devTools/editor/fields/selectorListItem/SelectorListItem";
 
-type OptionValue = { value: string; elementInfo?: ElementInfo };
-type SelectorOptions = OptionsType<OptionValue>;
+interface ElementSuggestion extends SuggestionTypeBase {
+  value: string
+  elementInfo?: ElementInfo
+}
 
-const CustomOption: ComponentType<OptionProps<OptionValue, false>> = ({
-  children,
-  ...props
-}) => {
-  const { port } = useContext(DevToolsContext);
-
-  const toggle = useCallback(
-    async (on: boolean) => {
-      await nativeOperations.toggleSelector(port, {
-        selector: props.data.value,
-        on,
-      });
-    },
-    [port, props.data.value]
-  );
-
-  return (
-    <components.Option {...props}>
-      <div onMouseEnter={() => toggle(true)} onMouseLeave={() => toggle(false)}>
-        {props.data.elementInfo?.tagName && (
-          <Badge variant="dark" className="mr-1 pb-1">
-            {props.data.elementInfo.tagName}
-          </Badge>
-        )}
-        {props.data.elementInfo?.hasData && (
-          <Badge variant="info" className="mx-1 pb-1">
-            Data
-          </Badge>
-        )}
-        {children}
-      </div>
-    </components.Option>
-  );
-};
-
-function unrollValues(elementInfo: ElementInfo): OptionValue[] {
+function getSuggestionsForElement(elementInfo: ElementInfo | undefined): ElementSuggestion[] {
   if (!elementInfo) {
     return [];
   }
 
-  return [
-    ...(elementInfo.selectors ?? []).map((value) => ({ value, elementInfo })),
-    ...compact([elementInfo.parent]).flatMap(unrollValues),
-  ].filter((x) => x.value && x.value.trim() !== "");
-}
-
-function makeOptions(
-  elementInfo: ElementInfo | null,
-  extra: string[] = []
-): SelectorOptions {
   return uniqBy(
-    [...unrollValues(elementInfo), ...extra.map((value) => ({ value }))],
-    (x) => x.value
-  ).map((option) => ({
-    ...option,
-    label: option.value,
-  }));
+    compact([
+      ...elementInfo.selectors.map((value) => ({ value, elementInfo })),
+      ...getSuggestionsForElement(elementInfo.parent)
+    ]).filter((suggestion) => suggestion.value && suggestion.value.trim() !== "")
+  , (suggestion) => suggestion.value);
 }
 
 interface CommonProps {
@@ -131,14 +85,45 @@ export const SelectorSelectorControl: React.FunctionComponent<
 }) => {
   const { port } = useContext(DevToolsContext);
   const { addToast } = useToasts();
-  const [element, setElement] = useState<ElementInfo>(initialElement);
-  const [created, setCreated] = useState([]);
+  const [element, setElement] = useState(initialElement);
   const [isSelecting, setSelecting] = useState(false);
 
-  const options: SelectorOptions = useMemo(() => {
-    const raw = makeOptions(element, compact([...created, value]));
+  const suggestions: ElementSuggestion[] = useMemo(() => {
+    const raw = getSuggestionsForElement(element);
     return sort ? sortBy(raw, (x) => x.value.length) : raw;
-  }, [created, element, value, sort]);
+  }, [element, sort]);
+
+  const renderSuggestion = useCallback((suggestion: ElementSuggestion) => (
+    <SelectorListItem
+      value={suggestion.value}
+      hasData={suggestion.elementInfo.hasData}
+      tag={suggestion.elementInfo.tagName}
+    />
+  ), []);
+
+  const enableSelector = useCallback((selector: string) => {
+    try {
+      void nativeOperations.toggleSelector(port, { selector });
+    } catch (error: unknown) {
+      console.debug("Error toggling selector", { selector, error });
+    }
+  },[port]);
+
+  const disableSelector = useCallback(() => {
+    void nativeOperations.toggleSelector(port, { on: false });
+  },[port]);
+
+  const onHighlighted = useCallback((suggestion: ElementSuggestion | null) => {
+    if (suggestion) {
+      enableSelector(suggestion.value);
+    } else {
+      disableSelector();
+    }
+  }, [enableSelector, disableSelector]);
+
+  const onTextChanged = useCallback((value: string) => {
+    onSelect(value);
+  }, [onSelect]);
 
   const select = useCallback(async () => {
     setSelecting(true);
@@ -204,31 +189,16 @@ export const SelectorSelectorControl: React.FunctionComponent<
         </Button>
       </div>
       <div className="flex-grow-1">
-        <Creatable
+        <CreatableAutosuggest
           isClearable={isClearable}
-          createOptionPosition="first"
           isDisabled={isSelecting || disabled}
-          options={options}
-          components={{ Option: CustomOption }}
-          onCreateOption={(inputValue) => {
-            setCreated([...created, inputValue]);
-            onSelect(inputValue);
-          }}
-          value={options.find((x) => x.value === value)}
-          onMenuClose={() => {
-            void nativeOperations.toggleSelector(port, {
-              selector: null,
-              on: false,
-            });
-          }}
-          onChange={async (option) => {
-            console.debug("selected", { option });
-            onSelect(option ? option.value : null);
-            void nativeOperations.toggleSelector(port, {
-              selector: null,
-              on: false,
-            });
-          }}
+          suggestions={suggestions}
+          inputValue={value}
+          inputPlaceholder="Choose a selector..."
+          renderSuggestion={renderSuggestion}
+          onSuggestionHighlighted={onHighlighted}
+          onSuggestionsClosed={disableSelector}
+          onTextChanged={onTextChanged}
         />
       </div>
     </div>

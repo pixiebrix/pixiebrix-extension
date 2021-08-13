@@ -168,10 +168,10 @@ export const toggleSelector = liftBackground(
   "TOGGLE_SELECTOR",
   (target: Target) => async ({
     selector,
-    on = true,
+    on,
   }: {
-    selector: string;
-    on: boolean;
+    selector?: string;
+    on?: boolean;
   }) => nativeEditorProtocol.toggleOverlay(target, { selector, on })
 );
 
