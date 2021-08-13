@@ -104,8 +104,10 @@ export const SelectorSelectorControl: React.FunctionComponent<
   const enableSelector = useCallback((selector: string) => {
     try {
       void nativeOperations.toggleSelector(port, { selector });
-    } catch (error: unknown) {
-      console.debug("Error toggling selector", { selector, error });
+    } catch {
+      // The toggleSelector function throws errors on invalid selector
+      // values, so we're eating everything here since this fires as
+      // the user types in the input.
     }
   },[port]);
 
@@ -120,6 +122,12 @@ export const SelectorSelectorControl: React.FunctionComponent<
       disableSelector();
     }
   }, [enableSelector, disableSelector]);
+
+  const onTextChanged = useCallback((value: string) => {
+    disableSelector();
+    enableSelector(value);
+    onSelect(value);
+  }, [disableSelector, enableSelector, onSelect]);
 
   const select = useCallback(async () => {
     setSelecting(true);
@@ -194,7 +202,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
           renderSuggestion={renderSuggestion}
           onSuggestionHighlighted={onHighlighted}
           onSuggestionsClosed={disableSelector}
-          onTextChanged={onSelect}
+          onTextChanged={onTextChanged}
         />
       </div>
     </div>
