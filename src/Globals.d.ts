@@ -15,5 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-declare module "*.module.css";
-declare module "*.module.scss";
+declare module "*.module.css" {
+  const classes: Record<string, string>;
+  export default classes;
+}
+declare module "*.module.scss" {
+  const classes: Record<string, string>;
+  export default classes;
+}
