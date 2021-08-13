@@ -141,10 +141,16 @@ export const clearDynamicElements = liftBackground(
     nativeEditorProtocol.clear(target, { uuid })
 );
 
-export const enableOverlay = liftBackground(
+export const enableDataOverlay = liftBackground(
   "ENABLE_ELEMENT",
   (target: Target) => async (uuid: string) =>
     nativeEditorProtocol.enableOverlay(target, `[data-uuid="${uuid}"]`)
+);
+
+export const enableSelectorOverlay = liftBackground(
+  "ENABLE_SELECTOR",
+  (target: Target) => async (selector: string) =>
+    nativeEditorProtocol.enableOverlay(target, selector)
 );
 
 export const disableOverlay = liftBackground(
@@ -152,18 +158,6 @@ export const disableOverlay = liftBackground(
   (target: Target) => async () =>
     nativeEditorProtocol.disableOverlay(target)
 );
-
-export const enableSelector = liftBackground(
-  "ENABLE_SELECTOR",
-  (target: Target) => async (selector: string) =>
-    nativeEditorProtocol.enableOverlay(target, selector)
-);
-
-export const disableSelector = liftBackground(
-  "DISABLE_SELECTOR",
-  (target: Target) => async () =>
-    nativeEditorProtocol.disableOverlay(target)
-)
 
 export const getInstalledExtensionPointIds = liftBackground(
   "INSTALLED_EXTENSION_POINT_IDS",

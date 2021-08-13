@@ -26,8 +26,7 @@ import { compact, isEmpty, sortBy, uniqBy } from "lodash";
 import { Button } from "react-bootstrap";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import * as nativeOperations from "@/background/devtools";
-import { selectElement } from "@/background/devtools";
+import { selectElement, enableSelectorOverlay, disableOverlay } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { SelectMode } from "@/nativeEditor/selector";
 import { ElementInfo } from "@/nativeEditor/frameworks";
@@ -103,7 +102,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
 
   const enableSelector = useCallback((selector: string) => {
     try {
-      void nativeOperations.enableSelector(port, selector);
+      void enableSelectorOverlay(port, selector);
     } catch {
       // The enableSelector function throws errors on invalid selector
       // values, so we're eating everything here since this fires any
@@ -112,7 +111,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
   },[port]);
 
   const disableSelector = useCallback(() => {
-    void nativeOperations.disableSelector(port);
+    void disableOverlay(port);
   },[port]);
 
   const onHighlighted = useCallback((suggestion: ElementSuggestion | null) => {

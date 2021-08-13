@@ -20,7 +20,7 @@ import { actions, FormState } from "@/devTools/editor/editorSlice";
 import { Runtime } from "webextension-polyfill-ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
-import * as nativeOperations from "@/background/devtools";
+import { enableDataOverlay, disableOverlay } from "@/background/devtools";
 import { ListGroup } from "react-bootstrap";
 import { getLabel } from "@/devTools/editor/sidebar/common";
 import {
@@ -47,14 +47,14 @@ const DynamicEntry: React.FunctionComponent<{
 
   const showOverlay = useCallback(
     async (uuid: string) => {
-      await nativeOperations.enableOverlay(port, uuid);
+      await enableDataOverlay(port, uuid);
     },
     [port]
   );
 
   const hideOverlay = useCallback(
     async () => {
-      await nativeOperations.disableOverlay(port);
+      await disableOverlay(port);
     },
     [port]
   )
