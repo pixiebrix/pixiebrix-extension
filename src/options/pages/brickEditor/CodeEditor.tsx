@@ -30,7 +30,7 @@ import panelTemplate from "@contrib/templates/foundation-panel.txt";
 import blueprintTemplate from "@contrib/templates/blueprint-menu.txt";
 
 const AceEditor = React.lazy(
-  () =>
+  async () =>
     import(
       /* webpackChunkName: "ace-editor" */
       "@/vendors/AceEditor"

@@ -244,7 +244,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       this.cancelPending.add(cancelWatchRemote);
     }
 
-    return !!cancelWatchRemote;
+    return Boolean(cancelWatchRemote);
   }
 
   addPanel($panel: JQuery): void {

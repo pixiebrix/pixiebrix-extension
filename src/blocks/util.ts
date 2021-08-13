@@ -23,7 +23,7 @@ export async function getType(
   block: IBlock | IService
 ): Promise<BlockType | null> {
   if ("inferType" in block) {
-    return await (block as any).inferType();
+    return (block as any).inferType();
   }
 
   if ("read" in block) {

@@ -53,7 +53,7 @@ function useInstallState(
   const [availableDynamicIds] = useAsyncState(async () => {
     if (meta) {
       const availability = await Promise.all(
-        elements.map((element) =>
+        elements.map(async (element) =>
           checkAvailable(port, element.extensionPoint.definition.isAvailable)
         )
       );

@@ -126,7 +126,7 @@ const ReaderTab: React.FunctionComponent<{
 
   const { values: formValues } = useFormikContext<FormState>();
   const [{ value: readers }] = useField<
-    (ReaderReferenceFormState | ReaderFormState)[]
+    Array<ReaderReferenceFormState | ReaderFormState>
   >("readers");
 
   const locked =
@@ -225,7 +225,9 @@ const ReaderTab: React.FunctionComponent<{
                           key={`${index}-${reader.metadata.id}`}
                           index={index}
                           reader={reader}
-                          onSelect={() => setActive(index)}
+                          onSelect={() => {
+                            setActive(index);
+                          }}
                           onRemove={() => {
                             setActive(Math.max(0, index - 1));
                             remove(index);
@@ -241,7 +243,9 @@ const ReaderTab: React.FunctionComponent<{
                           isDragDisabled
                           index={readers.length}
                           reader={CONTEXT_MENU_READER}
-                          onSelect={() => setActive(readers.length)}
+                          onSelect={() => {
+                            setActive(readers.length);
+                          }}
                           isActive={active === readers.length}
                           isLocked={locked}
                         />

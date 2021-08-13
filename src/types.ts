@@ -99,7 +99,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
 
   public readonly icon: BlockIcon;
 
-  protected readonly extensions: IExtension<TConfig>[] = [];
+  protected readonly extensions: Array<IExtension<TConfig>> = [];
 
   protected readonly template?: string;
 
@@ -113,9 +113,9 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
    * Permissions required to use this extensions
    * https://developer.chrome.com/extensions/permission_warnings
    */
-  public abstract readonly permissions: Permissions.Permissions = {};
+  public abstract readonly permissions: Permissions.Permissions;
 
-  public get defaultOptions(): { [key: string]: unknown } {
+  public get defaultOptions(): Record<string, unknown> {
     return {};
   }
 
@@ -135,7 +135,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   /** Internal method to perform a partial uninstall of the extension point */
   protected abstract removeExtensions(extensionIds: string[]): void;
 
-  syncExtensions(extensions: IExtension<TConfig>[]): void {
+  syncExtensions(extensions: Array<IExtension<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
 
     const updatedIds = new Set(extensions.map((x) => x.id));

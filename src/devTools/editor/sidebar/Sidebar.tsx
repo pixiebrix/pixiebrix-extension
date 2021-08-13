@@ -127,7 +127,7 @@ const Sidebar: React.FunctionComponent<
             target="_blank"
           />
           <DropdownButton
-            disabled={!!inserting || !hasPermissions}
+            disabled={Boolean(inserting) || !hasPermissions}
             variant="info"
             size="sm"
             title="Add"
@@ -148,20 +148,18 @@ const Sidebar: React.FunctionComponent<
               )
             )}
           </DropdownButton>
-          <div className="my-auto">
-            <Form.Check
-              type="checkbox"
-              label={
-                unavailableCount != null
-                  ? `Show ${unavailableCount} unavailable`
-                  : `Show unavailable`
-              }
-              defaultChecked={showAll}
-              onChange={(event: FormEvent<HTMLInputElement>) => {
-                setShowAll(event.currentTarget.checked);
-              }}
-            />
-          </div>
+          {unavailableCount ? (
+            <div className="my-auto">
+              <Form.Check
+                type="checkbox"
+                label={`Show ${unavailableCount} unavailable`}
+                defaultChecked={showAll}
+                onChange={(event: FormEvent<HTMLInputElement>) => {
+                  setShowAll(event.currentTarget.checked);
+                }}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="Sidebar__extensions flex-grow-1">

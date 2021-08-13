@@ -95,7 +95,9 @@ const FileField: React.FunctionComponent<
 
       await new Promise<void>((resolve) => {
         gapi.load("picker", {
-          callback: () => resolve(),
+          callback: () => {
+            resolve();
+          },
         });
       });
 

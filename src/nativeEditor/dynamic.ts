@@ -56,7 +56,7 @@ export interface DynamicDefinition<
   type: ElementType;
   extensionPoint: ExtensionPointConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
-  readers: (ReaderConfig<TReader> | ReaderReference)[];
+  readers: Array<ReaderConfig<TReader> | ReaderReference>;
 }
 
 let _overlay: Overlay | null = null;

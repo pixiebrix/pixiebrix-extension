@@ -22,6 +22,7 @@ import * as session from "@/contentScript/context";
 import { ReaderOutput, Schema } from "@/core";
 import { Manifest, Permissions } from "webextension-polyfill-ts";
 import chromeP from "webext-polyfill-kinda";
+import { isChrome } from "webext-detect-page";
 
 class ChromeProfileReader extends Reader {
   constructor() {
@@ -64,7 +65,7 @@ class ChromeProfileReader extends Reader {
   };
 
   async isAvailable(): Promise<boolean> {
-    return !!chrome?.identity;
+    return Boolean(chrome?.identity) && isChrome();
   }
 }
 

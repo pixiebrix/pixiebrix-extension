@@ -32,7 +32,13 @@ const PermissionRow: React.FunctionComponent<{
   <ListGroup.Item className="d-flex">
     <div className="flex-grow-1 align-self-center">{value}</div>
     <div className="align-self-center">
-      <Button variant="danger" size="sm" onClick={async () => remove(value)}>
+      <Button
+        variant="danger"
+        size="sm"
+        onClick={async () => {
+          remove(value);
+        }}
+      >
         Revoke
       </Button>{" "}
     </div>

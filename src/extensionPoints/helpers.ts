@@ -173,7 +173,12 @@ function mutationSelector(
       { target: target ?? document }
     );
   });
-  return [promise, () => observer?.disconnect()];
+  return [
+    promise,
+    () => {
+      observer.disconnect();
+    },
+  ];
 }
 
 function _initialize(

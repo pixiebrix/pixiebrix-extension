@@ -24,7 +24,7 @@ import { RemoteServiceError } from "@/services/errors";
 import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
-import { ContextError } from "@/errors";
+import { ContextError, isAxiosError } from "@/errors";
 import { isEmpty } from "lodash";
 import {
   deleteCachedAuthData,
@@ -135,9 +135,9 @@ async function authenticate(
       throw new Error("Extension not authenticated with PixieBrix web service");
     }
 
-    const absoluteURL = !isAbsoluteURL(request.url)
-      ? urljoin(await getBaseURL(), request.url)
-      : request.url;
+    const absoluteURL = isAbsoluteURL(request.url)
+      ? request.url
+      : urljoin(await getBaseURL(), request.url);
 
     return service.authenticateRequest(
       ({ apiKey } as unknown) as ServiceConfig,
@@ -206,7 +206,7 @@ async function proxyRequest<T>(
       remoteResponse.message ?? remoteResponse.reason,
       // FIXME: should fix the type of RemoteServiceError to support incomplete responses, e.g., because
       //  the proxy doesn't return header information from the remote service
-      proxyResponseToAxiosResponse(remoteResponse) as AxiosResponse
+      proxyResponseToAxiosResponse(remoteResponse)
     );
   } else {
     // The json payload from the proxy is the response from the remote server
@@ -242,7 +242,7 @@ const _proxyService = liftBackground(
         const service = await serviceRegistry.lookup(serviceConfig.serviceId);
         if (service.isOAuth2 || service.isToken) {
           await deleteCachedAuthData(serviceConfig.id);
-          return await backgroundRequest(
+          return backgroundRequest(
             await authenticate(serviceConfig, requestConfig)
           );
         }
@@ -267,19 +267,31 @@ export async function proxyService<TData>(
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
     // No service configuration provided. Perform request directly without authentication
+    if (!isAbsoluteURL(requestConfig.url) && requestConfig.baseURL == null) {
+      throw new Error("expected absolute URL for request without service");
+    }
+
     try {
       return (await backgroundRequest(
         requestConfig
       )) as SanitizedResponse<TData>;
-      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-    } catch (error) {
-      if (error.response) {
-        throw new RemoteServiceError(error.response.statusText, error.response);
-      } else {
-        const msg = "No response received; see browser network log for error.";
-        console.error(msg);
-        throw new RemoteServiceError(msg, null);
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        if (error.response) {
+          throw new RemoteServiceError(
+            error.response.statusText,
+            error.response
+          );
+        } else {
+          // XXX: most likely the browser blocked the network request (or perhaps the response timed out)
+          const msg =
+            "No response received; see browser network log for error.";
+          console.error(msg);
+          throw new RemoteServiceError(msg, null);
+        }
       }
+
+      throw error;
     }
   }
 

@@ -46,7 +46,9 @@ const ObjectEntry: React.FunctionComponent<{
   return (
     <ListGroup.Item key={prop}>
       <div
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => {
+          setCollapsed(!collapsed);
+        }}
         style={{ cursor: "pointer" }}
       >
         <FontAwesomeIcon icon={collapsed ? faCaretRight : faCaretDown} />{" "}
@@ -75,7 +77,9 @@ const ArrayEntry: React.FunctionComponent<{
     return (
       <ListGroup.Item>
         <div
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={() => {
+            setCollapsed(!collapsed);
+          }}
           style={{ cursor: "pointer" }}
         >
           <FontAwesomeIcon icon={collapsed ? faCaretRight : faCaretDown} />{" "}

@@ -64,7 +64,7 @@ const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
 
   const [hasPermissions] = useAsyncState<boolean | undefined>(async () => {
     if (browser.permissions?.contains) {
-      return await browser.permissions.contains({
+      return browser.permissions.contains({
         origins: [absoluteUrl],
       });
     }

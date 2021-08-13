@@ -44,7 +44,9 @@ const BlockSelector: React.FunctionComponent<{
     <Select
       key={Math.random()}
       options={blockOptions}
-      onChange={(x: BlockOption) => onSelect(x.block)}
+      onChange={(x: BlockOption) => {
+        onSelect(x.block);
+      }}
       {...props}
     />
   );

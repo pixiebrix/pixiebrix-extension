@@ -27,7 +27,6 @@ import "@/contentScript/contextMenus";
 import "@/contentScript/browserAction";
 import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
-import addExternalListener from "@/contentScript/externalProtocol";
 import addExecutorListener, {
   notifyReady,
   whoAmI,
@@ -53,7 +52,6 @@ async function init(): Promise<void> {
   addErrorListeners();
 
   addContentScriptListener();
-  addExternalListener();
   addExecutorListener();
   initTelemetry();
 

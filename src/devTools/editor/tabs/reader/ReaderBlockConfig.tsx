@@ -142,7 +142,9 @@ export const ReaderBlockForm: React.FunctionComponent<{
           <Col sm={10}>
             <SelectorSelectorControl
               value={testSelector}
-              onSelect={(selector) => setTestSelector(selector)}
+              onSelect={(selector) => {
+                setTestSelector(selector);
+              }}
               isClearable
             />
             <Form.Text>
@@ -161,7 +163,9 @@ export const ReaderBlockForm: React.FunctionComponent<{
           <Form.Control
             type="text"
             placeholder="Search for a property or value"
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+            }}
           />
         </Col>
       </Form.Group>

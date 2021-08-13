@@ -81,7 +81,7 @@ export function makeRead(
     throw new Error(`Reader type ${config.type} not implemented`);
   }
 
-  return (root: ReaderRoot) => doRead(config, root);
+  return async (root: ReaderRoot) => doRead(config, root);
 }
 
 export function readerFactory(component: unknown): IReader {

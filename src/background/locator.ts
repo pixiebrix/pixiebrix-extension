@@ -40,11 +40,11 @@ export const refresh: (
 ) => Promise<unknown> = liftBackground(
   "REFRESH_SERVICES",
   async (options: RefreshOptions) => {
-    const { local, remote } = Object.assign(
-      {},
-      { local: true, remote: true },
-      options
-    );
+    const { local, remote } = {
+      local: true,
+      remote: true,
+      ...options,
+    };
 
     if (remote && local) {
       await locator.refresh();

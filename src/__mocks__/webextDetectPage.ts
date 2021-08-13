@@ -14,30 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* eslint-disable import/export -- These are overrides, it's on purpose */
 
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
-import * as native from "@/actionPanel/native";
+// The node_modules path is to avoid self-references due to webpack alias to this file
+export * from "../../node_modules/webext-detect-page";
 
-export const toggleActionPanel = liftContentScript(
-  "TOGGLE_ACTION_PANEL",
-  async () => native.toggleActionPanel()
-);
-
-export const showActionPanel = liftContentScript(
-  "SHOW_ACTION_PANEL",
-  async () => native.showActionPanel()
-);
-
-export const hideActionPanel = liftContentScript(
-  "HIDE_ACTION_PANEL",
-  async () => {
-    native.hideActionPanel();
-  }
-);
-
-export const removeActionPanelPanel = liftContentScript(
-  "REMOVE_ACTION_PANEL_PANEL",
-  async (extensionId: string) => {
-    native.removeExtension(extensionId);
-  }
-);
+export function isExtensionContext() {
+  // Enables static analysis and removal of dead code
+  return true;
+}

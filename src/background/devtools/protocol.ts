@@ -29,12 +29,10 @@ import {
   liftBackground,
   registerPort as internalRegisterPort,
 } from "@/background/devtools/internal";
-import { getTargetState, ensureContentScript } from "@/background/util";
+import { ensureContentScript } from "@/background/util";
 import { isEmpty } from "lodash";
 import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
-
-const TOP_LEVEL_FRAME = 0;
 
 export const registerPort = liftBackground(
   "REGISTER_PORT",
@@ -43,24 +41,18 @@ export const registerPort = liftBackground(
   }
 );
 
-export const getTabInfo = liftBackground(
-  "CURRENT_URL",
+export const checkTargetPermissions = liftBackground(
+  "CHECK_TARGET_PERMISSIONS",
   (target: Target) => async () => {
-    if (target.frameId !== TOP_LEVEL_FRAME) {
-      console.warn(
-        `getTabInfo called targeting non top-level frame: ${target.frameId}`
-      );
+    try {
+      await browser.tabs.executeScript(target.tabId, {
+        code: "true",
+        frameId: target.frameId,
+      });
+      return true;
+    } catch {
+      return false;
     }
-
-    const state = await getTargetState({
-      ...target,
-      frameId: TOP_LEVEL_FRAME,
-    }).catch(() => false);
-    const { url } = await browser.tabs.get(target.tabId);
-    return {
-      url,
-      hasPermissions: Boolean(state),
-    };
   }
 );
 

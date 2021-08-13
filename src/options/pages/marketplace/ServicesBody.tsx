@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ComponentType, useCallback, useMemo, useState } from "react";
 import ServiceAuthSelector, {
   AuthOption,
   useAuthOptions,
@@ -43,6 +43,7 @@ import { useToasts } from "react-toast-notifications";
 import { useField } from "formik";
 import { persistor } from "@/options/store";
 import { refresh as refreshBackgroundLocator } from "@/background/locator";
+import { GroupTypeBase, MenuListComponentProps } from "react-select";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -103,6 +104,28 @@ const AuthWidget: React.FunctionComponent<{
     [helpers, addToast, dispatch, setShow, serviceId]
   );
 
+  const CustomMenuList = useMemo(() => {
+    const MenuListWithAddButton: ComponentType<
+      MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
+    > = ({ children }) => (
+      <div>
+        {children}
+        <div className="text-center">
+          <Button
+            size="sm"
+            variant="link"
+            onClick={() => {
+              setShow(true);
+            }}
+          >
+            + Add new
+          </Button>
+        </div>
+      </div>
+    );
+    return MenuListWithAddButton;
+  }, [setShow]);
+
   const initialConfiguration: RawServiceConfiguration = useMemo(
     () =>
       ({
@@ -119,7 +142,9 @@ const AuthWidget: React.FunctionComponent<{
         <ServiceEditorModal
           configuration={initialConfiguration}
           service={serviceDefinition}
-          onClose={() => setShow(false)}
+          onClose={() => {
+            setShow(false);
+          }}
           onSave={save}
         />
       )}
@@ -131,20 +156,24 @@ const AuthWidget: React.FunctionComponent<{
               name={`services.${serviceId}`}
               serviceId={serviceId}
               authOptions={options}
+              CustomMenuList={CustomMenuList}
             />
           </div>
         )}
         <div>
-          <Button
-            variant={options.length > 0 ? "info" : "primary"}
-            size="sm"
-            style={{ height: "36px", marginTop: "1px" }}
-            onClick={() => setShow(true)}
-            disabled={isPending || error != null}
-          >
-            <FontAwesomeIcon icon={faPlus} />{" "}
-            {options.length > 0 ? "Add New" : "Configure"}
-          </Button>
+          {options.length === 0 && (
+            <Button
+              variant={options.length > 0 ? "info" : "primary"}
+              size="sm"
+              style={{ height: "36px", marginTop: "1px" }}
+              onClick={() => {
+                setShow(true);
+              }}
+              disabled={isPending || error != null}
+            >
+              <FontAwesomeIcon icon={faPlus} /> Configure
+            </Button>
+          )}
         </div>
       </div>
     </>

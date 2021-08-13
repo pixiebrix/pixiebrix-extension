@@ -49,8 +49,12 @@ const Editor: React.FunctionComponent = () => {
   const dispatch = useDispatch();
 
   const [showChat, setShowChat] = useState<boolean>(false);
-  const showSupport = useCallback(() => setShowChat(true), [setShowChat]);
-  const hideSupport = useCallback(() => setShowChat(false), [setShowChat]);
+  const showSupport = useCallback(() => {
+    setShowChat(true);
+  }, [setShowChat]);
+  const hideSupport = useCallback(() => {
+    setShowChat(false);
+  }, [setShowChat]);
 
   const {
     selectionSeq,

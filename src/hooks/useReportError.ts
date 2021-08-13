@@ -15,29 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
-import * as native from "@/actionPanel/native";
+import { useEffect } from "react";
+import { reportError } from "@/telemetry/logging";
 
-export const toggleActionPanel = liftContentScript(
-  "TOGGLE_ACTION_PANEL",
-  async () => native.toggleActionPanel()
-);
+/**
+ * React hook to report an error
+ */
+function useReportError(error: unknown): void {
+  useEffect(() => {
+    if (error) {
+      reportError(error);
+    }
+  }, [error]);
+}
 
-export const showActionPanel = liftContentScript(
-  "SHOW_ACTION_PANEL",
-  async () => native.showActionPanel()
-);
-
-export const hideActionPanel = liftContentScript(
-  "HIDE_ACTION_PANEL",
-  async () => {
-    native.hideActionPanel();
-  }
-);
-
-export const removeActionPanelPanel = liftContentScript(
-  "REMOVE_ACTION_PANEL_PANEL",
-  async (extensionId: string) => {
-    native.removeExtension(extensionId);
-  }
-);
+export default useReportError;

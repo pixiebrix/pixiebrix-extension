@@ -117,7 +117,9 @@ const FrameworkSelector: React.FunctionComponent<{
     <Select
       options={frameworkOptions}
       value={frameworkOptions.find((x) => x.value === field.value)}
-      onChange={(option: FrameworkOption) => helpers.setValue(option.value)}
+      onChange={(option: FrameworkOption) => {
+        helpers.setValue(option.value);
+      }}
     />
   );
 };
@@ -380,7 +382,9 @@ const ReaderConfig: React.FunctionComponent<{
             <Form.Control
               type="text"
               placeholder="Search for a property or value"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </Col>
         </Form.Group>
@@ -484,7 +488,9 @@ const ReaderConfig: React.FunctionComponent<{
             <Form.Control
               type="text"
               placeholder="Search for a property or value"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </Col>
         </Form.Group>

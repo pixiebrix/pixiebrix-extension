@@ -117,7 +117,9 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                   style={{ width: 100 }}
                   variant="info"
                   size="sm"
-                  onClick={() => navigate(`/services/zapier/`)}
+                  onClick={() => {
+                    navigate(`/services/zapier/`);
+                  }}
                 >
                   View Key
                 </Button>
@@ -151,11 +153,11 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                     style={{ width: 100 }}
                     variant="info"
                     size="sm"
-                    onClick={() =>
+                    onClick={() => {
                       navigate(
                         `/services/${encodeURIComponent(configuredService.id)}`
-                      )
-                    }
+                      );
+                    }}
                   >
                     Configure
                   </Button>

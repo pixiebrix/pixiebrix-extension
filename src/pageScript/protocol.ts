@@ -48,7 +48,7 @@ export type ReadPayload = ReadOptions & {
 export interface WritePayload {
   framework: Framework;
   selector: string;
-  valueMap: { [key: string]: unknown };
+  valueMap: Record<string, unknown>;
 }
 
 export const setComponentData = createSendScriptMessage<void, WritePayload>(
@@ -68,16 +68,19 @@ export const getElementInfo = createSendScriptMessage<
 type Handler = (payload: unknown) => unknown | Promise<unknown>;
 type AttachHandler = (type: string, handler: Handler) => void;
 
-const handlers: { [type: string]: Handler } = {};
+// Message Type -> Handler
+const handlers = new Map<string, Handler>();
 
 async function messageHandler(event: MessageEvent): Promise<void> {
-  const handler = handlers[event.data?.type];
+  const type: string = event.data?.type;
 
-  if (!handler) {
+  const handler = handlers.get(type);
+
+  if (handler == null) {
     return;
   }
 
-  const { meta, type, payload } = event.data;
+  const { meta, payload } = event.data;
 
   console.debug(`RECEIVE ${type}`, event.data);
 
@@ -129,6 +132,6 @@ export function initialize(): AttachHandler {
   window.addEventListener("message", messageHandler);
 
   return (messageType: string, handler: Handler) => {
-    handlers[messageType] = handler;
+    handlers.set(messageType, handler);
   };
 }

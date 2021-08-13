@@ -80,13 +80,13 @@ export const UIPATH_PROPERTIES: SchemaProperties = {
 interface JobsResponse {
   "@odata.context": "https://cloud.uipath.com/odata/$metadata#Jobs";
   "@odata.count": number;
-  value: {
+  value: Array<{
     Id: number;
     Key: string;
     State: "Successful" | "Pending" | "Faulted";
     OutputArguments: string;
     Info: string;
-  }[];
+  }>;
 }
 
 export class RunProcess extends Transformer {

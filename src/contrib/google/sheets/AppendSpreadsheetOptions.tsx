@@ -22,7 +22,7 @@ import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
 import { FieldProps } from "@/components/fields/propTypes";
 import { useField } from "formik";
 import { Schema } from "@/core";
-import { compact, fromPairs, identity, uniq } from "lodash";
+import { compact, fromPairs, uniq } from "lodash";
 import Select from "react-select";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
@@ -32,6 +32,7 @@ import GridLoader from "react-spinners/GridLoader";
 import { isNullOrBlank } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileField from "@/contrib/google/sheets/FileField";
+import { getErrorMessage } from "@/errors";
 
 const TabField: React.FunctionComponent<
   FieldProps<string> & { doc: SheetMeta | null }
@@ -63,7 +64,9 @@ const TabField: React.FunctionComponent<
       <Select
         value={sheetOptions?.filter((x) => x.value === field.value)}
         options={sheetOptions ?? []}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => {
+          helpers.setValue(option?.value);
+        }}
       />
       <Form.Text className="text-muted">The spreadsheet tab</Form.Text>
 
@@ -73,7 +76,7 @@ const TabField: React.FunctionComponent<
 
       {tabsError && (
         <span className="text-danger small">
-          Error fetching sheet names: {tabsError.toString()}
+          Error fetching sheet names: {getErrorMessage(tabsError)}
         </span>
       )}
 
@@ -137,7 +140,7 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const basePath = [name, configKey].filter(identity).join(".");
+  const basePath = compact([name, configKey]).join(".");
 
   const [doc, setDoc] = useState<SheetMeta>(null);
 

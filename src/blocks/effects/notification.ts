@@ -56,7 +56,7 @@ export class ShowNotificationEffect extends Effect {
       message,
       iconUrl: "icons/logo48.png",
     });
-    console.debug("Sent chrome notification", { id });
+    console.debug("Sent browser notification", { id });
   }
 }
 

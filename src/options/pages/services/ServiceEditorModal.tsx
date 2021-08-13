@@ -67,7 +67,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   }, [service]);
 
   const schemaPromise = useMemo(
-    () =>
+    async () =>
       dereference({
         type: "object",
         properties: {
@@ -157,7 +157,9 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
                   {onDelete && (
                     <AsyncButton
                       variant="outline-danger"
-                      onClick={() => onDelete(originalConfiguration.id)}
+                      onClick={() => {
+                        onDelete(originalConfiguration.id);
+                      }}
                     >
                       Delete
                     </AsyncButton>

@@ -204,7 +204,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       }
 
       // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-      this.observer?.disconnect();
+      if (this.observer != null) {
+        this.observer.disconnect();
+      }
 
       this.observer = new IntersectionObserver(
         (entries) => {
