@@ -23,6 +23,7 @@ import Autosuggest, {
   OnSuggestionSelected
 } from "react-autosuggest";
 import cx from "classnames";
+import {noop} from "lodash";
 
 export interface SuggestionTypeBase {
   value: string;
@@ -94,11 +95,11 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
     inputPlaceholder = "",
     renderSuggestion,
     renderCreateNew,
-    onSuggestionHighlighted = (_) => {},
-    onSuggestionsClosed = () => {},
-    onSuggestionSelected = (_) => {},
+    onSuggestionHighlighted = noop,
+    onSuggestionsClosed = noop,
+    onSuggestionSelected = noop,
     onCreateNew,
-    onTextChanged = (_) => {},
+    onTextChanged = noop,
   }: Props<SuggestionType>
 ) => {
   const [currentSuggestions, setCurrentSuggestions] = useState<Array<SuggestionType | CreateNew>>([]);
