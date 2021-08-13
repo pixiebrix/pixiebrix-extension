@@ -38,3 +38,8 @@ $clearButtonPadding: 2px;
   &::-webkit-search-results-button,
   &::-webkit-search-results-decoration { display: none; }
 }
+
+.suggestionList {
+  max-height: 60vh;
+  overflow-y: scroll;
+}

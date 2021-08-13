@@ -171,7 +171,7 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
       [styles.notClearable]: !isClearable
     }),
     suggestionsContainer: 'dropdown',
-    suggestionsList: 'dropdown-menu show',
+    suggestionsList: cx("dropdown-menu", "show", styles.suggestionList),
     suggestion: 'dropdown-item text-wrap',
     suggestionHighlighted: 'active'
   }), [isClearable]);
