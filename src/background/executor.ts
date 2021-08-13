@@ -36,7 +36,7 @@ import {
 } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
 import { sleep } from "@/utils";
-import { partition } from "lodash";
+import { fromPairs, partition, zip } from "lodash";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -167,20 +167,23 @@ handlers.set(
 handlers.set(
   MESSAGE_RUN_BLOCK_BROADCAST,
   async (request: ObjectPayloadMessage, sender) => {
-    const tabTargets = Object.entries(tabReady).filter(
-      ([tabId, ready]) =>
-        tabId !== String(sender.tab.id) && ready[TOP_LEVEL_FRAME]
-    );
+    const tabIds = Object.entries(tabReady)
+      .filter(
+        ([tabId, ready]) =>
+          tabId !== String(sender.tab.id) && ready[TOP_LEVEL_FRAME]
+      )
+      .map(([tabId]) => Number.parseInt(tabId, 10));
 
-    console.debug(`Broadcasting to ${tabTargets.length} top-level frames`, {
+    console.debug(`Broadcasting to ${tabIds.length} ready top-level frames`, {
+      // Convert to string for consistency with the types of `ready`
       sender: String(sender.tab.id),
-      known: Object.keys(tabReady),
+      ready: Object.keys(tabReady),
     });
 
     const results = await Promise.allSettled(
-      tabTargets.map(async ([tabId]) =>
+      tabIds.map(async (tabId) =>
         browser.tabs.sendMessage(
-          Number.parseInt(tabId, 10),
+          tabId,
           {
             type: CONTENT_MESSAGE_RUN_BLOCK,
             payload: {
@@ -195,17 +198,24 @@ handlers.set(
     );
 
     const [fulfilled, rejected] = partition(
-      results,
-      (x) => x.status === "fulfilled"
+      zip(tabIds, results),
+      ([, result]) => result.status === "fulfilled"
     );
 
     if (rejected.length > 0) {
       console.warn(`Broadcast rejected for ${rejected.length} tabs`, {
-        rejected: rejected.map((x: PromiseRejectedResult) => x.reason),
+        reasons: fromPairs(
+          rejected.map(([tabId, result]) => [
+            tabId,
+            (result as PromiseRejectedResult).reason,
+          ])
+        ),
       });
     }
 
-    return fulfilled.map((x: PromiseFulfilledResult<unknown>) => x.value);
+    return fulfilled.map(
+      ([, result]) => (result as PromiseFulfilledResult<unknown>).value
+    );
   }
 );
 
@@ -444,7 +454,7 @@ export async function executeInAll(
   blockArgs: RenderedArgs,
   options: RemoteBlockOptions
 ): Promise<unknown> {
-  console.debug(`Running ${blockId} in all tabs`);
+  console.debug(`Running ${blockId} in all ready tabs`);
   return browser.runtime.sendMessage({
     type: MESSAGE_RUN_BLOCK_BROADCAST,
     payload: {

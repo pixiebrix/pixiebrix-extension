@@ -290,6 +290,13 @@ async function runStage(
   }
 }
 
+function arraySchema(base: Schema): Schema {
+  return {
+    type: "array",
+    items: base,
+  };
+}
+
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
   config: BlockConfig | BlockPipeline,
@@ -379,8 +386,9 @@ export async function reducePipeline(
       }
 
       if (validate && !isEmpty(block.outputSchema)) {
+        const baseSchema = castSchema(block.outputSchema);
         const validationResult = await validateOutput(
-          castSchema(block.outputSchema),
+          stage.window === "broadcast" ? arraySchema(baseSchema) : baseSchema,
           excludeUndefined(output)
         );
         if (!validationResult.valid) {
