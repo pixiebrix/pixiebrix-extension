@@ -67,7 +67,7 @@ const Sidebar: React.FunctionComponent = () => {
   const { flags } = useContext(AuthContext);
 
   return (
-    <nav className="sidebar sidebar-offcanvas" id="sidebar">
+    <nav className="sidebar sidebar-offcanvas sidebar-offcanvas-left" id="sidebar">
       <ul className="nav">
         <SidebarLink
           route="/installed"
