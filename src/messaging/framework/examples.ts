@@ -47,17 +47,6 @@ backgroundActor.addHandler(MESSAGE_TYPE, exampleHandler);
 
 // Creating the caller/operation
 
-// A "dumb" action creator method to perform type checking
-function createAction<T extends Contract>(
-  type: T["type"],
-  payload: Payload<T["method"]>
-): Message<string, Payload<T["method"]>> {
-  return {
-    type,
-    payload,
-  };
-}
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const create: ActionCreator<Example> = (foo: number) => ({
   type: MESSAGE_TYPE,
@@ -78,5 +67,16 @@ const create: ActionCreator<Example> = (foo: number) => ({
 // const doesNotTypeCheck = createAction<Example>(MESSAGE_TYPE, {bar: 32});
 
 // Type checks
+// A "dumb" action creator method so call don't have to use the string
+function createAction<T extends Contract>(
+  type: T["type"]
+): ActionCreator<Contract> {
+  return (payload: Payload<T["method"]>) => ({
+    type,
+    payload,
+  });
+}
+
+const actionFactory = createAction<Example>(MESSAGE_TYPE);
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const action = createAction<Example>(MESSAGE_TYPE, { foo: 32 });
+const action = actionFactory({ foo: 32 });
