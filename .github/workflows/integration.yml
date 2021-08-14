@@ -70,8 +70,8 @@ jobs:
           retention-days: 5
           if-no-files-found: error
 
-  // Surface type errors in GitHub’s UI faster and outside webpack
   types:
+    # Surface type errors in GitHub’s UI faster and outside webpack
     runs-on: ubuntu-latest
 
     steps:
