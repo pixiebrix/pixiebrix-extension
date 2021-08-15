@@ -28,7 +28,9 @@
     "plugin:jsx-a11y/recommended"
   ],
   "rules": {
-    "filenames/match-exported": "warn",
+    // Enable extra rules
+    "filenames/match-exported": "error",
+
     // Customize some rules
     "import/no-unresolved": [
       "error",
