@@ -39,7 +39,7 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
       - uses: actions/upload-artifact@v2
-        if: contains(github.ref, "release/") || startsWith(github.ref, "refs/tags")
+        if: contains(github.ref, 'release/') || startsWith(github.ref, 'refs/tags')
         with:
           name: build-staging
           path: dist
