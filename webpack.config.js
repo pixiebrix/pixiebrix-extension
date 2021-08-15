@@ -349,7 +349,17 @@ module.exports = (env, options) =>
       rules: [
         {
           test: /\.s?css$/,
-          use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+          use: [
+            MiniCssExtractPlugin.loader,
+            "css-loader",
+            {
+              loader: "sass-loader",
+              options: {
+                // Prefer `dart-sass`
+                implementation: require("node-sass"),
+              },
+            },
+          ],
         },
       ],
     },
