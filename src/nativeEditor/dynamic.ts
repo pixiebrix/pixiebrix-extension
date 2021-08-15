@@ -50,7 +50,8 @@ export type ElementType =
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
-  TExtension = unknown,
+  // eslint-disable-next-line @typescript-eslint/ban-types -- don't assume anything about keys
+  TExtension extends object = object,
   TReader extends ReaderDefinition = ReaderDefinition
 > {
   type: ElementType;
@@ -147,15 +148,12 @@ export const enableOverlay = liftContentScript(
   }
 );
 
-export const disableOverlay = liftContentScript(
-  "DISABLE_OVERLAY",
-  async () => {
-    if (_overlay != null) {
-      _overlay.remove();
-      _overlay = null;
-    }
+export const disableOverlay = liftContentScript("DISABLE_OVERLAY", async () => {
+  if (_overlay != null) {
+    _overlay.remove();
+    _overlay = null;
   }
-);
+});
 
 export const checkAvailable = liftContentScript(
   "CHECK_AVAILABLE",

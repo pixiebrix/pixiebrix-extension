@@ -37,6 +37,7 @@ import {
   ReaderFormState,
   ReaderReferenceFormState,
 } from "@/devTools/editor/extensionPoints/elementConfig";
+import { Except } from "type-fest";
 
 export interface WizardStep {
   step: string;
@@ -117,7 +118,7 @@ export function makeBaseState(
   defaultSelector: string | null,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
-): Omit<BaseFormState, "type" | "label" | "extensionPoint"> {
+): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
     services: [],
@@ -282,7 +283,8 @@ export function selectIsAvailable(
 
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
-  TConfig,
+  // eslint-disable-next-line @typescript-eslint/ban-types -- don't assume anything about keys
+  TConfig extends object,
   TType extends string
 >(
   config: IExtension<TConfig>,
@@ -313,7 +315,7 @@ export async function lookupExtensionPoint<
 
 export function baseSelectExtensionPoint(
   formState: BaseFormState
-): Omit<ExtensionPointConfig, "definition"> {
+): Except<ExtensionPointConfig, "definition"> {
   const { metadata } = formState.extensionPoint;
 
   return {

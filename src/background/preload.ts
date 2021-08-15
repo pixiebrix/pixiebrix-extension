@@ -24,11 +24,11 @@ import {
 import { reportError } from "@/telemetry/logging";
 import { loadOptions } from "@/options/loader";
 
-interface PreloadOptions<TConfig = Record<string, unknown>> {
+type PreloadOptions<TConfig = object> = {
   id: string;
   extensionPointId: string;
   config: TConfig;
-}
+};
 
 async function preload(extensions: PreloadOptions[]): Promise<void> {
   for (const definition of extensions) {

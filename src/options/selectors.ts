@@ -18,16 +18,11 @@
 import { OptionsState } from "@/options/slices";
 import { IExtension } from "@/core";
 
-export type RecipeContext = {
-  id: string;
-  name: string;
-};
-
 export function selectExtensions({
   options,
 }: {
   options: OptionsState;
-}): Array<IExtension<Record<string, unknown>>> {
+}): IExtension[] {
   return Object.values(options.extensions).flatMap((extensionPointOptions) =>
     Object.values(extensionPointOptions)
   );

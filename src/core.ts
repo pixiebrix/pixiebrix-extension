@@ -126,9 +126,8 @@ export function selectMetadata(metadata: Metadata): Metadata {
   return pick(metadata, ["id", "name", "version", "description"]);
 }
 
-// Don't assume anything about the config, except that it's an object
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type EmptyConfig = {};
+// eslint-disable-next-line @typescript-eslint/ban-types -- don't assume any keys
+export type EmptyConfig = object;
 
 export interface ServiceDependency {
   id: string;
