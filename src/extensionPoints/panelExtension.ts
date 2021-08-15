@@ -55,13 +55,13 @@ import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
 import iconAsSVG from "@/icons/svgIcons";
 
-export interface PanelConfig {
+export type PanelConfig = {
   heading?: string;
   body: BlockConfig | BlockPipeline;
   icon?: IconConfig;
   collapsible?: boolean;
   shadowDOM?: boolean;
-}
+};
 
 const RENDER_LOOP_THRESHOLD = 25;
 const RENDER_LOOP_WINDOW_MS = 500;

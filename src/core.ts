@@ -126,6 +126,8 @@ export function selectMetadata(metadata: Metadata): Metadata {
   return pick(metadata, ["id", "name", "version", "description"]);
 }
 
+export type Config = Record<string, unknown>;
+
 export type EmptyConfig = Record<never, unknown>;
 
 export interface ServiceDependency {
@@ -161,7 +163,7 @@ export type ExtensionIdentifier = {
   extensionPointId: string;
 };
 
-export interface IExtension<T extends EmptyConfig = EmptyConfig> {
+export interface IExtension<T extends Config = EmptyConfig> {
   /**
    * UUID of the extension
    */
@@ -291,24 +293,32 @@ type ServiceId = string;
 export type KeyedConfig = Record<string, string | null>;
 
 export type SanitizedConfig = KeyedConfig & {
-  // Nominal typing to distinguish from ServiceConfig
+  /**
+   * Nominal typing to distinguish from `ServiceConfig`
+   * @see `ServiceConfig`
+   */
   _sanitizedConfigBrand: null;
 };
 
 export type ServiceConfig = KeyedConfig & {
-  // Nominal typing to distinguish from SanitizedConfig
+  /**
+   * Nominal typing to distinguish from SanitizedConfig
+   * @see `SanitizedConfig`
+   */
   _serviceConfigBrand: null;
 };
 
 export interface AuthData {
-  // Nominal typing to distinguish from SanitizedConfig and ServiceConfig
+  /**
+   * Nominal typing to distinguish from `SanitizedConfig` and `ServiceConfig`
+   */
   _oauthBrand: null;
   [key: string]: string | null;
 }
 
 export interface TokenContext {
   url: string;
-  data: Record<string, unknown>;
+  data: Config;
 }
 
 export interface OAuth2Context {
