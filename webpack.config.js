@@ -355,7 +355,7 @@ module.exports = (env, options) =>
             {
               loader: "sass-loader",
               options: {
-                // Prefer `dart-sass`
+                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
                 implementation: require("node-sass"),
               },
             },
