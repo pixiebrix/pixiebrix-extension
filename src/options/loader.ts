@@ -16,12 +16,13 @@
  */
 
 import { browser } from "webextension-polyfill-ts";
+import { IExtension } from "@/core";
 
 const STORAGE_KEY = "persist:extensionOptions";
 const INITIAL_STATE = JSON.stringify({});
 
 type State = {
-  extensions: Record<string, Record<string, unknown>>;
+  extensions: Record<string, Record<string, IExtension>>;
 };
 
 type JSONString = string;
