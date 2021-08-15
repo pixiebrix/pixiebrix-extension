@@ -115,7 +115,7 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
     <ExtensionPointDetail
       initialValue={{
         label: extensionConfig?.label,
-        config: extensionConfig?.config as Record<string, unknown>,
+        config: extensionConfig?.config,
         services: extensionConfig?.services ?? [],
         optionsArgs: extensionConfig?.optionsArgs ?? {},
       }}
