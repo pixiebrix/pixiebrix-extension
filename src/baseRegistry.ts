@@ -104,7 +104,7 @@ export class Registry<TItem extends RegistryItem> {
    * @deprecated needed for header generation; will be removed in future versions
    */
   cached(): TItem[] {
-    return Object.values(this.cache);
+    return [...this.cache.values()];
   }
 
   /**
@@ -121,7 +121,7 @@ export class Registry<TItem extends RegistryItem> {
         }
       })
     );
-    return Object.values(this.cache);
+    return [...this.cache.values()];
   }
 
   register(...items: TItem[]): void {
@@ -173,7 +173,7 @@ export class Registry<TItem extends RegistryItem> {
 
       if (!this.kinds.has(item.kind)) {
         console.warn(
-          `Item ${item.metadata?.id ?? "<unknown>"} has kind ${
+          `Item ${item.metadata?.id ?? "[[unknown]]"} has kind ${
             item.kind
           }; expected: ${[...this.kinds.values()].join(", ")}`
         );

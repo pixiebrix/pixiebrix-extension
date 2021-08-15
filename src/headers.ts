@@ -28,7 +28,7 @@ console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
 const blockDefinitions = blockRegistry.cached().map((block) => ({
   apiVersion: "v1",
   header: true,
-  kind: (block as any).read ? "reader" : "component",
+  kind: "read" in block ? "reader" : "component",
   metadata: {
     id: block.id,
     version: process.env.NPM_PACKAGE_VERSION,
@@ -64,6 +64,15 @@ const content = JSON.stringify([
   ...blockDefinitions,
   ...extensionPointDefinitions,
 ]);
+
+if (blockDefinitions.length === 0) {
+  throw new Error("No block definitions generated");
+}
+
+if (extensionPointDefinitions.length === 0) {
+  throw new Error("No extension point definitions generated");
+}
+
 fs.writeFileSync("headers.json", content);
 
 console.log(`headers.json written to disk: ${content.length} bytes`);
