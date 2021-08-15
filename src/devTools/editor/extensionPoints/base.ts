@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata, selectMetadata } from "@/core";
+import { EmptyConfig, IExtension, Metadata, selectMetadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import { castArray, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
@@ -283,8 +283,7 @@ export function selectIsAvailable(
 
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
-  // eslint-disable-next-line @typescript-eslint/ban-types -- don't assume anything about keys
-  TConfig extends object,
+  TConfig extends EmptyConfig,
   TType extends string
 >(
   config: IExtension<TConfig>,
