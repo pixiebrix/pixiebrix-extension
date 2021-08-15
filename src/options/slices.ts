@@ -17,17 +17,10 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  DeploymentContext,
-  Metadata,
-  RawServiceConfiguration,
-  ServiceDependency,
-} from "@/core";
+import { IExtension, RawServiceConfiguration } from "@/core";
 import { orderBy } from "lodash";
-import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { preloadMenus } from "@/background/preload";
-import { Primitive } from "type-fest";
 import { selectEventData } from "@/telemetry/deployments";
 
 type InstallMode = "local" | "remote";
@@ -58,27 +51,10 @@ const initialServicesState: ServicesState = {
   configured: {},
 };
 
-type BaseConfig = Record<string, unknown>;
-type UserOptions = Record<string, Primitive>;
-
-export interface ExtensionOptions<TConfig = BaseConfig> {
-  id: string;
-  _deployment?: DeploymentContext;
-  _recipeId?: string;
-  _recipe: Metadata | null;
-  extensionPointId: string;
-  active: boolean;
-  label: string;
-  optionsArgs?: UserOptions;
-  permissions?: Permissions.Permissions;
-  services: ServiceDependency[];
-  config: TConfig;
-}
-
 export interface OptionsState {
   extensions: {
     [extensionPointId: string]: {
-      [extensionId: string]: ExtensionOptions;
+      [extensionId: string]: IExtension;
     };
   };
 }
@@ -189,10 +165,6 @@ export const optionsSlice = createSlice({
     resetOptions(state) {
       state.extensions = {};
     },
-    toggleExtension(state, { payload }) {
-      const { extensionPointId, extensionId, active } = payload;
-      state.extensions[extensionPointId][extensionId].active = active;
-    },
     installRecipe(state, { payload }) {
       const {
         recipe,
@@ -216,7 +188,7 @@ export const optionsSlice = createSlice({
           state.extensions[extensionPointId] = {};
         }
 
-        const extensionConfig: ExtensionOptions = {
+        const extensionConfig: IExtension = {
           id: extensionId,
           _deployment: deployment
             ? {
@@ -224,7 +196,6 @@ export const optionsSlice = createSlice({
                 timestamp: deployment.updated_at,
               }
             : undefined,
-          _recipeId: recipe.metadata.id,
           _recipe: recipe.metadata,
           optionsArgs,
           services: Object.entries(services ?? {}).map(
@@ -236,7 +207,6 @@ export const optionsSlice = createSlice({
           ),
           label,
           extensionPointId,
-          active: true,
           config,
         };
 
@@ -275,7 +245,6 @@ export const optionsSlice = createSlice({
         label,
         optionsArgs,
         services,
-        active: true,
         config,
       };
     },

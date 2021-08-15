@@ -27,7 +27,7 @@ import {
 import { Form, Row, Col, Card, Nav, Button } from "react-bootstrap";
 import ServicesFormCard from "@/options/pages/extensionEditor/ServicesFormCard";
 import ExtensionConfigurationCard from "@/options/pages/extensionEditor/ExtensionConfigurationCard";
-import { IExtensionPoint, OptionsArgs, ServiceDependency } from "@/core";
+import { IExtensionPoint, UserOptions, ServiceDependency } from "@/core";
 import DataSourceCard from "@/options/pages/extensionEditor/DataSourceCard";
 import { Formik, FormikProps, getIn, useFormikContext } from "formik";
 import TextField from "@/components/fields/TextField";
@@ -56,7 +56,7 @@ export interface Config {
   config: TopConfig;
   label: string;
   services: ServiceDependency[];
-  optionsArgs: OptionsArgs;
+  optionsArgs: UserOptions;
 }
 
 interface OwnProps {

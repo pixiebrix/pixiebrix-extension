@@ -18,14 +18,15 @@
 import { liftBackground } from "@/background/protocol";
 import { JsonObject } from "type-fest";
 import { v4 as uuidv4 } from "uuid";
-import { debounce, uniq, throttle } from "lodash";
+import { debounce, uniq, throttle, compact } from "lodash";
 import { browser } from "webextension-polyfill-ts";
 import { readStorage, setStorage } from "@/chrome";
 import { getExtensionToken } from "@/auth/token";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { boolean } from "@/utils";
-import { ExtensionOptions, loadOptions } from "@/options/loader";
+import { loadOptions } from "@/options/loader";
+import { IExtension } from "@/core";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -125,13 +126,12 @@ async function userSummary() {
 
   try {
     const { extensions: extensionPointConfigs } = await loadOptions();
-    const extensions: ExtensionOptions[] = Object.entries(
+    const extensions: IExtension[] = Object.entries(
       extensionPointConfigs
     ).flatMap(([, xs]) => Object.values(xs));
     numActiveExtensions = extensions.length;
-    numActiveBlueprints = uniq(
-      extensions.filter((x) => x._recipeId).map((x) => x._recipeId)
-    ).length;
+    numActiveBlueprints = uniq(compact(extensions.map((x) => x._recipe?.id)))
+      .length;
     numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
       .length;
   } catch (error: unknown) {

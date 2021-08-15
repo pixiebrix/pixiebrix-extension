@@ -126,10 +126,9 @@ export function selectMetadata(metadata: Metadata): Metadata {
   return pick(metadata, ["id", "name", "version", "description"]);
 }
 
-// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
-// the inputs using jsonschema, so the types should match what's expected.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BaseExtensionConfig = Record<string, any>;
+// Don't assume anything about the config, except that it's an object
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type EmptyConfig = {};
 
 export interface ServiceDependency {
   id: string;
@@ -153,20 +152,43 @@ export interface DeploymentContext {
 }
 
 export type ExtensionIdentifier = {
+  /**
+   * UUID of the extension.
+   */
   extensionId: string;
+
+  /**
+   * Registry id of the extension point
+   */
   extensionPointId: string;
 };
 
-export interface IExtension<
-  T extends BaseExtensionConfig = BaseExtensionConfig
-> {
+export interface IExtension<T extends EmptyConfig = EmptyConfig> {
+  /**
+   * UUID of the extension
+   */
   id: string;
 
+  /**
+   * Registry id of the extension point
+   */
   extensionPointId: string;
 
+  /**
+   * Metadata about the deployment used to install the extension, or `undefined` if the extension was not installed
+   * via a deployment.
+   */
   _deployment?: DeploymentContext;
 
-  label?: string;
+  /**
+   * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension directly
+   */
+  _recipe: Metadata | undefined;
+
+  /**
+   * A human-readable label for the extension
+   */
+  label: string | null;
 
   /**
    * Default template engine when running the extension
@@ -186,8 +208,11 @@ export interface IExtension<
   /**
    * Options the end-user has configured (i.e., during blueprint activation)
    */
-  optionsArgs?: OptionsArgs;
+  optionsArgs?: UserOptions;
 
+  /**
+   * The extension configuration for the extension point
+   */
   config: T;
 }
 
@@ -251,9 +276,7 @@ export interface IBlock extends Metadata {
   run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
 }
 
-export interface ReaderOutput {
-  [key: string]: unknown;
-}
+export type ReaderOutput = Record<string, unknown>;
 
 /**
  * A block that can read data from a page or part of the page.
@@ -267,24 +290,21 @@ export interface IReader extends IBlock {
 
 type ServiceId = string;
 
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- we're extending to get nominal typing
-export interface KeyedConfig {
-  [key: string]: string | null;
-}
+export type KeyedConfig = Record<string, string | null>;
 
-export interface SanitizedConfig extends KeyedConfig {
+export type SanitizedConfig = KeyedConfig & {
   // Nominal typing to distinguish from ServiceConfig
   _sanitizedConfigBrand: null;
-}
+};
 
-export interface ServiceConfig extends KeyedConfig {
+export type ServiceConfig = KeyedConfig & {
   // Nominal typing to distinguish from SanitizedConfig
   _serviceConfigBrand: null;
-}
+};
 
 export interface AuthData {
   // Nominal typing to distinguish from SanitizedConfig and ServiceConfig
-  _oauth: null;
+  _oauthBrand: null;
   [key: string]: string | null;
 }
 
@@ -384,15 +404,10 @@ export interface IconConfig {
   color?: string;
 }
 
-export interface OptionsArgs {
-  [prop: string]: Primitive;
-}
+export type UserOptions = Record<string, Primitive>;
 
-export interface RenderedArgs {
-  // FIXME: enforcing nominal typing will require helper methods to produce the RenderedArgs
-  // _renderedArgsBrand: null;
-  [prop: string]: unknown;
-}
+// TODO: add nominal typing to distinguish rendered vs. non-rendered args
+export type RenderedArgs = Record<string, unknown>;
 
 export interface OrganizationAuthState {
   readonly id: string;
@@ -420,8 +435,8 @@ export function isReader(block: IBlock): block is IReader {
   return "read" in block;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
 export function isRendererBlock(
+  // eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
   block: IBlock & { render?: Function }
 ): boolean {
   return typeof block.render === "function";

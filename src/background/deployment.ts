@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionOptions, loadOptions, saveOptions } from "@/options/loader";
+import { loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
 import { fromPairs, partition, uniqBy } from "lodash";
@@ -33,6 +33,7 @@ import { selectInstalledExtensions } from "@/options/selectors";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { containsPermissions } from "@/utils/permissions";
 import { deploymentPermissions } from "@/permissions";
+import { IExtension } from "@/core";
 
 const { reducer, actions } = optionsSlice;
 
@@ -45,7 +46,7 @@ type ActiveDeployment = {
 };
 
 export function activeDeployments(
-  extensions: Array<Pick<ExtensionOptions, "_deployment" | "_recipe">>
+  extensions: Array<Pick<IExtension, "_deployment" | "_recipe">>
 ): ActiveDeployment[] {
   return uniqBy(
     extensions
@@ -110,7 +111,7 @@ function installDeployment(
   return returnState;
 }
 
-function makeDeploymentTimestampLookup(extensions: ExtensionOptions[]) {
+function makeDeploymentTimestampLookup(extensions: IExtension[]) {
   const timestamps = new Map<string, Date>();
 
   for (const extension of extensions) {
@@ -133,7 +134,7 @@ async function updateDeployments() {
   }
 
   const { extensions: extensionPointConfigs } = await loadOptions();
-  const extensions: ExtensionOptions[] = Object.entries(
+  const extensions: IExtension[] = Object.entries(
     extensionPointConfigs
   ).flatMap(([, xs]) => Object.values(xs));
 

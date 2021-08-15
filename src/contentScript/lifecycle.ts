@@ -185,12 +185,12 @@ async function loadExtensions() {
 
   const { extensions: extensionPointConfigs } = await loadOptions();
 
-  for (const [extensionPointId, extensions] of Object.entries(
+  for (const [extensionPointId, extensionMap] of Object.entries(
     extensionPointConfigs
   )) {
-    const activeExtensions = Object.values(extensions).filter((x) => x.active);
+    const extensions = Object.values(extensionMap);
 
-    if (activeExtensions.length === 0 && !previousIds.has(extensionPointId)) {
+    if (extensions.length === 0 && !previousIds.has(extensionPointId)) {
       // Ignore the case where we uninstalled the last extension, but the extension point was
       // not deleted from the state.
       //
@@ -204,9 +204,9 @@ async function loadExtensions() {
         extensionPointId
       );
 
-      extensionPoint.syncExtensions(activeExtensions);
+      extensionPoint.syncExtensions(extensions);
 
-      if (activeExtensions.length > 0) {
+      if (extensions.length > 0) {
         // Cleared out _extensionPoints before, so can just push w/o checking if it's already in the array
         _extensionPoints.push(extensionPoint);
       }

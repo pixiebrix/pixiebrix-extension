@@ -40,7 +40,7 @@ import PanelTab from "@/devTools/editor/tabs/panel/PanelTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
-import { DynamicDefinition } from "@/nativeEditor";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
@@ -175,6 +175,7 @@ function selectExtension({
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
     label,
     services,
     config: extension,
