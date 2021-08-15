@@ -18,9 +18,9 @@
 import { useMemo } from "react";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useSelector } from "react-redux";
-import { RootState } from "@/options/store";
-import { IExtension, IExtensionPoint } from "@/core";
+import { IExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import { useAsyncState } from "@/hooks/common";
+import { selectExtensions } from "@/options/selectors";
 
 interface ExtensionResult {
   extensionPoint: IExtensionPoint | null;
@@ -29,42 +29,32 @@ interface ExtensionResult {
 }
 
 export function useExtension(
-  extensionPointId: string,
-  extensionId: string
+  extensionPointId: RegistryId,
+  extensionId: UUID
 ): ExtensionResult {
   console.debug("useExtension", { extensionPointId, extensionId });
 
-  const options = useSelector((state: RootState) => state.options);
+  const extensions = useSelector(selectExtensions);
 
   const extensionConfig = useMemo(() => {
-    let config;
-
     if (!extensionId) {
       return null;
     }
 
-    if (extensionPointId) {
-      config = options.extensions[extensionPointId][extensionId];
-    } else {
-      for (const pointExtensions of Object.values(options.extensions)) {
-        const pointConfig = pointExtensions[extensionId];
-        if (pointConfig) {
-          config = pointConfig;
-          break;
-        }
-      }
-    }
+    const config = extensions.find(
+      (x) => x.extensionPointId === extensionPointId && x.id === extensionId
+    );
 
     if (!config) {
       throw new Error(
         `Could not locate configuration for extension ${extensionId} (extension point: ${
-          extensionPointId ?? "<unknown>"
+          extensionPointId ?? "[[ unknown ]]"
         })`
       );
     }
 
     return config;
-  }, [options, extensionId, extensionPointId]);
+  }, [extensions, extensionId, extensionPointId]);
 
   const [extensionPoint, isPending] = useAsyncState(async () => {
     if (extensionConfig) {

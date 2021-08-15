@@ -15,26 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
-import { useAsyncEffect } from "use-async-effect";
-import fetchSVG from "@/icons/svgElementFromUrl";
+import { localStorage } from "redux-persist-webextension-storage";
 
-function useSvg(logoUrl: string): string {
-  const [logo, setLogo] = useState("");
-
-  useAsyncEffect(
-    async (isMounted) => {
-      const $icon = await fetchSVG(logoUrl);
-      if (!isMounted()) {
-        return;
-      }
-
-      setLogo($icon.get(0).outerHTML);
-    },
-    [setLogo]
-  );
-
-  return logo;
-}
-
-export default useSvg;
+export const persistServicesConfig = {
+  key: "servicesOptions",
+  storage: localStorage,
+};

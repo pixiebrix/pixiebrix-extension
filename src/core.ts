@@ -72,16 +72,18 @@ export interface Message<
  * @see Logger
  */
 export interface MessageContext {
-  readonly deploymentId?: string;
-  readonly blueprintId?: string;
-  readonly extensionPointId?: string;
-  readonly blockId?: string;
-  readonly extensionId?: string;
-  readonly serviceId?: string;
-  readonly authId?: string;
+  readonly deploymentId?: UUID;
+  readonly blueprintId?: RegistryId;
+  readonly extensionPointId?: RegistryId;
+  readonly blockId?: RegistryId;
+  readonly extensionId?: UUID;
+  readonly serviceId?: RegistryId;
+  readonly authId?: UUID;
 }
 
 export type SerializedError = Primitive | ErrorObject;
+
+export type Data = Record<string, unknown>;
 
 export interface Logger {
   readonly context: MessageContext;
@@ -89,15 +91,12 @@ export interface Logger {
    * Return a child logger with additional message context
    */
   childLogger: (additionalContext: MessageContext) => Logger;
-  trace: (msg: string, data?: Record<string, unknown>) => void;
-  warn: (msg: string, data?: Record<string, unknown>) => void;
-  debug: (msg: string, data?: Record<string, unknown>) => void;
-  log: (msg: string, data?: Record<string, unknown>) => void;
-  info: (msg: string, data?: Record<string, unknown>) => void;
-  error: (
-    error: SerializedError | Error,
-    data?: Record<string, unknown>
-  ) => void;
+  trace: (msg: string, data?: Data) => void;
+  warn: (msg: string, data?: Data) => void;
+  debug: (msg: string, data?: Data) => void;
+  log: (msg: string, data?: Data) => void;
+  info: (msg: string, data?: Data) => void;
+  error: (error: unknown, data?: Data) => void;
 }
 
 export type ReaderRoot = HTMLElement | Document;
@@ -185,7 +184,7 @@ export interface DeploymentContext {
   timestamp: string;
 }
 
-export type ExtensionIdentifier = {
+export type ExtensionRef = {
   /**
    * UUID of the extension.
    */
@@ -199,12 +198,12 @@ export type ExtensionIdentifier = {
 
 export interface IExtension<T extends Config = EmptyConfig> {
   /**
-   * UUID of the extension
+   * UUID of the extension.
    */
   id: UUID;
 
   /**
-   * Registry id of the extension point
+   * Registry id of the extension point.
    */
   extensionPointId: RegistryId;
 
@@ -215,7 +214,8 @@ export interface IExtension<T extends Config = EmptyConfig> {
   _deployment?: DeploymentContext;
 
   /**
-   * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension directly
+   * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension
+   * directly.
    */
   _recipe: Metadata | undefined;
 
@@ -235,7 +235,12 @@ export interface IExtension<T extends Config = EmptyConfig> {
   permissions?: Permissions.Permissions;
 
   /**
-   * Inner/anonymous component/reader/extensionPoint definitions.
+   * Inner/anonymous definitions used by the extension.
+   *
+   * Supported definitions:
+   * - extension points
+   * - components
+   * - readers
    */
   definitions?: InnerDefinitions;
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import { useToasts } from "react-toast-notifications";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";

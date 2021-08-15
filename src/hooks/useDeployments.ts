@@ -23,7 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fromPairs } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { optionsSlice } from "@/options/slices";
-import { selectInstalledExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 import { getExtensionToken } from "@/auth/token";
@@ -126,7 +126,7 @@ type DeploymentState = {
 function useDeployments(): DeploymentState {
   const notify = useNotifications();
   const dispatch = useDispatch();
-  const installed = useSelector(selectInstalledExtensions);
+  const installed = useSelector(selectExtensions);
 
   const [deployments] = useAsyncState(async () => fetchDeployments(installed), [
     installed,

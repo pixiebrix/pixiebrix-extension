@@ -15,13 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { createSlice } from "@reduxjs/toolkit";
-import { IExtension, RawServiceConfiguration, RegistryId } from "@/core";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  ExtensionRef,
+  IExtension,
+  RawServiceConfiguration,
+  RegistryId,
+  UUID,
+} from "@/core";
 import { orderBy } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { preloadMenus } from "@/background/preload";
 import { selectEventData } from "@/telemetry/deployments";
 import { uuidv4 } from "@/types/helpers";
+import { Except } from "type-fest";
+import { OptionsState } from "@/store/extensions";
 
 type InstallMode = "local" | "remote";
 
@@ -50,14 +58,6 @@ export interface ServicesState {
 const initialServicesState: ServicesState = {
   configured: {},
 };
-
-export interface OptionsState {
-  extensions: {
-    [extensionPointId: string]: {
-      [extensionId: string]: IExtension;
-    };
-  };
-}
 
 type RecentBrick = {
   id: string;
@@ -88,11 +88,8 @@ const initialWorkshopState: WorkshopState = {
 };
 
 const initialOptionsState: OptionsState = {
-  extensions: {},
+  extensions: [],
 };
-
-/* The object access in servicesSlice and optionsSlice should be safe because slice reducers use immer under the hood */
-/* eslint-disable security/detect-object-injection */
 
 export const workshopSlice = createSlice({
   name: "workshop",
@@ -132,30 +129,39 @@ export const workshopSlice = createSlice({
 });
 
 export const servicesSlice = createSlice({
+  /* The object access in servicesSlice and optionsSlice should be safe because type-checker enforced UUID */
+  /* eslint-disable security/detect-object-injection */
+
   name: "services",
   initialState: initialServicesState,
   reducers: {
-    deleteServiceConfig(state, { payload: { id } }) {
+    deleteServiceConfig(
+      state,
+      { payload: { id } }: PayloadAction<{ id: UUID }>
+    ) {
       if (!state.configured[id]) {
         throw new Error(`Service configuration ${id} does not exist`);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- type-checked as UUID
       delete state.configured[id];
       return state;
     },
     updateServiceConfig(state, { payload: { id, serviceId, label, config } }) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- branding with nominal type
       state.configured[id] = {
-        _rawServiceConfigurationBrand: undefined,
         id,
         serviceId,
         label,
         config,
-      };
+      } as RawServiceConfiguration;
     },
     resetServices(state) {
       state.configured = {};
     },
   },
+
+  /* eslint-enable security/detect-object-injection */
 });
 
 export const optionsSlice = createSlice({
@@ -163,7 +169,7 @@ export const optionsSlice = createSlice({
   initialState: initialOptionsState,
   reducers: {
     resetOptions(state) {
-      state.extensions = {};
+      state.extensions = [];
     },
     installRecipe(state, { payload }) {
       const {
@@ -184,11 +190,7 @@ export const optionsSlice = createSlice({
           throw new Error("extensionPointId is required");
         }
 
-        if (state.extensions[extensionPointId] == null) {
-          state.extensions[extensionPointId] = {};
-        }
-
-        const extensionConfig: IExtension = {
+        const extension: IExtension = {
           id: extensionId,
           _deployment: deployment
             ? {
@@ -201,6 +203,7 @@ export const optionsSlice = createSlice({
           services: Object.entries(services ?? {}).map(
             ([outputKey, id]: [string, RegistryId]) => ({
               outputKey,
+              // eslint-disable-next-line security/detect-object-injection -- type-checked as RegistryId
               config: auths[id],
               id,
             })
@@ -210,14 +213,20 @@ export const optionsSlice = createSlice({
           config,
         };
 
-        reportEvent("ExtensionActivate", selectEventData(extensionConfig));
+        reportEvent("ExtensionActivate", selectEventData(extension));
 
-        state.extensions[extensionPointId][extensionId] = extensionConfig;
+        state.extensions.push(extension);
 
-        void preloadMenus({ extensions: [extensionConfig] });
+        void preloadMenus({ extensions: [extension] });
       }
     },
-    saveExtension(state, { payload }) {
+    // XXX: why do we expose a `extensionId` in addition IExtension's `id` prop here?
+    saveExtension(
+      state,
+      {
+        payload,
+      }: PayloadAction<Except<IExtension, "_recipe"> & { extensionId?: UUID }>
+    ) {
       const {
         id,
         extensionId,
@@ -229,16 +238,16 @@ export const optionsSlice = createSlice({
       } = payload;
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
       if (extensionId == null && id == null) {
-        throw new Error("extensionId is required");
+        throw new Error("id or extensionId is required");
       } else if (extensionPointId == null) {
         throw new Error("extensionPointId is required");
       }
 
-      if (state.extensions[extensionPointId] == null) {
-        state.extensions[extensionPointId] = {};
-      }
+      const index = state.extensions.findIndex(
+        (x) => x.id === extensionId ?? id
+      );
 
-      state.extensions[extensionPointId][extensionId ?? id] = {
+      const extension: IExtension = {
         id: extensionId ?? id,
         extensionPointId,
         _recipe: null,
@@ -247,20 +256,19 @@ export const optionsSlice = createSlice({
         services,
         config,
       };
-    },
-    removeExtension(state, { payload }) {
-      const { extensionPointId, extensionId } = payload;
-      const extensions = state.extensions[extensionPointId] ?? {};
-      if (extensions[extensionId]) {
-        delete extensions[extensionId];
+
+      if (index >= 0) {
+        // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
+        state.extensions[index] = extension;
       } else {
-        // It's already removed
-        console.debug(
-          `Extension id ${extensionId} does not exist for extension point ${extensionPointId}`
-        );
+        state.extensions.push(extension);
       }
+    },
+    removeExtension(
+      state,
+      { payload: { extensionId } }: PayloadAction<ExtensionRef>
+    ) {
+      state.extensions = state.extensions.filter((x) => x.id === extensionId);
     },
   },
 });
-
-/* eslint-enable security/detect-object-injection */

@@ -17,7 +17,7 @@ Check if the bug has already been reported by searching on GitHub under [Issues]
   When possible, add a comment with any additional context that's not already covered in the discussion.
 
 - If you're not able to find an existing issue, [open a new issue](https://github.com/pixiebrix/pixiebrix-extension/issues/new).
-  Provide information about the what you were trying to do, the expected behavior, and the actual behavior.
+  Provide information about what you were trying to do, the expected behavior, and the actual behavior.
 
 ## Feature Pull Requests
 

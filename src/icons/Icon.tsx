@@ -16,7 +16,7 @@
  */
 
 import React, { useState } from "react";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { IconLibrary } from "@/core";
 import iconAsSVG from "@/icons/svgIcons";
 

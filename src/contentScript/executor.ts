@@ -19,7 +19,7 @@
 import { browser, Runtime } from "webextension-polyfill-ts";
 import blockRegistry from "@/blocks/registry";
 import { BackgroundLogger } from "@/background/logging";
-import { MessageContext } from "@/core";
+import { MessageContext, RegistryId, RenderedArgs } from "@/core";
 import {
   liftContentScript,
   MESSAGE_PREFIX,
@@ -56,8 +56,8 @@ export interface RunBlockAction {
   payload: {
     sourceTabId?: number;
     nonce?: string;
-    blockId: string;
-    blockArgs: Record<string, unknown>;
+    blockId: RegistryId;
+    blockArgs: RenderedArgs;
     options: RemoteBlockOptions;
   };
 }

@@ -15,28 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OptionsState } from "@/options/slices";
 import { IExtension } from "@/core";
+import { OptionsState } from "@/store/extensions";
 
 export function selectExtensions({
   options,
 }: {
   options: OptionsState;
 }): IExtension[] {
-  return Object.values(options.extensions).flatMap((extensionPointOptions) =>
-    Object.values(extensionPointOptions)
-  );
-}
+  if (!Array.isArray(options.extensions)) {
+    console.warn("state migration has not been applied yet", {
+      options,
+    });
+    throw new TypeError("state migration has not been applied yet");
+  }
 
-export function selectInstalledExtensions(state: {
-  options: OptionsState;
-}): IExtension[] {
-  return Object.entries(state.options.extensions).flatMap(
-    ([extensionPointId, pointExtensions]) =>
-      Object.entries(pointExtensions).map(([extensionId, extension]) => ({
-        id: extensionId,
-        extensionPointId,
-        ...extension,
-      }))
-  );
+  return options.extensions;
 }

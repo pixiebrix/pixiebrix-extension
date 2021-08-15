@@ -15,7 +15,8 @@
     "build:scripts": "webpack --config scripts/webpack.scripts.js",
     "generate:headers": "NODE_OPTIONS=--stack-trace-limit=100 node scripts/bin/headers.js",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "madge:circular": "madge --extensions js,ts,tsx --circular src/** --ts-config tsconfig.json"
   },
   "engine-strict": true,
   "engines": {
@@ -204,6 +205,7 @@
     "jest-environment-jsdom": "^27.0.6",
     "jest-raw-loader": "^1.0.1",
     "jest-webextension-mock": "^3.7.17",
+    "madge": "^5.0.1",
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "~2.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",

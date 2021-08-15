@@ -16,11 +16,10 @@
  */
 
 import { configureStore } from "@reduxjs/toolkit";
-import { persistStore, persistReducer } from "redux-persist";
+import { persistReducer, persistStore } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
 import {
   optionsSlice,
-  OptionsState,
   servicesSlice,
   ServicesState,
   settingsSlice,
@@ -32,20 +31,12 @@ import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
 import { boolean } from "@/utils";
+import { OptionsState, persistOptionsConfig } from "@/store/extensions";
+import { persistServicesConfig } from "@/store/services";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
-const persistOptionsConfig = {
-  key: "extensionOptions",
-  storage: localStorage,
-};
-
 export const hashHistory = createHashHistory({ hashType: "slash" });
-
-const persistServicesConfig = {
-  key: "servicesOptions",
-  storage: localStorage,
-};
 
 const persistSettingsConfig = {
   key: "settings",
@@ -71,6 +62,7 @@ const store = configureStore({
     router: connectRouter(hashHistory),
     options: persistReducer(persistOptionsConfig, optionsSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistSettingsConfig, workshopSlice.reducer),
   },

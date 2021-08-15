@@ -18,7 +18,11 @@
 import { useAsyncState } from "@/hooks/common";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useFormikContext } from "formik";
-import { SanitizedServiceConfiguration, ServiceDependency } from "@/core";
+import {
+  RegistryId,
+  SanitizedServiceConfiguration,
+  ServiceDependency,
+} from "@/core";
 import { castArray, head } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";
@@ -42,7 +46,7 @@ function listenerKey(dependency: ServiceDependency) {
   return `${dependency.id}:${dependency.config}`;
 }
 
-function useDependency(serviceId: string | string[]): Dependency {
+function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
   const notify = useNotifications();
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
   const [grantedPermissions, setGrantedPermissions] = useState(false);

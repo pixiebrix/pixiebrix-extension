@@ -25,7 +25,7 @@ import Select from "react-select";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import { runReader } from "@/background/devtools";
 import { jsonTreeTheme as theme } from "@/themes/light";

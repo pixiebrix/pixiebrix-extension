@@ -23,10 +23,10 @@ import { browser } from "webextension-polyfill-ts";
 import { readStorage, setStorage } from "@/chrome";
 import { getExtensionToken } from "@/auth/token";
 import axios from "axios";
+import { Data } from "@/core";
 import { getBaseURL } from "@/services/baseService";
 import { boolean } from "@/utils";
 import { loadOptions } from "@/options/loader";
-import { IExtension } from "@/core";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -125,10 +125,7 @@ async function userSummary() {
   let numActiveBlueprints: number = null;
 
   try {
-    const { extensions: extensionPointConfigs } = await loadOptions();
-    const extensions: IExtension[] = Object.entries(
-      extensionPointConfigs
-    ).flatMap(([, xs]) => Object.values(xs));
+    const { extensions } = await loadOptions();
     numActiveExtensions = extensions.length;
     numActiveBlueprints = uniq(compact(extensions.map((x) => x._recipe?.id)))
       .length;
@@ -203,7 +200,7 @@ export const recordEvent = liftBackground(
 
 export const sendDeploymentAlert = liftBackground(
   "SEND_DEPLOYMENT_ALERT",
-  async ({ deploymentId, data }: { deploymentId: string; data: object }) => {
+  async ({ deploymentId, data }: { deploymentId: string; data: Data }) => {
     const url = `${await getBaseURL()}/api/deployments/${deploymentId}/alerts/`;
     const token = await getExtensionToken();
     if (!token) {

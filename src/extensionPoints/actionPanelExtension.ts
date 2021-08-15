@@ -194,26 +194,28 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       throw new Error("Reader returned null/undefined");
     }
 
-    const errors = [];
+    const errors: unknown[] = [];
 
-    for (const extension of this.extensions) {
-      if (extensionIds != null && !extensionIds.includes(extension.id)) {
-        continue;
-      }
+    const toRun = this.extensions.filter(
+      (x) => extensionIds == null || extensionIds.includes(x.id)
+    );
 
-      try {
-        await this.runExtension(readerContext, extension);
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-      } catch (error) {
-        errors.push(error);
-        this.logger
-          .childLogger({
-            deploymentId: extension._deployment?.id,
-            extensionId: extension.id,
-          })
-          .error(error);
-      }
-    }
+    // OK to run in parallel because we've fixed the order the panels appear in reservePanels
+    await Promise.all(
+      toRun.map(async (extension) => {
+        try {
+          await this.runExtension(readerContext, extension);
+        } catch (error: unknown) {
+          errors.push(error);
+          this.logger
+            .childLogger({
+              deploymentId: extension._deployment?.id,
+              extensionId: extension.id,
+            })
+            .error(error);
+        }
+      })
+    );
 
     if (errors.length > 0) {
       notifyError(`An error occurred adding ${errors.length} panels(s)`);

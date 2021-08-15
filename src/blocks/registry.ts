@@ -17,9 +17,9 @@
 
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/blocks/transformers/blockFactory";
-import { IBlock } from "@/core";
+import { IBlock, RegistryId } from "@/core";
 
-const registry = new BaseRegistry<IBlock>(
+const registry = new BaseRegistry<RegistryId, IBlock>(
   ["block", "component", "effect", "reader"],
   "blocks",
   fromJS
