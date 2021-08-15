@@ -23,28 +23,31 @@ import {
 } from "@/extensionPoints/contextMenu";
 import { reportError } from "@/telemetry/logging";
 import { loadOptions } from "@/options/loader";
+import { EmptyConfig } from "@/core";
 
-type PreloadOptions<TConfig = object> = {
+type PreloadOptions<TConfig = EmptyConfig> = {
   id: string;
   extensionPointId: string;
   config: TConfig;
 };
 
 async function preload(extensions: PreloadOptions[]): Promise<void> {
-  for (const definition of extensions) {
-    const extensionPoint = await extensionPointRegistry.lookup(
-      definition.extensionPointId
-    );
-    if (extensionPoint instanceof ContextMenuExtensionPoint) {
-      try {
-        await extensionPoint.ensureMenu(
-          (definition as unknown) as PreloadOptions<ContextMenuConfig>
-        );
-      } catch (error: unknown) {
-        reportError(error);
+  await Promise.all(
+    extensions.map(async (definition) => {
+      const extensionPoint = await extensionPointRegistry.lookup(
+        definition.extensionPointId
+      );
+      if (extensionPoint instanceof ContextMenuExtensionPoint) {
+        try {
+          await extensionPoint.ensureMenu(
+            (definition as unknown) as PreloadOptions<ContextMenuConfig>
+          );
+        } catch (error: unknown) {
+          reportError(error);
+        }
       }
-    }
-  }
+    })
+  );
 }
 
 export const preloadMenus = liftBackground(

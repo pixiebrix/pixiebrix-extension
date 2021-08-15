@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, IExtensionPoint, IReader } from "@/core";
+import { EmptyConfig, IExtension, IExtensionPoint, IReader } from "@/core";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import {
   clearDynamic,
@@ -50,8 +50,7 @@ export type ElementType =
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
-  // eslint-disable-next-line @typescript-eslint/ban-types -- don't assume anything about keys
-  TExtension extends object = object,
+  TExtension extends EmptyConfig = EmptyConfig,
   TReader extends ReaderDefinition = ReaderDefinition
 > {
   type: ElementType;
