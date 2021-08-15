@@ -33,6 +33,8 @@ const TYPE_MAP = {
 
 export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
   if (config.kind !== "extensionPoint") {
+    // Is `never` due to check, but needed because this method is called dynamically
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new Error(`Expected kind extensionPoint, got ${config.kind}`);
   }
 
@@ -42,5 +44,6 @@ export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
     );
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the factory methods perform validation
   return TYPE_MAP[config.definition.type](config as any);
 }
