@@ -17,10 +17,10 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  ExtensionRef,
   IExtension,
   RawServiceConfiguration,
   RegistryId,
+  UserOptions,
   UUID,
 } from "@/core";
 import { orderBy } from "lodash";
@@ -29,7 +29,9 @@ import { preloadMenus } from "@/background/preload";
 import { selectEventData } from "@/telemetry/deployments";
 import { uuidv4 } from "@/types/helpers";
 import { Except } from "type-fest";
-import { OptionsState } from "@/store/extensions";
+import { OptionsState, requireLatestState } from "@/store/extensions";
+import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
+import { Deployment } from "@/types/contract";
 
 type InstallMode = "local" | "remote";
 
@@ -171,7 +173,21 @@ export const optionsSlice = createSlice({
     resetOptions(state) {
       state.extensions = [];
     },
-    installRecipe(state, { payload }) {
+
+    installRecipe(
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        recipe: RecipeDefinition;
+        services?: Record<RegistryId, UUID>;
+        extensionPoints: ExtensionPointConfig[];
+        optionsArgs?: UserOptions;
+        deployment?: Pick<Deployment, "id" | "updated_at">;
+      }>
+    ) {
+      requireLatestState(state);
+
       const {
         recipe,
         services: auths,
@@ -182,10 +198,11 @@ export const optionsSlice = createSlice({
       for (const {
         id: extensionPointId,
         label,
-        services,
+        services = {},
         config,
       } of extensionPoints) {
         const extensionId = uuidv4();
+
         if (extensionPointId == null) {
           throw new Error("extensionPointId is required");
         }
@@ -200,11 +217,11 @@ export const optionsSlice = createSlice({
             : undefined,
           _recipe: recipe.metadata,
           optionsArgs,
-          services: Object.entries(services ?? {}).map(
+          services: Object.entries(services).map(
             ([outputKey, id]: [string, RegistryId]) => ({
               outputKey,
-              // eslint-disable-next-line security/detect-object-injection -- type-checked as RegistryId
-              config: auths[id],
+              // @ts-expect-error -- TypeScript is complaining that RegistryId can't index Record<RegistryId, ...>
+              config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
               id,
             })
           ),
@@ -227,6 +244,8 @@ export const optionsSlice = createSlice({
         payload,
       }: PayloadAction<Except<IExtension, "_recipe"> & { extensionId?: UUID }>
     ) {
+      requireLatestState(state);
+
       const {
         id,
         extensionId,
@@ -266,9 +285,10 @@ export const optionsSlice = createSlice({
     },
     removeExtension(
       state,
-      { payload: { extensionId } }: PayloadAction<ExtensionRef>
+      { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>
     ) {
-      state.extensions = state.extensions.filter((x) => x.id === extensionId);
+      requireLatestState(state);
+      state.extensions = state.extensions.filter((x) => x.id !== extensionId);
     },
   },
 });

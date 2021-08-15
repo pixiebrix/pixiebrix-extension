@@ -93,7 +93,6 @@ function activateDeployments(
       if (extension._recipe?.id === deployment.package.package_id) {
         dispatch(
           actions.removeExtension({
-            extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
           })
         );

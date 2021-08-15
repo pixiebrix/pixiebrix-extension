@@ -41,31 +41,20 @@ export function useExtension(
       return null;
     }
 
-    const config = extensions.find(
-      (x) => x.extensionPointId === extensionPointId && x.id === extensionId
-    );
+    const config = extensions.find((x) => x.id === extensionId);
 
     if (!config) {
       throw new Error(
-        `Could not locate configuration for extension ${extensionId} (extension point: ${
-          extensionPointId ?? "[[ unknown ]]"
-        })`
+        `Could not locate configuration for extension: ${extensionId}`
       );
     }
 
     return config;
-  }, [extensions, extensionId, extensionPointId]);
+  }, [extensions, extensionId]);
 
   const [extensionPoint, isPending] = useAsyncState(async () => {
-    if (extensionConfig) {
-      return extensionPointRegistry.lookup(extensionConfig.extensionPointId);
-    }
-
-    if (extensionPointId) {
-      return extensionPointRegistry.lookup(extensionPointId);
-    }
-
-    return null;
+    const id = extensionConfig?.extensionPointId ?? extensionPointId;
+    return id ? extensionPointRegistry.lookup(id) : null;
   }, [extensionPointRegistry, extensionConfig, extensionPointId]);
 
   return { extensionPoint, extensionConfig, isPending };

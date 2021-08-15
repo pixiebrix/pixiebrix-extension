@@ -73,7 +73,6 @@ function useReinstall(): Reinstall {
           await uninstallContextMenu({ extensionId: extension.id });
           dispatch(
             removeExtension({
-              extensionPointId: extension.extensionPointId,
               extensionId: extension.id,
             })
           );

@@ -76,3 +76,11 @@ export function migrateOptionsState<T>(
 }
 
 export type OptionsState = LegacyExtensionsState | ExtensionsOptionsState;
+
+export function requireLatestState(
+  state: OptionsState
+): asserts state is ExtensionsOptionsState {
+  if (!Array.isArray(state.extensions)) {
+    throw new TypeError("redux state has not been migrated");
+  }
+}
