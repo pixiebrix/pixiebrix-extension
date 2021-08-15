@@ -52,6 +52,8 @@ for (const [env, defaultValue] of Object.entries(defaults)) {
   }
 }
 
+const SOURCEMAP_URL = process.env.SOURCEMAP_URL;
+
 console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
 console.log("CHROME_EXTENSION_ID:", process.env.CHROME_EXTENSION_ID);
@@ -211,8 +213,11 @@ module.exports = (env, options) =>
       global: true,
     },
 
-    // https://stackoverflow.com/a/57460886/402560
-    devtool: isProd(options) ? "nosources-source-map" : "inline-source-map",
+    devtool: SOURCEMAP_URL
+      ? false // Explicitly handled by `SourceMapDevToolPlugin` below
+      : isProd(options)
+      ? "nosources-source-map"
+      : "inline-source-map", // https://stackoverflow.com/a/57460886/402560
 
     // https://webpack.js.org/configuration/watch/#saving-in-webstorm
     watchOptions: {
@@ -271,6 +276,7 @@ module.exports = (env, options) =>
     },
 
     optimization: {
+      minimize: false,
       // Chrome bug https://bugs.chromium.org/p/chromium/issues/detail?id=1108199
       splitChunks: {
         automaticNameDelimiter: "-",
@@ -344,6 +350,14 @@ module.exports = (env, options) =>
           "static",
         ],
       }),
+
+      // WIP for https://webpack.js.org/plugins/source-map-dev-tool-plugin/#host-source-maps-externally
+      isProd(options) &&
+        new webpack.SourceMapDevToolPlugin({
+          filename: "[file].map[query]", // Without this it won't output anything
+          noSources: true,
+          publicPath: `https://sourcemap-pb-test.vercel.app/${process.env.SOURCE_VERSION}/`,
+        }),
     ],
     module: {
       rules: [
