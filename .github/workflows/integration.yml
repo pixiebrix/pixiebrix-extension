@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI
 
 on: [push]
 
@@ -25,7 +25,7 @@ jobs:
           node-version: "16"
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npm run build:webpack
         env:
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
