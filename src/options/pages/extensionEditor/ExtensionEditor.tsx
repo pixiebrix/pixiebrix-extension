@@ -17,7 +17,7 @@
 
 import React, { useCallback } from "react";
 import { useToasts } from "react-toast-notifications";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { connect } from "react-redux";
 import { optionsSlice } from "@/options/slices";
 import { push } from "connected-react-router";

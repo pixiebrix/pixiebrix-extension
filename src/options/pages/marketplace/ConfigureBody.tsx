@@ -26,12 +26,15 @@ import { WizardValues } from "@/options/pages/marketplace/wizard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { ServiceAuthPair } from "@/core";
+import { RegistryId, ServiceAuthPair, UUID } from "@/core";
 
 export function selectedAuths(values: WizardValues): ServiceAuthPair[] {
-  return Object.entries(values.services)
-    .filter(([, config]) => config)
-    .map(([id, config]) => ({ id, config }));
+  return (
+    Object.entries(values.services)
+      .filter(([, config]) => config)
+      // We lose type information when using Object.entries
+      .map(([id, config]) => ({ id: id as RegistryId, config: config as UUID }))
+  );
 }
 
 export function selectedExtensions(

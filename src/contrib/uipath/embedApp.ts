@@ -19,7 +19,7 @@ import { Renderer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { isEmpty } from "lodash";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { browser, Permissions } from "webextension-polyfill-ts";
 import { executeForNonce } from "@/background/executor";
 

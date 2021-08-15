@@ -44,7 +44,7 @@ import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
 import {

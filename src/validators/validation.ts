@@ -25,6 +25,7 @@ import { MissingConfigurationError } from "@/services/errors";
 import uniq from "lodash/uniq";
 import isPlainObject from "lodash/isPlainObject";
 import mapValues from "lodash/mapValues";
+import { isUUID } from "@/types/helpers";
 
 const IDENTIFIER_REGEX = /^[A-Z_a-z]\w*$/;
 
@@ -191,6 +192,12 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
             if (value == null) {
               return this.createError({
                 message: "Select a service configuration",
+              });
+            }
+
+            if (!isUUID(value)) {
+              return this.createError({
+                message: "Expected service configuration UUID",
               });
             }
 

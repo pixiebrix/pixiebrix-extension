@@ -52,7 +52,7 @@ import {
 } from "@/actionPanel/native";
 import Mustache from "mustache";
 import { reportError } from "@/telemetry/logging";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { BusinessError, getErrorMessage } from "@/errors";
 import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";

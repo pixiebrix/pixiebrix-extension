@@ -21,7 +21,7 @@ import Form from "@rjsf/core";
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { BusinessError, CancelError } from "@/errors";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module

@@ -19,7 +19,7 @@
  * The script that gets injected into the host page. Shares a JS context with the host page
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");

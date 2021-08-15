@@ -33,11 +33,13 @@ import {
   Schema,
   TokenContext,
   KeyedConfig,
+  RegistryId,
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
 import { partition } from "lodash";
 import { Permissions } from "webextension-polyfill-ts";
+import { castRegistryId } from "@/types/helpers";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
@@ -46,7 +48,7 @@ export abstract class Service<
   TConfig extends KeyedConfig = KeyedConfig,
   TOAuth extends AuthData = AuthData
 > implements IService<TConfig> {
-  id: string;
+  id: RegistryId;
 
   name: string;
 
@@ -63,7 +65,7 @@ export abstract class Service<
   abstract isToken: boolean;
 
   protected constructor(
-    id: string,
+    id: RegistryId,
     name: string,
     description?: string,
     icon?: BlockIcon
@@ -91,7 +93,7 @@ export abstract class Service<
 
 export abstract class ExtensionPoint<TConfig extends EmptyConfig>
   implements IExtensionPoint {
-  public readonly id: string;
+  public readonly id: RegistryId;
 
   public readonly name: string;
 
@@ -125,7 +127,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     description?: string,
     icon?: BlockIcon
   ) {
-    this.id = id;
+    this.id = castRegistryId(id);
     this.name = name;
     this.description = description;
     this.icon = icon;
@@ -185,7 +187,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
 }
 
 export abstract class Block implements IBlock {
-  readonly id: string;
+  readonly id: RegistryId;
 
   readonly name: string;
 
@@ -207,7 +209,7 @@ export abstract class Block implements IBlock {
     description?: string,
     icon?: BlockIcon
   ) {
-    this.id = id;
+    this.id = castRegistryId(id);
     this.name = name;
     this.description = description;
     this.icon = icon;

@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { v4 as uuidv4 } from "uuid";
 import { createSlice } from "@reduxjs/toolkit";
-import { IExtension, RawServiceConfiguration } from "@/core";
+import { IExtension, RawServiceConfiguration, RegistryId } from "@/core";
 import { orderBy } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { preloadMenus } from "@/background/preload";
 import { selectEventData } from "@/telemetry/deployments";
+import { uuidv4 } from "@/types/helpers";
 
 type InstallMode = "local" | "remote";
 
@@ -199,7 +199,7 @@ export const optionsSlice = createSlice({
           _recipe: recipe.metadata,
           optionsArgs,
           services: Object.entries(services ?? {}).map(
-            ([outputKey, id]: [string, string]) => ({
+            ([outputKey, id]: [string, RegistryId]) => ({
               outputKey,
               config: auths[id],
               id,

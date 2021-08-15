@@ -17,7 +17,7 @@
 
 import { liftBackground } from "@/background/protocol";
 import { JsonObject } from "type-fest";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { debounce, uniq, throttle, compact } from "lodash";
 import { browser } from "webextension-polyfill-ts";
 import { readStorage, setStorage } from "@/chrome";

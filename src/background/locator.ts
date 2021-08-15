@@ -18,6 +18,7 @@
 import LazyLocatorFactory from "@/services/locator";
 import { liftBackground } from "@/background/protocol";
 import { isBackgroundPage } from "webext-detect-page";
+import { RegistryId, UUID } from "@/core";
 
 export const locator = new LazyLocatorFactory();
 
@@ -27,7 +28,8 @@ async function initLocator() {
 
 export const locate = liftBackground(
   "LOCATE_SERVICE",
-  async (serviceId: string, id: string | null) => locator.locate(serviceId, id)
+  async (serviceId: RegistryId, id: UUID | null) =>
+    locator.locate(serviceId, id)
 );
 
 type RefreshOptions = {

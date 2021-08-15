@@ -45,7 +45,7 @@ import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
