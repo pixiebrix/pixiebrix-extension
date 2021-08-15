@@ -49,6 +49,7 @@ export type ConfigurableAuth = components["schemas"]["EditableAuth"] & {
 };
 
 export type Deployment = components["schemas"]["DeploymentDetail"] & {
+  id: UUID;
   package: { config: RecipeDefinition };
 };
 

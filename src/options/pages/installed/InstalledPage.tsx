@@ -140,8 +140,9 @@ const InstalledPage: React.FunctionComponent<{
   );
 };
 
-const mapStateToProps = (state: { options: OptionsState }) =>
-  selectExtensions(state);
+const mapStateToProps = (state: { options: OptionsState }) => ({
+  extensions: selectExtensions(state),
+});
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   onRemove: (ref: ExtensionRef) => {
