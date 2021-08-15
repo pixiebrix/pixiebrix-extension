@@ -57,10 +57,10 @@ import { BusinessError, getErrorMessage } from "@/errors";
 import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 
-export interface ActionPanelConfig {
+export type ActionPanelConfig = {
   heading: string;
   body: BlockConfig | BlockPipeline;
-}
+};
 
 export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPanelConfig> {
   readonly permissions: Permissions.Permissions = {};

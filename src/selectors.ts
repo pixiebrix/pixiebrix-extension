@@ -19,13 +19,12 @@ import { useMemo } from "react";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useSelector } from "react-redux";
 import { RootState } from "@/options/store";
-import { IExtensionPoint } from "@/core";
-import { ExtensionOptions } from "@/options/slices";
+import { IExtension, IExtensionPoint } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 
 interface ExtensionResult {
   extensionPoint: IExtensionPoint | null;
-  extensionConfig: ExtensionOptions;
+  extensionConfig: IExtension;
   isPending: boolean;
 }
 

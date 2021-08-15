@@ -24,17 +24,17 @@ import {
   faEdit,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Row, Col, Card, Nav, Button } from "react-bootstrap";
+import { Button, Card, Col, Form, Nav, Row } from "react-bootstrap";
 import ServicesFormCard from "@/options/pages/extensionEditor/ServicesFormCard";
 import ExtensionConfigurationCard from "@/options/pages/extensionEditor/ExtensionConfigurationCard";
-import { IExtensionPoint, OptionsArgs, ServiceDependency } from "@/core";
+import { IExtensionPoint, ServiceDependency, UserOptions } from "@/core";
 import DataSourceCard from "@/options/pages/extensionEditor/DataSourceCard";
 import { Formik, FormikProps, getIn, useFormikContext } from "formik";
 import TextField from "@/components/fields/TextField";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { extensionValidatorFactory } from "@/validators/validation";
 import { SCHEMA_TYPE_TO_BLOCK_PROPERTY } from "@/components/fields/BlockField";
-import { castArray, isEmpty, fromPairs, truncate } from "lodash";
+import { castArray, fromPairs, isEmpty, truncate } from "lodash";
 import useAsyncEffect from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
@@ -43,20 +43,20 @@ import { useDispatch } from "react-redux";
 import { push as navigate } from "connected-react-router";
 import { useAsyncState } from "@/hooks/common";
 import { saveAs } from "file-saver";
-import { useToasts } from "react-toast-notifications";
-import { reportError } from "@/telemetry/logging";
 import { configToYaml } from "@/devTools/editor/hooks/useCreate";
 import OptionsArgsCard from "@/options/pages/extensionEditor/OptionsArgsCard";
 import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";
+import { getErrorMessage } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
 
-type TopConfig = { [prop: string]: unknown };
+type TopConfig = Record<string, unknown>;
 
 export interface Config {
   config: TopConfig;
   label: string;
   services: ServiceDependency[];
-  optionsArgs: OptionsArgs;
+  optionsArgs: UserOptions;
 }
 
 interface OwnProps {
@@ -79,7 +79,7 @@ const labelSchema = {
  * - Cast block $ref fields to arrays to they can support combinations.
  */
 function normalizeConfig(
-  config: TopConfig = {},
+  config: TopConfig,
   extensionPoint: IExtensionPoint
 ): TopConfig {
   const schema = extensionPoint.inputSchema;
@@ -172,7 +172,7 @@ const ExtensionForm: React.FunctionComponent<{
   extensionId,
 }) => {
   useTitle(
-    `Configure ${truncate(!isEmpty(values.label) ? values.label : "Brick", {
+    `Configure ${truncate(isEmpty(values.label) ? "Brick" : values.label, {
       length: 15,
     })}`
   );
@@ -183,7 +183,7 @@ const ExtensionForm: React.FunctionComponent<{
 
   const dispatch = useDispatch();
 
-  const { addToast } = useToasts();
+  const notify = useNotifications();
 
   useAsyncEffect(async () => {
     await validateForm();
@@ -193,13 +193,11 @@ const ExtensionForm: React.FunctionComponent<{
     try {
       exportBlueprint(values, extensionPoint);
     } catch (error: unknown) {
-      reportError(error);
-      addToast(`Error exporting as blueprint: ${error}`, {
-        appearance: "error",
-        autoDismiss: true,
+      notify.error(`Error exporting as blueprint: ${getErrorMessage(error)}`, {
+        error,
       });
     }
-  }, [addToast, values, extensionPoint]);
+  }, [notify, values, extensionPoint]);
 
   const hasOptions = !isEmpty(values.optionsArgs);
 

@@ -19,7 +19,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Runtime } from "webextension-polyfill-ts";
 import { IExtension, Metadata, Schema, ServiceDependency } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { DynamicDefinition } from "@/nativeEditor";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 

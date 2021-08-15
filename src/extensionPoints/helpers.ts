@@ -19,7 +19,7 @@ import { castArray, noop, once } from "lodash";
 // @ts-ignore: no type definitions
 import initialize from "@/vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
-import { IExtension, MessageContext, Metadata } from "@/core";
+import { IExtension, MessageContext } from "@/core";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
@@ -280,11 +280,7 @@ export function acquireElement(
   return onNodeRemoved(element, onRemove);
 }
 
-// FIXME: we have inconsistent typing of extensions, e.g., IExtension, InstalledExtension, ExtensionOptions. So handle
-//  common shape without referencing those modules: https://github.com/pixiebrix/pixiebrix-extension/issues/893
-type Extension = IExtension & { _recipe?: Metadata };
-
-export function selectExtensionContext(extension: Extension): MessageContext {
+export function selectExtensionContext(extension: IExtension): MessageContext {
   return {
     extensionId: extension.id,
     extensionPointId: extension.extensionPointId,

@@ -33,6 +33,7 @@ import { ensureContentScript } from "@/background/util";
 import { isEmpty } from "lodash";
 import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 
 export const registerPort = liftBackground(
   "REGISTER_PORT",
@@ -131,7 +132,7 @@ export const showBrowserActionPanel = liftBackground(
 
 export const updateDynamicElement = liftBackground(
   "UPDATE_DYNAMIC_ELEMENT",
-  (target: Target) => async (element: nativeEditorProtocol.DynamicDefinition) =>
+  (target: Target) => async (element: DynamicDefinition) =>
     nativeEditorProtocol.updateDynamicElement(target, element)
 );
 
@@ -155,8 +156,7 @@ export const enableSelectorOverlay = liftBackground(
 
 export const disableOverlay = liftBackground(
   "DISABLE_ELEMENT",
-  (target: Target) => async () =>
-    nativeEditorProtocol.disableOverlay(target)
+  (target: Target) => async () => nativeEditorProtocol.disableOverlay(target)
 );
 
 export const getInstalledExtensionPointIds = liftBackground(

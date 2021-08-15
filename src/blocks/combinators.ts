@@ -28,7 +28,7 @@ import {
   isReader,
   isRendererBlock,
   Logger,
-  OptionsArgs,
+  UserOptions,
   ReaderRoot,
   RenderedArgs,
   SanitizedServiceConfiguration,
@@ -125,7 +125,7 @@ interface ReduceOptions {
   validate?: boolean;
   logValues?: boolean;
   headless?: boolean;
-  optionsArgs?: OptionsArgs;
+  optionsArgs?: UserOptions;
   serviceArgs?: RenderedArgs;
 }
 

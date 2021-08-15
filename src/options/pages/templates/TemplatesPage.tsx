@@ -407,7 +407,7 @@ export default connect(
     installedRecipes: new Set(
       Object.values(options.extensions).flatMap((extensionPoint) =>
         Object.values(extensionPoint)
-          .map((x) => x._recipeId)
+          .map((x) => x._recipe?.id)
           .filter((x) => x)
       )
     ),

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata, selectMetadata } from "@/core";
+import { EmptyConfig, IExtension, Metadata, selectMetadata } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import { castArray, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
@@ -37,6 +37,7 @@ import {
   ReaderFormState,
   ReaderReferenceFormState,
 } from "@/devTools/editor/extensionPoints/elementConfig";
+import { Except } from "type-fest";
 
 export interface WizardStep {
   step: string;
@@ -117,7 +118,7 @@ export function makeBaseState(
   defaultSelector: string | null,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
-): Omit<BaseFormState, "type" | "label" | "extensionPoint"> {
+): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
     services: [],
@@ -282,7 +283,7 @@ export function selectIsAvailable(
 
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
-  TConfig,
+  TConfig extends EmptyConfig,
   TType extends string
 >(
   config: IExtension<TConfig>,
@@ -313,7 +314,7 @@ export async function lookupExtensionPoint<
 
 export function baseSelectExtensionPoint(
   formState: BaseFormState
-): Omit<ExtensionPointConfig, "definition"> {
+): Except<ExtensionPointConfig, "definition"> {
   const { metadata } = formState.extensionPoint;
 
   return {

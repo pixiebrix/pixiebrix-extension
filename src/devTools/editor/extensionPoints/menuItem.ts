@@ -167,6 +167,7 @@ function selectExtension({
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
     label,
     services,
     config: extension,

@@ -35,7 +35,7 @@ import {
   TriggerDefinition,
   TriggerExtensionPoint,
 } from "@/extensionPoints/triggerExtension";
-import { DynamicDefinition } from "@/nativeEditor";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
 import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
@@ -137,6 +137,7 @@ function selectExtension({
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
     label,
     services,
     config: extension,

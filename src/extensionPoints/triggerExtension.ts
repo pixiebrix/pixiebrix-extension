@@ -51,9 +51,9 @@ import { notifyError } from "@/contentScript/notify";
 // @ts-ignore: using for the EventHandler type below
 import JQuery from "jquery";
 
-export interface TriggerConfig {
+export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
-}
+};
 
 export type Trigger = "load" | "click" | "dblclick" | "mouseover" | "appear";
 

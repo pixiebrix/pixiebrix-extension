@@ -22,7 +22,6 @@ export {
   updateDynamicElement,
   checkAvailable,
   getInstalledExtensionPointIds,
-  DynamicDefinition,
 } from "./dynamic";
 export { insertButton, dragButton } from "./insertButton";
 export { insertPanel } from "./insertPanel";

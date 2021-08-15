@@ -16,7 +16,7 @@
  */
 
 import {
-  BaseExtensionConfig,
+  EmptyConfig,
   BlockArg,
   BlockIcon,
   BlockOptions,
@@ -89,7 +89,7 @@ export abstract class Service<
   ): AxiosRequestConfig;
 }
 
-export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
+export abstract class ExtensionPoint<TConfig extends EmptyConfig>
   implements IExtensionPoint {
   public readonly id: string;
 

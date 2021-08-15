@@ -15,26 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionOptions, OptionsState } from "@/options/slices";
+import { OptionsState } from "@/options/slices";
 import { IExtension } from "@/core";
-
-export type RecipeContext = {
-  id: string;
-  name: string;
-};
-
-/**
- * Extension with additional metadata about how it was installed.
- */
-export interface InstalledExtension extends IExtension {
-  _recipe: RecipeContext | null;
-}
 
 export function selectExtensions({
   options,
 }: {
   options: OptionsState;
-}): ExtensionOptions[] {
+}): IExtension[] {
   return Object.values(options.extensions).flatMap((extensionPointOptions) =>
     Object.values(extensionPointOptions)
   );
@@ -42,7 +30,7 @@ export function selectExtensions({
 
 export function selectInstalledExtensions(state: {
   options: OptionsState;
-}): InstalledExtension[] {
+}): IExtension[] {
   return Object.entries(state.options.extensions).flatMap(
     ([extensionPointId, pointExtensions]) =>
       Object.entries(pointExtensions).map(([extensionId, extension]) => ({
