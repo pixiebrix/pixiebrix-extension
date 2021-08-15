@@ -29,18 +29,10 @@ import {
 import { editorSlice, EditorState } from "@/devTools/editor/editorSlice";
 import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
+import { persistOptionsConfig } from "@/store/extensions";
+import { persistServicesConfig } from "@/store/services";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
-
-const persistOptionsConfig = {
-  key: "extensionOptions",
-  storage: localStorage,
-};
-
-const persistServicesConfig = {
-  key: "servicesOptions",
-  storage: localStorage,
-};
 
 const persistSettingsConfig = {
   key: "settings",

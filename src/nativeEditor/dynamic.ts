@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EmptyConfig, IExtension, IExtensionPoint, IReader } from "@/core";
+import {
+  EmptyConfig,
+  IExtension,
+  IExtensionPoint,
+  IReader,
+  UUID,
+} from "@/core";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import {
   clearDynamic,
@@ -64,7 +70,7 @@ const _temporaryExtensions: Map<string, IExtensionPoint> = new Map();
 
 export const clear = liftContentScript(
   "CLEAR_DYNAMIC",
-  async ({ uuid }: { uuid?: string }) => {
+  async ({ uuid }: { uuid?: UUID }) => {
     clearDynamic(uuid);
     if (uuid) {
       _temporaryExtensions.delete(uuid);

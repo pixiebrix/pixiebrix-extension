@@ -27,7 +27,7 @@ import {
 import { Button, Card, Col, Form, Nav, Row } from "react-bootstrap";
 import ServicesFormCard from "@/options/pages/extensionEditor/ServicesFormCard";
 import ExtensionConfigurationCard from "@/options/pages/extensionEditor/ExtensionConfigurationCard";
-import { IExtensionPoint, ServiceDependency, UserOptions } from "@/core";
+import { IExtensionPoint, ServiceDependency, UserOptions, UUID } from "@/core";
 import DataSourceCard from "@/options/pages/extensionEditor/DataSourceCard";
 import { Formik, FormikProps, getIn, useFormikContext } from "formik";
 import TextField from "@/components/fields/TextField";
@@ -35,7 +35,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { extensionValidatorFactory } from "@/validators/validation";
 import { SCHEMA_TYPE_TO_BLOCK_PROPERTY } from "@/components/fields/BlockField";
 import { castArray, fromPairs, isEmpty, truncate } from "lodash";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
 import { useParams } from "react-router";
@@ -61,7 +61,7 @@ export interface Config {
 
 interface OwnProps {
   extensionPoint: IExtensionPoint;
-  extensionId: string | null;
+  extensionId: UUID | null;
   initialValue: Config;
   onSave: (
     update: Config,
@@ -165,7 +165,7 @@ function exportBlueprint(
 const ExtensionForm: React.FunctionComponent<{
   formikProps: FormikProps<Config>;
   extensionPoint: IExtensionPoint;
-  extensionId: string | null;
+  extensionId: UUID | null;
 }> = ({
   formikProps: { handleSubmit, isSubmitting, isValid, validateForm, values },
   extensionPoint,

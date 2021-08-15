@@ -31,7 +31,7 @@ import Fuse from "fuse.js";
 import { isEmpty, sortBy } from "lodash";
 import copy from "copy-to-clipboard";
 import { BlockType, getType } from "@/blocks/util";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";

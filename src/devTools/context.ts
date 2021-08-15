@@ -25,7 +25,7 @@ import {
   ensureScript,
   navigationEvent,
 } from "@/background/devtools/index";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { useAsyncState } from "@/hooks/common";
 import { FrameworkMeta } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";

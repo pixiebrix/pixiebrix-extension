@@ -21,7 +21,7 @@ import { Data, SheetMeta } from "@/contrib/google/sheets/types";
 import { DevToolsContext } from "@/devTools/context";
 import { useToasts } from "react-toast-notifications";
 import { useField } from "formik";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { isNullOrBlank } from "@/utils";
 import {
   devtoolsProtocol,

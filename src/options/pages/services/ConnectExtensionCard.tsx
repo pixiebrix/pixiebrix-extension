@@ -18,7 +18,7 @@
 import React, { useState } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { getExtensionToken } from "@/auth/token";
 import Card from "react-bootstrap/Card";
 import urljoin from "url-join";

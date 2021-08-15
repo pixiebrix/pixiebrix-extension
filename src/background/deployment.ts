@@ -25,12 +25,12 @@ import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
-import { optionsSlice, OptionsState } from "@/options/slices";
+import { ExtensionsOptionsState, optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { liftBackground } from "@/background/protocol";
 import * as contentScript from "@/contentScript/lifecycle";
-import { selectInstalledExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { containsPermissions } from "@/utils/permissions";
 import { deploymentPermissions } from "@/permissions";
@@ -70,11 +70,11 @@ export const queueReactivate = liftBackground(
 );
 
 function installDeployment(
-  state: OptionsState,
+  state: ExtensionsOptionsState,
   deployment: Deployment
-): OptionsState {
+): ExtensionsOptionsState {
   let returnState = state;
-  const installed = selectInstalledExtensions({ options: state });
+  const installed = selectExtensions({ options: state });
 
   for (const extension of installed) {
     if (extension._recipe.id === deployment.package.package_id) {
@@ -134,10 +134,7 @@ async function updateDeployments() {
     return;
   }
 
-  const { extensions: extensionPointConfigs } = await loadOptions();
-  const extensions: IExtension[] = Object.entries(
-    extensionPointConfigs
-  ).flatMap(([, xs]) => Object.values(xs));
+  const { extensions } = await loadOptions();
 
   if (!extensions.some((x) => x._deployment?.id)) {
     console.debug("No deployments installed");

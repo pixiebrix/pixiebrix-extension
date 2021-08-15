@@ -35,6 +35,7 @@ import {
   Schema,
   ServiceDependency,
   TemplateEngine,
+  RegistryId,
 } from "@/core";
 import { validateInput, validateOutput } from "@/validators/generic";
 import {
@@ -65,19 +66,23 @@ import {
 import { engineRenderer } from "@/utils/renderers";
 
 export type ReaderConfig =
-  | string
+  | RegistryId
   // Can't use Record syntax because generics can't reference themselves
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
 
 export interface BlockConfig {
-  id: string;
+  id: RegistryId;
 
-  // (Optional) human-readable label for the step. Shown in the progress indicator
+  /**
+   * (Optional) human-readable label for the step. Shown in the progress indicator
+   */
   label?: string;
 
-  // (Optional) indicate the step is being run in the interface
+  /**
+   * (Optional) indicate the step is being run in the interface
+   */
   notifyProgress?: boolean;
 
   onError?: {
@@ -88,14 +93,20 @@ export interface BlockConfig {
 
   outputKey?: string;
 
-  // (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
-  // provided, the step is run unconditionally.
+  /**
+   * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
+   * provided, the step is run unconditionally.
+   */
   if?: string | boolean | number;
 
-  // (Optional) root selector for reader
+  /**
+   * (Optional) root selector for reader
+   */
   root?: string;
 
-  // (Optional) template language to use for rendering the if and config properties. Default is mustache
+  /**
+   * (Optional) template language to use for rendering the if and config properties. Default is mustache
+   */
   templateEngine?: TemplateEngine;
 
   config: Record<string, unknown>;

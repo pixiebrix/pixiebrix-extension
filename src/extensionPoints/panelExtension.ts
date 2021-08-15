@@ -43,6 +43,7 @@ import {
   IReader,
   ReaderOutput,
   Schema,
+  UUID,
 } from "@/core";
 import {
   ExtensionPointDefinition,
@@ -97,7 +98,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
   protected $container: JQuery;
 
-  private readonly collapsedExtensions: { [key: string]: boolean };
+  private readonly collapsedExtensions: Map<UUID, boolean>;
 
   private readonly cancelPending: Set<() => void>;
 
@@ -119,7 +120,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   ) {
     super(id, name, description, icon);
     this.$container = null;
-    this.collapsedExtensions = {};
+    this.collapsedExtensions = new Map();
     this.cancelPending = new Set();
     this.cancelRemovalMonitor = new Map();
     this.renderTimestamps = new Map();
@@ -214,19 +215,23 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     const selector = this.getContainerSelector();
 
-    console.debug(`Awaiting panel container for ${this.id}: ${selector}`);
+    console.debug(
+      `Awaiting panel container for ${this.id}: ${JSON.stringify(selector)}`
+    );
 
     const [containerPromise, cancelInstall] = awaitElementOnce(selector);
     this.cancelPending.add(cancelInstall);
 
-    this.$container = (await containerPromise) as JQuery<HTMLElement>;
+    this.$container = (await containerPromise) as JQuery;
 
     if (this.$container.length === 0) {
       return false;
     }
 
     if (this.$container.length > 1) {
-      console.error(`Multiple containers found for selector: ${selector}`);
+      console.error(
+        `Multiple containers found for selector: ${JSON.stringify(selector)}`
+      );
       this.logger.error(`Multiple containers found: ${this.$container.length}`);
       return false;
     }
@@ -235,7 +240,11 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       this.$container.get(0),
       this.id,
       () => {
-        console.debug(`Container removed from DOM for ${this.id}: ${selector}`);
+        console.debug(
+          `Container removed from DOM for ${this.id}: ${JSON.stringify(
+            selector
+          )}`
+        );
         this.$container = undefined;
       }
     );
@@ -291,7 +300,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     // Start collapsed
     if (collapsible && cnt === 1) {
-      this.collapsedExtensions[extension.id] = true;
+      this.collapsedExtensions.set(extension.id, true);
     }
 
     const serviceContext = await makeServiceContext(extension.services);
@@ -393,7 +402,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     };
 
     if (collapsible) {
-      const startExpanded = !this.collapsedExtensions[extension.id];
+      const startExpanded = !this.collapsedExtensions.get(extension.id);
 
       $bodyContainers.addClass(["collapse"]);
       const $toggle = $panel.find('[data-toggle="collapse"]');
@@ -407,7 +416,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         const showing = $bodyContainers.hasClass("show");
         $toggle.attr("aria-expanded", String(showing));
         $toggle.toggleClass("active", showing);
-        this.collapsedExtensions[extension.id] = !showing;
+        this.collapsedExtensions.set(extension.id, !showing);
         if (showing) {
           console.debug(
             `Installing body for collapsible panel: ${extension.id}`
@@ -439,7 +448,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       throw new Error("Reader returned null/undefined");
     }
 
-    const errors = [];
+    const errors: unknown[] = [];
 
     for (const extension of this.extensions) {
       if (extensionIds != null && !extensionIds.includes(extension.id)) {
@@ -447,9 +456,10 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       }
 
       try {
+        // Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously
+        // eslint-disable-next-line no-await-in-loop
         await this.runExtension(readerContext, extension);
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-      } catch (error) {
+      } catch (error: unknown) {
         errors.push(error);
         this.logger
           .childLogger({
@@ -537,6 +547,8 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
       }
 
       default: {
+        // Type is `never` due to checks above
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Unexpected position: ${position}`);
       }
     }

@@ -28,7 +28,11 @@ export const PIXIEBRIX_SERVICE_ID: RegistryId = castRegistryId(
 
 const storageKey = "persist:servicesOptions";
 
-const registry = new BaseRegistry<Service>(["service"], "services", fromJS);
+const registry = new BaseRegistry<RegistryId, Service>(
+  ["service"],
+  "services",
+  fromJS
+);
 
 export async function readRawConfigurations(): Promise<
   RawServiceConfiguration[]

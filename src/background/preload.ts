@@ -58,10 +58,7 @@ export const preloadMenus = liftBackground(
 );
 
 export async function preloadAllMenus(): Promise<void> {
-  const { extensions: extensionPointConfigs } = await loadOptions();
-  const extensions: PreloadOptions[] = Object.entries(
-    extensionPointConfigs
-  ).flatMap(([, xs]) => Object.values(xs));
+  const { extensions } = await loadOptions();
   await preload(extensions);
 }
 

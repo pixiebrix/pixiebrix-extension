@@ -17,14 +17,17 @@
 
 import React, { useCallback } from "react";
 import { connect } from "react-redux";
+import { compact } from "lodash";
 import { OptionsState } from "../slices";
 import GenericMarketplacePage from "@/pages/marketplace/MarketplacePage";
 import { push } from "connected-react-router";
 import { RecipeDefinition } from "@/types/definitions";
 import { useTitle } from "@/hooks/title";
+import { selectExtensions } from "@/options/selectors";
+import { RegistryId } from "@/core";
 
 export interface MarketplaceProps {
-  installedRecipes: Set<string>;
+  installedRecipes: Set<RegistryId>;
   navigate: (url: string) => void;
 }
 
@@ -50,13 +53,9 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
 };
 
 export default connect(
-  ({ options }: { options: OptionsState }) => ({
+  (state: { options: OptionsState }) => ({
     installedRecipes: new Set(
-      Object.values(options.extensions).flatMap((extensionPoint) =>
-        Object.values(extensionPoint)
-          .map((x) => x._recipe?.id)
-          .filter((x) => x)
-      )
+      compact(selectExtensions(state).map((x) => x._recipe?.id))
     ),
   }),
   { navigate: push }

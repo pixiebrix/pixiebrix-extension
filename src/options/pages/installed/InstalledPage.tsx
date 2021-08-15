@@ -23,7 +23,7 @@ import { PageTitle } from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Card, Col, Row, Table } from "react-bootstrap";
-import { ExtensionIdentifier, IExtension } from "@/core";
+import { ExtensionRef, IExtension } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
@@ -31,14 +31,14 @@ import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import { Dispatch } from "redux";
-import { selectInstalledExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import { useTitle } from "@/hooks/title";
 import NoExtensionsPage from "@/options/pages/installed/NoExtensionsPage";
 import RecipeEntry from "@/options/pages/installed/RecipeEntry";
 
 const { removeExtension } = optionsSlice.actions;
 
-type RemoveAction = (identifier: ExtensionIdentifier) => void;
+type RemoveAction = (identifier: ExtensionRef) => void;
 
 const InstalledTable: React.FunctionComponent<{
   extensions: IExtension[];
@@ -140,11 +140,11 @@ const InstalledPage: React.FunctionComponent<{
 };
 
 const mapStateToProps = (state: { options: OptionsState }) => ({
-  extensions: selectInstalledExtensions(state),
+  extensions: selectExtensions(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  onRemove: (ref: ExtensionIdentifier) => {
+  onRemove: (ref: ExtensionRef) => {
     reportEvent("ExtensionRemove", {
       extensionId: ref.extensionId,
     });

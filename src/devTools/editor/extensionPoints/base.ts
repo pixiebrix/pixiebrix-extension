@@ -145,7 +145,7 @@ export async function generateExtensionPointMetadata(
 
   await brickRegistry.fetch();
 
-  const allowId = async (id: string) => {
+  const allowId = async (id: RegistryId) => {
     if (!reservedNames.includes(id)) {
       try {
         await brickRegistry.lookup(id);
@@ -158,12 +158,13 @@ export async function generateExtensionPointMetadata(
     return false;
   };
 
+  const collection = `${scope ?? "@local"}/${domain}/`;
+
   // Find next available foundation id
   for (let index = 1; index < 1000; index++) {
-    const id =
-      index === 1
-        ? `${scope ?? "@local"}/${domain}/foundation`
-        : `${scope ?? "@local"}/${domain}/foundation-${index}`;
+    const id = castRegistryId(
+      [collection, index === 1 ? "foundation" : `foundation-${index}`].join("/")
+    );
 
     // Can't parallelize loop because we're looking for first alternative
     const ok = (await Promise.all([allowId(id), allowId(makeReaderId(id))])) // eslint-disable-line no-await-in-loop
@@ -214,14 +215,14 @@ export async function makeReaderFormState(
 ): Promise<Array<ReaderFormState | ReaderReferenceFormState>> {
   const readerId = extensionPoint.definition.reader;
 
-  let readerIds: string[];
+  let readerIds: RegistryId[];
 
   if (isPlainObject(readerId)) {
     throw new Error("Key-based composite readers not supported");
   } else if (typeof readerId === "string") {
     readerIds = [readerId];
   } else if (Array.isArray(readerId)) {
-    readerIds = readerId as string[];
+    readerIds = readerId as RegistryId[];
   } else {
     throw new TypeError("Unexpected reader configuration");
   }

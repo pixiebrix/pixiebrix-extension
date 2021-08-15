@@ -26,12 +26,12 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { ExtensionIdentifier, IExtension } from "@/core";
+import { ExtensionRef, IExtension } from "@/core";
 import ExtensionRow from "@/options/pages/installed/ExtensionRow";
 import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 
-type RemoveAction = (identifier: ExtensionIdentifier) => void;
+type RemoveAction = (identifier: ExtensionRef) => void;
 
 const RecipeEntry: React.FunctionComponent<{
   recipeId: string;

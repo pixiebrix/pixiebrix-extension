@@ -15,26 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useState } from "react";
-import { useAsyncEffect } from "use-async-effect";
-import fetchSVG from "@/icons/svgElementFromUrl";
+import { MigrationManifest, PersistedState } from "redux-persist/es/types";
+import { migrateOptionsState, OptionsState } from "@/options/slices";
+import { localStorage } from "redux-persist-webextension-storage";
+import { createMigrate } from "redux-persist";
+import { boolean } from "@/utils";
 
-function useSvg(logoUrl: string): string {
-  const [logo, setLogo] = useState("");
+const migrations: MigrationManifest = {
+  1: (state: PersistedState & OptionsState) => migrateOptionsState(state),
+};
 
-  useAsyncEffect(
-    async (isMounted) => {
-      const $icon = await fetchSVG(logoUrl);
-      if (!isMounted()) {
-        return;
-      }
-
-      setLogo($icon.get(0).outerHTML);
-    },
-    [setLogo]
-  );
-
-  return logo;
-}
-
-export default useSvg;
+export const persistOptionsConfig = {
+  key: "extensionOptions",
+  storage: localStorage,
+  version: 1,
+  // https://github.com/rt2zz/redux-persist#migrations
+  migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
+};

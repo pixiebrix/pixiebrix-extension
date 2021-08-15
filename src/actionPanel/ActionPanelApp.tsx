@@ -23,7 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCog,
   faSpinner,
-  faAngleDoubleRight
+  faAngleDoubleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { getStore } from "@/actionPanel/native";
 import {
@@ -45,6 +45,7 @@ import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { selectEventData } from "@/telemetry/deployments";
 import { browser } from "webextension-polyfill-ts";
 import { HIDE_ACTION_FRAME } from "@/background/browserAction";
+import { UUID } from "@/core";
 
 const closeSidebar = async () => {
   await browser.runtime.sendMessage({
@@ -61,7 +62,7 @@ const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
   const { lookup } = useExtensionMeta();
 
   const onSelect = useCallback(
-    (extensionId: string) => {
+    (extensionId: UUID) => {
       reportEvent("ViewSidePanelPanel", {
         ...selectEventData(lookup.get(extensionId)),
         initialLoad: false,
@@ -145,10 +146,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 size="sm"
                 variant="link"
               >
-                <FontAwesomeIcon
-                  icon={faAngleDoubleRight}
-                  className="fa-lg"
-                />
+                <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
               </Button>
               <div className="align-self-center">
                 <img
@@ -165,7 +163,9 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 variant="link"
                 className="action-panel-button d-inline-flex align-items-center"
               >
-                <span>Options  <FontAwesomeIcon icon={faCog} /></span>
+                <span>
+                  Options <FontAwesomeIcon icon={faCog} />
+                </span>
               </Button>
             </div>
 
