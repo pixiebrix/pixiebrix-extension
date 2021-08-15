@@ -18,7 +18,7 @@
 import { connect } from "react-redux";
 import React, { useContext, useMemo } from "react";
 import { groupBy, isEmpty, sortBy } from "lodash";
-import { optionsSlice, OptionsState } from "@/options/slices";
+import { optionsSlice } from "@/options/slices";
 import { PageTitle } from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
@@ -35,6 +35,7 @@ import { selectExtensions } from "@/options/selectors";
 import { useTitle } from "@/hooks/title";
 import NoExtensionsPage from "@/options/pages/installed/NoExtensionsPage";
 import RecipeEntry from "@/options/pages/installed/RecipeEntry";
+import { OptionsState } from "@/store/extensions";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -139,9 +140,8 @@ const InstalledPage: React.FunctionComponent<{
   );
 };
 
-const mapStateToProps = (state: { options: OptionsState }) => ({
-  extensions: selectExtensions(state),
-});
+const mapStateToProps = (state: { options: OptionsState }) =>
+  selectExtensions(state);
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   onRemove: (ref: ExtensionRef) => {

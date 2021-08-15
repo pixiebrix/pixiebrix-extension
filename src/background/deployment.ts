@@ -25,7 +25,7 @@ import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
-import { ExtensionsOptionsState, optionsSlice } from "@/options/slices";
+import { optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { liftBackground } from "@/background/protocol";
@@ -35,6 +35,7 @@ import { uninstallContextMenu } from "@/background/contextMenus";
 import { containsPermissions } from "@/utils/permissions";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension } from "@/core";
+import { ExtensionsOptionsState } from "@/store/extensions";
 
 const { reducer, actions } = optionsSlice;
 

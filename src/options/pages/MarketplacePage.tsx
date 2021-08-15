@@ -18,13 +18,13 @@
 import React, { useCallback } from "react";
 import { connect } from "react-redux";
 import { compact } from "lodash";
-import { OptionsState } from "../slices";
 import GenericMarketplacePage from "@/pages/marketplace/MarketplacePage";
 import { push } from "connected-react-router";
 import { RecipeDefinition } from "@/types/definitions";
 import { useTitle } from "@/hooks/title";
 import { selectExtensions } from "@/options/selectors";
 import { RegistryId } from "@/core";
+import { OptionsState } from "@/store/extensions";
 
 export interface MarketplaceProps {
   installedRecipes: Set<RegistryId>;

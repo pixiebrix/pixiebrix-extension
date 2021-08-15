@@ -20,7 +20,6 @@ import { persistStore, persistReducer } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
 import {
   optionsSlice,
-  OptionsState,
   servicesSlice,
   settingsSlice,
   SettingsState,
@@ -29,7 +28,7 @@ import {
 import { editorSlice, EditorState } from "@/devTools/editor/editorSlice";
 import { createLogger } from "redux-logger";
 import { boolean } from "@/utils";
-import { persistOptionsConfig } from "@/store/extensions";
+import { OptionsState, persistOptionsConfig } from "@/store/extensions";
 import { persistServicesConfig } from "@/store/services";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);

@@ -29,6 +29,7 @@ import { preloadMenus } from "@/background/preload";
 import { selectEventData } from "@/telemetry/deployments";
 import { uuidv4 } from "@/types/helpers";
 import { Except } from "type-fest";
+import { OptionsState } from "@/store/extensions";
 
 type InstallMode = "local" | "remote";
 
@@ -57,49 +58,6 @@ export interface ServicesState {
 const initialServicesState: ServicesState = {
   configured: {},
 };
-
-/**
- * @deprecated use ExtensionsState - this is only used in the migration
- */
-type LegacyExtensionsState = {
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- documentation
-  extensions: {
-    // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- documentation
-    [extensionPointId: string]: {
-      [extensionId: string]: IExtension;
-    };
-  };
-};
-
-export type ExtensionsOptionsState = {
-  extensions: IExtension[];
-};
-
-export function migrateOptionsState<T>(
-  state: T & (LegacyExtensionsState | ExtensionsOptionsState)
-): T & ExtensionsOptionsState {
-  if (state.extensions == null) {
-    console.info("Repairing redux state");
-    return { ...state, extensions: [] };
-  }
-
-  if (Array.isArray(state.extensions)) {
-    // Already migrated
-    console.debug("Redux state already up-to-date");
-    return state as T & ExtensionsOptionsState;
-  }
-
-  console.info("Migrating redux state");
-
-  return {
-    ...state,
-    extensions: Object.values(state.extensions).flatMap((extensionMap) =>
-      Object.values(extensionMap)
-    ),
-  };
-}
-
-export type OptionsState = LegacyExtensionsState | ExtensionsOptionsState;
 
 type RecentBrick = {
   id: string;

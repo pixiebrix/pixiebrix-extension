@@ -16,7 +16,10 @@
  */
 
 import { browser } from "webextension-polyfill-ts";
-import { ExtensionsOptionsState, migrateOptionsState } from "@/options/slices";
+import {
+  ExtensionsOptionsState,
+  migrateOptionsState,
+} from "@/store/extensions";
 
 const STORAGE_KEY = "persist:extensionOptions";
 const INITIAL_STATE = JSON.stringify({});

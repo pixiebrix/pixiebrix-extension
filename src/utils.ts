@@ -181,13 +181,15 @@ export function boolean(value: unknown): boolean {
   return false;
 }
 
-export function clone<T extends {}>(object: T): T {
+export function clone<T extends Record<string, unknown>>(object: T): T {
   return Object.assign(Object.create(null), object);
 }
 
-export function clearObject(obj: { [key: string]: unknown }): void {
+export function clearObject(obj: Record<string, unknown>): void {
   for (const member in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, member)) {
+      // Checking to ensure own property
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
       delete obj[member];
     }
   }
@@ -263,7 +265,16 @@ export interface ReadProxy {
 
 export const noopProxy: ReadProxy = {
   toJS: identity,
-  get: (value, prop) => (value as any)[prop],
+  get: (value, prop) => {
+    if (
+      typeof value === "object" &&
+      Object.prototype.hasOwnProperty.call(value, prop)
+    ) {
+      // Checking visibility of the property above
+      // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-explicit-any
+      return (value as any)[prop];
+    }
+  },
 };
 
 export function getPropByPath(

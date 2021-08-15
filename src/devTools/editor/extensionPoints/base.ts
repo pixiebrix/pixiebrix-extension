@@ -158,9 +158,8 @@ export async function generateExtensionPointMetadata(
     return false;
   };
 
-  const collection = `${scope ?? "@local"}/${domain}/`;
-
   // Find next available foundation id
+  const collection = `${scope ?? "@local"}/${domain}`;
   for (let index = 1; index < 1000; index++) {
     const id = castRegistryId(
       [collection, index === 1 ? "foundation" : `foundation-${index}`].join("/")

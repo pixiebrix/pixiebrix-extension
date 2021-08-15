@@ -42,8 +42,11 @@ import {
   ListResponse,
 } from "@/contrib/automationanywhere/contract";
 import { getErrorMessage } from "@/errors";
+import { castRegistryId } from "@/types/helpers";
 
-const AUTOMATION_ANYWHERE_SERVICE_ID = "automation-anywhere/control-room";
+const AUTOMATION_ANYWHERE_SERVICE_ID = castRegistryId(
+  "automation-anywhere/control-room"
+);
 
 const OUTPUT_KEY_SCHEMA: Schema = {
   type: "string",

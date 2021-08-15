@@ -42,7 +42,6 @@ import {
 } from "react-bootstrap";
 import { InstallRecipe, RecipeList } from "@/pages/marketplace/MarketplacePage";
 import { connect } from "react-redux";
-import { OptionsState } from "@/options/slices";
 import { push } from "connected-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -53,6 +52,7 @@ import GridLoader from "react-spinners/GridLoader";
 import { useTitle } from "@/hooks/title";
 import { RegistryId } from "@/core";
 import { selectExtensions } from "@/options/selectors";
+import { OptionsState } from "@/store/extensions";
 
 export interface TemplatesProps {
   installedRecipes: Set<RegistryId>;

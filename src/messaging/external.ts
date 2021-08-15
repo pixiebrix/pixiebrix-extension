@@ -24,6 +24,7 @@ import { liftExternal } from "@/contentScript/externalProtocol";
 import { browser } from "webextension-polyfill-ts";
 import { isFirefox } from "webext-detect-page";
 import { reportEvent } from "@/telemetry/events";
+import { getUID } from "@/background/telemetry";
 
 const lift = isFirefox() ? liftExternal : liftBackground;
 
@@ -40,7 +41,8 @@ const _reload = liftBackground("BACKGROUND_RELOAD", async () => {
 export const setExtensionAuth = lift(
   "SET_EXTENSION_AUTH",
   async (auth: AuthData) => {
-    const updated = await updateExtensionAuth(auth);
+    const browserId = await getUID();
+    const updated = await updateExtensionAuth({ ...auth, browserId });
     if (updated) {
       // A hack to ensure the SET_EXTENSION_AUTH response flows to the front-end before the backend
       // page is reloaded, causing the message port to close.
