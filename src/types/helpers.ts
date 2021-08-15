@@ -15,15 +15,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Primitive } from "type-fest";
+import { validate, v4 as uuidFactory } from "uuid";
 import { RegistryId, UUID } from "@/core";
 
-export interface WizardValues {
-  extensions: Record<string, boolean>;
-  /**
-   * Mapping from service id to auth id
-   */
-  services: Record<RegistryId, UUID>;
-  optionsArgs: Record<string, Primitive>;
-  grantPermissions: boolean;
+export const PACKAGE_REGEX = /^((?<scope>@[\da-z~-][\d._a-z~-]*)\/)?((?<collection>[\da-z~-][\d._a-z~-]*)\/)?(?<name>[\da-z~-][\d._a-z~-]*)$/;
+
+export function uuidv4(): UUID {
+  return uuidFactory() as UUID;
+}
+
+export function isUUID(uuid: string): uuid is UUID {
+  return validate(uuid);
+}
+
+export function castUUID(uuid: string): UUID {
+  if (isUUID(uuid)) {
+    return uuid;
+  }
+
+  throw new Error("Invalid UUID");
+}
+
+export function isRegistryId(id: string): id is RegistryId {
+  return PACKAGE_REGEX.test(id);
+}
+
+export function castRegistryId(id: string): RegistryId {
+  if (isRegistryId(id)) {
+    return id;
+  }
+
+  throw new Error("Invalid registry id");
 }

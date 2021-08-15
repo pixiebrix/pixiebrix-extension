@@ -17,7 +17,7 @@
 
 import { loadOptions } from "@/options/loader";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { IExtensionPoint } from "@/core";
+import { IExtensionPoint, RegistryId } from "@/core";
 import {
   liftContentScript,
   notifyContentScripts,
@@ -30,7 +30,7 @@ import { testMatchPatterns } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 import { browser } from "webextension-polyfill-ts";
 
-let _scriptPromise: Promise<void>;
+let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<string, IExtensionPoint> = new Map();
 const _frameHref: Map<number, string> = new Map();
 let _extensionPoints: IExtensionPoint[];
@@ -44,7 +44,7 @@ const WAIT_LOADED_INTERVAL_MS = 25;
 async function installScriptOnce(): Promise<void> {
   // https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script/9517879#9517879
   // https://stackoverflow.com/questions/9602022/chrome-extension-retrieving-global-variable-from-webpage
-  if (!_scriptPromise) {
+  if (_scriptPromise == null) {
     console.debug("Installing page script");
     _scriptPromise = new Promise((resolve) => {
       const script = document.createElement("script");
@@ -179,7 +179,9 @@ export async function runDynamic(
 async function loadExtensions() {
   console.debug("Loading extensions for page");
 
-  const previousIds = new Set((_extensionPoints ?? []).map((x) => x.id));
+  const previousIds = new Set<RegistryId>(
+    (_extensionPoints ?? []).map((x) => x.id)
+  );
 
   _extensionPoints = [];
 
@@ -190,7 +192,10 @@ async function loadExtensions() {
   )) {
     const extensions = Object.values(extensionMap);
 
-    if (extensions.length === 0 && !previousIds.has(extensionPointId)) {
+    if (
+      extensions.length === 0 &&
+      !previousIds.has(extensionPointId as RegistryId)
+    ) {
       // Ignore the case where we uninstalled the last extension, but the extension point was
       // not deleted from the state.
       //

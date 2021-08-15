@@ -15,7 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { EmptyConfig, IExtension, Metadata, selectMetadata } from "@/core";
+import {
+  EmptyConfig,
+  IExtension,
+  Metadata,
+  RegistryId,
+  selectMetadata,
+  UUID,
+} from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import { castArray, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
@@ -38,6 +45,7 @@ import {
   ReaderReferenceFormState,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
+import { castRegistryId } from "@/types/helpers";
 
 export interface WizardStep {
   step: string;
@@ -68,10 +76,10 @@ export function makeIsAvailable(
 export function makeReaderId(
   foundationId: string,
   excludeIds: string[] = []
-): string {
+): RegistryId {
   const base = `${foundationId}-reader`;
   if (!excludeIds.includes(base)) {
-    return base;
+    return castRegistryId(base);
   }
 
   let num = 1;
@@ -81,7 +89,7 @@ export function makeReaderId(
     id = `${base}-${num}`;
   } while (excludeIds.includes(id));
 
-  return id;
+  return castRegistryId(id);
 }
 
 interface ReaderOptions {
@@ -114,7 +122,7 @@ export function makeDefaultReader(
 }
 
 export function makeBaseState(
-  uuid: string,
+  uuid: UUID,
   defaultSelector: string | null,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
@@ -157,13 +165,13 @@ export async function generateExtensionPointMetadata(
         ? `${scope ?? "@local"}/${domain}/foundation`
         : `${scope ?? "@local"}/${domain}/foundation-${index}`;
 
-    const ok = (
-      await Promise.all([allowId(id), allowId(makeReaderId(id))])
-    ).every((allowed) => allowed);
+    // Can't parallelize loop because we're looking for first alternative
+    const ok = (await Promise.all([allowId(id), allowId(makeReaderId(id))])) // eslint-disable-line no-await-in-loop
+      .every((allowed) => allowed);
 
     if (ok) {
       return {
-        id,
+        id: castRegistryId(id),
         name: `${domain} ${label}`,
       };
     }

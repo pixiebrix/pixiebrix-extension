@@ -30,7 +30,7 @@ import ServiceAuthSelector, {
 import ServiceModal from "@/components/fields/ServiceModal";
 import { useFetch } from "@/hooks/fetch";
 import { ServiceDefinition } from "@/types/definitions";
-import { PACKAGE_REGEX } from "@/blocks/types";
+import { PACKAGE_REGEX } from "@/types/helpers";
 
 function defaultOutputKey(serviceId: string): string {
   const match = PACKAGE_REGEX.exec(serviceId);

@@ -24,7 +24,7 @@ import { useAuthOptions } from "@/options/pages/extensionEditor/ServiceAuthSelec
 import { head } from "lodash";
 import { ServiceDefinition } from "@/types/definitions";
 import ServiceModal from "@/components/fields/ServiceModal";
-import { PACKAGE_REGEX } from "@/blocks/types";
+import { PACKAGE_REGEX } from "@/types/helpers";
 import useFetch from "@/hooks/useFetch";
 import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

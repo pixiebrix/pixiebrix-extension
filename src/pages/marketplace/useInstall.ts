@@ -30,6 +30,7 @@ import { collectPermissions } from "@/permissions";
 import { reactivate } from "@/background/navigation";
 import { push } from "connected-react-router";
 import { optionsSlice } from "@/options/slices";
+import { RegistryId, UUID } from "@/core";
 
 const { installRecipe } = optionsSlice.actions;
 
@@ -61,8 +62,12 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       );
 
       const configuredAuths = Object.entries(values.services)
-        .filter((x) => x[1])
-        .map(([id, config]) => ({ id, config }));
+        .filter(([, config]) => config)
+        // We lose type information when using Object.entries
+        .map(([id, config]) => ({
+          id: id as RegistryId,
+          config: config as UUID,
+        }));
 
       const enabled = await containsPermissions(
         await collectPermissions(selected, configuredAuths)

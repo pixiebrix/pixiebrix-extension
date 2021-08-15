@@ -17,7 +17,7 @@
 
 import { browser } from "webextension-polyfill-ts";
 import { reportError } from "@/telemetry/logging";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import {
   ActionPanelStore,
   PanelEntry,

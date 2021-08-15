@@ -23,11 +23,11 @@ import {
 } from "@/extensionPoints/contextMenu";
 import { reportError } from "@/telemetry/logging";
 import { loadOptions } from "@/options/loader";
-import { EmptyConfig } from "@/core";
+import { EmptyConfig, RegistryId, UUID } from "@/core";
 
 type PreloadOptions<TConfig = EmptyConfig> = {
-  id: string;
-  extensionPointId: string;
+  id: UUID;
+  extensionPointId: RegistryId;
   config: TConfig;
 };
 

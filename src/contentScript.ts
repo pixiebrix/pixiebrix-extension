@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { uuidv4 } from "@/types/helpers";
+
 const start = Date.now();
 
-import { v4 as uuidv4 } from "uuid";
 import "@/extensionContext";
 import addErrorListeners from "@/contentScript/errors";
 import "@/blocks";

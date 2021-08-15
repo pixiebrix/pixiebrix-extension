@@ -34,6 +34,20 @@ export type RenderedHTML = string;
 
 export type ActionType = string;
 
+export type UUID = string & {
+  // Nominal subtyping
+  _uuidBrand: never;
+};
+
+/**
+ * A brick registry id conforming to `@scope/collection/name`
+ */
+export type RegistryId = string & {
+  // Nominal subtyping
+  _registryIdBrand: never;
+};
+type ServiceId = RegistryId;
+
 export interface Meta {
   nonce?: string;
   [index: string]: unknown;
@@ -114,7 +128,7 @@ export type BlockIcon = string;
  * Metadata about a block, extension point, or service
  */
 export interface Metadata {
-  id: string;
+  id: RegistryId;
   name: string;
   version?: string;
   description?: string;
@@ -130,24 +144,44 @@ export type Config = Record<string, unknown>;
 
 export type EmptyConfig = Record<never, unknown>;
 
+export type InnerDefinitions = Record<string, Config>;
+
 export interface ServiceDependency {
-  id: string;
+  /**
+   * The registry id of the service.
+   */
+  id: RegistryId;
+
+  /**
+   * The output key for the dependency (without the leading "@")
+   */
   outputKey: string;
-  config?: string;
+
+  /**
+   * The UUID of the service configuration.
+   */
+  config?: UUID;
 }
 
 export type ServiceLocator = (
-  serviceId: string,
-  id?: string
+  serviceId: RegistryId,
+  configurationId?: UUID
 ) => Promise<SanitizedServiceConfiguration>;
 
 export type ServiceAuthPair = {
-  id: string;
-  config: string;
+  /**
+   * The registry id of the service.
+   */
+  id: RegistryId;
+
+  /**
+   * UUID of the service configuration.
+   */
+  config: UUID;
 };
 
 export interface DeploymentContext {
-  id: string;
+  id: UUID;
   timestamp: string;
 }
 
@@ -155,24 +189,24 @@ export type ExtensionIdentifier = {
   /**
    * UUID of the extension.
    */
-  extensionId: string;
+  extensionId: UUID;
 
   /**
-   * Registry id of the extension point
+   * Registry id of the extension point.
    */
-  extensionPointId: string;
+  extensionPointId: RegistryId;
 };
 
 export interface IExtension<T extends Config = EmptyConfig> {
   /**
    * UUID of the extension
    */
-  id: string;
+  id: UUID;
 
   /**
    * Registry id of the extension point
    */
-  extensionPointId: string;
+  extensionPointId: RegistryId;
 
   /**
    * Metadata about the deployment used to install the extension, or `undefined` if the extension was not installed
@@ -186,12 +220,12 @@ export interface IExtension<T extends Config = EmptyConfig> {
   _recipe: Metadata | undefined;
 
   /**
-   * A human-readable label for the extension
+   * A human-readable label for the extension.
    */
   label: string | null;
 
   /**
-   * Default template engine when running the extension
+   * Default template engine when running the extension.
    */
   templateEngine?: TemplateEngine;
 
@@ -199,6 +233,11 @@ export interface IExtension<T extends Config = EmptyConfig> {
    * Additional permissions, e.g., origins to perform effects on after opening a tab.
    */
   permissions?: Permissions.Permissions;
+
+  /**
+   * Inner/anonymous component/reader/extensionPoint definitions.
+   */
+  definitions?: InnerDefinitions;
 
   /**
    * Configured services/integrations for the extension
@@ -288,8 +327,6 @@ export interface IReader extends IBlock {
   read: (root: ReaderRoot) => Promise<ReaderOutput>;
 }
 
-type ServiceId = string;
-
 export type KeyedConfig = Record<string, string | null>;
 
 export type SanitizedConfig = KeyedConfig & {
@@ -338,10 +375,17 @@ export interface RawServiceConfiguration {
   /**
    * UUID of the service configuration
    */
-  id: string | undefined;
+  id: UUID | undefined;
 
+  /**
+   * Registry identifier for the service, e.g., `@pixiebrix/api`.
+   */
   serviceId: ServiceId;
 
+  /**
+   * Human-readable label for the configuration to distinguish it from other configurations for the same service in the
+   * interface.
+   */
   label: string | undefined;
 
   /**
@@ -355,10 +399,13 @@ export interface SanitizedServiceConfiguration {
   _sanitizedServiceConfigurationBrand: null;
 
   /**
-   * UUID of the service configuration
+   * UUID of the service configuration.
    */
-  id?: string;
+  id?: UUID;
 
+  /**
+   * Registry identifier for the service, e.g., @pixiebrix/api
+   */
   serviceId: ServiceId;
 
   /**
@@ -414,7 +461,7 @@ export interface IconConfig {
 
 export type UserOptions = Record<string, Primitive>;
 
-// TODO: add nominal typing to distinguish rendered vs. non-rendered args
+// Nice-to-have: add nominal typing to distinguish rendered vs. non-rendered args
 export type RenderedArgs = Record<string, unknown>;
 
 export interface OrganizationAuthState {

@@ -20,7 +20,7 @@ import { Card, Table, Button } from "react-bootstrap";
 import React, { useCallback, useContext } from "react";
 import { RawServiceConfiguration, IService, ServiceConfig } from "@/core";
 import { RootState } from "../../store";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { ServiceDefinition } from "@/types/definitions";
 import ServiceModal from "@/components/fields/ServiceModal";
 import useFetch from "@/hooks/useFetch";

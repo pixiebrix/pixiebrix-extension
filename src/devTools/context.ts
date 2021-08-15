@@ -29,7 +29,7 @@ import useAsyncEffect from "use-async-effect";
 import { useAsyncState } from "@/hooks/common";
 import { FrameworkMeta } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
 import { sleep } from "@/utils";
 import { getErrorMessage } from "@/errors";
