@@ -15,16 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Config, Metadata, RegistryId, Schema } from "@/core";
+import {
+  Config,
+  InnerDefinitions,
+  Metadata,
+  OutputKey,
+  RegistryId,
+  Schema,
+} from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 import { UiSchema } from "@rjsf/core";
 
-export interface ExtensionPointConfig {
+export type ExtensionPointConfig = {
   /**
-   * The id of the ExtensionPoint
+   * The id of the ExtensionPoint.
    */
   id: RegistryId;
 
+  /**
+   * Human-readable name for the extension to display in the UI.
+   */
   label: string;
 
   /**
@@ -33,10 +43,17 @@ export interface ExtensionPointConfig {
    */
   permissions?: Permissions.Permissions;
 
-  services?: Record<string, string>;
+  services?: Record<OutputKey, RegistryId>;
 
+  /**
+   * The extension configuration.
+   */
   config: Config;
-}
+};
+
+export type ResolvedExtensionPointConfig = ExtensionPointConfig & {
+  _resolvedExtensionPointConfigBrand: never;
+};
 
 export interface OptionsDefinition {
   schema: Schema;
@@ -56,6 +73,7 @@ export interface Definition {
 export interface RecipeDefinition extends Definition {
   kind: "recipe";
   extensionPoints: ExtensionPointConfig[];
+  definitions?: InnerDefinitions;
   options?: OptionsDefinition;
 }
 

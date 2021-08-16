@@ -216,6 +216,9 @@ export const optionsSlice = createSlice({
               }
             : undefined,
           _recipe: recipe.metadata,
+          // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
+          // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
+          definitions: recipe.definitions ?? {},
           optionsArgs,
           services: Object.entries(services).map(
             ([outputKey, id]: [string, RegistryId]) => ({

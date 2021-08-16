@@ -56,6 +56,7 @@ import { uuidv4 } from "@/types/helpers";
 import { BusinessError, getErrorMessage } from "@/errors";
 import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { cloneDeep } from "lodash";
 
 export type ActionPanelConfig = {
   heading: string;
@@ -242,10 +243,12 @@ class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
-    const { id, name, description } = config.metadata;
+    // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
+    const cloned = cloneDeep(config);
+    const { id, name, description } = cloned.metadata;
     super(id, name, description);
-    this.rawConfig = config;
-    this.definition = config.definition;
+    this.rawConfig = cloned;
+    this.definition = cloned.definition;
   }
 
   async defaultReader(): Promise<IReader> {

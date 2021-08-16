@@ -25,7 +25,14 @@ import {
   BlockPipeline,
   reducePipeline,
 } from "@/blocks/combinators";
-import { BlockArg, BlockOptions, IBlock, Metadata, Schema } from "@/core";
+import {
+  BlockArg,
+  BlockOptions,
+  Config,
+  IBlock,
+  Metadata,
+  Schema,
+} from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
@@ -138,7 +145,7 @@ class ExternalBlock extends Block {
   }
 }
 
-export function fromJS(component: Record<string, unknown>): IBlock {
+export function fromJS(component: Config): IBlock {
   if (component.kind == null) {
     throw new ValidationError(
       "Component definition is missing a 'kind' property",
