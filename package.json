@@ -147,7 +147,7 @@
     "@types/gapi": "0.0.41",
     "@types/gapi.client.oauth2": "^2.0.2",
     "@types/gapi.client.sheets": "^4.0.20201029",
-    "@types/google.picker": "0.0.37",
+    "@types/google.picker": "0.0.39",
     "@types/howler": "^2.2.3",
     "@types/jest": "^26.0.24",
     "@types/jquery": "^3.5.6",
