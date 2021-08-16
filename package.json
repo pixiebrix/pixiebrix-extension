@@ -205,7 +205,6 @@
     "jest-environment-jsdom": "^27.0.6",
     "jest-raw-loader": "^1.0.1",
     "jest-webextension-mock": "^3.7.17",
-    "madge": "^5.0.1",
     "min-document": "^2.19.0",
     "mini-css-extract-plugin": "~2.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
