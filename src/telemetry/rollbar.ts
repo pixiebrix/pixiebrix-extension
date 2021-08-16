@@ -16,11 +16,22 @@
  */
 
 import Rollbar, { LogArgument } from "rollbar";
-import { isExtensionContext } from "webext-detect-page";
-import { getUID } from "@/background/telemetry";
 import { getErrorMessage } from "@/errors";
+import { isExtensionContext } from "webext-detect-page";
 
 const accessToken = process.env.ROLLBAR_BROWSER_ACCESS_TOKEN;
+
+type Frame = {
+  filename: string;
+};
+
+type Payload = {
+  body: {
+    trace: {
+      frames: Frame[];
+    };
+  };
+};
 
 /**
  *  @see https://docs.rollbar.com/docs/javascript
@@ -57,7 +68,7 @@ export const rollbar: Rollbar = (() => {
         // Standardize the origin across browsers so that they match the source map we uploaded to rollbar
         // https://docs.rollbar.com/docs/source-maps#section-using-source-maps-on-many-domains
         for (const frame of payload.body.trace?.frames ?? []) {
-          if (frame.filename?.includes(process.env.CHROME_EXTENSION_ID)) {
+          if (frame.filename && !frame.filename.startsWith("http")) {
             frame.filename = frame.filename.replace(
               location.origin,
               process.env.ROLLBAR_PUBLIC_PATH
@@ -97,39 +108,31 @@ export async function updateAuth({
   userId,
   email,
   organizationId,
+  browserId,
 }: {
   userId: string;
   organizationId: string | null;
   email: string | null;
+  browserId: string | null;
 }): Promise<void> {
-  if (rollbar) {
-    if (isExtensionContext()) {
-      if (organizationId) {
-        // Enterprise accounts, use userId for telemetry
-        rollbar.configure({
-          payload: { person: { id: userId, email, organizationId } },
-        });
-      } else {
-        rollbar.configure({
-          payload: { person: { id: await getUID(), organizationId: null } },
-        });
-      }
+  if (!rollbar) {
+    return;
+  }
+
+  if (isExtensionContext()) {
+    if (organizationId) {
+      // Enterprise accounts, use userId for telemetry
+      rollbar.configure({
+        payload: { person: { id: userId, email, organizationId } },
+      });
     } else {
       rollbar.configure({
-        payload: { person: { id: userId, organizationId } },
+        payload: { person: { id: browserId, organizationId: null } },
       });
     }
+  } else {
+    rollbar.configure({
+      payload: { person: { id: userId, organizationId } },
+    });
   }
 }
-
-type Frame = {
-  filename: string;
-};
-
-type Payload = {
-  body: {
-    trace: {
-      frames: Frame[];
-    };
-  };
-};

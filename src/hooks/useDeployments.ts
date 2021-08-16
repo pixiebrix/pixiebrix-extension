@@ -23,10 +23,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fromPairs } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { optionsSlice } from "@/options/slices";
-import {
-  InstalledExtension,
-  selectInstalledExtensions,
-} from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 import { getExtensionToken } from "@/auth/token";
@@ -38,6 +35,7 @@ import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill-ts";
+import { IExtension } from "@/core";
 
 const { actions } = optionsSlice;
 
@@ -54,7 +52,7 @@ async function selectDeploymentPermissions(
 }
 
 async function fetchDeployments(
-  installedExtensions: InstalledExtension[]
+  installedExtensions: IExtension[]
 ): Promise<Deployment[]> {
   const token = await getExtensionToken();
   const { data: deployments } = await axios.post<Deployment[]>(
@@ -71,7 +69,7 @@ async function fetchDeployments(
   return deployments;
 }
 
-const makeUpdatedFilter = (installed: InstalledExtension[]) => (
+const makeUpdatedFilter = (installed: IExtension[]) => (
   deployment: Deployment
 ) => {
   const match = installed.find(
@@ -86,7 +84,7 @@ const makeUpdatedFilter = (installed: InstalledExtension[]) => (
 function activateDeployments(
   dispatch: Dispatch,
   deployments: Deployment[],
-  installed: InstalledExtension[]
+  installed: IExtension[]
 ) {
   for (const deployment of deployments) {
     // Clear existing installs of the blueprint
@@ -95,7 +93,6 @@ function activateDeployments(
       if (extension._recipe?.id === deployment.package.package_id) {
         dispatch(
           actions.removeExtension({
-            extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
           })
         );
@@ -128,7 +125,7 @@ type DeploymentState = {
 function useDeployments(): DeploymentState {
   const notify = useNotifications();
   const dispatch = useDispatch();
-  const installed = useSelector(selectInstalledExtensions);
+  const installed = useSelector(selectExtensions);
 
   const [deployments] = useAsyncState(async () => fetchDeployments(installed), [
     installed,

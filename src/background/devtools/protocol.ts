@@ -33,6 +33,8 @@ import { ensureContentScript } from "@/background/util";
 import { isEmpty } from "lodash";
 import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
+import { RegistryId, UUID } from "@/core";
 
 export const registerPort = liftBackground(
   "REGISTER_PORT",
@@ -131,40 +133,31 @@ export const showBrowserActionPanel = liftBackground(
 
 export const updateDynamicElement = liftBackground(
   "UPDATE_DYNAMIC_ELEMENT",
-  (target: Target) => async (element: nativeEditorProtocol.DynamicDefinition) =>
+  (target: Target) => async (element: DynamicDefinition) =>
     nativeEditorProtocol.updateDynamicElement(target, element)
 );
 
 export const clearDynamicElements = liftBackground(
   "CLEAR_DYNAMIC",
-  (target: Target) => async ({ uuid }: { uuid?: string }) =>
+  (target: Target) => async ({ uuid }: { uuid?: UUID }) =>
     nativeEditorProtocol.clear(target, { uuid })
 );
 
-export const toggleOverlay = liftBackground(
-  "TOGGLE_ELEMENT",
-  (target: Target) => async ({
-    uuid,
-    on = true,
-  }: {
-    uuid: string;
-    on: boolean;
-  }) =>
-    nativeEditorProtocol.toggleOverlay(target, {
-      selector: `[data-uuid="${uuid}"]`,
-      on,
-    })
+export const enableDataOverlay = liftBackground(
+  "ENABLE_ELEMENT",
+  (target: Target) => async (uuid: UUID) =>
+    nativeEditorProtocol.enableOverlay(target, `[data-uuid="${uuid}"]`)
 );
 
-export const toggleSelector = liftBackground(
-  "TOGGLE_SELECTOR",
-  (target: Target) => async ({
-    selector,
-    on = true,
-  }: {
-    selector: string;
-    on: boolean;
-  }) => nativeEditorProtocol.toggleOverlay(target, { selector, on })
+export const enableSelectorOverlay = liftBackground(
+  "ENABLE_SELECTOR",
+  (target: Target) => async (selector: string) =>
+    nativeEditorProtocol.enableOverlay(target, selector)
+);
+
+export const disableOverlay = liftBackground(
+  "DISABLE_ELEMENT",
+  (target: Target) => async () => nativeEditorProtocol.disableOverlay(target)
 );
 
 export const getInstalledExtensionPointIds = liftBackground(
@@ -194,7 +187,7 @@ export const runReaderBlock = liftBackground(
     id,
     rootSelector,
   }: {
-    id: string;
+    id: RegistryId;
     rootSelector?: string;
   }) =>
     contentScriptProtocol.runReaderBlock(target, {
@@ -222,15 +215,14 @@ export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
   // False positive - it's the inner method that should be async
   // eslint-disable-next-line unicorn/consistent-function-scoping
-  () => async ({ extensionId }: { extensionId: string }) =>
+  () => async ({ extensionId }: { extensionId: UUID }) =>
     contextMenuProtocol.uninstall(extensionId)
 );
 
 export const uninstallActionPanelPanel = liftBackground(
   "UNINSTALL_ACTION_PANEL_PANEL",
   // False positive - it's the inner method that should be async
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  (target) => async ({ extensionId }: { extensionId: string }) =>
+  (target) => async ({ extensionId }: { extensionId: UUID }) =>
     browserActionProtocol.removeActionPanelPanel(target, extensionId)
 );
 

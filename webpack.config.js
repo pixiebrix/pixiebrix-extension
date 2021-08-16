@@ -196,10 +196,10 @@ function customizeManifest(manifest, isProduction) {
 function mockHeavyDependencies() {
   if (process.env.DEV_SLIM.toLowerCase() === "true") {
     console.warn(
-      "Mocking dependencies for development build: svgIcons, uipath/robot"
+      "Mocking dependencies for development build: @/icons/list, uipath/robot"
     );
     return {
-      "@/icons/svgIcons": path.resolve("src/__mocks__/iconsMock"),
+      "@/icons/list": path.resolve("src/__mocks__/iconsListMock"),
       "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
     };
   }
@@ -224,31 +224,46 @@ module.exports = (env, options) =>
       globalObject: "window",
       chunkFilename: "bundles/[name].bundle.js",
     },
-    entry: Object.fromEntries(
-      [
-        "background",
-        "contentScript",
-        "devtools",
-        "devtoolsPanel",
-        "script", // The script that gets injected into the host page
-        "frame",
-        "options",
-        "support",
-        "action",
-        "permissionsPopup",
-      ].map((name) => [name, `./src/${name}`])
-    ),
+    entry: {
+      // All of these entries require the `vendors.js` file to be included first
+      ...Object.fromEntries(
+        [
+          "background",
+          "contentScript",
+          "devtools",
+          "devtoolsPanel",
+          "frame",
+          "options",
+          "support",
+          "action",
+          "permissionsPopup",
+        ].map((name) => [
+          name,
+          { import: `./src/${name}`, dependOn: "vendors" },
+        ])
+      ),
+
+      // This creates a `vendors.js` file that must be included together with the bundles generated above
+      vendors: [
+        "react",
+        "react-dom",
+        "webextension-polyfill",
+        "jquery",
+        "lodash-es",
+        "js-beautify",
+        "css-selector-generator",
+        "@fortawesome/free-solid-svg-icons",
+      ],
+      // The script that gets injected into the host page should not have a vendor chunk
+      script: "./src/script",
+    },
 
     resolve: {
-      extensions: [".ts", ".tsx", ".jsx", ".js"],
       alias: {
         ...mockHeavyDependencies(),
 
         // Enables static analysis and removal of dead code
         "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
-
-        // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
-        handlebars: "handlebars/dist/handlebars.js",
       },
     },
 
@@ -331,7 +346,17 @@ module.exports = (env, options) =>
       rules: [
         {
           test: /\.s?css$/,
-          use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+          use: [
+            MiniCssExtractPlugin.loader,
+            "css-loader",
+            {
+              loader: "sass-loader",
+              options: {
+                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+                implementation: require("node-sass"),
+              },
+            },
+          ],
         },
       ],
     },

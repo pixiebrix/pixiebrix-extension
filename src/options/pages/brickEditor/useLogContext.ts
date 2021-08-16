@@ -19,7 +19,7 @@ import { useDebounce } from "use-debounce";
 import { useState } from "react";
 import yaml from "js-yaml";
 import { MessageContext, RawConfig } from "@/core";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 
 const LOG_MESSAGE_CONTEXT_DEBOUNCE_MS = 350;
 

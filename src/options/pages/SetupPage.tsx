@@ -30,6 +30,7 @@ import GridLoader from "react-spinners/GridLoader";
 import "./SetupPage.scss";
 import { useTitle } from "@/hooks/title";
 
+// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const SERVICE_URL = process.env.SERVICE_URL;
 const { setMode } = settingsSlice.actions;
 

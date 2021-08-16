@@ -22,7 +22,7 @@ import { RootState } from "@/devTools/store";
 import SplitPane from "react-split-pane";
 import { cancelSelectElement } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
-import { selectInstalledExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import PermissionsPane from "@/devTools/editor/panes/PermissionsPane";
 import BetaPane from "@/devTools/editor/panes/BetaPane";
 import SupportWidget from "@/devTools/editor/panes/SupportWidget";
@@ -45,12 +45,16 @@ const DEFAULT_SIDEBAR_WIDTH_PX = 260;
 
 const Editor: React.FunctionComponent = () => {
   const { tabState, port, connecting } = useContext(DevToolsContext);
-  const installed = useSelector(selectInstalledExtensions);
+  const installed = useSelector(selectExtensions);
   const dispatch = useDispatch();
 
   const [showChat, setShowChat] = useState<boolean>(false);
-  const showSupport = useCallback(() => setShowChat(true), [setShowChat]);
-  const hideSupport = useCallback(() => setShowChat(false), [setShowChat]);
+  const showSupport = useCallback(() => {
+    setShowChat(true);
+  }, [setShowChat]);
+  const hideSupport = useCallback(() => {
+    setShowChat(false);
+  }, [setShowChat]);
 
   const {
     selectionSeq,

@@ -25,7 +25,7 @@ import Select from "react-select";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import { runReader } from "@/background/devtools";
 import { jsonTreeTheme as theme } from "@/themes/light";
@@ -117,7 +117,9 @@ const FrameworkSelector: React.FunctionComponent<{
     <Select
       options={frameworkOptions}
       value={frameworkOptions.find((x) => x.value === field.value)}
-      onChange={(option: FrameworkOption) => helpers.setValue(option.value)}
+      onChange={(option: FrameworkOption) => {
+        helpers.setValue(option.value);
+      }}
     />
   );
 };
@@ -380,7 +382,9 @@ const ReaderConfig: React.FunctionComponent<{
             <Form.Control
               type="text"
               placeholder="Search for a property or value"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </Col>
         </Form.Group>
@@ -484,7 +488,9 @@ const ReaderConfig: React.FunctionComponent<{
             <Form.Control
               type="text"
               placeholder="Search for a property or value"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </Col>
         </Form.Group>

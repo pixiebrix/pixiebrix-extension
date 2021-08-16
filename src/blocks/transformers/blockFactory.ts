@@ -114,6 +114,15 @@ class ExternalBlock extends Block {
   }
 
   async run(renderedInputs: BlockArg, options: BlockOptions): Promise<unknown> {
+    console.warn("Running component pipeline", {
+      renderedInputs,
+      options,
+    });
+
+    options.logger.debug("Running component pipeline", {
+      renderedInputs,
+    });
+
     return reducePipeline(
       this.component.pipeline,
       renderedInputs,

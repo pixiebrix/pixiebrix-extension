@@ -28,7 +28,7 @@ export function useLabelRenderer() {
   // https://github.com/reduxjs/redux-devtools/blob/85b4b0fb04b1d6d95054d5073fa17fa61efc0df3/packages/redux-devtools-inspector-monitor/src/ActionPreview.tsx
   return useCallback(
     (
-      [key, ...rest]: (string | number)[],
+      [key, ...rest]: Array<string | number>,
       nodeType: string,
       expanded: boolean
     ) => (

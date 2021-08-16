@@ -16,13 +16,14 @@
  */
 
 import { Primitive } from "type-fest";
+import { RegistryId, UUID } from "@/core";
 
 export interface WizardValues {
   extensions: Record<string, boolean>;
   /**
    * Mapping from service id to auth id
    */
-  services: Record<string, string>;
+  services: Record<RegistryId, UUID>;
   optionsArgs: Record<string, Primitive>;
   grantPermissions: boolean;
 }

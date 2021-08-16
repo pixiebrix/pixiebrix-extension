@@ -15,13 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Registry, { RegistryItem } from "@/baseRegistry";
+import { Registry, RegistryItem } from "@/baseRegistry";
 import { useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
+import { RegistryId } from "@/core";
 
-export function useRegistry<T extends RegistryItem>(
-  registry: Registry<T>,
-  id: string
+export function useRegistry<Id extends RegistryId, T extends RegistryItem<Id>>(
+  registry: Registry<Id, T>,
+  id: Id
 ): T {
   const [result, setResult] = useState<T>();
   useAsyncEffect(

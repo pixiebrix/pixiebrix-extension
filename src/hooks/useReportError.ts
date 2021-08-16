@@ -15,20 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser } from "webextension-polyfill-ts";
+import { useEffect } from "react";
+import { reportError } from "@/telemetry/logging";
 
-export default async function fetchSVG(
-  src: string
-): Promise<JQuery<SVGElement>> {
-  const extensionPrefix = browser.runtime.getURL("/");
-  if (!src.startsWith(extensionPrefix)) {
-    throw new Error(
-      "fetchSVG can only be used to fetch icons bundled with the extension"
-    );
-  }
-
-  const response = await fetch(src);
-  const svg = await response.text();
-  // There might also be comment nodes, so they need to be filtered out
-  return $<SVGElement>(svg).filter("svg");
+/**
+ * React hook to report an error
+ */
+function useReportError(error: unknown): void {
+  useEffect(() => {
+    if (error) {
+      reportError(error);
+    }
+  }, [error]);
 }
+
+export default useReportError;

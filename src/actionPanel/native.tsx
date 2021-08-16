@@ -17,7 +17,7 @@
 
 import { browser } from "webextension-polyfill-ts";
 import { reportError } from "@/telemetry/logging";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import {
   ActionPanelStore,
   PanelEntry,
@@ -29,17 +29,13 @@ import { FORWARD_FRAME_NOTIFICATION } from "@/background/browserAction";
 import { isBrowser } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContentScript } from "@/utils/expectContext";
+import { ExtensionRef } from "@/core";
 
 const SIDEBAR_WIDTH_PX = 400;
-const PANEL_CONTAINER_ID = "pixiebrix-chrome-extension";
+const PANEL_CONTAINER_ID = "pixiebrix-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
 
 let renderSequenceNumber = 0;
-
-type ExtensionRef = {
-  extensionId: string;
-  extensionPointId: string;
-};
 
 export type ShowCallback = () => void;
 

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Metadata, Schema } from "@/core";
+import { Config, Metadata, RegistryId, Schema } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 import { UiSchema } from "@rjsf/core";
 
@@ -23,7 +23,7 @@ export interface ExtensionPointConfig {
   /**
    * The id of the ExtensionPoint
    */
-  id: string;
+  id: RegistryId;
 
   label: string;
 
@@ -35,7 +35,7 @@ export interface ExtensionPointConfig {
 
   services?: Record<string, string>;
 
-  config: Record<string, unknown>;
+  config: Config;
 }
 
 export interface OptionsDefinition {
@@ -81,7 +81,7 @@ export interface OAuth2AuthenticationDefinition {
     authorizeUrl: string;
     tokenUrl: string;
   };
-  headers: { [header: string]: string };
+  headers: Record<string, string>;
 }
 
 export interface ServiceDefinition<

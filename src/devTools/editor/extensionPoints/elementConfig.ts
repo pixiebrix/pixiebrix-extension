@@ -17,9 +17,9 @@
 import React from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Runtime } from "webextension-polyfill-ts";
-import { IExtension, Metadata, Schema, ServiceDependency } from "@/core";
+import { IExtension, Metadata, Schema, ServiceDependency, UUID } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { DynamicDefinition } from "@/nativeEditor";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 
@@ -47,7 +47,7 @@ export interface ReaderFormState {
      */
     type: string | null;
     selector: string | null;
-    selectors: { [field: string]: string };
+    selectors: Record<string, string>;
     optional: boolean;
   };
 }
@@ -72,7 +72,7 @@ export interface BaseFormState {
   /**
    * The extension uuid
    */
-  readonly uuid: string;
+  readonly uuid: UUID;
 
   /**
    * The type of the extensionPoint
@@ -97,7 +97,7 @@ export interface BaseFormState {
 
   services: ServiceDependency[];
 
-  readers: (ReaderFormState | ReaderReferenceFormState)[];
+  readers: Array<ReaderFormState | ReaderReferenceFormState>;
 
   extensionPoint: BaseExtensionPointState;
 

@@ -24,7 +24,7 @@ import {
   MessageLevel,
 } from "@/background/logging";
 import { stubTrue } from "lodash";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { MessageContext } from "@/core";
 import LogContext from "@/components/logViewer/LogContext";
 

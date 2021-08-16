@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -18,7 +19,7 @@
 import { browser, Runtime } from "webextension-polyfill-ts";
 import blockRegistry from "@/blocks/registry";
 import { BackgroundLogger } from "@/background/logging";
-import { MessageContext } from "@/core";
+import { MessageContext, RegistryId, RenderedArgs } from "@/core";
 import {
   liftContentScript,
   MESSAGE_PREFIX,
@@ -55,8 +56,8 @@ export interface RunBlockAction {
   payload: {
     sourceTabId?: number;
     nonce?: string;
-    blockId: string;
-    blockArgs: { [param: string]: unknown };
+    blockId: RegistryId;
+    blockArgs: RenderedArgs;
     options: RemoteBlockOptions;
   };
 }
@@ -66,18 +67,26 @@ const childTabs = new Set<number>();
 const handlers = new HandlerMap();
 
 handlers.set(MESSAGE_RUN_BLOCK, async (request: RunBlockAction) => {
+  // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
   const { blockId, blockArgs, options } = request.payload;
-  // FIXME: validate sourceTabId here
-  // if (!childTabs.has(sourceTabId)) {
-  //   return Promise.reject("Unknown source tab id");
-  // }
   const block = await blockRegistry.lookup(blockId);
   const logger = new BackgroundLogger(options.messageContext);
-  return block.run(blockArgs, {
-    ctxt: options.ctxt,
-    logger,
-    root: document,
-  });
+
+  try {
+    return await block.run(blockArgs, {
+      ctxt: options.ctxt,
+      logger,
+      root: document,
+    });
+  } catch (error: unknown) {
+    // Provide extra logging on the tab because `handlers` doesn't report errors. It's also nice to log here because
+    // we still have the original (non-serialized) error
+    console.info(`Error running remote block on tab`, {
+      request,
+      error,
+    });
+    throw error;
+  }
 });
 
 handlers.set(

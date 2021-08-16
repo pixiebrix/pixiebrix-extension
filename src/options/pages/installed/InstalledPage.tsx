@@ -18,12 +18,12 @@
 import { connect } from "react-redux";
 import React, { useContext, useMemo } from "react";
 import { groupBy, isEmpty, sortBy } from "lodash";
-import { optionsSlice, OptionsState } from "@/options/slices";
+import { optionsSlice } from "@/options/slices";
 import { PageTitle } from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Card, Col, Row, Table } from "react-bootstrap";
-import { ExtensionIdentifier } from "@/core";
+import { ExtensionRef, IExtension } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
@@ -31,20 +31,18 @@ import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import { Dispatch } from "redux";
-import {
-  InstalledExtension,
-  selectInstalledExtensions,
-} from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import { useTitle } from "@/hooks/title";
 import NoExtensionsPage from "@/options/pages/installed/NoExtensionsPage";
 import RecipeEntry from "@/options/pages/installed/RecipeEntry";
+import { OptionsState } from "@/store/extensions";
 
 const { removeExtension } = optionsSlice.actions;
 
-type RemoveAction = (identifier: ExtensionIdentifier) => void;
+type RemoveAction = (identifier: ExtensionRef) => void;
 
 const InstalledTable: React.FunctionComponent<{
-  extensions: InstalledExtension[];
+  extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
   const recipeExtensions = useMemo(
@@ -86,7 +84,7 @@ const InstalledTable: React.FunctionComponent<{
 };
 
 const InstalledPage: React.FunctionComponent<{
-  extensions: InstalledExtension[];
+  extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
   useTitle("Active Bricks");
@@ -143,11 +141,11 @@ const InstalledPage: React.FunctionComponent<{
 };
 
 const mapStateToProps = (state: { options: OptionsState }) => ({
-  extensions: selectInstalledExtensions(state),
+  extensions: selectExtensions(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  onRemove: (ref: ExtensionIdentifier) => {
+  onRemove: (ref: ExtensionRef) => {
     reportEvent("ExtensionRemove", {
       extensionId: ref.extensionId,
     });

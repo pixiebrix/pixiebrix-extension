@@ -21,7 +21,7 @@ import Form from "@rjsf/core";
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { registerBlock } from "@/blocks/registry";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { BusinessError, CancelError } from "@/errors";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
@@ -113,9 +113,9 @@ export class ModalTransformer extends Transformer {
                       <button
                         className="btn btn-link"
                         type="button"
-                        onClick={() =>
-                          reject(new CancelError("You cancelled the form"))
-                        }
+                        onClick={() => {
+                          reject(new CancelError("You cancelled the form"));
+                        }}
                       >
                         Cancel
                       </button>
@@ -128,9 +128,9 @@ export class ModalTransformer extends Transformer {
         </React.Fragment>
       );
       ReactDOM.render(form, shadowRoot);
-      $(`#${id}`).on("hide.bs.modal", () =>
-        reject(new CancelError("You cancelled the form"))
-      );
+      $(`#${id}`).on("hide.bs.modal", () => {
+        reject(new CancelError("You cancelled the form"));
+      });
     });
 
     let data;

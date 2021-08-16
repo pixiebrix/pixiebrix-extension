@@ -48,7 +48,9 @@ const ServiceSelector: React.FunctionComponent<{
     <Select
       options={serviceOptions}
       placeholder={placeholder}
-      onChange={(x: ServiceOption) => onSelect(x.service)}
+      onChange={(x: ServiceOption) => {
+        onSelect(x.service);
+      }}
     />
   );
 };

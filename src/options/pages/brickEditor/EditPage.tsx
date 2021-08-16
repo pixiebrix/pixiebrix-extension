@@ -66,7 +66,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
       return {
         isBlueprint: true,
         isInstalled: extensions.some(
-          (x) => x._recipeId === configJSON.metadata?.id
+          (x) => x._recipe?.id === configJSON.metadata?.id
         ),
         config: configJSON,
       };

@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -64,7 +65,7 @@ export function getVersion(): string | null {
 export function getEmberApplication(): EmberApplication {
   // https://stackoverflow.com/questions/32971707/how-to-access-the-ember-data-store-from-the-console
   if (window.Ember) {
-    const Ember = window.Ember;
+    const { Ember } = window;
     // https://github.com/emberjs/ember-inspector/blob/2237dc1b4818e31a856f3348f35305b10f42f60a/ember_debug/vendor/startup-wrapper.js#L201
     const namespaces = Ember.A(Ember.Namespace.NAMESPACES);
     // TODO: support multiple Ember applications on the page
@@ -195,7 +196,7 @@ function isManaged(node: Node): boolean {
     throw new Error("Could not get DOM HTMLElement for node");
   }
 
-  return !!ignoreNotFound(() => getEmberComponentById(elt.id));
+  return Boolean(ignoreNotFound(() => getEmberComponentById(elt.id)));
 }
 
 const EMBER_INTERNAL_PROPS = new Set([

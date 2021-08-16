@@ -16,14 +16,12 @@
  */
 
 import { useSelector } from "react-redux";
-import {
-  InstalledExtension,
-  selectInstalledExtensions,
-} from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import { useMemo } from "react";
+import { IExtension } from "@/core";
 
-function useExtensionMeta(): { lookup: Map<string, InstalledExtension> } {
-  const extensions = useSelector(selectInstalledExtensions);
+function useExtensionMeta(): { lookup: Map<string, IExtension> } {
+  const extensions = useSelector(selectExtensions);
   const lookup = useMemo(() => new Map(extensions.map((x) => [x.id, x])), [
     extensions,
   ]);

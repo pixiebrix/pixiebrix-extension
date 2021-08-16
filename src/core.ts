@@ -24,6 +24,7 @@ import { Permissions } from "webextension-polyfill-ts";
 import { pick } from "lodash";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
+// Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 export type SchemaDefinition = JSONSchema7Definition;
@@ -32,6 +33,20 @@ export type SchemaProperties = Record<string, SchemaDefinition>;
 export type RenderedHTML = string;
 
 export type ActionType = string;
+
+export type UUID = string & {
+  // Nominal subtyping
+  _uuidBrand: never;
+};
+
+/**
+ * A brick registry id conforming to `@scope/collection/name`
+ */
+export type RegistryId = string & {
+  // Nominal subtyping
+  _registryIdBrand: never;
+};
+type ServiceId = RegistryId;
 
 export interface Meta {
   nonce?: string;
@@ -57,16 +72,18 @@ export interface Message<
  * @see Logger
  */
 export interface MessageContext {
-  readonly deploymentId?: string;
-  readonly blueprintId?: string;
-  readonly extensionPointId?: string;
-  readonly blockId?: string;
-  readonly extensionId?: string;
-  readonly serviceId?: string;
-  readonly authId?: string;
+  readonly deploymentId?: UUID;
+  readonly blueprintId?: RegistryId;
+  readonly extensionPointId?: RegistryId;
+  readonly blockId?: RegistryId;
+  readonly extensionId?: UUID;
+  readonly serviceId?: RegistryId;
+  readonly authId?: UUID;
 }
 
 export type SerializedError = Primitive | ErrorObject;
+
+export type Data = Record<string, unknown>;
 
 export interface Logger {
   readonly context: MessageContext;
@@ -74,15 +91,12 @@ export interface Logger {
    * Return a child logger with additional message context
    */
   childLogger: (additionalContext: MessageContext) => Logger;
-  trace: (msg: string, data?: Record<string, unknown>) => void;
-  warn: (msg: string, data?: Record<string, unknown>) => void;
-  debug: (msg: string, data?: Record<string, unknown>) => void;
-  log: (msg: string, data?: Record<string, unknown>) => void;
-  info: (msg: string, data?: Record<string, unknown>) => void;
-  error: (
-    error: SerializedError | Error,
-    data?: Record<string, unknown>
-  ) => void;
+  trace: (msg: string, data?: Data) => void;
+  warn: (msg: string, data?: Data) => void;
+  debug: (msg: string, data?: Data) => void;
+  log: (msg: string, data?: Data) => void;
+  info: (msg: string, data?: Data) => void;
+  error: (error: unknown, data?: Data) => void;
 }
 
 export type ReaderRoot = HTMLElement | Document;
@@ -113,7 +127,7 @@ export type BlockIcon = string;
  * Metadata about a block, extension point, or service
  */
 export interface Metadata {
-  id: string;
+  id: RegistryId;
   name: string;
   version?: string;
   description?: string;
@@ -125,50 +139,93 @@ export function selectMetadata(metadata: Metadata): Metadata {
   return pick(metadata, ["id", "name", "version", "description"]);
 }
 
-// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
-// the inputs using jsonschema, so the types should match what's expected.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BaseExtensionConfig = Record<string, any>;
+export type Config = Record<string, unknown>;
+
+export type EmptyConfig = Record<never, unknown>;
+
+export type InnerDefinitions = Record<string, Config>;
 
 export interface ServiceDependency {
-  id: string;
+  /**
+   * The registry id of the service.
+   */
+  id: RegistryId;
+
+  /**
+   * The output key for the dependency (without the leading "@")
+   */
   outputKey: string;
-  config?: string;
+
+  /**
+   * The UUID of the service configuration.
+   */
+  config?: UUID;
 }
 
 export type ServiceLocator = (
-  serviceId: string,
-  id?: string
+  serviceId: RegistryId,
+  configurationId?: UUID
 ) => Promise<SanitizedServiceConfiguration>;
 
 export type ServiceAuthPair = {
-  id: string;
-  config: string;
+  /**
+   * The registry id of the service.
+   */
+  id: RegistryId;
+
+  /**
+   * UUID of the service configuration.
+   */
+  config: UUID;
 };
 
 export interface DeploymentContext {
-  id: string;
+  id: UUID;
   timestamp: string;
 }
 
-export type ExtensionIdentifier = {
-  extensionId: string;
-  extensionPointId: string;
-};
-
-export interface IExtension<
-  T extends BaseExtensionConfig = BaseExtensionConfig
-> {
-  id: string;
-
-  extensionPointId: string;
-
-  _deployment?: DeploymentContext;
-
-  label?: string;
+export type ExtensionRef = {
+  /**
+   * UUID of the extension.
+   */
+  extensionId: UUID;
 
   /**
-   * Default template engine when running the extension
+   * Registry id of the extension point.
+   */
+  extensionPointId: RegistryId;
+};
+
+export interface IExtension<T extends Config = EmptyConfig> {
+  /**
+   * UUID of the extension.
+   */
+  id: UUID;
+
+  /**
+   * Registry id of the extension point.
+   */
+  extensionPointId: RegistryId;
+
+  /**
+   * Metadata about the deployment used to install the extension, or `undefined` if the extension was not installed
+   * via a deployment.
+   */
+  _deployment?: DeploymentContext;
+
+  /**
+   * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension
+   * directly.
+   */
+  _recipe: Metadata | undefined;
+
+  /**
+   * A human-readable label for the extension.
+   */
+  label: string | null;
+
+  /**
+   * Default template engine when running the extension.
    */
   templateEngine?: TemplateEngine;
 
@@ -178,6 +235,16 @@ export interface IExtension<
   permissions?: Permissions.Permissions;
 
   /**
+   * Inner/anonymous definitions used by the extension.
+   *
+   * Supported definitions:
+   * - extension points
+   * - components
+   * - readers
+   */
+  definitions?: InnerDefinitions;
+
+  /**
    * Configured services/integrations for the extension
    */
   services: ServiceDependency[];
@@ -185,8 +252,11 @@ export interface IExtension<
   /**
    * Options the end-user has configured (i.e., during blueprint activation)
    */
-  optionsArgs?: OptionsArgs;
+  optionsArgs?: UserOptions;
 
+  /**
+   * The extension configuration for the extension point
+   */
   config: T;
 }
 
@@ -250,9 +320,7 @@ export interface IBlock extends Metadata {
   run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
 }
 
-export interface ReaderOutput {
-  [key: string]: unknown;
-}
+export type ReaderOutput = Record<string, unknown>;
 
 /**
  * A block that can read data from a page or part of the page.
@@ -264,32 +332,35 @@ export interface IReader extends IBlock {
   read: (root: ReaderRoot) => Promise<ReaderOutput>;
 }
 
-type ServiceId = string;
+export type KeyedConfig = Record<string, string | null>;
 
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- we're extending to get nominal typing
-export interface KeyedConfig {
-  [key: string]: string | null;
-}
-
-export interface SanitizedConfig extends KeyedConfig {
-  // Nominal typing to distinguish from ServiceConfig
+export type SanitizedConfig = KeyedConfig & {
+  /**
+   * Nominal typing to distinguish from `ServiceConfig`
+   * @see `ServiceConfig`
+   */
   _sanitizedConfigBrand: null;
-}
+};
 
-export interface ServiceConfig extends KeyedConfig {
-  // Nominal typing to distinguish from SanitizedConfig
+export type ServiceConfig = KeyedConfig & {
+  /**
+   * Nominal typing to distinguish from SanitizedConfig
+   * @see `SanitizedConfig`
+   */
   _serviceConfigBrand: null;
-}
+};
 
 export interface AuthData {
-  // Nominal typing to distinguish from SanitizedConfig and ServiceConfig
-  _oauth: null;
+  /**
+   * Nominal typing to distinguish from `SanitizedConfig` and `ServiceConfig`
+   */
+  _oauthBrand: null;
   [key: string]: string | null;
 }
 
 export interface TokenContext {
   url: string;
-  data: Record<string, unknown>;
+  data: Config;
 }
 
 export interface OAuth2Context {
@@ -309,10 +380,17 @@ export interface RawServiceConfiguration {
   /**
    * UUID of the service configuration
    */
-  id: string | undefined;
+  id: UUID | undefined;
 
+  /**
+   * Registry identifier for the service, e.g., `@pixiebrix/api`.
+   */
   serviceId: ServiceId;
 
+  /**
+   * Human-readable label for the configuration to distinguish it from other configurations for the same service in the
+   * interface.
+   */
   label: string | undefined;
 
   /**
@@ -326,10 +404,13 @@ export interface SanitizedServiceConfiguration {
   _sanitizedServiceConfigurationBrand: null;
 
   /**
-   * UUID of the service configuration
+   * UUID of the service configuration.
    */
-  id?: string;
+  id?: UUID;
 
+  /**
+   * Registry identifier for the service, e.g., @pixiebrix/api
+   */
   serviceId: ServiceId;
 
   /**
@@ -383,15 +464,10 @@ export interface IconConfig {
   color?: string;
 }
 
-export interface OptionsArgs {
-  [prop: string]: Primitive;
-}
+export type UserOptions = Record<string, Primitive>;
 
-export interface RenderedArgs {
-  // FIXME: enforcing nominal typing will require helper methods to product the RenderedArgs
-  // _renderedArgsBrand: null;
-  [prop: string]: unknown;
-}
+// Nice-to-have: add nominal typing to distinguish rendered vs. non-rendered args
+export type RenderedArgs = Record<string, unknown>;
 
 export interface OrganizationAuthState {
   readonly id: string;
@@ -414,3 +490,19 @@ export type RawConfig = {
   kind: "service" | "extensionPoint" | "component" | "reader" | "recipe";
   metadata: Metadata;
 };
+
+export function isReader(block: IBlock): block is IReader {
+  return "read" in block;
+}
+
+export function isRendererBlock(
+  // eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
+  block: IBlock & { render?: Function }
+): boolean {
+  return typeof block.render === "function";
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
+export function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
+  return typeof block.effect === "function";
+}

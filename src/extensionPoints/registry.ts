@@ -18,9 +18,9 @@
 import { sortBy } from "lodash";
 import { fromJS } from "@/extensionPoints/factory";
 import BaseRegistry from "@/baseRegistry";
-import { IExtensionPoint, IOption } from "@/core";
+import { IExtensionPoint, IOption, RegistryId } from "@/core";
 
-const registry = new BaseRegistry<IExtensionPoint>(
+const registry = new BaseRegistry<RegistryId, IExtensionPoint>(
   ["foundation", "extensionPoint"],
   "extension-points",
   fromJS

@@ -51,9 +51,9 @@ import { notifyError } from "@/contentScript/notify";
 // @ts-ignore: using for the EventHandler type below
 import JQuery from "jquery";
 
-export interface TriggerConfig {
+export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
-}
+};
 
 export type Trigger = "load" | "click" | "dblclick" | "mouseover" | "appear";
 
@@ -204,7 +204,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
       }
 
       // https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API
-      this.observer?.disconnect();
+      if (this.observer != null) {
+        this.observer.disconnect();
+      }
 
       this.observer = new IntersectionObserver(
         (entries) => {

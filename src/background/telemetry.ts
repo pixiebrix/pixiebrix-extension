@@ -17,15 +17,16 @@
 
 import { liftBackground } from "@/background/protocol";
 import { JsonObject } from "type-fest";
-import { v4 as uuidv4 } from "uuid";
-import { debounce, uniq, throttle } from "lodash";
+import { uuidv4 } from "@/types/helpers";
+import { debounce, uniq, throttle, compact } from "lodash";
 import { browser } from "webextension-polyfill-ts";
 import { readStorage, setStorage } from "@/chrome";
 import { getExtensionToken } from "@/auth/token";
 import axios from "axios";
+import { Data } from "@/core";
 import { getBaseURL } from "@/services/baseService";
 import { boolean } from "@/utils";
-import { ExtensionOptions, loadOptions } from "@/options/loader";
+import { loadOptions } from "@/options/loader";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -124,14 +125,10 @@ async function userSummary() {
   let numActiveBlueprints: number = null;
 
   try {
-    const { extensions: extensionPointConfigs } = await loadOptions();
-    const extensions: ExtensionOptions[] = Object.entries(
-      extensionPointConfigs
-    ).flatMap(([, xs]) => Object.values(xs));
+    const { extensions } = await loadOptions();
     numActiveExtensions = extensions.length;
-    numActiveBlueprints = uniq(
-      extensions.filter((x) => x._recipeId).map((x) => x._recipeId)
-    ).length;
+    numActiveBlueprints = uniq(compact(extensions.map((x) => x._recipe?.id)))
+      .length;
     numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
       .length;
   } catch (error: unknown) {
@@ -203,7 +200,7 @@ export const recordEvent = liftBackground(
 
 export const sendDeploymentAlert = liftBackground(
   "SEND_DEPLOYMENT_ALERT",
-  async ({ deploymentId, data }: { deploymentId: string; data: object }) => {
+  async ({ deploymentId, data }: { deploymentId: string; data: Data }) => {
     const url = `${await getBaseURL()}/api/deployments/${deploymentId}/alerts/`;
     const token = await getExtensionToken();
     if (!token) {

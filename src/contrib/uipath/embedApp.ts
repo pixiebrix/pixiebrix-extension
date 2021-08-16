@@ -19,8 +19,8 @@ import { Renderer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { isEmpty } from "lodash";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { v4 as uuidv4 } from "uuid";
-import { Permissions } from "webextension-polyfill-ts";
+import { uuidv4 } from "@/types/helpers";
+import { browser, Permissions } from "webextension-polyfill-ts";
 import { executeForNonce } from "@/background/executor";
 
 export class UiPathAppRenderer extends Renderer {
@@ -79,7 +79,7 @@ export class UiPathAppRenderer extends Renderer {
     { logger }: BlockOptions
   ): Promise<string> {
     // https://transitory.technology/browser-extensions-and-csp-headers/
-    const frameSrc = chrome.extension.getURL("frame.html");
+    const frameSrc = browser.runtime.getURL("frame.html");
 
     const nonce = uuidv4();
 

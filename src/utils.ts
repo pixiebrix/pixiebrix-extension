@@ -42,7 +42,7 @@ export function mostCommonElement<T>(items: T[]): T {
 }
 
 export function isGetter(obj: object, prop: string): boolean {
-  return !!Object.getOwnPropertyDescriptor(obj, prop)?.["get"];
+  return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
 }
 
 /**
@@ -71,6 +71,17 @@ export async function waitAnimationFrame(): Promise<void> {
 }
 
 /**
+ * Returns a new object with all the values from the original resolved
+ */
+export async function resolveObj<T>(
+  obj: Record<string, Promise<T>>
+): Promise<Record<string, T>> {
+  return fromPairs(
+    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
+  );
+}
+
+/**
  * Same as lodash mapValues but supports promises
  */
 export async function asyncMapValues<T, TResult>(
@@ -86,8 +97,10 @@ export async function asyncMapValues<T, TResult>(
   ) as any;
 }
 
-export const sleep = (milliseconds: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, milliseconds));
+export const sleep = async (milliseconds: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
 
 export class TimeoutError extends Error {
   constructor(message: string) {
@@ -168,13 +181,15 @@ export function boolean(value: unknown): boolean {
   return false;
 }
 
-export function clone<T extends {}>(object: T): T {
+export function clone<T extends Record<string, unknown>>(object: T): T {
   return Object.assign(Object.create(null), object);
 }
 
-export function clearObject(obj: { [key: string]: unknown }): void {
+export function clearObject(obj: Record<string, unknown>): void {
   for (const member in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, member)) {
+      // Checking to ensure own property
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
       delete obj[member];
     }
   }
@@ -250,7 +265,16 @@ export interface ReadProxy {
 
 export const noopProxy: ReadProxy = {
   toJS: identity,
-  get: (value, prop) => (value as any)[prop],
+  get: (value, prop) => {
+    if (
+      typeof value === "object" &&
+      Object.prototype.hasOwnProperty.call(value, prop)
+    ) {
+      // Checking visibility of the property above
+      // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-explicit-any
+      return (value as any)[prop];
+    }
+  },
 };
 
 export function getPropByPath(

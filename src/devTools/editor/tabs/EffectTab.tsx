@@ -164,7 +164,9 @@ const EffectTab: React.FunctionComponent<{
                             isDragDisabled={actions.length === 1}
                             block={block}
                             outputKey={blockConfig.outputKey}
-                            onSelect={() => setActiveIndex(index)}
+                            onSelect={() => {
+                              setActiveIndex(index);
+                            }}
                             onRemove={() => {
                               setActiveIndex(Math.max(0, index - 1));
                               remove(index);

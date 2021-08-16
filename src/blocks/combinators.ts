@@ -24,24 +24,35 @@ import {
   BlockArg,
   IBlock,
   IReader,
+  isEffectBlock,
+  isReader,
+  isRendererBlock,
   Logger,
-  OptionsArgs,
+  UserOptions,
   ReaderRoot,
   RenderedArgs,
   SanitizedServiceConfiguration,
   Schema,
   ServiceDependency,
   TemplateEngine,
+  RegistryId,
 } from "@/core";
 import { validateInput, validateOutput } from "@/validators/generic";
-import { castArray, isPlainObject, mapValues, pickBy, isEmpty } from "lodash";
+import {
+  castArray,
+  isPlainObject,
+  mapValues,
+  pickBy,
+  isEmpty,
+  fromPairs,
+} from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
   executeInAll,
   executeInOpener,
   executeInTarget,
 } from "@/background/executor";
-import { boolean } from "@/utils";
+import { boolean, resolveObj } from "@/utils";
 import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
@@ -55,19 +66,23 @@ import {
 import { engineRenderer } from "@/utils/renderers";
 
 export type ReaderConfig =
-  | string
+  | RegistryId
   // Can't use Record syntax because generics can't reference themselves
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
 
 export interface BlockConfig {
-  id: string;
+  id: RegistryId;
 
-  // (Optional) human-readable label for the step. Shown in the progress indicator
+  /**
+   * (Optional) human-readable label for the step. Shown in the progress indicator
+   */
   label?: string;
 
-  // (Optional) indicate the step is being run in the interface
+  /**
+   * (Optional) indicate the step is being run in the interface
+   */
   notifyProgress?: boolean;
 
   onError?: {
@@ -78,14 +93,20 @@ export interface BlockConfig {
 
   outputKey?: string;
 
-  // (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
-  // provided, the step is run unconditionally.
+  /**
+   * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
+   * provided, the step is run unconditionally.
+   */
   if?: string | boolean | number;
 
-  // (Optional) root selector for reader
+  /**
+   * (Optional) root selector for reader
+   */
   root?: string;
 
-  // (Optional) template language to use for rendering the if and config properties. Default is mustache
+  /**
+   * (Optional) template language to use for rendering the if and config properties. Default is mustache
+   */
   templateEngine?: TemplateEngine;
 
   config: Record<string, unknown>;
@@ -115,14 +136,14 @@ interface ReduceOptions {
   validate?: boolean;
   logValues?: boolean;
   headless?: boolean;
-  optionsArgs?: OptionsArgs;
+  optionsArgs?: UserOptions;
   serviceArgs?: RenderedArgs;
 }
 
-type SchemaProperties = { [key: string]: Schema };
+type SchemaProperties = Record<string, Schema>;
 
 function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
-  if (schemaOrProperties["type"] && schemaOrProperties["properties"]) {
+  if (schemaOrProperties.type && schemaOrProperties.properties) {
     return schemaOrProperties as Schema;
   }
 
@@ -141,19 +162,6 @@ function excludeUndefined(obj: unknown): unknown {
   }
 
   return obj;
-}
-
-function isReader(block: IBlock): block is IReader {
-  return "read" in block;
-}
-
-function isRendererBlock(block: IBlock & { render?: Function }): boolean {
-  return typeof block.render === "function";
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
-  return typeof block.effect === "function";
 }
 
 type StageOptions = {
@@ -255,35 +263,49 @@ async function runStage(
   }
 
   try {
-    if (stage.window === "opener") {
-      return await executeInOpener(stage.id, blockArgs, {
-        ctxt: args,
-        messageContext: logger.context,
-      });
-    }
+    const baseOptions = {
+      ctxt: args,
+      messageContext: logger.context,
+    };
 
-    if (stage.window === "target") {
-      return await executeInTarget(stage.id, blockArgs, {
-        ctxt: args,
-        messageContext: logger.context,
-      });
-    }
+    switch (stage.window ?? "self") {
+      case "opener": {
+        return await executeInOpener(stage.id, blockArgs, baseOptions);
+      }
 
-    if (stage.window === "broadcast") {
-      return await executeInAll(stage.id, blockArgs, {
-        ctxt: args,
-        messageContext: logger.context,
-      });
-    }
+      case "target": {
+        return await executeInTarget(stage.id, blockArgs, baseOptions);
+      }
 
-    if (stage.window ?? "self" === "self") {
-      return await block.run(blockArgs, { ctxt: args, logger, root, headless });
-    }
+      case "broadcast": {
+        return await executeInAll(stage.id, blockArgs, baseOptions);
+      }
 
-    throw new BusinessError(`Unexpected stage window ${stage.window}`);
+      case "self": {
+        return await block.run(blockArgs, {
+          ...baseOptions,
+          logger,
+          root,
+          headless,
+        });
+      }
+
+      default: {
+        throw new BusinessError(`Unexpected stage window ${stage.window}`);
+      }
+    }
   } finally {
-    progressCallbacks?.hide();
+    if (progressCallbacks) {
+      progressCallbacks.hide();
+    }
   }
+}
+
+function arraySchema(base: Schema): Schema {
+  return {
+    type: "array",
+    items: base,
+  };
 }
 
 /** Execute a pipeline of blocks and return the result. */
@@ -363,6 +385,11 @@ export async function reducePipeline(
       });
 
       if (logValues) {
+        console.info(`Output for block #${index + 1}: ${stage.id}`, {
+          output,
+          outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
+        });
+
         logger.debug(`Output for block #${index + 1}: ${stage.id}`, {
           output,
           outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
@@ -370,8 +397,9 @@ export async function reducePipeline(
       }
 
       if (validate && !isEmpty(block.outputSchema)) {
+        const baseSchema = castSchema(block.outputSchema);
         const validationResult = await validateOutput(
-          castSchema(block.outputSchema),
+          stage.window === "broadcast" ? arraySchema(baseSchema) : baseSchema,
           excludeUndefined(output)
         );
         if (!validationResult.valid) {
@@ -435,18 +463,6 @@ export async function reducePipeline(
   return currentArgs;
 }
 
-async function resolveObj<T>(
-  obj: Record<string, Promise<T>>
-): Promise<Record<string, T>> {
-  const result: Record<string, T> = {};
-  for (const [key, promise] of Object.entries(obj)) {
-    // eslint-disable-next-line security/detect-object-injection -- safe because we're using Object.entries
-    result[key] = await promise;
-  }
-
-  return result;
-}
-
 /** Instantiate a reader from a reader configuration. */
 export async function mergeReaders(
   readerConfig: ReaderConfig
@@ -483,15 +499,21 @@ export type ServiceContext = {
 export async function makeServiceContext(
   dependencies: ServiceDependency[]
 ): Promise<ServiceContext> {
-  const ctxt: ServiceContext = {};
-  for (const dependency of dependencies) {
+  const dependencyContext = async (dependency: ServiceDependency) => {
     const configuredService = await locate(dependency.id, dependency.config);
-    ctxt[`@${dependency.outputKey}`] = {
+    return {
       // Our JSON validator gets mad at undefined values
       ...pickBy(configuredService.config, (x) => x !== undefined),
       __service: configuredService,
     };
-  }
+  };
 
-  return ctxt;
+  return resolveObj(
+    fromPairs(
+      dependencies.map((dependency) => [
+        `@${dependency.outputKey}`,
+        dependencyContext(dependency),
+      ])
+    )
+  );
 }

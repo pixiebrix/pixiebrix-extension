@@ -124,14 +124,6 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
   return inputSchema as SchemaProperties;
 }
 
-export const isChrome =
-  typeof navigator === "object" &&
-  navigator.userAgent.toLowerCase().includes("chrome");
-
-export const isFirefox =
-  typeof navigator === "object" &&
-  navigator.userAgent.toLowerCase().includes("firefox");
-
 /**
  * True if the script is executing in a web browser context.
  */

@@ -18,11 +18,13 @@
 import isEmpty from "lodash/isEmpty";
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
+import { isExtensionContext } from "webext-detect-page";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { forbidBackgroundPage } from "./utils/expectContext";
 
-export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
+// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
+export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 
 type StorageLocation = "local" | "sync";
 
@@ -37,18 +39,7 @@ export class RequestError extends Error {
 }
 
 export function isBrowserActionPanel(): boolean {
-  const isExtensionContext =
-    typeof chrome === "object" &&
-    chrome &&
-    typeof chrome.extension === "object";
-
-  if (!isExtensionContext) {
-    return false;
-  }
-
-  const url = new URL("action.html", location.origin);
-
-  return url.pathname === location.pathname && url.origin === location.origin;
+  return isExtensionContext() && location.pathname === "/action.html";
 }
 
 export function setChromeExtensionId(extensionId: string): void {

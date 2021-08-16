@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -40,11 +41,11 @@ import PanelTab from "@/devTools/editor/tabs/panel/PanelTab";
 import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
-import { DynamicDefinition } from "@/nativeEditor";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
 import { faWindowMaximize } from "@fortawesome/free-solid-svg-icons";
@@ -158,7 +159,7 @@ function selectExtensionPoint(
       type: "panel",
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
-      containerSelector: containerSelector,
+      containerSelector,
       position,
       template,
     },
@@ -175,6 +176,7 @@ function selectExtension({
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
     label,
     services,
     config: extension,

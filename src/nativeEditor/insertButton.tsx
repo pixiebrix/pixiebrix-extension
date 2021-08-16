@@ -17,7 +17,7 @@
 
 // https://github.com/facebook/react/blob/7559722a865e89992f75ff38c1015a865660c3cd/packages/react-devtools-shared/src/backend/views/Highlighter/index.js
 
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { ElementInfo } from "./frameworks";
 import { userSelectElement } from "./selector";
@@ -31,6 +31,8 @@ import {
 import { html as beautifyHTML } from "js-beautify";
 import { DynamicDefinition } from "./dynamic";
 import dragula from "dragula";
+import { Except } from "type-fest";
+import { UUID } from "@/core";
 
 export const DEFAULT_ACTION_CAPTION = "Action";
 
@@ -39,20 +41,20 @@ export type ButtonDefinition = DynamicDefinition<
   MenuItemExtensionConfig
 >;
 
-export interface ButtonSelectionResult {
-  uuid: string;
-  menu: Omit<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
+export type ButtonSelectionResult = {
+  uuid: UUID;
+  menu: Except<MenuDefinition, "defaultOptions" | "isAvailable" | "reader">;
   item: Pick<MenuItemExtensionConfig, "caption">;
   containerInfo: ElementInfo;
-}
+};
 
-export interface DragResult {
+export type DragResult = {
   target: ElementInfo;
   // Element to place the button before
   sibling: string[] | null;
-}
+};
 
-function dragPromise(uuid: string): Promise<DragResult | null> {
+async function dragPromise(uuid: string): Promise<DragResult | null> {
   const drake = dragula({
     isContainer: (el?: Element) => ["DIV", "SECTION"].includes(el.tagName),
     moves: (el?: Element) => el.getAttribute(DATA_ATTR) === uuid,

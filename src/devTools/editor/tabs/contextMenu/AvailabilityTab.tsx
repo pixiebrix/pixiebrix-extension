@@ -68,9 +68,9 @@ const ContextSelector: React.FunctionComponent<{
       isClearable={false}
       options={contextOptions}
       value={contextOptions.filter((x) => field.value.includes(x.value))}
-      onChange={(values) =>
-        helpers.setValue(values.map((x: ContextOption) => x.value))
-      }
+      onChange={(values) => {
+        helpers.setValue(values.map((x: ContextOption) => x.value));
+      }}
     />
   );
 };
@@ -147,7 +147,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setDocumentPattern(HTTPS_PATTERN)}
+                onClick={() => {
+                  setDocumentPattern(HTTPS_PATTERN);
+                }}
               >
                 HTTPS
               </a>{" "}
@@ -155,7 +157,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setDocumentPattern(SITES_PATTERN)}
+                onClick={() => {
+                  setDocumentPattern(SITES_PATTERN);
+                }}
               >
                 All URLs
               </a>
@@ -178,7 +182,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 })
               }
             >
-              Chrome Documentation
+              Patterns Documentation
             </a>{" "}
             for examples
           </Form.Text>
@@ -247,11 +251,11 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() =>
+                onClick={() => {
                   setMatchPattern(
                     values.extensionPoint.definition.documentUrlPatterns[0]
-                  )
-                }
+                  );
+                }}
               >
                 Copy from above
               </a>
@@ -281,7 +285,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern(HTTPS_PATTERN)}
+                onClick={() => {
+                  setMatchPattern(HTTPS_PATTERN);
+                }}
               >
                 HTTPS
               </a>{" "}
@@ -289,7 +295,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern(SITES_PATTERN)}
+                onClick={() => {
+                  setMatchPattern(SITES_PATTERN);
+                }}
               >
                 All URLs
               </a>

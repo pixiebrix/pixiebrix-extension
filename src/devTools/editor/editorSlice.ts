@@ -220,4 +220,4 @@ export const editorSlice = createSlice({
   },
 });
 
-export const actions = editorSlice.actions;
+export const { actions } = editorSlice;

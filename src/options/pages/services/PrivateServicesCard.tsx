@@ -20,7 +20,7 @@ import { Card, Table, Button } from "react-bootstrap";
 import React, { useCallback, useContext } from "react";
 import { RawServiceConfiguration, IService, ServiceConfig } from "@/core";
 import { RootState } from "../../store";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { ServiceDefinition } from "@/types/definitions";
 import ServiceModal from "@/components/fields/ServiceModal";
 import useFetch from "@/hooks/useFetch";
@@ -117,7 +117,9 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                   style={{ width: 100 }}
                   variant="info"
                   size="sm"
-                  onClick={() => navigate(`/services/zapier/`)}
+                  onClick={() => {
+                    navigate(`/services/zapier/`);
+                  }}
                 >
                   View Key
                 </Button>
@@ -151,11 +153,11 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                     style={{ width: 100 }}
                     variant="info"
                     size="sm"
-                    onClick={() =>
+                    onClick={() => {
                       navigate(
                         `/services/${encodeURIComponent(configuredService.id)}`
-                      )
-                    }
+                      );
+                    }}
                   >
                     Configure
                   </Button>

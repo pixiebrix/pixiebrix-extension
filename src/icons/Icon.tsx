@@ -16,9 +16,9 @@
  */
 
 import React, { useState } from "react";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { IconLibrary } from "@/core";
-import iconAsSVG from "@/icons/svgIcons";
+import getSvgIcon from "@/icons/getSvgIcon";
 
 const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
   icon,
@@ -28,12 +28,12 @@ const Icon: React.FunctionComponent<{ icon: string; library: IconLibrary }> = ({
 
   useAsyncEffect(
     async (isMounted) => {
-      const $icon = await iconAsSVG({ id: icon, library, size: 16 });
+      const svg = await getSvgIcon({ id: icon, library, size: 16 });
       if (!isMounted()) {
         return;
       }
 
-      setSvg($icon);
+      setSvg(svg);
     },
     [icon, library, setSvg]
   );

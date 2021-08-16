@@ -31,7 +31,7 @@ import Fuse from "fuse.js";
 import { isEmpty, sortBy } from "lodash";
 import copy from "copy-to-clipboard";
 import { BlockType, getType } from "@/blocks/util";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
@@ -243,7 +243,9 @@ const BrickReference: React.FunctionComponent<{
               id="query"
               placeholder="Start typing to find results"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </InputGroup>
           <div className="overflow-auto h-100">
@@ -253,7 +255,9 @@ const BrickReference: React.FunctionComponent<{
                   key={result.id}
                   block={result}
                   active={selected?.id === result.id}
-                  onSelect={() => setSelected(result)}
+                  onSelect={() => {
+                    setSelected(result);
+                  }}
                 />
               ))}
             </ListGroup>

@@ -30,7 +30,7 @@ import ServiceAuthSelector, {
 import ServiceModal from "@/components/fields/ServiceModal";
 import { useFetch } from "@/hooks/fetch";
 import { ServiceDefinition } from "@/types/definitions";
-import { PACKAGE_REGEX } from "@/blocks/types";
+import { PACKAGE_REGEX } from "@/types/helpers";
 
 function defaultOutputKey(serviceId: string): string {
   const match = PACKAGE_REGEX.exec(serviceId);
@@ -50,7 +50,11 @@ export const DependencyRow: React.FunctionComponent<{
         {/* @ts-ignore: not sure what's going on with the type definition for this */}
         {({ field, meta }) => (
           <Form.Group>
-            <Form.Control {...field} size="default" isInvalid={!!meta.error} />
+            <Form.Control
+              {...field}
+              size="default"
+              isInvalid={Boolean(meta.error)}
+            />
             {meta.touched && meta.error && (
               <Form.Control.Feedback type="invalid">
                 {meta.error}
@@ -80,7 +84,13 @@ export const DependencyRow: React.FunctionComponent<{
     </td>
     <td>
       <Form.Group>
-        <Button variant="danger" size="sm" onClick={() => remove(index)}>
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={() => {
+            remove(index);
+          }}
+        >
           <FontAwesomeIcon icon={faTrash} /> Remove
         </Button>
       </Form.Group>

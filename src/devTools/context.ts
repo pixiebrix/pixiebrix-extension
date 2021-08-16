@@ -25,11 +25,11 @@ import {
   ensureScript,
   navigationEvent,
 } from "@/background/devtools/index";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { useAsyncState } from "@/hooks/common";
 import { FrameworkMeta } from "@/messaging/constants";
 import { reportError } from "@/telemetry/logging";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { useTabEventListener } from "@/hooks/events";
 import { sleep } from "@/utils";
 import { getErrorMessage } from "@/errors";
@@ -145,7 +145,7 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
   let frameworks: FrameworkMeta[] = [];
   try {
     console.debug(`connectToFrame: detecting frameworks on ${url}`);
-    frameworks = await runInMillis(() => detectFrameworks(port), 500);
+    frameworks = await runInMillis(async () => detectFrameworks(port), 500);
   } catch (error: unknown) {
     console.debug(`connectToFrame: error detecting frameworks ${url}`, {
       error,
@@ -157,7 +157,7 @@ async function connectToFrame(port: Runtime.Port): Promise<FrameMeta> {
 }
 
 export function useDevConnection(): Context {
-  const tabId = browser.devtools.inspectedWindow.tabId;
+  const { tabId } = browser.devtools.inspectedWindow;
 
   const [connecting, setConnecting] = useState(false);
 
@@ -220,7 +220,7 @@ export function useDevConnection(): Context {
   return {
     port,
     connecting,
-    connect: connect,
+    connect,
     portError: portError?.toString(),
     tabState: current,
   };

@@ -90,7 +90,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern(HTTPS_PATTERN)}
+                onClick={() => {
+                  setMatchPattern(HTTPS_PATTERN);
+                }}
               >
                 HTTPS
               </a>{" "}
@@ -98,7 +100,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern(SITES_PATTERN)}
+                onClick={() => {
+                  setMatchPattern(SITES_PATTERN);
+                }}
               >
                 All URLs
               </a>
@@ -121,7 +125,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 })
               }
             >
-              Chrome Documentation
+              Patterns Documentation
             </a>{" "}
             for examples
           </Form.Text>

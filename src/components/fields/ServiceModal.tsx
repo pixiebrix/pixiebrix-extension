@@ -125,7 +125,12 @@ const ServiceModal: React.FunctionComponent<{
     const Component: React.FunctionComponent<{
       setShow: (show: boolean) => void;
     }> = ({ setShow }) => (
-      <Button variant={variant} onClick={() => setShow(true)}>
+      <Button
+        variant={variant}
+        onClick={() => {
+          setShow(true);
+        }}
+      >
         {caption}
       </Button>
     );
@@ -161,7 +166,9 @@ const ServiceModal: React.FunctionComponent<{
                       <Form.Control
                         placeholder="Start typing to find results"
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
+                        onChange={(e) => {
+                          setQuery(e.target.value);
+                        }}
                       />
                     </InputGroup>
                   </Form>

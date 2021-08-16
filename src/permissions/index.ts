@@ -19,14 +19,10 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import { IExtension, IExtensionPoint, ServiceAuthPair } from "@/core";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { Permissions } from "webextension-polyfill-ts";
-import { castArray, compact, groupBy, sortBy, uniq } from "lodash";
+import { castArray, compact, uniq } from "lodash";
 import { locator } from "@/background/locator";
 import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
-import {
-  distinctPermissions,
-  mergePermissions,
-  requestPermissions,
-} from "@/utils/permissions";
+import { mergePermissions, requestPermissions } from "@/utils/permissions";
 import { Deployment } from "@/types/contract";
 
 // Copied from the permissions section of manifest.json
@@ -58,6 +54,10 @@ export async function ensureAllPermissions(
 function normalizeOptionalPermissions(
   permissions: Permissions.Permissions
 ): Required<Permissions.Permissions> {
+  if (permissions == null) {
+    return { origins: [], permissions: [] };
+  }
+
   return {
     origins: uniq(castArray(permissions.origins ?? [])),
     permissions: uniq(
@@ -87,14 +87,13 @@ export async function deploymentPermissions(
 export async function blueprintPermissions(
   blueprint: RecipeDefinition
 ): Promise<Permissions.Permissions> {
-  const permissions = await collectPermissions(blueprint.extensionPoints, []);
-  return mergePermissions(permissions);
+  return collectPermissions(blueprint.extensionPoints, []);
 }
 
 export async function collectPermissions(
   extensionPoints: ExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
-): Promise<Permissions.Permissions[]> {
+): Promise<Permissions.Permissions> {
   const servicePromises = serviceAuths.map(async (serviceAuth) =>
     serviceOriginPermissions(serviceAuth)
   );
@@ -131,7 +130,7 @@ export async function collectPermissions(
     ...extensionPointPromises,
   ]);
 
-  return distinctPermissions(permissionsList);
+  return mergePermissions(permissionsList);
 }
 
 /**
@@ -203,37 +202,10 @@ export async function extensionPermissions(
   const blocks = await extensionPoint.getBlocks(extension);
   const blockPermissions = blocks.map((x) => x.permissions);
   return mergePermissions(
-    distinctPermissions(
-      compact([
-        opts.includeExtensionPoint ? extensionPoint.permissions : null,
-        ...(opts.includeServices ? services : []),
-        ...blockPermissions,
-      ])
-    )
+    compact([
+      opts.includeExtensionPoint ? extensionPoint.permissions : null,
+      ...(opts.includeServices ? services : []),
+      ...blockPermissions,
+    ])
   );
-}
-
-/**
- * Return permissions grouped by origin.
- * @deprecated The logic of grouping permissions by origin doesn't actually make sense as we don't currently have any
- * way to enforce permissions on a per-origin basis. https://github.com/pixiebrix/pixiebrix-extension/pull/828#discussion_r671703130
- */
-export function originPermissions(
-  permissions: Permissions.Permissions[]
-): Permissions.Permissions[] {
-  const perms = permissions.flatMap((perm) =>
-    perm.origins.map((origin) => ({
-      origins: [origin],
-      permissions: perm.permissions,
-    }))
-  );
-
-  const grouped = Object.entries(groupBy(perms, (x) => x.origins[0])).map(
-    ([origin, xs]) => ({
-      origins: [origin],
-      permissions: uniq(xs.flatMap((x) => x.permissions)),
-    })
-  );
-
-  return sortBy(grouped, (x) => x.origins[0]);
 }

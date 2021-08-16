@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { uuidv4 } from "@/types/helpers";
+
 const start = Date.now();
 
-import { v4 as uuidv4 } from "uuid";
 import "@/extensionContext";
 import addErrorListeners from "@/contentScript/errors";
 import "@/blocks";
@@ -27,7 +28,6 @@ import "@/contentScript/contextMenus";
 import "@/contentScript/browserAction";
 import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
-import addExternalListener from "@/contentScript/externalProtocol";
 import addExecutorListener, {
   notifyReady,
   whoAmI,
@@ -53,7 +53,6 @@ async function init(): Promise<void> {
   addErrorListeners();
 
   addContentScriptListener();
-  addExternalListener();
   addExecutorListener();
   initTelemetry();
 

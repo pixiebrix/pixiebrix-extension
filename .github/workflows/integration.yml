@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI
 
 on: [push]
 
@@ -25,7 +25,7 @@ jobs:
           node-version: "16"
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npm run build:webpack
         env:
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
@@ -39,6 +39,7 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
       - uses: actions/upload-artifact@v2
+        if: contains(github.ref, 'release/') || startsWith(github.ref, 'refs/tags')
         with:
           name: build-staging
           path: dist
@@ -69,6 +70,19 @@ jobs:
           path: headers.json
           retention-days: 5
           if-no-files-found: error
+
+  types:
+    # Surface type errors in GitHub’s UI faster and outside webpack
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run build:typescript
 
   lint:
     runs-on: ubuntu-latest

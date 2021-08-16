@@ -55,10 +55,10 @@ import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { getErrorMessage, isErrorObject } from "@/errors";
 
-export interface ContextMenuConfig {
+export type ContextMenuConfig = {
   title: string;
   action: BlockConfig | BlockPipeline;
-}
+};
 
 let clickedElement: HTMLElement = null;
 let selectionHandlerInstalled = false;

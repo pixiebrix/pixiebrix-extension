@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -68,7 +69,9 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
           setCreated(uniq([...created, value]));
         }}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue(option?.value)}
+        onChange={(option) => {
+          helpers.setValue(option?.value);
+        }}
       />
     );
   } else if (options.length > 0 && !creatable) {
@@ -77,7 +80,9 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         isClearable
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue(option?.value)}
+        onChange={(option) => {
+          helpers.setValue(option?.value);
+        }}
       />
     );
   } else if (typeof value === "object") {
@@ -92,7 +97,7 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         as="textarea"
         value={value ?? ""}
         {...field}
-        isInvalid={!!meta.error}
+        isInvalid={Boolean(meta.error)}
       />
     );
   } else {
@@ -101,7 +106,7 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         type="text"
         value={value ?? ""}
         {...field}
-        isInvalid={!!meta.error}
+        isInvalid={Boolean(meta.error)}
       />
     );
   }
@@ -181,7 +186,9 @@ export const ServiceField: React.FunctionComponent<
       <Select
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue(option?.value)}
+        onChange={(option) => {
+          helpers.setValue(option?.value);
+        }}
       />
       {schema.description && (
         <Form.Text className="text-muted">
@@ -218,7 +225,9 @@ const BooleanField: React.FunctionComponent<FieldProps<boolean>> = ({
         onlabel="On"
         offlabel="Off"
         checked={field.value ?? false}
-        onChange={(value) => helpers.setValue(value)}
+        onChange={(value) => {
+          helpers.setValue(value);
+        }}
       />
       {schema.description && (
         <Form.Text className="text-muted">{schema.description}</Form.Text>
@@ -267,7 +276,9 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() => remove(index)}
+                      onClick={() => {
+                        remove(index);
+                      }}
                     >
                       Remove Item
                     </Button>
@@ -275,7 +286,11 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
                 );
               })}
             </ul>
-            <Button onClick={() => push(getDefaultArrayItem(schemaItems))}>
+            <Button
+              onClick={() => {
+                push(getDefaultArrayItem(schemaItems));
+              }}
+            >
               Add Item
             </Button>
           </>

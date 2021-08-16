@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { ExtensionIdentifier, IExtension } from "@/core";
+import { ExtensionRef, IExtension } from "@/core";
 import { useToasts } from "react-toast-notifications";
 import {
   ExtensionValidationResult,
@@ -30,7 +30,7 @@ import { Link } from "react-router-dom";
 import AsyncButton from "@/components/AsyncButton";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 
-type RemoveAction = (identifier: ExtensionIdentifier) => void;
+type RemoveAction = (identifier: ExtensionRef) => void;
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";

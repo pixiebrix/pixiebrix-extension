@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -63,7 +64,7 @@ export function getComponent(node: Node): AngularElement | null {
 }
 
 export function isManaged(element: HTMLElement): boolean {
-  return !!ignoreNotFound(() => getComponent(element));
+  return Boolean(ignoreNotFound(() => getComponent(element)));
 }
 
 function getAngularData(instance: AngularElement): Scope {

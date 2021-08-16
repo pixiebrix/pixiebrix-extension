@@ -24,7 +24,7 @@ import { runtimeConnect } from "@/chrome";
 let _cachedPort: Runtime.Port | null = null;
 
 export async function connectDevtools(): Promise<Runtime.Port> {
-  const tabId = browser.devtools.inspectedWindow.tabId;
+  const { tabId } = browser.devtools.inspectedWindow;
 
   if (_cachedPort) {
     console.debug("Devtools already connected to the background page");

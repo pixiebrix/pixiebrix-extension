@@ -30,7 +30,7 @@ import { useAsyncState } from "@/hooks/common";
 import { getAuth } from "@/hooks/auth";
 import AuthContext from "@/auth/AuthContext";
 import { ToastProvider } from "react-toast-notifications";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
 import ScopeSettings from "@/devTools/ScopeSettings";
 import { AuthState } from "@/core";
@@ -87,7 +87,13 @@ const Panel: React.FunctionComponent = () => {
       <Centered>
         <div className="PaneTitle">Error authenticating account</div>
         <div>{authError?.toString() ?? "Unknown error"}</div>
-        <Button onClick={() => location.reload()}>Reload Editor</Button>
+        <Button
+          onClick={() => {
+            location.reload();
+          }}
+        >
+          Reload Editor
+        </Button>
       </Centered>
     );
   }
@@ -100,7 +106,13 @@ const Panel: React.FunctionComponent = () => {
         </div>
         <div>{context.portError ?? context.tabState?.error}</div>
         <div className="mt-2">
-          <Button onClick={() => location.reload()}>Reload Editor</Button>
+          <Button
+            onClick={() => {
+              location.reload();
+            }}
+          >
+            Reload Editor
+          </Button>
         </div>
       </Centered>
     );

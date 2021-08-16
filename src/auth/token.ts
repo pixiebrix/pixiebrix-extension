@@ -34,6 +34,9 @@ export interface AuthData extends UserData {
   token: string;
 }
 
+/**
+ * @deprecated will be moved into the app project since it's not used directly by the extension
+ */
 export function readAuthFromWebsite(): AuthData {
   const container = document.querySelector<HTMLElement>("#container");
   const {
@@ -87,9 +90,11 @@ export async function clearExtensionAuth(): Promise<void> {
 }
 
 /**
- * Refresh the Chrome extensions auth (user, email, token, hostname), and return true if it was updated.
+ * Refresh the Chrome extensions auth (user, email, token, API hostname), and return true if it was updated.
  */
-export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
+export async function updateExtensionAuth(
+  auth: AuthData & { browserId: string }
+): Promise<boolean> {
   if (!auth) {
     return false;
   }
@@ -98,6 +103,7 @@ export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
     userId: auth.user,
     email: auth.email,
     organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
+    browserId: auth.browserId,
   });
 
   // Note: `auth` is a `Object.create(null)` object, which for some `isEqual` implementations

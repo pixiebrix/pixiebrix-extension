@@ -22,10 +22,9 @@ import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
-import { Framework } from "@/messaging/constants";
 import blockRegistry from "@/blocks/registry";
-import getCssSelector from "css-selector-generator";
-import { IReader } from "@/core";
+import { getCssSelector } from "css-selector-generator";
+import { IReader, RegistryId } from "@/core";
 import {
   addListenerForUpdateSelectedElement,
   selectedElement,
@@ -35,6 +34,7 @@ import {
 import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
+import { isNullOrBlank } from "@/utils";
 
 export type Target = {
   tabId: number;
@@ -72,7 +72,7 @@ export const searchWindow: (
 
 export const runReaderBlock = liftContentScript(
   "RUN_READER_BLOCK",
-  async ({ id, rootSelector }: { id: string; rootSelector?: string }) => {
+  async ({ id, rootSelector }: { id: RegistryId; rootSelector?: string }) => {
     const root = rootSelector
       ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
         $(document).find(rootSelector).get(0)
@@ -114,11 +114,10 @@ export const runReader = liftContentScript(
   }) => {
     console.debug("runReader", { config, rootSelector });
 
-    const root =
-      (rootSelector?.trim() ?? "") !== ""
-        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
-          $(document).find(rootSelector).get(0)
-        : document;
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
+    const root = isNullOrBlank(rootSelector)
+      ? document
+      : $(document).find(rootSelector).get(0);
 
     return makeRead(config)(root);
   }
@@ -129,14 +128,14 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
     const selector = getCssSelector(selectedElement);
     console.debug(`Generated selector: ${selector}`);
 
-    const base: { [key: string]: unknown } = {
+    const base: Record<string, unknown> = {
       selector,
       htmlData: $(selectedElement).data(),
     };
     for (const framework of FRAMEWORK_ADAPTERS.keys()) {
       // eslint-disable-next-line security/detect-object-injection -- safe because key coming from compile-time constant
       base[framework] = await read(async () =>
-        getComponentData({ framework: framework as Framework, selector })
+        getComponentData({ framework, selector })
       );
     }
 

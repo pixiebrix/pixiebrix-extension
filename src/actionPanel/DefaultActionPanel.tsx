@@ -25,7 +25,7 @@ import {
   faClipboardCheck,
   faExternalLinkAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { selectInstalledExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 
 const OnboardingContent: React.FunctionComponent = () => (
   <Container>
@@ -89,7 +89,7 @@ const NoAvailablePanelsContent: React.FunctionComponent = () => (
 );
 
 const DefaultActionPanel: React.FunctionComponent = () => {
-  const extensions = useSelector(selectInstalledExtensions);
+  const extensions = useSelector(selectExtensions);
 
   return (
     <div>
