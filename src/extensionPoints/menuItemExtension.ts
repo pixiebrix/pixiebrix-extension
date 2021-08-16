@@ -66,7 +66,7 @@ import {
 import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
 import { PanelDefinition } from "@/extensionPoints/panelExtension";
-import iconAsSVG from "@/icons/svgIcons";
+import getSvgIcon from "@/icons/getSvgIcon";
 import { engineRenderer } from "@/utils/renderers";
 import { selectEventData } from "@/telemetry/deployments";
 
@@ -495,12 +495,12 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const extensionContext = { ...ctxt, ...serviceContext };
       html = Mustache.render(this.getTemplate(), {
         caption: renderTemplate(caption, extensionContext),
-        icon: await iconAsSVG?.(icon),
+        icon: await getSvgIcon(icon),
       });
     } else {
       html = Mustache.render(this.getTemplate(), {
         caption,
-        icon: await iconAsSVG?.(icon),
+        icon: await getSvgIcon(icon),
       });
     }
 

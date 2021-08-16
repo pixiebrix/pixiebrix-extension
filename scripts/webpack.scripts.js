@@ -37,7 +37,7 @@ module.exports = mergeWithShared({
   },
   resolve: {
     alias: {
-      "@/icons/svgIcons": path.resolve("src/__mocks__/iconsMock"),
+      "@/icons/list": path.resolve("src/__mocks__/iconsListMock"),
       "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
     },
   },

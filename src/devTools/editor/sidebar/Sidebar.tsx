@@ -39,7 +39,6 @@ import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
 import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
-import useSvg from "@/hooks/useSvg";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -114,18 +113,17 @@ const Sidebar: React.FunctionComponent<
 
   const addElement = useAddElement(reservedNames);
 
-  const logo = useSvg(logoUrl);
-
   return (
     <div className="Sidebar d-flex flex-column vh-100">
       <div className="Sidebar__actions flex-grow-0">
         <div className="d-inline-flex flex-wrap">
           <a
-            className="Sidebar__logo"
-            dangerouslySetInnerHTML={{ __html: logo }}
             href="/options.html"
             target="_blank"
-          />
+            title="Open PixieBrix Options"
+          >
+            <img src={logoUrl} alt="" width={31} height={31} />
+          </a>
           <DropdownButton
             disabled={Boolean(inserting) || !hasPermissions}
             variant="info"

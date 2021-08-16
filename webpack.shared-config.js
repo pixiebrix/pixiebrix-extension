@@ -18,11 +18,11 @@
 const fs = require("fs");
 const path = require("path");
 const JSON5 = require("json5");
-const { mergeWithCustomize, customizeArray } = require("webpack-merge");
+const { mergeWithCustomize, customizeObject } = require("webpack-merge");
 
 const merge = mergeWithCustomize({
   // Webpack resolves aliases in order, so the mocks need to be first
-  customizeArray: customizeArray({
+  customizeObject: customizeObject({
     "resolve.alias": "prepend",
   }),
 });

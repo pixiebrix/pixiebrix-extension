@@ -196,10 +196,10 @@ function customizeManifest(manifest, isProduction) {
 function mockHeavyDependencies() {
   if (process.env.DEV_SLIM.toLowerCase() === "true") {
     console.warn(
-      "Mocking dependencies for development build: svgIcons, uipath/robot"
+      "Mocking dependencies for development build: @/icons/list, uipath/robot"
     );
     return {
-      "@/icons/svgIcons": path.resolve("src/__mocks__/iconsMock"),
+      "@/icons/list": path.resolve("src/__mocks__/iconsListMock"),
       "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
     };
   }
@@ -264,9 +264,6 @@ module.exports = (env, options) =>
 
         // Enables static analysis and removal of dead code
         "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
-
-        // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
-        handlebars: "handlebars/dist/handlebars.js",
       },
     },
 
