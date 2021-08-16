@@ -257,7 +257,7 @@
       "fake-indexeddb/auto"
     ],
     "moduleNameMapper": {
-      "^@/icons/svgIcons$": "<rootDir>/src/__mocks__/iconsMock",
+      "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
       "^@/(.*)$": "<rootDir>/src/$1",
       "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
       "^@contrib/(.*)$": "<rootDir>/contrib/$1",

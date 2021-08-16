@@ -54,7 +54,7 @@ import { PanelComponent, render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
-import iconAsSVG from "@/icons/svgIcons";
+import getSvgIcon from "@/icons/getSvgIcon";
 
 export type PanelConfig = {
   heading?: string;
@@ -311,7 +311,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         heading: Mustache.render(heading, extensionContext),
         // Render a placeholder body that we'll fill in async
         body: `<div id="${bodyUUID}"></div>`,
-        icon: await iconAsSVG?.(icon),
+        icon: await getSvgIcon(icon),
         bodyUUID,
       })
     );
