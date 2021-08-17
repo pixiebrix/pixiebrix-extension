@@ -55,28 +55,32 @@ const DetailSection: React.FunctionComponent<{ title: string }> = ({
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
-  if (schema.type === "object") {
-    for (const [prop, value] of Object.entries(schema.properties)) {
-      if (typeof value !== "boolean") {
-        result += `# ${prop}: ${value.type} (${
-          schema.required.includes(prop) ? "required" : "optional"
-        })\n`;
-        if (value.description) {
-          for (const line of value.description.split("\n")) {
-            result += `# ${line} \n`;
-          }
-        }
+  if (schema.type !== "object") {
+    return result;
+  }
 
-        if (value.enum) {
-          result += "# valid values:\n";
-          for (const line of value.enum) {
-            result += `# - ${line} \n`;
-          }
-        }
+  for (const [prop, value] of Object.entries(schema.properties)) {
+    if (typeof value === "boolean") {
+      continue;
+    }
 
-        result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
+    result += `# ${prop}: ${value.type} (${
+      schema.required.includes(prop) ? "required" : "optional"
+    })\n`;
+    if (value.description) {
+      for (const line of value.description.split("\n")) {
+        result += `# ${line} \n`;
       }
     }
+
+    if (value.enum) {
+      result += "# valid values:\n";
+      for (const line of value.enum) {
+        result += `# - ${line} \n`;
+      }
+    }
+
+    result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
   }
 
   return result;
