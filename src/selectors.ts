@@ -27,6 +27,7 @@ interface ExtensionResult {
   extensionPoint: IExtensionPoint | null;
   extensionConfig: IExtension;
   isPending: boolean;
+  error: unknown;
 }
 
 export function useExtension(
@@ -46,23 +47,25 @@ export function useExtension(
     const config = extensions.find((x) => x.id === extensionId);
 
     if (!config) {
-      throw new Error(
-        `Could not locate configuration for extension: ${extensionId}`
-      );
+      throw new Error("Could not locate configuration for extension");
     }
 
     return config;
   }, [extensions, extensionId]);
 
-  const [extensionPoint, isPending] = useAsyncState(async () => {
+  const [extensionPoint, isPending, error] = useAsyncState(async () => {
     if (match) {
-      // There will be no match if no extensionId is provided (i.e., when creating a new extension via the workshop GUI
       const extension = await resolveDefinitions(match);
       return extensionPointRegistry.lookup(extension.extensionPointId);
     }
 
-    return extensionPointRegistry.lookup(extensionPointId);
+    if (extensionPointId) {
+      // There will be no match if no extensionId is provided (i.e., when creating a new extension via the workshop GUI)
+      return extensionPointRegistry.lookup(extensionPointId);
+    }
+
+    return null;
   }, [extensionPointRegistry, match, extensionPointId]);
 
-  return { extensionPoint, extensionConfig: match, isPending };
+  return { extensionPoint, extensionConfig: match, isPending, error };
 }

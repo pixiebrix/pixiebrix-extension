@@ -20,9 +20,9 @@ import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/services/factory";
 import { RawServiceConfiguration, RegistryId } from "@/core";
 import { Service } from "@/types";
-import { castRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 
-export const PIXIEBRIX_SERVICE_ID: RegistryId = castRegistryId(
+export const PIXIEBRIX_SERVICE_ID: RegistryId = validateRegistryId(
   "@pixiebrix/api"
 );
 

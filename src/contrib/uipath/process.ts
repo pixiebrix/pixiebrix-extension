@@ -27,14 +27,14 @@ import {
 } from "@/core";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors";
-import { castRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 
 export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",
   "uipath/cloud-oauth",
   "uipath/orchestrator",
-].map((x) => castRegistryId(x));
-export const UIPATH_ID = castRegistryId("@pixiebrix/uipath/process");
+].map((x) => validateRegistryId(x));
+export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/process");
 
 const MAX_WAIT_MILLIS = 20_000;
 const POLL_MILLIS = 1000;

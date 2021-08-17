@@ -17,7 +17,7 @@
 
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { castRegistryId, uuidv4 } from "@/types/helpers";
+import { validateRegistryId, uuidv4 } from "@/types/helpers";
 import LogTable from "@/components/logViewer/LogTable";
 import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
@@ -52,7 +52,7 @@ NoEntriesForLevel.args = {
   pageEntries: [],
 };
 
-const blockId = castRegistryId("@pixiebrix/system/notification");
+const blockId = validateRegistryId("@pixiebrix/system/notification");
 
 const DEBUG_MESSAGE: LogEntry = {
   uuid: uuidv4(),

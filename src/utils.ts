@@ -384,3 +384,18 @@ export function evaluableFunction(
 ): string {
   return "(" + function_.toString() + ")()";
 }
+
+/**
+ * Lift a unary function to pass through null/undefined.
+ */
+export function optional<T extends (arg: unknown) => unknown>(
+  func: T
+): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
+  return (arg: Parameters<T>[0]) => {
+    if (arg == null) {
+      return null;
+    }
+
+    return func(arg) as ReturnType<T>;
+  };
+}
