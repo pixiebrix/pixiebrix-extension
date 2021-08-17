@@ -262,7 +262,6 @@ const ReaderTab: React.FunctionComponent<{
             <>
               {isCustomReader(reader) ? (
                 <ReaderConfig
-                  key={`${reader.metadata.id}-${active}`}
                   editable={editable}
                   available={available}
                   readerIndex={active}
@@ -270,7 +269,6 @@ const ReaderTab: React.FunctionComponent<{
                 />
               ) : (
                 <ReaderBlockConfig
-                  key={`${reader.metadata.id}-${active}`}
                   readerIndex={active}
                   available={available}
                   testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
