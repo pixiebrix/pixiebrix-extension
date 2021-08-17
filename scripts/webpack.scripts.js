@@ -18,7 +18,7 @@
 const path = require("path");
 const rootDir = path.resolve(__dirname, "../");
 const webpack = require("webpack");
-const mergeWithShared = require("../webpack.shared-config.js");
+const mergeWithShared = require("../webpack.sharedConfig.js");
 
 module.exports = mergeWithShared({
   mode: "development",
