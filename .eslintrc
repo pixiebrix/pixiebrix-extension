@@ -93,7 +93,6 @@
 
     "@typescript-eslint/no-confusing-void-expression": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
-    "@typescript-eslint/consistent-indexed-object-style": "warn",
     "@typescript-eslint/no-base-to-string": "warn",
     "@typescript-eslint/no-unnecessary-type-arguments": "warn",
     "@typescript-eslint/prefer-ts-expect-error": "warn",

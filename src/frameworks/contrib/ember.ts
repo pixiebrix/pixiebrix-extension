@@ -36,6 +36,7 @@ interface EmberObject {
 
 interface EmberApplication {
   __container__: {
+    // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
     lookup: (container: string) => { [componentId: string]: EmberObject };
   };
 }
@@ -231,13 +232,13 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,
   hasData: (instance) => {
-    const target = targetForComponent(instance) as { [prop: string]: unknown };
+    const target = targetForComponent(instance) as Record<string, unknown>;
     return getAllPropertyNames(target).some(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );
   },
   getData: (instance) => {
-    const target = targetForComponent(instance) as { [prop: string]: unknown };
+    const target = targetForComponent(instance) as Record<string, unknown>;
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );

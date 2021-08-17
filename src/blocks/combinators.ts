@@ -67,8 +67,7 @@ import { engineRenderer } from "@/utils/renderers";
 
 export type ReaderConfig =
   | RegistryId
-  // Can't use Record syntax because generics can't reference themselves
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
 
@@ -486,8 +485,7 @@ export async function mergeReaders(
   throw new BusinessError("Unexpected value for readerConfig");
 }
 
-// Using indexed object to make it clear they key is an outputKey
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 export type ServiceContext = {
   [outputKey: string]: {
     __service: SanitizedServiceConfiguration;

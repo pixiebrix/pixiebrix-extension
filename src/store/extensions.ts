@@ -33,18 +33,18 @@ export const persistOptionsConfig = {
   migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
 };
 
+/* eslint-disable @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys */
 /**
  * @deprecated use ExtensionsState - this is only used in the migration
  */
 type LegacyExtensionsState = {
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- documentation
   extensions: {
-    // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- documentation
     [extensionPointId: string]: {
       [extensionId: string]: IExtension;
     };
   };
 };
+/* eslint-enabled @typescript-eslint/consistent-indexed-object-style */
 
 export type ExtensionsOptionsState = {
   extensions: IExtension[];
