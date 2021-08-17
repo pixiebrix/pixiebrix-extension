@@ -100,7 +100,7 @@ class ExternalBlock extends Block {
       throw new Error("Cannot deserialize reader as block");
     }
 
-    // @ts-ignore: we're being dynamic here to set the corresponding method for the kind since
+    // @ts-expect-error we're being dynamic here to set the corresponding method for the kind since
     // we use that method to distinguish between block types in places
     this[METHOD_MAP.get(kind)] = async (
       renderedInputs: BlockArg,

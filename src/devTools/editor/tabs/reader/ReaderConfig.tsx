@@ -38,7 +38,7 @@ import {
   RendererContext,
 } from "@/components/fields/blockOptions";
 import devtoolFields from "@/devTools/editor/fields/Fields";
-// @ts-ignore: no type definitions?
+// @ts-expect-error no type definitions?
 import GenerateSchema from "generate-schema";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import ToggleField from "@/devTools/editor/components/ToggleField";

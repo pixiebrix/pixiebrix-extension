@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// @ts-ignore: no type definitions available
+// @ts-expect-error no type definitions available
 import { getMetadata } from "page-metadata-parser";
 import { Reader } from "@/types";
 import { Schema } from "@/core";

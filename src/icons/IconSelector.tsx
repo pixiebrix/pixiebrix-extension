@@ -18,7 +18,7 @@
 // Required for react-select-virtualized https://github.com/guiyep/react-select-virtualized/issues/283
 import "regenerator-runtime/runtime";
 
-// @ts-ignore: no types for this one :(
+// @ts-expect-error no types for this one :(
 import Select from "react-select-virtualized";
 import React, { useMemo } from "react";
 import { IconOption } from "@/icons/types";

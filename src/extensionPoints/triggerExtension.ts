@@ -48,7 +48,7 @@ import {
 } from "@/extensionPoints/helpers";
 import { notifyError } from "@/contentScript/notify";
 
-// @ts-ignore: using for the EventHandler type below
+// @ts-expect-error using for the EventHandler type below
 import JQuery from "jquery";
 
 export type TriggerConfig = {

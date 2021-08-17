@@ -55,10 +55,7 @@ const ObjectEntry: React.FunctionComponent<{
         <span>{prop}</span>
         <span className="type">: object</span>
       </div>
-      {!collapsed && (
-        // @ts-ignore: we filtered over the boolean case
-        <SchemaTree schema={definition} />
-      )}
+      {!collapsed && <SchemaTree schema={definition} />}
     </ListGroup.Item>
   );
 };
@@ -69,7 +66,6 @@ const ArrayEntry: React.FunctionComponent<{
 }> = ({ prop, definition }) => {
   const [collapsed, setCollapsed] = useState(true);
 
-  // @ts-ignore: for some reason we're getting item instead of items in some of the reader output specs
   const items = definition.items ?? { type: "unknown" };
   const itemType = ((items as Schema) ?? {}).type;
 
@@ -87,7 +83,7 @@ const ArrayEntry: React.FunctionComponent<{
           <span className="type">: array of objects</span>
         </div>
         {!collapsed && (
-          // @ts-ignore: we filtered over the boolean case
+          // @ts-expect-error we filtered over the boolean case
           <SchemaTree schema={items} />
         )}
       </ListGroup.Item>
