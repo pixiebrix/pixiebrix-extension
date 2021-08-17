@@ -170,7 +170,7 @@ const Editor: React.FunctionComponent = () => {
           inserting={inserting}
         />
         <div className="d-flex h-100">
-          <div className="h-100 flex-grow-1">{body}</div>
+          <div className="h-100 flex-grow-1 pb-2 overflow-auto">{body}</div>
           {showChat && (
             <div className="SupportPane h-100">
               <SupportWidget onClose={hideSupport} />
