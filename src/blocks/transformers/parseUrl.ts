@@ -20,7 +20,8 @@ import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { pick } from "lodash";
-import psl, { ParsedDomain } from "psl";
+import { isValid, ParsedDomain, parse } from "psl";
+import { isNullOrBlank } from "@/utils";
 
 const URL_PROPERTIES = [
   "port",
@@ -65,10 +66,11 @@ export class UrlParser extends Transformer {
 
     let publicSuffix: string;
 
-    if (parsed.host) {
-      const domain = parsed.host.split(":")[0];
-      if (psl.isValid(domain)) {
-        const result = psl.parse(domain);
+    if (!isNullOrBlank(parsed.host)) {
+      // `host` includes the port
+      const [domain] = parsed.host.split(":");
+      if (isValid(domain)) {
+        const result = parse(domain);
         if (!("error" in result)) {
           publicSuffix = (result as ParsedDomain).domain;
         }

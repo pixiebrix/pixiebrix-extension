@@ -86,7 +86,9 @@ const Editor: React.FunctionComponent = () => {
   );
 
   const body = useMemo(() => {
-    if (!tabState.hasPermissions && !connecting) {
+    // Need to explicitly check for `false` because hasPermissions will be undefined if pending/error
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-boolean-literal-compare
+    if (tabState.hasPermissions === false && !connecting) {
       // Check `connecting` to optimistically show the main interface while the devtools are connecting to the page.
       return <PermissionsPane />;
     }

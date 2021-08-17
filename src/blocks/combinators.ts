@@ -36,6 +36,7 @@ import {
   ServiceDependency,
   TemplateEngine,
   RegistryId,
+  OutputKey,
 } from "@/core";
 import { validateInput, validateOutput } from "@/validators/generic";
 import {
@@ -485,13 +486,13 @@ export async function mergeReaders(
   throw new BusinessError("Unexpected value for readerConfig");
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
-export type ServiceContext = {
-  [outputKey: string]: {
+export type ServiceContext = Record<
+  OutputKey,
+  {
     __service: SanitizedServiceConfiguration;
     [prop: string]: string | SanitizedServiceConfiguration | null;
-  };
-};
+  }
+>;
 
 /** Build the service context by locating the dependencies */
 export async function makeServiceContext(

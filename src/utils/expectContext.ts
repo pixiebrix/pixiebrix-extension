@@ -34,7 +34,7 @@ function createError(
     return error;
   }
 
-  // eslint-disable-next-line new-cap
+  // eslint-disable-next-line new-cap -- ctor passed in as argument
   return new error(defaultMessage);
 }
 

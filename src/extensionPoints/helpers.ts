@@ -199,18 +199,19 @@ function _initialize(
 
 /**
  * Recursively await an element using one or more JQuery selectors.
- * @param selector
- * @param rootElement
+ * @param selector selector, or an array of selectors to
+ * @param rootElement the root element, defaults to `document`
  */
 export function awaitElementOnce(
   selector: string | string[],
-  rootElement: JQuery<HTMLElement | Document> = undefined
+  rootElement?: JQuery<HTMLElement | Document>
 ): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (selector == null) {
     throw new Error("awaitElementOnce expected selector");
   }
 
   const selectors = castArray(selector);
+  // Safe to pass rootElement to $ constructor since it's already a JQuery object
   const $root = rootElement ? $(rootElement) : $(document);
 
   if (selectors.length === 0) {
