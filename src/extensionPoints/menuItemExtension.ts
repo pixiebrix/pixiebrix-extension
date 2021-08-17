@@ -595,13 +595,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $dependency = $(document).find(dependency);
         if ($dependency.length > 0) {
-          $dependency.each((index, element) => {
+          for (const element of $dependency) {
             elementCount++;
             observer.observe(element, {
               childList: true,
               subtree: true,
             });
-          });
+          }
         } else {
           const [elementPromise, cancel] = awaitElementOnce(dependency);
           cancellers.push(cancel);

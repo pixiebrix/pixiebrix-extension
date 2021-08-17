@@ -16,7 +16,7 @@
  */
 
 import { uniq, compact, sortBy, unary, intersection } from "lodash";
-import getCssSelector, { css_selector_type } from "css-selector-generator";
+import { getCssSelector, css_selector_type } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement } from "@/utils";
 import { BusinessError } from "@/errors";
 
@@ -546,6 +546,7 @@ export function getCommonAncestor(...args: Node[]): Node {
   let currentNode: Node | null = node;
 
   while (currentNode) {
+    // eslint-disable-next-line @typescript-eslint/no-loop-func -- The function is used immediately
     if (otherNodes.every((x) => currentNode.contains(x))) {
       return currentNode;
     }

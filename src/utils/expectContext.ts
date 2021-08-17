@@ -21,13 +21,12 @@ import { isBackgroundPage, isContentScript } from "webext-detect-page";
  * Accepts 'This is my error' | new Error('This is my error') | Error;
  * The constructor would be used to create a custom error with the defalt message
  */
-type ErrorBaseType = string | Error | { new (message?: string): Error };
+type ErrorBaseType = string | Error | (new (message?: string) => Error);
 function createError(
   defaultMessage: string,
   error: ErrorBaseType = Error
 ): Error {
   if (typeof error === "string") {
-    // eslint-disable-next-line unicorn/prefer-type-error
     return new Error(error);
   }
 
@@ -35,6 +34,7 @@ function createError(
     return error;
   }
 
+  // eslint-disable-next-line new-cap
   return new error(defaultMessage);
 }
 

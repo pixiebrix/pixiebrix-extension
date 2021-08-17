@@ -395,7 +395,7 @@ const ReaderConfig: React.FunctionComponent<{
               {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
             </span>
             <div className="overflow-auto h-100 w-100">
-              {available === false && (
+              {!available && (
                 <span className="text-danger">
                   Extension not available on page
                 </span>
@@ -507,7 +507,7 @@ const ReaderConfig: React.FunctionComponent<{
                 {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
               </span>
               <div className="overflow-auto h-100 w-100">
-                {available === false && (
+                {!available && (
                   <span className="text-danger">
                     Extension not available on page
                   </span>

@@ -225,8 +225,7 @@ test("infer multiple buttons", () => {
 });
 
 test("infer list items", () => {
-  document.body.innerHTML =
-    "<div><ul>" + "<li>Foo</li>" + "<li>Bar</li>" + "</ul></div>";
+  document.body.innerHTML = "<div><ul><li>Foo</li><li>Bar</li></ul></div>";
 
   const inferred = inferButtonHTML(
     $(document).find("ul").get(0),

@@ -95,13 +95,13 @@ const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
     <Row>
       <Col>
         <span>Response</span>
-        {hasPermissions === false && (
+        {!hasPermissions && (
           <div className="text-warning">
             <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does not
             have permission to access {absoluteUrl}
           </div>
         )}
-        {hasPermissions === true && (
+        {hasPermissions && (
           <div className="text-info">
             <FontAwesomeIcon icon={faCheck} /> PixieBrix has permission to
             access {absoluteUrl}

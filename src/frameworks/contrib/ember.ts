@@ -68,6 +68,7 @@ export function getEmberApplication(): EmberApplication {
   if (window.Ember) {
     const { Ember } = window;
     // https://github.com/emberjs/ember-inspector/blob/2237dc1b4818e31a856f3348f35305b10f42f60a/ember_debug/vendor/startup-wrapper.js#L201
+    // eslint-disable-next-line new-cap -- Not a constructor
     const namespaces = Ember.A(Ember.Namespace.NAMESPACES);
     // TODO: support multiple Ember applications on the page
     return namespaces.find(

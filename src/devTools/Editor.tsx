@@ -86,7 +86,7 @@ const Editor: React.FunctionComponent = () => {
   );
 
   const body = useMemo(() => {
-    if (tabState.hasPermissions === false && !connecting) {
+    if (!tabState.hasPermissions && !connecting) {
       // Check `connecting` to optimistically show the main interface while the devtools are connecting to the page.
       return <PermissionsPane />;
     }

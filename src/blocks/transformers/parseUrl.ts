@@ -65,7 +65,7 @@ export class UrlParser extends Transformer {
 
     let publicSuffix: string;
 
-    if (parsed.host ?? "" !== "") {
+    if (parsed.host) {
       const domain = parsed.host.split(":")[0];
       if (psl.isValid(domain)) {
         const result = psl.parse(domain);
