@@ -42,9 +42,9 @@ import {
   ListResponse,
 } from "@/contrib/automationanywhere/contract";
 import { getErrorMessage } from "@/errors";
-import { castRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 
-const AUTOMATION_ANYWHERE_SERVICE_ID = castRegistryId(
+const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
 );
 

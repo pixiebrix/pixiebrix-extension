@@ -27,7 +27,13 @@ import {
 import { Button, Card, Col, Form, Nav, Row } from "react-bootstrap";
 import ServicesFormCard from "@/options/pages/extensionEditor/ServicesFormCard";
 import ExtensionConfigurationCard from "@/options/pages/extensionEditor/ExtensionConfigurationCard";
-import { IExtensionPoint, ServiceDependency, UserOptions, UUID } from "@/core";
+import {
+  Config,
+  IExtensionPoint,
+  ServiceDependency,
+  UserOptions,
+  UUID,
+} from "@/core";
 import DataSourceCard from "@/options/pages/extensionEditor/DataSourceCard";
 import { Formik, FormikProps, getIn, useFormikContext } from "formik";
 import TextField from "@/components/fields/TextField";
@@ -50,21 +56,19 @@ import { HotKeys } from "react-hotkeys";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 
-type TopConfig = Record<string, unknown>;
-
-export interface Config {
-  config: TopConfig;
+export type ExtensionFormState = {
+  config: Config;
   label: string;
   services: ServiceDependency[];
   optionsArgs: UserOptions;
-}
+};
 
 interface OwnProps {
   extensionPoint: IExtensionPoint;
   extensionId: UUID | null;
-  initialValue: Config;
+  initialValue: ExtensionFormState;
   onSave: (
-    update: Config,
+    update: ExtensionFormState,
     helpers: { setSubmitting: (submitting: boolean) => void }
   ) => void;
 }
@@ -79,11 +83,16 @@ const labelSchema = {
  * - Cast block $ref fields to arrays to they can support combinations.
  */
 function normalizeConfig(
-  config: TopConfig,
+  config: Config,
   extensionPoint: IExtensionPoint
-): TopConfig {
+): Config {
+  if (config == null) {
+    // `config` was coming through as null on some page transitions. Precondition to provide a better error message
+    throw new Error("config is required");
+  }
+
   const schema = extensionPoint.inputSchema;
-  const result: TopConfig = {};
+  const result: Config = {};
   for (const [prop, definition] of Object.entries(schema.properties)) {
     // Safe because prop is coming from Object.entries
     /* eslint-disable security/detect-object-injection */
@@ -131,14 +140,14 @@ const NavItem: React.FunctionComponent<{
 };
 
 function exportBlueprint(
-  { label, services, config }: Config,
+  { label, services, config }: ExtensionFormState,
   extensionPoint: IExtensionPoint
 ): void {
   const blueprint = {
     apiVersion: "v1",
     kind: "recipe",
     metadata: {
-      // In the future, could put in the user's scope here? Wouldn't be a valid id though
+      // In the future, could put in the user's scope here? Wouldn't be a valid id by itself though
       id: "",
       name: label,
       description: "Blueprint exported from PixieBrix",
@@ -163,7 +172,7 @@ function exportBlueprint(
 }
 
 const ExtensionForm: React.FunctionComponent<{
-  formikProps: FormikProps<Config>;
+  formikProps: FormikProps<ExtensionFormState>;
   extensionPoint: IExtensionPoint;
   extensionId: UUID | null;
 }> = ({
