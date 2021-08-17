@@ -15,33 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { useField } from "formik";
 import { compact, isEmpty, sortBy, uniqBy } from "lodash";
 import { Button } from "react-bootstrap";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { selectElement, enableSelectorOverlay, disableOverlay } from "@/background/devtools";
+import {
+  disableOverlay,
+  enableSelectorOverlay,
+  selectElement,
+} from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
 import { SelectMode } from "@/nativeEditor/selector";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { Framework } from "@/messaging/constants";
-import { reportError } from "@/telemetry/logging";
-import { useToasts } from "react-toast-notifications";
-import CreatableAutosuggest, { SuggestionTypeBase } from "@/devTools/editor/fields/creatableAutosuggest/CreatableAutosuggest";
+import CreatableAutosuggest, {
+  SuggestionTypeBase,
+} from "@/devTools/editor/fields/creatableAutosuggest/CreatableAutosuggest";
 import SelectorListItem from "@/devTools/editor/fields/selectorListItem/SelectorListItem";
+import { getErrorMessage } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
+import { ComplexObjectValue } from "@/components/fields/FieldTable";
 
 interface ElementSuggestion extends SuggestionTypeBase {
-  value: string
-  elementInfo?: ElementInfo
+  value: string;
+  elementInfo?: ElementInfo;
 }
 
-function getSuggestionsForElement(elementInfo: ElementInfo | undefined): ElementSuggestion[] {
+function getSuggestionsForElement(
+  elementInfo: ElementInfo | undefined
+): ElementSuggestion[] {
   if (!elementInfo) {
     return [];
   }
@@ -49,17 +53,22 @@ function getSuggestionsForElement(elementInfo: ElementInfo | undefined): Element
   return uniqBy(
     compact([
       ...(elementInfo.selectors ?? []).map((value) => ({ value, elementInfo })),
-      ...getSuggestionsForElement(elementInfo.parent)
-    ]).filter((suggestion) => suggestion.value && suggestion.value.trim() !== "")
-  , (suggestion) => suggestion.value);
+      ...getSuggestionsForElement(elementInfo.parent),
+    ]).filter(
+      (suggestion) => suggestion.value && suggestion.value.trim() !== ""
+    ),
+    (suggestion) => suggestion.value
+  );
 }
 
 function renderSuggestion(suggestion: ElementSuggestion): React.ReactNode {
-  return <SelectorListItem
-    value={suggestion.value}
-    hasData={suggestion.elementInfo.hasData}
-    tag={suggestion.elementInfo.tagName}
-  />
+  return (
+    <SelectorListItem
+      value={suggestion.value}
+      hasData={suggestion.elementInfo.hasData}
+      tag={suggestion.elementInfo.tagName}
+    />
+  );
 }
 
 interface CommonProps {
@@ -91,7 +100,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
   disabled = false,
 }) => {
   const { port } = useContext(DevToolsContext);
-  const { addToast } = useToasts();
+  const notify = useNotifications();
   const [element, setElement] = useState(initialElement);
   const [isSelecting, setSelecting] = useState(false);
 
@@ -100,33 +109,42 @@ export const SelectorSelectorControl: React.FunctionComponent<
     return sort ? sortBy(raw, (x) => x.value.length) : raw;
   }, [element, sort]);
 
-  const enableSelector = useCallback((selector: string) => {
-    try {
-      void enableSelectorOverlay(port, selector);
-    } catch {
-      // The enableSelector function throws errors on invalid selector
-      // values, so we're eating everything here since this fires any
-      // time the user types in the input.
-    }
-  },[port]);
+  const enableSelector = useCallback(
+    (selector: string) => {
+      try {
+        void enableSelectorOverlay(port, selector);
+      } catch {
+        // The enableSelector function throws errors on invalid selector
+        // values, so we're eating everything here since this fires any
+        // time the user types in the input.
+      }
+    },
+    [port]
+  );
 
   const disableSelector = useCallback(() => {
     void disableOverlay(port);
-  },[port]);
+  }, [port]);
 
-  const onHighlighted = useCallback((suggestion: ElementSuggestion | null) => {
-    if (suggestion) {
-      enableSelector(suggestion.value);
-    } else {
+  const onHighlighted = useCallback(
+    (suggestion: ElementSuggestion | null) => {
+      if (suggestion) {
+        enableSelector(suggestion.value);
+      } else {
+        disableSelector();
+      }
+    },
+    [enableSelector, disableSelector]
+  );
+
+  const onTextChanged = useCallback(
+    (value: string) => {
       disableSelector();
-    }
-  }, [enableSelector, disableSelector]);
-
-  const onTextChanged = useCallback((value: string) => {
-    disableSelector();
-    enableSelector(value);
-    onSelect(value);
-  }, [disableSelector, enableSelector, onSelect]);
+      enableSelector(value);
+      onSelect(value);
+    },
+    [disableSelector, enableSelector, onSelect]
+  );
 
   const select = useCallback(async () => {
     setSelecting(true);
@@ -139,10 +157,8 @@ export const SelectorSelectorControl: React.FunctionComponent<
       });
 
       if (isEmpty(selected)) {
-        reportError(new Error("selectElement returned empty object"));
-        addToast("Unknown error selecting element", {
-          appearance: "error",
-          autoDismiss: true,
+        notify.error("Unknown error selecting element", {
+          error: new Error("selectElement returned empty object"),
         });
         return;
       }
@@ -158,10 +174,8 @@ export const SelectorSelectorControl: React.FunctionComponent<
       console.debug("Setting selector", { selected, firstSelector });
       onSelect(firstSelector);
     } catch (error: unknown) {
-      reportError(error);
-      addToast(`Error selecting element: ${error.toString()} `, {
-        appearance: "error",
-        autoDismiss: true,
+      notify.error(`Error selecting element: ${getErrorMessage(error)}`, {
+        error,
       });
     } finally {
       setSelecting(false);
@@ -170,7 +184,7 @@ export const SelectorSelectorControl: React.FunctionComponent<
     port,
     sort,
     framework,
-    addToast,
+    notify,
     setSelecting,
     traverseUp,
     selectMode,
@@ -211,7 +225,17 @@ export const SelectorSelectorControl: React.FunctionComponent<
 const SelectorSelectorField: React.FunctionComponent<
   CommonProps & { name?: string }
 > = ({ name, ...props }) => {
-  const [field, , helpers] = useField(name);
+  // Some properties (e.g., the menuItem's container prop) support providing an array of selectors.
+  // See awaitElementOnce for for the difference in the semantics vs. nested CSS selectors
+  const [field, , helpers] = useField<string | string[]>(name);
+
+  if (Array.isArray(field.value)) {
+    return (
+      // Match what we show in other places interface. Not a good UX, but it's consistent!
+      <ComplexObjectValue name={name} schema={null} />
+    );
+  }
+
   return (
     <SelectorSelectorControl
       value={field.value}
