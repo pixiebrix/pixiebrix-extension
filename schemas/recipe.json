@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://app.pixiebrix.com/schemas/recipe#",
   "type": "object",
-  "title": "PixieBrix Recipe",
+  "title": "PixieBrix Blueprint",
   "description": "A PixieBrix blueprint for one or more installed bricks",
   "properties": {
     "apiVersion": {
@@ -14,6 +14,14 @@
       "const": "recipe"
     },
     "metadata": { "$ref": "https://app.pixiebrix.com/schemas/metadata#" },
+    "definitions": {
+      "type": "object",
+      "description": "Internal definitions for extensionPoints, readers, and other blocks",
+      "additionalProperties": {
+        "type": "object"
+      },
+      "minProperties": 1
+    },
     "options": {
       "type": "object",
       "properties": {

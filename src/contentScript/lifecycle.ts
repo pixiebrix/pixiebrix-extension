@@ -17,7 +17,7 @@
 
 import { loadOptions } from "@/options/loader";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { IExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
+import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import {
   liftContentScript,
   notifyContentScripts,
@@ -30,6 +30,7 @@ import { testMatchPatterns } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 import { browser } from "webextension-polyfill-ts";
 import { groupBy } from "lodash";
+import { resolveDefinitions } from "@/registry/internal";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -37,6 +38,7 @@ const _frameHref: Map<number, string> = new Map();
 let _extensionPoints: IExtensionPoint[];
 let _navSequence = 1;
 const _installedExtensionPoints: IExtensionPoint[] = [];
+
 // Reload extension definitions on next navigation
 let _reloadOnNextNavigate = false;
 
@@ -188,40 +190,46 @@ async function loadExtensions() {
 
   const options = await loadOptions();
 
-  const extensionMap = groupBy(options.extensions, (x) => x.extensionPointId);
+  const externalized = await Promise.all(
+    options.extensions.map(async (x) => resolveDefinitions(x))
+  );
+
+  const extensionMap = groupBy(externalized, (x) => x.extensionPointId);
 
   await Promise.all(
-    Object.entries(extensionMap).map(
-      async ([extensionPointId, extensions]: [RegistryId, IExtension[]]) => {
-        // Object.entries loses the type information
+    Object.entries(extensionMap).map(async (entry) => {
+      // Object.entries loses the type information :sadface:
+      const [extensionPointId, extensions] = (entry as unknown) as [
+        RegistryId,
+        ResolvedExtension[]
+      ];
 
-        if (extensions.length === 0 && !previousIds.has(extensionPointId)) {
-          // Ignore the case where we uninstalled the last extension, but the extension point was
-          // not deleted from the state.
-          //
-          // But for updates (i.e., re-activation flow) we need to include to so that when we run
-          // syncExtensions their elements are removed from the page
-          return;
-        }
-
-        try {
-          const extensionPoint = await extensionPointRegistry.lookup(
-            extensionPointId
-          );
-
-          extensionPoint.syncExtensions(extensions);
-
-          if (extensions.length > 0) {
-            // We cleared _extensionPoints prior to the loop, so we can just push w/o checking if it's already in the array
-            _extensionPoints.push(extensionPoint);
-          }
-        } catch (error: unknown) {
-          console.warn(`Error adding extension point: ${extensionPointId}`, {
-            error,
-          });
-        }
+      if (extensions.length === 0 && !previousIds.has(extensionPointId)) {
+        // Ignore the case where we uninstalled the last extension, but the extension point was
+        // not deleted from the state.
+        //
+        // But for updates (i.e., re-activation flow) we need to include to so that when we run
+        // syncExtensions their elements are removed from the page
+        return;
       }
-    )
+
+      try {
+        const extensionPoint = await extensionPointRegistry.lookup(
+          extensionPointId
+        );
+
+        extensionPoint.syncExtensions(extensions);
+
+        if (extensions.length > 0) {
+          // We cleared _extensionPoints prior to the loop, so we can just push w/o checking if it's already in the array
+          _extensionPoints.push(extensionPoint);
+        }
+      } catch (error: unknown) {
+        console.warn(`Error adding extension point: ${extensionPointId}`, {
+          error,
+        });
+      }
+    })
   );
 }
 

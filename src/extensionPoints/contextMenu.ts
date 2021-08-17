@@ -39,7 +39,7 @@ import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { castArray, uniq, compact } from "lodash";
+import { castArray, uniq, compact, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import {
   ensureContextMenu,
@@ -359,23 +359,28 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
 
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
+    // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
+    const cloned = cloneDeep(config);
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
-    this._definition = config.definition;
-    this.rawConfig = config;
-    const { isAvailable, documentUrlPatterns, contexts } = config.definition;
+    this._definition = cloned.definition;
+    this.rawConfig = cloned;
+    const { isAvailable, documentUrlPatterns, contexts } = cloned.definition;
     // If documentUrlPatterns not specified show everywhere
     this.documentUrlPatterns = castArray(documentUrlPatterns ?? ["*://*/*"]);
     this.contexts = castArray(contexts);
     this.permissions = {
-      origins: isAvailable.matchPatterns
+      origins: isAvailable?.matchPatterns
         ? castArray(isAvailable.matchPatterns)
         : [],
     };
   }
 
   async isAvailable(): Promise<boolean> {
-    if (await checkAvailable(this._definition.isAvailable)) {
+    if (
+      !isEmpty(this._definition.isAvailable) &&
+      (await checkAvailable(this._definition.isAvailable))
+    ) {
       return true;
     }
 

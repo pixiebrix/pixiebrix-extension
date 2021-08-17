@@ -19,7 +19,7 @@ import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, once, debounce } from "lodash";
+import { castArray, once, debounce, cloneDeep } from "lodash";
 import {
   reducePipeline,
   mergeReaders,
@@ -764,11 +764,13 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   }
 
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
+    // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
+    const cloned = cloneDeep(config);
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
-    this._definition = config.definition;
-    this.rawConfig = config;
-    const { isAvailable } = config.definition;
+    this._definition = cloned.definition;
+    this.rawConfig = cloned;
+    const { isAvailable } = cloned.definition;
     this.permissions = {
       permissions: ["tabs", "webNavigation"],
       origins: castArray(isAvailable.matchPatterns),

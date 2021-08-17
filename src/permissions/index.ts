@@ -17,13 +17,18 @@
 
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { IExtension, IExtensionPoint, ServiceAuthPair } from "@/core";
-import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
+import {
+  ExtensionPointConfig,
+  RecipeDefinition,
+  ResolvedExtensionPointConfig,
+} from "@/types/definitions";
 import { Permissions } from "webextension-polyfill-ts";
 import { castArray, compact, uniq } from "lodash";
 import { locator } from "@/background/locator";
 import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import { mergePermissions, requestPermissions } from "@/utils/permissions";
 import { Deployment } from "@/types/contract";
+import { resolveDefinitions, resolveRecipe } from "@/registry/internal";
 
 // Copied from the permissions section of manifest.json
 const MANDATORY_PERMISSIONS = new Set([
@@ -87,11 +92,12 @@ export async function deploymentPermissions(
 export async function blueprintPermissions(
   blueprint: RecipeDefinition
 ): Promise<Permissions.Permissions> {
-  return collectPermissions(blueprint.extensionPoints, []);
+  const resolved = await resolveRecipe(blueprint, blueprint.extensionPoints);
+  return collectPermissions(resolved, []);
 }
 
 export async function collectPermissions(
-  extensionPoints: ExtensionPointConfig[],
+  extensionPoints: ResolvedExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
 ): Promise<Permissions.Permissions> {
   const servicePromises = serviceAuths.map(async (serviceAuth) =>
@@ -189,17 +195,18 @@ export async function extensionPermissions(
     includeServices: true,
     ...options,
   };
+  const resolved = await resolveDefinitions(extension);
   const extensionPoint =
     opts.extensionPoint ??
-    (await extensionPointRegistry.lookup(extension.extensionPointId));
+    (await extensionPointRegistry.lookup(resolved.extensionPointId));
   const services = await Promise.all(
-    extension.services
+    resolved.services
       .filter((x) => x.config)
       .map(async (x) =>
         serviceOriginPermissions({ id: x.id, config: x.config })
       )
   );
-  const blocks = await extensionPoint.getBlocks(extension);
+  const blocks = await extensionPoint.getBlocks(resolved);
   const blockPermissions = blocks.map((x) => x.permissions);
   return mergePermissions(
     compact([

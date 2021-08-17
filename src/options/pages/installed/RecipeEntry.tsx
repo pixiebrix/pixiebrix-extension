@@ -16,7 +16,6 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,7 +25,7 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { ExtensionRef, IExtension } from "@/core";
+import { ExtensionRef, ResolvedExtension, IExtension } from "@/core";
 import ExtensionRow from "@/options/pages/installed/ExtensionRow";
 import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
@@ -35,7 +34,7 @@ type RemoveAction = (identifier: ExtensionRef) => void;
 
 const RecipeEntry: React.FunctionComponent<{
   recipeId: string;
-  extensions: IExtension[];
+  extensions: ResolvedExtension[];
   onRemove: RemoveAction;
 }> = ({ recipeId, extensions, onRemove }) => {
   const notify = useNotifications();
@@ -57,7 +56,6 @@ const RecipeEntry: React.FunctionComponent<{
 
         notify.success(`Uninstalled ${name}`);
       } catch (error: unknown) {
-        reportError(error);
         notify.error(`Error uninstalling ${name}: ${getErrorMessage(error)}`, {
           error,
         });

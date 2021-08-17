@@ -16,8 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { ExtensionRef, IExtension } from "@/core";
-import { useToasts } from "react-toast-notifications";
+import { ExtensionRef, ResolvedExtension } from "@/core";
 import {
   ExtensionValidationResult,
   useExtensionValidator,
@@ -29,6 +28,7 @@ import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import AsyncButton from "@/components/AsyncButton";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
+import useNotifications from "@/hooks/useNotifications";
 
 type RemoveAction = (identifier: ExtensionRef) => void;
 
@@ -55,11 +55,11 @@ function validationMessage(validation: ExtensionValidationResult) {
 }
 
 const ExtensionRow: React.FunctionComponent<{
-  extension: IExtension;
+  extension: ResolvedExtension;
   onRemove: RemoveAction;
 }> = ({ extension, onRemove }) => {
   const { id, label, extensionPointId } = extension;
-  const { addToast } = useToasts();
+  const notify = useNotifications();
 
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extension
@@ -109,9 +109,8 @@ const ExtensionRow: React.FunctionComponent<{
           size="sm"
           onClick={() => {
             onRemove({ extensionId: id, extensionPointId });
-            addToast(`Removed brick ${label ?? id}`, {
-              appearance: "success",
-              autoDismiss: true,
+            notify.success(`Removed brick ${label ?? id}`, {
+              event: "ExtensionRemove",
             });
           }}
         >

@@ -21,6 +21,7 @@ import { useSelector } from "react-redux";
 import { IExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import { selectExtensions } from "@/options/selectors";
+import { resolveDefinitions } from "@/registry/internal";
 
 interface ExtensionResult {
   extensionPoint: IExtensionPoint | null;
@@ -36,8 +37,9 @@ export function useExtension(
 
   const extensions = useSelector(selectExtensions);
 
-  const extensionConfig = useMemo(() => {
+  const match = useMemo(() => {
     if (!extensionId) {
+      // There will be no match if no extensionId is provided (i.e., when creating a new extension via the workshop GUI
       return null;
     }
 
@@ -53,9 +55,14 @@ export function useExtension(
   }, [extensions, extensionId]);
 
   const [extensionPoint, isPending] = useAsyncState(async () => {
-    const id = extensionConfig?.extensionPointId ?? extensionPointId;
-    return id ? extensionPointRegistry.lookup(id) : null;
-  }, [extensionPointRegistry, extensionConfig, extensionPointId]);
+    if (match) {
+      // There will be no match if no extensionId is provided (i.e., when creating a new extension via the workshop GUI
+      const extension = await resolveDefinitions(match);
+      return extensionPointRegistry.lookup(extension.extensionPointId);
+    }
 
-  return { extensionPoint, extensionConfig, isPending };
+    return extensionPointRegistry.lookup(extensionPointId);
+  }, [extensionPointRegistry, match, extensionPointId]);
+
+  return { extensionPoint, extensionConfig: match, isPending };
 }

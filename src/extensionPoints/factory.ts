@@ -40,7 +40,7 @@ export function fromJS(config: ExtensionPointConfig): IExtensionPoint {
 
   if (!Object.prototype.hasOwnProperty.call(TYPE_MAP, config.definition.type)) {
     throw new Error(
-      `Unexpected extension point type ${config.definition.type}`
+      `Unexpected extension point type: ${config.definition.type}`
     );
   }
 
