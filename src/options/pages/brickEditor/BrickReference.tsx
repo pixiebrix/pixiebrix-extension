@@ -36,10 +36,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
 import "./BrickReference.scss";
-import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
 import GridLoader from "react-spinners/GridLoader";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
 
 export type ReferenceEntry = IBlock | IExtensionPoint | IService;
 
@@ -107,7 +107,9 @@ const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
       </DetailSection>
 
       <DetailSection title="Input Schema">
-        {!isEmpty(schema) ? (
+        {isEmpty(schema) ? (
+          <div className="text-muted">No input schema provided</div>
+        ) : (
           <div>
             <Button
               className="p-0"
@@ -131,17 +133,15 @@ const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
             </Button>
             <SchemaTree schema={schema} />
           </div>
-        ) : (
-          <div className="text-muted">No input schema provided</div>
         )}
       </DetailSection>
 
       {"outputSchema" in brick && (
         <DetailSection title="Output Schema">
-          {!isEmpty(brick.outputSchema) ? (
-            <SchemaTree schema={brick.outputSchema} />
-          ) : (
+          {isEmpty(brick.outputSchema) ? (
             <div className="text-muted">No output schema provided</div>
+          ) : (
+            <SchemaTree schema={brick.outputSchema} />
           )}
         </DetailSection>
       )}

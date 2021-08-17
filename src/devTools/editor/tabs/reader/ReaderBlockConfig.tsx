@@ -19,7 +19,6 @@ import React, { useCallback, useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { useFormikContext } from "formik";
 import { Alert, Col, Form, Row } from "react-bootstrap";
-import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import { jsonTreeTheme as theme } from "@/themes/light";
@@ -37,6 +36,7 @@ import { faCode, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import copy from "copy-to-clipboard";
 import { useToasts } from "react-toast-notifications";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
 
 export const ReaderBlockForm: React.FunctionComponent<{
   reader: IReader;
