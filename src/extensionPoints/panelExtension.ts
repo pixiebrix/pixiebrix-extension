@@ -311,7 +311,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         heading: Mustache.render(heading, extensionContext),
         // Render a placeholder body that we'll fill in async
         body: `<div id="${bodyUUID}"></div>`,
-        icon: await getSvgIcon(icon),
+        icon: icon ? await getSvgIcon(icon) : null,
         bodyUUID,
       })
     );

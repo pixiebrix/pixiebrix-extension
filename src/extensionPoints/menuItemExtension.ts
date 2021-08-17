@@ -495,12 +495,12 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const extensionContext = { ...ctxt, ...serviceContext };
       html = Mustache.render(this.getTemplate(), {
         caption: renderTemplate(caption, extensionContext),
-        icon: await getSvgIcon(icon),
+        icon: icon ? await getSvgIcon(icon) : null,
       });
     } else {
       html = Mustache.render(this.getTemplate(), {
         caption,
-        icon: await getSvgIcon(icon),
+        icon: icon ? await getSvgIcon(icon) : null,
       });
     }
 
