@@ -94,7 +94,6 @@
     "@typescript-eslint/no-confusing-void-expression": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
     "@typescript-eslint/no-base-to-string": "warn",
-    "@typescript-eslint/no-unnecessary-type-arguments": "warn",
     "@typescript-eslint/non-nullable-type-assertion-style": "warn",
     "@typescript-eslint/no-unnecessary-type-assertion": "warn",
     "@typescript-eslint/consistent-type-assertions": "warn",

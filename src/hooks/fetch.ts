@@ -91,7 +91,7 @@ export function useFetch<TData>(
         // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument here
         setData(undefined);
         try {
-          const data = (await fetch(relativeOrAbsoluteUrl)) as TData;
+          const data: TData = await fetch(relativeOrAbsoluteUrl);
           if (!isMounted()) return;
           setData(data);
         } catch (error: unknown) {
