@@ -262,7 +262,7 @@ const ReaderTab: React.FunctionComponent<{
             <>
               {isCustomReader(reader) ? (
                 <ReaderConfig
-                  key={active}
+                  key={active} // Re-render the reader content when the selected (active) reader changes
                   editable={editable}
                   available={available}
                   readerIndex={active}
@@ -270,7 +270,7 @@ const ReaderTab: React.FunctionComponent<{
                 />
               ) : (
                 <ReaderBlockConfig
-                  key={active}
+                  key={active} // Re-render the reader content when the selected (active) reader changes
                   readerIndex={active}
                   available={available}
                   testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
