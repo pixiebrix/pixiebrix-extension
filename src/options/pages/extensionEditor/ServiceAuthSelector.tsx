@@ -129,6 +129,12 @@ const ServiceAuthSelector: React.FunctionComponent<{
     [authOptions, serviceId]
   );
 
+  // `react-select` barfs on undefined component overrides
+  const components = useMemo(
+    () => (CustomMenuList ? { MenuList: CustomMenuList } : {}),
+    [CustomMenuList]
+  );
+
   useEffect(() => {
     if (authOptions.length === 1 && field.value == null) {
       helpers.setValue(authOptions[0].value);
@@ -161,7 +167,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
         options={options}
         value={value}
         error={Boolean(meta.error)}
-        components={{ MenuList: CustomMenuList }}
+        components={components}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
           helpers.setValue(x.value);
