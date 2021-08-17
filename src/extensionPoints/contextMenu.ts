@@ -172,8 +172,9 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     super(id, name, description, icon);
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-literal-property-style -- has to match parent type
-  public readonly syncInstall: boolean = true;
+  public get syncInstall() {
+    return true;
+  }
 
   abstract getBaseReader(): Promise<IReader>;
 

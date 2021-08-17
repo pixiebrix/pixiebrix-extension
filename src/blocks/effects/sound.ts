@@ -21,7 +21,7 @@ import { BlockArg, Schema } from "@/core";
 import { browser } from "webextension-polyfill-ts";
 import { propertiesToSchema } from "@/validators/generic";
 
-const sprite: { [key: string]: [number, number] } = {
+const sprite: Record<string, [number, number]> = {
   "alien death": [1000, 2000],
   "boss hit": [3000, 3500],
   escape: [4000, 7200],

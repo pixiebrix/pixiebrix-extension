@@ -29,7 +29,7 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, isEmpty } = require("lodash");
 const Policy = require("csp-parse");
-const mergeWithShared = require("./webpack.shared-config.js");
+const mergeWithShared = require("./webpack.sharedConfig.js");
 
 // Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
 const defaults = {

@@ -278,7 +278,7 @@ export const noopProxy: ReadProxy = {
 };
 
 export function getPropByPath(
-  obj: { [prop: string]: unknown },
+  obj: Record<string, unknown>,
   path: string,
   {
     args = {},

@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// <reference types="gapi.client.sheets" />
-
 import { liftBackground } from "@/background/protocol";
 import { liftBackground as liftDevtools } from "@/background/devtools/internal";
 import { ensureAuth, handleRejection } from "@/contrib/google/auth";
@@ -215,13 +213,10 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
 }
 
 export const devtoolsProtocol = {
-  getTabNames: liftDevtools(
-    "GET_TAB_NAMES",
-    () => async (spreadsheetId: string) => getTabNames(spreadsheetId)
-  ),
+  getTabNames: liftDevtools("GET_TAB_NAMES", () => getTabNames),
   getSheetProperties: liftDevtools(
     "GET_SHEET_PROPERTIES",
-    () => async (spreadsheetId: string) => getSheetProperties(spreadsheetId)
+    () => getSheetProperties
   ),
   getHeaders: liftDevtools(
     "GET_HEADERS",

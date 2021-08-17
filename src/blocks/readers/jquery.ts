@@ -92,7 +92,7 @@ async function processFind(
 }
 
 function processElement($elt: JQuery, selector: SingleSelector) {
-  const CONTENT_TYPES: { [key: string]: number | undefined } = {
+  const CONTENT_TYPES: Record<string, number | undefined> = {
     text: Node.TEXT_NODE,
     comment: Node.COMMENT_NODE,
   };

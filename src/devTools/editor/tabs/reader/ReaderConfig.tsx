@@ -38,7 +38,7 @@ import {
   RendererContext,
 } from "@/components/fields/blockOptions";
 import devtoolFields from "@/devTools/editor/fields/Fields";
-// @ts-ignore: no type definitions?
+// @ts-expect-error no type definitions?
 import GenerateSchema from "generate-schema";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import ToggleField from "@/devTools/editor/components/ToggleField";
@@ -395,7 +395,7 @@ const ReaderConfig: React.FunctionComponent<{
               {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
             </span>
             <div className="overflow-auto h-100 w-100">
-              {available === false && (
+              {!available && (
                 <span className="text-danger">
                   Extension not available on page
                 </span>
@@ -507,7 +507,7 @@ const ReaderConfig: React.FunctionComponent<{
                 {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
               </span>
               <div className="overflow-auto h-100 w-100">
-                {available === false && (
+                {!available && (
                   <span className="text-danger">
                     Extension not available on page
                   </span>

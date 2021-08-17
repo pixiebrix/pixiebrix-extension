@@ -25,6 +25,7 @@ import {
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
+import { unary } from "lodash";
 
 type CellValue = string | number | null;
 
@@ -77,7 +78,7 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
   const row = [];
   const matched = new Set();
 
-  const fields = headerRow.map(normalizeHeader);
+  const fields = headerRow.map(unary(normalizeHeader));
   console.debug(`Normalized headers: ${fields.join(", ")}`);
 
   for (const header of fields) {
