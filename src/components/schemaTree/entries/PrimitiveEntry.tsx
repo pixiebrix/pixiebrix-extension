@@ -15,13 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const value: string;
-  export default value;
-}
+import React from "react";
+import { Schema } from "@/core";
+import { ListGroup } from "react-bootstrap";
 
-declare module "*.txt" {
-  const value: string;
-  export default value;
-}
+const PrimitiveEntry: React.FunctionComponent<{
+  prop: string;
+  definition: Schema;
+}> = ({ prop, definition }) => {
+  const { type = "unknown", format } = definition;
+  // FIXME: template can be an array https://github.com/pixiebrix/pixiebrix-extension/issues/990
+  return (
+    <ListGroup.Item key={prop}>
+      <span>{prop}</span>
+      <span className="type">: {format ? `${format} ${type}` : type}</span>
+    </ListGroup.Item>
+  );
+};
+
+export default PrimitiveEntry;

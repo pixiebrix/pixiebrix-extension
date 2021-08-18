@@ -47,7 +47,7 @@ export const DependencyRow: React.FunctionComponent<{
   <tr>
     <td style={{ width: 250 }}>
       <Field name={`${field.name}.${index}.outputKey`}>
-        {/* @ts-ignore: not sure what's going on with the type definition for this */}
+        {/* @ts-expect-error not sure what's going on with the type definition for this */}
         {({ field, meta }) => (
           <Form.Group>
             <Form.Control

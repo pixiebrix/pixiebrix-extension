@@ -98,7 +98,7 @@ const colors = {
 };
 
 export const customStyles: StylesConfig<AuthOption, boolean> = {
-  // @ts-ignore: not sure how to pass the genetic argument to the react-select types
+  // @ts-expect-error not sure how to pass the genetic argument to the react-select types
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: (base: CSSProperties, state: { selectProps: any }) => {
     let statusColor = colors.divider;

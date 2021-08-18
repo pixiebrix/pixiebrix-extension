@@ -51,8 +51,7 @@ const SidebarLink: React.FunctionComponent<LinkProps> = ({
     <li
       className={cx("nav-item", {
         active:
-          location.pathname.startsWith(route) ||
-          (isActive && isActive(null, location)),
+          location.pathname.startsWith(route) || isActive?.(null, location),
       })}
     >
       <NavLink to={route} className="nav-link" isActive={isActive}>
@@ -67,7 +66,10 @@ const Sidebar: React.FunctionComponent = () => {
   const { flags } = useContext(AuthContext);
 
   return (
-    <nav className="sidebar sidebar-offcanvas sidebar-offcanvas-left" id="sidebar">
+    <nav
+      className="sidebar sidebar-offcanvas sidebar-offcanvas-left"
+      id="sidebar"
+    >
       <ul className="nav">
         <SidebarLink
           route="/installed"

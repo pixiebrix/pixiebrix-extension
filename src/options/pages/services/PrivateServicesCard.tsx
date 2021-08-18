@@ -18,7 +18,7 @@
 import { useSelector } from "react-redux";
 import { Card, Table, Button } from "react-bootstrap";
 import React, { useCallback, useContext } from "react";
-import { RawServiceConfiguration, IService, ServiceConfig } from "@/core";
+import { RawServiceConfiguration, IService } from "@/core";
 import { RootState } from "../../store";
 import { uuidv4 } from "@/types/helpers";
 import { ServiceDefinition } from "@/types/definitions";
@@ -82,7 +82,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         id: uuidv4(),
         label: undefined,
         serviceId: definition.metadata.id,
-        config: {} as ServiceConfig,
+        config: {},
       } as RawServiceConfiguration);
     },
     [onCreate]

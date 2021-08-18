@@ -19,6 +19,7 @@ import { Transformer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
+import { unary } from "lodash";
 
 export class RegexTransformer extends Transformer {
   constructor() {
@@ -66,7 +67,7 @@ export class RegexTransformer extends Transformer {
       return match?.groups ?? {};
     };
 
-    return Array.isArray(input) ? input.map(extract) : extract(input);
+    return Array.isArray(input) ? input.map(unary(extract)) : extract(input);
   }
 }
 

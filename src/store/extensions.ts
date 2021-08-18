@@ -37,9 +37,9 @@ export const persistOptionsConfig = {
  * @deprecated use ExtensionsState - this is only used in the migration
  */
 type LegacyExtensionsState = {
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- documentation
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
   extensions: {
-    // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- documentation
+    // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
     [extensionPointId: string]: {
       [extensionId: string]: IExtension;
     };

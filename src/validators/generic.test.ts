@@ -18,7 +18,6 @@
 import { validateKind } from "@/validators/generic";
 import yaml from "js-yaml";
 
-// @ts-ignore: jest has a transformer for text files
 import serviceTemplate from "@contrib/templates/service.txt";
 
 test("can validate service", async () => {

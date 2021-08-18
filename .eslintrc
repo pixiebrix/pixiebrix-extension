@@ -81,37 +81,25 @@
     "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
     "unicorn/prefer-set-has": "off", // Not always worth the extra code
     "unicorn/require-post-message-target-origin": "off", // Incompatible https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1396
+    "no-warning-comments": "off", // Only useful if there aren't hundreds of other real warnings
 
     // Temporarily disable rules
     "no-await-in-loop": "warn",
     "no-negated-condition": "warn",
     "no-return-await": "warn",
     "no-promise-executor-return": "warn",
-    "no-useless-concat": "warn",
-    "new-cap": "warn",
-    "no-self-compare": "warn",
 
     "@typescript-eslint/no-confusing-void-expression": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
-    "@typescript-eslint/consistent-indexed-object-style": "warn",
     "@typescript-eslint/no-base-to-string": "warn",
-    "@typescript-eslint/no-unnecessary-type-arguments": "warn",
-    "@typescript-eslint/prefer-ts-expect-error": "warn",
     "@typescript-eslint/non-nullable-type-assertion-style": "warn",
     "@typescript-eslint/no-unnecessary-type-assertion": "warn",
     "@typescript-eslint/consistent-type-assertions": "warn",
     "@typescript-eslint/no-require-imports": "warn",
     "@typescript-eslint/no-dynamic-delete": "warn",
-    "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
-    "@typescript-eslint/prefer-readonly": "warn",
-    "@typescript-eslint/prefer-optional-chain": "warn",
-    "@typescript-eslint/class-literal-property-style": "warn",
     "@typescript-eslint/triple-slash-reference": "warn",
-    "@typescript-eslint/prefer-string-starts-ends-with": "warn",
-    "@typescript-eslint/prefer-function-type": "warn",
     "@typescript-eslint/no-redeclare": "warn",
     "@typescript-eslint/no-misused-promises": "warn",
-    "@typescript-eslint/no-loop-func": "warn",
     "@typescript-eslint/unified-signatures": "warn",
     "@typescript-eslint/prefer-regexp-exec": "warn",
     "@typescript-eslint/no-useless-constructor": "warn",
@@ -168,6 +156,7 @@
         "jest": true
       },
       "rules": {
+        "@typescript-eslint/no-require-imports": "off",
         "@typescript-eslint/no-var-requires": "off",
         "unicorn/prefer-module": "off",
 

@@ -61,7 +61,7 @@ function useAvailableExtensionPoints<
     return zip(withConfig, availability)
       .filter(
         ([, availability]) =>
-          availability.status === "fulfilled" && availability.value === true
+          availability.status === "fulfilled" && availability.value
       )
       .map(([extensionPoint]) => extensionPoint);
   }, [port]);

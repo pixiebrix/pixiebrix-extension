@@ -109,7 +109,9 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
 
   protected readonly logger: Logger;
 
-  public readonly syncInstall: boolean = false;
+  public get syncInstall() {
+    return false;
+  }
 
   /**
    * Permissions required to use this extensions

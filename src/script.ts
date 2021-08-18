@@ -114,17 +114,15 @@ function readPathSpec(
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(obj as { [prop: string]: unknown }, path, {
+      values[key] = getPropByPath(obj as Record<string, unknown>, path, {
         args: args as object,
         proxy,
       });
     } else {
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(
-        obj as { [prop: string]: unknown },
-        pathOrObj,
-        { proxy }
-      );
+      values[key] = getPropByPath(obj as Record<string, unknown>, pathOrObj, {
+        proxy,
+      });
     }
   }
 

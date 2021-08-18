@@ -22,7 +22,7 @@ export default async function getSvgIcon({
   id = "box",
   size = 14,
   color = "#ae87e8",
-}: IconConfig): Promise<string> {
+}: Partial<IconConfig> = {}): Promise<string> {
   const { icons } = await import(
     /* webpackChunkName: "iconLibrary" */ "@/icons/list"
   );
