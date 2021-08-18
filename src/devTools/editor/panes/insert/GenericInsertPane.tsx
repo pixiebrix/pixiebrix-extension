@@ -125,7 +125,7 @@ const GenericInsertPane: React.FunctionComponent<{
   const extensionPoints = useAvailableExtensionPoints(config.baseClass);
 
   return (
-    <Centered>
+    <Centered isScrollable>
       <div className="PaneTitle">Add {config.label}</div>
       <div className="text-left">{config.insertModeHelp}</div>
       <div>
