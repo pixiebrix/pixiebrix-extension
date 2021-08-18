@@ -262,7 +262,10 @@ const ReaderTab: React.FunctionComponent<{
             <>
               {isCustomReader(reader) ? (
                 <ReaderConfig
-                  key={`${reader.metadata.id}-${active}`}
+                  // Re-render the reader content when the selected (active) reader changes. Can't include the brick id
+                  // as part of they key because it causes the component to re-render on every keypress when editing
+                  // the id field
+                  key={active}
                   editable={editable}
                   available={available}
                   readerIndex={active}
@@ -270,7 +273,10 @@ const ReaderTab: React.FunctionComponent<{
                 />
               ) : (
                 <ReaderBlockConfig
-                  key={`${reader.metadata.id}-${active}`}
+                  // Re-render the reader content when the selected (active) reader changes. Can't include the brick id
+                  // as part of they key because it causes the component to re-render on every keypress when editing
+                  // the id field
+                  key={active}
                   readerIndex={active}
                   available={available}
                   testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}
