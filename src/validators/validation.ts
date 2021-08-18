@@ -25,7 +25,7 @@ import { MissingConfigurationError } from "@/services/errors";
 import uniq from "lodash/uniq";
 import isPlainObject from "lodash/isPlainObject";
 import mapValues from "lodash/mapValues";
-import { castRegistryId, isUUID } from "@/types/helpers";
+import { validateRegistryId, isUUID } from "@/types/helpers";
 
 const IDENTIFIER_REGEX = /^[A-Z_a-z]\w*$/;
 
@@ -52,7 +52,7 @@ function blockSchemaFactory(): Yup.Schema<Record<string, unknown>> {
   return Yup.object().shape({
     id: Yup.string().test("is-block", "Block not found", async (id: string) =>
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- false positive
-      blockRegistry.exists(castRegistryId(id))
+      blockRegistry.exists(validateRegistryId(id))
     ),
     templateEngine: Yup.string()
       .oneOf(["nunjucks", "mustache", "handlebars"])
@@ -161,7 +161,7 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
           "Unknown service",
           async (value) => {
             try {
-              await serviceRegistry.lookup(castRegistryId(value));
+              await serviceRegistry.lookup(validateRegistryId(value));
             } catch (error: unknown) {
               if (error instanceof DoesNotExistError) {
                 return false;

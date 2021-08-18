@@ -166,7 +166,6 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
                   )}
                 </div>
                 <div>
-                  {/* @ts-ignore: ts doesn't like the default variant */}
                   <Button variant="default" onClick={onClose}>
                     Cancel
                   </Button>

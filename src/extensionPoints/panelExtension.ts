@@ -20,7 +20,7 @@ import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
-import { castArray } from "lodash";
+import { castArray, cloneDeep } from "lodash";
 import {
   reducePipeline,
   mergeReaders,
@@ -311,7 +311,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         heading: Mustache.render(heading, extensionContext),
         // Render a placeholder body that we'll fill in async
         body: `<div id="${bodyUUID}"></div>`,
-        icon: await getSvgIcon(icon),
+        icon: icon ? await getSvgIcon(icon) : null,
         bodyUUID,
       })
     );
@@ -504,11 +504,13 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
-    const { id, name, description } = config.metadata;
+    // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
+    const cloned = cloneDeep(config);
+    const { id, name, description } = cloned.metadata;
     super(id, name, description);
-    this._definition = config.definition;
-    this.rawConfig = config;
-    const { isAvailable } = config.definition;
+    this._definition = cloned.definition;
+    this.rawConfig = cloned;
+    const { isAvailable } = cloned.definition;
     this.permissions = {
       permissions: ["tabs", "webNavigation"],
       origins: castArray(isAvailable.matchPatterns),

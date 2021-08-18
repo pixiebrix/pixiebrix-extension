@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const value: string;
-  export default value;
-}
+import React from "react";
+import { Schema } from "@/core";
 
-declare module "*.txt" {
-  const value: string;
-  export default value;
-}
+export type TreeRenderer = React.FunctionComponent<{
+  schema: Schema;
+  prop?: string;
+}>;
+export type TreeEntry = React.FunctionComponent<{
+  prop: string;
+  definition: Schema;
+  TreeRenderer: TreeRenderer;
+}>;

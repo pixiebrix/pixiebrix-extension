@@ -16,8 +16,7 @@
  */
 
 import React, { useCallback, useMemo } from "react";
-import { useToasts } from "react-toast-notifications";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId, validateUUID } from "@/types/helpers";
 import { connect } from "react-redux";
 import { optionsSlice } from "@/options/slices";
 import { push } from "connected-react-router";
@@ -27,9 +26,11 @@ import ExtensionPointDetail from "./ExtensionPointDetail";
 import WorkshopPage from "@/options/pages/extensionEditor/WorkshopPage";
 import { reactivate } from "@/background/navigation";
 import GridLoader from "react-spinners/GridLoader";
-
 import "./ExtensionEditor.scss";
 import { RegistryId, UUID } from "@/core";
+import { getErrorMessage } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
+import { optional } from "@/utils";
 
 const { saveExtension } = optionsSlice.actions;
 
@@ -39,39 +40,40 @@ interface OwnProps {
 }
 
 type InstallRouteParams = {
-  extensionId: UUID;
+  // Leave key in to make call to useExtension more straight-forward
+  extensionId: undefined;
   extensionPointId: RegistryId;
   tab?: string;
 };
 
 type EditRouteParams = {
-  extensionPointId: UUID;
   extensionId: RegistryId;
+  extensionPointId: UUID;
   tab?: string;
 };
 
 type RouteParams = InstallRouteParams | EditRouteParams;
 
+const safeDecodeURIComponent = optional(decodeURIComponent);
+
 const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   saveExtension,
   navigate,
 }) => {
-  const { addToast } = useToasts();
+  const notify = useNotifications();
   const params = useParams<RouteParams>();
 
   const parsed = useMemo(
     () => ({
-      extensionPointId: params.extensionPointId
-        ? (decodeURIComponent(params.extensionPointId) as RegistryId)
-        : undefined,
-      extensionId: params.extensionId
-        ? (decodeURIComponent(params.extensionId) as UUID)
-        : undefined,
+      extensionPointId: validateRegistryId(
+        safeDecodeURIComponent(params.extensionPointId)
+      ),
+      extensionId: validateUUID(safeDecodeURIComponent(params.extensionId)),
     }),
-    [params]
+    [params.extensionPointId, params.extensionId]
   );
 
-  const { extensionPoint, extensionConfig, isPending } = useExtension(
+  const { extensionPoint, extensionConfig, isPending, error } = useExtension(
     parsed.extensionPointId,
     parsed.extensionId
   );
@@ -95,14 +97,9 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
           optionsArgs,
         });
 
-        const toastMsg = extensionConfig?.id
-          ? "Updated brick"
-          : "Activated brick";
-
-        addToast(toastMsg, {
-          appearance: "success",
-          autoDismiss: true,
-        });
+        notify.success(
+          extensionConfig?.id ? "Updated brick" : "Activated brick"
+        );
 
         if (isNew) {
           navigate(`/workshop/extensions/${extensionId}`);
@@ -113,8 +110,16 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
         setSubmitting(false);
       }
     },
-    [extensionPoint, extensionConfig, saveExtension, addToast, navigate]
+    [extensionPoint, extensionConfig, saveExtension, notify, navigate]
   );
+
+  if (error) {
+    return (
+      <div className="text-danger">
+        Error loading workshop: {getErrorMessage(error)}
+      </div>
+    );
+  }
 
   if (isPending) {
     return <GridLoader />;
@@ -127,8 +132,8 @@ const ExtensionEditor: React.FunctionComponent<OwnProps> = ({
   return (
     <ExtensionPointDetail
       initialValue={{
-        label: extensionConfig?.label,
-        config: extensionConfig?.config,
+        label: extensionConfig?.label ?? "",
+        config: extensionConfig?.config ?? {},
         services: extensionConfig?.services ?? [],
         optionsArgs: extensionConfig?.optionsArgs ?? {},
       }}

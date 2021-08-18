@@ -38,7 +38,7 @@ import {
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { Permissions } from "webextension-polyfill-ts";
-import { castArray, compact } from "lodash";
+import { castArray, cloneDeep, compact } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
 import { reportEvent } from "@/telemetry/events";
@@ -48,7 +48,7 @@ import {
 } from "@/extensionPoints/helpers";
 import { notifyError } from "@/contentScript/notify";
 
-// @ts-ignore: using for the EventHandler type below
+// @ts-expect-error using for the EventHandler type below
 import JQuery from "jquery";
 
 export type TriggerConfig = {
@@ -287,11 +287,13 @@ class RemoteTriggerExtensionPoint extends TriggerExtensionPoint {
   }
 
   constructor(config: ExtensionPointConfig<TriggerDefinition>) {
-    const { id, name, description, icon } = config.metadata;
+    // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
+    const cloned = cloneDeep(config);
+    const { id, name, description, icon } = cloned.metadata;
     super(id, name, description, icon);
-    this._definition = config.definition;
-    this.rawConfig = config;
-    const { isAvailable } = config.definition;
+    this._definition = cloned.definition;
+    this.rawConfig = cloned;
+    const { isAvailable } = cloned.definition;
     this.permissions = {
       permissions: ["tabs", "webNavigation"],
       origins: castArray(isAvailable.matchPatterns),

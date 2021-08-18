@@ -24,6 +24,7 @@ import { Validator } from "@cfworker/json-schema";
 import { dereference } from "@/validators/generic";
 import readerSchema from "@schemas/reader.json";
 import { Schema as ValidatorSchema } from "@cfworker/json-schema/dist/types";
+import { cloneDeep } from "lodash";
 
 export interface ReaderTypeConfig {
   type: string;
@@ -51,7 +52,7 @@ export interface ReaderConfig<
 
 function validateReaderDefinition(
   component: unknown
-): asserts component is ReaderConfig<ReaderDefinition> {
+): asserts component is ReaderConfig {
   const validator = new Validator(
     dereference(readerSchema as Schema) as ValidatorSchema
   );
@@ -87,17 +88,19 @@ export function makeRead(
 export function readerFactory(component: unknown): IReader {
   validateReaderDefinition(component);
 
+  // Need to `cloneDeep` because component could be a proxy object
+  const cloned = cloneDeep(component);
+
   const {
     metadata: { id, name, description },
     outputSchema = {},
     definition,
-    kind,
-  } = component;
+  } = cloned;
 
   const { reader, isAvailable } = definition;
 
-  if (kind !== "reader") {
-    throw new Error(`Expected kind reader, got ${kind}`);
+  if (reader == null) {
+    throw new TypeError("definition.reader is null");
   }
 
   class ExternalReader extends Reader {

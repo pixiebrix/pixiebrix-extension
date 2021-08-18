@@ -31,6 +31,7 @@ import { reactivate } from "@/background/navigation";
 import { push } from "connected-react-router";
 import { optionsSlice } from "@/options/slices";
 import { RegistryId, UUID } from "@/core";
+import { resolveRecipe } from "@/registry/internal";
 
 const { installRecipe } = optionsSlice.actions;
 
@@ -57,7 +58,8 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       const missingServiceIds = Object.keys(
         pickBy(
           values.services,
-          (v, k) => requiredServiceIds.includes(k) && v == null
+          // `pickBy` not reasoning about the type of the keys
+          (v, k: RegistryId) => requiredServiceIds.includes(k) && v == null
         )
       );
 
@@ -70,7 +72,10 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
         }));
 
       const enabled = await containsPermissions(
-        await collectPermissions(selected, configuredAuths)
+        await collectPermissions(
+          await resolveRecipe(recipe, selected),
+          configuredAuths
+        )
       );
 
       if (selected.length === 0) {

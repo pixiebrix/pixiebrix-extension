@@ -15,29 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sortBy } from "lodash";
 import { fromJS } from "@/extensionPoints/factory";
 import BaseRegistry from "@/baseRegistry";
-import { IExtensionPoint, IOption, RegistryId } from "@/core";
+import { IExtensionPoint, RegistryId } from "@/core";
 
 const registry = new BaseRegistry<RegistryId, IExtensionPoint>(
   ["foundation", "extensionPoint"],
   "extension-points",
   fromJS
 );
-
-export interface ExtensionPointOption extends IOption {
-  extensionPoint: IExtensionPoint;
-}
-
-export async function getExtensionPointOptions(): Promise<
-  ExtensionPointOption[]
-> {
-  return sortBy(await registry.all(), (x) => x.name).map((x) => ({
-    value: x.id,
-    label: x.name,
-    extensionPoint: x,
-  }));
-}
 
 export default registry;

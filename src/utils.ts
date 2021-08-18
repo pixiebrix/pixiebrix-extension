@@ -278,7 +278,7 @@ export const noopProxy: ReadProxy = {
 };
 
 export function getPropByPath(
-  obj: { [prop: string]: unknown },
+  obj: Record<string, unknown>,
   path: string,
   {
     args = {},
@@ -383,4 +383,19 @@ export function evaluableFunction(
   function_: (...parameters: unknown[]) => unknown
 ): string {
   return "(" + function_.toString() + ")()";
+}
+
+/**
+ * Lift a unary function to pass through null/undefined.
+ */
+export function optional<T extends (arg: unknown) => unknown>(
+  func: T
+): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
+  return (arg: Parameters<T>[0]) => {
+    if (arg == null) {
+      return null;
+    }
+
+    return func(arg) as ReturnType<T>;
+  };
 }

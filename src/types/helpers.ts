@@ -28,11 +28,27 @@ export function isUUID(uuid: string): uuid is UUID {
   return validate(uuid);
 }
 
+export function validateUUID(uuid: string): UUID {
+  if (uuid == null) {
+    // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
+    // we can remove this check as strictNullChecks will check the callsite
+    return uuid as UUID;
+  }
+
+  if (isUUID(uuid)) {
+    return uuid;
+  }
+
+  console.debug("Invalid UUID: %s", uuid);
+
+  throw new Error("Invalid UUID");
+}
+
 export function isRegistryId(id: string): id is RegistryId {
   return PACKAGE_REGEX.test(id);
 }
 
-export function castRegistryId(id: string): RegistryId {
+export function validateRegistryId(id: string): RegistryId {
   if (id == null) {
     // We don't have strictNullChecks on, so null values will find there way here. We should pass them along. Eventually
     // we can remove this check as strictNullChecks will check the callsite

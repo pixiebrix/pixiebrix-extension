@@ -63,7 +63,7 @@ interface Fiber {
   /**
    * The props used to create the output.
    */
-  memoizedProps: { [prop: string]: unknown };
+  memoizedProps: Record<string, unknown>;
 
   /**
    * The resolved function/class associated with this fiber.
@@ -86,7 +86,7 @@ export function hasReactProps(fiber: Fiber): boolean {
   return Object.keys(fiber.memoizedProps).some((x) => x !== "children");
 }
 
-export function readReactProps(fiber: Fiber): { [prop: string]: unknown } {
+export function readReactProps(fiber: Fiber): Record<string, unknown> {
   return pickBy(fiber.memoizedProps, (value, key) => key !== "children");
 }
 

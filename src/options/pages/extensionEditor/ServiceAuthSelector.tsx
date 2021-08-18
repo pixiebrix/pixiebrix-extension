@@ -98,7 +98,7 @@ const colors = {
 };
 
 export const customStyles: StylesConfig<AuthOption, boolean> = {
-  // @ts-ignore: not sure how to pass the genetic argument to the react-select types
+  // @ts-expect-error not sure how to pass the genetic argument to the react-select types
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   control: (base: CSSProperties, state: { selectProps: any }) => {
     let statusColor = colors.divider;
@@ -127,6 +127,12 @@ const ServiceAuthSelector: React.FunctionComponent<{
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
     [authOptions, serviceId]
+  );
+
+  // `react-select` barfs on undefined component overrides
+  const components = useMemo(
+    () => (CustomMenuList ? { MenuList: CustomMenuList } : {}),
+    [CustomMenuList]
   );
 
   useEffect(() => {
@@ -161,7 +167,7 @@ const ServiceAuthSelector: React.FunctionComponent<{
         options={options}
         value={value}
         error={Boolean(meta.error)}
-        components={{ MenuList: CustomMenuList }}
+        components={components}
         onChange={(x: AuthOption) => {
           console.debug(`Selected option ${x.value} (${x.label})`);
           helpers.setValue(x.value);

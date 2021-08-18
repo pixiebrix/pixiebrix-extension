@@ -18,7 +18,7 @@
 import { JSONSchema7, JSONSchema7Definition } from "json-schema";
 import { UiSchema as StandardUiSchema } from "@rjsf/core";
 import { AxiosRequestConfig } from "axios";
-import { Primitive } from "type-fest";
+import { Except, Primitive } from "type-fest";
 import { ErrorObject } from "serialize-error";
 import { Permissions } from "webextension-polyfill-ts";
 import { pick } from "lodash";
@@ -33,6 +33,8 @@ export type SchemaProperties = Record<string, SchemaDefinition>;
 export type RenderedHTML = string;
 
 export type ActionType = string;
+
+export type OutputKey = string;
 
 export type UUID = string & {
   // Nominal subtyping
@@ -116,11 +118,6 @@ export interface BlockOptions {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BlockArg = Record<string, any>;
 
-export interface IOption {
-  value: string | number | boolean;
-  label: string;
-}
-
 export type BlockIcon = string;
 
 /**
@@ -196,7 +193,7 @@ export type ExtensionRef = {
   extensionPointId: RegistryId;
 };
 
-export interface IExtension<T extends Config = EmptyConfig> {
+export type IExtension<T extends Config = EmptyConfig> = {
   /**
    * UUID of the extension.
    */
@@ -241,6 +238,8 @@ export interface IExtension<T extends Config = EmptyConfig> {
    * - extension points
    * - components
    * - readers
+   *
+   * @see ResolvedExtension
    */
   definitions?: InnerDefinitions;
 
@@ -258,7 +257,17 @@ export interface IExtension<T extends Config = EmptyConfig> {
    * The extension configuration for the extension point
    */
   config: T;
-}
+};
+
+/**
+ * An `IExtension` with all definitions resolved.
+ */
+export type ResolvedExtension<T extends Config = EmptyConfig> = Except<
+  IExtension<T>,
+  "definitions"
+> & {
+  _resolvedExtensionBrand: never;
+};
 
 export interface IExtensionPoint extends Metadata {
   inputSchema: Schema;

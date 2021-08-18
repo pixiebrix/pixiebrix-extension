@@ -40,6 +40,7 @@ import useNotifications from "@/hooks/useNotifications";
 import { uniq } from "lodash";
 import { Card, Table } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
+import { resolveRecipe } from "@/registry/internal";
 
 interface ActivateProps {
   blueprint: RecipeDefinition;
@@ -47,7 +48,7 @@ interface ActivateProps {
 
 export function useEnsurePermissions(
   blueprint: RecipeDefinition,
-  extensions: ExtensionPointConfig[],
+  selected: ExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
 ) {
   const notify = useNotifications();
@@ -55,13 +56,16 @@ export function useEnsurePermissions(
 
   const [permissionState, isPending, error] = useAsyncState(async () => {
     await locator.refreshLocal();
-    const permissions = await collectPermissions(extensions, serviceAuths);
+    const permissions = await collectPermissions(
+      await resolveRecipe(blueprint, selected),
+      serviceAuths
+    );
     const enabled = await containsPermissions(permissions);
     return {
       enabled,
       permissions,
     };
-  }, [extensions, serviceAuths]);
+  }, [selected, serviceAuths]);
 
   const { enabled, permissions } = permissionState ?? {
     enabled: false,
@@ -81,6 +85,7 @@ export function useEnsurePermissions(
     }
 
     if (!accepted) {
+      // Event is tracked in `activate` callback
       notify.warning("You declined the permissions");
       return false;
     }
@@ -95,17 +100,17 @@ export function useEnsurePermissions(
       if (accepted) {
         reportEvent("MarketplaceActivate", {
           blueprintId: blueprint.metadata.id,
-          extensions: extensions.map((x) => x.label),
+          extensions: selected.map((x) => x.label),
         });
         return submitForm();
       }
 
       reportEvent("MarketplaceRejectPermissions", {
         blueprintId: blueprint.metadata.id,
-        extensions: extensions.map((x) => x.label),
+        extensions: selected.map((x) => x.label),
       });
     });
-  }, [extensions, request, submitForm, blueprint.metadata]);
+  }, [selected, request, submitForm, blueprint.metadata]);
 
   return {
     enabled,
@@ -113,7 +118,7 @@ export function useEnsurePermissions(
     permissions,
     activate,
     isPending,
-    extensions,
+    extensions: selected,
     error,
   };
 }

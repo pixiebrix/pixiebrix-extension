@@ -41,7 +41,7 @@ const ExtensionConfigurationCard: React.FunctionComponent<OwnProps> = ({
             key={property}
             name={name ? `${name}.${property}` : property}
             schema={schema as Schema}
-            // @ts-ignore: need to type field props to allow extra types
+            // @ts-expect-error need to type field props to allow extra types
             blocks={blocks}
           />
         );

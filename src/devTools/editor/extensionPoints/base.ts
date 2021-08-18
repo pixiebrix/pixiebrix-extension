@@ -45,7 +45,7 @@ import {
   ReaderReferenceFormState,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
-import { castRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 
 export interface WizardStep {
   step: string;
@@ -79,7 +79,7 @@ export function makeReaderId(
 ): RegistryId {
   const base = `${foundationId}-reader`;
   if (!excludeIds.includes(base)) {
-    return castRegistryId(base);
+    return validateRegistryId(base);
   }
 
   let num = 1;
@@ -89,7 +89,7 @@ export function makeReaderId(
     id = `${base}-${num}`;
   } while (excludeIds.includes(id));
 
-  return castRegistryId(id);
+  return validateRegistryId(id);
 }
 
 interface ReaderOptions {
@@ -161,7 +161,7 @@ export async function generateExtensionPointMetadata(
   // Find next available foundation id
   const collection = `${scope ?? "@local"}/${domain}`;
   for (let index = 1; index < 1000; index++) {
-    const id = castRegistryId(
+    const id = validateRegistryId(
       [collection, index === 1 ? "foundation" : `foundation-${index}`].join("/")
     );
 
@@ -171,7 +171,7 @@ export async function generateExtensionPointMetadata(
 
     if (ok) {
       return {
-        id: castRegistryId(id),
+        id: validateRegistryId(id),
         name: `${domain} ${label}`,
       };
     }

@@ -39,7 +39,7 @@ import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
 import { partition } from "lodash";
 import { Permissions } from "webextension-polyfill-ts";
-import { castRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
@@ -109,7 +109,9 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
 
   protected readonly logger: Logger;
 
-  public readonly syncInstall: boolean = false;
+  public get syncInstall() {
+    return false;
+  }
 
   /**
    * Permissions required to use this extensions
@@ -127,7 +129,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     description?: string,
     icon?: BlockIcon
   ) {
-    this.id = castRegistryId(id);
+    this.id = validateRegistryId(id);
     this.name = name;
     this.description = description;
     this.icon = icon;
@@ -209,7 +211,7 @@ export abstract class Block implements IBlock {
     description?: string,
     icon?: BlockIcon
   ) {
-    this.id = castRegistryId(id);
+    this.id = validateRegistryId(id);
     this.name = name;
     this.description = description;
     this.icon = icon;

@@ -39,7 +39,7 @@ import {
   NotConfiguredError,
 } from "@/services/errors";
 import { fetch } from "@/hooks/fetch";
-import { castRegistryId } from "@/types/helpers";
+import { validateRegistryId } from "@/types/helpers";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -159,7 +159,7 @@ class LazyLocatorFactory {
           ...x,
           level: x.organization ? ServiceLevel.Team : ServiceLevel.BuiltIn,
           local: false,
-          serviceId: castRegistryId(x.service.name),
+          serviceId: validateRegistryId(x.service.name),
         })),
       ],
       (x) => x.level
