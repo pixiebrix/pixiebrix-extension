@@ -43,11 +43,16 @@ import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
+import type { ReadOptions } from "@/pageScript/protocol";
+import { Primitive } from "type-fest";
 
-type ReaderSelector = (options: {
-  type: string;
-  [prop: string]: unknown;
-}) => ReaderTypeConfig;
+type ReaderSelector = (
+  options: ReadOptions & {
+    type: string;
+    // `selectors` is JQuery-reader only
+    selectors?: Record<string, string>;
+  }
+) => ReaderTypeConfig;
 
 type FrameworkOption = {
   value: Framework;
@@ -59,7 +64,17 @@ type FrameworkOption = {
 export const defaultSelector: ReaderSelector = partial(
   pick,
   partial.placeholder,
-  ["type", "selector", "traverseUp", "optional"]
+  // Should be kept in sync with ReadOptions, otherwise behavior will differ between running a brick in the devtools
+  // vs. running a brick in the normal application
+  [
+    "type",
+    "pathSpec",
+    "waitMillis",
+    "retryMillis",
+    "selector",
+    "traverseUp",
+    "optional",
+  ]
 ) as ReaderSelector;
 
 export const readerOptions: FrameworkOption[] = [
@@ -124,7 +139,7 @@ const FrameworkSelector: React.FunctionComponent<{
   );
 };
 
-function normalize(value: unknown): string {
+function normalize(value: Primitive): string {
   return value.toString().toLowerCase();
 }
 
@@ -152,7 +167,7 @@ export function searchData(query: string, data: unknown): unknown {
     return compact(data.map(partial(searchData, query)));
   }
 
-  return normalize(data).includes(normalized) ? data : undefined;
+  return normalize(data as Primitive).includes(normalized) ? data : undefined;
 }
 
 const FrameworkFields: React.FunctionComponent<{
