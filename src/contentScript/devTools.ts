@@ -34,7 +34,8 @@ import {
 import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
-import { isNullOrBlank } from "@/utils";
+import { isNullOrBlank, resolveObj } from "@/utils";
+import { fromPairs } from "lodash";
 
 export type Target = {
   tabId: number;
@@ -73,10 +74,10 @@ export const searchWindow: (
 export const runReaderBlock = liftContentScript(
   "RUN_READER_BLOCK",
   async ({ id, rootSelector }: { id: RegistryId; rootSelector?: string }) => {
-    const root = rootSelector
-      ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
-        $(document).find(rootSelector).get(0)
-      : document;
+    const root = isNullOrBlank(rootSelector)
+      ? document
+      : // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
+        $(document).find(rootSelector).get(0);
 
     if (id === "@pixiebrix/context-menu-data") {
       // HACK: special handling for context menu built-in
@@ -84,7 +85,9 @@ export const runReaderBlock = liftContentScript(
         return {
           // TODO: extract the media type
           mediaType: null,
-          // eslint-disable-next-line unicorn/prefer-dom-node-text-content -- TODO: Review if necessary
+          // Use `innerText` because only want human readable elements
+          // https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent#differences_from_innertext
+          // eslint-disable-next-line unicorn/prefer-dom-node-text-content
           linkText: root.tagName === "A" ? root.innerText : null,
           linkUrl: root.tagName === "A" ? root.getAttribute("href") : null,
           srcUrl: root.getAttribute("src"),
@@ -114,10 +117,10 @@ export const runReader = liftContentScript(
   }) => {
     console.debug("runReader", { config, rootSelector });
 
-    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
     const root = isNullOrBlank(rootSelector)
       ? document
-      : $(document).find(rootSelector).get(0);
+      : // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
+        $(document).find(rootSelector).get(0);
 
     return makeRead(config)(root);
   }
@@ -132,14 +135,17 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
       selector,
       htmlData: $(selectedElement).data(),
     };
-    for (const framework of FRAMEWORK_ADAPTERS.keys()) {
-      // eslint-disable-next-line security/detect-object-injection -- safe because key coming from compile-time constant
-      base[framework] = await read(async () =>
-        getComponentData({ framework, selector })
-      );
-    }
 
-    return base;
+    const frameworkData = await resolveObj(
+      fromPairs(
+        [...FRAMEWORK_ADAPTERS.keys()].map((framework) => [
+          framework,
+          read(async () => getComponentData({ framework, selector })),
+        ])
+      )
+    );
+
+    return { ...base, ...frameworkData };
   }
 
   return {

@@ -22,7 +22,9 @@ import { castArray, fromPairs, compact } from "lodash";
 import { getComponentData, ReadPayload } from "@/pageScript/protocol";
 
 type FrameworkConfig = ReadPayload & {
-  // Legacy emberjs reader config; now handled via pathSpec
+  /**
+   * @deprecated Legacy emberjs reader config. Use patchSpec instead
+   */
   attrs: string | string[];
 };
 
@@ -57,7 +59,7 @@ function makeRead(framework: Framework): Read<FrameworkConfig> {
     } = reader;
 
     const rootSelector = isHTMLElement(root)
-      ? await asyncFastCssSelector(root as HTMLElement)
+      ? await asyncFastCssSelector(root)
       : null;
 
     return getComponentData({
