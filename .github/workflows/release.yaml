@@ -13,7 +13,7 @@ jobs:
   build-for-store:
     runs-on: ubuntu-latest
     env:
-      SOURCE_MAP_PATH: sourcemaps/${{ env.GITHUB_JOB }}/${{ env.GITHUB_SHA }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
     steps:
       - uses: actions/checkout@v2
@@ -47,7 +47,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      SOURCE_MAP_PATH: sourcemaps/${{ env.GITHUB_JOB }}/${{ env.GITHUB_SHA }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
     steps:
       - uses: actions/checkout@v2

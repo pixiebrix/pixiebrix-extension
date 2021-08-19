@@ -3,17 +3,6 @@ name: CI
 on: push
 
 env:
-  ##########################################
-  ##########################################
-  ##########################################
-  ##########################################
-  ##########################################
-  # TODO: drop `|| true` before merging PR #
-  ##########################################
-  ##########################################
-  ##########################################
-  ##########################################
-  ##########################################
   # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
   PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' || true }}
 
@@ -34,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # Uploads sourcemaps to S3, if it's a public release
-      SOURCE_MAP_PATH: sourcemaps/${{ env.GITHUB_JOB }}/${{ env.GITHUB_SHA }}
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
 
     steps:
       - uses: actions/checkout@v2
@@ -59,7 +48,7 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         name: Save extension
-        if: env.PUBLIC_RELEASE == true # boolean comparison required
+        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         with:
           name: build-staging
           path: |
@@ -77,7 +66,7 @@ jobs:
           if-no-files-found: error
 
       - run: npm run upload:sourcemaps
-        if: env.PUBLIC_RELEASE == true # boolean comparison required
+        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
