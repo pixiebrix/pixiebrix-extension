@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {useCallback, useContext, useMemo, useRef} from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { Form, Button, Table } from "react-bootstrap";
 import { Schema } from "@/core";
 import { FieldProps } from "@/components/fields/propTypes";
@@ -217,8 +217,8 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
   const { setFieldValue } = useFormikContext();
 
   // UseRef indirection layer so the callbacks below don't re-calculate on every change
-  const value = useRef(field.value);
-  value.current = field.value;
+  const valueRef = useRef(field.value);
+  valueRef.current = field.value ?? {};
 
   const [properties, declaredProperties] = useMemo(() => {
     const declared = schema.properties ?? {};
@@ -234,20 +234,20 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
     (property: string) => {
       setFieldValue(
         name,
-        produce(value.current, draft => {
+        produce(valueRef.current, draft => {
           if (draft != null) {
             delete draft[property];
           }
         })
       );
     },
-    [name, setFieldValue, value]
+    [name, setFieldValue, valueRef]
   );
 
   const onRename = useCallback(
     (oldProp: string, newProp: string) => {
       if (oldProp !== newProp) {
-        const previousValue: ObjectValue = value.current ?? {};
+        const previousValue: ObjectValue = valueRef.current;
 
         console.debug("Renaming property", {
           newProp,
@@ -264,17 +264,17 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
         );
       }
     },
-    [name, setFieldValue, value]
+    [name, setFieldValue, valueRef]
   );
 
   const addProperty = useCallback(() => {
     setFieldValue(
       name,
-      produce(value.current, draft => {
+      produce(valueRef.current, draft => {
         draft[freshPropertyName(draft)] = "";
       })
     );
-  }, [name, setFieldValue, value]);
+  }, [name, setFieldValue, valueRef]);
 
   return (
     <Form.Group controlId={field.name}>
