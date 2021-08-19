@@ -13,7 +13,7 @@ jobs:
           node-version: "16"
           cache: npm
       - run: npm ci
-      - run: npm run test:coverage
+      - run: npm run test -- --coverage
       - name: Run codacy-coverage-reporter
         uses: codacy/codacy-coverage-reporter-action@v1
         # Skip step for dependabot: https://github.com/pixiebrix/pixiebrix-app/issues/231

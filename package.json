@@ -5,7 +5,6 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watchAll",
-    "test:coverage": "jest --coverage --collectCoverageFrom=\"src/**/*.ts(x?)\"",
     "lint": "eslint src --ext js,jsx,ts,tsx",
     "watch": "concurrently 'npm:watch:*' -r",
     "watch:webpack": "ENV_FILE='.env.development' webpack --mode development --watch",
@@ -256,6 +255,12 @@
       "<rootDir>/src/testEnv.js",
       "jest-webextension-mock",
       "fake-indexeddb/auto"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!**/__mocks__/**",
+      "!**/node_modules/**",
+      "!**/vendor/**"
     ],
     "moduleNameMapper": {
       "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
