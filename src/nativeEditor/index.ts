@@ -23,5 +23,5 @@ export {
   checkAvailable,
   getInstalledExtensionPointIds,
 } from "./dynamic";
-export { insertButton, dragButton } from "./insertButton";
+export { insertButton } from "./insertButton";
 export { insertPanel } from "./insertPanel";
