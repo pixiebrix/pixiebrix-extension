@@ -5,6 +5,7 @@
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watchAll",
+    "test:coverage": "jest --coverage --collectCoverageFrom=\"src/**/*.ts(x?)\"",
     "lint": "eslint src --ext js,jsx,ts,tsx",
     "watch": "concurrently 'npm:watch:*' -r",
     "watch:webpack": "ENV_FILE='.env.development' webpack --mode development --watch",
@@ -239,6 +240,9 @@
       "yaml",
       "yml",
       "json"
+    ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/src/vendors/"
     ],
     "transform": {
       "^.+\\.[jt]sx?$": "babel-jest",
