@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState, useMemo, useCallback } from "react";
-import { LogEntry } from "@/background/logging";
+import React, { useState, useMemo, useCallback, createContext } from "react";
+import type { LogEntry } from "@/background/logging";
 import { isEqual, noop } from "lodash";
 
 type Refresh = () => Promise<void>;
@@ -40,9 +40,10 @@ const defaultValue: LogContextShape = {
 };
 
 /**
- * @deprecated This component introduces an anti-pattern of inversion of control. Should be using Redux store here?
+ * @deprecated This component introduces an anti-pattern of returning `safeSetUnread` and `safeSetRefresh`. In the
+ *  future, we should probably be using the Redux store here. Should be using Redux store here?
  */
-const LogContext = React.createContext(defaultValue);
+const LogContext = createContext(defaultValue);
 
 export const LogContextWrapper: React.FunctionComponent = ({ children }) => {
   const [unread, setUnread] = useState<LogEntry[]>([]);
