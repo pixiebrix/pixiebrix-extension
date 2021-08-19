@@ -134,6 +134,29 @@ function getVersionName(isProduction) {
   return `${process.env.npm_package_version}-local+${new Date().toISOString()}`;
 }
 
+function getConditionalPlugins(isProduction) {
+  if (isProduction) {
+    return [
+      new BundleAnalyzerPlugin({
+        analyzerMode: "static",
+        reportFilename: path.resolve("report.html"),
+      }),
+    ];
+  }
+
+  if (process.env.DEV_NOTIFY === "false") {
+    return [];
+  }
+
+  // Only notifies when watching. `zsh-notify` is suggested for the `build` script
+  return [
+    new WebpackBuildNotifierPlugin({
+      title: "PB Extension",
+      showDuration: true,
+    }),
+  ];
+}
+
 const isProd = (options) => options.mode === "production";
 
 function customizeManifest(manifest, isProduction) {
@@ -295,19 +318,12 @@ module.exports = (env, options) =>
     },
     plugins: compact([
       rollbarPlugin,
+      ...getConditionalPlugins(isProd(options)),
 
-      // Only notifies when watching. `zsh-notify` is suggested for the `build` script
-      options.watch &&
-        process.env.DEV_NOTIFY !== "false" &&
-        new WebpackBuildNotifierPlugin({
-          title: "PB Extension",
-          showDuration: true,
-        }),
-
-      isProd(options) &&
-        new BundleAnalyzerPlugin({
-          analyzerMode: "static",
-          reportFilename: path.resolve("report.html"),
+      produceSourcemap &&
+        new webpack.SourceMapDevToolPlugin({
+          publicPath: sourceMapPublicUrl,
+          filename: "[file].map[query]", // Without this it won't output anything
         }),
 
       new NodePolyfillPlugin(),
@@ -358,12 +374,6 @@ module.exports = (env, options) =>
           "static",
         ],
       }),
-
-      produceSourcemap &&
-        new webpack.SourceMapDevToolPlugin({
-          publicPath: sourceMapPublicUrl,
-          filename: "[file].map[query]", // Without this it won't output anything
-        }),
     ]),
     module: {
       rules: [
