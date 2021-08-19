@@ -16,7 +16,7 @@
  */
 
 import { Form, Pagination } from "react-bootstrap";
-import { MessageLevel } from "@/background/logging";
+import type { MessageLevel } from "@/background/logging";
 import { range } from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
