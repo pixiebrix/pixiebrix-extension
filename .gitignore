@@ -37,7 +37,6 @@ assets/bundles
 browsers/**/bundles/**
 browsers/dist
 dist
-!dist/.vercelignore
 .transpiled
 
 # Other artifacts
