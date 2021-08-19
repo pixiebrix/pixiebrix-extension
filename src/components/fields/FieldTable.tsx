@@ -247,7 +247,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
   const onRename = useCallback(
     (oldProp: string, newProp: string) => {
       if (oldProp !== newProp) {
-        const previousValue: ObjectValue = valueRef.current;
+        const previousValue = valueRef.current;
 
         console.debug("Renaming property", {
           newProp,
