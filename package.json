@@ -240,6 +240,9 @@
       "yml",
       "json"
     ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/src/vendors/"
+    ],
     "transform": {
       "^.+\\.[jt]sx?$": "babel-jest",
       "^.+\\.ya?ml$": "yaml-jest-transform",
@@ -252,6 +255,12 @@
       "<rootDir>/src/testEnv.js",
       "jest-webextension-mock",
       "fake-indexeddb/auto"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!**/__mocks__/**",
+      "!**/node_modules/**",
+      "!**/vendor/**"
     ],
     "moduleNameMapper": {
       "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",
