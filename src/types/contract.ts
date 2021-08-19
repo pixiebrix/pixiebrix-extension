@@ -19,7 +19,7 @@
  * Type contract between the backend and front-end.
  */
 import { RecipeDefinition } from "@/types/definitions";
-import { ServiceConfig, SanitizedConfig, Metadata } from "@/core";
+import { ServiceConfig, SanitizedConfig, Metadata, UUID } from "@/core";
 
 import { components } from "@/types/swagger";
 
@@ -36,7 +36,7 @@ export type Organization = components["schemas"]["Organization"];
 
 export type SanitizedAuth = components["schemas"]["SanitizedAuth"] & {
   // XXX: update serialize to required id in response type
-  id: string;
+  id: UUID;
   // Specialized to `SanitizedConfig` to get nominal typing
   config: SanitizedConfig;
   // XXX: update serializer to include proper metadata child serializer
@@ -49,6 +49,7 @@ export type ConfigurableAuth = components["schemas"]["EditableAuth"] & {
 };
 
 export type Deployment = components["schemas"]["DeploymentDetail"] & {
+  id: UUID;
   package: { config: RecipeDefinition };
 };
 

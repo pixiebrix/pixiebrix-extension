@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -26,9 +27,10 @@ import {
 import { groupBy } from "lodash";
 import { RegistryPackage } from "@/types/contract";
 import { getErrorMessage } from "@/errors";
+import { RegistryId } from "@/core";
 
-export interface RegistryItem {
-  id: string;
+export interface RegistryItem<T extends RegistryId = RegistryId> {
+  id: T;
 }
 
 export class DoesNotExistError extends Error {
@@ -41,33 +43,38 @@ export class DoesNotExistError extends Error {
   }
 }
 
-export class Registry<TItem extends RegistryItem> {
-  private readonly cache = new Map<string, TItem>();
+export class Registry<
+  Id extends RegistryId = RegistryId,
+  Item extends RegistryItem<Id> = RegistryItem<Id>
+> {
+  // Use RegistryId for `cache` and `remote` because they come from the external service
 
-  private readonly remote: Set<string>;
+  private readonly cache = new Map<RegistryId, Item>();
+
+  private readonly remote: Set<RegistryId>;
 
   private readonly remoteResourcePath: string;
 
   public readonly kinds: Set<Kind>;
 
-  private readonly deserialize: (raw: unknown) => TItem;
+  private readonly deserialize: (raw: unknown) => Item;
 
   constructor(
     kinds: Kind[],
     remoteResourcePath: string,
-    deserialize: (raw: unknown) => TItem
+    deserialize: (raw: unknown) => Item
   ) {
-    this.remote = new Set<string>();
+    this.remote = new Set<Id>();
     this.kinds = new Set(kinds);
     this.remoteResourcePath = remoteResourcePath;
     this.deserialize = deserialize;
   }
 
-  async exists(id: string): Promise<boolean> {
+  async exists(id: Id): Promise<boolean> {
     return this.cache.has(id) || (await find(id)) != null;
   }
 
-  async lookup(id: string): Promise<TItem> {
+  async lookup(id: Id): Promise<Item> {
     if (!id) {
       throw new Error("id is required");
     }
@@ -81,7 +88,9 @@ export class Registry<TItem extends RegistryItem> {
     const raw = await find(id);
 
     if (!raw) {
-      console.debug(`Cannot find ${id} in registry ${this.remoteResourcePath}`);
+      console.debug(
+        `Cannot find ${id as string} in registry ${this.remoteResourcePath}`
+      );
       throw new DoesNotExistError(id);
     }
 
@@ -102,14 +111,14 @@ export class Registry<TItem extends RegistryItem> {
   /**
    * @deprecated needed for header generation; will be removed in future versions
    */
-  cached(): TItem[] {
-    return Object.values(this.cache);
+  cached(): Item[] {
+    return [...this.cache.values()];
   }
 
   /**
    * @deprecated requires all data to be parsed
    */
-  async all(): Promise<TItem[]> {
+  async all(): Promise<Item[]> {
     await Promise.allSettled(
       [...this.kinds.values()].map(async (kind) => {
         for (const raw of await getKind(kind)) {
@@ -120,10 +129,10 @@ export class Registry<TItem extends RegistryItem> {
         }
       })
     );
-    return Object.values(this.cache);
+    return [...this.cache.values()];
   }
 
-  register(...items: TItem[]): void {
+  register(...items: Item[]): void {
     for (const item of items) {
       if (item.id == null) {
         console.warn("Skipping item with no id", item);
@@ -134,7 +143,7 @@ export class Registry<TItem extends RegistryItem> {
     }
   }
 
-  private parse(raw: unknown): TItem | undefined {
+  private parse(raw: unknown): Item | undefined {
     try {
       return this.deserialize(raw);
     } catch (error: unknown) {
@@ -172,7 +181,7 @@ export class Registry<TItem extends RegistryItem> {
 
       if (!this.kinds.has(item.kind)) {
         console.warn(
-          `Item ${item.metadata?.id ?? "<unknown>"} has kind ${
+          `Item ${item.metadata?.id ?? "[[unknown]]"} has kind ${
             item.kind
           }; expected: ${[...this.kinds.values()].join(", ")}`
         );

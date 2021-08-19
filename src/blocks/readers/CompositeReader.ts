@@ -24,9 +24,9 @@ import fromPairs from "lodash/fromPairs";
 class CompositeReader extends Reader {
   public readonly outputSchema: Schema;
 
-  private readonly _readers: { [key: string]: IReader };
+  private readonly _readers: Record<string, IReader>;
 
-  constructor(readers: { [key: string]: IReader }) {
+  constructor(readers: Record<string, IReader>) {
     super(undefined, "Composite Reader", "Combination of multiple readers");
     this._readers = readers;
     this.outputSchema = {

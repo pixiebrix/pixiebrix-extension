@@ -31,15 +31,15 @@ import Fuse from "fuse.js";
 import { isEmpty, sortBy } from "lodash";
 import copy from "copy-to-clipboard";
 import { BlockType, getType } from "@/blocks/util";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
 import "./BrickReference.scss";
-import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
 import GridLoader from "react-spinners/GridLoader";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
 
 export type ReferenceEntry = IBlock | IExtensionPoint | IService;
 
@@ -55,28 +55,32 @@ const DetailSection: React.FunctionComponent<{ title: string }> = ({
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
-  if (schema.type === "object") {
-    for (const [prop, value] of Object.entries(schema.properties)) {
-      if (typeof value !== "boolean") {
-        result += `# ${prop}: ${value.type} (${
-          schema.required.includes(prop) ? "required" : "optional"
-        })\n`;
-        if (value.description) {
-          for (const line of value.description.split("\n")) {
-            result += `# ${line} \n`;
-          }
-        }
+  if (schema.type !== "object") {
+    return result;
+  }
 
-        if (value.enum) {
-          result += "# valid values:\n";
-          for (const line of value.enum) {
-            result += `# - ${line} \n`;
-          }
-        }
+  for (const [prop, value] of Object.entries(schema.properties)) {
+    if (typeof value === "boolean") {
+      continue;
+    }
 
-        result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
+    result += `# ${prop}: ${value.type} (${
+      schema.required.includes(prop) ? "required" : "optional"
+    })\n`;
+    if (value.description) {
+      for (const line of value.description.split("\n")) {
+        result += `# ${line} \n`;
       }
     }
+
+    if (value.enum) {
+      result += "# valid values:\n";
+      for (const line of value.enum) {
+        result += `# - ${line} \n`;
+      }
+    }
+
+    result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
   }
 
   return result;
@@ -103,7 +107,9 @@ const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
       </DetailSection>
 
       <DetailSection title="Input Schema">
-        {!isEmpty(schema) ? (
+        {isEmpty(schema) ? (
+          <div className="text-muted">No input schema provided</div>
+        ) : (
           <div>
             <Button
               className="p-0"
@@ -127,17 +133,15 @@ const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
             </Button>
             <SchemaTree schema={schema} />
           </div>
-        ) : (
-          <div className="text-muted">No input schema provided</div>
         )}
       </DetailSection>
 
       {"outputSchema" in brick && (
         <DetailSection title="Output Schema">
-          {!isEmpty(brick.outputSchema) ? (
-            <SchemaTree schema={brick.outputSchema} />
-          ) : (
+          {isEmpty(brick.outputSchema) ? (
             <div className="text-muted">No output schema provided</div>
+          ) : (
+            <SchemaTree schema={brick.outputSchema} />
           )}
         </DetailSection>
       )}

@@ -51,7 +51,7 @@ function useRemove(element: FormState): () => void {
       return;
     }
 
-    const target = {
+    const ref = {
       extensionPointId: values.extensionPoint.metadata.id,
       extensionId: values.uuid,
     };
@@ -59,12 +59,12 @@ function useRemove(element: FormState): () => void {
     try {
       // Remove from storage first so it doesn't get re-added by any subsequent steps
       if (values.installed) {
-        dispatch(optionsSlice.actions.removeExtension(target));
+        dispatch(optionsSlice.actions.removeExtension(ref));
       }
 
       void Promise.allSettled([
-        nativeOperations.uninstallContextMenu(port, target),
-        nativeOperations.uninstallActionPanelPanel(port, target),
+        nativeOperations.uninstallContextMenu(port, ref),
+        nativeOperations.uninstallActionPanelPanel(port, ref),
       ]);
 
       // Remove from page editor

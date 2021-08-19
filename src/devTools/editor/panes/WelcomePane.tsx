@@ -25,7 +25,7 @@ import { faCommentAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
 const WelcomePane: React.FunctionComponent<{ showSupport: () => void }> = ({
   showSupport,
 }) => (
-  <Centered>
+  <Centered isScrollable>
     <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
 
     <div className="text-left">

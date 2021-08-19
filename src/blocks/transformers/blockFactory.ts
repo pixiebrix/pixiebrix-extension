@@ -25,7 +25,14 @@ import {
   BlockPipeline,
   reducePipeline,
 } from "@/blocks/combinators";
-import { BlockArg, BlockOptions, IBlock, Metadata, Schema } from "@/core";
+import {
+  BlockArg,
+  BlockOptions,
+  Config,
+  IBlock,
+  Metadata,
+  Schema,
+} from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
@@ -93,7 +100,7 @@ class ExternalBlock extends Block {
       throw new Error("Cannot deserialize reader as block");
     }
 
-    // @ts-ignore: we're being dynamic here to set the corresponding method for the kind since
+    // @ts-expect-error we're being dynamic here to set the corresponding method for the kind since
     // we use that method to distinguish between block types in places
     this[METHOD_MAP.get(kind)] = async (
       renderedInputs: BlockArg,
@@ -138,7 +145,7 @@ class ExternalBlock extends Block {
   }
 }
 
-export function fromJS(component: Record<string, unknown>): IBlock {
+export function fromJS(component: Config): IBlock {
   if (component.kind == null) {
     throw new ValidationError(
       "Component definition is missing a 'kind' property",

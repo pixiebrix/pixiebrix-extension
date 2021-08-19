@@ -18,13 +18,24 @@
 // Required for react-select-virtualized https://github.com/guiyep/react-select-virtualized/issues/283
 import "regenerator-runtime/runtime";
 
-// @ts-ignore: no types for this one :(
+// @ts-expect-error no types for this one :(
 import Select from "react-select-virtualized";
 import React, { useMemo } from "react";
-import { iconOptions } from "@/icons/svgIcons";
 import { IconOption } from "@/icons/types";
+import { icons } from "@/icons/list";
 import Icon from "./Icon";
 import { IconLibrary } from "@/core";
+import { sortBy } from "lodash";
+
+const iconOptions: IconOption[] = sortBy(
+  [...icons].flatMap(([library, libraryCache]) =>
+    [...libraryCache].map(([id]) => ({
+      value: { library, id },
+      label: id,
+    }))
+  ),
+  (x) => x.label
+);
 
 // https://github.com/JedWatson/react-select/issues/3480#issuecomment-481566579
 function customSingleValue({ data }: { data: IconOption }): JSX.Element {

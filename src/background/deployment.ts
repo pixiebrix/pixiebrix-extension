@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -15,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionOptions, loadOptions, saveOptions } from "@/options/loader";
+import { loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
 import { fromPairs, partition, uniqBy } from "lodash";
@@ -24,15 +25,17 @@ import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { getExtensionToken } from "@/auth/token";
-import { optionsSlice, OptionsState } from "@/options/slices";
+import { optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { liftBackground } from "@/background/protocol";
 import * as contentScript from "@/contentScript/lifecycle";
-import { selectInstalledExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { containsPermissions } from "@/utils/permissions";
 import { deploymentPermissions } from "@/permissions";
+import { IExtension } from "@/core";
+import { ExtensionsOptionsState } from "@/store/extensions";
 
 const { reducer, actions } = optionsSlice;
 
@@ -45,7 +48,7 @@ type ActiveDeployment = {
 };
 
 export function activeDeployments(
-  extensions: Array<Pick<ExtensionOptions, "_deployment" | "_recipe">>
+  extensions: Array<Pick<IExtension, "_deployment" | "_recipe">>
 ): ActiveDeployment[] {
   return uniqBy(
     extensions
@@ -68,11 +71,11 @@ export const queueReactivate = liftBackground(
 );
 
 function installDeployment(
-  state: OptionsState,
+  state: ExtensionsOptionsState,
   deployment: Deployment
-): OptionsState {
+): ExtensionsOptionsState {
   let returnState = state;
-  const installed = selectInstalledExtensions({ options: state });
+  const installed = selectExtensions({ options: state });
 
   for (const extension of installed) {
     if (extension._recipe.id === deployment.package.package_id) {
@@ -110,7 +113,7 @@ function installDeployment(
   return returnState;
 }
 
-function makeDeploymentTimestampLookup(extensions: ExtensionOptions[]) {
+function makeDeploymentTimestampLookup(extensions: IExtension[]) {
   const timestamps = new Map<string, Date>();
 
   for (const extension of extensions) {
@@ -132,10 +135,7 @@ async function updateDeployments() {
     return;
   }
 
-  const { extensions: extensionPointConfigs } = await loadOptions();
-  const extensions: ExtensionOptions[] = Object.entries(
-    extensionPointConfigs
-  ).flatMap(([, xs]) => Object.values(xs));
+  const { extensions } = await loadOptions();
 
   if (!extensions.some((x) => x._deployment?.id)) {
     console.debug("No deployments installed");

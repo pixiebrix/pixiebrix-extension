@@ -29,7 +29,7 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
 const { uniq, isEmpty } = require("lodash");
 const Policy = require("csp-parse");
-const mergeWithShared = require("./webpack.shared-config.js");
+const mergeWithShared = require("./webpack.sharedConfig.js");
 
 // Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
 const defaults = {
@@ -198,10 +198,10 @@ function customizeManifest(manifest, isProduction) {
 function mockHeavyDependencies() {
   if (process.env.DEV_SLIM.toLowerCase() === "true") {
     console.warn(
-      "Mocking dependencies for development build: svgIcons, uipath/robot"
+      "Mocking dependencies for development build: @/icons/list, uipath/robot"
     );
     return {
-      "@/icons/svgIcons": path.resolve("src/__mocks__/iconsMock"),
+      "@/icons/list": path.resolve("src/__mocks__/iconsListMock"),
       "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
     };
   }
@@ -269,9 +269,6 @@ module.exports = (env, options) =>
 
         // Enables static analysis and removal of dead code
         "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
-
-        // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
-        handlebars: "handlebars/dist/handlebars.js",
       },
     },
 
@@ -362,7 +359,17 @@ module.exports = (env, options) =>
       rules: [
         {
           test: /\.s?css$/,
-          use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+          use: [
+            MiniCssExtractPlugin.loader,
+            "css-loader",
+            {
+              loader: "sass-loader",
+              options: {
+                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+                implementation: require("node-sass"),
+              },
+            },
+          ],
         },
       ],
     },

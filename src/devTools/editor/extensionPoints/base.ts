@@ -15,7 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, Metadata, selectMetadata } from "@/core";
+import {
+  EmptyConfig,
+  IExtension,
+  Metadata,
+  RegistryId,
+  selectMetadata,
+  UUID,
+} from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
 import { castArray, isPlainObject } from "lodash";
 import brickRegistry from "@/blocks/registry";
@@ -37,6 +44,8 @@ import {
   ReaderFormState,
   ReaderReferenceFormState,
 } from "@/devTools/editor/extensionPoints/elementConfig";
+import { Except } from "type-fest";
+import { validateRegistryId } from "@/types/helpers";
 
 export interface WizardStep {
   step: string;
@@ -67,10 +76,10 @@ export function makeIsAvailable(
 export function makeReaderId(
   foundationId: string,
   excludeIds: string[] = []
-): string {
+): RegistryId {
   const base = `${foundationId}-reader`;
   if (!excludeIds.includes(base)) {
-    return base;
+    return validateRegistryId(base);
   }
 
   let num = 1;
@@ -80,7 +89,7 @@ export function makeReaderId(
     id = `${base}-${num}`;
   } while (excludeIds.includes(id));
 
-  return id;
+  return validateRegistryId(id);
 }
 
 interface ReaderOptions {
@@ -113,11 +122,11 @@ export function makeDefaultReader(
 }
 
 export function makeBaseState(
-  uuid: string,
+  uuid: UUID,
   defaultSelector: string | null,
   metadata: Metadata,
   frameworks: FrameworkMeta[]
-): Omit<BaseFormState, "type" | "label" | "extensionPoint"> {
+): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
     services: [],
@@ -136,7 +145,7 @@ export async function generateExtensionPointMetadata(
 
   await brickRegistry.fetch();
 
-  const allowId = async (id: string) => {
+  const allowId = async (id: RegistryId) => {
     if (!reservedNames.includes(id)) {
       try {
         await brickRegistry.lookup(id);
@@ -150,19 +159,19 @@ export async function generateExtensionPointMetadata(
   };
 
   // Find next available foundation id
+  const collection = `${scope ?? "@local"}/${domain}`;
   for (let index = 1; index < 1000; index++) {
-    const id =
-      index === 1
-        ? `${scope ?? "@local"}/${domain}/foundation`
-        : `${scope ?? "@local"}/${domain}/foundation-${index}`;
+    const id = validateRegistryId(
+      [collection, index === 1 ? "foundation" : `foundation-${index}`].join("/")
+    );
 
-    const ok = (
-      await Promise.all([allowId(id), allowId(makeReaderId(id))])
-    ).every((allowed) => allowed);
+    // Can't parallelize loop because we're looking for first alternative
+    const ok = (await Promise.all([allowId(id), allowId(makeReaderId(id))])) // eslint-disable-line no-await-in-loop
+      .every((allowed) => allowed);
 
     if (ok) {
       return {
-        id,
+        id: validateRegistryId(id),
         name: `${domain} ${label}`,
       };
     }
@@ -205,14 +214,14 @@ export async function makeReaderFormState(
 ): Promise<Array<ReaderFormState | ReaderReferenceFormState>> {
   const readerId = extensionPoint.definition.reader;
 
-  let readerIds: string[];
+  let readerIds: RegistryId[];
 
   if (isPlainObject(readerId)) {
     throw new Error("Key-based composite readers not supported");
   } else if (typeof readerId === "string") {
     readerIds = [readerId];
   } else if (Array.isArray(readerId)) {
-    readerIds = readerId as string[];
+    readerIds = readerId as RegistryId[];
   } else {
     throw new TypeError("Unexpected reader configuration");
   }
@@ -282,7 +291,7 @@ export function selectIsAvailable(
 
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
-  TConfig,
+  TConfig extends EmptyConfig,
   TType extends string
 >(
   config: IExtension<TConfig>,
@@ -313,7 +322,7 @@ export async function lookupExtensionPoint<
 
 export function baseSelectExtensionPoint(
   formState: BaseFormState
-): Omit<ExtensionPointConfig, "definition"> {
+): Except<ExtensionPointConfig, "definition"> {
   const { metadata } = formState.extensionPoint;
 
   return {

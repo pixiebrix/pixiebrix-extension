@@ -16,7 +16,7 @@
  */
 
 import { castArray } from "lodash";
-import { MessageContext, Schema } from "@/core";
+import { MessageContext, RegistryId, Schema } from "@/core";
 import { BlockConfig, BlockPipeline } from "@/blocks/combinators";
 import { BusinessError } from "@/errors";
 import { OutputUnit } from "@cfworker/json-schema";
@@ -38,7 +38,7 @@ export class PipelineConfigurationError extends BusinessError {
  * different browser context (e.g., the PixieBrix sidebar)
  */
 export class HeadlessModeError extends Error {
-  public readonly blockId: string;
+  public readonly blockId: RegistryId;
 
   public readonly args: unknown;
 
@@ -47,7 +47,7 @@ export class HeadlessModeError extends Error {
   public readonly loggerContext: MessageContext;
 
   constructor(
-    blockId: string,
+    blockId: RegistryId,
     args: unknown,
     ctxt: unknown,
     loggerContext: MessageContext

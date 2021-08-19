@@ -28,13 +28,15 @@ import {
   isReader,
   isRendererBlock,
   Logger,
-  OptionsArgs,
+  UserOptions,
   ReaderRoot,
   RenderedArgs,
   SanitizedServiceConfiguration,
   Schema,
   ServiceDependency,
   TemplateEngine,
+  RegistryId,
+  OutputKey,
 } from "@/core";
 import { validateInput, validateOutput } from "@/validators/generic";
 import {
@@ -65,19 +67,22 @@ import {
 import { engineRenderer } from "@/utils/renderers";
 
 export type ReaderConfig =
-  | string
-  // Can't use Record syntax because generics can't reference themselves
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
+  | RegistryId
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
 
 export interface BlockConfig {
-  id: string;
+  id: RegistryId;
 
-  // (Optional) human-readable label for the step. Shown in the progress indicator
+  /**
+   * (Optional) human-readable label for the step. Shown in the progress indicator
+   */
   label?: string;
 
-  // (Optional) indicate the step is being run in the interface
+  /**
+   * (Optional) indicate the step is being run in the interface
+   */
   notifyProgress?: boolean;
 
   onError?: {
@@ -88,14 +93,20 @@ export interface BlockConfig {
 
   outputKey?: string;
 
-  // (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
-  // provided, the step is run unconditionally.
+  /**
+   * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
+   * provided, the step is run unconditionally.
+   */
   if?: string | boolean | number;
 
-  // (Optional) root selector for reader
+  /**
+   * (Optional) root selector for reader
+   */
   root?: string;
 
-  // (Optional) template language to use for rendering the if and config properties. Default is mustache
+  /**
+   * (Optional) template language to use for rendering the if and config properties. Default is mustache
+   */
   templateEngine?: TemplateEngine;
 
   config: Record<string, unknown>;
@@ -125,7 +136,7 @@ interface ReduceOptions {
   validate?: boolean;
   logValues?: boolean;
   headless?: boolean;
-  optionsArgs?: OptionsArgs;
+  optionsArgs?: UserOptions;
   serviceArgs?: RenderedArgs;
 }
 
@@ -475,14 +486,13 @@ export async function mergeReaders(
   throw new BusinessError("Unexpected value for readerConfig");
 }
 
-// Using indexed object to make it clear they key is an outputKey
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-export type ServiceContext = {
-  [outputKey: string]: {
+export type ServiceContext = Record<
+  OutputKey,
+  {
     __service: SanitizedServiceConfiguration;
     [prop: string]: string | SanitizedServiceConfiguration | null;
-  };
-};
+  }
+>;
 
 /** Build the service context by locating the dependencies */
 export async function makeServiceContext(

@@ -20,7 +20,7 @@ import "@/extensionContext";
 // Init rollbar early so we get error reporting on the other initialization
 import "@/telemetry/rollbar";
 
-import ReactDOM from "react-dom";
+import { render } from "react-dom";
 import React from "react";
 import App from "@/options/App";
 import initGoogle from "@/contrib/google/initGoogle";
@@ -30,4 +30,4 @@ import "@/vendors/overrides.scss";
 
 initGoogle();
 
-ReactDOM.render(<App />, document.querySelector("#container"));
+render(<App />, document.querySelector("#container"));

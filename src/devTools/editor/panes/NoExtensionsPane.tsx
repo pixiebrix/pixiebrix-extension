@@ -26,7 +26,7 @@ const NoExtensionsPane: React.FunctionComponent<{
   unavailableCount: number;
   showSupport: () => void;
 }> = ({ unavailableCount, showSupport }) => (
-  <Centered>
+  <Centered isScrollable>
     <div className="PaneTitle">No custom extensions on the page</div>
 
     <div className="text-left">
@@ -44,13 +44,9 @@ const NoExtensionsPane: React.FunctionComponent<{
       <p>
         Learn how to use the Page Editor in our{" "}
         <a
-          href="#"
-          onClick={async () =>
-            openTab({
-              url: "https://docs.pixiebrix.com/quick-start-guide",
-              active: true,
-            })
-          }
+          href="https://docs.pixiebrix.com/quick-start-guide"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           Quick Start Guide
         </a>

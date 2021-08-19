@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -55,6 +56,7 @@ interface Target {
 
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 const tabReady: { [tabId: string]: { [frameId: string]: boolean } } = {};
 const nonceToTarget = new Map<string, Target>();
 

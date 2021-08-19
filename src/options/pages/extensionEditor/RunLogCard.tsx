@@ -22,11 +22,12 @@ import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import useLogEntries from "@/components/logViewer/useLogEntries";
 import LogToolbar from "@/components/logViewer/LogToolbar";
+import { RegistryId, UUID } from "@/core";
 
 type OwnProps = {
   initialLevel?: MessageLevel;
-  extensionPointId: string;
-  extensionId: string;
+  extensionPointId: RegistryId;
+  extensionId: UUID;
   perPage?: number;
   refreshInterval?: number;
 };

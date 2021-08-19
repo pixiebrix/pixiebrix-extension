@@ -36,7 +36,7 @@ import {
 } from "@/background/devtools/contract";
 import { reportError } from "@/telemetry/logging";
 import { isBackgroundPage } from "webext-detect-page";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
@@ -61,6 +61,7 @@ const permissionsListeners = new Map<TabId, PromiseHandler[]>();
  * Listener that runs on the background page.
  */
 function backgroundMessageListener(
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments -- It defaults to a different `Meta`
   request: RemoteProcedureCallRequest<Meta>,
   port: Runtime.Port
 ) {

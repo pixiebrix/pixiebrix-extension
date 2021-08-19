@@ -19,7 +19,7 @@ import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import { useToasts } from "react-toast-notifications";
 import { useCallback, useState } from "react";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { fetch } from "@/hooks/fetch";
 
 type FetchState<TData> = {

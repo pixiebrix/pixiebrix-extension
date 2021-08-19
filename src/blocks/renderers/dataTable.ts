@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -17,6 +18,7 @@
 
 import { BusinessError } from "@/errors";
 
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 export interface Row {
   [column: string]: unknown;
 }

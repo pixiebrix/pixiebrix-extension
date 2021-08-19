@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -47,7 +48,7 @@ import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import MetaTab from "@/devTools/editor/tabs/MetaTab";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
 import * as nativeOperations from "@/background/devtools";
@@ -166,6 +167,7 @@ function selectExtension({
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
     label,
     services,
     config: extension,

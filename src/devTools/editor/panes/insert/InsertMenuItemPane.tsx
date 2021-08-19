@@ -44,7 +44,7 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
   const addExisting = useAddExisting(config, cancel);
 
   return (
-    <Centered>
+    <Centered isScrollable>
       <div className="PaneTitle">Inserting Button/Menu Item</div>
 
       <div className="text-left">

@@ -17,7 +17,7 @@
 
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { v4 as uuidv4 } from "uuid";
+import { validateRegistryId, uuidv4 } from "@/types/helpers";
 import LogTable from "@/components/logViewer/LogTable";
 import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
@@ -52,13 +52,15 @@ NoEntriesForLevel.args = {
   pageEntries: [],
 };
 
+const blockId = validateRegistryId("@pixiebrix/system/notification");
+
 const DEBUG_MESSAGE: LogEntry = {
   uuid: uuidv4(),
   timestamp: Date.now().toString(),
   message: "Sample debug message",
   level: "debug",
   context: {
-    blockId: "@pixiebrix/system/notification",
+    blockId,
   },
 };
 
@@ -69,7 +71,7 @@ const ERROR_MESSAGE: LogEntry = {
   level: "error",
   context: {
     // Just the context that will show up in the table
-    blockId: "@pixiebrix/system/notification",
+    blockId,
   },
   error: serializeError(new Error("Simple error")),
 };
@@ -104,11 +106,11 @@ const CONTEXT_ERROR_MESSAGE: LogEntry = {
   level: "error",
   context: {
     // Just the context that will show up in the table
-    blockId: "@pixiebrix/system/notification",
+    blockId,
   },
   error: serializeError(
     new ContextError(validationError, {
-      blockId: "@pixiebrix/system/notification",
+      blockId,
     })
   ),
 };

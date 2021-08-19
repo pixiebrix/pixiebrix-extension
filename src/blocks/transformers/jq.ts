@@ -57,7 +57,7 @@ export class JQTransformer extends Transformer {
     const jq = (
       await import(
         /* webpackChunkName: "jq-web" */
-        // @ts-ignore: no existing definitions exist
+        // @ts-expect-error no existing definitions exist
         "jq-web"
       )
     ).default;

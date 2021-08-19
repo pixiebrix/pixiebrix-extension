@@ -19,7 +19,7 @@
  * The script that gets injected into the host page. Shares a JS context with the host page
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
@@ -114,17 +114,15 @@ function readPathSpec(
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(obj as { [prop: string]: unknown }, path, {
+      values[key] = getPropByPath(obj as Record<string, unknown>, path, {
         args: args as object,
         proxy,
       });
     } else {
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(
-        obj as { [prop: string]: unknown },
-        pathOrObj,
-        { proxy }
-      );
+      values[key] = getPropByPath(obj as Record<string, unknown>, pathOrObj, {
+        proxy,
+      });
     }
   }
 

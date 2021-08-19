@@ -25,7 +25,7 @@ import Table from "react-bootstrap/Table";
 import { searchWindow, detectFrameworks } from "@/background/devtools";
 import { browser } from "webextension-polyfill-ts";
 import { DevToolsContext } from "@/devTools/context";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { isEmpty } from "lodash";
 
 function useSearchWindow(query: string) {

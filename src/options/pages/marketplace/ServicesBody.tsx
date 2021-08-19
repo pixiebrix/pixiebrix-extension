@@ -21,7 +21,7 @@ import ServiceAuthSelector, {
   useAuthOptions,
 } from "@/options/pages/extensionEditor/ServiceAuthSelector";
 import { uniq } from "lodash";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { Button, Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";

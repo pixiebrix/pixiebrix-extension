@@ -44,7 +44,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BlockType, getType } from "@/blocks/util";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
 
 import "./BlockModal.scss";

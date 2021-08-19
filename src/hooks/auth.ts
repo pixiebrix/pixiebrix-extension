@@ -18,6 +18,7 @@
 import { fetch } from "@/hooks/fetch";
 import { AuthState } from "@/core";
 import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
+import { getUID } from "@/background/telemetry";
 
 interface OrganizationResponse {
   readonly id: string;
@@ -60,6 +61,7 @@ export async function getAuth(): Promise<AuthState> {
       userId: id,
       email,
       organizationId: telemetryOrganization?.id ?? organization?.id,
+      browserId: await getUID(),
     });
     return {
       userId: id,

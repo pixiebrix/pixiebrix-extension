@@ -24,18 +24,24 @@ import {
   faEdit,
   faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { Form, Row, Col, Card, Nav, Button } from "react-bootstrap";
+import { Button, Card, Col, Form, Nav, Row } from "react-bootstrap";
 import ServicesFormCard from "@/options/pages/extensionEditor/ServicesFormCard";
 import ExtensionConfigurationCard from "@/options/pages/extensionEditor/ExtensionConfigurationCard";
-import { IExtensionPoint, OptionsArgs, ServiceDependency } from "@/core";
+import {
+  Config,
+  IExtensionPoint,
+  ServiceDependency,
+  UserOptions,
+  UUID,
+} from "@/core";
 import DataSourceCard from "@/options/pages/extensionEditor/DataSourceCard";
 import { Formik, FormikProps, getIn, useFormikContext } from "formik";
 import TextField from "@/components/fields/TextField";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { extensionValidatorFactory } from "@/validators/validation";
 import { SCHEMA_TYPE_TO_BLOCK_PROPERTY } from "@/components/fields/BlockField";
-import { castArray, isEmpty, fromPairs, truncate } from "lodash";
-import useAsyncEffect from "use-async-effect";
+import { castArray, fromPairs, isEmpty, truncate } from "lodash";
+import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import RunLogCard from "@/options/pages/extensionEditor/RunLogCard";
 import { useParams } from "react-router";
@@ -43,28 +49,26 @@ import { useDispatch } from "react-redux";
 import { push as navigate } from "connected-react-router";
 import { useAsyncState } from "@/hooks/common";
 import { saveAs } from "file-saver";
-import { useToasts } from "react-toast-notifications";
-import { reportError } from "@/telemetry/logging";
 import { configToYaml } from "@/devTools/editor/hooks/useCreate";
 import OptionsArgsCard from "@/options/pages/extensionEditor/OptionsArgsCard";
 import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";
+import { getErrorMessage } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
 
-type TopConfig = { [prop: string]: unknown };
-
-export interface Config {
-  config: TopConfig;
+export type ExtensionFormState = {
+  config: Config;
   label: string;
   services: ServiceDependency[];
-  optionsArgs: OptionsArgs;
-}
+  optionsArgs: UserOptions;
+};
 
 interface OwnProps {
   extensionPoint: IExtensionPoint;
-  extensionId: string | null;
-  initialValue: Config;
+  extensionId: UUID | null;
+  initialValue: ExtensionFormState;
   onSave: (
-    update: Config,
+    update: ExtensionFormState,
     helpers: { setSubmitting: (submitting: boolean) => void }
   ) => void;
 }
@@ -79,11 +83,16 @@ const labelSchema = {
  * - Cast block $ref fields to arrays to they can support combinations.
  */
 function normalizeConfig(
-  config: TopConfig = {},
+  config: Config,
   extensionPoint: IExtensionPoint
-): TopConfig {
+): Config {
+  if (config == null) {
+    // `config` was coming through as null on some page transitions. Precondition to provide a better error message
+    throw new Error("config is required");
+  }
+
   const schema = extensionPoint.inputSchema;
-  const result: TopConfig = {};
+  const result: Config = {};
   for (const [prop, definition] of Object.entries(schema.properties)) {
     // Safe because prop is coming from Object.entries
     /* eslint-disable security/detect-object-injection */
@@ -131,14 +140,14 @@ const NavItem: React.FunctionComponent<{
 };
 
 function exportBlueprint(
-  { label, services, config }: Config,
+  { label, services, config }: ExtensionFormState,
   extensionPoint: IExtensionPoint
 ): void {
   const blueprint = {
     apiVersion: "v1",
     kind: "recipe",
     metadata: {
-      // In the future, could put in the user's scope here? Wouldn't be a valid id though
+      // In the future, could put in the user's scope here? Wouldn't be a valid id by itself though
       id: "",
       name: label,
       description: "Blueprint exported from PixieBrix",
@@ -163,16 +172,16 @@ function exportBlueprint(
 }
 
 const ExtensionForm: React.FunctionComponent<{
-  formikProps: FormikProps<Config>;
+  formikProps: FormikProps<ExtensionFormState>;
   extensionPoint: IExtensionPoint;
-  extensionId: string | null;
+  extensionId: UUID | null;
 }> = ({
   formikProps: { handleSubmit, isSubmitting, isValid, validateForm, values },
   extensionPoint,
   extensionId,
 }) => {
   useTitle(
-    `Configure ${truncate(!isEmpty(values.label) ? values.label : "Brick", {
+    `Configure ${truncate(isEmpty(values.label) ? "Brick" : values.label, {
       length: 15,
     })}`
   );
@@ -183,7 +192,7 @@ const ExtensionForm: React.FunctionComponent<{
 
   const dispatch = useDispatch();
 
-  const { addToast } = useToasts();
+  const notify = useNotifications();
 
   useAsyncEffect(async () => {
     await validateForm();
@@ -193,13 +202,11 @@ const ExtensionForm: React.FunctionComponent<{
     try {
       exportBlueprint(values, extensionPoint);
     } catch (error: unknown) {
-      reportError(error);
-      addToast(`Error exporting as blueprint: ${error}`, {
-        appearance: "error",
-        autoDismiss: true,
+      notify.error(`Error exporting as blueprint: ${getErrorMessage(error)}`, {
+        error,
       });
     }
-  }, [addToast, values, extensionPoint]);
+  }, [notify, values, extensionPoint]);
 
   const hasOptions = !isEmpty(values.optionsArgs);
 

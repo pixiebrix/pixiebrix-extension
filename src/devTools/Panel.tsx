@@ -30,7 +30,7 @@ import { useAsyncState } from "@/hooks/common";
 import { getAuth } from "@/hooks/auth";
 import AuthContext from "@/auth/AuthContext";
 import { ToastProvider } from "react-toast-notifications";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import blockRegistry from "@/blocks/registry";
 import ScopeSettings from "@/devTools/ScopeSettings";
 import { AuthState } from "@/core";

@@ -17,9 +17,7 @@
 
 import { useEffect, useRef } from "react";
 
-interface GenericHandler<T = unknown> {
-  (arg: T): void;
-}
+type GenericHandler<T = unknown> = (arg: T) => void;
 
 interface TabEvent<TValue> {
   addListener(tabId: number, handler: GenericHandler<TValue>): void;
@@ -27,7 +25,7 @@ interface TabEvent<TValue> {
 }
 
 export class SimpleEvent<TValue> implements TabEvent<TValue> {
-  private listeners = new Map<number, Array<GenericHandler<TValue>>>();
+  private readonly listeners = new Map<number, Array<GenericHandler<TValue>>>();
 
   addListener(tabId: number, handler: GenericHandler<TValue>): void {
     if (!this.listeners.has(tabId)) {

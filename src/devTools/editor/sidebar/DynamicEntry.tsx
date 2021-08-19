@@ -28,6 +28,7 @@ import {
   NotAvailableIcon,
   UnsavedChangesIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
+import { UUID } from "@/core";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
@@ -46,18 +47,15 @@ const DynamicEntry: React.FunctionComponent<{
   );
 
   const showOverlay = useCallback(
-    async (uuid: string) => {
+    async (uuid: UUID) => {
       await enableDataOverlay(port, uuid);
     },
     [port]
   );
 
-  const hideOverlay = useCallback(
-    async () => {
-      await disableOverlay(port);
-    },
-    [port]
-  )
+  const hideOverlay = useCallback(async () => {
+    await disableOverlay(port);
+  }, [port]);
 
   return (
     <ListGroup.Item

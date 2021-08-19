@@ -31,14 +31,14 @@ export type PathSpec =
   | string[]
   | Record<string, string | { path: string; args: unknown }>;
 
-export interface ReadOptions {
+export type ReadOptions = {
   pathSpec?: PathSpec;
   waitMillis?: number;
   retryMillis?: number;
   traverseUp?: number;
   rootProp?: string;
   optional?: boolean;
-}
+};
 
 export type ReadPayload = ReadOptions & {
   framework: Framework;

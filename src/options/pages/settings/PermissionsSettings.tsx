@@ -20,7 +20,7 @@ import { useToasts } from "react-toast-notifications";
 import { getAdditionalPermissions } from "webext-additional-permissions";
 import { browser, Manifest } from "webextension-polyfill-ts";
 import { sortBy } from "lodash";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { Button, Card, ListGroup } from "react-bootstrap";
 type OptionalPermission = Manifest.OptionalPermission;
 type Permissions = chrome.permissions.Permissions;

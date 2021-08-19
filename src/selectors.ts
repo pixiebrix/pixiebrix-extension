@@ -18,66 +18,54 @@
 import { useMemo } from "react";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { useSelector } from "react-redux";
-import { RootState } from "@/options/store";
-import { IExtensionPoint } from "@/core";
-import { ExtensionOptions } from "@/options/slices";
+import { IExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import { useAsyncState } from "@/hooks/common";
+import { selectExtensions } from "@/options/selectors";
+import { resolveDefinitions } from "@/registry/internal";
 
 interface ExtensionResult {
   extensionPoint: IExtensionPoint | null;
-  extensionConfig: ExtensionOptions;
+  extensionConfig: IExtension;
   isPending: boolean;
+  error: unknown;
 }
 
 export function useExtension(
-  extensionPointId: string,
-  extensionId: string
+  extensionPointId: RegistryId,
+  extensionId: UUID
 ): ExtensionResult {
   console.debug("useExtension", { extensionPointId, extensionId });
 
-  const options = useSelector((state: RootState) => state.options);
+  const extensions = useSelector(selectExtensions);
 
-  const extensionConfig = useMemo(() => {
-    let config;
-
+  const match = useMemo(() => {
     if (!extensionId) {
+      // There will be no match if no extensionId is provided (i.e., when creating a new extension via the workshop GUI
       return null;
     }
 
-    if (extensionPointId) {
-      config = options.extensions[extensionPointId][extensionId];
-    } else {
-      for (const pointExtensions of Object.values(options.extensions)) {
-        const pointConfig = pointExtensions[extensionId];
-        if (pointConfig) {
-          config = pointConfig;
-          break;
-        }
-      }
-    }
+    const config = extensions.find((x) => x.id === extensionId);
 
     if (!config) {
-      throw new Error(
-        `Could not locate configuration for extension ${extensionId} (extension point: ${
-          extensionPointId ?? "<unknown>"
-        })`
-      );
+      throw new Error("Could not locate configuration for extension");
     }
 
     return config;
-  }, [options, extensionId, extensionPointId]);
+  }, [extensions, extensionId]);
 
-  const [extensionPoint, isPending] = useAsyncState(async () => {
-    if (extensionConfig) {
-      return extensionPointRegistry.lookup(extensionConfig.extensionPointId);
+  const [extensionPoint, isPending, error] = useAsyncState(async () => {
+    if (match) {
+      const extension = await resolveDefinitions(match);
+      return extensionPointRegistry.lookup(extension.extensionPointId);
     }
 
     if (extensionPointId) {
+      // There will be no match if no extensionId is provided (i.e., when creating a new extension via the workshop GUI)
       return extensionPointRegistry.lookup(extensionPointId);
     }
 
     return null;
-  }, [extensionPointRegistry, extensionConfig, extensionPointId]);
+  }, [extensionPointRegistry, match, extensionPointId]);
 
-  return { extensionPoint, extensionConfig, isPending };
+  return { extensionPoint, extensionConfig: match, isPending, error };
 }

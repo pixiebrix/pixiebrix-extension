@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -24,6 +25,8 @@ import {
   ServiceLocator,
   SanitizedConfig,
   KeyedConfig,
+  RegistryId,
+  UUID,
 } from "@/core";
 import { sortBy, isEmpty } from "lodash";
 import registry, {
@@ -36,6 +39,7 @@ import {
   NotConfiguredError,
 } from "@/services/errors";
 import { fetch } from "@/hooks/fetch";
+import { validateRegistryId } from "@/types/helpers";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -80,8 +84,8 @@ export async function pixieServiceFactory(): Promise<SanitizedServiceConfigurati
 }
 
 type Option = {
-  id: string;
-  serviceId: string;
+  id: UUID;
+  serviceId: RegistryId;
   level: ServiceLevel;
   local: boolean;
   config: ServiceConfig | SanitizedConfig;
@@ -155,7 +159,7 @@ class LazyLocatorFactory {
           ...x,
           level: x.organization ? ServiceLevel.Team : ServiceLevel.BuiltIn,
           local: false,
-          serviceId: x.service.name,
+          serviceId: validateRegistryId(x.service.name),
         })),
       ],
       (x) => x.level
@@ -175,8 +179,8 @@ class LazyLocatorFactory {
   }
 
   async locate(
-    serviceId: string,
-    authId: string
+    serviceId: RegistryId,
+    authId: UUID
   ): Promise<SanitizedServiceConfiguration> {
     if (!this.initialized) {
       await this.refresh();

@@ -15,23 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IconConfig } from "@/core";
-
-export type IconLibrary = "bootstrap" | "simple-icons";
-
-const DEFAULT_ICON_CONFIG: IconConfig = { library: "bootstrap", id: "box" };
-
-export interface IconOption {
-  value: { id: string; library: IconLibrary };
-  label: string;
-}
-
-export const iconOptions: IconOption[] = [
-  {
-    value: { id: "exclamation-triangle", library: "bootstrap" },
-    label: "No Icons - Slim Build",
-  },
-];
+import { IconLibrary } from "@/core";
 
 // https://raw.githubusercontent.com/twbs/icons/main/icons/exclamation-triangle.svg -- bootstrap icon triangle
 const icon =
@@ -40,14 +24,8 @@ const icon =
   '  <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>\n' +
   "</svg>";
 
-async function iconAsSVG(
-  config: IconConfig = DEFAULT_ICON_CONFIG
-): Promise<string> {
-  const $elt = $(icon);
-  $elt.attr("width", config.size ?? 14);
-  $elt.attr("height", config.size ?? 14);
-  $elt.attr("fill", config.color ?? "#ae87e8");
-  return $elt.get(0).outerHTML;
-}
-
-export default iconAsSVG;
+export const icons = new Map<IconLibrary, Map<string, string>>();
+icons.set(
+  "bootstrap",
+  new Map([["box", "data:image/svg+xml;base64," + btoa(icon)]])
+);

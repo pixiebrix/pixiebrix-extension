@@ -303,7 +303,7 @@ export async function proxyService<TData>(
     // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     throw new ContextError(error, {
-      serviceId: serviceConfig.id,
+      serviceId: serviceConfig.serviceId,
       authId: serviceConfig.id,
     });
   }

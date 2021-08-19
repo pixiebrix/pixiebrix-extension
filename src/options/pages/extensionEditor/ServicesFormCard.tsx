@@ -30,7 +30,7 @@ import ServiceAuthSelector, {
 import ServiceModal from "@/components/fields/ServiceModal";
 import { useFetch } from "@/hooks/fetch";
 import { ServiceDefinition } from "@/types/definitions";
-import { PACKAGE_REGEX } from "@/blocks/types";
+import { PACKAGE_REGEX } from "@/types/helpers";
 
 function defaultOutputKey(serviceId: string): string {
   const match = PACKAGE_REGEX.exec(serviceId);
@@ -47,7 +47,7 @@ export const DependencyRow: React.FunctionComponent<{
   <tr>
     <td style={{ width: 250 }}>
       <Field name={`${field.name}.${index}.outputKey`}>
-        {/* @ts-ignore: not sure what's going on with the type definition for this */}
+        {/* @ts-expect-error not sure what's going on with the type definition for this */}
         {({ field, meta }) => (
           <Form.Group>
             <Form.Control

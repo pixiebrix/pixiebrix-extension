@@ -63,9 +63,9 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   );
 };
 
-const ComplexObjectValue: React.FunctionComponent<FieldProps<unknown>> = () => (
-  <Form.Control plaintext readOnly defaultValue="Complex object" />
-);
+export const ComplexObjectValue: React.FunctionComponent<
+  FieldProps<unknown>
+> = () => <Form.Control plaintext readOnly defaultValue="Complex object" />;
 
 const SimpleValue: React.FunctionComponent<FieldProps<unknown>> = (props) => {
   const [field, meta] = useField(props);
