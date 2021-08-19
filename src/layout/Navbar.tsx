@@ -35,7 +35,7 @@ import { useAsyncState } from "@/hooks/common";
 import { getExtensionToken } from "@/auth/token";
 import { useSelector } from "react-redux";
 import { SettingsState } from "@/options/slices";
-import { toggleNavbar } from "./toggleNavbar";
+import { toggleSidebar } from "./toggleSidebar";
 
 const Navbar: React.FunctionComponent = () => {
   const { email, extension } = useContext(AuthContext);
@@ -60,7 +60,7 @@ const Navbar: React.FunctionComponent = () => {
           <button
             className="navbar-toggler"
             type="button"
-            onClick={toggleNavbar}
+            onClick={toggleSidebar}
           >
             <FontAwesomeIcon icon={faBars} />
           </button>
@@ -71,7 +71,7 @@ const Navbar: React.FunctionComponent = () => {
           <button
             className="navbar-toggler align-self-center"
             type="button"
-            onClick={toggleNavbar}
+            onClick={toggleSidebar}
           >
             <FontAwesomeIcon icon={faBars} />
           </button>

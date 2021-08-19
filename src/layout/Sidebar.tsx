@@ -17,7 +17,6 @@
 
 import React, { useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { NavLink } from "react-router-dom";
 import {
   faClipboardCheck,
   faCloud,
@@ -28,41 +27,10 @@ import {
   faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
-import { useLocation } from "react-router";
-import { Location } from "history";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import AuthContext from "@/auth/AuthContext";
-
-interface LinkProps {
-  isActive?: (match: any, location: Location) => boolean;
-  title: string;
-  icon: IconProp;
-  route: string;
-}
+import { SidebarLink } from "./SidebarLink";
 
 export const sidebarId = "sidebar";
-
-const SidebarLink: React.FunctionComponent<LinkProps> = ({
-  route,
-  title,
-  icon,
-  isActive,
-}) => {
-  const location = useLocation();
-  return (
-    <li
-      className={cx("nav-item", {
-        active:
-          location.pathname.startsWith(route) || isActive?.(null, location),
-      })}
-    >
-      <NavLink to={route} className="nav-link" isActive={isActive}>
-        <span className="menu-title">{title}</span>
-        <FontAwesomeIcon icon={icon} className="menu-icon" fixedWidth />
-      </NavLink>
-    </li>
-  );
-};
 
 const Sidebar: React.FunctionComponent = () => {
   const { flags } = useContext(AuthContext);
