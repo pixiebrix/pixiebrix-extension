@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useRef } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { Form, Button, Table } from "react-bootstrap";
 import { Schema } from "@/core";
 import { FieldProps } from "@/components/fields/propTypes";
@@ -213,11 +213,11 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
-  const [field] = useField(props);
+  const [field] = useField<ObjectValue>(props);
   const { setFieldValue } = useFormikContext();
 
   // UseRef indirection layer so the callbacks below don't re-calculate on every change
-  const fieldRef = useRef(field);
+  // const fieldRef = useRef(field);
 
   const [properties, declaredProperties] = useMemo(() => {
     const declared = schema.properties ?? {};
@@ -233,20 +233,20 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
     (property: string) => {
       setFieldValue(
         name,
-        produce(fieldRef.current.value, (draft: ObjectValue) => {
+        produce(field.value, draft => {
           if (draft != null) {
             delete draft[property];
           }
         })
       );
     },
-    [name, setFieldValue, fieldRef]
+    [name, setFieldValue, field.value]
   );
 
   const onRename = useCallback(
     (oldProp: string, newProp: string) => {
       if (oldProp !== newProp) {
-        const previousValue = fieldRef.current.value ?? {};
+        const previousValue: ObjectValue = field.value ?? {};
 
         console.debug("Renaming property", {
           newProp,
@@ -256,24 +256,24 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
         setFieldValue(
           name,
-          produce(previousValue, (draft: ObjectValue) => {
+          produce(previousValue, draft => {
             draft[newProp] = draft[oldProp] ?? "";
             delete draft[oldProp];
           })
         );
       }
     },
-    [name, setFieldValue, fieldRef]
+    [name, setFieldValue, field.value]
   );
 
   const addProperty = useCallback(() => {
     setFieldValue(
       name,
-      produce(fieldRef.current.value ?? {}, (draft: ObjectValue) => {
+      produce(field.value, draft => {
         draft[freshPropertyName(draft)] = "";
       })
     );
-  }, [name, setFieldValue, fieldRef]);
+  }, [name, setFieldValue, field.value]);
 
   return (
     <Form.Group controlId={field.name}>
