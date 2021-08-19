@@ -323,7 +323,10 @@ module.exports = (env, options) =>
       produceSourcemap &&
         new webpack.SourceMapDevToolPlugin({
           publicPath: sourceMapPublicUrl,
-          filename: "[file].map[query]", // Without this it won't output anything
+
+          // The sourcemap will be inlined if `undefined`. Only inlined sourcemaps work locally
+          // https://bugs.chromium.org/p/chromium/issues/detail?id=974543
+          filename: sourceMapPublicUrl && "[file].map[query]",
         }),
 
       new NodePolyfillPlugin(),
