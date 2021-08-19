@@ -27,9 +27,25 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const RollbarSourceMapPlugin = require("rollbar-sourcemap-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
-const { uniq, isEmpty } = require("lodash");
+const { uniq, compact } = require("lodash");
 const Policy = require("csp-parse");
 const mergeWithShared = require("./webpack.sharedConfig.js");
+
+function parseEnv(value) {
+  switch (String(value).toLowerCase()) {
+    case "undefined":
+      return;
+    case "null":
+      return null;
+    case "false":
+      return false;
+    case "true":
+      return true;
+    default:
+  }
+
+  return Number.isNaN(Number(value)) ? value : Number(value);
+}
 
 // Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
 const defaults = {
@@ -47,12 +63,10 @@ dotenv.config({
 });
 
 for (const [env, defaultValue] of Object.entries(defaults)) {
-  if (isEmpty(process.env[env])) {
+  if (parseEnv(process.env[env]) == null) {
     process.env[env] = defaultValue;
   }
 }
-
-const SOURCEMAP_URL = process.env.SOURCEMAP_URL;
 
 console.log("SOURCE_VERSION:", process.env.SOURCE_VERSION);
 console.log("SERVICE_URL:", process.env.SERVICE_URL);
@@ -65,28 +79,38 @@ if (!process.env.SOURCE_VERSION) {
     .trim();
 }
 
-function rollbarPlugins() {
+// Configure sourcemaps
+// Disable sourcemaps on CI unless it's a PUBLIC_RELEASE
+const produceSourcemap =
+  !parseEnv(process.env.CI) || parseEnv(process.env.PUBLIC_RELEASE);
+if (!produceSourcemap) {
+  console.log("No sourcemaps will be generated");
+}
+
+const sourceMapPublicUrl =
+  parseEnv(process.env.PUBLIC_RELEASE) &&
+  `https://pixiebrix-extension-source-maps.s3.amazonaws.com/${process.env.SOURCE_MAP_PATH}/`;
+if (sourceMapPublicUrl) {
+  console.log("Source maps will be available at", sourceMapPublicUrl);
+}
+
+// Setup Rollbar
+const rollbarPlugin =
+  produceSourcemap &&
+  parseEnv(process.env.ROLLBAR_BROWSER_ACCESS_TOKEN) &&
+  parseEnv(process.env.ROLLBAR_BROWSER_ACCESS_TOKEN) &&
+  new RollbarSourceMapPlugin({
+    accessToken: process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN,
+    version: process.env.SOURCE_VERSION, // https://stackoverflow.com/a/43661131
+    publicPath: process.env.ROLLBAR_PUBLIC_PATH,
+  });
+if (rollbarPlugin) {
   console.log(
-    "ROLLBAR_BROWSER_ACCESS_TOKEN:",
+    "Rollbar was configured with",
     process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
   );
-  if (
-    process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN &&
-    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN &&
-    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN !== "undefined"
-  ) {
-    return [
-      new RollbarSourceMapPlugin({
-        accessToken: process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN,
-        // https://stackoverflow.com/a/43661131
-        version: process.env.SOURCE_VERSION,
-        publicPath: process.env.ROLLBAR_PUBLIC_PATH,
-      }),
-    ];
-  }
-
-  console.warn("ROLLBAR_POST_SERVER_ITEM_TOKEN not configured");
-  return [];
+} else {
+  console.log("Rollbar was not configured");
 }
 
 function getVersion() {
@@ -108,30 +132,6 @@ function getVersionName(isProduction) {
   }
 
   return `${process.env.npm_package_version}-local+${new Date().toISOString()}`;
-}
-
-function getConditionalPlugins(isProduction) {
-  if (isProduction) {
-    return [
-      new BundleAnalyzerPlugin({
-        analyzerMode: "static",
-        reportFilename: path.resolve("report.html"),
-      }),
-      ...rollbarPlugins(),
-    ];
-  }
-
-  if (process.env.DEV_NOTIFY === "false") {
-    return [];
-  }
-
-  // Only notifies when watching. `zsh-notify` is suggested for the `build` script
-  return [
-    new WebpackBuildNotifierPlugin({
-      title: "PB Extension",
-      showDuration: true,
-    }),
-  ];
 }
 
 const isProd = (options) => options.mode === "production";
@@ -213,11 +213,9 @@ module.exports = (env, options) =>
       global: true,
     },
 
-    devtool: SOURCEMAP_URL
-      ? false // Explicitly handled by `SourceMapDevToolPlugin` below
-      : isProd(options)
-      ? "nosources-source-map"
-      : "inline-source-map", // https://stackoverflow.com/a/57460886/402560
+    // Don't use `eval` maps https://stackoverflow.com/a/57460886/402560
+    // Explicitly handled by `SourceMapDevToolPlugin` below
+    devtool: false,
 
     // https://webpack.js.org/configuration/watch/#saving-in-webstorm
     watchOptions: {
@@ -295,8 +293,22 @@ module.exports = (env, options) =>
       maxEntrypointSize: 5_120_000,
       maxAssetSize: 5_120_000,
     },
-    plugins: [
-      ...getConditionalPlugins(isProd(options)),
+    plugins: compact([
+      rollbarPlugin,
+
+      // Only notifies when watching. `zsh-notify` is suggested for the `build` script
+      options.watch &&
+        process.env.DEV_NOTIFY !== "false" &&
+        new WebpackBuildNotifierPlugin({
+          title: "PB Extension",
+          showDuration: true,
+        }),
+
+      isProd(options) &&
+        new BundleAnalyzerPlugin({
+          analyzerMode: "static",
+          reportFilename: path.resolve("report.html"),
+        }),
 
       new NodePolyfillPlugin(),
       new WebExtensionTarget(),
@@ -347,14 +359,12 @@ module.exports = (env, options) =>
         ],
       }),
 
-      // WIP for https://webpack.js.org/plugins/source-map-dev-tool-plugin/#host-source-maps-externally
-      isProd(options) &&
+      produceSourcemap &&
         new webpack.SourceMapDevToolPlugin({
+          publicPath: sourceMapPublicUrl,
           filename: "[file].map[query]", // Without this it won't output anything
-          noSources: true,
-          publicPath: `https://sourcemap-pb-test.vercel.app/${process.env.SOURCE_VERSION}/`,
         }),
-    ],
+    ]),
     module: {
       rules: [
         {
