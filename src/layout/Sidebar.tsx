@@ -40,6 +40,8 @@ interface LinkProps {
   route: string;
 }
 
+export const sidebarId = "sidebar";
+
 const SidebarLink: React.FunctionComponent<LinkProps> = ({
   route,
   title,
@@ -68,7 +70,7 @@ const Sidebar: React.FunctionComponent = () => {
   return (
     <nav
       className="sidebar sidebar-offcanvas sidebar-offcanvas-left"
-      id="sidebar"
+      id={sidebarId}
     >
       <ul className="nav">
         <SidebarLink
