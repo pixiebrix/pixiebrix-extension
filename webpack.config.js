@@ -367,12 +367,6 @@ module.exports = (env, options) =>
           "static",
         ],
       }),
-
-      produceSourcemap &&
-        new webpack.SourceMapDevToolPlugin({
-          publicPath: sourceMapPublicUrl,
-          filename: "[file].map[query]", // Without this it won't output anything
-        }),
     ]),
     module: {
       rules: [
