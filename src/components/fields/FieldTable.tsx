@@ -234,7 +234,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
     (property: string) => {
       setFieldValue(
         name,
-        produce(valueRef.current, draft => {
+        produce(valueRef.current, (draft) => {
           if (draft != null) {
             delete draft[property];
           }
@@ -257,7 +257,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
         setFieldValue(
           name,
-          produce(previousValue, draft => {
+          produce(previousValue, (draft) => {
             draft[newProp] = draft[oldProp] ?? "";
             delete draft[oldProp];
           })
@@ -270,7 +270,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
   const addProperty = useCallback(() => {
     setFieldValue(
       name,
-      produce(valueRef.current, draft => {
+      produce(valueRef.current, (draft) => {
         draft[freshPropertyName(draft)] = "";
       })
     );

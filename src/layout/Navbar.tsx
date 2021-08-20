@@ -59,7 +59,9 @@ const Navbar: React.FunctionComponent = () => {
           <button
             className="navbar-toggler"
             type="button"
-            onClick={() => document.querySelector("#sidebar").classList.toggle("active")}
+            onClick={() =>
+              document.querySelector("#sidebar").classList.toggle("active")
+            }
           >
             <FontAwesomeIcon icon={faBars} />
           </button>
