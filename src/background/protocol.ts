@@ -20,12 +20,7 @@ import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { patternToRegex } from "webext-patterns";
 import chromeP from "webext-polyfill-kinda";
-import {
-  isExtensionContext,
-  isBackgroundPage,
-  isContentScript,
-  isOptionsPage,
-} from "webext-detect-page";
+import { isBackgroundPage, isExtensionContext } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 
 import {
@@ -93,25 +88,17 @@ async function handleRequest(
   }
 }
 
-export function getExtensionId(): string {
-  if (isContentScript() || isOptionsPage() || isBackgroundPage()) {
-    return browser.runtime.id;
-  }
-
-  if (chrome.runtime == null) {
+async function callBackground(
+  type: string,
+  args: unknown[],
+  options: HandlerOptions
+): Promise<unknown> {
+  if (!isExtensionContext() && chrome.runtime == null) {
     throw new RuntimeNotFoundError(
       "Browser runtime is unavailable; is the extension externally connectable?"
     );
   }
 
-  return getChromeExtensionId();
-}
-
-export async function callBackground(
-  type: string,
-  args: unknown[],
-  options: HandlerOptions
-): Promise<unknown> {
   const nonce = uuidv4();
   const message = { type, payload: args, meta: { nonce } };
 
@@ -120,7 +107,7 @@ export async function callBackground(
   const sendMessage = isExtensionContext()
     ? browser.runtime.sendMessage
     : chromeP.runtime.sendMessage;
-  const extensionId = isExtensionContext() ? null : getExtensionId();
+  const extensionId = isExtensionContext() ? null : getChromeExtensionId();
 
   if (isNotification(options)) {
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
