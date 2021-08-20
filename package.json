@@ -87,7 +87,7 @@
     "prop-types": "^15.7.2",
     "psl": "^1.8.0",
     "react": "^17.0.2",
-    "react-ace": "^9.4.1",
+    "react-ace": "^9.4.3",
     "react-autosuggest": "^10.1.0",
     "react-beautiful-dnd": "^13.1.0",
     "react-bootstrap": "^1.6.1",
@@ -258,7 +258,8 @@
       "fake-indexeddb/auto"
     ],
     "collectCoverageFrom": [
-      "src/**/*.{ts,tsx,js,jsx}",
+      "src/**/*.{ts,tsx}",
+      "!src/**/*.stories.tsx",
       "!**/__mocks__/**",
       "!**/node_modules/**",
       "!**/vendor/**"
@@ -269,7 +270,6 @@
       "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
       "^@contrib/(.*)$": "<rootDir>/contrib/$1",
       "^@schemas/(.*)$": "<rootDir>/schemas/$1",
-      "^@/chrome$": "<rootDir>/src/__mocks__/chromeMock.ts",
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }

@@ -16,14 +16,14 @@
  */
 
 import React, { FormEvent, useCallback, useMemo, useState } from "react";
-import styles from './CreatableAutosuggest.module.scss';
+import styles from "./CreatableAutosuggest.module.scss";
 import Autosuggest, {
   ChangeEvent,
   InputProps,
-  OnSuggestionSelected
+  OnSuggestionSelected,
 } from "react-autosuggest";
 import cx from "classnames";
-import {noop} from "lodash";
+import { noop } from "lodash";
 
 export interface SuggestionTypeBase {
   value: string;
@@ -33,148 +33,182 @@ interface CreateNew extends SuggestionTypeBase {
   isNew: boolean;
 }
 
-function isNew<T extends SuggestionTypeBase>(suggestion: T | CreateNew): suggestion is CreateNew {
+function isNew<T extends SuggestionTypeBase>(
+  suggestion: T | CreateNew
+): suggestion is CreateNew {
   return suggestion && "isNew" in suggestion;
 }
 
 export interface Props<SuggestionType extends SuggestionTypeBase> {
   // Show the X clear button in the input
-  isClearable?: boolean,
+  isClearable?: boolean;
 
   // Can the input be focused/edited
-  isDisabled?: boolean,
+  isDisabled?: boolean;
 
   // List of suggestions for the autosuggest
-  suggestions: SuggestionType[],
+  suggestions: SuggestionType[];
 
   // Should we only show suggestions that start with the current input value?
-  filterSuggestionsByValue?: boolean,
+  filterSuggestionsByValue?: boolean;
 
   // Text value of the input
-  inputValue?: string,
+  inputValue?: string;
 
   // Placeholder for the input field
-  inputPlaceholder?: string,
+  inputPlaceholder?: string;
 
   // How the suggestion should be displayed
-  renderSuggestion: (suggestion: SuggestionType) => React.ReactNode,
+  renderSuggestion: (suggestion: SuggestionType) => React.ReactNode;
 
   // If provided, how the create option should be displayed
-  renderCreateNew?: (value: string) => React.ReactNode,
+  renderCreateNew?: (value: string) => React.ReactNode;
 
   // Called when a suggestion is highlighted by mouseover or arrow keys,
   //  also is called with null when nothing is highlighted
-  onSuggestionHighlighted?: (suggestion: SuggestionType | null) => void,
+  onSuggestionHighlighted?: (suggestion: SuggestionType | null) => void;
 
   // Callback when the suggestions list is closed
-  onSuggestionsClosed?: () => void,
+  onSuggestionsClosed?: () => void;
 
   // Callback for value change event
-  onSuggestionSelected?: (suggestion: SuggestionType) => void,
+  onSuggestionSelected?: (suggestion: SuggestionType) => void;
 
   // Callback for when the create option is selected
-  onCreateNew?: (inputValue: string) => SuggestionType,
+  onCreateNew?: (inputValue: string) => SuggestionType;
 
   // Callback for input text changes, from both user typing and selecting suggestions
-  onTextChanged?: (value: string) => void,
+  onTextChanged?: (value: string) => void;
 }
 
-const filterSuggestions = <T extends SuggestionTypeBase>(suggestions: T[], value: string) => {
+const filterSuggestions = <T extends SuggestionTypeBase>(
+  suggestions: T[],
+  value: string
+) => {
   const input = value.trim().toLowerCase();
   return input.length === 0
     ? []
-    : suggestions.filter(item => item.value.toLowerCase().startsWith(input));
-}
+    : suggestions.filter((item) => item.value.toLowerCase().startsWith(input));
+};
 
-const getSuggestionValue =
-  <SuggestionType extends SuggestionTypeBase>(suggestion: SuggestionType) => suggestion.value;
+const getSuggestionValue = <SuggestionType extends SuggestionTypeBase>(
+  suggestion: SuggestionType
+) => suggestion.value;
 
-const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>(
-  {
-    isClearable = true,
-    isDisabled = false,
-    suggestions,
-    filterSuggestionsByValue = false,
-    inputValue,
-    inputPlaceholder = "",
-    renderSuggestion,
-    renderCreateNew,
-    onSuggestionHighlighted = noop,
-    onSuggestionsClosed = noop,
-    onSuggestionSelected = noop,
-    onCreateNew,
-    onTextChanged = noop,
-  }: Props<SuggestionType>
-) => {
+const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
+  isClearable = true,
+  isDisabled = false,
+  suggestions,
+  filterSuggestionsByValue = false,
+  inputValue,
+  inputPlaceholder = "",
+  renderSuggestion,
+  renderCreateNew,
+  onSuggestionHighlighted = noop,
+  onSuggestionsClosed = noop,
+  onSuggestionSelected = noop,
+  onCreateNew,
+  onTextChanged = noop,
+}: Props<SuggestionType>) => {
   const [currentValue, setCurrentValue] = useState(inputValue ?? "");
-  const [currentSuggestions, setCurrentSuggestions] = useState<Array<SuggestionType | CreateNew>>([]);
-  const [createdSuggestions, setCreatedSuggestions] = useState<SuggestionType[]>([]);
+  const [currentSuggestions, setCurrentSuggestions] = useState<
+    Array<SuggestionType | CreateNew>
+  >([]);
+  const [createdSuggestions, setCreatedSuggestions] = useState<
+    SuggestionType[]
+  >([]);
 
-  const getSuggestions = useCallback(({ value }: { value: string }) => {
-    let newSuggestions: Array<SuggestionType | CreateNew> = [...suggestions, ...createdSuggestions];
-    if (filterSuggestionsByValue) {
-      newSuggestions = filterSuggestions(newSuggestions, value);
-    }
+  const getSuggestions = useCallback(
+    ({ value }: { value: string }) => {
+      let newSuggestions: Array<SuggestionType | CreateNew> = [
+        ...suggestions,
+        ...createdSuggestions,
+      ];
+      if (filterSuggestionsByValue) {
+        newSuggestions = filterSuggestions(newSuggestions, value);
+      }
 
-    if (!newSuggestions.some(item => item.value === value) && renderCreateNew !== undefined) {
-      newSuggestions.unshift({ value, isNew: true});
-    }
+      if (
+        !newSuggestions.some((item) => item.value === value) &&
+        renderCreateNew !== undefined
+      ) {
+        newSuggestions.unshift({ value, isNew: true });
+      }
 
-    setCurrentSuggestions(newSuggestions);
-  }, [filterSuggestionsByValue, renderCreateNew, suggestions, createdSuggestions]);
+      setCurrentSuggestions(newSuggestions);
+    },
+    [filterSuggestionsByValue, renderCreateNew, suggestions, createdSuggestions]
+  );
 
-  const renderSuggestionWithCreateNew = useCallback((suggestion: SuggestionType | CreateNew) =>
-    isNew(suggestion)
-      ? renderCreateNew(`Create "${suggestion.value}"`)
-      : renderSuggestion(suggestion),
-  [renderCreateNew, renderSuggestion]);
+  const renderSuggestionWithCreateNew = useCallback(
+    (suggestion: SuggestionType | CreateNew) =>
+      isNew(suggestion)
+        ? renderCreateNew(`Create "${suggestion.value}"`)
+        : renderSuggestion(suggestion),
+    [renderCreateNew, renderSuggestion]
+  );
 
-  const onHighlighted = useCallback(({ suggestion }: { suggestion: SuggestionType | CreateNew | null }) => {
-    if (isNew(suggestion)) return;
-    onSuggestionHighlighted(suggestion);
-  }, [onSuggestionHighlighted]);
+  const onHighlighted = useCallback(
+    ({ suggestion }: { suggestion: SuggestionType | CreateNew | null }) => {
+      if (isNew(suggestion)) return;
+      onSuggestionHighlighted(suggestion);
+    },
+    [onSuggestionHighlighted]
+  );
 
   const clearSuggestions = useCallback(() => {
     setCurrentSuggestions([]);
     onSuggestionsClosed();
   }, [onSuggestionsClosed]);
 
-  const handleChange = useCallback((event: FormEvent<HTMLElement>, params: ChangeEvent) => {
-    onTextChanged(params.newValue);
-    setCurrentValue(params.newValue);
-  }, [onTextChanged, setCurrentValue]);
+  const handleChange = useCallback(
+    (event: FormEvent<HTMLElement>, params: ChangeEvent) => {
+      onTextChanged(params.newValue);
+      setCurrentValue(params.newValue);
+    },
+    [onTextChanged, setCurrentValue]
+  );
 
-  const nativeOnSuggestionSelected: OnSuggestionSelected<SuggestionType | CreateNew> =
-    (event, data) => {
-      if (isNew(data.suggestion)) {
-        const newSuggestion = onCreateNew(data.suggestionValue);
-        setCreatedSuggestions(existing => [...existing, newSuggestion]);
-        onSuggestionSelected(newSuggestion)
-      } else {
-        onSuggestionSelected(data.suggestion);
-      }
-    };
+  const nativeOnSuggestionSelected: OnSuggestionSelected<
+    SuggestionType | CreateNew
+  > = (event, data) => {
+    if (isNew(data.suggestion)) {
+      const newSuggestion = onCreateNew(data.suggestionValue);
+      setCreatedSuggestions((existing) => [...existing, newSuggestion]);
+      onSuggestionSelected(newSuggestion);
+    } else {
+      onSuggestionSelected(data.suggestion);
+    }
+  };
 
-  const onSelected = useCallback(nativeOnSuggestionSelected,
-    [onCreateNew, onSuggestionSelected]);
+  const onSelected = useCallback(nativeOnSuggestionSelected, [
+    onCreateNew,
+    onSuggestionSelected,
+  ]);
 
-  const inputProps: InputProps<SuggestionType> = useMemo(() => ({
-    type: 'search',
-    value: inputValue ?? currentValue,
-    onChange: handleChange,
-    placeholder: inputPlaceholder,
-    disabled: isDisabled
-  }), [inputValue, currentValue, handleChange, inputPlaceholder, isDisabled]);
-
-  const theme = useMemo(() => ({
-    input: cx("form-control", styles.input, {
-      [styles.notClearable]: !isClearable
+  const inputProps: InputProps<SuggestionType> = useMemo(
+    () => ({
+      type: "search",
+      value: inputValue ?? currentValue,
+      onChange: handleChange,
+      placeholder: inputPlaceholder,
+      disabled: isDisabled,
     }),
-    suggestionsContainer: 'dropdown',
-    suggestionsList: cx("dropdown-menu", "show", styles.suggestionList),
-    suggestion: 'dropdown-item text-wrap',
-    suggestionHighlighted: 'active'
-  }), [isClearable]);
+    [inputValue, currentValue, handleChange, inputPlaceholder, isDisabled]
+  );
+
+  const theme = useMemo(
+    () => ({
+      input: cx("form-control", styles.input, {
+        [styles.notClearable]: !isClearable,
+      }),
+      suggestionsContainer: "dropdown",
+      suggestionsList: cx("dropdown-menu", "show", styles.suggestionList),
+      suggestion: "dropdown-item text-wrap",
+      suggestionHighlighted: "active",
+    }),
+    [isClearable]
+  );
 
   return (
     <Autosuggest
