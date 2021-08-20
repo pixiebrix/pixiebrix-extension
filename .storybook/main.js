@@ -34,9 +34,11 @@ module.exports = {
       "@contrib": path.resolve(rootDir, "contrib"),
       "@schemas": path.resolve(rootDir, "schemas"),
       vendors: path.resolve(rootDir, "src/vendors"),
+      "webextension-polyfill-ts": path.resolve(
+        rootDir,
+        "src/__mocks__/browserMocks.ts"
+      ),
     };
-
-    config.pl;
 
     config.module.rules.push({
       test: /\.scss$/,
@@ -44,7 +46,14 @@ module.exports = {
         // style-loader loads the css into the DOM
         "style-loader",
         "css-loader",
-        { loader: "sass-loader", options: { sourceMap: true } },
+        {
+          loader: "sass-loader",
+          options: {
+            sourceMap: true,
+            // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+            implementation: require("node-sass"),
+          },
+        },
       ],
     });
 

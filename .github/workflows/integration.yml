@@ -13,7 +13,16 @@ jobs:
           node-version: "16"
           cache: npm
       - run: npm ci
-      - run: npm test
+      - run: npm run test -- --coverage
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        # Skip step for dependabot: https://github.com/pixiebrix/pixiebrix-app/issues/231
+        # @see https://dev.to/github/conditional-workflows-and-failures-in-github-actions-2okk
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        with:
+          # https://github.com/codacy/codacy-coverage-reporter-action
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage/lcov.info
 
   stage:
     runs-on: ubuntu-latest
@@ -101,3 +110,11 @@ jobs:
           echo "::remove-matcher owner=eslint-compact::"
           echo "::remove-matcher owner=eslint-stylish::"
           npm run lint -- --quiet
+
+  # https://pre-commit.com/#usage-in-continuous-integration
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: pre-commit/action@v2.0.3

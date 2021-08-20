@@ -213,11 +213,12 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
-  const [field] = useField(props);
+  const [field] = useField<ObjectValue>(props);
   const { setFieldValue } = useFormikContext();
 
   // UseRef indirection layer so the callbacks below don't re-calculate on every change
-  const fieldRef = useRef(field);
+  const valueRef = useRef(field.value);
+  valueRef.current = field.value ?? {};
 
   const [properties, declaredProperties] = useMemo(() => {
     const declared = schema.properties ?? {};
@@ -233,20 +234,20 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
     (property: string) => {
       setFieldValue(
         name,
-        produce(fieldRef.current.value, (draft: ObjectValue) => {
+        produce(valueRef.current, (draft) => {
           if (draft != null) {
             delete draft[property];
           }
         })
       );
     },
-    [name, setFieldValue, fieldRef]
+    [name, setFieldValue, valueRef]
   );
 
   const onRename = useCallback(
     (oldProp: string, newProp: string) => {
       if (oldProp !== newProp) {
-        const previousValue = fieldRef.current.value ?? {};
+        const previousValue = valueRef.current;
 
         console.debug("Renaming property", {
           newProp,
@@ -256,24 +257,24 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
         setFieldValue(
           name,
-          produce(previousValue, (draft: ObjectValue) => {
+          produce(previousValue, (draft) => {
             draft[newProp] = draft[oldProp] ?? "";
             delete draft[oldProp];
           })
         );
       }
     },
-    [name, setFieldValue, fieldRef]
+    [name, setFieldValue, valueRef]
   );
 
   const addProperty = useCallback(() => {
     setFieldValue(
       name,
-      produce(fieldRef.current.value ?? {}, (draft: ObjectValue) => {
+      produce(valueRef.current, (draft) => {
         draft[freshPropertyName(draft)] = "";
       })
     );
-  }, [name, setFieldValue, fieldRef]);
+  }, [name, setFieldValue, valueRef]);
 
   return (
     <Form.Group controlId={field.name}>

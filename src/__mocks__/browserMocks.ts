@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function getChromeExtensionId(): string {
-  return "abc123";
-}
+// Mock for "webextension-polyfill-ts"
+
+import type { Browser } from "webextension-polyfill-ts";
+
+export const browser: Partial<Browser> = {};

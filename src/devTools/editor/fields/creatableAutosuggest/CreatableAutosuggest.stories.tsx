@@ -16,16 +16,22 @@
  */
 
 import React from "react";
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { ComponentMeta, ComponentStory } from "@storybook/react";
 import CreatableAutosuggest from "@/devTools/editor/fields/creatableAutosuggest/CreatableAutosuggest";
-import {faHandPeace, faHandshake, faPrayingHands, faStar, faThumbsUp} from "@fortawesome/free-solid-svg-icons";
+import {
+  faHandPeace,
+  faHandshake,
+  faPrayingHands,
+  faStar,
+  faThumbsUp,
+} from "@fortawesome/free-solid-svg-icons";
 import { IconDefinition } from "@fortawesome/fontawesome-common-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default {
   title: "Fields/CreatableAutosuggest",
-  component: CreatableAutosuggest
-} as ComponentMeta<typeof CreatableAutosuggest>
+  component: CreatableAutosuggest,
+} as ComponentMeta<typeof CreatableAutosuggest>;
 
 const Story: ComponentStory<typeof CreatableAutosuggest> = (args) => (
   <div style={{ height: 200 }}>
@@ -34,15 +40,15 @@ const Story: ComponentStory<typeof CreatableAutosuggest> = (args) => (
 );
 
 interface Suggestion {
-  icon: IconDefinition,
-  value: string
+  icon: IconDefinition;
+  value: string;
 }
 
 const suggestions = [
-  { icon: faThumbsUp, value: "Foo"},
-  { icon: faHandPeace, value: "Bar"},
-  { icon: faPrayingHands, value: "Baz"},
-  { icon: faHandshake, value: "Qux"}
+  { icon: faThumbsUp, value: "Foo" },
+  { icon: faHandPeace, value: "Bar" },
+  { icon: faPrayingHands, value: "Baz" },
+  { icon: faHandshake, value: "Qux" },
 ];
 
 const getNewSuggestion = (value: string) => ({ icon: faStar, value });
@@ -50,8 +56,8 @@ const getNewSuggestion = (value: string) => ({ icon: faStar, value });
 function render(value: string, icon?: IconDefinition) {
   return (
     <>
-      <span>{value}  </span>
-      {icon && <FontAwesomeIcon icon={icon} color="red"/>}
+      <span>{value} </span>
+      {icon && <FontAwesomeIcon icon={icon} color="red" />}
     </>
   );
 }
@@ -66,38 +72,38 @@ const baseArgs = {
   suggestions,
   renderSuggestion,
   onCreateNew: getNewSuggestion,
-}
+};
 
 export const Default = Story.bind({});
 Default.args = {
   ...baseArgs,
-  inputPlaceholder: 'Choose from Default...',
+  inputPlaceholder: "Choose from Default...",
 };
 
 export const InitialValue = Story.bind({});
 InitialValue.args = {
   ...baseArgs,
   inputValue: suggestions[0].value,
-  inputPlaceholder: 'Choose after InitialValue cleared...',
+  inputPlaceholder: "Choose after InitialValue cleared...",
 };
 
 export const NotClearable = Story.bind({});
 NotClearable.args = {
   ...baseArgs,
   isClearable: false,
-  inputPlaceholder: 'Choose with no clearing...'
+  inputPlaceholder: "Choose with no clearing...",
 };
 
 export const Disabled = Story.bind({});
 Disabled.args = {
   ...baseArgs,
   isDisabled: true,
-  inputPlaceholder: 'You cannot choose from a disabled autosuggest'
+  inputPlaceholder: "You cannot choose from a disabled autosuggest",
 };
 
 export const Creatable = Story.bind({});
 Creatable.args = {
   ...baseArgs,
   renderCreateNew,
-  inputPlaceholder: 'Choose an option or create new item...'
-}
+  inputPlaceholder: "Choose an option or create new item...",
+};
