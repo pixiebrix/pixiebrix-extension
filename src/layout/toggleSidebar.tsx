@@ -14,12 +14,10 @@ export const toggleSidebar = () => {
   }
 };
 
-export const closeSidebar = () => {
+export const closeSidebaronSmallScreen = () => {
   if (window.matchMedia(smallScreenMediaQuery).matches) {
     document
       .querySelector(`#${sidebarId}`)
       .classList.remove(sidebarActiveClassName);
-  } else {
-    document.body.classList.add(sidebarIconOnlyClassName);
   }
 };

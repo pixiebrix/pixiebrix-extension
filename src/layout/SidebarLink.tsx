@@ -22,7 +22,7 @@ import cx from "classnames";
 import { useLocation } from "react-router";
 import { Location } from "history";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { closeSidebar } from "./toggleSidebar";
+import { closeSidebaronSmallScreen } from "./toggleSidebar";
 
 interface LinkProps {
   isActive?: (match: any, location: Location) => boolean;
@@ -49,7 +49,7 @@ export const SidebarLink: React.FunctionComponent<LinkProps> = ({
         to={route}
         className="nav-link"
         isActive={isActive}
-        onClick={closeSidebar}
+        onClick={closeSidebaronSmallScreen}
       >
         <span className="menu-title">{title}</span>
         <FontAwesomeIcon icon={icon} className="menu-icon" fixedWidth />
