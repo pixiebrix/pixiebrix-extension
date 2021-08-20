@@ -15,16 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import isEmpty from "lodash/isEmpty";
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
 import { isExtensionContext } from "webext-detect-page";
 import { browser, Runtime } from "webextension-polyfill-ts";
-import { forbidBackgroundPage } from "./utils/expectContext";
+import { forbidBackgroundPage, forbidContext } from "./utils/expectContext";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
-export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
+const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 
 type StorageLocation = "local" | "sync";
 
@@ -42,8 +41,11 @@ export function isBrowserActionPanel(): boolean {
   return isExtensionContext() && location.pathname === "/action.html";
 }
 
-export function setChromeExtensionId(extensionId: string): void {
-  if (isEmpty(extensionId)) {
+export function setChromeExtensionId(extensionId = ""): void {
+  forbidContext("extension");
+
+  extensionId = extensionId.trim();
+  if (extensionId) {
     localStorage.removeItem(CHROME_EXTENSION_STORAGE_KEY);
   } else {
     localStorage.setItem(CHROME_EXTENSION_STORAGE_KEY, extensionId);
@@ -51,8 +53,11 @@ export function setChromeExtensionId(extensionId: string): void {
 }
 
 export function getChromeExtensionId(): string {
-  const manualKey = localStorage.getItem(CHROME_EXTENSION_STORAGE_KEY);
-  return isEmpty(manualKey ?? "") ? CHROME_EXTENSION_ID : manualKey;
+  forbidContext("extension");
+
+  return (
+    localStorage.getItem(CHROME_EXTENSION_STORAGE_KEY) ?? CHROME_EXTENSION_ID
+  );
 }
 
 /**

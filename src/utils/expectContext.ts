@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackgroundPage, isContentScript } from "webext-detect-page";
+import {
+  isBackgroundPage,
+  isContentScript,
+  isExtensionContext,
+} from "webext-detect-page";
 
 /**
  * Accepts 'This is my error' | new Error('This is my error') | Error;
@@ -83,5 +87,58 @@ export function forbidBackgroundPage(error?: ErrorBaseType): void {
 export function forbidContentScript(error?: ErrorBaseType): void {
   if (isContentScript()) {
     throw createError(`This code cannot run in the content script`, error);
+  }
+}
+
+const contexts = ["extension", "background", "contentScript"] as const;
+const contextMap = new Map<typeof contexts[number], () => boolean>([
+  ["extension", isExtensionContext],
+  ["background", isBackgroundPage],
+  ["contentScript", isContentScript],
+]);
+
+/**
+ * @example expectContext('extension')
+ * @example expectContext('extension', WrongContextError)
+ * @example expectContext('extension', 'Wrong context and this is my custom error')
+ * @example expectContext('extension', new Error('Wrong context and this is my custom error'))
+ */
+export function expectContext(
+  context: typeof contexts[number],
+  error?: ErrorBaseType
+): void {
+  expectContextBase(context, error, true);
+}
+
+/**
+ * @example forbidContext('extension')
+ * @example forbidContext('extension', WrongContextError)
+ * @example forbidContext('extension', 'Wrong context and this is my custom error')
+ * @example forbidContext('extension', new Error('Wrong context and this is my custom error'))
+ */
+export function forbidContext(
+  context: typeof contexts[number],
+  error?: ErrorBaseType
+): void {
+  expectContextBase(context, error, false);
+}
+
+function expectContextBase(
+  context: typeof contexts[number],
+  error?: ErrorBaseType,
+  expectedResult = true
+): void {
+  const isContext = contextMap.get(context);
+  if (!isContext) {
+    throw new TypeError(`Context "${context}" not found`);
+  }
+
+  if (isContext() !== expectedResult) {
+    throw createError(
+      `This code can ${
+        expectedResult ? "only" : "not"
+      } run in the "${context}" context`,
+      error
+    );
   }
 }
