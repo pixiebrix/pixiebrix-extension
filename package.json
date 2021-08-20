@@ -48,7 +48,6 @@
     "csharp-helpers": "^0.9.3",
     "css-selector-generator": "^3.0.1",
     "dompurify": "^2.3.0",
-    "dragula": "^3.7.3",
     "exifreader": "^3.16.0",
     "export-to-csv": "^0.2.1",
     "file-saver": "^2.0.5",
@@ -142,7 +141,6 @@
     "@storybook/react": "^6.3.4",
     "@types/chrome": "0.0.154",
     "@types/dompurify": "^2.2.3",
-    "@types/dragula": "^3.7.1",
     "@types/file-saver": "^2.0.3",
     "@types/firefox-webext-browser": "^82.0.1",
     "@types/gapi": "0.0.41",
@@ -243,6 +241,9 @@
       "yml",
       "json"
     ],
+    "testPathIgnorePatterns": [
+      "<rootDir>/src/vendors/"
+    ],
     "transform": {
       "^.+\\.[jt]sx?$": "babel-jest",
       "^.+\\.ya?ml$": "yaml-jest-transform",
@@ -255,6 +256,12 @@
       "<rootDir>/src/testEnv.js",
       "jest-webextension-mock",
       "fake-indexeddb/auto"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx,js,jsx}",
+      "!**/__mocks__/**",
+      "!**/node_modules/**",
+      "!**/vendor/**"
     ],
     "moduleNameMapper": {
       "^@/icons/list$": "<rootDir>/src/__mocks__/iconsListMock",

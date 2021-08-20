@@ -15,13 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export {
-  clear,
-  enableOverlay,
-  disableOverlay,
-  updateDynamicElement,
-  checkAvailable,
-  getInstalledExtensionPointIds,
-} from "./dynamic";
-export { insertButton } from "./insertButton";
-export { insertPanel } from "./insertPanel";
+// Mock for "webextension-polyfill-ts"
+
+import type { Browser } from "webextension-polyfill-ts";
+
+export const browser: Partial<Browser> = {};

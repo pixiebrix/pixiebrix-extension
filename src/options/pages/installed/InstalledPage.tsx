@@ -117,7 +117,7 @@ const InstalledPage: React.FunctionComponent<{
                   <>
                     You can find more to activate on the{" "}
                     <Link to={"/templates"}>Templates</Link> page. Or, follow
-                    the
+                    the{" "}
                     <a
                       href="https://docs.pixiebrix.com/quick-start-guide"
                       target="_blank"
