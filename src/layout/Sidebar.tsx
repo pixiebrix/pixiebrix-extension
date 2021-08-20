@@ -16,6 +16,7 @@
  */
 
 import React, { useContext } from "react";
+import OutsideClickHandler from "react-outside-click-handler";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faClipboardCheck,
@@ -29,59 +30,62 @@ import {
 import cx from "classnames";
 import AuthContext from "@/auth/AuthContext";
 import { SidebarLink } from "./SidebarLink";
+import { closeSidebarOnSmallScreen } from "./toggleSidebar";
 
-export const sidebarId = "sidebar";
+export const SIDEBAR_ID = "sidebar";
 
 const Sidebar: React.FunctionComponent = () => {
   const { flags } = useContext(AuthContext);
 
   return (
-    <nav
-      className="sidebar sidebar-offcanvas sidebar-offcanvas-left"
-      id={sidebarId}
-    >
-      <ul className="nav">
-        <SidebarLink
-          route="/installed"
-          title="Active Bricks"
-          icon={faCubes}
-          isActive={(match, location) =>
-            match ||
-            location.pathname === "/" ||
-            location.pathname.startsWith("/extensions/")
-          }
-        />
-        <SidebarLink
-          route="/templates"
-          title="Templates"
-          icon={faClipboardCheck}
-        />
-        {flags.includes("marketplace") && (
+    <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
+      <nav
+        className="sidebar sidebar-offcanvas sidebar-offcanvas-left"
+        id={SIDEBAR_ID}
+      >
+        <ul className="nav">
           <SidebarLink
-            route="/marketplace"
-            title="Marketplace"
-            icon={faStoreAlt}
+            route="/installed"
+            title="Active Bricks"
+            icon={faCubes}
+            isActive={(match, location) =>
+              match ||
+              location.pathname === "/" ||
+              location.pathname.startsWith("/extensions/")
+            }
           />
-        )}
-        {flags.includes("workshop") && (
-          <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
-        )}
-        {/* <ConnectedNavLink route="build" title="Build Brick" icon={faTools} /> */}
-        <SidebarLink route="/services" title="Integrations" icon={faCloud} />
-        <SidebarLink route="/settings" title="Settings" icon={faCogs} />
-        <li className={cx("nav-item")}>
-          <a
-            href="https://docs.pixiebrix.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link"
-          >
-            <span className="menu-title">Documentation</span>
-            <FontAwesomeIcon icon={faInfoCircle} className="menu-icon" />
-          </a>
-        </li>
-      </ul>
-    </nav>
+          <SidebarLink
+            route="/templates"
+            title="Templates"
+            icon={faClipboardCheck}
+          />
+          {flags.includes("marketplace") && (
+            <SidebarLink
+              route="/marketplace"
+              title="Marketplace"
+              icon={faStoreAlt}
+            />
+          )}
+          {flags.includes("workshop") && (
+            <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
+          )}
+          {/* <ConnectedNavLink route="build" title="Build Brick" icon={faTools} /> */}
+          <SidebarLink route="/services" title="Integrations" icon={faCloud} />
+          <SidebarLink route="/settings" title="Settings" icon={faCogs} />
+          <li className={cx("nav-item")}>
+            <a
+              href="https://docs.pixiebrix.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-link"
+            >
+              <span className="menu-title">Documentation</span>
+              <FontAwesomeIcon icon={faInfoCircle} className="menu-icon" />
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </OutsideClickHandler>
   );
 };
 
