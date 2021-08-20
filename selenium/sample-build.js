@@ -105,9 +105,9 @@ async function getChromeOptions() {
   const options = new chrome.Options();
   options.addArguments("auto-open-devtools-for-tabs");
   if (isBrowserstack) {
-    options.setOptions({
-      extensions: [await getZippedExtensionAsBuffer()],
-    });
+    options.addExtensions(
+      (await getZippedExtensionAsBuffer()).toString("base64")
+    );
   } else {
     options.addArguments("load-extension=" + extensionLocation);
   }
@@ -142,7 +142,7 @@ async function runInBrowser(browser) {
   builder.withCapabilities(configurations.get(browser));
   if (browser === "chrome") {
     require("chromedriver");
-    builder.setChromeOptions(getChromeOptions());
+    builder.setChromeOptions(await getChromeOptions());
   }
   if (browser === "firefox") {
     require("geckodriver");
