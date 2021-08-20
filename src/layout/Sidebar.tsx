@@ -30,7 +30,7 @@ import {
 import cx from "classnames";
 import AuthContext from "@/auth/AuthContext";
 import { SidebarLink } from "./SidebarLink";
-import { closeSidebar } from "./toggleSidebar";
+import { closeSidebarOnSmallScreen } from "./toggleSidebar";
 
 export const sidebarId = "sidebar";
 
@@ -38,7 +38,7 @@ const Sidebar: React.FunctionComponent = () => {
   const { flags } = useContext(AuthContext);
 
   return (
-    <OutsideClickHandler onOutsideClick={closeSidebar}>
+    <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
       <nav
         className="sidebar sidebar-offcanvas sidebar-offcanvas-left"
         id={sidebarId}
