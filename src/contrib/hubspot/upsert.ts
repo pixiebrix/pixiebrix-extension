@@ -27,7 +27,7 @@ function makeProperties(
   propertyKey = "property"
 ) {
   return Object.entries(obj)
-    .filter(([, value]) => !!value)
+    .filter(([, value]) => Boolean(value))
     .map(([property, value]) => ({
       [propertyKey]: property,
       value,
@@ -122,7 +122,7 @@ export class AddUpdateContact extends Effect {
         );
       }
 
-      // @ts-ignore: come back and define types for the hubspot API
+      // @ts-expect-error come back and define types for the hubspot API
       const { contacts } = await proxyHubspot({
         url: "https://api.hubapi.com/contacts/v1/search/query",
         params: { q: `${firstname} ${lastname} ${company}`.trim(), count: 5 },
@@ -198,7 +198,7 @@ export class AddUpdateCompany extends Effect {
 
     const hostName = new URL(website).hostname;
 
-    // @ts-ignore: come back and define types for the hubspot API
+    // @ts-expect-error come back and define types for the hubspot API
     const { results } = await proxyHubspot({
       url: `https://api.hubapi.com/companies/v2/domains/${hostName}/companies`,
       method: "post",

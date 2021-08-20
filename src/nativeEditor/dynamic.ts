@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, IExtensionPoint, IReader } from "@/core";
+import {
+  EmptyConfig,
+  IExtension,
+  IExtensionPoint,
+  IReader,
+  UUID,
+} from "@/core";
 import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import {
   clearDynamic,
@@ -50,13 +56,13 @@ export type ElementType =
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
-  TExtension = unknown,
+  TExtension extends EmptyConfig = EmptyConfig,
   TReader extends ReaderDefinition = ReaderDefinition
 > {
   type: ElementType;
   extensionPoint: ExtensionPointConfig<TExtensionPoint>;
   extension: IExtension<TExtension>;
-  readers: (ReaderConfig<TReader> | ReaderReference)[];
+  readers: Array<ReaderConfig<TReader> | ReaderReference>;
 }
 
 let _overlay: Overlay | null = null;
@@ -64,7 +70,7 @@ const _temporaryExtensions: Map<string, IExtensionPoint> = new Map();
 
 export const clear = liftContentScript(
   "CLEAR_DYNAMIC",
-  async ({ uuid }: { uuid?: string }) => {
+  async ({ uuid }: { uuid?: UUID }) => {
     clearDynamic(uuid);
     if (uuid) {
       _temporaryExtensions.delete(uuid);
@@ -76,9 +82,7 @@ export const clear = liftContentScript(
 
 export const getInstalledExtensionPointIds = liftContentScript(
   "INSTALLED_EXTENSIONS",
-  async () => {
-    return getInstalledIds();
-  }
+  async () => getInstalledIds()
 );
 
 type ReaderLike = ReaderConfig | ReaderReference | Reader;
@@ -132,23 +136,29 @@ export const updateDynamicElement = liftContentScript(
   }
 );
 
-export const toggleOverlay = liftContentScript(
-  "TOGGLE_OVERLAY",
-  async ({ selector, on = true }: { selector: string; on: boolean }) => {
-    if (on) {
-      if (_overlay == null) {
-        _overlay = new Overlay();
-      }
-
-      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive on JQuery method
-      const $elt = $(document).find(selector);
-      _overlay.inspect($elt.toArray(), null);
-    } else if (_overlay != null) {
-      _overlay.remove();
-      _overlay = null;
+export const enableOverlay = liftContentScript(
+  "ENABLE_OVERLAY",
+  async (selector: string) => {
+    if (!selector) {
+      throw new Error(`Selector not found: ${selector}`);
     }
+
+    if (_overlay == null) {
+      _overlay = new Overlay();
+    }
+
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive on JQuery method
+    const $elt = $(document).find(selector);
+    _overlay.inspect($elt.toArray(), null);
   }
 );
+
+export const disableOverlay = liftContentScript("DISABLE_OVERLAY", async () => {
+  if (_overlay != null) {
+    _overlay.remove();
+    _overlay = null;
+  }
+});
 
 export const checkAvailable = liftContentScript(
   "CHECK_AVAILABLE",

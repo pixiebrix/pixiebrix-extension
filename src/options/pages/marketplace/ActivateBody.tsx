@@ -16,19 +16,14 @@
  */
 
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useFormikContext } from "formik";
-import { Button, Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
   useSelectedAuths,
   useSelectedExtensions,
 } from "@/options/pages/marketplace/ConfigureBody";
-import {
-  collectPermissions,
-  ensureAllPermissions,
-  originPermissions as groupOriginPermissions,
-} from "@/permissions";
+import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { locator } from "@/background/locator";
 import GridLoader from "react-spinners/GridLoader";
 import { useAsyncState } from "@/hooks/common";
@@ -36,9 +31,16 @@ import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage } from "@/errors";
-import { containsPermissions, mergePermissions } from "@/utils/permissions";
+import {
+  containsPermissions,
+  selectOptionalPermissions,
+} from "@/utils/permissions";
 import { ServiceAuthPair } from "@/core";
 import useNotifications from "@/hooks/useNotifications";
+import { uniq } from "lodash";
+import { Card, Table } from "react-bootstrap";
+import useReportError from "@/hooks/useReportError";
+import { resolveRecipe } from "@/registry/internal";
 
 interface ActivateProps {
   blueprint: RecipeDefinition;
@@ -46,7 +48,7 @@ interface ActivateProps {
 
 export function useEnsurePermissions(
   blueprint: RecipeDefinition,
-  extensions: ExtensionPointConfig[],
+  selected: ExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
 ) {
   const notify = useNotifications();
@@ -54,28 +56,27 @@ export function useEnsurePermissions(
 
   const [permissionState, isPending, error] = useAsyncState(async () => {
     await locator.refreshLocal();
-    const permissions = await collectPermissions(extensions, serviceAuths);
-    const enabled = await containsPermissions(mergePermissions(permissions));
+    const permissions = await collectPermissions(
+      await resolveRecipe(blueprint, selected),
+      serviceAuths
+    );
+    const enabled = await containsPermissions(permissions);
     return {
       enabled,
       permissions,
-      originPermissions: groupOriginPermissions(permissions),
     };
-  }, [extensions, serviceAuths]);
+  }, [selected, serviceAuths]);
 
-  const { enabled, permissions, originPermissions } = permissionState ?? {
+  const { enabled, permissions } = permissionState ?? {
     enabled: false,
     permissions: null,
-    originPermissions: null,
   };
 
   const request = useCallback(async () => {
     let accepted = false;
 
     try {
-      accepted = await ensureAllPermissions(
-        mergePermissions(permissions ?? [])
-      );
+      accepted = await ensureAllPermissions(permissions);
     } catch (error: unknown) {
       notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
         error,
@@ -84,6 +85,7 @@ export function useEnsurePermissions(
     }
 
     if (!accepted) {
+      // Event is tracked in `activate` callback
       notify.warning("You declined the permissions");
       return false;
     }
@@ -98,25 +100,25 @@ export function useEnsurePermissions(
       if (accepted) {
         reportEvent("MarketplaceActivate", {
           blueprintId: blueprint.metadata.id,
-          extensions: extensions.map((x) => x.label),
+          extensions: selected.map((x) => x.label),
         });
         return submitForm();
       }
 
       reportEvent("MarketplaceRejectPermissions", {
         blueprintId: blueprint.metadata.id,
-        extensions: extensions.map((x) => x.label),
+        extensions: selected.map((x) => x.label),
       });
     });
-  }, [extensions, request, submitForm, blueprint.metadata]);
+  }, [selected, request, submitForm, blueprint.metadata]);
 
   return {
     enabled,
     request,
-    permissions: originPermissions,
+    permissions,
     activate,
     isPending,
-    extensions,
+    extensions: selected,
     error,
   };
 }
@@ -126,23 +128,64 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
 }) => {
   const selectedExtensions = useSelectedExtensions(blueprint.extensionPoints);
   const selectedAuths = useSelectedAuths();
-  const {
-    enabled,
-    activate,
-    isPending,
-    permissions,
-    error,
-  } = useEnsurePermissions(blueprint, selectedExtensions, selectedAuths);
+  const { enabled, isPending, permissions, error } = useEnsurePermissions(
+    blueprint,
+    selectedExtensions,
+    selectedAuths
+  );
 
-  if (error) {
-    console.error(error);
-  }
+  useReportError(error);
+
+  const permissionsList = useMemo(() => {
+    if (permissions == null) {
+      return [];
+    }
+
+    // `selectOptionalPermissions` never returns any origins because we request *://*
+    return uniq([
+      ...selectOptionalPermissions(permissions.permissions),
+      ...permissions.origins,
+    ]);
+  }, [permissions]);
+
+  const helpText = useMemo(() => {
+    if (isPending) {
+      return <GridLoader />;
+    }
+
+    if (error) {
+      return (
+        <Card.Text className="text-danger">
+          An error occurred determining additional permissions
+        </Card.Text>
+      );
+    }
+
+    if (permissionsList.length === 0) {
+      return <Card.Text>No special permissions required</Card.Text>;
+    }
+
+    if (enabled) {
+      return (
+        <Card.Text>
+          PixieBrix already has the permissions required for the bricks
+          you&apos;ve selected
+        </Card.Text>
+      );
+    }
+
+    return (
+      <Card.Text>
+        Your browser will prompt to you approve any permissions you haven&apos;t
+        granted yet
+      </Card.Text>
+    );
+  }, [permissionsList, enabled, error, isPending]);
 
   return (
     <>
       <Card.Body className="mb-0 p-3">
         <Card.Title>Review Permissions & Activate</Card.Title>
-
         <p className="text-info">
           <FontAwesomeIcon icon={faInfoCircle} /> You can de-activate bricks at
           any time on the{" "}
@@ -153,75 +196,24 @@ const ActivateBody: React.FunctionComponent<ActivateProps> = ({
             </u>
           </Link>
         </p>
-
-        <Button onClick={activate}>Activate</Button>
       </Card.Body>
 
       <Card.Body className="p-3">
-        <Card.Subtitle>Permissions</Card.Subtitle>
-
-        {enabled == null || !enabled ? (
-          <Card.Text>
-            Your browser will prompt to you approve any permissions you
-            haven&apos;t granted yet
-          </Card.Text>
-        ) : (
-          <Card.Text>
-            PixieBrix already has the permissions required for the bricks
-            you&apos;ve selected
-          </Card.Text>
-        )}
+        <Card.Subtitle>Permissions & URLs</Card.Subtitle>
+        {helpText}
       </Card.Body>
-      <Table>
-        <thead>
-          <tr>
-            <th>URL</th>
-            <th className="w-100">Permissions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {isPending && (
-            <tr>
-              <td colSpan={2}>
-                <GridLoader />
-              </td>
-            </tr>
-          )}
-          {error && (
-            <tr>
-              <td colSpan={2} className="text-danger">
-                An error occurred while determining the permissions
-              </td>
-            </tr>
-          )}
-          {permissions?.length > 0 &&
-            permissions.map((x, i) => {
-              const additional = x.permissions.filter(
-                (x) => !["tabs", "webNavigation"].includes(x)
-              );
-              return (
-                <tr key={i}>
-                  <td>
-                    {x.origins.length > 0 ? x.origins.join(", ") : "Any URL"}
-                  </td>
-                  <td>
-                    <ul className="mb-0">
-                      <li>Read/write information and detect page navigation</li>
-                      {additional.map((x) => (
-                        <li key={x}>{x}</li>
-                      ))}
-                    </ul>
-                  </td>
-                </tr>
-              );
-            })}
-          {permissions?.length === 0 && (
-            <tr>
-              <td colSpan={2}>No special permissions required</td>
-            </tr>
-          )}
-        </tbody>
-      </Table>
+      {permissionsList.length > 0 && (
+        // Use Table single column table instead of ListGroup to more closely match style on other wizard tabs
+        <Table variant="flush">
+          <tbody>
+            {permissionsList.map((permission) => (
+              <tr key={permission}>
+                <td>{permission}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      )}
     </>
   );
 };

@@ -15,26 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import { FastField, FieldInputProps, useFormikContext } from "formik";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { openTab } from "@/background/executor";
-import { getTabInfo } from "@/background/devtools";
-import { DevToolsContext } from "@/devTools/context";
 import {
   createDomainPattern,
   createSitePattern,
   HTTPS_PATTERN,
   SITES_PATTERN,
 } from "@/permissions/patterns";
+import { getCurrentURL } from "@/devTools/utils";
 
 const AvailabilityTab: React.FunctionComponent<{
   eventKey?: string;
   editable: Set<string>;
 }> = ({ eventKey = "availability", editable }) => {
-  const { port } = useContext(DevToolsContext);
   const { values, getFieldHelpers } = useFormikContext<FormState>();
   const locked = useMemo(
     () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
@@ -71,7 +69,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 className="mx-2"
                 role="button"
                 onClick={async () => {
-                  const url = (await getTabInfo(port)).url;
+                  const url = await getCurrentURL();
                   setMatchPattern(createSitePattern(url));
                 }}
               >
@@ -82,7 +80,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 className="mx-2"
                 role="button"
                 onClick={async () => {
-                  const url = (await getTabInfo(port)).url;
+                  const url = await getCurrentURL();
                   setMatchPattern(createDomainPattern(url));
                 }}
               >
@@ -92,7 +90,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern(HTTPS_PATTERN)}
+                onClick={() => {
+                  setMatchPattern(HTTPS_PATTERN);
+                }}
               >
                 HTTPS
               </a>{" "}
@@ -100,7 +100,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern(SITES_PATTERN)}
+                onClick={() => {
+                  setMatchPattern(SITES_PATTERN);
+                }}
               >
                 All URLs
               </a>
@@ -123,7 +125,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 })
               }
             >
-              Chrome Documentation
+              Patterns Documentation
             </a>{" "}
             for examples
           </Form.Text>

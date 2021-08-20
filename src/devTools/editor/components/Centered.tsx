@@ -17,17 +17,16 @@
 
 import React from "react";
 import { Col, Container, Row } from "react-bootstrap";
+import cx from "classnames";
 
-const Centered: React.FunctionComponent = ({ children }) => {
-  return (
-    <Container fluid>
-      <Row>
-        <Col className="mx-auto mt-4 text-center" md={8} lg={5} sm={11}>
-          {children}
-        </Col>
-      </Row>
-    </Container>
-  );
-};
+const Centered: React.FunctionComponent<{ isScrollable?: boolean }> = ({ isScrollable = false, children }) => (
+  <Container fluid className={cx({ "h-100 pb-2 overflow-auto": isScrollable })}>
+    <Row>
+      <Col className="mx-auto mt-4 text-center" md={8} lg={5} sm={11}>
+        {children}
+      </Col>
+    </Row>
+  </Container>
+);
 
 export default Centered;

@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -27,8 +28,8 @@ import {
   selectIsAvailable,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
-import { v4 as uuidv4 } from "uuid";
-import { DynamicDefinition } from "@/nativeEditor";
+import { uuidv4 } from "@/types/helpers";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
 import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
@@ -148,6 +149,7 @@ function selectExtension({
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
     label,
     services,
     config: extension,

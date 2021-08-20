@@ -20,7 +20,7 @@ import { actions, FormState } from "@/devTools/editor/editorSlice";
 import { Runtime } from "webextension-polyfill-ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
-import * as nativeOperations from "@/background/devtools";
+import { enableDataOverlay, disableOverlay } from "@/background/devtools";
 import { ListGroup } from "react-bootstrap";
 import { getLabel } from "@/devTools/editor/sidebar/common";
 import {
@@ -28,6 +28,7 @@ import {
   NotAvailableIcon,
   UnsavedChangesIcon,
 } from "@/devTools/editor/sidebar/ExtensionIcons";
+import { UUID } from "@/core";
 
 /**
  * A sidebar menu entry corresponding to an extension that is new or is currently being edited.
@@ -46,18 +47,22 @@ const DynamicEntry: React.FunctionComponent<{
   );
 
   const showOverlay = useCallback(
-    async (uuid: string, on: boolean) => {
-      await nativeOperations.toggleOverlay(port, { uuid, on });
+    async (uuid: UUID) => {
+      await enableDataOverlay(port, uuid);
     },
     [port]
   );
+
+  const hideOverlay = useCallback(async () => {
+    await disableOverlay(port);
+  }, [port]);
 
   return (
     <ListGroup.Item
       active={item.uuid === activeElement}
       key={`dynamic-${item.uuid}`}
-      onMouseEnter={async () => showOverlay(item.uuid, true)}
-      onMouseLeave={async () => showOverlay(item.uuid, false)}
+      onMouseEnter={async () => showOverlay(item.uuid)}
+      onMouseLeave={async () => hideOverlay()}
       onClick={() => dispatch(actions.selectElement(item.uuid))}
       style={{ cursor: "pointer" }}
     >

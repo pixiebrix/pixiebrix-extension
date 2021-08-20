@@ -16,8 +16,8 @@
  */
 
 .CategoryCard {
-  height: 4rem;
   width: 150px;
+  align-self: stretch;
 
   &:not(:first-child) {
     margin-left: 1rem;
@@ -36,6 +36,9 @@
 
   .card-body {
     padding: 0.875rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 
   &__title {

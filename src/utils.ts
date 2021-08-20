@@ -34,6 +34,7 @@ import {
   pickBy,
 } from "lodash";
 import { Primitive } from "type-fest";
+import { getErrorMessage } from "@/errors";
 
 export function mostCommonElement<T>(items: T[]): T {
   // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
@@ -41,7 +42,7 @@ export function mostCommonElement<T>(items: T[]): T {
 }
 
 export function isGetter(obj: object, prop: string): boolean {
-  return !!Object.getOwnPropertyDescriptor(obj, prop)?.["get"];
+  return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
 }
 
 /**
@@ -63,8 +64,21 @@ export function getAllPropertyNames(obj: object): string[] {
 
 export async function waitAnimationFrame(): Promise<void> {
   return new Promise((resolve) => {
-    window.requestAnimationFrame(() => resolve());
+    window.requestAnimationFrame(() => {
+      resolve();
+    });
   });
+}
+
+/**
+ * Returns a new object with all the values from the original resolved
+ */
+export async function resolveObj<T>(
+  obj: Record<string, Promise<T>>
+): Promise<Record<string, T>> {
+  return fromPairs(
+    await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
+  );
 }
 
 /**
@@ -76,16 +90,17 @@ export async function asyncMapValues<T, TResult>(
 ): Promise<{ [K in keyof T]: TResult }> {
   const entries = Object.entries(mapping);
   const values = await Promise.all(
-    entries.map(([key, value]) => func(value, key, mapping))
+    entries.map(async ([key, value]) => func(value, key, mapping))
   );
   return fromPairs(
     zip(entries, values).map(([[key], value]) => [key, value])
   ) as any;
 }
 
-export const sleep = (milliseconds: number): Promise<void> => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
+export const sleep = async (milliseconds: number): Promise<void> =>
+  new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
 
 export class TimeoutError extends Error {
   constructor(message: string) {
@@ -114,6 +129,7 @@ export async function awaitValue<T>(
       return value;
     }
 
+    // eslint-disable-next-line no-await-in-loop -- intentionally blocking the loop
     await sleep(retryMillis);
   } while (Date.now() - start < waitMillis);
 
@@ -165,13 +181,15 @@ export function boolean(value: unknown): boolean {
   return false;
 }
 
-export function clone<T extends {}>(object: T): T {
+export function clone<T extends Record<string, unknown>>(object: T): T {
   return Object.assign(Object.create(null), object);
 }
 
-export function clearObject(obj: { [key: string]: unknown }): void {
+export function clearObject(obj: Record<string, unknown>): void {
   for (const member in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, member)) {
+      // Checking to ensure own property
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,security/detect-object-injection
       delete obj[member];
     }
   }
@@ -194,12 +212,10 @@ export function cleanValue(
   depth?: number
 ): unknown[];
 export function cleanValue(
-  value: {
-    [key: string]: unknown;
-  },
+  value: Record<string, unknown>,
   maxDepth?: number,
   depth?: number
-): { [key: string]: unknown };
+): Record<string, unknown>;
 export function cleanValue(
   value: unknown,
   maxDepth?: number,
@@ -213,7 +229,7 @@ export function cleanValue(value: unknown, maxDepth = 5, depth = 0): unknown {
   }
 
   if (Array.isArray(value)) {
-    return value.map(recurse);
+    return value.map((x) => recurse(x));
   }
 
   if (typeof value === "object" && value != null) {
@@ -249,11 +265,20 @@ export interface ReadProxy {
 
 export const noopProxy: ReadProxy = {
   toJS: identity,
-  get: (value, prop) => (value as any)[prop],
+  get: (value, prop) => {
+    if (
+      typeof value === "object" &&
+      Object.prototype.hasOwnProperty.call(value, prop)
+    ) {
+      // Checking visibility of the property above
+      // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-explicit-any
+      return (value as any)[prop];
+    }
+  },
 };
 
 export function getPropByPath(
-  obj: { [prop: string]: unknown },
+  obj: Record<string, unknown>,
   path: string,
   {
     args = {},
@@ -303,7 +328,9 @@ export function getPropByPath(
       try {
         value = value.apply(previous, args);
       } catch (error: unknown) {
-        throw new Error(`Error running method ${part}: ${error}`);
+        throw new Error(
+          `Error running method ${part}: ${getErrorMessage(error)}`
+        );
       }
     }
   }
@@ -316,11 +343,7 @@ export function isNullOrBlank(value: unknown): boolean {
     return true;
   }
 
-  if (typeof value === "string" && value.trim() === "") {
-    return true;
-  }
-
-  return false;
+  return typeof value === "string" && value.trim() === "";
 }
 
 export class PromiseCancelled extends Error {
@@ -360,4 +383,19 @@ export function evaluableFunction(
   function_: (...parameters: unknown[]) => unknown
 ): string {
   return "(" + function_.toString() + ")()";
+}
+
+/**
+ * Lift a unary function to pass through null/undefined.
+ */
+export function optional<T extends (arg: unknown) => unknown>(
+  func: T
+): (arg: null | Parameters<T>[0]) => ReturnType<T> | null {
+  return (arg: Parameters<T>[0]) => {
+    if (arg == null) {
+      return null;
+    }
+
+    return func(arg) as ReturnType<T>;
+  };
 }

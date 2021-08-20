@@ -17,17 +17,18 @@
 
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { IExtension, IExtensionPoint, ServiceAuthPair } from "@/core";
-import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
+import {
+  ExtensionPointConfig,
+  RecipeDefinition,
+  ResolvedExtensionPointConfig,
+} from "@/types/definitions";
 import { Permissions } from "webextension-polyfill-ts";
-import { castArray, compact, groupBy, sortBy, uniq } from "lodash";
+import { castArray, compact, uniq } from "lodash";
 import { locator } from "@/background/locator";
 import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
-import {
-  distinctPermissions,
-  mergePermissions,
-  requestPermissions,
-} from "@/utils/permissions";
+import { mergePermissions, requestPermissions } from "@/utils/permissions";
 import { Deployment } from "@/types/contract";
+import { resolveDefinitions, resolveRecipe } from "@/registry/internal";
 
 // Copied from the permissions section of manifest.json
 const MANDATORY_PERMISSIONS = new Set([
@@ -58,6 +59,10 @@ export async function ensureAllPermissions(
 function normalizeOptionalPermissions(
   permissions: Permissions.Permissions
 ): Required<Permissions.Permissions> {
+  if (permissions == null) {
+    return { origins: [], permissions: [] };
+  }
+
   return {
     origins: uniq(castArray(permissions.origins ?? [])),
     permissions: uniq(
@@ -87,14 +92,14 @@ export async function deploymentPermissions(
 export async function blueprintPermissions(
   blueprint: RecipeDefinition
 ): Promise<Permissions.Permissions> {
-  const permissions = await collectPermissions(blueprint.extensionPoints, []);
-  return mergePermissions(permissions);
+  const resolved = await resolveRecipe(blueprint, blueprint.extensionPoints);
+  return collectPermissions(resolved, []);
 }
 
 export async function collectPermissions(
-  extensionPoints: ExtensionPointConfig[],
+  extensionPoints: ResolvedExtensionPointConfig[],
   serviceAuths: ServiceAuthPair[]
-): Promise<Permissions.Permissions[]> {
+): Promise<Permissions.Permissions> {
   const servicePromises = serviceAuths.map(async (serviceAuth) =>
     serviceOriginPermissions(serviceAuth)
   );
@@ -121,6 +126,7 @@ export async function collectPermissions(
           config,
         });
       }
+
       return mergePermissions([extensionPoint.permissions, permissions, inner]);
     }
   );
@@ -130,7 +136,7 @@ export async function collectPermissions(
     ...extensionPointPromises,
   ]);
 
-  return distinctPermissions(permissionsList);
+  return mergePermissions(permissionsList);
 }
 
 /**
@@ -189,50 +195,24 @@ export async function extensionPermissions(
     includeServices: true,
     ...options,
   };
+  const resolved = await resolveDefinitions(extension);
   const extensionPoint =
     opts.extensionPoint ??
-    (await extensionPointRegistry.lookup(extension.extensionPointId));
+    (await extensionPointRegistry.lookup(resolved.extensionPointId));
   const services = await Promise.all(
-    extension.services
+    resolved.services
       .filter((x) => x.config)
       .map(async (x) =>
         serviceOriginPermissions({ id: x.id, config: x.config })
       )
   );
-  const blocks = await extensionPoint.getBlocks(extension);
+  const blocks = await extensionPoint.getBlocks(resolved);
   const blockPermissions = blocks.map((x) => x.permissions);
   return mergePermissions(
-    distinctPermissions(
-      compact([
-        opts.includeExtensionPoint ? extensionPoint.permissions : null,
-        ...(opts.includeServices ? services : []),
-        ...blockPermissions,
-      ])
-    )
+    compact([
+      opts.includeExtensionPoint ? extensionPoint.permissions : null,
+      ...(opts.includeServices ? services : []),
+      ...blockPermissions,
+    ])
   );
-}
-
-/**
- * Return permissions grouped by origin.
- * @deprecated The logic of grouping permissions by origin doesn't actually make sense as we don't currently have any
- * way to enforce permissions on a per-origin basis. https://github.com/pixiebrix/pixiebrix-extension/pull/828#discussion_r671703130
- */
-export function originPermissions(
-  permissions: Permissions.Permissions[]
-): Permissions.Permissions[] {
-  const perms = permissions.flatMap((perm) =>
-    perm.origins.map((origin) => ({
-      origins: [origin],
-      permissions: perm.permissions,
-    }))
-  );
-
-  const grouped = Object.entries(groupBy(perms, (x) => x.origins[0])).map(
-    ([origin, xs]) => ({
-      origins: [origin],
-      permissions: uniq(xs.flatMap((x) => x.permissions)),
-    })
-  );
-
-  return sortBy(grouped, (x) => x.origins[0]);
 }

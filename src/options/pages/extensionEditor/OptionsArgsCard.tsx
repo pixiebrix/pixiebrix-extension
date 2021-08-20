@@ -18,13 +18,13 @@
 import React from "react";
 
 import { useField } from "formik";
-import { OptionsArgs } from "@/core";
+import { UserOptions } from "@/core";
 import { Card, Table } from "react-bootstrap";
 
 const OptionsArgsCard: React.FunctionComponent<{
   name: string;
 }> = (props) => {
-  const [field] = useField<OptionsArgs>(props);
+  const [field] = useField<UserOptions>(props);
 
   return (
     <div className="OptionsArgsCard">

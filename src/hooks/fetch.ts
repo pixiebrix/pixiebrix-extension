@@ -16,18 +16,16 @@
  */
 
 import { useState } from "react";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
 import { useToasts } from "react-toast-notifications";
-import { isExtensionContext } from "@/chrome";
+import { isExtensionContext } from "webext-detect-page";
 import { getExtensionToken } from "@/auth/token";
 
 export function isAbsoluteURL(url: string): boolean {
-  // We're testing if a URL is absolute here, not creating a URL to call
-  // noinspection HttpUrlsUsage
-  return url.indexOf("http://") === 0 || url.indexOf("https://") === 0;
+  return /^https?:\/\//.test(url);
 }
 
 export async function makeURL(relativeOrAbsoluteUrl: string): Promise<string> {
@@ -42,7 +40,7 @@ export function joinURL(host: string, relativeUrl: string): string {
   return `${cleanHost}/${cleanPath}`;
 }
 
-export async function fetch<TData>(
+export async function fetch<TData = unknown>(
   relativeOrAbsoluteUrl: string
 ): Promise<TData> {
   const absolute = isAbsoluteURL(relativeOrAbsoluteUrl);
@@ -91,7 +89,7 @@ export function useFetch<TData>(
         // eslint-disable-next-line unicorn/no-useless-undefined -- TypeScript requires argument here
         setData(undefined);
         try {
-          const data = (await fetch(relativeOrAbsoluteUrl)) as TData;
+          const data: TData = await fetch(relativeOrAbsoluteUrl);
           if (!isMounted()) return;
           setData(data);
         } catch (error: unknown) {

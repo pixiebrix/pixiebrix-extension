@@ -31,54 +31,56 @@ import Fuse from "fuse.js";
 import { isEmpty, sortBy } from "lodash";
 import copy from "copy-to-clipboard";
 import { BlockType, getType } from "@/blocks/util";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
 import "./BrickReference.scss";
-import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
 import GridLoader from "react-spinners/GridLoader";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
 
 export type ReferenceEntry = IBlock | IExtensionPoint | IService;
 
 const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
   children,
-}) => {
-  return (
-    <div className="my-4">
-      <div className="font-weight-bold">{title}</div>
-      <div className="py-2">{children}</div>
-    </div>
-  );
-};
+}) => (
+  <div className="my-4">
+    <div className="font-weight-bold">{title}</div>
+    <div className="py-2">{children}</div>
+  </div>
+);
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
-  if (schema.type === "object") {
-    for (const [prop, value] of Object.entries(schema.properties)) {
-      if (typeof value !== "boolean") {
-        result += `# ${prop}: ${value.type} (${
-          schema.required.includes(prop) ? "required" : "optional"
-        })\n`;
-        if (value.description) {
-          for (const line of value.description.split("\n")) {
-            result += `# ${line} \n`;
-          }
-        }
+  if (schema.type !== "object") {
+    return result;
+  }
 
-        if (value.enum) {
-          result += "# valid values:\n";
-          for (const line of value.enum) {
-            result += `# - ${line} \n`;
-          }
-        }
+  for (const [prop, value] of Object.entries(schema.properties)) {
+    if (typeof value === "boolean") {
+      continue;
+    }
 
-        result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
+    result += `# ${prop}: ${value.type} (${
+      schema.required.includes(prop) ? "required" : "optional"
+    })\n`;
+    if (value.description) {
+      for (const line of value.description.split("\n")) {
+        result += `# ${line} \n`;
       }
     }
+
+    if (value.enum) {
+      result += "# valid values:\n";
+      for (const line of value.enum) {
+        result += `# - ${line} \n`;
+      }
+    }
+
+    result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
   }
 
   return result;
@@ -105,7 +107,9 @@ const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
       </DetailSection>
 
       <DetailSection title="Input Schema">
-        {!isEmpty(schema) ? (
+        {isEmpty(schema) ? (
+          <div className="text-muted">No input schema provided</div>
+        ) : (
           <div>
             <Button
               className="p-0"
@@ -129,17 +133,15 @@ const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
             </Button>
             <SchemaTree schema={schema} />
           </div>
-        ) : (
-          <div className="text-muted">No input schema provided</div>
         )}
       </DetailSection>
 
       {"outputSchema" in brick && (
         <DetailSection title="Output Schema">
-          {!isEmpty(brick.outputSchema) ? (
-            <SchemaTree schema={brick.outputSchema} />
-          ) : (
+          {isEmpty(brick.outputSchema) ? (
             <div className="text-muted">No output schema provided</div>
+          ) : (
+            <SchemaTree schema={brick.outputSchema} />
           )}
         </DetailSection>
       )}
@@ -194,13 +196,15 @@ const BrickReference: React.FunctionComponent<{
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ReferenceEntry>(initialSelected);
 
-  const sortedBlocks = useMemo(() => {
-    return sortBy(
-      blocks ?? [],
-      (x) => (isOfficial(x) ? 0 : 1),
-      (x) => x.name
-    );
-  }, [blocks]);
+  const sortedBlocks = useMemo(
+    () =>
+      sortBy(
+        blocks ?? [],
+        (x) => (isOfficial(x) ? 0 : 1),
+        (x) => x.name
+      ),
+    [blocks]
+  );
 
   useEffect(() => {
     if (sortedBlocks.length > 0 && selected == null) {
@@ -208,12 +212,14 @@ const BrickReference: React.FunctionComponent<{
     }
   }, [sortedBlocks, selected, setSelected]);
 
-  const fuse: Fuse<IBlock | IService> = useMemo(() => {
-    return new Fuse(sortedBlocks, {
-      // Prefer name, then id
-      keys: ["name", "id"],
-    });
-  }, [sortedBlocks]);
+  const fuse: Fuse<IBlock | IService> = useMemo(
+    () =>
+      new Fuse(sortedBlocks, {
+        // Prefer name, then id
+        keys: ["name", "id"],
+      }),
+    [sortedBlocks]
+  );
 
   const results = useMemo(() => {
     let matches =
@@ -241,7 +247,9 @@ const BrickReference: React.FunctionComponent<{
               id="query"
               placeholder="Start typing to find results"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </InputGroup>
           <div className="overflow-auto h-100">
@@ -251,7 +259,9 @@ const BrickReference: React.FunctionComponent<{
                   key={result.id}
                   block={result}
                   active={selected?.id === result.id}
-                  onSelect={() => setSelected(result)}
+                  onSelect={() => {
+                    setSelected(result);
+                  }}
                 />
               ))}
             </ListGroup>

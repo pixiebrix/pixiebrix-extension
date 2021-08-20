@@ -26,12 +26,15 @@ import { WizardValues } from "@/options/pages/marketplace/wizard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { ServiceAuthPair } from "@/core";
+import { RegistryId, ServiceAuthPair, UUID } from "@/core";
 
 export function selectedAuths(values: WizardValues): ServiceAuthPair[] {
-  return Object.entries(values.services)
-    .filter(([, config]) => config)
-    .map(([id, config]) => ({ id, config }));
+  return (
+    Object.entries(values.services)
+      .filter(([, config]) => config)
+      // We lose type information when using Object.entries
+      .map(([id, config]) => ({ id: id as RegistryId, config: config as UUID }))
+  );
 }
 
 export function selectedExtensions(
@@ -97,52 +100,50 @@ interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
-const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  return (
-    <>
-      <Card.Body className="p-3">
-        <h3 className="pb-1 mb-0">{blueprint.metadata.name}</h3>
-        <code className="p-0 small">{blueprint.metadata.id}</code>
-        <div className="pt-3">
-          <p>
-            {blueprint.metadata.description ?? (
-              <span>
-                <i>No description provided</i>
-              </span>
-            )}
-          </p>
-        </div>
-      </Card.Body>
-
-      <Card.Body className="px-3 py-0">
-        <p className="text-info">
-          <FontAwesomeIcon icon={faInfoCircle} /> Don&apos;t know which bricks
-          to select? Don&apos;t worry! &mdash; you can de-activate bricks at any
-          time on the{" "}
-          <Link to="/installed">
-            <u>
-              <FontAwesomeIcon icon={faCubes} />
-              {"  "}Active Bricks page
-            </u>
-          </Link>
+const ConfigureBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => (
+  <>
+    <Card.Body className="p-3">
+      <h3 className="pb-1 mb-0">{blueprint.metadata.name}</h3>
+      <code className="p-0 small">{blueprint.metadata.id}</code>
+      <div className="pt-3">
+        <p>
+          {blueprint.metadata.description ?? (
+            <span>
+              <i>No description provided</i>
+            </span>
+          )}
         </p>
-      </Card.Body>
+      </div>
+    </Card.Body>
 
-      <Table>
-        <thead>
-          <tr>
-            <th colSpan={2}>Selected?</th>
-            <th className="w-100">Name/Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {blueprint.extensionPoints.map((x, i) => (
-            <ConfigureRow key={i} definition={x} name={`extensions.${i}`} />
-          ))}
-        </tbody>
-      </Table>
-    </>
-  );
-};
+    <Card.Body className="px-3 py-0">
+      <p className="text-info">
+        <FontAwesomeIcon icon={faInfoCircle} /> Don&apos;t know which bricks to
+        select? Don&apos;t worry! &mdash; you can de-activate bricks at any time
+        on the{" "}
+        <Link to="/installed">
+          <u>
+            <FontAwesomeIcon icon={faCubes} />
+            {"  "}Active Bricks page
+          </u>
+        </Link>
+      </p>
+    </Card.Body>
+
+    <Table>
+      <thead>
+        <tr>
+          <th colSpan={2}>Selected?</th>
+          <th className="w-100">Name/Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {blueprint.extensionPoints.map((x, i) => (
+          <ConfigureRow key={i} definition={x} name={`extensions.${i}`} />
+        ))}
+      </tbody>
+    </Table>
+  </>
+);
 
 export default ConfigureBody;

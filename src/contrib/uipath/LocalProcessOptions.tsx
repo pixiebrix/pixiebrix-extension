@@ -20,7 +20,7 @@ import {
   BlockOptionProps,
   FieldRenderer,
 } from "@/components/fields/blockOptions";
-import { identity } from "lodash";
+import { compact } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/localProcess";
 import { Schema } from "@/core";
 import { useField } from "formik";
@@ -29,8 +29,7 @@ import { Button, Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
-import { openTab } from "@/background/executor";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import {
   getUiPathProcesses,
   initUiPathRobot,
@@ -43,10 +42,11 @@ import {
   InputArgumentsField,
   releaseSchema,
   useReleases,
-} from "@/contrib/uipath/processOptions";
+} from "@/contrib/uipath/ProcessOptions";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
-import { useDependency } from "@/services/hooks";
+import useDependency from "@/services/useDependency";
 import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
+import { getErrorMessage } from "@/errors";
 
 interface Process {
   id: string;
@@ -62,13 +62,15 @@ export const ProcessField: React.FunctionComponent<
 > = ({ label, schema, processes, fetchError, isPending, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
 
-  const options = useMemo(() => {
-    return (processes ?? []).map((x) => ({
-      value: x.id,
-      label: x.name,
-      process: x,
-    }));
-  }, [processes]);
+  const options = useMemo(
+    () =>
+      (processes ?? []).map((x) => ({
+        value: x.id,
+        label: x.name,
+        process: x,
+      })),
+    [processes]
+  );
 
   return (
     <Form.Group>
@@ -76,7 +78,9 @@ export const ProcessField: React.FunctionComponent<
       <Select
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => {
+          helpers.setValue(option.value);
+        }}
       />
       {schema.description && (
         <Form.Text className="text-muted">The UiPath process to run</Form.Text>
@@ -88,7 +92,7 @@ export const ProcessField: React.FunctionComponent<
       )}
       {fetchError && (
         <span className="text-danger small">
-          Error fetching processes: {fetchError.toString()}
+          Error fetching processes: {getErrorMessage(fetchError)}
         </span>
       )}
       {meta.touched && meta.error && (
@@ -120,7 +124,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   showOutputKey,
 }) => {
   const { port } = useContext(DevToolsContext);
-  const basePath = [name, configKey].filter(identity).join(".");
+  const basePath = compact([name, configKey]).join(".");
 
   const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);
 
@@ -154,7 +158,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   }, [port, setConsentCode, setRobotAvailable, setInitError]);
 
   const [processes, processesPending, processesError] = useAsyncState<
-    Array<RobotProcess>
+    RobotProcess[]
   >(async () => {
     if (robotAvailable) {
       return getUiPathProcesses(port);
@@ -163,9 +167,10 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     return [];
   }, [robotAvailable]);
 
-  const process = useMemo(() => {
-    return processes?.find((x) => x.id === releaseKey);
-  }, [processes, releaseKey]);
+  const process = useMemo(() => processes?.find((x) => x.id === releaseKey), [
+    processes,
+    releaseKey,
+  ]);
 
   if (!port) {
     return (
@@ -183,13 +188,9 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         <span className="text-danger">
           UiPath Assistant not found. Don&apos;t have the UiPath Assistant?{" "}
           <a
-            href="#"
-            onClick={async () => {
-              await openTab({
-                url: "https://robotjs.uipath.com/download",
-                active: true,
-              });
-            }}
+            href="https://robotjs.uipath.com/download"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Get it now.
           </a>
@@ -198,9 +199,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     );
   }
 
-  const argumentsName = [name, configKey, "inputArguments"]
-    .filter(identity)
-    .join(".");
+  const argumentsName = compact([name, configKey, "inputArguments"]).join(".");
 
   return (
     <div>
@@ -215,7 +214,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         schema={UIPATH_PROPERTIES.releaseKey as Schema}
         isPending={processesPending}
         processes={processes}
-        fetchError={initError?.toString() ?? processesError?.toString()}
+        fetchError={initError ?? processesError}
       />
 
       {!remoteConfig && (
@@ -241,7 +240,7 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 
       {schemaError && (
         <span className="text-danger">
-          Error fetching input arguments: {schemaError.toString()}
+          Error fetching input arguments: {getErrorMessage(schemaError)}
         </span>
       )}
 

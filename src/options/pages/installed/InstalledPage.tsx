@@ -18,12 +18,12 @@
 import { connect } from "react-redux";
 import React, { useContext, useMemo } from "react";
 import { groupBy, isEmpty, sortBy } from "lodash";
-import { optionsSlice, OptionsState } from "@/options/slices";
-import { PageTitle } from "@/layout/Page";
+import { optionsSlice } from "@/options/slices";
+import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Card, Col, Row, Table } from "react-bootstrap";
-import { ExtensionIdentifier } from "@/core";
+import { ExtensionRef, ResolvedExtension, IExtension } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
@@ -31,28 +31,29 @@ import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import { Dispatch } from "redux";
-import {
-  InstalledExtension,
-  selectInstalledExtensions,
-} from "@/options/selectors";
-import { useTitle } from "@/hooks/title";
+import { selectExtensions } from "@/options/selectors";
 import NoExtensionsPage from "@/options/pages/installed/NoExtensionsPage";
 import RecipeEntry from "@/options/pages/installed/RecipeEntry";
+import { OptionsState } from "@/store/extensions";
+import { useAsyncState } from "@/hooks/common";
+import { resolveDefinitions } from "@/registry/internal";
 
 const { removeExtension } = optionsSlice.actions;
 
-type RemoveAction = (identifier: ExtensionIdentifier) => void;
+type RemoveAction = (identifier: ExtensionRef) => void;
 
 const InstalledTable: React.FunctionComponent<{
-  extensions: InstalledExtension[];
+  extensions: ResolvedExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  const recipeExtensions = useMemo(() => {
-    return sortBy(
-      Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
-      (x) => (x[0] === "" ? 0 : 1)
-    );
-  }, [extensions]);
+  const recipeExtensions = useMemo(
+    () =>
+      sortBy(
+        Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
+        ([recipeId]) => (recipeId === "" ? 0 : 1)
+      ),
+    [extensions]
+  );
 
   return (
     <Row>
@@ -84,17 +85,18 @@ const InstalledTable: React.FunctionComponent<{
 };
 
 const InstalledPage: React.FunctionComponent<{
-  extensions: InstalledExtension[];
+  extensions: IExtension[];
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove }) => {
-  useTitle("Active Bricks");
-
   const { flags } = useContext(AuthContext);
 
-  return (
-    <div>
-      <PageTitle icon={faCubes} title="Active Bricks" />
+  const [resolved] = useAsyncState(
+    async () => Promise.all(extensions.map(async (x) => resolveDefinitions(x))),
+    [extensions]
+  );
 
+  return (
+    <Page title="Active Bricks" icon={faCubes}>
       <Row>
         <Col>
           <div className="pb-4">
@@ -115,7 +117,7 @@ const InstalledPage: React.FunctionComponent<{
                   <>
                     You can find more to activate on the{" "}
                     <Link to={"/templates"}>Templates</Link> page. Or, follow
-                    the
+                    the{" "}
                     <a
                       href="https://docs.pixiebrix.com/quick-start-guide"
                       target="_blank"
@@ -134,24 +136,25 @@ const InstalledPage: React.FunctionComponent<{
       {isEmpty(extensions) ? (
         <NoExtensionsPage />
       ) : (
-        <InstalledTable extensions={extensions} onRemove={onRemove} />
+        <InstalledTable extensions={resolved} onRemove={onRemove} />
       )}
-    </div>
+    </Page>
   );
 };
 
 const mapStateToProps = (state: { options: OptionsState }) => ({
-  extensions: selectInstalledExtensions(state),
+  extensions: selectExtensions(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  onRemove: (ref: ExtensionIdentifier) => {
+  // IntelliJ doesn't detect use in the props
+  onRemove: (ref: ExtensionRef) => {
     reportEvent("ExtensionRemove", {
       extensionId: ref.extensionId,
     });
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension(ref));
-    // TODO: also remove remove side panel panels that are already open?
+    // XXX: also remove remove side panel panels that are already open?
     void uninstallContextMenu(ref).catch((error) => {
       reportError(error);
     });

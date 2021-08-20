@@ -18,7 +18,7 @@
 import React, { useCallback, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { DevToolsContext } from "@/devTools/context";
-import { getTabInfo, showBrowserActionPanel } from "@/background/devtools";
+import { showBrowserActionPanel } from "@/background/devtools";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import Centered from "@/devTools/editor/components/Centered";
 import { Button } from "react-bootstrap";
@@ -33,6 +33,7 @@ import { reportEvent } from "@/telemetry/events";
 import * as nativeOperations from "@/background/devtools";
 import { useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
+import { getCurrentURL } from "@/devTools/utils";
 
 const { addElement } = editorSlice.actions;
 
@@ -80,7 +81,7 @@ const GenericInsertPane: React.FunctionComponent<{
   const addExisting = useCallback(
     async (extensionPoint) => {
       try {
-        const { url } = await getTabInfo(port);
+        const url = await getCurrentURL();
         await start(
           (await config.fromExtensionPoint(
             url,
@@ -100,7 +101,7 @@ const GenericInsertPane: React.FunctionComponent<{
 
   const addNew = useCallback(async () => {
     try {
-      const { url } = await getTabInfo(port);
+      const url = await getCurrentURL();
 
       const metadata = await generateExtensionPointMetadata(
         config.label,
@@ -110,12 +111,7 @@ const GenericInsertPane: React.FunctionComponent<{
       );
 
       await start(
-        (await config.fromNativeElement(
-          url,
-          metadata,
-          undefined,
-          []
-        )) as FormState
+        config.fromNativeElement(url, metadata, undefined, []) as FormState
       );
     } catch (error: unknown) {
       reportError(error);
@@ -129,7 +125,7 @@ const GenericInsertPane: React.FunctionComponent<{
   const extensionPoints = useAvailableExtensionPoints(config.baseClass);
 
   return (
-    <Centered>
+    <Centered isScrollable>
       <div className="PaneTitle">Add {config.label}</div>
       <div className="text-left">{config.insertModeHelp}</div>
       <div>

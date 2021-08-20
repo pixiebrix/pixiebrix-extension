@@ -14,27 +14,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* eslint-disable import/export -- These are overrides, it's on purpose */
 
-import { useState } from "react";
-import useAsyncEffect from "use-async-effect";
-import fetchSVG from "@/icons/svgElementFromUrl";
+// The node_modules path is to avoid self-references due to webpack alias to this file
+export * from "../../node_modules/webext-detect-page";
 
-function useSvg(logoUrl: string): string {
-  const [logo, setLogo] = useState("");
-
-  useAsyncEffect(
-    async (isMounted) => {
-      const $icon = await fetchSVG(logoUrl);
-      if (!isMounted()) {
-        return;
-      }
-
-      setLogo($icon.get(0).outerHTML);
-    },
-    [setLogo]
-  );
-
-  return logo;
+export function isExtensionContext() {
+  // Enables static analysis and removal of dead code
+  return true;
 }
-
-export default useSvg;

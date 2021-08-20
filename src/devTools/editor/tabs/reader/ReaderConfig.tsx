@@ -24,8 +24,7 @@ import { Alert, Col, Form, Row } from "react-bootstrap";
 import Select from "react-select";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
-import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import { runReader } from "@/background/devtools";
 import { jsonTreeTheme as theme } from "@/themes/light";
@@ -38,16 +37,22 @@ import {
   RendererContext,
 } from "@/components/fields/blockOptions";
 import devtoolFields from "@/devTools/editor/fields/Fields";
-// @ts-ignore: no type definitions?
+// @ts-expect-error no type definitions?
 import GenerateSchema from "generate-schema";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
+import type { ReadOptions } from "@/pageScript/protocol";
+import { Primitive } from "type-fest";
 
-type ReaderSelector = (options: {
-  type: string;
-  [prop: string]: unknown;
-}) => ReaderTypeConfig;
+type ReaderSelector = (
+  options: ReadOptions & {
+    type: string;
+    // `selectors` is JQuery-reader only
+    selectors?: Record<string, string>;
+  }
+) => ReaderTypeConfig;
 
 type FrameworkOption = {
   value: Framework;
@@ -59,7 +64,17 @@ type FrameworkOption = {
 export const defaultSelector: ReaderSelector = partial(
   pick,
   partial.placeholder,
-  ["type", "selector", "traverseUp", "optional"]
+  // Should be kept in sync with ReadOptions, otherwise behavior will differ between running a brick in the devtools
+  // vs. running a brick in the normal application
+  [
+    "type",
+    "pathSpec",
+    "waitMillis",
+    "retryMillis",
+    "selector",
+    "traverseUp",
+    "optional",
+  ]
 ) as ReaderSelector;
 
 export const readerOptions: FrameworkOption[] = [
@@ -117,12 +132,14 @@ const FrameworkSelector: React.FunctionComponent<{
     <Select
       options={frameworkOptions}
       value={frameworkOptions.find((x) => x.value === field.value)}
-      onChange={(option: FrameworkOption) => helpers.setValue(option.value)}
+      onChange={(option: FrameworkOption) => {
+        helpers.setValue(option.value);
+      }}
     />
   );
 };
 
-function normalize(value: unknown): string {
+function normalize(value: Primitive): string {
   return value.toString().toLowerCase();
 }
 
@@ -150,59 +167,57 @@ export function searchData(query: string, data: unknown): unknown {
     return compact(data.map(partial(searchData, query)));
   }
 
-  return normalize(data).includes(normalized) ? data : undefined;
+  return normalize(data as Primitive).includes(normalized) ? data : undefined;
 }
 
 const FrameworkFields: React.FunctionComponent<{
   name: string;
   element: FormState;
-}> = ({ element, name }) => {
-  return (
-    <>
-      <Form.Group as={Row} controlId="readerSelector">
-        <Form.Label column sm={2}>
-          Selector
-        </Form.Label>
-        <Col sm={10}>
-          <SelectorSelectorField
-            isClearable
-            name={`${name}.definition.selector`}
-            initialElement={
-              "containerInfo" in element ? element.containerInfo : null
-            }
-            traverseUp={5}
-          />
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="readerOptional">
-        <Form.Label column sm={2}>
-          Optional
-        </Form.Label>
-        <Col sm={10}>
-          <ToggleField name={`${name}.definition.optional`} />
-          <Form.Text className="text-muted">
-            Toggle on if the selector might not always be available
-          </Form.Text>
-        </Col>
-      </Form.Group>
-      <Form.Group as={Row} controlId="readerTraverseUp">
-        <Form.Label column sm={2}>
-          Traverse Up
-        </Form.Label>
-        <Col sm={10}>
-          <Field name={`${name}.definition.traverseUp`}>
-            {({ field }: { field: FieldInputProps<number> }) => (
-              <Form.Control type="number" {...field} min={0} max={10} />
-            )}
-          </Field>
-          <Form.Text className="text-muted">
-            Traverse non-visible framework elements
-          </Form.Text>
-        </Col>
-      </Form.Group>
-    </>
-  );
-};
+}> = ({ element, name }) => (
+  <>
+    <Form.Group as={Row} controlId="readerSelector">
+      <Form.Label column sm={2}>
+        Selector
+      </Form.Label>
+      <Col sm={10}>
+        <SelectorSelectorField
+          isClearable
+          name={`${name}.definition.selector`}
+          initialElement={
+            "containerInfo" in element ? element.containerInfo : null
+          }
+          traverseUp={5}
+        />
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row} controlId="readerOptional">
+      <Form.Label column sm={2}>
+        Optional
+      </Form.Label>
+      <Col sm={10}>
+        <ToggleField name={`${name}.definition.optional`} />
+        <Form.Text className="text-muted">
+          Toggle on if the selector might not always be available
+        </Form.Text>
+      </Col>
+    </Form.Group>
+    <Form.Group as={Row} controlId="readerTraverseUp">
+      <Form.Label column sm={2}>
+        Traverse Up
+      </Form.Label>
+      <Col sm={10}>
+        <Field name={`${name}.definition.traverseUp`}>
+          {({ field }: { field: FieldInputProps<number> }) => (
+            <Form.Control type="number" {...field} min={0} max={10} />
+          )}
+        </Field>
+        <Form.Text className="text-muted">
+          Traverse non-visible framework elements
+        </Form.Text>
+      </Col>
+    </Form.Group>
+  </>
+);
 
 const JQUERY_FIELD_SCHEMA: Schema = {
   type: "object",
@@ -382,7 +397,9 @@ const ReaderConfig: React.FunctionComponent<{
             <Form.Control
               type="text"
               placeholder="Search for a property or value"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </Col>
         </Form.Group>
@@ -393,7 +410,7 @@ const ReaderConfig: React.FunctionComponent<{
               {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
             </span>
             <div className="overflow-auto h-100 w-100">
-              {available === false && (
+              {!available && (
                 <span className="text-danger">
                   Extension not available on page
                 </span>
@@ -486,7 +503,9 @@ const ReaderConfig: React.FunctionComponent<{
             <Form.Control
               type="text"
               placeholder="Search for a property or value"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </Col>
         </Form.Group>
@@ -503,7 +522,7 @@ const ReaderConfig: React.FunctionComponent<{
                 {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
               </span>
               <div className="overflow-auto h-100 w-100">
-                {available === false && (
+                {!available && (
                   <span className="text-danger">
                     Extension not available on page
                   </span>

@@ -18,6 +18,7 @@
 import { Renderer } from "@/types";
 import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
+import { browser } from "webextension-polyfill-ts";
 
 export class IFrameRenderer extends Renderer {
   constructor() {
@@ -67,7 +68,7 @@ export class IFrameRenderer extends Renderer {
     }
 
     // https://transitory.technology/browser-extensions-and-csp-headers/
-    const frameSrc = chrome.extension.getURL("frame.html");
+    const frameSrc = browser.runtime.getURL("frame.html");
     const src = `${frameSrc}?url=${encodeURIComponent(url)}`;
     return `<iframe src="${src}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`;
   }

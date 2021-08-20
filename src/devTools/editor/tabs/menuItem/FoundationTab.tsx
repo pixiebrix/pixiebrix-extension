@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import {
   FastField,
   Field,
@@ -29,69 +23,29 @@ import {
   useField,
   useFormikContext,
 } from "formik";
-import { Alert, Button, Col, Form, Row, Tab } from "react-bootstrap";
+import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
-import * as nativeOperations from "@/background/devtools";
-import { DevToolsContext } from "@/devTools/context";
-import { reportError } from "@/telemetry/logging";
 import { ActionFormState } from "@/devTools/editor/extensionPoints/menuItem";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;
   editable: Set<string>;
 }> = ({ eventKey = "foundation", editable }) => {
-  const [containerInfoField, , containerInfoHelpers] = useField(
-    "containerInfo"
-  );
-  const [dragging, setDragging] = useState(false);
-  const { port } = useContext(DevToolsContext);
-  const { values, setFieldValue } = useFormikContext<ActionFormState>();
+  const [containerInfoField] = useField("containerInfo");
+
+  const { values } = useFormikContext<ActionFormState>();
   const templateInput = useRef<HTMLTextAreaElement>(null);
 
-  const toggle = useCallback(async () => {
-    setDragging(true);
-    try {
-      const dragResult = await nativeOperations.dragButton(port, {
-        uuid: values.uuid,
-      });
-      if (dragResult) {
-        const { target, sibling } = dragResult;
-        containerInfoHelpers.setValue(target);
-        setFieldValue(
-          "extensionPoint.definition.containerSelector",
-          target.selectors[0],
-          false
-        );
-        setFieldValue(
-          "extensionPoint.definition.position",
-          {
-            sibling: sibling?.[0],
-          },
-          true
-        );
-      }
-    } catch (error: unknown) {
-      // Can continue, because it won't have any effect on the form values, so the user can just try again
-      // noinspection ES6MissingAwait
-      reportError(error);
-    } finally {
-      setDragging(false);
-    }
-  }, [values.uuid, port, setDragging]);
+  const insertSnippet = useCallback((snippet) => {
+    const { current } = templateInput;
+    const pos = current.selectionStart;
+    current.setRangeText(snippet, pos, pos);
+    current.focus();
 
-  const insertSnippet = useCallback(
-    (snippet) => {
-      const { current } = templateInput;
-      const pos = current.selectionStart;
-      current.setRangeText(snippet, pos, pos);
-      current.focus();
-
-      // Trigger a DOM 'input' event
-      const event = new Event("input", { bubbles: true });
-      current.dispatchEvent(event);
-    },
-    [templateInput.current]
-  );
+    // Trigger a DOM 'input' event
+    const event = new Event("input", { bubbles: true });
+    current.dispatchEvent(event);
+  }, []);
 
   const locked = useMemo(
     () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
@@ -150,18 +104,6 @@ const FoundationTab: React.FunctionComponent<{
           </FastField>
         </Col>
       </Form.Group>
-
-      <Form.Group as={Row} controlId="formContainerSelector">
-        <Form.Label column sm={2}>
-          Drag and Drop
-        </Form.Label>
-        <Col sm={10}>
-          <Button variant="info" disabled={dragging} onClick={toggle}>
-            Drag and Drop
-          </Button>
-        </Col>
-      </Form.Group>
-
       <Form.Group as={Row} controlId="formContainerSelector">
         <Form.Label column sm={2}>
           Container Selector

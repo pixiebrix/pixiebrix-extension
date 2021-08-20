@@ -33,7 +33,9 @@ export function hideOverlay(): void {
 
 let _cancelSelect: () => void = null;
 
-export function userSelectElement(root?: HTMLElement): Promise<HTMLElement[]> {
+export async function userSelectElement(
+  root?: HTMLElement
+): Promise<HTMLElement[]> {
   return new Promise<HTMLElement[]>((resolve, reject) => {
     const targets: HTMLElement[] = [];
 

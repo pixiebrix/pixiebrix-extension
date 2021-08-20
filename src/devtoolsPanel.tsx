@@ -21,18 +21,18 @@ import React from "react";
 import Panel from "@/devTools/Panel";
 
 import "bootstrap/dist/css/bootstrap.min.css";
-import "vendors/overrides.scss";
+import "@/vendors/overrides.scss";
 import "@/devTools/Panel.scss";
 import { reportError } from "@/telemetry/logging";
 
 import initGoogle from "@/contrib/google/initGoogle";
 
-window.addEventListener("error", function (e) {
+window.addEventListener("error", (e) => {
   reportError(e);
   return false;
 });
 
-window.addEventListener("unhandledrejection", function (e) {
+window.addEventListener("unhandledrejection", (e) => {
   reportError(e);
 });
 

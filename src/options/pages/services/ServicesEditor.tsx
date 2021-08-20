@@ -164,13 +164,21 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
           across bricks
         </p>
       </div>
-      {showZapier && <ZapierModal onClose={() => navigate("/services")} />}
+      {showZapier && (
+        <ZapierModal
+          onClose={() => {
+            navigate("/services");
+          }}
+        />
+      )}
       {activeConfiguration && activeService && (
         <ServiceEditorModal
           configuration={activeConfiguration}
           service={activeService}
           onDelete={handleDelete}
-          onClose={() => navigate("/services")}
+          onClose={() => {
+            navigate("/services");
+          }}
           onSave={handleSave}
         />
       )}
@@ -186,7 +194,9 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
               <Nav
                 variant="tabs"
                 defaultActiveKey={activeTab}
-                onSelect={(x: string) => setTab(x)}
+                onSelect={(x: string) => {
+                  setTab(x);
+                }}
               >
                 <Nav.Item>
                   <Nav.Link eventKey="private">

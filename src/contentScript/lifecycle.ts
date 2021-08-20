@@ -17,7 +17,7 @@
 
 import { loadOptions } from "@/options/loader";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { IExtensionPoint } from "@/core";
+import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
 import {
   liftContentScript,
   notifyContentScripts,
@@ -28,13 +28,17 @@ import { PromiseCancelled, sleep } from "@/utils";
 import { NAVIGATION_RULES } from "@/contrib/navigationRules";
 import { testMatchPatterns } from "@/blocks/available";
 import { reportError } from "@/telemetry/logging";
+import { browser } from "webextension-polyfill-ts";
+import { groupBy } from "lodash";
+import { resolveDefinitions } from "@/registry/internal";
 
-let _scriptPromise: Promise<void>;
-const _dynamic: Map<string, IExtensionPoint> = new Map();
+let _scriptPromise: Promise<void> | undefined;
+const _dynamic: Map<UUID, IExtensionPoint> = new Map();
 const _frameHref: Map<number, string> = new Map();
 let _extensionPoints: IExtensionPoint[];
 let _navSequence = 1;
 const _installedExtensionPoints: IExtensionPoint[] = [];
+
 // Reload extension definitions on next navigation
 let _reloadOnNextNavigate = false;
 
@@ -43,13 +47,13 @@ const WAIT_LOADED_INTERVAL_MS = 25;
 async function installScriptOnce(): Promise<void> {
   // https://stackoverflow.com/questions/9515704/insert-code-into-the-page-context-using-a-content-script/9517879#9517879
   // https://stackoverflow.com/questions/9602022/chrome-extension-retrieving-global-variable-from-webpage
-  if (!_scriptPromise) {
+  if (_scriptPromise == null) {
     console.debug("Installing page script");
     _scriptPromise = new Promise((resolve) => {
       const script = document.createElement("script");
-      script.src = chrome.extension.getURL("script.js");
+      script.src = browser.runtime.getURL("script.js");
       (document.head || document.documentElement).append(script);
-      script.addEventListener("load", function () {
+      script.addEventListener("load", () => {
         script.remove();
         console.debug("Installed page script");
         resolve();
@@ -99,11 +103,11 @@ async function runExtensionPoint(
   await extensionPoint.run();
 }
 
-export function getInstalledIds(): string[] {
+export function getInstalledIds(): RegistryId[] {
   return _installedExtensionPoints.map((x) => x.id);
 }
 
-function markUninstalled(id: string) {
+function markUninstalled(id: RegistryId) {
   // Remove from _installedExtensionPoints so they'll be re-added on a call to loadExtensions
   const index = _installedExtensionPoints.findIndex((x) => x.id === id);
   if (index >= 0) {
@@ -123,7 +127,7 @@ function markUninstalled(id: string) {
  *
  * @param extensionId the uuid of the dynamic extension, or undefined to clear all dynamic extensions
  */
-export function clearDynamic(extensionId?: string): void {
+export function clearDynamic(extensionId?: UUID): void {
   if (extensionId) {
     if (_dynamic.has(extensionId)) {
       console.debug(`clearDynamic: ${extensionId}`);
@@ -145,6 +149,7 @@ export function clearDynamic(extensionId?: string): void {
         reportError(error);
       }
     }
+
     _dynamic.clear();
   }
 }
@@ -159,7 +164,7 @@ function makeCancelOnNavigate(): () => boolean {
 }
 
 export async function runDynamic(
-  uuid: string,
+  uuid: UUID,
   extensionPoint: IExtensionPoint
 ): Promise<void> {
   // Uninstall the previous extension point instance (in favor of the updated extensionPoint)
@@ -177,43 +182,55 @@ export async function runDynamic(
 async function loadExtensions() {
   console.debug("Loading extensions for page");
 
-  const previousIds = new Set((_extensionPoints ?? []).map((x) => x.id));
+  const previousIds = new Set<RegistryId>(
+    (_extensionPoints ?? []).map((x) => x.id)
+  );
 
   _extensionPoints = [];
 
-  const { extensions: extensionPointConfigs } = await loadOptions();
+  const options = await loadOptions();
 
-  for (const [extensionPointId, extensions] of Object.entries(
-    extensionPointConfigs
-  )) {
-    const activeExtensions = Object.values(extensions).filter((x) => x.active);
+  const externalized = await Promise.all(
+    options.extensions.map(async (x) => resolveDefinitions(x))
+  );
 
-    if (activeExtensions.length === 0 && !previousIds.has(extensionPointId)) {
-      // Ignore the case where we uninstalled the last extension, but the extension point was
-      // not deleted from the state.
-      //
-      // But for updates (i.e., re-activation flow) we need to include to so that when we run
-      // syncExtensions their elements are removed from the page
-      continue;
-    }
+  const extensionMap = groupBy(externalized, (x) => x.extensionPointId);
 
-    try {
-      const extensionPoint = await extensionPointRegistry.lookup(
-        extensionPointId
-      );
+  await Promise.all(
+    Object.entries(extensionMap).map(async (entry) => {
+      // Object.entries loses the type information :sadface:
+      const [extensionPointId, extensions] = (entry as unknown) as [
+        RegistryId,
+        ResolvedExtension[]
+      ];
 
-      extensionPoint.syncExtensions(activeExtensions);
-
-      if (activeExtensions.length > 0) {
-        // Cleared out _extensionPoints before, so can just push w/o checking if it's already in the array
-        _extensionPoints.push(extensionPoint);
+      if (extensions.length === 0 && !previousIds.has(extensionPointId)) {
+        // Ignore the case where we uninstalled the last extension, but the extension point was
+        // not deleted from the state.
+        //
+        // But for updates (i.e., re-activation flow) we need to include to so that when we run
+        // syncExtensions their elements are removed from the page
+        return;
       }
-    } catch (error: unknown) {
-      console.warn(`Error adding extension point: ${extensionPointId}`, {
-        error,
-      });
-    }
-  }
+
+      try {
+        const extensionPoint = await extensionPointRegistry.lookup(
+          extensionPointId
+        );
+
+        extensionPoint.syncExtensions(extensions);
+
+        if (extensions.length > 0) {
+          // We cleared _extensionPoints prior to the loop, so we can just push w/o checking if it's already in the array
+          _extensionPoints.push(extensionPoint);
+        }
+      } catch (error: unknown) {
+        console.warn(`Error adding extension point: ${extensionPointId}`, {
+          error,
+        });
+      }
+    })
+  );
 }
 
 /**
@@ -253,6 +270,7 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
       console.debug(
         `Custom navigation rule detected that page is still loading: ${url}`
       );
+      // eslint-disable-next-line no-await-in-loop -- looping to allow for sleep
       await sleep(WAIT_LOADED_INTERVAL_MS);
     }
   }
@@ -272,7 +290,7 @@ export async function handleNavigate({
     return;
   }
 
-  const href = location.href;
+  const { href } = location;
 
   if (!force && _frameHref.get(context.frameId) === href) {
     console.debug(
@@ -304,21 +322,24 @@ export async function handleNavigate({
 
     await waitLoaded(cancel);
 
-    for (const extensionPoint of extensionPoints) {
-      // Don't await each extension point since the extension point may never appear. For example, an
-      // extension point that runs on the contact information page on LinkedIn
-      const runPromise = runExtensionPoint(extensionPoint, cancel).catch(
-        (error: unknown) => {
-          console.error(`Error installing/running: ${extensionPoint.id}`, {
-            error,
-          });
-        }
-      );
+    // Safe to use Promise.all since the inner method can't throw
+    await Promise.all(
+      extensionPoints.map(async (extensionPoint) => {
+        // Don't await each extension point since the extension point may never appear. For example, an
+        // extension point that runs on the contact information modal on LinkedIn
+        const runPromise = runExtensionPoint(extensionPoint, cancel).catch(
+          (error: unknown) => {
+            console.error(`Error installing/running: ${extensionPoint.id}`, {
+              error,
+            });
+          }
+        );
 
-      if (extensionPoint.syncInstall) {
-        await runPromise;
-      }
-    }
+        if (extensionPoint.syncInstall) {
+          await runPromise;
+        }
+      })
+    );
   }
 }
 

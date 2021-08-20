@@ -29,7 +29,7 @@ import {
   TabId,
 } from "@/background/devtools/contract";
 import { browser, Runtime, WebNavigation } from "webextension-polyfill-ts";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { SimpleEvent } from "@/hooks/events";
 import { forbidBackgroundPage } from "@/utils/expectContext";
 import { getErrorMessage } from "@/errors";
@@ -74,7 +74,7 @@ function devtoolsMessageListener(response: BackgroundResponse) {
       reject(deserializeError(payload.$$error));
     }
 
-    return resolve(payload);
+    resolve(payload);
   }
 }
 

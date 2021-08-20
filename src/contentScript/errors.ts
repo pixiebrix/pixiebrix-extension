@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -20,7 +21,7 @@ import { showConnectionLost } from "@/contentScript/connection";
 import { reportError } from "@/telemetry/logging";
 
 function addErrorListeners(): void {
-  window.addEventListener("error", function (error) {
+  window.addEventListener("error", (error) => {
     if (isConnectionError(error)) {
       showConnectionLost();
     } else {
@@ -29,7 +30,7 @@ function addErrorListeners(): void {
     }
   });
 
-  window.addEventListener("unhandledrejection", function (error) {
+  window.addEventListener("unhandledrejection", (error) => {
     if (isConnectionError(error)) {
       showConnectionLost();
     } else {

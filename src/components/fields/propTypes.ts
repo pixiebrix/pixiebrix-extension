@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import PropTypes from "prop-types";
+import * as PropTypes from "prop-types";
 import { Schema, UiSchema } from "@/core";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html

@@ -17,14 +17,13 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Card, Nav, Tab } from "react-bootstrap";
-import { openExtensionOptions } from "@/messaging/external";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import logo from "@img/logo.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faPuzzlePiece,
+  faCog,
   faSpinner,
-  faChevronRight,
+  faAngleDoubleRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { getStore } from "@/actionPanel/native";
 import {
@@ -46,6 +45,7 @@ import useExtensionMeta from "@/hooks/useExtensionMeta";
 import { selectEventData } from "@/telemetry/deployments";
 import { browser } from "webextension-polyfill-ts";
 import { HIDE_ACTION_FRAME } from "@/background/browserAction";
+import { UUID } from "@/core";
 
 const closeSidebar = async () => {
   await browser.runtime.sendMessage({
@@ -62,7 +62,7 @@ const ActionPanelTabs: React.FunctionComponent<{ panels: PanelEntry[] }> = ({
   const { lookup } = useExtensionMeta();
 
   const onSelect = useCallback(
-    (extensionId: string) => {
+    (extensionId: UUID) => {
       reportEvent("ViewSidePanelPanel", {
         ...selectEventData(lookup.get(extensionId)),
         initialLoad: false,
@@ -139,18 +139,15 @@ const ActionPanelApp: React.FunctionComponent = () => {
       <PersistGate loading={<GridLoader />} persistor={persistor}>
         <ToastProvider>
           <div className="d-flex flex-column" style={{ height: "100vh" }}>
-            <div className="d-flex mb-2" style={{ flex: "none" }}>
+            <div className="d-flex flex-row mb-2 p-2 justify-content-between align-content-center">
               <Button
-                className="action-panel-close-button"
+                className="action-panel-button"
                 onClick={closeSidebar}
                 size="sm"
                 variant="link"
               >
-                <FontAwesomeIcon icon={faChevronRight} />
-                <FontAwesomeIcon icon={faChevronRight} />
+                <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
               </Button>
-              {/* spacer */}
-              <div className="flex-grow-1" />
               <div className="align-self-center">
                 <img
                   src={logo}
@@ -159,15 +156,17 @@ const ActionPanelApp: React.FunctionComponent = () => {
                   className="px-4"
                 />
               </div>
-              <div className="ActionPanelToolbar">
-                <Button
-                  onClick={async () => openExtensionOptions()}
-                  size="sm"
-                  variant="info"
-                >
-                  <FontAwesomeIcon icon={faPuzzlePiece} /> Open Extension
-                </Button>
-              </div>
+              <Button
+                href="/options.html"
+                target="_blank"
+                size="sm"
+                variant="link"
+                className="action-panel-button d-inline-flex align-items-center"
+              >
+                <span>
+                  Options <FontAwesomeIcon icon={faCog} />
+                </span>
+              </Button>
             </div>
 
             <DeploymentBanner className="flex-none" />

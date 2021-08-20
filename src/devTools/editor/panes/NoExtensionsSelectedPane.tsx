@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -18,20 +19,18 @@
 import Centered from "@/devTools/editor/components/Centered";
 import React from "react";
 
-const NoExtensionSelectedPane: React.FunctionComponent = () => {
-  return (
-    <Centered>
-      <div className="PaneTitle">No extension selected</div>
+const NoExtensionSelectedPane: React.FunctionComponent = () => (
+  <Centered>
+    <div className="PaneTitle">No extension selected</div>
 
-      <div className="text-left">
-        <p>Select an extension in the sidebar to edit</p>
-        <p>
-          Or, click the <span className="text-info">Add</span> button in the
-          sidebar to add an extension to the page.
-        </p>
-      </div>
-    </Centered>
-  );
-};
+    <div className="text-left">
+      <p>Select an extension in the sidebar to edit</p>
+      <p>
+        Or, click the <span className="text-info">Add</span> button in the
+        sidebar to add an extension to the page.
+      </p>
+    </div>
+  </Centered>
+);
 
 export default NoExtensionSelectedPane;

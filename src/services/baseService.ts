@@ -16,8 +16,9 @@
  */
 
 import isEmpty from "lodash/isEmpty";
-import { isExtensionContext, readStorage, setStorage } from "@/chrome";
-import useAsyncEffect from "use-async-effect";
+import { readStorage, setStorage } from "@/chrome";
+import { isExtensionContext } from "webext-detect-page";
+import { useAsyncEffect } from "use-async-effect";
 import { useState, useCallback } from "react";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;

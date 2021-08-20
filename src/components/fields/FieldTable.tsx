@@ -28,9 +28,9 @@ import { useField, useFormikContext } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import produce from "immer";
+import { produce } from "immer";
 
-interface PropertyRow {
+interface PropertyRowProps {
   name: string;
   showActions?: boolean;
   readOnly: boolean;
@@ -39,7 +39,16 @@ interface PropertyRow {
   onRename: (newName: string) => void;
 }
 
-const CompositePropertyRow: React.FunctionComponent<PropertyRow> = ({
+interface RowProps {
+  parentSchema: Schema;
+  name: string;
+  property: string;
+  defined: boolean;
+  onDelete: (prop: string) => void;
+  onRename: (oldProp: string, newProp: string) => void;
+}
+
+const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   name,
   schema,
   showActions,
@@ -54,9 +63,9 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRow> = ({
   );
 };
 
-const ComplexObjectValue: React.FunctionComponent<FieldProps<unknown>> = () => (
-  <Form.Control plaintext readOnly defaultValue="Complex object" />
-);
+export const ComplexObjectValue: React.FunctionComponent<
+  FieldProps<unknown>
+> = () => <Form.Control plaintext readOnly defaultValue="Complex object" />;
 
 const SimpleValue: React.FunctionComponent<FieldProps<unknown>> = (props) => {
   const [field, meta] = useField(props);
@@ -65,12 +74,12 @@ const SimpleValue: React.FunctionComponent<FieldProps<unknown>> = (props) => {
       type="text"
       {...props}
       value={field.value ?? ""}
-      isInvalid={!!meta.error}
+      isInvalid={meta.error != null}
     />
   );
 };
 
-const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
+const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   readOnly,
   onDelete,
   onRename,
@@ -129,7 +138,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRow> = ({
   );
 };
 
-function freshPropertyName(obj: { [key: string]: unknown }) {
+function freshPropertyName(obj: Record<string, unknown>) {
   let x = 1;
   while (Object.prototype.hasOwnProperty.call(obj, `property${x}`)) {
     x++;
@@ -138,19 +147,10 @@ function freshPropertyName(obj: { [key: string]: unknown }) {
   return `property${x}`;
 }
 
-interface RowProps {
-  parentSchema: Schema;
-  name: string;
-  property: string;
-  defined: boolean;
-  onDelete: (prop: string) => void;
-  onRename: (oldProp: string, newProp: string) => void;
-}
-
 const BOOLEAN_SCHEMA: Schema = { type: "string" };
 const FALLBACK_SCHEMA: Schema = { type: "string" };
 
-const PropertyRow: React.FunctionComponent<RowProps> = ({
+const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
   parentSchema,
   defined,
   name,
@@ -168,27 +168,33 @@ const PropertyRow: React.FunctionComponent<RowProps> = ({
       : rawSchema ?? FALLBACK_SCHEMA;
   }, [property, defined, parentSchema]);
 
-  const PropertyRow = useMemo(() => getPropertyRow(propertySchema), [
+  const PropertyRowComponent = useMemo(() => getPropertyRow(propertySchema), [
     propertySchema,
   ]);
-  const deleteProp = useCallback(() => onDelete(property), [
-    property,
-    onDelete,
-  ]);
+
+  const deleteProp = useCallback(() => {
+    onDelete(property);
+  }, [property, onDelete]);
+
   const renameProp = useCallback(
-    (newProp: string) => onRename(property, newProp),
+    (newProp: string) => {
+      onRename(property, newProp);
+    },
     [property, onRename]
   );
 
   return (
-    <PropertyRow
+    <PropertyRowComponent
       key={property}
       name={name}
-      readOnly={!!defined}
+      readOnly={defined}
       schema={propertySchema}
-      showActions={!!parentSchema.additionalProperties}
-      onDelete={!defined ? deleteProp : undefined}
-      onRename={!defined ? renameProp : undefined}
+      showActions={
+        parentSchema.additionalProperties === true ||
+        typeof parentSchema.additionalProperties === "object"
+      }
+      onDelete={defined ? undefined : deleteProp}
+      onRename={defined ? undefined : renameProp}
     />
   );
 };
@@ -207,11 +213,12 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
   // Helpers.setValue changes on every render, so use setFieldValue instead
   // https://github.com/formium/formik/issues/2268
-  const [field] = useField(props);
+  const [field] = useField<ObjectValue>(props);
   const { setFieldValue } = useFormikContext();
 
   // UseRef indirection layer so the callbacks below don't re-calculate on every change
-  const fieldRef = useRef(field);
+  const valueRef = useRef(field.value);
+  valueRef.current = field.value ?? {};
 
   const [properties, declaredProperties] = useMemo(() => {
     const declared = schema.properties ?? {};
@@ -227,18 +234,20 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
     (property: string) => {
       setFieldValue(
         name,
-        produce(fieldRef.current.value, (draft: ObjectValue) => {
-          delete draft[property];
+        produce(valueRef.current, draft => {
+          if (draft != null) {
+            delete draft[property];
+          }
         })
       );
     },
-    [name, setFieldValue, fieldRef]
+    [name, setFieldValue, valueRef]
   );
 
   const onRename = useCallback(
     (oldProp: string, newProp: string) => {
       if (oldProp !== newProp) {
-        const previousValue = fieldRef.current.value ?? {};
+        const previousValue = valueRef.current;
 
         console.debug("Renaming property", {
           newProp,
@@ -248,24 +257,24 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
         setFieldValue(
           name,
-          produce(previousValue, (draft: ObjectValue) => {
+          produce(previousValue, draft => {
             draft[newProp] = draft[oldProp] ?? "";
             delete draft[oldProp];
           })
         );
       }
     },
-    [name, setFieldValue, fieldRef]
+    [name, setFieldValue, valueRef]
   );
 
   const addProperty = useCallback(() => {
     setFieldValue(
       name,
-      produce(fieldRef.current.value ?? {}, (draft: ObjectValue) => {
+      produce(valueRef.current, draft => {
         draft[freshPropertyName(draft)] = "";
       })
     );
-  }, [name, setFieldValue, fieldRef]);
+  }, [name, setFieldValue, valueRef]);
 
   return (
     <Form.Group controlId={field.name}>
@@ -280,7 +289,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
         </thead>
         <tbody>
           {properties.map((property) => (
-            <PropertyRow
+            <ObjectFieldRow
               key={property}
               parentSchema={schema}
               name={[field.name, property].join(".")}
@@ -304,7 +313,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
 export function getPropertyRow(
   schema: Schema
-): React.FunctionComponent<PropertyRow> {
+): React.FunctionComponent<PropertyRowProps> {
   switch (schema?.type) {
     case "array":
     case "object":

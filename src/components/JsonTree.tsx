@@ -21,8 +21,6 @@ import React from "react";
 
 const JsonTree: React.FunctionComponent<Partial<VendorJSONTree["props"]>> = (
   props
-) => {
-  return <VendorJSONTree hideRoot theme={theme} invertTheme {...props} />;
-};
+) => <VendorJSONTree hideRoot theme={theme} invertTheme {...props} />;
 
 export default JsonTree;

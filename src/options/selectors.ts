@@ -15,40 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionOptions, OptionsState } from "@/options/slices";
 import { IExtension } from "@/core";
-
-export type RecipeContext = {
-  id: string;
-  name: string;
-};
-
-/**
- * Extension with additional metadata about how it was installed.
- */
-export interface InstalledExtension extends IExtension {
-  _recipe: RecipeContext | null;
-}
+import { OptionsState } from "@/store/extensions";
 
 export function selectExtensions({
   options,
 }: {
   options: OptionsState;
-}): ExtensionOptions[] {
-  return Object.values(options.extensions).flatMap((extensionPointOptions) =>
-    Object.values(extensionPointOptions)
-  );
-}
+}): IExtension[] {
+  if (!Array.isArray(options.extensions)) {
+    console.warn("state migration has not been applied yet", {
+      options,
+    });
+    throw new TypeError("state migration has not been applied yet");
+  }
 
-export function selectInstalledExtensions(state: {
-  options: OptionsState;
-}): InstalledExtension[] {
-  return Object.entries(state.options.extensions).flatMap(
-    ([extensionPointId, pointExtensions]) =>
-      Object.entries(pointExtensions).map(([extensionId, extension]) => ({
-        id: extensionId,
-        extensionPointId,
-        ...extension,
-      }))
-  );
+  return options.extensions;
 }

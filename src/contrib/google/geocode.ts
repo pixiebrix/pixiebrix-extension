@@ -48,9 +48,9 @@ interface AddressComponent {
 }
 
 interface GeocodeData {
-  results: {
+  results: Array<{
     address_components: AddressComponent[];
-  }[];
+  }>;
   // https://developers.google.com/maps/documentation/geocoding/overview
   status:
     | "OK"

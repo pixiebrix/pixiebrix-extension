@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: CI
 
 on: [push]
 
@@ -10,10 +10,19 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "16"
           cache: npm
       - run: npm ci
-      - run: npm test
+      - run: npm run test -- --coverage
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        # Skip step for dependabot: https://github.com/pixiebrix/pixiebrix-app/issues/231
+        # @see https://dev.to/github/conditional-workflows-and-failures-in-github-actions-2okk
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        with:
+          # https://github.com/codacy/codacy-coverage-reporter-action
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage/lcov.info
 
   stage:
     runs-on: ubuntu-latest
@@ -22,10 +31,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "16"
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npm run build:webpack
         env:
           ENVIRONMENT: staging
           EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
@@ -50,6 +59,7 @@ jobs:
         # Invokes the actual test script that would run on BrowserStack browsers
         run: node selenium/sample-build.js
       - uses: actions/upload-artifact@v2
+        if: contains(github.ref, 'release/') || startsWith(github.ref, 'refs/tags')
         with:
           name: build-staging
           path: dist
@@ -95,17 +105,30 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "16"
           cache: npm
       - run: npm ci
       - run: npm run build:scripts
-      - run: node scripts/bin/headers.js
+      - run: npm run generate:headers
       - uses: actions/upload-artifact@v2
         with:
           name: brick-headers
           path: headers.json
           retention-days: 5
           if-no-files-found: error
+
+  types:
+    # Surface type errors in GitHub’s UI faster and outside webpack
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run build:typescript
 
   lint:
     runs-on: ubuntu-latest
@@ -114,7 +137,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "16"
           cache: npm
       - run: npm ci
         # Run eslint without GitHub Actions annotations
@@ -123,4 +146,4 @@ jobs:
         run: |
           echo "::remove-matcher owner=eslint-compact::"
           echo "::remove-matcher owner=eslint-stylish::"
-          npm run lint
+          npm run lint -- --quiet

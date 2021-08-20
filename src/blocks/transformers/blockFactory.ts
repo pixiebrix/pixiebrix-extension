@@ -25,7 +25,14 @@ import {
   BlockPipeline,
   reducePipeline,
 } from "@/blocks/combinators";
-import { BlockArg, BlockOptions, IBlock, Metadata, Schema } from "@/core";
+import {
+  BlockArg,
+  BlockOptions,
+  Config,
+  IBlock,
+  Metadata,
+  Schema,
+} from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
@@ -47,40 +54,45 @@ const METHOD_MAP: Map<ComponentKind, string> = new Map([
 interface ComponentConfig {
   kind: ComponentKind;
   metadata: Metadata;
-  defaultOptions: { [key: string]: string };
+  defaultOptions: Record<string, string>;
   pipeline: BlockConfig | BlockPipeline;
   inputSchema: Schema;
-  services?: { [key: string]: string };
+  outputSchema?: Schema;
+  // Mapping from `key` -> `serviceId`
+  services?: Record<string, string>;
 }
 
 function validateBlockDefinition(
-  component: any
+  component: unknown
 ): asserts component is ComponentConfig {
   const validator = new Validator(
     dereference(blockSchema as Schema) as ValidatorSchema
   );
   const result = validator.validate(component);
   if (!result.valid) {
-    console.warn(
-      `Invalid block configuration (kind=${component.kind})`,
-      result
-    );
+    console.warn("Invalid block configuration", {
+      component,
+      result,
+    });
     throw new ValidationError("Invalid block configuration", result.errors);
   }
 }
 
 class ExternalBlock extends Block {
-  private component: ComponentConfig;
+  private readonly component: ComponentConfig;
 
   readonly inputSchema: Schema;
 
-  readonly defaultOptions: { [key: string]: any };
+  readonly outputSchema: Schema;
+
+  readonly defaultOptions: Record<string, unknown>;
 
   constructor(component: ComponentConfig) {
     const { id, name, description, icon } = component.metadata;
     super(id, name, description, icon);
     this.component = component;
     this.inputSchema = this.component.inputSchema;
+    this.outputSchema = this.component.outputSchema;
 
     const kind = component.kind ?? ("transform" as ComponentKind);
 
@@ -88,9 +100,9 @@ class ExternalBlock extends Block {
       throw new Error("Cannot deserialize reader as block");
     }
 
-    // @ts-ignore: we're being dynamic here to set the corresponding method for the kind since
+    // @ts-expect-error we're being dynamic here to set the corresponding method for the kind since
     // we use that method to distinguish between block types in places
-    this[METHOD_MAP.get(kind)] = (
+    this[METHOD_MAP.get(kind)] = async (
       renderedInputs: BlockArg,
       options: BlockOptions
     ) => this.run(renderedInputs, options);
@@ -109,6 +121,15 @@ class ExternalBlock extends Block {
   }
 
   async run(renderedInputs: BlockArg, options: BlockOptions): Promise<unknown> {
+    console.warn("Running component pipeline", {
+      renderedInputs,
+      options,
+    });
+
+    options.logger.debug("Running component pipeline", {
+      renderedInputs,
+    });
+
     return reducePipeline(
       this.component.pipeline,
       renderedInputs,
@@ -124,7 +145,7 @@ class ExternalBlock extends Block {
   }
 }
 
-export function fromJS(component: Record<string, unknown>): IBlock {
+export function fromJS(component: Config): IBlock {
   if (component.kind == null) {
     throw new ValidationError(
       "Component definition is missing a 'kind' property",

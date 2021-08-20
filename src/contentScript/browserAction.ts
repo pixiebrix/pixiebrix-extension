@@ -20,9 +20,7 @@ import * as native from "@/actionPanel/native";
 
 export const toggleActionPanel = liftContentScript(
   "TOGGLE_ACTION_PANEL",
-  async () => {
-    return native.toggleActionPanel();
-  }
+  async () => native.toggleActionPanel()
 );
 
 export const showActionPanel = liftContentScript(
@@ -32,10 +30,14 @@ export const showActionPanel = liftContentScript(
 
 export const hideActionPanel = liftContentScript(
   "HIDE_ACTION_PANEL",
-  async () => native.hideActionPanel()
+  async () => {
+    native.hideActionPanel();
+  }
 );
 
 export const removeActionPanelPanel = liftContentScript(
   "REMOVE_ACTION_PANEL_PANEL",
-  async (extensionId: string) => native.removeExtension(extensionId)
+  async (extensionId: string) => {
+    native.removeExtension(extensionId);
+  }
 );

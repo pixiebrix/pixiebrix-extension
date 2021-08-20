@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -57,7 +58,7 @@ async function handleRequest(
   console.debug(`Handling contentScript action ${type}`);
 
   if (isNotification(options)) {
-    handler(...payload);
+    void handler(...payload);
     return;
   }
 
@@ -155,42 +156,14 @@ export type Target = {
  * @param method the method to lift
  * @param options contentScript action handler options
  */
-export function liftContentScript<R extends SerializableResponse>(
-  type: string,
-  method: () => R | Promise<R>,
-  options?: HandlerOptions
-): (target: Target | null) => Promise<R>;
-export function liftContentScript<T, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T) => R | Promise<R>,
-  options?: HandlerOptions
-): (target: Target | null, a0: T) => Promise<R>;
-export function liftContentScript<T0, T1, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1) => R | Promise<R>,
-  options?: HandlerOptions
-): (target: Target | null, a0: T0, a1: T1) => Promise<R>;
-export function liftContentScript<T0, T1, T2, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1, a2: T2) => R | Promise<R>,
-  options?: HandlerOptions
-): (target: Target | null, a0: T0, a1: T1, a2: T2) => Promise<R>;
 export function liftContentScript<
-  T0,
-  T1,
-  T2,
-  T3,
+  TArguments extends unknown[],
   R extends SerializableResponse
 >(
   type: string,
-  method: (a0: T0, a1: T1, a2: T2, a3: T3) => R,
+  method: (...args: TArguments) => Promise<R>,
   options?: HandlerOptions
-): (target: Target | null, a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>;
-export function liftContentScript<R extends SerializableResponse>(
-  type: string,
-  method: (...args: unknown[]) => R,
-  options?: HandlerOptions
-): (target: Target | null, ...args: unknown[]) => Promise<R> {
+): (target: Target | null, ...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
@@ -202,7 +175,7 @@ export function liftContentScript<R extends SerializableResponse>(
   return async (target: Target | null, ...args: unknown[]) => {
     if (isContentScript()) {
       console.debug("Resolving call from the contentScript immediately");
-      return method(...args);
+      return method(...(args as TArguments));
     }
 
     expectBackgroundPage(ContentScriptActionError);

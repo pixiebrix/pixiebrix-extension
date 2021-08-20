@@ -19,21 +19,21 @@ import React, { useCallback, useContext, useState } from "react";
 import { FieldProps } from "@/components/fields/propTypes";
 import { Data, SheetMeta } from "@/contrib/google/sheets/types";
 import { DevToolsContext } from "@/devTools/context";
-import { useToasts } from "react-toast-notifications";
 import { useField } from "formik";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { isNullOrBlank } from "@/utils";
+import * as sheetHandlers from "@/contrib/google/sheets/handlers";
 import {
   devtoolsProtocol,
   GOOGLE_SHEETS_SCOPES,
 } from "@/contrib/google/sheets/handlers";
-import * as sheetHandlers from "@/contrib/google/sheets/handlers";
-import { reportError } from "@/telemetry/logging";
 import { ensureAuth } from "@/contrib/google/auth";
 import { partial } from "lodash";
 import { isOptionsPage } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
 import { Button, Form, InputGroup } from "react-bootstrap";
+import useNotifications from "@/hooks/useNotifications";
+import { getErrorMessage } from "@/errors";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
@@ -45,7 +45,7 @@ const FileField: React.FunctionComponent<
   }
 > = ({ name, onSelect, doc }) => {
   const { port } = useContext(DevToolsContext);
-  const { addToast } = useToasts();
+  const notify = useNotifications();
 
   const [field, meta, helpers] = useField<string>(name);
   const [sheetError, setSheetError] = useState(null);
@@ -76,11 +76,9 @@ const FileField: React.FunctionComponent<
       } catch (error: unknown) {
         if (!isMounted()) return;
         onSelect(null);
-        reportError(error);
         setSheetError(error);
-        addToast("Error retrieving sheet information", {
-          appearance: "error",
-          autoDismiss: true,
+        notify.error("Error retrieving sheet information", {
+          error,
         });
       }
     },
@@ -95,7 +93,9 @@ const FileField: React.FunctionComponent<
 
       await new Promise<void>((resolve) => {
         gapi.load("picker", {
-          callback: () => resolve(),
+          callback: () => {
+            resolve();
+          },
         });
       });
 
@@ -134,12 +134,11 @@ const FileField: React.FunctionComponent<
         .build();
       picker.setVisible(true);
     } catch (error: unknown) {
-      addToast(`Error loading file picker: ${error}`, {
-        appearance: "error",
-        autoDismiss: true,
+      notify.error(`Error loading file picker: ${getErrorMessage(error)}`, {
+        error,
       });
     }
-  }, [addToast, helpers, onSelect]);
+  }, [notify, helpers, onSelect]);
 
   return (
     <Form.Group>

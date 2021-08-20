@@ -19,7 +19,7 @@ import React from "react";
 import { editorSlice, FormState } from "@/devTools/editor/editorSlice";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
 import { useDispatch, useSelector } from "react-redux";
-import { selectInstalledExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import { useDebouncedCallback } from "use-debounce";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Formik } from "formik";
@@ -42,7 +42,7 @@ const EditorPane: React.FunctionComponent<{
 }> = ({ selectedElement, toggleChat, selectionSeq }) => {
   const create = useCreate();
   const dispatch = useDispatch();
-  const installed = useSelector(selectInstalledExtensions);
+  const installed = useSelector(selectExtensions);
   const editable = useEditable();
 
   // XXX: anti-pattern: callback to update the redux store based on the formik state

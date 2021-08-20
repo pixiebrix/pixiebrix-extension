@@ -30,24 +30,22 @@ const primereact = require("!!raw-loader!primereact/resources/primereact.min.css
 const DataTableComponent: React.FunctionComponent<{
   columns: ColumnProps[];
   rows: object[];
-}> = ({ columns, rows }) => {
-  return (
-    <React.Fragment>
-      <style
-        type="text/css"
-        dangerouslySetInnerHTML={{ __html: theme.toString() }}
-      />
-      <style
-        type="text/css"
-        dangerouslySetInnerHTML={{ __html: primereact.toString() }}
-      />
-      <RawDataTable value={rows}>
-        {columns.map((column) => (
-          <Column key={column.field} {...column} />
-        ))}
-      </RawDataTable>
-    </React.Fragment>
-  );
-};
+}> = ({ columns, rows }) => (
+  <React.Fragment>
+    <style
+      type="text/css"
+      dangerouslySetInnerHTML={{ __html: theme.toString() }}
+    />
+    <style
+      type="text/css"
+      dangerouslySetInnerHTML={{ __html: primereact.toString() }}
+    />
+    <RawDataTable value={rows}>
+      {columns.map((column) => (
+        <Column key={column.field} {...column} />
+      ))}
+    </RawDataTable>
+  </React.Fragment>
+);
 
 export default DataTableComponent;

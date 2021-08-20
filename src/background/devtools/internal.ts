@@ -36,7 +36,7 @@ import {
 } from "@/background/devtools/contract";
 import { reportError } from "@/telemetry/logging";
 import { isBackgroundPage } from "webext-detect-page";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
@@ -61,6 +61,7 @@ const permissionsListeners = new Map<TabId, PromiseHandler[]>();
  * Listener that runs on the background page.
  */
 function backgroundMessageListener(
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments -- It defaults to a different `Meta`
   request: RemoteProcedureCallRequest<Meta>,
   port: Runtime.Port
 ) {
@@ -151,24 +152,18 @@ function backgroundMessageListener(
  * @param method the method to lift
  * @param options background action handler options
  */
-export function liftBackground<R extends SerializableResponse>(
-  type: string,
-  method: (target: Target, port: Runtime.Port) => () => R | Promise<R>,
-  options?: HandlerOptions
-): (port: Runtime.Port) => Promise<R>;
-export function liftBackground<T, R extends SerializableResponse>(
-  type: string,
-  method: (target: Target, port: Runtime.Port) => (a0: T) => R | Promise<R>,
-  options?: HandlerOptions
-): (port: Runtime.Port, a0: T) => Promise<R>;
-export function liftBackground<R extends SerializableResponse>(
+
+export function liftBackground<
+  TArguments extends unknown[],
+  R extends SerializableResponse
+>(
   type: string,
   method: (
     target: Target,
     port: Runtime.Port
-  ) => (...args: unknown[]) => R | Promise<R>,
+  ) => (...args: TArguments) => Promise<R>,
   options?: HandlerOptions
-): (port: Runtime.Port, ...args: unknown[]) => Promise<R> {
+): (port: Runtime.Port, ...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isBackgroundPage()) {
@@ -298,7 +293,7 @@ async function attemptTemporaryAccess({
 
     // Side note: Cross-origin iframes lose the `activeTab` after navigation
     // https://github.com/pixiebrix/pixiebrix-extension/pull/661#discussion_r661590847
-    if (getErrorMessage(error).startsWith("Cannot access")) {
+    if (/Cannot access|missing host permission/.test(getErrorMessage(error))) {
       console.debug(
         `Skipping attemptTemporaryAccess because no activeTab permissions`,
         { tabId, frameId, url }

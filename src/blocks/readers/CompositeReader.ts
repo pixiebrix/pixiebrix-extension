@@ -24,9 +24,9 @@ import fromPairs from "lodash/fromPairs";
 class CompositeReader extends Reader {
   public readonly outputSchema: Schema;
 
-  private readonly _readers: { [key: string]: IReader };
+  private readonly _readers: Record<string, IReader>;
 
-  constructor(readers: { [key: string]: IReader }) {
+  constructor(readers: Record<string, IReader>) {
     super(undefined, "Composite Reader", "Combination of multiple readers");
     this._readers = readers;
     this.outputSchema = {
@@ -41,7 +41,7 @@ class CompositeReader extends Reader {
     const readerArray = Object.values(this._readers);
     // PERFORMANCE: could return quicker if any came back false using Promise.any
     const availability = await Promise.all(
-      readerArray.map((x) => x.isAvailable())
+      readerArray.map(async (x) => x.isAvailable())
     );
     return availability.every(identity);
   }
@@ -52,7 +52,9 @@ class CompositeReader extends Reader {
       await reader.read(root),
     ];
     const resultPairs = await Promise.all(
-      Object.entries(this._readers).map(([key, reader]) => readOne(key, reader))
+      Object.entries(this._readers).map(async ([key, reader]) =>
+        readOne(key, reader)
+      )
     );
     return fromPairs(resultPairs);
   }

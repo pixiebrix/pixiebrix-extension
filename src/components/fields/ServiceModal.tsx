@@ -39,35 +39,33 @@ import { ButtonVariant } from "react-bootstrap/types";
 const ServiceResult: React.FunctionComponent<{
   service: ServiceDefinition;
   onSelect: () => void;
-}> = ({ service: { metadata }, onSelect }) => {
-  return (
-    <ListGroup.Item onClick={onSelect}>
-      <div className="d-flex">
-        <div className="mr-2">
-          <FontAwesomeIcon icon={faCloud} />
+}> = ({ service: { metadata }, onSelect }) => (
+  <ListGroup.Item onClick={onSelect}>
+    <div className="d-flex">
+      <div className="mr-2">
+        <FontAwesomeIcon icon={faCloud} />
+      </div>
+      <div className="flex-grow-1">
+        <div className="d-flex BlockModal__title">
+          <div className="flex-grow-1">{metadata.name}</div>
+          <div className="flex-grow-0 BlockModal__badges">
+            {metadata.id.startsWith("@pixiebrix/") && (
+              <Badge variant="info">Official</Badge>
+            )}
+          </div>
         </div>
-        <div className="flex-grow-1">
-          <div className="d-flex BlockModal__title">
-            <div className="flex-grow-1">{metadata.name}</div>
-            <div className="flex-grow-0 BlockModal__badges">
-              {metadata.id.startsWith("@pixiebrix/") && (
-                <Badge variant="info">Official</Badge>
-              )}
-            </div>
-          </div>
-          <div className="BlockModal__id">
-            <code className="small">{metadata.id}</code>
-          </div>
-          <div>
-            <p className="mb-0 small">
-              {truncate(metadata.description, { length: 256 })}
-            </p>
-          </div>
+        <div className="BlockModal__id">
+          <code className="small">{metadata.id}</code>
+        </div>
+        <div>
+          <p className="mb-0 small">
+            {truncate(metadata.description, { length: 256 })}
+          </p>
         </div>
       </div>
-    </ListGroup.Item>
-  );
-};
+    </div>
+  </ListGroup.Item>
+);
 
 export type ModalToggle = React.FunctionComponent<{
   setShow: (show: boolean) => void;
@@ -127,7 +125,12 @@ const ServiceModal: React.FunctionComponent<{
     const Component: React.FunctionComponent<{
       setShow: (show: boolean) => void;
     }> = ({ setShow }) => (
-      <Button variant={variant} onClick={() => setShow(true)}>
+      <Button
+        variant={variant}
+        onClick={() => {
+          setShow(true);
+        }}
+      >
         {caption}
       </Button>
     );
@@ -163,7 +166,9 @@ const ServiceModal: React.FunctionComponent<{
                       <Form.Control
                         placeholder="Start typing to find results"
                         value={query}
-                        onChange={(e) => setQuery(e.target.value)}
+                        onChange={(e) => {
+                          setQuery(e.target.value);
+                        }}
                       />
                     </InputGroup>
                   </Form>

@@ -23,28 +23,31 @@ import {
 } from "@/extensionPoints/contextMenu";
 import { reportError } from "@/telemetry/logging";
 import { loadOptions } from "@/options/loader";
+import { EmptyConfig, RegistryId, UUID } from "@/core";
 
-interface PreloadOptions<TConfig = Record<string, unknown>> {
-  id: string;
-  extensionPointId: string;
+type PreloadOptions<TConfig = EmptyConfig> = {
+  id: UUID;
+  extensionPointId: RegistryId;
   config: TConfig;
-}
+};
 
 async function preload(extensions: PreloadOptions[]): Promise<void> {
-  for (const definition of extensions) {
-    const extensionPoint = await extensionPointRegistry.lookup(
-      definition.extensionPointId
-    );
-    if (extensionPoint instanceof ContextMenuExtensionPoint) {
-      try {
-        await extensionPoint.ensureMenu(
-          (definition as unknown) as PreloadOptions<ContextMenuConfig>
-        );
-      } catch (error: unknown) {
-        reportError(error);
+  await Promise.all(
+    extensions.map(async (definition) => {
+      const extensionPoint = await extensionPointRegistry.lookup(
+        definition.extensionPointId
+      );
+      if (extensionPoint instanceof ContextMenuExtensionPoint) {
+        try {
+          await extensionPoint.ensureMenu(
+            (definition as unknown) as PreloadOptions<ContextMenuConfig>
+          );
+        } catch (error: unknown) {
+          reportError(error);
+        }
       }
-    }
-  }
+    })
+  );
 }
 
 export const preloadMenus = liftBackground(
@@ -55,10 +58,7 @@ export const preloadMenus = liftBackground(
 );
 
 export async function preloadAllMenus(): Promise<void> {
-  const { extensions: extensionPointConfigs } = await loadOptions();
-  const extensions: PreloadOptions[] = Object.entries(extensionPointConfigs)
-    .flatMap(([, xs]) => Object.values(xs))
-    .filter((x) => x.active);
+  const { extensions } = await loadOptions();
   await preload(extensions);
 }
 

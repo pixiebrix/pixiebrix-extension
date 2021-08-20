@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { ComponentType, useCallback, useMemo, useState } from "react";
 import ServiceAuthSelector, {
   AuthOption,
   useAuthOptions,
 } from "@/options/pages/extensionEditor/ServiceAuthSelector";
 import { uniq } from "lodash";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { Button, Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
@@ -43,6 +43,7 @@ import { useToasts } from "react-toast-notifications";
 import { useField } from "formik";
 import { persistor } from "@/options/store";
 import { refresh as refreshBackgroundLocator } from "@/background/locator";
+import { GroupTypeBase, MenuListComponentProps } from "react-select";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -60,9 +61,10 @@ const AuthWidget: React.FunctionComponent<{
 
   const [showModal, setShow] = useState(false);
 
-  const [serviceDefinition, isPending, error] = useAsyncState(async () => {
-    return (await registry.all()).find((x) => x.id === serviceId);
-  }, [serviceId]);
+  const [serviceDefinition, isPending, error] = useAsyncState(
+    async () => (await registry.all()).find((x) => x.id === serviceId),
+    [serviceId]
+  );
 
   const options = useMemo(
     () => authOptions.filter((x) => x.serviceId === serviceId),
@@ -102,13 +104,37 @@ const AuthWidget: React.FunctionComponent<{
     [helpers, addToast, dispatch, setShow, serviceId]
   );
 
-  const initialConfiguration: RawServiceConfiguration = useMemo(() => {
-    return {
-      serviceId,
-      label: "New Configuration",
-      config: {},
-    } as RawServiceConfiguration;
-  }, [serviceId]);
+  const CustomMenuList = useMemo(() => {
+    const MenuListWithAddButton: ComponentType<
+      MenuListComponentProps<AuthOption, boolean, GroupTypeBase<AuthOption>>
+    > = ({ children }) => (
+      <div>
+        {children}
+        <div className="text-center">
+          <Button
+            size="sm"
+            variant="link"
+            onClick={() => {
+              setShow(true);
+            }}
+          >
+            + Add new
+          </Button>
+        </div>
+      </div>
+    );
+    return MenuListWithAddButton;
+  }, [setShow]);
+
+  const initialConfiguration: RawServiceConfiguration = useMemo(
+    () =>
+      ({
+        serviceId,
+        label: "New Configuration",
+        config: {},
+      } as RawServiceConfiguration),
+    [serviceId]
+  );
 
   return (
     <>
@@ -116,7 +142,9 @@ const AuthWidget: React.FunctionComponent<{
         <ServiceEditorModal
           configuration={initialConfiguration}
           service={serviceDefinition}
-          onClose={() => setShow(false)}
+          onClose={() => {
+            setShow(false);
+          }}
           onSave={save}
         />
       )}
@@ -128,20 +156,24 @@ const AuthWidget: React.FunctionComponent<{
               name={`services.${serviceId}`}
               serviceId={serviceId}
               authOptions={options}
+              CustomMenuList={CustomMenuList}
             />
           </div>
         )}
         <div>
-          <Button
-            variant={options.length > 0 ? "info" : "primary"}
-            size="sm"
-            style={{ height: "36px", marginTop: "1px" }}
-            onClick={() => setShow(true)}
-            disabled={isPending || error != null}
-          >
-            <FontAwesomeIcon icon={faPlus} />{" "}
-            {options.length > 0 ? "Add New" : "Configure"}
-          </Button>
+          {options.length === 0 && (
+            <Button
+              variant={options.length > 0 ? "info" : "primary"}
+              size="sm"
+              style={{ height: "36px", marginTop: "1px" }}
+              onClick={() => {
+                setShow(true);
+              }}
+              disabled={isPending || error != null}
+            >
+              <FontAwesomeIcon icon={faPlus} /> Configure
+            </Button>
+          )}
         </div>
       </div>
     </>
@@ -152,9 +184,10 @@ const ServiceDescriptor: React.FunctionComponent<{
   serviceConfigs: ServiceDefinition[];
   serviceId: string;
 }> = ({ serviceId, serviceConfigs }) => {
-  const config = useMemo(() => {
-    return serviceConfigs?.find((x) => x.metadata.id === serviceId);
-  }, [serviceId, serviceConfigs]);
+  const config = useMemo(
+    () => serviceConfigs?.find((x) => x.metadata.id === serviceId),
+    [serviceId, serviceConfigs]
+  );
 
   if (config) {
     return (

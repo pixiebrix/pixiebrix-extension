@@ -16,17 +16,18 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { LogEntry } from "@/background/logging";
+import type { LogEntry } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { ErrorObject } from "serialize-error";
 import { ContextError, isErrorObject } from "@/errors";
-import { InputValidationError } from "@/blocks/errors";
+import { InputValidationError, OutputValidationError } from "@/blocks/errors";
 import { AxiosError } from "axios";
 import InputDetail from "@/components/logViewer/details/InputDetail";
 import InputValidationErrorDetail from "@/components/logViewer/details/InputValidationErrorDetail";
 import NetworkErrorDetail from "@/components/logViewer/details/NetworkErrorDetail";
 import OutputDetail from "@/components/logViewer/details/OutputDetail";
+import OutputValidationErrorDetail from "@/components/logViewer/details/OutputValidationErrorDetail";
 
 const dateFormat = new Intl.DateTimeFormat("en-US", {
   dateStyle: "short",
@@ -51,6 +52,14 @@ const ErrorDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
         return (
           <InputValidationErrorDetail
             error={(rootCause as unknown) as InputValidationError}
+          />
+        );
+      }
+
+      if (rootCause.name === "OutputValidationError") {
+        return (
+          <OutputValidationErrorDetail
+            error={(rootCause as unknown) as OutputValidationError}
           />
         );
       }
@@ -89,12 +98,14 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
     return null;
   }, [entry]);
 
-  const expandable = !!Detail;
+  const expandable = Boolean(Detail);
 
   return (
     <>
       <tr
-        onClick={() => setExpanded(!expanded)}
+        onClick={() => {
+          setExpanded(!expanded);
+        }}
         style={{ cursor: expandable ? "pointer" : "" }}
       >
         <td>

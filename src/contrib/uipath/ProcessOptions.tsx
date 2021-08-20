@@ -21,7 +21,7 @@ import {
   FieldRenderer,
   ServiceField,
 } from "@/components/fields/blockOptions";
-import { fromPairs, identity } from "lodash";
+import { fromPairs, compact } from "lodash";
 import {
   UIPATH_PROPERTIES,
   UIPATH_SERVICE_IDS,
@@ -36,8 +36,8 @@ import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
 import { parseAssemblyQualifiedName } from "csharp-helpers";
 import { inputProperties } from "@/helpers";
-import { useDependency } from "@/services/hooks";
-import { BusinessError } from "@/errors";
+import useDependency from "@/services/useDependency";
+import { BusinessError, getErrorMessage } from "@/errors";
 
 interface Argument {
   name: string;
@@ -96,8 +96,6 @@ export function useReleases(): {
     return null;
   }, [config, hasPermissions]);
 
-  console.debug("releases", { releases, isPending, error });
-
   return { releases, isPending, error, hasConfig: config != null };
 }
 
@@ -127,9 +125,10 @@ const RobotsField: React.FunctionComponent<FieldProps<number[]>> = ({
 
   const { robots, error } = useRobots();
 
-  const options = useMemo(() => {
-    return (robots ?? []).map((x) => ({ value: x.Id, label: x.Id }));
-  }, [robots]);
+  const options = useMemo(
+    () => (robots ?? []).map((x) => ({ value: x.Id, label: x.Id })),
+    [robots]
+  );
 
   return (
     <Form.Group>
@@ -140,7 +139,7 @@ const RobotsField: React.FunctionComponent<FieldProps<number[]>> = ({
         value={options.filter((x) => value.includes(x.value))}
         onChange={(values) => {
           console.debug("Selected values", { values });
-          helper.setValue((values as any)?.map((x: any) => x.value) ?? []);
+          helper.setValue(values?.map((x) => x.value) ?? []);
         }}
       />
       {schema.description && (
@@ -148,7 +147,7 @@ const RobotsField: React.FunctionComponent<FieldProps<number[]>> = ({
       )}
       {error && (
         <span className="text-danger small">
-          Error fetching robots: {error.toString()}
+          Error fetching robots: {getErrorMessage(error)}
         </span>
       )}
       {meta.touched && meta.error && (
@@ -163,13 +162,15 @@ export const ReleaseField: React.FunctionComponent<
 > = ({ label, schema, releases, fetchError, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
 
-  const options = useMemo(() => {
-    return (releases ?? []).map((x) => ({
-      value: x.Key,
-      label: `${x.Name} - ${x.ProcessVersion}`,
-      release: x,
-    }));
-  }, [releases]);
+  const options = useMemo(
+    () =>
+      (releases ?? []).map((x) => ({
+        value: x.Key,
+        label: `${x.Name} - ${x.ProcessVersion}`,
+        release: x,
+      })),
+    [releases]
+  );
 
   return (
     <Form.Group>
@@ -177,14 +178,16 @@ export const ReleaseField: React.FunctionComponent<
       <Select
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue((option as any)?.value)}
+        onChange={(option) => {
+          helpers.setValue(option.value);
+        }}
       />
       {schema.description && (
         <Form.Text className="text-muted">The UIPath process to run</Form.Text>
       )}
       {fetchError && (
         <span className="text-danger small">
-          Error fetching releases: {fetchError.toString()}
+          Error fetching releases: {getErrorMessage(fetchError)}
         </span>
       )}
       {meta.touched && meta.error && (
@@ -237,44 +240,38 @@ export function releaseSchema(release: Release): Schema {
 }
 
 export const InputArgumentsField: React.FunctionComponent<
-  FieldProps<object>
-> = ({ name, schema, label }) => {
-  return (
-    <Form.Group>
-      <Form.Label>inputArguments</Form.Label>
-      <Card>
-        <Card.Header>{label}</Card.Header>
-        <Card.Body>
-          {schema &&
-            Object.entries(inputProperties(schema)).map(
-              ([prop, fieldSchema]) => {
-                if (typeof fieldSchema === "boolean") {
-                  throw new TypeError(
-                    "Expected schema for input property type"
-                  );
-                }
+  FieldProps<Record<string, unknown>>
+> = ({ name, schema, label }) => (
+  <Form.Group>
+    <Form.Label>inputArguments</Form.Label>
+    <Card>
+      <Card.Header>{label}</Card.Header>
+      <Card.Body>
+        {schema &&
+          Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
+            if (typeof fieldSchema === "boolean") {
+              throw new TypeError("Expected schema for input property type");
+            }
 
-                return (
-                  <FieldRenderer
-                    key={prop}
-                    name={`${name}.${prop}`}
-                    schema={schema}
-                  />
-                );
-              }
-            )}
-        </Card.Body>
-      </Card>
-    </Form.Group>
-  );
-};
+            return (
+              <FieldRenderer
+                key={prop}
+                name={`${name}.${prop}`}
+                schema={schema}
+              />
+            );
+          })}
+      </Card.Body>
+    </Card>
+  </Form.Group>
+);
 
 const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
   showOutputKey,
 }) => {
-  const basePath = [name, configKey].filter(identity).join(".");
+  const basePath = compact([name, configKey]).join(".");
 
   const { hasPermissions, requestPermissions } = useDependency(
     UIPATH_SERVICE_IDS
@@ -292,11 +289,11 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   useEffect(() => {
     if (!strategy) {
-      strategyHelpers.setValue((UIPATH_PROPERTIES["strategy"] as any).default);
+      strategyHelpers.setValue((UIPATH_PROPERTIES.strategy as any).default);
     } else if (strategy === "JobsCount" && jobsCount == null) {
       jobsCountHelpers.setValue(1);
     }
-  }, [strategy, jobsCount]);
+  }, [strategy, jobsCount, jobsCountHelpers, strategyHelpers]);
 
   const [release, schema] = useMemo(() => {
     const release = releases?.find((x) => x.Key === releaseKey);
@@ -321,41 +318,41 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       <ServiceField
         key="uipath"
         name={`${basePath}.uipath`}
-        schema={UIPATH_PROPERTIES["uipath"] as Schema}
+        schema={UIPATH_PROPERTIES.uipath as Schema}
       />
       <ReleaseField
         label="release"
         name={`${basePath}.releaseKey`}
-        schema={UIPATH_PROPERTIES["releaseKey"] as Schema}
+        schema={UIPATH_PROPERTIES.releaseKey as Schema}
         releases={releases}
         fetchError={releasesError}
       />
       <FieldRenderer
         name={`${basePath}.strategy`}
-        schema={UIPATH_PROPERTIES["strategy"] as Schema}
+        schema={UIPATH_PROPERTIES.strategy as Schema}
       />
 
       {strategy === "Specific" && (
         <RobotsField
           name={`${basePath}.robotIds`}
-          schema={UIPATH_PROPERTIES["robotIds"] as Schema}
+          schema={UIPATH_PROPERTIES.robotIds as Schema}
         />
       )}
       {strategy === "JobsCount" && (
         <FieldRenderer
           name={`${basePath}.jobsCount`}
-          schema={UIPATH_PROPERTIES["jobsCount"] as Schema}
+          schema={UIPATH_PROPERTIES.jobsCount as Schema}
         />
       )}
       <FieldRenderer
         name={`${basePath}.awaitResult`}
-        schema={UIPATH_PROPERTIES["awaitResult"] as Schema}
+        schema={UIPATH_PROPERTIES.awaitResult as Schema}
       />
       {releaseKey && release && (
         <InputArgumentsField
           label={release.Name}
           schema={schema}
-          name={[name, configKey, "inputArguments"].filter(identity).join(".")}
+          name={compact([name, configKey, "inputArguments"]).join(".")}
         />
       )}
 

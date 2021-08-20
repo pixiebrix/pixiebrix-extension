@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -15,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ConfigurableAuth } from "@/types/contract";
+import { SanitizedAuth } from "@/types/contract";
 import {
   SanitizedServiceConfiguration,
   IService,
@@ -23,6 +24,9 @@ import {
   ServiceConfig,
   ServiceLocator,
   SanitizedConfig,
+  KeyedConfig,
+  RegistryId,
+  UUID,
 } from "@/core";
 import { sortBy, isEmpty } from "lodash";
 import registry, {
@@ -35,6 +39,7 @@ import {
   NotConfiguredError,
 } from "@/services/errors";
 import { fetch } from "@/hooks/fetch";
+import { validateRegistryId } from "@/types/helpers";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -50,12 +55,13 @@ enum ServiceLevel {
 /** Return config excluding any secrets/keys. */
 export function excludeSecrets(
   service: IService,
-  config: ServiceConfig
+  config: KeyedConfig
 ): SanitizedConfig {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- cast required for nominal typing
   const result: SanitizedConfig = {} as SanitizedConfig;
   for (const [key, type] of Object.entries(inputProperties(service.schema))) {
-    // @ts-ignore: ts doesn't think $ref can be on SchemaDefinition
-    if (!REF_SECRETS.includes(type["$ref"])) {
+    // @ts-expect-error: ts doesn't think $ref can be on SchemaDefinition
+    if (!REF_SECRETS.includes(type.$ref)) {
       // Safe because we're getting from Object.entries
       // eslint-disable-next-line security/detect-object-injection
       result[key] = config[key];
@@ -72,22 +78,23 @@ export async function pixieServiceFactory(): Promise<SanitizedServiceConfigurati
     serviceId: PIXIEBRIX_SERVICE_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
+    // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- cast required for nominal subtyping
     config: {} as SanitizedConfig,
   };
 }
 
 type Option = {
-  id: string;
-  serviceId: string;
+  id: UUID;
+  serviceId: RegistryId;
   level: ServiceLevel;
   local: boolean;
-  config: ServiceConfig;
+  config: ServiceConfig | SanitizedConfig;
 };
 
 let wasInitialized = false;
 
 class LazyLocatorFactory {
-  private remote: ConfigurableAuth[] = [];
+  private remote: SanitizedAuth[] = [];
 
   private local: RawServiceConfiguration[] = [];
 
@@ -112,7 +119,7 @@ class LazyLocatorFactory {
   }
 
   async refreshRemote(): Promise<void> {
-    this.remote = await fetch("/api/services/shared/?meta=1");
+    this.remote = await fetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
     console.debug(`Fetched ${this.remote.length} remote service auths`);
     this.makeOptions();
   }
@@ -152,7 +159,7 @@ class LazyLocatorFactory {
           ...x,
           level: x.organization ? ServiceLevel.Team : ServiceLevel.BuiltIn,
           local: false,
-          serviceId: x.service.name,
+          serviceId: validateRegistryId(x.service.name),
         })),
       ],
       (x) => x.level
@@ -172,8 +179,8 @@ class LazyLocatorFactory {
   }
 
   async locate(
-    serviceId: string,
-    authId: string
+    serviceId: RegistryId,
+    authId: UUID
   ): Promise<SanitizedServiceConfiguration> {
     if (!this.initialized) {
       await this.refresh();
@@ -220,7 +227,7 @@ class LazyLocatorFactory {
     return {
       _sanitizedServiceConfigurationBrand: undefined,
       id: authId,
-      serviceId: serviceId,
+      serviceId,
       proxy: service.hasAuth && !match.local,
       config: excludeSecrets(service, match.config),
     };

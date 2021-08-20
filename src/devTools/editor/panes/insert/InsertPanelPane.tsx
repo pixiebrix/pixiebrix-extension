@@ -44,7 +44,7 @@ const InsertPanelPane: React.FunctionComponent<{
   const addExistingPanel = useAddExisting(config, cancel);
 
   return (
-    <Centered>
+    <Centered isScrollable>
       <div className="PaneTitle">Inserting Panel</div>
 
       <div className="text-left">

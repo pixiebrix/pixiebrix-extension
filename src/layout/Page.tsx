@@ -39,11 +39,11 @@ export const PageTitle: React.FunctionComponent<{
 const Page: React.FunctionComponent<{
   icon: IconProp;
   title: string;
-  description: string | React.ReactNode;
+  description?: string | React.ReactNode;
   breadcrumb?: React.ReactNode;
   toolbar?: React.ReactNode;
   children: React.ReactNode;
-}> = ({ icon, title, breadcrumb, toolbar, description, children }) => {
+}> = ({ icon, title, breadcrumb, toolbar, description = null, children }) => {
   useTitle(title);
 
   return (

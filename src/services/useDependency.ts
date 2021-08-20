@@ -17,32 +17,39 @@
 
 import { useAsyncState } from "@/hooks/common";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { reportError } from "@/telemetry/logging";
-import { useToasts } from "react-toast-notifications";
 import { useFormikContext } from "formik";
-import { SanitizedServiceConfiguration, ServiceDependency } from "@/core";
+import {
+  RegistryId,
+  SanitizedServiceConfiguration,
+  ServiceDependency,
+} from "@/core";
 import { castArray, head } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";
 import { Service } from "@/types";
 import { containsPermissions, requestPermissions } from "@/utils/permissions";
 import { getErrorMessage } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
 
 type Listener = () => void;
 
-const permissionsListeners = new Map<string, Listener[]>();
-
-export function useDependency(
-  serviceId: string | string[]
-): {
+type Dependency = {
   config: SanitizedServiceConfiguration;
   service: Service;
   hasPermissions: boolean;
   requestPermissions: () => void;
-} {
-  const { addToast } = useToasts();
+};
+
+const permissionsListeners = new Map<string, Listener[]>();
+
+function listenerKey(dependency: ServiceDependency) {
+  return `${dependency.id}:${dependency.config}`;
+}
+
+function useDependency(serviceId: RegistryId | RegistryId[]): Dependency {
+  const notify = useNotifications();
   const { values } = useFormikContext<{ services: ServiceDependency[] }>();
-  const [grantedPermissions, setGrantedPermissions] = useState<boolean>(false);
+  const [grantedPermissions, setGrantedPermissions] = useState(false);
 
   const serviceIds = useMemo(() => castArray(serviceId), [serviceId]);
 
@@ -58,38 +65,31 @@ export function useDependency(
   }, [serviceIds, values.services]);
 
   const [serviceResult] = useAsyncState(async () => {
-    if (dependency.config) {
+    if (dependency?.config) {
       const localConfig = await locator.locate(
         dependency.id,
         dependency.config
       );
+
       const service = await registry.lookup(dependency.id);
-      return { localConfig, service };
+
+      const origins = service.getOrigins(localConfig.config);
+
+      const hasPermissions = await containsPermissions({ origins });
+
+      return { localConfig, service, origins, hasPermissions };
     }
 
     throw new Error("No integration selected");
   }, [dependency?.config]);
 
-  const origins = useMemo(() => {
-    return serviceResult?.service
-      ? serviceResult.service.getOrigins(serviceResult.localConfig.config)
-      : null;
-  }, [serviceResult.localConfig.config, serviceResult?.service]);
-
-  const [hasPermissions] = useAsyncState(async () => {
-    if (origins != null) {
-      return containsPermissions({ origins });
-    }
-
-    return false;
-  }, [origins]);
-
   useEffect(() => {
-    if (dependency?.config && !hasPermissions) {
-      const key = `${dependency.id}:${dependency.config}`;
+    if (dependency != null && !serviceResult?.hasPermissions) {
+      const key = listenerKey(dependency);
       const listener = () => {
         setGrantedPermissions(true);
       };
+
       permissionsListeners.set(key, [
         ...(permissionsListeners.get(key) ?? []),
         listener,
@@ -101,50 +101,36 @@ export function useDependency(
         );
       };
     }
-  }, [
-    dependency?.id,
-    dependency?.config,
-    setGrantedPermissions,
-    hasPermissions,
-  ]);
+  }, [dependency, setGrantedPermissions, serviceResult]);
 
   const requestPermissionCallback = useCallback(async () => {
-    const permissions = { origins };
+    const permissions = { origins: serviceResult?.origins ?? [] };
     console.debug("requesting origins", { permissions });
     try {
       const result = await requestPermissions(permissions);
       setGrantedPermissions(result);
-      if (result) {
-        const key = `${dependency.id}:${dependency.config}`;
+      if (result && dependency != null) {
+        const key = listenerKey(dependency);
         for (const listener of permissionsListeners.get(key)) {
           listener();
         }
-      } else {
-        addToast("You must accept the permissions request", {
-          appearance: "warning",
-          autoDismiss: true,
-        });
+      } else if (!result) {
+        notify.warning("You must accept the permissions request");
       }
     } catch (error: unknown) {
       setGrantedPermissions(false);
-      reportError(error);
-      addToast(`Error granting permissions: ${getErrorMessage(error)}`, {
-        appearance: "error",
-        autoDismiss: true,
+      notify.error(`Error granting permissions: ${getErrorMessage(error)}`, {
+        error,
       });
     }
-  }, [
-    addToast,
-    setGrantedPermissions,
-    origins,
-    dependency?.id,
-    dependency?.config,
-  ]);
+  }, [notify, setGrantedPermissions, serviceResult?.origins, dependency]);
 
   return {
     config: serviceResult?.localConfig,
     service: serviceResult?.service,
-    hasPermissions: hasPermissions || grantedPermissions,
+    hasPermissions: serviceResult?.hasPermissions || grantedPermissions,
     requestPermissions: requestPermissionCallback,
   };
 }
+
+export default useDependency;

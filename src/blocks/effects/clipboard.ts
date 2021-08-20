@@ -39,13 +39,13 @@ export class CopyToClipboard extends Effect {
     type: "object",
     properties: {
       text: {
-        type: "string",
+        type: ["string", "boolean", "number"],
       },
     },
   };
 
   async effect({ text }: BlockArg): Promise<void> {
-    copy(text);
+    copy(String(text));
   }
 }
 

@@ -16,8 +16,9 @@
  */
 
 import { uniq, compact, sortBy, unary, intersection } from "lodash";
-import getCssSelector, { css_selector_type } from "css-selector-generator";
+import { getCssSelector, css_selector_type } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement } from "@/utils";
+import { BusinessError } from "@/errors";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -74,14 +75,14 @@ function escapeDoubleQuotes(str: string): string {
  * Returns true iff any of the immediate children are text nodes.
  * @param $element
  */
-function hasTextNodeChild($element: JQuery<HTMLElement>): boolean {
+function hasTextNodeChild($element: JQuery): boolean {
   return $element
     .contents()
     .get()
     .some((x) => x.nodeType === Node.TEXT_NODE);
 }
 
-function commonAttr($items: JQuery<HTMLElement>, attr: string) {
+function commonAttr($items: JQuery, attr: string) {
   const attributeValues = $items
     .toArray()
     .map((x) => x.attributes.getNamedItem(attr)?.value);
@@ -108,10 +109,7 @@ function commonAttr($items: JQuery<HTMLElement>, attr: string) {
   return filtered.length > 0 ? filtered.join(" ") : null;
 }
 
-function setCommonAttrs(
-  $common: JQuery<HTMLElement>,
-  $items: JQuery<HTMLElement>
-) {
+function setCommonAttrs($common: JQuery, $items: JQuery) {
   const { attributes } = $items.get(0);
 
   // Find the common attributes between the elements
@@ -186,7 +184,7 @@ function removeUnstyledLayout(node: Node): Node | null {
  * placeholder
  */
 function commonButtonStructure(
-  $items: JQuery<HTMLElement>,
+  $items: JQuery,
   captioned = false
 ): [JQuery<HTMLElement | Text>, boolean] {
   let currentCaptioned = captioned;
@@ -277,7 +275,7 @@ type PanelStructureState = {
  * @param state current traversal/insertion state
  */
 function commonPanelStructure(
-  $items: JQuery<HTMLElement>,
+  $items: JQuery,
   {
     inHeader = false,
     headingInserted = false,
@@ -339,7 +337,7 @@ function commonPanelStructure(
   return [$common, { inHeader, bodyInserted, headingInserted }];
 }
 
-function buildHeader(proto: HTMLElement): [JQuery<HTMLElement>, boolean] {
+function buildHeader(proto: HTMLElement): [JQuery, boolean] {
   const tag = proto.tagName.toLowerCase();
   const $inferred = $(`<${tag}>`);
   setCommonAttrs($inferred, $(proto));
@@ -395,7 +393,7 @@ function buildBody(proto: HTMLElement): [JQuery<HTMLElement | Text>, boolean] {
 export function buildSinglePanelElement(
   proto: HTMLElement,
   { headingInserted = false }: PanelStructureState = {} as PanelStructureState
-): [JQuery<HTMLElement>, PanelStructureState] {
+): [JQuery, PanelStructureState] {
   let bodyInserted = false;
 
   const $inferred = $(`<${proto.tagName.toLowerCase()}>`);
@@ -419,7 +417,7 @@ export function buildSinglePanelElement(
   return [$inferred, { inHeader: false, headingInserted, bodyInserted }];
 }
 
-function commonButtonHTML(tag: string, $items: JQuery<HTMLElement>): string {
+function commonButtonHTML(tag: string, $items: JQuery): string {
   if ($items.length === 0) {
     throw new Error(`No items provided`);
   }
@@ -438,7 +436,7 @@ function commonButtonHTML(tag: string, $items: JQuery<HTMLElement>): string {
   return $("<div>").append($common.clone()).html();
 }
 
-function commonPanelHTML(tag: string, $items: JQuery<HTMLElement>): string {
+function commonPanelHTML(tag: string, $items: JQuery): string {
   if ($items.length === 0) {
     throw new Error(`No items provided`);
   }
@@ -548,6 +546,7 @@ export function getCommonAncestor(...args: Node[]): Node {
   let currentNode: Node | null = node;
 
   while (currentNode) {
+    // eslint-disable-next-line @typescript-eslint/no-loop-func -- The function is used immediately
     if (otherNodes.every((x) => currentNode.contains(x))) {
       return currentNode;
     }
@@ -630,7 +629,7 @@ export function findContainer(
  * @param selected the selected descendent elements
  */
 function containerChildren(
-  $container: JQuery<HTMLElement>,
+  $container: JQuery,
   selected: HTMLElement[]
 ): HTMLElement[] {
   return selected.map((element) => {
@@ -683,7 +682,9 @@ export function inferButtonHTML(
   const $container = $(container);
 
   if (selected.length === 0) {
-    throw new Error("one or more prototype button-like elements required");
+    throw new BusinessError(
+      "One or more prototype button-like elements required"
+    );
   } else if (selected.length > 1) {
     const children = containerChildren($container, selected);
     // Vote on the root tag
@@ -709,7 +710,7 @@ export function inferButtonHTML(
       }
     }
 
-    throw new Error(
+    throw new BusinessError(
       `Did not find any button-like tags in container ${container.tagName}`
     );
   }

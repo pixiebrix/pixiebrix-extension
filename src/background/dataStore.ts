@@ -18,6 +18,7 @@
 import { readStorage, setStorage } from "@/chrome";
 import { JsonObject } from "type-fest";
 import { liftBackground } from "./protocol";
+import { SerializableResponse } from "@/messaging/protocol";
 
 export const LOCAL_DATA_STORE = "LOCAL_DATA_STORE";
 export const KEY_PREFIX = "@@";
@@ -40,9 +41,7 @@ async function _setRecord(uuid: string, value: JsonObject): Promise<void> {
 
 export const getRecord = liftBackground(
   "GET_DATA_STORE",
-  async (uuid: string) => {
-    return _getRecord(uuid);
-  }
+  async (uuid: string) => _getRecord(uuid) as SerializableResponse
 );
 
 export const setRecord = liftBackground(

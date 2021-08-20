@@ -78,11 +78,12 @@ const PermissionsPopup: React.FC = () => {
     <Centered>
       <p>
         Additional permissions are required, the browser will prompt you to
-        accept permissions.
+        accept them.
       </p>
 
       <p>
-        <AsyncButton onClick={request}>
+        {/* eslint-disable-next-line jsx-a11y/no-autofocus -- It's a modal, autofocus improves a11y */}
+        <AsyncButton onClick={request} autoFocus>
           <FontAwesomeIcon icon={faShieldAlt} /> Grant Permissions
         </AsyncButton>
       </p>

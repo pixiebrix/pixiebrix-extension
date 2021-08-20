@@ -31,25 +31,23 @@ const ExtensionConfigurationCard: React.FunctionComponent<OwnProps> = ({
   name,
   extensionPoint,
   blocks = [],
-}) => {
-  return (
-    <Card.Body>
-      {Object.entries(inputProperties(extensionPoint.inputSchema)).map(
-        ([property, schema]) => {
-          const Field = defaultFieldRenderer(schema as Schema);
-          return (
-            <Field
-              key={property}
-              name={name ? `${name}.${property}` : property}
-              schema={schema as Schema}
-              // @ts-ignore: need to type field props to allow extra types
-              blocks={blocks}
-            />
-          );
-        }
-      )}
-    </Card.Body>
-  );
-};
+}) => (
+  <Card.Body>
+    {Object.entries(inputProperties(extensionPoint.inputSchema)).map(
+      ([property, schema]) => {
+        const Field = defaultFieldRenderer(schema as Schema);
+        return (
+          <Field
+            key={property}
+            name={name ? `${name}.${property}` : property}
+            schema={schema as Schema}
+            // @ts-expect-error need to type field props to allow extra types
+            blocks={blocks}
+          />
+        );
+      }
+    )}
+  </Card.Body>
+);
 
 export default ExtensionConfigurationCard;

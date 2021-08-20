@@ -27,9 +27,7 @@ import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 
 export const ExtensionIcon: React.FunctionComponent<{ type: ElementType }> = ({
   type,
-}) => {
-  return <FontAwesomeIcon icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece} />;
-};
+}) => <FontAwesomeIcon icon={ADAPTERS.get(type)?.icon ?? faPuzzlePiece} />;
 
 export const NotAvailableIcon: React.FunctionComponent = () => (
   <FontAwesomeIcon icon={faEyeSlash} title="Not available on page" />

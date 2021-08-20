@@ -16,12 +16,12 @@
  */
 
 import { castArray } from "lodash";
-import { MessageContext, Schema } from "@/core";
+import { MessageContext, RegistryId, Schema } from "@/core";
+import { BlockConfig, BlockPipeline } from "@/blocks/combinators";
 import { BusinessError } from "@/errors";
 import { OutputUnit } from "@cfworker/json-schema";
-import { BlockConfig, BlockPipeline } from "@/blocks/combinators";
 
-export class PipelineConfigurationError extends Error {
+export class PipelineConfigurationError extends BusinessError {
   readonly config: BlockPipeline;
 
   constructor(message: string, config: BlockConfig | BlockPipeline) {
@@ -38,7 +38,7 @@ export class PipelineConfigurationError extends Error {
  * different browser context (e.g., the PixieBrix sidebar)
  */
 export class HeadlessModeError extends Error {
-  public readonly blockId: string;
+  public readonly blockId: RegistryId;
 
   public readonly args: unknown;
 
@@ -47,7 +47,7 @@ export class HeadlessModeError extends Error {
   public readonly loggerContext: MessageContext;
 
   constructor(
-    blockId: string,
+    blockId: RegistryId,
     args: unknown,
     ctxt: unknown,
     loggerContext: MessageContext
@@ -81,6 +81,33 @@ export class InputValidationError extends BusinessError {
     this.name = "InputValidationError";
     this.schema = schema;
     this.input = input;
+    this.errors = errors;
+  }
+}
+
+/**
+ * Error indicating output elements of a block did not match the schema.
+ *
+ * In practice, this error should be logged, not thrown. Checking brick post-conditions is helpful for fault
+ * localization, but we optimistically try to proceed with brick execution.
+ */
+export class OutputValidationError extends BusinessError {
+  readonly schema: Schema;
+
+  readonly instance: unknown;
+
+  readonly errors: OutputUnit[];
+
+  constructor(
+    message: string,
+    schema: Schema,
+    instance: unknown,
+    errors: OutputUnit[]
+  ) {
+    super(message);
+    this.name = "OutputValidationError";
+    this.schema = schema;
+    this.instance = instance;
     this.errors = errors;
   }
 }

@@ -18,11 +18,10 @@
 import { validateKind } from "@/validators/generic";
 import yaml from "js-yaml";
 
-// @ts-ignore: jest has a transformer for text files
 import serviceTemplate from "@contrib/templates/service.txt";
 
 test("can validate service", async () => {
-  const json = yaml.load(serviceTemplate) as object;
+  const json = yaml.load(serviceTemplate) as Record<string, unknown>;
   const result = await validateKind(json, "service");
   console.log(result.errors);
   expect(result.valid).toBeTruthy();

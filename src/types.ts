@@ -16,7 +16,7 @@
  */
 
 import {
-  BaseExtensionConfig,
+  EmptyConfig,
   BlockArg,
   BlockIcon,
   BlockOptions,
@@ -33,11 +33,13 @@ import {
   Schema,
   TokenContext,
   KeyedConfig,
+  RegistryId,
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
 import { partition } from "lodash";
 import { Permissions } from "webextension-polyfill-ts";
+import { validateRegistryId } from "@/types/helpers";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
@@ -46,7 +48,7 @@ export abstract class Service<
   TConfig extends KeyedConfig = KeyedConfig,
   TOAuth extends AuthData = AuthData
 > implements IService<TConfig> {
-  id: string;
+  id: RegistryId;
 
   name: string;
 
@@ -63,7 +65,7 @@ export abstract class Service<
   abstract isToken: boolean;
 
   protected constructor(
-    id: string,
+    id: RegistryId,
     name: string,
     description?: string,
     icon?: BlockIcon
@@ -89,9 +91,9 @@ export abstract class Service<
   ): AxiosRequestConfig;
 }
 
-export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
+export abstract class ExtensionPoint<TConfig extends EmptyConfig>
   implements IExtensionPoint {
-  public readonly id: string;
+  public readonly id: RegistryId;
 
   public readonly name: string;
 
@@ -99,7 +101,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
 
   public readonly icon: BlockIcon;
 
-  protected readonly extensions: IExtension<TConfig>[] = [];
+  protected readonly extensions: Array<IExtension<TConfig>> = [];
 
   protected readonly template?: string;
 
@@ -107,15 +109,17 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
 
   protected readonly logger: Logger;
 
-  public readonly syncInstall: boolean = false;
+  public get syncInstall() {
+    return false;
+  }
 
   /**
    * Permissions required to use this extensions
    * https://developer.chrome.com/extensions/permission_warnings
    */
-  public abstract readonly permissions: Permissions.Permissions = {};
+  public abstract readonly permissions: Permissions.Permissions;
 
-  public get defaultOptions(): { [key: string]: unknown } {
+  public get defaultOptions(): Record<string, unknown> {
     return {};
   }
 
@@ -125,7 +129,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
     description?: string,
     icon?: BlockIcon
   ) {
-    this.id = id;
+    this.id = validateRegistryId(id);
     this.name = name;
     this.description = description;
     this.icon = icon;
@@ -135,7 +139,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
   /** Internal method to perform a partial uninstall of the extension point */
   protected abstract removeExtensions(extensionIds: string[]): void;
 
-  syncExtensions(extensions: IExtension<TConfig>[]): void {
+  syncExtensions(extensions: Array<IExtension<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
 
     const updatedIds = new Set(extensions.map((x) => x.id));
@@ -185,7 +189,7 @@ export abstract class ExtensionPoint<TConfig extends BaseExtensionConfig>
 }
 
 export abstract class Block implements IBlock {
-  readonly id: string;
+  readonly id: RegistryId;
 
   readonly name: string;
 
@@ -207,7 +211,7 @@ export abstract class Block implements IBlock {
     description?: string,
     icon?: BlockIcon
   ) {
-    this.id = id;
+    this.id = validateRegistryId(id);
     this.name = name;
     this.description = description;
     this.icon = icon;

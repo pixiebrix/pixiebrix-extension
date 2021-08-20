@@ -25,6 +25,7 @@ import { MissingConfigurationError } from "@/services/errors";
 import uniq from "lodash/uniq";
 import isPlainObject from "lodash/isPlainObject";
 import mapValues from "lodash/mapValues";
+import { validateRegistryId, isUUID } from "@/types/helpers";
 
 const IDENTIFIER_REGEX = /^[A-Z_a-z]\w*$/;
 
@@ -51,7 +52,7 @@ function blockSchemaFactory(): Yup.Schema<Record<string, unknown>> {
   return Yup.object().shape({
     id: Yup.string().test("is-block", "Block not found", async (id: string) =>
       // eslint-disable-next-line security/detect-non-literal-fs-filename -- false positive
-      blockRegistry.exists(id)
+      blockRegistry.exists(validateRegistryId(id))
     ),
     templateEngine: Yup.string()
       .oneOf(["nunjucks", "mustache", "handlebars"])
@@ -74,7 +75,7 @@ function isBrickSchema(schema: Schema): boolean {
   //   },
   // ],
   return (
-    !!BRICK_RUN_METHODS[schema.$ref] ||
+    Boolean(BRICK_RUN_METHODS[schema.$ref]) ||
     (schema.oneOf ?? []).some(
       (x) => typeof x === "object" && BRICK_RUN_METHODS[x.$ref]
     )
@@ -160,7 +161,7 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
           "Unknown service",
           async (value) => {
             try {
-              await serviceRegistry.lookup(value);
+              await serviceRegistry.lookup(validateRegistryId(value));
             } catch (error: unknown) {
               if (error instanceof DoesNotExistError) {
                 return false;
@@ -194,6 +195,12 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
               });
             }
 
+            if (!isUUID(value)) {
+              return this.createError({
+                message: "Expected service configuration UUID",
+              });
+            }
+
             try {
               await locate(this.parent.id, value);
             } catch (error: unknown) {
@@ -213,9 +220,11 @@ function serviceSchemaFactory(): Yup.Schema<unknown> {
         ),
       })
     )
-    .test("unique-keys", "Services must have unique keys", function (value) {
-      return value.length === uniq(value.map((x) => x.outputKey)).length;
-    });
+    .test(
+      "unique-keys",
+      "Services must have unique keys",
+      (value) => value.length === uniq(value.map((x) => x.outputKey)).length
+    );
 }
 
 export function extensionValidatorFactory(schema: Schema): Yup.Schema<unknown> {

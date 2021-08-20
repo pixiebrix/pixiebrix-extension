@@ -22,29 +22,27 @@ import JsonTree from "@/components/JsonTree";
 
 const InputValidationErrorDetail: React.FunctionComponent<{
   error: InputValidationError;
-}> = ({ error }) => {
-  return (
-    <Row>
-      <Col>
-        <span>Errors</span>
-        <ul>
-          {error.errors.map((x) => (
-            <li key={`${x.keywordLocation}-${x.error}`}>
-              {x.keywordLocation}: {x.error}
-            </li>
-          ))}
-        </ul>
-      </Col>
-      <Col>
-        <span>Rendered Args</span>
-        <JsonTree data={error.input} />
-      </Col>
-      <Col>
-        <span>Schema</span>
-        <JsonTree data={error.schema} />
-      </Col>
-    </Row>
-  );
-};
+}> = ({ error }) => (
+  <Row>
+    <Col>
+      <span>Errors</span>
+      <ul>
+        {error.errors.map((x) => (
+          <li key={`${x.keywordLocation}-${x.error}`}>
+            {x.keywordLocation}: {x.error}
+          </li>
+        ))}
+      </ul>
+    </Col>
+    <Col>
+      <span>Rendered Args</span>
+      <JsonTree data={error.input} />
+    </Col>
+    <Col>
+      <span>Schema</span>
+      <JsonTree data={error.schema} />
+    </Col>
+  </Row>
+);
 
 export default InputValidationErrorDetail;

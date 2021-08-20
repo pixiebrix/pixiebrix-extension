@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -22,41 +23,39 @@ import ToggleField from "@/devTools/editor/components/ToggleField";
 
 const PanelTeb: React.FunctionComponent<{
   eventKey?: string;
-}> = ({ eventKey = "panelBody" }) => {
-  return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Heading
-        </Form.Label>
-        <Col sm={10}>
-          <Field name="extension.heading">
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control type="text" {...field} />
-            )}
-          </Field>
-        </Col>
-      </Form.Group>
+}> = ({ eventKey = "panelBody" }) => (
+  <Tab.Pane eventKey={eventKey} className="h-100">
+    <Form.Group as={Row} controlId="formCaption">
+      <Form.Label column sm={2}>
+        Heading
+      </Form.Label>
+      <Col sm={10}>
+        <Field name="extension.heading">
+          {({ field }: { field: FieldInputProps<string> }) => (
+            <Form.Control type="text" {...field} />
+          )}
+        </Field>
+      </Col>
+    </Form.Group>
 
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Collapsible
-        </Form.Label>
-        <Col sm={10}>
-          <ToggleField name="extension.collapsible" />
-        </Col>
-      </Form.Group>
+    <Form.Group as={Row} controlId="formCaption">
+      <Form.Label column sm={2}>
+        Collapsible
+      </Form.Label>
+      <Col sm={10}>
+        <ToggleField name="extension.collapsible" />
+      </Col>
+    </Form.Group>
 
-      <Form.Group as={Row} controlId="formCaption">
-        <Form.Label column sm={2}>
-          Shadow DOM
-        </Form.Label>
-        <Col sm={10}>
-          <ToggleField name="extension.shadowDOM" />
-        </Col>
-      </Form.Group>
-    </Tab.Pane>
-  );
-};
+    <Form.Group as={Row} controlId="formCaption">
+      <Form.Label column sm={2}>
+        Shadow DOM
+      </Form.Label>
+      <Col sm={10}>
+        <ToggleField name="extension.shadowDOM" />
+      </Col>
+    </Form.Group>
+  </Tab.Pane>
+);
 
 export default PanelTeb;

@@ -110,7 +110,9 @@ const QuickAdd: React.FunctionComponent<{
           <Card
             className="RecommendationCard"
             key={block.id}
-            onClick={() => onSelect(block)}
+            onClick={() => {
+              onSelect(block);
+            }}
           >
             <Card.Body className="text-center RecommendationCard__image">
               <div>

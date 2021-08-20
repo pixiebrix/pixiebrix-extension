@@ -15,20 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser } from "webextension-polyfill-ts";
+import React from "react";
+import { Schema } from "@/core";
+import { ListGroup } from "react-bootstrap";
 
-export default async function fetchSVG(
-  src: string
-): Promise<JQuery<SVGElement>> {
-  const extensionPrefix = browser.runtime.getURL("/");
-  if (!src.startsWith(extensionPrefix)) {
-    throw new Error(
-      "fetchSVG can only be used to fetch icons bundled with the extension"
-    );
-  }
+const PrimitiveEntry: React.FunctionComponent<{
+  prop: string;
+  definition: Schema;
+}> = ({ prop, definition }) => {
+  const { type = "unknown", format } = definition;
+  // FIXME: template can be an array https://github.com/pixiebrix/pixiebrix-extension/issues/990
+  return (
+    <ListGroup.Item key={prop}>
+      <span>{prop}</span>
+      <span className="type">: {format ? `${format} ${type}` : type}</span>
+    </ListGroup.Item>
+  );
+};
 
-  const response = await fetch(src);
-  const svg = await response.text();
-  // There might also be comment nodes, so they need to be filtered out
-  return $<SVGElement>(svg).filter("svg");
-}
+export default PrimitiveEntry;

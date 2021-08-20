@@ -50,9 +50,13 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
       <Creatable
         isClearable
         options={options}
-        onCreateOption={(value) => setCreated(uniq([...created, value]))}
+        onCreateOption={(value) => {
+          setCreated(uniq([...created, value]));
+        }}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue(option?.value)}
+        onChange={(option) => {
+          helpers.setValue(option?.value);
+        }}
       />
     );
   } else if (options.length > 0 && !creatable) {
@@ -61,7 +65,9 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         isClearable
         options={options}
         value={options.find((x) => x.value === value)}
-        onChange={(option) => helpers.setValue(option?.value)}
+        onChange={(option) => {
+          helpers.setValue(option?.value);
+        }}
       />
     );
   } else if (schema.format === "markdown") {
@@ -70,7 +76,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         as="textarea"
         value={value ?? ""}
         {...field}
-        isInvalid={!!meta.error}
+        isInvalid={Boolean(meta.error)}
       />
     );
   } else {
@@ -79,7 +85,7 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         type="text"
         value={value ?? ""}
         {...field}
-        isInvalid={!!meta.error}
+        isInvalid={Boolean(meta.error)}
       />
     );
   }

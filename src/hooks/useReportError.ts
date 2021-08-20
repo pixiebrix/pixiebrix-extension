@@ -15,26 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import "./Banner.scss";
+import { useEffect } from "react";
+import { reportError } from "@/telemetry/logging";
 
-const errorMessages = new Map([
-  [
-    "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",
-    "PixieBrix can’t run on internal browser pages",
-  ],
-  ["ERR_BROWSER_ACTION_TOGGLE", "PixieBrix could not run on the page"],
-]);
+/**
+ * React hook to report an error
+ */
+function useReportError(error: unknown): void {
+  useEffect(() => {
+    if (error) {
+      reportError(error);
+    }
+  }, [error]);
+}
 
-const ErrorBanner: React.FunctionComponent = () => {
-  const message = errorMessages.get(
-    new URLSearchParams(location.search).get("error")
-  );
-  if (message) {
-    return <div className="error-banner w-100">{message}</div>;
-  }
-
-  return null;
-};
-
-export default ErrorBanner;
+export default useReportError;

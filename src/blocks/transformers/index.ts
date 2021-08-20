@@ -29,3 +29,4 @@ export * from "./detect";
 export * from "./modal";
 export * from "./encode";
 export * from "./template";
+export * from "./url";

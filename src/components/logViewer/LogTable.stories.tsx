@@ -15,19 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+Object.assign(global, { chrome: { runtime: { id: 42 } } });
+
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { v4 as uuidv4 } from "uuid";
+import { validateRegistryId, uuidv4 } from "@/types/helpers";
 import LogTable from "@/components/logViewer/LogTable";
 import { serializeError } from "serialize-error";
 import { Card } from "react-bootstrap";
 import { ContextError } from "@/errors";
 import { InputValidationError } from "@/blocks/errors";
 import { Schema } from "@/core";
-import { LogEntry } from "@/background/logging";
+import type { LogEntry } from "@/background/logging";
 
 export default {
-  title: "Common/LogTable",
+  title: "Editor/LogTable",
   component: LogTable,
 } as ComponentMeta<typeof LogTable>;
 
@@ -52,13 +54,15 @@ NoEntriesForLevel.args = {
   pageEntries: [],
 };
 
+const blockId = validateRegistryId("@pixiebrix/system/notification");
+
 const DEBUG_MESSAGE: LogEntry = {
   uuid: uuidv4(),
   timestamp: Date.now().toString(),
   message: "Sample debug message",
   level: "debug",
   context: {
-    blockId: "@pixiebrix/system/notification",
+    blockId,
   },
 };
 
@@ -69,7 +73,7 @@ const ERROR_MESSAGE: LogEntry = {
   level: "error",
   context: {
     // Just the context that will show up in the table
-    blockId: "@pixiebrix/system/notification",
+    blockId,
   },
   error: serializeError(new Error("Simple error")),
 };
@@ -104,11 +108,11 @@ const CONTEXT_ERROR_MESSAGE: LogEntry = {
   level: "error",
   context: {
     // Just the context that will show up in the table
-    blockId: "@pixiebrix/system/notification",
+    blockId,
   },
   error: serializeError(
     new ContextError(validationError, {
-      blockId: "@pixiebrix/system/notification",
+      blockId,
     })
   ),
 };

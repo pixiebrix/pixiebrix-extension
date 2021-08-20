@@ -31,7 +31,6 @@ import { IExtension } from "@/core";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import hash from "object-hash";
 import logoUrl from "@/icons/custom-icons/favicon.svg";
-import { openExtensionOptions } from "@/messaging/external";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import useInstallState from "@/devTools/editor/hooks/useInstallState";
 import InstalledEntry from "@/devTools/editor/sidebar/InstalledEntry";
@@ -40,29 +39,26 @@ import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
 import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
-import useSvg from "@/hooks/useSvg";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
   icon: IconProp;
   onClick: () => void;
   beta?: boolean;
-}> = ({ beta, icon, caption, onClick }) => {
-  return (
-    <Dropdown.Item onClick={onClick}>
-      <FontAwesomeIcon icon={icon} />
-      &nbsp;{caption}
-      {beta && (
-        <>
-          {" "}
-          <Badge variant="success" pill>
-            Beta
-          </Badge>
-        </>
-      )}
-    </Dropdown.Item>
-  );
-};
+}> = ({ beta, icon, caption, onClick }) => (
+  <Dropdown.Item onClick={onClick}>
+    <FontAwesomeIcon icon={icon} />
+    &nbsp;{caption}
+    {beta && (
+      <>
+        {" "}
+        <Badge variant="success" pill>
+          Beta
+        </Badge>
+      </>
+    )}
+  </Dropdown.Item>
+);
 
 const Sidebar: React.FunctionComponent<
   Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
@@ -117,19 +113,19 @@ const Sidebar: React.FunctionComponent<
 
   const addElement = useAddElement(reservedNames);
 
-  const logo = useSvg(logoUrl);
-
   return (
     <div className="Sidebar d-flex flex-column vh-100">
       <div className="Sidebar__actions flex-grow-0">
         <div className="d-inline-flex flex-wrap">
-          <span
-            className="Sidebar__logo"
-            dangerouslySetInnerHTML={{ __html: logo }}
-            onClick={async () => openExtensionOptions()}
-          />
+          <a
+            href="/options.html"
+            target="_blank"
+            title="Open PixieBrix Options"
+          >
+            <img src={logoUrl} alt="" width={31} height={31} />
+          </a>
           <DropdownButton
-            disabled={!!inserting || !hasPermissions}
+            disabled={Boolean(inserting) || !hasPermissions}
             variant="info"
             size="sm"
             title="Add"
@@ -150,20 +146,18 @@ const Sidebar: React.FunctionComponent<
               )
             )}
           </DropdownButton>
-          <div className="my-auto">
-            <Form.Check
-              type="checkbox"
-              label={
-                unavailableCount != null
-                  ? `Show ${unavailableCount} unavailable`
-                  : `Show unavailable`
-              }
-              defaultChecked={showAll}
-              onChange={(event: FormEvent<HTMLInputElement>) => {
-                setShowAll(event.currentTarget.checked);
-              }}
-            />
-          </div>
+          {unavailableCount ? (
+            <div className="my-auto">
+              <Form.Check
+                type="checkbox"
+                label={`Show ${unavailableCount} unavailable`}
+                defaultChecked={showAll}
+                onChange={(event: FormEvent<HTMLInputElement>) => {
+                  setShowAll(event.currentTarget.checked);
+                }}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="Sidebar__extensions flex-grow-1">

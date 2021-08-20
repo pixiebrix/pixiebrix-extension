@@ -79,7 +79,7 @@ export const KIND_SCHEMAS = {
 };
 
 export async function validateKind(
-  instance: object,
+  instance: Record<string, unknown>,
   kind: keyof typeof KIND_SCHEMAS
 ): Promise<ValidationResult> {
   const finalSchema = await dereference(KIND_SCHEMAS[kind] as Schema);
@@ -90,6 +90,29 @@ export async function validateKind(
   return validator.validate(instance);
 }
 
+/**
+ * Validate the output of a block against its output JSONSchema
+ */
+export async function validateOutput(
+  schema: Schema,
+  instance: unknown
+): Promise<ValidationResult> {
+  const validator = new Validator({
+    $id: urljoin(BASE_SCHEMA_URI, "block"),
+    ...schema,
+  } as ValidatorSchema);
+
+  // @ts-expect-error: loading statically
+  validator.addSchema(serviceSchema);
+
+  return validator.validate(instance ?? null);
+}
+
+/**
+ * Validate the input of a block against its output JSONSchema.
+ *
+ * To avoid secret leakage, does not validate the secret `$ref`s of properties taking service configuration.
+ */
 export async function validateInput(
   schema: Schema,
   instance: unknown
@@ -99,7 +122,7 @@ export async function validateInput(
     ...schema,
   } as ValidatorSchema);
 
-  // @ts-ignore: loading statically
+  // @ts-expect-error: loading statically
   validator.addSchema(serviceSchema);
 
   for (const service of await serviceRegistry.all()) {
@@ -107,11 +130,11 @@ export async function validateInput(
       $id: `${BASE_SCHEMA_URI}services/${service.id}`,
       type: "object",
       // Strip out the properties containing secrets because those will be excluded as this point
-      // @ts-ignore: getting confused about schema types
+      // @ts-expect-error: getting confused about schema types
       properties: pickBy(
         inputProperties(service.schema),
-        // @ts-ignore: getting confused about schema types
-        (x) => !REF_SECRETS.includes(x["$ref"])
+        // @ts-expect-error: getting confused about schema types
+        (x) => !REF_SECRETS.includes(x.$ref)
       ),
     });
   }
@@ -129,7 +152,7 @@ export function propertiesToSchema(
   return {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
-    properties: properties,
+    properties,
     required:
       required === undefined && !isEmpty(properties)
         ? Object.keys(properties)

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { liftBackground } from "@/background/protocol";
 import { rollbar } from "@/telemetry/rollbar";
 import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
@@ -109,6 +109,7 @@ async function getDB() {
           unique: false,
         });
       }
+
       // Create the joint index
       store.createIndex(
         "context",
@@ -205,9 +206,11 @@ export const recordError = liftBackground(
       const message = getErrorMessage(error);
 
       if (!(await _getDNT())) {
-        // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the
-        // object is the custom payload data
-        // https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+        // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the object is the custom
+        // payload data. WARNING: the prototype chain is lost during deserialization, so make sure any predicate you
+        // call here also handles deserialized errors properly.
+        // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+        // See https://github.com/sindresorhus/serialize-error/issues/48
         const errorObj = deserializeError(error);
 
         if (hasCancelRootCause(error)) {
@@ -335,16 +338,11 @@ export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
   _config = config;
 }
 
-export const getLoggingConfig = liftBackground(
-  "GET_LOGGING_CONFIG",
-  async () => {
-    return _getLoggingConfig();
-  }
+export const getLoggingConfig = liftBackground("GET_LOGGING_CONFIG", async () =>
+  _getLoggingConfig()
 );
 
 export const setLoggingConfig = liftBackground(
   "SET_LOGGING_CONFIG",
-  async (config: LoggingConfig) => {
-    return _setLoggingConfig(config);
-  }
+  async (config: LoggingConfig) => _setLoggingConfig(config)
 );

@@ -19,6 +19,7 @@ import { browser } from "webextension-polyfill-ts";
 import { isBrowserActionPanel } from "@/chrome";
 import { HandlerMap } from "@/messaging/protocol";
 import { reportError } from "@/telemetry/logging";
+import { RegistryId, UUID } from "@/core";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/browserAction/";
 
@@ -30,7 +31,7 @@ let seqNumber = -1;
  * Information required to run a renderer
  */
 export type RendererPayload = {
-  blockId: string;
+  blockId: RegistryId;
   key: string;
   args: unknown;
   ctxt: unknown;
@@ -42,8 +43,8 @@ export type RendererError = {
 };
 
 export type PanelEntry = {
-  extensionId: string;
-  extensionPointId: string;
+  extensionId: UUID;
+  extensionPointId: RegistryId;
   heading: string;
   payload: RendererPayload | RendererError | null;
 };
@@ -88,6 +89,7 @@ handlers.set(RENDER_PANELS_MESSAGE, async (message: RenderPanelsMessage) => {
     );
     return;
   }
+
   seqNumber = messageSeq;
 
   console.debug(

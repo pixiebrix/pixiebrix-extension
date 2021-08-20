@@ -1,15 +1,11 @@
-import { IExtension, Metadata } from "@/core";
+import { IExtension } from "@/core";
 import { JsonObject } from "type-fest";
-
-// FIXME: we have inconsistent typing of extensions, e.g., IExtension, InstalledExtension, ExtensionOptions. So handle
-//  common shape without referencing those modules: https://github.com/pixiebrix/pixiebrix-extension/issues/893
-type Extension = IExtension & { _recipe?: Metadata };
 
 /**
  * Select data to report to the team admins for the deployment
  */
 export function selectEventData(
-  extension: Extension | null | undefined
+  extension: IExtension | null | undefined
 ): JsonObject {
   if (extension == null) {
     return {};

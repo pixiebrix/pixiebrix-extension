@@ -22,7 +22,7 @@ import { Form, Row, Col } from "react-bootstrap";
 import { castArray, isEmpty } from "lodash";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
-import { IBlock } from "@/core";
+import { IBlock, RegistryId } from "@/core";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import {
   FieldArray,
@@ -40,13 +40,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./BlockField.scss";
 import Button from "react-bootstrap/Button";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import { reportError } from "@/telemetry/logging";
 import BlockModal from "@/components/fields/BlockModal";
 import optionsRegistry from "@/components/fields/optionsRegistry";
 
-export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
+export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: Record<string, string> = {
   "#/definitions/renderer": "render",
   "#/definitions/effect": "effect",
   "#/definitions/reader": "read",
@@ -61,7 +61,7 @@ export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: { [key: string]: string } = {
   "https://app.pixiebrix.com/schemas/transformer": "transform",
 };
 
-type ConfigValue = { [key: string]: string };
+type ConfigValue = Record<string, string>;
 
 interface BlockState {
   block?: IBlock | null;
@@ -69,7 +69,7 @@ interface BlockState {
 }
 
 export function useBlockOptions(
-  id: string
+  id: RegistryId
 ): [BlockState, React.FunctionComponent<BlockOptionProps>] {
   const [{ block, error }, setBlock] = useState<BlockState>({
     block: null,
@@ -93,7 +93,7 @@ export function useBlockOptions(
   );
 
   const BlockOptions = useMemo(() => {
-    if (block) {
+    if (block?.id) {
       const registered = optionsRegistry.get(block.id);
       return (
         registered ?? genericOptionsFactory(inputProperties(block.inputSchema))
@@ -125,7 +125,9 @@ const BlockCard: React.FunctionComponent<{
     <Card className={cx("BlockCard", { invalid: !isValid })}>
       <Card.Header className={cx({ "bg-danger": !isValid })}>
         <div
-          onClick={() => setCollapsed(!collapsed)}
+          onClick={() => {
+            setCollapsed(!collapsed);
+          }}
           style={{ cursor: "pointer" }}
           className="d-flex"
         >
@@ -189,8 +191,10 @@ const BlockCard: React.FunctionComponent<{
 };
 
 interface BlockConfig {
-  id: string;
-  // Optionally, a name to store the output to
+  id: RegistryId;
+  /**
+   * (Optional) a name to store the output to (excluding a "@")
+   */
   outputKey?: string;
   config: ConfigValue;
   templateEngine?: "mustache" | "handlebars" | "nunjucks";
@@ -239,7 +243,9 @@ const BlockField: React.FunctionComponent<
                         }
                         config={blockConfig}
                         showOutputKey={index < numBlocks - 1}
-                        onRemove={() => remove(index)}
+                        onRemove={() => {
+                          remove(index);
+                        }}
                       />
                     </ErrorBoundary>
                   ))}

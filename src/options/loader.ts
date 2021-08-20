@@ -15,35 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Metadata, ServiceDependency } from "@/core";
-import { Permissions, browser } from "webextension-polyfill-ts";
-import { Primitive } from "type-fest";
+import { browser } from "webextension-polyfill-ts";
+import {
+  ExtensionsOptionsState,
+  migrateOptionsState,
+} from "@/store/extensions";
 
 const STORAGE_KEY = "persist:extensionOptions";
 const INITIAL_STATE = JSON.stringify({});
 
-export interface ExtensionOptions {
-  id: string;
-  _recipeId?: string;
-  _recipe: Metadata | null;
-  _deployment?: {
-    id: string;
-    timestamp: string;
-  };
-  extensionPointId: string;
-  active: boolean;
-  label: string;
-  permissions?: Permissions.Permissions;
-  services: ServiceDependency[];
-  optionsArgs?: Record<string, Primitive>;
-  config: { [prop: string]: unknown };
-}
-
-type ExtensionOptionState = {
-  extensions: Record<string, Record<string, ExtensionOptions>>;
-};
-
 type JSONString = string;
+
 type RawOptionsState = Record<string, JSONString>;
 
 async function getOptionsState(): Promise<RawOptionsState> {
@@ -55,18 +37,21 @@ async function getOptionsState(): Promise<RawOptionsState> {
 }
 
 /**
- * Read extension options from local storage
+ * Read extension options from local storage (without going through redux-persistor).
  */
-export async function loadOptions(): Promise<ExtensionOptionState> {
+export async function loadOptions(): Promise<ExtensionsOptionsState> {
   const base = await getOptionsState();
-  // The redux persist layer persists the extensions value as as JSON-string
-  return { extensions: JSON.parse(base.extensions) };
+  // The redux persist layer persists the extensions value as as JSON-string.
+  // Also apply the upgradeExtensionsState migration here because the migration in store might not have run yet.
+  return migrateOptionsState({ extensions: JSON.parse(base.extensions) });
 }
 
 /**
- * Save extension options to local storage
+ * Save extension options to local storage (without going through redux-persistor).
  */
-export async function saveOptions(state: ExtensionOptionState): Promise<void> {
+export async function saveOptions(
+  state: ExtensionsOptionsState
+): Promise<void> {
   const base = await getOptionsState();
   await browser.storage.local.set({
     // The redux persist layer persists the extensions value as as JSON-string

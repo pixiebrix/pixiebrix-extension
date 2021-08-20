@@ -16,8 +16,6 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import { InstalledExtension } from "@/options/selectors";
-import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,16 +25,16 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { ExtensionIdentifier } from "@/core";
+import { ExtensionRef, ResolvedExtension, IExtension } from "@/core";
 import ExtensionRow from "@/options/pages/installed/ExtensionRow";
 import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 
-type RemoveAction = (identifier: ExtensionIdentifier) => void;
+type RemoveAction = (identifier: ExtensionRef) => void;
 
 const RecipeEntry: React.FunctionComponent<{
   recipeId: string;
-  extensions: InstalledExtension[];
+  extensions: ResolvedExtension[];
   onRemove: RemoveAction;
 }> = ({ recipeId, extensions, onRemove }) => {
   const notify = useNotifications();
@@ -50,14 +48,14 @@ const RecipeEntry: React.FunctionComponent<{
   );
 
   const removeMany = useCallback(
-    async (extensions: InstalledExtension[], name: string) => {
+    async (extensions: IExtension[], name: string) => {
       try {
         for (const { id: extensionId, extensionPointId } of extensions) {
           onRemove({ extensionId, extensionPointId });
         }
+
         notify.success(`Uninstalled ${name}`);
       } catch (error: unknown) {
-        reportError(error);
         notify.error(`Error uninstalling ${name}: ${getErrorMessage(error)}`, {
           error,
         });

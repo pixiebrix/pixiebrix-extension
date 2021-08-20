@@ -25,12 +25,12 @@ import Table from "react-bootstrap/Table";
 import { searchWindow, detectFrameworks } from "@/background/devtools";
 import { browser } from "webextension-polyfill-ts";
 import { DevToolsContext } from "@/devTools/context";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { isEmpty } from "lodash";
 
 function useSearchWindow(query: string) {
   const { port } = useContext(DevToolsContext);
-  const tabId = browser.devtools.inspectedWindow.tabId;
+  const { tabId } = browser.devtools.inspectedWindow;
   const [results, setResults] = useState([]);
   const [error, setError] = useState();
 
@@ -56,11 +56,11 @@ function useSearchWindow(query: string) {
 }
 
 const Locator: React.FunctionComponent = () => {
-  const tabId = browser.devtools.inspectedWindow.tabId;
+  const { tabId } = browser.devtools.inspectedWindow;
   const { port } = useContext(DevToolsContext);
 
   const [query, setQuery] = useState("");
-  const [frameworks] = useAsyncState(() => detectFrameworks(port), [
+  const [frameworks] = useAsyncState(async () => detectFrameworks(port), [
     port,
     tabId,
   ]);
@@ -92,7 +92,9 @@ const Locator: React.FunctionComponent = () => {
           placeholder="Expression"
           aria-label="Expression"
           defaultValue={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+          }}
           aria-describedby="search-addon"
         />
       </InputGroup>

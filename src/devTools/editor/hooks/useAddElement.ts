@@ -22,11 +22,11 @@ import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
 import { actions, FormState } from "@/devTools/editor/editorSlice";
 import * as nativeOperations from "@/background/devtools";
-import { getTabInfo } from "@/background/devtools";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
 import { reportError } from "@/telemetry/logging";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { getErrorMessage } from "@/errors";
+import { getCurrentURL } from "@/devTools/utils";
 
 type AddElement = (config: ElementConfig) => void;
 
@@ -54,7 +54,7 @@ function useAddElement(reservedNames: string[]): AddElement {
 
       try {
         const element = await config.selectNativeElement(port);
-        const { url } = await getTabInfo(port);
+        const url = await getCurrentURL();
 
         const metadata = await generateExtensionPointMetadata(
           config.label,

@@ -25,11 +25,13 @@ import { WizardValues } from "@/options/pages/marketplace/wizard";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 import { pickBy, uniq } from "lodash";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
-import { containsPermissions, mergePermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/utils/permissions";
 import { collectPermissions } from "@/permissions";
 import { reactivate } from "@/background/navigation";
 import { push } from "connected-react-router";
 import { optionsSlice } from "@/options/slices";
+import { RegistryId, UUID } from "@/core";
+import { resolveRecipe } from "@/registry/internal";
 
 const { installRecipe } = optionsSlice.actions;
 
@@ -56,16 +58,24 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
       const missingServiceIds = Object.keys(
         pickBy(
           values.services,
-          (v, k) => requiredServiceIds.includes(k) && v == null
+          // `pickBy` not reasoning about the type of the keys
+          (v, k: RegistryId) => requiredServiceIds.includes(k) && v == null
         )
       );
 
       const configuredAuths = Object.entries(values.services)
-        .filter((x) => x[1])
-        .map(([id, config]) => ({ id, config }));
+        .filter(([, config]) => config)
+        // We lose type information when using Object.entries
+        .map(([id, config]) => ({
+          id: id as RegistryId,
+          config: config as UUID,
+        }));
 
       const enabled = await containsPermissions(
-        mergePermissions(await collectPermissions(selected, configuredAuths))
+        await collectPermissions(
+          await resolveRecipe(recipe, selected),
+          configuredAuths
+        )
       );
 
       if (selected.length === 0) {

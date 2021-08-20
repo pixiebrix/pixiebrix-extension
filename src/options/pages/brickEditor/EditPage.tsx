@@ -66,7 +66,7 @@ function useParseBrick(config: string | null): ParsedBrickInfo {
       return {
         isBlueprint: true,
         isInstalled: extensions.some(
-          (x) => x._recipeId === configJSON.metadata?.id
+          (x) => x._recipe?.id === configJSON.metadata?.id
         ),
         config: configJSON,
       };
@@ -92,23 +92,21 @@ const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
   );
 };
 
-const LoadingBody: React.FunctionComponent = () => {
-  return (
-    <>
-      <div className="d-flex">
-        <div className="flex-grow-1">
-          <PageTitle icon={faHammer} title="Edit Brick" />
-        </div>
-        <div className="flex-grow-1 text-right">
-          <Button disabled>Update Brick</Button>
-        </div>
+const LoadingBody: React.FunctionComponent = () => (
+  <>
+    <div className="d-flex">
+      <div className="flex-grow-1">
+        <PageTitle icon={faHammer} title="Edit Brick" />
       </div>
-      <div>
-        <GridLoader />
+      <div className="flex-grow-1 text-right">
+        <Button disabled>Update Brick</Button>
       </div>
-    </>
-  );
-};
+    </div>
+    <div>
+      <GridLoader />
+    </div>
+  </>
+);
 
 const keyMap = {
   SAVE: "command+s",

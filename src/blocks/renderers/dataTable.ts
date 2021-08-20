@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -17,6 +18,7 @@
 
 import { BusinessError } from "@/errors";
 
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 export interface Row {
   [column: string]: unknown;
 }
@@ -36,7 +38,7 @@ function renderValue<TRow extends Row>(
 }
 
 function renderRow<TRow extends Row>(
-  columns: ColumnDefinition<TRow>[],
+  columns: Array<ColumnDefinition<TRow>>,
   row: TRow
 ) {
   const columnHTML = columns
@@ -46,7 +48,7 @@ function renderRow<TRow extends Row>(
 }
 
 function makeDataTable<TRow extends {}>(
-  columns: ColumnDefinition<TRow>[]
+  columns: Array<ColumnDefinition<TRow>>
 ): (ctxt: unknown) => string {
   return (ctxt: unknown): string => {
     if (!Array.isArray(ctxt)) {

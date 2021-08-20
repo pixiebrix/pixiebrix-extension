@@ -29,10 +29,10 @@ export function addListenerForUpdateSelectedElement(): void {
   });
 }
 
-export function updateSelectedElement(): void {
+export async function updateSelectedElement(): Promise<void> {
   let $0: Element; // Unused, type only, don't move it inside `evaluableFunction`
 
-  chrome.devtools.inspectedWindow.eval(
+  await browser.devtools.inspectedWindow.eval(
     evaluableFunction(() => {
       // This function does not have access outside its scope,
       // don't use the `GET_SELECTED_DEV_TOOLS_ELEMENT` constant

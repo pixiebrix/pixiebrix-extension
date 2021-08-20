@@ -22,15 +22,16 @@ import { AuthData, updateExtensionAuth } from "@/auth/token";
 import { liftBackground } from "@/background/protocol";
 import { liftExternal } from "@/contentScript/externalProtocol";
 import { browser } from "webextension-polyfill-ts";
+import { isFirefox } from "webext-detect-page";
 import { reportEvent } from "@/telemetry/events";
-import { isChrome } from "@/helpers";
+import { getUID } from "@/background/telemetry";
 
-const lift = isChrome ? liftBackground : liftExternal;
+const lift = isFirefox() ? liftExternal : liftBackground;
 
-export const connectPage = lift("CONNECT_PAGE", async () => {
+export const connectPage = lift("CONNECT_PAGE", async () =>
   // `browser.runtimes`'s types don't include the whole manifest. Use the chrome namespace to get the full type
-  return chrome.runtime.getManifest();
-});
+  chrome.runtime.getManifest()
+);
 
 const _reload = liftBackground("BACKGROUND_RELOAD", async () => {
   browser.runtime.reload();
@@ -40,7 +41,8 @@ const _reload = liftBackground("BACKGROUND_RELOAD", async () => {
 export const setExtensionAuth = lift(
   "SET_EXTENSION_AUTH",
   async (auth: AuthData) => {
-    const updated = await updateExtensionAuth(auth);
+    const browserId = await getUID();
+    const updated = await updateExtensionAuth({ ...auth, browserId });
     if (updated) {
       // A hack to ensure the SET_EXTENSION_AUTH response flows to the front-end before the backend
       // page is reloaded, causing the message port to close.
@@ -53,7 +55,7 @@ export const setExtensionAuth = lift(
   }
 );
 
-// Chrome.runtime.openOptionsPage only available from the background page
+// `runtime.openOptionsPage` is only available in the background page
 const _openOptions = liftBackground("BACKGROUND_OPEN_OPTIONS", async () => {
   await browser.runtime.openOptionsPage();
   return true;
@@ -147,25 +149,19 @@ const _openActivate = liftBackground(
 
 export const openActivateBlueprint = lift(
   "OPEN_ACTIVATE_BLUEPRINT",
-  async (options: ActivateBlueprintOptions) => {
-    return _openActivate(options);
-  }
+  async (options: ActivateBlueprintOptions) => _openActivate(options)
 );
 
-export const openExtensionOptions = lift("OPEN_OPTIONS", async () => {
-  return _openOptions();
-});
+export const openExtensionOptions = lift("OPEN_OPTIONS", async () =>
+  _openOptions()
+);
 
 export const openMarketplace = lift(
   "OPEN_MARKETPLACE",
-  async (options: OpenOptionsOptions = {}) => {
-    return _openMarketplace(options);
-  }
+  async (options: OpenOptionsOptions = {}) => _openMarketplace(options)
 );
 
 export const openTemplates = lift(
   "OPEN_TEMPLATES",
-  async (options: OpenOptionsOptions = {}) => {
-    return _openTemplates(options);
-  }
+  async (options: OpenOptionsOptions = {}) => _openTemplates(options)
 );

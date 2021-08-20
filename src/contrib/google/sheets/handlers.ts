@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// <reference types="gapi.client.sheets" />
-
 import { liftBackground } from "@/background/protocol";
 import { liftBackground as liftDevtools } from "@/background/devtools/internal";
 import { ensureAuth, handleRejection } from "@/contrib/google/auth";
@@ -45,7 +43,7 @@ export const createTab = liftBackground(
     const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
     try {
       return (await gapi.client.sheets.spreadsheets.batchUpdate({
-        spreadsheetId: spreadsheetId,
+        spreadsheetId,
         resource: {
           requests: [
             {
@@ -70,7 +68,7 @@ export const appendRows = liftBackground(
     const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
     try {
       return (await gapi.client.sheets.spreadsheets.values.append({
-        spreadsheetId: spreadsheetId,
+        spreadsheetId,
         range: tabName,
         valueInputOption: "USER_ENTERED",
         resource: {
@@ -90,7 +88,7 @@ export const batchUpdate = liftBackground(
     const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
     try {
       return (await gapi.client.sheets.spreadsheets.batchUpdate({
-        spreadsheetId: spreadsheetId,
+        spreadsheetId,
         resource: {
           requests,
         },
@@ -107,18 +105,18 @@ export const batchGet = liftBackground(
     const token = await ensureAuth(GOOGLE_SHEETS_SCOPES);
     try {
       const sheetRequest = gapi.client.sheets.spreadsheets.values.batchGet({
-        spreadsheetId: spreadsheetId,
+        spreadsheetId,
         ranges,
       });
-      return await new Promise<BatchGetValuesResponse>((resolve, reject) =>
+      return await new Promise<BatchGetValuesResponse>((resolve, reject) => {
         sheetRequest.execute((r) => {
           if (r.status >= 300 || (r as any).code >= 300) {
             reject(r);
           } else {
             resolve(r.result);
           }
-        })
-      );
+        });
+      });
     } catch (error: unknown) {
       throw await handleRejection(token, error);
     }
@@ -149,10 +147,10 @@ export async function getSheetProperties(
 
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.get({
-      spreadsheetId: spreadsheetId,
+      spreadsheetId,
       fields: "properties",
     });
-    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) =>
+    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);
@@ -165,8 +163,8 @@ export async function getSheetProperties(
         }
 
         resolve(r.result);
-      })
-    );
+      });
+    });
     if (!spreadsheet) {
       throw new Error("Unknown error fetching spreadsheet");
     }
@@ -186,10 +184,10 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
 
   try {
     const sheetRequest = gapi.client.sheets.spreadsheets.get({
-      spreadsheetId: spreadsheetId,
+      spreadsheetId,
       fields: "sheets.properties",
     });
-    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) =>
+    const spreadsheet = await new Promise<Spreadsheet>((resolve, reject) => {
       sheetRequest.execute((r: any) => {
         // Response in practice doesn't match the type signature
         console.debug("Got spreadsheet response", r);
@@ -202,8 +200,8 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
         }
 
         resolve(r.result);
-      })
-    );
+      });
+    });
     if (!spreadsheet) {
       throw new Error("Unknown error fetching spreadsheet");
     }
@@ -215,17 +213,10 @@ async function getTabNames(spreadsheetId: string): Promise<string[]> {
 }
 
 export const devtoolsProtocol = {
-  getTabNames: liftDevtools(
-    "GET_TAB_NAMES",
-    () => async (spreadsheetId: string) => {
-      return getTabNames(spreadsheetId);
-    }
-  ),
+  getTabNames: liftDevtools("GET_TAB_NAMES", () => getTabNames),
   getSheetProperties: liftDevtools(
     "GET_SHEET_PROPERTIES",
-    () => async (spreadsheetId: string) => {
-      return getSheetProperties(spreadsheetId);
-    }
+    () => getSheetProperties
   ),
   getHeaders: liftDevtools(
     "GET_HEADERS",
@@ -235,9 +226,7 @@ export const devtoolsProtocol = {
     }: {
       spreadsheetId: string;
       tabName: string;
-    }) => {
-      return getHeaders(spreadsheetId, tabName);
-    }
+    }) => getHeaders(spreadsheetId, tabName)
   ),
 };
 

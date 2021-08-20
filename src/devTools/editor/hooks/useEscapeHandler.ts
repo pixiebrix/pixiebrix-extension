@@ -15,7 +15,7 @@ export default function useEscapeHandler(
         event.preventDefault();
         event.stopImmediatePropagation();
         event.stopPropagation();
-        void cancel();
+        cancel();
       }
     },
     [cancel]
@@ -29,6 +29,8 @@ export default function useEscapeHandler(
       document.removeEventListener("keydown", escapeHandler);
     }
 
-    return () => document.removeEventListener("keydown", escapeHandler);
+    return () => {
+      document.removeEventListener("keydown", escapeHandler);
+    };
   }, [active, cancel, escapeHandler]);
 }

@@ -17,43 +17,41 @@
 
 import React from "react";
 import { Table } from "react-bootstrap";
-import { LogEntry } from "@/background/logging";
+import type { LogEntry } from "@/background/logging";
 import EntryRow from "@/components/logViewer/EntryRow";
 
 const LogTable: React.FunctionComponent<{
   pageEntries: LogEntry[];
   hasEntries: boolean;
-}> = ({ pageEntries, hasEntries }) => {
-  return (
-    <Table responsive>
-      <thead>
+}> = ({ pageEntries, hasEntries }) => (
+  <Table responsive>
+    <thead>
+      <tr>
+        <th>&nbsp;</th>
+        <th>Timestamp</th>
+        <th>Level</th>
+        <th>Block/Service</th>
+        <th className="w-100">Message/Error</th>
+      </tr>
+    </thead>
+    <tbody>
+      {pageEntries.map((entry) => (
+        <EntryRow entry={entry} key={entry.uuid} />
+      ))}
+      {pageEntries.length === 0 && (
         <tr>
-          <th>&nbsp;</th>
-          <th>Timestamp</th>
-          <th>Level</th>
-          <th>Block/Service</th>
-          <th className="w-100">Message/Error</th>
+          <td>&nbsp;</td>
+          <td colSpan={4}>
+            {hasEntries ? (
+              <span>There are no log entries at this log level</span>
+            ) : (
+              <span>No log entries</span>
+            )}
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        {pageEntries.map((entry) => (
-          <EntryRow entry={entry} key={entry.uuid} />
-        ))}
-        {pageEntries.length === 0 && (
-          <tr>
-            <td>&nbsp;</td>
-            <td colSpan={4}>
-              {hasEntries ? (
-                <span>There are no log entries at this log level</span>
-              ) : (
-                <span>No log entries</span>
-              )}
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </Table>
-  );
-};
+      )}
+    </tbody>
+  </Table>
+);
 
 export default LogTable;

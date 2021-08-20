@@ -25,7 +25,7 @@ import React, {
 import { useFetch } from "@/hooks/fetch";
 import { RecipeDefinition } from "@/types/definitions";
 import { PageTitle } from "@/layout/Page";
-import { groupBy, sortBy, noop } from "lodash";
+import { groupBy, sortBy, noop, compact } from "lodash";
 import {
   faClipboardCheck,
   faExternalLinkAlt,
@@ -42,7 +42,6 @@ import {
 } from "react-bootstrap";
 import { InstallRecipe, RecipeList } from "@/pages/marketplace/MarketplacePage";
 import { connect } from "react-redux";
-import { OptionsState } from "@/options/slices";
 import { push } from "connected-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
@@ -51,9 +50,12 @@ import "./TemplatesPage.scss";
 import AuthContext from "@/auth/AuthContext";
 import GridLoader from "react-spinners/GridLoader";
 import { useTitle } from "@/hooks/title";
+import { RegistryId } from "@/core";
+import { selectExtensions } from "@/options/selectors";
+import { OptionsState } from "@/store/extensions";
 
 export interface TemplatesProps {
-  installedRecipes: Set<string>;
+  installedRecipes: Set<RegistryId>;
   installRecipe: InstallRecipe;
 }
 
@@ -66,16 +68,14 @@ export interface FeaturedRecipeDefinition extends RecipeDefinition {
   };
 }
 
-interface TemplateGroup {
-  label: string;
-  templates: FeaturedRecipeDefinition[];
-}
-
 interface GroupProps {
   install: InstallRecipe;
-  installedRecipes: Set<string>;
+  installedRecipes: Set<RegistryId>;
   query: string;
-  group: TemplateGroup;
+  group: {
+    label: string;
+    templates: FeaturedRecipeDefinition[];
+  };
 }
 
 const CATEGORY_SORT_ORDER = new Map<string, number>([
@@ -113,7 +113,7 @@ const TemplateGroup: React.FunctionComponent<GroupProps> = ({
             <TemplateEntry
               key={recipe.metadata.id}
               installed={installedRecipes.has(recipe.metadata.id)}
-              onAdd={() => install(recipe)}
+              onAdd={async () => install(recipe)}
               {...recipe}
             />
           ))}
@@ -130,40 +130,36 @@ const TemplateGroup: React.FunctionComponent<GroupProps> = ({
 
 const TemplateEntry: React.FunctionComponent<
   FeaturedRecipeDefinition & { installed: boolean; onAdd: () => void }
-> = ({ feature, metadata, installed, onAdd }) => {
-  return (
-    <ListGroup.Item className="TemplateEntry">
-      <div className="d-flex align-items-center">
-        <div>
-          {installed ? (
-            <Button size="sm" variant="info" disabled>
-              Added
-            </Button>
-          ) : (
-            <Button size="sm" variant="info" onClick={onAdd}>
-              Add
-            </Button>
-          )}
-        </div>
-        <div className="ml-3">{feature.shortName ?? metadata.name}</div>
+> = ({ feature, metadata, installed, onAdd }) => (
+  <ListGroup.Item className="TemplateEntry">
+    <div className="d-flex align-items-center">
+      <div>
+        {installed ? (
+          <Button size="sm" variant="info" disabled>
+            Added
+          </Button>
+        ) : (
+          <Button size="sm" variant="info" onClick={onAdd}>
+            Add
+          </Button>
+        )}
       </div>
-    </ListGroup.Item>
-  );
-};
+      <div className="ml-3">{feature.shortName ?? metadata.name}</div>
+    </div>
+  </ListGroup.Item>
+);
 
 const SharedWithMe: React.FunctionComponent<{
   active?: boolean;
   onSelect: () => void;
-}> = ({ active, onSelect }) => {
-  return (
-    <Card className={cx("CategoryCard", { active })} onClick={onSelect}>
-      <Card.Body>
-        <div className="CategoryCard__title">Shared with Me</div>
-        <div className="CategoryCard__subtitle">Custom</div>
-      </Card.Body>
-    </Card>
-  );
-};
+}> = ({ active, onSelect }) => (
+  <Card className={cx("CategoryCard", { active })} onClick={onSelect}>
+    <Card.Body>
+      <div className="CategoryCard__title">Shared with Me</div>
+      <div className="CategoryCard__subtitle">Custom</div>
+    </Card.Body>
+  </Card>
+);
 
 const Category: React.FunctionComponent<{
   active?: boolean;
@@ -171,27 +167,25 @@ const Category: React.FunctionComponent<{
   title: string;
   subtitle: string;
   onSelect?: () => void;
-}> = ({ title, subtitle, active, inviteOnly, onSelect = noop }) => {
-  return (
-    <Card
-      className={cx("CategoryCard", { active, inviteOnly })}
-      onClick={onSelect}
-    >
-      <Card.Body>
-        {inviteOnly && (
-          <div className="ribbon">
-            <span>Invite-Only</span>
-          </div>
-        )}
-        <div className="CategoryCard__title">{title}</div>
-        <div className="CategoryCard__subtitle">{subtitle}</div>
-      </Card.Body>
-    </Card>
-  );
-};
+}> = ({ title, subtitle, active, inviteOnly, onSelect = noop }) => (
+  <Card
+    className={cx("CategoryCard", { active, inviteOnly })}
+    onClick={onSelect}
+  >
+    <Card.Body>
+      {inviteOnly && (
+        <div className="ribbon">
+          <span>Invite-Only</span>
+        </div>
+      )}
+      <div className="CategoryCard__title">{title}</div>
+      <div className="CategoryCard__subtitle">{subtitle}</div>
+    </Card.Body>
+  </Card>
+);
 
 const ContextMenuTemplates: React.FunctionComponent<{
-  installedRecipes: Set<string>;
+  installedRecipes: Set<RegistryId>;
   install: InstallRecipe;
 }> = ({ installedRecipes, install }) => {
   const rawRecipes: FeaturedRecipeDefinition[] = useFetch<
@@ -236,7 +230,9 @@ const ContextMenuTemplates: React.FunctionComponent<{
                     id="query"
                     placeholder="Start typing to filter templates"
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                    }}
                   />
                 </InputGroup>
               </Form>
@@ -261,7 +257,7 @@ const ContextMenuTemplates: React.FunctionComponent<{
 };
 
 const SharedTemplates: React.FunctionComponent<{
-  installedRecipes: Set<string>;
+  installedRecipes: Set<RegistryId>;
   install: InstallRecipe;
 }> = ({ installedRecipes, install }) => {
   const rawRecipes: RecipeDefinition[] = useFetch<FeaturedRecipeDefinition[]>(
@@ -365,12 +361,16 @@ const TemplatesPage: React.FunctionComponent<
             {flags.includes("templates-shared") && (
               <SharedWithMe
                 active={activeKey === "shared"}
-                onSelect={() => setActiveKey("shared")}
+                onSelect={() => {
+                  setActiveKey("shared");
+                }}
               />
             )}
             <Category
               active={activeKey === "contextmenu-search"}
-              onSelect={() => setActiveKey("contextmenu-search")}
+              onSelect={() => {
+                setActiveKey("contextmenu-search");
+              }}
               title="Context Menus"
               subtitle="Search"
             />
@@ -403,13 +403,9 @@ TemplatesPage.defaultProps = {
 };
 
 export default connect(
-  ({ options }: { options: OptionsState }) => ({
+  (state: { options: OptionsState }) => ({
     installedRecipes: new Set(
-      Object.values(options.extensions).flatMap((extensionPoint) =>
-        Object.values(extensionPoint)
-          .map((x) => x._recipeId)
-          .filter((x) => x)
-      )
+      compact(selectExtensions(state).map((x) => x._recipe?.id))
     ),
   }),
   { navigate: push }

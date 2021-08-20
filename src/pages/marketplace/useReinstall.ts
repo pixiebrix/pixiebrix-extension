@@ -20,8 +20,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
 import { useCallback } from "react";
 import { uninstallContextMenu } from "@/background/contextMenus";
-import { ExtensionOptions, optionsSlice } from "@/options/slices";
+import { optionsSlice } from "@/options/slices";
 import { groupBy, uniq } from "lodash";
+import { IExtension } from "@/core";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -29,9 +30,7 @@ type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 
 type ServiceId = string;
 
-function selectAuths(
-  extensions: ExtensionOptions[]
-): Record<ServiceId, string> {
+function selectAuths(extensions: IExtension[]): Record<ServiceId, string> {
   const serviceAuths = groupBy(
     extensions.flatMap((x) => x.services),
     (x) => x.id
@@ -44,6 +43,7 @@ function selectAuths(
     } else if (configs.length > 1) {
       throw new Error(`Service ${id} has multiple configurations`);
     }
+
     // eslint-disable-next-line security/detect-object-injection -- safe because it's from Object.entries
     result[id] = configs[0];
   }
@@ -58,7 +58,7 @@ function useReinstall(): Reinstall {
   return useCallback(
     async (recipe: RecipeDefinition) => {
       const recipeExtensions = extensions.filter(
-        (x) => x._recipeId === recipe.metadata.id
+        (x) => x._recipe?.id === recipe.metadata.id
       );
 
       if (recipeExtensions.length === 0) {
@@ -73,7 +73,6 @@ function useReinstall(): Reinstall {
           await uninstallContextMenu({ extensionId: extension.id });
           dispatch(
             removeExtension({
-              extensionPointId: extension.extensionPointId,
               extensionId: extension.id,
             })
           );

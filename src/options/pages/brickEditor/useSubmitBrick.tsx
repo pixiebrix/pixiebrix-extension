@@ -114,7 +114,7 @@ function useSubmitBrick({
         });
 
         refreshPromise
-          .then(() => reactivate())
+          .then(async () => reactivate())
           .catch((error: unknown) => {
             reportError(error);
             console.warn("An error occurred when re-activating bricks", error);
@@ -140,6 +140,7 @@ function useSubmitBrick({
               autoDismiss: true,
             });
           }
+
           setErrors(error.response.data);
         } else {
           addToast(error.toString(), {

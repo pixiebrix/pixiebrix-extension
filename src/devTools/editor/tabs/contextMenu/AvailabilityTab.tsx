@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import {
   FastField,
@@ -24,8 +24,6 @@ import {
   useField,
   useFormikContext,
 } from "formik";
-import { getTabInfo } from "@/background/devtools";
-import { DevToolsContext } from "@/devTools/context";
 import { openTab } from "@/background/executor";
 import Select from "react-select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -37,6 +35,7 @@ import {
   SITES_PATTERN,
 } from "@/permissions/patterns";
 import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextMenu";
+import { getCurrentURL } from "@/devTools/utils";
 
 const CONTEXTS = [
   "page",
@@ -69,9 +68,9 @@ const ContextSelector: React.FunctionComponent<{
       isClearable={false}
       options={contextOptions}
       value={contextOptions.filter((x) => field.value.includes(x.value))}
-      onChange={(values) =>
-        helpers.setValue(values.map((x: ContextOption) => x.value))
-      }
+      onChange={(values) => {
+        helpers.setValue(values.map((x: ContextOption) => x.value));
+      }}
     />
   );
 };
@@ -81,7 +80,6 @@ const AvailabilityTab: React.FunctionComponent<{
   editable: Set<string>;
 }> = ({ eventKey = "availability", editable }) => {
   const { values, getFieldHelpers } = useFormikContext<ContextMenuFormState>();
-  const { port } = useContext(DevToolsContext);
   const locked = useMemo(
     () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
     [editable, values.installed, values.extensionPoint.metadata.id]
@@ -128,7 +126,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 className="mx-2"
                 role="button"
                 onClick={async () => {
-                  const url = (await getTabInfo(port)).url;
+                  const url = await getCurrentURL();
                   setDocumentPattern(createSitePattern(url));
                 }}
               >
@@ -139,7 +137,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 className="mx-2"
                 role="button"
                 onClick={async () => {
-                  const url = (await getTabInfo(port)).url;
+                  const url = await getCurrentURL();
                   setDocumentPattern(createDomainPattern(url));
                 }}
               >
@@ -149,7 +147,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setDocumentPattern(HTTPS_PATTERN)}
+                onClick={() => {
+                  setDocumentPattern(HTTPS_PATTERN);
+                }}
               >
                 HTTPS
               </a>{" "}
@@ -157,7 +157,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setDocumentPattern(SITES_PATTERN)}
+                onClick={() => {
+                  setDocumentPattern(SITES_PATTERN);
+                }}
               >
                 All URLs
               </a>
@@ -180,7 +182,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 })
               }
             >
-              Chrome Documentation
+              Patterns Documentation
             </a>{" "}
             for examples
           </Form.Text>
@@ -249,11 +251,11 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() =>
+                onClick={() => {
                   setMatchPattern(
                     values.extensionPoint.definition.documentUrlPatterns[0]
-                  )
-                }
+                  );
+                }}
               >
                 Copy from above
               </a>
@@ -262,7 +264,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 className="mx-2"
                 role="button"
                 onClick={async () => {
-                  const url = (await getTabInfo(port)).url;
+                  const url = await getCurrentURL();
                   setMatchPattern(createSitePattern(url));
                 }}
               >
@@ -273,7 +275,7 @@ const AvailabilityTab: React.FunctionComponent<{
                 className="mx-2"
                 role="button"
                 onClick={async () => {
-                  const url = (await getTabInfo(port)).url;
+                  const url = await getCurrentURL();
                   setMatchPattern(createDomainPattern(url));
                 }}
               >
@@ -283,7 +285,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern(HTTPS_PATTERN)}
+                onClick={() => {
+                  setMatchPattern(HTTPS_PATTERN);
+                }}
               >
                 HTTPS
               </a>{" "}
@@ -291,7 +295,9 @@ const AvailabilityTab: React.FunctionComponent<{
                 href="#"
                 role="button"
                 className="mx-2"
-                onClick={() => setMatchPattern(SITES_PATTERN)}
+                onClick={() => {
+                  setMatchPattern(SITES_PATTERN);
+                }}
               >
                 All URLs
               </a>

@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -64,13 +65,15 @@ export const ZapField: React.FunctionComponent<
 > = ({ label, schema, hooks, error, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
 
-  const options = useMemo(() => {
-    return (hooks ?? []).map((x) => ({
-      value: x.display_name,
-      label: x.display_name,
-      hook: x,
-    }));
-  }, [hooks]);
+  const options = useMemo(
+    () =>
+      (hooks ?? []).map((x) => ({
+        value: x.display_name,
+        label: x.display_name,
+        hook: x,
+      })),
+    [hooks]
+  );
 
   return (
     <Form.Group>
@@ -119,9 +122,10 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
     setGrantedPermissions(result);
   }, [setGrantedPermissions]);
 
-  const hook = useMemo(() => {
-    return hooks?.find((x) => x.display_name === pushKey);
-  }, [hooks, pushKey]);
+  const hook = useMemo(() => hooks?.find((x) => x.display_name === pushKey), [
+    hooks,
+    pushKey,
+  ]);
 
   if (!(grantedPermissions || hasPermissions)) {
     return (

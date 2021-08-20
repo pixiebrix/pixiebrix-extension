@@ -29,9 +29,9 @@ import { REGISTER_ACTION_FRAME } from "@/background/browserAction";
 import "@/actionPanel/protocol";
 
 // Keep in order so precedence is preserved
-import "vendors/theme/app/app.scss";
-import "./action.scss";
+import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
+import "./action.scss";
 
 const url = new URL(location.href);
 const nonce = url.searchParams.get("nonce");

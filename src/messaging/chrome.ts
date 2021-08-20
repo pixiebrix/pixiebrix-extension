@@ -40,7 +40,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
     callbacks: CallbackMap,
     prop: "result" | "error"
   ) => {
-    document.addEventListener(type, function (event: CustomEvent) {
+    document.addEventListener(type, (event: CustomEvent) => {
       if (!event.detail) {
         throw new Error(
           `Handler for ${type} did not provide a detail property`
@@ -67,7 +67,7 @@ export function createSendScriptMessage<TReturn = unknown, TPayload = unknown>(
   listen(`${messageType}_FULFILLED`, fulfillmentCallbacks, "result");
   listen(`${messageType}_REJECTED`, rejectionCallbacks, "error");
 
-  return (payload: TPayload) => {
+  return async (payload: TPayload) => {
     const id = messageSeq++;
     const promise = new Promise((resolve, reject) => {
       fulfillmentCallbacks.set(id, resolve);

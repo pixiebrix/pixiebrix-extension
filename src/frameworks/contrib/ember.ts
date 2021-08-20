@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -35,6 +36,7 @@ interface EmberObject {
 
 interface EmberApplication {
   __container__: {
+    // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
     lookup: (container: string) => { [componentId: string]: EmberObject };
   };
 }
@@ -64,8 +66,9 @@ export function getVersion(): string | null {
 export function getEmberApplication(): EmberApplication {
   // https://stackoverflow.com/questions/32971707/how-to-access-the-ember-data-store-from-the-console
   if (window.Ember) {
-    const Ember = window.Ember;
+    const { Ember } = window;
     // https://github.com/emberjs/ember-inspector/blob/2237dc1b4818e31a856f3348f35305b10f42f60a/ember_debug/vendor/startup-wrapper.js#L201
+    // eslint-disable-next-line new-cap -- Not a constructor
     const namespaces = Ember.A(Ember.Namespace.NAMESPACES);
     // TODO: support multiple Ember applications on the page
     return namespaces.find(
@@ -195,7 +198,7 @@ function isManaged(node: Node): boolean {
     throw new Error("Could not get DOM HTMLElement for node");
   }
 
-  return !!ignoreNotFound(() => getEmberComponentById(elt.id));
+  return Boolean(ignoreNotFound(() => getEmberComponentById(elt.id)));
 }
 
 const EMBER_INTERNAL_PROPS = new Set([
@@ -230,13 +233,13 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,
   hasData: (instance) => {
-    const target = targetForComponent(instance) as { [prop: string]: unknown };
+    const target = targetForComponent(instance) as Record<string, unknown>;
     return getAllPropertyNames(target).some(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );
   },
   getData: (instance) => {
-    const target = targetForComponent(instance) as { [prop: string]: unknown };
+    const target = targetForComponent(instance) as Record<string, unknown>;
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );

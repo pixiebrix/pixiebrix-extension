@@ -24,50 +24,48 @@ import { faCommentAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
 
 const WelcomePane: React.FunctionComponent<{ showSupport: () => void }> = ({
   showSupport,
-}) => {
-  return (
-    <Centered>
-      <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
+}) => (
+  <Centered isScrollable>
+    <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
 
-      <div className="text-left">
-        <p>Click Add in the sidebar to add an element to the page.</p>
+    <div className="text-left">
+      <p>Click Add in the sidebar to add an element to the page.</p>
 
-        <p>
-          Learn how to use the Page Editor in our{" "}
-          <a
-            href="#"
-            onClick={async () =>
-              openTab({
-                url: "https://docs.pixiebrix.com/quick-start-guide",
-                active: true,
-              })
-            }
-          >
-            Quick Start Guide
-          </a>
-        </p>
+      <p>
+        Learn how to use the Page Editor in our{" "}
+        <a
+          href="#"
+          onClick={async () =>
+            openTab({
+              url: "https://docs.pixiebrix.com/quick-start-guide",
+              active: true,
+            })
+          }
+        >
+          Quick Start Guide
+        </a>
+      </p>
 
-        <div className="text-center">
-          <Button variant="info" onClick={showSupport}>
-            <FontAwesomeIcon icon={faCommentAlt} /> Live Chat Support
-          </Button>
+      <div className="text-center">
+        <Button variant="info" onClick={showSupport}>
+          <FontAwesomeIcon icon={faCommentAlt} /> Live Chat Support
+        </Button>
 
-          <Button
-            className="ml-2"
-            variant="info"
-            onClick={async () =>
-              openTab({
-                url: "https://calendly.com/pixiebrix-todd/live-support-session",
-                active: true,
-              })
-            }
-          >
-            <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom Session
-          </Button>
-        </div>
+        <Button
+          className="ml-2"
+          variant="info"
+          onClick={async () =>
+            openTab({
+              url: "https://calendly.com/pixiebrix-todd/live-support-session",
+              active: true,
+            })
+          }
+        >
+          <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom Session
+        </Button>
       </div>
-    </Centered>
-  );
-};
+    </div>
+  </Centered>
+);
 
 export default WelcomePane;

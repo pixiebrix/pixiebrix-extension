@@ -95,28 +95,26 @@ export const RecipeList: React.FunctionComponent<
     buttonProps?: ButtonProps;
     recipes: RecipeDefinition[];
   }
-> = ({ buttonProps, recipes, installedRecipes, installRecipe }) => {
-  return (
-    <ListGroup>
-      {(recipes ?? []).slice(0, 10).map((x) => (
-        <Entry
-          {...x}
-          buttonProps={buttonProps}
-          key={x.metadata.id}
-          onInstall={() => installRecipe(x)}
-          installed={installedRecipes.has(x.metadata.id)}
-        />
-      ))}
-      {recipes.length >= 10 && (
-        <ListGroup.Item>
-          <span className="text-muted">
-            {recipes.length - 10} more result(s) not shown
-          </span>
-        </ListGroup.Item>
-      )}
-    </ListGroup>
-  );
-};
+> = ({ buttonProps, recipes, installedRecipes, installRecipe }) => (
+  <ListGroup>
+    {(recipes ?? []).slice(0, 10).map((x) => (
+      <Entry
+        {...x}
+        buttonProps={buttonProps}
+        key={x.metadata.id}
+        onInstall={async () => installRecipe(x)}
+        installed={installedRecipes.has(x.metadata.id)}
+      />
+    ))}
+    {recipes.length >= 10 && (
+      <ListGroup.Item>
+        <span className="text-muted">
+          {recipes.length - 10} more result(s) not shown
+        </span>
+      </ListGroup.Item>
+    )}
+  </ListGroup>
+);
 
 const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installRecipe,
@@ -157,7 +155,9 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
                 id="query"
                 placeholder="Start typing to filter blueprints"
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                }}
               />
             </InputGroup>
           </Form>

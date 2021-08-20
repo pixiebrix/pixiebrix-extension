@@ -5,9 +5,7 @@
   },
   "settings": {
     "import/resolver": {
-      "webpack": {
-        "config": "./resolve.config.js"
-      }
+      "typescript": {}
     },
     "import/ignore": [
       "react-select" // For some reason it points to a flow JS file
@@ -16,7 +14,7 @@
       "version": "detect"
     }
   },
-  "plugins": ["filenames"],
+  "plugins": ["filenames", "jsx-a11y"],
   "extends": [
     "xo", // Full config: https://github.com/xojs/eslint-config-xo/blob/main/index.js
     "xo-typescript", // Full config: https://github.com/xojs/eslint-config-xo-typescript/blob/main/index.js
@@ -26,10 +24,13 @@
     "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:security/recommended",
-    "plugin:unicorn/recommended"
+    "plugin:unicorn/recommended",
+    "plugin:jsx-a11y/recommended"
   ],
   "rules": {
-    "filenames/match-exported": "warn",
+    // Enable extra rules
+    "filenames/match-exported": "error",
+
     // Customize some rules
     "import/no-unresolved": [
       "error",
@@ -65,7 +66,6 @@
     // Soft-enable some rules, maybe enforce them later
     "@typescript-eslint/ban-types": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/promise-function-async": "warn",
     "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
     "unicorn/no-useless-undefined": "warn", // Buggy with React
     "unicorn/no-nested-ternary": "warn", // Sometimes it conflicts with Prettier
@@ -81,50 +81,25 @@
     "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
     "unicorn/prefer-set-has": "off", // Not always worth the extra code
     "unicorn/require-post-message-target-origin": "off", // Incompatible https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1396
-
-    // Large diffs, autofix later together
-    "arrow-body-style": "off",
-    "prefer-arrow-callback": "off",
-    "padding-line-between-statements": "off",
+    "no-warning-comments": "off", // Only useful if there aren't hundreds of other real warnings
 
     // Temporarily disable rules
     "no-await-in-loop": "warn",
     "no-negated-condition": "warn",
-    "no-implicit-coercion": "warn",
-    "prefer-destructuring": "warn",
-    "object-shorthand": "warn",
     "no-return-await": "warn",
     "no-promise-executor-return": "warn",
-    "no-useless-concat": "warn",
-    "new-cap": "warn",
-    "prefer-object-spread": "warn",
-    "no-self-compare": "warn",
 
     "@typescript-eslint/no-confusing-void-expression": "warn",
     "@typescript-eslint/restrict-template-expressions": "warn",
-    "@typescript-eslint/consistent-indexed-object-style": "warn",
     "@typescript-eslint/no-base-to-string": "warn",
-    "@typescript-eslint/no-unnecessary-type-arguments": "warn",
-    "@typescript-eslint/prefer-ts-expect-error": "warn",
-    "@typescript-eslint/dot-notation": "warn",
-    "@typescript-eslint/array-type": "warn",
     "@typescript-eslint/non-nullable-type-assertion-style": "warn",
     "@typescript-eslint/no-unnecessary-type-assertion": "warn",
     "@typescript-eslint/consistent-type-assertions": "warn",
     "@typescript-eslint/no-require-imports": "warn",
     "@typescript-eslint/no-dynamic-delete": "warn",
-    "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
-    "@typescript-eslint/await-thenable": "warn",
-    "@typescript-eslint/return-await": "warn",
-    "@typescript-eslint/prefer-readonly": "warn",
-    "@typescript-eslint/prefer-optional-chain": "warn",
-    "@typescript-eslint/class-literal-property-style": "warn",
     "@typescript-eslint/triple-slash-reference": "warn",
-    "@typescript-eslint/prefer-string-starts-ends-with": "warn",
-    "@typescript-eslint/prefer-function-type": "warn",
     "@typescript-eslint/no-redeclare": "warn",
     "@typescript-eslint/no-misused-promises": "warn",
-    "@typescript-eslint/no-loop-func": "warn",
     "@typescript-eslint/unified-signatures": "warn",
     "@typescript-eslint/prefer-regexp-exec": "warn",
     "@typescript-eslint/no-useless-constructor": "warn",
@@ -140,7 +115,15 @@
     "unicorn/no-null": "off",
     "unicorn/prefer-ternary": "off",
     "@typescript-eslint/member-ordering": "off",
-    "@typescript-eslint/no-empty-function": "off"
+    "@typescript-eslint/no-empty-function": "off",
+
+    // `a11y` rules we'll eventually want to treat as errors. Include as warning for now to avoid new issues being
+    // introduced to the codebase
+    "jsx-a11y/click-events-have-key-events": "warn",
+    "jsx-a11y/no-static-element-interactions": "warn",
+    "jsx-a11y/anchor-is-valid": "warn",
+    "jsx-a11y/interactive-supports-focus": "warn",
+    "jsx-a11y/iframe-has-title": "warn"
   },
   "ignorePatterns": [
     "node_modules",
@@ -149,6 +132,7 @@
     "artifacts",
     "scripts/bin",
     "src/vendors",
+    "src/types/swagger.ts",
     "src/nativeEditor/Overlay.tsx",
     "src/support.js",
     "sample-build.js"
@@ -173,6 +157,7 @@
         "jest": true
       },
       "rules": {
+        "@typescript-eslint/no-require-imports": "off",
         "@typescript-eslint/no-var-requires": "off",
         "unicorn/prefer-module": "off",
 

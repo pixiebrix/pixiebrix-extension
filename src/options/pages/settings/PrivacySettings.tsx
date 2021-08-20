@@ -20,7 +20,7 @@ import { Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { getDNT, toggleDNT } from "@/background/telemetry";
 
 function useDNT(): [boolean, (enabled: boolean) => Promise<void>] {
