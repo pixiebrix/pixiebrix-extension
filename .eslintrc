@@ -14,7 +14,7 @@
       "version": "detect"
     }
   },
-  "plugins": ["filenames", "jsx-a11y"],
+  "plugins": ["filenames", "jsx-a11y", "prettier"],
   "extends": [
     "xo", // Full config: https://github.com/xojs/eslint-config-xo/blob/main/index.js
     "xo-typescript", // Full config: https://github.com/xojs/eslint-config-xo-typescript/blob/main/index.js
@@ -123,7 +123,8 @@
     "jsx-a11y/no-static-element-interactions": "warn",
     "jsx-a11y/anchor-is-valid": "warn",
     "jsx-a11y/interactive-supports-focus": "warn",
-    "jsx-a11y/iframe-has-title": "warn"
+    "jsx-a11y/iframe-has-title": "warn",
+    "prettier/prettier": "warn"
   },
   "ignorePatterns": [
     "node_modules",
