@@ -107,7 +107,17 @@ export function expectContext(
   context: typeof contexts[number],
   error?: ErrorBaseType
 ): void {
-  expectContextBase(context, error, true);
+  const isContext = contextMap.get(context);
+  if (!isContext) {
+    throw new TypeError(`Context "${context}" not found`);
+  }
+
+  if (!isContext()) {
+    throw createError(
+      `This code can only run in the "${context}" context`,
+      error
+    );
+  }
 }
 
 /**
@@ -120,24 +130,14 @@ export function forbidContext(
   context: typeof contexts[number],
   error?: ErrorBaseType
 ): void {
-  expectContextBase(context, error, false);
-}
-
-function expectContextBase(
-  context: typeof contexts[number],
-  error?: ErrorBaseType,
-  expectedResult = true
-): void {
   const isContext = contextMap.get(context);
   if (!isContext) {
     throw new TypeError(`Context "${context}" not found`);
   }
 
-  if (isContext() !== expectedResult) {
+  if (isContext()) {
     throw createError(
-      `This code can ${
-        expectedResult ? "only" : "not"
-      } run in the "${context}" context`,
+      `This code cannot run in the "${context}" context`,
       error
     );
   }
