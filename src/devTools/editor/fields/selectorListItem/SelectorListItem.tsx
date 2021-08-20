@@ -16,25 +16,29 @@
  */
 
 import React from "react";
-import styles from './SelectorListItem.module.css';
+import styles from "./SelectorListItem.module.css";
 import { Badge } from "react-bootstrap";
 
 export interface Props {
-  value: string,
-  hasData: boolean,
-  tag: string | null
+  value: string;
+  hasData: boolean;
+  tag: string | null;
 }
 
-const SelectorListItem: React.FC<Props> = ({
-  value,
-  hasData,
-  tag
-}) => (
+const SelectorListItem: React.FC<Props> = ({ value, hasData, tag }) => (
   <div className={styles.container}>
-    {tag && <Badge variant="dark" className={styles.badge}>{tag}</Badge>}
-    {hasData && <Badge variant="info" className={styles.badge}>DATA</Badge>}
+    {tag && (
+      <Badge variant="dark" className={styles.badge}>
+        {tag}
+      </Badge>
+    )}
+    {hasData && (
+      <Badge variant="info" className={styles.badge}>
+        DATA
+      </Badge>
+    )}
     {value}
   </div>
-)
+);
 
 export default SelectorListItem;
