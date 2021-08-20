@@ -116,4 +116,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: pre-commit run --all-files
+      - run: pre-commit run --all-files
