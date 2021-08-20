@@ -257,7 +257,7 @@
       "fake-indexeddb/auto"
     ],
     "collectCoverageFrom": [
-      "src/**/*.{ts,tsx,js,jsx}",
+      "src/**/*.{ts,tsx}",
       "!**/__mocks__/**",
       "!**/node_modules/**",
       "!**/vendor/**"
