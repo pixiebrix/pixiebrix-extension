@@ -163,6 +163,12 @@ function customizeManifest(manifest, isProduction) {
     policy.add("connect-src", "ws://localhost:9090/ http://127.0.0.1:8000");
   }
 
+  // React Dev Tools app
+  if (!isProduction) {
+    policy.add("script-src", "http://localhost:8097")
+    policy.add("connect-src", "ws://localhost:8097/")
+  }
+
   manifest.content_security_policy = policy.toString();
 
   if (process.env.EXTERNALLY_CONNECTABLE) {
