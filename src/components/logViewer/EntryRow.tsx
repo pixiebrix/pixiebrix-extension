@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { LogEntry } from "@/background/logging";
+import type { LogEntry } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { ErrorObject } from "serialize-error";

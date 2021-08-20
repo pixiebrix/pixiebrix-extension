@@ -16,16 +16,16 @@
  */
 
 import React from "react";
-import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { ComponentMeta, ComponentStory } from "@storybook/react";
 import SelectorListItem from "./SelectorListItem";
 
 export default {
   title: "Components/SelectorListItem",
-  component: SelectorListItem
+  component: SelectorListItem,
 } as ComponentMeta<typeof SelectorListItem>;
 
 const Story: ComponentStory<typeof SelectorListItem> = (args) => (
-  <SelectorListItem {...args}/>
+  <SelectorListItem {...args} />
 );
 
 const selector = ".main-content .container .foo.bar";
@@ -34,19 +34,19 @@ export const Plain = Story.bind({});
 Plain.args = {
   value: selector,
   hasData: false,
-  tag: null
+  tag: null,
 };
 
 export const Tag = Story.bind({});
 Tag.args = {
   value: selector,
   hasData: false,
-  tag: "H1"
+  tag: "H1",
 };
 
 export const Data = Story.bind({});
 Data.args = {
   value: selector,
   hasData: true,
-  tag: "DIV"
+  tag: "DIV",
 };

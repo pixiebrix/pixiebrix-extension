@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+Object.assign(global, { chrome: { runtime: { id: 42 } } });
+
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { validateRegistryId, uuidv4 } from "@/types/helpers";
@@ -24,10 +26,10 @@ import { Card } from "react-bootstrap";
 import { ContextError } from "@/errors";
 import { InputValidationError } from "@/blocks/errors";
 import { Schema } from "@/core";
-import { LogEntry } from "@/background/logging";
+import type { LogEntry } from "@/background/logging";
 
 export default {
-  title: "Common/LogTable",
+  title: "Editor/LogTable",
   component: LogTable,
 } as ComponentMeta<typeof LogTable>;
 

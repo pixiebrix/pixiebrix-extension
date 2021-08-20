@@ -30,6 +30,7 @@ staticfiles
 
 # Testing Artifacts
 .coverage
+coverage
 
 # NPM/Webpack
 webpack-stats.json
