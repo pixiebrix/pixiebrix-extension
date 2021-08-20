@@ -24,6 +24,7 @@ const chrome = require("selenium-webdriver/chrome");
 const firefox = require("selenium-webdriver/firefox");
 const extensionLocation = require("../package.json").webExt.sourceDir;
 const path = require("path");
+const pWaitFor = require("p-wait-for");
 
 const useFirefox = process.argv.includes("--firefox");
 const useChrome = process.argv.includes("--chrome");
@@ -54,9 +55,8 @@ if (!isBrowserstack) {
 // Open devtools: https://stackoverflow.com/questions/37683576/how-do-you-automatically-open-the-chrome-devtools-tab-within-selenium-c
 
 async function testPixieBrixHomepage(driver) {
-  await driver.get("https://www.pixiebrix.com");
   try {
-    await driver.wait(webdriver.until.titleMatches(/pixiebrix/i), 5000);
+    await driver.wait(webdriver.until.titleMatches(/pixiebrix/i), 50000);
     console.log(await driver.getTitle());
     await driver.executeScript('console.log("sdasd")');
   } catch {
@@ -137,6 +137,17 @@ configurations.set("firefox", {
   name: "firefox test",
 });
 
+async function switchToWindowWithUrl(driver, urlRegex) {
+  for (const window of await driver.getAllWindowHandles()) {
+    await driver.switchTo().window(window);
+    if (urlRegex.test(await driver.getCurrentUrl())) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 async function runInBrowser(browser) {
   const builder = getBuilder();
   builder.withCapabilities(configurations.get(browser));
@@ -152,7 +163,18 @@ async function runInBrowser(browser) {
   if (browser === "firefox") {
     await driver.installAddon(await getZippedExtensionAsPath(), true);
   }
-  await testPixieBrixHomepage(driver);
+
+  await pWaitFor(() => switchToWindowWithUrl(driver, /\/options\.html/), {
+    interval: 200,
+  });
+
+  const element = await driver.wait(
+    webdriver.until.elementLocated(
+      webdriver.By.xpath("//*[contains(text(), 'You have version')]")
+    )
+  );
+  console.log(await element.getText());
+
   await driver.quit();
 }
 
