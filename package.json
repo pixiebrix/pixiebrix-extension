@@ -258,6 +258,7 @@
     ],
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
+      "!src/**/*.stories.tsx",
       "!**/__mocks__/**",
       "!**/node_modules/**",
       "!**/vendor/**"
