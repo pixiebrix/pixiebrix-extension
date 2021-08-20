@@ -157,6 +157,9 @@ const Editor: React.FunctionComponent<OwnProps> = ({
           <li className="list-inline-item mx-3">
             <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>O</kbd>: Open Brick
           </li>
+          <li className="list-inline-item mx-3">
+            <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>F</kbd>: Search
+          </li>
         </ul>
       </div>
       <Card ref={editorRef}>
