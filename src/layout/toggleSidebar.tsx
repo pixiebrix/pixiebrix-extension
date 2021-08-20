@@ -14,7 +14,7 @@ export const toggleSidebar = () => {
   }
 };
 
-export const closeSidebaronSmallScreen = () => {
+export const closeSidebarOnSmallScreen = () => {
   if (window.matchMedia(smallScreenMediaQuery).matches) {
     document
       .querySelector(`#${sidebarId}`)
