@@ -100,6 +100,7 @@ export const selectElement = liftBackground(
       traverseUp,
       root,
     });
+
     if (isEmpty(element)) {
       throw new Error("selectElement returned an empty element");
     }

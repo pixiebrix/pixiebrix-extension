@@ -198,11 +198,15 @@ const BUSINESS_ERROR_NAMES = new Set([
   "InputValidationError",
   "OutputValidationError",
   "PipelineConfigurationError",
+  "MissingConfigurationError",
+  "NotConfiguredError",
+  "RemoteServiceError",
 ]);
 
 /**
  * Returns true iff the root cause of the error was a BusinessError.
  * @param error the error object
+ * @see BUSINESS_ERROR_CLASSES
  */
 export function hasBusinessRootCause(
   error: SerializedError | unknown
@@ -287,15 +291,6 @@ export function isAxiosError(error: unknown): error is AxiosError {
   return (
     typeof error === "object" && Boolean((error as AxiosError).isAxiosError)
   );
-}
-
-/**
- * Return true iff the value is an AxiosError corresponding to a HTTP_400_BAD_REQUEST.
- */
-export function isBadRequestError(
-  error: unknown
-): error is AxiosError & { response: { status: 400 } } {
-  return isAxiosError(error) && error.response.status === 400;
 }
 
 /**

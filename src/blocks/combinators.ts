@@ -28,6 +28,7 @@ import {
   isReader,
   isRendererBlock,
   Logger,
+  MessageContext,
   OutputKey,
   ReaderRoot,
   RenderedArgs,
@@ -51,7 +52,7 @@ import {
   executeInOpener,
   executeInTarget,
 } from "@/background/executor";
-import { boolean, resolveObj } from "@/utils";
+import { boolean, excludeUndefined, resolveObj } from "@/utils";
 import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
@@ -104,17 +105,6 @@ function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
   };
 }
 
-function excludeUndefined(obj: unknown): unknown {
-  if (isPlainObject(obj) && typeof obj === "object") {
-    return mapValues(
-      pickBy(obj, (x) => x !== undefined),
-      excludeUndefined
-    );
-  }
-
-  return obj;
-}
-
 type StageOptions = {
   context: RenderedArgs;
   validate: boolean;
@@ -132,6 +122,11 @@ async function runStage(
 ): Promise<unknown> {
   const argContext = { ...context, ...args };
   const stageConfig = stage.config ?? {};
+
+  // If logValues not provided explicitly, default to the global setting
+  if (logValues === undefined) {
+    logValues = (await getLoggingConfig()).logValues ?? false;
+  }
 
   let blockArgs: BlockArg;
 
@@ -261,13 +256,14 @@ function arraySchema(base: Schema): Schema {
 
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
-  config: BlockConfig | BlockPipeline,
+  pipeline: BlockConfig | BlockPipeline,
   renderedArgs: RenderedArgs,
   logger: Logger,
   root: HTMLElement | Document = null,
   {
     validate = true,
-    logValues = false,
+    // Don't default `logValues`, will set async below using `getLoggingConfig` if not provided
+    logValues,
     headless = false,
     optionsArgs = {},
     serviceArgs = {},
@@ -279,15 +275,18 @@ export async function reducePipeline(
     "@options": optionsArgs,
   };
 
-  // If logValues not provided explicitly by the extension point, use the global value
+  // If logValues not provided explicitly, default to the global setting
   if (logValues === undefined) {
     logValues = (await getLoggingConfig()).logValues ?? false;
   }
 
   let currentArgs: RenderedArgs = renderedArgs;
 
-  for (const [index, stage] of castArray(config).entries()) {
-    const stageContext = { blockId: stage.id };
+  for (const [index, stage] of castArray(pipeline).entries()) {
+    const stageContext: MessageContext = {
+      blockId: stage.id,
+      label: stage.label,
+    };
     const stageLogger = logger.childLogger(stageContext);
 
     try {
