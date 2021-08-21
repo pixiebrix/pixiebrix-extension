@@ -27,7 +27,6 @@ import PrivateServicesCard from "./PrivateServicesCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import SharedServicesCard from "./SharedServicesCard";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
-import { useFetch } from "@/hooks/fetch";
 import useServiceDefinitions from "./useServiceDefinitions";
 import { RootState } from "../../store";
 import { RawServiceConfiguration } from "@/core";
@@ -39,6 +38,7 @@ import AuthContext from "@/auth/AuthContext";
 import { sleep } from "@/utils";
 import { reportError } from "@/telemetry/logging";
 import { useTitle } from "@/hooks/title";
+import useFetch from "@/hooks/useFetch";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
@@ -58,7 +58,9 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 }) => {
   useTitle("Integrations");
 
-  const remoteAuths = useFetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
+  const { data: remoteAuths } = useFetch<SanitizedAuth[]>(
+    "/api/services/shared/?meta=1"
+  );
   const { flags } = useContext(AuthContext);
 
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(

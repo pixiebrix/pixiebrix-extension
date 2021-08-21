@@ -492,6 +492,10 @@ export interface AuthState {
   readonly isOnboarded: boolean;
   readonly extension: boolean;
   readonly organization?: OrganizationAuthState | null;
+
+  /**
+   * List of feature flags enabled for the user.
+   */
   readonly flags: string[];
 }
 

@@ -18,11 +18,9 @@
 import { useSelector } from "react-redux";
 import { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
-import axios from "axios";
 import { EditablePackage } from "@/devTools/editor/hooks/useCreate";
-import { makeURL } from "@/hooks/fetch";
-import { getExtensionToken } from "@/auth/token";
 import { RootState } from "@/devTools/store";
+import { getLinkedClient } from "@/services/apiClient";
 
 const selectEditor = (x: RootState) => x.editor;
 
@@ -30,11 +28,8 @@ function useEditable(): Set<string> {
   const { knownEditable } = useSelector(selectEditor);
 
   const [initialEditable] = useAsyncState(async () => {
-    const { data } = await axios.get<EditablePackage[]>(
-      await makeURL("api/bricks/"),
-      {
-        headers: { Authorization: `Token ${await getExtensionToken()}` },
-      }
+    const { data } = await (await getLinkedClient()).get<EditablePackage[]>(
+      "api/bricks/"
     );
     return new Set(data.map((x) => x.name));
   }, []);

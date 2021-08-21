@@ -32,7 +32,6 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useFetch } from "@/hooks/fetch";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { useAsyncState } from "@/hooks/common";
 import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
@@ -44,6 +43,7 @@ import { useField } from "formik";
 import { persistor } from "@/options/store";
 import { refresh as refreshBackgroundLocator } from "@/background/locator";
 import { GroupTypeBase, MenuListComponentProps } from "react-select";
+import useFetch from "@/hooks/useFetch";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -211,7 +211,9 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
 
   const selected = useSelectedExtensions(blueprint.extensionPoints);
 
-  const serviceConfigs = useFetch<ServiceDefinition[]>("/api/services/");
+  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
+    "/api/services/"
+  );
 
   const serviceIds = useMemo(
     // The PixieBrix service gets automatically configured, so don't need to show it. If the PixieBrix service is

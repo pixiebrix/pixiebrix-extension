@@ -22,7 +22,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useFetch } from "@/hooks/fetch";
 import { RecipeDefinition } from "@/types/definitions";
 import { PageTitle } from "@/layout/Page";
 import { groupBy, sortBy, noop, compact } from "lodash";
@@ -45,7 +44,6 @@ import { connect } from "react-redux";
 import { push } from "connected-react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
-
 import "./TemplatesPage.scss";
 import AuthContext from "@/auth/AuthContext";
 import GridLoader from "react-spinners/GridLoader";
@@ -53,6 +51,7 @@ import { useTitle } from "@/hooks/title";
 import { RegistryId } from "@/core";
 import { selectExtensions } from "@/options/selectors";
 import { OptionsState } from "@/store/extensions";
+import useFetch from "@/hooks/useFetch";
 
 export interface TemplatesProps {
   installedRecipes: Set<RegistryId>;
@@ -188,9 +187,9 @@ const ContextMenuTemplates: React.FunctionComponent<{
   installedRecipes: Set<RegistryId>;
   install: InstallRecipe;
 }> = ({ installedRecipes, install }) => {
-  const rawRecipes: FeaturedRecipeDefinition[] = useFetch<
-    FeaturedRecipeDefinition[]
-  >("/api/featured/recipes/?category=search");
+  const { data: rawRecipes } = useFetch<FeaturedRecipeDefinition[]>(
+    "/api/featured/recipes/?category=search"
+  );
 
   const [query, setQuery] = useState("");
 
@@ -260,7 +259,7 @@ const SharedTemplates: React.FunctionComponent<{
   installedRecipes: Set<RegistryId>;
   install: InstallRecipe;
 }> = ({ installedRecipes, install }) => {
-  const rawRecipes: RecipeDefinition[] = useFetch<FeaturedRecipeDefinition[]>(
+  const { data: rawRecipes } = useFetch<RecipeDefinition[]>(
     "/api/invited/recipes/"
   );
 

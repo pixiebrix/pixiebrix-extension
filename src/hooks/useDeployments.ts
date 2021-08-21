@@ -26,8 +26,6 @@ import { optionsSlice } from "@/options/slices";
 import { selectExtensions } from "@/options/selectors";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
-import { getExtensionToken } from "@/auth/token";
-import axios from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { activeDeployments } from "@/background/deployment";
@@ -36,6 +34,7 @@ import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill-ts";
 import { IExtension } from "@/core";
+import { getLinkedClient } from "@/services/apiClient";
 
 const { actions } = optionsSlice;
 
@@ -54,18 +53,13 @@ async function selectDeploymentPermissions(
 async function fetchDeployments(
   installedExtensions: IExtension[]
 ): Promise<Deployment[]> {
-  const token = await getExtensionToken();
-  const { data: deployments } = await axios.post<Deployment[]>(
-    `${await getBaseURL()}/api/deployments/`,
-    {
-      uid: await getUID(),
-      version: await getExtensionVersion(),
-      active: activeDeployments(installedExtensions),
-    },
-    {
-      headers: { Authorization: `Token ${token}` },
-    }
-  );
+  const { data: deployments } = await (await getLinkedClient()).post<
+    Deployment[]
+  >(`${await getBaseURL()}/api/deployments/`, {
+    uid: await getUID(),
+    version: await getExtensionVersion(),
+    active: activeDeployments(installedExtensions),
+  });
   return deployments;
 }
 

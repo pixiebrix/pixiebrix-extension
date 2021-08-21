@@ -18,10 +18,8 @@
 import { editorSlice, FormState } from "@/devTools/editor/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback, useState } from "react";
-import axios, { AxiosError } from "axios";
-import { makeURL } from "@/hooks/fetch";
+import { AxiosError } from "axios";
 import { dump } from "js-yaml";
-import { getExtensionToken } from "@/auth/token";
 import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
 import { uniq } from "lodash";
@@ -39,6 +37,7 @@ import { extensionPermissions } from "@/permissions";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 import { requestPermissions } from "@/utils/permissions";
 import { getErrorMessage } from "@/errors";
+import { getLinkedClient } from "@/services/apiClient";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -53,25 +52,16 @@ async function upsertConfig(
   kind: "reader" | "extensionPoint",
   config: unknown
 ): Promise<void> {
-  const common = {
-    data: { config: configToYaml(config), kind },
-    headers: { Authorization: `Token ${await getExtensionToken()}` },
-  };
+  const client = await getLinkedClient();
+
+  const data = { config: configToYaml(config), kind };
 
   if (packageUUID) {
-    await axios({
-      url: await makeURL(`api/bricks/${packageUUID}/`),
-      method: "put",
-      ...common,
-    });
+    await client.put(`api/bricks/${packageUUID}/`, data);
     return;
   }
 
-  await axios({
-    url: await makeURL("api/bricks/"),
-    method: "post",
-    ...common,
-  });
+  await client.post("api/bricks/", data);
 }
 
 function selectErrorMessage(error: unknown): string {
@@ -183,12 +173,9 @@ export function useCreate(): CreateCallback {
 
         // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
         // number of bricks implemented and frequency of saves
-        const { data: editablePackages } = await axios.get<EditablePackage[]>(
-          await makeURL("api/bricks/"),
-          {
-            headers: { Authorization: `Token ${await getExtensionToken()}` },
-          }
-        );
+        const { data: editablePackages } = await (await getLinkedClient()).get<
+          EditablePackage[]
+        >("api/bricks/");
 
         const isEditable = editablePackages.some(
           (x) => x.name === element.extensionPoint.metadata.id

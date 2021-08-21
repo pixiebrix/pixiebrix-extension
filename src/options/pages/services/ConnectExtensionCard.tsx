@@ -19,7 +19,7 @@ import React, { useState } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import { useAsyncEffect } from "use-async-effect";
-import { getExtensionToken } from "@/auth/token";
+import { isLinked } from "@/auth/token";
 import Card from "react-bootstrap/Card";
 import urljoin from "url-join";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,7 +31,7 @@ const ConnectExtensionCard: React.FunctionComponent = () => {
 
   useAsyncEffect(
     async (isMounted) => {
-      const hasKey = Boolean(await getExtensionToken());
+      const hasKey = await isLinked();
       if (isMounted()) return;
       setHasExtensionKey(hasKey);
     },

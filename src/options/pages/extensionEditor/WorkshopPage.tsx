@@ -44,7 +44,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import registry from "@/extensionPoints/registry";
 import { Link } from "react-router-dom";
-import { useFetch } from "@/hooks/fetch";
 import AuthContext from "@/auth/AuthContext";
 import { orderBy, uniq, compact, sortBy, isEmpty } from "lodash";
 import BlockModal from "@/components/fields/BlockModal";
@@ -62,6 +61,7 @@ import "./WorkshopPage.scss";
 import { useTitle } from "@/hooks/title";
 import { Brick } from "@/types/contract";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import useFetch from "@/hooks/useFetch";
 
 interface OwnProps {
   navigate: (url: string) => void;
@@ -144,7 +144,7 @@ const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
 }) => {
   const dispatch = useDispatch();
   const [query, setQuery] = useState("");
-  const remoteBricks = useFetch<Brick[]>("/api/bricks/");
+  const { data: remoteBricks } = useFetch<Brick[]>("/api/bricks/");
   const { scopes = [], collections = [], kinds = [] } = useSelector(
     selectFilters
   );

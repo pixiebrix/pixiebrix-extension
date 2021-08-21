@@ -17,9 +17,9 @@
 
 import { ServiceDefinition } from "@/types/definitions";
 import React, { useMemo } from "react";
-import { useFetch } from "@/hooks/fetch";
 import Select from "react-select";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import useFetch from "@/hooks/useFetch";
 
 interface ServiceOption {
   value: string;
@@ -31,7 +31,9 @@ const ServiceSelector: React.FunctionComponent<{
   onSelect: (service: ServiceDefinition) => void;
   placeholder?: string;
 }> = ({ onSelect, placeholder = "Configure a new service" }) => {
-  const serviceConfigs = useFetch("/api/services/") as ServiceDefinition[];
+  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
+    "/api/services/"
+  );
   const serviceOptions = useMemo(
     () =>
       (serviceConfigs ?? [])

@@ -56,7 +56,7 @@ type Notifications = {
    *
    * If the user is filling out a form, you should use form validation instead of showing a userError on submit.
    */
-  userError: (content: string, options?: ErrorNotificationOptions) => void;
+  userError: (content: unknown, options?: ErrorNotificationOptions) => void;
 };
 
 /**
@@ -140,8 +140,8 @@ function useNotifications(): Notifications {
   );
 
   const notifyUserError = useCallback(
-    (content: string, options: ErrorNotificationOptions = {}) => {
-      notify(content, {
+    (content: unknown, options: ErrorNotificationOptions = {}) => {
+      notify(getErrorMessage(content), {
         report: false,
         autoDismiss: true,
         ...options,
