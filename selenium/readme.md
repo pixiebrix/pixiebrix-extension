@@ -32,3 +32,11 @@ The tests can be run in Firefox by setting a `BROWSER` ENV variable:
 ```sh
 BROWSER=firefox npm run test:selenium
 ```
+
+# Links
+
+Some more information and testing exploration may be found in:
+
+- https://github.com/pixiebrix/pixiebrix-extension/wiki/Web-Extension-Testing-Reference
+- https://github.com/pixiebrix/pixiebrix-extension/pull/1139
+- https://github.com/pixiebrix/pixiebrix-extension/pull/749
