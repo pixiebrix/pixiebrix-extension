@@ -54,7 +54,6 @@ jobs:
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
-
       - uses: actions/upload-artifact@v2
         name: Save extension
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
