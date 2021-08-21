@@ -166,7 +166,7 @@ export const selectElement = liftContentScript(
     traverseUp = 0,
     mode = "element",
     framework,
-    root = undefined,
+    root,
   }: {
     traverseUp: number;
     framework?: Framework;
@@ -174,7 +174,7 @@ export const selectElement = liftContentScript(
     isMulti?: boolean;
     root?: string;
   }) => {
-    const rootElement = root != null ? requireSingleElement(root) : undefined;
+    const rootElement = root == null ? undefined : requireSingleElement(root);
     const elements = await userSelectElement(rootElement);
 
     switch (mode) {
@@ -210,6 +210,7 @@ export const selectElement = liftContentScript(
       }
 
       default: {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for type `never`
         throw new Error(`Unexpected mode: ${mode}`);
       }
     }

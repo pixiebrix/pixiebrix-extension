@@ -75,7 +75,9 @@ interface LogDB extends DBSchema {
   };
 }
 
-const indexKeys: Array<keyof Except<MessageContext, "deploymentId">> = [
+const indexKeys: Array<
+  keyof Except<MessageContext, "deploymentId" | "label">
+> = [
   "extensionPointId",
   "extensionId",
   "blueprintId",

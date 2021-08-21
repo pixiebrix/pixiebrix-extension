@@ -16,15 +16,16 @@
  */
 
 import { AxiosResponse } from "axios";
+import { BusinessError, SuspiciousOperationError } from "@/errors";
 
-export class IncompatibleServiceError extends Error {
+export class IncompatibleServiceError extends SuspiciousOperationError {
   constructor(message: string) {
     super(message);
     this.name = "IncompatibleServiceError";
   }
 }
 
-export class MissingConfigurationError extends Error {
+export class MissingConfigurationError extends BusinessError {
   serviceId: string;
 
   id: string;
@@ -37,7 +38,7 @@ export class MissingConfigurationError extends Error {
   }
 }
 
-export class NotConfiguredError extends Error {
+export class NotConfiguredError extends BusinessError {
   serviceId: string;
 
   missingProperties: string[];
@@ -54,17 +55,7 @@ export class NotConfiguredError extends Error {
   }
 }
 
-export class UnknownServiceError extends Error {
-  serviceId: string;
-
-  constructor(message: string, serviceId: string) {
-    super(message);
-    this.name = "UnknownServiceError";
-    this.serviceId = serviceId;
-  }
-}
-
-export class RemoteServiceError extends Error {
+export class RemoteServiceError extends BusinessError {
   response: AxiosResponse | null;
 
   constructor(message: string, response: AxiosResponse | null) {

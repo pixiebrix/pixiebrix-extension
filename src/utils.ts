@@ -32,6 +32,7 @@ import {
   fromPairs,
   zip,
   pickBy,
+  isPlainObject,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { getErrorMessage } from "@/errors";
@@ -344,6 +345,17 @@ export function isNullOrBlank(value: unknown): boolean {
   }
 
   return typeof value === "string" && value.trim() === "";
+}
+
+export function excludeUndefined(obj: unknown): unknown {
+  if (isPlainObject(obj) && typeof obj === "object") {
+    return mapValues(
+      pickBy(obj, (x) => x !== undefined),
+      excludeUndefined
+    );
+  }
+
+  return obj;
 }
 
 export class PromiseCancelled extends Error {

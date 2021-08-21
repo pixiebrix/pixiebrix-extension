@@ -62,6 +62,7 @@ export class JQTransformer extends Transformer {
     ).default;
 
     logger.debug("Running jq transform", { filter, data, ctxt, input });
+
     try {
       // eslint-disable-next-line @typescript-eslint/return-await -- Type is `any`, it throws the rule off
       return await jq.promised.json(input, filter);
