@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { CancelError } from "@/errors";
@@ -66,5 +65,3 @@ export class Prompt extends Transformer {
     };
   }
 }
-
-registerBlock(new Prompt());

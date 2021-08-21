@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { boolean } from "@/utils";
 import { BusinessError } from "@/errors";
@@ -80,8 +79,12 @@ export class SetInputValue extends Effect {
     required: ["inputs"],
   };
 
-  async effect({ inputs }: BlockArg, { logger }: BlockOptions): Promise<void> {
+  async effect(
+    { inputs }: { inputs: Array<{ selector: string; value: unknown }> },
+    { logger }: BlockOptions
+  ): Promise<void> {
     for (const { selector, value } of inputs) {
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
       const $input = $(document).find(selector);
       if ($input.length === 0) {
         logger.warn(`Could not find input for selector: ${selector}`);
@@ -175,6 +178,3 @@ export class FormFill extends Effect {
     }
   }
 }
-
-registerBlock(new FormFill());
-registerBlock(new SetInputValue());

@@ -15,28 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Effect } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
-import { propertiesToSchema } from "@/validators/generic";
+import { RegistryId } from "@/core";
+import { validateRegistryId } from "@/types/helpers";
 
-export class LogEffect extends Effect {
-  constructor() {
-    super(
-      "@pixiebrix/browser/log",
-      "Log To Console",
-      "Log a message to the Browser's console",
-      "faSearch"
-    );
-  }
-
-  inputSchema: Schema = propertiesToSchema({
-    message: {
-      type: "string",
-      description: "The message to log",
-    },
-  });
-
-  async effect({ message }: BlockArg, { ctxt }: BlockOptions): Promise<void> {
-    console.log(message, ctxt);
-  }
-}
+export const PIXIEBRIX_SERVICE_ID: RegistryId = validateRegistryId(
+  "@pixiebrix/api"
+);

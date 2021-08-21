@@ -15,18 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./jq";
-export * from "./jsonPath";
-export * from "./httpGet";
-export * from "./remoteMethod";
-export * from "./regex";
-export * from "./mapping";
-export * from "./identity";
-export * from "./FormData";
-export * from "./parseUrl";
-export * from "./prompt";
-export * from "./detect";
-export * from "./modal";
-export * from "./encode";
-export * from "./template";
-export * from "./url";
+import { registerBlock } from "@/blocks/registry";
+
+import { JQTransformer } from "./jq";
+import { JSONPathTransformer } from "./jsonPath";
+import { GetAPITransformer } from "./httpGet";
+import { RemoteMethod } from "./remoteMethod";
+import { RegexTransformer } from "./regex";
+import { MappingTransformer } from "./mapping";
+import { IdentityTransformer } from "./identity";
+import { UrlParser } from "./parseUrl";
+import { FormData } from "./FormData";
+import { Prompt } from "./prompt";
+import { DetectElement } from "./detect";
+import { ModalTransformer } from "./modal";
+import { Base64Decode, Base64Encode } from "./encode";
+import { TemplateTransformer } from "./template";
+import { UrlParams } from "./url";
+
+registerBlock(new JQTransformer());
+registerBlock(new JSONPathTransformer());
+registerBlock(new GetAPITransformer());
+registerBlock(new RemoteMethod());
+registerBlock(new RegexTransformer());
+registerBlock(new MappingTransformer());
+registerBlock(new IdentityTransformer());
+registerBlock(new UrlParser());
+registerBlock(new FormData());
+registerBlock(new Prompt());
+registerBlock(new DetectElement());
+registerBlock(new ModalTransformer());
+registerBlock(new Base64Encode());
+registerBlock(new Base64Decode());
+registerBlock(new TemplateTransformer());
+registerBlock(new UrlParams());

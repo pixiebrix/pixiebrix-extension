@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 
@@ -76,5 +75,3 @@ export class ExportCsv extends Effect {
     csvExporter.generateCsv(rows);
   }
 }
-
-registerBlock(new ExportCsv());

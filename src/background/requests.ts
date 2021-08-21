@@ -20,7 +20,7 @@ import { liftBackground } from "@/background/protocol";
 import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
-import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
 import { ContextError, ExtensionNotLinkedError, isAxiosError } from "@/errors";
@@ -31,9 +31,10 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
-import { isAbsoluteURL } from "@/hooks/fetch";
+import { isAbsoluteUrl } from "@/utils";
 import { expectBackgroundPage } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 interface ProxyResponseSuccessData {
   json: unknown;
@@ -262,7 +263,7 @@ export async function proxyService<TData>(
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
     // No service configuration provided. Perform request directly without authentication
-    if (!isAbsoluteURL(requestConfig.url) && requestConfig.baseURL == null) {
+    if (!isAbsoluteUrl(requestConfig.url) && requestConfig.baseURL == null) {
       throw new Error("expected absolute URL for request without service");
     }
 

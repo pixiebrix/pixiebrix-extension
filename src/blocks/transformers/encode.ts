@@ -17,7 +17,6 @@
 
 import { Transformer } from "@/types";
 import { BlockArg } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class Base64Encode extends Transformer {
@@ -69,6 +68,3 @@ export class Base64Decode extends Transformer {
     return btoa(encodedData);
   }
 }
-
-registerBlock(new Base64Encode());
-registerBlock(new Base64Decode());

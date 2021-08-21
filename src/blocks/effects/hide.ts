@@ -18,7 +18,6 @@
 import { Effect } from "@/types";
 import { Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { registerBlock } from "@/blocks/registry";
 
 export class HideEffect extends Effect {
   constructor() {
@@ -59,5 +58,3 @@ export class HideEffect extends Effect {
     }
   }
 }
-
-registerBlock(new HideEffect());

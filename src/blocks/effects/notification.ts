@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { PERMISSIONS_NOTIFICATIONS } from "@/permissions/optional";
 import { createNotification } from "@/background/notifications";
 import { propertiesToSchema } from "@/validators/generic";
@@ -59,5 +58,3 @@ export class ShowNotificationEffect extends Effect {
     console.debug("Sent browser notification", { id });
   }
 }
-
-registerBlock(new ShowNotificationEffect());

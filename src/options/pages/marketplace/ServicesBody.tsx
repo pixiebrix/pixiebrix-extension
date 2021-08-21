@@ -34,7 +34,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { useAsyncState } from "@/hooks/common";
-import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import registry from "@/services/registry";
 import { RawServiceConfiguration } from "@/core";
 import { servicesSlice } from "@/options/slices";
 import { useDispatch } from "react-redux";
@@ -44,6 +44,7 @@ import { persistor } from "@/options/store";
 import { refresh as refreshBackgroundLocator } from "@/background/locator";
 import { GroupTypeBase, MenuListComponentProps } from "react-select";
 import useFetch from "@/hooks/useFetch";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 const { updateServiceConfig } = servicesSlice.actions;
 

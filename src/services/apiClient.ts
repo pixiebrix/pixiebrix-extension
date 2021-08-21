@@ -19,8 +19,7 @@ import axios, { AxiosInstance } from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionToken } from "@/auth/token";
 import { ExtensionNotLinkedError, SuspiciousOperationError } from "@/errors";
-import { isAbsoluteURL } from "@/hooks/fetch";
-import urljoin from "url-join";
+import { isAbsoluteUrl } from "@/utils";
 
 /**
  * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
@@ -29,7 +28,7 @@ import urljoin from "url-join";
 export async function absoluteApiUrl(
   relativeOrAbsoluteURL: string
 ): Promise<string> {
-  const absolute = isAbsoluteURL(relativeOrAbsoluteURL);
+  const absolute = isAbsoluteUrl(relativeOrAbsoluteURL);
   const base = await getBaseURL();
 
   if (absolute) {
@@ -42,7 +41,7 @@ export async function absoluteApiUrl(
     return relativeOrAbsoluteURL;
   }
 
-  return new URL(urljoin(await getBaseURL(), relativeOrAbsoluteURL)).href;
+  return new URL(relativeOrAbsoluteURL, await getBaseURL()).href;
 }
 
 /**

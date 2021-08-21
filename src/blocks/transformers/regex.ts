@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { unary } from "lodash";
@@ -70,5 +69,3 @@ export class RegexTransformer extends Transformer {
     return Array.isArray(input) ? input.map(unary(extract)) : extract(input);
   }
 }
-
-registerBlock(new RegexTransformer());

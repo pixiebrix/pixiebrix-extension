@@ -17,10 +17,9 @@
 
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
+import { makeURL } from "@/utils";
 
-export const SPACE_ENCODING_DEFAULT = "plus";
-const SPACE_ENCODED_VALUE = "%20";
+export const URL_INPUT_SPACE_ENCODING_DEFAULT = "plus";
 
 export const URL_INPUT_SPEC: Schema = {
   $schema: "https://json-schema.org/draft/2019-09/schema#",
@@ -39,37 +38,12 @@ export const URL_INPUT_SPEC: Schema = {
     spaceEncoding: {
       type: "string",
       description: "Encode space using %20 vs. +",
-      default: SPACE_ENCODING_DEFAULT,
+      default: URL_INPUT_SPACE_ENCODING_DEFAULT,
       enum: ["percent", "plus"],
     },
   },
   required: ["url"],
 };
-
-export function makeURL(
-  url: string,
-  params: Record<string, string | number | boolean> | undefined = {},
-  spaceEncoding: "plus" | "percent" = SPACE_ENCODING_DEFAULT
-): string {
-  // https://javascript.info/url#searchparams
-  const result = new URL(url);
-  for (const [name, value] of Object.entries(params ?? {})) {
-    if ((value ?? "") !== "") {
-      result.searchParams.append(name, String(value));
-    }
-  }
-
-  const fullURL = result.toString();
-
-  if (spaceEncoding === "plus" || result.search.length === 0) {
-    return fullURL;
-  }
-
-  return fullURL.replace(
-    result.search,
-    result.search.replaceAll("+", SPACE_ENCODED_VALUE)
-  );
-}
 
 export class UrlParams extends Transformer {
   constructor() {
@@ -98,12 +72,10 @@ export class UrlParams extends Transformer {
   async transform({
     url,
     params,
-    spaceEncoding = SPACE_ENCODING_DEFAULT,
+    spaceEncoding = URL_INPUT_SPACE_ENCODING_DEFAULT,
   }: BlockArg): Promise<{ url: string }> {
     return {
       url: makeURL(url, params, spaceEncoding),
     };
   }
 }
-
-registerBlock(new UrlParams());

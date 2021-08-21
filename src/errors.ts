@@ -284,7 +284,9 @@ export function isErrorEvent(event: unknown): event is ErrorEvent {
  * Return true iff the value is an AxiosError.
  */
 export function isAxiosError(error: unknown): error is AxiosError {
-  return typeof error === "object" && (error as AxiosError).isAxiosError;
+  return (
+    typeof error === "object" && Boolean((error as AxiosError).isAxiosError)
+  );
 }
 
 /**

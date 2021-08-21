@@ -20,10 +20,11 @@ import { RootState } from "@/options/store";
 import { IService, RawServiceConfiguration } from "@/core";
 import { useParams } from "react-router";
 import { useMemo } from "react";
-import sortBy from "lodash/sortBy";
-import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import { sortBy } from "lodash";
+import registry from "@/services/registry";
 import { useAsyncState } from "@/hooks/common";
 import { ServicesState } from "@/options/slices";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 interface ServiceDefinitions {
   serviceDefinitions: IService[];

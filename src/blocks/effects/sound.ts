@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { browser } from "webextension-polyfill-ts";
 import { propertiesToSchema } from "@/validators/generic";
@@ -71,5 +70,3 @@ export class SoundEffect extends Effect {
     _howl.play(sound as string);
   }
 }
-
-registerBlock(new SoundEffect());

@@ -19,19 +19,14 @@ import axios from "axios";
 import { getApiClient } from "@/services/apiClient";
 import { EndpointAuthError, isAxiosError } from "@/errors";
 import { clearExtensionAuth, isLinked } from "@/auth/token";
-import { openTab } from "@/background/executor";
-import { getBaseURL } from "@/services/baseService";
-
-export function isAbsoluteURL(url: string): boolean {
-  return /^https?:\/\//.test(url);
-}
+import { isAbsoluteUrl } from "@/utils";
 
 const HTTP_401_UNAUTHENTICATED = 401;
 
 export async function fetch<TData = unknown>(
   relativeOrAbsoluteUrl: string
 ): Promise<TData> {
-  const absolute = isAbsoluteURL(relativeOrAbsoluteUrl);
+  const absolute = isAbsoluteUrl(relativeOrAbsoluteUrl);
 
   if (absolute) {
     // Make a normal request
@@ -52,12 +47,13 @@ export async function fetch<TData = unknown>(
     ) {
       if (linked) {
         // The token is incorrect - try relinking
+        // TODO: use openTab to open the extension page. Can't currently do it because openTab is coupled to
+        //  the registry. Add once we fix the messaging architecture
         await clearExtensionAuth();
-        await openTab({
-          url: await getBaseURL(),
-          active: true,
-        });
       } else {
+        console.warn(
+          `API endpoint requires authentication: ${relativeOrAbsoluteUrl}`
+        );
         throw new EndpointAuthError(relativeOrAbsoluteUrl);
       }
     }

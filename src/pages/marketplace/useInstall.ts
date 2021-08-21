@@ -24,7 +24,6 @@ import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizard";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 import { pickBy, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import { containsPermissions } from "@/utils/permissions";
 import { collectPermissions } from "@/permissions";
 import { reactivate } from "@/background/navigation";
@@ -32,6 +31,7 @@ import { push } from "connected-react-router";
 import { optionsSlice } from "@/options/slices";
 import { RegistryId, UUID } from "@/core";
 import { resolveRecipe } from "@/registry/internal";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 const { installRecipe } = optionsSlice.actions;
 

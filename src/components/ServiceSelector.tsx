@@ -18,8 +18,8 @@
 import { ServiceDefinition } from "@/types/definitions";
 import React, { useMemo } from "react";
 import Select from "react-select";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import useFetch from "@/hooks/useFetch";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 interface ServiceOption {
   value: string;

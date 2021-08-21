@@ -17,7 +17,6 @@
 
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { BusinessError } from "@/errors";
 
 export class ErrorEffect extends Effect {
@@ -44,5 +43,3 @@ export class ErrorEffect extends Effect {
     throw new BusinessError(message ?? "Unknown business error");
   }
 }
-
-registerBlock(new ErrorEffect());
