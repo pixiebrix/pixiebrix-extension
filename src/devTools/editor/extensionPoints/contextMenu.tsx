@@ -51,7 +51,7 @@ import {
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Menus } from "webextension-polyfill-ts";
-import { BlockPipeline } from "@/blocks/combinators";
+import { BlockPipeline } from "@/blocks/types";
 import React from "react";
 
 const wizard: WizardStep[] = [

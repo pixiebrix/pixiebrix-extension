@@ -25,7 +25,6 @@ import { IBlock } from "@/core";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { BlockPipeline } from "@/blocks/combinators";
 import { FieldArray, useField } from "formik";
 import hash from "object-hash";
 import Centered from "@/devTools/editor/components/Centered";
@@ -37,6 +36,7 @@ import BlockEntry from "@/devTools/editor/tabs/effect/BlockEntry";
 import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
 import QuickAdd from "@/devTools/editor/tabs/effect/QuickAdd";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
+import { BlockPipeline } from "@/blocks/types";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -183,17 +183,17 @@ const EffectTab: React.FunctionComponent<{
         />
         <div className="h-100 flex-grow-1">
           <div className="overflow-auto">
-            {activeBlockConfig != null ? (
+            {activeBlockConfig == null ? (
+              <ErrorBoundary>
+                <QuickAdd blocks={relevantBlocks} onSelect={appendBlock} />
+              </ErrorBoundary>
+            ) : (
               <ErrorBoundary key={`${activeIndex}-${activeBlock.id}`}>
                 <BlockConfiguration
                   name={`${fieldName}[${activeIndex}]`}
                   block={activeBlock}
                   showOutput={activeIndex !== count}
                 />
-              </ErrorBoundary>
-            ) : (
-              <ErrorBoundary>
-                <QuickAdd blocks={relevantBlocks} onSelect={appendBlock} />
               </ErrorBoundary>
             )}
           </div>

@@ -17,9 +17,9 @@
 
 import { castArray } from "lodash";
 import { MessageContext, RegistryId, Schema } from "@/core";
-import { BlockConfig, BlockPipeline } from "@/blocks/combinators";
 import { BusinessError } from "@/errors";
 import { OutputUnit } from "@cfworker/json-schema";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 export class PipelineConfigurationError extends BusinessError {
   readonly config: BlockPipeline;

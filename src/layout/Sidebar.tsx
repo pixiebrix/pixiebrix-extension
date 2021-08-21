@@ -30,9 +30,7 @@ import {
 import cx from "classnames";
 import AuthContext from "@/auth/AuthContext";
 import { SidebarLink } from "./SidebarLink";
-import { closeSidebarOnSmallScreen } from "./toggleSidebar";
-
-export const SIDEBAR_ID = "sidebar";
+import { closeSidebarOnSmallScreen, SIDEBAR_ID } from "./toggleSidebar";
 
 const Sidebar: React.FunctionComponent = () => {
   const { flags } = useContext(AuthContext);

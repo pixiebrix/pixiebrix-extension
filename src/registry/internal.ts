@@ -38,7 +38,7 @@ import {
   ResolvedExtensionPointConfig,
 } from "@/types/definitions";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { ReaderConfig } from "@/blocks/combinators";
+import { ReaderConfig } from "@/blocks/types";
 
 type InnerExtensionPoint = Pick<ExtensionPointConfig, "definition" | "kind">;
 

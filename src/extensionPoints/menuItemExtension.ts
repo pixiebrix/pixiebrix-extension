@@ -24,8 +24,6 @@ import {
   reducePipeline,
   mergeReaders,
   blockList,
-  BlockConfig,
-  BlockPipeline,
   makeServiceContext,
 } from "@/blocks/combinators";
 import { reportError } from "@/telemetry/logging";
@@ -69,6 +67,7 @@ import { PanelDefinition } from "@/extensionPoints/panelExtension";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { engineRenderer } from "@/utils/renderers";
 import { selectEventData } from "@/telemetry/deployments";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
