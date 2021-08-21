@@ -17,7 +17,6 @@
 
 import { proxyService } from "@/background/requests";
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockOptions, Schema, SchemaProperties } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
@@ -98,5 +97,3 @@ export class PushZap extends Effect {
     });
   }
 }
-
-registerBlock(new PushZap());

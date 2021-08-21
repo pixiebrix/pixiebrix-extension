@@ -15,7 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./effects";
-export * from "./renderers";
-export * from "./transformers";
-export * from "./readers";
+import registerEffects from "./effects/registerEffects";
+import registerTransformers from "./transformers/registerTransformers";
+import registerRenderers from "./renderers/registerRenderers";
+import registerReaders from "@/blocks/readers/registerReaders";
+
+function registerBuiltinBlocks() {
+  registerTransformers();
+  registerEffects();
+  registerRenderers();
+  registerReaders();
+}
+
+export default registerBuiltinBlocks;

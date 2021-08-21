@@ -18,7 +18,6 @@
 import { proxyService } from "@/background/requests";
 import { Effect } from "@/types";
 import { mapValues } from "lodash";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 
 export const AUTOMATION_ANYWHERE_RUN_BOT_ID =
@@ -89,5 +88,3 @@ export class RunBot extends Effect {
     options.logger.info(`Automation id ${responseData.automationId}`);
   }
 }
-
-registerBlock(new RunBot());

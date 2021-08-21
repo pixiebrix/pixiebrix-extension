@@ -16,7 +16,6 @@
  */
 
 import { Renderer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { browser } from "webextension-polyfill-ts";
 
@@ -73,5 +72,3 @@ export class IFrameRenderer extends Renderer {
     return `<iframe src="${src}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`;
   }
 }
-
-registerBlock(new IFrameRenderer());

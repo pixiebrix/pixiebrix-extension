@@ -16,7 +16,6 @@
  */
 
 import { Renderer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions } from "@/core";
 import { isNullOrBlank } from "@/utils";
@@ -30,7 +29,7 @@ import makeDataTable, { Row } from "@/blocks/renderers/dataTable";
 //   href: string;
 // };
 
-export class Table extends Renderer {
+export class TableRenderer extends Renderer {
   constructor() {
     super(
       "@pixiebrix/table",
@@ -121,5 +120,3 @@ export class Table extends Renderer {
     // } as any;
   }
 }
-
-registerBlock(new Table());

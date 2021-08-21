@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Handler } from "htmlmetaparser";
-import { Parser } from "htmlparser2";
 import { Reader } from "@/types";
 import { ReaderOutput, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 
-class PageSemanticReader extends Reader {
+export class PageSemanticReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/document-semantic",
@@ -31,6 +28,11 @@ class PageSemanticReader extends Reader {
   }
 
   async read(): Promise<ReaderOutput> {
+    const [{ Handler }, { Parser }] = await Promise.all([
+      import("htmlmetaparser"),
+      import("htmlparser2"),
+    ]);
+
     return new Promise((resolve, reject) => {
       const handler = new Handler(
         (error, result) => {
@@ -77,5 +79,3 @@ class PageSemanticReader extends Reader {
     return true;
   }
 }
-
-registerBlock(new PageSemanticReader());

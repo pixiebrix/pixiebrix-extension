@@ -15,11 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./google";
-export * from "./hubspot";
-export * from "./pipedrive";
-export * from "./slack";
-export * from "./salesforce";
-export * from "./uipath";
-export * from "./zapier";
-export * from "./automationanywhere";
+import { registerBlock } from "@/blocks/registry";
+import { HtmlRenderer } from "./html";
+import { IFrameRenderer } from "./iframe";
+import { MarkdownRenderer } from "./markdown";
+import { PropertyTableRenderer } from "./propertyTable";
+import { CustomFormRenderer } from "./customForm";
+import { TableRenderer } from "./table";
+
+function registerRenderers(): void {
+  registerBlock(new HtmlRenderer());
+  registerBlock(new IFrameRenderer());
+  registerBlock(new MarkdownRenderer());
+  registerBlock(new PropertyTableRenderer());
+  registerBlock(new CustomFormRenderer());
+  registerBlock(new TableRenderer());
+}
+
+export default registerRenderers;

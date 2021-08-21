@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { proxyService } from "@/background/requests";
 import { BlockArg, Schema } from "@/core";
 import { BusinessError } from "@/errors";
@@ -98,5 +97,3 @@ export class ResolvePerson extends Transformer {
     return data.items[0].item;
   }
 }
-
-registerBlock(new ResolvePerson());

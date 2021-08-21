@@ -53,9 +53,12 @@ import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 
 // Import the built-in bricks
-import "@/blocks";
-import "@/contrib";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contrib/editors";
+
+registerBuiltinBlocks();
+registerContribBlocks();
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(

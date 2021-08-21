@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registerBlock } from "@/blocks/registry";
 import { Reader } from "@/types";
 import { Schema } from "@/core";
 import axios from "axios";
-import * as ExifReader from "exifreader";
 
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
   // Adapted from https://github.com/exif-js/exif-js/blob/master/exif.js#L343
@@ -29,6 +27,7 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
   const buffer = new ArrayBuffer(len);
   const view = new Uint8Array(buffer);
   for (let i = 0; i < len; i++) {
+    // eslint-disable-next-line security/detect-object-injection -- is a numeric loop variable
     view[i] = binary.charCodeAt(i);
   }
 
@@ -56,7 +55,7 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
   return response.data;
 }
 
-class ImageExifReader extends Reader {
+export class ImageExifReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/image/exif",
@@ -66,6 +65,8 @@ class ImageExifReader extends Reader {
   }
 
   async read(elementOrDocument: HTMLElement | Document) {
+    const ExifReader = await import("exifreader");
+
     const element = elementOrDocument as HTMLImageElement;
 
     if (element?.tagName === "IMG") {
@@ -89,5 +90,3 @@ class ImageExifReader extends Reader {
     return true;
   }
 }
-
-registerBlock(new ImageExifReader());

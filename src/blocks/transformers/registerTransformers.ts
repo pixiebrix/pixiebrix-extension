@@ -33,19 +33,23 @@ import { Base64Decode, Base64Encode } from "./encode";
 import { TemplateTransformer } from "./template";
 import { UrlParams } from "./url";
 
-registerBlock(new JQTransformer());
-registerBlock(new JSONPathTransformer());
-registerBlock(new GetAPITransformer());
-registerBlock(new RemoteMethod());
-registerBlock(new RegexTransformer());
-registerBlock(new MappingTransformer());
-registerBlock(new IdentityTransformer());
-registerBlock(new UrlParser());
-registerBlock(new FormData());
-registerBlock(new Prompt());
-registerBlock(new DetectElement());
-registerBlock(new ModalTransformer());
-registerBlock(new Base64Encode());
-registerBlock(new Base64Decode());
-registerBlock(new TemplateTransformer());
-registerBlock(new UrlParams());
+function registerTransformers() {
+  registerBlock(new JQTransformer());
+  registerBlock(new JSONPathTransformer());
+  registerBlock(new GetAPITransformer());
+  registerBlock(new RemoteMethod());
+  registerBlock(new RegexTransformer());
+  registerBlock(new MappingTransformer());
+  registerBlock(new IdentityTransformer());
+  registerBlock(new UrlParser());
+  registerBlock(new FormData());
+  registerBlock(new Prompt());
+  registerBlock(new DetectElement());
+  registerBlock(new ModalTransformer());
+  registerBlock(new Base64Encode());
+  registerBlock(new Base64Decode());
+  registerBlock(new TemplateTransformer());
+  registerBlock(new UrlParams());
+}
+
+export default registerTransformers;

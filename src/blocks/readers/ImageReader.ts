@@ -14,8 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-import { registerBlock } from "@/blocks/registry";
 import { Reader } from "@/types";
 import { Schema } from "@/core";
 
@@ -41,7 +39,7 @@ function getBase64Image(img: HTMLImageElement) {
   return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 }
 
-class ImageReader extends Reader {
+export class ImageReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/image",
@@ -56,7 +54,7 @@ class ImageReader extends Reader {
     if (element?.tagName === "IMG") {
       return {
         src: element.src,
-        img: getBase64Image(element as HTMLImageElement),
+        img: getBase64Image(element),
       };
     }
 
@@ -85,5 +83,3 @@ class ImageReader extends Reader {
     return true;
   }
 }
-
-registerBlock(new ImageReader());

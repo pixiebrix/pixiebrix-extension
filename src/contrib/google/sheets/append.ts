@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import {
   appendRows,
   createTab,
@@ -166,5 +165,3 @@ export class GoogleSheetsAppend extends Effect {
     ]);
   }
 }
-
-registerBlock(new GoogleSheetsAppend());

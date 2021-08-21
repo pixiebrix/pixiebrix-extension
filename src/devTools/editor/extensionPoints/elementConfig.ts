@@ -19,9 +19,9 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Runtime } from "webextension-polyfill-ts";
 import { IExtension, Metadata, Schema, ServiceDependency, UUID } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 
 export type ElementType =
   | "menuItem"
@@ -37,6 +37,12 @@ export type ReaderReferenceFormState = {
   metadata: Metadata;
 };
 
+export function isCustomReader(
+  reader: ReaderFormState | ReaderReferenceFormState
+): reader is ReaderFormState {
+  return "definition" in reader;
+}
+
 export interface ReaderFormState {
   _new?: boolean;
   metadata: Metadata;
@@ -50,12 +56,6 @@ export interface ReaderFormState {
     selectors: Record<string, string>;
     optional: boolean;
   };
-}
-
-export function isCustomReader(
-  reader: ReaderFormState | ReaderReferenceFormState
-): reader is ReaderFormState {
-  return "definition" in reader;
 }
 
 export interface BaseExtensionPointState {

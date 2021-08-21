@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import UiPathRobot from "@/contrib/uipath/UiPathRobot";
 import { JobResult } from "@uipath/robot/dist/models";
@@ -87,5 +86,3 @@ export class RunLocalProcess extends Transformer {
     ]);
   }
 }
-
-registerBlock(new RunLocalProcess());
