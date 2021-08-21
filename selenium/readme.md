@@ -20,10 +20,12 @@ npm run test:selenium
 You will need to specify your keys as ENV variables, for example:
 
 ```sh
+rm -rf dist
+CI=true npm run build
 BROWSERSTACK_ACCESS_KEY=63azqC BROWSERSTACK_USERNAME=federico_1Jh npm run test:selenium
 ```
 
-The extension will need to be uploaded and it might take 1-2 minutes to do so.
+The extension will need to be uploaded and it might take 1-2 minutes to do so. To speed things up and avoid timeouts, the special `CI` build command will create the smallest possible bundle.
 
 ## Testing in Firefox
 
