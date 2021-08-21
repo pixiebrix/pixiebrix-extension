@@ -15,11 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./google";
-export * from "./hubspot";
-export * from "./pipedrive";
-export * from "./slack";
-export * from "./salesforce";
-export * from "./uipath";
-export * from "./zapier";
-export * from "./automationanywhere";
+import registerEffects from "./effects/registerEffects";
+import registerTransformers from "./transformers/registerTransformers";
+import registerRenderers from "./renderers/registerRenderers";
+import registerReaders from "@/blocks/readers/registerReaders";
+
+function registerBuiltinBlocks() {
+  registerTransformers();
+  registerEffects();
+  registerRenderers();
+  registerReaders();
+}
+
+export default registerBuiltinBlocks;

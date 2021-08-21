@@ -29,10 +29,7 @@ import {
   UUID,
 } from "@/core";
 import { sortBy, isEmpty } from "lodash";
-import registry, {
-  PIXIEBRIX_SERVICE_ID,
-  readRawConfigurations,
-} from "@/services/registry";
+import registry, { readRawConfigurations } from "@/services/registry";
 import { inputProperties } from "@/helpers";
 import {
   MissingConfigurationError,
@@ -40,6 +37,7 @@ import {
 } from "@/services/errors";
 import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -72,15 +70,15 @@ export function excludeSecrets(
 }
 
 export async function pixieServiceFactory(): Promise<SanitizedServiceConfiguration> {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- cast required for nominal subtyping
   return {
-    _sanitizedServiceConfigurationBrand: undefined,
     id: undefined,
     serviceId: PIXIEBRIX_SERVICE_ID,
     // Don't need to proxy requests to our own service
     proxy: false,
     // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- cast required for nominal subtyping
     config: {} as SanitizedConfig,
-  };
+  } as SanitizedServiceConfiguration;
 }
 
 type Option = {

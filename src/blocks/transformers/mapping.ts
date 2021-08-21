@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 
@@ -78,5 +77,3 @@ export class MappingTransformer extends Transformer {
     throw new BusinessError(`Key ${key} not found in the mapping`);
   }
 }
-
-registerBlock(new MappingTransformer());

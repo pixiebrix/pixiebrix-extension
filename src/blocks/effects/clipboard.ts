@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import copy from "copy-to-clipboard";
 import { BlockArg, Schema } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
@@ -48,5 +47,3 @@ export class CopyToClipboard extends Effect {
     copy(String(text));
   }
 }
-
-registerBlock(new CopyToClipboard());

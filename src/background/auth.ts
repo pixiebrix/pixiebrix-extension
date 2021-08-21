@@ -24,7 +24,7 @@ import {
   generateVerifier,
   getRandomString,
 } from "@/vendors/pkce";
-import { BusinessError } from "@/errors";
+import { BusinessError, getErrorMessage } from "@/errors";
 import { expectBackgroundPage } from "@/utils/expectContext";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
@@ -67,10 +67,9 @@ export async function deleteCachedAuthData(key: string): Promise<void> {
 
   const current = JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}");
   if (Object.prototype.hasOwnProperty.call(current, key)) {
-    // OK because we're guarding with hasOwnProperty
-    // eslint-disable-next-line security/detect-object-injection
     console.debug(`deleteCachedAuthData: removed data for auth ${key}`);
-
+    // OK because we're guarding with hasOwnProperty
+    // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
     delete current[key];
   } else {
     console.warn(
@@ -166,14 +165,10 @@ export async function launchOAuth2Flow(
     );
   } else if (code_challenge_method != null) {
     throw new BusinessError(
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check; type is `never`
       `Unsupported code challenge method: ${code_challenge_method}`
     );
   }
-
-  // Console.debug("OAuth2 context", {
-  //   authorizeURL,
-  //   oauth2,
-  // });
 
   const responseUrl = await browser.identity.launchWebAuthFlow({
     url: authorizeURL.toString(),
@@ -201,7 +196,7 @@ export async function launchOAuth2Flow(
 
   const tokenURL = new URL(rawTokenUrl);
 
-  const tokenBody: Record<string, unknown> = {
+  const tokenBody: Record<string, string> = {
     redirect_uri,
     grant_type: "authorization_code",
     code: authResponse.searchParams.get("code"),
@@ -231,7 +226,7 @@ export async function launchOAuth2Flow(
     });
   } catch (error: unknown) {
     console.error(error);
-    throw new Error(`Error getting OAuth2 token: ${error}`);
+    throw new Error(`Error getting OAuth2 token: ${getErrorMessage(error)}`);
   }
 
   const { data, status, statusText } = tokenResponse;

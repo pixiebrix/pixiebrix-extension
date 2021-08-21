@@ -17,7 +17,6 @@
 
 import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 
 // https://developer.mozilla.org/en-US/docs/Web/Events
 const DOM_EVENTS = [
@@ -91,5 +90,3 @@ export class ElementEvent extends Effect {
     $element.trigger(event);
   }
 }
-
-registerBlock(new ElementEvent());

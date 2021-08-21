@@ -17,15 +17,14 @@
 
 import { Schema } from "@/core";
 import * as Yup from "yup";
-import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
 import { locate } from "@/background/locator";
 import { DoesNotExistError } from "@/baseRegistry";
 import { MissingConfigurationError } from "@/services/errors";
-import uniq from "lodash/uniq";
-import isPlainObject from "lodash/isPlainObject";
-import mapValues from "lodash/mapValues";
+import { uniq, mapValues, isPlainObject } from "lodash";
 import { validateRegistryId, isUUID } from "@/types/helpers";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 const IDENTIFIER_REGEX = /^[A-Z_a-z]\w*$/;
 

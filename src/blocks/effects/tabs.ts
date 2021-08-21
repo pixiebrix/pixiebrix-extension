@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { activateTab, closeTab } from "@/background/executor";
@@ -48,6 +47,3 @@ export class CloseTabEffect extends Effect {
     await closeTab();
   }
 }
-
-registerBlock(new ActivateTabEffect());
-registerBlock(new CloseTabEffect());

@@ -18,7 +18,6 @@
 import React from "react";
 import { Renderer } from "@/types";
 import { BlockArg, BlockOptions, RenderedHTML, Schema, UiSchema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import Form from "@rjsf/core";
 import { JsonObject } from "type-fest";
 import { getRecord, setRecord } from "@/background/dataStore";
@@ -65,7 +64,7 @@ const CustomFormComponent: React.FunctionComponent<{
   </div>
 );
 
-export class CustomForm extends Renderer {
+export class CustomFormRenderer extends Renderer {
   constructor() {
     super(
       "@pixiebrix/form",
@@ -130,5 +129,3 @@ export class CustomForm extends Renderer {
     } as any;
   }
 }
-
-registerBlock(new CustomForm());

@@ -15,7 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./effects";
-export * from "./renderers";
-export * from "./transformers";
-export * from "./readers";
+import { RegistryId } from "@/core";
+import { validateRegistryId } from "@/types/helpers";
+
+export const PIXIEBRIX_SERVICE_ID: RegistryId = validateRegistryId(
+  "@pixiebrix/api"
+);

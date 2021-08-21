@@ -16,10 +16,10 @@
  */
 
 import { MemberRole, Organization } from "@/types/contract";
-import { useFetch } from "@/hooks/fetch";
 import { useContext, useMemo } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { partial } from "lodash";
+import useFetch from "@/hooks/useFetch";
 
 function isEditable(email: string, organization: Organization): boolean {
   return (organization.members ?? []).some(
@@ -31,11 +31,13 @@ export function useOrganization(): {
   organizations: Organization[];
   managedOrganizations: Organization[];
 } {
-  const organizations = useFetch("/api/organizations/") as Organization[];
+  const { data: organizations } = useFetch<Organization[]>(
+    "/api/organizations/"
+  );
   const { email } = useContext(AuthContext);
   const managedOrganizations = useMemo(
     () => (organizations ?? []).filter(partial(isEditable, email)),
-    [organizations]
+    [organizations, email]
   );
   return { organizations, managedOrganizations };
 }

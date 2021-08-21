@@ -51,8 +51,8 @@ import {
   BaseFormState,
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { BlockPipeline } from "@/blocks/combinators";
 import React from "react";
+import { BlockPipeline } from "@/blocks/types";
 
 const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },

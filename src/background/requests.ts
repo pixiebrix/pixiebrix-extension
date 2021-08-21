@@ -19,12 +19,11 @@ import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import { liftBackground } from "@/background/protocol";
 import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
-import { getBaseURL } from "@/services/baseService";
 import { RemoteServiceError } from "@/services/errors";
-import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
-import { ContextError, isAxiosError } from "@/errors";
+import { ContextError, ExtensionNotLinkedError, isAxiosError } from "@/errors";
 import { isEmpty } from "lodash";
 import {
   deleteCachedAuthData,
@@ -32,9 +31,10 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
-import { isAbsoluteURL } from "@/hooks/fetch";
-import urljoin from "url-join";
+import { isAbsoluteUrl } from "@/utils";
 import { expectBackgroundPage } from "@/utils/expectContext";
+import { absoluteApiUrl } from "@/services/apiClient";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 interface ProxyResponseSuccessData {
   json: unknown;
@@ -132,16 +132,12 @@ async function authenticate(
   if (service.id === PIXIEBRIX_SERVICE_ID) {
     const apiKey = await getExtensionToken();
     if (!apiKey) {
-      throw new Error("Extension not authenticated with PixieBrix web service");
+      throw new ExtensionNotLinkedError();
     }
-
-    const absoluteURL = isAbsoluteURL(request.url)
-      ? request.url
-      : urljoin(await getBaseURL(), request.url);
 
     return service.authenticateRequest(
       ({ apiKey } as unknown) as ServiceConfig,
-      { ...request, url: absoluteURL }
+      { ...request, url: await absoluteApiUrl(request.url) }
     );
   }
 
@@ -185,7 +181,7 @@ async function proxyRequest<T>(
   try {
     proxyResponse = (await backgroundRequest(
       await authenticate(await pixieServiceFactory(), {
-        url: `${await getBaseURL()}/api/proxy/`,
+        url: await absoluteApiUrl("/api/proxy/"),
         method: "post" as Method,
         data: {
           ...requestConfig,
@@ -267,7 +263,7 @@ export async function proxyService<TData>(
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
     // No service configuration provided. Perform request directly without authentication
-    if (!isAbsoluteURL(requestConfig.url) && requestConfig.baseURL == null) {
+    if (!isAbsoluteUrl(requestConfig.url) && requestConfig.baseURL == null) {
       throw new Error("expected absolute URL for request without service");
     }
 

@@ -19,7 +19,6 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { readQuery } from "./handlers";
-import { registerBlock } from "@/blocks/registry";
 import { zipObject } from "lodash";
 
 // Simplified interface for passing scalar parameters
@@ -197,5 +196,3 @@ export class GoogleBigQueryQuery extends Transformer {
     );
   }
 }
-
-registerBlock(new GoogleBigQueryQuery());

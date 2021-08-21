@@ -15,6 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./geocode";
-import "./sheets/append";
-import "./bigquery/query";
+export * from "./geocode";
+export * from "./sheets/append";
+export * from "./bigquery/query";

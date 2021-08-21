@@ -28,24 +28,23 @@ import {
   isReader,
   isRendererBlock,
   Logger,
-  UserOptions,
+  MessageContext,
+  OutputKey,
   ReaderRoot,
   RenderedArgs,
   SanitizedServiceConfiguration,
   Schema,
   ServiceDependency,
-  TemplateEngine,
-  RegistryId,
-  OutputKey,
+  UserOptions,
 } from "@/core";
 import { validateInput, validateOutput } from "@/validators/generic";
 import {
   castArray,
+  fromPairs,
+  isEmpty,
   isPlainObject,
   mapValues,
   pickBy,
-  isEmpty,
-  fromPairs,
 } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
@@ -53,7 +52,7 @@ import {
   executeInOpener,
   executeInTarget,
 } from "@/background/executor";
-import { boolean, resolveObj } from "@/utils";
+import { boolean, excludeUndefined, resolveObj } from "@/utils";
 import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
@@ -65,54 +64,7 @@ import {
   PipelineConfigurationError,
 } from "@/blocks/errors";
 import { engineRenderer } from "@/utils/renderers";
-
-export type ReaderConfig =
-  | RegistryId
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
-  | { [key: string]: ReaderConfig }
-  | ReaderConfig[];
-
-export interface BlockConfig {
-  id: RegistryId;
-
-  /**
-   * (Optional) human-readable label for the step. Shown in the progress indicator
-   */
-  label?: string;
-
-  /**
-   * (Optional) indicate the step is being run in the interface
-   */
-  notifyProgress?: boolean;
-
-  onError?: {
-    alert?: boolean;
-  };
-
-  window?: "self" | "opener" | "target" | "broadcast";
-
-  outputKey?: string;
-
-  /**
-   * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
-   * provided, the step is run unconditionally.
-   */
-  if?: string | boolean | number;
-
-  /**
-   * (Optional) root selector for reader
-   */
-  root?: string;
-
-  /**
-   * (Optional) template language to use for rendering the if and config properties. Default is mustache
-   */
-  templateEngine?: TemplateEngine;
-
-  config: Record<string, unknown>;
-}
-
-export type BlockPipeline = BlockConfig[];
+import { BlockConfig, BlockPipeline, ReaderConfig } from "./types";
 
 /** Return block definitions for all blocks referenced in a pipeline */
 export async function blockList(
@@ -153,17 +105,6 @@ function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
   };
 }
 
-function excludeUndefined(obj: unknown): unknown {
-  if (isPlainObject(obj) && typeof obj === "object") {
-    return mapValues(
-      pickBy(obj, (x) => x !== undefined),
-      excludeUndefined
-    );
-  }
-
-  return obj;
-}
-
 type StageOptions = {
   context: RenderedArgs;
   validate: boolean;
@@ -181,6 +122,11 @@ async function runStage(
 ): Promise<unknown> {
   const argContext = { ...context, ...args };
   const stageConfig = stage.config ?? {};
+
+  // If logValues not provided explicitly, default to the global setting
+  if (logValues === undefined) {
+    logValues = (await getLoggingConfig()).logValues ?? false;
+  }
 
   let blockArgs: BlockArg;
 
@@ -310,13 +256,14 @@ function arraySchema(base: Schema): Schema {
 
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
-  config: BlockConfig | BlockPipeline,
+  pipeline: BlockConfig | BlockPipeline,
   renderedArgs: RenderedArgs,
   logger: Logger,
   root: HTMLElement | Document = null,
   {
     validate = true,
-    logValues = false,
+    // Don't default `logValues`, will set async below using `getLoggingConfig` if not provided
+    logValues,
     headless = false,
     optionsArgs = {},
     serviceArgs = {},
@@ -328,15 +275,18 @@ export async function reducePipeline(
     "@options": optionsArgs,
   };
 
-  // If logValues not provided explicitly by the extension point, use the global value
+  // If logValues not provided explicitly, default to the global setting
   if (logValues === undefined) {
     logValues = (await getLoggingConfig()).logValues ?? false;
   }
 
   let currentArgs: RenderedArgs = renderedArgs;
 
-  for (const [index, stage] of castArray(config).entries()) {
-    const stageContext = { blockId: stage.id };
+  for (const [index, stage] of castArray(pipeline).entries()) {
+    const stageContext: MessageContext = {
+      blockId: stage.id,
+      label: stage.label,
+    };
     const stageLogger = logger.childLogger(stageContext);
 
     try {

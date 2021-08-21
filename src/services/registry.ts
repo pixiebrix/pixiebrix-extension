@@ -20,11 +20,6 @@ import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/services/factory";
 import { RawServiceConfiguration, RegistryId } from "@/core";
 import { Service } from "@/types";
-import { validateRegistryId } from "@/types/helpers";
-
-export const PIXIEBRIX_SERVICE_ID: RegistryId = validateRegistryId(
-  "@pixiebrix/api"
-);
 
 const storageKey = "persist:servicesOptions";
 

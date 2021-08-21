@@ -17,7 +17,6 @@
 
 import { Transformer } from "@/types";
 import { proxyService } from "@/background/requests";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors";
@@ -79,5 +78,3 @@ export class RemoteMethod extends Transformer {
     return data;
   }
 }
-
-registerBlock(new RemoteMethod());

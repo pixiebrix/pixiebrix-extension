@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// @ts-expect-error no type definitions available
-import { getMetadata } from "page-metadata-parser";
 import { Reader } from "@/types";
 import { Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 
-class PageMetadataReader extends Reader {
+export class PageMetadataReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/document-metadata",
@@ -31,6 +28,10 @@ class PageMetadataReader extends Reader {
   }
 
   async read() {
+    const { getMetadata } = await import(
+      // @ts-expect-error no type definitions available
+      "page-metadata-parser"
+    );
     return getMetadata(document, location.href);
   }
 
@@ -77,5 +78,3 @@ class PageMetadataReader extends Reader {
     return true;
   }
 }
-
-registerBlock(new PageMetadataReader());

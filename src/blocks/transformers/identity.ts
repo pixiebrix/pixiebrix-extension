@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 
 export class IdentityTransformer extends Transformer {
@@ -38,5 +37,3 @@ export class IdentityTransformer extends Transformer {
     return arg;
   }
 }
-
-registerBlock(new IdentityTransformer());

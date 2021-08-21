@@ -22,7 +22,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import React, { useMemo } from "react";
 import { useParams } from "react-router";
-import { useFetch } from "@/hooks/fetch";
 import { RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
 import GridLoader from "react-spinners/GridLoader";
@@ -30,6 +29,7 @@ import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import useFetch from "@/hooks/useFetch";
 
 export interface BlueprintResponse {
   config: RecipeDefinition;
@@ -78,7 +78,9 @@ const ActivatePage: React.FunctionComponent = () => {
     blueprintId: string;
     sourcePage: string;
   }>();
-  const blueprint = useFetch<BlueprintResponse>(`/api/recipes/${blueprintId}`);
+  const { data: blueprint } = useFetch<BlueprintResponse>(
+    `/api/recipes/${blueprintId}`
+  );
 
   const body = useMemo(() => {
     if (blueprint?.config?.extensionPoints != null) {

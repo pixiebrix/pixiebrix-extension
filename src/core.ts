@@ -73,7 +73,12 @@ export interface Message<
  * Log event metadata for the extensions internal logging infrastructure.
  * @see Logger
  */
-export interface MessageContext {
+export type MessageContext = {
+  /**
+   * A human-readable label, e.g., provided via a `label:` directive to help identify the context when there's multiple
+   * blocks with the same id being used.
+   */
+  readonly label?: string;
   readonly deploymentId?: UUID;
   readonly blueprintId?: RegistryId;
   readonly extensionPointId?: RegistryId;
@@ -81,7 +86,7 @@ export interface MessageContext {
   readonly extensionId?: UUID;
   readonly serviceId?: RegistryId;
   readonly authId?: UUID;
-}
+};
 
 export type SerializedError = Primitive | ErrorObject;
 
@@ -90,7 +95,7 @@ export type Data = Record<string, unknown>;
 export interface Logger {
   readonly context: MessageContext;
   /**
-   * Return a child logger with additional message context
+   * Return a new child logger with additional message context
    */
   childLogger: (additionalContext: MessageContext) => Logger;
   trace: (msg: string, data?: Data) => void;
@@ -124,12 +129,20 @@ export type BlockIcon = string;
  * Metadata about a block, extension point, or service
  */
 export interface Metadata {
-  id: RegistryId;
-  name: string;
-  version?: string;
-  description?: string;
-  icon?: BlockIcon;
-  author?: string;
+  readonly id: RegistryId;
+  readonly name: string;
+  readonly version?: string;
+  readonly description?: string;
+
+  /**
+   * @deprecated experimental prop that will likely be removed in the future
+   */
+  readonly icon?: BlockIcon;
+
+  /**
+   * @deprecated experimental prop that will likely be removed in the future
+   */
+  readonly author?: string;
 }
 
 export function selectMetadata(metadata: Metadata): Metadata {
@@ -492,6 +505,10 @@ export interface AuthState {
   readonly isOnboarded: boolean;
   readonly extension: boolean;
   readonly organization?: OrganizationAuthState | null;
+
+  /**
+   * List of feature flags enabled for the user.
+   */
   readonly flags: string[];
 }
 

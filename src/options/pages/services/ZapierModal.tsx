@@ -17,27 +17,26 @@
 
 import { Button, Modal, Form, InputGroup } from "react-bootstrap";
 import React, { useCallback } from "react";
-import { useFetch } from "@/hooks/fetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import copy from "copy-to-clipboard";
-import { useToasts } from "react-toast-notifications";
+import useFetch from "@/hooks/useFetch";
+import useNotifications from "@/hooks/useNotifications";
 
 interface OwnProps {
   onClose: () => void;
 }
 
 const ZapierModal: React.FunctionComponent<OwnProps> = ({ onClose }) => {
-  const data = useFetch<{ api_key: string }>("/api/webhooks/key/");
-  const { addToast } = useToasts();
+  const { data } = useFetch<{ api_key: string }>("/api/webhooks/key/");
+  const notify = useNotifications();
 
   const handleCopy = useCallback(() => {
     copy(data?.api_key);
-    addToast("Copied API Key to clipboard", {
-      appearance: "success",
-      autoDismiss: true,
+    notify.success("Copied API Key to clipboard", {
+      event: "ZapierKeyCopy",
     });
-  }, [data?.api_key]);
+  }, [notify, data?.api_key]);
 
   return (
     <Modal show onHide={onClose} backdrop="static" keyboard={false}>

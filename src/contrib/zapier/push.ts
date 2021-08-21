@@ -17,8 +17,7 @@
 
 import { proxyService } from "@/background/requests";
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
-import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
+import { BlockOptions, Schema, SchemaProperties } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
@@ -63,7 +62,7 @@ export class PushZap extends Effect {
   permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
   async effect(
-    { pushKey, data }: BlockArg,
+    { pushKey, data }: { pushKey: string; data: Record<string, unknown> },
     options: BlockOptions
   ): Promise<void> {
     const { data: webhooks } = await proxyService<{
@@ -98,5 +97,3 @@ export class PushZap extends Effect {
     });
   }
 }
-
-registerBlock(new PushZap());

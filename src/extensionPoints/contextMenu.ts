@@ -16,9 +16,7 @@
  */
 
 import {
-  BlockConfig,
   blockList,
-  BlockPipeline,
   makeServiceContext,
   mergeReaders,
   reducePipeline,
@@ -54,6 +52,7 @@ import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { getErrorMessage, isErrorObject } from "@/errors";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 export type ContextMenuConfig = {
   title: string;

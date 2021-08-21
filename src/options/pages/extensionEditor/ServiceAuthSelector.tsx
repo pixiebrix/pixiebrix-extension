@@ -31,12 +31,10 @@ import Select, {
 } from "react-select";
 import useFetch from "@/hooks/useFetch";
 import { SanitizedAuth } from "@/types/contract";
-import {
-  PIXIEBRIX_SERVICE_ID,
-  readRawConfigurations,
-} from "@/services/registry";
+import { readRawConfigurations } from "@/services/registry";
 import { useAsyncState } from "@/hooks/common";
 import { RawServiceConfiguration } from "@/core";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 export interface AuthOption {
   value: string;

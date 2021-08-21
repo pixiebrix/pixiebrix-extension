@@ -1,5 +1,4 @@
-import { SIDEBAR_ID } from "./Sidebar";
-
+export const SIDEBAR_ID = "sidebar";
 const smallScreenMediaQuery = "(max-width: 991px)";
 const sidebarActiveClassName = "active"; // Used to show/hide navbar on small screen
 const sidebarIconOnlyClassName = "sidebar-icon-only"; // Used to show/hide navbar on big screen

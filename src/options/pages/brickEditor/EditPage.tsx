@@ -20,7 +20,6 @@ import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { Formik, useField } from "formik";
-import { useFetch } from "@/hooks/fetch";
 import { useParams } from "react-router";
 import Editor from "./Editor";
 import { truncate } from "lodash";
@@ -36,6 +35,7 @@ import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";
 import { workshopSlice } from "@/options/slices";
 import useLogContext from "@/options/pages/brickEditor/useLogContext";
+import useFetch from "@/hooks/useFetch";
 
 const { touchBrick } = workshopSlice.actions;
 
@@ -125,7 +125,7 @@ const EditPage: React.FunctionComponent = () => {
 
   const url = `api/bricks/${id}/`;
 
-  const data = useFetch<BrickData>(url);
+  const { data } = useFetch<BrickData>(url);
 
   const { isBlueprint, isInstalled, config: rawConfig } = useParseBrick(
     data?.config

@@ -35,24 +35,20 @@ import {
   readerFactory,
   ReaderReference,
 } from "@/blocks/readers/factory";
-import {
-  ExtensionPointConfig,
-  ExtensionPointDefinition,
-} from "@/extensionPoints/types";
 import Overlay from "@/nativeEditor/Overlay";
 import { checkAvailable as _checkAvailable } from "@/blocks/available";
 import ArrayCompositeReader from "@/blocks/readers/ArrayCompositeReader";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import blockRegistry from "@/blocks/registry";
 import { Reader } from "@/types";
-import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
-
-export type ElementType =
-  | "menuItem"
-  | "trigger"
-  | "panel"
-  | "contextMenu"
-  | "actionPanel";
+import {
+  ExtensionPointConfig,
+  ExtensionPointDefinition,
+} from "@/extensionPoints/types";
+import {
+  ElementType,
+  isCustomReader,
+} from "@/devTools/editor/extensionPoints/elementConfig";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,

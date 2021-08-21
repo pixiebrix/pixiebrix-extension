@@ -20,7 +20,6 @@ import ReactDOM from "react-dom";
 import Form from "@rjsf/core";
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { uuidv4 } from "@/types/helpers";
 import { BusinessError, CancelError } from "@/errors";
 
@@ -61,7 +60,7 @@ export class ModalTransformer extends Transformer {
     schema,
     uiSchema = {},
     containerAttrs = {},
-  }: BlockArg): Promise<object> {
+  }: BlockArg): Promise<unknown> {
     const container = document.createElement("div");
     const shadowRoot = container.attachShadow({ mode: "closed" });
 
@@ -144,5 +143,3 @@ export class ModalTransformer extends Transformer {
     return data;
   }
 }
-
-registerBlock(new ModalTransformer());

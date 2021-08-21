@@ -32,6 +32,7 @@ import {
   fromPairs,
   zip,
   pickBy,
+  isPlainObject,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { getErrorMessage } from "@/errors";
@@ -346,6 +347,17 @@ export function isNullOrBlank(value: unknown): boolean {
   return typeof value === "string" && value.trim() === "";
 }
 
+export function excludeUndefined(obj: unknown): unknown {
+  if (isPlainObject(obj) && typeof obj === "object") {
+    return mapValues(
+      pickBy(obj, (x) => x !== undefined),
+      excludeUndefined
+    );
+  }
+
+  return obj;
+}
+
 export class PromiseCancelled extends Error {
   constructor(message: string) {
     super(message);
@@ -398,4 +410,38 @@ export function optional<T extends (arg: unknown) => unknown>(
 
     return func(arg) as ReturnType<T>;
   };
+}
+
+/**
+ * Returns true if `url` is an absolute URL, based on whether the URL contains a schema
+ */
+export function isAbsoluteUrl(url: string): boolean {
+  return /(^|:)\/\//.test(url);
+}
+
+export const SPACE_ENCODED_VALUE = "%20";
+
+export function makeURL(
+  url: string,
+  params: Record<string, string | number | boolean> | undefined = {},
+  spaceEncoding: "plus" | "percent" = "plus"
+): string {
+  // https://javascript.info/url#searchparams
+  const result = new URL(url);
+  for (const [name, value] of Object.entries(params ?? {})) {
+    if ((value ?? "") !== "") {
+      result.searchParams.append(name, String(value));
+    }
+  }
+
+  const fullURL = result.toString();
+
+  if (spaceEncoding === "plus" || result.search.length === 0) {
+    return fullURL;
+  }
+
+  return fullURL.replace(
+    result.search,
+    result.search.replaceAll("+", SPACE_ENCODED_VALUE)
+  );
 }

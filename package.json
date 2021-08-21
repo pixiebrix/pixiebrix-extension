@@ -125,7 +125,7 @@
     "uuid": "^8.3.2",
     "webext-additional-permissions": "^2.1.0",
     "webext-content-scripts": "^0.9.0",
-    "webext-detect-page": "^3.0.1",
+    "webext-detect-page": "git://github.com/twschiller/webext-detect-page#f75ffd7417b2b3ca9aa0746efa1f7139c8310cee",
     "webext-dynamic-content-scripts": "^8.0.0",
     "webext-patterns": "^1.1.1",
     "webext-polyfill-kinda": "^0.1.0",

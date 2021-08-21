@@ -17,7 +17,6 @@
 
 import { Effect } from "@/types";
 import { proxyService } from "@/background/requests";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
 
@@ -155,6 +154,3 @@ export class AddPerson extends Effect {
     }
   }
 }
-
-registerBlock(new AddOrganization());
-registerBlock(new AddPerson());

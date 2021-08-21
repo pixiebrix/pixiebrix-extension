@@ -21,8 +21,8 @@ const start = Date.now();
 
 import "@/extensionContext";
 import addErrorListeners from "@/contentScript/errors";
-import "@/blocks";
-import "@/contrib";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contentScript/devTools";
 import "@/contentScript/contextMenus";
 import "@/contentScript/browserAction";
@@ -41,6 +41,9 @@ import "@/contentScript/uipath";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
+
+registerBuiltinBlocks();
+registerContribBlocks();
 
 declare global {
   interface Window {

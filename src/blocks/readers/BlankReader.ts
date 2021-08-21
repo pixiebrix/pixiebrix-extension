@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { registerBlock } from "@/blocks/registry";
 import { Reader } from "@/types";
 import { Schema } from "@/core";
 
-class BlankReader extends Reader {
+export class BlankReader extends Reader {
   constructor() {
     super("@pixiebrix/blank", "Reader that returns no data");
   }
@@ -39,5 +38,3 @@ class BlankReader extends Reader {
     return true;
   }
 }
-
-registerBlock(new BlankReader());

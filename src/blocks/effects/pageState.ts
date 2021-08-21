@@ -19,7 +19,6 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { merge, cloneDeep } from "lodash";
-import { registerBlock } from "@/blocks/registry";
 import { BusinessError } from "@/errors";
 
 let _pageState: Record<string, unknown> = {};
@@ -94,6 +93,3 @@ export class GetPageState extends Transformer {
     return _pageState;
   }
 }
-
-registerBlock(new SetPageState());
-registerBlock(new GetPageState());

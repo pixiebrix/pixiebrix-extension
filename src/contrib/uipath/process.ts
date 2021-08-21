@@ -17,7 +17,6 @@
 
 import { proxyService } from "@/background/requests";
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import {
   BlockArg,
   BlockOptions,
@@ -180,5 +179,3 @@ export class RunProcess extends Transformer {
     return {};
   }
 }
-
-registerBlock(new RunProcess());

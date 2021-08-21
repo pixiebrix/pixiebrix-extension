@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
@@ -63,6 +62,7 @@ export class JQTransformer extends Transformer {
     ).default;
 
     logger.debug("Running jq transform", { filter, data, ctxt, input });
+
     try {
       // eslint-disable-next-line @typescript-eslint/return-await -- Type is `any`, it throws the rule off
       return await jq.promised.json(input, filter);
@@ -98,5 +98,3 @@ export class JQTransformer extends Transformer {
     }
   }
 }
-
-registerBlock(new JQTransformer());
