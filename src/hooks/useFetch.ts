@@ -17,22 +17,24 @@
 
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
-import { useToasts } from "react-toast-notifications";
 import { useCallback, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { fetch } from "@/hooks/fetch";
+import useNotifications from "@/hooks/useNotifications";
 
-type FetchState<TData> = {
+type FetchState<TData = unknown> = {
   data: TData | undefined;
   isLoading: boolean;
   error: unknown;
   refresh: () => Promise<void>;
 };
 
-function useFetch<TData>(relativeOrAbsoluteUrl: string): FetchState<TData> {
+function useFetch<TData = unknown>(
+  relativeOrAbsoluteUrl: string
+): FetchState<TData> {
   const [host] = useAsyncState(getBaseURL);
-  const { addToast } = useToasts();
-  const [data, setData] = useState<TData>();
+  const notify = useNotifications();
+  const [data, setData] = useState<TData | undefined>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<unknown>();
 
@@ -42,12 +44,9 @@ function useFetch<TData>(relativeOrAbsoluteUrl: string): FetchState<TData> {
       setData(data);
     } catch (error: unknown) {
       setError(error);
-      addToast(`An error occurred fetching data from the server`, {
-        appearance: "error",
-        autoDismiss: true,
-      });
+      notify.error("An error occurred fetching data from the server");
     }
-  }, [addToast, relativeOrAbsoluteUrl, setData]);
+  }, [relativeOrAbsoluteUrl, setData, notify]);
 
   useAsyncEffect(
     async (isMounted) => {
@@ -62,10 +61,7 @@ function useFetch<TData>(relativeOrAbsoluteUrl: string): FetchState<TData> {
         } catch (error: unknown) {
           if (!isMounted()) return;
           setError(error);
-          addToast(`An error occurred fetching data from the server`, {
-            appearance: "error",
-            autoDismiss: true,
-          });
+          notify.error("An error occurred fetching data from the server");
         } finally {
           if (isMounted()) {
             setIsLoading(false);
@@ -73,7 +69,7 @@ function useFetch<TData>(relativeOrAbsoluteUrl: string): FetchState<TData> {
         }
       }
     },
-    [host, relativeOrAbsoluteUrl, setData, setIsLoading, setError]
+    [host, relativeOrAbsoluteUrl, setData, setIsLoading, setError, notify]
   );
 
   return {

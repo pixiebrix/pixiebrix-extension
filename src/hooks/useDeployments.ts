@@ -33,7 +33,7 @@ import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill-ts";
 import { IExtension } from "@/core";
-import { getLinkedClient } from "@/services/apiClient";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 const { actions } = optionsSlice;
 
@@ -52,7 +52,7 @@ async function selectDeploymentPermissions(
 async function fetchDeployments(
   installedExtensions: IExtension[]
 ): Promise<Deployment[]> {
-  const { data: deployments } = await (await getLinkedClient()).post<
+  const { data: deployments } = await (await getLinkedApiClient()).post<
     Deployment[]
   >("/api/deployments/", {
     uid: await getUID(),

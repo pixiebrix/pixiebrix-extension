@@ -25,7 +25,7 @@ import { isLinked } from "@/auth/token";
 import { Data } from "@/core";
 import { boolean } from "@/utils";
 import { loadOptions } from "@/options/loader";
-import { getLinkedClient } from "@/services/apiClient";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -82,7 +82,7 @@ export async function _getDNT(): Promise<boolean> {
 async function flush(): Promise<void> {
   if (buffer.length > 0) {
     const events = buffer.splice(0, buffer.length);
-    await (await getLinkedClient()).post("/api/events/", { events });
+    await (await getLinkedApiClient()).post("/api/events/", { events });
   }
 }
 
@@ -135,7 +135,7 @@ async function userSummary() {
 
 async function _init(): Promise<void> {
   if (await isLinked()) {
-    await (await getLinkedClient()).post("/api/identify/", {
+    await (await getLinkedApiClient()).post("/api/identify/", {
       uid: await uid(),
       data: await userSummary(),
     });
@@ -184,6 +184,6 @@ export const sendDeploymentAlert = liftBackground(
   "SEND_DEPLOYMENT_ALERT",
   async ({ deploymentId, data }: { deploymentId: string; data: Data }) => {
     const url = `/api/deployments/${deploymentId}/alerts/`;
-    await (await getLinkedClient()).post(url, data);
+    await (await getLinkedApiClient()).post(url, data);
   }
 );

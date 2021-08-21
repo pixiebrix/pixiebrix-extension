@@ -24,7 +24,7 @@ import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reportError } from "@/telemetry/logging";
 import { StatusCodes } from "http-status-codes";
-import { getLinkedClient } from "@/services/apiClient";
+import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 
@@ -98,7 +98,7 @@ const ScopeSettings: React.FunctionComponent = () => {
       { setErrors }: FormikBag<unknown, Profile>
     ) => {
       try {
-        await (await getLinkedClient()).patch("/api/settings/", values);
+        await (await getLinkedApiClient()).patch("/api/settings/", values);
       } catch (error: unknown) {
         if (!isAxiosError(error)) {
           notify.error("Error updating account alias", {

@@ -28,7 +28,7 @@ import { reactivate } from "@/background/navigation";
 import { Definition, RecipeDefinition } from "@/types/definitions";
 import useReinstall from "@/pages/marketplace/useReinstall";
 import useNotifications from "@/hooks/useNotifications";
-import { getLinkedClient } from "@/services/apiClient";
+import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
 
 interface SubmitOptions {
@@ -62,7 +62,7 @@ function useSubmitBrick({
 
   const remove = useCallback(async () => {
     try {
-      await (await getLinkedClient()).delete(url);
+      await (await getLinkedApiClient()).delete(url);
     } catch (error: unknown) {
       notify.error("Error deleting brick", {
         error,
@@ -86,7 +86,7 @@ function useSubmitBrick({
 
       try {
         // FIXME: add expected return value
-        const client = await getLinkedClient();
+        const client = await getLinkedApiClient();
         const { data } = await client[create ? "post" : "put"](url, {
           ...values,
           kind,

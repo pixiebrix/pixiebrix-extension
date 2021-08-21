@@ -34,7 +34,7 @@ import { containsPermissions } from "@/utils/permissions";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension } from "@/core";
 import { ExtensionsOptionsState } from "@/store/extensions";
-import { getLinkedClient } from "@/services/apiClient";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 const { reducer, actions } = optionsSlice;
 
@@ -139,7 +139,7 @@ async function updateDeployments() {
     return;
   }
 
-  const { data: deployments } = await (await getLinkedClient()).post<
+  const { data: deployments } = await (await getLinkedApiClient()).post<
     Deployment[]
   >("/api/deployments/", {
     uid: await getUID(),

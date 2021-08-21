@@ -46,10 +46,10 @@ export async function absoluteApiUrl(
 }
 
 /**
- * Returns axios client for making authenticated API requests to PixieBrix.
- * @throws Error if the extension has not been linked to the API yet
+ * Returns an Axios client for making authenticated API requests to PixieBrix.
+ * @throws ExtensionNotLinkedError if the extension has not been linked to the API yet
  */
-export async function getLinkedClient(): Promise<AxiosInstance> {
+export async function getLinkedApiClient(): Promise<AxiosInstance> {
   const token = await getExtensionToken();
 
   if (!token) {
@@ -68,7 +68,7 @@ export async function getLinkedClient(): Promise<AxiosInstance> {
 }
 
 /**
- * Returns axios client for making (optionally) authenticated API requests to PixieBrix.
+ * Returns an Axios client for making (optionally) authenticated API requests to PixieBrix.
  */
 export async function getApiClient(): Promise<AxiosInstance> {
   const token = await getExtensionToken();

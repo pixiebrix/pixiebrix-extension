@@ -20,7 +20,7 @@ import { useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { EditablePackage } from "@/devTools/editor/hooks/useCreate";
 import { RootState } from "@/devTools/store";
-import { getLinkedClient } from "@/services/apiClient";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 const selectEditor = (x: RootState) => x.editor;
 
@@ -28,7 +28,7 @@ function useEditable(): Set<string> {
   const { knownEditable } = useSelector(selectEditor);
 
   const [initialEditable] = useAsyncState(async () => {
-    const { data } = await (await getLinkedClient()).get<EditablePackage[]>(
+    const { data } = await (await getLinkedApiClient()).get<EditablePackage[]>(
       "api/bricks/"
     );
     return new Set(data.map((x) => x.name));
