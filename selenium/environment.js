@@ -30,13 +30,7 @@ fs.readFileSync(manifestPath); // Existence check with automatic ENOENT error
 
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
-
 const isBrowserstack = Boolean(username);
-if (isBrowserstack) {
-  console.log("Using Browserstack");
-} else {
-  console.log("Using local WebDriver");
-}
 
 function getBuilder() {
   const builder = new webdriver.Builder();
@@ -74,8 +68,25 @@ const getZippedExtensionAsBuffer = onetime(async function () {
   return zippedExtension;
 });
 
-// Arguments list: https://peter.sh/experiments/chromium-command-line-switches/
-async function getChromeOptions() {
+async function runInChrome() {
+  if (!isBrowserstack) {
+    require("chromedriver");
+  }
+
+  // https://www.browserstack.com/automate/capabilities
+  const builder = getBuilder();
+  builder.withCapabilities({
+    browser: "chrome",
+    browserName: "chrome",
+    browser_version: "latest",
+    "bstack:options": {
+      os: "Windows",
+      osVersion: "10",
+    },
+    name: "chrome test",
+  });
+
+  // Arguments list: https://peter.sh/experiments/chromium-command-line-switches/
   const options = new chrome.Options();
   options.addArguments("auto-open-devtools-for-tabs");
   if (isBrowserstack) {
@@ -85,55 +96,52 @@ async function getChromeOptions() {
   } else {
     options.addArguments("load-extension=" + extensionLocation);
   }
-  return options;
+
+  builder.setChromeOptions(options);
+  return builder.build();
 }
 
-// https://www.browserstack.com/automate/capabilities
-const configurations = new Map();
-configurations.set("chrome", {
-  browser: "chrome",
-  browserName: "chrome",
-  browser_version: "latest",
-  "bstack:options": {
-    os: "Windows",
-    osVersion: "10",
-  },
-  name: "chrome test",
-});
-configurations.set("firefox", {
-  browser: "firefox",
-  browserName: "firefox",
-  browser_version: "latest",
-  "bstack:options": {
-    os: "Windows",
-    osVersion: "10",
-  },
-  name: "firefox test",
-});
-
-async function runInBrowser(browser) {
-  const builder = getBuilder();
-
-  builder.withCapabilities(configurations.get(browser));
-  if (browser === "chrome") {
-    require("chromedriver");
-    builder.setChromeOptions(await getChromeOptions());
-  }
-  if (browser === "firefox") {
+async function runInFirefox() {
+  if (!isBrowserstack) {
     require("geckodriver");
   }
 
+  // https://www.browserstack.com/automate/capabilities
+  const builder = getBuilder();
+  builder.withCapabilities({
+    browser: "firefox",
+    browserName: "firefox",
+    browser_version: "latest",
+    "bstack:options": {
+      os: "Windows",
+      osVersion: "10",
+    },
+    name: "firefox test",
+  });
+
   const driver = await builder.build();
-  if (browser === "firefox") {
-    await driver.installAddon(await getZippedExtensionAsPath(), true);
-  }
+  await driver.installAddon(await getZippedExtensionAsPath(), true);
   return driver;
 }
 
 module.exports = class SeleniumEnvironment extends NodeEnvironment {
   async setup() {
     await super.setup();
-    this.global.__DRIVER__ = await runInBrowser("chrome");
+
+    const BROWSER = process.env.BROWSER ?? "chrome";
+    console.log(
+      "Will test on",
+      BROWSER,
+      isBrowserstack ? "using Browserstack" : "locally"
+    );
+    if (BROWSER === "firefox") {
+      this.global.__DRIVER__ = await runInFirefox();
+    } else if (BROWSER === "chrome") {
+      this.global.__DRIVER__ = await runInChrome();
+    } else {
+      throw new Error("Unrecognized BROWSER env: " + BROWSER);
+    }
+
     this.global.__WEB_DRIVER__ = webdriver;
   }
 

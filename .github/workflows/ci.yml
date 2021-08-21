@@ -54,16 +54,6 @@ jobs:
           GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
           GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
-      - name: BrowserStack Env Setup
-        uses: browserstack/github-actions/setup-env@master
-        with:
-          username: ${{ secrets.BROWSERSTACK_USERNAME }}
-          access-key: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          # https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
-          build-name: ${{ github.workflow }} - ${{ github.run_id }}
-          project-name: pixiebrix-extension
-      - name: Running test on BrowserStack
-        run: npm run test:selenium
       - uses: actions/upload-artifact@v2
         name: Save extension
         if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
