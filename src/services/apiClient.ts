@@ -18,7 +18,32 @@
 import axios, { AxiosInstance } from "axios";
 import { getBaseURL } from "@/services/baseService";
 import { getExtensionToken } from "@/auth/token";
-import { ExtensionNotLinkedError } from "@/errors";
+import { ExtensionNotLinkedError, SuspiciousOperationError } from "@/errors";
+import { isAbsoluteURL } from "@/hooks/fetch";
+import urljoin from "url-join";
+
+/**
+ * Converts `relativeOrAbsoluteURL` to an absolute PixieBrix service URL
+ * @throws SuspiciousOperationError if the absolute URL provided is not for the current base URL
+ */
+export async function absoluteApiUrl(
+  relativeOrAbsoluteURL: string
+): Promise<string> {
+  const absolute = isAbsoluteURL(relativeOrAbsoluteURL);
+  const base = await getBaseURL();
+
+  if (absolute) {
+    if (!relativeOrAbsoluteURL.startsWith(base)) {
+      throw new SuspiciousOperationError(
+        `URL is not a PixieBrix service URL: ${relativeOrAbsoluteURL}`
+      );
+    }
+
+    return relativeOrAbsoluteURL;
+  }
+
+  return new URL(urljoin(await getBaseURL(), relativeOrAbsoluteURL)).href;
+}
 
 /**
  * Returns axios client for making authenticated API requests to PixieBrix.

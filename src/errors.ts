@@ -62,6 +62,16 @@ export class EndpointAuthError extends Error {
 }
 
 /**
+ * Error indicating the client performed a suspicious operation
+ */
+export class SuspiciousOperationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SuspiciousOperationError";
+  }
+}
+
+/**
  * Error indicating the extension is not properly linked to the PixieBrix API.
  */
 export class ExtensionNotLinkedError extends Error {

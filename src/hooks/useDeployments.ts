@@ -26,7 +26,6 @@ import { optionsSlice } from "@/options/slices";
 import { selectExtensions } from "@/options/selectors";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
-import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { activeDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/useRefresh";
@@ -55,7 +54,7 @@ async function fetchDeployments(
 ): Promise<Deployment[]> {
   const { data: deployments } = await (await getLinkedClient()).post<
     Deployment[]
-  >(`${await getBaseURL()}/api/deployments/`, {
+  >("/api/deployments/", {
     uid: await getUID(),
     version: await getExtensionVersion(),
     active: activeDeployments(installedExtensions),
