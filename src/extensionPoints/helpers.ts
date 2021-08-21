@@ -287,6 +287,7 @@ export function acquireElement(
 
 export function selectExtensionContext(extension: IExtension): MessageContext {
   return {
+    label: extension.label,
     extensionId: extension.id,
     extensionPointId: extension.extensionPointId,
     deploymentId: extension._deployment?.id,
