@@ -17,11 +17,10 @@
 
 import { Renderer } from "@/types";
 import createDOMPurify, { DOMPurifyI } from "dompurify";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
 
-export class Html extends Renderer {
+export class HtmlRenderer extends Renderer {
   private DOMPurify: DOMPurifyI;
 
   constructor() {
@@ -47,5 +46,3 @@ export class Html extends Renderer {
     return this.DOMPurify.sanitize(html);
   }
 }
-
-registerBlock(new Html());

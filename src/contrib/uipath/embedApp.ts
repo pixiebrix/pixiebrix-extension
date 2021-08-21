@@ -16,7 +16,6 @@
  */
 
 import { Renderer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { isEmpty } from "lodash";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
@@ -120,5 +119,3 @@ export class UiPathAppRenderer extends Renderer {
     return `<iframe src="${frameURL.toString()}" title="${title}" height="${height}" width="${width}" style="border:none;"></iframe>`;
   }
 }
-
-registerBlock(new UiPathAppRenderer());

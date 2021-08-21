@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import Mustache from "mustache";
@@ -63,5 +62,3 @@ export class TemplateTransformer extends Transformer {
     return Mustache.render(template, ctxt);
   }
 }
-
-registerBlock(new TemplateTransformer());

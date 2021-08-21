@@ -17,7 +17,6 @@
 
 import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { PropError } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
 import { getDNT } from "@/background/telemetry";
@@ -76,5 +75,3 @@ export class TelemetryEffect extends Effect {
     });
   }
 }
-
-registerBlock(new TelemetryEffect());

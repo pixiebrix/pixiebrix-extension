@@ -16,14 +16,13 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg } from "@/core";
 import { openTab } from "@/background/executor";
 import {
-  makeURL,
-  SPACE_ENCODING_DEFAULT,
+  URL_INPUT_SPACE_ENCODING_DEFAULT,
   URL_INPUT_SPEC,
 } from "@/blocks/transformers/url";
+import { makeURL } from "@/utils";
 
 export class NavigateURLEffect extends Effect {
   constructor() {
@@ -40,7 +39,7 @@ export class NavigateURLEffect extends Effect {
   async effect({
     url,
     params,
-    spaceEncoding = SPACE_ENCODING_DEFAULT,
+    spaceEncoding = URL_INPUT_SPACE_ENCODING_DEFAULT,
   }: BlockArg): Promise<void> {
     document.location.href = makeURL(url, params, spaceEncoding);
   }
@@ -61,7 +60,7 @@ export class OpenURLEffect extends Effect {
   async effect({
     url,
     params,
-    spaceEncoding = SPACE_ENCODING_DEFAULT,
+    spaceEncoding = URL_INPUT_SPACE_ENCODING_DEFAULT,
   }: BlockArg): Promise<void> {
     await openTab({
       url: makeURL(url, params, spaceEncoding),
@@ -69,6 +68,3 @@ export class OpenURLEffect extends Effect {
     });
   }
 }
-
-registerBlock(new OpenURLEffect());
-registerBlock(new NavigateURLEffect());

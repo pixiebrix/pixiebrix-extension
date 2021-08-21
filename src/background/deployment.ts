@@ -21,10 +21,8 @@ import { Deployment } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
 import { fromPairs, partition, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
-import axios from "axios";
-import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
-import { getExtensionToken } from "@/auth/token";
+import { isLinked } from "@/auth/token";
 import { optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
@@ -36,6 +34,7 @@ import { containsPermissions } from "@/utils/permissions";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension } from "@/core";
 import { ExtensionsOptionsState } from "@/store/extensions";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 const { reducer, actions } = optionsSlice;
 
@@ -129,9 +128,7 @@ function makeDeploymentTimestampLookup(extensions: IExtension[]) {
 }
 
 async function updateDeployments() {
-  const token = await getExtensionToken();
-
-  if (!token) {
+  if (!(await isLinked())) {
     return;
   }
 
@@ -142,17 +139,13 @@ async function updateDeployments() {
     return;
   }
 
-  const { data: deployments } = await axios.post<Deployment[]>(
-    `${await getBaseURL()}/api/deployments/`,
-    {
-      uid: await getUID(),
-      version: await getExtensionVersion(),
-      active: activeDeployments(extensions),
-    },
-    {
-      headers: { Authorization: `Token ${token}` },
-    }
-  );
+  const { data: deployments } = await (await getLinkedApiClient()).post<
+    Deployment[]
+  >("/api/deployments/", {
+    uid: await getUID(),
+    version: await getExtensionVersion(),
+    active: activeDeployments(extensions),
+  });
 
   const timestamps = makeDeploymentTimestampLookup(extensions);
 

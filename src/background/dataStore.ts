@@ -24,15 +24,15 @@ export const LOCAL_DATA_STORE = "LOCAL_DATA_STORE";
 export const KEY_PREFIX = "@@";
 
 async function _getRecord(uuid: string): Promise<unknown> {
-  const rawData = (await readStorage(LOCAL_DATA_STORE)) ?? "{}";
-  const data = JSON.parse(rawData as string);
+  const rawData = (await readStorage<string>(LOCAL_DATA_STORE)) ?? "{}";
+  const data = JSON.parse(rawData);
   const key = `${KEY_PREFIX}${uuid}`;
   return data[key] ?? {};
 }
 
 async function _setRecord(uuid: string, value: JsonObject): Promise<void> {
-  const rawData = (await readStorage(LOCAL_DATA_STORE)) ?? "{}";
-  const data = JSON.parse(rawData as string);
+  const rawData = (await readStorage<string>(LOCAL_DATA_STORE)) ?? "{}";
+  const data = JSON.parse(rawData);
   const key = `${KEY_PREFIX}${uuid}`;
 
   data[key] = value;

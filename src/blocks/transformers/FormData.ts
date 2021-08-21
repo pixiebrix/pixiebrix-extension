@@ -17,7 +17,6 @@
 
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class FormData extends Transformer {
@@ -45,6 +44,7 @@ export class FormData extends Transformer {
   async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
     const result: Record<string, unknown> = {};
     $(document)
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
       .find(selector)
       .find(":input")
       .each(function () {
@@ -56,5 +56,3 @@ export class FormData extends Transformer {
     return result;
   }
 }
-
-registerBlock(new FormData());

@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { proxyService } from "@/background/requests";
 import { Schema, BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
@@ -67,7 +66,7 @@ export class GetAPITransformer extends Transformer {
     }
 
     const { data } = await proxyService(
-      !isNullOrBlank(service) ? service : null,
+      isNullOrBlank(service) ? null : service,
       {
         ...requestProps,
         method: "get",
@@ -77,5 +76,3 @@ export class GetAPITransformer extends Transformer {
     return data;
   }
 }
-
-registerBlock(new GetAPITransformer());

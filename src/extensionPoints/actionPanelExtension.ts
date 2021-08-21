@@ -16,9 +16,7 @@
  */
 
 import {
-  BlockConfig,
   blockList,
-  BlockPipeline,
   makeServiceContext,
   mergeReaders,
   reducePipeline,
@@ -57,6 +55,7 @@ import { BusinessError, getErrorMessage } from "@/errors";
 import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { cloneDeep } from "lodash";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 export type ActionPanelConfig = {
   heading: string;

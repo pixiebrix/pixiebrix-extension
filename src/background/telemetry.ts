@@ -18,15 +18,14 @@
 import { liftBackground } from "@/background/protocol";
 import { JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
-import { debounce, uniq, throttle, compact } from "lodash";
+import { compact, debounce, throttle, uniq } from "lodash";
 import { browser } from "webextension-polyfill-ts";
 import { readStorage, setStorage } from "@/chrome";
-import { getExtensionToken } from "@/auth/token";
-import axios from "axios";
+import { isLinked } from "@/auth/token";
 import { Data } from "@/core";
-import { getBaseURL } from "@/services/baseService";
 import { boolean } from "@/utils";
 import { loadOptions } from "@/options/loader";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -82,17 +81,8 @@ export async function _getDNT(): Promise<boolean> {
 
 async function flush(): Promise<void> {
   if (buffer.length > 0) {
-    const url = `${await getBaseURL()}/api/events/`;
     const events = buffer.splice(0, buffer.length);
-    await axios.post(
-      url,
-      {
-        events,
-      },
-      {
-        headers: { Authorization: `Token ${await getExtensionToken()}` },
-      }
-    );
+    await (await getLinkedApiClient()).post("/api/events/", { events });
   }
 }
 
@@ -144,19 +134,11 @@ async function userSummary() {
 }
 
 async function _init(): Promise<void> {
-  const url = `${await getBaseURL()}/api/identify/`;
-  const token = await getExtensionToken();
-  if (token) {
-    await axios.post(
-      url,
-      {
-        uid: await uid(),
-        data: await userSummary(),
-      },
-      {
-        headers: { Authorization: `Token ${token}` },
-      }
-    );
+  if (await isLinked()) {
+    await (await getLinkedApiClient()).post("/api/identify/", {
+      uid: await uid(),
+      data: await userSummary(),
+    });
   }
 }
 
@@ -201,14 +183,7 @@ export const recordEvent = liftBackground(
 export const sendDeploymentAlert = liftBackground(
   "SEND_DEPLOYMENT_ALERT",
   async ({ deploymentId, data }: { deploymentId: string; data: Data }) => {
-    const url = `${await getBaseURL()}/api/deployments/${deploymentId}/alerts/`;
-    const token = await getExtensionToken();
-    if (!token) {
-      throw new Error("Extension not linked to PixieBrix server");
-    }
-
-    await axios.post(url, data, {
-      headers: { Authorization: `Token ${token}` },
-    });
+    const url = `/api/deployments/${deploymentId}/alerts/`;
+    await (await getLinkedApiClient()).post(url, data);
   }
 );

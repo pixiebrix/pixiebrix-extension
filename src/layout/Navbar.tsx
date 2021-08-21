@@ -20,10 +20,10 @@ import Dropdown from "react-bootstrap/Dropdown";
 import Nav from "react-bootstrap/Nav";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faSignOutAlt,
   faBars,
   faCaretDown,
   faExternalLinkAlt,
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import AuthContext from "@/auth/AuthContext";
 import { Link } from "react-router-dom";
@@ -32,7 +32,7 @@ import logo from "@img/logo.svg";
 import logoSmall from "@img/logo-small-rounded.svg";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
-import { getExtensionToken } from "@/auth/token";
+import { isLinked } from "@/auth/token";
 import { useSelector } from "react-redux";
 import { SettingsState } from "@/options/slices";
 import { toggleSidebar } from "./toggleSidebar";
@@ -40,12 +40,13 @@ import { toggleSidebar } from "./toggleSidebar";
 const Navbar: React.FunctionComponent = () => {
   const { email, extension } = useContext(AuthContext);
   const [serviceURL] = useAsyncState<string>(getBaseURL);
-  const [token, tokenPending] = useAsyncState(getExtensionToken);
+  const [connected, connectedPending] = useAsyncState(isLinked);
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
   );
 
-  const showNavbarToggle = mode === "local" || token != null || tokenPending;
+  // Use `connectedPending` to optimistically show the toggle
+  const showNavbarToggle = mode === "local" || connected || connectedPending;
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
@@ -89,6 +90,7 @@ const Navbar: React.FunctionComponent = () => {
           )}
 
           {email && !extension && (
+            // FIXME: remove https://github.com/pixiebrix/pixiebrix-app/issues/494
             <li className="nav-item nav-profile">
               <Dropdown alignRight>
                 <Dropdown.Toggle id="profile-dropdown" className="nav-link">
@@ -103,8 +105,9 @@ const Navbar: React.FunctionComponent = () => {
                 <Dropdown.Menu className="navbar-dropdown">
                   <Dropdown.Item
                     href="#"
-                    onClick={async (e: any) => {
+                    onClick={async (e) => {
                       e.preventDefault();
+                      // Posting to the Django view, not the API
                       await axios.post("/logout/");
                       location.href = "/";
                     }}

@@ -42,6 +42,46 @@ export class ConnectionError extends Error {
 }
 
 /**
+ * Error indicating that client made an unauthenticated request to a PixieBrix API that requires authentication.
+ *
+ * NOTE: do not throw this error for calls where the token is incorrect
+ *
+ * This indicates an error in the PixieBrix code, of either:
+ * - The endpoint is enforcing authentication when it should (e.g., it should return an empty response for
+ * unauthenticated users, or
+ * - The client should not make the call if the extensions is not linked
+ */
+export class EndpointAuthError extends Error {
+  readonly url: string;
+
+  constructor(url: string) {
+    super(`API endpoint requires authentication: ${url}`);
+    this.name = "EndpointAuthError";
+    this.url = url;
+  }
+}
+
+/**
+ * Error indicating the client performed a suspicious operation
+ */
+export class SuspiciousOperationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "SuspiciousOperationError";
+  }
+}
+
+/**
+ * Error indicating the extension is not properly linked to the PixieBrix API.
+ */
+export class ExtensionNotLinkedError extends Error {
+  constructor() {
+    super("Extension not linked to PixieBrix server");
+    this.name = "ExtensionNotLinkedError";
+  }
+}
+
+/**
  * Base class for "Error" of cancelling out of a flow that's in progress
  */
 export class CancelError extends Error {
@@ -244,7 +284,9 @@ export function isErrorEvent(event: unknown): event is ErrorEvent {
  * Return true iff the value is an AxiosError.
  */
 export function isAxiosError(error: unknown): error is AxiosError {
-  return typeof error === "object" && (error as AxiosError).isAxiosError;
+  return (
+    typeof error === "object" && Boolean((error as AxiosError).isAxiosError)
+  );
 }
 
 /**

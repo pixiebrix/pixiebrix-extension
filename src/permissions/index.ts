@@ -25,10 +25,11 @@ import {
 import { Permissions } from "webextension-polyfill-ts";
 import { castArray, compact, uniq } from "lodash";
 import { locator } from "@/background/locator";
-import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import registry from "@/services/registry";
 import { mergePermissions, requestPermissions } from "@/utils/permissions";
 import { Deployment } from "@/types/contract";
 import { resolveDefinitions, resolveRecipe } from "@/registry/internal";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 // Copied from the permissions section of manifest.json
 const MANDATORY_PERMISSIONS = new Set([

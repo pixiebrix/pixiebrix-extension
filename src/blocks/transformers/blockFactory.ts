@@ -20,11 +20,7 @@ import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
 import { ValidationError } from "@/errors";
 import { castArray } from "lodash";
-import {
-  BlockConfig,
-  BlockPipeline,
-  reducePipeline,
-} from "@/blocks/combinators";
+import { reducePipeline } from "@/blocks/combinators";
 import {
   BlockArg,
   BlockOptions,
@@ -37,6 +33,7 @@ import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 type ComponentKind =
   | "reader"

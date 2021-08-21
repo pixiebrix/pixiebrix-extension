@@ -18,7 +18,6 @@
 import { setComponentData } from "@/pageScript/protocol";
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 
 export class SetVueValues extends Effect {
@@ -55,5 +54,3 @@ export class SetVueValues extends Effect {
     await setComponentData({ framework: "vue", selector, valueMap });
   }
 }
-
-registerBlock(new SetVueValues());

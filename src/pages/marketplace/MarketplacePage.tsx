@@ -16,7 +16,6 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { useFetch } from "@/hooks/fetch";
 import GridLoader from "react-spinners/GridLoader";
 import { PageTitle } from "@/layout/Page";
 import sortBy from "lodash/sortBy";
@@ -25,7 +24,8 @@ import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
 import "./MarketplacePage.scss";
-import { ButtonProps } from "react-bootstrap/Button";
+import type { ButtonProps } from "react-bootstrap/Button";
+import useFetch from "@/hooks/useFetch";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -120,7 +120,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installRecipe,
   installedRecipes,
 }) => {
-  const rawRecipes = useFetch("/api/recipes/") as RecipeDefinition[];
+  const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
 
   const recipes = useMemo(() => {

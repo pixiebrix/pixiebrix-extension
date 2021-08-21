@@ -24,11 +24,12 @@ import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";
 // @ts-expect-error -- no type definitions exist for react-shadow-root
 import ReactShadowRoot from "react-shadow-root";
-
-// Import the built-in bricks
-import "@/blocks";
-import "@/contrib";
 import { getErrorMessage } from "@/errors";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
+
+registerContribBlocks();
+registerBuiltinBlocks();
 
 const BodyComponent: React.FunctionComponent<{
   body: string | ComponentRef;

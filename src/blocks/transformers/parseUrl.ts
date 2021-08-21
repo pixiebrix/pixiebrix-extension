@@ -16,12 +16,13 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { pick } from "lodash";
-import { isValid, ParsedDomain, parse } from "psl";
 import { isNullOrBlank } from "@/utils";
+
+// Methods imported async in the brick
+import type { ParsedDomain } from "psl";
 
 const URL_PROPERTIES = [
   "port",
@@ -62,6 +63,8 @@ export class UrlParser extends Transformer {
   );
 
   async transform({ url, base }: BlockArg): Promise<unknown> {
+    const { isValid, parse } = await import("psl");
+
     const parsed = new URL(url, base);
 
     let publicSuffix: string;
@@ -91,5 +94,3 @@ export class UrlParser extends Transformer {
     };
   }
 }
-
-registerBlock(new UrlParser());

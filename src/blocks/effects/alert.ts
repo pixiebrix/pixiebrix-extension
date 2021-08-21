@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
@@ -42,5 +41,3 @@ export class AlertEffect extends Effect {
     window.alert(String(message));
   }
 }
-
-registerBlock(new AlertEffect());

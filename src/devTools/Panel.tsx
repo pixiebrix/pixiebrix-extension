@@ -22,7 +22,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
 import GridLoader from "react-spinners/GridLoader";
 import Editor from "@/devTools/Editor";
-
 import store, { persistor, RootState } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
 import { Provider, useSelector } from "react-redux";
@@ -35,15 +34,15 @@ import blockRegistry from "@/blocks/registry";
 import ScopeSettings from "@/devTools/ScopeSettings";
 import { AuthState } from "@/core";
 import Centered from "@/devTools/editor/components/Centered";
-
-// Import bricks for the registry
-import "@/blocks/effects";
-import "@/blocks/readers";
-import "@/blocks/transformers";
-import "@/blocks/renderers";
-import "@/contrib/index";
-import "@/contrib/editors";
 import { ModalProvider } from "@/components/ConfirmationModal";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
+
+// Import custom options widgets/forms for the built-in bricks
+import "@/contrib/editors";
+
+registerContribBlocks();
+registerBuiltinBlocks();
 
 const defaultState: AuthState = {
   isLoggedIn: false,

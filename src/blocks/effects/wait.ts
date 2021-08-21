@@ -17,7 +17,6 @@
 
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { awaitElementOnce } from "@/extensionPoints/helpers";
 
 export class WaitElementEffect extends Effect {
@@ -47,5 +46,3 @@ export class WaitElementEffect extends Effect {
     await promise;
   }
 }
-
-registerBlock(new WaitElementEffect());

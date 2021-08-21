@@ -17,7 +17,6 @@
 
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { CancelError } from "@/errors";
 
 export class CancelEffect extends Effect {
@@ -44,5 +43,3 @@ export class CancelEffect extends Effect {
     throw new CancelError(message ?? "Action cancelled");
   }
 }
-
-registerBlock(new CancelEffect());

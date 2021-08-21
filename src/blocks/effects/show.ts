@@ -18,7 +18,6 @@
 import { Effect } from "@/types";
 import { Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { registerBlock } from "@/blocks/registry";
 
 export class ShowEffect extends Effect {
   constructor() {
@@ -45,5 +44,3 @@ export class ShowEffect extends Effect {
     $elt.show();
   }
 }
-
-registerBlock(new ShowEffect());

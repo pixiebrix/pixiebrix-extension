@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { Schema } from "@/core";
 import { browser } from "webextension-polyfill-ts";
 import {
@@ -68,6 +67,3 @@ export class HideSidebar extends Effect {
     });
   }
 }
-
-registerBlock(new ShowSidebar());
-registerBlock(new HideSidebar());

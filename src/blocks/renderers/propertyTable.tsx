@@ -17,7 +17,6 @@
 
 import React from "react";
 import { Renderer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg, BlockOptions, RenderedHTML } from "@/core";
 import { sortBy, isPlainObject } from "lodash";
@@ -134,5 +133,3 @@ export class PropertyTableRenderer extends Renderer {
     } as any;
   }
 }
-
-registerBlock(new PropertyTableRenderer());

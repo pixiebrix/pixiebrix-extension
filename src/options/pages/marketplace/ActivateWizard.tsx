@@ -32,11 +32,11 @@ import ActivateBody, {
 } from "@/options/pages/marketplace/ActivateBody";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { useTitle } from "@/hooks/title";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import useInstall from "@/pages/marketplace/useInstall";
 import AsyncButton from "@/components/AsyncButton";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 interface OwnProps {
   blueprint: RecipeDefinition;

@@ -16,7 +16,6 @@
  */
 
 import { Reader } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { getExtensionAuth } from "@/auth/token";
 import * as session from "@/contentScript/context";
 import { ReaderOutput, Schema } from "@/core";
@@ -24,7 +23,7 @@ import { Manifest, Permissions } from "webextension-polyfill-ts";
 import chromeP from "webext-polyfill-kinda";
 import { isChrome } from "webext-detect-page";
 
-class ChromeProfileReader extends Reader {
+export class ChromeProfileReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/chrome-profile",
@@ -69,7 +68,7 @@ class ChromeProfileReader extends Reader {
   }
 }
 
-class TimestampReader extends Reader {
+export class TimestampReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/timestamp",
@@ -101,7 +100,7 @@ class TimestampReader extends Reader {
   }
 }
 
-class PixieBrixSessionReader extends Reader {
+export class PixieBrixSessionReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/session",
@@ -161,7 +160,7 @@ class PixieBrixSessionReader extends Reader {
   }
 }
 
-class PixieBrixProfileReader extends Reader {
+export class PixieBrixProfileReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/profile",
@@ -196,7 +195,7 @@ class PixieBrixProfileReader extends Reader {
   }
 }
 
-class DocumentReader extends Reader {
+export class DocumentReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/document-context",
@@ -235,7 +234,7 @@ class DocumentReader extends Reader {
   }
 }
 
-class ManifestReader extends Reader {
+export class ManifestReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/chrome-extension-manifest",
@@ -277,10 +276,3 @@ class ManifestReader extends Reader {
     return chrome.runtime.getManifest();
   }
 }
-
-registerBlock(new DocumentReader());
-registerBlock(new ManifestReader());
-registerBlock(new ChromeProfileReader());
-registerBlock(new PixieBrixProfileReader());
-registerBlock(new PixieBrixSessionReader());
-registerBlock(new TimestampReader());

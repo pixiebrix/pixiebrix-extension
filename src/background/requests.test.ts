@@ -16,10 +16,13 @@
  */
 
 import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
-import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import serviceRegistry from "@/services/registry";
 import axios, { AxiosRequestConfig } from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { isBackgroundPage } from "webext-detect-page";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { proxyService } from "./requests";
+import { ContextError } from "@/errors";
 
 const axiosMock = new MockAdapter(axios);
 const mockIsBackgroundPage = isBackgroundPage as jest.MockedFunction<
@@ -32,8 +35,6 @@ jest.mock("@/auth/token");
 jest.mock("webext-detect-page");
 
 import * as token from "@/auth/token";
-
-import { proxyService } from "./requests";
 
 afterEach(() => {
   axiosMock.reset();
@@ -112,7 +113,7 @@ it("can proxy remote error", async () => {
     fail("Expected proxyService to throw an error");
     // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
-    expect(error).toBeInstanceOf(Error);
+    expect(error).toBeInstanceOf(ContextError);
     const { status, statusText } = error.cause.response;
     expect(status).toEqual(400);
     expect(statusText).toEqual("Bad request");

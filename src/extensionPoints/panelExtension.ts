@@ -25,8 +25,6 @@ import {
   reducePipeline,
   mergeReaders,
   blockList,
-  BlockConfig,
-  BlockPipeline,
   makeServiceContext,
 } from "@/blocks/combinators";
 import { boolean } from "@/utils";
@@ -55,6 +53,7 @@ import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 export type PanelConfig = {
   heading?: string;

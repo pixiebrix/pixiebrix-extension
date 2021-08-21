@@ -107,7 +107,7 @@ export class RuntimeNotFoundError extends Error {
 /**
  * @deprecated use browser.storage directly
  */
-export async function readStorage<T>(
+export async function readStorage<T = unknown>(
   storageKey: string,
   storageType: StorageLocation = "local"
 ): Promise<T> {

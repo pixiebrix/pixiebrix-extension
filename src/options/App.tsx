@@ -44,7 +44,7 @@ import ActivatePage from "@/options/pages/marketplace/ActivatePage";
 import { getAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
 import { SettingsState } from "@/options/slices";
-import { getExtensionToken } from "@/auth/token";
+import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { AuthState } from "@/core";
 import TemplatesPage from "@/options/pages/templates/TemplatesPage";
@@ -53,21 +53,24 @@ import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 
 // Import the built-in bricks
-import "@/blocks";
-import "@/contrib";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contrib/editors";
+
+registerBuiltinBlocks();
+registerContribBlocks();
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
   );
-  const [token, isPending] = useAsyncState(getExtensionToken);
+  const [linked, isPending] = useAsyncState(isLinked);
 
   if (isPending && mode === "remote") {
     return null;
   }
 
-  if (mode === "remote" && !token) {
+  if (mode === "remote" && !linked) {
     return <SetupPage />;
   }
 

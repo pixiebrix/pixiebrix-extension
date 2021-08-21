@@ -28,9 +28,9 @@ import ServiceAuthSelector, {
   useAuthOptions,
 } from "@/options/pages/extensionEditor/ServiceAuthSelector";
 import ServiceModal from "@/components/fields/ServiceModal";
-import { useFetch } from "@/hooks/fetch";
 import { ServiceDefinition } from "@/types/definitions";
 import { PACKAGE_REGEX } from "@/types/helpers";
+import useFetch from "@/hooks/useFetch";
 
 function defaultOutputKey(serviceId: string): string {
   const match = PACKAGE_REGEX.exec(serviceId);
@@ -104,7 +104,7 @@ const ServicesFormCard: React.FunctionComponent<{ name: string }> = ({
   const [selectKey, setKey] = useState(0);
   const [field, meta] = useField(props);
   const [authOptions] = useAuthOptions();
-  const services = useFetch<ServiceDefinition[]>("/api/services/");
+  const { data: services } = useFetch<ServiceDefinition[]>("/api/services/");
 
   return (
     <FieldArray name={props.name}>

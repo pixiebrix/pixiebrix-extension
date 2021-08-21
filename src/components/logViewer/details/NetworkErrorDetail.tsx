@@ -26,12 +26,12 @@ import {
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import JsonTree from "@/components/JsonTree";
-import { isAbsoluteURL } from "@/hooks/fetch";
 import urljoin from "url-join";
 import { getReasonPhrase } from "http-status-codes";
+import { isAbsoluteUrl } from "@/utils";
 
 function getAbsoluteUrl({ url, baseURL }: AxiosRequestConfig): string {
-  return isAbsoluteURL(url) ? url : urljoin(baseURL, url);
+  return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
 }
 
 function tryParse(value: unknown): unknown {

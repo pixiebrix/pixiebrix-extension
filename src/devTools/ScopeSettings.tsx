@@ -17,17 +17,16 @@
 
 import React, { useCallback } from "react";
 import { Formik, FormikBag, FormikValues, useField } from "formik";
-import { Form, Button, Row, Col, Alert } from "react-bootstrap";
+import { Alert, Button, Col, Form, Row } from "react-bootstrap";
 import * as Yup from "yup";
-import { useToasts } from "react-toast-notifications";
-import axios from "axios";
-import { mapValues, castArray } from "lodash";
-import { makeURL } from "@/hooks/fetch";
-import { getExtensionToken } from "@/auth/token";
+import { castArray, mapValues } from "lodash";
 import { faEyeSlash, faInfo } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reportError } from "@/telemetry/logging";
 import { StatusCodes } from "http-status-codes";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { isAxiosError } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
 
 interface Profile {
   scope: string | null;
@@ -91,7 +90,7 @@ const VALIDATION_SCHEMA = Yup.object({
 });
 
 const ScopeSettings: React.FunctionComponent = () => {
-  const { addToast } = useToasts();
+  const notify = useNotifications();
 
   const submit = useCallback(
     async (
@@ -99,16 +98,19 @@ const ScopeSettings: React.FunctionComponent = () => {
       { setErrors }: FormikBag<unknown, Profile>
     ) => {
       try {
-        await axios.patch(await makeURL("/api/settings/"), values, {
-          headers: { Authorization: `Token ${await getExtensionToken()}` },
-        });
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-      } catch (error) {
+        await (await getLinkedApiClient()).patch("/api/settings/", values);
+      } catch (error: unknown) {
+        if (!isAxiosError(error)) {
+          notify.error("Error updating account alias", {
+            error,
+          });
+          return;
+        }
+
         switch (error.response.status) {
           case StatusCodes.UNAUTHORIZED: {
-            addToast("Could not authenticate with PixieBrix", {
-              appearance: "error",
-              autoDismiss: true,
+            notify.error("Could not authenticate with PixieBrix", {
+              error,
             });
             return;
           }
@@ -120,17 +122,17 @@ const ScopeSettings: React.FunctionComponent = () => {
 
           default: {
             reportError(error);
-            addToast("Error updating account alias", {
-              appearance: "error",
-              autoDismiss: true,
+            notify.error("Error updating account alias", {
+              error,
             });
+            return;
           }
         }
       }
 
       location.reload();
     },
-    [addToast]
+    [notify]
   );
 
   return (

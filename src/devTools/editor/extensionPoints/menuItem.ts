@@ -57,7 +57,7 @@ import {
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
-import { BlockPipeline } from "@/blocks/combinators";
+import { BlockPipeline } from "@/blocks/types";
 
 const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },

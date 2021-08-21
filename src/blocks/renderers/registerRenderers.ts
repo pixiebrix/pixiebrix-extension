@@ -15,23 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export * from "./logger";
-export * from "./notification";
-export * from "./redirectPage";
-export * from "./clipboard";
-export * from "./forms";
-export * from "./tabs";
-export * from "./highlight";
-export * from "./vue";
-export * from "./event";
-export * from "./wait";
-export * from "./sound";
-export * from "./alert";
-export * from "./pageState";
-export * from "./hide";
-export * from "./exportCsv";
-export * from "./sidebar";
-export * from "./cancel";
-export * from "./error";
-export * from "./show";
-export * from "./telemetry";
+import { registerBlock } from "@/blocks/registry";
+import { HtmlRenderer } from "./html";
+import { IFrameRenderer } from "./iframe";
+import { MarkdownRenderer } from "./markdown";
+import { PropertyTableRenderer } from "./propertyTable";
+import { CustomFormRenderer } from "./customForm";
+import { TableRenderer } from "./table";
+
+function registerRenderers(): void {
+  registerBlock(new HtmlRenderer());
+  registerBlock(new IFrameRenderer());
+  registerBlock(new MarkdownRenderer());
+  registerBlock(new PropertyTableRenderer());
+  registerBlock(new CustomFormRenderer());
+  registerBlock(new TableRenderer());
+}
+
+export default registerRenderers;

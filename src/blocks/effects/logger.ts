@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
@@ -41,5 +40,3 @@ export class LogEffect extends Effect {
     console.log(message, ctxt);
   }
 }
-
-registerBlock(new LogEffect());

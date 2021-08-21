@@ -17,9 +17,7 @@
 
 import { ExtensionPoint } from "@/types";
 import {
-  BlockConfig,
   blockList,
-  BlockPipeline,
   makeServiceContext,
   mergeReaders,
   reducePipeline,
@@ -50,6 +48,7 @@ import { notifyError } from "@/contentScript/notify";
 
 // @ts-expect-error using for the EventHandler type below
 import JQuery from "jquery";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;

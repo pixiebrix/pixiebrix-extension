@@ -17,10 +17,9 @@
 
 import { Reader } from "@/types";
 import { Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { fromPairs } from "lodash";
 
-class ElementReader extends Reader {
+export class ElementReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/html/element",
@@ -77,5 +76,3 @@ class ElementReader extends Reader {
     return true;
   }
 }
-
-registerBlock(new ElementReader());

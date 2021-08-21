@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
@@ -98,5 +97,3 @@ export class JQTransformer extends Transformer {
     }
   }
 }
-
-registerBlock(new JQTransformer());

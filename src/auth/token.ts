@@ -35,6 +35,7 @@ export interface AuthData extends UserData {
 }
 
 /**
+ * TODO: https://github.com/pixiebrix/pixiebrix-app/issues/494
  * @deprecated will be moved into the app project since it's not used directly by the extension
  */
 export function readAuthFromWebsite(): AuthData {
@@ -76,6 +77,10 @@ async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
 export async function getExtensionToken(): Promise<string | undefined> {
   const { token } = await readAuthData();
   return token;
+}
+
+export async function isLinked(): Promise<boolean> {
+  return (await getExtensionToken()) != null;
 }
 
 export async function getExtensionAuth(): Promise<UserData> {
