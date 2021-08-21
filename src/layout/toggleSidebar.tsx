@@ -1,4 +1,4 @@
-import { sidebarId } from "./Sidebar";
+import { SIDEBAR_ID } from "./Sidebar";
 
 const smallScreenMediaQuery = "(max-width: 991px)";
 const sidebarActiveClassName = "active"; // Used to show/hide navbar on small screen
@@ -7,7 +7,7 @@ const sidebarIconOnlyClassName = "sidebar-icon-only"; // Used to show/hide navba
 export const toggleSidebar = () => {
   if (window.matchMedia(smallScreenMediaQuery).matches) {
     document
-      .querySelector(`#${sidebarId}`)
+      .querySelector(`#${SIDEBAR_ID}`)
       .classList.toggle(sidebarActiveClassName);
   } else {
     document.body.classList.toggle(sidebarIconOnlyClassName);
@@ -17,7 +17,7 @@ export const toggleSidebar = () => {
 export const closeSidebarOnSmallScreen = () => {
   if (window.matchMedia(smallScreenMediaQuery).matches) {
     document
-      .querySelector(`#${sidebarId}`)
+      .querySelector(`#${SIDEBAR_ID}`)
       .classList.remove(sidebarActiveClassName);
   }
 };

@@ -134,29 +134,6 @@ function getVersionName(isProduction) {
   return `${process.env.npm_package_version}-local+${new Date().toISOString()}`;
 }
 
-function getConditionalPlugins(isProduction) {
-  if (isProduction) {
-    return [
-      new BundleAnalyzerPlugin({
-        analyzerMode: "static",
-        reportFilename: path.resolve("report.html"),
-      }),
-    ];
-  }
-
-  if (process.env.DEV_NOTIFY === "false") {
-    return [];
-  }
-
-  // Only notifies when watching. `zsh-notify` is suggested for the `build` script
-  return [
-    new WebpackBuildNotifierPlugin({
-      title: "PB Extension",
-      showDuration: true,
-    }),
-  ];
-}
-
 const isProd = (options) => options.mode === "production";
 
 function customizeManifest(manifest, isProduction) {
@@ -186,6 +163,12 @@ function customizeManifest(manifest, isProduction) {
   policy.add("connect-src", process.env.SERVICE_URL);
   if (!isProduction) {
     policy.add("connect-src", "ws://localhost:9090/ http://127.0.0.1:8000");
+  }
+
+  if (!isProduction) {
+    // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Local-build-setup#stand-alone
+    policy.add("script-src", "http://localhost:8097");
+    policy.add("connect-src", "ws://localhost:8097/");
   }
 
   manifest.content_security_policy = policy.toString();
@@ -318,7 +301,6 @@ module.exports = (env, options) =>
     },
     plugins: compact([
       rollbarPlugin,
-      ...getConditionalPlugins(isProd(options)),
 
       produceSourcemap &&
         new webpack.SourceMapDevToolPlugin({
@@ -327,6 +309,20 @@ module.exports = (env, options) =>
           // The sourcemap will be inlined if `undefined`. Only inlined sourcemaps work locally
           // https://bugs.chromium.org/p/chromium/issues/detail?id=974543
           filename: sourceMapPublicUrl && "[file].map[query]",
+        }),
+
+      // Only notifies when watching. `zsh-notify` is suggested for the `build` script
+      options.watch &&
+        process.env.DEV_NOTIFY !== "false" &&
+        new WebpackBuildNotifierPlugin({
+          title: "PB Extension",
+          showDuration: true,
+        }),
+
+      isProd(options) &&
+        new BundleAnalyzerPlugin({
+          analyzerMode: "static",
+          reportFilename: path.resolve("report.html"),
         }),
 
       new NodePolyfillPlugin(),

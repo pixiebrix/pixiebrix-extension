@@ -3,7 +3,7 @@ name: Storybook
 on: [push]
 
 jobs:
-  stage:
+  storybook:
     runs-on: ubuntu-latest
 
     steps:
