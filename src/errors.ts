@@ -85,8 +85,8 @@ export class ExtensionNotLinkedError extends Error {
  * Base class for "Error" of cancelling out of a flow that's in progress
  */
 export class CancelError extends Error {
-  constructor(message: string) {
-    super(message);
+  constructor(message?: string) {
+    super(message ?? "User cancelled the operation");
     this.name = "CancelError";
   }
 }

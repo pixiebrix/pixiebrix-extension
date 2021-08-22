@@ -55,6 +55,7 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contrib/editors";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
+import { ModalProvider } from "@/components/ConfirmationModal";
 
 // Import the built-in bricks
 registerBuiltinBlocks();
@@ -92,15 +93,7 @@ const Layout = () => {
             <ErrorModal />
             <Banner />
             <UpdateBanner />
-            <Switch>
-              <Route
-                exact
-                // Only show on the main page. Because it has a primary button, it's confusing on other pages,
-                // especially when working in the workshop
-                path="/installed"
-                component={DeploymentBanner}
-              />
-            </Switch>
+            <DeploymentBanner />
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
@@ -172,9 +165,11 @@ const App: React.FunctionComponent = () => {
       <PersistGate loading={<GridLoader />} persistor={persistor}>
         <AuthContext.Provider value={authState ?? defaultState}>
           <ConnectedRouter history={hashHistory}>
-            <ToastProvider>
-              <Layout />
-            </ToastProvider>
+            <ModalProvider>
+              <ToastProvider>
+                <Layout />
+              </ToastProvider>
+            </ModalProvider>
           </ConnectedRouter>
         </AuthContext.Provider>
       </PersistGate>

@@ -21,7 +21,6 @@ import ServiceAuthSelector, {
 } from "@/options/pages/extensionEditor/ServiceAuthSelector";
 import { useField } from "formik";
 import { useDispatch } from "react-redux";
-import { useToasts } from "react-toast-notifications";
 import { useAsyncState } from "@/hooks/common";
 import registry from "@/services/registry";
 import { RawServiceConfiguration, UUID } from "@/core";
@@ -34,6 +33,7 @@ import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { servicesSlice } from "@/options/slices";
+import useNotifications from "@/hooks/useNotifications";
 
 const { updateServiceConfig } = servicesSlice.actions;
 
@@ -42,9 +42,11 @@ const AuthWidget: React.FunctionComponent<{
   authOptions: AuthOption[];
   serviceId: string;
 }> = ({ name, serviceId, authOptions }) => {
-  const helpers = useField<UUID>(name ?? `services.${serviceId}`)[2];
+  const fieldName = name ?? `services.${serviceId}`;
+
+  const helpers = useField<UUID>(fieldName)[2];
   const dispatch = useDispatch();
-  const { addToast } = useToasts();
+  const notify = useNotifications();
 
   const [showModal, setShow] = useState(false);
 
@@ -76,10 +78,7 @@ const AuthWidget: React.FunctionComponent<{
       // Also refresh the service locator on the background so the new auth works immediately
       await refreshBackgroundLocator({ remote: false, local: true });
 
-      addToast(`Added configuration for integration`, {
-        appearance: "success",
-        autoDismiss: true,
-      });
+      notify.success(`Added configuration for integration`);
 
       // Don't need to track changes locally via setCreated; the new auth automatically flows
       // through via the redux selectors
@@ -88,7 +87,7 @@ const AuthWidget: React.FunctionComponent<{
 
       setShow(false);
     },
-    [helpers, addToast, dispatch, setShow, serviceId]
+    [helpers, notify, dispatch, setShow, serviceId]
   );
 
   const CustomMenuList = useMemo(() => {
@@ -115,6 +114,7 @@ const AuthWidget: React.FunctionComponent<{
 
   const initialConfiguration: RawServiceConfiguration = useMemo(
     () =>
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- inline nominal typing
       ({
         serviceId,
         label: "New Configuration",
@@ -140,7 +140,7 @@ const AuthWidget: React.FunctionComponent<{
         {options.length > 0 && (
           <div style={{ minWidth: "300px" }} className="mr-2">
             <ServiceAuthSelector
-              name={`services.${serviceId}`}
+              name={fieldName}
               serviceId={serviceId}
               authOptions={options}
               CustomMenuList={CustomMenuList}

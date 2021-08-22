@@ -25,7 +25,7 @@ const migrations: MigrationManifest = {
   1: (state: PersistedState & OptionsState) => migrateExtensionsShape(state),
   2: (state: PersistedState & OptionsState) =>
     migrateActiveExtensions(
-      state as PersistedState & LegacyExtensionObjectSate
+      state as PersistedState & LegacyExtensionObjectState
     ),
 };
 
@@ -51,9 +51,9 @@ type LegacyExtensionObjectShapeState = {
 };
 
 /**
- * @deprecated use PersistedOptionsState - this is only used in a migration
+ * @deprecated use ExtensionOptionsState - this is only used in a migration
  */
-export type LegacyExtensionObjectSate = {
+export type LegacyExtensionObjectState = {
   extensions: IExtension[];
 };
 
@@ -63,8 +63,8 @@ export type ExtensionOptionsState = {
 
 // Putting here because it was causing circular dependencies
 export function migrateExtensionsShape<T>(
-  state: T & (LegacyExtensionObjectShapeState | LegacyExtensionObjectSate)
-): T & LegacyExtensionObjectSate {
+  state: T & (LegacyExtensionObjectShapeState | LegacyExtensionObjectState)
+): T & LegacyExtensionObjectState {
   if (state.extensions == null) {
     console.info("Repairing redux state");
     return { ...state, extensions: [] };
@@ -73,10 +73,10 @@ export function migrateExtensionsShape<T>(
   if (Array.isArray(state.extensions)) {
     // Already migrated
     console.debug("Redux state already up-to-date");
-    return state as T & LegacyExtensionObjectSate;
+    return state as T & LegacyExtensionObjectState;
   }
 
-  console.info("Migrating redux state");
+  console.info("Migrating Redux state");
 
   return {
     ...state,
@@ -87,7 +87,7 @@ export function migrateExtensionsShape<T>(
 }
 
 export function migrateActiveExtensions<T>(
-  state: T & (LegacyExtensionObjectSate | ExtensionOptionsState)
+  state: T & (LegacyExtensionObjectState | ExtensionOptionsState)
 ): T & ExtensionOptionsState {
   const timestamp = new Date().toISOString();
 
@@ -106,12 +106,12 @@ export function migrateActiveExtensions<T>(
 
 export type OptionsState =
   | LegacyExtensionObjectShapeState
-  | LegacyExtensionObjectSate
+  | LegacyExtensionObjectState
   | ExtensionOptionsState;
 
 export function requireLatestState(
   state: OptionsState
-): asserts state is LegacyExtensionObjectSate | ExtensionOptionsState {
+): asserts state is LegacyExtensionObjectState | ExtensionOptionsState {
   if (!Array.isArray(state.extensions)) {
     throw new TypeError("redux state has not been migrated");
   }

@@ -28,6 +28,7 @@ import { useCallback } from "react";
 import { getErrorMessage } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
 import { CloudExtension } from "@/types/contract";
+import { fromPairs } from "lodash";
 
 function useEnsurePermissions(
   extension: CloudExtension,
@@ -40,16 +41,21 @@ function useEnsurePermissions(
     await locator.refreshLocal();
     const resolved = await resolveDefinitions({ ...extension, services });
 
+    const configured = services.filter((x) => x.config);
+
     const permissions = await collectPermissions(
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- inline nominal typing
       [resolved].map(
-        (x) =>
+        (extension) =>
+          // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- inline nominal typing
           ({
-            id: x.extensionPointId,
-            config: x.config,
+            id: extension.extensionPointId,
+            config: extension.config,
+            services: fromPairs(
+              services.map((service) => [service.outputKey, service.id])
+            ),
           } as ResolvedExtensionPointConfig)
       ),
-      services.map(({ id, config }) => ({ id, config }))
+      configured.map(({ id, config }) => ({ id, config }))
     );
     const enabled = await containsPermissions(permissions);
     return {

@@ -18,7 +18,7 @@
 import React, { useCallback, useMemo } from "react";
 import { AuthOption } from "@/options/pages/extensionEditor/ServiceAuthSelector";
 import { CloudExtension } from "@/types/contract";
-import { Formik, FormikProps } from "formik";
+import { Form, Formik, FormikProps } from "formik";
 import { useDispatch } from "react-redux";
 import { push } from "connected-react-router";
 import { optionsSlice } from "@/options/slices";
@@ -70,10 +70,10 @@ const ActivateForm: React.FunctionComponent<{
   return (
     <Formik initialValues={initialValues} onSubmit={onSubmit}>
       {() => (
-        <>
+        <Form id="activate-wizard" noValidate>
           <ServicesCard authOptions={authOptions} />
           <ActivateCard extension={extension} />
-        </>
+        </Form>
       )}
     </Formik>
   );

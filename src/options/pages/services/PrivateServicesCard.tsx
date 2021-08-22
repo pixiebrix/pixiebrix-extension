@@ -139,7 +139,13 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
               <tr
                 key={`${configuredService.serviceId}-${configuredService.id}`}
               >
-                <td>{configuredService.label}</td>
+                <td>
+                  {configuredService.label ? (
+                    <span>{configuredService.label}</span>
+                  ) : (
+                    <span className="text-muted">No label provided</span>
+                  )}
+                </td>
                 <td>
                   <div>{service.name}</div>
                   <div>

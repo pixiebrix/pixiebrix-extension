@@ -19,11 +19,13 @@ import React, { useState } from "react";
 import { ResolvedExtension } from "@/core";
 import AsyncButton from "@/components/AsyncButton";
 import { push } from "connected-react-router";
-import { faCloudDownloadAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCloudDownloadAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useUserAction from "@/hooks/useUserAction";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { useDispatch } from "react-redux";
+import { useModals } from "@/components/ConfirmationModal";
+import { CancelError } from "@/errors";
 
 /**
  * Extension row corresponding to a cloud-synced extension that's not active on the user's current client.
@@ -34,8 +36,21 @@ const CloudExtensionRow: React.FunctionComponent<{
   const dispatch = useDispatch();
   const [deleted, setDeleted] = useState(false);
   const { id, label } = extension;
+  const modals = useModals();
+
   const onDelete = useUserAction(
     async () => {
+      const confirmed = await modals.showConfirmation({
+        title: "Permanently Delete?",
+        message: "Permanently delete the brick from your account?",
+        submitCaption: "Delete",
+        cancelCaption: "Back to Safety",
+      });
+
+      if (!confirmed) {
+        throw new CancelError();
+      }
+
       // FIXME: if this is the last extension in the table, `NoExtensionsPage` won't be displayed after its deleted
       const client = await getLinkedApiClient();
       await client.delete(`/api/extensions/${id}/`);
@@ -46,7 +61,7 @@ const CloudExtensionRow: React.FunctionComponent<{
       errorMessage: `Error deleting brick ${label ?? id} from the server`,
       event: "ExtensionCloudDelete",
     },
-    [id]
+    [id, modals]
   );
 
   if (deleted) {
@@ -68,7 +83,7 @@ const CloudExtensionRow: React.FunctionComponent<{
       </td>
       <td>
         <AsyncButton variant="danger" size="sm" onClick={onDelete}>
-          Delete
+          <FontAwesomeIcon icon={faTrash} /> Delete
         </AsyncButton>
       </td>
     </tr>

@@ -37,8 +37,9 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
 
   const values = field.value.map((dependency, index) => ({
     dependency,
-    index,
+    valueIndex: index,
   }));
+
   const configurable = values.filter(
     ({ dependency }) => dependency.id !== PIXIEBRIX_SERVICE_ID
   );
@@ -58,8 +59,8 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
           </tr>
         </thead>
         <tbody>
-          {configurable.map(({ dependency, index }) => (
-            <tr key={dependency.outputKey}>
+          {configurable.map(({ dependency, valueIndex }) => (
+            <tr key={`dependency.outputKey-${valueIndex}`}>
               <td>
                 <ServiceDescriptor
                   serviceId={dependency.id}
@@ -70,7 +71,7 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
                 <AuthWidget
                   authOptions={authOptions}
                   serviceId={dependency.id}
-                  name={["services", index, "config"].join(".")}
+                  name={[field.name, valueIndex, "config"].join(".")}
                 />
               </td>
             </tr>
@@ -82,7 +83,6 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
           )}
         </tbody>
       </Table>
-      <ServicesCard authOptions={authOptions} />
     </Card>
   );
 };

@@ -25,11 +25,18 @@ import PermissionsBody from "@/options/pages/marketplace/PermissionsBody";
 import useEnsurePermissions from "@/options/pages/activateExtension/useEnsurePermissions";
 import { CloudExtension } from "@/types/contract";
 import { FormState } from "@/options/pages/activateExtension/activateTypes";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 const ActivateCard: React.FunctionComponent<{ extension: CloudExtension }> = ({
   extension,
 }) => {
-  const { submitForm, values } = useFormikContext<FormState>();
+  const { submitForm, values, isSubmitting } = useFormikContext<FormState>();
+
+  console.debug("form values", { values });
+
+  const anyUnconfigured = values.services.some(
+    ({ id, config }) => id !== PIXIEBRIX_SERVICE_ID && config == null
+  );
 
   const permissionsState = useEnsurePermissions(extension, values.services);
 
@@ -41,7 +48,12 @@ const ActivateCard: React.FunctionComponent<{ extension: CloudExtension }> = ({
 
       <Card.Footer className="d-inline-flex">
         <div className="ml-auto">
-          <AsyncButton variant="primary" size="sm" onClick={submitForm}>
+          <AsyncButton
+            variant="primary"
+            size="sm"
+            onClick={submitForm}
+            disabled={anyUnconfigured || isSubmitting}
+          >
             <FontAwesomeIcon icon={faMagic} /> Activate
           </AsyncButton>
         </div>
