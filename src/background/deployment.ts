@@ -33,7 +33,7 @@ import { uninstallContextMenu } from "@/background/contextMenus";
 import { containsPermissions } from "@/utils/permissions";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension } from "@/core";
-import { ExtensionsOptionsState } from "@/store/extensions";
+import { ExtensionOptionsState } from "@/store/extensions";
 import { getLinkedApiClient } from "@/services/apiClient";
 
 const { reducer, actions } = optionsSlice;
@@ -70,9 +70,9 @@ export const queueReactivate = liftBackground(
 );
 
 function installDeployment(
-  state: ExtensionsOptionsState,
+  state: ExtensionOptionsState,
   deployment: Deployment
-): ExtensionsOptionsState {
+): ExtensionOptionsState {
   let returnState = state;
   const installed = selectExtensions({ options: state });
 

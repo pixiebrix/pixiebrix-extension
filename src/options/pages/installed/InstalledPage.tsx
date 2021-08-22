@@ -16,14 +16,14 @@
  */
 
 import { connect } from "react-redux";
-import React, { useContext, useMemo } from "react";
-import { groupBy, isEmpty, sortBy } from "lodash";
+import React, { useContext } from "react";
+import { isEmpty } from "lodash";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { Card, Col, Row, Table } from "react-bootstrap";
-import { ExtensionRef, ResolvedExtension, IExtension } from "@/core";
+import { Col, Row } from "react-bootstrap";
+import { ExtensionRef, IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
@@ -33,56 +33,15 @@ import { reactivate } from "@/background/navigation";
 import { Dispatch } from "redux";
 import { selectExtensions } from "@/options/selectors";
 import NoExtensionsPage from "@/options/pages/installed/NoExtensionsPage";
-import RecipeEntry from "@/options/pages/installed/RecipeEntry";
 import { OptionsState } from "@/store/extensions";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { UserExtension } from "@/types/contract";
+import { RemoveAction } from "@/options/pages/installed/types";
+import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 
 const { removeExtension } = optionsSlice.actions;
-
-type RemoveAction = (identifier: ExtensionRef) => void;
-
-const InstalledTable: React.FunctionComponent<{
-  extensions: ResolvedExtension[];
-  onRemove: RemoveAction;
-}> = ({ extensions, onRemove }) => {
-  const recipeExtensions = useMemo(
-    () =>
-      sortBy(
-        Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
-        ([recipeId]) => (recipeId === "" ? 0 : 1)
-      ),
-    [extensions]
-  );
-
-  return (
-    <Row>
-      <Col xl={9} lg={10} md={12}>
-        <Card className="ActiveBricksCard">
-          <Card.Header>Active Bricks</Card.Header>
-          <Table>
-            <thead>
-              <tr>
-                <th>&nbsp;</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Uninstall</th>
-              </tr>
-            </thead>
-            {recipeExtensions.map(([recipeId, xs]) => (
-              <RecipeEntry
-                key={recipeId}
-                recipeId={recipeId}
-                extensions={xs}
-                onRemove={onRemove}
-              />
-            ))}
-          </Table>
-        </Card>
-      </Col>
-    </Row>
-  );
-};
 
 const InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
@@ -90,9 +49,24 @@ const InstalledPage: React.FunctionComponent<{
 }> = ({ extensions, onRemove }) => {
   const { flags } = useContext(AuthContext);
 
+  const [cloudExtensions] = useAsyncState(async () => {
+    const lookup = new Set<UUID>(extensions.map((x) => x.id));
+    const { data } = await (await getLinkedApiClient()).get<UserExtension[]>(
+      "/api/extensions/"
+    );
+    return data
+      .filter((x) => !lookup.has(x.id))
+      .map((x) => ({ ...x, active: false }));
+  }, [extensions]);
+
   const [resolved] = useAsyncState(
-    async () => Promise.all(extensions.map(async (x) => resolveDefinitions(x))),
-    [extensions]
+    async () =>
+      Promise.all(
+        [...extensions, ...(cloudExtensions ?? [])].map(async (x) =>
+          resolveDefinitions(x)
+        )
+      ),
+    [extensions, cloudExtensions]
   );
 
   return (
@@ -136,7 +110,7 @@ const InstalledPage: React.FunctionComponent<{
       {isEmpty(extensions) ? (
         <NoExtensionsPage />
       ) : (
-        <InstalledTable extensions={resolved} onRemove={onRemove} />
+        <ActiveBricksCard extensions={resolved} onRemove={onRemove} />
       )}
     </Page>
   );

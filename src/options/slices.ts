@@ -18,6 +18,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   IExtension,
+  PersistedExtension,
   RawServiceConfiguration,
   RegistryId,
   UserOptions,
@@ -29,9 +30,11 @@ import { preloadMenus } from "@/background/preload";
 import { selectEventData } from "@/telemetry/deployments";
 import { uuidv4 } from "@/types/helpers";
 import { Except } from "type-fest";
-import { OptionsState, requireLatestState } from "@/store/extensions";
+import { ExtensionOptionsState, requireLatestState } from "@/store/extensions";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { Deployment } from "@/types/contract";
+import { saveUserExtension } from "@/services/apiClient";
+import { reportError } from "@/telemetry/logging";
 
 type InstallMode = "local" | "remote";
 
@@ -89,7 +92,7 @@ const initialWorkshopState: WorkshopState = {
   },
 };
 
-const initialOptionsState: OptionsState = {
+const initialOptionsState: ExtensionOptionsState = {
   extensions: [],
 };
 
@@ -203,11 +206,13 @@ export const optionsSlice = createSlice({
       } of extensionPoints) {
         const extensionId = uuidv4();
 
+        const timestamp = new Date().toISOString();
+
         if (extensionPointId == null) {
           throw new Error("extensionPointId is required");
         }
 
-        const extension: IExtension = {
+        const extension: PersistedExtension = {
           id: extensionId,
           _deployment: deployment
             ? {
@@ -231,9 +236,14 @@ export const optionsSlice = createSlice({
           label,
           extensionPointId,
           config,
+          active: true,
+          createTimestamp: timestamp,
+          updateTimestamp: timestamp,
         };
 
         reportEvent("ExtensionActivate", selectEventData(extension));
+
+        // NOTE: do not save the extensions in the cloud
 
         state.extensions.push(extension);
 
@@ -245,9 +255,16 @@ export const optionsSlice = createSlice({
       state,
       {
         payload,
-      }: PayloadAction<Except<IExtension, "_recipe"> & { extensionId?: UUID }>
+      }: PayloadAction<
+        Except<IExtension | PersistedExtension, "_recipe"> & {
+          extensionId?: UUID;
+          createTimestamp?: string;
+        }
+      >
     ) {
       requireLatestState(state);
+
+      const timestamp = new Date().toISOString();
 
       const {
         id,
@@ -257,6 +274,8 @@ export const optionsSlice = createSlice({
         label,
         optionsArgs,
         services,
+        _deployment,
+        createTimestamp = timestamp,
       } = payload;
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
       if (extensionId == null && id == null) {
@@ -269,7 +288,7 @@ export const optionsSlice = createSlice({
         (x) => x.id === extensionId ?? id
       );
 
-      const extension: IExtension = {
+      const extension: PersistedExtension = {
         id: extensionId ?? id,
         extensionPointId,
         _recipe: null,
@@ -277,7 +296,15 @@ export const optionsSlice = createSlice({
         optionsArgs,
         services,
         config,
+        createTimestamp,
+        updateTimestamp: timestamp,
+        active: true,
       };
+
+      if (!_deployment) {
+        // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
+        void saveUserExtension(extension).catch(reportError);
+      }
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
@@ -291,6 +318,7 @@ export const optionsSlice = createSlice({
       { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>
     ) {
       requireLatestState(state);
+      // NOTE: we aren't deleting the extension on the server. The must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);
     },
   },

@@ -24,7 +24,6 @@ import {
 import { BeatLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faExclamation } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import AsyncButton from "@/components/AsyncButton";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
@@ -104,7 +103,7 @@ const ExtensionRow: React.FunctionComponent<{
       </td>
       <td className="text-wrap">{statusElt}</td>
       <td>
-        <Button
+        <AsyncButton
           variant="danger"
           size="sm"
           onClick={() => {
@@ -115,7 +114,7 @@ const ExtensionRow: React.FunctionComponent<{
           }}
         >
           Uninstall
-        </Button>
+        </AsyncButton>
       </td>
     </tr>
   );
