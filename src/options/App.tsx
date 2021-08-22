@@ -40,7 +40,8 @@ import AuthContext from "@/auth/AuthContext";
 import { useAsyncState } from "@/hooks/common";
 import Banner from "@/layout/Banner";
 import ErrorModal from "@/layout/ErrorModal";
-import ActivatePage from "@/options/pages/marketplace/ActivatePage";
+import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
+import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import { getAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
 import { SettingsState } from "@/options/slices";
@@ -49,14 +50,13 @@ import SetupPage from "@/options/pages/SetupPage";
 import { AuthState } from "@/core";
 import TemplatesPage from "@/options/pages/templates/TemplatesPage";
 import { initTelemetry } from "@/telemetry/events";
-import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import UpdateBanner from "@/options/pages/UpdateBanner";
-
-// Import the built-in bricks
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contrib/editors";
+import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 
+// Import the built-in bricks
 registerBuiltinBlocks();
 registerContribBlocks();
 
@@ -92,7 +92,15 @@ const Layout = () => {
             <ErrorModal />
             <Banner />
             <UpdateBanner />
-            <DeploymentBanner />
+            <Switch>
+              <Route
+                exact
+                // Only show on the main page. Because it has a primary button, it's confusing on other pages,
+                // especially when working in the workshop
+                path="/installed"
+                component={DeploymentBanner}
+              />
+            </Switch>
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
@@ -101,11 +109,16 @@ const Layout = () => {
                     path="/marketplace"
                     component={MarketplacePage}
                   />
+                  <Route
+                    exact
+                    path="/extensions/install/:extensionId"
+                    component={ActivateExtensionPage}
+                  />
                   <Route exact path="/templates" component={TemplatesPage} />
                   <Route
                     exact
                     path="/:sourcePage/activate/:blueprintId"
-                    component={ActivatePage}
+                    component={ActivateBlueprintPage}
                   />
                   <Route exact path="/settings" component={SettingsPage} />
                   <Route path="/services/:id?" component={ServicesEditor} />

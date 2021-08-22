@@ -32,7 +32,7 @@ import { uuidv4 } from "@/types/helpers";
 import { Except } from "type-fest";
 import { ExtensionOptionsState, requireLatestState } from "@/store/extensions";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
-import { Deployment } from "@/types/contract";
+import { CloudExtension, Deployment } from "@/types/contract";
 import { saveUserExtension } from "@/services/apiClient";
 import { reportError } from "@/telemetry/logging";
 
@@ -177,6 +177,22 @@ export const optionsSlice = createSlice({
       state.extensions = [];
     },
 
+    installCloudExtension(
+      state,
+      { payload }: PayloadAction<{ extension: CloudExtension }>
+    ) {
+      const { extension } = payload;
+
+      reportEvent("ExtensionCloudActivate", selectEventData(extension));
+
+      // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
+      // or activate the deployment again
+
+      state.extensions.push({ ...extension, active: true });
+
+      void preloadMenus({ extensions: [extension] });
+    },
+
     installRecipe(
       state,
       {
@@ -243,7 +259,8 @@ export const optionsSlice = createSlice({
 
         reportEvent("ExtensionActivate", selectEventData(extension));
 
-        // NOTE: do not save the extensions in the cloud
+        // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
+        // or activate the deployment again
 
         state.extensions.push(extension);
 

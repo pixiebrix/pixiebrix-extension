@@ -15,18 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useEffect } from "react";
-import { reportError } from "@/telemetry/logging";
+import { ServiceDependency } from "@/core";
 
-/**
- * React hook to report an error once.
- */
-function useReportError(error: unknown): void {
-  useEffect(() => {
-    if (error) {
-      reportError(error);
-    }
-  }, [error]);
-}
-
-export default useReportError;
+export type FormState = {
+  services: ServiceDependency[];
+};

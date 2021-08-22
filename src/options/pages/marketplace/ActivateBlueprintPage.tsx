@@ -31,9 +31,9 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useFetch from "@/hooks/useFetch";
 
-export interface BlueprintResponse {
+type BlueprintResponse = {
   config: RecipeDefinition;
-}
+};
 
 const TEMPLATES_PAGE_PART = "templates";
 
@@ -73,7 +73,7 @@ const MarketplaceHeader: React.FunctionComponent<{
   </>
 );
 
-const ActivatePage: React.FunctionComponent = () => {
+const ActivateBlueprintPage: React.FunctionComponent = () => {
   const { blueprintId, sourcePage } = useParams<{
     blueprintId: string;
     sourcePage: string;
@@ -130,4 +130,4 @@ const ActivatePage: React.FunctionComponent = () => {
   );
 };
 
-export default ActivatePage;
+export default ActivateBlueprintPage;

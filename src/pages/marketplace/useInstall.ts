@@ -21,7 +21,7 @@ import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { useCallback } from "react";
 import { FormikHelpers } from "formik";
-import { WizardValues } from "@/options/pages/marketplace/wizard";
+import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 import { pickBy, uniq } from "lodash";
 import { containsPermissions } from "@/utils/permissions";

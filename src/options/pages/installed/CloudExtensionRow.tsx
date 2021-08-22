@@ -18,11 +18,12 @@
 import React, { useState } from "react";
 import { ResolvedExtension } from "@/core";
 import AsyncButton from "@/components/AsyncButton";
-import useNotifications from "@/hooks/useNotifications";
+import { push } from "connected-react-router";
 import { faCloudDownloadAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useUserAction from "@/hooks/useUserAction";
 import { getLinkedApiClient } from "@/services/apiClient";
+import { useDispatch } from "react-redux";
 
 /**
  * Extension row corresponding to a cloud-synced extension that's not active on the user's current client.
@@ -30,10 +31,9 @@ import { getLinkedApiClient } from "@/services/apiClient";
 const CloudExtensionRow: React.FunctionComponent<{
   extension: ResolvedExtension;
 }> = ({ extension }) => {
+  const dispatch = useDispatch();
   const [deleted, setDeleted] = useState(false);
   const { id, label } = extension;
-  const notify = useNotifications();
-
   const onDelete = useUserAction(
     async () => {
       // FIXME: if this is the last extension in the table, `NoExtensionsPage` won't be displayed after its deleted
@@ -61,11 +61,7 @@ const CloudExtensionRow: React.FunctionComponent<{
         <AsyncButton
           variant="info"
           size="sm"
-          onClick={() => {
-            notify.success(`Activated brick ${label ?? id}`, {
-              event: "ExtensionCloudActivate",
-            });
-          }}
+          onClick={() => dispatch(push(`/extensions/install/${id}`))}
         >
           <FontAwesomeIcon icon={faCloudDownloadAlt} /> Activate
         </AsyncButton>

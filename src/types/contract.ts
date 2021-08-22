@@ -76,9 +76,9 @@ export type RegistryPackage = Pick<
 };
 
 /**
- * A user extension synced/saved to the cloud
+ * A personal user extension synced/saved to the cloud.
  */
-export type UserExtension<T extends Config = EmptyConfig> = Except<
+export type CloudExtension<T extends Config = EmptyConfig> = Except<
   PersistedExtension<T>,
   "active"
 > & {

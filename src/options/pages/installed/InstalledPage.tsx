@@ -37,7 +37,7 @@ import { OptionsState } from "@/store/extensions";
 import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import { getLinkedApiClient } from "@/services/apiClient";
-import { UserExtension } from "@/types/contract";
+import { CloudExtension } from "@/types/contract";
 import { RemoveAction } from "@/options/pages/installed/types";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 
@@ -51,7 +51,7 @@ const InstalledPage: React.FunctionComponent<{
 
   const [cloudExtensions] = useAsyncState(async () => {
     const lookup = new Set<UUID>(extensions.map((x) => x.id));
-    const { data } = await (await getLinkedApiClient()).get<UserExtension[]>(
+    const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
       "/api/extensions/"
     );
     return data
