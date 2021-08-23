@@ -472,7 +472,7 @@ const DEFAULT_SELECTOR_PRIORITIES: css_selector_type[] = [
 export function safeCssSelector(
   element: HTMLElement,
   selectors: css_selector_type[] | undefined,
-  root: Element
+  root: Element = undefined
 ): string {
   // https://github.com/fczbkk/css-selector-generator
 
@@ -497,7 +497,10 @@ export function safeCssSelector(
 /**
  * Generate some CSS selector variants for an element.
  */
-export function inferSelectors(element: HTMLElement, root: Element): string[] {
+export function inferSelectors(
+  element: HTMLElement,
+  root: Element = undefined
+): string[] {
   const makeSelector = (allowed: css_selector_type[]) => {
     try {
       return safeCssSelector(element, allowed, root);
@@ -518,7 +521,7 @@ export function inferSelectors(element: HTMLElement, root: Element): string[] {
         makeSelector(["tag", "class", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute", "nthchild"]),
         makeSelector(["id", "tag", "attribute"]),
-        makeSelector(),
+        makeSelector(undefined),
       ])
     ).filter((x) => (x ?? "").trim() !== ""),
     (x) => x.length

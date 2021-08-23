@@ -132,7 +132,7 @@ export function configSchemaFactory(
             : wrapRequired(Yup.string())
         );
       } else {
-        const { items } = schema;
+        const items = schema.items as Schema;
         return Yup.lazy((x) =>
           Array.isArray(x)
             ? wrapRequired(Yup.array().of(configSchemaFactory(items)))

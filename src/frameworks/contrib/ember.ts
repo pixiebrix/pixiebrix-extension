@@ -138,9 +138,7 @@ export function getProp(value: any, prop: string | number): unknown {
   return undefined;
 }
 
-function pickExternalProps(
-  obj: Record<string, unknown>
-): Record<string, unknown> {
+function pickExternalProps(obj: object): object {
   // Lodash's pickby was having issues with some getters
   return fromPairs(
     Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
@@ -218,7 +216,7 @@ const EMBER_INTERNAL_PROPS = new Set([
  * Returns the "target" of a (classic) component.
  * See: https://github.com/emberjs/ember-inspector/blob/d4f1fbb1ee30d178f81ce03bf8f037722bd4b166/ember_debug/libs/capture-render-tree.js
  */
-function targetForComponent(component: any): Record<string, unknown> {
+function targetForComponent(component: any): object {
   return component._target || component._targetObject;
 }
 
@@ -235,13 +233,13 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,
   hasData: (instance) => {
-    const target = targetForComponent(instance)!;
+    const target = targetForComponent(instance) as Record<string, unknown>;
     return getAllPropertyNames(target).some(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );
   },
   getData: (instance) => {
-    const target = targetForComponent(instance)!;
+    const target = targetForComponent(instance) as Record<string, unknown>;
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );

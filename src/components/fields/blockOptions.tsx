@@ -251,7 +251,7 @@ const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
     throw new TypeError("Schema required for items");
   }
 
-  const schemaItems = schema.items;
+  const schemaItems = schema.items as Schema;
 
   return (
     <Form.Group controlId={field.name}>

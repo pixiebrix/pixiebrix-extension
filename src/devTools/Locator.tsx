@@ -37,8 +37,8 @@ function useSearchWindow(query: string) {
   useAsyncEffect(
     async (isMounted) => {
       if (!query) return;
-      setError();
-      setResults();
+      setError(undefined);
+      setResults(undefined);
       try {
         const { results } = await searchWindow(port, query);
         if (!isMounted()) return;
