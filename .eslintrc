@@ -63,6 +63,16 @@
     // smart allows for != null. See: https://github.com/pixiebrix/pixiebrix-extension/pull/887#pullrequestreview-711873690
     "eqeqeq": ["error", "smart"],
 
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "variable",
+        "modifiers": ["const", "exported"],
+        "types": ["boolean", "string", "number"],
+        "format": ["UPPER_CASE"]
+      }
+    ],
+
     // Soft-enable some rules, maybe enforce them later
     "@typescript-eslint/ban-types": "warn",
     "@typescript-eslint/no-explicit-any": "warn",
