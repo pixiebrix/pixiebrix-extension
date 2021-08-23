@@ -65,14 +65,6 @@ dotenv.config({
 });
 
 for (const [env, defaultValue] of Object.entries(defaults)) {
-  console.log(
-    JSON.stringify([
-      process.env[env],
-      parseEnv(process.env[env]),
-      parseEnv(process.env[env]) == null,
-      !process.env[env],
-    ])
-  );
   if (parseEnv(process.env[env]) == null) {
     process.env[env] = defaultValue;
   }
