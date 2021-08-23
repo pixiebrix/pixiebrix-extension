@@ -24,7 +24,6 @@ import * as nativeOperations from "@/background/devtools";
 import { useAsyncEffect } from "use-async-effect";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { Button } from "react-bootstrap";
-import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 
 const DEFAULT_RELOAD_MILLIS = 350;
 
@@ -36,9 +35,7 @@ function isAutomaticTrigger(element: FormState): boolean {
   const automatic = ["load", "appear"];
   return (
     element?.type === "trigger" &&
-    automatic.includes(
-      (element as TriggerFormState)?.extensionPoint.definition.trigger
-    )
+    automatic.includes(element?.extensionPoint.definition.trigger)
   );
 }
 

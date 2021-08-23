@@ -29,7 +29,7 @@ const primereact = require("!!raw-loader!primereact/resources/primereact.min.css
 
 const DataTableComponent: React.FunctionComponent<{
   columns: ColumnProps[];
-  rows: object[];
+  rows: Array<Record<string, unknown>>;
 }> = ({ columns, rows }) => (
   <React.Fragment>
     <style
