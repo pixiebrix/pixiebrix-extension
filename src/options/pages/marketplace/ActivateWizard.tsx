@@ -26,10 +26,8 @@ import ConfigureBody, {
   useSelectedExtensions,
 } from "./ConfigureBody";
 import ServicesBody from "./ServicesBody";
-import { WizardValues } from "./wizard";
-import ActivateBody, {
-  useEnsurePermissions,
-} from "@/options/pages/marketplace/ActivateBody";
+import { WizardValues } from "./wizardTypes";
+import ActivateBody from "@/options/pages/marketplace/ActivateBody";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { useTitle } from "@/hooks/title";
 import useInstall from "@/pages/marketplace/useInstall";
@@ -37,6 +35,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { faMagic } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 
 interface OwnProps {
   blueprint: RecipeDefinition;

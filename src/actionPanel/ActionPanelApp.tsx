@@ -34,7 +34,6 @@ import {
 } from "@/actionPanel/protocol";
 import PanelBody from "@/actionPanel/PanelBody";
 import DefaultActionPanel from "@/actionPanel/DefaultActionPanel";
-import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ToastProvider } from "react-toast-notifications";
 import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
@@ -168,8 +167,6 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 </span>
               </Button>
             </div>
-
-            <DeploymentBanner className="flex-none" />
 
             <div className="mt-2" style={{ minHeight: 1, flex: "1 1 auto" }}>
               {panels?.length ? (

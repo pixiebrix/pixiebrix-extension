@@ -17,8 +17,9 @@
 
 import { browser } from "webextension-polyfill-ts";
 import {
-  ExtensionsOptionsState,
-  migrateOptionsState,
+  migrateExtensionsShape,
+  migrateActiveExtensions,
+  ExtensionOptionsState,
 } from "@/store/extensions";
 
 const STORAGE_KEY = "persist:extensionOptions";
@@ -39,19 +40,21 @@ async function getOptionsState(): Promise<RawOptionsState> {
 /**
  * Read extension options from local storage (without going through redux-persistor).
  */
-export async function loadOptions(): Promise<ExtensionsOptionsState> {
+export async function loadOptions(): Promise<ExtensionOptionsState> {
+  console.debug("Loading raw options from storage");
+
   const base = await getOptionsState();
   // The redux persist layer persists the extensions value as as JSON-string.
   // Also apply the upgradeExtensionsState migration here because the migration in store might not have run yet.
-  return migrateOptionsState({ extensions: JSON.parse(base.extensions) });
+  return migrateActiveExtensions(
+    migrateExtensionsShape({ extensions: JSON.parse(base.extensions) })
+  );
 }
 
 /**
  * Save extension options to local storage (without going through redux-persistor).
  */
-export async function saveOptions(
-  state: ExtensionsOptionsState
-): Promise<void> {
+export async function saveOptions(state: ExtensionOptionsState): Promise<void> {
   const base = await getOptionsState();
   await browser.storage.local.set({
     // The redux persist layer persists the extensions value as as JSON-string

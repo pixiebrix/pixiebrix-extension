@@ -14,7 +14,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useCallback, useState, useEffect, useContext } from "react";
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useContext,
+  createContext,
+} from "react";
 import { Modal, Button } from "react-bootstrap";
 
 type ModalProps = {
@@ -34,9 +40,7 @@ const initialModalState: ModalContextProps = {
   },
 };
 
-export const ModalContext = React.createContext<ModalContextProps>(
-  initialModalState
-);
+export const ModalContext = createContext<ModalContextProps>(initialModalState);
 
 const ConfirmationModal: React.FunctionComponent<
   ModalProps & { onCancel: () => void; onSubmit: () => void }
@@ -47,7 +51,7 @@ const ConfirmationModal: React.FunctionComponent<
     </Modal.Header>
     <Modal.Body>{message}</Modal.Body>
     <Modal.Footer>
-      <Button variant="secondary" onClick={onCancel}>
+      <Button variant="info" onClick={onCancel}>
         {cancelCaption ?? "Cancel"}
       </Button>
       <Button variant="danger" onClick={onSubmit}>
@@ -62,26 +66,32 @@ type Callback = (submit: boolean) => void;
 export const ModalProvider: React.FunctionComponent<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const [modalProps, setModalProps] = useState<ModalProps>();
-  const [callback, setCallback] = useState<Callback>();
+  const [modalProps, setModalProps] = useState<ModalProps | null>();
+  const [callback, setCallback] = useState<Callback | null>();
 
   useEffect(
+    // On unmount, resolve the promise as if the user cancelled out of the modal
     () => () => {
-      callback?.(false);
+      if (callback) {
+        callback(false);
+      }
     },
     [callback]
   );
 
   const showConfirmation = useCallback(
     async (modalProps: ModalProps) => {
-      // Cancel any previous modal that was showing
-      callback?.(false);
+      if (callback) {
+        // Cancel any previous modal that was showing
+        callback(false);
+      }
+
       return new Promise<boolean>((resolve) => {
         setModalProps(modalProps);
         const newCallback = (submit: boolean) => {
-          setModalProps(undefined);
+          setModalProps(null);
           resolve(submit);
-          setCallback(undefined);
+          setCallback(null);
         };
 
         setCallback((_prevState: Callback) => newCallback);

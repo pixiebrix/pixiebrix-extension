@@ -19,9 +19,18 @@
  * Type contract between the backend and front-end.
  */
 import { RecipeDefinition } from "@/types/definitions";
-import { ServiceConfig, SanitizedConfig, Metadata, UUID } from "@/core";
+import {
+  ServiceConfig,
+  SanitizedConfig,
+  Metadata,
+  UUID,
+  Config,
+  EmptyConfig,
+  PersistedExtension,
+} from "@/core";
 
 import { components } from "@/types/swagger";
+import { Except } from "type-fest";
 
 export enum MemberRole {
   Member = 1,
@@ -64,4 +73,16 @@ export type RegistryPackage = Pick<
   // XXX: update serializer to include proper child serializer
   metadata: Metadata;
   kind: Kind;
+};
+
+/**
+ * A personal user extension synced/saved to the cloud.
+ */
+export type CloudExtension<T extends Config = EmptyConfig> = Except<
+  PersistedExtension<T>,
+  "active"
+> & {
+  _remoteUserExtensionBrand: never;
+  _deployment: undefined;
+  _recipe: undefined;
 };
