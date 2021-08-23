@@ -32,6 +32,7 @@ import "@/actionPanel/protocol";
 import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
 import "./action.scss";
+import { logger } from "./logger/logger";
 
 const url = new URL(location.href);
 const nonce = url.searchParams.get("nonce");
@@ -42,7 +43,7 @@ void browser.runtime
     payload: { nonce },
   })
   .then(() => {
-    console.debug("Registered action frame with background page");
+    logger.debug("Registered action frame with background page");
   });
 
 ReactDOM.render(<App />, document.querySelector("#container"));
