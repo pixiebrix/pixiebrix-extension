@@ -18,7 +18,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Badge,
-  Button,
   Col,
   Container,
   Form,
@@ -26,25 +25,20 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { IBlock, IExtensionPoint, IService, Schema } from "@/core";
+import { IBlock, IService, Schema } from "@/core";
 import Fuse from "fuse.js";
-import { isEmpty, sortBy } from "lodash";
-import copy from "copy-to-clipboard";
+import { sortBy } from "lodash";
 import { BlockType, getType } from "@/blocks/util";
-import AceEditor from "@/vendors/AceEditor";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
 import "./BrickReference.scss";
-import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import GridLoader from "react-spinners/GridLoader";
-import SchemaTree from "@/components/schemaTree/SchemaTree";
-import useUserAction from "@/hooks/useUserAction";
+import { BrickDetail } from "./BrickDetail";
+import { ReferenceEntry } from "./referenceEntryType";
 
-export type ReferenceEntry = IBlock | IExtensionPoint | IService;
-
-const DetailSection: React.FunctionComponent<{ title: string }> = ({
+export const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
   children,
 }) => (
@@ -58,7 +52,7 @@ function isOfficial(block: ReferenceEntry): boolean {
   return block.id.startsWith("@pixiebrix/");
 }
 
-function makeArgumentYaml(schema: Schema): string {
+export function makeArgumentYaml(schema: Schema): string {
   let result = "";
   if (schema.type !== "object") {
     return result;
@@ -90,72 +84,6 @@ function makeArgumentYaml(schema: Schema): string {
 
   return result;
 }
-
-const BrickDetail: React.FunctionComponent<{ brick: ReferenceEntry }> = ({
-  brick,
-}) => {
-  const schema = "schema" in brick ? brick.schema : brick.inputSchema;
-
-  const copyHandler = useUserAction(
-    async () => {
-      copy(makeArgumentYaml(schema));
-    },
-    {
-      successMessage: "Copied input argument YAML to clipboard",
-      errorMessage: "Error copying YAML to clipboard",
-    },
-    [schema]
-  );
-
-  return (
-    <div>
-      <div>
-        <h3>{brick.name}</h3>
-        <code className="p-0">{brick.id}</code>
-      </div>
-
-      <DetailSection title="Description">
-        {brick.description ?? (
-          <span className="text-muted">No description provided</span>
-        )}
-      </DetailSection>
-
-      <DetailSection title="Input Schema">
-        {isEmpty(schema) ? (
-          <div className="text-muted">No input schema provided</div>
-        ) : (
-          <div>
-            <Button className="p-0" variant="link" onClick={copyHandler}>
-              <FontAwesomeIcon icon={faClipboard} /> Copy Argument YAML
-            </Button>
-            <SchemaTree schema={schema} />
-          </div>
-        )}
-      </DetailSection>
-
-      {"outputSchema" in brick && (
-        <DetailSection title="Output Schema">
-          {isEmpty(brick.outputSchema) ? (
-            <div className="text-muted">No output schema provided</div>
-          ) : (
-            <SchemaTree schema={brick.outputSchema} />
-          )}
-        </DetailSection>
-      )}
-
-      {"component" in brick && (
-        <DetailSection title="Configuration">
-          <AceEditor
-            value={
-              // `rawConfig` is added by External(Block|Reader) etc.
-              JSON.stringify((brick as any).component)
-            }
-          />
-        </DetailSection>
-      )}
-    </div>
-  );
-};
 
 const BlockResult: React.FunctionComponent<{
   block: ReferenceEntry;

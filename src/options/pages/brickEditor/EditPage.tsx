@@ -126,6 +126,7 @@ const EditPage: React.FunctionComponent = () => {
   const url = `api/bricks/${id}/`;
 
   const { data } = useFetch<BrickData>(url);
+  console.log("edit page data", data);
 
   const { isBlueprint, isInstalled, config: rawConfig } = useParseBrick(
     data?.config

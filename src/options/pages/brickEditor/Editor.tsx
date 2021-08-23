@@ -31,9 +31,8 @@ import SharingTable from "./Sharing";
 import { sortBy, flatten } from "lodash";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext } from "@/core";
-import BrickReference, {
-  ReferenceEntry,
-} from "@/options/pages/brickEditor/BrickReference";
+import BrickReference from "@/options/pages/brickEditor/BrickReference";
+import { ReferenceEntry } from "@/options/pages/brickEditor/referenceEntryType";
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
