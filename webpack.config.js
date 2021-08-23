@@ -58,6 +58,8 @@ const defaults = {
   SERVICE_URL: "https://app.pixiebrix.com",
 };
 
+console.log(process.env);
+
 dotenv.config({
   path: process.env.ENV_FILE ?? ".env",
 });
