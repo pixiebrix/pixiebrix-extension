@@ -71,7 +71,7 @@ for (const [env, defaultValue] of Object.entries(defaults)) {
       !process.env[env],
     ])
   );
-  if (!process.env[env] || parseEnv(process.env[env]) == null) {
+  if (parseEnv(process.env[env]) == null) {
     process.env[env] = defaultValue;
   }
 }
