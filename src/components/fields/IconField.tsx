@@ -69,7 +69,7 @@ const IconField: React.FunctionComponent<FieldProps<IconConfig>> = ({
         helpers.setValue(null);
       }
 
-      helpers.setError(undefined);
+      helpers.setError();
       helpers.setTouched(true);
     },
     [helpers]

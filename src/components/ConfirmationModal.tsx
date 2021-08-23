@@ -79,9 +79,9 @@ export const ModalProvider: React.FunctionComponent<{
       return new Promise<boolean>((resolve) => {
         setModalProps(modalProps);
         const newCallback = (submit: boolean) => {
-          setModalProps(undefined);
+          setModalProps();
           resolve(submit);
-          setCallback(undefined);
+          setCallback();
         };
 
         setCallback((_prevState: Callback) => newCallback);

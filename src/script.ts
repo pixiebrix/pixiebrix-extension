@@ -115,7 +115,7 @@ function readPathSpec(
       const { path, args } = pathOrObj;
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
       values[key] = getPropByPath(obj as Record<string, unknown>, path, {
-        args: args as object,
+        args: args as Record<string, unknown>,
         proxy,
       });
     } else {

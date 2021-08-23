@@ -20,7 +20,12 @@ import { serializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import isPromise from "is-promise";
 
-export type SerializableResponse = boolean | string | number | object | void;
+export type SerializableResponse =
+  | boolean
+  | string
+  | number
+  | Record<string, unknown>
+  | void;
 
 export interface RemoteProcedureCallRequest<TMeta extends Meta = Meta>
   extends Message<ActionType, TMeta> {

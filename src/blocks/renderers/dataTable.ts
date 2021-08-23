@@ -47,7 +47,7 @@ function renderRow<TRow extends Row>(
   return `<tr>${columnHTML}</tr>`;
 }
 
-function makeDataTable<TRow extends {}>(
+function makeDataTable<TRow extends Record<string, unknown>>(
   columns: Array<ColumnDefinition<TRow>>
 ): (ctxt: unknown) => string {
   return (ctxt: unknown): string => {

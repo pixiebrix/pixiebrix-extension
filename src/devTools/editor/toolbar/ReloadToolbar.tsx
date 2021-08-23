@@ -36,9 +36,7 @@ function isAutomaticTrigger(element: FormState): boolean {
   const automatic = ["load", "appear"];
   return (
     element?.type === "trigger" &&
-    automatic.includes(
-      (element as TriggerFormState)?.extensionPoint.definition.trigger
-    )
+    automatic.includes(element?.extensionPoint.definition.trigger)
   );
 }
 
