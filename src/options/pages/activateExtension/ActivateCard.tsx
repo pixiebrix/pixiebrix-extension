@@ -32,8 +32,6 @@ const ActivateCard: React.FunctionComponent<{ extension: CloudExtension }> = ({
 }) => {
   const { submitForm, values, isSubmitting } = useFormikContext<FormState>();
 
-  console.debug("form values", { values });
-
   const anyUnconfigured = values.services.some(
     ({ id, config }) => id !== PIXIEBRIX_SERVICE_ID && config == null
   );

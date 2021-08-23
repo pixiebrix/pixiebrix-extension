@@ -57,8 +57,8 @@ const CloudExtensionRow: React.FunctionComponent<{
       setDeleted(true);
     },
     {
-      successMessage: `Deleted brick ${label ?? id} from server`,
-      errorMessage: `Error deleting brick ${label ?? id} from the server`,
+      successMessage: `Deleted brick ${label ?? id} from your account`,
+      errorMessage: `Error deleting brick ${label ?? id} from your account`,
       event: "ExtensionCloudDelete",
     },
     [id, modals]

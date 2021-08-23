@@ -76,11 +76,6 @@ const ServicesCard: React.FunctionComponent<{ authOptions: AuthOption[] }> = ({
               </td>
             </tr>
           ))}
-          {configurable.length === 0 && (
-            <tr>
-              <td colSpan={2}>No services to configure</td>
-            </tr>
-          )}
         </tbody>
       </Table>
     </Card>
