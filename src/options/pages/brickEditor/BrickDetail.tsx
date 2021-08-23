@@ -96,7 +96,7 @@ export const BrickDetail: React.FunctionComponent<{
             Configuration not available for built-in bricks
           </div>
         ) : (
-          <AceEditor value={brickConfig} />
+          <AceEditor value={brickConfig} mode="yaml" theme="chrome" readOnly />
         )}
       </DetailSection>
     </div>
