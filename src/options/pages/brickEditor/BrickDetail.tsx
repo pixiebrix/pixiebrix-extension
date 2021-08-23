@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Button } from "react-bootstrap";
 import { isEmpty } from "lodash";
 import copy from "copy-to-clipboard";
@@ -27,12 +27,16 @@ import useUserAction from "@/hooks/useUserAction";
 import { makeArgumentYaml, DetailSection } from "./BrickReference";
 import { ReferenceEntry } from "./referenceEntryType";
 import * as localRegistry from "@/registry/localRegistry";
-import yaml from "yaml";
+import { objToYaml } from "@/utils/objToYaml";
+import { Schema } from "@/core";
+import { useAsyncState } from "@/hooks/common";
 
 export const BrickDetail: React.FunctionComponent<{
   brick: ReferenceEntry;
 }> = ({ brick }) => {
   const schema = "schema" in brick ? brick.schema : brick.inputSchema;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const outputSchema = (brick as any).outputSchema as Schema;
 
   const copyHandler = useUserAction(
     async () => {
@@ -45,14 +49,10 @@ export const BrickDetail: React.FunctionComponent<{
     [schema]
   );
 
-  useEffect(async () => localRegistry.syncRemote(), []);
-
-  localRegistry.find(brick.id).then((val) => {
-    console.log("brick", brick.id, val);
-  });
-
-  const brickYaml = new yaml.Document();
-  brickYaml.contents = (brick as any).component || null;
+  const [brickConfig, isBrickConfigLoading] = useAsyncState(async () => {
+    const brickPackage = await localRegistry.find(brick.id);
+    return brickPackage?.config ? objToYaml(brickPackage.config) : null;
+  }, [brick]);
 
   return (
     <div>
@@ -81,23 +81,22 @@ export const BrickDetail: React.FunctionComponent<{
       </DetailSection>
 
       <DetailSection title="Output Schema">
-        {isEmpty(brick.outputSchema) ? (
+        {isEmpty(outputSchema) ? (
           <div className="text-muted">No output schema provided</div>
         ) : (
-          <SchemaTree schema={brick.outputSchema} />
+          <SchemaTree schema={outputSchema} />
         )}
       </DetailSection>
 
       <DetailSection title="Configuration">
-        {brick.component ? (
-          <AceEditor
-            value={
-              // `rawConfig` is added by External(Block|Reader) etc.
-              brickYaml.toString()
-            }
-          />
+        {isBrickConfigLoading ? (
+          <div className="text-muted">Loading...</div>
+        ) : isEmpty(brickConfig) ? (
+          <div className="text-muted">
+            Configuration not available for built-in bricks
+          </div>
         ) : (
-          <div className="text-muted">No configuration provided</div>
+          <AceEditor value={brickConfig} />
         )}
       </DetailSection>
     </div>
