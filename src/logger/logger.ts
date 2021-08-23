@@ -16,7 +16,7 @@
  */
 
 import { ConsoleLogger } from "./consoleLogger";
-import { MutedLogger } from "./mutedLogger2";
+import { MutedLogger } from "./mutedLogger";
 
 export const logger =
   typeof jest === "undefined" ? new ConsoleLogger() : new MutedLogger();
