@@ -37,7 +37,7 @@ hard to build a diverse and vibrant community of makers.
 
 ## Documentation
 
-For documentation, [see our Wiki](https://github.com/pixiebrix/pixiebrix-extension/wiki).
+For documentation, [see our Documentation site](https://docs.pixiebrix.com/).
 
 ## Contributing
 
@@ -45,8 +45,10 @@ PixieBrix is an open source project, and we're delighted by community contributi
 the [Contributing file](https://github.com/pixiebrix/pixiebrix-extension/blob/main/CONTRIBUTING.md) for
 more information.
 
+See the wiki for [instructions for setting up a local build](https://github.com/pixiebrix/pixiebrix-extension/wiki/Local-build-setup).
+
 ## Why not _X_?
 
 We're avid users of browser extensions, bookmarklets, and userscripts. They'll always each have
 their place. We're building PixieBrix to bring their power to a broader audience. See our Wiki for
-[a full comparison](https://github.com/pixiebrix/pixiebrix-extension/wiki/Why-not-X%3F).
+[a full comparison](https://docs.pixiebrix.com/why-not-x).
