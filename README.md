@@ -8,8 +8,8 @@ registry of bricks and pre-made blueprints. You can create a PixieBrix account t
 support for team features, such as shared service configurations and team bricks.
 
 | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/firefox/firefox.svg" alt="" width="24px" height="24px" />](#readme)<br/>Firefox | [<img src="https://raw.githubusercontent.com/alrra/browser-logos/90fdf03c/src/chrome/chrome.svg" alt="" width="24px" height="24px" />](#readme)<br/>Chrome |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| last 2 versions                                                                                                                                                                                                   | last 2 versions                                                                                                                                                                                               |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| last 2 versions                                                                                                                                               | last 2 versions                                                                                                                                            |
 
 ## Example Uses
 
