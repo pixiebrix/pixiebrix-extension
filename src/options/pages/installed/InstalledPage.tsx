@@ -38,7 +38,7 @@ import { useAsyncState } from "@/hooks/common";
 import { resolveDefinitions } from "@/registry/internal";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { CloudExtension } from "@/types/contract";
-import { RemoveAction } from "@/options/pages/installed/types";
+import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 
 const { removeExtension } = optionsSlice.actions;

@@ -29,7 +29,7 @@ import ExtensionRow from "@/options/pages/installed/ExtensionRow";
 import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useUserAction from "@/hooks/useUserAction";
-import { RemoveAction } from "./types";
+import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import CloudExtensionRow from "@/options/pages/installed/CloudExtensionRow";
 
 const RecipeEntry: React.FunctionComponent<{

@@ -17,7 +17,7 @@
 
 import React, { useMemo } from "react";
 import { ResolvedExtension } from "@/core";
-import { RemoveAction } from "@/options/pages/installed/types";
+import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import { groupBy, sortBy } from "lodash";
 import { Card, Col, Row, Table } from "react-bootstrap";
 import RecipeEntry from "@/options/pages/installed/RecipeEntry";

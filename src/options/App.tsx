@@ -57,7 +57,7 @@ import "@/contrib/editors";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
 
-// Import the built-in bricks
+// Register the built-in bricks
 registerBuiltinBlocks();
 registerContribBlocks();
 
