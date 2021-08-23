@@ -29,10 +29,7 @@ const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;
  * @param maybePath
  * @param ctxt
  */
-export function isSimplePath(
-  maybePath: string,
-  ctxt: Record<string, unknown>
-): boolean {
+export function isSimplePath(maybePath: string, ctxt: object): boolean {
   if (!pathRegex.test(maybePath)) {
     return false;
   }
@@ -42,29 +39,29 @@ export function isSimplePath(
   return ctxt ? Object.prototype.hasOwnProperty.call(ctxt, path) : false;
 }
 
-type Args = string | Record<string, unknown> | Array<Record<string, unknown>>;
+type Args = string | object | object[];
 
 /**
  * Recursively apply a template renderer to a configuration.
  */
 export function mapArgs(
   config: string,
-  ctxt: Record<string, unknown>,
+  ctxt: object,
   render?: Renderer
 ): string;
-export function mapArgs<T extends Record<string, unknown>>(
+export function mapArgs<T extends object>(
   config: T,
-  ctxt: Record<string, unknown>,
+  ctxt: object,
   render?: Renderer
 ): T;
 export function mapArgs(
-  config: Array<Record<string, unknown>>,
-  ctxt: Record<string, unknown>,
+  config: object[],
+  ctxt: object,
   render?: Renderer
-): Array<Record<string, unknown>>;
+): object[];
 export function mapArgs(
   config: Args,
-  ctxt: Record<string, unknown>,
+  ctxt: object,
   render: Renderer = Mustache.render
 ): unknown {
   if (Array.isArray(config)) {
@@ -73,7 +70,7 @@ export function mapArgs(
 
   if (isPlainObject(config)) {
     return pickBy(
-      mapValues(config as Record<string, unknown>, (subConfig) =>
+      mapValues(config as object, (subConfig) =>
         mapArgs(subConfig, ctxt, render)
       ),
       (x) => x != null
@@ -82,7 +79,7 @@ export function mapArgs(
 
   if (typeof config === "string") {
     if (isSimplePath(config, ctxt)) {
-      const prop = getPropByPath(ctxt, config);
+      const prop = getPropByPath(ctxt as Record<string, unknown>, config);
       if (prop && typeof prop === "object" && "__service" in prop) {
         // If we're returning the root service context, return the service itself
         // @ts-expect-error not sure why the "in" check isn't working
