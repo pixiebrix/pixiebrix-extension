@@ -58,11 +58,21 @@ const defaults = {
   SERVICE_URL: "https://app.pixiebrix.com",
 };
 
+console.log(process.env);
+
 dotenv.config({
   path: process.env.ENV_FILE ?? ".env",
 });
 
 for (const [env, defaultValue] of Object.entries(defaults)) {
+  console.log(
+    JSON.stringify([
+      process.env[env],
+      parseEnv(process.env[env]),
+      parseEnv(process.env[env]) == null,
+      !process.env[env],
+    ])
+  );
   if (parseEnv(process.env[env]) == null) {
     process.env[env] = defaultValue;
   }
