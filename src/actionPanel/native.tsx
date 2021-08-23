@@ -26,7 +26,7 @@ import {
   RendererPayload,
 } from "@/actionPanel/protocol";
 import { FORWARD_FRAME_NOTIFICATION } from "@/background/browserAction";
-import { isBrowser } from "@/helpers";
+import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
 import { expectContentScript } from "@/utils/expectContext";
 import { ExtensionRef } from "@/core";
@@ -284,6 +284,6 @@ export function upsertPanel(
   renderPanels();
 }
 
-if (isBrowser) {
+if (IS_BROWSER) {
   storeOriginalCSS();
 }
