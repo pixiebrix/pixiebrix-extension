@@ -28,7 +28,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useFormikContext } from "formik";
 import CodeEditor from "./CodeEditor";
 import SharingTable from "./Sharing";
-import { sortBy } from "lodash";
+import { sortBy, flatten } from "lodash";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext } from "@/core";
 import BrickReference, {
@@ -89,7 +89,10 @@ function useOpenEditorTab() {
         // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
         window.open(`${url}#/workshop/bricks/${brick.id}`);
       } else {
-        notify.warning(`You cannot edit brick: ${id}`);
+        addToast(`You cannot edit brick: ${id}`, {
+          appearance: "warning",
+          autoDismiss: true,
+        });
       }
     },
     [notify]
@@ -108,12 +111,12 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const { errors, values, dirty } = useFormikContext<EditorValues>();
 
   const [blocks] = useAsyncState(async () => {
-    const [extensionPoints, blocks, services] = await Promise.all([
+    const items: ReferenceEntry[][] = await Promise.all([
       extensionPointRegistry.all(),
       blockRegistry.all(),
       serviceRegistry.all(),
     ]);
-    return [...extensionPoints, ...blocks, ...services];
+    return flatten(items);
   }, []);
 
   const openReference = useCallback(
@@ -127,7 +130,10 @@ const Editor: React.FunctionComponent<OwnProps> = ({
         console.debug("Known bricks", {
           blocks: sortBy(blocks.map((x) => x.id)),
         });
-        notify.warning(`Cannot find block: ${id}`);
+        addToast(`Cannot find block: ${id}`, {
+          appearance: "warning",
+          autoDismiss: true,
+        });
       }
     },
     [setTab, blocks, setSelectedReference, notify]
