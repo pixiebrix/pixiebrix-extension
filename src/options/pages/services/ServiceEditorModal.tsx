@@ -19,7 +19,7 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
-import { IService, RawServiceConfiguration } from "@/core";
+import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { Formik, FormikHelpers } from "formik";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, truncate } from "lodash";
@@ -34,7 +34,7 @@ interface OwnProps {
   configuration: RawServiceConfiguration;
   service: IService;
   onClose: () => void;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: UUID) => void;
   onSave: (config: RawServiceConfiguration) => Promise<void>;
 }
 

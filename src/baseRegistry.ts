@@ -43,6 +43,9 @@ export class DoesNotExistError extends Error {
   }
 }
 
+/**
+ * Local brick registry backed by IDB.
+ */
 export class Registry<
   Id extends RegistryId = RegistryId,
   Item extends RegistryItem<Id> = RegistryItem<Id>
@@ -156,6 +159,9 @@ export class Registry<
     }
   }
 
+  /**
+   * Fetch remote brick definitions.
+   */
   async fetch(): Promise<void> {
     const timestamp = new Date();
 
@@ -211,6 +217,9 @@ export class Registry<
     );
   }
 
+  /**
+   * Clear the registry cache.
+   */
   clear(): void {
     this.cache.clear();
   }

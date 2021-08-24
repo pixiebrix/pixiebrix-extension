@@ -91,6 +91,12 @@ type Option = {
 
 let wasInitialized = false;
 
+/**
+ * Singleton class that produces `ServiceLocator` methods via `getLocator`.
+ *
+ * NOTE: this class handles service credentials, not the service definitions. For service definitions, see the
+ * `services.registry` file.
+ */
 class LazyLocatorFactory {
   private remote: SanitizedAuth[] = [];
 
@@ -168,7 +174,7 @@ class LazyLocatorFactory {
     return LazyLocatorFactory.prototype.locate.bind(this);
   }
 
-  async getLocalConfig(authId: string): Promise<RawServiceConfiguration> {
+  async getLocalConfig(authId: UUID): Promise<RawServiceConfiguration> {
     if (!this.initialized) {
       await this.refresh();
     }

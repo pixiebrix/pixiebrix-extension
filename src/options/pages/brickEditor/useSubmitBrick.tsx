@@ -22,7 +22,7 @@ import { useHistory } from "react-router";
 import { push } from "connected-react-router";
 import { useDispatch } from "react-redux";
 import { EditorValues } from "./Editor";
-import { validateSchema } from "./validate";
+import { BrickValidationResult, validateSchema } from "./validate";
 import useRefresh from "@/hooks/useRefresh";
 import { reactivate } from "@/background/navigation";
 import { Definition, RecipeDefinition } from "@/types/definitions";
@@ -30,26 +30,28 @@ import useReinstall from "@/pages/marketplace/useReinstall";
 import useNotifications from "@/hooks/useNotifications";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { getErrorMessage, isAxiosError } from "@/errors";
+import { UUID } from "@/core";
+import { clearServiceCache } from "@/background/requests";
 
-interface SubmitOptions {
+type SubmitOptions = {
   create: boolean;
   url: string;
-}
+};
 
-interface SubmitCallbacks {
-  validate: (values: EditorValues) => Promise<any>;
+type SubmitCallbacks = {
+  validate: (values: EditorValues) => Promise<BrickValidationResult>;
   remove: () => Promise<void>;
   submit: (
     values: EditorValues,
-    helpers: { setErrors: (errors: any) => void }
+    helpers: { setErrors: (errors: unknown) => void }
   ) => Promise<void>;
-}
+};
 
 function useSubmitBrick({
   create = false,
   url,
 }: SubmitOptions): SubmitCallbacks {
-  const [, refresh] = useRefresh(false);
+  const [, refresh] = useRefresh({ refreshOnMount: false });
   const reinstall = useReinstall();
   const history = useHistory();
   const notify = useNotifications();
@@ -85,19 +87,26 @@ function useSubmitBrick({
       const { kind, metadata } = json;
 
       try {
-        // FIXME: add expected return value
         const client = await getLinkedApiClient();
-        const { data } = await client[create ? "post" : "put"](url, {
-          ...values,
-          kind,
-        });
+        const { data } = await client[create ? "post" : "put"]<{ id: UUID }>(
+          url,
+          {
+            ...values,
+            kind,
+          }
+        );
 
         // We attach the handler below, and don't want it to block the save
-        // noinspection ES6MissingAwait
-        const refreshPromise =
-          kind === "recipe" && reinstallBlueprint
-            ? reinstall(json as RecipeDefinition)
-            : refresh();
+        let refreshPromise: Promise<void>;
+        if (kind === "recipe" && reinstallBlueprint) {
+          refreshPromise = reinstall(json as RecipeDefinition);
+        } else if (kind === "service") {
+          // Fetch the remote definitions, then clear the background page's service cache so it's forced to read the
+          // updated service definition.
+          refreshPromise = refresh().then(async () => clearServiceCache());
+        } else {
+          refreshPromise = refresh();
+        }
 
         notify.success(`${create ? "Created" : "Updated"} ${metadata.name}`);
 

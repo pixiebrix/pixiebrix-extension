@@ -16,9 +16,9 @@
  */
 
 import { useSelector } from "react-redux";
-import { Card, Table, Button } from "react-bootstrap";
+import { Button, Card, Table } from "react-bootstrap";
 import React, { useCallback, useContext } from "react";
-import { RawServiceConfiguration, IService } from "@/core";
+import { IService, RawServiceConfiguration } from "@/core";
 import { RootState } from "../../store";
 import { uuidv4 } from "@/types/helpers";
 import { ServiceDefinition } from "@/types/definitions";
@@ -27,26 +27,25 @@ import useFetch from "@/hooks/useFetch";
 import { faEyeSlash, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
-import { useToasts } from "react-toast-notifications";
 import { deleteCachedAuth } from "@/background/requests";
-import { reportError } from "@/telemetry/logging";
 import { ServicesState } from "@/options/slices";
+import useNotifications from "@/hooks/useNotifications";
 
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
 
-interface OwnProps {
+type OwnProps = {
   services: IService[];
-  navigate: (x: string) => void;
-  onCreate: (x: RawServiceConfiguration) => void;
-}
+  navigate: (url: string) => void;
+  onCreate: (configuration: RawServiceConfiguration) => void;
+};
 
 const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   services,
   navigate,
   onCreate,
 }) => {
-  const { addToast } = useToasts();
+  const notify = useNotifications();
   const { isLoggedIn } = useContext(AuthContext);
 
   const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
@@ -61,19 +60,14 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
     async (authId: string) => {
       try {
         await deleteCachedAuth(authId);
-        addToast("Reset login for integration", {
-          appearance: "success",
-          autoDismiss: true,
-        });
+        notify.success("Reset login for integration");
       } catch (error: unknown) {
-        reportError(error);
-        addToast("Error resetting login for integration", {
-          appearance: "error",
-          autoDismiss: true,
+        notify.error("Error resetting login for integration", {
+          error,
         });
       }
     },
-    [addToast]
+    [notify]
   );
 
   const onSelect = useCallback(
