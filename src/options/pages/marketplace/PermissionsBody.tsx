@@ -22,6 +22,7 @@ import GridLoader from "react-spinners/GridLoader";
 import { Card, Table } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
 import { Permissions } from "webextension-polyfill-ts";
+import { getErrorMessage } from "@/errors";
 
 const PermissionsBody: React.FunctionComponent<{
   enabled: boolean;
@@ -51,7 +52,8 @@ const PermissionsBody: React.FunctionComponent<{
     if (error) {
       return (
         <Card.Text className="text-danger">
-          An error occurred determining additional permissions
+          An error occurred determining additional permissions:{" "}
+          {getErrorMessage(error)}
         </Card.Text>
       );
     }

@@ -183,9 +183,9 @@ type PermissionOptions = {
 
 /**
  * Returns browser permissions required to run the extension
- * - Extension point
  * - Blocks
- * - Services
+ * - Services (optional, default=true)
+ * - Extension point (optional, default=true)
  */
 export async function extensionPermissions(
   extension: IExtension,
@@ -200,19 +200,26 @@ export async function extensionPermissions(
   const extensionPoint =
     opts.extensionPoint ??
     (await extensionPointRegistry.lookup(resolved.extensionPointId));
-  const services = await Promise.all(
-    resolved.services
-      .filter((x) => x.config)
-      .map(async (x) =>
-        serviceOriginPermissions({ id: x.id, config: x.config })
-      )
-  );
+
+  let servicePermissions: Permissions.Permissions[] = [];
+
+  if (opts.includeServices) {
+    servicePermissions = await Promise.all(
+      (resolved.services ?? [])
+        .filter((x) => x.config)
+        .map(async (x) =>
+          serviceOriginPermissions({ id: x.id, config: x.config })
+        )
+    );
+  }
+
   const blocks = await extensionPoint.getBlocks(resolved);
   const blockPermissions = blocks.map((x) => x.permissions);
+
   return mergePermissions(
     compact([
       opts.includeExtensionPoint ? extensionPoint.permissions : null,
-      ...(opts.includeServices ? services : []),
+      ...servicePermissions,
       ...blockPermissions,
     ])
   );
