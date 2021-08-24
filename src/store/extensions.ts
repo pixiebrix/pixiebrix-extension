@@ -19,24 +19,28 @@ import { MigrationManifest, PersistedState } from "redux-persist/es/types";
 import { localStorage } from "redux-persist-webextension-storage";
 import { createMigrate } from "redux-persist";
 import { boolean } from "@/utils";
-import { IExtension } from "@/core";
+import { IExtension, PersistedExtension } from "@/core";
 
 const migrations: MigrationManifest = {
-  1: (state: PersistedState & OptionsState) => migrateOptionsState(state),
+  1: (state: PersistedState & OptionsState) => migrateExtensionsShape(state),
+  2: (state: PersistedState & OptionsState) =>
+    migrateActiveExtensions(
+      state as PersistedState & LegacyExtensionObjectState
+    ),
 };
 
 export const persistOptionsConfig = {
   key: "extensionOptions",
   storage: localStorage,
-  version: 1,
+  version: 2,
   // https://github.com/rt2zz/redux-persist#migrations
   migrate: createMigrate(migrations, { debug: boolean(process.env.DEBUG) }),
 };
 
 /**
- * @deprecated use ExtensionsState - this is only used in the migration
+ * @deprecated use PersistedOptionsState - this is only used in the migration
  */
-type LegacyExtensionsState = {
+type LegacyExtensionObjectShapeState = {
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
   extensions: {
     // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record doesn't allow labelled keys
@@ -46,14 +50,21 @@ type LegacyExtensionsState = {
   };
 };
 
-export type ExtensionsOptionsState = {
+/**
+ * @deprecated use ExtensionOptionsState - this is only used in a migration
+ */
+export type LegacyExtensionObjectState = {
   extensions: IExtension[];
 };
 
+export type ExtensionOptionsState = {
+  extensions: PersistedExtension[];
+};
+
 // Putting here because it was causing circular dependencies
-export function migrateOptionsState<T>(
-  state: T & (LegacyExtensionsState | ExtensionsOptionsState)
-): T & ExtensionsOptionsState {
+export function migrateExtensionsShape<T>(
+  state: T & (LegacyExtensionObjectShapeState | LegacyExtensionObjectState)
+): T & LegacyExtensionObjectState {
   if (state.extensions == null) {
     console.info("Repairing redux state");
     return { ...state, extensions: [] };
@@ -62,10 +73,10 @@ export function migrateOptionsState<T>(
   if (Array.isArray(state.extensions)) {
     // Already migrated
     console.debug("Redux state already up-to-date");
-    return state as T & ExtensionsOptionsState;
+    return state as T & LegacyExtensionObjectState;
   }
 
-  console.info("Migrating redux state");
+  console.info("Migrating Redux state");
 
   return {
     ...state,
@@ -75,11 +86,32 @@ export function migrateOptionsState<T>(
   };
 }
 
-export type OptionsState = LegacyExtensionsState | ExtensionsOptionsState;
+export function migrateActiveExtensions<T>(
+  state: T & (LegacyExtensionObjectState | ExtensionOptionsState)
+): T & ExtensionOptionsState {
+  const timestamp = new Date().toISOString();
+
+  return {
+    ...state,
+    extensions: state.extensions.map((x) => ({
+      ...x,
+      active: true,
+      createTimestamp:
+        (x as Partial<PersistedExtension>).createTimestamp ?? timestamp,
+      updateTimestamp:
+        (x as Partial<PersistedExtension>).updateTimestamp ?? timestamp,
+    })),
+  };
+}
+
+export type OptionsState =
+  | LegacyExtensionObjectShapeState
+  | LegacyExtensionObjectState
+  | ExtensionOptionsState;
 
 export function requireLatestState(
   state: OptionsState
-): asserts state is ExtensionsOptionsState {
+): asserts state is LegacyExtensionObjectState | ExtensionOptionsState {
   if (!Array.isArray(state.extensions)) {
     throw new TypeError("redux state has not been migrated");
   }

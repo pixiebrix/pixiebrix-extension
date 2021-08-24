@@ -127,5 +127,5 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
 /**
  * True if the script is executing in a web browser context.
  */
-export const isBrowser =
+export const IS_BROWSER =
   typeof window !== "undefined" && typeof window.document !== "undefined";

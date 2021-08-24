@@ -44,7 +44,7 @@ export class GetAPITransformer extends Transformer {
       params: {
         type: "object",
         description: "The URL parameters",
-        additionalProperties: { type: "string" },
+        additionalProperties: { type: ["string", "number", "boolean"] },
       },
       headers: {
         type: "object",

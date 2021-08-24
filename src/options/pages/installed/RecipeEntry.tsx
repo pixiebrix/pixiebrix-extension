@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
-import { getErrorMessage } from "@/errors";
+import React, { useMemo, useState } from "react";
 import cx from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -25,12 +24,13 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { ExtensionRef, ResolvedExtension, IExtension } from "@/core";
+import { IExtension, ResolvedExtension } from "@/core";
 import ExtensionRow from "@/options/pages/installed/ExtensionRow";
 import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
-
-type RemoveAction = (identifier: ExtensionRef) => void;
+import useUserAction from "@/hooks/useUserAction";
+import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
+import CloudExtensionRow from "@/options/pages/installed/CloudExtensionRow";
 
 const RecipeEntry: React.FunctionComponent<{
   recipeId: string;
@@ -38,6 +38,10 @@ const RecipeEntry: React.FunctionComponent<{
   onRemove: RemoveAction;
 }> = ({ recipeId, extensions, onRemove }) => {
   const notify = useNotifications();
+
+  const recipe = extensions[0]._recipe;
+  const label = recipe?.name ?? recipeId;
+
   const [expanded, setExpanded] = useState(true);
 
   // Only consider to be a deployment if none of the extensions have been modified
@@ -47,19 +51,15 @@ const RecipeEntry: React.FunctionComponent<{
     extensions
   );
 
-  const removeMany = useCallback(
-    async (extensions: IExtension[], name: string) => {
-      try {
-        for (const { id: extensionId, extensionPointId } of extensions) {
-          onRemove({ extensionId, extensionPointId });
-        }
-
-        notify.success(`Uninstalled ${name}`);
-      } catch (error: unknown) {
-        notify.error(`Error uninstalling ${name}: ${getErrorMessage(error)}`, {
-          error,
-        });
+  const removeMany = useUserAction(
+    async (extensions: IExtension[]) => {
+      for (const { id: extensionId, extensionPointId } of extensions) {
+        onRemove({ extensionId, extensionPointId });
       }
+    },
+    {
+      successMessage: `Uninstalled ${recipe?.name ?? "extensions"}`,
+      errorMessage: `Error uninstalling ${recipe?.name ?? "extensions"}`,
     },
     [notify, onRemove]
   );
@@ -90,9 +90,6 @@ const RecipeEntry: React.FunctionComponent<{
     return null;
   }, [isDeployment, hasPermissions, requestPermissions]);
 
-  const recipe = extensions[0]._recipe;
-  const label = recipe?.name ?? recipeId;
-
   return (
     <tbody key={recipeId}>
       {recipeId !== "" && (
@@ -119,7 +116,9 @@ const RecipeEntry: React.FunctionComponent<{
             <AsyncButton
               variant="danger"
               size="sm"
-              onClick={async () => removeMany(extensions, recipe?.name)}
+              onClick={async () => {
+                await removeMany(extensions);
+              }}
             >
               Uninstall
             </AsyncButton>
@@ -128,13 +127,17 @@ const RecipeEntry: React.FunctionComponent<{
       )}
       {expanded &&
         !isDeployment &&
-        extensions.map((extension) => (
-          <ExtensionRow
-            key={extension.id}
-            extension={extension}
-            onRemove={onRemove}
-          />
-        ))}
+        extensions.map((extension) =>
+          extension.active ? (
+            <ExtensionRow
+              key={extension.id}
+              extension={extension}
+              onRemove={onRemove}
+            />
+          ) : (
+            <CloudExtensionRow key={extension.id} extension={extension} />
+          )
+        )}
     </tbody>
   );
 };

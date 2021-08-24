@@ -76,61 +76,63 @@ export class ModalTransformer extends Transformer {
 
     document.body.append(container);
 
-    const resultPromise = new Promise<object>((resolve, reject) => {
-      const id = `modal-${uuidv4()}`;
-      const form = (
-        <React.Fragment>
-          <style
-            type="text/css"
-            dangerouslySetInnerHTML={{ __html: theme.toString() }}
-          />
-          <div className="modal-backdrop show"></div>
-          <div
-            id={id}
-            className="modal show"
-            tabIndex={-1}
-            role="dialog"
-            style={{ display: "block", paddingRight: 15 }}
-          >
+    const resultPromise = new Promise<Record<string, unknown>>(
+      (resolve, reject) => {
+        const id = `modal-${uuidv4()}`;
+        const form = (
+          <React.Fragment>
+            <style
+              type="text/css"
+              dangerouslySetInnerHTML={{ __html: theme.toString() }}
+            />
+            <div className="modal-backdrop show"></div>
             <div
-              className="modal-dialog modal-dialog-scrollable"
-              role="document"
+              id={id}
+              className="modal show"
+              tabIndex={-1}
+              role="dialog"
+              style={{ display: "block", paddingRight: 15 }}
             >
-              <div className="modal-content">
-                <div className="modal-body">
-                  <Form
-                    schema={schema}
-                    uiSchema={uiSchema}
-                    onSubmit={({ formData }) => {
-                      resolve(formData as object);
-                    }}
-                  >
-                    <div>
-                      <button className="btn btn-primary" type="submit">
-                        Submit
-                      </button>
-                      <button
-                        className="btn btn-link"
-                        type="button"
-                        onClick={() => {
-                          reject(new CancelError("You cancelled the form"));
-                        }}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </Form>
+              <div
+                className="modal-dialog modal-dialog-scrollable"
+                role="document"
+              >
+                <div className="modal-content">
+                  <div className="modal-body">
+                    <Form
+                      schema={schema}
+                      uiSchema={uiSchema}
+                      onSubmit={({ formData }) => {
+                        resolve(formData as Record<string, unknown>);
+                      }}
+                    >
+                      <div>
+                        <button className="btn btn-primary" type="submit">
+                          Submit
+                        </button>
+                        <button
+                          className="btn btn-link"
+                          type="button"
+                          onClick={() => {
+                            reject(new CancelError("You cancelled the form"));
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </Form>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </React.Fragment>
-      );
-      ReactDOM.render(form, shadowRoot);
-      $(`#${id}`).on("hide.bs.modal", () => {
-        reject(new CancelError("You cancelled the form"));
-      });
-    });
+          </React.Fragment>
+        );
+        ReactDOM.render(form, shadowRoot);
+        $(`#${id}`).on("hide.bs.modal", () => {
+          reject(new CancelError("You cancelled the form"));
+        });
+      }
+    );
 
     let data;
 

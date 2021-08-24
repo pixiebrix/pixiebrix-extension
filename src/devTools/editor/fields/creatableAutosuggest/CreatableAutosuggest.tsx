@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { FormEvent, useCallback, useMemo, useState } from "react";
+import React, { FormEvent, useCallback, useMemo, useState, memo } from "react";
 import styles from "./CreatableAutosuggest.module.scss";
 import Autosuggest, {
   ChangeEvent,
@@ -24,6 +24,7 @@ import Autosuggest, {
 } from "react-autosuggest";
 import cx from "classnames";
 import { noop } from "lodash";
+import { Form } from "react-bootstrap";
 
 export interface SuggestionTypeBase {
   value: string;
@@ -186,15 +187,17 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
     onSuggestionSelected,
   ]);
 
+  const value = inputValue ?? currentValue ?? "";
+
   const inputProps: InputProps<SuggestionType> = useMemo(
     () => ({
       type: "search",
-      value: inputValue ?? currentValue,
+      value,
       onChange: handleChange,
       placeholder: inputPlaceholder,
       disabled: isDisabled,
     }),
-    [inputValue, currentValue, handleChange, inputPlaceholder, isDisabled]
+    [value, handleChange, inputPlaceholder, isDisabled]
   );
 
   const theme = useMemo(
@@ -209,6 +212,16 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
     }),
     [isClearable]
   );
+
+  if (typeof value !== "string") {
+    // Cowardly bail on non-string values
+    // https://github.com/moroshko/react-autosuggest/issues/510
+    console.warn("CreatableAutosuggest received non-string value", {
+      inputValue,
+      currentValue,
+    });
+    return <Form.Control plaintext readOnly defaultValue="Unsupported Value" />;
+  }
 
   return (
     <Autosuggest
@@ -226,4 +239,4 @@ const CreatableAutosuggest = <SuggestionType extends SuggestionTypeBase>({
   );
 };
 
-export default React.memo(CreatableAutosuggest);
+export default memo(CreatableAutosuggest);

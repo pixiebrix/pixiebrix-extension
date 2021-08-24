@@ -68,12 +68,12 @@ interface Fiber {
   /**
    * The resolved function/class associated with this fiber.
    */
-  type: string | object;
+  type: string | Record<string, unknown>;
 
   /**
    * The local state associated with this fiber.
    */
-  stateNode: Node | object;
+  stateNode: Node | Record<string, unknown>;
 }
 
 export function isManaged(node: Node): boolean {

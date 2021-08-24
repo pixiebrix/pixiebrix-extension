@@ -17,7 +17,7 @@
 
 import { ReadProxy } from "@/utils";
 
-type ComponentData = object;
+type ComponentData = Record<string, unknown>;
 
 export function traverse<T = unknown>(
   next: (current: T) => T | null,

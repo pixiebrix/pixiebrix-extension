@@ -65,12 +65,12 @@ export async function elementInfo(
     if (component) {
       return {
         selectors: inferredSelectors,
-        framework: framework as Framework,
+        framework,
         tagName: element.tagName,
         hasData: !isEmpty(adapter.getData(component)),
         parent: await elementInfo(
           element.parentElement,
-          framework as Framework,
+          framework,
           [],
           traverseUp - 1
         ),

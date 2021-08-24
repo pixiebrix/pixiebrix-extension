@@ -41,6 +41,8 @@ function parseEnv(value) {
       return false;
     case "true":
       return true;
+    case "":
+      return "";
     default:
   }
 
@@ -63,7 +65,7 @@ dotenv.config({
 });
 
 for (const [env, defaultValue] of Object.entries(defaults)) {
-  if (parseEnv(process.env[env]) == null) {
+  if (!process.env[env] || parseEnv(process.env[env]) == null) {
     process.env[env] = defaultValue;
   }
 }

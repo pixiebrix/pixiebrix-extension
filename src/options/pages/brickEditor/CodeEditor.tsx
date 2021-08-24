@@ -159,7 +159,7 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
           <ListGroup>
             {castArray(meta.error).map((x) => (
               <ListGroup.Item
-                key={x as string}
+                key={x}
                 className="text-danger"
                 style={{ borderRadius: 0 }}
               >

@@ -30,8 +30,12 @@ import { BlankReader } from "./BlankReader";
 import { ImageReader } from "./ImageReader";
 import { ImageExifReader } from "@/blocks/readers/ImageExifReader";
 import { ElementReader } from "@/blocks/readers/ElementReader";
+import { registerFactory } from "@/blocks/readers/factory";
+import { frameworkReadFactory } from "@/blocks/readers/frameworkReader";
+import { readJQuery } from "@/blocks/readers/jquery";
 
 function registerReaders(): void {
+  // Built-in readers
   registerBlock(new DocumentReader());
   registerBlock(new ManifestReader());
   registerBlock(new ChromeProfileReader());
@@ -44,6 +48,14 @@ function registerReaders(): void {
   registerBlock(new ImageReader());
   registerBlock(new ImageExifReader());
   registerBlock(new ElementReader());
+
+  // Framework readers
+  registerFactory("angularjs", frameworkReadFactory("angularjs"));
+  registerFactory("emberjs", frameworkReadFactory("emberjs"));
+  registerFactory("react", frameworkReadFactory("react"));
+  registerFactory("vue", frameworkReadFactory("vue"));
+  registerFactory("vuejs", frameworkReadFactory("vue"));
+  registerFactory("jquery", readJQuery);
 }
 
 export default registerReaders;

@@ -42,14 +42,14 @@ export function mostCommonElement<T>(items: T[]): T {
   return flow(countBy, entries, partialRight(maxBy, last), head)(items) as T;
 }
 
-export function isGetter(obj: object, prop: string): boolean {
+export function isGetter(obj: Record<string, unknown>, prop: string): boolean {
   return Boolean(Object.getOwnPropertyDescriptor(obj, prop)?.get);
 }
 
 /**
  * Return all property names (including non-enumerable) in the prototype hierarchy.
  */
-export function getAllPropertyNames(obj: object): string[] {
+export function getAllPropertyNames(obj: Record<string, unknown>): string[] {
   const props = new Set<string>();
   let current = obj;
   while (current) {
@@ -146,7 +146,9 @@ export function isPrimitive(val: unknown): val is Primitive {
 }
 
 export function removeUndefined(obj: unknown): unknown {
-  if (obj === undefined) {
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null
+  // `typeof null === "object"`, so have to check for it before the "object" check below
+  if (obj == null) {
     return null;
   }
 
@@ -284,7 +286,7 @@ export function getPropByPath(
   {
     args = {},
     proxy = noopProxy,
-  }: { args?: object; proxy?: ReadProxy } | undefined = {}
+  }: { args?: Record<string, unknown>; proxy?: ReadProxy } | undefined = {}
 ): unknown {
   // Consider using jsonpath syntax https://www.npmjs.com/package/jsonpath-plus
 

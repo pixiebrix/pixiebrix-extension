@@ -17,14 +17,43 @@
 
 import { DependencyList, useCallback } from "react";
 import useNotifications from "@/hooks/useNotifications";
-import { CancelError, getErrorMessage } from "@/errors";
+import { CancelError, getErrorMessage, isAxiosError } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
+import { AxiosResponse } from "axios";
 
 type Options = {
   event?: string;
   errorMessage?: string;
   successMessage?: string;
 };
+
+function selectResponseText(response: AxiosResponse): string {
+  if (response.status === 400) {
+    // Do some basic parsing of Django/DRF 400 messages
+
+    if (typeof response.data === "string") {
+      return response.data;
+    }
+
+    if (Array.isArray(response.data) && typeof response.data[0] === "string") {
+      return response.data[0];
+    }
+  }
+
+  return response.statusText;
+}
+
+function getHumanDetail(error: unknown): string {
+  try {
+    if (isAxiosError(error)) {
+      return selectResponseText(error.response);
+    }
+  } catch {
+    // We tried - just fall back to our default message extraction
+  }
+
+  return getErrorMessage(error);
+}
 
 /**
  * Replacement for useCallback that handles success/error notifications and telemetry.
@@ -56,7 +85,7 @@ function useUserAction<T extends (...args: never[]) => unknown>(
         return;
       }
 
-      const detail = getErrorMessage(error);
+      const detail = getHumanDetail(error);
       notify.error(`${errorMessage}: ${detail}`, {
         error,
       });
@@ -65,6 +94,7 @@ function useUserAction<T extends (...args: never[]) => unknown>(
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally leaving callback out of deps
   return useCallback<T>(enhancedCallback, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps is a `DependencyList`
     ...deps,
     notify,
     options,

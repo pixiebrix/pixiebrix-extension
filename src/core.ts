@@ -257,7 +257,7 @@ export type IExtension<T extends Config = EmptyConfig> = {
   definitions?: InnerDefinitions;
 
   /**
-   * Configured services/integrations for the extension
+   * Configured services/integrations for the extension.
    */
   services: ServiceDependency[];
 
@@ -267,9 +267,44 @@ export type IExtension<T extends Config = EmptyConfig> = {
   optionsArgs?: UserOptions;
 
   /**
-   * The extension configuration for the extension point
+   * The extension configuration for the extension point.
    */
   config: T;
+
+  /**
+   * True iff the extension is activated in the client
+   *
+   * For extensions on the server, but not activated on the client, this will be false.
+   */
+  active?: boolean;
+};
+
+/**
+ * An extension that has been saved locally.
+ * @see IExtension
+ * @see UserExtension
+ */
+export type PersistedExtension<
+  T extends Config = EmptyConfig
+> = IExtension<T> & {
+  /**
+   * True to indicate this extension has been activated on the client.
+   */
+  active: true;
+
+  /**
+   * Creation timestamp in ISO format with timezone.
+   *
+   * Currently not used for anything - might be used for sorting, etc. in the future.
+   */
+  createTimestamp: string;
+
+  /**
+   * Update timestamp in ISO format with timezone.
+   *
+   * Used to determine if local version is outdated compared to user's version on the server.
+   */
+  updateTimestamp: string;
 };
 
 /**
