@@ -238,6 +238,7 @@
     "zip-dir": "^2.0.0"
   },
   "jest": {
+    "silent": true,
     "testEnvironment": "jest-environment-jsdom",
     "modulePaths": [
       "/src"
