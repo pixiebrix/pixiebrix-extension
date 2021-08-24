@@ -15,30 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.BlockResults.list-group {
-  border-radius: 0;
+.titleColumn {
+  min-width: 0;
+  margin-right: 5px;
+}
 
-  .list-group-item {
-    width: 100%;
-    cursor: pointer;
-    border-radius: 0;
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-    text-align: left;
-
-    code {
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    &:hover {
-      color: #fff;
-      background-color: #b66dff;
-    }
-
-    &.active {
-      border-color: #e5d3ff;
-      color: black;
-      background-color: #f0e1ff;
-    }
-  }
+.id {
+  @extend .ellipsis;
+  display: block;
 }

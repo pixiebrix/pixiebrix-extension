@@ -17,7 +17,6 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Badge,
   Col,
   Container,
   Form,
@@ -28,15 +27,13 @@ import {
 import { IBlock, IService, Schema } from "@/core";
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
-import { BlockType, getType } from "@/blocks/util";
-import { useAsyncEffect } from "use-async-effect";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getIcon } from "@/components/fields/BlockModal";
-import cx from "classnames";
-import "./BrickReference.scss";
+import styles from "./BrickReference.module.scss";
 import GridLoader from "react-spinners/GridLoader";
 import { BrickDetail } from "./BrickDetail";
 import { ReferenceEntry } from "./brickEditorTypes";
+import { BlockResult } from "./BlockResult";
+import { isOfficial } from "./isOfficial";
+import cx from "classnames";
 
 export const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
@@ -47,10 +44,6 @@ export const DetailSection: React.FunctionComponent<{ title: string }> = ({
     <div className="py-2">{children}</div>
   </div>
 );
-
-function isOfficial(block: ReferenceEntry): boolean {
-  return block.id.startsWith("@pixiebrix/");
-}
 
 export function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -84,42 +77,6 @@ export function makeArgumentYaml(schema: Schema): string {
 
   return result;
 }
-
-const BlockResult: React.FunctionComponent<{
-  block: ReferenceEntry;
-  active?: boolean;
-  onSelect: () => void;
-}> = ({ block, onSelect, active }) => {
-  const [type, setType] = useState<BlockType>(null);
-
-  useAsyncEffect(async () => {
-    setType(await getType(block));
-  }, [block, setType]);
-
-  return (
-    <ListGroup.Item
-      onClick={onSelect}
-      className={cx("BlockResult", { active })}
-    >
-      <div className="d-flex">
-        <div className="mr-2 text-muted">
-          <FontAwesomeIcon icon={getIcon(block, type)} fixedWidth />
-        </div>
-        <div className="flex-grow-1">
-          <div className="d-flex BlockResult__title">
-            <div className="flex-grow-1">{block.name}</div>
-            <div className="flex-grow-0 BlockResult__badges">
-              {isOfficial(block) && <Badge variant="info">Official</Badge>}
-            </div>
-          </div>
-          <div className="BlockResult__id">
-            <code className="small">{block.id}</code>
-          </div>
-        </div>
-      </div>
-    </ListGroup.Item>
-  );
-};
 
 const BrickReference: React.FunctionComponent<{
   blocks: ReferenceEntry[];
@@ -184,8 +141,8 @@ const BrickReference: React.FunctionComponent<{
               }}
             />
           </InputGroup>
-          <div className="overflow-auto h-100">
-            <ListGroup className="BlockResults">
+          <div className={cx("overflow-auto", "h-100", styles.blockResults)}>
+            <ListGroup>
               {results.map((result) => (
                 <BlockResult
                   key={result.id}
@@ -199,7 +156,7 @@ const BrickReference: React.FunctionComponent<{
             </ListGroup>
           </div>
         </Col>
-        <Col md={8} className="pt-4">
+        <Col md={8} className={cx("pt-4", styles.datailColumn)}>
           {selected ? (
             <BrickDetail brick={selected} />
           ) : (
