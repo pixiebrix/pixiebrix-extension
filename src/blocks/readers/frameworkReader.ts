@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Read, registerFactory } from "@/blocks/readers/factory";
+import { Read } from "@/blocks/readers/factory";
 import { Framework } from "@/messaging/constants";
 import { ReaderOutput, ReaderRoot } from "@/core";
 import { castArray, fromPairs, compact } from "lodash";
@@ -43,7 +43,9 @@ async function asyncFastCssSelector(element: HTMLElement): Promise<string> {
   });
 }
 
-function makeRead(framework: Framework): Read<FrameworkConfig> {
+export function frameworkReadFactory(
+  framework: Framework
+): Read<FrameworkConfig> {
   async function read(
     reader: FrameworkConfig,
     root: ReaderRoot
@@ -77,9 +79,3 @@ function makeRead(framework: Framework): Read<FrameworkConfig> {
 
   return read;
 }
-
-registerFactory("angularjs", makeRead("angularjs"));
-registerFactory("emberjs", makeRead("emberjs"));
-registerFactory("react", makeRead("react"));
-registerFactory("vue", makeRead("vue"));
-registerFactory("vuejs", makeRead("vue"));
