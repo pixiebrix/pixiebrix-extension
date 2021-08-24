@@ -37,7 +37,8 @@
         // Customize the defaults to force being explicit about use of null-coalescing operator because its precedence
         // is unintuitive. See: https://eslint.org/docs/rules/no-mixed-operators
         "groups": [
-          ["+", "-", "*", "/", "%", "**", "??"],
+          // Conflicts with Prettier: https://github.com/prettier/prettier/issues/3968
+          // ["+", "-", "*", "/", "%", "**", "??"],
           ["&", "|", "^", "~", "<<", ">>", ">>>", "??"],
           ["==", "!=", "===", "!==", ">", ">=", "<", "<=", "??"],
           ["&&", "||", "??"],
