@@ -19,16 +19,16 @@ import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
 import { stubTrue } from "lodash";
-import { refresh as refreshLocator } from "@/background/locator";
+import { refresh as refreshBackgroundAuthLocator } from "@/background/locator";
 import { useCallback, useState } from "react";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
+import { clearServiceCache as clearBackgroundServiceCache } from "@/background/requests";
 
 /**
  * Refresh registries for the current context.
  *
- * NOTE: calling this method does not update the locator/service definitions for the background page unless this method
- * is called from the background page.
+ * Additionally refreshes background states necessary for making network calls.
  */
 export async function refreshRegistries(): Promise<void> {
   console.debug("Refreshing bricks from the server");
@@ -36,8 +36,12 @@ export async function refreshRegistries(): Promise<void> {
     extensionPointRegistry.fetch(),
     blockRegistry.fetch(),
     serviceRegistry.fetch(),
-    refreshLocator(),
+    refreshBackgroundAuthLocator(),
   ]);
+
+  // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
+  // the call to serviceRegistry, because that populates the local IDB definitions.
+  await clearBackgroundServiceCache();
 }
 
 function useRefresh(options?: {
