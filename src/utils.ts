@@ -146,7 +146,9 @@ export function isPrimitive(val: unknown): val is Primitive {
 }
 
 export function removeUndefined(obj: unknown): unknown {
-  if (obj === undefined) {
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null
+  // `typeof null === "object"`, so have to check for it before the "object" check below
+  if (obj == null) {
     return null;
   }
 

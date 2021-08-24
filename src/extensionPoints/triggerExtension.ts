@@ -54,7 +54,13 @@ export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
 };
 
-export type Trigger = "load" | "click" | "dblclick" | "mouseover" | "appear";
+export type Trigger =
+  | "load"
+  | "click"
+  | "dblclick"
+  | "mouseover"
+  | "appear"
+  | "change";
 
 export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig> {
   abstract get trigger(): Trigger;

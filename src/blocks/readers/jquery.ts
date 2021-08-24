@@ -16,7 +16,6 @@
  */
 
 import { ReaderOutput } from "@/core";
-import { registerFactory } from "@/blocks/readers/factory";
 import { asyncMapValues, sleep } from "@/utils";
 import { BusinessError, MultipleElementsFoundError } from "@/errors";
 
@@ -223,7 +222,7 @@ async function select(
   }
 }
 
-async function read(
+export async function readJQuery(
   reader: JQueryConfig,
   root: HTMLElement | Document
 ): Promise<ReaderOutput> {
@@ -235,5 +234,3 @@ async function read(
 
   return asyncMapValues(selectors, async (selector) => select(selector, $root));
 }
-
-registerFactory("jquery", read);

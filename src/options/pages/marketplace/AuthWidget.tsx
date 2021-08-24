@@ -72,13 +72,13 @@ const AuthWidget: React.FunctionComponent<{
         })
       );
 
-      // Need to write the current options to storage so the locator can read them during checks
+      // Need to write the current Redux options to storage so the locator can read them during checks
       await persistor.flush();
 
       // Also refresh the service locator on the background so the new auth works immediately
       await refreshBackgroundLocator({ remote: false, local: true });
 
-      notify.success(`Added configuration for integration`);
+      notify.success("Added configuration for integration");
 
       // Don't need to track changes locally via setCreated; the new auth automatically flows
       // through via the redux selectors
