@@ -16,6 +16,7 @@
  */
 
 import yaml from "yaml";
+import { sortBy, fromPairs } from "lodash";
 
 export const objToYaml = (obj: Record<string, unknown>) => {
   const yamlDocument = new yaml.Document();
@@ -23,41 +24,23 @@ export const objToYaml = (obj: Record<string, unknown>) => {
   return yamlDocument.toString();
 };
 
-export const brickToYaml = (brickConfig: Record<string, unknown>) => {
-  // Ordering some of the root keys
-  const {
-    apiVersion,
-    kind,
-    metadata,
-    inputSchema,
-    outputSchema,
-    ...rest
-  } = brickConfig;
+function orderKeys<T extends Record<string, unknown>>(
+  obj: T,
+  keys: Array<keyof T>
+): T {
+  const lookup = new Map(keys.map((key, index) => [key, index]));
+  return fromPairs(
+    sortBy(Object.entries(obj), ([key]) => lookup.get(key) ?? keys.length)
+  ) as T;
+}
 
-  const configWithSortedKeys: Record<string, unknown> = {};
-
-  if (typeof apiVersion !== "undefined") {
-    configWithSortedKeys.apiVersion = apiVersion;
-  }
-
-  if (typeof kind !== "undefined") {
-    configWithSortedKeys.kind = kind;
-  }
-
-  if (typeof metadata !== "undefined") {
-    configWithSortedKeys.metadata = metadata;
-  }
-
-  if (typeof inputSchema !== "undefined") {
-    configWithSortedKeys.inputSchema = inputSchema;
-  }
-
-  if (typeof outputSchema !== "undefined") {
-    configWithSortedKeys.outputSchema = outputSchema;
-  }
-
-  return objToYaml({
-    ...configWithSortedKeys,
-    ...rest,
-  });
-};
+export const brickToYaml = (brickConfig: Record<string, unknown>) =>
+  objToYaml(
+    orderKeys(brickConfig, [
+      "apiVersion",
+      "kind",
+      "metadata",
+      "inputSchema",
+      "outputSchema",
+    ])
+  );
