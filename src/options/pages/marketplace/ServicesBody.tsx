@@ -36,7 +36,7 @@ interface OwnProps {
 }
 
 const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const [authOptions] = useAuthOptions();
+  const [authOptions, refreshAuthOptions] = useAuthOptions();
 
   const [field] = useField<ServiceAuthPair[]>("services");
 
@@ -96,6 +96,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                   authOptions={authOptions}
                   serviceId={serviceId}
                   name={[field.name, index, "config"].join(".")}
+                  onRefresh={refreshAuthOptions}
                 />
               </td>
             </tr>
