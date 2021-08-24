@@ -1,0 +1,171 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`it renders by @testing-library/react 1`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <h3 />
+      <code
+        class="p-0"
+      />
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Description
+      </div>
+      <div
+        class="py-2"
+      >
+        <span
+          class="text-muted"
+        >
+          No description provided
+        </span>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Input Schema
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          No input schema provided
+        </div>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Output Schema
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          No output schema provided
+        </div>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Definition
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          Loading...
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`it renders by @testing-library/react 2`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <h3 />
+      <code
+        class="p-0"
+      />
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Description
+      </div>
+      <div
+        class="py-2"
+      >
+        <span
+          class="text-muted"
+        >
+          No description provided
+        </span>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Input Schema
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          No input schema provided
+        </div>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Output Schema
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          No output schema provided
+        </div>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Definition
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          Definition not available for built-in bricks
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
