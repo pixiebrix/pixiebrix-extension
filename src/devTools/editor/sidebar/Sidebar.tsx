@@ -39,6 +39,7 @@ import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
 import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
+import { Except } from "type-fest";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -61,7 +62,7 @@ const DropdownEntry: React.FunctionComponent<{
 );
 
 const Sidebar: React.FunctionComponent<
-  Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
+  Except<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
     installed: IExtension[];
   }
 > = ({ inserting, activeElement, installed, elements }) => {
@@ -79,21 +80,21 @@ const Sidebar: React.FunctionComponent<
     unavailableCount,
   } = useInstallState(installed, elements);
 
-  const elementHash = hash(sortBy(elements.map((x) => x.uuid)));
+  const elementHash = hash(sortBy(elements.map((formState) => formState.uuid)));
   const entries = useMemo(
     () => {
-      const elementIds = new Set(elements.map((x) => x.uuid));
+      const elementIds = new Set(elements.map((formState) => formState.uuid));
       const entries = [
         ...elements.filter(
-          (x) =>
+          (formState) =>
             showAll ||
-            availableDynamicIds?.has(x.uuid) ||
-            activeElement === x.uuid
+            availableDynamicIds?.has(formState.uuid) ||
+            activeElement === formState.uuid
         ),
         ...installed.filter(
-          (x) =>
-            !elementIds.has(x.id) &&
-            (showAll || installedIds?.includes(x.extensionPointId))
+          (extension) =>
+            !elementIds.has(extension.id) &&
+            (showAll || installedIds?.includes(extension.extensionPointId))
         ),
       ];
       return sortBy(entries, (x) => x.label);
