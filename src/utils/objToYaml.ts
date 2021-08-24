@@ -17,8 +17,47 @@
 
 import yaml from "yaml";
 
-export const objToYaml = (obj: any) => {
+export const objToYaml = (obj: Record<string, unknown>) => {
   const yamlDocument = new yaml.Document();
   yamlDocument.contents = obj;
   return yamlDocument.toString();
+};
+
+export const brickToYaml = (brickConfig: Record<string, unknown>) => {
+  // Ordering some of the root keys
+  const {
+    apiVersion,
+    kind,
+    metadata,
+    inputSchema,
+    outputSchema,
+    ...rest
+  } = brickConfig;
+
+  const configWithSortedKeys: Record<string, unknown> = {};
+
+  if (typeof apiVersion !== "undefined") {
+    configWithSortedKeys.apiVersion = apiVersion;
+  }
+
+  if (typeof kind !== "undefined") {
+    configWithSortedKeys.kind = kind;
+  }
+
+  if (typeof metadata !== "undefined") {
+    configWithSortedKeys.metadata = metadata;
+  }
+
+  if (typeof inputSchema !== "undefined") {
+    configWithSortedKeys.inputSchema = inputSchema;
+  }
+
+  if (typeof outputSchema !== "undefined") {
+    configWithSortedKeys.outputSchema = outputSchema;
+  }
+
+  return objToYaml({
+    ...configWithSortedKeys,
+    ...rest,
+  });
 };

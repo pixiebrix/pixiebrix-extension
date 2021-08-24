@@ -27,7 +27,7 @@ import useUserAction from "@/hooks/useUserAction";
 import { makeArgumentYaml, DetailSection } from "./BrickReference";
 import { ReferenceEntry } from "./referenceEntryType";
 import * as localRegistry from "@/registry/localRegistry";
-import { objToYaml } from "@/utils/objToYaml";
+import { brickToYaml } from "@/utils/objToYaml";
 import { Schema } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 
@@ -51,7 +51,7 @@ export const BrickDetail: React.FunctionComponent<{
 
   const [brickConfig, isBrickConfigLoading] = useAsyncState(async () => {
     const brickPackage = await localRegistry.find(brick.id);
-    return brickPackage?.config ? objToYaml(brickPackage.config) : null;
+    return brickPackage?.config ? brickToYaml(brickPackage.config) : null;
   }, [brick]);
 
   return (
@@ -88,12 +88,12 @@ export const BrickDetail: React.FunctionComponent<{
         )}
       </DetailSection>
 
-      <DetailSection title="Configuration">
+      <DetailSection title="Definition">
         {isBrickConfigLoading ? (
           <div className="text-muted">Loading...</div>
         ) : isEmpty(brickConfig) ? (
           <div className="text-muted">
-            Configuration not available for built-in bricks
+            Definition not available for built-in bricks
           </div>
         ) : (
           <AceEditor value={brickConfig} mode="yaml" theme="chrome" readOnly />
