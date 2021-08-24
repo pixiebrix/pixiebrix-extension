@@ -28,6 +28,8 @@ import useFetch from "@/hooks/useFetch";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 import AuthWidget from "@/options/pages/marketplace/AuthWidget";
 import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
+import { useField } from "formik";
+import { ServiceAuthPair } from "@/core";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -35,6 +37,8 @@ interface OwnProps {
 
 const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [authOptions] = useAuthOptions();
+
+  const [field] = useField<ServiceAuthPair[]>("services");
 
   const selected = useSelectedExtensions(blueprint.extensionPoints);
 
@@ -79,7 +83,7 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           </tr>
         </thead>
         <tbody>
-          {serviceIds.map((serviceId) => (
+          {field.value.map(({ id: serviceId }, index) => (
             <tr key={serviceId}>
               <td>
                 <ServiceDescriptor
@@ -88,7 +92,11 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
                 />
               </td>
               <td>
-                <AuthWidget authOptions={authOptions} serviceId={serviceId} />
+                <AuthWidget
+                  authOptions={authOptions}
+                  serviceId={serviceId}
+                  name={[field.name, index, "config"].join(".")}
+                />
               </td>
             </tr>
           ))}

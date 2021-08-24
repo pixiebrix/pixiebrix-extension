@@ -97,8 +97,10 @@ function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
       }
     });
     const initialValues: WizardValues = {
-      extensions: Object.fromEntries(extensionPoints.map((x, i) => [i, true])),
-      services: Object.fromEntries(serviceIds.map((x) => [x, undefined])),
+      extensions: Object.fromEntries(
+        extensionPoints.map((x, index) => [index, true])
+      ),
+      services: serviceIds.map((id) => ({ id, config: undefined })),
       optionsArgs: mapValues(
         blueprint.options?.schema ?? {},
         (x) => (x as any).default

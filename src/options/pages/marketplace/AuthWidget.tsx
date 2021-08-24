@@ -38,13 +38,11 @@ import useNotifications from "@/hooks/useNotifications";
 const { updateServiceConfig } = servicesSlice.actions;
 
 const AuthWidget: React.FunctionComponent<{
-  name?: string;
+  name: string;
   authOptions: AuthOption[];
   serviceId: string;
 }> = ({ name, serviceId, authOptions }) => {
-  const fieldName = name ?? `services.${serviceId}`;
-
-  const helpers = useField<UUID>(fieldName)[2];
+  const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
   const notify = useNotifications();
 
@@ -140,7 +138,7 @@ const AuthWidget: React.FunctionComponent<{
         {options.length > 0 && (
           <div style={{ minWidth: "300px" }} className="mr-2">
             <ServiceAuthSelector
-              name={fieldName}
+              name={name}
               serviceId={serviceId}
               authOptions={options}
               CustomMenuList={CustomMenuList}

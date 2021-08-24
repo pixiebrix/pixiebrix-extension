@@ -16,14 +16,22 @@
  */
 
 import { Primitive } from "type-fest";
-import { RegistryId, UUID } from "@/core";
+import { ServiceAuthPair } from "@/core";
 
-export interface WizardValues {
-  extensions: Record<string, boolean>;
+export type WizardValues = {
   /**
-   * Mapping from service id to auth id
+   * Mapping from extension index to whether or not it's toggled.
    */
-  services: Record<RegistryId, UUID>;
+  extensions: Record<string, boolean>;
+
+  // Use array instead of Record<RegistryId, UUID> because `RegistryId`s can contain periods which throw off Formik
+  /**
+   * Mapping from service id to auth id.
+   */
+  services: ServiceAuthPair[];
+
+  // XXX: optionsArgs can contain periods, which will throw off formik
   optionsArgs: Record<string, Primitive>;
+
   grantPermissions: boolean;
-}
+};

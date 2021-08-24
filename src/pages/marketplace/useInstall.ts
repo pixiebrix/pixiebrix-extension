@@ -23,13 +23,12 @@ import { useCallback } from "react";
 import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
-import { pickBy, uniq } from "lodash";
+import { fromPairs, uniq } from "lodash";
 import { containsPermissions } from "@/utils/permissions";
 import { collectPermissions } from "@/permissions";
 import { reactivate } from "@/background/navigation";
 import { push } from "connected-react-router";
 import { optionsSlice } from "@/options/slices";
-import { RegistryId, UUID } from "@/core";
 import { resolveRecipe } from "@/registry/internal";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
@@ -55,21 +54,13 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           .flatMap((x) => Object.values(x.services ?? {}))
           .filter((x) => x !== PIXIEBRIX_SERVICE_ID)
       );
-      const missingServiceIds = Object.keys(
-        pickBy(
-          values.services,
-          // `pickBy` not reasoning about the type of the keys
-          (v, k: RegistryId) => requiredServiceIds.includes(k) && v == null
+      const missingServiceIds = values.services
+        .filter(
+          ({ id, config }) => requiredServiceIds.includes(id) && config == null
         )
-      );
+        .map((x) => x.id);
 
-      const configuredAuths = Object.entries(values.services)
-        .filter(([, config]) => config)
-        // We lose type information when using Object.entries
-        .map(([id, config]) => ({
-          id: id as RegistryId,
-          config: config as UUID,
-        }));
+      const configuredAuths = values.services.filter(({ config }) => config);
 
       const enabled = await containsPermissions(
         await collectPermissions(
@@ -106,7 +97,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           installRecipe({
             recipe,
             extensionPoints: selected,
-            services: values.services,
+            services: fromPairs(
+              values.services.map(({ id, config }) => [id, config])
+            ),
             optionsArgs: values.optionsArgs,
           })
         );
