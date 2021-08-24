@@ -51,7 +51,7 @@ export class RemoteMethod extends Transformer {
       params: {
         type: "object",
         description: "Search/query params",
-        additionalProperties: { type: "string" },
+        additionalProperties: { type: ["string", "number", "boolean"] },
       },
       headers: {
         type: "object",
