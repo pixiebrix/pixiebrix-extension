@@ -36,7 +36,7 @@ import cx from "classnames";
 import "./BrickReference.scss";
 import GridLoader from "react-spinners/GridLoader";
 import { BrickDetail } from "./BrickDetail";
-import { ReferenceEntry } from "./referenceEntryType";
+import { ReferenceEntry } from "./brickEditorTypes";
 
 export const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
@@ -90,7 +90,7 @@ const BlockResult: React.FunctionComponent<{
   active?: boolean;
   onSelect: () => void;
 }> = ({ block, onSelect, active }) => {
-  const [type, setType] = useState<BlockType | null>(null);
+  const [type, setType] = useState<BlockType>(null);
 
   useAsyncEffect(async () => {
     setType(await getType(block));

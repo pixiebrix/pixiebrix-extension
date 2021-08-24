@@ -41,7 +41,7 @@ import { Brick } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import useNotifications from "@/hooks/useNotifications";
-import { ReferenceEntry } from "./referenceEntryType";
+import { ReferenceEntry } from "./brickEditorTypes";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;

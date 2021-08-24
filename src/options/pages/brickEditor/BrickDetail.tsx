@@ -25,7 +25,7 @@ import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import { makeArgumentYaml, DetailSection } from "./BrickReference";
-import { ReferenceEntry } from "./referenceEntryType";
+import { ReferenceEntry } from "./brickEditorTypes";
 import * as localRegistry from "@/registry/localRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { Schema } from "@/core";
