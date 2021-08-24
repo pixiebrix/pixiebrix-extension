@@ -1,6 +1,284 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`it renders by @testing-library/react 1`] = `
+exports[`renders @pixiebrix/table brick 1`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <h3>
+        A customizable table
+      </h3>
+      <code
+        class="p-0"
+      >
+        @pixiebrix/table
+      </code>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Description
+      </div>
+      <div
+        class="py-2"
+      >
+        A customizable table that displays a list of values
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Input Schema
+      </div>
+      <div
+        class="py-2"
+      >
+        <div>
+          <button
+            class="p-0 btn btn-link"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-clipboard fa-w-12 "
+              data-icon="clipboard"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 384 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M384 112v352c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h80c0-35.29 28.71-64 64-64s64 28.71 64 64h80c26.51 0 48 21.49 48 48zM192 40c-13.255 0-24 10.745-24 24s10.745 24 24 24 24-10.745 24-24-10.745-24-24-24m96 114v-20a6 6 0 0 0-6-6H102a6 6 0 0 0-6 6v20a6 6 0 0 0 6 6h180a6 6 0 0 0 6-6z"
+                fill="currentColor"
+              />
+            </svg>
+             Copy Argument YAML
+          </button>
+          <div
+            class="SchemaTree list-group list-group-flush"
+          >
+            <div
+              class="list-group-item"
+            >
+              <div
+                style="cursor: pointer;"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-caret-right fa-w-6 "
+                  data-icon="caret-right"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 192 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 
+                <span>
+                  columns
+                </span>
+                <span
+                  class="type"
+                >
+                  : array of objects
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Output Schema
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          No output schema provided
+        </div>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Definition
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          Loading...
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`renders @pixiebrix/table brick 2`] = `
+<DocumentFragment>
+  <div>
+    <div>
+      <h3>
+        A customizable table
+      </h3>
+      <code
+        class="p-0"
+      >
+        @pixiebrix/table
+      </code>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Description
+      </div>
+      <div
+        class="py-2"
+      >
+        A customizable table that displays a list of values
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Input Schema
+      </div>
+      <div
+        class="py-2"
+      >
+        <div>
+          <button
+            class="p-0 btn btn-link"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="svg-inline--fa fa-clipboard fa-w-12 "
+              data-icon="clipboard"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 384 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M384 112v352c0 26.51-21.49 48-48 48H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h80c0-35.29 28.71-64 64-64s64 28.71 64 64h80c26.51 0 48 21.49 48 48zM192 40c-13.255 0-24 10.745-24 24s10.745 24 24 24 24-10.745 24-24-10.745-24-24-24m96 114v-20a6 6 0 0 0-6-6H102a6 6 0 0 0-6 6v20a6 6 0 0 0 6 6h180a6 6 0 0 0 6-6z"
+                fill="currentColor"
+              />
+            </svg>
+             Copy Argument YAML
+          </button>
+          <div
+            class="SchemaTree list-group list-group-flush"
+          >
+            <div
+              class="list-group-item"
+            >
+              <div
+                style="cursor: pointer;"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="svg-inline--fa fa-caret-right fa-w-6 "
+                  data-icon="caret-right"
+                  data-prefix="fas"
+                  focusable="false"
+                  role="img"
+                  viewBox="0 0 192 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                    fill="currentColor"
+                  />
+                </svg>
+                 
+                <span>
+                  columns
+                </span>
+                <span
+                  class="type"
+                >
+                  : array of objects
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Output Schema
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          No output schema provided
+        </div>
+      </div>
+    </div>
+    <div
+      class="my-4"
+    >
+      <div
+        class="font-weight-bold"
+      >
+        Definition
+      </div>
+      <div
+        class="py-2"
+      >
+        <div
+          class="text-muted"
+        >
+          Definition not available for built-in bricks
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`renders empty brick 1`] = `
 <DocumentFragment>
   <div>
     <div>
@@ -85,7 +363,7 @@ exports[`it renders by @testing-library/react 1`] = `
 </DocumentFragment>
 `;
 
-exports[`it renders by @testing-library/react 2`] = `
+exports[`renders empty brick 2`] = `
 <DocumentFragment>
   <div>
     <div>
