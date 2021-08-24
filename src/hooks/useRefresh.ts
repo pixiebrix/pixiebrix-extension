@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { useToasts } from "react-toast-notifications";
 import { useAsyncEffect } from "use-async-effect";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
@@ -23,9 +22,15 @@ import { stubTrue } from "lodash";
 import { refresh as refreshLocator } from "@/background/locator";
 import { useCallback, useState } from "react";
 import { getErrorMessage } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
 
+/**
+ * Refresh registries for the current context.
+ *
+ * NOTE: calling this method does not update the locator/service definitions for the background page unless this method
+ * is called from the background page.
+ */
 export async function refreshRegistries(): Promise<void> {
-  // TODO: clarify in which contexts (e.g., current page, the background, etc.) this method refreshes the registries in
   console.debug("Refreshing bricks from the server");
   await Promise.all([
     extensionPointRegistry.fetch(),
@@ -35,9 +40,16 @@ export async function refreshRegistries(): Promise<void> {
   ]);
 }
 
-function useRefresh(refreshOnMount = true): [boolean, () => Promise<void>] {
+function useRefresh(options?: {
+  refreshOnMount: boolean;
+}): [boolean, () => Promise<void>] {
+  const { refreshOnMount } = {
+    refreshOnMount: true,
+    ...options,
+  };
+
   const [loaded, setLoaded] = useState(false);
-  const { addToast } = useToasts();
+  const notify = useNotifications();
 
   const refresh = useCallback(
     async (isMounted = stubTrue) => {
@@ -49,11 +61,10 @@ function useRefresh(refreshOnMount = true): [boolean, () => Promise<void>] {
           return;
         }
 
-        addToast(
+        notify.error(
           `Error refreshing bricks from server: ${getErrorMessage(error)}`,
           {
-            appearance: "error",
-            autoDismiss: true,
+            error,
           }
         );
       } finally {
@@ -62,7 +73,7 @@ function useRefresh(refreshOnMount = true): [boolean, () => Promise<void>] {
         }
       }
     },
-    [addToast, setLoaded]
+    [notify, setLoaded]
   );
 
   useAsyncEffect(
@@ -71,7 +82,8 @@ function useRefresh(refreshOnMount = true): [boolean, () => Promise<void>] {
         await refresh(isMounted);
       }
     },
-    [refresh]
+    // Dependencies intentionally left blank -- only running on the initial mount
+    []
   );
 
   return [loaded, refresh];

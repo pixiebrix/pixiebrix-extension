@@ -141,6 +141,9 @@ export async function uninstall(extensionId: UUID): Promise<boolean> {
   }
 }
 
+/**
+ * Uninstall context menu and return whether or not the context menu was uninstalled.
+ */
 export const uninstallContextMenu = liftBackground(
   "UNINSTALL_CONTEXT_MENU",
   async ({ extensionId }: { extensionId: UUID }) => uninstall(extensionId)
