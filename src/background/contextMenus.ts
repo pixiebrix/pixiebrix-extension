@@ -20,6 +20,7 @@ import { liftBackground } from "@/background/protocol";
 import { browser, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
+import { noop } from "lodash";
 import { handleMenuAction } from "@/contentScript/contextMenus";
 import { showNotification } from "@/contentScript/notify";
 import { ensureContentScript } from "@/background/util";
@@ -188,11 +189,7 @@ export const ensureContextMenu = liftBackground(
         }
       } else {
         // Just to be safe if our `extensionMenuItems` bookkeeping is off, remove any stale menu item
-        try {
-          await browser.contextMenus.remove(expectedMenuId);
-        } catch {
-          // NOP - might throw error if it doesn't exist
-        }
+        await browser.contextMenus.remove(expectedMenuId).catch(noop);
       }
 
       // The update failed, or this is a new context menu
@@ -223,6 +220,8 @@ export const ensureContextMenu = liftBackground(
       if (
         getErrorMessage(error).includes("Cannot create item with duplicate id")
       ) {
+        // Likely caused by a concurrent update. In practice, our `pendingRegistration` set and `extensionMenuItems`
+        // should prevent this from happening
         console.debug("Error registering context menu item", { error });
         return;
       }
