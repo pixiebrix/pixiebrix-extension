@@ -33,6 +33,7 @@ type ExtensionId = UUID;
 type MenuItemId = number | string;
 
 const extensionMenuItems = new Map<ExtensionId, MenuItemId>();
+const pendingRegistration = new Set<ExtensionId>();
 
 const MENU_PREFIX = "pixiebrix-";
 const CONTEXT_SCRIPT_INSTALL_MS = 1000;
@@ -156,7 +157,17 @@ export const ensureContextMenu = liftBackground(
       throw new Error("extensionId is required");
     }
 
-    const createProperties: Menus.CreateCreatePropertiesType = {
+    // Handle the thundering herd of re-registrations when a contentScript.reactivate is broadcast
+    if (pendingRegistration.has(extensionId)) {
+      console.debug("contextMenu registration pending for %s", extensionId);
+
+      // Is it OK to return immediately? Or do we need to track the common promise that all callers should see?
+      return;
+    }
+
+    pendingRegistration.add(extensionId);
+
+    const updateProperties: Menus.UpdateUpdatePropertiesType = {
       type: "normal",
       title,
       contexts,
@@ -170,13 +181,13 @@ export const ensureContextMenu = liftBackground(
 
       if (menuId) {
         try {
-          await browser.contextMenus.update(menuId, createProperties);
+          await browser.contextMenus.update(menuId, updateProperties);
           return;
         } catch (error: unknown) {
           console.debug("Cannot update context menu", { error });
         }
       } else {
-        // Just to be safe if our `extensionMenuItems` book keeping is off, remove any stale menu item
+        // Just to be safe if our `extensionMenuItems` bookkeeping is off, remove any stale menu item
         try {
           await browser.contextMenus.remove(expectedMenuId);
         } catch {
@@ -187,16 +198,21 @@ export const ensureContextMenu = liftBackground(
       // The update failed, or this is a new context menu
       extensionMenuItems.delete(extensionId);
 
-      // The types of browser.contextMenus.create might be wrong? Unlike update it takes a callback instead of returning
-      // a callback. In either case we should get back a menu id here
+      // The types of browser.contextMenus.create are wacky. I verified on Chrome that the method does take a callback
+      // even when using the browser polyfill
       let createdMenuId: string | number;
-      menuId = await new Promise((resolve) => {
+      menuId = await new Promise((resolve, reject) => {
+        // `browser.contextMenus.create` returns immediately with the assigned menu id
         createdMenuId = browser.contextMenus.create(
           {
-            ...createProperties,
+            ...updateProperties,
             id: makeMenuId(extensionId),
           },
           () => {
+            if (browser.runtime.lastError) {
+              reject(new Error(browser.runtime.lastError.message));
+            }
+
             resolve(createdMenuId);
           }
         );
@@ -204,8 +220,17 @@ export const ensureContextMenu = liftBackground(
 
       extensionMenuItems.set(extensionId, menuId);
     } catch (error: unknown) {
-      console.error(`Error registering context menu item`, error);
+      if (
+        getErrorMessage(error).includes("Cannot create item with duplicate id")
+      ) {
+        console.debug("Error registering context menu item", { error });
+        return;
+      }
+
+      console.error("Error registering context menu item", { error });
       throw error;
+    } finally {
+      pendingRegistration.delete(extensionId);
     }
   }
 );
