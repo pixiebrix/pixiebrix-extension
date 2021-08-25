@@ -50,7 +50,7 @@ export const BlockResult: React.FunctionComponent<{
           <div className={styles.ellipsis}>{block.name}</div>
           <code className={cx("small", styles.id)}>{block.id}</code>
         </div>
-        <div className="flex-grow-0 BlockResult__badges">
+        <div className="flex-grow-0">
           <OfficialBadge id={block.id} />
         </div>
       </div>
