@@ -24,7 +24,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
-import { makeArgumentYaml } from "./makeArgumentYaml";
 import { DetailSection } from "./DetailSection";
 import { ReferenceEntry } from "./brickEditorTypes";
 import * as localRegistry from "@/registry/localRegistry";
@@ -32,6 +31,39 @@ import { brickToYaml } from "@/utils/objToYaml";
 import { Schema } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import styles from "./BrickDetail.module.scss";
+
+function makeArgumentYaml(schema: Schema): string {
+  let result = "";
+  if (schema.type !== "object") {
+    return result;
+  }
+
+  for (const [prop, value] of Object.entries(schema.properties)) {
+    if (typeof value === "boolean") {
+      continue;
+    }
+
+    result += `# ${prop}: ${value.type} (${
+      schema.required.includes(prop) ? "required" : "optional"
+    })\n`;
+    if (value.description) {
+      for (const line of value.description.split("\n")) {
+        result += `# ${line} \n`;
+      }
+    }
+
+    if (value.enum) {
+      result += "# valid values:\n";
+      for (const line of value.enum) {
+        result += `# - ${line} \n`;
+      }
+    }
+
+    result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
+  }
+
+  return result;
+}
 
 export const BrickDetail: React.FunctionComponent<{
   brick: ReferenceEntry;
