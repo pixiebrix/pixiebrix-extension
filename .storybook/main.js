@@ -58,7 +58,33 @@ module.exports = {
         },
       ],
     });
+    config.module.rules.push({
+      test: /\.ya?ml$/,
+      type: "json",
+      use: "yaml-loader",
+    });
 
+    // config.plugins.push(
+    //   new webpack.EnvironmentPlugin({
+    //     // If not found, these values will be used as defaults
+    //     DEBUG: true,
+    //     REDUX_DEV_TOOLS: true,
+    //     NPM_PACKAGE_VERSION: process.env.npm_package_version,
+    //     ENVIRONMENT: process.env.ENVIRONMENT ?? "development",
+
+    //     // If not found, "undefined" will cause the build to fail
+    //     SERVICE_URL: undefined,
+    //     SOURCE_VERSION: undefined,
+    //     CHROME_EXTENSION_ID: undefined,
+    //     ROLLBAR_PUBLIC_PATH: undefined,
+
+    //     // If not found, "null" will leave the ENV unset in the bundle
+    //     ROLLBAR_BROWSER_ACCESS_TOKEN: null,
+    //     SUPPORT_WIDGET_ID: null,
+    //     GOOGLE_API_KEY: null,
+    //     GOOGLE_APP_ID: null,
+    //   })
+    // );
     config.plugins.push(new NodePolyfillPlugin());
     config.plugins.push(
       new webpack.ProvidePlugin({
