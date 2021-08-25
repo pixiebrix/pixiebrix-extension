@@ -17,13 +17,12 @@
 
 import React, { useState } from "react";
 import { Badge, ListGroup } from "react-bootstrap";
-import { BlockType, getType } from "@/blocks/util";
+import { BlockType, getType, isOfficial } from "@/blocks/util";
 import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
 import { ReferenceEntry } from "./brickEditorTypes";
-import { isOfficial } from "./isOfficial";
 import styles from "./BlockResult.module.scss";
 
 export const BlockResult: React.FunctionComponent<{
@@ -51,7 +50,7 @@ export const BlockResult: React.FunctionComponent<{
           <code className={cx("small", styles.id)}>{block.id}</code>
         </div>
         <div className="flex-grow-0 BlockResult__badges">
-          {isOfficial(block) && <Badge variant="info">Official</Badge>}
+          {isOfficial(block.id) && <Badge variant="info">Official</Badge>}
         </div>
       </div>
     </ListGroup.Item>

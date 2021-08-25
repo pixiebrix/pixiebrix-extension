@@ -32,8 +32,8 @@ import GridLoader from "react-spinners/GridLoader";
 import { BrickDetail } from "./BrickDetail";
 import { ReferenceEntry } from "./brickEditorTypes";
 import { BlockResult } from "./BlockResult";
-import { isOfficial } from "./isOfficial";
 import cx from "classnames";
+import { isOfficial } from "@/blocks/util";
 
 export const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
@@ -89,7 +89,7 @@ const BrickReference: React.FunctionComponent<{
     () =>
       sortBy(
         blocks ?? [],
-        (x) => (isOfficial(x) ? 0 : 1),
+        (x) => (isOfficial(x.id) ? 0 : 1),
         (x) => x.name
       ),
     [blocks]

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, IService } from "@/core";
+import { IBlock, IService, RegistryId } from "@/core";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 
@@ -43,4 +43,8 @@ export async function getType(
   }
 
   return null;
+}
+
+export function isOfficial(id: RegistryId): boolean {
+  return id.startsWith("@pixiebrix/");
 }

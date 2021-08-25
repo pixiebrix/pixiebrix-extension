@@ -42,7 +42,7 @@ import {
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { BlockType, getType } from "@/blocks/util";
+import { BlockType, getType, isOfficial } from "@/blocks/util";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
@@ -115,9 +115,7 @@ const BlockResult: React.FunctionComponent<{
           <div className="d-flex BlockModal__title">
             <div className="flex-grow-1">{block.name}</div>
             <div className="flex-grow-0 BlockModal__badges">
-              {block.id.startsWith("@pixiebrix/") && (
-                <Badge variant="info">Official</Badge>
-              )}
+              {isOfficial(block.id) && <Badge variant="info">Official</Badge>}
             </div>
           </div>
           <div className="BlockModal__id">
