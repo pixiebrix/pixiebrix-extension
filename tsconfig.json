@@ -1,20 +1,22 @@
 {
+  // You can see the full details at https://github.com/sindresorhus/tsconfig/blob/main/tsconfig.json
+  // Note: `strict: true` enables many flags that aren’t explicitly listed in that file
+  "extends": "@sindresorhus/tsconfig/tsconfig.json",
   "compilerOptions": {
     "sourceMap": true,
-    "noImplicitAny": true,
-    "module": "es2020",
     "target": "es2020",
-    "jsx": "react",
-    "allowJs": false,
-    "strictBindCallApply": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "Node",
-    "noUnusedLocals": true,
-    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "downlevelIteration": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "baseUrl": ".",
+
+    // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
+    "strictNullChecks": false,
+    "strictFunctionTypes": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": false,
+    "noUnusedParameters": false,
+    "useDefineForClassFields": false,
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
