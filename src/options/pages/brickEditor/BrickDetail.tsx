@@ -30,6 +30,7 @@ import * as localRegistry from "@/registry/localRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 import { Schema } from "@/core";
 import { useAsyncState } from "@/hooks/common";
+import styles from "./BrickDetail.module.scss";
 
 export const BrickDetail: React.FunctionComponent<{
   brick: ReferenceEntry;
@@ -55,7 +56,7 @@ export const BrickDetail: React.FunctionComponent<{
   }, [brick]);
 
   return (
-    <div>
+    <div className={styles.root}>
       <div>
         <h3>{brick.name}</h3>
         <code className="p-0">{brick.id}</code>
@@ -96,7 +97,13 @@ export const BrickDetail: React.FunctionComponent<{
             Definition not available for built-in bricks
           </div>
         ) : (
-          <AceEditor value={brickConfig} mode="yaml" theme="chrome" readOnly />
+          <AceEditor
+            value={brickConfig}
+            mode="yaml"
+            theme="chrome"
+            width="100%"
+            readOnly
+          />
         )}
       </DetailSection>
     </div>

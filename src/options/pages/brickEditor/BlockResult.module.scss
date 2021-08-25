@@ -15,6 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+.root {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 0;
+  text-align: left;
+
+  &:hover {
+    color: #fff;
+    background-color: #b66dff;
+  }
+
+  &:global(.list-group-item).active {
+    border-color: #e5d3ff;
+    color: black;
+    background-color: #f0e1ff;
+  }
+}
+
 .titleColumn {
   min-width: 0;
   margin-right: 5px;
@@ -29,4 +47,6 @@
 .id {
   @extend .ellipsis;
   display: block;
+  padding-left: 0;
+  padding-right: 0;
 }

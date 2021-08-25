@@ -141,22 +141,22 @@ const BrickReference: React.FunctionComponent<{
               }}
             />
           </InputGroup>
-          <div className={cx("overflow-auto", "h-100", styles.blockResults)}>
-            <ListGroup>
-              {results.map((result) => (
-                <BlockResult
-                  key={result.id}
-                  block={result}
-                  active={selected?.id === result.id}
-                  onSelect={() => {
-                    setSelected(result);
-                  }}
-                />
-              ))}
-            </ListGroup>
-          </div>
+          <ListGroup
+            className={cx("overflow-auto", "h-100", styles.blockResults)}
+          >
+            {results.map((result) => (
+              <BlockResult
+                key={result.id}
+                block={result}
+                active={selected?.id === result.id}
+                onSelect={() => {
+                  setSelected(result);
+                }}
+              />
+            ))}
+          </ListGroup>
         </Col>
-        <Col md={8} className={cx("pt-4", styles.datailColumn)}>
+        <Col md={8} className={cx("pt-4")}>
           {selected ? (
             <BrickDetail brick={selected} />
           ) : (
