@@ -25,7 +25,6 @@ import {
   InputGroup,
   Row,
   Container,
-  Badge,
 } from "react-bootstrap";
 import { sortBy, truncate, unary } from "lodash";
 import { IBlock, IService } from "@/core";
@@ -42,7 +41,7 @@ import {
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { BlockType, getType, isOfficial } from "@/blocks/util";
+import { BlockType, getType } from "@/blocks/util";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
@@ -53,6 +52,7 @@ import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
+import { OfficialBadge } from "../OfficialBadge";
 
 export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
   if ("schema" in block) {
@@ -115,7 +115,7 @@ const BlockResult: React.FunctionComponent<{
           <div className="d-flex BlockModal__title">
             <div className="flex-grow-1">{block.name}</div>
             <div className="flex-grow-0 BlockModal__badges">
-              {isOfficial(block.id) && <Badge variant="info">Official</Badge>}
+              <OfficialBadge id={block.id} />
             </div>
           </div>
           <div className="BlockModal__id">

@@ -16,14 +16,15 @@
  */
 
 import React, { useState } from "react";
-import { Badge, ListGroup } from "react-bootstrap";
-import { BlockType, getType, isOfficial } from "@/blocks/util";
+import { ListGroup } from "react-bootstrap";
+import { BlockType, getType } from "@/blocks/util";
 import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
 import { ReferenceEntry } from "./brickEditorTypes";
 import styles from "./BlockResult.module.scss";
+import { OfficialBadge } from "@/components/OfficialBadge";
 
 export const BlockResult: React.FunctionComponent<{
   block: ReferenceEntry;
@@ -50,7 +51,7 @@ export const BlockResult: React.FunctionComponent<{
           <code className={cx("small", styles.id)}>{block.id}</code>
         </div>
         <div className="flex-grow-0 BlockResult__badges">
-          {isOfficial(block.id) && <Badge variant="info">Official</Badge>}
+          <OfficialBadge id={block.id} />
         </div>
       </div>
     </ListGroup.Item>

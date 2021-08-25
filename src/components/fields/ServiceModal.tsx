@@ -25,7 +25,6 @@ import {
   InputGroup,
   Row,
   Container,
-  Badge,
 } from "react-bootstrap";
 import { sortBy, truncate } from "lodash";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
@@ -35,7 +34,7 @@ import { useDebounce } from "use-debounce";
 import "./BlockModal.scss";
 import { ServiceDefinition } from "@/types/definitions";
 import { ButtonVariant } from "react-bootstrap/types";
-import { isOfficial } from "@/blocks/util";
+import { OfficialBadge } from "../OfficialBadge";
 
 const ServiceResult: React.FunctionComponent<{
   service: ServiceDefinition;
@@ -50,7 +49,7 @@ const ServiceResult: React.FunctionComponent<{
         <div className="d-flex BlockModal__title">
           <div className="flex-grow-1">{metadata.name}</div>
           <div className="flex-grow-0 BlockModal__badges">
-            {isOfficial(metadata.id) && <Badge variant="info">Official</Badge>}
+            <OfficialBadge id={metadata.id} />
           </div>
         </div>
         <div className="BlockModal__id">
