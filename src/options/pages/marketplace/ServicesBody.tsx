@@ -17,7 +17,6 @@
 
 import React, { useMemo } from "react";
 import { useAuthOptions } from "@/options/pages/extensionEditor/ServiceAuthSelector";
-import { uniq } from "lodash";
 import { Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
@@ -46,12 +45,14 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
     "/api/services/"
   );
 
-  const serviceIds = useMemo(
+  const visibleServiceIds = useMemo(
     // The PixieBrix service gets automatically configured, so don't need to show it. If the PixieBrix service is
     // the only service, the wizard won't render the ServicesBody component at all
     () =>
-      uniq(selected.flatMap((x) => Object.values(x.services ?? {}))).filter(
-        (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
+      new Set(
+        selected
+          .flatMap((x) => Object.values(x.services ?? {}))
+          .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
       ),
     [selected]
   );
@@ -83,25 +84,29 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           </tr>
         </thead>
         <tbody>
-          {field.value.map(({ id: serviceId }, index) => (
-            <tr key={serviceId}>
-              <td>
-                <ServiceDescriptor
-                  serviceId={serviceId}
-                  serviceConfigs={serviceConfigs}
-                />
-              </td>
-              <td>
-                <AuthWidget
-                  authOptions={authOptions}
-                  serviceId={serviceId}
-                  name={[field.name, index, "config"].join(".")}
-                  onRefresh={refreshAuthOptions}
-                />
-              </td>
-            </tr>
-          ))}
-          {serviceIds.length === 0 && (
+          {field.value.map(({ id: serviceId }, index) =>
+            // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
+            // consistent with the index in field.value
+            visibleServiceIds.has(serviceId) ? (
+              <tr key={serviceId}>
+                <td>
+                  <ServiceDescriptor
+                    serviceId={serviceId}
+                    serviceConfigs={serviceConfigs}
+                  />
+                </td>
+                <td>
+                  <AuthWidget
+                    authOptions={authOptions}
+                    serviceId={serviceId}
+                    name={[field.name, index, "config"].join(".")}
+                    onRefresh={refreshAuthOptions}
+                  />
+                </td>
+              </tr>
+            ) : null
+          )}
+          {visibleServiceIds.size === 0 && (
             <tr>
               <td colSpan={2}>No services to configure</td>
             </tr>
