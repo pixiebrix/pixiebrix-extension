@@ -16,6 +16,8 @@
  */
 
 const path = require("path");
+const webpack = require("webpack");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const rootDir = path.resolve(__dirname, "../");
 
@@ -56,6 +58,14 @@ module.exports = {
         },
       ],
     });
+
+    config.plugins.push(new NodePolyfillPlugin());
+    config.plugins.push(
+      new webpack.ProvidePlugin({
+        $: "jquery",
+        jQuery: "jquery",
+      })
+    );
 
     return config;
   },
