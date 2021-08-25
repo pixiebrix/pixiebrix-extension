@@ -15,36 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, IService, RegistryId } from "@/core";
+import { isOfficial } from "./util";
+import randomWords from "random-words";
+import { RegistryId } from "@/core";
 
-export type BlockType = "reader" | "effect" | "transform" | "renderer";
-
-export async function getType(
-  block: IBlock | IService
-): Promise<BlockType | null> {
-  if ("inferType" in block) {
-    return (block as any).inferType();
-  }
-
-  if ("read" in block) {
-    return "reader";
-  }
-
-  if ("effect" in block) {
-    return "effect";
-  }
-
-  if ("transform" in block) {
-    return "transform";
-  }
-
-  if ("render" in block) {
-    return "renderer";
-  }
-
-  return null;
-}
-
-export function isOfficial(id: RegistryId): boolean {
-  return id.startsWith("@pixiebrix/");
-}
+describe("isOfficial", () => {
+  test("returns true for an official block", () => {
+    expect(isOfficial("@pixiebrix/api" as RegistryId)).toBeTruthy();
+  });
+  test("returns false for a 3d-party block", () => {
+    expect(isOfficial(randomWords(1)[0] as RegistryId)).toBeFalsy();
+  });
+});

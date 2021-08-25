@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,36 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, IService, RegistryId } from "@/core";
-
-export type BlockType = "reader" | "effect" | "transform" | "renderer";
-
-export async function getType(
-  block: IBlock | IService
-): Promise<BlockType | null> {
-  if ("inferType" in block) {
-    return (block as any).inferType();
+.blockResults {
+  &:global(.list-group) {
+    border-radius: 0;
   }
-
-  if ("read" in block) {
-    return "reader";
-  }
-
-  if ("effect" in block) {
-    return "effect";
-  }
-
-  if ("transform" in block) {
-    return "transform";
-  }
-
-  if ("render" in block) {
-    return "renderer";
-  }
-
-  return null;
-}
-
-export function isOfficial(id: RegistryId): boolean {
-  return id.startsWith("@pixiebrix/");
 }

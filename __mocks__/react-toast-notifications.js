@@ -1,3 +1,6 @@
+/* eslint-disable unicorn/filename-case */
+/* eslint-disable filenames/match-exported */
+
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -13,38 +16,15 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-import { IBlock, IService, RegistryId } from "@/core";
+const reactToastNotificationsmock = jest.createMockFromModule(
+  "react-toast-notifications"
+);
 
-export type BlockType = "reader" | "effect" | "transform" | "renderer";
+export const useToasts = jest.fn(() => ({
+  addToast: jest.fn(),
+}));
 
-export async function getType(
-  block: IBlock | IService
-): Promise<BlockType | null> {
-  if ("inferType" in block) {
-    return (block as any).inferType();
-  }
-
-  if ("read" in block) {
-    return "reader";
-  }
-
-  if ("effect" in block) {
-    return "effect";
-  }
-
-  if ("transform" in block) {
-    return "transform";
-  }
-
-  if ("render" in block) {
-    return "renderer";
-  }
-
-  return null;
-}
-
-export function isOfficial(id: RegistryId): boolean {
-  return id.startsWith("@pixiebrix/");
-}
+export default reactToastNotificationsmock;

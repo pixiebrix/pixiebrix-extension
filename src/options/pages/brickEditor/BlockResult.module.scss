@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,36 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, IService, RegistryId } from "@/core";
+.root {
+  width: 100%;
+  cursor: pointer;
+  border-radius: 0;
+  text-align: left;
 
-export type BlockType = "reader" | "effect" | "transform" | "renderer";
-
-export async function getType(
-  block: IBlock | IService
-): Promise<BlockType | null> {
-  if ("inferType" in block) {
-    return (block as any).inferType();
+  &:hover {
+    color: #fff;
+    background-color: #b66dff;
   }
 
-  if ("read" in block) {
-    return "reader";
+  &:global(.list-group-item).active {
+    border-color: #e5d3ff;
+    color: black;
+    background-color: #f0e1ff;
   }
-
-  if ("effect" in block) {
-    return "effect";
-  }
-
-  if ("transform" in block) {
-    return "transform";
-  }
-
-  if ("render" in block) {
-    return "renderer";
-  }
-
-  return null;
 }
 
-export function isOfficial(id: RegistryId): boolean {
-  return id.startsWith("@pixiebrix/");
+.titleColumn {
+  min-width: 0;
+  margin-right: 5px;
+}
+
+.ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.id {
+  @extend .ellipsis;
+  display: block;
+  padding-left: 0;
+  padding-right: 0;
 }

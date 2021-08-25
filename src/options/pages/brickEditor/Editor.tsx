@@ -31,9 +31,7 @@ import SharingTable from "./Sharing";
 import { sortBy } from "lodash";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext } from "@/core";
-import BrickReference, {
-  ReferenceEntry,
-} from "@/options/pages/brickEditor/BrickReference";
+import BrickReference from "@/options/pages/brickEditor/BrickReference";
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
@@ -43,6 +41,7 @@ import { Brick } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
 import useNotifications from "@/hooks/useNotifications";
+import { ReferenceEntry } from "./brickEditorTypes";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;

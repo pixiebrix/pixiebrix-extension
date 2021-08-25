@@ -15,36 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, IService, RegistryId } from "@/core";
+import React from "react";
+import { render } from "@testing-library/react";
+import { BrickDetail } from "./BrickDetail";
+import { waitForEffect } from "@/testHelpers";
+import { TableRenderer } from "@/blocks/renderers/table";
+import { ReferenceEntry } from "./brickEditorTypes";
 
-export type BlockType = "reader" | "effect" | "transform" | "renderer";
-
-export async function getType(
-  block: IBlock | IService
-): Promise<BlockType | null> {
-  if ("inferType" in block) {
-    return (block as any).inferType();
-  }
-
-  if ("read" in block) {
-    return "reader";
-  }
-
-  if ("effect" in block) {
-    return "effect";
-  }
-
-  if ("transform" in block) {
-    return "transform";
-  }
-
-  if ("render" in block) {
-    return "renderer";
-  }
-
-  return null;
-}
-
-export function isOfficial(id: RegistryId): boolean {
-  return id.startsWith("@pixiebrix/");
-}
+test.each([
+  ["empty", {}],
+  ["@pixiebrix/table", new TableRenderer()],
+])("renders %s brick", async (brickName: string, brick: ReferenceEntry) => {
+  const rendered = render(<BrickDetail brick={brick} />);
+  expect(rendered.asFragment()).toMatchSnapshot();
+  await waitForEffect();
+  expect(rendered.asFragment()).toMatchSnapshot();
+});

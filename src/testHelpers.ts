@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,30 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.BlockResults.list-group {
-  border-radius: 0;
+import { act } from "react-dom/test-utils";
 
-  .list-group-item {
-    width: 100%;
-    cursor: pointer;
-    border-radius: 0;
-
-    text-align: left;
-
-    code {
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    &:hover {
-      color: #fff;
-      background-color: #b66dff;
-    }
-
-    &.active {
-      border-color: #e5d3ff;
-      color: black;
-      background-color: #f0e1ff;
-    }
-  }
-}
+export const waitForEffect = async () =>
+  act(async () => {
+    // Awaiting the async state update
+  });

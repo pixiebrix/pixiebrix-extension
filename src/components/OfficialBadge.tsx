@@ -15,36 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, IService, RegistryId } from "@/core";
+import { isOfficial } from "@/blocks/util";
+import { RegistryId } from "@/core";
+import React from "react";
+import { Badge } from "react-bootstrap";
 
-export type BlockType = "reader" | "effect" | "transform" | "renderer";
-
-export async function getType(
-  block: IBlock | IService
-): Promise<BlockType | null> {
-  if ("inferType" in block) {
-    return (block as any).inferType();
-  }
-
-  if ("read" in block) {
-    return "reader";
-  }
-
-  if ("effect" in block) {
-    return "effect";
-  }
-
-  if ("transform" in block) {
-    return "transform";
-  }
-
-  if ("render" in block) {
-    return "renderer";
-  }
-
-  return null;
-}
-
-export function isOfficial(id: RegistryId): boolean {
-  return id.startsWith("@pixiebrix/");
-}
+export const OfficialBadge: React.FunctionComponent<{
+  id: RegistryId;
+}> = ({ id }) => isOfficial(id) && <Badge variant="info">Official</Badge>;
