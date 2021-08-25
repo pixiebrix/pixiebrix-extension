@@ -255,6 +255,13 @@ const _proxyService = liftBackground(
   }
 );
 
+export const clearServiceCache = liftBackground(
+  "CLEAR_SERVICE_CACHE",
+  async () => {
+    serviceRegistry.clear();
+  }
+);
+
 export async function proxyService<TData>(
   serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig

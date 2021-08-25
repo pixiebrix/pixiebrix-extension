@@ -19,37 +19,35 @@ import React, { useCallback, useContext, useState } from "react";
 import { connect, useSelector } from "react-redux";
 import { servicesSlice, ServicesState } from "../../slices";
 import { PageTitle } from "@/layout/Page";
-import { Row, Col, Card, Nav, Badge } from "react-bootstrap";
+import { Badge, Card, Col, Nav, Row } from "react-bootstrap";
 import { push } from "connected-react-router";
-import { useToasts } from "react-toast-notifications";
 import ServiceEditorModal from "./ServiceEditorModal";
 import PrivateServicesCard from "./PrivateServicesCard";
 import ConnectExtensionCard from "./ConnectExtensionCard";
 import SharedServicesCard from "./SharedServicesCard";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import useServiceDefinitions from "./useServiceDefinitions";
-import { RootState } from "../../store";
+import { persistor, RootState } from "../../store";
 import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
-import { refresh as refreshServices } from "@/background/locator";
+import { refresh as refreshBackgroundAuths } from "@/background/locator";
 import GridLoader from "react-spinners/GridLoader";
 import ZapierModal from "@/options/pages/services/ZapierModal";
 import AuthContext from "@/auth/AuthContext";
-import { sleep } from "@/utils";
-import { reportError } from "@/telemetry/logging";
 import { useTitle } from "@/hooks/title";
 import useFetch from "@/hooks/useFetch";
+import useNotifications from "@/hooks/useNotifications";
 
 const { updateServiceConfig, deleteServiceConfig } = servicesSlice.actions;
 
-interface OwnProps {
-  updateServiceConfig: (config: RawServiceConfiguration) => void;
-  deleteServiceConfig: ({ id }: { id: string }) => void;
-  navigate: (url: string) => void;
-}
-
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
+
+type OwnProps = {
+  updateServiceConfig: typeof updateServiceConfig;
+  deleteServiceConfig: typeof deleteServiceConfig;
+  navigate: typeof push;
+};
 
 const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   updateServiceConfig,
@@ -69,7 +67,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
 
   const [activeTab, setTab] = useState("private");
 
-  const { addToast } = useToasts();
+  const notify = useNotifications();
 
   const {
     activeConfiguration,
@@ -82,60 +80,50 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
   const handleSave = useCallback(
     async (config) => {
       updateServiceConfig(config);
-      addToast(`Updated your private configuration for ${activeService.name}`, {
-        appearance: "success",
-        autoDismiss: true,
-      });
+      notify.success(
+        `Updated your private configuration for ${activeService.name}`
+      );
 
-      // Wait 1000ms to allow changes to propagate to storage (via redux persist)
-      void sleep(1000).then(async () => {
-        try {
-          await refreshServices();
-        } catch (error: unknown) {
-          reportError(error);
-          addToast(
-            `Error refreshing service configurations, restart the PixieBrix extension`,
-            {
-              appearance: "warning",
-              autoDismiss: true,
-            }
-          );
-        }
-      });
+      await persistor.flush();
+
+      try {
+        await refreshBackgroundAuths();
+      } catch (error: unknown) {
+        notify.warning(
+          `Error refreshing service configurations, restart the PixieBrix extension`,
+          {
+            error,
+          }
+        );
+      }
 
       navigate("/services");
     },
-    [updateServiceConfig, activeService, addToast, navigate]
+    [updateServiceConfig, activeService, notify, navigate]
   );
 
   const handleDelete = useCallback(
     async (id) => {
       deleteServiceConfig({ id });
 
-      addToast(`Deleted private configuration for ${activeService.name}`, {
-        appearance: "success",
-        autoDismiss: true,
-      });
+      notify.success(`Deleted private configuration for ${activeService.name}`);
 
-      // Don't need to wait before navigating, as this window has the updated state immediately
-      void sleep(1000).then(async () => {
-        try {
-          await refreshServices();
-        } catch (error: unknown) {
-          addToast(
-            `Error refreshing service configurations, restart the PixieBrix extension`,
-            {
-              appearance: "warning",
-              autoDismiss: true,
-            }
-          );
-          reportError(error);
-        }
-      });
+      await persistor.flush();
+
+      try {
+        await refreshBackgroundAuths();
+      } catch (error: unknown) {
+        notify.warning(
+          `Error refreshing service configurations, restart the PixieBrix extension`,
+          {
+            error,
+          }
+        );
+      }
 
       navigate("/services");
     },
-    [deleteServiceConfig, navigate, addToast, activeService]
+    [deleteServiceConfig, navigate, notify, activeService]
   );
 
   if (servicesPending) {

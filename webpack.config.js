@@ -308,9 +308,6 @@ module.exports = (env, options) =>
         new webpack.SourceMapDevToolPlugin({
           publicPath: sourceMapPublicUrl,
 
-          // Produce full/heavy sourcemaps only if they're going to be public
-          noSources: !sourceMapPublicUrl,
-
           // The sourcemap will be inlined if `undefined`. Only inlined sourcemaps work locally
           // https://bugs.chromium.org/p/chromium/issues/detail?id=974543
           filename: sourceMapPublicUrl && "[file].map[query]",

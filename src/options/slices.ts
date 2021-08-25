@@ -294,20 +294,20 @@ export const optionsSlice = createSlice({
         _deployment,
         createTimestamp = timestamp,
       } = payload;
+
+      const persistedId = extensionId ?? id;
+
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
-      if (extensionId == null && id == null) {
+      if (persistedId == null) {
         throw new Error("id or extensionId is required");
       } else if (extensionPointId == null) {
         throw new Error("extensionPointId is required");
       }
 
-      const index = state.extensions.findIndex(
-        (x) => x.id === extensionId ?? id
-      );
-
       const extension: PersistedExtension = {
-        id: extensionId ?? id,
+        id: persistedId,
         extensionPointId,
+        // If the user updates an extension, detach it from the recipe -- it's now a personal extension
         _recipe: null,
         label,
         optionsArgs,
@@ -322,6 +322,8 @@ export const optionsSlice = createSlice({
         // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
         void saveUserExtension(extension).catch(reportError);
       }
+
+      const index = state.extensions.findIndex((x) => x.id === persistedId);
 
       if (index >= 0) {
         // eslint-disable-next-line security/detect-object-injection -- array index from findIndex

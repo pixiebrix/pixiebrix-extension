@@ -23,7 +23,7 @@ import { useField } from "formik";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import registry from "@/services/registry";
-import { RawServiceConfiguration, UUID } from "@/core";
+import { RawServiceConfiguration, RegistryId, UUID } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { persistor } from "@/options/store";
 import { refresh as refreshBackgroundLocator } from "@/background/locator";
@@ -38,13 +38,22 @@ import useNotifications from "@/hooks/useNotifications";
 const { updateServiceConfig } = servicesSlice.actions;
 
 const AuthWidget: React.FunctionComponent<{
-  name?: string;
-  authOptions: AuthOption[];
-  serviceId: string;
-}> = ({ name, serviceId, authOptions }) => {
-  const fieldName = name ?? `services.${serviceId}`;
+  /**
+   * The field name. WARNING: do not use `serviceId`s as part of a field name because they can contain periods which
+   * break Formik's nested field naming.
+   */
+  name: string;
 
-  const helpers = useField<UUID>(fieldName)[2];
+  serviceId: RegistryId;
+
+  authOptions: AuthOption[];
+
+  /**
+   * Optional callback to refresh the authOptions.
+   */
+  onRefresh?: () => Promise<void>;
+}> = ({ name, serviceId, authOptions, onRefresh }) => {
+  const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
   const notify = useNotifications();
 
@@ -78,6 +87,10 @@ const AuthWidget: React.FunctionComponent<{
       // Also refresh the service locator on the background so the new auth works immediately
       await refreshBackgroundLocator({ remote: false, local: true });
 
+      if (onRefresh) {
+        await onRefresh();
+      }
+
       notify.success("Added configuration for integration");
 
       // Don't need to track changes locally via setCreated; the new auth automatically flows
@@ -87,7 +100,7 @@ const AuthWidget: React.FunctionComponent<{
 
       setShow(false);
     },
-    [helpers, notify, dispatch, setShow, serviceId]
+    [helpers, notify, dispatch, setShow, serviceId, onRefresh]
   );
 
   const CustomMenuList = useMemo(() => {
@@ -140,7 +153,7 @@ const AuthWidget: React.FunctionComponent<{
         {options.length > 0 && (
           <div style={{ minWidth: "300px" }} className="mr-2">
             <ServiceAuthSelector
-              name={fieldName}
+              name={name}
               serviceId={serviceId}
               authOptions={options}
               CustomMenuList={CustomMenuList}

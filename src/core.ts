@@ -259,7 +259,7 @@ export type IExtension<T extends Config = EmptyConfig> = {
   /**
    * Configured services/integrations for the extension.
    */
-  services: ServiceDependency[];
+  services?: ServiceDependency[];
 
   /**
    * Options the end-user has configured (i.e., during blueprint activation)
