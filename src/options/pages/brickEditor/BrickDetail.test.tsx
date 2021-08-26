@@ -28,7 +28,7 @@ test.each([
   "renders %s brick in loading state",
   async (brickName: string, brick: ReferenceEntry) => {
     const rendered = render(
-      <BrickDetail block={brick} blockConfig={null} isBlockConfigLoading />
+      <BrickDetail brick={brick} brickConfig={null} isBrickConfigLoading />
     );
     expect(rendered.asFragment()).toMatchSnapshot();
   }
@@ -37,9 +37,9 @@ test.each([
 test("renders @pixiebrix/table loaded", () => {
   const rendered = render(
     <BrickDetail
-      block={new TableRenderer()}
-      blockConfig={null}
-      isBlockConfigLoading={false}
+      brick={new TableRenderer()}
+      brickConfig={null}
+      isBrickConfigLoading={false}
     />
   );
   expect(rendered.asFragment()).toMatchSnapshot();

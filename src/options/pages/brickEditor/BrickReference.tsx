@@ -36,7 +36,7 @@ import cx from "classnames";
 import { isOfficial } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import { find } from "@/registry/localRegistry";
-import { blockConfigToYaml } from "@/utils/objToYaml";
+import { brickToYaml } from "@/utils/objToYaml";
 
 const BrickReference: React.FunctionComponent<{
   blocks: ReferenceEntry[];
@@ -67,7 +67,7 @@ const BrickReference: React.FunctionComponent<{
     }
 
     const blockPackage = await find(selected.id);
-    return blockPackage?.config ? blockConfigToYaml(blockPackage.config) : null;
+    return blockPackage?.config ? brickToYaml(blockPackage.config) : null;
   }, [selected]);
 
   const fuse: Fuse<IBlock | IService> = useMemo(
@@ -128,9 +128,9 @@ const BrickReference: React.FunctionComponent<{
         <Col md={8} className={cx("pt-4")}>
           {selected ? (
             <BrickDetail
-              block={selected}
-              blockConfig={blockConfig}
-              isBlockConfigLoading={isBlockConfigLoading}
+              brick={selected}
+              brickConfig={blockConfig}
+              isBrickConfigLoading={isBlockConfigLoading}
             />
           ) : (
             <div>
