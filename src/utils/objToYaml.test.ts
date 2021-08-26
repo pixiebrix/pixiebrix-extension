@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { brickToYaml } from "./objToYaml";
+import { blockConfigToYaml } from "./objToYaml";
 
 describe("brickToYaml", () => {
   test("serializes arbitrary object", () => {
@@ -28,7 +28,7 @@ describe("brickToYaml", () => {
 lorem: ipsum
 `;
 
-    const actual = brickToYaml(config);
+    const actual = blockConfigToYaml(config);
 
     expect(actual).toBe(expected);
   });
@@ -92,7 +92,7 @@ outputSchema:
   additionalProperties: true
 `;
 
-    const actual = brickToYaml(config);
+    const actual = blockConfigToYaml(config);
 
     expect(actual).toBe(expected);
   });
@@ -164,7 +164,7 @@ authentication:
     key: "{{apiKey}}"
 `;
 
-    const actual = brickToYaml(config);
+    const actual = blockConfigToYaml(config);
 
     expect(actual).toBe(expected);
   });

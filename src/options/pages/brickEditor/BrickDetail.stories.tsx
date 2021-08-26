@@ -22,7 +22,7 @@ import { TableRenderer } from "@/blocks/renderers/table";
 import { ToastProvider } from "react-toast-notifications";
 import { fromJS } from "@/blocks/transformers/blockFactory";
 import amazonSearch from "@contrib/blocks/amazon-search.yaml";
-import { brickToYaml } from "@/utils/objToYaml";
+import { blockConfigToYaml } from "@/utils/objToYaml";
 
 export default {
   title: "Components/BrickDetail",
@@ -37,16 +37,16 @@ const Template: ComponentStory<typeof BrickDetail> = (args) => (
 
 export const BuiltIn = Template.bind({});
 BuiltIn.args = {
-  brick: new TableRenderer(),
-  brickConfig: null,
-  isBrickConfigLoading: false,
+  block: new TableRenderer(),
+  blockConfig: null,
+  isBlockConfigLoading: false,
 };
 
 const amazonSearchBrick = fromJS(amazonSearch);
-const amazonSearchBrickConfig = brickToYaml(amazonSearch);
+const amazonSearchBrickConfig = blockConfigToYaml(amazonSearch);
 export const AmazonSearch = Template.bind({});
 AmazonSearch.args = {
-  brick: amazonSearchBrick,
-  brickConfig: amazonSearchBrickConfig,
-  isBrickConfigLoading: false,
+  block: amazonSearchBrick,
+  blockConfig: amazonSearchBrickConfig,
+  isBlockConfigLoading: false,
 };

@@ -63,13 +63,13 @@ function makeArgumentYaml(schema: Schema): string {
 }
 
 export const BrickDetail: React.FunctionComponent<{
-  brick: ReferenceEntry;
-  brickConfig: string;
-  isBrickConfigLoading: boolean;
-}> = ({ brick, brickConfig, isBrickConfigLoading }) => {
-  const schema = "schema" in brick ? brick.schema : brick.inputSchema;
+  block: ReferenceEntry;
+  blockConfig: string;
+  isBlockConfigLoading: boolean;
+}> = ({ block, blockConfig, isBlockConfigLoading }) => {
+  const schema = "schema" in block ? block.schema : block.inputSchema;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const outputSchema = (brick as any).outputSchema as Schema;
+  const outputSchema = (block as any).outputSchema as Schema;
 
   const copyHandler = useUserAction(
     async () => {
@@ -85,12 +85,12 @@ export const BrickDetail: React.FunctionComponent<{
   return (
     <div className={styles.root}>
       <div>
-        <h3>{brick.name}</h3>
-        <code className="p-0">{brick.id}</code>
+        <h3>{block.name}</h3>
+        <code className="p-0">{block.id}</code>
       </div>
 
       <DetailSection title="Description">
-        {brick.description ?? (
+        {block.description ?? (
           <span className="text-muted">No description provided</span>
         )}
       </DetailSection>
@@ -117,15 +117,15 @@ export const BrickDetail: React.FunctionComponent<{
       </DetailSection>
 
       <DetailSection title="Definition">
-        {isBrickConfigLoading ? (
+        {isBlockConfigLoading ? (
           <div className="text-muted">Loading...</div>
-        ) : isEmpty(brickConfig) ? (
+        ) : isEmpty(blockConfig) ? (
           <div className="text-muted">
             Definition not available for built-in bricks
           </div>
         ) : (
           <AceEditor
-            value={brickConfig}
+            value={blockConfig}
             mode="yaml"
             theme="chrome"
             width="100%"

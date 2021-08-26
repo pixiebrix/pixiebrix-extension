@@ -34,9 +34,9 @@ function orderKeys<T extends Record<string, unknown>>(
   ) as T;
 }
 
-export const brickToYaml = (brickConfig: Record<string, unknown>) =>
+export const blockConfigToYaml = (blockConfig: Record<string, unknown>) =>
   objToYaml(
-    orderKeys(brickConfig, [
+    orderKeys(blockConfig, [
       "apiVersion",
       "kind",
       "metadata",
