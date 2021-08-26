@@ -1,6 +1,6 @@
 import React from "react";
 
-export const DetailSection: React.FunctionComponent<{ title: string }> = ({
+const DetailSection: React.FunctionComponent<{ title: string }> = ({
   title,
   children,
 }) => (
@@ -9,3 +9,5 @@ export const DetailSection: React.FunctionComponent<{ title: string }> = ({
     <div className="py-2">{children}</div>
   </div>
 );
+
+export default DetailSection;

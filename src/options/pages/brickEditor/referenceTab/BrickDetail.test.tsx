@@ -17,9 +17,9 @@
 
 import React from "react";
 import { render } from "@testing-library/react";
-import { BrickDetail } from "./BrickDetail";
+import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
-import { ReferenceEntry } from "./brickEditorTypes";
+import { ReferenceEntry } from "../brickEditorTypes";
 
 test.each([
   ["empty", {}],

@@ -22,11 +22,11 @@ import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
-import { ReferenceEntry } from "./brickEditorTypes";
+import { ReferenceEntry } from "../brickEditorTypes";
 import styles from "./BlockResult.module.scss";
 import { OfficialBadge } from "@/components/OfficialBadge";
 
-export const BlockResult: React.FunctionComponent<{
+const BlockResult: React.FunctionComponent<{
   block: ReferenceEntry;
   active?: boolean;
   onSelect: () => void;
@@ -57,3 +57,5 @@ export const BlockResult: React.FunctionComponent<{
     </ListGroup.Item>
   );
 };
+
+export default BlockResult;

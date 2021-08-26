@@ -24,8 +24,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
-import { DetailSection } from "./DetailSection";
-import { ReferenceEntry } from "./brickEditorTypes";
+import DetailSection from "./DetailSection";
+import { ReferenceEntry } from "../brickEditorTypes";
 import { Schema } from "@/core";
 import styles from "./BrickDetail.module.scss";
 
@@ -62,7 +62,7 @@ function makeArgumentYaml(schema: Schema): string {
   return result;
 }
 
-export const BrickDetail: React.FunctionComponent<{
+const BrickDetail: React.FunctionComponent<{
   brick: ReferenceEntry;
   brickConfig: string;
   isBrickConfigLoading: boolean;
@@ -136,3 +136,5 @@ export const BrickDetail: React.FunctionComponent<{
     </div>
   );
 };
+
+export default BrickDetail;

@@ -17,7 +17,7 @@
 
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
-import { BrickDetail } from "./BrickDetail";
+import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
 import { ToastProvider } from "react-toast-notifications";
 import { fromJS } from "@/blocks/transformers/blockFactory";
