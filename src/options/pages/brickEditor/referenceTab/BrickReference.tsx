@@ -39,50 +39,50 @@ import { find } from "@/registry/localRegistry";
 import { brickToYaml } from "@/utils/objToYaml";
 
 const BrickReference: React.FunctionComponent<{
-  blocks: ReferenceEntry[];
+  bricks: ReferenceEntry[];
   initialSelected?: ReferenceEntry;
-}> = ({ blocks, initialSelected }) => {
+}> = ({ bricks, initialSelected }) => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ReferenceEntry>(initialSelected);
 
-  const sortedBlocks = useMemo(
+  const sortedBricks = useMemo(
     () =>
       sortBy(
-        blocks ?? [],
+        bricks ?? [],
         (x) => (isOfficial(x.id) ? 0 : 1),
         (x) => x.name
       ),
-    [blocks]
+    [bricks]
   );
 
   useEffect(() => {
-    if (sortedBlocks.length > 0 && selected == null) {
-      setSelected(sortedBlocks[0]);
+    if (sortedBricks.length > 0 && selected == null) {
+      setSelected(sortedBricks[0]);
     }
-  }, [sortedBlocks, selected, setSelected]);
+  }, [sortedBricks, selected, setSelected]);
 
-  const [blockConfig, isBlockConfigLoading] = useAsyncState(async () => {
+  const [brickConfig, isBrickConfigLoading] = useAsyncState(async () => {
     if (!selected?.id) {
       return null;
     }
 
-    const blockPackage = await find(selected.id);
-    return blockPackage?.config ? brickToYaml(blockPackage.config) : null;
+    const brickPackage = await find(selected.id);
+    return brickPackage?.config ? brickToYaml(brickPackage.config) : null;
   }, [selected]);
 
   const fuse: Fuse<IBlock | IService> = useMemo(
     () =>
-      new Fuse(sortedBlocks, {
+      new Fuse(sortedBricks, {
         // Prefer name, then id
         keys: ["name", "id"],
       }),
-    [sortedBlocks]
+    [sortedBricks]
   );
 
   const results = useMemo(() => {
     let matches =
       query.trim() === ""
-        ? sortedBlocks
+        ? sortedBricks
         : fuse.search(query).map((x) => x.item);
 
     // If a brick is selected, have it show up at the top of the list
@@ -91,7 +91,7 @@ const BrickReference: React.FunctionComponent<{
     }
 
     return matches.slice(0, 10);
-  }, [selected, initialSelected, query, fuse, sortedBlocks]);
+  }, [selected, initialSelected, query, fuse, sortedBricks]);
 
   return (
     <Container className="px-0 h-100" fluid>
@@ -129,8 +129,8 @@ const BrickReference: React.FunctionComponent<{
           {selected ? (
             <BrickDetail
               brick={selected}
-              brickConfig={blockConfig}
-              isBrickConfigLoading={isBlockConfigLoading}
+              brickConfig={brickConfig}
+              isBrickConfigLoading={isBrickConfigLoading}
             />
           ) : (
             <div>

@@ -222,7 +222,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
             <Tab.Pane eventKey="reference" className="p-0">
               <BrickReference
                 key={selectedReference?.id}
-                blocks={blocks}
+                bricks={blocks}
                 initialSelected={selectedReference}
               />
             </Tab.Pane>
