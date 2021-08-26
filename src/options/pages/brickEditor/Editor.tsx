@@ -106,30 +106,30 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
 
-  const [blocks] = useAsyncState(async () => {
-    const [extensionPoints, blocks, services] = await Promise.all([
+  const [bricks] = useAsyncState(async () => {
+    const [extensionPoints, bricks, services] = await Promise.all([
       extensionPointRegistry.all(),
       blockRegistry.all(),
       serviceRegistry.all(),
     ]);
-    return [...extensionPoints, ...blocks, ...services];
+    return [...extensionPoints, ...bricks, ...services];
   }, []);
 
   const openReference = useCallback(
     (id: string) => {
-      const block = blocks?.find((x) => x.id === id);
-      if (block) {
-        console.debug("Open reference for block: %s", block.id, { block });
-        setSelectedReference(block);
+      const brick = bricks?.find((x) => x.id === id);
+      if (brick) {
+        console.debug("Open reference for brick: %s", brick.id, { brick });
+        setSelectedReference(brick);
         setTab("reference");
       } else {
         console.debug("Known bricks", {
-          blocks: sortBy(blocks.map((x) => x.id)),
+          bricks: sortBy(bricks.map((x) => x.id)),
         });
-        notify.warning(`Cannot find block: ${id}`);
+        notify.warning(`Cannot find brick: ${id}`);
       }
     },
-    [setTab, blocks, setSelectedReference, notify]
+    [setTab, bricks, setSelectedReference, notify]
   );
 
   const openEditorTab = useOpenEditorTab();
@@ -222,7 +222,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
             <Tab.Pane eventKey="reference" className="p-0">
               <BrickReference
                 key={selectedReference?.id}
-                bricks={blocks}
+                bricks={bricks}
                 initialSelected={selectedReference}
               />
             </Tab.Pane>
