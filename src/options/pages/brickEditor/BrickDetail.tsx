@@ -26,10 +26,7 @@ import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import { DetailSection } from "./DetailSection";
 import { ReferenceEntry } from "./brickEditorTypes";
-import * as localRegistry from "@/registry/localRegistry";
-import { brickToYaml } from "@/utils/objToYaml";
 import { Schema } from "@/core";
-import { useAsyncState } from "@/hooks/common";
 import styles from "./BrickDetail.module.scss";
 
 function makeArgumentYaml(schema: Schema): string {
@@ -67,7 +64,9 @@ function makeArgumentYaml(schema: Schema): string {
 
 export const BrickDetail: React.FunctionComponent<{
   brick: ReferenceEntry;
-}> = ({ brick }) => {
+  brickConfig: string;
+  isBrickConfigLoading: boolean;
+}> = ({ brick, brickConfig, isBrickConfigLoading }) => {
   const schema = "schema" in brick ? brick.schema : brick.inputSchema;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const outputSchema = (brick as any).outputSchema as Schema;
@@ -82,11 +81,6 @@ export const BrickDetail: React.FunctionComponent<{
     },
     [schema]
   );
-
-  const [brickConfig, isBrickConfigLoading] = useAsyncState(async () => {
-    const brickPackage = await localRegistry.find(brick.id);
-    return brickPackage?.config ? brickToYaml(brickPackage.config) : null;
-  }, [brick]);
 
   return (
     <div className={styles.root}>

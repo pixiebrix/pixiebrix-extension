@@ -34,6 +34,9 @@ import { ReferenceEntry } from "./brickEditorTypes";
 import { BlockResult } from "./BlockResult";
 import cx from "classnames";
 import { isOfficial } from "@/blocks/util";
+import { useAsyncState } from "@/hooks/common";
+import { find } from "@/registry/localRegistry";
+import { brickToYaml } from "@/utils/objToYaml";
 
 const BrickReference: React.FunctionComponent<{
   blocks: ReferenceEntry[];
@@ -57,6 +60,15 @@ const BrickReference: React.FunctionComponent<{
       setSelected(sortedBlocks[0]);
     }
   }, [sortedBlocks, selected, setSelected]);
+
+  const [blockConfig, isBlockConfigLoading] = useAsyncState(async () => {
+    if (!selected?.id) {
+      return null;
+    }
+
+    const blockPackage = await find(selected.id);
+    return blockPackage?.config ? brickToYaml(blockPackage.config) : null;
+  }, [selected]);
 
   const fuse: Fuse<IBlock | IService> = useMemo(
     () =>
@@ -115,7 +127,11 @@ const BrickReference: React.FunctionComponent<{
         </Col>
         <Col md={8} className={cx("pt-4")}>
           {selected ? (
-            <BrickDetail brick={selected} />
+            <BrickDetail
+              brick={selected}
+              brickConfig={blockConfig}
+              isBrickConfigLoading={isBlockConfigLoading}
+            />
           ) : (
             <div>
               <GridLoader />
