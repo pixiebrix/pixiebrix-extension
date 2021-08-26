@@ -336,7 +336,7 @@ export async function _getLoggingConfig(): Promise<LoggingConfig> {
 export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
   expectBackgroundPage();
 
-  await setStorage(LOG_CONFIG_STORAGE_KEY, JSON.stringify(config));
+  await setStorage(LOG_CONFIG_STORAGE_KEY, config);
   _config = config;
 }
 

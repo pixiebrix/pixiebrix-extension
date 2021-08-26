@@ -36,7 +36,7 @@ async function _setRecord(uuid: string, value: JsonObject): Promise<void> {
   const key = `${KEY_PREFIX}${uuid}`;
 
   data[key] = value;
-  await setStorage(LOCAL_DATA_STORE, JSON.stringify(data));
+  await setStorage(LOCAL_DATA_STORE, data);
 }
 
 export const getRecord = liftBackground(
