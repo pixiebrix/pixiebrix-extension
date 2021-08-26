@@ -29,10 +29,7 @@ import {
 import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
-import {
-  expectBackgroundPage,
-  expectContentScript,
-} from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { getErrorMessage } from "@/errors";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
@@ -109,7 +106,7 @@ export function notifyContentScripts(
   }
 
   return async (tabId: number | null, ...args: unknown[]) => {
-    expectBackgroundPage(ContentScriptActionError);
+    expectContext("background", ContentScriptActionError);
 
     console.debug(
       `Broadcasting content script notification ${fullType} to tab: ${
@@ -178,7 +175,7 @@ export function liftContentScript<
       return method(...(args as TArguments));
     }
 
-    expectBackgroundPage(ContentScriptActionError);
+    expectContext("background", ContentScriptActionError);
 
     console.debug(
       `Sending content script action ${fullType} to tab ${
@@ -247,7 +244,7 @@ function contentScriptListener(
 }
 
 function addContentScriptListener(): void {
-  expectContentScript();
+  expectContext("contentScript");
 
   browser.runtime.onMessage.addListener(contentScriptListener);
   console.debug(

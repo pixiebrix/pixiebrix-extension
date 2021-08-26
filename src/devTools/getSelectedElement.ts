@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { expectContentScript } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { evaluableFunction } from "@/utils";
 
 export let selectedElement: HTMLElement; // Live binding
@@ -23,7 +23,7 @@ export let selectedElement: HTMLElement; // Live binding
 const GET_SELECTED_DEV_TOOLS_ELEMENT = "@@pixiebrix/devtools/get-selected";
 
 export function addListenerForUpdateSelectedElement(): void {
-  expectContentScript();
+  expectContext("contentScript");
   window.addEventListener(GET_SELECTED_DEV_TOOLS_ELEMENT, (el) => {
     selectedElement = el.target as HTMLElement;
   });

@@ -28,7 +28,7 @@ import { Availability } from "@/blocks/types";
 import { checkAvailable } from "@/blocks/available";
 import { markReady } from "./context";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
-import { expectContentScript } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { ConnectionError } from "@/errors";
 import { HandlerMap } from "@/messaging/protocol";
 
@@ -137,7 +137,7 @@ export async function notifyReady(): Promise<void> {
 }
 
 function addExecutorListener(): void {
-  expectContentScript();
+  expectContext("contentScript");
 
   browser.runtime.onMessage.addListener(handlers.asListener());
 }

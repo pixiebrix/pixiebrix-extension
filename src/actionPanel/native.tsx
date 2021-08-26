@@ -28,7 +28,7 @@ import {
 import { FORWARD_FRAME_NOTIFICATION } from "@/background/browserAction";
 import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
-import { expectContentScript } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef } from "@/core";
 
 const SIDEBAR_WIDTH_PX = 400;
@@ -159,7 +159,7 @@ export function getStore(): ActionPanelStore {
 }
 
 function renderPanels() {
-  expectContentScript();
+  expectContext("contentScript");
 
   if (isActionPanelVisible()) {
     const seqNum = renderSequenceNumber;
@@ -181,7 +181,7 @@ function renderPanels() {
 }
 
 export function removeExtension(extensionId: string): void {
-  expectContentScript();
+  expectContext("contentScript");
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
@@ -190,7 +190,7 @@ export function removeExtension(extensionId: string): void {
 }
 
 export function removeExtensionPoint(extensionPointId: string): void {
-  expectContentScript();
+  expectContext("contentScript");
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);

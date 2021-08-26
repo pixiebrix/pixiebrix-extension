@@ -42,59 +42,12 @@ function createError(
   return new error(defaultMessage);
 }
 
-/**
- * @example expectBackgroundPage()
- * @example expectBackgroundPage(WrongContextError)
- * @example expectBackgroundPage('Wrong context and this is my custom error')
- * @example expectBackgroundPage(new Error('Wrong context and this is my custom error'))
- */
-export function expectBackgroundPage(error?: ErrorBaseType): void {
-  if (!isBackgroundPage()) {
-    throw createError("This code can only run in the background page", error);
-  }
-}
-
-/**
- * @example expectContentScript()
- * @example expectContentScript(WrongContextError)
- * @example expectContentScript('Wrong context and this is my custom error')
- * @example expectContentScript(new Error('Wrong context and this is my custom error'))
- */
-export function expectContentScript(error?: ErrorBaseType): void {
-  if (!isContentScript()) {
-    throw createError("This code can only run in the content script", error);
-  }
-}
-
-/**
- * @example expectBackgroundPage()
- * @example expectBackgroundPage(WrongContextError)
- * @example expectBackgroundPage('Wrong context and this is my custom error')
- * @example expectBackgroundPage(new Error('Wrong context and this is my custom error'))
- */
-export function forbidBackgroundPage(error?: ErrorBaseType): void {
-  if (isBackgroundPage()) {
-    throw createError("This code cannot run in the background page", error);
-  }
-}
-
-/**
- * @example forbidContentScript()
- * @example forbidContentScript(WrongContextError)
- * @example forbidContentScript('Wrong context and this is my custom error')
- * @example forbidContentScript(new Error('Wrong context and this is my custom error'))
- */
-export function forbidContentScript(error?: ErrorBaseType): void {
-  if (isContentScript()) {
-    throw createError(`This code cannot run in the content script`, error);
-  }
-}
-
 const contexts = ["extension", "background", "contentScript"] as const;
 const contextMap = new Map<typeof contexts[number], () => boolean>([
   ["extension", isExtensionContext],
   ["background", isBackgroundPage],
   ["contentScript", isContentScript],
+  ["extension", isExtensionContext],
 ]);
 
 /**

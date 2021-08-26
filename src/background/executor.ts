@@ -31,10 +31,7 @@ import { ActionType, Message, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError, getErrorMessage } from "@/errors";
-import {
-  expectBackgroundPage,
-  expectContentScript,
-} from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
 import { sleep } from "@/utils";
 import { fromPairs, partition, zip } from "lodash";
@@ -342,14 +339,14 @@ async function linkTabListener(tab: Tabs.Tab): Promise<void> {
 }
 
 function initExecutor(): void {
-  expectBackgroundPage();
+  expectContext("background");
 
   browser.tabs.onCreated.addListener(linkTabListener);
   browser.runtime.onMessage.addListener(handlers.asListener());
 }
 
 export async function activateTab(): Promise<void> {
-  expectContentScript();
+  expectContext("contentScript");
 
   return browser.runtime.sendMessage({
     type: MESSAGE_ACTIVATE_TAB,
@@ -358,7 +355,7 @@ export async function activateTab(): Promise<void> {
 }
 
 export async function closeTab(): Promise<void> {
-  expectContentScript();
+  expectContext("contentScript");
 
   return browser.runtime.sendMessage({
     type: MESSAGE_CLOSE_TAB,

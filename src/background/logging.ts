@@ -33,7 +33,7 @@ import {
   getErrorMessage,
 } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
-import { expectBackgroundPage } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -322,7 +322,7 @@ const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS";
 let _config: LoggingConfig = null;
 
 export async function _getLoggingConfig(): Promise<LoggingConfig> {
-  expectBackgroundPage();
+  expectContext("background");
 
   if (_config != null) {
     return _config;
@@ -334,7 +334,7 @@ export async function _getLoggingConfig(): Promise<LoggingConfig> {
 }
 
 export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
-  expectBackgroundPage();
+  expectContext("background");
 
   await setStorage(LOG_CONFIG_STORAGE_KEY, JSON.stringify(config));
   _config = config;
