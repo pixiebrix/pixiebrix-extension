@@ -41,10 +41,7 @@ import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { reactivate } from "@/background/navigation";
-import {
-  expectBackgroundPage,
-  forbidBackgroundPage,
-} from "@/utils/expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
 import { getErrorMessage, isPrivatePageError } from "@/errors";
 
 const TOP_LEVEL_FRAME_ID = 0;
@@ -175,7 +172,7 @@ export function liftBackground<
   }
 
   return async (port: Runtime.Port, ...args: unknown[]): Promise<R> => {
-    forbidBackgroundPage();
+    forbidContext("background");
 
     if (!port) {
       throw new Error("Devtools port is required");
@@ -226,7 +223,7 @@ function deleteStaleConnections(port: Runtime.Port) {
 }
 
 function connectDevtools(port: Runtime.Port): void {
-  expectBackgroundPage();
+  expectContext("background");
 
   if (allowBackgroundSender(port.sender) && port.name === PORT_NAME) {
     // Sender.tab won't be available if we don't have permissions for it yet

@@ -18,7 +18,7 @@
 
 import { isFirefox } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
-import { expectBackgroundPage } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 
 const FIREFOX_OPTIONS_MENU_ID = "PIXIEBRIX_FIREFOX_OPTIONS";
 
@@ -29,7 +29,7 @@ function onContextMenuClick({ menuItemId }: browser.contextMenus.OnClickData) {
 }
 
 export default async function initFirefoxCompat(): Promise<void> {
-  expectBackgroundPage();
+  expectContext("background");
   if (!isFirefox()) {
     return;
   }

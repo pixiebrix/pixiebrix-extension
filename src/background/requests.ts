@@ -32,7 +32,7 @@ import {
   launchOAuth2Flow,
 } from "@/background/auth";
 import { isAbsoluteUrl } from "@/utils";
-import { expectBackgroundPage } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { absoluteApiUrl } from "@/services/apiClient";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
@@ -125,7 +125,7 @@ async function authenticate(
   config: SanitizedServiceConfiguration,
   request: AxiosRequestConfig
 ): Promise<AxiosRequestConfig> {
-  expectBackgroundPage();
+  expectContext("background");
 
   const service = await serviceRegistry.lookup(config.serviceId);
 

@@ -25,11 +25,11 @@ import {
 } from "@/messaging/protocol";
 import pTimeout from "p-timeout";
 import oneMutation from "one-mutation";
-import { isContentScript, isExtensionContext } from "webext-detect-page";
+import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
 import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
-import { expectContentScript } from "@/utils/expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
 
 // Context for this protocol:
 // - Implemented and explained in https://github.com/pixiebrix/pixiebrix-extension/pull/1019
@@ -95,7 +95,7 @@ function sendMessageToOtherSide(message: Message | Response) {
 async function onContentScriptReceiveMessage(
   event: MessageEvent<Message>
 ): Promise<void> {
-  expectContentScript();
+  expectContext("contentScript");
 
   if (event.source !== document.defaultView) {
     // The message comes from other views (PB does not send these)
@@ -178,9 +178,10 @@ export function liftExternal<
   }
 
   return async (...args: TArguments) => {
-    if (isExtensionContext()) {
-      throw new ContentScriptActionError("Expected call from external page");
-    }
+    forbidContext(
+      "extension",
+      new ContentScriptActionError("Expected call from external page")
+    );
 
     await waitExtensionLoaded();
 
