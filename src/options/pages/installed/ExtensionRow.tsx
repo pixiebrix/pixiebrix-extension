@@ -95,29 +95,25 @@ const ExtensionRow: React.FunctionComponent<{
     );
   }, [hasPermissions, requestPermissions, validation]);
 
-  return (
-    <tr>
-      <td>&nbsp;</td>
-      <td>
-        <Link to={`/workshop/extensions/${id}`}>{label ?? id}</Link>
-      </td>
-      <td className="text-wrap">{statusElt}</td>
-      <td>
-        <AsyncButton
-          variant="danger"
-          size="sm"
-          onClick={() => {
-            onRemove({ extensionId: id, extensionPointId });
-            notify.success(`Removed brick ${label ?? id}`, {
-              event: "ExtensionRemove",
-            });
-          }}
-        >
-          Uninstall
-        </AsyncButton>
-      </td>
-    </tr>
-  );
+  <tr>
+    <td>&nbsp;</td>
+    <td>{label ?? id}</td>
+    <td className="text-wrap">{statusElt}</td>
+    <td>
+      <AsyncButton
+        variant="danger"
+        size="sm"
+        onClick={() => {
+          onRemove({ extensionId: id, extensionPointId });
+          notify.success(`Removed brick ${label ?? id}`, {
+            event: "ExtensionRemove",
+          });
+        }}
+      >
+        Uninstall
+      </AsyncButton>
+    </td>
+  </tr>;
 };
 
 export default ExtensionRow;
