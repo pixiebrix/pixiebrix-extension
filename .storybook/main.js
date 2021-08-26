@@ -42,34 +42,40 @@ module.exports = {
       ),
     };
 
-    config.module.rules.push({
-      test: /\.scss$/,
-      use: [
-        // style-loader loads the css into the DOM
-        "style-loader",
-        "css-loader",
+    config.module.rules.push(
+      ...[
         {
-          loader: "sass-loader",
-          options: {
-            sourceMap: true,
-            // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
-            implementation: require("node-sass"),
-          },
+          test: /\.ya?ml$/,
+          type: "json",
+          use: "yaml-loader",
         },
-      ],
-    });
-    config.module.rules.push({
-      test: /\.ya?ml$/,
-      type: "json",
-      use: "yaml-loader",
-    });
+        {
+          test: /\.scss$/,
+          use: [
+            // style-loader loads the css into the DOM
+            "style-loader",
+            "css-loader",
+            {
+              loader: "sass-loader",
+              options: {
+                sourceMap: true,
+                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+                implementation: require("node-sass"),
+              },
+            },
+          ],
+        },
+      ]
+    );
 
-    config.plugins.push(new NodePolyfillPlugin());
     config.plugins.push(
-      new webpack.ProvidePlugin({
-        $: "jquery",
-        jQuery: "jquery",
-      })
+      ...[
+        new NodePolyfillPlugin(),
+        new webpack.ProvidePlugin({
+          $: "jquery",
+          jQuery: "jquery",
+        }),
+      ]
     );
 
     return config;
