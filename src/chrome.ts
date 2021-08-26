@@ -107,7 +107,7 @@ export class RuntimeNotFoundError extends Error {
  */
 export async function readStorageWithMigration<
   T extends Record<string, unknown>
->(storageKey: string, defaultValue?: T): Promise<T | undefined> {
+>(storageKey: string, defaultValue?: Partial<T>): Promise<T | undefined> {
   const storedValue = await readStorage<T>(storageKey, defaultValue);
   if (typeof storedValue !== "string") {
     // No migration necessary
@@ -121,7 +121,7 @@ export async function readStorageWithMigration<
 
 export async function readStorage<T = unknown>(
   storageKey: string,
-  defaultValue?: T
+  defaultValue?: Partial<T>
 ): Promise<T | undefined> {
   const result = await browser.storage.local.get({
     [storageKey]: defaultValue,

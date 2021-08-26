@@ -52,7 +52,7 @@ async function uid(): Promise<string> {
     return _uid;
   }
 
-  let uuid = await readStorage<string>(UUID_STORAGE_KEY);
+  let uuid = await readStorage<boolean | string>(UUID_STORAGE_KEY);
   if (!uuid || typeof uuid !== "string") {
     uuid = uuidv4();
     await setStorage(UUID_STORAGE_KEY, uuid);
