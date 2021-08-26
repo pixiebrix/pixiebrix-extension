@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders @pixiebrix/table brick 1`] = `
+exports[`renders @pixiebrix/table brick in loading state 1`] = `
 <DocumentFragment>
   <div>
     <div>
@@ -139,7 +139,7 @@ exports[`renders @pixiebrix/table brick 1`] = `
 </DocumentFragment>
 `;
 
-exports[`renders @pixiebrix/table brick 2`] = `
+exports[`renders @pixiebrix/table loaded 1`] = `
 <DocumentFragment>
   <div>
     <div>
@@ -278,7 +278,7 @@ exports[`renders @pixiebrix/table brick 2`] = `
 </DocumentFragment>
 `;
 
-exports[`renders empty brick 1`] = `
+exports[`renders empty brick in loading state 1`] = `
 <DocumentFragment>
   <div>
     <div>
@@ -356,91 +356,6 @@ exports[`renders empty brick 1`] = `
           class="text-muted"
         >
           Loading...
-        </div>
-      </div>
-    </div>
-  </div>
-</DocumentFragment>
-`;
-
-exports[`renders empty brick 2`] = `
-<DocumentFragment>
-  <div>
-    <div>
-      <h3 />
-      <code
-        class="p-0"
-      />
-    </div>
-    <div
-      class="my-4"
-    >
-      <div
-        class="font-weight-bold"
-      >
-        Description
-      </div>
-      <div
-        class="py-2"
-      >
-        <span
-          class="text-muted"
-        >
-          No description provided
-        </span>
-      </div>
-    </div>
-    <div
-      class="my-4"
-    >
-      <div
-        class="font-weight-bold"
-      >
-        Input Schema
-      </div>
-      <div
-        class="py-2"
-      >
-        <div
-          class="text-muted"
-        >
-          No input schema provided
-        </div>
-      </div>
-    </div>
-    <div
-      class="my-4"
-    >
-      <div
-        class="font-weight-bold"
-      >
-        Output Schema
-      </div>
-      <div
-        class="py-2"
-      >
-        <div
-          class="text-muted"
-        >
-          No output schema provided
-        </div>
-      </div>
-    </div>
-    <div
-      class="my-4"
-    >
-      <div
-        class="font-weight-bold"
-      >
-        Definition
-      </div>
-      <div
-        class="py-2"
-      >
-        <div
-          class="text-muted"
-        >
-          Definition not available for built-in bricks
         </div>
       </div>
     </div>

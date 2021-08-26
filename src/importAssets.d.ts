@@ -25,3 +25,8 @@ declare module "*.txt" {
   const CONTENT: string;
   export default CONTENT;
 }
+
+declare module "*.yaml" {
+  const CONTENT: Record<string, unknown>;
+  export default CONTENT;
+}
