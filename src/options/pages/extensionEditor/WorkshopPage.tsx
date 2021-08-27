@@ -48,7 +48,7 @@ import { orderBy, uniq, compact, sortBy, isEmpty } from "lodash";
 import Select from "react-select";
 import { Kind, PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
 import { WorkshopState, workshopSlice } from "@/options/slices";
-import { useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 
 const { actions } = workshopSlice;
 
@@ -59,6 +59,7 @@ import { useTitle } from "@/hooks/title";
 import { Brick } from "@/types/contract";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import useFetch from "@/hooks/useFetch";
+import { push } from "connected-react-router";
 
 interface OwnProps {
   navigate: (url: string) => void;
@@ -407,4 +408,6 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
   );
 };
 
-export default WorkshopPage;
+const mapDispatchToProps = { navigate: push };
+
+export default connect(undefined, mapDispatchToProps)(WorkshopPage);
