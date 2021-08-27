@@ -53,7 +53,7 @@ async function upsertConfig(
 ): Promise<void> {
   const client = await getLinkedApiClient();
 
-  const data = { config: objToYaml(config as any), kind };
+  const data = { config: objToYaml(config as Record<string, unknown>), kind };
 
   if (packageUUID) {
     await client.put(`api/bricks/${packageUUID}/`, data);

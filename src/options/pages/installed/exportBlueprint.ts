@@ -18,6 +18,7 @@
 import { fromPairs } from "lodash";
 import { IExtension } from "@/core";
 import { objToYaml } from "@/utils/objToYaml";
+import { saveAs } from "file-saver";
 
 export function exportBlueprint(extension: IExtension) {
   const {

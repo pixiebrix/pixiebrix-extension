@@ -50,7 +50,7 @@ const ActiveBricksCard: React.FunctionComponent<{
                 <th>&nbsp;</th>
                 <th>Name</th>
                 <th>Status</th>
-                <th>Uninstall</th>
+                <th>Actions</th>
               </tr>
             </thead>
             {recipeExtensions.map(([recipeId, xs]) => (

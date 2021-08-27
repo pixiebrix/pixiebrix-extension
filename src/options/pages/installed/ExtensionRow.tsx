@@ -25,6 +25,7 @@ import { BeatLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
+  faDownload,
   faExclamation,
   faShare,
   faTimes,
@@ -122,7 +123,7 @@ const ExtensionRow: React.FunctionComponent<{
             {
               title: (
                 <>
-                  <FontAwesomeIcon icon={faShare} /> Share
+                  <FontAwesomeIcon icon={faDownload} /> Export
                 </>
               ),
               action: onExport,
