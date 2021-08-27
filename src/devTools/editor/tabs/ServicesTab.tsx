@@ -19,7 +19,7 @@ import React, { useCallback, useState } from "react";
 import { Button, Tab, Table } from "react-bootstrap";
 import { FieldArray, useField } from "formik";
 import { ServiceDependency } from "@/core";
-import { DependencyRow } from "@/options/pages/extensionEditor/ServicesFormCard";
+import DependencyRow from "./DependencyRow";
 import { useAuthOptions } from "@/options/pages/extensionEditor/ServiceAuthSelector";
 import { head } from "lodash";
 import { ServiceDefinition } from "@/types/definitions";

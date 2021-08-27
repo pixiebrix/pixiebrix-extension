@@ -50,7 +50,7 @@ function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
   ) as Schema;
 }
 
-export function defaultFieldRenderer(
+function defaultFieldRenderer(
   schema: Schema
 ): React.FunctionComponent<FieldProps<unknown>> {
   if (booleanPredicate(schema)) {
