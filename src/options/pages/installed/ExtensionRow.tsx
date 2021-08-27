@@ -27,7 +27,6 @@ import {
   faCheck,
   faDownload,
   faExclamation,
-  faShare,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
