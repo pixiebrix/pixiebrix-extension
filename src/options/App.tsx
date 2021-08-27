@@ -55,7 +55,7 @@ import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contrib/editors";
 import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import { ModalProvider } from "@/components/ConfirmationModal";
-import WorkshopPage from "./pages/extensionEditor/WorkshopPage";
+import WorkshopPage from "./pages/workshop/WorkshopPage";
 
 // Register the built-in bricks
 registerBuiltinBlocks();

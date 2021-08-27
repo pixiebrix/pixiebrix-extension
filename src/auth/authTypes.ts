@@ -15,29 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
-import { Tab } from "react-bootstrap";
-import RunLogCard from "./RunLogCard";
-import { useFormikContext } from "formik";
-
-export const LOGS_EVENT_KEY = "logs";
-
-const LogsTab: React.FunctionComponent<{
-  eventKey: string;
-}> = ({ eventKey = LOGS_EVENT_KEY }) => {
-  const { values } = useFormikContext<FormState>();
-
-  return (
-    <Tab.Pane eventKey={eventKey} className="h-100">
-      <RunLogCard
-        extensionPointId={values.extensionPoint.metadata.id}
-        extensionId={values.uuid}
-        initialLevel="debug"
-        refreshInterval={750}
-      />
-    </Tab.Pane>
-  );
-};
-
-export default LogsTab;
+export interface AuthOption {
+  value: string;
+  label: string;
+  serviceId: string;
+  local: boolean;
+}

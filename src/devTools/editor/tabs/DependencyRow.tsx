@@ -21,9 +21,8 @@ import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ServiceDependency } from "@/core";
 import { Field, FieldInputProps } from "formik";
-import ServiceAuthSelector, {
-  AuthOption,
-} from "@/options/pages/extensionEditor/ServiceAuthSelector";
+import ServiceAuthSelector from "@/components/ServiceAuthSelector";
+import { AuthOption } from "@/auth/authTypes";
 
 const DependencyRow: React.FunctionComponent<{
   field: FieldInputProps<unknown>;
