@@ -19,6 +19,7 @@ import React, { ReactNode } from "react";
 import { Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import styles from "./EllipsisMenu.module.scss";
 
 type Item = {
   title: ReactNode;
@@ -26,11 +27,16 @@ type Item = {
   className?: string;
 };
 
-const EllipsisMenu: React.FunctionComponent<{ items: Item[] }> = ({
-  items,
-}) => (
-  <Dropdown>
-    <Dropdown.Toggle variant="outline-dark" size="sm">
+const EllipsisMenu: React.FunctionComponent<{
+  variant?: string;
+  items: Item[];
+}> = ({ variant, items }) => (
+  <Dropdown alignRight>
+    <Dropdown.Toggle
+      className={styles.toggle}
+      variant={variant ?? "light"}
+      size="sm"
+    >
       <FontAwesomeIcon icon={faEllipsisV} />
     </Dropdown.Toggle>
 

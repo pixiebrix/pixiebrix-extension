@@ -23,10 +23,15 @@ import {
 } from "@/validators/generic";
 import { BeatLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faExclamation } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck,
+  faExclamation,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useNotifications from "@/hooks/useNotifications";
+import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 
 type RemoveAction = (identifier: ExtensionRef) => void;
 
@@ -100,18 +105,25 @@ const ExtensionRow: React.FunctionComponent<{
       <td>{label ?? id}</td>
       <td className="text-wrap">{statusElt}</td>
       <td>
-        <AsyncButton
-          variant="danger"
-          size="sm"
-          onClick={() => {
-            onRemove({ extensionId: id, extensionPointId });
-            notify.success(`Removed brick ${label ?? id}`, {
-              event: "ExtensionRemove",
-            });
-          }}
-        >
-          Uninstall
-        </AsyncButton>
+        <EllipsisMenu
+          items={[
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faTimes} />
+                  &nbsp; Uninstall
+                </>
+              ),
+              action: () => {
+                onRemove({ extensionId: id, extensionPointId });
+                notify.success(`Removed brick ${label ?? id}`, {
+                  event: "ExtensionRemove",
+                });
+              },
+              className: "text-danger",
+            },
+          ]}
+        />
       </td>
     </tr>
   );

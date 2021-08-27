@@ -19,10 +19,37 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import React from "react";
 import EllipsisMenu from "./EllipsisMenu";
 import { action } from "@storybook/addon-actions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 export default {
   title: "Components/EllipsisMenu",
   component: EllipsisMenu,
+  argTypes: {
+    variant: {
+      options: [
+        "primary",
+        "secondary",
+        "success",
+        "warning",
+        "danger",
+        "info",
+        "light",
+        "dark",
+        "link",
+        "outline-primary",
+        "outline-secondary",
+        "outline-success",
+        "outline-warning",
+        "outline-danger",
+        "outline-info",
+        "outline-light",
+        "outline-dark",
+        "outline-link",
+      ],
+      control: { type: "select" },
+    },
+  },
 } as ComponentMeta<typeof EllipsisMenu>;
 
 const Template: ComponentStory<typeof EllipsisMenu> = (args) => (
@@ -41,7 +68,12 @@ Default.args = {
       action: action("Another ation"),
     },
     {
-      title: "Something dangerous",
+      title: (
+        <>
+          <FontAwesomeIcon icon={faTimes} />
+          &nbsp; Something dangerous
+        </>
+      ),
       action: action("Something dangerous"),
       className: "text-danger",
     },
