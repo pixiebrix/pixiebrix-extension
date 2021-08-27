@@ -25,6 +25,7 @@ import { BeatLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
+  faDownload,
   faExclamation,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
@@ -32,6 +33,7 @@ import AsyncButton from "@/components/AsyncButton";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useNotifications from "@/hooks/useNotifications";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import { getErrorMessage } from "@/errors";
 
 type RemoveAction = (identifier: ExtensionRef) => void;
 
@@ -99,6 +101,16 @@ const ExtensionRow: React.FunctionComponent<{
     );
   }, [hasPermissions, requestPermissions, validation]);
 
+  const handleExport = () => {
+    try {
+      exportBlueprint(values, extensionPoint);
+    } catch (error: unknown) {
+      notify.error(`Error exporting as blueprint: ${getErrorMessage(error)}`, {
+        error,
+      });
+    }
+  };
+
   return (
     <tr>
       <td>&nbsp;</td>
@@ -110,8 +122,16 @@ const ExtensionRow: React.FunctionComponent<{
             {
               title: (
                 <>
-                  <FontAwesomeIcon icon={faTimes} />
-                  &nbsp; Uninstall
+                  <FontAwesomeIcon icon={faDownload} /> Export Blueprint
+                </>
+              ),
+              action: handleExport,
+              className: "text-danger",
+            },
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faTimes} /> Uninstall
                 </>
               ),
               action: () => {

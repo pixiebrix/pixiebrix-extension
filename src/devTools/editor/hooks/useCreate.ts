@@ -38,6 +38,7 @@ import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig"
 import { requestPermissions } from "@/utils/permissions";
 import { getErrorMessage } from "@/errors";
 import { getLinkedApiClient } from "@/services/apiClient";
+import { objToYaml } from "@/utils/objToYaml";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -54,7 +55,7 @@ async function upsertConfig(
 ): Promise<void> {
   const client = await getLinkedApiClient();
 
-  const data = { config: configToYaml(config), kind };
+  const data = { config: objToYaml(config as any), kind };
 
   if (packageUUID) {
     await client.put(`api/bricks/${packageUUID}/`, data);
@@ -76,13 +77,6 @@ function selectErrorMessage(error: unknown): string {
   }
 
   return getErrorMessage(error);
-}
-
-/**
- * Dump to YAML, removing keys with undefined values.
- */
-export function configToYaml(content: unknown): string {
-  return dump(removeUndefined(content));
 }
 
 async function ensurePermissions(element: FormState, addToast: AddToast) {

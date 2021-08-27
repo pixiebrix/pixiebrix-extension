@@ -49,12 +49,12 @@ import { useDispatch } from "react-redux";
 import { push as navigate } from "connected-react-router";
 import { useAsyncState } from "@/hooks/common";
 import { saveAs } from "file-saver";
-import { configToYaml } from "@/devTools/editor/hooks/useCreate";
 import OptionsArgsCard from "@/options/pages/extensionEditor/OptionsArgsCard";
 import { useTitle } from "@/hooks/title";
 import { HotKeys } from "react-hotkeys";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
+import { objToYaml } from "@/utils/objToYaml";
 
 export type ExtensionFormState = {
   config: Config;
@@ -166,7 +166,7 @@ function exportBlueprint(
       },
     ],
   };
-  const blueprintYAML = configToYaml(blueprint);
+  const blueprintYAML = objToYaml(blueprint);
   const blob = new Blob([blueprintYAML], { type: "text/plain;charset=utf-8" });
   saveAs(blob, "blueprint.yaml");
 }
