@@ -24,7 +24,6 @@ import {
 import { BeatLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faExclamation } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
 import AsyncButton from "@/components/AsyncButton";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useNotifications from "@/hooks/useNotifications";
@@ -95,25 +94,27 @@ const ExtensionRow: React.FunctionComponent<{
     );
   }, [hasPermissions, requestPermissions, validation]);
 
-  <tr>
-    <td>&nbsp;</td>
-    <td>{label ?? id}</td>
-    <td className="text-wrap">{statusElt}</td>
-    <td>
-      <AsyncButton
-        variant="danger"
-        size="sm"
-        onClick={() => {
-          onRemove({ extensionId: id, extensionPointId });
-          notify.success(`Removed brick ${label ?? id}`, {
-            event: "ExtensionRemove",
-          });
-        }}
-      >
-        Uninstall
-      </AsyncButton>
-    </td>
-  </tr>;
+  return (
+    <tr>
+      <td>&nbsp;</td>
+      <td>{label ?? id}</td>
+      <td className="text-wrap">{statusElt}</td>
+      <td>
+        <AsyncButton
+          variant="danger"
+          size="sm"
+          onClick={() => {
+            onRemove({ extensionId: id, extensionPointId });
+            notify.success(`Removed brick ${label ?? id}`, {
+              event: "ExtensionRemove",
+            });
+          }}
+        >
+          Uninstall
+        </AsyncButton>
+      </td>
+    </tr>
+  );
 };
 
 export default ExtensionRow;
