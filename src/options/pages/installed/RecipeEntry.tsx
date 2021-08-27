@@ -29,14 +29,18 @@ import ExtensionRow from "@/options/pages/installed/ExtensionRow";
 import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useUserAction from "@/hooks/useUserAction";
-import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
+import {
+  ExportBlueprintAction,
+  RemoveAction,
+} from "@/options/pages/installed/installedPageTypes";
 import CloudExtensionRow from "@/options/pages/installed/CloudExtensionRow";
 
 const RecipeEntry: React.FunctionComponent<{
   recipeId: string;
   extensions: ResolvedExtension[];
   onRemove: RemoveAction;
-}> = ({ recipeId, extensions, onRemove }) => {
+  onExportBlueprint: ExportBlueprintAction;
+}> = ({ recipeId, extensions, onRemove, onExportBlueprint }) => {
   const notify = useNotifications();
 
   const recipe = extensions[0]._recipe;
@@ -133,6 +137,7 @@ const RecipeEntry: React.FunctionComponent<{
               key={extension.id}
               extension={extension}
               onRemove={onRemove}
+              onExportBlueprint={onExportBlueprint}
             />
           ) : (
             <CloudExtensionRow key={extension.id} extension={extension} />

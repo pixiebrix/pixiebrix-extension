@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import { ExtensionRef, ResolvedExtension } from "@/core";
+import { ResolvedExtension } from "@/core";
 import {
   ExtensionValidationResult,
   useExtensionValidator,
@@ -25,17 +25,15 @@ import { BeatLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
-  faDownload,
   faExclamation,
+  faShare,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useNotifications from "@/hooks/useNotifications";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
-import { getErrorMessage } from "@/errors";
-
-type RemoveAction = (identifier: ExtensionRef) => void;
+import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
@@ -62,7 +60,8 @@ function validationMessage(validation: ExtensionValidationResult) {
 const ExtensionRow: React.FunctionComponent<{
   extension: ResolvedExtension;
   onRemove: RemoveAction;
-}> = ({ extension, onRemove }) => {
+  onExportBlueprint: ExportBlueprintAction;
+}> = ({ extension, onRemove, onExportBlueprint }) => {
   const { id, label, extensionPointId } = extension;
   const notify = useNotifications();
 
@@ -101,18 +100,19 @@ const ExtensionRow: React.FunctionComponent<{
     );
   }, [hasPermissions, requestPermissions, validation]);
 
-  const handleExport = () => {
-    try {
-      exportBlueprint(values, extensionPoint);
-    } catch (error: unknown) {
-      notify.error(`Error exporting as blueprint: ${getErrorMessage(error)}`, {
-        error,
-      });
-    }
+  const onExport = () => {
+    onExportBlueprint(id);
+  };
+
+  const onUninstall = () => {
+    onRemove({ extensionId: id, extensionPointId });
+    notify.success(`Removed brick ${label ?? id}`, {
+      event: "ExtensionRemove",
+    });
   };
 
   return (
-    <tr>
+    <tr data-id={id}>
       <td>&nbsp;</td>
       <td>{label ?? id}</td>
       <td className="text-wrap">{statusElt}</td>
@@ -122,11 +122,10 @@ const ExtensionRow: React.FunctionComponent<{
             {
               title: (
                 <>
-                  <FontAwesomeIcon icon={faDownload} /> Export Blueprint
+                  <FontAwesomeIcon icon={faShare} /> Share
                 </>
               ),
-              action: handleExport,
-              className: "text-danger",
+              action: onExport,
             },
             {
               title: (
@@ -134,12 +133,7 @@ const ExtensionRow: React.FunctionComponent<{
                   <FontAwesomeIcon icon={faTimes} /> Uninstall
                 </>
               ),
-              action: () => {
-                onRemove({ extensionId: id, extensionPointId });
-                notify.success(`Removed brick ${label ?? id}`, {
-                  event: "ExtensionRemove",
-                });
-              },
+              action: onUninstall,
               className: "text-danger",
             },
           ]}
