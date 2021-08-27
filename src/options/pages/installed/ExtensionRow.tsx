@@ -112,7 +112,7 @@ const ExtensionRow: React.FunctionComponent<{
   };
 
   return (
-    <tr data-id={id}>
+    <tr>
       <td>&nbsp;</td>
       <td>{label ?? id}</td>
       <td className="text-wrap">{statusElt}</td>

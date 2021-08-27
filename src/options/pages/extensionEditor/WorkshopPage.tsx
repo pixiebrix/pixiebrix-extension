@@ -42,12 +42,9 @@ import {
   Button,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import registry from "@/extensionPoints/registry";
 import { Link } from "react-router-dom";
 import AuthContext from "@/auth/AuthContext";
 import { orderBy, uniq, compact, sortBy, isEmpty } from "lodash";
-import BlockModal from "@/components/fields/BlockModal";
-import { useAsyncState } from "@/hooks/common";
 import Select from "react-select";
 import { Kind, PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
 import { WorkshopState, workshopSlice } from "@/options/slices";
@@ -374,7 +371,6 @@ const CustomBricksCard: React.FunctionComponent<
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
   useTitle("Workshop");
   const { isLoggedIn, flags } = useContext(AuthContext);
-  const [extensionPoints] = useAsyncState(registry.all(), []);
 
   return (
     <div>
@@ -390,36 +386,23 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
           )}
         </p>
       </div>
-      <Row>
-        <Col md="12" lg="8">
-          <BlockModal
-            blocks={extensionPoints}
-            caption="Select foundation"
-            renderButton={({ show }) => (
-              <Button variant="info" onClick={show}>
-                <FontAwesomeIcon icon={faCube} /> Use Foundation
+      {isLoggedIn && (
+        <>
+          <Row>
+            <Col md="12" lg="8">
+              <Button
+                variant="info"
+                onClick={() => {
+                  navigate(`/workshop/create/`);
+                }}
+              >
+                <FontAwesomeIcon icon={faPlus} /> Create New Brick
               </Button>
-            )}
-            onSelect={(block) => {
-              navigate(`/workshop/install/${encodeURIComponent(block.id)}`);
-            }}
-          />
-
-          {isLoggedIn && (
-            <Button
-              className="ml-3"
-              variant="info"
-              onClick={() => {
-                navigate(`/workshop/create/`);
-              }}
-            >
-              <FontAwesomeIcon icon={faPlus} /> Create New Brick
-            </Button>
-          )}
-        </Col>
-      </Row>
-
-      {isLoggedIn && <CustomBricksSection navigate={navigate} />}
+            </Col>
+          </Row>
+          <CustomBricksSection navigate={navigate} />
+        </>
+      )}
     </div>
   );
 };
