@@ -35,6 +35,14 @@ function selectResponseText(response: AxiosResponse): string {
       return response.data;
     }
 
+    if (
+      typeof response.data === "object" &&
+      "__all__" in response.data &&
+      Array.isArray(response.data.__all__)
+    ) {
+      return response.data.__all__[0];
+    }
+
     if (Array.isArray(response.data) && typeof response.data[0] === "string") {
       return response.data[0];
     }
@@ -43,7 +51,7 @@ function selectResponseText(response: AxiosResponse): string {
   return response.statusText;
 }
 
-function getHumanDetail(error: unknown): string {
+export function getHumanDetail(error: unknown): string {
   try {
     if (isAxiosError(error)) {
       return selectResponseText(error.response);

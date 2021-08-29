@@ -42,14 +42,24 @@ import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 import useNotifications from "@/hooks/useNotifications";
 import { exportBlueprint } from "./exportBlueprint";
+import { useRouteMatch } from "react-router";
+import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
+import { push } from "connected-react-router";
 
 const { removeExtension } = optionsSlice.actions;
 
 const InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
+  push: (path: string) => void;
   onRemove: RemoveAction;
-}> = ({ extensions, onRemove }) => {
+}> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
+
+  const matchShare = useRouteMatch<{ extensionId: string }>({
+    path: "/extensions/share/:extensionId",
+    strict: true,
+    sensitive: true,
+  });
 
   const [allExtensions] = useAsyncState(async () => {
     const lookup = new Set<UUID>(extensions.map((x) => x.id));
@@ -91,8 +101,20 @@ const InstalledPage: React.FunctionComponent<{
     [notify, allExtensions]
   );
 
+  const toShare = allExtensions?.find(
+    (x) => matchShare && x.id === matchShare.params?.extensionId
+  );
+
   return (
     <Page title="Active Bricks" icon={faCubes}>
+      {toShare && (
+        <ShareExtensionModal
+          extension={toShare}
+          onCancel={() => {
+            push("/installed");
+          }}
+        />
+      )}
       <Row>
         <Col>
           <div className="pb-4">
@@ -148,6 +170,9 @@ const mapStateToProps = (state: { options: OptionsState }) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   // IntelliJ doesn't detect use in the props
+  push: (path: string) => {
+    dispatch(push(path));
+  },
   onRemove: (ref: ExtensionRef) => {
     reportEvent("ExtensionRemove", {
       extensionId: ref.extensionId,

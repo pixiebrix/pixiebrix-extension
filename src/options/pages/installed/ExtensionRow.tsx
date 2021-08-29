@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { ResolvedExtension } from "@/core";
 import {
   ExtensionValidationResult,
@@ -27,6 +27,7 @@ import {
   faCheck,
   faDownload,
   faExclamation,
+  faShare,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
@@ -34,6 +35,9 @@ import useExtensionPermissions from "@/options/pages/installed/useExtensionPermi
 import useNotifications from "@/hooks/useNotifications";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
+import { push } from "connected-react-router";
+import { useDispatch } from "react-redux";
+import AuthContext from "@/auth/AuthContext";
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
@@ -62,12 +66,15 @@ const ExtensionRow: React.FunctionComponent<{
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extension, onRemove, onExportBlueprint }) => {
-  const { id, label, extensionPointId } = extension;
+  const { id, label, extensionPointId, _recipe } = extension;
   const notify = useNotifications();
+  const { scope } = useContext(AuthContext);
 
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extension
   );
+
+  const dispatch = useDispatch();
 
   const [validation] = useExtensionValidator(extension);
 
@@ -115,6 +122,17 @@ const ExtensionRow: React.FunctionComponent<{
       <td>
         <EllipsisMenu
           items={[
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faShare} /> Share
+                </>
+              ),
+              hide: _recipe != null || scope == null,
+              action: () => {
+                dispatch(push(`/extensions/share/${id}`));
+              },
+            },
             {
               title: (
                 <>
