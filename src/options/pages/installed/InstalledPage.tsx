@@ -16,7 +16,7 @@
  */
 
 import { connect } from "react-redux";
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { isEmpty } from "lodash";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
@@ -40,6 +40,8 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { CloudExtension } from "@/types/contract";
 import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
+import useNotifications from "@/hooks/useNotifications";
+import { exportBlueprint } from "./exportBlueprint";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -49,24 +51,44 @@ const InstalledPage: React.FunctionComponent<{
 }> = ({ extensions, onRemove }) => {
   const { flags } = useContext(AuthContext);
 
-  const [cloudExtensions] = useAsyncState(async () => {
+  const [allExtensions] = useAsyncState(async () => {
     const lookup = new Set<UUID>(extensions.map((x) => x.id));
     const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
       "/api/extensions/"
     );
-    return data
+    const cloudExtensions = data
       .filter((x) => !lookup.has(x.id))
       .map((x) => ({ ...x, active: false }));
+
+    return [...extensions, ...cloudExtensions];
   }, [extensions]);
 
   const [resolved] = useAsyncState(
     async () =>
       Promise.all(
-        [...extensions, ...(cloudExtensions ?? [])].map(async (x) =>
-          resolveDefinitions(x)
-        )
+        allExtensions.map(async (extension) => resolveDefinitions(extension))
       ),
-    [extensions, cloudExtensions]
+    [allExtensions]
+  );
+
+  const notify = useNotifications();
+
+  const onExportBlueprint = useCallback(
+    (extensionIdToExport: UUID) => {
+      const extension = allExtensions.find(
+        (extension) => extension.id === extensionIdToExport
+      );
+
+      if (extension == null) {
+        notify.error(
+          `Error exporting as blueprint: extension with id ${extensionIdToExport} not found.`
+        );
+        return;
+      }
+
+      exportBlueprint(extension);
+    },
+    [notify, allExtensions]
   );
 
   return (
@@ -110,7 +132,11 @@ const InstalledPage: React.FunctionComponent<{
       {isEmpty(extensions) ? (
         <NoExtensionsPage />
       ) : (
-        <ActiveBricksCard extensions={resolved} onRemove={onRemove} />
+        <ActiveBricksCard
+          extensions={resolved}
+          onRemove={onRemove}
+          onExportBlueprint={onExportBlueprint}
+        />
       )}
     </Page>
   );
