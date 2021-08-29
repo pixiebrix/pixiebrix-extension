@@ -30,13 +30,9 @@ type Item = {
 const EllipsisMenu: React.FunctionComponent<{
   variant?: string;
   items: Item[];
-}> = ({ variant, items }) => (
+}> = ({ variant = "light", items }) => (
   <Dropdown alignRight>
-    <Dropdown.Toggle
-      className={styles.toggle}
-      variant={variant ?? "light"}
-      size="sm"
-    >
+    <Dropdown.Toggle className={styles.toggle} variant={variant} size="sm">
       <FontAwesomeIcon icon={faEllipsisV} />
     </Dropdown.Toggle>
 
