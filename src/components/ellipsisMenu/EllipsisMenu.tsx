@@ -44,10 +44,7 @@ const EllipsisMenu: React.FunctionComponent<{
       {items.map((item, index) => (
         <Dropdown.Item
           key={index}
-          onClick={(event) => {
-            // FIXME: unsucessfully trying to prevent the RecipeEntry row toggle click handler...
-            event.stopPropagation();
-            event.preventDefault();
+          onClick={() => {
             item.action();
           }}
           className={item.className}

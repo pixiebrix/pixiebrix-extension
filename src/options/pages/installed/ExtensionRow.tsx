@@ -100,10 +100,6 @@ const ExtensionRow: React.FunctionComponent<{
     );
   }, [hasPermissions, requestPermissions, validation]);
 
-  const onExport = () => {
-    onExportBlueprint(id);
-  };
-
   const onUninstall = () => {
     onRemove({ extensionId: id, extensionPointId });
     notify.success(`Removed brick ${label ?? id}`, {
@@ -125,7 +121,9 @@ const ExtensionRow: React.FunctionComponent<{
                   <FontAwesomeIcon icon={faDownload} /> Export
                 </>
               ),
-              action: onExport,
+              action: () => {
+                onExportBlueprint(id);
+              },
             },
             {
               title: (

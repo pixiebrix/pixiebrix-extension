@@ -101,7 +101,14 @@ const RecipeEntry: React.FunctionComponent<{
       {recipeId !== "" && (
         <tr
           className={cx("ActiveBricksCard__blueprint", { isDeployment })}
-          onClick={() => {
+          onClick={(event) => {
+            if (
+              ["A", "BUTTON"].includes((event.target as HTMLElement).tagName)
+            ) {
+              // Don't toggle the row if the user is clicking the action button/more dropdown for the row
+              return;
+            }
+
             setExpanded((prev: boolean) => !prev);
           }}
         >
@@ -148,7 +155,11 @@ const RecipeEntry: React.FunctionComponent<{
               onExportBlueprint={onExportBlueprint}
             />
           ) : (
-            <CloudExtensionRow key={extension.id} extension={extension} />
+            <CloudExtensionRow
+              key={extension.id}
+              extension={extension}
+              onExportBlueprint={onExportBlueprint}
+            />
           )
         )}
     </tbody>

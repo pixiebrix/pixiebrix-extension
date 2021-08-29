@@ -16,7 +16,7 @@
  */
 
 import { connect } from "react-redux";
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { isEmpty } from "lodash";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
@@ -73,18 +73,23 @@ const InstalledPage: React.FunctionComponent<{
 
   const notify = useNotifications();
 
-  const onExportBlueprint = (extensionIdToExport: UUID) => {
-    const extension = extensions.find((e) => e.id === extensionIdToExport);
-
-    if (extension === null) {
-      notify.error(
-        `Error exporting as blueprint: extension with id ${extensionIdToExport} not found.`
+  const onExportBlueprint = useCallback(
+    (extensionIdToExport: UUID) => {
+      const extension = allExtensions.find(
+        (extension) => extension.id === extensionIdToExport
       );
-      return;
-    }
 
-    exportBlueprint(extension);
-  };
+      if (extension == null) {
+        notify.error(
+          `Error exporting as blueprint: extension with id ${extensionIdToExport} not found.`
+        );
+        return;
+      }
+
+      exportBlueprint(extension);
+    },
+    [notify, allExtensions]
+  );
 
   return (
     <Page title="Active Bricks" icon={faCubes}>
