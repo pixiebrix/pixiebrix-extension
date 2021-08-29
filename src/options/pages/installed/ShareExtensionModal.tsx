@@ -116,14 +116,14 @@ const ShareExtensionModal: React.FC<{
         if (isAxiosError(error) && error.response.data.config) {
           helpers.setStatus(error.response.data.config);
           return;
-        } else {
-          notify.error(
-            `Error converting/sharing brick: ${getHumanDetail(error)}`,
-            {
-              error,
-            }
-          );
         }
+
+        notify.error(
+          `Error converting/sharing brick: ${getHumanDetail(error)}`,
+          {
+            error,
+          }
+        );
       } finally {
         helpers.setSubmitting(false);
       }
