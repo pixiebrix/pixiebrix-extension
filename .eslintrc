@@ -30,6 +30,17 @@
   "rules": {
     // Enable extra rules
     "filenames/match-exported": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["*/__mocks__/*"],
+            "message": "Mocks should not be imported directly, they’re automatically picked up by tools."
+          }
+        ]
+      }
+    ],
 
     "no-mixed-operators": [
       "error",
