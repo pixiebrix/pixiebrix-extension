@@ -483,16 +483,12 @@ export async function executeInOpener(
 
 export async function executeOnServer(
   blockId: string,
-  blockArgs: RenderedArgs,
-  options: RemoteBlockOptions
+  blockArgs: RenderedArgs
 ): Promise<unknown> {
   console.debug(`Running ${blockId} on the server`);
   return (await getLinkedApiClient()).post("/api/run/", {
     id: blockId,
-    args: {
-      args: blockArgs,
-      options: options,
-    },
+    args: blockArgs,
   });
 }
 
