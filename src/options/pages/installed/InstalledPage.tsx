@@ -63,7 +63,7 @@ const InstalledPage: React.FunctionComponent<{
       return [...extensions, ...cloudExtensions];
     },
     [extensions],
-    []
+    extensions ?? []
   );
 
   const [resolvedExtensions] = useAsyncState(
