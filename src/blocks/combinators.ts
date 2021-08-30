@@ -237,7 +237,7 @@ async function runStage(
           // TODO: Determine type of error
           throw new RemoteExecutionError(
             "Error while executing brick remotely",
-            data.error
+            error
           );
         }
 
