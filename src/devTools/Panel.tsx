@@ -20,7 +20,7 @@ import { Button, Container } from "react-bootstrap";
 import { HashRouter as Router } from "react-router-dom";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { DevToolsContext, useDevConnection } from "@/devTools/context";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import Editor from "@/devTools/Editor";
 import store, { persistor, RootState } from "./store";
 import { PersistGate } from "redux-persist/integration/react";
@@ -54,7 +54,7 @@ const defaultState: AuthState = {
 const PersistLoader: React.FunctionComponent = () => (
   <Centered>
     <div className="d-flex justify-content-center">
-      <GridLoader />
+      <Spinner />
     </div>
   </Centered>
 );
@@ -122,7 +122,7 @@ const Panel: React.FunctionComponent = () => {
       <Centered>
         <p>Initializing connection...</p>
         <div className="d-flex justify-content-center">
-          <GridLoader />
+          <Spinner />
         </div>
       </Centered>
     );

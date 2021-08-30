@@ -46,7 +46,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import cx from "classnames";
 import "./TemplatesPage.scss";
 import AuthContext from "@/auth/AuthContext";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { useTitle } from "@/hooks/title";
 import { RegistryId } from "@/core";
 import { selectExtensions } from "@/options/selectors";
@@ -267,7 +267,7 @@ const SharedTemplates: React.FunctionComponent<{
     return (
       <Row className="mt-3">
         <Col xl={9} lg={10} md={10} sm={12}>
-          <GridLoader />
+          <Spinner />
         </Col>
       </Row>
     );

@@ -23,7 +23,7 @@ import { Formik, useField } from "formik";
 import { useParams } from "react-router";
 import Editor from "./Editor";
 import { truncate } from "lodash";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import useSubmitBrick from "./useSubmitBrick";
 import yaml from "js-yaml";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
@@ -103,7 +103,7 @@ const LoadingBody: React.FunctionComponent = () => (
       </div>
     </div>
     <div>
-      <GridLoader />
+      <Spinner />
     </div>
   </>
 );

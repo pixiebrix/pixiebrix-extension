@@ -21,7 +21,7 @@ import React from "react";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import urljoin from "url-join";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { SanitizedAuth } from "@/types/contract";
 import { faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -71,7 +71,7 @@ const SharedServicesCard: React.FunctionComponent<OwnProps> = ({
         </Table>
       ) : (
         <Card.Body>
-          <GridLoader />
+          <Spinner />
         </Card.Body>
       )}
       <Card.Footer>

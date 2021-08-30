@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { uniq } from "lodash";
 import { selectOptionalPermissions } from "@/utils/permissions";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { Card, Table } from "react-bootstrap";
 import useReportError from "@/hooks/useReportError";
 import { Permissions } from "webextension-polyfill-ts";
@@ -46,7 +46,7 @@ const PermissionsBody: React.FunctionComponent<{
 
   const helpText = useMemo(() => {
     if (isPending) {
-      return <GridLoader />;
+      return <Spinner />;
     }
 
     if (error) {

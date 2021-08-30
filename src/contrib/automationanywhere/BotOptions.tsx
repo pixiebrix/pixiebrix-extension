@@ -32,7 +32,7 @@ import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import useDependency from "@/services/useDependency";
 import {
   Bot,
@@ -297,7 +297,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
               {inputSchema != null &&
                 isEmpty(inputSchema.properties) &&
                 !schemaPending && <span>Bot does not take any inputs</span>}
-              {schemaPending && <GridLoader />}
+              {schemaPending && <Spinner />}
               {schemaError && (
                 <span className="text-danger">
                   Error fetching schema: {getErrorMessage(schemaError)}

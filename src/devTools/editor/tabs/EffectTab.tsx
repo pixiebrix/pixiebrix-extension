@@ -28,7 +28,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { FieldArray, useField } from "formik";
 import hash from "object-hash";
 import Centered from "@/devTools/editor/components/Centered";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import BlockModal from "@/components/fields/BlockModal";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { BlockType, getType } from "@/blocks/util";
@@ -123,7 +123,7 @@ const EffectTab: React.FunctionComponent<{
     return (
       <Tab.Pane eventKey={eventKey} className="EffectTab h-100">
         <Centered>
-          <GridLoader />
+          <Spinner />
         </Centered>
       </Tab.Pane>
     );

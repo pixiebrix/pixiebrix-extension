@@ -22,7 +22,7 @@ import { Button, Card, Form } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { clearLogs } from "@/background/logging";
 import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
@@ -63,7 +63,7 @@ const LoggingSettings: React.FunctionComponent = () => {
             </Form.Group>
           </Form>
         ) : (
-          <GridLoader />
+          <Spinner />
         )}
       </Card.Body>
       <Card.Footer>

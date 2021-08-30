@@ -41,7 +41,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./BlockField.scss";
 import Button from "react-bootstrap/Button";
 import { useAsyncEffect } from "use-async-effect";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { reportError } from "@/telemetry/logging";
 import BlockModal from "@/components/fields/BlockModal";
 import optionsRegistry from "@/components/fields/optionsRegistry";
@@ -160,7 +160,7 @@ const BlockCard: React.FunctionComponent<{
           ) : error ? (
             <div className="invalid-feedback d-block mb-4">{error}</div>
           ) : (
-            <GridLoader />
+            <Spinner />
           )}
 
           <div className="d-flex">

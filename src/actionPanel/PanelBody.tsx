@@ -18,7 +18,7 @@
 import { ComponentRef, PanelComponent } from "@/extensionPoints/dom";
 import React, { useMemo } from "react";
 import { PanelEntry } from "@/actionPanel/protocol";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import ConsoleLogger from "@/tests/ConsoleLogger";
@@ -89,7 +89,7 @@ const PanelBody: React.FunctionComponent<{ panel: PanelEntry }> = ({
   }
 
   if (pending || component == null) {
-    return <GridLoader />;
+    return <Spinner />;
   }
 
   return component;

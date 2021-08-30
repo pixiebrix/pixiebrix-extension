@@ -17,7 +17,7 @@
 
 import React, { useMemo, useState } from "react";
 import { MessageLevel } from "@/background/logging";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { Card } from "react-bootstrap";
 import LogTable from "@/components/logViewer/LogTable";
 import useLogEntries from "@/components/logViewer/useLogEntries";
@@ -58,7 +58,7 @@ const RunLogCard: React.FunctionComponent<OwnProps> = ({
   if (logs.isLoading) {
     return (
       <Card.Body>
-        <GridLoader />
+        <Spinner />
       </Card.Body>
     );
   }

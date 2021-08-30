@@ -22,7 +22,7 @@ import { useBlockOptions } from "@/components/fields/BlockField";
 import { Card, Form } from "react-bootstrap";
 import { RendererContext } from "@/components/fields/blockOptions";
 import devtoolFields from "@/devTools/editor/fields/Fields";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -56,7 +56,7 @@ const BlockConfiguration: React.FunctionComponent<{
               ) : error ? (
                 <div className="invalid-feedback d-block mb-4">{error}</div>
               ) : (
-                <GridLoader />
+                <Spinner />
               )}
             </RendererContext.Provider>
           </div>

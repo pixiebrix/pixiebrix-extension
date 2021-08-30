@@ -37,7 +37,7 @@ import DefaultActionPanel from "@/actionPanel/DefaultActionPanel";
 import { ToastProvider } from "react-toast-notifications";
 import store, { persistor } from "@/options/store";
 import { Provider } from "react-redux";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { PersistGate } from "redux-persist/integration/react";
 import { reportEvent } from "@/telemetry/events";
 import useExtensionMeta from "@/hooks/useExtensionMeta";
@@ -135,7 +135,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<GridLoader />} persistor={persistor}>
+      <PersistGate loading={<Spinner />} persistor={persistor}>
         <ToastProvider>
           <div className="d-flex flex-column" style={{ height: "100vh" }}>
             <div className="d-flex flex-row mb-2 p-2 justify-content-between align-content-center">

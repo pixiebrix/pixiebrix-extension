@@ -19,7 +19,7 @@ import React, { useEffect } from "react";
 import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import Container from "react-bootstrap/Container";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import InstalledPage from "@/options/pages/installed/InstalledPage";
@@ -159,7 +159,7 @@ const App: React.FunctionComponent = () => {
 
   return (
     <Provider store={store}>
-      <PersistGate loading={<GridLoader />} persistor={persistor}>
+      <PersistGate loading={<Spinner />} persistor={persistor}>
         <AuthContext.Provider value={authState ?? defaultState}>
           <ConnectedRouter history={hashHistory}>
             <ModalProvider>

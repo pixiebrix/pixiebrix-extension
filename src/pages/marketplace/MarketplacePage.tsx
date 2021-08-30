@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo, useState } from "react";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { PageTitle } from "@/layout/Page";
 import sortBy from "lodash/sortBy";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
@@ -167,7 +167,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
       <Row>
         <Col xl={8} lg={10} md={12}>
           {rawRecipes == null ? (
-            <GridLoader />
+            <Spinner />
           ) : (
             <RecipeList
               installedRecipes={installedRecipes}

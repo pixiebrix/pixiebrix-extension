@@ -21,7 +21,7 @@ import {
   ExtensionValidationResult,
   useExtensionValidator,
 } from "@/validators/generic";
-import { BeatLoader } from "react-spinners";
+import Spinner from "@/components/Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck,
@@ -80,7 +80,7 @@ const ExtensionRow: React.FunctionComponent<{
 
   const statusElt = useMemo(() => {
     if (hasPermissions == null || validation == null) {
-      return <BeatLoader />;
+      return <Spinner />;
     }
 
     if (validation && !validation.valid) {

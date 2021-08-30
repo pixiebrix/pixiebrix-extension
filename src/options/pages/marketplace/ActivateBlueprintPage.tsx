@@ -24,7 +24,7 @@ import React, { useMemo } from "react";
 import { useParams } from "react-router";
 import { RecipeDefinition } from "@/types/definitions";
 import { Card, Col, Row } from "react-bootstrap";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import ActivateWizard from "@/options/pages/marketplace/ActivateWizard";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Link } from "react-router-dom";
@@ -111,7 +111,7 @@ const ActivateBlueprintPage: React.FunctionComponent = () => {
       );
     }
 
-    return <GridLoader />;
+    return <Spinner />;
   }, [blueprintId, blueprint, sourcePage]);
 
   return (

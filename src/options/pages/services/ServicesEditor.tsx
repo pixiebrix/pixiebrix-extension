@@ -31,7 +31,7 @@ import { persistor, RootState } from "../../store";
 import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
 import { refresh as refreshBackgroundAuths } from "@/background/locator";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import ZapierModal from "@/options/pages/services/ZapierModal";
 import AuthContext from "@/auth/AuthContext";
 import { useTitle } from "@/hooks/title";
@@ -138,7 +138,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
         </div>
         <Row>
           <Col>
-            <GridLoader />
+            <Spinner />
           </Col>
         </Row>
       </div>

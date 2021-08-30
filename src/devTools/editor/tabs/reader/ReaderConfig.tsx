@@ -25,7 +25,7 @@ import Select from "react-select";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import { useAsyncEffect } from "use-async-effect";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { runReader } from "@/background/devtools";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
@@ -416,7 +416,7 @@ const ReaderConfig: React.FunctionComponent<{
                 </span>
               )}
               {searchResults === undefined ? (
-                <GridLoader />
+                <Spinner />
               ) : (
                 <JSONTree
                   data={searchResults}
@@ -528,7 +528,7 @@ const ReaderConfig: React.FunctionComponent<{
                   </span>
                 )}
                 {searchResults === undefined ? (
-                  <GridLoader />
+                  <Spinner />
                 ) : (
                   <JSONTree
                     data={searchResults}
@@ -545,7 +545,7 @@ const ReaderConfig: React.FunctionComponent<{
               <span>Inferred Schema</span>
               <div className="overflow-auto h-100 w-100">
                 {schema === undefined ? (
-                  <GridLoader />
+                  <Spinner />
                 ) : (
                   <SchemaTree schema={schema} />
                 )}

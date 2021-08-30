@@ -17,7 +17,7 @@
 
 import React, { useState } from "react";
 import { MessageLevel } from "@/background/logging";
-import GridLoader from "react-spinners/GridLoader";
+import Spinner from "@/components/Spinner";
 import { Card } from "react-bootstrap";
 import { MessageContext } from "@/core";
 import LogTable from "@/components/logViewer/LogTable";
@@ -44,7 +44,7 @@ const BrickLogs: React.FunctionComponent<{
   if (logs.isLoading) {
     return (
       <Card.Body>
-        <GridLoader />
+        <Spinner />
       </Card.Body>
     );
   }

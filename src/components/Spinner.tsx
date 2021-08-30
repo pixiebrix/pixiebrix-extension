@@ -15,25 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext } from "react";
-import AuthContext from "@/auth/AuthContext";
-import { DevToolsContext } from "@/devTools/context";
-import Spinner from "@/components/Spinner";
+import React from "react";
 
-const Footer: React.FunctionComponent = () => {
-  const { scope } = useContext(AuthContext);
-  const { connecting } = useContext(DevToolsContext);
+import "./Spinner.scss";
 
-  return (
-    <div className="Sidebar__footer flex-grow-0">
-      <div className="d-flex">
-        <div className="flex-grow-1">
-          Scope: <code>{scope}</code>
-        </div>
-        <div>{connecting && <Spinner />}</div>
-      </div>
+const Spinner: React.FunctionComponent = () => (
+  <div className="pb-loader">
+    <div className="pb-loader-spinner">
+      <i></i>
+      <i></i>
+      <i></i>
+      <i></i>
     </div>
-  );
-};
+    <p className="pb-loader-error"></p>
+  </div>
+);
 
-export default Footer;
+export default Spinner;
