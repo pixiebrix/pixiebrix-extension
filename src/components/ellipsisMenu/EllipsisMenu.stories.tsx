@@ -22,31 +22,33 @@ import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
+const toggleVariantOptions = [
+  "primary",
+  "secondary",
+  "success",
+  "warning",
+  "danger",
+  "info",
+  "light",
+  "dark",
+  "link",
+  "outline-primary",
+  "outline-secondary",
+  "outline-success",
+  "outline-warning",
+  "outline-danger",
+  "outline-info",
+  "outline-light",
+  "outline-dark",
+  "outline-link",
+];
+
 export default {
   title: "Components/EllipsisMenu",
   component: EllipsisMenu,
   argTypes: {
     variant: {
-      options: [
-        "primary",
-        "secondary",
-        "success",
-        "warning",
-        "danger",
-        "info",
-        "light",
-        "dark",
-        "link",
-        "outline-primary",
-        "outline-secondary",
-        "outline-success",
-        "outline-warning",
-        "outline-danger",
-        "outline-info",
-        "outline-light",
-        "outline-dark",
-        "outline-link",
-      ],
+      options: toggleVariantOptions,
       control: { type: "select" },
     },
   },

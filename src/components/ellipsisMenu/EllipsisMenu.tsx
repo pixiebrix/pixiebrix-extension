@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode } from "react";
+import React, { ReactNode, SyntheticEvent } from "react";
 import { Dropdown } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
@@ -30,26 +30,32 @@ type Item = {
 const EllipsisMenu: React.FunctionComponent<{
   variant?: string;
   items: Item[];
-}> = ({ variant = "light", items }) => (
-  <Dropdown alignRight>
-    <Dropdown.Toggle className={styles.toggle} variant={variant} size="sm">
-      <FontAwesomeIcon icon={faEllipsisV} />
-    </Dropdown.Toggle>
+}> = ({ variant = "light", items }) => {
+  const onToggle = (isOpen: boolean, event: SyntheticEvent<Dropdown>) => {
+    event.stopPropagation();
+  };
 
-    <Dropdown.Menu>
-      {items.map((item, index) => (
-        <Dropdown.Item
-          key={index}
-          onClick={() => {
-            item.action();
-          }}
-          className={item.className}
-        >
-          {item.title}
-        </Dropdown.Item>
-      ))}
-    </Dropdown.Menu>
-  </Dropdown>
-);
+  return (
+    <Dropdown alignRight onToggle={onToggle}>
+      <Dropdown.Toggle className={styles.toggle} variant={variant} size="sm">
+        <FontAwesomeIcon icon={faEllipsisV} />
+      </Dropdown.Toggle>
+
+      <Dropdown.Menu>
+        {items.map((item, index) => (
+          <Dropdown.Item
+            key={index}
+            onClick={() => {
+              item.action();
+            }}
+            className={item.className}
+          >
+            {item.title}
+          </Dropdown.Item>
+        ))}
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+};
 
 export default EllipsisMenu;
