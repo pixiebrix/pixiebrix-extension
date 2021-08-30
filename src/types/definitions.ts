@@ -22,6 +22,7 @@ import {
   OutputKey,
   RegistryId,
   Schema,
+  TemplateEngine,
 } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 import { UiSchema } from "@rjsf/core";
@@ -46,6 +47,11 @@ export type ExtensionPointConfig = {
   services?: Record<OutputKey, RegistryId>;
 
   /**
+   * The default template engine for the extension.
+   */
+  templateEngine?: TemplateEngine;
+
+  /**
    * The extension configuration.
    */
   config: Config;
@@ -66,6 +72,7 @@ type Kind = "recipe" | "service" | "reader" | "component";
  * A PixieBrix brick or extension point definition
  */
 export interface Definition {
+  apiVersion: "v1";
   kind: Kind;
   metadata: Metadata;
 }

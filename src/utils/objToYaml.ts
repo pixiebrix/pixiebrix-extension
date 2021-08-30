@@ -19,7 +19,8 @@ import { sortBy, fromPairs } from "lodash";
 import { removeUndefined } from "@/utils";
 import { dump } from "js-yaml";
 
-export const objToYaml = (obj: Record<string, unknown>) =>
+// eslint-disable-next-line @typescript-eslint/ban-types -- don't need/want index signature
+export const objToYaml = (obj: object) =>
   dump(removeUndefined(obj), {
     quotingType: '"',
   });

@@ -20,7 +20,7 @@ import React, { useCallback, useContext } from "react";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, Redirect, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { ExtensionRef, IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
@@ -41,13 +41,16 @@ import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 import useNotifications from "@/hooks/useNotifications";
 import { exportBlueprint } from "./exportBlueprint";
+import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
+import { push } from "connected-react-router";
 
 const { removeExtension } = optionsSlice.actions;
 
 const InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
+  push: (path: string) => void;
   onRemove: RemoveAction;
-}> = ({ extensions, onRemove }) => {
+}> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
 
   const [allExtensions] = useAsyncState(
@@ -99,6 +102,31 @@ const InstalledPage: React.FunctionComponent<{
 
   return (
     <Page title="Active Bricks" icon={faCubes}>
+      <Route
+        exact
+        path="/installed/share/:extensionId"
+        render={(routeProps) => {
+          // Avoid race condition with load when visiting the URL directly
+          if (!allExtensions) {
+            return null;
+          }
+
+          const toShare = allExtensions.find(
+            (x) => x.id === routeProps.match.params.extensionId
+          );
+
+          return toShare ? (
+            <ShareExtensionModal
+              extension={toShare}
+              onCancel={() => {
+                push("/installed");
+              }}
+            />
+          ) : (
+            <Redirect to="/installed" />
+          );
+        }}
+      />
       <Row>
         <Col>
           <div className="pb-4">
@@ -154,6 +182,9 @@ const mapStateToProps = (state: { options: OptionsState }) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   // IntelliJ doesn't detect use in the props
+  push: (path: string) => {
+    dispatch(push(path));
+  },
   onRemove: (ref: ExtensionRef) => {
     reportEvent("ExtensionRemove", {
       extensionId: ref.extensionId,
