@@ -37,21 +37,28 @@ import {
 import CloudExtensionRow from "@/options/pages/installed/CloudExtensionRow";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 
-const RecipeEntry: React.FunctionComponent<{
-  recipeId: string;
+const ExtensionGroup: React.FunctionComponent<{
+  label: string;
   extensions: ResolvedExtension[];
+  expandable?: boolean;
+  startExpanded?: boolean;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
-}> = ({ recipeId, extensions, onRemove, onExportBlueprint }) => {
+}> = ({
+  label,
+  extensions,
+  expandable,
+  startExpanded,
+  onRemove,
+  onExportBlueprint,
+}) => {
   const notify = useNotifications();
 
-  const recipe = extensions[0]._recipe;
-  const label = recipe?.name ?? recipeId;
-
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(startExpanded);
 
   // Only consider to be a deployment if none of the extensions have been modified
-  const isDeployment = extensions.every((x) => x._deployment != null);
+  const isDeployment =
+    extensions.length > 0 && extensions.every((x) => x._deployment != null);
 
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extensions
@@ -64,8 +71,8 @@ const RecipeEntry: React.FunctionComponent<{
       }
     },
     {
-      successMessage: `Uninstalled ${recipe?.name ?? "extensions"}`,
-      errorMessage: `Error uninstalling ${recipe?.name ?? "extensions"}`,
+      successMessage: `Uninstalled ${label}`,
+      errorMessage: `Error uninstalling ${label}`,
     },
     [notify, onRemove]
   );
@@ -97,46 +104,44 @@ const RecipeEntry: React.FunctionComponent<{
   }, [isDeployment, hasPermissions, requestPermissions]);
 
   return (
-    <tbody key={recipeId}>
-      {recipeId !== "" && (
-        <tr
-          className={cx("ActiveBricksCard__blueprint", { isDeployment })}
-          onClick={() => {
-            setExpanded((prev: boolean) => !prev);
-          }}
-        >
-          <th>
-            {!isDeployment && (
-              // Deployments cannot be expanded
-              <FontAwesomeIcon
-                icon={expanded ? faCaretDown : faCaretRight}
-                onClick={() => {
-                  setExpanded((prev: boolean) => !prev);
-                }}
-              />
-            )}
-          </th>
-          <th className="py-2">{label}</th>
-          <th className="py-2">{status}</th>
-          <th>
-            <EllipsisMenu
-              items={[
-                {
-                  title: (
-                    <>
-                      <FontAwesomeIcon icon={faTimes} /> Uninstall
-                    </>
-                  ),
-                  action: async () => {
-                    await removeMany(extensions);
-                  },
-                  className: "text-danger",
-                },
-              ]}
+    <tbody>
+      <tr
+        className={cx("ActiveBricksCard__blueprint", { isDeployment })}
+        onClick={() => {
+          setExpanded((prev: boolean) => !prev);
+        }}
+      >
+        <th>
+          {!isDeployment && (
+            // Deployments cannot be expanded
+            <FontAwesomeIcon
+              icon={expanded ? faCaretDown : faCaretRight}
+              onClick={() => {
+                setExpanded((prev: boolean) => !prev);
+              }}
             />
-          </th>
-        </tr>
-      )}
+          )}
+        </th>
+        <th className="py-2">{label}</th>
+        <th className="py-2">{status}</th>
+        <th>
+          <EllipsisMenu
+            items={[
+              {
+                title: (
+                  <>
+                    <FontAwesomeIcon icon={faTimes} /> Uninstall
+                  </>
+                ),
+                action: async () => {
+                  await removeMany(extensions);
+                },
+                className: "text-danger",
+              },
+            ]}
+          />
+        </th>
+      </tr>
       {expanded &&
         !isDeployment &&
         extensions.map((extension) =>
@@ -159,4 +164,4 @@ const RecipeEntry: React.FunctionComponent<{
   );
 };
 
-export default RecipeEntry;
+export default ExtensionGroup;

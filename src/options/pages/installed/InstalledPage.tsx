@@ -51,24 +51,29 @@ const InstalledPage: React.FunctionComponent<{
 }> = ({ extensions, onRemove }) => {
   const { flags } = useContext(AuthContext);
 
-  const [allExtensions] = useAsyncState(async () => {
-    const lookup = new Set<UUID>(extensions.map((x) => x.id));
-    const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
-      "/api/extensions/"
-    );
-    const cloudExtensions = data
-      .filter((x) => !lookup.has(x.id))
-      .map((x) => ({ ...x, active: false }));
+  const [allExtensions] = useAsyncState(
+    async () => {
+      const lookup = new Set<UUID>(extensions.map((x) => x.id));
+      const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
+        "/api/extensions/"
+      );
+      const cloudExtensions = data
+        .filter((x) => !lookup.has(x.id))
+        .map((x) => ({ ...x, active: false }));
 
-    return [...extensions, ...cloudExtensions];
-  }, [extensions]);
+      return [...extensions, ...cloudExtensions];
+    },
+    [extensions],
+    []
+  );
 
-  const [resolved] = useAsyncState(
+  const [resolvedExtensions] = useAsyncState(
     async () =>
       Promise.all(
         allExtensions.map(async (extension) => resolveDefinitions(extension))
       ),
-    [allExtensions]
+    [allExtensions],
+    []
   );
 
   const notify = useNotifications();
@@ -133,7 +138,7 @@ const InstalledPage: React.FunctionComponent<{
         <NoExtensionsPage />
       ) : (
         <ActiveBricksCard
-          extensions={resolved}
+          extensions={resolvedExtensions}
           onRemove={onRemove}
           onExportBlueprint={onExportBlueprint}
         />

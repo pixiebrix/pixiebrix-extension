@@ -17,25 +17,25 @@
 
 import React, { useMemo } from "react";
 import { ResolvedExtension } from "@/core";
-import {
-  ExportBlueprintAction,
-  RemoveAction,
-} from "@/options/pages/installed/installedPageTypes";
-import { groupBy, sortBy } from "lodash";
+import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { Card, Col, Row, Table } from "react-bootstrap";
-import RecipeEntry from "@/options/pages/installed/RecipeEntry";
+import ExtensionGroup from "./ExtensionGroup";
 
 const ActiveBricksCard: React.FunctionComponent<{
   extensions: ResolvedExtension[];
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
-  const recipeExtensions = useMemo(
-    () =>
-      sortBy(
-        Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
-        ([recipeId]) => (recipeId === "" ? 0 : 1)
+  const extensionGroups = useMemo(
+    () => ({
+      personal: extensions.filter(
+        (extension) => !extension._recipe && !extension._deployment
       ),
+      marketplace: extensions.filter(
+        (extension) => extension._recipe && !extension._deployment
+      ),
+      deployments: extensions.filter((extension) => extension._deployment),
+    }),
     [extensions]
   );
 
@@ -53,15 +53,30 @@ const ActiveBricksCard: React.FunctionComponent<{
                 <th>Actions</th>
               </tr>
             </thead>
-            {recipeExtensions.map(([recipeId, xs]) => (
-              <RecipeEntry
-                key={recipeId}
-                recipeId={recipeId}
-                extensions={xs}
-                onRemove={onRemove}
-                onExportBlueprint={onExportBlueprint}
-              />
-            ))}
+
+            <ExtensionGroup
+              label="Personal Bricks"
+              extensions={extensionGroups.personal}
+              expandable
+              startExpanded
+              onRemove={onRemove}
+              onExportBlueprint={onExportBlueprint}
+            />
+
+            <ExtensionGroup
+              label="Marketplace Bricks"
+              extensions={extensionGroups.marketplace}
+              expandable
+              onRemove={onRemove}
+              onExportBlueprint={onExportBlueprint}
+            />
+
+            <ExtensionGroup
+              label="Automatic Team Deployments"
+              extensions={extensionGroups.deployments}
+              onRemove={onRemove}
+              onExportBlueprint={onExportBlueprint}
+            />
           </Table>
         </Card>
       </Col>
