@@ -229,7 +229,7 @@ async function runStage(
       }
 
       case "remote": {
-        return await executeOnServer(stage.id, blockArgs);
+        return (await executeOnServer(stage.id, blockArgs)).data;
       }
 
       case "self": {
