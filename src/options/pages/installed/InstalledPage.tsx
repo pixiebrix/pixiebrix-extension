@@ -21,7 +21,7 @@ import { isEmpty } from "lodash";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, Redirect, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { ExtensionRef, IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
@@ -42,7 +42,6 @@ import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
 import useNotifications from "@/hooks/useNotifications";
 import { exportBlueprint } from "./exportBlueprint";
-import { useRouteMatch } from "react-router";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import { push } from "connected-react-router";
 
@@ -54,12 +53,6 @@ const InstalledPage: React.FunctionComponent<{
   onRemove: RemoveAction;
 }> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
-
-  const matchShare = useRouteMatch<{ extensionId: string }>({
-    path: "/extensions/share/:extensionId",
-    strict: true,
-    sensitive: true,
-  });
 
   const [allExtensions] = useAsyncState(async () => {
     const lookup = new Set<UUID>(extensions.map((x) => x.id));
@@ -101,20 +94,33 @@ const InstalledPage: React.FunctionComponent<{
     [notify, allExtensions]
   );
 
-  const toShare = allExtensions?.find(
-    (x) => matchShare && x.id === matchShare.params?.extensionId
-  );
-
   return (
     <Page title="Active Bricks" icon={faCubes}>
-      {toShare && (
-        <ShareExtensionModal
-          extension={toShare}
-          onCancel={() => {
-            push("/installed");
-          }}
-        />
-      )}
+      <Route
+        exact
+        path="/installed/share/:extensionId"
+        render={(routeProps) => {
+          // Avoid race condition with load when visiting the URL directly
+          if (!allExtensions) {
+            return null;
+          }
+
+          const toShare = allExtensions.find(
+            (x) => x.id === routeProps.match.params.extensionId
+          );
+
+          return toShare ? (
+            <ShareExtensionModal
+              extension={toShare}
+              onCancel={() => {
+                push("/installed");
+              }}
+            />
+          ) : (
+            <Redirect to="/installed" />
+          );
+        }}
+      />
       <Row>
         <Col>
           <div className="pb-4">

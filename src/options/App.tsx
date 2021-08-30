@@ -128,7 +128,7 @@ const Layout = () => {
                   />
                   <Route
                     exact
-                    path="/extensions/share/:extensionId"
+                    path="/installed/share/:extensionId"
                     component={InstalledPage}
                   />
                   <Route component={InstalledPage} />

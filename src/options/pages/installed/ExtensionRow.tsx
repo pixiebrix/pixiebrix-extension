@@ -130,7 +130,7 @@ const ExtensionRow: React.FunctionComponent<{
               ),
               hide: _recipe != null || scope == null,
               action: () => {
-                dispatch(push(`/extensions/share/${id}`));
+                dispatch(push(`/installed/share/${id}`));
               },
             },
             {
