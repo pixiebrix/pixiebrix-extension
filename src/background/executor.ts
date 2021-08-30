@@ -35,6 +35,7 @@ import { expectContext } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
 import { sleep } from "@/utils";
 import { fromPairs, partition, zip } from "lodash";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -476,6 +477,21 @@ export async function executeInOpener(
       blockId,
       blockArgs,
       options,
+    },
+  });
+}
+
+export async function executeOnServer(
+  blockId: string,
+  blockArgs: RenderedArgs,
+  options: RemoteBlockOptions
+): Promise<unknown> {
+  console.debug(`Running ${blockId} on the server`);
+  return (await getLinkedApiClient()).post("/api/run/", {
+    id: blockId,
+    args: {
+      args: blockArgs,
+      options: options,
     },
   });
 }

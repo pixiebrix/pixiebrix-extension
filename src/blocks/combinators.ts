@@ -51,6 +51,7 @@ import {
   executeInAll,
   executeInOpener,
   executeInTarget,
+  executeOnServer,
 } from "@/background/executor";
 import { boolean, excludeUndefined, resolveObj } from "@/utils";
 import { getLoggingConfig } from "@/background/logging";
@@ -225,6 +226,10 @@ async function runStage(
 
       case "broadcast": {
         return await executeInAll(stage.id, blockArgs, baseOptions);
+      }
+
+      case "remote": {
+        return await executeOnServer(stage.id, blockArgs, baseOptions);
       }
 
       case "self": {
