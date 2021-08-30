@@ -23,6 +23,7 @@ import styles from "./EllipsisMenu.module.scss";
 
 type Item = {
   title: ReactNode;
+  hide?: boolean;
   action: () => void;
   className?: string;
 };
@@ -42,17 +43,19 @@ const EllipsisMenu: React.FunctionComponent<{
       </Dropdown.Toggle>
 
       <Dropdown.Menu>
-        {items.map((item, index) => (
-          <Dropdown.Item
-            key={index}
-            onClick={() => {
-              item.action();
-            }}
-            className={item.className}
-          >
-            {item.title}
-          </Dropdown.Item>
-        ))}
+        {items
+          .filter((x) => !x.hide)
+          .map((item, index) => (
+            <Dropdown.Item
+              key={index}
+              onClick={() => {
+                item.action();
+              }}
+              className={item.className}
+            >
+              {item.title}
+            </Dropdown.Item>
+          ))}
       </Dropdown.Menu>
     </Dropdown>
   );

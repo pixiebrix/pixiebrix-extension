@@ -15,12 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromPairs } from "lodash";
-import { IExtension } from "@/core";
+import { fromPairs, isEmpty } from "lodash";
+import { IExtension, Metadata, RegistryId } from "@/core";
 import { objToYaml } from "@/utils/objToYaml";
 import { saveAs } from "file-saver";
+import { RecipeDefinition } from "@/types/definitions";
 
-export function exportBlueprint(extension: IExtension) {
+export function makeBlueprint(
+  extension: IExtension,
+  metadata: Metadata
+): RecipeDefinition {
   const {
     extensionPointId,
     label,
@@ -32,15 +36,14 @@ export function exportBlueprint(extension: IExtension) {
     config,
   } = extension;
 
-  const blueprint = {
+  if (!isEmpty(optionsArgs)) {
+    throw new Error("optionsArgs not supported in extension conversion");
+  }
+
+  return {
     apiVersion: "v1",
     kind: "recipe",
-    metadata: {
-      id: "",
-      name: label,
-      description: "Blueprint exported from PixieBrix",
-      version: "1.0.0",
-    },
+    metadata,
     definitions,
     extensionPoints: [
       {
@@ -53,11 +56,19 @@ export function exportBlueprint(extension: IExtension) {
         ),
         templateEngine,
         permissions,
-        optionsArgs,
         config,
       },
     ],
   };
+}
+
+export function exportBlueprint(extension: IExtension) {
+  const blueprint = makeBlueprint(extension, {
+    id: "" as RegistryId,
+    name: extension.label,
+    description: "Blueprint exported from PixieBrix",
+    version: "1.0.0",
+  });
 
   const blueprintYAML = objToYaml(blueprint);
   const blob = new Blob([blueprintYAML], { type: "text/plain;charset=utf-8" });

@@ -126,6 +126,11 @@ const Layout = () => {
                     path="/workshop/bricks/:id/"
                     component={BrickEditPage}
                   />
+                  <Route
+                    exact
+                    path="/installed/share/:extensionId"
+                    component={InstalledPage}
+                  />
                   <Route component={InstalledPage} />
                 </Switch>
               </ErrorBoundary>
