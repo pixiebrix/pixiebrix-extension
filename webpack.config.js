@@ -380,6 +380,7 @@ module.exports = (env, options) =>
       rules: [
         {
           test: /\.s?css$/,
+          resourceQuery: { not: [/loadAsUrl/] },
           use: [
             MiniCssExtractPlugin.loader,
             "css-loader",

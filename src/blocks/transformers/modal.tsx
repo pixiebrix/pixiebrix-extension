@@ -23,9 +23,7 @@ import { BlockArg, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
 import { BusinessError, CancelError } from "@/errors";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-const theme = require("!!raw-loader!bootstrap/dist/css/bootstrap.min.css?esModule=false")
-  .default;
+import theme from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 
 export class ModalTransformer extends Transformer {
   constructor() {

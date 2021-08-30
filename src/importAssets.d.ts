@@ -21,6 +21,11 @@ declare module "*.svg" {
   export default CONTENT;
 }
 
+declare module "*?loadAsUrl" {
+  const CONTENT: string;
+  export default CONTENT;
+}
+
 declare module "*.txt" {
   const CONTENT: string;
   export default CONTENT;

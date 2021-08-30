@@ -19,33 +19,15 @@ import { TreeTable } from "primereact/treetable";
 import { Column } from "primereact/column";
 import React from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-const theme = require("!!raw-loader!primereact/resources/themes/saga-blue/theme.css?esModule=false")
-  .default;
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-const primereact = require("!!raw-loader!primereact/resources/primereact.min.css?esModule=false")
-  .default;
-
-// FIXME: figure out how to load the fonts, since the font URL in the file doesn't work with Chrome extensions
-// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-const primeicons = require("!!raw-loader!primeicons/primeicons.css?esModule=false")
-  .default;
+import theme from "primereact/resources/themes/saga-blue/theme.css?loadAsUrl";
+import primereact from "primereact/resources/primereact.min.css?loadAsUrl";
+import primeicons from "primeicons/primeicons.css?loadAsUrl";
 
 const PropertyTree: React.FunctionComponent<{ value: any }> = ({ value }) => (
   <React.Fragment>
-    <style
-      type="text/css"
-      dangerouslySetInnerHTML={{ __html: theme.toString() }}
-    />
-    <style
-      type="text/css"
-      dangerouslySetInnerHTML={{ __html: primereact.toString() }}
-    />
-    <style
-      type="text/css"
-      dangerouslySetInnerHTML={{ __html: primeicons.toString() }}
-    />
+    <link rel="stylesheet" href={theme} />
+    <link rel="stylesheet" href={primereact} />
+    <link rel="stylesheet" href={primeicons} />
     <TreeTable value={value}>
       <Column field="name" header="Property" expander />
       <Column field="value" header="Value" />
