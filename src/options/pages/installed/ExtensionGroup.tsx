@@ -40,25 +40,22 @@ import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
   extensions: ResolvedExtension[];
-  expandable?: boolean;
+  managed?: boolean;
   startExpanded?: boolean;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({
   label,
   extensions,
-  expandable,
+  managed,
   startExpanded,
   onRemove,
   onExportBlueprint,
 }) => {
   const notify = useNotifications();
 
-  const [expanded, setExpanded] = useState(startExpanded);
-
-  // Only consider to be a deployment if none of the extensions have been modified
-  const isDeployment =
-    extensions.length > 0 && extensions.every((x) => x._deployment != null);
+  const expandable = !managed;
+  const [expanded, setExpanded] = useState(expandable && startExpanded);
 
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extensions
@@ -92,7 +89,7 @@ const ExtensionGroup: React.FunctionComponent<{
       );
     }
 
-    if (isDeployment) {
+    if (managed) {
       return (
         <>
           <FontAwesomeIcon icon={faCheck} /> Managed
@@ -101,25 +98,23 @@ const ExtensionGroup: React.FunctionComponent<{
     }
 
     return null;
-  }, [isDeployment, hasPermissions, requestPermissions]);
+  }, [managed, hasPermissions, requestPermissions]);
 
   return (
     <tbody>
       <tr
-        className={cx("ActiveBricksCard__blueprint", { isDeployment })}
+        className={cx("ActiveBricksCard__blueprint", { expandable })}
         onClick={() => {
+          if (!expandable) {
+            return;
+          }
+
           setExpanded((prev: boolean) => !prev);
         }}
       >
         <th>
-          {!isDeployment && (
-            // Deployments cannot be expanded
-            <FontAwesomeIcon
-              icon={expanded ? faCaretDown : faCaretRight}
-              onClick={() => {
-                setExpanded((prev: boolean) => !prev);
-              }}
-            />
+          {expandable && (
+            <FontAwesomeIcon icon={expanded ? faCaretDown : faCaretRight} />
           )}
         </th>
         <th className="py-2">{label}</th>
@@ -143,7 +138,7 @@ const ExtensionGroup: React.FunctionComponent<{
         </th>
       </tr>
       {expanded &&
-        !isDeployment &&
+        expandable &&
         extensions.map((extension) =>
           extension.active ? (
             <ExtensionRow

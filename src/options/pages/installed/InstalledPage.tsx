@@ -17,7 +17,6 @@
 
 import { connect } from "react-redux";
 import React, { useCallback, useContext } from "react";
-import { isEmpty } from "lodash";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
@@ -96,12 +95,14 @@ const InstalledPage: React.FunctionComponent<{
     [notify, allExtensions]
   );
 
+  const noExtensions = allExtensions.length === 0;
+
   return (
     <Page title="Active Bricks" icon={faCubes}>
       <Row>
         <Col>
           <div className="pb-4">
-            {isEmpty(extensions) ? (
+            {noExtensions ? (
               <p>
                 Once you&apos;ve activated templates or created your own bricks,
                 you&apos;ll be able to manage them here
@@ -134,7 +135,7 @@ const InstalledPage: React.FunctionComponent<{
           </div>
         </Col>
       </Row>
-      {isEmpty(extensions) ? (
+      {noExtensions ? (
         <NoExtensionsPage />
       ) : (
         <ActiveBricksCard

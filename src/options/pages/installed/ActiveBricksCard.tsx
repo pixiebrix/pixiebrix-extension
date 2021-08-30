@@ -54,29 +54,34 @@ const ActiveBricksCard: React.FunctionComponent<{
               </tr>
             </thead>
 
-            <ExtensionGroup
-              label="Personal Bricks"
-              extensions={extensionGroups.personal}
-              expandable
-              startExpanded
-              onRemove={onRemove}
-              onExportBlueprint={onExportBlueprint}
-            />
+            {extensionGroups.personal.length > 0 && (
+              <ExtensionGroup
+                label="Personal Bricks"
+                extensions={extensionGroups.personal}
+                startExpanded
+                onRemove={onRemove}
+                onExportBlueprint={onExportBlueprint}
+              />
+            )}
 
-            <ExtensionGroup
-              label="Marketplace Bricks"
-              extensions={extensionGroups.marketplace}
-              expandable
-              onRemove={onRemove}
-              onExportBlueprint={onExportBlueprint}
-            />
+            {extensionGroups.marketplace.length > 0 && (
+              <ExtensionGroup
+                label="Marketplace Bricks"
+                extensions={extensionGroups.marketplace}
+                onRemove={onRemove}
+                onExportBlueprint={onExportBlueprint}
+              />
+            )}
 
-            <ExtensionGroup
-              label="Automatic Team Deployments"
-              extensions={extensionGroups.deployments}
-              onRemove={onRemove}
-              onExportBlueprint={onExportBlueprint}
-            />
+            {extensionGroups.deployments.length > 0 && (
+              <ExtensionGroup
+                label="Automatic Team Deployments"
+                extensions={extensionGroups.deployments}
+                managed
+                onRemove={onRemove}
+                onExportBlueprint={onExportBlueprint}
+              />
+            )}
           </Table>
         </Card>
       </Col>
