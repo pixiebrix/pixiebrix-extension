@@ -15,47 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { ResolvedExtension } from "@/core";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { Card, Col, Row, Table } from "react-bootstrap";
 import ExtensionGroup from "./ExtensionGroup";
+import ExtensionGroupHeader from "./ExtensionGroupHeader";
+import ExtensionRow from "./ExtensionRow";
+import { groupBy } from "lodash";
 
-type ExtensionGroupDefinition = {
-  label: string;
-  extensions: ResolvedExtension[];
-  managed?: boolean;
-  startExpanded?: boolean;
-};
+const groupByRecipe = (
+  extensions: ResolvedExtension[]
+): ResolvedExtension[][] =>
+  Object.values(groupBy(extensions, (extension) => extension._recipe.id));
 
 const ActiveBricksCard: React.FunctionComponent<{
   extensions: ResolvedExtension[];
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extensions, onRemove, onExportBlueprint }) => {
-  const extensionGroups = useMemo(
-    () =>
-      [
-        {
-          label: "Personal Bricks",
-          extensions: extensions.filter(
-            (extension) => !extension._recipe && !extension._deployment
-          ),
-          startExpanded: true,
-        } as ExtensionGroupDefinition,
-        {
-          label: "Marketplace Bricks",
-          extensions: extensions.filter(
-            (extension) => extension._recipe && !extension._deployment
-          ),
-        } as ExtensionGroupDefinition,
-        {
-          label: "Automatic Team Deployments",
-          extensions: extensions.filter((extension) => extension._deployment),
-          managed: true,
-        } as ExtensionGroupDefinition,
-      ].filter((groupDefinition) => groupDefinition.extensions.length > 0),
-    [extensions]
+  const personalExtensions = extensions.filter(
+    (extension) => !extension._recipe && !extension._deployment
+  );
+
+  const marketplaceExtensionGroupss = groupByRecipe(
+    extensions.filter(
+      (extension) => extension._recipe && !extension._deployment
+    )
+  );
+
+  const deploymentGroupss = groupByRecipe(
+    extensions.filter((extension) => extension._deployment)
   );
 
   return (
@@ -73,14 +63,56 @@ const ActiveBricksCard: React.FunctionComponent<{
               </tr>
             </thead>
 
-            {extensionGroups.map((groupDefinition) => (
-              <ExtensionGroup
-                key={groupDefinition.label}
-                onRemove={onRemove}
-                onExportBlueprint={onExportBlueprint}
-                {...groupDefinition}
-              />
-            ))}
+            <tbody>
+              {personalExtensions.length > 0 && (
+                <>
+                  <ExtensionGroupHeader label="Personal Bricks" />
+                  {personalExtensions.map((extension) => (
+                    <ExtensionRow
+                      key={extension.id}
+                      extension={extension}
+                      onRemove={onRemove}
+                      onExportBlueprint={onExportBlueprint}
+                    />
+                  ))}
+                </>
+              )}
+
+              {marketplaceExtensionGroupss.length > 0 && (
+                <>
+                  <ExtensionGroupHeader label="Marketplace Bricks" />
+                  {marketplaceExtensionGroupss.map((extensions) => (
+                    <ExtensionGroup
+                      key={extensions[0]._recipe.id}
+                      label={
+                        extensions[0]._recipe.name ?? extensions[0]._recipe.id
+                      }
+                      extensions={extensions}
+                      onRemove={onRemove}
+                      onExportBlueprint={onExportBlueprint}
+                    />
+                  ))}
+                </>
+              )}
+
+              {deploymentGroupss.length > 0 && (
+                <>
+                  <ExtensionGroupHeader label="Automatic Team Deploymentss" />
+                  {deploymentGroupss.map((extensions) => (
+                    <ExtensionGroup
+                      key={extensions[0]._recipe.id}
+                      label={
+                        extensions[0]._recipe.name ?? extensions[0]._recipe.id
+                      }
+                      extensions={extensions}
+                      managed
+                      onRemove={onRemove}
+                      onExportBlueprint={onExportBlueprint}
+                    />
+                  ))}
+                </>
+              )}
+            </tbody>
           </Table>
         </Card>
       </Col>

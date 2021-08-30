@@ -36,6 +36,7 @@ import {
 } from "@/options/pages/installed/installedPageTypes";
 import CloudExtensionRow from "@/options/pages/installed/CloudExtensionRow";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import styles from "./ExtensionGroup.module.scss";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
@@ -101,9 +102,9 @@ const ExtensionGroup: React.FunctionComponent<{
   }, [managed, hasPermissions, requestPermissions]);
 
   return (
-    <tbody>
+    <>
       <tr
-        className={cx("ActiveBricksCard__blueprint", { expandable })}
+        className={cx(styles.groupLabel, { [styles.expandable]: expandable })}
         onClick={() => {
           if (!expandable) {
             return;
@@ -112,14 +113,14 @@ const ExtensionGroup: React.FunctionComponent<{
           setExpanded((prev: boolean) => !prev);
         }}
       >
-        <th>
+        <td>
           {expandable && (
             <FontAwesomeIcon icon={expanded ? faCaretDown : faCaretRight} />
           )}
-        </th>
-        <th className="py-2">{label}</th>
-        <th className="py-2">{status}</th>
-        <th>
+        </td>
+        <td>{label}</td>
+        <td>{status}</td>
+        <td>
           <EllipsisMenu
             items={[
               {
@@ -135,7 +136,7 @@ const ExtensionGroup: React.FunctionComponent<{
               },
             ]}
           />
-        </th>
+        </td>
       </tr>
       {expanded &&
         expandable &&
@@ -155,7 +156,7 @@ const ExtensionGroup: React.FunctionComponent<{
             />
           )
         )}
-    </tbody>
+    </>
   );
 };
 
