@@ -481,18 +481,15 @@ export async function executeInOpener(
   });
 }
 
-async function _executeOnServer(blockId: string, blockArgs: RenderedArgs) {
-  console.debug(`Running ${blockId} on the server`);
-  return (await getLinkedApiClient()).post("/api/run/", {
-    id: blockId,
-    args: blockArgs,
-  });
-}
-
 export const executeOnServer = liftBackground(
   "EXECUTE_ON_SERVER",
-  async (blockId: string, blockArgs: RenderedArgs) =>
-    _executeOnServer(blockId, blockArgs)
+  async (blockId: string, blockArgs: RenderedArgs) => {
+    console.debug(`Running ${blockId} on the server`);
+    return (await getLinkedApiClient()).post("/api/run/", {
+      id: blockId,
+      args: blockArgs,
+    });
+  }
 );
 
 export default initExecutor;
