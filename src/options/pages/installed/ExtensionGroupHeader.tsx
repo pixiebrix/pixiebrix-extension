@@ -22,7 +22,9 @@ const ExtensionGroupHeader: React.FunctionComponent<{ label: string }> = ({
   label,
 }) => (
   <tr className={styles.root}>
-    <td colSpan={4}>{label}</td>
+    <td colSpan={2}>{label}</td>
+    <td>Status</td>
+    <td>Actions</td>
   </tr>
 );
 

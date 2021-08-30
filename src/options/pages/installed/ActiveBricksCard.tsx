@@ -38,13 +38,13 @@ const ActiveBricksCard: React.FunctionComponent<{
     (extension) => !extension._recipe && !extension._deployment
   );
 
-  const marketplaceExtensionGroupss = groupByRecipe(
+  const marketplaceExtensionGroups = groupByRecipe(
     extensions.filter(
       (extension) => extension._recipe && !extension._deployment
     )
   );
 
-  const deploymentGroupss = groupByRecipe(
+  const deploymentGroups = groupByRecipe(
     extensions.filter((extension) => extension._deployment)
   );
 
@@ -54,15 +54,6 @@ const ActiveBricksCard: React.FunctionComponent<{
         <Card className="ActiveBricksCard">
           <Card.Header>Active Bricks</Card.Header>
           <Table>
-            <thead>
-              <tr>
-                <th>&nbsp;</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-
             <tbody>
               {personalExtensions.length > 0 && (
                 <>
@@ -75,15 +66,13 @@ const ActiveBricksCard: React.FunctionComponent<{
                 </>
               )}
 
-              {marketplaceExtensionGroupss.length > 0 && (
+              {marketplaceExtensionGroups.length > 0 && (
                 <>
                   <ExtensionGroupHeader label="Marketplace Bricks" />
-                  {marketplaceExtensionGroupss.map((extensions) => (
+                  {marketplaceExtensionGroups.map((extensions) => (
                     <ExtensionGroup
                       key={extensions[0]._recipe.id}
-                      label={
-                        extensions[0]._recipe.name ?? extensions[0]._recipe.id
-                      }
+                      label={extensions[0]._recipe.name}
                       extensions={extensions}
                       onRemove={onRemove}
                       onExportBlueprint={onExportBlueprint}
@@ -92,15 +81,13 @@ const ActiveBricksCard: React.FunctionComponent<{
                 </>
               )}
 
-              {deploymentGroupss.length > 0 && (
+              {deploymentGroups.length > 0 && (
                 <>
-                  <ExtensionGroupHeader label="Automatic Team Deploymentss" />
-                  {deploymentGroupss.map((extensions) => (
+                  <ExtensionGroupHeader label="Automatic Team Deployments" />
+                  {deploymentGroups.map((extensions) => (
                     <ExtensionGroup
                       key={extensions[0]._recipe.id}
-                      label={
-                        extensions[0]._recipe.name ?? extensions[0]._recipe.id
-                      }
+                      label={extensions[0]._recipe.name}
                       extensions={extensions}
                       managed
                       onRemove={onRemove}

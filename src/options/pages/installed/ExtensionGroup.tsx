@@ -103,7 +103,7 @@ const ExtensionGroup: React.FunctionComponent<{
   return (
     <>
       <tr
-        className={cx({ [styles.expandable]: styles.expandableGroupLabel })}
+        className={cx({ [styles.expandableGroupLabel]: expandable })}
         onClick={() => {
           if (!expandable) {
             return;
