@@ -26,7 +26,7 @@ import {
   RunBlockAction,
 } from "@/contentScript/executor";
 import { browser, Tabs } from "webextension-polyfill-ts";
-import { MESSAGE_PREFIX } from "@/background/protocol";
+import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
 import { ActionType, Message, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
@@ -481,15 +481,18 @@ export async function executeInOpener(
   });
 }
 
-export async function executeOnServer(
-  blockId: string,
-  blockArgs: RenderedArgs
-): Promise<unknown> {
+async function _executeOnServer(blockId: string, blockArgs: RenderedArgs) {
   console.debug(`Running ${blockId} on the server`);
   return (await getLinkedApiClient()).post("/api/run/", {
     id: blockId,
     args: blockArgs,
   });
 }
+
+export const executeOnServer = liftBackground(
+  "EXECUTE_ON_SERVER",
+  async (blockId: string, blockArgs: RenderedArgs) =>
+    _executeOnServer(blockId, blockArgs)
+);
 
 export default initExecutor;
