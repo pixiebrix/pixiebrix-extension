@@ -215,6 +215,19 @@ function mockHeavyDependencies() {
   }
 }
 
+/**
+ * Ensure that a dependency is never included in a production build.
+ * May cause runtime errors if this isn't *also* handled in the code,
+ * for example by checking ENV === 'production'
+ */
+function devDependenciesOnly(options, ...dependencyName) {
+  if (isProd(options)) {
+    return Object.fromEntries(dependencyName.map((dep) => [dep, false]));
+  }
+
+  return {};
+}
+
 module.exports = (env, options) =>
   mergeWithShared({
     node: {
@@ -272,6 +285,7 @@ module.exports = (env, options) =>
     resolve: {
       alias: {
         ...mockHeavyDependencies(),
+        ...devDependenciesOnly(options, "redux-logger"),
 
         // Enables static analysis and removal of dead code
         "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
