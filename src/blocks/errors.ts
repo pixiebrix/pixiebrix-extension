@@ -111,3 +111,13 @@ export class OutputValidationError extends BusinessError {
     this.errors = errors;
   }
 }
+
+export class RemoteExecutionError extends BusinessError {
+  readonly error: OutputUnit[];
+
+  constructor(message: string, error: OutputUnit[]) {
+    super(message);
+    this.name = "PipelineConfigurationError";
+    this.error = castArray(error);
+  }
+}

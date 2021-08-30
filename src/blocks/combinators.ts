@@ -63,6 +63,7 @@ import {
   InputValidationError,
   OutputValidationError,
   PipelineConfigurationError,
+  RemoteExecutionError,
 } from "@/blocks/errors";
 import { engineRenderer } from "@/utils/renderers";
 import { BlockConfig, BlockPipeline, ReaderConfig } from "./types";
@@ -229,7 +230,15 @@ async function runStage(
       }
 
       case "remote": {
-        return (await executeOnServer(stage.id, blockArgs)).data.data;
+        const data = (await executeOnServer(stage.id, blockArgs)).data;
+        if (data.error) {
+          // TODO: Determine type of error
+          throw new RemoteExecutionError(
+            "Error while executing brick remotely",
+            data.error
+          );
+        }
+        return data.data;
       }
 
       case "self": {
