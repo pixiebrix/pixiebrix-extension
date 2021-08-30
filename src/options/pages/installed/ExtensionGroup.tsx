@@ -97,7 +97,13 @@ const ExtensionGroup: React.FunctionComponent<{
       );
     }
 
-    return null;
+    // XXX: this should check the status of the underlying bricks and surface if there's any problems (because the
+    // groups start collapsed, you wouldn't know where to look)
+    return (
+      <>
+        <FontAwesomeIcon icon={faCheck} /> Active
+      </>
+    );
   }, [managed, hasPermissions, requestPermissions]);
 
   return (

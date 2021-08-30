@@ -20,6 +20,7 @@ import React from "react";
 import CloudExtensionRow from "./CloudExtensionRow";
 import InstalledExtensionRow from "./InstalledExtensionRow";
 import { RemoveAction, ExportBlueprintAction } from "./installedPageTypes";
+import { sortBy } from "lodash";
 
 const ExtensionRows: React.FunctionComponent<{
   extensions: ResolvedExtension[];
@@ -27,7 +28,12 @@ const ExtensionRows: React.FunctionComponent<{
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extensions, onRemove, onExportBlueprint }) => (
   <>
-    {extensions.map((extension) =>
+    {sortBy(
+      extensions,
+      (x) => (x.active ? 0 : 1),
+      (x) => x.label ?? "",
+      (x) => x.id
+    ).map((extension) =>
       extension.active ? (
         <InstalledExtensionRow
           key={extension.id}
