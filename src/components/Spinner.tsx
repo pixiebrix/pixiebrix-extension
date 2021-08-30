@@ -27,7 +27,6 @@ const Spinner: React.FunctionComponent = () => (
       <i></i>
       <i></i>
     </div>
-    <p className="pb-loader-error"></p>
   </div>
 );
 
