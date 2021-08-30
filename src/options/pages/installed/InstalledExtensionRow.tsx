@@ -57,7 +57,7 @@ function validationMessage(validation: ExtensionValidationResult) {
   return message;
 }
 
-const ExtensionRow: React.FunctionComponent<{
+const InstalledExtensionRow: React.FunctionComponent<{
   extension: ResolvedExtension;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
@@ -141,4 +141,4 @@ const ExtensionRow: React.FunctionComponent<{
   );
 };
 
-export default ExtensionRow;
+export default InstalledExtensionRow;

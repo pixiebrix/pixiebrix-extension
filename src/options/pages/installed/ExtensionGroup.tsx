@@ -26,7 +26,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import { IExtension, ResolvedExtension } from "@/core";
-import ExtensionRow from "@/options/pages/installed/ExtensionRow";
 import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useUserAction from "@/hooks/useUserAction";
@@ -34,9 +33,9 @@ import {
   ExportBlueprintAction,
   RemoveAction,
 } from "@/options/pages/installed/installedPageTypes";
-import CloudExtensionRow from "@/options/pages/installed/CloudExtensionRow";
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import styles from "./ExtensionGroup.module.scss";
+import ExtensionRows from "./ExtensionRows";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
@@ -104,7 +103,7 @@ const ExtensionGroup: React.FunctionComponent<{
   return (
     <>
       <tr
-        className={cx(styles.groupLabel, { [styles.expandable]: expandable })}
+        className={cx({ [styles.expandable]: styles.expandableGroupLabel })}
         onClick={() => {
           if (!expandable) {
             return;
@@ -138,24 +137,13 @@ const ExtensionGroup: React.FunctionComponent<{
           />
         </td>
       </tr>
-      {expanded &&
-        expandable &&
-        extensions.map((extension) =>
-          extension.active ? (
-            <ExtensionRow
-              key={extension.id}
-              extension={extension}
-              onRemove={onRemove}
-              onExportBlueprint={onExportBlueprint}
-            />
-          ) : (
-            <CloudExtensionRow
-              key={extension.id}
-              extension={extension}
-              onExportBlueprint={onExportBlueprint}
-            />
-          )
-        )}
+      {expanded && expandable && (
+        <ExtensionRows
+          extensions={extensions}
+          onRemove={onRemove}
+          onExportBlueprint={onExportBlueprint}
+        />
+      )}
     </>
   );
 };

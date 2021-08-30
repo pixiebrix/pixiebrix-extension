@@ -21,8 +21,8 @@ import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { Card, Col, Row, Table } from "react-bootstrap";
 import ExtensionGroup from "./ExtensionGroup";
 import ExtensionGroupHeader from "./ExtensionGroupHeader";
-import ExtensionRow from "./ExtensionRow";
 import { groupBy } from "lodash";
+import ExtensionRows from "./ExtensionRows";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
@@ -67,14 +67,11 @@ const ActiveBricksCard: React.FunctionComponent<{
               {personalExtensions.length > 0 && (
                 <>
                   <ExtensionGroupHeader label="Personal Bricks" />
-                  {personalExtensions.map((extension) => (
-                    <ExtensionRow
-                      key={extension.id}
-                      extension={extension}
-                      onRemove={onRemove}
-                      onExportBlueprint={onExportBlueprint}
-                    />
-                  ))}
+                  <ExtensionRows
+                    extensions={personalExtensions}
+                    onRemove={onRemove}
+                    onExportBlueprint={onExportBlueprint}
+                  />
                 </>
               )}
 
