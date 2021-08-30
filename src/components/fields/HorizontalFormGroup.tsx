@@ -23,7 +23,7 @@ import { FieldInputProps, FieldMetaProps } from "formik/dist/types";
 import { FieldHookConfig } from "formik/dist/Field";
 
 type OwnProps<T = any> = {
-  description?: string;
+  description?: string | React.ReactNode;
   label?: string;
   propsOrFieldName: string | FieldHookConfig<T>;
   children: (
