@@ -79,10 +79,7 @@ export class ModalTransformer extends Transformer {
         const id = `modal-${uuidv4()}`;
         const form = (
           <React.Fragment>
-            <style
-              type="text/css"
-              dangerouslySetInnerHTML={{ __html: theme.toString() }}
-            />
+            <link rel="stylesheet" href={theme} />
             <div className="modal-backdrop show"></div>
             <div
               id={id}
