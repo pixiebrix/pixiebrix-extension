@@ -27,7 +27,7 @@ import {
 } from "@/contentScript/executor";
 import { browser, Tabs } from "webextension-polyfill-ts";
 import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
-import { ActionType, Message, RenderedArgs } from "@/core";
+import { ActionType, Message, RegistryId, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError, getErrorMessage } from "@/errors";
@@ -483,7 +483,7 @@ export async function executeInOpener(
 
 export const executeOnServer = liftBackground(
   "EXECUTE_ON_SERVER",
-  async (blockId: string, blockArgs: RenderedArgs) => {
+  async (blockId: RegistryId, blockArgs: RenderedArgs) => {
     console.debug(`Running ${blockId} on the server`);
     return (await getLinkedApiClient()).post("/api/run/", {
       id: blockId,
