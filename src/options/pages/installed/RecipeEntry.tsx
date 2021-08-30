@@ -101,14 +101,7 @@ const RecipeEntry: React.FunctionComponent<{
       {recipeId !== "" && (
         <tr
           className={cx("ActiveBricksCard__blueprint", { isDeployment })}
-          onClick={(event) => {
-            if (
-              ["A", "BUTTON"].includes((event.target as HTMLElement).tagName)
-            ) {
-              // Don't toggle the row if the user is clicking the action button/more dropdown for the row
-              return;
-            }
-
+          onClick={() => {
             setExpanded((prev: boolean) => !prev);
           }}
         >
