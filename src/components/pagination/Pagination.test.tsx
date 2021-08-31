@@ -29,7 +29,9 @@ test(`renders ${MAX_DISPLAYED_PAGES} pages`, () => {
 test.each([
   0,
   1,
+  MAX_DISPLAYED_PAGES,
   Math.floor(1.5 * MAX_DISPLAYED_PAGES),
+  2 * MAX_DISPLAYED_PAGES,
   3 * MAX_DISPLAYED_PAGES - 2,
   3 * MAX_DISPLAYED_PAGES - 1,
 ])(

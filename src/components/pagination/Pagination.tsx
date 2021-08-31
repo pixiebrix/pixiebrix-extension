@@ -54,6 +54,24 @@ const Pagination: React.FC<{
     );
   }
 
+  const onMoreLeft = () => {
+    let toPage = page - MAX_DISPLAYED_PAGES;
+    if (toPage < middlePageIndex) {
+      toPage = Math.floor(middlePageIndex);
+    }
+
+    setPage(toPage);
+  };
+
+  const onMoreRight = () => {
+    let toPage = page + MAX_DISPLAYED_PAGES;
+    if (toPage > numPages - middlePageIndex - 1) {
+      toPage = Math.ceil(numPages - middlePageIndex - 1);
+    }
+
+    setPage(toPage);
+  };
+
   return (
     <BootstrapPagination className="my-0">
       {renderLeftEllipsis && (
@@ -63,11 +81,7 @@ const Pagination: React.FC<{
               setPage(0);
             }}
           />
-          <BootstrapPagination.Ellipsis
-            onClick={() => {
-              setPage(displayedNumbers[0] - 1);
-            }}
-          />
+          <BootstrapPagination.Ellipsis onClick={onMoreLeft} />
         </>
       )}
       {displayedNumbers.map((pageIndex) => (
@@ -83,11 +97,7 @@ const Pagination: React.FC<{
       ))}
       {renderRightEllipsis && (
         <>
-          <BootstrapPagination.Ellipsis
-            onClick={() => {
-              setPage(displayedNumbers[MAX_DISPLAYED_PAGES - 1] + 1);
-            }}
-          />
+          <BootstrapPagination.Ellipsis onClick={onMoreRight} />
           <BootstrapPagination.Last
             onClick={() => {
               setPage(numPages - 1);
