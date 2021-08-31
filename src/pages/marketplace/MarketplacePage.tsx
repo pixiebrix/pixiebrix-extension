@@ -18,13 +18,13 @@
 import React, { useMemo, useState } from "react";
 import Spinner from "@/components/Spinner";
 import { PageTitle } from "@/layout/Page";
-import sortBy from "lodash/sortBy";
+import { sortBy } from "lodash";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
 import "./MarketplacePage.scss";
-import type { ButtonProps } from "react-bootstrap/Button";
+import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;

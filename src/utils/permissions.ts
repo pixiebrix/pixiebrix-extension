@@ -16,7 +16,7 @@
  */
 
 import { browser, Manifest, Permissions } from "webextension-polyfill-ts";
-import uniq from "lodash/uniq";
+import { uniq } from "lodash";
 import { liftBackground } from "@/background/protocol";
 import { openPopupPrompt } from "@/background/permissionPrompt";
 

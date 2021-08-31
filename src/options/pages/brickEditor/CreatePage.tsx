@@ -18,11 +18,8 @@
 import React from "react";
 import { PageTitle } from "@/layout/Page";
 import { faHammer } from "@fortawesome/free-solid-svg-icons";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import Button from "react-bootstrap/Button";
+import { Row, Col, Button, Form } from "react-bootstrap";
 import { Formik } from "formik";
-import Form from "react-bootstrap/Form";
 import Editor, { EditorValues } from "./Editor";
 import useSubmitBrick from "./useSubmitBrick";
 import { useTitle } from "@/hooks/title";

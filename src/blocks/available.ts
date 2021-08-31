@@ -16,7 +16,7 @@
  */
 
 import { patternToRegex } from "webext-patterns";
-import castArray from "lodash/castArray";
+import { castArray } from "lodash";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
 

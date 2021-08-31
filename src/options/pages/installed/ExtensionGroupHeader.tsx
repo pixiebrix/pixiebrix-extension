@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,33 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.ActiveBricksCard {
-  .table {
-    th {
-      font-weight: 400;
-    }
+import React from "react";
+import styles from "./ExtensionGroupHeader.module.scss";
 
-    th,
-    td {
-      height: 44px;
-      padding-top: 5px;
-      padding-bottom: 5px;
+const ExtensionGroupHeader: React.FunctionComponent<{ label: string }> = ({
+  label,
+}) => (
+  <tr className={styles.root}>
+    <td colSpan={2}>{label}</td>
+    <td>Status</td>
+    <td>Actions</td>
+  </tr>
+);
 
-      &:first-child {
-        width: 15px;
-      }
-    }
-  }
-}
-
-.VideoCard {
-  .card {
-    min-width: 725px;
-    max-width: 725px;
-    width: 725px;
-
-    .card-body {
-      padding: 1.5rem;
-    }
-  }
-}
+export default ExtensionGroupHeader;

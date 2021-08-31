@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import Card from "react-bootstrap/Card";
-import Table from "react-bootstrap/Table";
+import { Card, Table } from "react-bootstrap";
 import React from "react";
 import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";

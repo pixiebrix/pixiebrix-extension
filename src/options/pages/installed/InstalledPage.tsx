@@ -17,7 +17,6 @@
 
 import { connect } from "react-redux";
 import React, { useCallback, useContext } from "react";
-import { isEmpty } from "lodash";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
@@ -54,24 +53,29 @@ const InstalledPage: React.FunctionComponent<{
 }> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
 
-  const [allExtensions] = useAsyncState(async () => {
-    const lookup = new Set<UUID>(extensions.map((x) => x.id));
-    const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
-      "/api/extensions/"
-    );
-    const cloudExtensions = data
-      .filter((x) => !lookup.has(x.id))
-      .map((x) => ({ ...x, active: false }));
+  const [allExtensions] = useAsyncState(
+    async () => {
+      const lookup = new Set<UUID>(extensions.map((x) => x.id));
+      const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
+        "/api/extensions/"
+      );
+      const cloudExtensions = data
+        .filter((x) => !lookup.has(x.id))
+        .map((x) => ({ ...x, active: false }));
 
-    return [...extensions, ...cloudExtensions];
-  }, [extensions]);
+      return [...extensions, ...cloudExtensions];
+    },
+    [extensions],
+    extensions ?? []
+  );
 
-  const [resolved] = useAsyncState(
+  const [resolvedExtensions] = useAsyncState(
     async () =>
       Promise.all(
         allExtensions.map(async (extension) => resolveDefinitions(extension))
       ),
-    [allExtensions]
+    [allExtensions],
+    []
   );
 
   const notify = useNotifications();
@@ -93,6 +97,8 @@ const InstalledPage: React.FunctionComponent<{
     },
     [notify, allExtensions]
   );
+
+  const noExtensions = allExtensions.length === 0;
 
   return (
     <Page title="Active Bricks" icon={faCubes}>
@@ -124,7 +130,7 @@ const InstalledPage: React.FunctionComponent<{
       <Row>
         <Col>
           <div className="pb-4">
-            {isEmpty(extensions) ? (
+            {noExtensions ? (
               <p>
                 Once you&apos;ve activated templates or created your own bricks,
                 you&apos;ll be able to manage them here
@@ -157,11 +163,11 @@ const InstalledPage: React.FunctionComponent<{
           </div>
         </Col>
       </Row>
-      {isEmpty(extensions) ? (
+      {noExtensions ? (
         <NoExtensionsPage />
       ) : (
         <ActiveBricksCard
-          extensions={resolved}
+          extensions={resolvedExtensions}
           onRemove={onRemove}
           onExportBlueprint={onExportBlueprint}
         />
