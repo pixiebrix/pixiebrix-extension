@@ -27,6 +27,7 @@ import {
   faCheck,
   faDownload,
   faExclamation,
+  faList,
   faShare,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
@@ -141,6 +142,16 @@ const InstalledExtensionRow: React.FunctionComponent<{
               ),
               action: () => {
                 onExportBlueprint(id);
+              },
+            },
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faList} /> View Logs
+                </>
+              ),
+              action: () => {
+                dispatch(push(`/installed/logs/${id}`));
               },
             },
             {

@@ -43,6 +43,7 @@ import useNotifications from "@/hooks/useNotifications";
 import { exportBlueprint } from "./exportBlueprint";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import { push } from "connected-react-router";
+import ExtensionLogsModal from "./ExtensionLogsModal";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -99,7 +100,9 @@ const InstalledPage: React.FunctionComponent<{
   );
 
   const noExtensions = allExtensions.length === 0;
-
+  const closeModal = () => {
+    push("/installed");
+  };
   return (
     <Page title="Active Bricks" icon={faCubes}>
       <Route
@@ -116,17 +119,15 @@ const InstalledPage: React.FunctionComponent<{
           );
 
           return toShare ? (
-            <ShareExtensionModal
-              extension={toShare}
-              onCancel={() => {
-                push("/installed");
-              }}
-            />
+            <ShareExtensionModal extension={toShare} onCancel={closeModal} />
           ) : (
             <Redirect to="/installed" />
           );
         }}
       />
+      <Route exact path="/installed/logs/:extensionId">
+        <ExtensionLogsModal onCancel={closeModal} />
+      </Route>
       <Row>
         <Col>
           <div className="pb-4">
