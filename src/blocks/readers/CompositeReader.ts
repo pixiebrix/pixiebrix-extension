@@ -20,6 +20,7 @@ import { IReader, ReaderOutput, Schema } from "@/core";
 import mapValues from "lodash/mapValues";
 import identity from "lodash/identity";
 import fromPairs from "lodash/fromPairs";
+import last from "lodash/last";
 
 class CompositeReader extends Reader {
   public readonly outputSchema: Schema;
