@@ -28,7 +28,7 @@ import {
   SITES_PATTERN,
 } from "@/permissions/patterns";
 
-const UrlShortcut: React.FC<{
+const MatchPatternShortcut: React.FC<{
   caption: string;
   patternFactory: () => Promise<string>;
 }> = ({ caption, patternFactory }) => {
@@ -59,7 +59,7 @@ const UrlShortcut: React.FC<{
   );
 };
 
-const FoundationForm: React.FC = () => (
+const PanelForm: React.FC = () => (
   <div>
     <HorizontalFormGroup
       label="Heading"
@@ -80,25 +80,25 @@ const FoundationForm: React.FC = () => (
         <>
           <div className="small">
             <span>Shortcuts:</span>
-            <UrlShortcut
+            <MatchPatternShortcut
               caption="Site"
               patternFactory={async () => {
                 const url = await getCurrentURL();
                 return createSitePattern(url);
               }}
             />{" "}
-            <UrlShortcut
+            <MatchPatternShortcut
               caption="Domain"
               patternFactory={async () => {
                 const url = await getCurrentURL();
                 return createDomainPattern(url);
               }}
             />
-            <UrlShortcut
+            <MatchPatternShortcut
               caption="HTTPS"
               patternFactory={async () => HTTPS_PATTERN}
             />
-            <UrlShortcut
+            <MatchPatternShortcut
               caption="All URLs"
               patternFactory={async () => SITES_PATTERN}
             />
@@ -114,4 +114,4 @@ const FoundationForm: React.FC = () => (
   </div>
 );
 
-export default FoundationForm;
+export default PanelForm;
