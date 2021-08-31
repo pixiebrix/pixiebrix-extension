@@ -185,6 +185,12 @@
   ],
   "overrides": [
     {
+      "files": ["*.stories.tsx"],
+      "rules": {
+        "filenames/match-exported": "off"
+      }
+    },
+    {
       "files": ["*.js"],
       "rules": {
         "@typescript-eslint/no-implicit-any-catch": "off"
