@@ -24,7 +24,7 @@ import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
 import "./MarketplacePage.scss";
-import type { ButtonProps } from "react-bootstrap/Button";
+import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;

@@ -18,7 +18,7 @@
 import React, { useMemo, useState } from "react";
 import genericOptionsFactory, { BlockOptionProps } from "./blockOptions";
 import cx from "classnames";
-import { Form, Row, Col } from "react-bootstrap";
+import { Form, Row, Col, Card, Button } from "react-bootstrap";
 import { castArray, isEmpty } from "lodash";
 import { FieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
@@ -34,7 +34,6 @@ import {
 } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import blockRegistry from "@/blocks/registry";
-import { Card, Button } from "react-bootstrap";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

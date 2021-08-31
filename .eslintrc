@@ -44,7 +44,7 @@
             "message": "You can import \"lodash\" instead of \"lodash/*.\""
           },
           {
-            "group": ["react-bootstrap/*"],
+            "group": ["react-bootstrap/*", "!react-bootstrap/types"],
             "message": "You can import \"react-bootstrap\" instead of \"react-bootstrap/*.\""
           }
         ]

@@ -17,11 +17,9 @@
 
 import React, { useContext, useState } from "react";
 import { useAsyncState } from "@/hooks/common";
-import { InputGroup } from "react-bootstrap";
-import { Form } from "react-bootstrap";
+import { InputGroup, Form, Table } from "react-bootstrap";
 import { useDebounce } from "use-debounce";
 import GridLoader from "react-spinners/GridLoader";
-import { Table } from "react-bootstrap";
 import { searchWindow, detectFrameworks } from "@/background/devtools";
 import { browser } from "webextension-polyfill-ts";
 import { DevToolsContext } from "@/devTools/context";
