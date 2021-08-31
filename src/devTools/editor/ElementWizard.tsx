@@ -31,7 +31,7 @@ import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
-import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
+import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 
 // Step names to show lock icon for if the user is using a foundation they don't have edit access for
@@ -93,12 +93,8 @@ const ElementWizard: React.FunctionComponent<{
   const wizard = useMemo(() => ADAPTERS.get(element.type).wizard, [
     element.type,
   ]);
-  const [step, setStep] = useState(wizard[0].step);
 
-  const isLocked =
-    element.installed &&
-    editable &&
-    !editable.has(element.extensionPoint.metadata.id);
+  const [step, setStep] = useState("Edit");
 
   const { refresh: refreshLogs } = useContext(LogContext);
 
@@ -142,9 +138,15 @@ const ElementWizard: React.FunctionComponent<{
         className="h-100"
       >
         <Nav variant="pills" activeKey={step} onSelect={selectTabHandler}>
-          {wizard.map((step) => (
-            <WizardNavItem key={step.step} step={step} isLocked={isLocked} />
-          ))}
+          <Nav.Item>
+            <Nav.Link eventKey="Edit">Edit</Nav.Link>
+          </Nav.Item>
+
+          <WizardNavItem
+            key="Logs"
+            step={{ step: "Logs", Component: LogsTab }}
+            isLocked={false}
+          />
 
           {/* spacer */}
           <div className="flex-grow-1" />
@@ -180,15 +182,17 @@ const ElementWizard: React.FunctionComponent<{
 
         {status && <div className="text-danger">{status}</div>}
         <Tab.Content className="h-100">
-          {wizard.map(({ Component, step, extraProps = {} }) => (
-            <Component
-              key={step}
-              eventKey={step}
-              editable={editable}
-              available={available}
-              {...extraProps}
-            />
-          ))}
+          {wizard
+            .filter((x) => x.step === "Logs")
+            .map(({ Component, step, extraProps = {} }) => (
+              <Component
+                key={step}
+                eventKey={step}
+                editable={editable}
+                available={available}
+                {...extraProps}
+              />
+            ))}
         </Tab.Content>
       </Form>
     </Tab.Container>
