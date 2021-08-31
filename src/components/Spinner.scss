@@ -34,6 +34,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   width: fit-content;
+  height: fit-content;
 
   i {
     color: #b66dff;
@@ -57,6 +58,9 @@
     transform: rotate(180deg);
     animation-delay: 0.5s;
   }
+  .pb-loader-error + & {
+    animation: spinner-pop-in 0s 5s both reverse;
+  }
 }
 @keyframes spinner-fade {
   0%,
@@ -70,13 +74,12 @@
 }
 .pb-loader-error:before {
   content: "An error occurred while loading PixieBrix";
-  display: block;
-  margin-top: 1em;
   animation: spinner-pop-in 0s 5s both;
 }
 
 @keyframes spinner-pop-in {
   from {
+    height: 0;
     visibility: hidden;
   }
 }
