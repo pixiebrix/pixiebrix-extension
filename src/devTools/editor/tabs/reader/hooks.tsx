@@ -17,7 +17,6 @@
 
 import React, { useCallback } from "react";
 import copy from "copy-to-clipboard";
-import { reverse } from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
@@ -39,7 +38,7 @@ export function useLabelRenderer() {
           className="ReaderTree__copy-path"
           aria-label="copy path"
           onClick={() => {
-            copy(reverse([key, ...rest]).join("."));
+            copy([key, ...rest].reverse().join("."));
             addToast("Copied property path to the clipboard", {
               appearance: "info",
               autoDismiss: true,

@@ -18,7 +18,7 @@
 import React, { useMemo, useState } from "react";
 import { RecipeDefinition } from "@/types/definitions";
 import { Button, Card, Form, Nav, Tab } from "react-bootstrap";
-import { isEmpty, mapValues, truncate, uniq } from "lodash";
+import { isEmpty, mapValues, uniq } from "lodash";
 import "./ActivateWizard.scss";
 import { Formik } from "formik";
 import ConfigureBody, {
@@ -117,7 +117,7 @@ const ActivateWizard: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
   const [stepKey, setStep] = useState(blueprintSteps[0].key);
   const install = useInstall(blueprint);
 
-  useTitle(`Activate ${truncate(blueprint.metadata.name, { length: 15 })}`);
+  useTitle(`Activate ${blueprint.metadata.name.slice(0, 15)}`);
 
   return (
     <Formik initialValues={initialValues} onSubmit={install}>

@@ -22,7 +22,7 @@ import AsyncButton from "@/components/AsyncButton";
 import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { Formik, FormikHelpers } from "formik";
 import { dereference } from "@/validators/generic";
-import { cloneDeep, truncate } from "lodash";
+import { cloneDeep } from "lodash";
 import { useAsyncState } from "@/hooks/common";
 import genericOptionsFactory from "@/components/fields/blockOptions";
 import { buildYup } from "schema-to-yup";
@@ -45,7 +45,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   onDelete,
   onSave,
 }) => {
-  useTitle(`Configure ${truncate(service.name, { length: 15 })}`);
+  useTitle(`Configure ${service.name.slice(0, 15)}`);
 
   const handleSave = useCallback(
     async (

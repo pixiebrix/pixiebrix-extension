@@ -34,7 +34,7 @@ import { BusinessError, getErrorMessage } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
 import { sleep } from "@/utils";
-import { fromPairs, partition, zip } from "lodash";
+import { partition, zip } from "lodash";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -203,7 +203,7 @@ handlers.set(
 
     if (rejected.length > 0) {
       console.warn(`Broadcast rejected for ${rejected.length} tabs`, {
-        reasons: fromPairs(
+        reasons: Object.fromEntries(
           rejected.map(([tabId, result]) => [
             tabId,
             (result as PromiseRejectedResult).reason,
