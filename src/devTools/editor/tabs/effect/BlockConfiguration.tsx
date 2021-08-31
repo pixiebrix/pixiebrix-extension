@@ -15,93 +15,95 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { IBlock } from "@/core";
-import { FastField, FieldInputProps, getIn, useFormikContext } from "formik";
+import { getIn, useFormikContext } from "formik";
 import { useBlockOptions } from "@/components/fields/BlockField";
-import { Card, Form } from "react-bootstrap";
+import { Form, InputGroup } from "react-bootstrap";
 import { RendererContext } from "@/components/fields/blockOptions";
 import devtoolFields from "@/devTools/editor/fields/Fields";
 import GridLoader from "react-spinners/GridLoader";
+import { FormState } from "@/devTools/editor/editorSlice";
+import HorizontalFormGroup from "@/components/fields/HorizontalFormGroup";
 
+/**
+ * Renders the configuration for a `BlockConfig` based on the inputSchema of that brick
+ * @see BlockPipeline
+ * @see BlockConfig
+ */
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
   block: IBlock;
   showOutput: boolean;
 }> = ({ name, block, showOutput }) => {
-  const context = useFormikContext();
+  const context = useFormikContext<FormState>();
 
   const blockErrors = getIn(context.errors, name);
 
   const [{ error }, BlockOptions] = useBlockOptions(block.id);
 
+  const blockOptions = useMemo(() => {
+    if (blockErrors?.id) {
+      return (
+        <div className="invalid-feedback d-block mb-4">
+          Unknown block {block.id}
+        </div>
+      );
+    }
+
+    if (error) {
+      return <div className="invalid-feedback d-block mb-4">{error}</div>;
+    }
+
+    if (BlockOptions) {
+      return (
+        <BlockOptions
+          name={name}
+          configKey="config"
+          // We're showing the output key field ourselves
+          showOutputKey={false}
+        />
+      );
+    }
+
+    return <GridLoader />;
+  }, [name, block.id, error, BlockOptions, blockErrors?.id]);
+
   return (
-    <div className="BlockAccordion">
-      <Card>
-        <Card.Header className="BlockAccordion__header">Input</Card.Header>
-        <Card.Body>
-          <div>
-            <RendererContext.Provider value={devtoolFields}>
-              {blockErrors?.id && (
-                <div className="invalid-feedback d-block mb-4">
-                  Unknown block {block.id}
-                </div>
-              )}
-              {BlockOptions ? (
-                <BlockOptions
-                  name={name}
-                  configKey="config"
-                  showOutputKey={false}
-                />
-              ) : error ? (
-                <div className="invalid-feedback d-block mb-4">{error}</div>
-              ) : (
-                <GridLoader />
-              )}
-            </RendererContext.Provider>
-          </div>
-        </Card.Body>
-      </Card>
-      {showOutput && (
-        <Card>
-          <Card.Header className="BlockAccordion__header">Output</Card.Header>
-          <Card.Body>
-            <Form.Label>Output key</Form.Label>
-            <FastField name={`${name}.outputKey`}>
-              {({ field }: { field: FieldInputProps<string> }) => (
-                <Form.Control type="text" {...field} />
-              )}
-            </FastField>
-            <Form.Text className="text-muted">
-              Provide a output key to refer to the outputs of this block later.
-              For example, if you provide the name <code>output</code>, you can
-              use the output later with <code>@output</code>.
-            </Form.Text>
-          </Card.Body>
-        </Card>
-      )}
-      <Card>
-        <Card.Header className="BlockAccordion__header">
-          Advanced: Template Engine
-        </Card.Header>
-        <Card.Body>
-          <Form.Label>Template engine</Form.Label>
-          <FastField name={`${name}.templateEngine`}>
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="select" {...field}>
-                <option value="mustache">Mustache</option>
-                <option value="handlebars">Handlebars</option>
-                <option value="nunjucks">Nunjucks</option>
-              </Form.Control>
+    <RendererContext.Provider value={devtoolFields}>
+      <div>
+        <HorizontalFormGroup
+          label="Step Name"
+          description="A short name for the step"
+          propsOrFieldName={[name, "label"].join(".")}
+        >
+          {(field, meta) => (
+            <Form.Control
+              {...field}
+              placeholder={block.name}
+              isInvalid={Boolean(meta.error)}
+            />
+          )}
+        </HorizontalFormGroup>
+
+        {showOutput && (
+          <HorizontalFormGroup
+            label="Output"
+            description="A variable to reference the output of this brick"
+            propsOrFieldName={[name, "outputKey"].join(".")}
+          >
+            {(field, meta) => (
+              <InputGroup>
+                <InputGroup.Text>@</InputGroup.Text>
+                <Form.Control {...field} isInvalid={Boolean(meta.error)} />
+              </InputGroup>
             )}
-          </FastField>
-          <Form.Text className="text-muted">
-            The template engine controls how PixieBrix fills in{" "}
-            <code>{"{{variables}}"}</code> in the inputs.
-          </Form.Text>
-        </Card.Body>
-      </Card>
-    </div>
+          </HorizontalFormGroup>
+        )}
+
+        {blockOptions}
+      </div>
+    </RendererContext.Provider>
   );
 };
 
