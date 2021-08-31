@@ -91,8 +91,8 @@ const EffectTab: React.FunctionComponent<{
 
   const [relevantBlocks] = useAsyncState(async () => {
     const excludeTypes: BlockType[] = ["actionPanel", "panel"].includes(type)
-      ? ["reader", "effect"]
-      : ["reader", "renderer"];
+      ? ["effect"]
+      : ["renderer"];
     return filterBlocks(blocks, { excludeTypes });
   }, [blocks, type]);
 
