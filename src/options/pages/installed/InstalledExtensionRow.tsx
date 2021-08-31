@@ -16,7 +16,7 @@
  */
 
 import React, { useContext, useMemo } from "react";
-import { ResolvedExtension } from "@/core";
+import { MessageContext, ResolvedExtension } from "@/core";
 import {
   ExtensionValidationResult,
   useExtensionValidator,
@@ -39,6 +39,7 @@ import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { push } from "connected-react-router";
 import { useDispatch } from "react-redux";
 import AuthContext from "@/auth/AuthContext";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
@@ -64,9 +65,10 @@ function validationMessage(validation: ExtensionValidationResult) {
 
 const InstalledExtensionRow: React.FunctionComponent<{
   extension: ResolvedExtension;
+  onViewLogs: (context: MessageContext) => void;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
-}> = ({ extension, onRemove, onExportBlueprint }) => {
+}> = ({ extension, onViewLogs, onRemove, onExportBlueprint }) => {
   const { id, label, extensionPointId, _recipe } = extension;
   const notify = useNotifications();
   const { scope } = useContext(AuthContext);
@@ -151,7 +153,7 @@ const InstalledExtensionRow: React.FunctionComponent<{
                 </>
               ),
               action: () => {
-                dispatch(push(`/installed/logs/${id}`));
+                onViewLogs(selectExtensionContext(extension));
               },
             },
             {

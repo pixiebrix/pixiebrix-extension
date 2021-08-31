@@ -16,13 +16,13 @@
  */
 
 import { connect } from "react-redux";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link, Redirect, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
-import { ExtensionRef, IExtension, UUID } from "@/core";
+import { ExtensionRef, IExtension, MessageContext, UUID } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
@@ -79,6 +79,8 @@ const InstalledPage: React.FunctionComponent<{
     []
   );
 
+  const [logsContext, setLogsContext] = useState<MessageContext>();
+
   const notify = useNotifications();
 
   const onExportBlueprint = useCallback(
@@ -100,9 +102,7 @@ const InstalledPage: React.FunctionComponent<{
   );
 
   const noExtensions = allExtensions.length === 0;
-  const closeModal = () => {
-    push("/installed");
-  };
+
   return (
     <Page title="Active Bricks" icon={faCubes}>
       <Route
@@ -119,15 +119,25 @@ const InstalledPage: React.FunctionComponent<{
           );
 
           return toShare ? (
-            <ShareExtensionModal extension={toShare} onCancel={closeModal} />
+            <ShareExtensionModal
+              extension={toShare}
+              onCancel={() => {
+                push("/installed");
+              }}
+            />
           ) : (
             <Redirect to="/installed" />
           );
         }}
       />
-      <Route exact path="/installed/logs/:extensionId">
-        <ExtensionLogsModal onCancel={closeModal} />
-      </Route>
+      {logsContext && (
+        <ExtensionLogsModal
+          context={logsContext}
+          onCancel={() => {
+            setLogsContext(null);
+          }}
+        />
+      )}
       <Row>
         <Col>
           <div className="pb-4">
@@ -169,6 +179,7 @@ const InstalledPage: React.FunctionComponent<{
       ) : (
         <ActiveBricksCard
           extensions={resolvedExtensions}
+          onViewLogs={setLogsContext}
           onRemove={onRemove}
           onExportBlueprint={onExportBlueprint}
         />

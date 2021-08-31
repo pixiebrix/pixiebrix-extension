@@ -1,0 +1,6 @@
+.root :global(.modal-dialog) {
+  max-width: 90%;
+  @media (min-width: 992px) {
+    max-width: 60%;
+  }
+}

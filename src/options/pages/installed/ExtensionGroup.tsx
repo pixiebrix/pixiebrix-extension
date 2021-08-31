@@ -22,10 +22,11 @@ import {
   faCaretDown,
   faCaretRight,
   faCheck,
+  faList,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { IExtension, ResolvedExtension } from "@/core";
+import { IExtension, MessageContext, ResolvedExtension } from "@/core";
 import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useUserAction from "@/hooks/useUserAction";
@@ -42,6 +43,8 @@ const ExtensionGroup: React.FunctionComponent<{
   extensions: ResolvedExtension[];
   managed?: boolean;
   startExpanded?: boolean;
+  groupMessageContext: MessageContext;
+  onViewLogs: (context: MessageContext) => void;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({
@@ -49,6 +52,8 @@ const ExtensionGroup: React.FunctionComponent<{
   extensions,
   managed,
   startExpanded,
+  groupMessageContext,
+  onViewLogs,
   onRemove,
   onExportBlueprint,
 }) => {
@@ -131,6 +136,16 @@ const ExtensionGroup: React.FunctionComponent<{
               {
                 title: (
                   <>
+                    <FontAwesomeIcon icon={faList} /> View Logs
+                  </>
+                ),
+                action: () => {
+                  onViewLogs(groupMessageContext);
+                },
+              },
+              {
+                title: (
+                  <>
                     <FontAwesomeIcon icon={faTimes} /> Uninstall
                   </>
                 ),
@@ -146,6 +161,7 @@ const ExtensionGroup: React.FunctionComponent<{
       {expanded && expandable && (
         <ExtensionRows
           extensions={extensions}
+          onViewLogs={onViewLogs}
           onRemove={onRemove}
           onExportBlueprint={onExportBlueprint}
         />

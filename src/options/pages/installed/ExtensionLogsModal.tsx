@@ -19,17 +19,19 @@ import { MessageContext } from "@/core";
 import React from "react";
 import { Button, Modal } from "react-bootstrap";
 import BrickLogs from "../brickEditor/BrickLogs";
+import styles from "./ExtensionLogsModal.module.scss";
 
 const ExtensionLogsModal: React.FC<{
   context: MessageContext;
   onCancel: () => void;
 }> = ({ context, onCancel }) => (
-  <Modal show>
+  <Modal show className={styles.root}>
     <Modal.Header>
-      <Modal.Title>Share as Blueprint</Modal.Title>
+      <Modal.Title>
+        {context.label ? `Logs: ${context.label}` : "Logs"}
+      </Modal.Title>
     </Modal.Header>
-    {/* <BrickLogs context={context} /> */}
-    <div>logs</div>
+    <BrickLogs context={context} />
     <Modal.Footer>
       <Button variant="link" onClick={onCancel}>
         Cancel

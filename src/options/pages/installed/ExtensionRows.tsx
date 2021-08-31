@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ResolvedExtension } from "@/core";
+import { MessageContext, ResolvedExtension } from "@/core";
 import React from "react";
 import CloudExtensionRow from "./CloudExtensionRow";
 import InstalledExtensionRow from "./InstalledExtensionRow";
@@ -24,9 +24,10 @@ import { sortBy } from "lodash";
 
 const ExtensionRows: React.FunctionComponent<{
   extensions: ResolvedExtension[];
+  onViewLogs: (context: MessageContext) => void;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
-}> = ({ extensions, onRemove, onExportBlueprint }) => (
+}> = ({ extensions, onViewLogs, onRemove, onExportBlueprint }) => (
   <>
     {sortBy(
       extensions,
@@ -38,6 +39,7 @@ const ExtensionRows: React.FunctionComponent<{
         <InstalledExtensionRow
           key={extension.id}
           extension={extension}
+          onViewLogs={onViewLogs}
           onRemove={onRemove}
           onExportBlueprint={onExportBlueprint}
         />
