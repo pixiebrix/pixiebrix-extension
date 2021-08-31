@@ -39,8 +39,6 @@ const Pagination: React.FC<{
     renderLeftEllipsis = page > middlePageIndex;
     renderRightEllipsis = page < numPages - middlePageIndex - 1;
 
-    console.log("numPages", numPages);
-    console.log("page", page, middlePageIndex, Math.floor(middlePageIndex));
     let firstDisplayedPage = page - Math.floor(middlePageIndex);
     if (firstDisplayedPage < 0) {
       firstDisplayedPage = 0;
