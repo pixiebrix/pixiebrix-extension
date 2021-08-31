@@ -33,10 +33,15 @@
     "no-restricted-imports": [
       "error",
       {
+        // Documentation: https://eslint.org/docs/rules/no-restricted-imports#options
         "patterns": [
           {
             "group": ["*/__mocks__/*"],
             "message": "Mocks should not be imported directly, they’re automatically picked up by tools."
+          },
+          {
+            "group": ["lodash/*"],
+            "message": "You can import \"lodash\" instead of \"lodash/*.\""
           }
         ]
       }

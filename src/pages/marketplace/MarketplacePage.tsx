@@ -18,7 +18,7 @@
 import React, { useMemo, useState } from "react";
 import GridLoader from "react-spinners/GridLoader";
 import { PageTitle } from "@/layout/Page";
-import sortBy from "lodash/sortBy";
+import { sortBy } from "lodash";
 import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
