@@ -199,7 +199,7 @@
     "css-minimizer-webpack-plugin": "^3.0.2",
     "dotenv": "^10.0.0",
     "eslint": "^7.30.0",
-    "eslint-config-pixiebrix": "^0.0.0",
+    "eslint-config-pixiebrix": "^0.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-xo": "^0.37.0",
     "eslint-config-xo-typescript": "^0.43.0",
