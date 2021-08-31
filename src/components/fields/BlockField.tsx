@@ -34,12 +34,11 @@ import {
 } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import blockRegistry from "@/blocks/registry";
-import Card from "react-bootstrap/Card";
+import { Card, Button } from "react-bootstrap";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./BlockField.scss";
-import Button from "react-bootstrap/Button";
 import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import { reportError } from "@/telemetry/logging";

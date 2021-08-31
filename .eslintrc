@@ -42,6 +42,10 @@
           {
             "group": ["lodash/*"],
             "message": "You can import \"lodash\" instead of \"lodash/*.\""
+          },
+          {
+            "group": ["react-bootstrap/*"],
+            "message": "You can import \"react-bootstrap\" instead of \"react-bootstrap/*.\""
           }
         ]
       }

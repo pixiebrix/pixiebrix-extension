@@ -20,7 +20,7 @@ import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import GridLoader from "react-spinners/GridLoader";
-import Container from "react-bootstrap/Container";
+import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import InstalledPage from "@/options/pages/installed/InstalledPage";
 import ServicesEditor from "@/options/pages/services/ServicesEditor";
