@@ -117,7 +117,7 @@ export class RemoteExecutionError extends BusinessError {
 
   constructor(message: string, error: OutputUnit[]) {
     super(message);
-    this.name = "PipelineConfigurationError";
+    this.name = "RemoteExecutionError ";
     this.error = castArray(error);
   }
 }
