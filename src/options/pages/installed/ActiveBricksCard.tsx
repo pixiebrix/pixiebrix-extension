@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { ResolvedExtension } from "@/core";
+import { MessageContext, ResolvedExtension } from "@/core";
 import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { Card, Col, Row, Table } from "react-bootstrap";
 import ExtensionGroup from "./ExtensionGroup";
@@ -69,31 +69,49 @@ const ActiveBricksCard: React.FunctionComponent<{
               {marketplaceExtensionGroups.length > 0 && (
                 <>
                   <ExtensionGroupHeader label="Marketplace Bricks" />
-                  {marketplaceExtensionGroups.map((extensions) => (
-                    <ExtensionGroup
-                      key={extensions[0]._recipe.id}
-                      label={extensions[0]._recipe.name}
-                      extensions={extensions}
-                      onRemove={onRemove}
-                      onExportBlueprint={onExportBlueprint}
-                    />
-                  ))}
+                  {marketplaceExtensionGroups.map((extensions) => {
+                    const recipe = extensions[0]._recipe;
+                    const messageContext: MessageContext = {
+                      blueprintId: recipe.id,
+                    };
+
+                    return (
+                      <ExtensionGroup
+                        key={recipe.id}
+                        label={recipe.name}
+                        extensions={extensions}
+                        groupMessageContext={messageContext}
+                        onRemove={onRemove}
+                        onExportBlueprint={onExportBlueprint}
+                      />
+                    );
+                  })}
                 </>
               )}
 
               {deploymentGroups.length > 0 && (
                 <>
                   <ExtensionGroupHeader label="Automatic Team Deployments" />
-                  {deploymentGroups.map((extensions) => (
-                    <ExtensionGroup
-                      key={extensions[0]._recipe.id}
-                      label={extensions[0]._recipe.name}
-                      extensions={extensions}
-                      managed
-                      onRemove={onRemove}
-                      onExportBlueprint={onExportBlueprint}
-                    />
-                  ))}
+                  {deploymentGroups.map((extensions) => {
+                    const recipe = extensions[0]._recipe;
+                    const deployment = extensions[0]._deployment;
+                    const messageContext: MessageContext = {
+                      blueprintId: recipe.id,
+                      deploymentId: deployment.id,
+                    };
+
+                    return (
+                      <ExtensionGroup
+                        key={extensions[0]._recipe.id}
+                        label={extensions[0]._recipe.name}
+                        extensions={extensions}
+                        managed
+                        groupMessageContext={messageContext}
+                        onRemove={onRemove}
+                        onExportBlueprint={onExportBlueprint}
+                      />
+                    );
+                  })}
                 </>
               )}
             </tbody>
