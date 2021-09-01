@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Button } from "react-bootstrap";
 import { isEmpty } from "lodash";
 import copy from "copy-to-clipboard";
@@ -124,13 +124,15 @@ const BrickDetail: React.FunctionComponent<{
             Definition not available for built-in bricks
           </div>
         ) : (
-          <AceEditor
-            value={brickConfig}
-            mode="yaml"
-            theme="chrome"
-            width="100%"
-            readOnly
-          />
+          <Suspense fallback={<div className="text-muted">Loading...</div>}>
+            <AceEditor
+              value={brickConfig}
+              mode="yaml"
+              theme="chrome"
+              width="100%"
+              readOnly
+            />
+          </Suspense>
         )}
       </DetailSection>
     </div>
