@@ -15,14 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import { MessageContext } from "@/core";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const AceEditor = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "ace-editor" */
-      "./AceEditorSync"
-    )
-);
+export interface LogsContext {
+  title: string;
+  messageContext: MessageContext;
+}
 
-export default AceEditor;
+export interface InstalledPageState {
+  showLogsContext: LogsContext;
+}
+
+const initialState: InstalledPageState = {
+  showLogsContext: null,
+};
+
+export const installedPageSlice = createSlice({
+  name: "installedPage",
+  initialState,
+  reducers: {
+    setLogsContext: (state, action: PayloadAction<LogsContext>) => {
+      state.showLogsContext = action.payload;
+    },
+  },
+});

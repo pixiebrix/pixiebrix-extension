@@ -15,14 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import { RootState } from "@/options/store";
 
-const AceEditor = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "ace-editor" */
-      "./AceEditorSync"
-    )
-);
-
-export default AceEditor;
+export const selectShowLogsContext = ({ installedPage }: RootState) =>
+  installedPage.showLogsContext;
