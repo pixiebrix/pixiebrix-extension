@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import AceEditorSync from "react-ace";
 
-const AceEditor = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "ace-editor" */
-      "./AceEditorSync"
-    )
-);
+import "ace-builds/src-noconflict/mode-yaml";
+import "ace-builds/src-noconflict/theme-chrome";
+import "ace-builds/src-noconflict/ext-searchbox";
 
-export default AceEditor;
+/**
+ * Bundles AceEditor. Use "./AceEditor.tsx" for dynamic import.
+ */
+export default AceEditorSync;
