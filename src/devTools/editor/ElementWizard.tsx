@@ -33,6 +33,7 @@ import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
 import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
+import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 // Step names to show lock icon for if the user is using a foundation they don't have edit access for
 const LOCKABLE_STEP_NAMES = ["Foundation", "Availability", "Location", "Data"];
@@ -94,7 +95,7 @@ const ElementWizard: React.FunctionComponent<{
     element.type,
   ]);
 
-  const [step, setStep] = useState("Edit");
+  const [step, setStep] = useState(wizard[0].step);
 
   const { refresh: refreshLogs } = useContext(LogContext);
 
@@ -138,9 +139,11 @@ const ElementWizard: React.FunctionComponent<{
         className="h-100"
       >
         <Nav variant="pills" activeKey={step} onSelect={selectTabHandler}>
-          <Nav.Item>
-            <Nav.Link eventKey="Edit">Edit</Nav.Link>
-          </Nav.Item>
+          <WizardNavItem
+            key="Edit"
+            step={{ step: "Edit", Component: EditTab }}
+            isLocked={false}
+          />
 
           <WizardNavItem
             key="Logs"
@@ -182,9 +185,7 @@ const ElementWizard: React.FunctionComponent<{
 
         {status && <div className="text-danger">{status}</div>}
         <Tab.Content className="h-100">
-          {wizard
-            .filter((x) => x.step === "Logs")
-            .map(({ Component, step, extraProps = {} }) => (
+          {wizard.map(({ Component, step, extraProps = {} }) => (
               <Component
                 key={step}
                 eventKey={step}
