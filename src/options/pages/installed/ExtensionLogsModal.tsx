@@ -18,29 +18,36 @@
 import { MessageContext } from "@/core";
 import React from "react";
 import { Modal } from "react-bootstrap";
+import { useDispatch } from "react-redux";
 import BrickLogs from "../brickEditor/BrickLogs";
 import styles from "./ExtensionLogsModal.module.scss";
+import { installedPageSlice } from "./installedPageSlice";
 
 const ExtensionLogsModal: React.FC<{
+  title: string;
   context: MessageContext;
-  onCancel: () => void;
-}> = ({ context, onCancel }) => (
-  <Modal
-    show
-    onHide={onCancel}
-    className={styles.root}
-    dialogClassName={styles.modalDialog}
-    contentClassName={styles.modalContent}
-  >
-    <Modal.Header closeButton>
-      <Modal.Title>
-        {context.label ? `Logs: ${context.label}` : "Logs"}
-      </Modal.Title>
-    </Modal.Header>
-    <Modal.Body className={styles.body}>
-      <BrickLogs context={context} />
-    </Modal.Body>
-  </Modal>
-);
+}> = ({ title, context }) => {
+  const dispatch = useDispatch();
+  const onClose = () => {
+    dispatch(installedPageSlice.actions.setLogsContext(null));
+  };
+
+  return (
+    <Modal
+      show
+      onHide={onClose}
+      className={styles.root}
+      dialogClassName={styles.modalDialog}
+      contentClassName={styles.modalContent}
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>{`Logs: ${title}`}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body className={styles.body}>
+        <BrickLogs context={context} />
+      </Modal.Body>
+    </Modal>
+  );
+};
 
 export default ExtensionLogsModal;

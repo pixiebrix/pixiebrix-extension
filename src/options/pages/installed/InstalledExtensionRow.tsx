@@ -16,7 +16,7 @@
  */
 
 import React, { useContext, useMemo } from "react";
-import { MessageContext, ResolvedExtension } from "@/core";
+import { ResolvedExtension } from "@/core";
 import {
   ExtensionValidationResult,
   useExtensionValidator,
@@ -40,6 +40,7 @@ import { push } from "connected-react-router";
 import { useDispatch } from "react-redux";
 import AuthContext from "@/auth/AuthContext";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { installedPageSlice } from "./installedPageSlice";
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
@@ -65,10 +66,9 @@ function validationMessage(validation: ExtensionValidationResult) {
 
 const InstalledExtensionRow: React.FunctionComponent<{
   extension: ResolvedExtension;
-  onViewLogs: (context: MessageContext) => void;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
-}> = ({ extension, onViewLogs, onRemove, onExportBlueprint }) => {
+}> = ({ extension, onRemove, onExportBlueprint }) => {
   const { id, label, extensionPointId, _recipe } = extension;
   const notify = useNotifications();
   const { scope } = useContext(AuthContext);
@@ -109,6 +109,15 @@ const InstalledExtensionRow: React.FunctionComponent<{
       </AsyncButton>
     );
   }, [hasPermissions, requestPermissions, validation]);
+
+  const onViewLogs = () => {
+    dispatch(
+      installedPageSlice.actions.setLogsContext({
+        title: label,
+        messageContext: selectExtensionContext(extension),
+      })
+    );
+  };
 
   const onUninstall = () => {
     onRemove({ extensionId: id, extensionPointId });
@@ -152,9 +161,7 @@ const InstalledExtensionRow: React.FunctionComponent<{
                   <FontAwesomeIcon icon={faList} /> View Logs
                 </>
               ),
-              action: () => {
-                onViewLogs(selectExtensionContext(extension));
-              },
+              action: onViewLogs,
             },
             {
               title: (

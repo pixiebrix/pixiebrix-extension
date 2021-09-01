@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { connect } from "react-redux";
-import React, { useCallback, useContext, useState } from "react";
+import { connect, useSelector } from "react-redux";
+import React, { useCallback, useContext } from "react";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link, Redirect, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
-import { ExtensionRef, IExtension, MessageContext, UUID } from "@/core";
+import { ExtensionRef, IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/contextMenus";
 import { reportError } from "@/telemetry/logging";
@@ -44,6 +44,9 @@ import { exportBlueprint } from "./exportBlueprint";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import { push } from "connected-react-router";
 import ExtensionLogsModal from "./ExtensionLogsModal";
+import { RootState } from "@/options/store";
+import { LogsContext } from "./installedPageSlice";
+import { selectShowLogsContext } from "./installedPageSelectors";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -79,7 +82,9 @@ const InstalledPage: React.FunctionComponent<{
     []
   );
 
-  const [logsContext, setLogsContext] = useState<MessageContext>();
+  const showLogsContext = useSelector<RootState, LogsContext>(
+    selectShowLogsContext
+  );
 
   const notify = useNotifications();
 
@@ -130,12 +135,10 @@ const InstalledPage: React.FunctionComponent<{
           );
         }}
       />
-      {logsContext && (
+      {showLogsContext && (
         <ExtensionLogsModal
-          context={logsContext}
-          onCancel={() => {
-            setLogsContext(null);
-          }}
+          title={showLogsContext.title}
+          context={showLogsContext.messageContext}
         />
       )}
       <Row>
@@ -179,7 +182,6 @@ const InstalledPage: React.FunctionComponent<{
       ) : (
         <ActiveBricksCard
           extensions={resolvedExtensions}
-          onViewLogs={setLogsContext}
           onRemove={onRemove}
           onExportBlueprint={onExportBlueprint}
         />

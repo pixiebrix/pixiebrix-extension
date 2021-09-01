@@ -31,10 +31,9 @@ const groupByRecipe = (
 
 const ActiveBricksCard: React.FunctionComponent<{
   extensions: ResolvedExtension[];
-  onViewLogs: (context: MessageContext) => void;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
-}> = ({ extensions, onViewLogs, onRemove, onExportBlueprint }) => {
+}> = ({ extensions, onRemove, onExportBlueprint }) => {
   const personalExtensions = extensions.filter(
     (extension) => !extension._recipe && !extension._deployment
   );
@@ -61,7 +60,6 @@ const ActiveBricksCard: React.FunctionComponent<{
                   <ExtensionGroupHeader label="Personal Bricks" />
                   <ExtensionRows
                     extensions={personalExtensions}
-                    onViewLogs={onViewLogs}
                     onRemove={onRemove}
                     onExportBlueprint={onExportBlueprint}
                   />
@@ -74,7 +72,6 @@ const ActiveBricksCard: React.FunctionComponent<{
                   {marketplaceExtensionGroups.map((extensions) => {
                     const recipe = extensions[0]._recipe;
                     const messageContext: MessageContext = {
-                      label: recipe.name,
                       blueprintId: recipe.id,
                     };
 
@@ -84,7 +81,6 @@ const ActiveBricksCard: React.FunctionComponent<{
                         label={recipe.name}
                         extensions={extensions}
                         groupMessageContext={messageContext}
-                        onViewLogs={onViewLogs}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
@@ -100,7 +96,6 @@ const ActiveBricksCard: React.FunctionComponent<{
                     const recipe = extensions[0]._recipe;
                     const deployment = extensions[0]._deployment;
                     const messageContext: MessageContext = {
-                      label: recipe.name,
                       blueprintId: recipe.id,
                       deploymentId: deployment.id,
                     };
@@ -112,7 +107,6 @@ const ActiveBricksCard: React.FunctionComponent<{
                         extensions={extensions}
                         managed
                         groupMessageContext={messageContext}
-                        onViewLogs={onViewLogs}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}
                       />
