@@ -118,7 +118,7 @@ export class RemoteExecutionError extends BusinessError {
 
   constructor(message: string, error: JsonObject) {
     super(message);
-    this.name = "RemoteExecutionError ";
+    this.name = "RemoteExecutionError";
     this.error = error;
   }
 }
