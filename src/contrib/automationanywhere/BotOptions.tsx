@@ -21,7 +21,7 @@ import {
   FieldRenderer,
   ServiceField,
 } from "@/components/fields/blockOptions";
-import { fromPairs, isEmpty, compact } from "lodash";
+import { isEmpty, compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
 import { Schema } from "@/core";
 import { useField } from "formik";
@@ -102,7 +102,7 @@ function useDevices(): {
 function interfaceToInputSchema(botInterface: Interface): Schema {
   return {
     type: "object",
-    properties: fromPairs(
+    properties: Object.fromEntries(
       botInterface.variables
         .filter((x) => x.input)
         .map((v) => [

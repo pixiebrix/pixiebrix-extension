@@ -20,7 +20,6 @@ import { useCallback, useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
-import { fromPairs } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { optionsSlice } from "@/options/slices";
 import { selectExtensions } from "@/options/selectors";
@@ -97,7 +96,7 @@ function activateDeployments(
       actions.installRecipe({
         recipe: deployment.package.config,
         extensionPoints: deployment.package.config.extensionPoints,
-        services: fromPairs(
+        services: Object.fromEntries(
           deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
         ),
         deployment,

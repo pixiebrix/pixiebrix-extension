@@ -19,7 +19,7 @@ import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { Form, Button, Table } from "react-bootstrap";
 import { Schema } from "@/core";
 import { FieldProps } from "@/components/fields/propTypes";
-import { fromPairs, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import {
   getDefaultField,
   RendererContext,
@@ -222,7 +222,7 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
 
   const [properties, declaredProperties] = useMemo(() => {
     const declared = schema.properties ?? {};
-    const additional = fromPairs(
+    const additional = Object.fromEntries(
       Object.entries(field.value ?? {}).filter(
         ([property]) => !declared[property]
       )

@@ -18,7 +18,7 @@
 import { Read } from "@/blocks/readers/factory";
 import { Framework } from "@/messaging/constants";
 import { ReaderOutput, ReaderRoot } from "@/core";
-import { castArray, fromPairs, compact } from "lodash";
+import { castArray, compact } from "lodash";
 import { getComponentData, ReadPayload } from "@/pageScript/protocol";
 
 type FrameworkConfig = ReadPayload & {
@@ -72,7 +72,9 @@ export function frameworkReadFactory(
       optional,
       traverseUp,
       pathSpec: attrs
-        ? fromPairs(castArray(attrs).map((attr) => [attr, `attrs.${attr}`]))
+        ? Object.fromEntries(
+            castArray(attrs).map((attr) => [attr, `attrs.${attr}`])
+          )
         : pathSpec,
     });
   }

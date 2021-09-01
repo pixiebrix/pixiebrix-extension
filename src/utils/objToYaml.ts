@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { sortBy, fromPairs } from "lodash";
+import { sortBy } from "lodash";
 import { removeUndefined } from "@/utils";
 import { dump } from "js-yaml";
 
@@ -30,7 +30,7 @@ function orderKeys<T extends Record<string, unknown>>(
   keys: Array<keyof T>
 ): T {
   const lookup = new Map(keys.map((key, index) => [key, index]));
-  return fromPairs(
+  return Object.fromEntries(
     sortBy(Object.entries(obj), ([key]) => lookup.get(key) ?? keys.length)
   ) as T;
 }

@@ -35,7 +35,6 @@ import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
 import { isNullOrBlank, resolveObj } from "@/utils";
-import { fromPairs } from "lodash";
 
 export type Target = {
   tabId: number;
@@ -137,7 +136,7 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
     };
 
     const frameworkData = await resolveObj(
-      fromPairs(
+      Object.fromEntries(
         [...FRAMEWORK_ADAPTERS.keys()].map((framework) => [
           framework,
           read(async () => getComponentData({ framework, selector })),
