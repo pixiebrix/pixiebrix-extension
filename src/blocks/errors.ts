@@ -113,11 +113,11 @@ export class OutputValidationError extends BusinessError {
 }
 
 export class RemoteExecutionError extends BusinessError {
-  readonly error: OutputUnit[];
+  readonly errors: OutputUnit[];
 
-  constructor(message: string, error: OutputUnit[]) {
+  constructor(message: string, errors: OutputUnit[]) {
     super(message);
     this.name = "RemoteExecutionError ";
-    this.error = castArray(error);
+    this.errors = castArray(errors);
   }
 }

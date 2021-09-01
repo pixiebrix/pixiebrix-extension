@@ -37,6 +37,7 @@ import { sleep } from "@/utils";
 import { fromPairs, partition, zip } from "lodash";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
+import { OutputUnit } from "@cfworker/json-schema";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -488,7 +489,7 @@ export const executeOnServer = liftBackground(
     console.debug(`Running ${blockId} on the server`);
     return (await getLinkedApiClient()).post<{
       data?: JsonObject;
-      error?: JsonObject;
+      errors?: OutputUnit[];
     }>("/api/run/", {
       id: blockId,
       args: blockArgs,

@@ -230,14 +230,14 @@ async function runStage(
       }
 
       case "remote": {
-        const { data, error } = (
+        const { data, errors } = (
           await executeOnServer(stage.id, blockArgs)
         ).data;
-        if (error) {
+        if (errors) {
           // TODO: Fix https://github.com/pixiebrix/pixiebrix-extension/issues/1227
           throw new RemoteExecutionError(
             "Error while executing brick remotely",
-            error
+            errors
           );
         }
 
