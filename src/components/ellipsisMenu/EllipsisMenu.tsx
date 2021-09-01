@@ -32,8 +32,28 @@ const EllipsisMenu: React.FunctionComponent<{
   variant?: string;
   items: Item[];
 }> = ({ variant = "light", items }) => {
-  const onToggle = (isOpen: boolean, event: SyntheticEvent<Dropdown>) => {
+  const onToggle = (
+    isOpen: boolean,
+    event: SyntheticEvent<Dropdown>,
+    metadata: {
+      source: "select" | "click" | "rootClose" | "keydown";
+    }
+  ) => {
     event.stopPropagation();
+
+    if (metadata.source === "click" && isOpen) {
+      try {
+        // The click on this toggle doesn't go beyond the component,
+        // hence no other element knows that the click happened.
+        // Simulating the click on the body will let other menus know user clicked somewhere.
+        document.body.click();
+      } catch (error: unknown) {
+        console.debug(
+          "EllipsisMenu. Failed to trigger closing other menus",
+          error
+        );
+      }
+    }
   };
 
   return (
@@ -41,7 +61,6 @@ const EllipsisMenu: React.FunctionComponent<{
       <Dropdown.Toggle className={styles.toggle} variant={variant} size="sm">
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>
-
       <Dropdown.Menu>
         {items
           .filter((x) => !x.hide)
