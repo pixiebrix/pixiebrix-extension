@@ -27,7 +27,12 @@ const EditorModal: React.FC<{
   title: string;
 }> = ({ show = true, title, onHide, onRemove, children }) => {
   return (
-    <Modal show={show} onHide={onHide} size="lg">
+    <Modal
+      show={show}
+      onHide={onHide}
+      size="lg"
+      scrollable
+    >
       <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
