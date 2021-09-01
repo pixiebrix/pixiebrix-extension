@@ -43,10 +43,13 @@ const EllipsisMenu: React.FunctionComponent<{
 
     if (metadata.source === "click" && isOpen) {
       try {
+        // The click on this toggle doesn't go beyond the component,
+        // hence no other element knows that the click happened.
+        // Simulating the click on the body will let other menus know user clicked somewhere.
         document.body.click();
       } catch (error: unknown) {
         console.debug(
-          "EllipsisMenu. Failed trigger closing other menus",
+          "EllipsisMenu. Failed to trigger closing other menus",
           error
         );
       }
