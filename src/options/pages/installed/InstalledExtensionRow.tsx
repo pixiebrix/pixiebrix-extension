@@ -27,6 +27,7 @@ import {
   faCheck,
   faDownload,
   faExclamation,
+  faList,
   faShare,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
@@ -38,6 +39,8 @@ import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { push } from "connected-react-router";
 import { useDispatch } from "react-redux";
 import AuthContext from "@/auth/AuthContext";
+import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { installedPageSlice } from "./installedPageSlice";
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
@@ -107,6 +110,15 @@ const InstalledExtensionRow: React.FunctionComponent<{
     );
   }, [hasPermissions, requestPermissions, validation]);
 
+  const onViewLogs = () => {
+    dispatch(
+      installedPageSlice.actions.setLogsContext({
+        title: label,
+        messageContext: selectExtensionContext(extension),
+      })
+    );
+  };
+
   const onUninstall = () => {
     onRemove({ extensionId: id, extensionPointId });
     notify.success(`Removed brick ${label ?? id}`, {
@@ -142,6 +154,14 @@ const InstalledExtensionRow: React.FunctionComponent<{
               action: () => {
                 onExportBlueprint(id);
               },
+            },
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faList} /> View Logs
+                </>
+              ),
+              action: onViewLogs,
             },
             {
               title: (
