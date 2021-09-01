@@ -23,7 +23,7 @@ import { useCallback } from "react";
 import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
-import { fromPairs, uniq } from "lodash";
+import { uniq } from "lodash";
 import { containsPermissions } from "@/utils/permissions";
 import { collectPermissions } from "@/permissions";
 import { reactivate } from "@/background/navigation";
@@ -97,7 +97,7 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           installRecipe({
             recipe,
             extensionPoints: selected,
-            services: fromPairs(
+            services: Object.fromEntries(
               values.services.map(({ id, config }) => [id, config])
             ),
             optionsArgs: values.optionsArgs,

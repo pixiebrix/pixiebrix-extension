@@ -21,7 +21,7 @@ import {
   FieldRenderer,
   ServiceField,
 } from "@/components/fields/blockOptions";
-import { fromPairs, compact } from "lodash";
+import { compact } from "lodash";
 import {
   UIPATH_PROPERTIES,
   UIPATH_SERVICE_IDS,
@@ -229,7 +229,7 @@ export function releaseSchema(release: Release): Schema {
 
   const inputs = JSON.parse(release.Arguments.Input) as Argument[];
 
-  const properties = fromPairs(
+  const properties = Object.fromEntries(
     inputs.map((input) => [input.name, { type: toType(input.type) }])
   ) as SchemaProperties;
 

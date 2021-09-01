@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { fromPairs, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import { IExtension, Metadata, RegistryId } from "@/core";
 import { objToYaml } from "@/utils/objToYaml";
 import { saveAs } from "file-saver";
@@ -49,7 +49,7 @@ export function makeBlueprint(
       {
         id: extensionPointId,
         label,
-        services: fromPairs(
+        services: Object.fromEntries(
           services
             .filter((x) => x.outputKey !== null)
             .map(({ outputKey, id }) => [outputKey, id])

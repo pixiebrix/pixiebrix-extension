@@ -38,14 +38,7 @@ import {
   UserOptions,
 } from "@/core";
 import { validateInput, validateOutput } from "@/validators/generic";
-import {
-  castArray,
-  fromPairs,
-  isEmpty,
-  isPlainObject,
-  mapValues,
-  pickBy,
-} from "lodash";
+import { castArray, isEmpty, isPlainObject, mapValues, pickBy } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
   executeInAll,
@@ -458,7 +451,7 @@ export async function makeServiceContext(
   };
 
   return resolveObj(
-    fromPairs(
+    Object.fromEntries(
       dependencies.map((dependency) => [
         `@${dependency.outputKey}`,
         dependencyContext(dependency),
