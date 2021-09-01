@@ -36,6 +36,7 @@ import { HandlerMap } from "@/messaging/protocol";
 import { sleep } from "@/utils";
 import { fromPairs, partition, zip } from "lodash";
 import { getLinkedApiClient } from "@/services/apiClient";
+import { JsonObject } from "type-fest";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -485,7 +486,10 @@ export const executeOnServer = liftBackground(
   "EXECUTE_ON_SERVER",
   async (blockId: RegistryId, blockArgs: RenderedArgs) => {
     console.debug(`Running ${blockId} on the server`);
-    return (await getLinkedApiClient()).post("/api/run/", {
+    return (await getLinkedApiClient()).post<{
+      data?: JsonObject;
+      error?: JsonObject;
+    }>("/api/run/", {
       id: blockId,
       args: blockArgs,
     });
