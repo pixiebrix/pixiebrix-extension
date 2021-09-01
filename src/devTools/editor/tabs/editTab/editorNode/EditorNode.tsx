@@ -19,19 +19,30 @@ import React from "react";
 import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import cx from "classnames";
 
-export interface EditorNodeProps {
-  title: string
-  icon: IconProp,
-  onClick: () => void
-}
+export type EditorNodeProps = {
+  title: string;
+  outputKey?: string;
+  icon: IconProp;
+  onClick: () => void;
+  muted?: boolean;
+};
 
-const EditorNode: React.FC<EditorNodeProps> = (props) => (
-  <button type="button" className={styles.root} onClick={props.onClick}>
-    <div className={styles.box}>
-      <FontAwesomeIcon icon={props.icon} size="3x" fixedWidth />
+const EditorNode: React.FC<EditorNodeProps> = ({
+  onClick,
+  icon,
+  title,
+  outputKey,
+  muted,
+}) => (
+  // Use our own custom style here, not bootstrap
+  <button type="button" className={styles.root} onClick={onClick}>
+    {outputKey && <div className={styles.outputKey}>@{outputKey}</div>}
+    <div className={cx(styles.box, { muted })}>
+      <FontAwesomeIcon icon={icon} size="3x" fixedWidth />
     </div>
-    <div className={styles.title}>{props.title}</div>
+    <div className={styles.title}>{title}</div>
   </button>
 );
 

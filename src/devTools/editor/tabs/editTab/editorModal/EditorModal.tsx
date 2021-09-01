@@ -16,19 +16,29 @@
  */
 
 import React from "react";
-import { Modal } from "react-bootstrap";
+import { Button, Modal } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const EditorModal: React.FC<{
   show?: boolean;
+  onRemove?: () => void;
   onHide: () => void;
   title: string;
-}> = ({ show = true, title, onHide, children }) => {
+}> = ({ show = true, title, onHide, onRemove, children }) => {
   return (
-    <Modal show={show} onHide={onHide}>
-      <Modal.Header>
+    <Modal show={show} onHide={onHide} size="lg">
+      <Modal.Header closeButton>
         <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>{children}</Modal.Body>
+      {onRemove && (
+        <Modal.Footer>
+          <Button variant="danger" onClick={onRemove}>
+            <FontAwesomeIcon icon={faTrash} /> Delete
+          </Button>
+        </Modal.Footer>
+      )}
     </Modal>
   );
 };

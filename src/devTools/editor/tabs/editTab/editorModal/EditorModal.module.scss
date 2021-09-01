@@ -15,44 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: inline-flex;
-  flex-direction: column;
-  width: fit-content;
-  height: fit-content;
-  border: none;
-  background: none;
-  align-items: center;
-}
-
-.box {
-  display: flex;
-  border: 2px solid black;
-  border-radius: 20%;
-  width: 80px;
-  height: 80px;
-  align-items: center;
-  justify-content: center;
-
-  // How do we add additional affects to things?
-  &.muted {
-    border: 2px dashed #6c757d;
-    color: #6c757d;
+:root {
+  &:global {
   }
-
-  &:hover {
-    cursor: pointer;
-    color: #fff;
-    background-color: #b66dff;
-  }
-}
-
-.outputKey {
-  font-family: monospace;
-}
-
-.title {
-  display: block;
-  text-align: center;
-  margin-top: 0.5rem;
 }

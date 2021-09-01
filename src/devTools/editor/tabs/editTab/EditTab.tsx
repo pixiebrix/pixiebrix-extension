@@ -27,12 +27,14 @@ import { getIcon } from "@/components/fields/BlockModal";
 import { BlockType, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { zip } from "lodash";
+import { noop, zip } from "lodash";
 import { IBlock } from "@/core";
 import EditorModal from "@/devTools/editor/tabs/editTab/editorModal/EditorModal";
 import PanelForm from "@/devTools/editor/tabs/actionPanel/PanelForm";
 import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
 import hash from "object-hash";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { produce } from "immer";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -61,16 +63,17 @@ const EditTab: React.FC<{
     pipelineFieldHelpers,
   ] = useField<BlockPipeline>(fieldName);
 
+  // Load once
   const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);
 
-  const actionsHash = hash(blockPipeline.map((x) => x.id));
+  const pipelineIdHash = hash(blockPipeline.map((x) => x.id));
   const resolvedBlocks = useMemo(
     () =>
       blockPipeline.map(({ id }) =>
         (allBlocks ?? []).find((block) => block.id === id)
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using actionsHash since we only use the actions ids
-    [allBlocks, actionsHash]
+    [allBlocks, pipelineIdHash]
   );
 
   const [blockTypes] = useAsyncState(
@@ -90,16 +93,26 @@ const EditTab: React.FC<{
     blockPipeline,
     resolvedBlocks,
     blockTypes
-  ).map(([action, block, type], index) => ({
-    title: action.label ?? block.name,
-    icon: getIcon(block, type),
-    onClick: () => {
-      onSelectNode(index + 1);
-    },
-  }));
+  ).map(([action, block, type], index) =>
+    block
+      ? {
+          title: action.label ?? block?.name,
+          outputKey: action.outputKey,
+          icon: getIcon(block, type),
+          onClick: () => {
+            onSelectNode(index + 1);
+          },
+        }
+      : {
+          title: "Loading...",
+          icon: faSpinner,
+          onClick: noop,
+        }
+  );
 
   const initialNode: EditorNodeProps = useMemo(
     () => ({
+      outputKey: "input",
       title: label,
       icon,
       onClick: () => {
@@ -121,14 +134,23 @@ const EditTab: React.FC<{
   }, [allBlocks, elementType]);
 
   const addBlock = useCallback(
-    (block: IBlock, atIndex: number) => {
-      const prev = blockPipeline.slice(0, atIndex);
-      const next = blockPipeline.slice(atIndex, blockPipeline.length);
+    (block: IBlock, nodeIndex: number) => {
+      const pipelineIndex = nodeIndex - 1;
+      const prev = blockPipeline.slice(0, pipelineIndex);
+      const next = blockPipeline.slice(pipelineIndex, blockPipeline.length);
       const newBlock = { id: block.id, config: {} };
       pipelineFieldHelpers.setValue([...prev, newBlock, ...next]);
     },
     [pipelineFieldHelpers, blockPipeline]
   );
+
+  const removeBlock = (pipelineIndex: number) => {
+    const newPipeline = produce(blockPipeline, (draft) => {
+      setActiveNodeIndex(null);
+      draft.splice(pipelineIndex, 1);
+    });
+    pipelineFieldHelpers.setValue(newPipeline);
+  };
 
   return (
     <Tab.Pane eventKey={eventKey}>
@@ -148,6 +170,9 @@ const EditTab: React.FC<{
           onHide={() => {
             setActiveNodeIndex(null);
           }}
+          onRemove={() => {
+            removeBlock(activeNodeIndex - 1);
+          }}
           title={
             // eslint-disable-next-line security/detect-object-injection -- numeric index into an array
             nodes[activeNodeIndex].title
@@ -163,6 +188,11 @@ const EditTab: React.FC<{
 
       <EditorNodeLayout
         nodes={nodes}
+        showAppend={
+          !blockTypes ||
+          blockTypes?.length === 0 ||
+          blockTypes[blockTypes.length - 1] !== "renderer"
+        }
         relevantBlocksToAdd={relevantBlocksToAdd}
         addBlock={addBlock}
       />
