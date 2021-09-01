@@ -32,8 +32,25 @@ const EllipsisMenu: React.FunctionComponent<{
   variant?: string;
   items: Item[];
 }> = ({ variant = "light", items }) => {
-  const onToggle = (isOpen: boolean, event: SyntheticEvent<Dropdown>) => {
+  const onToggle = (
+    isOpen: boolean,
+    event: SyntheticEvent<Dropdown>,
+    metadata: {
+      source: "select" | "click" | "rootClose" | "keydown";
+    }
+  ) => {
     event.stopPropagation();
+
+    if (metadata.source === "click" && isOpen) {
+      try {
+        document.body.click();
+      } catch (error: unknown) {
+        console.debug(
+          "EllipsisMenu. Failed trigger closing other menus",
+          error
+        );
+      }
+    }
   };
 
   return (
@@ -41,7 +58,6 @@ const EllipsisMenu: React.FunctionComponent<{
       <Dropdown.Toggle className={styles.toggle} variant={variant} size="sm">
         <FontAwesomeIcon icon={faEllipsisV} />
       </Dropdown.Toggle>
-
       <Dropdown.Menu>
         {items
           .filter((x) => !x.hide)
