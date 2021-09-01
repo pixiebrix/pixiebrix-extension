@@ -29,9 +29,10 @@ export type AsyncState<T> = [
 
 export function useAsyncState<T>(
   promiseFactory: StateFactory<T>,
-  dependencies: unknown[] = []
+  dependencies: unknown[] = [],
+  initialState?: T | undefined
 ): AsyncState<T> {
-  const [data, setData] = useState<T | undefined>();
+  const [data, setData] = useState<T | undefined>(initialState);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState<unknown>();
 

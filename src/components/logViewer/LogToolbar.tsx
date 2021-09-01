@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Form, Pagination } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import type { MessageLevel } from "@/background/logging";
-import { range } from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync, faTrash } from "@fortawesome/free-solid-svg-icons";
 import React, { useCallback } from "react";
 import { useToasts } from "react-toast-notifications";
 import AsyncButton from "@/components/AsyncButton";
+import Pagination from "@/components/pagination/Pagination";
 
 const LogToolbar: React.FunctionComponent<{
   level: MessageLevel;
@@ -98,19 +98,7 @@ const LogToolbar: React.FunctionComponent<{
         </Form.Group>
         <Form.Group className="ml-4">
           {numPages > 0 && (
-            <Pagination className="my-0">
-              {range(numPages).map((pageIndex) => (
-                <Pagination.Item
-                  key={pageIndex}
-                  active={pageIndex === page}
-                  onClick={() => {
-                    setPage(pageIndex);
-                  }}
-                >
-                  {pageIndex + 1}
-                </Pagination.Item>
-              ))}
-            </Pagination>
+            <Pagination page={page} numPages={numPages} setPage={setPage} />
           )}
         </Form.Group>
         <Form.Group className="ml-auto">

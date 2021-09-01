@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.DataSourceCard {
-  .type {
-    color: #6c757d;
-  }
+export interface AuthOption {
+  value: string;
+  label: string;
+  serviceId: string;
+  local: boolean;
 }

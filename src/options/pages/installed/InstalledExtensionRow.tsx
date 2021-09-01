@@ -15,21 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
-import { ExtensionRef, ResolvedExtension } from "@/core";
+import React, { useContext, useMemo } from "react";
+import { ResolvedExtension } from "@/core";
 import {
   ExtensionValidationResult,
   useExtensionValidator,
 } from "@/validators/generic";
 import { BeatLoader } from "react-spinners";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faExclamation } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import {
+  faCheck,
+  faDownload,
+  faExclamation,
+  faShare,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useNotifications from "@/hooks/useNotifications";
-
-type RemoveAction = (identifier: ExtensionRef) => void;
+import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
+import { push } from "connected-react-router";
+import { useDispatch } from "react-redux";
+import AuthContext from "@/auth/AuthContext";
 
 function validationMessage(validation: ExtensionValidationResult) {
   let message = "Invalid Configuration";
@@ -53,16 +61,20 @@ function validationMessage(validation: ExtensionValidationResult) {
   return message;
 }
 
-const ExtensionRow: React.FunctionComponent<{
+const InstalledExtensionRow: React.FunctionComponent<{
   extension: ResolvedExtension;
   onRemove: RemoveAction;
-}> = ({ extension, onRemove }) => {
-  const { id, label, extensionPointId } = extension;
+  onExportBlueprint: ExportBlueprintAction;
+}> = ({ extension, onRemove, onExportBlueprint }) => {
+  const { id, label, extensionPointId, _recipe } = extension;
   const notify = useNotifications();
+  const { scope } = useContext(AuthContext);
 
   const [hasPermissions, requestPermissions] = useExtensionPermissions(
     extension
   );
+
+  const dispatch = useDispatch();
 
   const [validation] = useExtensionValidator(extension);
 
@@ -95,29 +107,56 @@ const ExtensionRow: React.FunctionComponent<{
     );
   }, [hasPermissions, requestPermissions, validation]);
 
+  const onUninstall = () => {
+    onRemove({ extensionId: id, extensionPointId });
+    notify.success(`Removed brick ${label ?? id}`, {
+      event: "ExtensionRemove",
+    });
+  };
+
   return (
     <tr>
       <td>&nbsp;</td>
-      <td>
-        <Link to={`/workshop/extensions/${id}`}>{label ?? id}</Link>
-      </td>
+      <td>{label ?? id}</td>
       <td className="text-wrap">{statusElt}</td>
       <td>
-        <AsyncButton
-          variant="danger"
-          size="sm"
-          onClick={() => {
-            onRemove({ extensionId: id, extensionPointId });
-            notify.success(`Removed brick ${label ?? id}`, {
-              event: "ExtensionRemove",
-            });
-          }}
-        >
-          Uninstall
-        </AsyncButton>
+        <EllipsisMenu
+          items={[
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faShare} /> Share
+                </>
+              ),
+              hide: _recipe != null || scope == null,
+              action: () => {
+                dispatch(push(`/installed/share/${id}`));
+              },
+            },
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faDownload} /> Export
+                </>
+              ),
+              action: () => {
+                onExportBlueprint(id);
+              },
+            },
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faTimes} /> Uninstall
+                </>
+              ),
+              action: onUninstall,
+              className: "text-danger",
+            },
+          ]}
+        />
       </td>
     </tr>
   );
 };
 
-export default ExtensionRow;
+export default InstalledExtensionRow;

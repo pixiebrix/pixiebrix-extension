@@ -19,20 +19,27 @@ import React, { useState } from "react";
 import { ResolvedExtension } from "@/core";
 import AsyncButton from "@/components/AsyncButton";
 import { push } from "connected-react-router";
-import { faCloudDownloadAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCloudDownloadAlt,
+  faDownload,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import useUserAction from "@/hooks/useUserAction";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { useDispatch } from "react-redux";
 import { useModals } from "@/components/ConfirmationModal";
 import { CancelError } from "@/errors";
+import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
+import { ExportBlueprintAction } from "@/options/pages/installed/installedPageTypes";
 
 /**
  * Extension row corresponding to a cloud-synced extension that's not active on the user's current client.
  */
 const CloudExtensionRow: React.FunctionComponent<{
   extension: ResolvedExtension;
-}> = ({ extension }) => {
+  onExportBlueprint: ExportBlueprintAction;
+}> = ({ extension, onExportBlueprint }) => {
   const dispatch = useDispatch();
   const [deleted, setDeleted] = useState(false);
   const { id, label } = extension;
@@ -82,9 +89,29 @@ const CloudExtensionRow: React.FunctionComponent<{
         </AsyncButton>
       </td>
       <td>
-        <AsyncButton variant="danger" size="sm" onClick={onDelete}>
-          <FontAwesomeIcon icon={faTrash} /> Delete
-        </AsyncButton>
+        <EllipsisMenu
+          items={[
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faDownload} /> Export
+                </>
+              ),
+              action: () => {
+                onExportBlueprint(id);
+              },
+            },
+            {
+              title: (
+                <>
+                  <FontAwesomeIcon icon={faTrash} /> Delete
+                </>
+              ),
+              action: onDelete,
+              className: "text-danger",
+            },
+          ]}
+        />
       </td>
     </tr>
   );

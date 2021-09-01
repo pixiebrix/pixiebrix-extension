@@ -17,9 +17,7 @@
 
 import React, { useCallback, Suspense } from "react";
 import { FieldProps } from "@/components/fields/propTypes";
-import Form from "react-bootstrap/Form";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { Form, Row, Col } from "react-bootstrap";
 
 import { IconOption } from "@/icons/types";
 import { useField } from "formik";

@@ -18,6 +18,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   IExtension,
+  Metadata,
   PersistedExtension,
   RawServiceConfiguration,
   RegistryId,
@@ -191,6 +192,17 @@ export const optionsSlice = createSlice({
       state.extensions.push({ ...extension, active: true });
 
       void preloadMenus({ extensions: [extension] });
+    },
+
+    attachExtension(
+      state,
+      {
+        payload,
+      }: PayloadAction<{ extensionId: UUID; recipeMetadata: Metadata }>
+    ) {
+      const { extensionId, recipeMetadata } = payload;
+      const extension = state.extensions.find((x) => x.id === extensionId);
+      extension._recipe = recipeMetadata;
     },
 
     installRecipe(

@@ -15,24 +15,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
 import { ResolvedExtension } from "@/core";
-import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
-import { groupBy, sortBy } from "lodash";
+import { ExportBlueprintAction, RemoveAction } from "./installedPageTypes";
 import { Card, Col, Row, Table } from "react-bootstrap";
-import RecipeEntry from "@/options/pages/installed/RecipeEntry";
+import ExtensionGroup from "./ExtensionGroup";
+import ExtensionGroupHeader from "./ExtensionGroupHeader";
+import { groupBy } from "lodash";
+import ExtensionRows from "./ExtensionRows";
+
+const groupByRecipe = (
+  extensions: ResolvedExtension[]
+): ResolvedExtension[][] =>
+  Object.values(groupBy(extensions, (extension) => extension._recipe.id));
 
 const ActiveBricksCard: React.FunctionComponent<{
   extensions: ResolvedExtension[];
   onRemove: RemoveAction;
-}> = ({ extensions, onRemove }) => {
-  const recipeExtensions = useMemo(
-    () =>
-      sortBy(
-        Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
-        ([recipeId]) => (recipeId === "" ? 0 : 1)
-      ),
-    [extensions]
+  onExportBlueprint: ExportBlueprintAction;
+}> = ({ extensions, onRemove, onExportBlueprint }) => {
+  const personalExtensions = extensions.filter(
+    (extension) => !extension._recipe && !extension._deployment
+  );
+
+  const marketplaceExtensionGroups = groupByRecipe(
+    extensions.filter(
+      (extension) => extension._recipe && !extension._deployment
+    )
+  );
+
+  const deploymentGroups = groupByRecipe(
+    extensions.filter((extension) => extension._deployment)
   );
 
   return (
@@ -41,22 +54,49 @@ const ActiveBricksCard: React.FunctionComponent<{
         <Card className="ActiveBricksCard">
           <Card.Header>Active Bricks</Card.Header>
           <Table>
-            <thead>
-              <tr>
-                <th>&nbsp;</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Uninstall</th>
-              </tr>
-            </thead>
-            {recipeExtensions.map(([recipeId, xs]) => (
-              <RecipeEntry
-                key={recipeId}
-                recipeId={recipeId}
-                extensions={xs}
-                onRemove={onRemove}
-              />
-            ))}
+            <tbody>
+              {personalExtensions.length > 0 && (
+                <>
+                  <ExtensionGroupHeader label="Personal Bricks" />
+                  <ExtensionRows
+                    extensions={personalExtensions}
+                    onRemove={onRemove}
+                    onExportBlueprint={onExportBlueprint}
+                  />
+                </>
+              )}
+
+              {marketplaceExtensionGroups.length > 0 && (
+                <>
+                  <ExtensionGroupHeader label="Marketplace Bricks" />
+                  {marketplaceExtensionGroups.map((extensions) => (
+                    <ExtensionGroup
+                      key={extensions[0]._recipe.id}
+                      label={extensions[0]._recipe.name}
+                      extensions={extensions}
+                      onRemove={onRemove}
+                      onExportBlueprint={onExportBlueprint}
+                    />
+                  ))}
+                </>
+              )}
+
+              {deploymentGroups.length > 0 && (
+                <>
+                  <ExtensionGroupHeader label="Automatic Team Deployments" />
+                  {deploymentGroups.map((extensions) => (
+                    <ExtensionGroup
+                      key={extensions[0]._recipe.id}
+                      label={extensions[0]._recipe.name}
+                      extensions={extensions}
+                      managed
+                      onRemove={onRemove}
+                      onExportBlueprint={onExportBlueprint}
+                    />
+                  ))}
+                </>
+              )}
+            </tbody>
           </Table>
         </Card>
       </Col>

@@ -16,12 +16,11 @@
  */
 
 import { connect } from "react-redux";
-import React, { useContext } from "react";
-import { isEmpty } from "lodash";
+import React, { useCallback, useContext } from "react";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, Redirect, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { ExtensionRef, IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
@@ -40,41 +39,98 @@ import { getLinkedApiClient } from "@/services/apiClient";
 import { CloudExtension } from "@/types/contract";
 import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
 import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
+import useNotifications from "@/hooks/useNotifications";
+import { exportBlueprint } from "./exportBlueprint";
+import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
+import { push } from "connected-react-router";
 
 const { removeExtension } = optionsSlice.actions;
 
 const InstalledPage: React.FunctionComponent<{
   extensions: IExtension[];
+  push: (path: string) => void;
   onRemove: RemoveAction;
-}> = ({ extensions, onRemove }) => {
+}> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
 
-  const [cloudExtensions] = useAsyncState(async () => {
-    const lookup = new Set<UUID>(extensions.map((x) => x.id));
-    const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
-      "/api/extensions/"
-    );
-    return data
-      .filter((x) => !lookup.has(x.id))
-      .map((x) => ({ ...x, active: false }));
-  }, [extensions]);
+  const [allExtensions] = useAsyncState(
+    async () => {
+      const lookup = new Set<UUID>(extensions.map((x) => x.id));
+      const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
+        "/api/extensions/"
+      );
+      const cloudExtensions = data
+        .filter((x) => !lookup.has(x.id))
+        .map((x) => ({ ...x, active: false }));
 
-  const [resolved] = useAsyncState(
+      return [...extensions, ...cloudExtensions];
+    },
+    [extensions],
+    extensions ?? []
+  );
+
+  const [resolvedExtensions] = useAsyncState(
     async () =>
       Promise.all(
-        [...extensions, ...(cloudExtensions ?? [])].map(async (x) =>
-          resolveDefinitions(x)
-        )
+        allExtensions.map(async (extension) => resolveDefinitions(extension))
       ),
-    [extensions, cloudExtensions]
+    [allExtensions],
+    []
   );
+
+  const notify = useNotifications();
+
+  const onExportBlueprint = useCallback(
+    (extensionIdToExport: UUID) => {
+      const extension = allExtensions.find(
+        (extension) => extension.id === extensionIdToExport
+      );
+
+      if (extension == null) {
+        notify.error(
+          `Error exporting as blueprint: extension with id ${extensionIdToExport} not found.`
+        );
+        return;
+      }
+
+      exportBlueprint(extension);
+    },
+    [notify, allExtensions]
+  );
+
+  const noExtensions = allExtensions.length === 0;
 
   return (
     <Page title="Active Bricks" icon={faCubes}>
+      <Route
+        exact
+        path="/installed/share/:extensionId"
+        render={(routeProps) => {
+          // Avoid race condition with load when visiting the URL directly
+          if (!allExtensions) {
+            return null;
+          }
+
+          const toShare = allExtensions.find(
+            (x) => x.id === routeProps.match.params.extensionId
+          );
+
+          return toShare ? (
+            <ShareExtensionModal
+              extension={toShare}
+              onCancel={() => {
+                push("/installed");
+              }}
+            />
+          ) : (
+            <Redirect to="/installed" />
+          );
+        }}
+      />
       <Row>
         <Col>
           <div className="pb-4">
-            {isEmpty(extensions) ? (
+            {noExtensions ? (
               <p>
                 Once you&apos;ve activated templates or created your own bricks,
                 you&apos;ll be able to manage them here
@@ -107,10 +163,14 @@ const InstalledPage: React.FunctionComponent<{
           </div>
         </Col>
       </Row>
-      {isEmpty(extensions) ? (
+      {noExtensions ? (
         <NoExtensionsPage />
       ) : (
-        <ActiveBricksCard extensions={resolved} onRemove={onRemove} />
+        <ActiveBricksCard
+          extensions={resolvedExtensions}
+          onRemove={onRemove}
+          onExportBlueprint={onExportBlueprint}
+        />
       )}
     </Page>
   );
@@ -122,6 +182,9 @@ const mapStateToProps = (state: { options: OptionsState }) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   // IntelliJ doesn't detect use in the props
+  push: (path: string) => {
+    dispatch(push(path));
+  },
   onRemove: (ref: ExtensionRef) => {
     reportEvent("ExtensionRemove", {
       extensionId: ref.extensionId,
