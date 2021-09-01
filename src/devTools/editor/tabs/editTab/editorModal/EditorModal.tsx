@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,35 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.root {
-  display: inline-flex;
-  flex-direction: column;
-  width: fit-content;
-  height: fit-content;
-  border: none;
-  background: none;
-  align-content: center;
-  justify-content: center;
-}
+import React from "react";
+import { Modal } from "react-bootstrap";
 
-.box {
-  display: flex;
-  border: 2px solid black;
-  border-radius: 20%;
-  width: 80px;
-  height: 80px;
-  align-items: center;
-  justify-content: center;
+const EditorModal: React.FC<{
+  show?: boolean;
+  onHide: () => void;
+  title: string;
+}> = ({ show = true, title, onHide, children }) => {
+  return (
+    <Modal show={show} onHide={onHide}>
+      <Modal.Header>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>{children}</Modal.Body>
+    </Modal>
+  );
+};
 
-  &:hover {
-    cursor: pointer;
-    color: #fff;
-    background-color: #b66dff;
-  }
-}
-
-.title {
-  display: block;
-  text-align: center;
-  margin-top: 0.5rem;
-}
+export default EditorModal;

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useField } from "formik";
@@ -29,6 +29,10 @@ import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { zip } from "lodash";
 import { IBlock } from "@/core";
+import EditorModal from "@/devTools/editor/tabs/editTab/editorModal/EditorModal";
+import PanelForm from "@/devTools/editor/tabs/actionPanel/PanelForm";
+import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
+import hash from "object-hash";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -47,45 +51,70 @@ const EditTab: React.FC<{
 }> = ({ eventKey = "editTab", fieldName = "extension.body" }) => {
   const [{ value: elementType }] = useField<ElementType>("type");
 
-  const { label, icon } = useMemo(() => ADAPTERS.get(elementType),
-    [elementType]
+  const [activeNodeIndex, setActiveNodeIndex] = useState<number | null>(null);
+
+  const { label, icon } = ADAPTERS.get(elementType);
+
+  const [
+    { value: blockPipeline = [] },
+    ,
+    pipelineFieldHelpers,
+  ] = useField<BlockPipeline>(fieldName);
+
+  const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);
+
+  const actionsHash = hash(blockPipeline.map((x) => x.id));
+  const resolvedBlocks = useMemo(
+    () =>
+      blockPipeline.map(({ id }) =>
+        (allBlocks ?? []).find((block) => block.id === id)
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- using actionsHash since we only use the actions ids
+    [allBlocks, actionsHash]
   );
 
-  const [{ value: actions = [] }, , actionsHelpers] = useField<BlockPipeline>(
-    fieldName
+  const [blockTypes] = useAsyncState(
+    async () =>
+      Promise.all(resolvedBlocks.map(async (block) => getType(block))),
+    [resolvedBlocks]
   );
 
-  const [allBlocks] = useAsyncState(async () => blockRegistry.all(),
-    [], []);
+  const onSelectNode = useCallback(
+    (index: number) => {
+      setActiveNodeIndex(index);
+    },
+    [setActiveNodeIndex]
+  );
 
-  const resolvedBlocks = actions.map(({ id }) => allBlocks.find(block => block.id === id));
+  const blockNodes: EditorNodeProps[] = zip(
+    blockPipeline,
+    resolvedBlocks,
+    blockTypes
+  ).map(([action, block, type], index) => ({
+    title: action.label ?? block.name,
+    icon: getIcon(block, type),
+    onClick: () => {
+      onSelectNode(index + 1);
+    },
+  }));
 
-  const [blockTypes] = useAsyncState(async () => {
-    const types = await Promise.all(resolvedBlocks.map(async block => getType(block)));
-    return types;
-  }, [], []);
-
-  const blockNodes: EditorNodeProps[] = zip(actions, resolvedBlocks, blockTypes)
-    .map(([action, block, type], index) => ({
-      title: action.label,
-      icon: getIcon(block, type),
-      onClick: () => { onNodeClick(index + 1) }
-    }));
-
-  const initialNode: EditorNodeProps = {
-    title: label,
-    icon,
-    onClick: () => { onNodeClick(0) }
-  }
+  const initialNode: EditorNodeProps = useMemo(
+    () => ({
+      title: label,
+      icon,
+      onClick: () => {
+        onSelectNode(0);
+      },
+    }),
+    [icon, label, onSelectNode]
+  );
 
   const nodes: EditorNodeProps[] = [initialNode, ...blockNodes];
 
-  const onNodeClick = useCallback((index: number) => {
-    console.log(`on node clicked: ${index}`)
-  }, []);
-
   const [relevantBlocksToAdd] = useAsyncState(async () => {
-    const excludeTypes: BlockType[] = ["actionPanel", "panel"].includes(elementType)
+    const excludeTypes: BlockType[] = ["actionPanel", "panel"].includes(
+      elementType
+    )
       ? ["effect"]
       : ["renderer"];
     return filterBlocks(allBlocks, { excludeTypes });
@@ -93,16 +122,45 @@ const EditTab: React.FC<{
 
   const addBlock = useCallback(
     (block: IBlock, atIndex: number) => {
-      const prev = actions.slice(0, atIndex);
-      const next = actions.slice(atIndex, actions.length);
+      const prev = blockPipeline.slice(0, atIndex);
+      const next = blockPipeline.slice(atIndex, blockPipeline.length);
       const newBlock = { id: block.id, config: {} };
-      actionsHelpers.setValue([...prev, newBlock, ...next]);
+      pipelineFieldHelpers.setValue([...prev, newBlock, ...next]);
     },
-    [actionsHelpers, actions]
+    [pipelineFieldHelpers, blockPipeline]
   );
 
   return (
     <Tab.Pane eventKey={eventKey}>
+      {activeNodeIndex === 0 && (
+        <EditorModal
+          onHide={() => {
+            setActiveNodeIndex(null);
+          }}
+          title={label}
+        >
+          <PanelForm />
+        </EditorModal>
+      )}
+
+      {activeNodeIndex > 0 && (
+        <EditorModal
+          onHide={() => {
+            setActiveNodeIndex(null);
+          }}
+          title={
+            // eslint-disable-next-line security/detect-object-injection -- numeric index into an array
+            nodes[activeNodeIndex].title
+          }
+        >
+          <BlockConfiguration
+            name={[fieldName, activeNodeIndex - 1].join(".")}
+            block={resolvedBlocks[activeNodeIndex - 1]}
+            showOutput={activeNodeIndex !== blockPipeline.length}
+          />
+        </EditorModal>
+      )}
+
       <EditorNodeLayout
         nodes={nodes}
         relevantBlocksToAdd={relevantBlocksToAdd}
@@ -110,6 +168,6 @@ const EditTab: React.FC<{
       />
     </Tab.Pane>
   );
-}
+};
 
 export default EditTab;
