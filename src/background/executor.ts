@@ -26,8 +26,8 @@ import {
   RunBlockAction,
 } from "@/contentScript/executor";
 import { browser, Tabs } from "webextension-polyfill-ts";
-import { MESSAGE_PREFIX } from "@/background/protocol";
-import { ActionType, Message, RenderedArgs } from "@/core";
+import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
+import { ActionType, Message, RegistryId, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError, getErrorMessage } from "@/errors";
@@ -35,6 +35,8 @@ import { expectContext } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
 import { sleep } from "@/utils";
 import { partition, zip } from "lodash";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { JsonObject } from "type-fest";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -479,5 +481,19 @@ export async function executeInOpener(
     },
   });
 }
+
+export const executeOnServer = liftBackground(
+  "EXECUTE_ON_SERVER",
+  async (blockId: RegistryId, blockArgs: RenderedArgs) => {
+    console.debug(`Running ${blockId} on the server`);
+    return (await getLinkedApiClient()).post<{
+      data?: JsonObject;
+      error?: JsonObject;
+    }>("/api/run/", {
+      id: blockId,
+      args: blockArgs,
+    });
+  }
+);
 
 export default initExecutor;
