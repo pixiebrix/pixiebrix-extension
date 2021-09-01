@@ -489,7 +489,7 @@ export const executeOnServer = liftBackground(
     console.debug(`Running ${blockId} on the server`);
     return (await getLinkedApiClient()).post<{
       data?: JsonObject;
-      errors?: OutputUnit[];
+      error?: JsonObject;
     }>("/api/run/", {
       id: blockId,
       args: blockArgs,

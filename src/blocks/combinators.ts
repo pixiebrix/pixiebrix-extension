@@ -230,13 +230,13 @@ async function runStage(
       }
 
       case "remote": {
-        const { data, errors } = (
+        const { data, error } = (
           await executeOnServer(stage.id, blockArgs)
         ).data;
-        if (errors) {
+        if (error) {
           throw new RemoteExecutionError(
             "Error while executing brick remotely",
-            errors
+            error
           );
         }
 
