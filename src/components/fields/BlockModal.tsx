@@ -26,7 +26,7 @@ import {
   Row,
   Container,
 } from "react-bootstrap";
-import { sortBy, unary } from "lodash";
+import { sortBy, truncate, unary } from "lodash";
 import { IBlock, IService } from "@/core";
 import {
   faBars,
@@ -122,7 +122,9 @@ const BlockResult: React.FunctionComponent<{
             <code className="small">{block.id}</code>
           </div>
           <div>
-            <p className="mb-0 small">{block.description.slice(0, 256)}</p>
+            <p className="mb-0 small">
+              {truncate(block.description, { length: 256 })}
+            </p>
           </div>
         </div>
       </div>

@@ -22,6 +22,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import { Formik, useField } from "formik";
 import { useParams } from "react-router";
 import Editor from "./Editor";
+import { truncate } from "lodash";
 import GridLoader from "react-spinners/GridLoader";
 import useSubmitBrick from "./useSubmitBrick";
 import yaml from "js-yaml";
@@ -138,7 +139,7 @@ const EditPage: React.FunctionComponent = () => {
 
   const name = rawConfig?.metadata?.name;
   const title = useMemo(
-    () => (name ? `Edit ${name.slice(0, 15)}` : "Edit Brick"),
+    () => (name ? `Edit ${truncate(name, { length: 15 })}` : "Edit Brick"),
     [name]
   );
   useTitle(title);

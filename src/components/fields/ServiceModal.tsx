@@ -26,7 +26,7 @@ import {
   Row,
   Container,
 } from "react-bootstrap";
-import { sortBy } from "lodash";
+import { sortBy, truncate } from "lodash";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDebounce } from "use-debounce";
@@ -56,7 +56,9 @@ const ServiceResult: React.FunctionComponent<{
           <code className="small">{metadata.id}</code>
         </div>
         <div>
-          <p className="mb-0 small">{metadata.description.slice(0, 256)}</p>
+          <p className="mb-0 small">
+            {truncate(metadata.description, { length: 256 })}
+          </p>
         </div>
       </div>
     </div>
