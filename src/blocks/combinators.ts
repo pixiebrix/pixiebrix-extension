@@ -234,7 +234,6 @@ async function runStage(
           await executeOnServer(stage.id, blockArgs)
         ).data;
         if (errors) {
-          // TODO: Fix https://github.com/pixiebrix/pixiebrix-extension/issues/1227
           throw new RemoteExecutionError(
             "Error while executing brick remotely",
             errors
