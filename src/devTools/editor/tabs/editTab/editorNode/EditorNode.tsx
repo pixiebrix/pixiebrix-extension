@@ -35,15 +35,23 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   title,
   outputKey,
   muted,
-}) => (
-  // Use our own custom style here, not bootstrap
-  <button type="button" className={styles.root} onClick={onClick}>
-    {outputKey && <div className={styles.outputKey}>@{outputKey}</div>}
-    <div className={cx(styles.box, { muted })}>
-      <FontAwesomeIcon icon={icon} size="3x" fixedWidth />
+}) => {
+  const outputName = outputKey ? `@${outputKey}` : "";
+
+  return (
+    // Use our own custom style here, not bootstrap
+    <div className={styles.root}>
+      <div className={styles.outputKey}>{outputName}</div>
+      <button
+        type="button"
+        onClick={onClick}
+        className={cx(styles.box, { muted })}
+      >
+        <FontAwesomeIcon icon={icon} size="3x" fixedWidth />
+      </button>
+      <div className={styles.title}>{title}</div>
     </div>
-    <div className={styles.title}>{title}</div>
-  </button>
-);
+  );
+}
 
 export default EditorNode;

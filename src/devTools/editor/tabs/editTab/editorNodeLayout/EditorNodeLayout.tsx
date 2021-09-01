@@ -21,12 +21,15 @@ import EditorNode, {
   EditorNodeProps,
 } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faMinus, faPlus, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
 import { IBlock } from "@/core";
 import BlockModal from "@/components/fields/BlockModal";
 
 const renderAppend = ({ show }: { show: () => void }) => (
-  <EditorNode muted title="Add" icon={faPlus} onClick={show} />
+  <>
+    <FontAwesomeIcon icon={faArrowRight} size="lg" className={styles.appendArrow} />
+    <EditorNode muted title="Add" icon={faPlus} onClick={show} />
+  </>
 );
 
 const EditorNodeLayout: React.FC<{
@@ -39,7 +42,9 @@ const EditorNodeLayout: React.FC<{
     ({ show }) => (
       // Don't use bootstrap styling
       <button type="button" className={styles.insertButton} onClick={show}>
-        <FontAwesomeIcon icon={faPlusCircle} size="lg" />
+        <FontAwesomeIcon icon={faMinus} />
+        <FontAwesomeIcon icon={faPlusCircle} size="lg" className={styles.plus} />
+        <FontAwesomeIcon icon={faArrowRight} size="lg" />
       </button>
     ),
     []
@@ -47,9 +52,10 @@ const EditorNodeLayout: React.FC<{
 
   return (
     <div className={styles.root}>
-      {nodes.length > 0 &&
+      <div className={styles.nodeContainer}>
+        {nodes.length > 0 &&
         nodes.map((nodeProps, index) => (
-          <div key={index}>
+          <React.Fragment key={index}>
             {index !== 0 && (
               <BlockModal
                 blocks={relevantBlocksToAdd}
@@ -60,17 +66,18 @@ const EditorNodeLayout: React.FC<{
               />
             )}
             <EditorNode {...nodeProps} />
-          </div>
+          </React.Fragment>
         ))}
-      {showAppend && (
-        <BlockModal
-          blocks={relevantBlocksToAdd}
-          renderButton={renderAppend}
-          onSelect={(block) => {
-            addBlock(block, nodes.length);
-          }}
-        />
-      )}
+        {showAppend && (
+          <BlockModal
+            blocks={relevantBlocksToAdd}
+            renderButton={renderAppend}
+            onSelect={(block) => {
+              addBlock(block, nodes.length);
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };

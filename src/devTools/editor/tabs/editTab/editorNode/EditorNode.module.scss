@@ -18,8 +18,6 @@
 .root {
   display: inline-flex;
   flex-direction: column;
-  width: fit-content;
-  height: fit-content;
   border: none;
   background: none;
   align-items: center;
@@ -27,6 +25,7 @@
 
 .box {
   display: flex;
+  flex-direction: column;
   border: 2px solid black;
   border-radius: 20%;
   width: 80px;
@@ -44,15 +43,23 @@
     cursor: pointer;
     color: #fff;
     background-color: #b66dff;
+    box-shadow: 4px 4px 2px gray;
   }
 }
 
 .outputKey {
   font-family: monospace;
+  height: 24px;
 }
 
 .title {
   display: block;
   text-align: center;
+  vertical-align: top;
+  height: 48px;
   margin-top: 0.5rem;
+  max-width: 120px;
+  text-wrap: normal;
+  max-lines: 2;
+  text-overflow: ellipsis;
 }

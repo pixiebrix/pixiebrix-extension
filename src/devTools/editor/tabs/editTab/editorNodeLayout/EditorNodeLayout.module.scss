@@ -16,18 +16,42 @@
  */
 
 .root {
+  height: 100%;
+  width: 80vw;
+  overflow-x: auto;
+}
+
+.nodeContainer {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-content: center;
-
-  > *:not(:last-child) {
-    margin-right: 20px;
-  }
+  align-items: flex-start;
 }
 
 .insertButton {
   border: none;
   background: none;
-  margin-right: 20px;
+  margin-top: 54px;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+
+  > *:not(:last-child) {
+    margin-right: 1px;
+  }
+}
+
+.plus {
+  border: none;
+  border-radius: 50%;
+
+  &:hover {
+    color: #a462e6;
+    box-shadow: 1px 1px 1px gray;
+  }
+}
+
+.appendArrow {
+  margin-top: 54px;
+  margin-right: 10px;
 }
