@@ -37,7 +37,6 @@ import { sleep } from "@/utils";
 import { fromPairs, partition, zip } from "lodash";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
-import { OutputUnit } from "@cfworker/json-schema";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
