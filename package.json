@@ -36,6 +36,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@maxim_mazurok/gapi.client.bigquery": "^2.0.20210701",
     "@reduxjs/toolkit": "^1.6.0",
+    "@rjsf/bootstrap-4": "^3.1.0",
     "@rjsf/core": "^3.0.0",
     "@types/react-autosuggest": "^10.1.5",
     "@uipath/robot": "^1.2.5",
