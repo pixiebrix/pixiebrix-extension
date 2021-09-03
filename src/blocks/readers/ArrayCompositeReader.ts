@@ -55,7 +55,7 @@ class ArrayCompositeReader extends Reader {
 
   async isAvailable(): Promise<boolean> {
     const availability = await Promise.all(
-      this._readers.map(async (x) => x.isAvailable())
+      this._readers.map((x) => x.isAvailable())
     );
     return availability.every(identity);
   }
