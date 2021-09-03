@@ -28,7 +28,6 @@ import { useCallback } from "react";
 import { getErrorMessage } from "@/errors";
 import { reportEvent } from "@/telemetry/events";
 import { CloudExtension } from "@/types/contract";
-import { fromPairs } from "lodash";
 
 function useEnsurePermissions(
   extension: CloudExtension,
@@ -50,7 +49,7 @@ function useEnsurePermissions(
           ({
             id: extension.extensionPointId,
             config: extension.config,
-            services: fromPairs(
+            services: Object.fromEntries(
               services.map((service) => [service.outputKey, service.id])
             ),
           } as ResolvedExtensionPointConfig)

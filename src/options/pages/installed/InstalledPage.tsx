@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import React, { useCallback, useContext } from "react";
 import { optionsSlice } from "@/options/slices";
 import Page from "@/layout/Page";
@@ -43,6 +43,10 @@ import useNotifications from "@/hooks/useNotifications";
 import { exportBlueprint } from "./exportBlueprint";
 import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
 import { push } from "connected-react-router";
+import ExtensionLogsModal from "./ExtensionLogsModal";
+import { RootState } from "@/options/store";
+import { LogsContext } from "./installedPageSlice";
+import { selectShowLogsContext } from "./installedPageSelectors";
 
 const { removeExtension } = optionsSlice.actions;
 
@@ -76,6 +80,10 @@ const InstalledPage: React.FunctionComponent<{
       ),
     [allExtensions],
     []
+  );
+
+  const showLogsContext = useSelector<RootState, LogsContext>(
+    selectShowLogsContext
   );
 
   const notify = useNotifications();
@@ -127,6 +135,12 @@ const InstalledPage: React.FunctionComponent<{
           );
         }}
       />
+      {showLogsContext && (
+        <ExtensionLogsModal
+          title={showLogsContext.title}
+          context={showLogsContext.messageContext}
+        />
+      )}
       <Row>
         <Col>
           <div className="pb-4">

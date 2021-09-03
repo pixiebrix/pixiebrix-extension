@@ -22,7 +22,7 @@ import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import { reverse, sortBy, isEmpty } from "lodash";
+import { sortBy, isEmpty } from "lodash";
 import { _getDNT } from "@/background/telemetry";
 import { isContentScript } from "webext-detect-page";
 import { readStorage, setStorage } from "@/chrome";
@@ -179,7 +179,7 @@ export async function getLog(
   }
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-  return sortBy(reverse(matches), (x) => -Number.parseInt(x.timestamp, 10));
+  return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
 function buildContext(

@@ -20,6 +20,7 @@ import { MessageContext, RegistryId, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 import { OutputUnit } from "@cfworker/json-schema";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { JsonObject } from "type-fest";
 
 export class PipelineConfigurationError extends BusinessError {
   readonly config: BlockPipeline;
@@ -109,5 +110,15 @@ export class OutputValidationError extends BusinessError {
     this.schema = schema;
     this.instance = instance;
     this.errors = errors;
+  }
+}
+
+export class RemoteExecutionError extends BusinessError {
+  readonly error: JsonObject;
+
+  constructor(message: string, error: JsonObject) {
+    super(message);
+    this.name = "RemoteExecutionError";
+    this.error = error;
   }
 }

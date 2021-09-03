@@ -29,7 +29,6 @@ import {
   flow,
   head,
   ObjectIterator,
-  fromPairs,
   zip,
   pickBy,
   isPlainObject,
@@ -77,7 +76,7 @@ export async function waitAnimationFrame(): Promise<void> {
 export async function resolveObj<T>(
   obj: Record<string, Promise<T>>
 ): Promise<Record<string, T>> {
-  return fromPairs(
+  return Object.fromEntries(
     await Promise.all(Object.entries(obj).map(async ([k, v]) => [k, await v]))
   );
 }
@@ -93,7 +92,7 @@ export async function asyncMapValues<T, TResult>(
   const values = await Promise.all(
     entries.map(async ([key, value]) => func(value, key, mapping))
   );
-  return fromPairs(
+  return Object.fromEntries(
     zip(entries, values).map(([[key], value]) => [key, value])
   ) as any;
 }

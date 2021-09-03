@@ -19,7 +19,7 @@
 // Resources:
 // https://github.com/emberjs/ember-inspector/blob/d4f1fbb1ee30d178f81ce03bf8f037722bd4b166/ember_debug/object-inspector.js
 
-import { mapValues, partial, unary, fromPairs } from "lodash";
+import { mapValues, partial, unary } from "lodash";
 import { getAllPropertyNames, isGetter, isPrimitive } from "@/utils";
 import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
@@ -140,7 +140,7 @@ export function getProp(value: any, prop: string | number): unknown {
 
 function pickExternalProps(obj: object): object {
   // Lodash's pickby was having issues with some getters
-  return fromPairs(
+  return Object.fromEntries(
     Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
   );
 }
@@ -245,7 +245,7 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
     );
     // Safe because the prop names are coming from getAllPropertyNames
     // eslint-disable-next-line security/detect-object-injection
-    return fromPairs(props.map((x) => [x, target[x]]));
+    return Object.fromEntries(props.map((x) => [x, target[x]]));
   },
   proxy: {
     toJS: unary(readEmberValueFromCache),

@@ -38,19 +38,13 @@ import {
   UserOptions,
 } from "@/core";
 import { validateInput, validateOutput } from "@/validators/generic";
-import {
-  castArray,
-  fromPairs,
-  isEmpty,
-  isPlainObject,
-  mapValues,
-  pickBy,
-} from "lodash";
+import { castArray, isEmpty, isPlainObject, mapValues, pickBy } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
   executeInAll,
   executeInOpener,
   executeInTarget,
+  executeOnServer,
 } from "@/background/executor";
 import { boolean, excludeUndefined, resolveObj } from "@/utils";
 import { getLoggingConfig } from "@/background/logging";
@@ -62,6 +56,7 @@ import {
   InputValidationError,
   OutputValidationError,
   PipelineConfigurationError,
+  RemoteExecutionError,
 } from "@/blocks/errors";
 import { engineRenderer } from "@/utils/renderers";
 import { BlockConfig, BlockPipeline, ReaderConfig } from "./types";
@@ -225,6 +220,20 @@ async function runStage(
 
       case "broadcast": {
         return await executeInAll(stage.id, blockArgs, baseOptions);
+      }
+
+      case "remote": {
+        const { data, error } = (
+          await executeOnServer(stage.id, blockArgs)
+        ).data;
+        if (error) {
+          throw new RemoteExecutionError(
+            "Error while executing brick remotely",
+            error
+          );
+        }
+
+        return data;
       }
 
       case "self": {
@@ -458,7 +467,7 @@ export async function makeServiceContext(
   };
 
   return resolveObj(
-    fromPairs(
+    Object.fromEntries(
       dependencies.map((dependency) => [
         `@${dependency.outputKey}`,
         dependencyContext(dependency),

@@ -34,6 +34,13 @@
       "error",
       {
         // Documentation: https://eslint.org/docs/rules/no-restricted-imports#options
+        "paths": [
+          {
+            "name": "lodash",
+            "importNames": ["fromPairs", "reverse"],
+            "message": "You can find an alternative on https://youmightnotneed.com/lodash/"
+          }
+        ],
         "patterns": [
           {
             "group": ["*/__mocks__/*"],
@@ -184,6 +191,12 @@
     "selenium"
   ],
   "overrides": [
+    {
+      "files": ["*.stories.tsx"],
+      "rules": {
+        "filenames/match-exported": "off"
+      }
+    },
     {
       "files": ["*.js"],
       "rules": {

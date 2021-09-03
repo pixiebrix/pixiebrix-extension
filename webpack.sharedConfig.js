@@ -93,6 +93,13 @@ const shared = {
         test: /\.txt/,
         type: "asset/source",
       },
+      {
+        resourceQuery: /loadAsUrl/,
+        type: "asset/resource",
+        generator: {
+          filename: "css/[name][ext]",
+        },
+      },
     ],
   },
 };

@@ -45,7 +45,7 @@ export interface BlockConfig {
     alert?: boolean;
   };
 
-  window?: "self" | "opener" | "target" | "broadcast";
+  window?: "self" | "opener" | "target" | "broadcast" | "remote";
 
   outputKey?: string;
 

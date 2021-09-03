@@ -17,7 +17,6 @@
 
 import { Reader } from "@/types";
 import { Schema } from "@/core";
-import { fromPairs } from "lodash";
 
 export class ElementReader extends Reader {
   constructor() {
@@ -39,7 +38,7 @@ export class ElementReader extends Reader {
 
     return {
       tagName: element.tagName,
-      attrs: fromPairs(
+      attrs: Object.fromEntries(
         Object.values(element.attributes).map((x) => [x.name, x.value])
       ),
       text: $element.text().trim(),
