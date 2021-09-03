@@ -18,9 +18,6 @@
 import { Reader } from "@/types";
 import { IReader, ReaderOutput, Schema } from "@/core";
 import { mapValues, identity } from "lodash";
-import fromPairs from "lodash/fromPairs";
-
-console.log(fromPairs);
 
 class CompositeReader extends Reader {
   public readonly outputSchema: Schema;
@@ -33,7 +30,7 @@ class CompositeReader extends Reader {
     this.outputSchema = {
       $schema: "https://json-schema.org/draft/2019-09/schema#",
       type: "object",
-      properties: mapValues(this._readers, (x: any) => x.outputSchema),
+      properties: mapValues(this._readers, (x) => x.outputSchema),
       required: Object.keys(this._readers),
     };
   }
