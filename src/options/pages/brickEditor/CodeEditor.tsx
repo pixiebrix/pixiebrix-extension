@@ -28,14 +28,7 @@ import reactTemplate from "@contrib/templates/reader-react.txt";
 import menuTemplate from "@contrib/templates/foundation-menu-item.txt";
 import panelTemplate from "@contrib/templates/foundation-panel.txt";
 import blueprintTemplate from "@contrib/templates/blueprint-menu.txt";
-
-const AceEditor = React.lazy(
-  async () =>
-    import(
-      /* webpackChunkName: "ace-editor" */
-      "@/vendors/AceEditor"
-    )
-);
+import AceEditor from "@/vendors/AceEditor";
 
 interface TemplateOption {
   value: string;

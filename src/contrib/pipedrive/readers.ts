@@ -16,7 +16,7 @@
  */
 
 import { Reader } from "@/types";
-import { startCase, mapValues, fromPairs } from "lodash";
+import { startCase, mapValues } from "lodash";
 import { withReadWindow } from "@/common";
 import { PathSpec } from "@/blocks/readers/window";
 import { Schema } from "@/core";
@@ -49,7 +49,9 @@ export class PipedriveReader extends Reader {
     this.pathSpec = pathSpec;
     this.outputSchema = {
       type: "object",
-      properties: fromPairs(Object.keys(this.pathSpec).map((x) => [x, {}])),
+      properties: Object.fromEntries(
+        Object.keys(this.pathSpec).map((x) => [x, {}])
+      ),
     };
   }
 

@@ -21,6 +21,7 @@ import EllipsisMenu from "./EllipsisMenu";
 import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { Card } from "react-bootstrap";
 
 const toggleVariantOptions = [
   "primary",
@@ -54,30 +55,49 @@ export default {
   },
 } as ComponentMeta<typeof EllipsisMenu>;
 
-const Template: ComponentStory<typeof EllipsisMenu> = (args) => (
+const items = [
+  {
+    title: "Action",
+    action: action("Action"),
+  },
+  {
+    title: "Another ation",
+    action: action("Another ation"),
+  },
+  {
+    title: (
+      <>
+        <FontAwesomeIcon icon={faTimes} />
+        &nbsp; Something dangerous
+      </>
+    ),
+    action: action("Something dangerous"),
+    className: "text-danger",
+  },
+];
+
+const SingleMenuTemplate: ComponentStory<typeof EllipsisMenu> = (args) => (
   <EllipsisMenu {...args} />
 );
 
-export const Default = Template.bind({});
-Default.args = {
-  items: [
-    {
-      title: "Action",
-      action: action("Action"),
-    },
-    {
-      title: "Another ation",
-      action: action("Another ation"),
-    },
-    {
-      title: (
-        <>
-          <FontAwesomeIcon icon={faTimes} />
-          &nbsp; Something dangerous
-        </>
-      ),
-      action: action("Something dangerous"),
-      className: "text-danger",
-    },
-  ],
+export const SingleMenu = SingleMenuTemplate.bind({});
+SingleMenu.args = {
+  items,
+};
+
+const MultipleMenuTemplate: ComponentStory<typeof EllipsisMenu> = (args) => (
+  <Card onClick={action("parent clicked")}>
+    <Card.Body>
+      <div className="p-3">
+        <EllipsisMenu {...args} />
+      </div>
+      <div className="p-3">
+        <EllipsisMenu {...args} />
+      </div>
+    </Card.Body>
+  </Card>
+);
+export const MultipleMenu = MultipleMenuTemplate.bind({});
+MultipleMenu.args = {
+  items,
 };

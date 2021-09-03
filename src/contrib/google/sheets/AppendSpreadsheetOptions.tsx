@@ -22,7 +22,7 @@ import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
 import { FieldProps } from "@/components/fields/propTypes";
 import { useField } from "formik";
 import { Schema } from "@/core";
-import { compact, fromPairs, uniq } from "lodash";
+import { compact, uniq } from "lodash";
 import Select from "react-select";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
@@ -111,7 +111,7 @@ const PropertiesField: React.FunctionComponent<{
       });
       return {
         type: "object",
-        properties: fromPairs(
+        properties: Object.fromEntries(
           headers
             .filter((x) => !isNullOrBlank(x))
             .map((header) => [header, { type: "string" }])

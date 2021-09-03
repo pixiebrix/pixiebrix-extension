@@ -22,10 +22,11 @@ import {
   faCaretDown,
   faCaretRight,
   faCheck,
+  faList,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
-import { IExtension, ResolvedExtension } from "@/core";
+import { IExtension, MessageContext, ResolvedExtension } from "@/core";
 import useNotifications from "@/hooks/useNotifications";
 import useExtensionPermissions from "@/options/pages/installed/useExtensionPermissions";
 import useUserAction from "@/hooks/useUserAction";
@@ -36,12 +37,15 @@ import {
 import EllipsisMenu from "@/components/ellipsisMenu/EllipsisMenu";
 import styles from "./ExtensionGroup.module.scss";
 import ExtensionRows from "./ExtensionRows";
+import { useDispatch } from "react-redux";
+import { installedPageSlice } from "./installedPageSlice";
 
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
   extensions: ResolvedExtension[];
   managed?: boolean;
   startExpanded?: boolean;
+  groupMessageContext: MessageContext;
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({
@@ -49,10 +53,12 @@ const ExtensionGroup: React.FunctionComponent<{
   extensions,
   managed,
   startExpanded,
+  groupMessageContext,
   onRemove,
   onExportBlueprint,
 }) => {
   const notify = useNotifications();
+  const dispatch = useDispatch();
 
   const expandable = !managed;
   const [expanded, setExpanded] = useState(expandable && startExpanded);
@@ -106,6 +112,15 @@ const ExtensionGroup: React.FunctionComponent<{
     );
   }, [managed, hasPermissions, requestPermissions]);
 
+  const onViewLogs = () => {
+    dispatch(
+      installedPageSlice.actions.setLogsContext({
+        title: label,
+        messageContext: groupMessageContext,
+      })
+    );
+  };
+
   return (
     <>
       <tr
@@ -128,6 +143,14 @@ const ExtensionGroup: React.FunctionComponent<{
         <td>
           <EllipsisMenu
             items={[
+              {
+                title: (
+                  <>
+                    <FontAwesomeIcon icon={faList} /> View Logs
+                  </>
+                ),
+                action: onViewLogs,
+              },
               {
                 title: (
                   <>

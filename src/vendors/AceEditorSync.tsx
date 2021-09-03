@@ -15,23 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import AceEditorSync from "react-ace";
 
-declare module "*?loadAsUrl" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import "ace-builds/src-noconflict/mode-yaml";
+import "ace-builds/src-noconflict/theme-chrome";
+import "ace-builds/src-noconflict/ext-searchbox";
 
-declare module "*.txt" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-declare module "*.yaml" {
-  const CONTENT: Record<string, unknown>;
-  export default CONTENT;
-}
+/**
+ * Bundles AceEditor. Use "./AceEditor.tsx" for dynamic import.
+ */
+export default AceEditorSync;

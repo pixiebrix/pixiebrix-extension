@@ -15,23 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const CONTENT: string;
-  export default CONTENT;
+import { MessageContext } from "@/core";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export interface LogsContext {
+  title: string;
+  messageContext: MessageContext;
 }
 
-declare module "*?loadAsUrl" {
-  const CONTENT: string;
-  export default CONTENT;
+export interface InstalledPageState {
+  showLogsContext: LogsContext;
 }
 
-declare module "*.txt" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+const initialState: InstalledPageState = {
+  showLogsContext: null,
+};
 
-declare module "*.yaml" {
-  const CONTENT: Record<string, unknown>;
-  export default CONTENT;
-}
+export const installedPageSlice = createSlice({
+  name: "installedPage",
+  initialState,
+  reducers: {
+    setLogsContext: (state, action: PayloadAction<LogsContext>) => {
+      state.showLogsContext = action.payload;
+    },
+  },
+});

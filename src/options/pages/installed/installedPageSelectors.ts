@@ -15,23 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
-declare module "*.svg" {
-  const CONTENT: string;
-  export default CONTENT;
-}
+import { RootState } from "@/options/store";
 
-declare module "*?loadAsUrl" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-declare module "*.txt" {
-  const CONTENT: string;
-  export default CONTENT;
-}
-
-declare module "*.yaml" {
-  const CONTENT: Record<string, unknown>;
-  export default CONTENT;
-}
+export const selectShowLogsContext = ({ installedPage }: RootState) =>
+  installedPage.showLogsContext;
