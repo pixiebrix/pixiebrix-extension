@@ -33,7 +33,7 @@ class CompositeReader extends Reader {
     this.outputSchema = {
       $schema: "https://json-schema.org/draft/2019-09/schema#",
       type: "object",
-      properties: mapValues(this._readers, (x) => x.outputSchema),
+      properties: mapValues(this._readers, (x: any) => x.outputSchema),
       required: Object.keys(this._readers),
     };
   }
