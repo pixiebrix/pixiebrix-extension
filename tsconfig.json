@@ -29,7 +29,6 @@
       // Silently improve tree-shakeability and AMD-related errors like #943
       "lodash": ["node_modules/lodash-es"]
     },
-    "lib": ["dom", "es2019", "es2020", "DOM.Iterable"],
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "exclude": ["venv", "dist", "node_modules"]
