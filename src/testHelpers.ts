@@ -16,8 +16,15 @@
  */
 
 import { act } from "react-dom/test-utils";
+import words from "random-words";
 
 export const waitForEffect = async () =>
   act(async () => {
     // Awaiting the async state update
+  });
+
+export const randomWords = (count = 1) =>
+  words({
+    exactly: count,
+    join: " ",
   });

@@ -147,6 +147,7 @@
     "@storybook/react": "^6.3.4",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
+    "@testing-library/user-event": "^13.2.1",
     "@types/chrome": "0.0.154",
     "@types/dompurify": "^2.2.3",
     "@types/file-saver": "^2.0.3",

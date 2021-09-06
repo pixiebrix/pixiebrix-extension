@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { useCallback, useContext } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
-import { Formik, FormikHelpers } from "formik";
+import { Button, Modal } from "react-bootstrap";
+import { FormikHelpers } from "formik";
 import { compact, isEmpty } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
-import HorizontalFormGroup from "@/components/fields/HorizontalFormGroup";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import AuthContext from "@/auth/AuthContext";
@@ -37,6 +36,8 @@ import { getHumanDetail } from "@/hooks/useUserAction";
 import SharingTable from "@/options/pages/brickEditor/Sharing";
 import { isAxiosError } from "@/errors";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import Form, { OnSubmit, RenderSubmit } from "@/components/form/Form";
+import HorizontalTextField from "@/components/form/fields/HorizontalTextField";
 
 const { attachExtension } = optionsSlice.actions;
 
@@ -103,7 +104,7 @@ const ShareExtensionModal: React.FC<{
     public: true,
   };
 
-  const handleShare = useCallback(
+  const handleShare: OnSubmit = useCallback(
     async (values: FormState, helpers: FormikHelpers<FormState>) => {
       try {
         const recipe = await convertAndShare(extension, values);
@@ -134,82 +135,58 @@ const ShareExtensionModal: React.FC<{
     [dispatch, notify, extension]
   );
 
+  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid, values }) => (
+    <Modal.Footer>
+      <Button variant="link" onClick={onCancel}>
+        Cancel
+      </Button>
+      <Button type="submit" disabled={!isValid || isSubmitting}>
+        {values.public || !isEmpty(values.organizations) ? "Share" : "Convert"}
+      </Button>
+    </Modal.Footer>
+  );
+
   return (
     <Modal show>
       <Modal.Header>
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>
-      <Formik
+      <Form
         validateOnMount
         validationSchema={ShareSchema}
         initialValues={initialValues}
         onSubmit={handleShare}
+        renderSubmit={renderSubmit}
       >
-        {({ values, handleSubmit, isSubmitting, isValid, status }) => (
-          <Form noValidate onSubmit={handleSubmit}>
-            <Modal.Body>
-              {status && <div className="text-danger mb-3">{status}</div>}
+        <Modal.Body>
+          <HorizontalTextField
+            label="Name"
+            name="name"
+            description="A name for the blueprint"
+          />
+          <HorizontalTextField
+            label="Registry Id"
+            name="blueprintId"
+            description={
+              <span>
+                A unique id for the blueprint.{" "}
+                <i>Cannot be modified once shared.</i>
+              </span>
+            }
+          />
+          <HorizontalTextField
+            label="Description"
+            name="description"
+            description="A short description of the blueprint"
+          />
+          <div className="text-info">
+            <FontAwesomeIcon icon={faInfoCircle} /> The blueprint&apos;s
+            dependencies will automatically also be shared.
+          </div>
 
-              <HorizontalFormGroup
-                label="Name"
-                propsOrFieldName="name"
-                description="A name for the blueprint"
-              >
-                {(field, meta) => (
-                  <Form.Control {...field} isInvalid={Boolean(meta.error)} />
-                )}
-              </HorizontalFormGroup>
-
-              <HorizontalFormGroup
-                label="Registry Id"
-                propsOrFieldName="blueprintId"
-                description={
-                  <span>
-                    A unique id for the blueprint.{" "}
-                    <i>Cannot be modified once shared.</i>
-                  </span>
-                }
-              >
-                {(field, meta) => (
-                  <Form.Control {...field} isInvalid={Boolean(meta.error)} />
-                )}
-              </HorizontalFormGroup>
-
-              <HorizontalFormGroup
-                label="Description"
-                propsOrFieldName="description"
-                description="A short description of the blueprint"
-              >
-                {(field, meta) => (
-                  <Form.Control {...field} isInvalid={Boolean(meta.error)} />
-                )}
-              </HorizontalFormGroup>
-
-              <div className="text-info">
-                <FontAwesomeIcon icon={faInfoCircle} /> The blueprint&apos;s
-                dependencies will automatically also be shared.
-              </div>
-
-              <SharingTable />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="link" onClick={onCancel}>
-                Cancel
-              </Button>
-              <input
-                type="submit"
-                className="btn btn-primary"
-                disabled={!isValid || isSubmitting}
-                value={
-                  values.public || !isEmpty(values.organizations)
-                    ? "Share"
-                    : "Convert"
-                }
-              />
-            </Modal.Footer>
-          </Form>
-        )}
-      </Formik>
+          <SharingTable />
+        </Modal.Body>
+      </Form>
     </Modal>
   );
 };
