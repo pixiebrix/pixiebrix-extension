@@ -43,7 +43,7 @@ if (window[PAGESCRIPT_SYMBOL]) {
 }
 
 import jQuery from "jquery";
-import { isEmpty, identity, castArray, fromPairs, cloneDeep } from "lodash";
+import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
   DETECT_FRAMEWORK_VERSIONS,
@@ -104,7 +104,7 @@ function readPathSpec(
   }
 
   if (Array.isArray(pathSpec) || typeof pathSpec === "string") {
-    return fromPairs(
+    return Object.fromEntries(
       castArray(pathSpec).map((prop) => [prop, toJS(get(obj, prop))])
     );
   }

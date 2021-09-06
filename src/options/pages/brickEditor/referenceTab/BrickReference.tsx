@@ -24,96 +24,65 @@ import {
   ListGroup,
   Row,
 } from "react-bootstrap";
-import { IBlock, IService, Schema } from "@/core";
+import { IBlock, IService } from "@/core";
 import Fuse from "fuse.js";
 import { sortBy } from "lodash";
 import styles from "./BrickReference.module.scss";
 import GridLoader from "react-spinners/GridLoader";
-import { BrickDetail } from "./BrickDetail";
-import { ReferenceEntry } from "./brickEditorTypes";
-import { BlockResult } from "./BlockResult";
+import BrickDetail from "./BrickDetail";
+import { ReferenceEntry } from "../brickEditorTypes";
+import BlockResult from "./BlockResult";
 import cx from "classnames";
 import { isOfficial } from "@/blocks/util";
-
-export const DetailSection: React.FunctionComponent<{ title: string }> = ({
-  title,
-  children,
-}) => (
-  <div className="my-4">
-    <div className="font-weight-bold">{title}</div>
-    <div className="py-2">{children}</div>
-  </div>
-);
-
-export function makeArgumentYaml(schema: Schema): string {
-  let result = "";
-  if (schema.type !== "object") {
-    return result;
-  }
-
-  for (const [prop, value] of Object.entries(schema.properties)) {
-    if (typeof value === "boolean") {
-      continue;
-    }
-
-    result += `# ${prop}: ${value.type} (${
-      schema.required.includes(prop) ? "required" : "optional"
-    })\n`;
-    if (value.description) {
-      for (const line of value.description.split("\n")) {
-        result += `# ${line} \n`;
-      }
-    }
-
-    if (value.enum) {
-      result += "# valid values:\n";
-      for (const line of value.enum) {
-        result += `# - ${line} \n`;
-      }
-    }
-
-    result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
-  }
-
-  return result;
-}
+import { useAsyncState } from "@/hooks/common";
+import { find } from "@/registry/localRegistry";
+import { brickToYaml } from "@/utils/objToYaml";
 
 const BrickReference: React.FunctionComponent<{
-  blocks: ReferenceEntry[];
+  bricks: ReferenceEntry[];
   initialSelected?: ReferenceEntry;
-}> = ({ blocks, initialSelected }) => {
+}> = ({ bricks, initialSelected }) => {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<ReferenceEntry>(initialSelected);
 
-  const sortedBlocks = useMemo(
+  const sortedBricks = useMemo(
     () =>
       sortBy(
-        blocks ?? [],
+        bricks ?? [],
         (x) => (isOfficial(x.id) ? 0 : 1),
         (x) => x.name
       ),
-    [blocks]
+    [bricks]
   );
 
   useEffect(() => {
-    if (sortedBlocks.length > 0 && selected == null) {
-      setSelected(sortedBlocks[0]);
+    if (sortedBricks.length > 0 && selected == null) {
+      setSelected(sortedBricks[0]);
     }
-  }, [sortedBlocks, selected, setSelected]);
+  }, [sortedBricks, selected, setSelected]);
+
+  const [brickConfig, isBrickConfigLoading] = useAsyncState(async () => {
+    if (!selected?.id) {
+      return null;
+    }
+
+    const brickPackage = await find(selected.id);
+    return brickPackage?.config ? brickToYaml(brickPackage.config) : null;
+  }, [selected]);
 
   const fuse: Fuse<IBlock | IService> = useMemo(
     () =>
-      new Fuse(sortedBlocks, {
+      new Fuse(sortedBricks, {
         // Prefer name, then id
         keys: ["name", "id"],
       }),
-    [sortedBlocks]
+    [sortedBricks]
   );
 
   const results = useMemo(() => {
     let matches =
       query.trim() === ""
-        ? sortedBlocks
+        ? sortedBricks
         : fuse.search(query).map((x) => x.item);
 
     // If a brick is selected, have it show up at the top of the list
@@ -122,7 +91,7 @@ const BrickReference: React.FunctionComponent<{
     }
 
     return matches.slice(0, 10);
-  }, [selected, initialSelected, query, fuse, sortedBlocks]);
+  }, [selected, initialSelected, query, fuse, sortedBricks]);
 
   return (
     <Container className="px-0 h-100" fluid>
@@ -158,7 +127,11 @@ const BrickReference: React.FunctionComponent<{
         </Col>
         <Col md={8} className={cx("pt-4")}>
           {selected ? (
-            <BrickDetail brick={selected} />
+            <BrickDetail
+              brick={selected}
+              brickConfig={brickConfig}
+              isBrickConfigLoading={isBrickConfigLoading}
+            />
           ) : (
             <div>
               <GridLoader />

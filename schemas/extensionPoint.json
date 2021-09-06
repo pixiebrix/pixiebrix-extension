@@ -6,10 +6,14 @@
   "description": "A PixieBrix Extension Point where bricks can be attached",
   "definitions": {
     "readerDefinition": {
-      "oneOf": [
+      "anyOf": [
+        {
+          "type": "string",
+          "description": "A reference to an inner definition"
+        },
         {
           "$ref": "https://app.pixiebrix.com/schemas/ref#/reader",
-          "description": "The name of a PixieBrix reader"
+          "description": "The registry id of a PixieBrix reader"
         },
         {
           "type": "array",

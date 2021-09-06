@@ -26,18 +26,17 @@ import {
   RunBlockAction,
 } from "@/contentScript/executor";
 import { browser, Tabs } from "webextension-polyfill-ts";
-import { MESSAGE_PREFIX } from "@/background/protocol";
-import { ActionType, Message, RenderedArgs } from "@/core";
+import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
+import { ActionType, Message, RegistryId, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError, getErrorMessage } from "@/errors";
-import {
-  expectBackgroundPage,
-  expectContentScript,
-} from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
 import { sleep } from "@/utils";
-import { fromPairs, partition, zip } from "lodash";
+import { partition, zip } from "lodash";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { JsonObject } from "type-fest";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -206,7 +205,7 @@ handlers.set(
 
     if (rejected.length > 0) {
       console.warn(`Broadcast rejected for ${rejected.length} tabs`, {
-        reasons: fromPairs(
+        reasons: Object.fromEntries(
           rejected.map(([tabId, result]) => [
             tabId,
             (result as PromiseRejectedResult).reason,
@@ -342,14 +341,14 @@ async function linkTabListener(tab: Tabs.Tab): Promise<void> {
 }
 
 function initExecutor(): void {
-  expectBackgroundPage();
+  expectContext("background");
 
   browser.tabs.onCreated.addListener(linkTabListener);
   browser.runtime.onMessage.addListener(handlers.asListener());
 }
 
 export async function activateTab(): Promise<void> {
-  expectContentScript();
+  expectContext("contentScript");
 
   return browser.runtime.sendMessage({
     type: MESSAGE_ACTIVATE_TAB,
@@ -358,7 +357,7 @@ export async function activateTab(): Promise<void> {
 }
 
 export async function closeTab(): Promise<void> {
-  expectContentScript();
+  expectContext("contentScript");
 
   return browser.runtime.sendMessage({
     type: MESSAGE_CLOSE_TAB,
@@ -482,5 +481,19 @@ export async function executeInOpener(
     },
   });
 }
+
+export const executeOnServer = liftBackground(
+  "EXECUTE_ON_SERVER",
+  async (blockId: RegistryId, blockArgs: RenderedArgs) => {
+    console.debug(`Running ${blockId} on the server`);
+    return (await getLinkedApiClient()).post<{
+      data?: JsonObject;
+      error?: JsonObject;
+    }>("/api/run/", {
+      id: blockId,
+      args: blockArgs,
+    });
+  }
+);
 
 export default initExecutor;

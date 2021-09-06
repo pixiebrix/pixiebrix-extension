@@ -17,9 +17,7 @@
 
 import { Reader } from "@/types";
 import { IReader, ReaderOutput, Schema } from "@/core";
-import mapValues from "lodash/mapValues";
-import identity from "lodash/identity";
-import fromPairs from "lodash/fromPairs";
+import { mapValues, identity } from "lodash";
 
 class CompositeReader extends Reader {
   public readonly outputSchema: Schema;
@@ -56,7 +54,7 @@ class CompositeReader extends Reader {
         readOne(key, reader)
       )
     );
-    return fromPairs(resultPairs);
+    return Object.fromEntries(resultPairs);
   }
 }
 

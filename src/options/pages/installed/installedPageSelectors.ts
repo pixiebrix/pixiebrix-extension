@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.BlockModal {
-  > .modal-dialog {
-    max-width: 800px;
-  }
-}
+import { RootState } from "@/options/store";
+
+export const selectShowLogsContext = ({ installedPage }: RootState) =>
+  installedPage.showLogsContext;

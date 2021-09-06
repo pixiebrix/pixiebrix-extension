@@ -33,6 +33,10 @@ import { createHashHistory } from "history";
 import { boolean } from "@/utils";
 import { OptionsState, persistOptionsConfig } from "@/store/extensions";
 import { persistServicesConfig } from "@/store/services";
+import {
+  installedPageSlice,
+  InstalledPageState,
+} from "./pages/installed/installedPageSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -48,6 +52,7 @@ export interface RootState {
   services: ServicesState;
   settings: SettingsState;
   workshop: WorkshopState;
+  installedPage: InstalledPageState;
 }
 
 const middleware = [routerMiddleware(hashHistory)];
@@ -65,6 +70,7 @@ const store = configureStore({
     // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistSettingsConfig, workshopSlice.reducer),
+    installedPage: installedPageSlice.reducer,
   },
   middleware,
   devTools: REDUX_DEV_TOOLS,

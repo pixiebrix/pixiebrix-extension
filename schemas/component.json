@@ -36,14 +36,18 @@
         "type": "object",
         "properties": {
           "id": {
-            "$ref": "https://app.pixiebrix.com/schemas/ref#/block",
-            "description": "The id of the block"
+            "anyOf": [
+              { "type": "string" },
+              { "$ref": "https://app.pixiebrix.com/schemas/ref#/block" }
+            ],
+            "description": "The id of the block, or an inner definition key"
           },
           "config": {
             "type": "object",
             "description": "The configuration for the block"
           }
-        }
+        },
+        "required": ["id"]
       }
     }
   },

@@ -17,17 +17,30 @@
 
 import React from "react";
 import { render } from "@testing-library/react";
-import { BrickDetail } from "./BrickDetail";
-import { waitForEffect } from "@/testHelpers";
+import BrickDetail from "./BrickDetail";
 import { TableRenderer } from "@/blocks/renderers/table";
-import { ReferenceEntry } from "./brickEditorTypes";
+import { ReferenceEntry } from "../brickEditorTypes";
 
 test.each([
   ["empty", {}],
   ["@pixiebrix/table", new TableRenderer()],
-])("renders %s brick", async (brickName: string, brick: ReferenceEntry) => {
-  const rendered = render(<BrickDetail brick={brick} />);
-  expect(rendered.asFragment()).toMatchSnapshot();
-  await waitForEffect();
+])(
+  "renders %s brick in loading state",
+  async (brickName: string, brick: ReferenceEntry) => {
+    const rendered = render(
+      <BrickDetail brick={brick} brickConfig={null} isBrickConfigLoading />
+    );
+    expect(rendered.asFragment()).toMatchSnapshot();
+  }
+);
+
+test("renders @pixiebrix/table loaded", () => {
+  const rendered = render(
+    <BrickDetail
+      brick={new TableRenderer()}
+      brickConfig={null}
+      isBrickConfigLoading={false}
+    />
+  );
   expect(rendered.asFragment()).toMatchSnapshot();
 });

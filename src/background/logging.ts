@@ -22,7 +22,7 @@ import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import { reverse, sortBy, isEmpty } from "lodash";
+import { sortBy, isEmpty } from "lodash";
 import { _getDNT } from "@/background/telemetry";
 import { isContentScript } from "webext-detect-page";
 import { readStorageWithMigration, setStorage } from "@/chrome";
@@ -33,7 +33,7 @@ import {
   getErrorMessage,
 } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
-import { expectBackgroundPage } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -179,7 +179,7 @@ export async function getLog(
   }
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-  return sortBy(reverse(matches), (x) => -Number.parseInt(x.timestamp, 10));
+  return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
 function buildContext(
@@ -322,7 +322,7 @@ const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS";
 let _config: LoggingConfig = null;
 
 export async function _getLoggingConfig(): Promise<LoggingConfig> {
-  expectBackgroundPage();
+  expectContext("background");
 
   if (_config != null) {
     return _config;
@@ -332,7 +332,7 @@ export async function _getLoggingConfig(): Promise<LoggingConfig> {
 }
 
 export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
-  expectBackgroundPage();
+  expectContext("background");
 
   await setStorage(LOG_CONFIG_STORAGE_KEY, config);
   _config = config;

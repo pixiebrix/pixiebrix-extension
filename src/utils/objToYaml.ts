@@ -15,21 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import yaml from "yaml";
-import { sortBy, fromPairs } from "lodash";
+import { sortBy } from "lodash";
+import { removeUndefined } from "@/utils";
+import { dump } from "js-yaml";
 
-export const objToYaml = (obj: Record<string, unknown>) => {
-  const yamlDocument = new yaml.Document();
-  yamlDocument.contents = obj;
-  return yamlDocument.toString();
-};
+// eslint-disable-next-line @typescript-eslint/ban-types -- don't need/want index signature
+export const objToYaml = (obj: object) =>
+  dump(removeUndefined(obj), {
+    quotingType: '"',
+  });
 
 function orderKeys<T extends Record<string, unknown>>(
   obj: T,
   keys: Array<keyof T>
 ): T {
   const lookup = new Map(keys.map((key, index) => [key, index]));
-  return fromPairs(
+  return Object.fromEntries(
     sortBy(Object.entries(obj), ([key]) => lookup.get(key) ?? keys.length)
   ) as T;
 }

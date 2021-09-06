@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { Suspense } from "react";
 import { Button } from "react-bootstrap";
 import { isEmpty } from "lodash";
 import copy from "copy-to-clipboard";
@@ -24,17 +24,49 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
-import { makeArgumentYaml, DetailSection } from "./BrickReference";
-import { ReferenceEntry } from "./brickEditorTypes";
-import * as localRegistry from "@/registry/localRegistry";
-import { brickToYaml } from "@/utils/objToYaml";
+import DetailSection from "./DetailSection";
+import { ReferenceEntry } from "../brickEditorTypes";
 import { Schema } from "@/core";
-import { useAsyncState } from "@/hooks/common";
 import styles from "./BrickDetail.module.scss";
 
-export const BrickDetail: React.FunctionComponent<{
+function makeArgumentYaml(schema: Schema): string {
+  let result = "";
+  if (schema.type !== "object") {
+    return result;
+  }
+
+  for (const [prop, value] of Object.entries(schema.properties)) {
+    if (typeof value === "boolean") {
+      continue;
+    }
+
+    result += `# ${prop}: ${value.type} (${
+      schema.required.includes(prop) ? "required" : "optional"
+    })\n`;
+    if (value.description) {
+      for (const line of value.description.split("\n")) {
+        result += `# ${line} \n`;
+      }
+    }
+
+    if (value.enum) {
+      result += "# valid values:\n";
+      for (const line of value.enum) {
+        result += `# - ${line} \n`;
+      }
+    }
+
+    result += `# ${prop.includes(" ") ? `"${prop}"` : prop}: \n`;
+  }
+
+  return result;
+}
+
+const BrickDetail: React.FunctionComponent<{
   brick: ReferenceEntry;
-}> = ({ brick }) => {
+  brickConfig: string;
+  isBrickConfigLoading: boolean;
+}> = ({ brick, brickConfig, isBrickConfigLoading }) => {
   const schema = "schema" in brick ? brick.schema : brick.inputSchema;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const outputSchema = (brick as any).outputSchema as Schema;
@@ -49,11 +81,6 @@ export const BrickDetail: React.FunctionComponent<{
     },
     [schema]
   );
-
-  const [brickConfig, isBrickConfigLoading] = useAsyncState(async () => {
-    const brickPackage = await localRegistry.find(brick.id);
-    return brickPackage?.config ? brickToYaml(brickPackage.config) : null;
-  }, [brick]);
 
   return (
     <div className={styles.root}>
@@ -97,15 +124,19 @@ export const BrickDetail: React.FunctionComponent<{
             Definition not available for built-in bricks
           </div>
         ) : (
-          <AceEditor
-            value={brickConfig}
-            mode="yaml"
-            theme="chrome"
-            width="100%"
-            readOnly
-          />
+          <Suspense fallback={<div className="text-muted">Loading...</div>}>
+            <AceEditor
+              value={brickConfig}
+              mode="yaml"
+              theme="chrome"
+              width="100%"
+              readOnly
+            />
+          </Suspense>
         )}
       </DetailSection>
     </div>
   );
 };
+
+export default BrickDetail;

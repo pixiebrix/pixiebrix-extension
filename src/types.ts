@@ -37,7 +37,6 @@ import {
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
-import { partition } from "lodash";
 import { Permissions } from "webextension-polyfill-ts";
 import { validateRegistryId } from "@/types/helpers";
 
@@ -143,8 +142,8 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     const before = this.extensions.map((x) => x.id);
 
     const updatedIds = new Set(extensions.map((x) => x.id));
-    const [, removed] = partition(this.extensions, (currentExtension) =>
-      updatedIds.has(currentExtension.id)
+    const removed = this.extensions.filter(
+      (currentExtension) => !updatedIds.has(currentExtension.id)
     );
     this.removeExtensions(removed.map((x) => x.id));
 

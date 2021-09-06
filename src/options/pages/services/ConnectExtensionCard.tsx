@@ -20,7 +20,7 @@ import { useAsyncState } from "@/hooks/common";
 import { getBaseURL } from "@/services/baseService";
 import { useAsyncEffect } from "use-async-effect";
 import { isLinked } from "@/auth/token";
-import Card from "react-bootstrap/Card";
+import { Card } from "react-bootstrap";
 import urljoin from "url-join";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";

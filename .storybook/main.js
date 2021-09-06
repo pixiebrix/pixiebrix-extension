@@ -16,12 +16,18 @@
  */
 
 const path = require("path");
+const webpack = require("webpack");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const rootDir = path.resolve(__dirname, "../");
 
 module.exports = {
   stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
-  addons: ["@storybook/addon-links", "@storybook/addon-essentials"],
+  addons: [
+    "@storybook/addon-links",
+    "@storybook/addon-essentials",
+    "@storybook/addon-actions",
+  ],
   core: {
     builder: "webpack5",
   },
@@ -40,22 +46,41 @@ module.exports = {
       ),
     };
 
-    config.module.rules.push({
-      test: /\.scss$/,
-      use: [
-        // style-loader loads the css into the DOM
-        "style-loader",
-        "css-loader",
+    config.module.rules.push(
+      ...[
         {
-          loader: "sass-loader",
-          options: {
-            sourceMap: true,
-            // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
-            implementation: require("node-sass"),
-          },
+          test: /\.ya?ml$/,
+          type: "json",
+          use: "yaml-loader",
         },
-      ],
-    });
+        {
+          test: /\.scss$/,
+          use: [
+            // style-loader loads the css into the DOM
+            "style-loader",
+            "css-loader",
+            {
+              loader: "sass-loader",
+              options: {
+                sourceMap: true,
+                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+                implementation: require("node-sass"),
+              },
+            },
+          ],
+        },
+      ]
+    );
+
+    config.plugins.push(
+      ...[
+        new NodePolyfillPlugin(),
+        new webpack.ProvidePlugin({
+          $: "jquery",
+          jQuery: "jquery",
+        }),
+      ]
+    );
 
     return config;
   },

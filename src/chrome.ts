@@ -19,7 +19,7 @@ import pDefer from "p-defer";
 import pTimeout from "p-timeout";
 import { isExtensionContext } from "webext-detect-page";
 import { browser, Runtime } from "webextension-polyfill-ts";
-import { forbidBackgroundPage, forbidContext } from "./utils/expectContext";
+import { forbidContext } from "./utils/expectContext";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
@@ -64,7 +64,7 @@ export function getChromeExtensionId(): string {
  * needs to send one message back within a second.
  * */
 export async function runtimeConnect(name: string): Promise<Runtime.Port> {
-  forbidBackgroundPage();
+  forbidContext("background");
 
   const { resolve, reject, promise: connectionPromise } = pDefer();
 

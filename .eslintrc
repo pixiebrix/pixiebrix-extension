@@ -30,6 +30,33 @@
   "rules": {
     // Enable extra rules
     "filenames/match-exported": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        // Documentation: https://eslint.org/docs/rules/no-restricted-imports#options
+        "paths": [
+          {
+            "name": "lodash",
+            "importNames": ["fromPairs", "reverse"],
+            "message": "You can find an alternative on https://youmightnotneed.com/lodash/"
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["*/__mocks__/*"],
+            "message": "Mocks should not be imported directly, they’re automatically picked up by tools."
+          },
+          {
+            "group": ["lodash/*"],
+            "message": "You can import \"lodash\" instead of \"lodash/*\"."
+          },
+          {
+            "group": ["react-bootstrap/*", "!react-bootstrap/types"],
+            "message": "You can import \"react-bootstrap\" instead of \"react-bootstrap/*\"."
+          }
+        ]
+      }
+    ],
 
     "no-mixed-operators": [
       "error",
@@ -164,6 +191,12 @@
     "selenium"
   ],
   "overrides": [
+    {
+      "files": ["*.stories.tsx"],
+      "rules": {
+        "filenames/match-exported": "off"
+      }
+    },
     {
       "files": ["*.js"],
       "rules": {

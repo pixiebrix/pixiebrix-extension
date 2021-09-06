@@ -17,30 +17,13 @@
 
 .ActiveBricksCard {
   .table {
-    .ActiveBricksCard__blueprint {
-      &:not(.isDeployment) {
-        cursor: pointer;
-        background-color: rgba(0, 0, 0, 0.03);
-      }
-
-      th {
-        font-weight: 400;
-        padding-top: 5px;
-        padding-bottom: 5px;
-
-        &:first-child {
-          width: 15px;
-        }
-      }
+    th {
+      font-weight: 400;
     }
 
-    .ActiveBricksCard__empty {
-      td {
-        height: 3rem;
-      }
-    }
-
+    th,
     td {
+      height: 44px;
       padding-top: 5px;
       padding-bottom: 5px;
 

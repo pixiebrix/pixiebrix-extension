@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.ServicesFormCard {
-  &.invalid {
-    border: 1px solid #fe7c96;
-  }
-}
+import React from "react";
+import styles from "./ExtensionGroupHeader.module.scss";
+
+const ExtensionGroupHeader: React.FunctionComponent<{ label: string }> = ({
+  label,
+}) => (
+  <tr className={styles.root}>
+    <td colSpan={2}>{label}</td>
+    <td>Status</td>
+    <td>Actions</td>
+  </tr>
+);
+
+export default ExtensionGroupHeader;

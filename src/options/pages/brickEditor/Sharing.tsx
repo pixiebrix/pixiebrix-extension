@@ -19,9 +19,8 @@
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import sortBy from "lodash/sortBy";
-import uniq from "lodash/uniq";
-import Table from "react-bootstrap/Table";
+import { sortBy, uniq } from "lodash";
+import { Table } from "react-bootstrap";
 import React from "react";
 import { useField } from "formik";
 import { useOrganization } from "@/hooks/organization";

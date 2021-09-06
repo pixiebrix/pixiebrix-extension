@@ -19,7 +19,7 @@
 import { loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
-import { fromPairs, partition, uniqBy } from "lodash";
+import { partition, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { isLinked } from "@/auth/token";
@@ -98,7 +98,7 @@ function installDeployment(
       recipe: deployment.package.config,
       extensionPoints: deployment.package.config.extensionPoints,
       deployment,
-      services: fromPairs(
+      services: Object.fromEntries(
         deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
       ),
     })

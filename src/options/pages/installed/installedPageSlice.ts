@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.DataSourceCard {
-  .type {
-    color: #6c757d;
-  }
+import { MessageContext } from "@/core";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export interface LogsContext {
+  title: string;
+  messageContext: MessageContext;
 }
+
+export interface InstalledPageState {
+  showLogsContext: LogsContext;
+}
+
+const initialState: InstalledPageState = {
+  showLogsContext: null,
+};
+
+export const installedPageSlice = createSlice({
+  name: "installedPage",
+  initialState,
+  reducers: {
+    setLogsContext: (state, action: PayloadAction<LogsContext>) => {
+      state.showLogsContext = action.payload;
+    },
+  },
+});

@@ -25,7 +25,7 @@ import {
   getRandomString,
 } from "@/vendors/pkce";
 import { BusinessError, getErrorMessage } from "@/errors";
-import { expectBackgroundPage } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 
@@ -33,7 +33,8 @@ async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   key: string,
   data: TAuthData
 ): Promise<void> {
-  expectBackgroundPage(
+  expectContext(
+    "background",
     "Only the background page can access oauth2 information"
   );
 
@@ -49,7 +50,8 @@ async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
 export async function getCachedAuthData(
   key: string
 ): Promise<AuthData | undefined> {
-  expectBackgroundPage(
+  expectContext(
+    "background",
     "Only the background page can access oauth2 information"
   );
 
@@ -63,7 +65,8 @@ export async function getCachedAuthData(
 }
 
 export async function deleteCachedAuthData(key: string): Promise<void> {
-  expectBackgroundPage(
+  expectContext(
+    "background",
     "Only the background page can access oauth2 information"
   );
 
