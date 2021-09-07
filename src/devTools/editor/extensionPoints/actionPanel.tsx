@@ -35,15 +35,15 @@ import {
   ActionPanelExtensionPoint,
   PanelDefinition,
 } from "@/extensionPoints/actionPanelExtension";
-// import FoundationTab from "@/devTools/editor/tabs/actionPanel/FoundationTab";
-// import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
-// import PanelTab from "@/devTools/editor/tabs/actionPanel/PanelTab";
-// import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-// import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
+import FoundationTab from "@/devTools/editor/tabs/actionPanel/FoundationTab";
+import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
+import PanelTab from "@/devTools/editor/tabs/actionPanel/PanelTab";
+import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
+import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
-// import EffectTab from "@/devTools/editor/tabs/EffectTab";
-// import MetaTab from "@/devTools/editor/tabs/MetaTab";
+import EffectTab from "@/devTools/editor/tabs/EffectTab";
+import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
@@ -53,25 +53,19 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
 import { BlockPipeline } from "@/blocks/types";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
-
-// const wizard: WizardStep[] = [
-//   { step: "Name", Component: MetaTab },
-//   { step: "Foundation", Component: FoundationTab },
-//   { step: "Data", Component: ReaderTab },
-//   { step: "Panel", Component: PanelTab },
-//   { step: "Integrations", Component: ServicesTab },
-//   {
-//     step: "Content",
-//     Component: EffectTab,
-//     extraProps: { fieldName: "extension.body" },
-//   },
-//   { step: "Availability", Component: AvailabilityTab },
-//   { step: "Logs", Component: LogsTab },
-// ];
 
 const wizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
+  { step: "Name", Component: MetaTab },
+  { step: "Foundation", Component: FoundationTab },
+  { step: "Data", Component: ReaderTab },
+  { step: "Panel", Component: PanelTab },
+  { step: "Integrations", Component: ServicesTab },
+  {
+    step: "Content",
+    Component: EffectTab,
+    extraProps: { fieldName: "extension.body" },
+  },
+  { step: "Availability", Component: AvailabilityTab },
   { step: "Logs", Component: LogsTab },
 ];
 

@@ -33,6 +33,7 @@ import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
 import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
+import BetaToolbar from "@/devTools/editor/toolbar/BetaToolbar";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 // Step names to show lock icon for if the user is using a foundation they don't have edit access for
@@ -83,6 +84,11 @@ const WizardNavItem: React.FunctionComponent<{
   );
 };
 
+const betaWizard: WizardStep[] = [
+  { step: "Edit", Component: EditTab },
+  { step: "Logs", Component: LogsTab },
+];
+
 const ElementWizard: React.FunctionComponent<{
   installed: IExtension[];
   element: FormState;
@@ -91,11 +97,25 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable, installed, toggleChat }) => {
   const { port } = useContext(DevToolsContext);
 
-  const wizard = useMemo(() => ADAPTERS.get(element.type).wizard, [
-    element.type,
-  ]);
+  const [isBeta, setIsBeta] = useState(false);
+
+  const [wizard, setWizard] = useState(ADAPTERS.get(element.type).wizard);
 
   const [step, setStep] = useState(wizard[0].step);
+
+  const setBetaMode = useCallback((enabled: boolean) => {
+    if (enabled !== isBeta) {
+      setIsBeta(enabled);
+      const newWizard = enabled ? betaWizard : ADAPTERS.get(element.type).wizard;
+      setWizard(newWizard);
+      setStep(newWizard[0].step);
+    }
+  }, [element.type, isBeta, setIsBeta, setStep, setWizard]);
+
+  const isLocked =
+    element.installed &&
+    editable &&
+    !editable.has(element.extensionPoint.metadata.id);
 
   const { refresh: refreshLogs } = useContext(LogContext);
 
@@ -139,17 +159,9 @@ const ElementWizard: React.FunctionComponent<{
         className="h-100"
       >
         <Nav variant="pills" activeKey={step} onSelect={selectTabHandler}>
-          <WizardNavItem
-            key="Edit"
-            step={{ step: "Edit", Component: EditTab }}
-            isLocked={false}
-          />
-
-          <WizardNavItem
-            key="Logs"
-            step={{ step: "Logs", Component: LogsTab }}
-            isLocked={false}
-          />
+          {wizard.map((step) => (
+            <WizardNavItem key={step.step} step={step} isLocked={isLocked} />
+          ))}
 
           {/* spacer */}
           <div className="flex-grow-1" />
@@ -169,6 +181,11 @@ const ElementWizard: React.FunctionComponent<{
           <PermissionsToolbar
             element={element}
             disabled={isSubmitting || !isValid}
+          />
+
+          <BetaToolbar
+            isBeta={isBeta}
+            setIsBeta={setBetaMode}
           />
 
           <ReloadToolbar
