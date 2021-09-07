@@ -37,10 +37,7 @@ const Sidebar: React.FunctionComponent = () => {
 
   return (
     <OutsideClickHandler onOutsideClick={closeSidebarOnSmallScreen}>
-      <nav
-        className="sidebar sidebar-offcanvas sidebar-offcanvas-left"
-        id={SIDEBAR_ID}
-      >
+      <nav className="sidebar sidebar-offcanvas" id={SIDEBAR_ID}>
         <ul className="nav">
           <SidebarLink
             route="/installed"
