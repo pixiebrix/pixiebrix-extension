@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode } from "react";
+import React, { FocusEventHandler, ReactNode } from "react";
 import {
   Col,
   Form as BootstrapForm,
@@ -23,25 +23,16 @@ import {
   Row,
 } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import { FieldInputProps, useField } from "formik";
+import { withFormikField } from "./withFormikField";
 
-type HorizontalTextFieldProps = FormControlProps & {
+export type HorizontalTextFieldProps = FormControlProps & {
   name: string;
   label?: string;
   placeholder?: string;
   description?: ReactNode;
   error?: string;
   touched?: boolean;
-};
-
-const withFormikField = (
-  Component:
-    | React.ComponentClass<HorizontalTextFieldProps>
-    | React.FC<HorizontalTextFieldProps>
-) => (props: Omit<HorizontalTextFieldProps, FieldInputProps<any>>) => {
-  const [field, { error, touched }] = useField(props.name);
-
-  return <Component {...field} error={error} touched={touched} {...props} />;
+  onBlur?: FocusEventHandler<HTMLInputElement>;
 };
 
 export const HorizontalTextField: React.FC<HorizontalTextFieldProps> = ({
