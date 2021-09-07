@@ -101,10 +101,7 @@ interface ReaderOptions {
 export function makeDefaultReader(
   metadata: Metadata,
   frameworks: FrameworkMeta[],
-  { defaultSelector, reservedIds, name }: ReaderOptions = {
-    defaultSelector: undefined,
-    reservedIds: [],
-  }
+  { defaultSelector, reservedIds = [], name }: ReaderOptions = {}
 ): ReaderFormState {
   return {
     metadata: {
