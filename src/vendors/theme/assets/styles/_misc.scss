@@ -40,9 +40,8 @@ body {
 }
 
 .main-panel {
-  @include display-flex();
-  @include flex-direction(column);
-
+  display: flex;
+  flex-direction: column;
   min-height: calc(100vh - #{$navbar-height});
   width: 100%;
 
