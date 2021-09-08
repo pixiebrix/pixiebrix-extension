@@ -48,7 +48,7 @@ test("prints 'Convert' when not Public", async () => {
   await waitForEffect();
   const dialogRoot = screen.getByRole("dialog");
   const publicSwitch = dialogRoot.querySelector(
-    "tbody > tr:first-child .switch.btn"
+    ".form-group:nth-child(5) .switch.btn"
   );
   userEvent.click(publicSwitch);
   const submitButton = dialogRoot.querySelector('.btn[type="submit"]');

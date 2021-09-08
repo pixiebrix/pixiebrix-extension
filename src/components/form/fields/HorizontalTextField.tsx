@@ -22,20 +22,17 @@ import {
   FormControlProps,
   Row,
 } from "react-bootstrap";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import { withFormikField } from "./withFormikField";
+import { WithFormikFieldDefaultProps } from "./withFormikField";
 
-export type HorizontalTextFieldProps = FormControlProps & {
-  name: string;
-  label?: string;
-  placeholder?: string;
-  description?: ReactNode;
-  error?: string;
-  touched?: boolean;
-  onBlur?: FocusEventHandler<HTMLInputElement>;
-};
+export type HorizontalTextFieldProps = WithFormikFieldDefaultProps<string> &
+  FormControlProps & {
+    label?: string;
+    placeholder?: string;
+    description?: ReactNode;
+    onFocus?: FocusEventHandler<HTMLInputElement>;
+  };
 
-export const HorizontalTextField: React.FC<HorizontalTextFieldProps> = ({
+const HorizontalTextField: React.FC<HorizontalTextFieldProps> = ({
   name,
   label,
   placeholder,
@@ -48,11 +45,11 @@ export const HorizontalTextField: React.FC<HorizontalTextFieldProps> = ({
   return (
     <BootstrapForm.Group as={Row} controlId={name}>
       {label && (
-        <BootstrapForm.Label column sm="2">
-          {fieldLabel(label)}
+        <BootstrapForm.Label column sm="3">
+          {label}
         </BootstrapForm.Label>
       )}
-      <Col sm={label ? "10" : "12"}>
+      <Col sm={label ? "9" : "12"}>
         <BootstrapForm.Control
           name={name}
           placeholder={placeholder}
@@ -74,4 +71,4 @@ export const HorizontalTextField: React.FC<HorizontalTextFieldProps> = ({
   );
 };
 
-export default withFormikField(HorizontalTextField);
+export default HorizontalTextField;

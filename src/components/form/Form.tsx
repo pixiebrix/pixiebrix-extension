@@ -19,11 +19,19 @@ import React, { ReactElement } from "react";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import { Formik, FormikHelpers, FormikValues } from "formik";
 import * as yup from "yup";
+import styles from "./Form.module.scss";
 
 export type OnSubmit<TValues = FormikValues> = (
   values: TValues,
   formikHelpers: FormikHelpers<TValues>
 ) => void | Promise<unknown>;
+
+export type RenderBody = (state: {
+  isValid: boolean;
+  values: FormikValues;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- type from Formik
+  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
+}) => ReactElement;
 
 export type RenderSubmit = (state: {
   isSubmitting: boolean;
@@ -35,6 +43,7 @@ type FormProps = {
   initialValues: FormikValues;
   validationSchema: yup.ObjectSchema;
   validateOnMount?: boolean;
+  renderBody?: RenderBody;
   renderSubmit?: RenderSubmit;
   onSubmit: OnSubmit;
 };
@@ -50,6 +59,7 @@ const Form: React.FC<FormProps> = ({
   validationSchema,
   validateOnMount,
   children,
+  renderBody,
   renderSubmit = defaultRenderSubmit,
   onSubmit,
 }) => (
@@ -59,10 +69,17 @@ const Form: React.FC<FormProps> = ({
     validateOnMount={validateOnMount}
     onSubmit={onSubmit}
   >
-    {({ handleSubmit, isSubmitting, isValid, values, status }) => (
+    {({
+      handleSubmit,
+      isSubmitting,
+      isValid,
+      values,
+      status,
+      setFieldValue,
+    }) => (
       <BootstrapForm noValidate onSubmit={handleSubmit}>
-        {status && <div className="text-danger mb-3">{status}</div>}
-        {children}
+        {status && <div className={styles.status}>{status}</div>}
+        {renderBody ? renderBody({ isValid, values, setFieldValue }) : children}
         {renderSubmit({ isSubmitting, isValid, values })}
       </BootstrapForm>
     )}

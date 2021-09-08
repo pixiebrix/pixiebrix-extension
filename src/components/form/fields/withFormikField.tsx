@@ -16,26 +16,40 @@
  */
 
 import React from "react";
-import { useField } from "formik";
-import { HorizontalTextFieldProps } from "./HorizontalTextField";
-import { Except } from "type-fest";
+import { FieldInputProps, useField } from "formik";
 
-export const withFormikField = (
-  Component:
-    | React.ComponentClass<HorizontalTextFieldProps>
-    | React.FC<HorizontalTextFieldProps>
-) => (
-  props: Except<
-    HorizontalTextFieldProps,
-    "value" | "error" | "touched" | "onChange" | "onBlur"
-  >
-) => {
-  const [field, { error, touched }] = useField(props.name);
-
-  // Explicit const is required to satisfy the rule:
-  // Component definition is missing display name - eslintreact/display-name
-  const ComponentWithFormikField = (
-    <Component {...props} {...field} error={error} touched={touched} />
-  );
-  return ComponentWithFormikField;
+export type WithFormikFieldProps = {
+  name: string;
 };
+export type WithFormikFieldDefaultProps<TValue> = WithFormikFieldProps &
+  FieldInputProps<TValue> & {
+    error?: string;
+    touched: boolean;
+  };
+
+// Own = Not injected props
+type OwnProps<
+  TValue,
+  TProps extends WithFormikFieldProps = WithFormikFieldDefaultProps<TValue>
+  // eslint-disable-next-line @typescript-eslint/ban-types -- using Omit to be more relaxed on the component's TProps
+> = Omit<
+  TProps,
+  "value" | "checked" | "onChange" | "onBlur" | "error" | "touched"
+>;
+
+export function withFormikField<
+  TValue,
+  TProps extends WithFormikFieldProps = WithFormikFieldDefaultProps<TValue>
+>(Component: React.FC<TProps>) {
+  return (props: OwnProps<TValue, TProps>) => {
+    const [field, { error, touched }] = useField<TValue>(props.name);
+
+    // Explicit const is required to satisfy the rule:
+    // Component definition is missing display name - eslintreact/display-name
+    const ComponentWithFormikField = (
+      // @ts-expect-error -- disabling type mismatch warning
+      <Component {...props} {...field} error={error} touched={touched} />
+    );
+    return ComponentWithFormikField;
+  };
+}

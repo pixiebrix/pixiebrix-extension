@@ -21,8 +21,11 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form as BootstrapForm } from "react-bootstrap";
 import HorizontalFormGroup from "../fields/HorizontalFormGroup";
 import Form, { OnSubmit } from "./Form";
-import HorizontalTextField from "./fields/HorizontalTextField";
+import FormikHorizontalTextField from "./fields/FormikHorizontalTextField";
+import FormikSwitchButton from "./fields/FormikSwitchButton";
 import { action } from "@storybook/addon-actions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -81,9 +84,9 @@ WithHorizontalFormGroup.storyName = "With HorizontalFormGroup";
 
 export const WithHorizontalTextField: ComponentStory<typeof Form> = (args) => (
   <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
-    <HorizontalTextField placeholder="Title" name="title" />
-    <HorizontalTextField label="Name" name="name" description="A name" />
-    <HorizontalTextField label="Age" name="age" description="Your age" />
+    <FormikHorizontalTextField placeholder="Title" name="title" />
+    <FormikHorizontalTextField label="Name" name="name" description="A name" />
+    <FormikHorizontalTextField label="Age" name="age" description="Your age" />
   </Form>
 );
 WithHorizontalTextField.storyName = "With HorizontalTextField";
@@ -95,9 +98,35 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
     {...args}
     renderSubmit={() => <button type="submit">Click to submit</button>}
   >
-    <HorizontalTextField placeholder="Title" name="title" />
-    <HorizontalTextField label="Name" name="name" description="A name" />
-    <HorizontalTextField label="Age" name="age" description="Your age" />
+    <FormikHorizontalTextField placeholder="Title" name="title" />
+    <FormikHorizontalTextField label="Name" name="name" description="A name" />
+    <FormikHorizontalTextField label="Age" name="age" description="Your age" />
+  </Form>
+);
+
+const AllFieldsSchema: yup.ObjectSchema = yup.object().shape({
+  name: yup.string().required(),
+  public: yup.boolean(),
+});
+const allFieldsnitialValues = {
+  name: "",
+  public: false,
+};
+export const AllFields: ComponentStory<typeof Form> = (args) => (
+  <Form
+    validationSchema={AllFieldsSchema}
+    initialValues={allFieldsnitialValues}
+    {...args}
+  >
+    <FormikHorizontalTextField label="Name" name="name" description="A name" />
+    <FormikSwitchButton
+      label={
+        <span>
+          <FontAwesomeIcon icon={faGlobe} /> Public
+        </span>
+      }
+      name="public"
+    />
   </Form>
 );
 

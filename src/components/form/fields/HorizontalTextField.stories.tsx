@@ -17,7 +17,7 @@
 
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { HorizontalTextField } from "./HorizontalTextField";
+import HorizontalTextField from "./HorizontalTextField";
 
 const componentMeta: ComponentMeta<typeof HorizontalTextField> = {
   title: "Fields/HorizontalTextField",
