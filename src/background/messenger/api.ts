@@ -24,6 +24,8 @@ forbidContext("background");
 export const containsPermissions = getMethod("CONTAINS_PERMISSIONS");
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT");
 export const whoAmI = getMethod("ECHO_SENDER");
+export const activateTab = getMethod("ACTIVATE_TAB");
+export const closeTab = getMethod("CLOSE_TAB");
 
 /**
  * Uninstall context menu and return whether or not the context menu was uninstalled.

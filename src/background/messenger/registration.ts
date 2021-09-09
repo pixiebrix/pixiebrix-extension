@@ -24,7 +24,7 @@ import {
   uninstallContextMenu,
 } from "@/background/contextMenus";
 import { openPopupPrompt } from "@/background/permissionPrompt";
-import { whoAmI } from "@/background/executor";
+import { activateTab, closeTab, whoAmI } from "@/background/executor";
 
 expectContext("background");
 
@@ -35,6 +35,8 @@ declare global {
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
     ECHO_SENDER: typeof whoAmI;
+    ACTIVATE_TAB: typeof activateTab;
+    CLOSE_TAB: typeof closeTab;
   }
 }
 
@@ -44,4 +46,6 @@ registerMethods({
   ENSURE_CONTEXT_MENU: ensureContextMenu,
   OPEN_POPUP_PROMPT: openPopupPrompt,
   ECHO_SENDER: whoAmI,
+  ACTIVATE_TAB: activateTab,
+  CLOSE_TAB: closeTab,
 });

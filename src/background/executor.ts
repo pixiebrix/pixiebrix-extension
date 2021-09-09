@@ -42,8 +42,6 @@ const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
 const MESSAGE_RUN_BLOCK_BROADCAST = `${MESSAGE_PREFIX}RUN_BLOCK_BROADCAST`;
 const MESSAGE_RUN_BLOCK_FRAME_NONCE = `${MESSAGE_PREFIX}RUN_BLOCK_FRAME_NONCE`;
-const MESSAGE_ACTIVATE_TAB = `${MESSAGE_PREFIX}MESSAGE_ACTIVATE_TAB`;
-const MESSAGE_CLOSE_TAB = `${MESSAGE_PREFIX}MESSAGE_CLOSE_TAB`;
 const MESSAGE_OPEN_TAB = `${MESSAGE_PREFIX}MESSAGE_OPEN_TAB`;
 
 const TOP_LEVEL_FRAME = 0;
@@ -277,16 +275,6 @@ handlers.set(
   }
 );
 
-handlers.set(MESSAGE_ACTIVATE_TAB, async (_, sender) => {
-  await browser.tabs.update(sender.tab.id, {
-    active: true,
-  });
-});
-
-handlers.set(MESSAGE_CLOSE_TAB, async (_, sender) =>
-  browser.tabs.remove(sender.tab.id)
-);
-
 handlers.set(MESSAGE_OPEN_TAB, async (request: OpenTabAction, sender) => {
   const tab = await browser.tabs.create(request.payload);
   // FIXME: include frame information here
@@ -340,28 +328,20 @@ function initExecutor(): void {
   browser.runtime.onMessage.addListener(handlers.asListener());
 }
 
-export async function activateTab(): Promise<void> {
-  expectContext("contentScript");
-
-  return browser.runtime.sendMessage({
-    type: MESSAGE_ACTIVATE_TAB,
-    payload: {},
+export async function activateTab(this: MessengerMeta): Promise<void> {
+  await browser.tabs.update(this.tab.id, {
+    active: true,
   });
+}
+
+export async function closeTab(this: MessengerMeta): Promise<void> {
+  await browser.tabs.remove(this.tab.id);
 }
 
 export async function whoAmI(
   this: MessengerMeta
 ): Promise<Runtime.MessageSender> {
   return this;
-}
-
-export async function closeTab(): Promise<void> {
-  expectContext("contentScript");
-
-  return browser.runtime.sendMessage({
-    type: MESSAGE_CLOSE_TAB,
-    payload: {},
-  });
 }
 
 export async function openTab(
