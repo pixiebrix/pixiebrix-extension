@@ -22,6 +22,7 @@ import { getMethod } from "webext-messenger";
 forbidContext("background");
 
 export const containsPermissions = getMethod("CONTAINS_PERMISSIONS");
+export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT");
 
 /**
  * Uninstall context menu and return whether or not the context menu was uninstalled.

@@ -23,6 +23,7 @@ import {
   ensureContextMenu,
   uninstallContextMenu,
 } from "@/background/contextMenus";
+import { openPopupPrompt } from "@/background/permissionPrompt";
 
 expectContext("background");
 
@@ -31,6 +32,7 @@ declare global {
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
+    OPEN_POPUP_PROMPT: typeof openPopupPrompt;
   }
 }
 
@@ -38,4 +40,5 @@ registerMethods({
   CONTAINS_PERMISSIONS: browser.permissions.contains,
   UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
   ENSURE_CONTEXT_MENU: ensureContextMenu,
+  OPEN_POPUP_PROMPT: openPopupPrompt,
 });

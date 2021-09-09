@@ -17,8 +17,10 @@
 
 import { browser, Manifest, Permissions } from "webextension-polyfill-ts";
 import { uniq } from "lodash";
-import { containsPermissions } from "@/background/messenger/api";
-import { openPopupPrompt } from "@/background/permissionPrompt";
+import {
+  containsPermissions,
+  openPopupPrompt,
+} from "@/background/messenger/api";
 
 /** Filters out any permissions that are not part of `optional_permissions` */
 export function selectOptionalPermissions(
