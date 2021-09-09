@@ -34,29 +34,6 @@ export interface AuthData extends UserData {
   token: string;
 }
 
-/**
- * TODO: https://github.com/pixiebrix/pixiebrix-app/issues/494
- * @deprecated will be moved into the app project since it's not used directly by the extension
- */
-export function readAuthFromWebsite(): AuthData {
-  const container = document.querySelector<HTMLElement>("#container");
-  const {
-    token,
-    email,
-    user,
-    organization,
-    telemetryOrganization,
-  } = container.dataset;
-  return {
-    token,
-    email,
-    user,
-    organizationId: organization,
-    telemetryOrganizationId: telemetryOrganization,
-    hostname: location.hostname,
-  };
-}
-
 async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
   const storage = await browser.storage.local.get({
     [STORAGE_EXTENSION_KEY]: {},
