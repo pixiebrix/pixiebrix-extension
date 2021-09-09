@@ -38,6 +38,7 @@ import {
 import { fetch } from "@/hooks/fetch";
 import { validateRegistryId } from "@/types/helpers";
 import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import { ExtensionNotLinkedError } from "@/errors";
 
 const REF_SECRETS = [
   "https://app.pixiebrix.com/schemas/key#",
@@ -123,8 +124,23 @@ class LazyLocatorFactory {
   }
 
   async refreshRemote(): Promise<void> {
-    this.remote = await fetch<SanitizedAuth[]>("/api/services/shared/?meta=1");
-    console.debug(`Fetched ${this.remote.length} remote service auths`);
+    try {
+      // As of https://github.com/pixiebrix/pixiebrix-app/issues/562, the API gradually handles unauthenticated calls
+      // to this endpoint. However, there's no need to pull the built-in services since the user can't call them
+      // without being authenticated
+      this.remote = await fetch<SanitizedAuth[]>(
+        "/api/services/shared/?meta=1",
+        { requireLinked: true }
+      );
+      console.debug(`Fetched ${this.remote.length} remote service auths`);
+    } catch (error: unknown) {
+      if (error instanceof ExtensionNotLinkedError) {
+        this.remote = [];
+      } else {
+        throw error;
+      }
+    }
+
     this.makeOptions();
   }
 

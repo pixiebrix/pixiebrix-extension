@@ -68,6 +68,22 @@ export async function getLinkedApiClient(): Promise<AxiosInstance> {
 }
 
 /**
+ * Return linked API client, or `null`.
+ * @see getLinkedApiClient
+ */
+export async function maybeGetLinkedApiClient(): Promise<AxiosInstance | null> {
+  try {
+    return await getLinkedApiClient();
+  } catch (error: unknown) {
+    if (error instanceof ExtensionNotLinkedError) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+/**
  * Returns an Axios client for making (optionally) authenticated API requests to PixieBrix.
  */
 export async function getApiClient(): Promise<AxiosInstance> {
