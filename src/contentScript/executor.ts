@@ -26,11 +26,8 @@ import {
 } from "@/contentScript/backgroundProtocol";
 import { Availability } from "@/blocks/types";
 import { checkAvailable } from "@/blocks/available";
-import { markReady } from "./context";
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { expectContext } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
-import { markTabAsReady } from "@/background/messenger/api";
 
 export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
@@ -102,16 +99,6 @@ export const linkChildTab = liftContentScript(
   },
   { asyncResponse: false }
 );
-
-export async function notifyReady(): Promise<void> {
-  markReady();
-
-  // Inform `ensureContentScript` that the content script has loaded, if it's listening
-  void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
-
-  // Informs the standard background listener to track this tab
-  await markTabAsReady();
-}
 
 function addExecutorListener(): void {
   expectContext("contentScript");

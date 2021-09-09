@@ -28,14 +28,15 @@ import "@/contentScript/contextMenus";
 import "@/contentScript/browserAction";
 import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
-import addExecutorListener, { notifyReady } from "@/contentScript/executor";
+import addExecutorListener from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "@/vendors/notify";
-import { updateTabInfo } from "@/contentScript/context";
+import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import "@/contentScript/uipath";
-import { whoAmI } from "@/background/messenger/api";
+import { markTabAsReady, whoAmI } from "@/background/messenger/api";
+import { ENSURE_CONTENT_SCRIPT_READY } from "./messaging/constants";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
@@ -73,7 +74,13 @@ async function init(): Promise<void> {
 
   try {
     // Notify the background script know we're ready to execute remote actions
-    await notifyReady();
+    markReady();
+
+    // Inform `ensureContentScript` that the content script has loaded, if it's listening
+    void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
+
+    // Informs the standard background listener to track this tab
+    await markTabAsReady();
     console.info(`contentScript ready in ${Date.now() - start}ms`);
   } catch (error: unknown) {
     console.error("Error pinging the background script", error);
