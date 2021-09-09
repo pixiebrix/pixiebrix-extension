@@ -56,6 +56,14 @@ export async function getExtensionToken(): Promise<string | undefined> {
   return token;
 }
 
+/**
+ * Return `true` if the extension is linked to the API.
+ *
+ * NOTE: do not use this as a check before making an authenticated API call. Instead use `maybeGetLinkedApiClient` which
+ * avoids a race condition between the time the check is made and underlying `getExtensionToken` call to get the token.
+ *
+ * @see maybeGetLinkedApiClient
+ */
 export async function isLinked(): Promise<boolean> {
   return (await getExtensionToken()) != null;
 }
