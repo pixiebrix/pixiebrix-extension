@@ -26,6 +26,7 @@ export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT");
 export const whoAmI = getMethod("ECHO_SENDER");
 export const activateTab = getMethod("ACTIVATE_TAB");
 export const closeTab = getMethod("CLOSE_TAB");
+export const markTabAsReady = getMethod("MARK_TAB_AS_READY");
 
 /**
  * Uninstall context menu and return whether or not the context menu was uninstalled.

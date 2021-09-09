@@ -19,7 +19,6 @@
 import {
   linkChildTab,
   MESSAGE_CHECK_AVAILABILITY,
-  MESSAGE_CONTENT_SCRIPT_READY,
   MESSAGE_RUN_BLOCK as CONTENT_MESSAGE_RUN_BLOCK,
   RemoteBlockOptions,
   RunBlockAction,
@@ -282,7 +281,9 @@ handlers.set(MESSAGE_OPEN_TAB, async (request: OpenTabAction, sender) => {
   tabToOpener.set(tab.id, sender.tab.id);
 });
 
-handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (_, sender) => {
+export async function markTabAsReady(this: MessengerMeta) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias, unicorn/no-this-assignment -- Not applicable to this pattern
+  const sender = this;
   const tabId = sender.tab.id;
   const { frameId } = sender;
   console.debug(`Marked tab ${tabId} (frame: ${frameId}) as ready`, {
@@ -307,7 +308,7 @@ handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (_, sender) => {
 
   tabReady[tabId][frameId] = true;
   emitDevtools("ContentScriptReady", { tabId, frameId });
-});
+}
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
