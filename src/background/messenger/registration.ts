@@ -24,6 +24,7 @@ import {
   uninstallContextMenu,
 } from "@/background/contextMenus";
 import { openPopupPrompt } from "@/background/permissionPrompt";
+import { whoAmI } from "@/background/executor";
 
 expectContext("background");
 
@@ -33,6 +34,7 @@ declare global {
     UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
     ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
     OPEN_POPUP_PROMPT: typeof openPopupPrompt;
+    ECHO_SENDER: typeof whoAmI;
   }
 }
 
@@ -41,4 +43,5 @@ registerMethods({
   UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
   ENSURE_CONTEXT_MENU: ensureContextMenu,
   OPEN_POPUP_PROMPT: openPopupPrompt,
+  ECHO_SENDER: whoAmI,
 });

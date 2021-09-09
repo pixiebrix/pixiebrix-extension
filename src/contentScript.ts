@@ -28,16 +28,14 @@ import "@/contentScript/contextMenus";
 import "@/contentScript/browserAction";
 import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
-import addExecutorListener, {
-  notifyReady,
-  whoAmI,
-} from "@/contentScript/executor";
+import addExecutorListener, { notifyReady } from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "@/vendors/notify";
 import { updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import "@/contentScript/uipath";
+import { whoAmI } from "@/background/messenger/api";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();

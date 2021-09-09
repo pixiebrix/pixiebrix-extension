@@ -19,13 +19,12 @@
 import {
   linkChildTab,
   MESSAGE_CHECK_AVAILABILITY,
-  MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
   MESSAGE_CONTENT_SCRIPT_READY,
   MESSAGE_RUN_BLOCK as CONTENT_MESSAGE_RUN_BLOCK,
   RemoteBlockOptions,
   RunBlockAction,
 } from "@/contentScript/executor";
-import { browser, Tabs } from "webextension-polyfill-ts";
+import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
 import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
 import { ActionType, Message, RegistryId, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
@@ -37,6 +36,7 @@ import { sleep } from "@/utils";
 import { partition, zip } from "lodash";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
+import { MessengerMeta } from "webext-messenger";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
@@ -321,13 +321,6 @@ handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (_, sender) => {
   emitDevtools("ContentScriptReady", { tabId, frameId });
 });
 
-handlers.set(MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, async (_, sender) => {
-  console.debug("Responding %s", MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, {
-    sender,
-  });
-  return sender;
-});
-
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
     tabToOpener.set(tab.id, tab.openerTabId);
@@ -354,6 +347,12 @@ export async function activateTab(): Promise<void> {
     type: MESSAGE_ACTIVATE_TAB,
     payload: {},
   });
+}
+
+export async function whoAmI(
+  this: MessengerMeta
+): Promise<Runtime.MessageSender> {
+  return this;
 }
 
 export async function closeTab(): Promise<void> {
