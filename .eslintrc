@@ -1,124 +1,23 @@
 {
   "root": true,
-  "env": {
-    "browser": true
-  },
-  "settings": {
-    "import/resolver": {
-      "typescript": {}
-    },
-    "import/ignore": [
-      "react-select" // For some reason it points to a flow JS file
-    ],
-    "react": {
-      "version": "detect"
-    }
-  },
-  "plugins": ["filenames", "jsx-a11y"],
   "extends": [
-    "xo", // Full config: https://github.com/xojs/eslint-config-xo/blob/main/index.js
-    "xo-typescript", // Full config: https://github.com/xojs/eslint-config-xo-typescript/blob/main/index.js
-    "prettier", // Disable style-related rules
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:import/recommended",
-    "plugin:import/typescript",
-    "plugin:security/recommended",
-    "plugin:unicorn/recommended",
-    "plugin:jsx-a11y/recommended"
+    // Full config: https://github.com/fregante/eslint-config-pixiebrix/blob/main/index.js
+    "pixiebrix"
   ],
   "rules": {
-    // Enable extra rules
-    "filenames/match-exported": "error",
-    "no-restricted-imports": [
-      "error",
-      {
-        // Documentation: https://eslint.org/docs/rules/no-restricted-imports#options
-        "paths": [
-          {
-            "name": "lodash",
-            "importNames": ["fromPairs", "reverse"],
-            "message": "You can find an alternative on https://youmightnotneed.com/lodash/"
-          }
-        ],
-        "patterns": [
-          {
-            "group": ["*/__mocks__/*"],
-            "message": "Mocks should not be imported directly, they’re automatically picked up by tools."
-          },
-          {
-            "group": ["lodash/*"],
-            "message": "You can import \"lodash\" instead of \"lodash/*\"."
-          },
-          {
-            "group": ["react-bootstrap/*", "!react-bootstrap/types"],
-            "message": "You can import \"react-bootstrap\" instead of \"react-bootstrap/*\"."
-          }
-        ]
-      }
-    ],
-
-    "no-mixed-operators": [
-      "error",
-      {
-        // Customize the defaults to force being explicit about use of null-coalescing operator because its precedence
-        // is unintuitive. See: https://eslint.org/docs/rules/no-mixed-operators
-        "groups": [
-          // Conflicts with Prettier: https://github.com/prettier/prettier/issues/3968
-          // ["+", "-", "*", "/", "%", "**", "??"],
-          ["&", "|", "^", "~", "<<", ">>", ">>>", "??"],
-          ["==", "!=", "===", "!==", ">", ">=", "<", "<=", "??"],
-          ["&&", "||", "??"],
-          ["in", "instanceof", "??"]
-        ]
-      }
-    ],
-
-    // Customize some rules
-    "import/no-unresolved": [
-      "error",
-      {
-        "ignore": [
-          "json-schema" // @types-only package
-        ]
-      }
-    ],
-    "unicorn/prevent-abbreviations": [
-      "error",
-      {
-        "extendDefaultReplacements": false,
-        "replacements": {
-          "err": {
-            "error": true
-          }
-        }
-      }
-    ],
-    "unicorn/filename-case": [
-      "error",
-      {
-        "cases": {
-          "camelCase": true,
-          "pascalCase": true
-        }
-      }
-    ],
-    // smart allows for != null. See: https://github.com/pixiebrix/pixiebrix-extension/pull/887#pullrequestreview-711873690
-    "eqeqeq": ["error", "smart"],
-
-    "@typescript-eslint/naming-convention": [
-      "error",
-      {
-        "selector": "variable",
-        "modifiers": ["const", "exported"],
-        "types": ["boolean", "string", "number"],
-        "format": ["UPPER_CASE"]
-      }
-    ],
-
-    // Soft-enable some rules, maybe enforce them later
-    "@typescript-eslint/ban-types": "warn",
+    // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-confusing-void-expression": "warn",
+    "@typescript-eslint/restrict-template-expressions": "warn",
+    "@typescript-eslint/non-nullable-type-assertion-style": "warn",
+    "@typescript-eslint/no-unnecessary-type-assertion": "warn",
+
+    // Rules to fix and enforce over time
+    "no-await-in-loop": "warn",
+    "no-negated-condition": "warn",
+    "no-return-await": "warn",
+    "no-promise-executor-return": "warn",
+
     "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
     "unicorn/no-useless-undefined": "warn", // Buggy with React
     "unicorn/no-nested-ternary": "warn", // Sometimes it conflicts with Prettier
@@ -126,27 +25,8 @@
     "unicorn/prefer-prototype-methods": "warn", // Buggy with abstract classes
     "unicorn/prefer-switch": "warn",
 
-    // Disable recommended rules
-    // It's fine because eqeqeq covers it. See https://github.com/pixiebrix/pixiebrix-extension/pull/887#pullrequestreview-711873690
-    "no-eq-null": "off",
-    "import/named": "off", // TypeScript does this natively
-    "react/prop-types": "off",
-    "unicorn/prefer-node-protocol": "off", // Not fully supported by TS
-    "unicorn/prefer-set-has": "off", // Not always worth the extra code
-    "unicorn/require-post-message-target-origin": "off", // Incompatible https://github.com/sindresorhus/eslint-plugin-unicorn/issues/1396
-    "no-warning-comments": "off", // Only useful if there aren't hundreds of other real warnings
-
-    // Temporarily disable rules
-    "no-await-in-loop": "warn",
-    "no-negated-condition": "warn",
-    "no-return-await": "warn",
-    "no-promise-executor-return": "warn",
-
-    "@typescript-eslint/no-confusing-void-expression": "warn",
-    "@typescript-eslint/restrict-template-expressions": "warn",
+    "@typescript-eslint/ban-types": "warn",
     "@typescript-eslint/no-base-to-string": "warn",
-    "@typescript-eslint/non-nullable-type-assertion-style": "warn",
-    "@typescript-eslint/no-unnecessary-type-assertion": "warn",
     "@typescript-eslint/consistent-type-assertions": "warn",
     "@typescript-eslint/no-require-imports": "warn",
     "@typescript-eslint/no-dynamic-delete": "warn",
@@ -158,20 +38,6 @@
     "@typescript-eslint/no-useless-constructor": "warn",
     "@typescript-eslint/default-param-last": "warn",
 
-    // Too strict for now
-    "@typescript-eslint/no-unsafe-assignment": "off",
-    "@typescript-eslint/no-unsafe-member-access": "off",
-    "@typescript-eslint/no-unsafe-return": "off",
-    "@typescript-eslint/no-unsafe-call": "off",
-
-    // Maybe later, opinionated
-    "unicorn/no-null": "off",
-    "unicorn/prefer-ternary": "off",
-    "@typescript-eslint/member-ordering": "off",
-    "@typescript-eslint/no-empty-function": "off",
-
-    // `a11y` rules we'll eventually want to treat as errors. Include as warning for now to avoid new issues being
-    // introduced to the codebase
     "jsx-a11y/click-events-have-key-events": "warn",
     "jsx-a11y/no-static-element-interactions": "warn",
     "jsx-a11y/anchor-is-valid": "warn",
