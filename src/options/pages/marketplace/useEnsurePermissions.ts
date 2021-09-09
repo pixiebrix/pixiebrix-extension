@@ -23,7 +23,7 @@ import { useAsyncState } from "@/hooks/common";
 import { locator } from "@/background/locator";
 import { collectPermissions, ensureAllPermissions } from "@/permissions";
 import { resolveRecipe } from "@/registry/internal";
-import { containsPermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/background/messenger/api";
 import { useCallback } from "react";
 import { getErrorMessage } from "@/errors";
 import { reportEvent } from "@/telemetry/events";

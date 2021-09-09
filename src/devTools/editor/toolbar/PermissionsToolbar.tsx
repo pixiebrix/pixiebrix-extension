@@ -27,7 +27,7 @@ import { Permissions } from "webextension-polyfill-ts";
 import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
 import { useToasts } from "react-toast-notifications";
-import { containsPermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/background/messenger/api";
 
 type PermissionsState = {
   hasPermissions: boolean;

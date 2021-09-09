@@ -17,6 +17,17 @@
 
 /* Use this file exclusively to register the handlers from `webext-messenger` */
 
+import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
 
 expectContext("background");
+
+declare global {
+  interface MessengerMethods {
+    CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
+  }
+}
+
+registerMethods({
+  CONTAINS_PERMISSIONS: browser.permissions.contains,
+});

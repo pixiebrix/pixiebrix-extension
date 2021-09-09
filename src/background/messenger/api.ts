@@ -17,5 +17,8 @@
 
 /* Do not register handlers in this file */
 import { forbidContext } from "@/utils/expectContext";
+import { getMethod } from "webext-messenger";
 
 forbidContext("background");
+
+export const containsPermissions = getMethod("CONTAINS_PERMISSIONS");

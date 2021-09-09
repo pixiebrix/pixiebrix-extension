@@ -35,7 +35,8 @@ import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
 import { ObjectField } from "@/components/fields/FieldTable";
-import { containsPermissions, requestPermissions } from "@/utils/permissions";
+import { requestPermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import { getErrorMessage } from "@/errors";
 

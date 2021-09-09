@@ -24,7 +24,7 @@ import { FormikHelpers } from "formik";
 import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
 import { uniq } from "lodash";
-import { containsPermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/background/messenger/api";
 import { collectPermissions } from "@/permissions";
 import { reactivate } from "@/background/navigation";
 import { push } from "connected-react-router";
