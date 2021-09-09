@@ -16,6 +16,7 @@
  */
 
 /* Do not use `registerMethod` in this file */
+import { browser } from "webextension-polyfill-ts";
 import { getMethod } from "webext-messenger";
 import { forbidContext } from "@/utils/expectContext";
 
