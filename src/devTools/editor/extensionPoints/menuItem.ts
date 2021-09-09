@@ -65,7 +65,7 @@ const wizard: WizardStep[] = [
   { step: "Data", Component: ReaderTab },
   { step: "Menu Item", Component: MenuItemTab },
   { step: "Integrations", Component: ServicesTab },
-  { step: "Effect", Component: EffectTab },
+  { step: "Action", Component: EffectTab },
   { step: "Availability", Component: AvailabilityTab },
   { step: "Logs", Component: LogsTab },
 ];
