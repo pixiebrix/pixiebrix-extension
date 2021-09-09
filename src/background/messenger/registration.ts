@@ -17,6 +17,7 @@
 
 /* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
 import { registerMethods } from "webext-messenger";
+import { browser } from "webextension-polyfill-ts";
 import { expectContext } from "@/utils/expectContext";
 import {
   ensureContextMenu,
@@ -55,3 +56,6 @@ registerMethods({
   CLOSE_TAB: closeTab,
   MARK_TAB_AS_READY: markTabAsReady,
 });
+
+// Temporary, webext-messenger depends on this global
+(globalThis as any).browser = browser;

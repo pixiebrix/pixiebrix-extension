@@ -16,11 +16,16 @@
  */
 
 /* Do not use `registerMethod` in this file */
-import { browser } from "webextension-polyfill-ts";
 import { getMethod } from "webext-messenger";
-import { forbidContext } from "@/utils/expectContext";
+import { browser } from "webextension-polyfill-ts";
+import { isBackgroundPage } from "webext-detect-page";
 
-forbidContext("background");
+// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
+if (isBackgroundPage()) {
+  console.trace(
+    "This should not have been imported in the background page. Use the API directly instead."
+  );
+}
 
 // Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
 export const containsPermissions = browser.permissions
@@ -38,3 +43,6 @@ export const markTabAsReady = getMethod("MARK_TAB_AS_READY");
  */
 export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU");
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU");
+
+// Temporary, webext-messenger depends on this global
+(globalThis as any).browser = browser;
