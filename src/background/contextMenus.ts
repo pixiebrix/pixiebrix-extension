@@ -117,7 +117,11 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
  * Uninstall contextMenu for `extensionId`. Returns true if the contextMenu was removed, or false if the contextMenu was
  * not found.
  */
-export async function uninstall(extensionId: UUID): Promise<boolean> {
+export async function uninstallContextMenu({
+  extensionId,
+}: {
+  extensionId: UUID;
+}): Promise<boolean> {
   try {
     const menuItemId = extensionMenuItems.get(extensionId);
 
@@ -140,14 +144,6 @@ export async function uninstall(extensionId: UUID): Promise<boolean> {
     return false;
   }
 }
-
-/**
- * Uninstall context menu and return whether or not the context menu was uninstalled.
- */
-export const uninstallContextMenu = liftBackground(
-  "UNINSTALL_CONTEXT_MENU",
-  async ({ extensionId }: { extensionId: UUID }) => uninstall(extensionId)
-);
 
 export const ensureContextMenu = liftBackground(
   "ENSURE_CONTEXT_MENU",

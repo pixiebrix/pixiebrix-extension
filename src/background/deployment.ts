@@ -29,8 +29,10 @@ import { refreshRegistries } from "@/hooks/useRefresh";
 import { liftBackground } from "@/background/protocol";
 import * as contentScript from "@/contentScript/lifecycle";
 import { selectExtensions } from "@/options/selectors";
-import { uninstallContextMenu } from "@/background/contextMenus";
-import { containsPermissions } from "@/utils/permissions";
+import {
+  uninstallContextMenu,
+  containsPermissions,
+} from "@/background/messenger/api";
 import { deploymentPermissions } from "@/permissions";
 import { IExtension } from "@/core";
 import { ExtensionOptionsState } from "@/store/extensions";
@@ -83,9 +85,7 @@ function installDeployment(
         extensionId: extension.id,
       };
 
-      void uninstallContextMenu(identifier).catch((error) => {
-        reportError(error);
-      });
+      void uninstallContextMenu(identifier).catch(reportError);
 
       returnState = reducer(returnState, actions.removeExtension(identifier));
     }

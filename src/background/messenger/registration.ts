@@ -19,15 +19,18 @@
 
 import { registerMethods } from "webext-messenger";
 import { expectContext } from "@/utils/expectContext";
+import { uninstallContextMenu } from "@/background/contextMenus";
 
 expectContext("background");
 
 declare global {
   interface MessengerMethods {
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
+    UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
   }
 }
 
 registerMethods({
   CONTAINS_PERMISSIONS: browser.permissions.contains,
+  UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
 });

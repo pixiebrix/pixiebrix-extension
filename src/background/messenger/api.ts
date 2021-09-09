@@ -22,3 +22,8 @@ import { getMethod } from "webext-messenger";
 forbidContext("background");
 
 export const containsPermissions = getMethod("CONTAINS_PERMISSIONS");
+
+/**
+ * Uninstall context menu and return whether or not the context menu was uninstalled.
+ */
+export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU");

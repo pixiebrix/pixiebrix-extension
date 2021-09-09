@@ -39,10 +39,8 @@ import {
 } from "@/extensionPoints/types";
 import { castArray, uniq, compact, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable } from "@/blocks/available";
-import {
-  ensureContextMenu,
-  uninstallContextMenu,
-} from "@/background/contextMenus";
+import { ensureContextMenu } from "@/background/contextMenus";
+import { uninstallContextMenu } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
 import { Manifest } from "webextension-polyfill-ts/lib/manifest";

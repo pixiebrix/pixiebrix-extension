@@ -19,7 +19,7 @@ import { RecipeDefinition } from "@/types/definitions";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
 import { useCallback } from "react";
-import { uninstallContextMenu } from "@/background/contextMenus";
+import { uninstallContextMenu } from "@/background/messenger/api";
 import { optionsSlice } from "@/options/slices";
 import { groupBy, uniq } from "lodash";
 import { IExtension } from "@/core";
