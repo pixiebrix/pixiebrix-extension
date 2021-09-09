@@ -15,13 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Do not register handlers in this file */
-import { forbidContext } from "@/utils/expectContext";
+/* Do not use `registerMethod` in this file */
 import { getMethod } from "webext-messenger";
+import { forbidContext } from "@/utils/expectContext";
 
 forbidContext("background");
 
-export const containsPermissions = getMethod("CONTAINS_PERMISSIONS");
+// Chrome offers this API in more contexts than Firefox, so it skips the messenger entirely
+export const containsPermissions = browser.permissions
+  ? browser.permissions.contains
+  : getMethod("CONTAINS_PERMISSIONS");
+
 export const openPopupPrompt = getMethod("OPEN_POPUP_PROMPT");
 export const whoAmI = getMethod("ECHO_SENDER");
 export const activateTab = getMethod("ACTIVATE_TAB");

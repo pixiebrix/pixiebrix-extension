@@ -40,8 +40,8 @@ import {
 import { castArray, uniq, compact, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import {
-  uninstallContextMenu,
   ensureContextMenu,
+  uninstallContextMenu,
 } from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
