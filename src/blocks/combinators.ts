@@ -36,6 +36,7 @@ import {
   Schema,
   ServiceDependency,
   UserOptions,
+  UUID,
 } from "@/core";
 import { validateInput, validateOutput } from "@/validators/generic";
 import { castArray, isEmpty, isPlainObject, mapValues, pickBy } from "lodash";
@@ -60,6 +61,10 @@ import {
 } from "@/blocks/errors";
 import { engineRenderer } from "@/utils/renderers";
 import { BlockConfig, BlockPipeline, ReaderConfig } from "./types";
+import { TraceRecordMeta } from "@/telemetry/trace";
+import { JsonObject } from "type-fest";
+import { recordTraceEntry, recordTraceExit } from "@/background/trace";
+import { uuidv4 } from "@/types/helpers";
 
 /** Return block definitions for all blocks referenced in a pipeline */
 export async function blockList(
@@ -85,6 +90,7 @@ interface ReduceOptions {
   headless?: boolean;
   optionsArgs?: UserOptions;
   serviceArgs?: RenderedArgs;
+  runId?: UUID;
 }
 
 type SchemaProperties = Record<string, Schema>;
@@ -100,6 +106,16 @@ function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
   };
 }
 
+type TraceOptions = {
+  runId: UUID;
+  blockInstanceId: UUID;
+};
+
+const defaultTraceOptions: TraceOptions = {
+  runId: undefined,
+  blockInstanceId: undefined,
+};
+
 type StageOptions = {
   context: RenderedArgs;
   validate: boolean;
@@ -107,13 +123,22 @@ type StageOptions = {
   logger: Logger;
   headless?: boolean;
   root: ReaderRoot;
+  trace?: TraceOptions;
 };
 
 async function runStage(
   block: IBlock,
   stage: BlockConfig,
   args: RenderedArgs,
-  { root, context, validate, logValues, logger, headless }: StageOptions
+  {
+    root,
+    context,
+    validate,
+    logValues,
+    logger,
+    headless,
+    trace = defaultTraceOptions,
+  }: StageOptions
 ): Promise<unknown> {
   const argContext = { ...context, ...args };
   const stageConfig = stage.config ?? {};
@@ -124,6 +149,11 @@ async function runStage(
   }
 
   let blockArgs: BlockArg;
+
+  const tracePayload: TraceRecordMeta = {
+    ...trace,
+    blockId: block.id,
+  };
 
   if (isReader(block)) {
     if ((stage.window ?? "self") === "self") {
@@ -165,6 +195,13 @@ async function runStage(
         }
       );
     }
+
+    void recordTraceEntry({
+      ...tracePayload,
+      timestamp: new Date().toISOString(),
+      templateContext: argContext as JsonObject,
+      renderedArgs: blockArgs,
+    });
   }
 
   if (validate) {
@@ -256,10 +293,10 @@ async function runStage(
   }
 }
 
-function arraySchema(base: Schema): Schema {
+function arraySchema(itemSchema: Schema): Schema {
   return {
     type: "array",
-    items: base,
+    items: itemSchema,
   };
 }
 
@@ -276,6 +313,7 @@ export async function reducePipeline(
     headless = false,
     optionsArgs = {},
     serviceArgs = {},
+    runId = uuidv4(),
   }: ReduceOptions = {}
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
@@ -341,6 +379,10 @@ export async function reducePipeline(
         validate,
         headless,
         logger: stageLogger,
+        trace: {
+          runId,
+          blockInstanceId: stage.instanceId,
+        },
       });
 
       if (logValues) {
@@ -354,6 +396,14 @@ export async function reducePipeline(
           outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
         });
       }
+
+      void recordTraceExit({
+        runId,
+        blockId: stage.id,
+        blockInstanceId: stage.instanceId,
+        outputKey: stage.outputKey,
+        output: output as JsonObject,
+      });
 
       if (validate && !isEmpty(block.outputSchema)) {
         const baseSchema = castSchema(block.outputSchema);
@@ -395,6 +445,13 @@ export async function reducePipeline(
         // An "expected" error, let the caller deal with it
         throw error;
       }
+
+      void recordTraceExit({
+        runId,
+        blockId: stage.id,
+        blockInstanceId: stage.instanceId,
+        error: serializeError(error),
+      });
 
       if (stage.onError?.alert) {
         if (logger.context.deploymentId) {

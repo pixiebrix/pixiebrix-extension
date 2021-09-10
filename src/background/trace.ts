@@ -15,29 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { liftBackground } from "@/background/protocol";
+import {
+  addTraceEntry,
+  addTraceExit,
+  TraceEntryData,
+  TraceExitData,
+} from "@/telemetry/trace";
 
-export class IdentityTransformer extends Transformer {
-  get isPure() {
-    return true;
-  }
+export const recordTraceEntry = liftBackground(
+  "RECORD_TRACE_ENTRY",
+  async (record: TraceEntryData) => addTraceEntry(record)
+);
 
-  constructor() {
-    super(
-      "@pixiebrix/identity",
-      "Identity function",
-      "Returns the object passed into it",
-      "faCode"
-    );
-  }
-
-  inputSchema: Schema = {
-    type: "object",
-    additionalProperties: true,
-  };
-
-  async transform(arg: BlockArg): Promise<BlockArg> {
-    return arg;
-  }
-}
+export const recordTraceExit = liftBackground(
+  "RECORD_TRACE_EXIT",
+  async (record: TraceExitData) => addTraceExit(record)
+);

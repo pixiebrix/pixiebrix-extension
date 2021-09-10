@@ -26,6 +26,7 @@ import {
   makeIsAvailable,
   makeReaderFormState,
   selectIsAvailable,
+  withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
@@ -213,7 +214,7 @@ async function fromExtension(
     extension: {
       ...config.config,
       heading: config.config.heading,
-      body: castArray(config.config.body),
+      body: withInstanceIds(castArray(config.config.body)),
     },
 
     extensionPoint: {

@@ -31,6 +31,7 @@ import {
   selectIsAvailable,
   lookupExtensionPoint,
   baseSelectExtensionPoint,
+  withInstanceIds,
 } from "@/devTools/editor/extensionPoints/base";
 import {
   MenuDefinition,
@@ -234,7 +235,7 @@ export async function fromExtension(
 
     extension: {
       ...config.config,
-      action: castArray(config.config.action),
+      action: withInstanceIds(castArray(config.config.action)),
     },
 
     containerInfo: null,

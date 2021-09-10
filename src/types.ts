@@ -204,6 +204,11 @@ export abstract class Block implements IBlock {
 
   readonly defaultOptions = {};
 
+  get isPure() {
+    // Safe default
+    return false;
+  }
+
   protected constructor(
     id: string,
     name: string,

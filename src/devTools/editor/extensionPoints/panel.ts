@@ -27,6 +27,7 @@ import {
   selectIsAvailable,
   lookupExtensionPoint,
   baseSelectExtensionPoint,
+  withInstanceIds,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
@@ -256,7 +257,7 @@ async function fromExtension(
     extension: {
       ...config.config,
       heading: config.config.heading,
-      body: castArray(config.config.body),
+      body: withInstanceIds(castArray(config.config.body)),
     },
 
     containerInfo: null,

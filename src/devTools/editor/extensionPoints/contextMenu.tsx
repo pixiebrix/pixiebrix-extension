@@ -26,6 +26,7 @@ import {
   makeIsAvailable,
   makeReaderFormState,
   selectIsAvailable,
+  withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
@@ -183,7 +184,7 @@ async function fromExtension(
 
     extension: {
       ...extensionConfig,
-      action: castArray(extensionConfig.action),
+      action: withInstanceIds(castArray(extensionConfig.action)),
     },
 
     extensionPoint: {

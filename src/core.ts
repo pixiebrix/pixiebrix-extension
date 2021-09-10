@@ -374,6 +374,16 @@ export interface IBlock extends Metadata {
    */
   permissions: Permissions.Permissions;
 
+  /**
+   * True iff the block is guaranteed to be side-effect free, (i.e., it can be safely re-run).
+   *
+   * Examples of impure actions:
+   * - Calling an API
+   * - Showing a prompt
+   * - Writing to the session state
+   */
+  isPure?: boolean;
+
   run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
 }
 

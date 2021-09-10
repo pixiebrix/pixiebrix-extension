@@ -20,6 +20,10 @@ import { BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class Base64Encode extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/encode/btoa",

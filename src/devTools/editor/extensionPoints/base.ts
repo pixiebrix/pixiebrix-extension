@@ -45,7 +45,8 @@ import {
   ReaderReferenceFormState,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { BlockPipeline } from "@/blocks/types";
 
 export interface WizardStep {
   step: string;
@@ -71,6 +72,16 @@ export function makeIsAvailable(
     matchPatterns: createSitePattern(url),
     selectors: null,
   };
+}
+
+/**
+ * Enrich a BlockPipeline with instanceIds for use in tracing.
+ */
+export function withInstanceIds(blocks: BlockPipeline): BlockPipeline {
+  return blocks.map((x) => ({
+    ...x,
+    instanceId: uuidv4(),
+  }));
 }
 
 export function makeReaderId(

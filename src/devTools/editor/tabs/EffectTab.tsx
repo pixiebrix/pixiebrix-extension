@@ -37,6 +37,7 @@ import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration
 import QuickAdd from "@/devTools/editor/tabs/effect/QuickAdd";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { BlockPipeline } from "@/blocks/types";
+import { uuidv4 } from "@/types/helpers";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -113,7 +114,10 @@ const EffectTab: React.FunctionComponent<{
   // PERFORMANCE: actionsHelpers.setValue and actions changes on every render
   const appendBlock = useCallback(
     (block: IBlock) => {
-      actionsHelpers.setValue([...actions, { id: block.id, config: {} }]);
+      actionsHelpers.setValue([
+        ...actions,
+        { id: block.id, instanceId: uuidv4(), config: {} },
+      ]);
       setActiveIndex(count);
     },
     [count, actionsHelpers, actions, setActiveIndex]
