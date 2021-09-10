@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension, RegistryId, UUID } from "./core";
+import { IExtension, RegistryId, UUID } from "@/core";
 import { randomWords } from "./testHelpers";
 
 const config = {
@@ -47,7 +47,7 @@ const config = {
   ],
 };
 
-export const getMockedExtension: (
+export const extensionFactory: (
   extensionProps?: Partial<IExtension>
 ) => IExtension = (extensionProps) => ({
   id: randomWords() as UUID,

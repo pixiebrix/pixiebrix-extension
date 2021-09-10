@@ -17,7 +17,7 @@
 
 import { isOfficial } from "./util";
 import { RegistryId } from "@/core";
-import { randomWords } from "@/testHelpers";
+import { randomWords } from "@/tests/testHelpers";
 
 describe("isOfficial", () => {
   test("returns true for an official block", () => {

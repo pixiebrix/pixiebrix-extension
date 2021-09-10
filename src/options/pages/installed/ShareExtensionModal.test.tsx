@@ -18,14 +18,14 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import ShareExtensionModal from "./ShareExtensionModal";
-import { getMockedExtension } from "@/coreMocks";
-import { waitForEffect } from "@/testHelpers";
+import { extensionFactory } from "@/tests/factories";
+import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 
 test("renders modal", async () => {
   render(
     <ShareExtensionModal
-      extension={getMockedExtension({
+      extension={extensionFactory({
         label: "testExtension",
       })}
       onCancel={jest.fn()}
@@ -39,7 +39,7 @@ test("renders modal", async () => {
 test("prints 'Convert' when not Public", async () => {
   render(
     <ShareExtensionModal
-      extension={getMockedExtension({
+      extension={extensionFactory({
         label: "testExtension",
       })}
       onCancel={jest.fn()}

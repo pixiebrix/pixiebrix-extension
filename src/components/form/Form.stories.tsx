@@ -18,8 +18,6 @@
 import React from "react";
 import * as yup from "yup";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { Form as BootstrapForm } from "react-bootstrap";
-import HorizontalFormGroup from "../fields/HorizontalFormGroup";
 import Form, { OnSubmit } from "./Form";
 import FormikHorizontalField from "./fields/FormikHorizontalField";
 import FormikSwitchButton from "./fields/FormikSwitchButton";
@@ -53,43 +51,16 @@ const initialValues = {
   age: "",
 };
 
-export const WithHorizontalFormGroup: ComponentStory<typeof Form> = (args) => (
-  <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
-    <HorizontalFormGroup label="Title" propsOrFieldName="title">
-      {(field, meta) => (
-        <BootstrapForm.Control {...field} isInvalid={Boolean(meta.error)} />
-      )}
-    </HorizontalFormGroup>
-    <HorizontalFormGroup
-      label="Name"
-      propsOrFieldName="name"
-      description="A name"
-    >
-      {(field, meta) => (
-        <BootstrapForm.Control {...field} isInvalid={Boolean(meta.error)} />
-      )}
-    </HorizontalFormGroup>
-    <HorizontalFormGroup
-      label="Age"
-      propsOrFieldName="age"
-      description="Your age"
-    >
-      {(field, meta) => (
-        <BootstrapForm.Control {...field} isInvalid={Boolean(meta.error)} />
-      )}
-    </HorizontalFormGroup>
-  </Form>
-);
-WithHorizontalFormGroup.storyName = "With HorizontalFormGroup";
-
-export const WithHorizontalTextField: ComponentStory<typeof Form> = (args) => (
+export const WithFormikHorizontalField: ComponentStory<typeof Form> = (
+  args
+) => (
   <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
     <FormikHorizontalField placeholder="Title" name="title" />
     <FormikHorizontalField label="Name" name="name" description="A name" />
     <FormikHorizontalField label="Age" name="age" description="Your age" />
   </Form>
 );
-WithHorizontalTextField.storyName = "With HorizontalTextField";
+WithFormikHorizontalField.storyName = "With FormikHorizontalField";
 
 export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
   <Form
@@ -109,7 +80,7 @@ const AllFieldsSchema: yup.ObjectSchema = yup.object().shape({
   story: yup.string(),
   public: yup.boolean(),
 });
-const allFieldsnitialValues = {
+const allFieldsInitialValues = {
   name: "",
   story: "",
   public: false,
@@ -117,7 +88,7 @@ const allFieldsnitialValues = {
 export const AllFields: ComponentStory<typeof Form> = (args) => (
   <Form
     validationSchema={AllFieldsSchema}
-    initialValues={allFieldsnitialValues}
+    initialValues={allFieldsInitialValues}
     {...args}
   >
     <FormikHorizontalField label="Name" name="name" description="A name" />

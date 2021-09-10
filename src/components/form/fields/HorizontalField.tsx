@@ -29,17 +29,18 @@ import {
 } from "react-bootstrap";
 import { WithFormikFieldDefaultProps } from "./withFormikField";
 
+// FIXME: these should be "|", not "&", but it makes the typing more complex
 type FieldProps = FormControlProps &
   InputHTMLAttributes<HTMLInputElement> &
   TextareaHTMLAttributes<HTMLTextAreaElement>;
 
-export type HorizontalFieldProps = WithFormikFieldDefaultProps<string> &
+export type HorizontalFieldProps<T = unknown> = WithFormikFieldDefaultProps<T> &
   FieldProps & {
     label?: string;
     placeholder?: string;
     description?: ReactNode;
     onFocus?: FocusEventHandler<HTMLInputElement>;
-    widget?: React.ComponentClass<FieldProps> | React.FC<FieldProps>;
+    widget?: React.ComponentType<FieldProps>;
   };
 
 const TextAreaWidget: React.FC<FieldProps> = (props: FormControlProps) => (
