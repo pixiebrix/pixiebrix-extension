@@ -18,7 +18,7 @@
 import HorizontalField, { HorizontalFieldProps } from "./HorizontalField";
 import { withFormikField } from "./withFormikField";
 
-const FormikHorizontalField = withFormikField<string, HorizontalFieldProps>(
+const FormikHorizontalField = withFormikField<unknown, HorizontalFieldProps>(
   HorizontalField
 );
 export default FormikHorizontalField;
