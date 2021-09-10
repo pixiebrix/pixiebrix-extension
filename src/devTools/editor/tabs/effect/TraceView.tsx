@@ -48,9 +48,10 @@ function useInterval(callback: () => void, delayMillis: number) {
   }, [delayMillis]);
 }
 
-const TraceView: React.FunctionComponent<{ instanceId: UUID }> = ({
-  instanceId,
-}) => {
+const TraceView: React.FunctionComponent<{
+  instanceId: UUID;
+  traceReloadMillis?: number;
+}> = ({ instanceId, traceReloadMillis = 750 }) => {
   const [record, isLoading, error, recalculate] = useAsyncState(async () => {
     if (instanceId == null) {
       throw new Error("No instance id found");
@@ -60,7 +61,7 @@ const TraceView: React.FunctionComponent<{ instanceId: UUID }> = ({
     return sortBy(records, (x) => new Date(x.timestamp)).reverse()[0];
   }, [instanceId]);
 
-  useInterval(recalculate, 1000);
+  useInterval(recalculate, traceReloadMillis);
 
   if (isLoading) {
     return (
@@ -84,13 +85,29 @@ const TraceView: React.FunctionComponent<{ instanceId: UUID }> = ({
 
   return (
     <div className="d-flex">
-      <div>
+      <div className="flex-grow-1">
+        <span>Context</span>
+        <JsonTree data={record.templateContext} />
+      </div>
+
+      <div className="flex-grow-1">
+        <span>Rendered Arguments</span>
         <JsonTree data={record.renderedArgs} />
       </div>
-      <div>
-        {"output" in record && <JsonTree data={record.output} />}
+      <div className="flex-grow-1">
+        {"output" in record && (
+          <>
+            <span>Output</span>
+            <JsonTree data={record.output} />
+          </>
+        )}
 
-        {"error" in record && <JsonTree data={record.error} />}
+        {"error" in record && (
+          <>
+            <span>Error</span>
+            <JsonTree data={record.error} />
+          </>
+        )}
       </div>
     </div>
   );

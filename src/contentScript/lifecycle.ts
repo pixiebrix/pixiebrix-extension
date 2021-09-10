@@ -127,8 +127,17 @@ function markUninstalled(id: RegistryId) {
  * method to re-install the installed extensions.
  *
  * @param extensionId the uuid of the dynamic extension, or undefined to clear all dynamic extensions
+ * @param options options to control clear behavior
  */
-export function clearDynamic(extensionId?: UUID): void {
+export function clearDynamic(
+  extensionId?: UUID,
+  options?: { clearTrace?: boolean }
+): void {
+  const { clearTrace } = {
+    clearTrace: true,
+    ...options,
+  };
+
   if (extensionId) {
     if (_dynamic.has(extensionId)) {
       console.debug(`clearDynamic: ${extensionId}`);
@@ -141,11 +150,14 @@ export function clearDynamic(extensionId?: UUID): void {
       console.debug(`No dynamic extension exists for uuid: ${extensionId}`);
     }
 
-    // Make sure we're not keeping any private data around from Page Editor sessions
-    void clearExtensionTraces(extensionId);
+    if (clearTrace) {
+      void clearExtensionTraces(extensionId);
+    }
   } else {
     for (const [extensionId, extensionPoint] of _dynamic.entries()) {
-      void clearExtensionTraces(extensionId);
+      if (clearTrace) {
+        void clearExtensionTraces(extensionId);
+      }
 
       try {
         extensionPoint.uninstall({ global: true });

@@ -156,12 +156,15 @@ export async function addTraceExit(record: TraceExitData): Promise<void> {
 
   const db = await getDB();
 
-  const data = await db.get(ENTRY_OBJECT_STORE, [
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+
+  const data = await tx.store.get([
     record.runId,
     record.blockInstanceId,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- types are wrong in idb?
   ] as any);
 
-  await db.add(ENTRY_OBJECT_STORE, {
+  await tx.store.put({
     ...data,
     ...record,
   });
@@ -206,7 +209,7 @@ export async function getByInstanceId(
   }
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-  return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
+  return sortBy(matches.reverse(), (x) => -new Date(x.timestamp).getTime());
 
   // TODO: figure out how to write an indexed query
   // return tx.store
