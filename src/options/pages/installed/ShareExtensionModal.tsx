@@ -46,7 +46,7 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
-import FormikHorizontalTextField from "@/components/form/fields/FormikHorizontalTextField";
+import FormikHorizontalField from "@/components/form/fields/FormikHorizontalField";
 import FormikSwitchButton from "@/components/form/fields/FormikSwitchButton";
 import SwitchButton from "@/components/form/fields/SwitchButton";
 import { useOrganization } from "@/hooks/organization";
@@ -150,12 +150,12 @@ const ShareExtensionModal: React.FC<{
 
   const renderBody: RenderBody = ({ values, setFieldValue }) => (
     <Modal.Body>
-      <FormikHorizontalTextField
+      <FormikHorizontalField
         label="Name"
         name="name"
         description="A name for the blueprint"
       />
-      <FormikHorizontalTextField
+      <FormikHorizontalField
         label="Registry Id"
         name="blueprintId"
         description={
@@ -165,7 +165,7 @@ const ShareExtensionModal: React.FC<{
           </span>
         }
       />
-      <FormikHorizontalTextField
+      <FormikHorizontalField
         label="Description"
         name="description"
         description="A short description of the blueprint"

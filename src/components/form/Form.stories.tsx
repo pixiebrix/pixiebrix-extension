@@ -21,7 +21,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import { Form as BootstrapForm } from "react-bootstrap";
 import HorizontalFormGroup from "../fields/HorizontalFormGroup";
 import Form, { OnSubmit } from "./Form";
-import FormikHorizontalTextField from "./fields/FormikHorizontalTextField";
+import FormikHorizontalField from "./fields/FormikHorizontalField";
 import FormikSwitchButton from "./fields/FormikSwitchButton";
 import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -84,9 +84,9 @@ WithHorizontalFormGroup.storyName = "With HorizontalFormGroup";
 
 export const WithHorizontalTextField: ComponentStory<typeof Form> = (args) => (
   <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
-    <FormikHorizontalTextField placeholder="Title" name="title" />
-    <FormikHorizontalTextField label="Name" name="name" description="A name" />
-    <FormikHorizontalTextField label="Age" name="age" description="Your age" />
+    <FormikHorizontalField placeholder="Title" name="title" />
+    <FormikHorizontalField label="Name" name="name" description="A name" />
+    <FormikHorizontalField label="Age" name="age" description="Your age" />
   </Form>
 );
 WithHorizontalTextField.storyName = "With HorizontalTextField";
@@ -98,18 +98,20 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
     {...args}
     renderSubmit={() => <button type="submit">Click to submit</button>}
   >
-    <FormikHorizontalTextField placeholder="Title" name="title" />
-    <FormikHorizontalTextField label="Name" name="name" description="A name" />
-    <FormikHorizontalTextField label="Age" name="age" description="Your age" />
+    <FormikHorizontalField placeholder="Title" name="title" />
+    <FormikHorizontalField label="Name" name="name" description="A name" />
+    <FormikHorizontalField label="Age" name="age" description="Your age" />
   </Form>
 );
 
 const AllFieldsSchema: yup.ObjectSchema = yup.object().shape({
   name: yup.string().required(),
+  story: yup.string(),
   public: yup.boolean(),
 });
 const allFieldsnitialValues = {
   name: "",
+  story: "",
   public: false,
 };
 export const AllFields: ComponentStory<typeof Form> = (args) => (
@@ -118,7 +120,14 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
     initialValues={allFieldsnitialValues}
     {...args}
   >
-    <FormikHorizontalTextField label="Name" name="name" description="A name" />
+    <FormikHorizontalField label="Name" name="name" description="A name" />
+    <FormikHorizontalField
+      label="Story"
+      name="story"
+      description="Tell me your story"
+      type="textarea"
+      rows={10}
+    />
     <FormikSwitchButton
       label={
         <span>

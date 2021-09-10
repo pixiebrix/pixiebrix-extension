@@ -17,11 +17,11 @@
 
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import HorizontalTextField from "./HorizontalTextField";
+import HorizontalField from "./HorizontalField";
 
-const componentMeta: ComponentMeta<typeof HorizontalTextField> = {
-  title: "Fields/HorizontalTextField",
-  component: HorizontalTextField,
+const componentMeta: ComponentMeta<typeof HorizontalField> = {
+  title: "Fields/HorizontalField",
+  component: HorizontalField,
   argTypes: {
     onChange: {
       action: "onChange",
@@ -69,19 +69,33 @@ const componentMeta: ComponentMeta<typeof HorizontalTextField> = {
         "time",
         "url",
         "week",
+        "textarea",
       ],
       control: { type: "select" },
+    },
+    widget: {
+      type: { name: "function", required: false },
     },
   },
 };
 
-const HorizontalTextFieldTemplate: ComponentStory<
-  typeof HorizontalTextField
-> = (args) => <HorizontalTextField {...args} />;
-export const Default = HorizontalTextFieldTemplate.bind({});
+const HorizontalFieldTemplate: ComponentStory<typeof HorizontalField> = (
+  args
+) => <HorizontalField {...args} />;
+export const Default = HorizontalFieldTemplate.bind({});
 Default.args = {
   name: "textField",
   label: "Text Field",
   type: "text",
 };
+
+export const CustomWidget = HorizontalFieldTemplate.bind({});
+CustomWidget.args = {
+  name: "textField",
+  label: "Text Field",
+  widget: ({ value, onChange }) => (
+    <input value={value} onChange={onChange} data-custom="plain html input" />
+  ),
+};
+
 export default componentMeta;

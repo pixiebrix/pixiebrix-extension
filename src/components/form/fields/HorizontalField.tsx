@@ -15,7 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { FocusEventHandler, ReactNode } from "react";
+import React, {
+  FocusEventHandler,
+  InputHTMLAttributes,
+  ReactNode,
+  TextareaHTMLAttributes,
+} from "react";
 import {
   Col,
   Form as BootstrapForm,
@@ -24,24 +29,44 @@ import {
 } from "react-bootstrap";
 import { WithFormikFieldDefaultProps } from "./withFormikField";
 
-export type HorizontalTextFieldProps = WithFormikFieldDefaultProps<string> &
-  FormControlProps & {
+type FieldProps = FormControlProps &
+  InputHTMLAttributes<HTMLInputElement> &
+  TextareaHTMLAttributes<HTMLTextAreaElement>;
+
+export type HorizontalFieldProps = WithFormikFieldDefaultProps<string> &
+  FieldProps & {
     label?: string;
     placeholder?: string;
     description?: ReactNode;
     onFocus?: FocusEventHandler<HTMLInputElement>;
+    widget?: React.ComponentClass<FieldProps> | React.FC<FieldProps>;
   };
 
-const HorizontalTextField: React.FC<HorizontalTextFieldProps> = ({
+const TextAreaWidget: React.FC<FieldProps> = (props: FormControlProps) => (
+  <BootstrapForm.Control as="textarea" {...props} />
+);
+
+const getWidgetByType = (type: string) => {
+  if (type === "textarea") {
+    return TextAreaWidget;
+  }
+
+  return BootstrapForm.Control;
+};
+
+const HorizontalField: React.FC<HorizontalFieldProps> = ({
   name,
   label,
-  placeholder,
   description,
   error,
   touched,
+  type = "text",
+  widget,
   ...restFieldProps
 }) => {
   const hasError = Boolean(error);
+  const Widget = widget ?? getWidgetByType(type);
+
   return (
     <BootstrapForm.Group as={Row} controlId={name}>
       {label && (
@@ -50,10 +75,10 @@ const HorizontalTextField: React.FC<HorizontalTextFieldProps> = ({
         </BootstrapForm.Label>
       )}
       <Col sm={label ? "9" : "12"}>
-        <BootstrapForm.Control
+        <Widget
           name={name}
-          placeholder={placeholder}
           isInvalid={hasError}
+          type={type}
           {...restFieldProps}
         />
         {description && (
@@ -71,4 +96,4 @@ const HorizontalTextField: React.FC<HorizontalTextFieldProps> = ({
   );
 };
 
-export default HorizontalTextField;
+export default HorizontalField;
