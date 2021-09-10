@@ -31,6 +31,7 @@ import { reportError } from "@/telemetry/logging";
 import { browser } from "webextension-polyfill-ts";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
+import { clearExtensionTraces } from "@/background/trace";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -139,8 +140,13 @@ export function clearDynamic(extensionId?: UUID): void {
     } else {
       console.debug(`No dynamic extension exists for uuid: ${extensionId}`);
     }
+
+    // Make sure we're not keeping any private data around from Page Editor sessions
+    void clearExtensionTraces(extensionId);
   } else {
-    for (const extensionPoint of _dynamic.values()) {
+    for (const [extensionId, extensionPoint] of _dynamic.entries()) {
+      void clearExtensionTraces(extensionId);
+
       try {
         extensionPoint.uninstall({ global: true });
         actionPanel.removeExtensionPoint(extensionPoint.id);

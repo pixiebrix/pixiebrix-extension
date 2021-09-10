@@ -16,19 +16,21 @@
  */
 
 import { liftBackground } from "@/background/protocol";
-import {
-  addTraceEntry,
-  addTraceExit,
-  TraceEntryData,
-  TraceExitData,
-} from "@/telemetry/trace";
+import * as native from "@/telemetry/trace";
+import { TraceEntryData, TraceExitData } from "@/telemetry/trace";
+import { UUID } from "@/core";
 
 export const recordTraceEntry = liftBackground(
   "RECORD_TRACE_ENTRY",
-  async (record: TraceEntryData) => addTraceEntry(record)
+  async (record: TraceEntryData) => native.addTraceEntry(record)
 );
 
 export const recordTraceExit = liftBackground(
   "RECORD_TRACE_EXIT",
-  async (record: TraceExitData) => addTraceExit(record)
+  async (record: TraceExitData) => native.addTraceExit(record)
+);
+
+export const clearExtensionTraces = liftBackground(
+  "CLEAR_EXTENSION_TRACES",
+  async (extensionId: UUID) => native.clearExtensionTraces(extensionId)
 );

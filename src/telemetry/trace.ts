@@ -18,6 +18,7 @@
 import { RegistryId, RenderedArgs, UUID } from "@/core";
 import { JsonObject } from "type-fest";
 import { DBSchema, openDB } from "idb/with-async-ittr";
+import { sortBy } from "lodash";
 
 const STORAGE_KEY = "TRACE";
 const ENTRY_OBJECT_STORE = "traces";
@@ -42,7 +43,7 @@ export type TraceRecordMeta = {
   blockInstanceId: UUID;
 
   /**
-   * The registry id of the block. Used
+   * The registry id of the block.
    */
   blockId: RegistryId;
 };
@@ -173,28 +174,42 @@ export async function clearTraces(): Promise<void> {
   await tx.store.clear();
 }
 
-// FIXME: this is a bad name because it's actually across multiple runs/traces
-export async function getTraceByExtensionId(
-  extensionId: UUID
-): Promise<TraceRecord[]> {
+export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
+  let cnt = 0;
+
   const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
-  return tx.store.index("extensionId").getAll(IDBKeyRange.only(extensionId));
+
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readwrite");
+
+  // There's probably a better way to write this using the index
+  for await (const cursor of tx.store) {
+    if (cursor.value.extensionId === extensionId) {
+      cnt++;
+      await cursor.delete();
+    }
+  }
+
+  console.debug(`Cleared %d trace entries for extension %s`, cnt, extensionId);
 }
 
-export async function getTraceByRunId(runId: UUID): Promise<TraceRecord[]> {
-  const db = await getDB();
-  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
-  return tx.store.index("runId").getAll(IDBKeyRange.only(runId));
-}
-
-// FIXME: this is a bad name because it's actually across multiple runs/traces
-export async function getTraceByInstanceId(
+export async function getByInstanceId(
   blockInstanceId: UUID
 ): Promise<TraceRecord[]> {
   const db = await getDB();
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
-  return tx.store
-    .index("blockInstanceId")
-    .getAll(IDBKeyRange.only(blockInstanceId));
+
+  const matches = [];
+  for await (const cursor of tx.store) {
+    if (cursor.value.blockInstanceId === blockInstanceId) {
+      matches.push(cursor.value);
+    }
+  }
+
+  // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
+  return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
+
+  // TODO: figure out how to write an indexed query
+  // return tx.store
+  //   .index("blockInstanceId")
+  //   .getAll(IDBKeyRange.only(blockInstanceId));
 }
