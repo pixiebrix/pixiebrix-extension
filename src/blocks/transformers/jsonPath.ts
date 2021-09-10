@@ -19,6 +19,10 @@ import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 
 export class JSONPathTransformer extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/jsonpath",

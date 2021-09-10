@@ -46,6 +46,10 @@ export const URL_INPUT_SPEC: Schema = {
 };
 
 export class UrlParams extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/url-params",
