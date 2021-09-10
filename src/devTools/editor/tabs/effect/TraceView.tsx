@@ -84,17 +84,18 @@ const TraceView: React.FunctionComponent<{
   }
 
   return (
-    <div className="d-flex">
-      <div className="flex-grow-1">
+    <div className="row">
+      <div className="col-4 overflow-auto">
         <span>Context</span>
         <JsonTree data={record.templateContext} />
       </div>
 
-      <div className="flex-grow-1">
+      <div className="col-4 overflow-auto">
         <span>Rendered Arguments</span>
         <JsonTree data={record.renderedArgs} />
       </div>
-      <div className="flex-grow-1">
+
+      <div className="col-4 overflow-auto">
         {"output" in record && (
           <>
             <span>Output</span>

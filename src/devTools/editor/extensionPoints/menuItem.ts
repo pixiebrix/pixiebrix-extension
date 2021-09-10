@@ -32,6 +32,7 @@ import {
   lookupExtensionPoint,
   baseSelectExtensionPoint,
   withInstanceIds,
+  excludeInstanceIds,
 } from "@/devTools/editor/extensionPoints/base";
 import {
   MenuDefinition,
@@ -158,20 +159,19 @@ function selectExtensionPoint(
   };
 }
 
-function selectExtension({
-  uuid,
-  label,
-  extensionPoint,
-  extension,
-  services,
-}: ActionFormState): IExtension<MenuItemExtensionConfig> {
+function selectExtension(
+  { uuid, label, extensionPoint, extension, services }: ActionFormState,
+  options: { includeInstanceIds?: boolean } = {}
+): IExtension<MenuItemExtensionConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
     services,
-    config: extension,
+    config: options.includeInstanceIds
+      ? extension
+      : excludeInstanceIds(extension, "action"),
   };
 }
 
@@ -253,7 +253,7 @@ export async function fromExtension(
 function asDynamicElement(element: ActionFormState): ButtonDefinition {
   return {
     type: "menuItem",
-    extension: selectExtension(element),
+    extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };

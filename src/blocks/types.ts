@@ -68,9 +68,9 @@ export interface BlockConfig {
   config: Record<string, unknown>;
 
   /**
-   * A unique id for the configured block, used to correlate telemetry across runs when using the Page Editor.
+   * A unique id for the configured block, used to correlate traces across runs when using the Page Editor.
    *
-   * Generated automatically by the Page Editor when running a dynamic element.
+   * DO NOT SET: generated automatically by the Page Editor when configuring a dynamic element.
    */
   instanceId?: UUID;
 }

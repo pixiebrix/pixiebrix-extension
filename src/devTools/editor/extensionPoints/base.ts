@@ -16,6 +16,7 @@
  */
 
 import {
+  Config,
   EmptyConfig,
   IExtension,
   Metadata,
@@ -24,7 +25,7 @@ import {
   UUID,
 } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
-import { castArray, isPlainObject } from "lodash";
+import { castArray, isPlainObject, omit } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
 import {
@@ -78,10 +79,26 @@ export function makeIsAvailable(
  * Enrich a BlockPipeline with instanceIds for use in tracing.
  */
 export function withInstanceIds(blocks: BlockPipeline): BlockPipeline {
-  return blocks.map((x) => ({
-    ...x,
+  return blocks.map((blockConfig) => ({
+    ...blockConfig,
     instanceId: uuidv4(),
   }));
+}
+
+/**
+ * Remove the automatically generated tracing ids.
+ */
+export function excludeInstanceIds<T extends Config>(
+  config: T,
+  prop: keyof T
+): T {
+  return {
+    ...config,
+    // eslint-disable-next-line security/detect-object-injection -- prop checked in signature
+    [prop]: (config[prop] as BlockPipeline).map((blockConfig) =>
+      omit(blockConfig, "instanceId")
+    ),
+  };
 }
 
 export function makeReaderId(

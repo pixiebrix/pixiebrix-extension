@@ -28,6 +28,7 @@ import {
   lookupExtensionPoint,
   baseSelectExtensionPoint,
   withInstanceIds,
+  excludeInstanceIds,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
@@ -167,27 +168,26 @@ function selectExtensionPoint(
   };
 }
 
-function selectExtension({
-  uuid,
-  label,
-  extensionPoint,
-  extension,
-  services,
-}: PanelFormState): IExtension<PanelConfig> {
+function selectExtension(
+  { uuid, label, extensionPoint, extension, services }: PanelFormState,
+  options: { includeInstanceIds?: boolean } = {}
+): IExtension<PanelConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
     services,
-    config: extension,
+    config: options.includeInstanceIds
+      ? extension
+      : excludeInstanceIds(extension, "body"),
   };
 }
 
 function asDynamicElement(element: PanelFormState): DynamicDefinition {
   return {
     type: "panel",
-    extension: selectExtension(element),
+    extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
