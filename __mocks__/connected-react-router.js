@@ -1,3 +1,6 @@
+/* eslint-disable unicorn/filename-case */
+/* eslint-disable filenames/match-exported */
+
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -13,11 +16,7 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-import { act } from "react-dom/test-utils";
-
-export const waitForEffect = async () =>
-  act(async () => {
-    // Awaiting the async state update
-  });
+export const push = jest.fn();

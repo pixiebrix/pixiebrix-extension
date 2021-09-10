@@ -15,11 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import React, { useCallback, useContext } from "react";
-import { Button, Form, Modal } from "react-bootstrap";
-import { Formik, FormikHelpers } from "formik";
-import { compact, isEmpty } from "lodash";
+import {
+  Button,
+  Modal,
+  Col,
+  Form as BootstrapForm,
+  Row,
+} from "react-bootstrap";
+import { FormikHelpers } from "formik";
+import { compact, isEmpty, sortBy, uniq } from "lodash";
 import { IExtension, RegistryId, UUID } from "@/core";
-import HorizontalFormGroup from "@/components/fields/HorizontalFormGroup";
 import * as Yup from "yup";
 import { PACKAGE_REGEX } from "@/types/helpers";
 import AuthContext from "@/auth/AuthContext";
@@ -34,9 +39,17 @@ import { RecipeDefinition } from "@/types/definitions";
 import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { getHumanDetail } from "@/hooks/useUserAction";
-import SharingTable from "@/options/pages/brickEditor/Sharing";
 import { isAxiosError } from "@/errors";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faGlobe, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import Form, {
+  OnSubmit,
+  RenderBody,
+  RenderSubmit,
+} from "@/components/form/Form";
+import FormikHorizontalField from "@/components/form/fields/FormikHorizontalField";
+import FormikSwitchButton from "@/components/form/fields/FormikSwitchButton";
+import SwitchButton from "@/components/form/fields/SwitchButton";
+import { useOrganization } from "@/hooks/organization";
 
 const { attachExtension } = optionsSlice.actions;
 
@@ -92,6 +105,7 @@ const ShareExtensionModal: React.FC<{
   // If loading the URL directly, there's a race condition if scope will be populated when the modal is mounted.
   // Not a priority to fix because user will general come to the modal via the "Share" button on the main page
   const { scope } = useContext(AuthContext);
+  const { organizations } = useOrganization();
 
   const initialValues: FormState = {
     blueprintId: compact([scope, slugify(extension.label).toLowerCase()]).join(
@@ -103,7 +117,7 @@ const ShareExtensionModal: React.FC<{
     public: true,
   };
 
-  const handleShare = useCallback(
+  const handleShare: OnSubmit = useCallback(
     async (values: FormState, helpers: FormikHelpers<FormState>) => {
       try {
         const recipe = await convertAndShare(extension, values);
@@ -134,82 +148,102 @@ const ShareExtensionModal: React.FC<{
     [dispatch, notify, extension]
   );
 
+  const renderBody: RenderBody = ({ values, setFieldValue }) => (
+    <Modal.Body>
+      <FormikHorizontalField
+        label="Name"
+        name="name"
+        description="A name for the blueprint"
+      />
+      <FormikHorizontalField
+        label="Registry Id"
+        name="blueprintId"
+        description={
+          <span>
+            A unique id for the blueprint.{" "}
+            <i>Cannot be modified once shared.</i>
+          </span>
+        }
+      />
+      <FormikHorizontalField
+        label="Description"
+        name="description"
+        description="A short description of the blueprint"
+      />
+
+      <BootstrapForm.Group as={Row}>
+        <Col sm="12" className="text-info">
+          <FontAwesomeIcon icon={faInfoCircle} /> The blueprint&apos;s
+          dependencies will automatically also be shared.
+        </Col>
+      </BootstrapForm.Group>
+
+      <FormikSwitchButton
+        name="public"
+        label={
+          values.public ? (
+            <span>
+              <FontAwesomeIcon icon={faGlobe} /> Public{" "}
+              <span className="text-primary">
+                <i> &ndash; visible to all PixieBrix users</i>
+              </span>
+            </span>
+          ) : (
+            <span>
+              <FontAwesomeIcon icon={faGlobe} /> Public
+            </span>
+          )
+        }
+      />
+
+      {sortBy(organizations, (organization) => organization.name).map(
+        (organization) => {
+          const checked = values.organizations.includes(organization.id);
+          return (
+            <SwitchButton
+              key={organization.id}
+              name={organization.id}
+              label={organization.name}
+              value={checked}
+              onChange={() => {
+                const next = checked
+                  ? values.organizations.filter(
+                      (x: string) => x !== organization.id
+                    )
+                  : uniq([...values.organizations, organization.id]);
+                setFieldValue("organizations", next);
+              }}
+            />
+          );
+        }
+      )}
+    </Modal.Body>
+  );
+
+  const renderSubmit: RenderSubmit = ({ isSubmitting, isValid, values }) => (
+    <Modal.Footer>
+      <Button variant="link" onClick={onCancel}>
+        Cancel
+      </Button>
+      <Button type="submit" disabled={!isValid || isSubmitting}>
+        {values.public || !isEmpty(values.organizations) ? "Share" : "Convert"}
+      </Button>
+    </Modal.Footer>
+  );
+
   return (
-    <Modal show>
+    <Modal show onHide={onCancel}>
       <Modal.Header>
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>
-      <Formik
+      <Form
         validateOnMount
         validationSchema={ShareSchema}
         initialValues={initialValues}
         onSubmit={handleShare}
-      >
-        {({ values, handleSubmit, isSubmitting, isValid, status }) => (
-          <Form noValidate onSubmit={handleSubmit}>
-            <Modal.Body>
-              {status && <div className="text-danger mb-3">{status}</div>}
-
-              <HorizontalFormGroup
-                label="Name"
-                propsOrFieldName="name"
-                description="A name for the blueprint"
-              >
-                {(field, meta) => (
-                  <Form.Control {...field} isInvalid={Boolean(meta.error)} />
-                )}
-              </HorizontalFormGroup>
-
-              <HorizontalFormGroup
-                label="Registry Id"
-                propsOrFieldName="blueprintId"
-                description={
-                  <span>
-                    A unique id for the blueprint.{" "}
-                    <i>Cannot be modified once shared.</i>
-                  </span>
-                }
-              >
-                {(field, meta) => (
-                  <Form.Control {...field} isInvalid={Boolean(meta.error)} />
-                )}
-              </HorizontalFormGroup>
-
-              <HorizontalFormGroup
-                label="Description"
-                propsOrFieldName="description"
-                description="A short description of the blueprint"
-              >
-                {(field, meta) => (
-                  <Form.Control {...field} isInvalid={Boolean(meta.error)} />
-                )}
-              </HorizontalFormGroup>
-
-              <div className="text-info">
-                <FontAwesomeIcon icon={faInfoCircle} /> The blueprint&apos;s
-                dependencies will automatically also be shared.
-              </div>
-
-              <SharingTable />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button variant="link" onClick={onCancel}>
-                Cancel
-              </Button>
-              <input
-                type="submit"
-                className="btn btn-primary"
-                disabled={!isValid || isSubmitting}
-                value={
-                  values.public || !isEmpty(values.organizations)
-                    ? "Share"
-                    : "Convert"
-                }
-              />
-            </Modal.Footer>
-          </Form>
-        )}
-      </Formik>
+        renderBody={renderBody}
+        renderSubmit={renderSubmit}
+      />
     </Modal>
   );
 };
