@@ -1,3 +1,6 @@
+/* eslint-disable unicorn/filename-case */
+/* eslint-disable filenames/match-exported */
+
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -13,9 +16,11 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-export function fieldLabel(name: string): string {
-  const parts = name.split(".");
-  return parts[parts.length - 1];
-}
+const reactRedux = jest.createMockFromModule("react-redux");
+
+export const useDispatch = jest.fn(() => jest.fn());
+
+export default reactRedux;

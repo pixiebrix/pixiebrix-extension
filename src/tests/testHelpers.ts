@@ -15,7 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function fieldLabel(name: string): string {
-  const parts = name.split(".");
-  return parts[parts.length - 1];
-}
+import { act } from "react-dom/test-utils";
+import words from "random-words";
+
+export const waitForEffect = async () =>
+  act(async () => {
+    // Awaiting the async state update
+  });
+
+export const randomWords = (count = 1) =>
+  words({
+    exactly: count,
+    join: " ",
+  });

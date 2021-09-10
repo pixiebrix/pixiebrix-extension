@@ -31,12 +31,12 @@ export function useOrganization(): {
   organizations: Organization[];
   managedOrganizations: Organization[];
 } {
-  const { data: organizations } = useFetch<Organization[]>(
+  const { data: organizations = [] } = useFetch<Organization[]>(
     "/api/organizations/"
   );
   const { email } = useContext(AuthContext);
   const managedOrganizations = useMemo(
-    () => (organizations ?? []).filter(partial(isEditable, email)),
+    () => organizations.filter(partial(isEditable, email)),
     [organizations, email]
   );
   return { organizations, managedOrganizations };
