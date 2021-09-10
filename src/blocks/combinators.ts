@@ -153,6 +153,7 @@ async function runStage(
   const tracePayload: TraceRecordMeta = {
     ...trace,
     blockId: block.id,
+    extensionId: logger.context.extensionId,
   };
 
   if (isReader(block)) {
@@ -399,6 +400,7 @@ export async function reducePipeline(
 
       void recordTraceExit({
         runId,
+        extensionId: logger.context.extensionId,
         blockId: stage.id,
         blockInstanceId: stage.instanceId,
         outputKey: stage.outputKey,
@@ -448,6 +450,7 @@ export async function reducePipeline(
 
       void recordTraceExit({
         runId,
+        extensionId: logger.context.extensionId,
         blockId: stage.id,
         blockInstanceId: stage.instanceId,
         error: serializeError(error),

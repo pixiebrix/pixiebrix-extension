@@ -25,6 +25,13 @@ const DB_VERSION_NUMBER = 1;
 
 export type TraceRecordMeta = {
   /**
+   * Extension id, to correlate across extension runs.
+   *
+   * `null` for ad-hoc block execution.
+   */
+  extensionId: UUID | null;
+
+  /**
    * Unique run id to correlate trace elements from the same run.
    */
   runId: UUID;
@@ -74,10 +81,9 @@ export type TraceExitData = TraceRecordMeta & (Output | ErrorOutput);
 
 export type TraceRecord = TraceEntryData & Partial<TraceExitData>;
 
-const indexKeys: Array<keyof Pick<TraceRecord, "runId" | "blockInstanceId">> = [
-  "runId",
-  "blockInstanceId",
-];
+const indexKeys: Array<
+  keyof Pick<TraceRecordMeta, "runId" | "blockInstanceId" | "extensionId">
+> = ["runId", "blockInstanceId", "extensionId"];
 
 interface TraceDB extends DBSchema {
   [ENTRY_OBJECT_STORE]: {
@@ -86,6 +92,7 @@ interface TraceDB extends DBSchema {
     indexes: {
       runId: UUID;
       blockInstanceId: UUID;
+      extensionId: UUID;
     };
   };
 }
@@ -166,12 +173,22 @@ export async function clearTraces(): Promise<void> {
   await tx.store.clear();
 }
 
+// FIXME: this is a bad name because it's actually across multiple runs/traces
+export async function getTraceByExtensionId(
+  extensionId: UUID
+): Promise<TraceRecord[]> {
+  const db = await getDB();
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
+  return tx.store.index("extensionId").getAll(IDBKeyRange.only(extensionId));
+}
+
 export async function getTraceByRunId(runId: UUID): Promise<TraceRecord[]> {
   const db = await getDB();
   const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
   return tx.store.index("runId").getAll(IDBKeyRange.only(runId));
 }
 
+// FIXME: this is a bad name because it's actually across multiple runs/traces
 export async function getTraceByInstanceId(
   blockInstanceId: UUID
 ): Promise<TraceRecord[]> {
