@@ -107,9 +107,10 @@ export class RuntimeNotFoundError extends Error {
  * @deprecated Use `readStorage` instead
  * @see readStorage
  */
-export async function readStorageWithMigration<
-  T extends Record<string, unknown>
->(storageKey: string, defaultValue?: T): Promise<T | undefined> {
+export async function readStorageWithMigration<T = unknown>(
+  storageKey: string,
+  defaultValue?: T
+): Promise<T | undefined> {
   const storedValue = await readStorage<T>(storageKey, defaultValue);
   if (typeof storedValue !== "string") {
     // No migration necessary
@@ -130,8 +131,6 @@ export async function readStorage<T = unknown>(
   // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
   // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
   const result = await browser.storage.local.get(storageKey);
-
-  console.debug("readStorage for key %s", storageKey, result);
 
   if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
     // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
