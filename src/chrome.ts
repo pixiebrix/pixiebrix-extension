@@ -103,7 +103,9 @@ export class RuntimeNotFoundError extends Error {
 }
 
 /**
+ * Read from `browser.storage.local`, updating the value to be stored as an object instead of a JSON-stringified value
  * @deprecated Use `readStorage` instead
+ * @see readStorage
  */
 export async function readStorageWithMigration<
   T extends Record<string, unknown>
