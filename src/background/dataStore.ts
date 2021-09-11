@@ -23,25 +23,28 @@ import { SerializableResponse } from "@/messaging/protocol";
 export const LOCAL_DATA_STORE = "LOCAL_DATA_STORE";
 export const KEY_PREFIX = "@@";
 
-async function _getRecord(uuid: string): Promise<unknown> {
+async function _getRecord(primaryKey: string): Promise<unknown> {
   const data = await readStorageWithMigration(LOCAL_DATA_STORE, {});
-  return data[`${KEY_PREFIX}${uuid}`] ?? {};
+  return data[`${KEY_PREFIX}${primaryKey}`] ?? {};
 }
 
-async function _setRecord(uuid: string, value: JsonObject): Promise<void> {
+async function _setRecord(
+  primaryKey: string,
+  value: JsonObject
+): Promise<void> {
   const data = await readStorageWithMigration(LOCAL_DATA_STORE, {});
-  data[`${KEY_PREFIX}${uuid}`] = value;
+  data[`${KEY_PREFIX}${primaryKey}`] = value;
   await setStorage(LOCAL_DATA_STORE, data);
 }
 
 export const getRecord = liftBackground(
   "GET_DATA_STORE",
-  async (uuid: string) => _getRecord(uuid) as SerializableResponse
+  async (primaryKey: string) => _getRecord(primaryKey) as SerializableResponse
 );
 
 export const setRecord = liftBackground(
   "SET_DATA_STORE",
-  async (uuid: string, value: JsonObject) => {
-    await _setRecord(uuid, value);
+  async (primaryKey: string, value: JsonObject) => {
+    await _setRecord(primaryKey, value);
   }
 );

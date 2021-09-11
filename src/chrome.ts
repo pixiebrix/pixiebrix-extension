@@ -126,7 +126,7 @@ export async function readStorage<T = unknown>(
   const result = await browser.storage.local.get({
     [storageKey]: defaultValue,
   });
-  if (storageKey in result) {
+  if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
     // eslint-disable-next-line security/detect-object-injection -- Just checked with `in`
     return result[storageKey];
   }

@@ -17,7 +17,7 @@
 
 import axios, { AxiosResponse } from "axios";
 import { readStorageWithMigration, setStorage } from "@/chrome";
-import { IService, AuthData, RawServiceConfiguration } from "@/core";
+import { IService, AuthData, RawServiceConfiguration, UUID } from "@/core";
 import { browser } from "webextension-polyfill-ts";
 import {
   computeChallenge,
@@ -30,7 +30,7 @@ import { expectContext } from "@/utils/expectContext";
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 
 async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
-  key: string,
+  serviceAuthId: UUID,
   data: TAuthData
 ): Promise<void> {
   expectContext(
@@ -38,17 +38,17 @@ async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorageWithMigration<Record<string, TAuthData>>(
+  const current = await readStorageWithMigration<Record<UUID, TAuthData>>(
     OAUTH2_STORAGE_KEY
   );
   await setStorage(OAUTH2_STORAGE_KEY, {
     ...current,
-    [key]: data,
+    [serviceAuthId]: data,
   });
 }
 
 export async function getCachedAuthData(
-  key: string
+  serviceAuthId: UUID
 ): Promise<AuthData | undefined> {
   expectContext(
     "background",
@@ -58,9 +58,9 @@ export async function getCachedAuthData(
   const current = await readStorageWithMigration<Record<string, AuthData>>(
     OAUTH2_STORAGE_KEY
   );
-  if (key in current) {
-    // eslint-disable-next-line security/detect-object-injection -- Just checked with `in`
-    return current[key];
+  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
+    // eslint-disable-next-line security/detect-object-injection -- Just checked with `hasOwnProperty`
+    return current[serviceAuthId];
   }
 }
 
