@@ -29,10 +29,19 @@ const registry = new BaseRegistry<RegistryId, Service>(
   fromJS
 );
 
+// See the ServicesState slice
+type PersistedServicesState = {
+  // XXX: in practice, only one of these should be true. Need to better understand/document how redux-persist stores
+  // each leave of state
+  configured: string | Record<string, RawServiceConfiguration>;
+};
+
 export async function readRawConfigurations(): Promise<
   RawServiceConfiguration[]
 > {
-  const base = await readStorageWithMigration(storageKey);
+  const base = await readStorageWithMigration<PersistedServicesState>(
+    storageKey
+  );
   if (!base?.configured) {
     return [];
   }
