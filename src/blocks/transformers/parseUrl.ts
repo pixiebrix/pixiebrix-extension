@@ -38,6 +38,10 @@ const URL_PROPERTIES = [
 ];
 
 export class UrlParser extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/parse-url",

@@ -20,6 +20,10 @@ import { BlockArg, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 
 export class MappingTransformer extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/mapping",

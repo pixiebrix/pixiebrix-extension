@@ -16,14 +16,14 @@
  */
 
 import { isOfficial } from "./util";
-import randomWords from "random-words";
 import { RegistryId } from "@/core";
+import { randomWords } from "@/tests/testHelpers";
 
 describe("isOfficial", () => {
   test("returns true for an official block", () => {
     expect(isOfficial("@pixiebrix/api" as RegistryId)).toBeTruthy();
   });
   test("returns false for a 3d-party block", () => {
-    expect(isOfficial(randomWords(1)[0] as RegistryId)).toBeFalsy();
+    expect(isOfficial(randomWords() as RegistryId)).toBeFalsy();
   });
 });

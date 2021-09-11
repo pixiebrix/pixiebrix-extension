@@ -49,7 +49,7 @@ export const LOG_LEVELS: { [key in MessageLevel]: number } = {
   error: 4,
 };
 
-export interface LogEntry {
+export type LogEntry = {
   uuid: string;
   timestamp: string;
   message: string;
@@ -57,7 +57,7 @@ export interface LogEntry {
   context: MessageContext;
   data?: JsonObject;
   error?: SerializedError;
-}
+};
 
 interface LogDB extends DBSchema {
   [ENTRY_OBJECT_STORE]: {

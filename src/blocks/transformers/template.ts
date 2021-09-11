@@ -25,6 +25,10 @@ import { BusinessError } from "@/errors";
  * Transformer that fills a template using the current context.
  */
 export class TemplateTransformer extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/template",

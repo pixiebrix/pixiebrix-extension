@@ -19,6 +19,10 @@ import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
 
 export class IdentityTransformer extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/identity",

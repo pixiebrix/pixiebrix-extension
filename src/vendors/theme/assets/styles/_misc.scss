@@ -40,17 +40,23 @@ body {
 }
 
 .main-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - #{$navbar-height});
+  width: 100%;
+
   transition: width $action-transition-duration
       $action-transition-timing-function,
     margin $action-transition-duration $action-transition-timing-function;
-  width: calc(100% - #{$sidebar-width-lg});
-  min-height: calc(100vh - #{$navbar-height});
-  @include display-flex();
-  @include flex-direction(column);
-  @media (max-width: 991px) {
-    margin-left: 0;
-    width: 100%;
+
+  @media (min-width: 992px) {
+    width: calc(100% - #{$sidebar-width-lg});
+    margin-left: $sidebar-width-lg;
+    .sidebar-icon-only & {
+      margin-left: $sidebar-width-icon;
+    }
   }
+
   &.main-panel-only {
     transition: none;
   }

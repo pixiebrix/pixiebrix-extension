@@ -25,7 +25,10 @@ import { isLinked } from "@/auth/token";
 import { Data } from "@/core";
 import { boolean } from "@/utils";
 import { loadOptions } from "@/options/loader";
-import { getLinkedApiClient } from "@/services/apiClient";
+import {
+  getLinkedApiClient,
+  maybeGetLinkedApiClient,
+} from "@/services/apiClient";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -81,8 +84,11 @@ export async function _getDNT(): Promise<boolean> {
 
 async function flush(): Promise<void> {
   if (buffer.length > 0) {
-    const events = buffer.splice(0, buffer.length);
-    await (await getLinkedApiClient()).post("/api/events/", { events });
+    const client = await maybeGetLinkedApiClient();
+    if (client) {
+      const events = buffer.splice(0, buffer.length);
+      await client.post("/api/events/", { events });
+    }
   }
 }
 

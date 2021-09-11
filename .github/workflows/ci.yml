@@ -123,13 +123,7 @@ jobs:
           node-version: "16"
           cache: npm
       - run: npm ci
-        # Run eslint without GitHub Actions annotations
-        # https://stackoverflow.com/a/65964721/288906
-      - name: npm run lint
-        run: |
-          echo "::remove-matcher owner=eslint-compact::"
-          echo "::remove-matcher owner=eslint-stylish::"
-          npm run lint -- --quiet
+      - run: npm run lint -- --quiet
 
   # https://pre-commit.com/#usage-in-continuous-integration
   prettier:
@@ -142,6 +136,7 @@ jobs:
   # https://github.com/packtracker/webpack-plugin#cli
   bundle-size:
     runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v2
         with:

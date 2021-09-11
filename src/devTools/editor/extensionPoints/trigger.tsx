@@ -20,12 +20,14 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
+  excludeInstanceIds,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
   selectIsAvailable,
+  withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
@@ -127,27 +129,26 @@ function selectExtensionPoint(
   };
 }
 
-function selectExtension({
-  uuid,
-  label,
-  extensionPoint,
-  extension,
-  services,
-}: TriggerFormState): IExtension<TriggerConfig> {
+function selectExtension(
+  { uuid, label, extensionPoint, extension, services }: TriggerFormState,
+  options: { includeInstanceIds?: boolean } = {}
+): IExtension<TriggerConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
     services,
-    config: extension,
+    config: options.includeInstanceIds
+      ? extension
+      : excludeInstanceIds(extension, "action"),
   };
 }
 
 function asDynamicElement(element: TriggerFormState): DynamicDefinition {
   return {
     type: "trigger",
-    extension: selectExtension(element),
+    extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
@@ -208,7 +209,7 @@ async function fromExtension(
 
     extension: {
       ...config.config,
-      action: castArray(config.config.action),
+      action: withInstanceIds(castArray(config.config.action)),
     },
 
     extensionPoint: {

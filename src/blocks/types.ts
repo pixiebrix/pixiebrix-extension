@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, TemplateEngine } from "@/core";
+import { RegistryId, TemplateEngine, UUID } from "@/core";
 
 export interface Availability {
   matchPatterns?: string | string[];
@@ -66,6 +66,13 @@ export interface BlockConfig {
   templateEngine?: TemplateEngine;
 
   config: Record<string, unknown>;
+
+  /**
+   * A unique id for the configured block, used to correlate traces across runs when using the Page Editor.
+   *
+   * DO NOT SET: generated automatically by the Page Editor when configuring a dynamic element.
+   */
+  instanceId?: UUID;
 }
 
 export type BlockPipeline = BlockConfig[];

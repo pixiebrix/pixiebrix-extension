@@ -1,5 +1,4 @@
 .sidebar {
-  min-height: calc(100vh - #{$navbar-height});
   background: $sidebar-light-bg;
   padding: 0;
   width: $sidebar-width-lg;
@@ -262,19 +261,17 @@
 }
 
 /* style for off-canvas menu*/
-@media screen and (max-width: 991px) {
-  .sidebar-offcanvas {
-    position: fixed;
-    max-height: calc(100vh - #{$navbar-height});
-    top: $navbar-height;
-    bottom: 0;
-    overflow: auto;
-    right: -$sidebar-width-lg;
-    -webkit-transition: all 0.25s ease-out;
-    -o-transition: all 0.25s ease-out;
+.sidebar-offcanvas {
+  position: fixed;
+  top: $navbar-height;
+  bottom: 0;
+  overflow: auto;
+
+  @media screen and (max-width: 991px) {
+    left: -$sidebar-width-lg;
     transition: all 0.25s ease-out;
     &.active {
-      right: 0;
+      left: 0;
     }
   }
 }

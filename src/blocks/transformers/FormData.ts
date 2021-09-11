@@ -20,6 +20,10 @@ import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class FormData extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/forms/data",
