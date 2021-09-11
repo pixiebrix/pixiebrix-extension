@@ -22,7 +22,7 @@ import { compact, debounce, throttle, uniq } from "lodash";
 import { browser } from "webextension-polyfill-ts";
 import { readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
-import { Data } from "@/core";
+import { Data, UUID } from "@/core";
 import { boolean } from "@/utils";
 import { loadOptions } from "@/options/loader";
 import {
@@ -43,21 +43,25 @@ interface UserEvent {
 export const DNT_STORAGE_KEY = "DNT";
 const UUID_STORAGE_KEY = "USER_UUID";
 
-let _uid: string = null;
+let _uid: UUID = null;
 let _dnt: boolean;
 const buffer: UserEvent[] = [];
 
 /**
  * Return a random ID for this browser profile.
  */
-async function uid(): Promise<string> {
+async function uid(): Promise<UUID> {
   if (_uid != null) {
     return _uid;
   }
 
-  let uuid = await readStorage<boolean | string>(UUID_STORAGE_KEY);
+  let uuid = await readStorage<UUID>(UUID_STORAGE_KEY);
+
+  console.debug("Current browser UID", { uuid });
+
   if (!uuid || typeof uuid !== "string") {
     uuid = uuidv4();
+    console.debug("Generating UID for browser", { uuid });
     await setStorage(UUID_STORAGE_KEY, uuid);
   }
 

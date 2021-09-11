@@ -107,15 +107,18 @@ export class RuntimeNotFoundError extends Error {
  * @deprecated Use `readStorage` instead
  * @see readStorage
  */
-export async function readStorageWithMigration<
-  T extends Record<string, unknown>
->(storageKey: string, defaultValue?: Partial<T>): Promise<T | undefined> {
+export async function readStorageWithMigration<T = unknown>(
+  storageKey: string,
+  defaultValue?: T
+): Promise<T | undefined> {
   const storedValue = await readStorage<T>(storageKey, defaultValue);
   if (typeof storedValue !== "string") {
     // No migration necessary
     return storedValue;
   }
 
+  // If storedValue is another string (e.g., a UUID, it will be returned as-is), so readStorageWithMigration is
+  // safe to use with string values
   const parsedValue = JSON.parse(storedValue) as T;
   await browser.storage.local.set({ [storageKey]: parsedValue });
   return parsedValue;
@@ -123,15 +126,18 @@ export async function readStorageWithMigration<
 
 export async function readStorage<T = unknown>(
   storageKey: string,
-  defaultValue?: Partial<T>
+  defaultValue?: T
 ): Promise<T | undefined> {
-  const result = await browser.storage.local.get({
-    [storageKey]: defaultValue,
-  });
+  // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
+  // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
+  const result = await browser.storage.local.get(storageKey);
+
   if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
-    // eslint-disable-next-line security/detect-object-injection -- Just checked with `in`
+    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
     return result[storageKey];
   }
+
+  return defaultValue;
 }
 
 export async function setStorage(

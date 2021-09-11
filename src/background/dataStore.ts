@@ -24,7 +24,10 @@ export const LOCAL_DATA_STORE = "LOCAL_DATA_STORE";
 export const KEY_PREFIX = "@@";
 
 async function _getRecord(primaryKey: string): Promise<unknown> {
-  const data = await readStorageWithMigration(LOCAL_DATA_STORE, {});
+  const data = await readStorageWithMigration<Record<string, unknown>>(
+    LOCAL_DATA_STORE,
+    {}
+  );
   return data[`${KEY_PREFIX}${primaryKey}`] ?? {};
 }
 
@@ -32,7 +35,10 @@ async function _setRecord(
   primaryKey: string,
   value: JsonObject
 ): Promise<void> {
-  const data = await readStorageWithMigration(LOCAL_DATA_STORE, {});
+  const data = await readStorageWithMigration<Record<string, unknown>>(
+    LOCAL_DATA_STORE,
+    {}
+  );
   data[`${KEY_PREFIX}${primaryKey}`] = value;
   await setStorage(LOCAL_DATA_STORE, data);
 }

@@ -22,7 +22,7 @@ import { extensionFactory } from "@/tests/factories";
 import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
 
-test("renders modal", async () => {
+test.skip("renders modal", async () => {
   render(
     <ShareExtensionModal
       extension={extensionFactory({
@@ -36,7 +36,7 @@ test("renders modal", async () => {
   expect(dialogRoot).toMatchSnapshot();
 });
 
-test("prints 'Convert' when not Public", async () => {
+test.skip("prints 'Convert' when not Public", async () => {
   render(
     <ShareExtensionModal
       extension={extensionFactory({
