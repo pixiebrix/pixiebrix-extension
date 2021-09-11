@@ -16,8 +16,8 @@
  */
 
 import axios, { AxiosResponse } from "axios";
-import { readStorage, setStorage } from "@/chrome";
-import { IService, AuthData, RawServiceConfiguration } from "@/core";
+import { readStorageWithMigration, setStorage } from "@/chrome";
+import { IService, AuthData, RawServiceConfiguration, UUID } from "@/core";
 import { browser } from "webextension-polyfill-ts";
 import {
   computeChallenge,
@@ -29,37 +29,39 @@ import { expectContext } from "@/utils/expectContext";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2";
 
-async function setCachedAuthData(
-  key: string,
-  data: Record<string, string>
+async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
+  serviceAuthId: UUID,
+  data: TAuthData
 ): Promise<void> {
   expectContext(
     "background",
     "Only the background page can access oauth2 information"
   );
 
-  const current = JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}");
-  await setStorage(
-    OAUTH2_STORAGE_KEY,
-    JSON.stringify({
-      ...current,
-      [key]: data,
-    })
+  const current = await readStorageWithMigration<Record<UUID, TAuthData>>(
+    OAUTH2_STORAGE_KEY
   );
+  await setStorage(OAUTH2_STORAGE_KEY, {
+    ...current,
+    [serviceAuthId]: data,
+  });
 }
 
-export async function getCachedAuthData<T extends AuthData>(
-  key: string
-): Promise<T> {
+export async function getCachedAuthData(
+  serviceAuthId: UUID
+): Promise<AuthData | undefined> {
   expectContext(
     "background",
     "Only the background page can access oauth2 information"
   );
 
-  const current = new Map<string, T>(
-    Object.entries(JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}"))
+  const current = await readStorageWithMigration<Record<string, AuthData>>(
+    OAUTH2_STORAGE_KEY
   );
-  return current.get(key);
+  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
+    // eslint-disable-next-line security/detect-object-injection -- Just checked with `hasOwnProperty`
+    return current[serviceAuthId];
+  }
 }
 
 export async function deleteCachedAuthData(key: string): Promise<void> {
@@ -68,20 +70,20 @@ export async function deleteCachedAuthData(key: string): Promise<void> {
     "Only the background page can access oauth2 information"
   );
 
-  const current = JSON.parse((await readStorage(OAUTH2_STORAGE_KEY)) ?? "{}");
+  const current = await readStorageWithMigration<Record<string, AuthData>>(
+    OAUTH2_STORAGE_KEY
+  );
   if (Object.prototype.hasOwnProperty.call(current, key)) {
     console.debug(`deleteCachedAuthData: removed data for auth ${key}`);
     // OK because we're guarding with hasOwnProperty
     // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
     delete current[key];
+    await setStorage(OAUTH2_STORAGE_KEY, current);
   } else {
     console.warn(
       `deleteCachedAuthData: No cached auth data exists for key: ${key}`
     );
   }
-
-  // Replace with updated object
-  await setStorage(OAUTH2_STORAGE_KEY, JSON.stringify(current));
 }
 
 /**
@@ -99,7 +101,7 @@ export async function getToken(
 
   const { url, data: tokenData } = service.getTokenContext(auth.config);
 
-  const { status, statusText, data: responseData } = await axios.post(
+  const { status, statusText, data: responseData } = await axios.post<AuthData>(
     url,
     tokenData
   );
@@ -110,7 +112,7 @@ export async function getToken(
 
   await setCachedAuthData(auth.id, responseData);
 
-  return responseData as AuthData;
+  return responseData;
 }
 
 export async function launchOAuth2Flow(

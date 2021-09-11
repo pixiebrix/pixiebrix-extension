@@ -417,6 +417,12 @@ export type ServiceConfig = KeyedConfig & {
   _serviceConfigBrand: null;
 };
 
+/**
+ * Data received from the 3rd-party service during an OAuth or token-exchange flow.
+ *
+ * @see setCachedAuthData
+ * @see getCachedAuthData
+ */
 export interface AuthData {
   /**
    * Nominal typing to distinguish from `SanitizedConfig` and `ServiceConfig`
