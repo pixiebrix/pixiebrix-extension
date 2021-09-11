@@ -20,12 +20,14 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
+  excludeInstanceIds,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
   selectIsAvailable,
+  withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { uuidv4 } from "@/types/helpers";
@@ -139,20 +141,19 @@ function selectExtensionPoint(
   };
 }
 
-function selectExtension({
-  uuid,
-  label,
-  extensionPoint,
-  extension,
-  services,
-}: ContextMenuFormState): IExtension<ContextMenuConfig> {
+function selectExtension(
+  { uuid, label, extensionPoint, extension, services }: ContextMenuFormState,
+  options: { includeInstanceIds?: boolean } = {}
+): IExtension<ContextMenuConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
     services,
-    config: extension,
+    config: options.includeInstanceIds
+      ? extension
+      : excludeInstanceIds(extension, "action"),
   };
 }
 
@@ -183,7 +184,7 @@ async function fromExtension(
 
     extension: {
       ...extensionConfig,
-      action: castArray(extensionConfig.action),
+      action: withInstanceIds(castArray(extensionConfig.action)),
     },
 
     extensionPoint: {
@@ -241,7 +242,7 @@ async function fromExtensionPoint(
 function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   return {
     type: "contextMenu",
-    extension: selectExtension(element),
+    extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };

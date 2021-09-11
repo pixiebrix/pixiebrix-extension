@@ -73,7 +73,7 @@ interface ObjectPayloadMessage<T extends ActionType = ActionType>
 
 async function waitNonceReady(
   nonce: string,
-  { maxWaitMillis, isAvailable }: WaitOptions = { maxWaitMillis: 10_000 }
+  { maxWaitMillis = 10_000, isAvailable }: WaitOptions = {}
 ) {
   const startTime = Date.now();
 
@@ -119,7 +119,7 @@ async function waitNonceReady(
 
 async function waitReady(
   { tabId, frameId }: Target,
-  { maxWaitMillis }: WaitOptions = { maxWaitMillis: 10_000 }
+  { maxWaitMillis = 10_000 }: WaitOptions = {}
 ): Promise<boolean> {
   const startTime = Date.now();
   while (tabReady[tabId]?.[frameId] == null) {

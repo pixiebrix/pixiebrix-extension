@@ -1,0 +1,11 @@
+.checkbox {
+  position: absolute;
+  top: 0;
+  pointer-events: none;
+  display: none;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+}

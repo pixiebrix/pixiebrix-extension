@@ -77,12 +77,3 @@ body {
     }
   }
 }
-
-.sidebar-offcanvas-left {
-  right: auto;
-  left: -$sidebar-width-lg;
-  &.active {
-    right: auto;
-    left: 0;
-  }
-}

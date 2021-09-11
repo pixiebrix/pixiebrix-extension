@@ -24,6 +24,10 @@ import { OutputUnit } from "@cfworker/json-schema";
 import { isErrorObject } from "@/errors";
 
 export class JQTransformer extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/jq",

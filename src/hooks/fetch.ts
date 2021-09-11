@@ -16,17 +16,27 @@
  */
 
 import axios from "axios";
-import { getApiClient } from "@/services/apiClient";
+import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { EndpointAuthError, isAxiosError } from "@/errors";
-import { clearExtensionAuth, isLinked } from "@/auth/token";
+import { clearExtensionAuth } from "@/auth/token";
 import { isAbsoluteUrl } from "@/utils";
 
 const HTTP_401_UNAUTHENTICATED = 401;
 
+type FetchOptions = {
+  requireLinked?: true;
+};
+
 export async function fetch<TData = unknown>(
-  relativeOrAbsoluteUrl: string
+  relativeOrAbsoluteUrl: string,
+  options: FetchOptions = {}
 ): Promise<TData> {
   const absolute = isAbsoluteUrl(relativeOrAbsoluteUrl);
+
+  const { requireLinked } = {
+    requireLinked: false,
+    ...options,
+  };
 
   if (absolute) {
     // Make a normal request
@@ -34,8 +44,7 @@ export async function fetch<TData = unknown>(
     return data;
   }
 
-  const linked = await isLinked();
-  const client = await getApiClient();
+  const client = await (requireLinked ? getLinkedApiClient() : getApiClient());
 
   try {
     const { data } = await client.get(relativeOrAbsoluteUrl);
@@ -43,9 +52,11 @@ export async function fetch<TData = unknown>(
   } catch (error: unknown) {
     if (
       isAxiosError(error) &&
-      error.response.status === HTTP_401_UNAUTHENTICATED
+      // There are some cases where `response` is undefined (because the browser blocked the request, e.g., b/c CORS)
+      // https://rollbar.com/pixiebrix/pixiebrix/items/832/
+      error.response?.status === HTTP_401_UNAUTHENTICATED
     ) {
-      if (linked) {
+      if ("Authorization" in client.defaults.headers) {
         // The token is incorrect - try relinking
         // TODO: use openTab to open the extension page. Can't currently do it because openTab is coupled to
         //  the registry. Add once we fix the messaging architecture

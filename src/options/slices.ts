@@ -36,6 +36,7 @@ import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
 import { CloudExtension, Deployment } from "@/types/contract";
 import { saveUserExtension } from "@/services/apiClient";
 import { reportError } from "@/telemetry/logging";
+import { clearExtensionTraces } from "@/background/trace";
 
 type InstallMode = "local" | "remote";
 
@@ -349,6 +350,10 @@ export const optionsSlice = createSlice({
       { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>
     ) {
       requireLatestState(state);
+
+      // Make sure we're not keeping any private data around from Page Editor sessions
+      void clearExtensionTraces(extensionId);
+
       // NOTE: we aren't deleting the extension on the server. The must do that separately from the dashboard
       state.extensions = state.extensions.filter((x) => x.id !== extensionId);
     },

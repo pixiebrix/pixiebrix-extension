@@ -19,6 +19,7 @@ import { browser } from "webextension-polyfill-ts";
 import Cookies from "js-cookie";
 import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
 import { isEqual } from "lodash";
+import { readStorageWithMigration, setStorage } from "@/chrome";
 
 const STORAGE_EXTENSION_KEY = "extensionKey";
 
@@ -34,44 +35,8 @@ export interface AuthData extends UserData {
   token: string;
 }
 
-/**
- * TODO: https://github.com/pixiebrix/pixiebrix-app/issues/494
- * @deprecated will be moved into the app project since it's not used directly by the extension
- */
-export function readAuthFromWebsite(): AuthData {
-  const container = document.querySelector<HTMLElement>("#container");
-  const {
-    token,
-    email,
-    user,
-    organization,
-    telemetryOrganization,
-  } = container.dataset;
-  return {
-    token,
-    email,
-    user,
-    organizationId: organization,
-    telemetryOrganizationId: telemetryOrganization,
-    hostname: location.hostname,
-  };
-}
-
 async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
-  const storage = await browser.storage.local.get({
-    [STORAGE_EXTENSION_KEY]: {},
-  });
-  // eslint-disable-next-line security/detect-object-injection -- Local constant
-  const data = storage[STORAGE_EXTENSION_KEY];
-
-  // TODO: Migration only; Drop at some point (Added August 18th 2021)
-  if (typeof data === "string") {
-    const parsed = JSON.parse(data);
-    await browser.storage.local.set({ [STORAGE_EXTENSION_KEY]: parsed });
-    return parsed;
-  }
-
-  return data;
+  return readStorageWithMigration(STORAGE_EXTENSION_KEY, {});
 }
 
 export async function getExtensionToken(): Promise<string | undefined> {
@@ -79,6 +44,14 @@ export async function getExtensionToken(): Promise<string | undefined> {
   return token;
 }
 
+/**
+ * Return `true` if the extension is linked to the API.
+ *
+ * NOTE: do not use this as a check before making an authenticated API call. Instead use `maybeGetLinkedApiClient` which
+ * avoids a race condition between the time the check is made and underlying `getExtensionToken` call to get the token.
+ *
+ * @see maybeGetLinkedApiClient
+ */
 export async function isLinked(): Promise<boolean> {
   return (await getExtensionToken()) != null;
 }
@@ -120,6 +93,6 @@ export async function updateExtensionAuth(
   }
 
   console.debug(`Setting extension auth for ${auth.email}`, auth);
-  await browser.storage.local.set({ [STORAGE_EXTENSION_KEY]: auth });
+  await setStorage(STORAGE_EXTENSION_KEY, auth);
   return true;
 }

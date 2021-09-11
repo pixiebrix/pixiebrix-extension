@@ -16,6 +16,7 @@
  */
 
 import {
+  Config,
   EmptyConfig,
   IExtension,
   Metadata,
@@ -24,7 +25,7 @@ import {
   UUID,
 } from "@/core";
 import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
-import { castArray, isPlainObject } from "lodash";
+import { castArray, isPlainObject, omit } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
 import {
@@ -45,7 +46,8 @@ import {
   ReaderReferenceFormState,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
-import { validateRegistryId } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
+import { BlockPipeline } from "@/blocks/types";
 
 export interface WizardStep {
   step: string;
@@ -70,6 +72,32 @@ export function makeIsAvailable(
   return {
     matchPatterns: createSitePattern(url),
     selectors: null,
+  };
+}
+
+/**
+ * Enrich a BlockPipeline with instanceIds for use in tracing.
+ */
+export function withInstanceIds(blocks: BlockPipeline): BlockPipeline {
+  return blocks.map((blockConfig) => ({
+    ...blockConfig,
+    instanceId: uuidv4(),
+  }));
+}
+
+/**
+ * Remove the automatically generated tracing ids.
+ */
+export function excludeInstanceIds<T extends Config>(
+  config: T,
+  prop: keyof T
+): T {
+  return {
+    ...config,
+    // eslint-disable-next-line security/detect-object-injection -- prop checked in signature
+    [prop]: (config[prop] as BlockPipeline).map((blockConfig) =>
+      omit(blockConfig, "instanceId")
+    ),
   };
 }
 
@@ -101,10 +129,7 @@ interface ReaderOptions {
 export function makeDefaultReader(
   metadata: Metadata,
   frameworks: FrameworkMeta[],
-  { defaultSelector, reservedIds, name }: ReaderOptions = {
-    defaultSelector: undefined,
-    reservedIds: [],
-  }
+  { defaultSelector, reservedIds = [], name }: ReaderOptions = {}
 ): ReaderFormState {
   return {
     metadata: {

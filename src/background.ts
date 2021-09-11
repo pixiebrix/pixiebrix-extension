@@ -25,6 +25,7 @@ import "@/telemetry/rollbar";
 import "webpack-target-webextension/lib/background";
 import "webext-dynamic-content-scripts";
 
+import "./background/messenger/registration";
 import "./development/autoreload";
 import "./background/installer";
 import "./messaging/external";
@@ -37,7 +38,7 @@ import "./background/dataStore";
 import "./background/devtools";
 import "./background/browserAction";
 import "./background/permissionPrompt";
-import "./background/messenger/registration";
+import "./background/trace";
 
 import initGoogle from "@/contrib/google/initGoogle";
 import initFrames from "@/background/iframes";

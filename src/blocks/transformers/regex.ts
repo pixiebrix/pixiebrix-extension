@@ -21,6 +21,10 @@ import { propertiesToSchema } from "@/validators/generic";
 import { unary } from "lodash";
 
 export class RegexTransformer extends Transformer {
+  get isPure() {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/regex",

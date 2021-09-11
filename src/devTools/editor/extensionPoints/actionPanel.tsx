@@ -20,12 +20,14 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
+  excludeInstanceIds,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
   selectIsAvailable,
+  withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
@@ -132,27 +134,26 @@ function selectExtensionPoint(
   };
 }
 
-function selectExtension({
-  uuid,
-  label,
-  extensionPoint,
-  extension,
-  services,
-}: ActionPanelFormState): IExtension<ActionPanelConfig> {
+function selectExtension(
+  { uuid, label, extensionPoint, extension, services }: ActionPanelFormState,
+  options: { includeInstanceIds?: boolean } = {}
+): IExtension<ActionPanelConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
     services,
-    config: extension,
+    config: options.includeInstanceIds
+      ? extension
+      : excludeInstanceIds(extension, "body"),
   };
 }
 
 function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
   return {
     type: "actionPanel",
-    extension: selectExtension(element),
+    extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
@@ -213,7 +214,7 @@ async function fromExtension(
     extension: {
       ...config.config,
       heading: config.config.heading,
-      body: castArray(config.config.body),
+      body: withInstanceIds(castArray(config.config.body)),
     },
 
     extensionPoint: {

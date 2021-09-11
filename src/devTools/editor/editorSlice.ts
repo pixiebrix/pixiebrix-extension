@@ -26,6 +26,8 @@ import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 import { PanelFormState } from "@/devTools/editor/extensionPoints/panel";
 import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextMenu";
 import { getErrorMessage } from "@/errors";
+import { clearExtensionTraces } from "@/background/trace";
+import { RegistryId, UUID } from "@/core";
 
 export type FormState =
   | ActionFormState
@@ -92,7 +94,7 @@ export const editorSlice = createSlice({
       state.beta = false;
       state.error = null;
     },
-    markEditable: (state, action: PayloadAction<string>) => {
+    markEditable: (state, action: PayloadAction<RegistryId>) => {
       state.knownEditable.push(action.payload);
     },
     addElement: (state, action: PayloadAction<FormState>) => {
@@ -111,7 +113,7 @@ export const editorSlice = createSlice({
     },
     adapterError: (
       state,
-      action: PayloadAction<{ uuid: string; error: unknown }>
+      action: PayloadAction<{ uuid: UUID; error: unknown }>
     ) => {
       const { uuid, error } = action.payload;
       state.error = getErrorMessage(error);
@@ -153,8 +155,11 @@ export const editorSlice = createSlice({
       state.beta = null;
       state.activeElement = uuid;
       state.selectionSeq++;
+
+      // Make sure we're not keeping any private data around from Page Editor sessions
+      void clearExtensionTraces(uuid);
     },
-    selectElement: (state, action: PayloadAction<string>) => {
+    selectElement: (state, action: PayloadAction<UUID>) => {
       if (!state.elements.some((x) => action.payload === x.uuid)) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
       }
@@ -164,7 +169,7 @@ export const editorSlice = createSlice({
       state.activeElement = action.payload;
       state.selectionSeq++;
     },
-    markSaved: (state, action: PayloadAction<string>) => {
+    markSaved: (state, action: PayloadAction<UUID>) => {
       const element = state.elements.find((x) => action.payload === x.uuid);
       if (!element) {
         throw new Error(`Unknown dynamic element: ${action.payload}`);
@@ -204,7 +209,7 @@ export const editorSlice = createSlice({
       // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
       state.dirty[uuid] = true;
     },
-    removeElement: (state, action: PayloadAction<string>) => {
+    removeElement: (state, action: PayloadAction<UUID>) => {
       const uuid = action.payload;
       if (state.activeElement === uuid) {
         state.activeElement = null;
@@ -214,8 +219,12 @@ export const editorSlice = createSlice({
         state.elements.findIndex((x) => x.uuid === uuid),
         1
       );
-      // eslint-disable-next-line security/detect-object-injection -- is uuid, and also using immer
+
+      // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-dynamic-delete -- is uuid, and also using immer
       delete state.dirty[uuid];
+
+      // Make sure we're not keeping any private data around from Page Editor sessions
+      void clearExtensionTraces(uuid);
     },
   },
 });
