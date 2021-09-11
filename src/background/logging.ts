@@ -328,7 +328,9 @@ export async function _getLoggingConfig(): Promise<LoggingConfig> {
     return _config;
   }
 
-  return readStorageWithMigration(LOG_CONFIG_STORAGE_KEY, {});
+  return readStorageWithMigration(LOG_CONFIG_STORAGE_KEY, {
+    logValues: false,
+  });
 }
 
 export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
