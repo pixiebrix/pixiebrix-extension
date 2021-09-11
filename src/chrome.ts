@@ -20,10 +20,27 @@ import pTimeout from "p-timeout";
 import { isExtensionContext } from "webext-detect-page";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { forbidContext } from "./utils/expectContext";
+import { JsonValue } from "type-fest";
 
 // eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
 const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
+
+/**
+ * A storage key managed manually (i.e., not using redux-persist).
+ * @see ReduxStorageKey
+ */
+export type RawStorageKey = string & {
+  _rawStorageKeyBrand: never;
+};
+
+/**
+ * A storage key managed by redux-persist.
+ * @see RawStorageKey
+ */
+export type ReduxStorageKey = string & {
+  _reduxStorageKeyBrand: never;
+};
 
 export class RequestError extends Error {
   readonly response: unknown;
@@ -108,7 +125,7 @@ export class RuntimeNotFoundError extends Error {
  * @see readStorage
  */
 export async function readStorageWithMigration<T = unknown>(
-  storageKey: string,
+  storageKey: RawStorageKey,
   defaultValue?: T
 ): Promise<T | undefined> {
   const storedValue = await readStorage<T>(storageKey, defaultValue);
@@ -125,7 +142,7 @@ export async function readStorageWithMigration<T = unknown>(
 }
 
 export async function readStorage<T = unknown>(
-  storageKey: string,
+  storageKey: RawStorageKey,
   defaultValue?: T
 ): Promise<T | undefined> {
   // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
@@ -140,9 +157,41 @@ export async function readStorage<T = unknown>(
   return defaultValue;
 }
 
+export async function readReduxStorage<T extends JsonValue = JsonValue>(
+  storageKey: ReduxStorageKey,
+  defaultValue?: T
+): Promise<T | undefined> {
+  // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
+  // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
+  const result = await browser.storage.local.get(storageKey);
+
+  if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
+    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
+    const value = result[storageKey];
+    if (typeof value === "string") {
+      return JSON.parse(value);
+    }
+
+    if (value !== undefined) {
+      console.warn("Expected stringified value for key %s", storageKey, {
+        value,
+      });
+    }
+  }
+
+  return defaultValue;
+}
+
 export async function setStorage(
-  storageKey: string,
+  storageKey: RawStorageKey,
   value: unknown
 ): Promise<void> {
   await browser.storage.local.set({ [storageKey]: value });
+}
+
+export async function setReduxStorage<T extends JsonValue = JsonValue>(
+  storageKey: ReduxStorageKey,
+  value: T
+): Promise<void> {
+  await browser.storage.local.set({ [storageKey]: JSON.stringify(value) });
 }

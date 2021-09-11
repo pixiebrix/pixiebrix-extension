@@ -16,7 +16,7 @@
  */
 
 import axios, { AxiosResponse } from "axios";
-import { readStorageWithMigration, setStorage } from "@/chrome";
+import { RawStorageKey, readStorageWithMigration, setStorage } from "@/chrome";
 import { IService, AuthData, RawServiceConfiguration, UUID } from "@/core";
 import { browser } from "webextension-polyfill-ts";
 import {
@@ -27,7 +27,7 @@ import {
 import { BusinessError, getErrorMessage } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
 
-const OAUTH2_STORAGE_KEY = "OAUTH2";
+const OAUTH2_STORAGE_KEY = "OAUTH2" as RawStorageKey;
 
 async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   serviceAuthId: UUID,

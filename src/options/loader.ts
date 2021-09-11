@@ -20,17 +20,16 @@ import {
   migrateActiveExtensions,
   ExtensionOptionsState,
 } from "@/store/extensions";
-import { readStorageWithMigration, setStorage } from "@/chrome";
+import { readReduxStorage, ReduxStorageKey, setReduxStorage } from "@/chrome";
 
-const STORAGE_KEY = "persist:extensionOptions";
-const INITIAL_STATE = {};
+const STORAGE_KEY = "persist:extensionOptions" as ReduxStorageKey;
 
 type JSONString = string;
 
-type RawOptionsState = Record<string, JSONString>;
+type PersistedOptionsState = Record<string, JSONString>;
 
-async function getOptionsState(): Promise<RawOptionsState> {
-  return readStorageWithMigration(STORAGE_KEY, INITIAL_STATE);
+async function getOptionsState(): Promise<PersistedOptionsState> {
+  return readReduxStorage(STORAGE_KEY, {});
 }
 
 /**
@@ -52,7 +51,7 @@ export async function loadOptions(): Promise<ExtensionOptionsState> {
  */
 export async function saveOptions(state: ExtensionOptionsState): Promise<void> {
   const base = await getOptionsState();
-  await setStorage(STORAGE_KEY, {
+  await setReduxStorage(STORAGE_KEY, {
     ...base,
     // The redux persist layer persists the extensions value as as JSON-string
     extensions: JSON.stringify(state.extensions),
