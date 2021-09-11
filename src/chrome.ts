@@ -144,6 +144,5 @@ export async function setStorage(
   storageKey: string,
   value: unknown
 ): Promise<void> {
-  console.debug("setStorage for key %s", storageKey, { value });
   await browser.storage.local.set({ [storageKey]: value });
 }
