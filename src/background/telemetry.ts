@@ -20,7 +20,7 @@ import { JsonObject } from "type-fest";
 import { uuidv4 } from "@/types/helpers";
 import { compact, debounce, throttle, uniq } from "lodash";
 import { browser } from "webextension-polyfill-ts";
-import { readStorage, setStorage } from "@/chrome";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isLinked } from "@/auth/token";
 import { Data, UUID } from "@/core";
 import { boolean } from "@/utils";
@@ -40,8 +40,8 @@ interface UserEvent {
   data: JsonObject;
 }
 
-export const DNT_STORAGE_KEY = "DNT";
-const UUID_STORAGE_KEY = "USER_UUID";
+export const DNT_STORAGE_KEY = "DNT" as ManualStorageKey;
+const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 
 let _uid: UUID = null;
 let _dnt: boolean;

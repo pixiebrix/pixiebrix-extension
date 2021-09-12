@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readStorageWithMigration } from "@/chrome";
+import { readReduxStorage, ReduxStorageKey } from "@/chrome";
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/services/factory";
 import { RawServiceConfiguration, RegistryId } from "@/core";
 import { Service } from "@/types";
 
-const storageKey = "persist:servicesOptions";
+const storageKey = "persist:servicesOptions" as ReduxStorageKey;
 
 const registry = new BaseRegistry<RegistryId, Service>(
   ["service"],
@@ -39,16 +39,15 @@ type PersistedServicesState = {
 export async function readRawConfigurations(): Promise<
   RawServiceConfiguration[]
 > {
-  const base = await readStorageWithMigration<PersistedServicesState>(
-    storageKey
-  );
-  if (!base?.configured) {
-    return [];
-  }
+  const base = (await readReduxStorage(storageKey)) as PersistedServicesState;
 
-  if (typeof base.configured === "string") {
+  if (typeof base?.configured === "string") {
     // Not really sure why redux-persist stores the next level down as escaped JSON?
     return Object.values(JSON.parse(base.configured));
+  }
+
+  if (!base?.configured) {
+    return [];
   }
 
   return Object.values(base.configured);
