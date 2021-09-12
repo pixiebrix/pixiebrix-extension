@@ -15,51 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
-import { getByInstanceId } from "@/telemetry/trace";
-import { useAsyncState } from "@/hooks/common";
+import React from "react";
 import { UUID } from "@/core";
-import { sortBy } from "lodash";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import JsonTree from "@/components/JsonTree";
-
-// https://overreacted.io/making-setinterval-declarative-with-react-hooks/
-function useInterval(callback: () => void, delayMillis: number) {
-  const savedCallback = useRef<() => void>();
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  // Set up the interval.
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-
-    if (delayMillis !== null) {
-      const id = setInterval(tick, delayMillis);
-      return () => {
-        clearInterval(id);
-      };
-    }
-  }, [delayMillis]);
-}
+import useInterval from "@/hooks/useInterval";
+import { useTrace } from "@/devTools/editor/tabs/effect/useTrace";
 
 const TraceView: React.FunctionComponent<{
   instanceId: UUID;
   traceReloadMillis?: number;
 }> = ({ instanceId, traceReloadMillis = 750 }) => {
-  const [record, isLoading, error, recalculate] = useAsyncState(async () => {
-    if (instanceId == null) {
-      throw new Error("No instance id found");
-    }
-
-    const records = await getByInstanceId(instanceId);
-    return sortBy(records, (x) => new Date(x.timestamp)).reverse()[0];
-  }, [instanceId]);
+  const { record, isLoading, error, recalculate } = useTrace(instanceId);
 
   useInterval(recalculate, traceReloadMillis);
 

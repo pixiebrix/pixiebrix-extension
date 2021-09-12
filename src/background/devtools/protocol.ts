@@ -175,6 +175,12 @@ export const searchWindow: (
     contentScriptProtocol.searchWindow(target, query)
 );
 
+export const runBlock = liftBackground(
+  "RUN_BLOCK",
+  (target: Target) => async (args: contentScriptProtocol.RunBlockArgs) =>
+    contentScriptProtocol.runBlock(target, args)
+);
+
 export const runReaderBlock = liftBackground(
   "RUN_READER_BLOCK",
   (target: Target) => async ({

@@ -351,6 +351,9 @@ export interface IExtensionPoint extends Metadata {
    */
   syncExtensions(extensions: IExtension[]): void;
 
+  /**
+   * Run the installed extensions for extension point.
+   */
   run(): Promise<void>;
 
   /**
@@ -375,14 +378,22 @@ export interface IBlock extends Metadata {
   permissions: Permissions.Permissions;
 
   /**
-   * True iff the block is guaranteed to be side-effect free, (i.e., it can be safely re-run).
+   * Returns true iff the block is guaranteed to be side-effect free, (i.e., it can be safely re-run).
+   *
+   * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
+   * the other blocks to resolve their purity).
+   *
+   * FIXME: isPure is marked as optional because we're using IBlock to represent packages/bricks in some places, e.g.,
+   *  the BrickModal. We need to make this require and fix the types in the places that break. For example, some places
+   *  take advantages the IExtensionPoint is compatible with the the IBlock interface even though they represent two
+   *  different concepts
    *
    * Examples of impure actions:
    * - Calling an API
    * - Showing a prompt
    * - Writing to the session state
    */
-  isPure?: boolean;
+  isPure?: () => Promise<boolean>;
 
   run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
 }

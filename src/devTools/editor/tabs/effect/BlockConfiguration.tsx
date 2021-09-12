@@ -25,6 +25,8 @@ import devtoolFields from "@/devTools/editor/fields/Fields";
 import GridLoader from "react-spinners/GridLoader";
 import TraceView from "@/devTools/editor/tabs/effect/TraceView";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import PreviewView from "@/devTools/editor/tabs/effect/PreviewView";
+import { BlockConfig } from "@/blocks/types";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -104,7 +106,23 @@ const BlockConfiguration: React.FunctionComponent<{
         </Card.Body>
       </Card>
       <Card>
-        <Card.Header className="BlockAccordion__header">Trace</Card.Header>
+        <Card.Header className="BlockAccordion__header">
+          Experimental: Output Preview
+        </Card.Header>
+        <Card.Body>
+          <ErrorBoundary>
+            <FastField name={name}>
+              {({ field }: { field: FieldInputProps<BlockConfig> }) => (
+                <PreviewView blockConfig={field.value} />
+              )}
+            </FastField>
+          </ErrorBoundary>
+        </Card.Body>
+      </Card>
+      <Card>
+        <Card.Header className="BlockAccordion__header">
+          Experimental: Trace
+        </Card.Header>
         <Card.Body>
           <ErrorBoundary>
             <FastField name={`${name}.instanceId`}>

@@ -38,7 +38,7 @@ const URL_PROPERTIES = [
 ];
 
 export class UrlParser extends Transformer {
-  get isPure() {
+  async isPure(): Promise<boolean> {
     return true;
   }
 
