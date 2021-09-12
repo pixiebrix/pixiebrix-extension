@@ -17,7 +17,7 @@
 
 import React, { useCallback, useContext, useState } from "react";
 import { connect, useSelector } from "react-redux";
-import { servicesSlice, ServicesState } from "../../slices";
+import { servicesSlice, ServicesState } from "@/options/slices";
 import { PageTitle } from "@/layout/Page";
 import { Badge, Card, Col, Nav, Row } from "react-bootstrap";
 import { push } from "connected-react-router";
@@ -27,7 +27,7 @@ import ConnectExtensionCard from "./ConnectExtensionCard";
 import SharedServicesCard from "./SharedServicesCard";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import useServiceDefinitions from "./useServiceDefinitions";
-import { persistor, RootState } from "../../store";
+import { persistor, RootState } from "@/options/store";
 import { RawServiceConfiguration } from "@/core";
 import { SanitizedAuth } from "@/types/contract";
 import { refresh as refreshBackgroundAuths } from "@/background/locator";

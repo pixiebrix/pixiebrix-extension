@@ -22,7 +22,7 @@ import { useAsyncEffect } from "use-async-effect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
-import { ReferenceEntry } from "../brickEditorTypes";
+import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import styles from "./BlockResult.module.scss";
 import { OfficialBadge } from "@/components/OfficialBadge";
 
