@@ -25,7 +25,11 @@ import { DBSchema, openDB } from "idb/with-async-ittr";
 import { sortBy, isEmpty } from "lodash";
 import { _getDNT } from "@/background/telemetry";
 import { isContentScript } from "webext-detect-page";
-import { RawStorageKey, readStorageWithMigration, setStorage } from "@/chrome";
+import {
+  ManualStorageKey,
+  readStorageWithMigration,
+  setStorage,
+} from "@/chrome";
 import {
   hasBusinessRootCause,
   hasCancelRootCause,
@@ -318,7 +322,7 @@ export type LoggingConfig = {
   logValues: boolean;
 };
 
-const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as RawStorageKey;
+const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
 let _config: LoggingConfig = null;
 
 export async function _getLoggingConfig(): Promise<LoggingConfig> {

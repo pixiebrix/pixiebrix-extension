@@ -30,13 +30,13 @@ const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
  * A storage key managed manually (i.e., not using redux-persist).
  * @see ReduxStorageKey
  */
-export type RawStorageKey = string & {
-  _rawStorageKeyBrand: never;
+export type ManualStorageKey = string & {
+  _manualStorageKeyBrand: never;
 };
 
 /**
  * A storage key managed by redux-persist.
- * @see RawStorageKey
+ * @see ManualStorageKey
  */
 export type ReduxStorageKey = string & {
   _reduxStorageKeyBrand: never;
@@ -121,11 +121,15 @@ export class RuntimeNotFoundError extends Error {
 
 /**
  * Read from `browser.storage.local`, updating the value to be stored as an object instead of a JSON-stringified value
+ *
+ * WARNING: this method will convert string numbers, e.g., "42" to the the corresponding number. So this method is
+ * not safe to use with storage holding primitive user-defined data.
+ *
  * @deprecated Use `readStorage` instead
  * @see readStorage
  */
 export async function readStorageWithMigration<T = unknown>(
-  storageKey: RawStorageKey,
+  storageKey: ManualStorageKey,
   defaultValue?: T
 ): Promise<T | undefined> {
   const storedValue = await readStorage<T>(storageKey, defaultValue);
@@ -134,15 +138,21 @@ export async function readStorageWithMigration<T = unknown>(
     return storedValue;
   }
 
-  // If storedValue is another string (e.g., a UUID, it will be returned as-is), so readStorageWithMigration is
-  // safe to use with string values
-  const parsedValue = JSON.parse(storedValue) as T;
-  await browser.storage.local.set({ [storageKey]: parsedValue });
+  let parsedValue: T;
+
+  try {
+    parsedValue = JSON.parse(storedValue) as T;
+    await browser.storage.local.set({ [storageKey]: parsedValue });
+  } catch {
+    // If it's not a valid JSON-string we must be working with a value that's already been migrated
+    parsedValue = storedValue;
+  }
+
   return parsedValue;
 }
 
 export async function readStorage<T = unknown>(
-  storageKey: RawStorageKey,
+  storageKey: ManualStorageKey,
   defaultValue?: T
 ): Promise<T | undefined> {
   // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
@@ -173,7 +183,7 @@ export async function readReduxStorage<T extends JsonValue = JsonValue>(
     }
 
     if (value !== undefined) {
-      console.warn("Expected stringified value for key %s", storageKey, {
+      console.warn("Expected JSON-stringified value for key %s", storageKey, {
         value,
       });
     }
@@ -183,7 +193,7 @@ export async function readReduxStorage<T extends JsonValue = JsonValue>(
 }
 
 export async function setStorage(
-  storageKey: RawStorageKey,
+  storageKey: ManualStorageKey,
   value: unknown
 ): Promise<void> {
   await browser.storage.local.set({ [storageKey]: value });

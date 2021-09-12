@@ -53,7 +53,7 @@ export async function saveOptions(state: ExtensionOptionsState): Promise<void> {
   const base = await getOptionsState();
   await setReduxStorage(STORAGE_KEY, {
     ...base,
-    // The redux persist layer persists the extensions value as as JSON-string
+    // The redux persist layer persists the extensions value as a JSON-string
     extensions: JSON.stringify(state.extensions),
   });
 }

@@ -19,9 +19,13 @@ import { browser } from "webextension-polyfill-ts";
 import Cookies from "js-cookie";
 import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
 import { isEqual } from "lodash";
-import { RawStorageKey, readStorageWithMigration, setStorage } from "@/chrome";
+import {
+  ManualStorageKey,
+  readStorageWithMigration,
+  setStorage,
+} from "@/chrome";
 
-const STORAGE_EXTENSION_KEY = "extensionKey" as RawStorageKey;
+const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
 interface UserData {
   email?: string;

@@ -16,13 +16,13 @@
  */
 
 import { isEmpty } from "lodash";
-import { RawStorageKey, readStorage, setStorage } from "@/chrome";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isExtensionContext } from "webext-detect-page";
 import { useAsyncEffect } from "use-async-effect";
 import { useCallback, useState } from "react";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
-export const SERVICE_STORAGE_KEY = "service-url" as RawStorageKey;
+export const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
 
 type ConfiguredHost = string | null | undefined;
 
