@@ -39,12 +39,12 @@ const MENU_PREFIX = "pixiebrix-";
 const CONTEXT_SCRIPT_INSTALL_MS = 1000;
 const CONTEXT_MENU_INSTALL_MS = 1000;
 
-interface SelectionMenuOptions {
+export type SelectionMenuOptions = {
   extensionId: UUID;
   title: string;
   contexts: Menus.ContextType[];
   documentUrlPatterns: string[];
-}
+};
 
 function makeMenuId(extensionId: UUID): string {
   return `${MENU_PREFIX}${extensionId}`;
