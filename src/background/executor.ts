@@ -19,13 +19,11 @@
 import {
   linkChildTab,
   MESSAGE_CHECK_AVAILABILITY,
-  MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
-  MESSAGE_CONTENT_SCRIPT_READY,
   MESSAGE_RUN_BLOCK as CONTENT_MESSAGE_RUN_BLOCK,
   RemoteBlockOptions,
   RunBlockAction,
 } from "@/contentScript/executor";
-import { browser, Tabs } from "webextension-polyfill-ts";
+import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
 import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
 import { ActionType, Message, RegistryId, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
@@ -37,13 +35,12 @@ import { sleep } from "@/utils";
 import { partition, zip } from "lodash";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
+import { MessengerMeta } from "webext-messenger";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
 const MESSAGE_RUN_BLOCK_BROADCAST = `${MESSAGE_PREFIX}RUN_BLOCK_BROADCAST`;
 const MESSAGE_RUN_BLOCK_FRAME_NONCE = `${MESSAGE_PREFIX}RUN_BLOCK_FRAME_NONCE`;
-const MESSAGE_ACTIVATE_TAB = `${MESSAGE_PREFIX}MESSAGE_ACTIVATE_TAB`;
-const MESSAGE_CLOSE_TAB = `${MESSAGE_PREFIX}MESSAGE_CLOSE_TAB`;
 const MESSAGE_OPEN_TAB = `${MESSAGE_PREFIX}MESSAGE_OPEN_TAB`;
 
 const TOP_LEVEL_FRAME = 0;
@@ -277,16 +274,6 @@ handlers.set(
   }
 );
 
-handlers.set(MESSAGE_ACTIVATE_TAB, async (_, sender) => {
-  await browser.tabs.update(sender.tab.id, {
-    active: true,
-  });
-});
-
-handlers.set(MESSAGE_CLOSE_TAB, async (_, sender) =>
-  browser.tabs.remove(sender.tab.id)
-);
-
 handlers.set(MESSAGE_OPEN_TAB, async (request: OpenTabAction, sender) => {
   const tab = await browser.tabs.create(request.payload);
   // FIXME: include frame information here
@@ -294,7 +281,9 @@ handlers.set(MESSAGE_OPEN_TAB, async (request: OpenTabAction, sender) => {
   tabToOpener.set(tab.id, sender.tab.id);
 });
 
-handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (_, sender) => {
+export async function markTabAsReady(this: MessengerMeta) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias, unicorn/no-this-assignment -- Not applicable to this pattern
+  const sender = this;
   const tabId = sender.tab.id;
   const { frameId } = sender;
   console.debug(`Marked tab ${tabId} (frame: ${frameId}) as ready`, {
@@ -319,14 +308,7 @@ handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (_, sender) => {
 
   tabReady[tabId][frameId] = true;
   emitDevtools("ContentScriptReady", { tabId, frameId });
-});
-
-handlers.set(MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, async (_, sender) => {
-  console.debug("Responding %s", MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, {
-    sender,
-  });
-  return sender;
-});
+}
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
@@ -347,22 +329,20 @@ function initExecutor(): void {
   browser.runtime.onMessage.addListener(handlers.asListener());
 }
 
-export async function activateTab(): Promise<void> {
-  expectContext("contentScript");
-
-  return browser.runtime.sendMessage({
-    type: MESSAGE_ACTIVATE_TAB,
-    payload: {},
+export async function activateTab(this: MessengerMeta): Promise<void> {
+  await browser.tabs.update(this.tab.id, {
+    active: true,
   });
 }
 
-export async function closeTab(): Promise<void> {
-  expectContext("contentScript");
+export async function closeTab(this: MessengerMeta): Promise<void> {
+  await browser.tabs.remove(this.tab.id);
+}
 
-  return browser.runtime.sendMessage({
-    type: MESSAGE_CLOSE_TAB,
-    payload: {},
-  });
+export async function whoAmI(
+  this: MessengerMeta
+): Promise<Runtime.MessageSender> {
+  return this;
 }
 
 export async function openTab(

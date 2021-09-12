@@ -27,7 +27,8 @@ import { castArray, head } from "lodash";
 import { locator } from "@/background/locator";
 import registry from "@/services/registry";
 import { Service } from "@/types";
-import { containsPermissions, requestPermissions } from "@/utils/permissions";
+import { requestPermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/background/messenger/api";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 

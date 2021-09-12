@@ -17,8 +17,10 @@
 
 import { browser, Manifest, Permissions } from "webextension-polyfill-ts";
 import { uniq } from "lodash";
-import { liftBackground } from "@/background/protocol";
-import { openPopupPrompt } from "@/background/permissionPrompt";
+import {
+  containsPermissions,
+  openPopupPrompt,
+} from "@/background/messenger/api";
 
 /** Filters out any permissions that are not part of `optional_permissions` */
 export function selectOptionalPermissions(
@@ -40,22 +42,6 @@ export function mergePermissions(
     origins: uniq(permissions.flatMap((x) => x.origins ?? [])),
     permissions: uniq(permissions.flatMap((x) => x.permissions ?? [])),
   };
-}
-
-const containsPermissionsInBackground = liftBackground(
-  "CONTAINS_PERMISSIONS",
-  async (permissions: Permissions.AnyPermissions) =>
-    browser.permissions.contains(permissions)
-);
-
-export async function containsPermissions(
-  permissions: Permissions.AnyPermissions
-): Promise<boolean> {
-  if (browser.permissions) {
-    return browser.permissions.contains(permissions);
-  }
-
-  return containsPermissionsInBackground(permissions);
 }
 
 // TODO: Make it work in content scripts as well, or any context that doesn't have the API

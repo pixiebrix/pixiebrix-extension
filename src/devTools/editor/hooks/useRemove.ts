@@ -26,6 +26,7 @@ import * as nativeOperations from "@/background/devtools";
 import { optionsSlice } from "@/options/slices";
 import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
+import { uninstallContextMenu } from "@/background/messenger/api";
 
 /**
  * Remove the current element from the page and installed extensions
@@ -63,7 +64,7 @@ function useRemove(element: FormState): () => void {
       }
 
       void Promise.allSettled([
-        nativeOperations.uninstallContextMenu(port, ref),
+        uninstallContextMenu(ref),
         nativeOperations.uninstallActionPanelPanel(port, ref),
       ]);
 

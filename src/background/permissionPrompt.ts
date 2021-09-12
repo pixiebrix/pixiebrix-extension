@@ -16,7 +16,6 @@
  */
 
 import { browser, Tabs } from "webextension-polyfill-ts";
-import { liftBackground } from "@/background/protocol";
 import { isFirefox } from "webext-detect-page";
 
 const POPUP_WIDTH_PX = 400; // Makes the native prompt appear centered
@@ -81,16 +80,13 @@ async function detectPopupSupport(
 /**
  * Show a popup prompt and await the popup closing
  */
-export const openPopupPrompt = liftBackground(
-  "OPEN_POPUP_PROMPT",
-  async (openerTabId: number, url: string) => {
-    const { windowId } = await browser.tabs.get(openerTabId);
-    const openerWindow = await browser.windows.get(windowId);
+export async function openPopupPrompt(openerTabId: number, url: string) {
+  const { windowId } = await browser.tabs.get(openerTabId);
+  const openerWindow = await browser.windows.get(windowId);
 
-    const popupTab = (await detectPopupSupport(openerWindow))
-      ? await openPopup(url, openerWindow)
-      : await openTab(url, openerTabId);
+  const popupTab = (await detectPopupSupport(openerWindow))
+    ? await openPopup(url, openerWindow)
+    : await openTab(url, openerTabId);
 
-    await onTabClose(popupTab.id);
-  }
-);
+  await onTabClose(popupTab.id);
+}

@@ -18,7 +18,7 @@
 import { Effect } from "@/types";
 import { Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { activateTab, closeTab } from "@/background/executor";
+import { activateTab, closeTab } from "@/background/messenger/api";
 
 export class ActivateTabEffect extends Effect {
   constructor() {

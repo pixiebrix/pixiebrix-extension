@@ -31,7 +31,6 @@ import {
 } from "@/background/devtools/internal";
 import { ensureContentScript } from "@/background/util";
 import { isEmpty } from "lodash";
-import * as contextMenuProtocol from "@/background/contextMenus";
 import { Target } from "@/background/devtools/contract";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { RegistryId, UUID } from "@/core";
@@ -204,14 +203,6 @@ export const runReader = liftBackground(
       config,
       rootSelector,
     })
-);
-
-export const uninstallContextMenu = liftBackground(
-  "UNINSTALL_CONTEXT_MENU",
-  // False positive - it's the inner method that should be async
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  () => async ({ extensionId }: { extensionId: UUID }) =>
-    contextMenuProtocol.uninstall(extensionId)
 );
 
 export const uninstallActionPanelPanel = liftBackground(

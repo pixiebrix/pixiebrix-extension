@@ -24,7 +24,7 @@ import { Link, Redirect, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
 import { ExtensionRef, IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
-import { uninstallContextMenu } from "@/background/contextMenus";
+import { uninstallContextMenu } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
 import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
@@ -206,9 +206,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension(ref));
     // XXX: also remove remove side panel panels that are already open?
-    void uninstallContextMenu(ref).catch((error) => {
-      reportError(error);
-    });
+    void uninstallContextMenu(ref).catch(reportError);
     void reactivate().catch((error: unknown) => {
       console.warn("Error re-activating content scripts", { error });
     });

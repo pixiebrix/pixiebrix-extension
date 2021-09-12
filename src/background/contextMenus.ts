@@ -16,7 +16,6 @@
  */
 
 import pTimeout from "p-timeout";
-import { liftBackground } from "@/background/protocol";
 import { browser, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
@@ -40,12 +39,12 @@ const MENU_PREFIX = "pixiebrix-";
 const CONTEXT_SCRIPT_INSTALL_MS = 1000;
 const CONTEXT_MENU_INSTALL_MS = 1000;
 
-interface SelectionMenuOptions {
+export type SelectionMenuOptions = {
   extensionId: UUID;
   title: string;
   contexts: Menus.ContextType[];
   documentUrlPatterns: string[];
-}
+};
 
 function makeMenuId(extensionId: UUID): string {
   return `${MENU_PREFIX}${extensionId}`;
@@ -117,7 +116,11 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
  * Uninstall contextMenu for `extensionId`. Returns true if the contextMenu was removed, or false if the contextMenu was
  * not found.
  */
-export async function uninstall(extensionId: UUID): Promise<boolean> {
+export async function uninstallContextMenu({
+  extensionId,
+}: {
+  extensionId: UUID;
+}): Promise<boolean> {
   try {
     const menuItemId = extensionMenuItems.get(extensionId);
 
@@ -141,101 +144,90 @@ export async function uninstall(extensionId: UUID): Promise<boolean> {
   }
 }
 
-/**
- * Uninstall context menu and return whether or not the context menu was uninstalled.
- */
-export const uninstallContextMenu = liftBackground(
-  "UNINSTALL_CONTEXT_MENU",
-  async ({ extensionId }: { extensionId: UUID }) => uninstall(extensionId)
-);
+export async function ensureContextMenu({
+  extensionId,
+  contexts,
+  title,
+  documentUrlPatterns,
+}: SelectionMenuOptions) {
+  if (!extensionId) {
+    throw new Error("extensionId is required");
+  }
 
-export const ensureContextMenu = liftBackground(
-  "ENSURE_CONTEXT_MENU",
-  async ({
-    extensionId,
-    contexts,
+  // Handle the thundering herd of re-registrations when a contentScript.reactivate is broadcast
+  if (pendingRegistration.has(extensionId)) {
+    console.debug("contextMenu registration pending for %s", extensionId);
+
+    // Is it OK to return immediately? Or do we need to track the common promise that all callers should see?
+    return;
+  }
+
+  pendingRegistration.add(extensionId);
+
+  const updateProperties: Menus.UpdateUpdatePropertiesType = {
+    type: "normal",
     title,
+    contexts,
     documentUrlPatterns,
-  }: SelectionMenuOptions) => {
-    if (!extensionId) {
-      throw new Error("extensionId is required");
+  };
+
+  const expectedMenuId = makeMenuId(extensionId);
+
+  try {
+    let menuId = extensionMenuItems.get(extensionId);
+
+    if (menuId) {
+      try {
+        await browser.contextMenus.update(menuId, updateProperties);
+        return;
+      } catch (error: unknown) {
+        console.debug("Cannot update context menu", { error });
+      }
+    } else {
+      // Just to be safe if our `extensionMenuItems` bookkeeping is off, remove any stale menu item
+      await browser.contextMenus.remove(expectedMenuId).catch(noop);
     }
 
-    // Handle the thundering herd of re-registrations when a contentScript.reactivate is broadcast
-    if (pendingRegistration.has(extensionId)) {
-      console.debug("contextMenu registration pending for %s", extensionId);
+    // The update failed, or this is a new context menu
+    extensionMenuItems.delete(extensionId);
 
-      // Is it OK to return immediately? Or do we need to track the common promise that all callers should see?
+    // The types of browser.contextMenus.create are wacky. I verified on Chrome that the method does take a callback
+    // even when using the browser polyfill
+    let createdMenuId: string | number;
+    menuId = await new Promise((resolve, reject) => {
+      // `browser.contextMenus.create` returns immediately with the assigned menu id
+      createdMenuId = browser.contextMenus.create(
+        {
+          ...updateProperties,
+          id: makeMenuId(extensionId),
+        },
+        () => {
+          if (browser.runtime.lastError) {
+            reject(new Error(browser.runtime.lastError.message));
+          }
+
+          resolve(createdMenuId);
+        }
+      );
+    });
+
+    extensionMenuItems.set(extensionId, menuId);
+  } catch (error: unknown) {
+    if (
+      getErrorMessage(error).includes("Cannot create item with duplicate id")
+    ) {
+      // Likely caused by a concurrent update. In practice, our `pendingRegistration` set and `extensionMenuItems`
+      // should prevent this from happening
+      console.debug("Error registering context menu item", { error });
       return;
     }
 
-    pendingRegistration.add(extensionId);
-
-    const updateProperties: Menus.UpdateUpdatePropertiesType = {
-      type: "normal",
-      title,
-      contexts,
-      documentUrlPatterns,
-    };
-
-    const expectedMenuId = makeMenuId(extensionId);
-
-    try {
-      let menuId = extensionMenuItems.get(extensionId);
-
-      if (menuId) {
-        try {
-          await browser.contextMenus.update(menuId, updateProperties);
-          return;
-        } catch (error: unknown) {
-          console.debug("Cannot update context menu", { error });
-        }
-      } else {
-        // Just to be safe if our `extensionMenuItems` bookkeeping is off, remove any stale menu item
-        await browser.contextMenus.remove(expectedMenuId).catch(noop);
-      }
-
-      // The update failed, or this is a new context menu
-      extensionMenuItems.delete(extensionId);
-
-      // The types of browser.contextMenus.create are wacky. I verified on Chrome that the method does take a callback
-      // even when using the browser polyfill
-      let createdMenuId: string | number;
-      menuId = await new Promise((resolve, reject) => {
-        // `browser.contextMenus.create` returns immediately with the assigned menu id
-        createdMenuId = browser.contextMenus.create(
-          {
-            ...updateProperties,
-            id: makeMenuId(extensionId),
-          },
-          () => {
-            if (browser.runtime.lastError) {
-              reject(new Error(browser.runtime.lastError.message));
-            }
-
-            resolve(createdMenuId);
-          }
-        );
-      });
-
-      extensionMenuItems.set(extensionId, menuId);
-    } catch (error: unknown) {
-      if (
-        getErrorMessage(error).includes("Cannot create item with duplicate id")
-      ) {
-        // Likely caused by a concurrent update. In practice, our `pendingRegistration` set and `extensionMenuItems`
-        // should prevent this from happening
-        console.debug("Error registering context menu item", { error });
-        return;
-      }
-
-      console.error("Error registering context menu item", { error });
-      throw error;
-    } finally {
-      pendingRegistration.delete(extensionId);
-    }
+    console.error("Error registering context menu item", { error });
+    throw error;
+  } finally {
+    pendingRegistration.delete(extensionId);
   }
-);
+}
 
 if (isBackgroundPage()) {
   browser.contextMenus.onClicked.addListener(menuListener);

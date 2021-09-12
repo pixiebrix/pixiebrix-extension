@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser, Runtime } from "webextension-polyfill-ts";
+import { browser } from "webextension-polyfill-ts";
 import blockRegistry from "@/blocks/registry";
 import { BackgroundLogger } from "@/background/logging";
 import { MessageContext, RegistryId, RenderedArgs } from "@/core";
@@ -26,16 +26,11 @@ import {
 } from "@/contentScript/backgroundProtocol";
 import { Availability } from "@/blocks/types";
 import { checkAvailable } from "@/blocks/available";
-import { markReady } from "./context";
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { expectContext } from "@/utils/expectContext";
-import { ConnectionError } from "@/errors";
 import { HandlerMap } from "@/messaging/protocol";
 
 export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
-export const MESSAGE_CONTENT_SCRIPT_READY = `${MESSAGE_PREFIX}SCRIPT_READY`;
-export const MESSAGE_CONTENT_SCRIPT_ECHO_SENDER = `${MESSAGE_PREFIX}ECHO_SENDER`;
 
 export interface RemoteBlockOptions {
   ctxt: unknown;
@@ -104,37 +99,6 @@ export const linkChildTab = liftContentScript(
   },
   { asyncResponse: false }
 );
-
-export async function whoAmI(): Promise<Runtime.MessageSender> {
-  const sender = await browser.runtime.sendMessage({
-    type: MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
-  });
-
-  if (sender == null) {
-    // If you see this error, it means the wrong message handler responded to the message.
-    // The most likely cause of this is that background listener function was accidentally marked
-    // with the "async" keyword as that prevents the method from returning "undefined" to indicate
-    // that it did not handle the message
-    throw new ConnectionError(
-      `Internal error: received null response for ${MESSAGE_CONTENT_SCRIPT_ECHO_SENDER}. Check use of async in message listeners`
-    );
-  }
-
-  return sender;
-}
-
-export async function notifyReady(): Promise<void> {
-  markReady();
-
-  // Inform `ensureContentScript` that the content script has loaded, if it's listening
-  void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
-
-  // Informs the standard background listener to track this tab
-  await browser.runtime.sendMessage({
-    type: MESSAGE_CONTENT_SCRIPT_READY,
-    payload: {},
-  });
-}
 
 function addExecutorListener(): void {
   expectContext("contentScript");
