@@ -151,7 +151,7 @@ export class Registry<
       return this.deserialize(raw);
     } catch (error: unknown) {
       console.warn(
-        `Error de-serializing item: %s`,
+        "Error de-serializing item: %s",
         getErrorMessage(error),
         raw
       );

@@ -90,7 +90,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
         await refreshBackgroundAuths();
       } catch (error: unknown) {
         notify.warning(
-          `Error refreshing service configurations, restart the PixieBrix extension`,
+          "Error refreshing service configurations, restart the PixieBrix extension",
           {
             error,
           }
@@ -114,7 +114,7 @@ const ServicesEditor: React.FunctionComponent<OwnProps> = ({
         await refreshBackgroundAuths();
       } catch (error: unknown) {
         notify.warning(
-          `Error refreshing service configurations, restart the PixieBrix extension`,
+          "Error refreshing service configurations, restart the PixieBrix extension",
           {
             error,
           }

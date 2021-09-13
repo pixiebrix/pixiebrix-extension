@@ -394,7 +394,7 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
               <Button
                 variant="info"
                 onClick={() => {
-                  navigate(`/workshop/create/`);
+                  navigate("/workshop/create/");
                 }}
               >
                 <FontAwesomeIcon icon={faPlus} /> Create New Brick

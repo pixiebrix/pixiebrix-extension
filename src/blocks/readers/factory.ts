@@ -58,7 +58,7 @@ function validateReaderDefinition(
   );
   const result = validator.validate(component);
   if (!result.valid) {
-    console.warn(`Invalid reader configuration`, result);
+    console.warn("Invalid reader configuration", result);
     throw new ValidationError("Invalid reader configuration", result.errors);
   }
 }

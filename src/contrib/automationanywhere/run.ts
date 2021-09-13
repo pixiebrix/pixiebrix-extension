@@ -70,7 +70,7 @@ export class RunBot extends Effect {
     options: BlockOptions
   ): Promise<void> {
     const { data: responseData } = await proxyService<DeployResponse>(service, {
-      url: `/v2/automations/deploy`,
+      url: "/v2/automations/deploy",
       method: "post",
       data: {
         fileId,

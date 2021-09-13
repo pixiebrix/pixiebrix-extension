@@ -72,7 +72,7 @@ export class RunLocalProcess extends Transformer {
         if (!process) {
           // `releaseKey`'s type is checked in the inputSchema
           logger.error(`Cannot find UiPath release: ${releaseKey as string}`);
-          throw new BusinessError(`Cannot find UiPath release`);
+          throw new BusinessError("Cannot find UiPath release");
         }
 
         console.debug("Running local UiPath process", { releaseKey });

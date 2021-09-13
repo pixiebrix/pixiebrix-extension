@@ -137,7 +137,7 @@ export async function uninstallContextMenu({
   } catch (error: unknown) {
     // Will throw if extensionId doesn't refer to a context menu. The callers don't have an easy way to check the type
     // without having to resolve the extensionPointId. So instead we'll just expect some of the calls to fail.
-    console.debug(`Could not uninstall context menu %s`, extensionId, {
+    console.debug("Could not uninstall context menu %s", extensionId, {
       error,
     });
     return false;

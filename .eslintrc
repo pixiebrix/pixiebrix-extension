@@ -5,6 +5,7 @@
     "pixiebrix"
   ],
   "rules": {
+    "quotes": ["error", "double", { "avoidEscape": true }],
     // Rules that depend on https://github.com/pixiebrix/pixiebrix-extension/issues/775
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-confusing-void-expression": "warn",
@@ -56,6 +57,7 @@
     "src/support.js",
     "selenium"
   ],
+
   "overrides": [
     {
       "files": ["*.stories.tsx"],

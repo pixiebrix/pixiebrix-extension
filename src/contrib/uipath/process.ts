@@ -124,7 +124,7 @@ export class RunProcess extends Transformer {
     { logger }: BlockOptions
   ): Promise<unknown> {
     const { data: startData } = await proxyService<JobsResponse>(uipath, {
-      url: `/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs`,
+      url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
       method: "post",
       data: {
         startInfo: {

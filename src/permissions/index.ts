@@ -122,7 +122,7 @@ export async function collectPermissions(
           }
         );
       } catch (error: unknown) {
-        console.warn(`Error getting blocks for extensionPoint %s`, id, {
+        console.warn("Error getting blocks for extensionPoint %s", id, {
           error,
           config,
         });
