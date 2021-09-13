@@ -20,11 +20,11 @@ import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
 import { isEmpty, groupBy } from "lodash";
 import { checkAvailable } from "@/background/devtools";
-import { Badge, Button, Form, Nav, Tab } from "react-bootstrap";
+import { Badge, Form, Nav, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCommentAlt, faLock } from "@fortawesome/free-solid-svg-icons";
+import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { IExtension } from "@/core";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
@@ -86,8 +86,7 @@ const ElementWizard: React.FunctionComponent<{
   installed: IExtension[];
   element: FormState;
   editable: Set<string>;
-  toggleChat: (toggle: boolean) => void;
-}> = ({ element, editable, installed, toggleChat }) => {
+}> = ({ element, editable, installed}) => {
   const { port } = useContext(DevToolsContext);
 
   const wizard = useMemo(() => ADAPTERS.get(element.type).wizard, [
@@ -148,18 +147,6 @@ const ElementWizard: React.FunctionComponent<{
 
           {/* spacer */}
           <div className="flex-grow-1" />
-
-          <div className="mx-3">
-            <Button
-              size="sm"
-              variant="info"
-              onClick={() => {
-                toggleChat(true);
-              }}
-            >
-              <FontAwesomeIcon icon={faCommentAlt} /> Live Support
-            </Button>
-          </div>
 
           <PermissionsToolbar
             element={element}

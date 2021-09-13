@@ -55,6 +55,7 @@ import {
 import { Menus } from "webextension-polyfill-ts";
 import { BlockPipeline } from "@/blocks/types";
 import React from "react";
+import HelpTab from "@/devTools/editor/tabs/helpTab/HelpTab";
 
 const wizard: WizardStep[] = [
   { step: "Menu Item", Component: MenuItemTab },
@@ -63,6 +64,7 @@ const wizard: WizardStep[] = [
   { step: "Integrations", Component: ServicesTab },
   { step: "Action", Component: EffectTab },
   { step: "Logs", Component: LogsTab },
+  { step: "Help", Component: HelpTab },
 ];
 
 export interface ContextMenuFormState extends BaseFormState {

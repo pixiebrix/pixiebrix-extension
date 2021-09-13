@@ -55,6 +55,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
 import { BlockPipeline } from "@/blocks/types";
+import HelpTab from "@/devTools/editor/tabs/helpTab/HelpTab";
 
 const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -69,6 +70,7 @@ const wizard: WizardStep[] = [
   },
   { step: "Availability", Component: AvailabilityTab },
   { step: "Logs", Component: LogsTab },
+  { step: "Help", Component: HelpTab },
 ];
 
 export interface ActionPanelFormState extends BaseFormState {
