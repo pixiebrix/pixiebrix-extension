@@ -25,7 +25,7 @@ import { faClipboard } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
-import { ReferenceEntry } from "../brickEditorTypes";
+import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import { Schema } from "@/core";
 import styles from "./BrickDetail.module.scss";
 

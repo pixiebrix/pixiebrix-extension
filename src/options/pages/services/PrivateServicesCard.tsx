@@ -19,7 +19,7 @@ import { useSelector } from "react-redux";
 import { Button, Card, Table } from "react-bootstrap";
 import React, { useCallback, useContext } from "react";
 import { IService, RawServiceConfiguration } from "@/core";
-import { RootState } from "../../store";
+import { RootState } from "@/options/store";
 import { uuidv4 } from "@/types/helpers";
 import { ServiceDefinition } from "@/types/definitions";
 import ServiceModal from "@/components/fields/ServiceModal";
