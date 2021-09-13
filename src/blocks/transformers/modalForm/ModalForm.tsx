@@ -38,15 +38,16 @@ const ModalLayout: React.FC = ({ children }) => (
 );
 
 const ModalForm: React.FC = () => {
-  const nonce = new URLSearchParams(location.search).get("nonce");
+  const params = new URLSearchParams(location.search);
+  const nonce = params.get("nonce");
+  const sourceFrameId = Number.parseInt(params.get("frameId") ?? "0", 10);
 
   const [state, isLoading, error] = useAsyncState(async () => {
     const tab = await whoAmI();
 
     async function sendMessage<T = unknown>(message: Message) {
-      // FIXME: the form might not have originated from the top-level frame
       return browser.tabs.sendMessage(tab.tab.id, message, {
-        frameId: 0,
+        frameId: sourceFrameId,
       }) as Promise<T>;
     }
 

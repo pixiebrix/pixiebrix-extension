@@ -22,6 +22,7 @@ import theme from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
 import { browser } from "webextension-polyfill-ts";
 import { registerForm } from "@/contentScript/modalForms";
 import { expectContext } from "@/utils/expectContext";
+import { whoAmI } from "@/background/messenger/api";
 
 export class ModalTransformer extends Transformer {
   constructor() {
@@ -79,8 +80,11 @@ export class ModalTransformer extends Transformer {
     const nonce = uuidv4();
     const id = `modal-${nonce}`;
 
+    const tab = await whoAmI();
+
     const frameSrc = new URL(browser.runtime.getURL("modalForm.html"));
     frameSrc.searchParams.set("nonce", nonce);
+    frameSrc.searchParams.set("frameId", String(tab.frameId));
 
     // By setting the modal-content 100vh, the iframe form content can expand to fit the available vertical size as
     // needed. Otherwise, we'd need to have the form message the content script with a requested vertical height.
@@ -91,7 +95,7 @@ export class ModalTransformer extends Transformer {
         <div id="${id}" class="modal show" style="display: block">
             <div class="modal-dialog modal-dialog-scrollable" role="document">
                 <div class="modal-content" style="height: 100vh; background: none transparent; border: none;">
-                    <iframe src="${frameSrc}" frameborder="0" allowtransparency="true" width="100%" height="100%"/>
+                    <iframe src="${frameSrc.toString()}" frameborder="0" allowtransparency="true" width="100%" height="100%"/>
                 </div>
             </div>
         </div>
