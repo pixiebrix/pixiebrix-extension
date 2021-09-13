@@ -67,7 +67,7 @@ function backgroundMessageListener(
 
   if (!allowBackgroundSender(port.sender)) {
     console.debug(
-      `Ignoring devtools message to background page from unknown sender`,
+      "Ignoring devtools message to background page from unknown sender",
       port.sender
     );
   } else if (handler) {
@@ -189,18 +189,18 @@ async function resetTab(tabId: number): Promise<void> {
       {}
     );
   } catch (error: unknown) {
-    console.warn(`Error clearing dynamic elements for tab: %d`, tabId, {
+    console.warn("Error clearing dynamic elements for tab: %d", tabId, {
       error,
     });
     reportError(error);
   }
 
-  console.info(`Removed dynamic elements for tab: %d`, tabId);
+  console.info("Removed dynamic elements for tab: %d", tabId);
 
   // Re-activate the content script so any saved extensions are added to the page as "permanent" extensions
   await reactivate();
 
-  console.info(`Re-activated extensions for tab: %d`, tabId);
+  console.info("Re-activated extensions for tab: %d", tabId);
 }
 
 function deleteStaleConnections(port: Runtime.Port) {
@@ -215,7 +215,7 @@ function deleteStaleConnections(port: Runtime.Port) {
         const listeners = permissionsListeners.get(tabId);
         permissionsListeners.delete(tabId);
         for (const [, reject] of listeners) {
-          reject(new Error(`Cleaning up stale connection`));
+          reject(new Error("Cleaning up stale connection"));
         }
       }
     }
@@ -279,7 +279,7 @@ async function attemptTemporaryAccess({
     return;
   }
 
-  console.debug(`attemptTemporaryAccess:`, { tabId, frameId, url });
+  console.debug("attemptTemporaryAccess:", { tabId, frameId, url });
 
   try {
     await ensureContentScript({ tabId, frameId });
@@ -292,7 +292,7 @@ async function attemptTemporaryAccess({
     // https://github.com/pixiebrix/pixiebrix-extension/pull/661#discussion_r661590847
     if (/Cannot access|missing host permission/.test(getErrorMessage(error))) {
       console.debug(
-        `Skipping attemptTemporaryAccess because no activeTab permissions`,
+        "Skipping attemptTemporaryAccess because no activeTab permissions",
         { tabId, frameId, url }
       );
       return;

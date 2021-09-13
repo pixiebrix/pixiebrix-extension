@@ -44,7 +44,7 @@ export async function errorBoundary(
 
     if (!isRendererOutput(value)) {
       logger.warn("Expected a renderer brick");
-      return `<div style="color: red;">Expected a renderer brick</div>`;
+      return '<div style="color: red;">Expected a renderer brick</div>';
     }
 
     // TODO: validate the shape of the value returned

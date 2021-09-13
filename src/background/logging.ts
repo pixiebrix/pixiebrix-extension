@@ -304,7 +304,7 @@ export class BackgroundLogger implements ILogger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    console.error(`An error occurred: %s`, getErrorMessage(error), {
+    console.error("An error occurred: %s", getErrorMessage(error), {
       error,
       context: this.context,
       data,

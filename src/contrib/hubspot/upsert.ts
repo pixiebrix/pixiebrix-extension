@@ -137,7 +137,7 @@ export class AddUpdateContact extends Effect {
         throw new BusinessError("Multiple Hubspot contacts found");
       } else {
         await proxyHubspot({
-          url: `https://api.hubapi.com/contacts/v1/contact/`,
+          url: "https://api.hubapi.com/contacts/v1/contact/",
           method: "post",
           data: { properties },
         });

@@ -107,7 +107,7 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
 export async function ensureContentScript(target: Target): Promise<void> {
   expectContext("background");
 
-  console.debug(`ensureContentScript: requested`, target);
+  console.debug("ensureContentScript: requested", target);
 
   const controller = new AbortController();
 
@@ -123,14 +123,14 @@ export async function ensureContentScript(target: Target): Promise<void> {
 
     if (!result) {
       console.debug(
-        `ensureContentScript: script messaged us back while waiting`,
+        "ensureContentScript: script messaged us back while waiting",
         target
       );
       return;
     }
 
     if (result.ready) {
-      console.debug(`ensureContentScript: already exists and is ready`, target);
+      console.debug("ensureContentScript: already exists and is ready", target);
       return;
     }
 
@@ -144,11 +144,11 @@ export async function ensureContentScript(target: Target): Promise<void> {
 
     if (result.installed || (await isContentScriptRegistered(result.url))) {
       console.debug(
-        `ensureContentScript: already exists or will be injected automatically`,
+        "ensureContentScript: already exists or will be injected automatically",
         target
       );
     } else {
-      console.debug(`ensureContentScript: injecting`, target);
+      console.debug("ensureContentScript: injecting", target);
       const loadingScripts = chrome.runtime
         .getManifest()
         .content_scripts.map(async (script) => {
@@ -165,7 +165,7 @@ export async function ensureContentScript(target: Target): Promise<void> {
       4000,
       "contentScript not ready in 4s"
     );
-    console.debug(`ensureContentScript: ready`, target);
+    console.debug("ensureContentScript: ready", target);
   } finally {
     controller.abort();
   }

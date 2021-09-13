@@ -112,7 +112,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
                   variant="info"
                   size="sm"
                   onClick={() => {
-                    navigate(`/services/zapier/`);
+                    navigate("/services/zapier/");
                   }}
                 >
                   View Key

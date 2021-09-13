@@ -170,7 +170,7 @@ async function forwardWhenReady(
   };
 
   console.debug(
-    `Forwarding message %s to action frame for tab: %d (seq: %d)`,
+    "Forwarding message %s to action frame for tab: %d (seq: %d)",
     message.type,
     tabId,
     seqNum
@@ -193,7 +193,7 @@ async function forwardWhenReady(
         frameId,
       });
       console.debug(
-        `Forwarded message %s to action frame for tab: %d (seq: %d)`,
+        "Forwarded message %s to action frame for tab: %d (seq: %d)",
         message.type,
         tabId,
         seqNum

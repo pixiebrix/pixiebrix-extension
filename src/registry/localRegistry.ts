@@ -152,7 +152,7 @@ export const find = liftBackground("REGISTRY_FIND", async (id: string) => {
   if (id == null) {
     throw new Error("id is required");
   } else if (typeof id !== "string") {
-    console.error(`REGISTRY_FIND received invalid id argument`, { id });
+    console.error("REGISTRY_FIND received invalid id argument", { id });
     throw new Error("invalid brick id");
   }
 
