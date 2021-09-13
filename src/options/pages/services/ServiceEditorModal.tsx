@@ -106,7 +106,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 
   return (
     <Modal
-      style={{ zIndex: "999" }}
+      style={{ zIndex: 999 }}
       show
       onHide={onClose}
       backdrop="static"
