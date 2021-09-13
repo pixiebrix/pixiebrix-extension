@@ -25,14 +25,14 @@ import { UUID } from "@/core";
 import { expectContext } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
 import { CancelError } from "@/errors";
+import pDefer, { DeferredPromise } from "p-defer";
 
-type Callbacks = {
-  resolve: (result: unknown) => void;
-  reject: (reason: unknown) => void;
+type RegisteredForm = {
+  definition: FormDefinition;
+  registration: DeferredPromise<unknown>;
 };
 
-const formDefinitions = new Map<UUID, FormDefinition>();
-const formCallbacks = new Map<UUID, Callbacks>();
+const forms = new Map<UUID, RegisteredForm>();
 
 /**
  * Register a form with the content script.
@@ -45,19 +45,18 @@ export async function registerForm(
 ): Promise<unknown> {
   expectContext("contentScript");
 
-  formDefinitions.set(nonce, definition);
+  const registration = pDefer();
 
-  return new Promise((resolve, reject) => {
-    formCallbacks.set(nonce, {
-      resolve,
-      reject,
-    });
+  forms.set(nonce, {
+    definition,
+    registration,
   });
+
+  return registration.promise;
 }
 
 function unregisterForm(nonce: UUID) {
-  formCallbacks.delete(nonce);
-  formDefinitions.delete(nonce);
+  forms.delete(nonce);
 }
 
 const handlers = new HandlerMap();
@@ -77,19 +76,23 @@ type CancelFormMessage = {
   payload: { nonce: UUID };
 };
 
-handlers.set(FORM_GET_DEFINITION, async (request: GetFormDefinitionMessage) =>
-  formDefinitions.get(request.payload.nonce)
+handlers.set(
+  FORM_GET_DEFINITION,
+  async (request: GetFormDefinitionMessage) =>
+    forms.get(request.payload.nonce).definition
 );
 
 handlers.set(FORM_RESOLVE, async (request: ResolveFormMessage) => {
   const { nonce, values } = request.payload;
-  formCallbacks.get(nonce).resolve(values);
+  forms.get(nonce).registration.resolve(values);
   unregisterForm(nonce);
 });
 
 handlers.set(FORM_CANCEL, async (request: CancelFormMessage) => {
   const { nonce } = request.payload;
-  formCallbacks.get(nonce).reject(new CancelError("User cancelled the action"));
+  forms
+    .get(nonce)
+    .registration.reject(new CancelError("User cancelled the action"));
   unregisterForm(nonce);
 });
 
