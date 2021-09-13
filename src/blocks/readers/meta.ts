@@ -19,54 +19,6 @@ import { Reader } from "@/types";
 import { getExtensionAuth } from "@/auth/token";
 import * as session from "@/contentScript/context";
 import { ReaderOutput, Schema } from "@/core";
-import { Manifest, Permissions } from "webextension-polyfill-ts";
-import chromeP from "webext-polyfill-kinda";
-import { isChrome } from "webext-detect-page";
-
-export class ChromeProfileReader extends Reader {
-  constructor() {
-    super(
-      "@pixiebrix/chrome-profile",
-      "Chrome user profile reader",
-      "Read data from the Chrome user profile"
-    );
-  }
-
-  permissions: Permissions.Permissions = {
-    permissions: ["identity.email" as Manifest.OptionalPermission],
-    origins: [],
-  };
-
-  async read(): Promise<ReaderOutput> {
-    if (!chrome.identity) {
-      throw new Error("No access to the Chrome Identity API");
-    }
-
-    const userInfo = await chromeP.identity.getProfileUserInfo();
-    return { ...userInfo };
-  }
-
-  outputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    properties: {
-      id: {
-        type: "string",
-        description: "A unique identifier for the account",
-      },
-      email: {
-        type: "string",
-        format: "email",
-        description:
-          "An email address for the user account signed into the current profile.",
-      },
-    },
-  };
-
-  async isAvailable(): Promise<boolean> {
-    return Boolean(chrome?.identity) && isChrome();
-  }
-}
 
 export class TimestampReader extends Reader {
   constructor() {
