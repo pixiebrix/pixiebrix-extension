@@ -47,7 +47,6 @@ import { SettingsState } from "@/options/slices";
 import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { AuthState } from "@/core";
-import TemplatesPage from "@/options/pages/templates/TemplatesPage";
 import { initTelemetry } from "@/telemetry/events";
 import UpdateBanner from "@/options/pages/UpdateBanner";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
@@ -107,7 +106,6 @@ const Layout = () => {
                     path="/extensions/install/:extensionId"
                     component={ActivateExtensionPage}
                   />
-                  <Route exact path="/templates" component={TemplatesPage} />
                   <Route
                     exact
                     path="/:sourcePage/activate/:blueprintId"

@@ -19,7 +19,6 @@ import React, { useContext } from "react";
 import OutsideClickHandler from "react-outside-click-handler";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faClipboardCheck,
   faCloud,
   faCogs,
   faCubes,
@@ -48,11 +47,6 @@ const Sidebar: React.FunctionComponent = () => {
               location.pathname === "/" ||
               location.pathname.startsWith("/extensions/")
             }
-          />
-          <SidebarLink
-            route="/templates"
-            title="Templates"
-            icon={faClipboardCheck}
           />
           {flags.includes("marketplace") && (
             <SidebarLink
