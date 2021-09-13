@@ -19,13 +19,18 @@ import React, { useMemo, useState } from "react";
 import GridLoader from "react-spinners/GridLoader";
 import { PageTitle } from "@/layout/Page";
 import { sortBy } from "lodash";
-import { faScroll } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExternalLinkAlt,
+  faRedo,
+  faScroll,
+} from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
 import "./MarketplacePage.scss";
 import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -136,12 +141,23 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
 
   return (
     <div className="marketplace-component">
-      <PageTitle icon={faScroll} title="My Blueprints" />
-      <div className="pb-4">
-        <p>
-          Activate pre-made blueprints for your favorite websites and SaaS apps
-        </p>
-      </div>
+      <Row>
+        <Col>
+          <PageTitle icon={faScroll} title="My Blueprints" />
+          <div className="pb-4">
+            <p>
+              Activate pre-made blueprints for your favorite websites and SaaS
+              apps
+            </p>
+          </div>
+        </Col>
+        <Col className="text-right">
+          <Button>
+            Open Public Marketplace{" "}
+            <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-1" />
+          </Button>
+        </Col>
+      </Row>
 
       <Row>
         <Col xl={8} lg={10} md={12}>
