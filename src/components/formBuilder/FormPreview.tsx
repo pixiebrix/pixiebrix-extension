@@ -18,45 +18,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { Schema } from "@/core";
-import { FieldProps, ISubmitEvent, utils } from "@rjsf/core";
+import { FieldProps, IChangeEvent, ISubmitEvent, UiSchema } from "@rjsf/core";
 import { SetActiveField } from "./formBuilderTypes";
-import { faLaptopHouse } from "@fortawesome/free-solid-svg-icons";
+import FormPreviewStingField, {
+  UI_SCHEMA_ACTIVE,
+} from "./FormPreviewStingField";
 
-const uiSchemaActive = "ui:active";
-const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
-
-interface FormRendererFieldProps extends FieldProps {
-  setActiveField: SetActiveField;
-}
-const FormRendererStingField: React.FC<FormRendererFieldProps> = ({
-  setActiveField,
-  ...rest
-}) => {
-  console.log("FormRendererStingField", rest);
-  const { name, uiSchema = {} } = rest;
-  const isActive = Boolean(uiSchema[uiSchemaActive]);
-
-  return (
-    <div
-      onClick={() => {
-        if (!isActive) {
-          setActiveField(name);
-        }
-      }}
-      style={
-        isActive
-          ? {
-              border: "1px solid black",
-            }
-          : null
-      }
-    >
-      <RjsfStringField {...rest} />
-    </div>
-  );
-};
-
-const FormRenderer: React.FC<{
+const FormPreview: React.FC<{
   schema: Schema;
   onSubmit: (
     e: ISubmitEvent<unknown>,
@@ -66,7 +34,7 @@ const FormRenderer: React.FC<{
   setActiveField: SetActiveField;
 }> = ({ schema, onSubmit, activeField, setActiveField }) => {
   const [data, setData] = useState(null);
-  const onDataChanged = ({ formData }) => {
+  const onDataChanged = ({ formData }: IChangeEvent<unknown>) => {
     setData(formData);
   };
 
@@ -76,7 +44,7 @@ const FormRenderer: React.FC<{
 
   const StringField = useCallback(
     (props: FieldProps) => (
-      <FormRendererStingField setActiveField={setActiveField} {...props} />
+      <FormPreviewStingField setActiveField={setActiveField} {...props} />
     ),
     [setActiveField]
   );
@@ -85,10 +53,10 @@ const FormRenderer: React.FC<{
     StringField,
   };
 
-  const uiSchema = {};
+  const uiSchema: UiSchema = {};
   if (activeField) {
     uiSchema[activeField] = {
-      [uiSchemaActive]: true,
+      [UI_SCHEMA_ACTIVE]: true,
     };
   }
 
@@ -104,4 +72,4 @@ const FormRenderer: React.FC<{
   );
 };
 
-export default FormRenderer;
+export default FormPreview;

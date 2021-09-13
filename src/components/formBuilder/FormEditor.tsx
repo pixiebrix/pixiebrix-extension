@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { editorFormSchema } from "./formBuilderSchemas";
 import {
@@ -123,7 +123,7 @@ const ArrayFieldTemplate = ({
   );
 };
 
-const FormBuilder: React.FC<{
+const FormEditor: React.FC<{
   currentSchema: Schema;
   onSchemaChanged: OnSchemaChanged;
   onSave: OnSchemaChanged;
@@ -150,7 +150,7 @@ const FormBuilder: React.FC<{
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- doesn't work with debounce
   const updateFormSchema = useCallback(
-    debounce((formConfig: any) => {
+    debounce((formConfig: FormConfig) => {
       const nextSchema = buildFormSchemaFromConfig(currentSchema, formConfig);
       onSchemaChanged(nextSchema);
     }, 500),
@@ -173,8 +173,6 @@ const FormBuilder: React.FC<{
     },
   };
 
-  console.log("FormBuilder render");
-
   return (
     <JsonSchemaForm
       formData={formConfig}
@@ -190,4 +188,4 @@ const FormBuilder: React.FC<{
   );
 };
 
-export default FormBuilder;
+export default FormEditor;
