@@ -19,7 +19,7 @@ import React, { useMemo, useState } from "react";
 import GridLoader from "react-spinners/GridLoader";
 import { PageTitle } from "@/layout/Page";
 import { sortBy } from "lodash";
-import { faStoreAlt } from "@fortawesome/free-solid-svg-icons";
+import { faScroll } from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
@@ -136,11 +136,10 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
 
   return (
     <div className="marketplace-component">
-      <PageTitle icon={faStoreAlt} title="Marketplace" />
+      <PageTitle icon={faScroll} title="My Blueprints" />
       <div className="pb-4">
         <p>
-          Find and activate pre-made blueprints for your favorite websites and
-          SaaS apps
+          Activate pre-made blueprints for your favorite websites and SaaS apps
         </p>
       </div>
 

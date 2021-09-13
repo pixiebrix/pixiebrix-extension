@@ -98,7 +98,7 @@ const Layout = () => {
                 <Switch>
                   <Route
                     exact
-                    path="/marketplace"
+                    path="/my-blueprints"
                     component={MarketplacePage}
                   />
                   <Route

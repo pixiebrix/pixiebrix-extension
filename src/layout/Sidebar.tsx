@@ -24,7 +24,7 @@ import {
   faCubes,
   faHammer,
   faInfoCircle,
-  faStoreAlt,
+  faScroll,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import AuthContext from "@/auth/AuthContext";
@@ -50,9 +50,9 @@ const Sidebar: React.FunctionComponent = () => {
           />
           {flags.includes("marketplace") && (
             <SidebarLink
-              route="/marketplace"
-              title="Marketplace"
-              icon={faStoreAlt}
+              route="/my-blueprints"
+              title="My Blueprints"
+              icon={faScroll}
             />
           )}
           {flags.includes("workshop") && (
