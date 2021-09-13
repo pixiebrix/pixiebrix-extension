@@ -15,15 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import GridLoader from "react-spinners/GridLoader";
 import { PageTitle } from "@/layout/Page";
 import { sortBy } from "lodash";
-import {
-  faExternalLinkAlt,
-  faRedo,
-  faScroll,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
@@ -31,6 +27,7 @@ import "./MarketplacePage.scss";
 import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import AuthContext from "@/auth/AuthContext";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -127,6 +124,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
 }) => {
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
+  const { flags } = useContext(AuthContext);
 
   const recipes = useMemo(() => {
     const normalQuery = (query ?? "").toLowerCase();
@@ -151,12 +149,18 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
             </p>
           </div>
         </Col>
-        <Col className="text-right">
-          <Button>
-            Open Public Marketplace{" "}
-            <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-1" />
-          </Button>
-        </Col>
+
+        {flags.includes("public_marketplace") && (
+          <Col className="text-right">
+            <a
+              href="https://www.pixiebrix.com/marketplace"
+              className="btn btn-primary"
+            >
+              Open Public Marketplace{" "}
+              <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-1" />
+            </a>
+          </Col>
+        )}
       </Row>
 
       <Row>
