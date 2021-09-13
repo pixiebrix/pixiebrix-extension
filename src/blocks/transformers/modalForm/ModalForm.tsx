@@ -31,18 +31,9 @@ import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 
 const ModalLayout: React.FC = ({ children }) => (
-  // Can't use React Bootstrap's Modal because we have to customize the classes in the layout
-  <div
-    className="modal show"
-    tabIndex={-1}
-    role="dialog"
-    style={{ display: "block" }}
-  >
-    <div className="modal-dialog modal-dialog-scrollable" role="document">
-      <div className="modal-content">
-        <div className="modal-body">{children}</div>
-      </div>
-    </div>
+  // Don;t use React Bootstrap's Modal because we want to customize the classes in the layout
+  <div className="modal-content">
+    <div className="modal-body">{children}</div>
   </div>
 );
 
@@ -101,17 +92,22 @@ const ModalForm: React.FC = () => {
       >
         <div>
           <button className="btn btn-primary" type="submit">
-            Submit
+            {state.definition.submitCaption}
           </button>
-          <button
-            className="btn btn-link"
-            type="button"
-            onClick={() => {
-              void state.sendMessage({ type: FORM_CANCEL, payload: { nonce } });
-            }}
-          >
-            Cancel
-          </button>
+          {state.definition.cancelable && (
+            <button
+              className="btn btn-link"
+              type="button"
+              onClick={() => {
+                void state.sendMessage({
+                  type: FORM_CANCEL,
+                  payload: { nonce },
+                });
+              }}
+            >
+              Cancel
+            </button>
+          )}
         </div>
       </Form>
     </ModalLayout>

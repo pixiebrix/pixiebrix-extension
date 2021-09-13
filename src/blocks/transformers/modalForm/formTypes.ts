@@ -20,6 +20,8 @@ import { Schema, UiSchema } from "@/core";
 export type FormDefinition = {
   schema: Schema;
   uiSchema: UiSchema;
+  cancelable: boolean;
+  submitCaption: string;
 };
 
 export const FORM_GET_DEFINITION = "@@forms/GET_FORM_DEFINITION";
