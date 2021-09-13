@@ -57,7 +57,6 @@
     "src/support.js",
     "selenium"
   ],
-
   "overrides": [
     {
       "files": ["*.stories.tsx"],
