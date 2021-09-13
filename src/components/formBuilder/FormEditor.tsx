@@ -49,101 +49,91 @@ const ArrayFieldTemplate = ({
   canAdd,
   onAddClick,
   ...rest
-}) => {
-  console.log("ArrayFieldTemplate", rest);
+}) => (
+  <div className={className}>
+    {rest.items.map((item, index) => {
+      const fieldName = formData[index].name;
+      const isActive = uiSchema[uiSchemaActive] === fieldName;
 
-  return (
-    <div className={className}>
-      {rest.items.map((item, index) => {
-        const fieldName = formData[index].name;
-        const isActive = uiSchema[uiSchemaActive] === fieldName;
-
-        return (
-          <div key={item.key}>
-            <div
-              onClick={() => {
-                if (!isActive) {
-                  setActiveField && setActiveField(fieldName);
-                }
-              }}
-              style={
-                isActive
-                  ? {
-                      border: "1px solid black",
-                    }
-                  : null
+      return (
+        <div key={item.key}>
+          <div
+            onClick={() => {
+              if (!isActive) {
+                setActiveField && setActiveField(fieldName);
               }
-            >
-              {item?.children}
-            </div>
-            <div className="d-flex flex-row">
-              {(item.hasMoveUp || item.hasMoveDown) && (
-                <>
-                  <Button
-                    variant="link"
-                    tabIndex={-1}
-                    disabled={item.disabled || item.readonly || !item.hasMoveUp}
-                    onClick={item.onReorderClick(item.index, item.index - 1)}
-                  >
-                    <FontAwesomeIcon icon={faArrowUp} />
-                  </Button>
-                  <Button
-                    variant="link"
-                    tabIndex={-1}
-                    disabled={
-                      item.disabled || item.readonly || !item.hasMoveDown
-                    }
-                    onClick={item.onReorderClick(item.index, item.index + 1)}
-                  >
-                    <FontAwesomeIcon icon={faArrowDown} />
-                  </Button>
-                </>
-              )}
-
-              {item.hasRemove && (
+            }}
+            style={
+              isActive
+                ? {
+                    border: "1px solid black",
+                  }
+                : null
+            }
+          >
+            {item?.children}
+          </div>
+          <div className="d-flex flex-row">
+            {(item.hasMoveUp || item.hasMoveDown) && (
+              <>
                 <Button
                   variant="link"
                   tabIndex={-1}
-                  disabled={item.disabled || item.readonly}
-                  onClick={item.onDropIndexClick(item.index)}
+                  disabled={item.disabled || item.readonly || !item.hasMoveUp}
+                  onClick={item.onReorderClick(item.index, item.index - 1)}
                 >
-                  <FontAwesomeIcon icon={faTimes} />
+                  <FontAwesomeIcon icon={faArrowUp} />
                 </Button>
-              )}
-            </div>
-            {canAdd && (
-              <Button onClick={onAddClick}>
-                <FontAwesomeIcon icon={faPlus} />
+                <Button
+                  variant="link"
+                  tabIndex={-1}
+                  disabled={item.disabled || item.readonly || !item.hasMoveDown}
+                  onClick={item.onReorderClick(item.index, item.index + 1)}
+                >
+                  <FontAwesomeIcon icon={faArrowDown} />
+                </Button>
+              </>
+            )}
+
+            {item.hasRemove && (
+              <Button
+                variant="link"
+                tabIndex={-1}
+                disabled={item.disabled || item.readonly}
+                onClick={item.onDropIndexClick(item.index)}
+              >
+                <FontAwesomeIcon icon={faTimes} />
               </Button>
             )}
           </div>
-        );
-      })}
-    </div>
-  );
-};
+          {canAdd && (
+            <Button onClick={onAddClick}>
+              <FontAwesomeIcon icon={faPlus} />
+            </Button>
+          )}
+        </div>
+      );
+    })}
+  </div>
+);
 
 const FormEditor: React.FC<{
   currentSchema: Schema;
-  onSchemaChanged: OnSchemaChanged;
-  onSave: OnSchemaChanged;
+  onChange: OnSchemaChanged;
+  onSave?: OnSchemaChanged;
   activeField?: string;
   setActiveField: SetActiveField;
-}> = ({
-  currentSchema,
-  onSchemaChanged,
-  onSave,
-  activeField,
-  setActiveField,
-}) => {
+}> = ({ currentSchema, onChange, onSave, activeField, setActiveField }) => {
   const [formConfig, setFormConfig] = useState(
     buildFormConfigFromSchema(currentSchema)
   );
+  const [errorSchema, setErrorSchema] = useState<ErrorSchema>(null);
 
   const onConfigChanged: OnConfigChanged = ({ formData }, errorSchema) => {
     setFormConfig(formData);
+    setErrorSchema(errorSchema);
 
-    if (!errorSchema) {
+    if (!errorSchema && onChange) {
       updateFormSchema(formData);
     }
   };
@@ -152,12 +142,16 @@ const FormEditor: React.FC<{
   const updateFormSchema = useCallback(
     debounce((formConfig: FormConfig) => {
       const nextSchema = buildFormSchemaFromConfig(currentSchema, formConfig);
-      onSchemaChanged(nextSchema);
+      onChange(nextSchema);
     }, 500),
-    [onSchemaChanged]
+    [onChange]
   );
 
-  const save = () => {
+  const onSubmit = () => {
+    if (!onSave || errorSchema) {
+      return;
+    }
+
     onSave(buildFormSchemaFromConfig(currentSchema, formConfig));
   };
 
@@ -179,9 +173,13 @@ const FormEditor: React.FC<{
       schema={editorFormSchema}
       uiSchema={uiSchema}
       onChange={onConfigChanged}
-      onSubmit={save}
+      onSubmit={onSubmit}
     >
-      <button className="btn btn-primary" type="submit">
+      <button
+        className="btn btn-primary"
+        type="submit"
+        style={onSave ? undefined : { display: "none" }}
+      >
         Save
       </button>
     </JsonSchemaForm>

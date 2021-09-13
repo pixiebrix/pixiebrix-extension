@@ -20,6 +20,9 @@ import React from "react";
 import { Schema } from "@/core";
 import FormBuilder from "./FormBuilder";
 import { action } from "@storybook/addon-actions";
+import { Formik } from "formik";
+import * as yup from "yup";
+import { Button, Form as BootstrapForm } from "react-bootstrap";
 
 const schema: Schema = {
   title: "A form",
@@ -49,16 +52,40 @@ const componentMeta: ComponentMeta<typeof FormBuilder> = {
   component: FormBuilder,
 };
 
-const Template: ComponentStory<typeof FormBuilder> = (args) => (
+export const Default: ComponentStory<typeof FormBuilder> = (args) => (
   <FormBuilder {...args} />
 );
-
-export const Default = Template.bind({});
 Default.args = {
   schema,
   onChange: action("onChange"),
   onSave: action("onSave"),
   onPreviewSubmitted: action("ui form submitted"),
 };
+
+const SchemaShape: yup.ObjectSchema = yup.object().shape({
+  dynamicForm: yup.object(),
+});
+const initialValues = {
+  dynamicForm: schema,
+};
+export const FormikForm: ComponentStory<typeof FormBuilder> = () => (
+  <Formik
+    initialValues={initialValues}
+    validationSchema={SchemaShape}
+    onSubmit={action("onSubmit")}
+  >
+    {({ values, setFieldValue, handleSubmit }) => (
+      <BootstrapForm noValidate onSubmit={handleSubmit}>
+        <FormBuilder
+          schema={values.dynamicForm}
+          onChange={(schema) => {
+            setFieldValue("dynamicForm", schema);
+          }}
+        />
+        <Button type="submit">Submit</Button>
+      </BootstrapForm>
+    )}
+  </Formik>
+);
 
 export default componentMeta;
