@@ -17,30 +17,49 @@
 
 import React, { useCallback, useEffect, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { Schema } from "@/core";
-import { FieldProps, IChangeEvent, ISubmitEvent, UiSchema } from "@rjsf/core";
+import { FieldProps, IChangeEvent, UiSchema } from "@rjsf/core";
 import { SetActiveField } from "./formBuilderTypes";
-import FormPreviewStingField, {
-  UI_SCHEMA_ACTIVE,
-} from "./FormPreviewStingField";
+import FormPreviewStingField from "./FormPreviewStingField";
+import { useField } from "formik";
+import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 
 const FormPreview: React.FC<{
-  schema: Schema;
-  onSubmit: (
-    e: ISubmitEvent<unknown>,
-    nativeEvent: React.FormEvent<HTMLFormElement>
-  ) => void;
+  name: string;
   activeField?: string;
   setActiveField: SetActiveField;
-}> = ({ schema, onSubmit, activeField, setActiveField }) => {
+}> = ({ name, activeField, setActiveField }) => {
   const [data, setData] = useState(null);
   const onDataChanged = ({ formData }: IChangeEvent<unknown>) => {
     setData(formData);
   };
 
+  const [
+    uiSchemaWithActiveField,
+    setUiSchemaWithActiveField,
+  ] = useState<UiSchema>({});
+
+  const [
+    {
+      value: { schema, uiSchema },
+    },
+  ] = useField(name);
+
   useEffect(() => {
     setData(null);
-  }, [schema]);
+  }, [schema, uiSchema]);
+
+  useEffect(() => {
+    if (activeField) {
+      const localUiSchema = { ...uiSchema };
+      localUiSchema[activeField] = {
+        ...localUiSchema[activeField],
+        [UI_SCHEMA_ACTIVE]: true,
+      };
+      setUiSchemaWithActiveField(localUiSchema);
+    } else {
+      setUiSchemaWithActiveField(uiSchema);
+    }
+  }, [activeField, uiSchema]);
 
   const StringField = useCallback(
     (props: FieldProps) => (
@@ -53,22 +72,17 @@ const FormPreview: React.FC<{
     StringField,
   };
 
-  const uiSchema: UiSchema = {};
-  if (activeField) {
-    uiSchema[activeField] = {
-      [UI_SCHEMA_ACTIVE]: true,
-    };
-  }
-
   return (
     <JsonSchemaForm
+      tagName="div"
       formData={data}
       fields={fields}
-      schema={{ ...schema }}
-      uiSchema={uiSchema}
+      schema={schema}
+      uiSchema={uiSchemaWithActiveField}
       onChange={onDataChanged}
-      onSubmit={onSubmit}
-    />
+    >
+      <div></div>
+    </JsonSchemaForm>
   );
 };
 

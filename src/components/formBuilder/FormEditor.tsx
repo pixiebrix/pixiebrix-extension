@@ -15,174 +15,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useRef, useState } from "react";
-import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { editorFormSchema } from "./formBuilderSchemas";
+import { Schema, UiSchema } from "@/core";
+import { FieldArray, Formik, useField } from "formik";
+import React, { useEffect, useState } from "react";
+import { FormConfig, SetActiveField } from "./formBuilderTypes";
+import { Button, Form as BootstrapForm } from "react-bootstrap";
 import {
   buildFormConfigFromSchema,
   buildFormSchemaFromConfig,
 } from "./formBuilderHelpers";
-import { debounce } from "lodash";
-import { ErrorSchema, IChangeEvent } from "@rjsf/core";
-import { Schema } from "@/core";
-import { FormConfig, SetActiveField } from "./formBuilderTypes";
-import { Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faArrowDown,
-  faArrowUp,
-  faPlus,
-  faTimes,
-} from "@fortawesome/free-solid-svg-icons";
+import FormikHorizontalField from "@/components/form/fields/FormikHorizontalField";
+import FieldEditor from "./FieldEditor";
 
-type OnConfigChanged = (e: IChangeEvent<FormConfig>, es?: ErrorSchema) => void;
-type OnSchemaChanged = (schema: Schema) => void;
-
-const uiSchemaActive = "ui:activeField";
-
-// ToDo split into ArrayFieldTemplate and FieldTemplate
-const ArrayFieldTemplate = ({
-  setActiveField,
-  className,
-  formData,
-  uiSchema,
-  canAdd,
-  onAddClick,
-  ...rest
-}) => (
-  <div className={className}>
-    {rest.items.map((item, index) => {
-      const fieldName = formData[index].name;
-      const isActive = uiSchema[uiSchemaActive] === fieldName;
-
-      return (
-        <div key={item.key}>
-          <div
-            onClick={() => {
-              if (!isActive) {
-                setActiveField && setActiveField(fieldName);
-              }
-            }}
-            style={
-              isActive
-                ? {
-                    border: "1px solid black",
-                  }
-                : null
-            }
-          >
-            {item?.children}
-          </div>
-          <div className="d-flex flex-row">
-            {(item.hasMoveUp || item.hasMoveDown) && (
-              <>
-                <Button
-                  variant="link"
-                  tabIndex={-1}
-                  disabled={item.disabled || item.readonly || !item.hasMoveUp}
-                  onClick={item.onReorderClick(item.index, item.index - 1)}
-                >
-                  <FontAwesomeIcon icon={faArrowUp} />
-                </Button>
-                <Button
-                  variant="link"
-                  tabIndex={-1}
-                  disabled={item.disabled || item.readonly || !item.hasMoveDown}
-                  onClick={item.onReorderClick(item.index, item.index + 1)}
-                >
-                  <FontAwesomeIcon icon={faArrowDown} />
-                </Button>
-              </>
-            )}
-
-            {item.hasRemove && (
-              <Button
-                variant="link"
-                tabIndex={-1}
-                disabled={item.disabled || item.readonly}
-                onClick={item.onDropIndexClick(item.index)}
-              >
-                <FontAwesomeIcon icon={faTimes} />
-              </Button>
-            )}
-          </div>
-          {canAdd && (
-            <Button onClick={onAddClick}>
-              <FontAwesomeIcon icon={faPlus} />
-            </Button>
-          )}
-        </div>
-      );
-    })}
-  </div>
-);
+const uiOrderProperty = "ui:order";
 
 const FormEditor: React.FC<{
-  currentSchema: Schema;
-  onChange: OnSchemaChanged;
-  onSave?: OnSchemaChanged;
+  name: string;
   activeField?: string;
   setActiveField: SetActiveField;
-}> = ({ currentSchema, onChange, onSave, activeField, setActiveField }) => {
-  const [formConfig, setFormConfig] = useState(
-    buildFormConfigFromSchema(currentSchema)
-  );
-  const [errorSchema, setErrorSchema] = useState<ErrorSchema>(null);
-
-  const onConfigChanged: OnConfigChanged = ({ formData }, errorSchema) => {
-    setFormConfig(formData);
-    setErrorSchema(errorSchema);
-
-    if (!errorSchema && onChange) {
-      updateFormSchema(formData);
-    }
-  };
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- doesn't work with debounce
-  const updateFormSchema = useCallback(
-    debounce((formConfig: FormConfig) => {
-      const nextSchema = buildFormSchemaFromConfig(currentSchema, formConfig);
-      onChange(nextSchema);
-    }, 500),
-    [onChange]
+}> = ({ name, activeField, setActiveField }) => {
+  const [{ value: schema }] = useField<Schema>(`${name}.schema`);
+  const [{ value: uiSchema }, , { setValue: setUiSchema }] = useField<UiSchema>(
+    `${name}.uiSchema`
   );
 
-  const onSubmit = () => {
-    if (!onSave || errorSchema) {
-      return;
+  useEffect(() => {
+    // Set uiSchema order if needed
+    if (!uiSchema[uiOrderProperty]) {
+      const properyKeys = Object.keys(schema.properties);
+      setUiSchema({ ...uiSchema, [uiOrderProperty]: properyKeys });
     }
+  }, [schema, uiSchema]);
 
-    onSave(buildFormSchemaFromConfig(currentSchema, formConfig));
-  };
-
-  // ToDo add dependency on setActiveField
-  const ArrayFieldComponent = useRef((props) => (
-    <ArrayFieldTemplate setActiveField={setActiveField} {...props} />
-  )).current;
-
-  const uiSchema = {
-    fields: {
-      "ui:activeField": activeField,
-      "ui:ArrayFieldTemplate": ArrayFieldComponent,
-    },
-  };
+  const propertyNameToShow = activeField || Object.keys(schema.properties)[0];
 
   return (
-    <JsonSchemaForm
-      formData={formConfig}
-      schema={editorFormSchema}
-      uiSchema={uiSchema}
-      onChange={onConfigChanged}
-      onSubmit={onSubmit}
-    >
-      <button
-        className="btn btn-primary"
-        type="submit"
-        style={onSave ? undefined : { display: "none" }}
-      >
-        Save
-      </button>
-    </JsonSchemaForm>
+    <div>
+      <BootstrapForm.Group>
+        <h5>Edit form</h5>
+        <hr />
+      </BootstrapForm.Group>
+      <FormikHorizontalField name={`${name}.schema.title`} label="Title" />
+      <FormikHorizontalField
+        name={`${name}.schema.description`}
+        label="Description"
+      />
+      <BootstrapForm.Group>
+        <h6>Edit fields</h6>
+        <hr />
+      </BootstrapForm.Group>
+      {/* eslint-disable-next-line security/detect-object-injection */}
+      {propertyNameToShow && Boolean(schema.properties[propertyNameToShow]) && (
+        <FieldEditor name={name} fieldName={propertyNameToShow} />
+      )}
+    </div>
   );
 };
 

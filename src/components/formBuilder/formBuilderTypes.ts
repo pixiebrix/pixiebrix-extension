@@ -22,10 +22,12 @@ export type FormField = {
   name: string;
   type: FormFieldType;
   title: string;
+  isRequired: boolean;
 };
 
 export type FormConfig = {
   title: string;
+  description: string;
   fields: FormField[];
 };
 

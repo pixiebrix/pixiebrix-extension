@@ -21,12 +21,14 @@ import { FormConfig, FormField, FormFieldType } from "./formBuilderTypes";
 export const buildFormConfigFromSchema = (formSchema: Schema): FormConfig => {
   const formConfig = {
     title: formSchema.title,
+    description: formSchema.description,
     fields: Object.entries(formSchema.properties).map(
       ([name, { type, title }]: [string, Schema]) => {
         const formField: FormField = {
           name,
           type: type as FormFieldType,
           title,
+          isRequired: formSchema.required?.includes(name),
         };
         return formField;
       }
@@ -42,6 +44,8 @@ export const buildFormSchemaFromConfig = (
 ): Schema => {
   const nextSchema = { ...currentSchema };
   nextSchema.title = formConfig.title;
+  nextSchema.description = formConfig.description;
+  nextSchema.required = [];
   nextSchema.properties = {};
 
   for (const fieldConfig of formConfig.fields) {
@@ -49,6 +53,9 @@ export const buildFormSchemaFromConfig = (
       type: fieldConfig.type || "string",
       title: fieldConfig.title || fieldConfig.name,
     };
+    if (fieldConfig.isRequired) {
+      nextSchema.required.push(fieldConfig.name);
+    }
   }
 
   return nextSchema;

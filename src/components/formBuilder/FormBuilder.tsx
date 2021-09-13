@@ -18,50 +18,37 @@
 import React, { useState } from "react";
 import FormEditor from "./FormEditor";
 import FormPreview from "./FormPreview";
-import { Schema } from "@/core";
-
-type OnSchemaChanged = (schema: Schema) => void;
+import { Schema, UiSchema } from "@/core";
+import { useField } from "formik";
+import { UI_ORDER } from "./schemaFieldNames";
 
 const FormBuilder: React.FC<{
-  schema: Schema;
-  onChange?: OnSchemaChanged;
-  onSave?: OnSchemaChanged;
-  onPreviewSubmitted?: (formData: unknown) => void;
-}> = ({ schema: initialSchema, onChange, onSave, onPreviewSubmitted }) => {
-  const [schema, setSchema] = useState(initialSchema);
-  const [activeField, setActiveField] = useState("");
+  name: string;
+}> = ({ name }) => {
+  const [
+    {
+      value: { schema, uiSchema },
+    },
+  ] = useField<{ schema: Schema; uiSchema: UiSchema }>(name);
 
-  const onSchemaChanged = (schema: Schema) => {
-    setSchema(schema);
-    if (onChange) {
-      onChange(schema);
-    }
-  };
-
-  const onSchemaSaved = (schema: Schema) => {
-    setSchema(schema);
-    onSave(schema);
-  };
+  const [activeField, setActiveField] = useState(
+    uiSchema[UI_ORDER]?.length
+      ? uiSchema[UI_ORDER][0]
+      : Object.keys(schema.properties)[0] ?? ""
+  );
 
   return (
     <div className="d-flex">
       <div className="m-5">
         <FormEditor
-          currentSchema={schema}
-          onChange={onSchemaChanged}
-          onSave={onSave ? onSchemaSaved : undefined}
+          name={name}
           activeField={activeField}
           setActiveField={setActiveField}
         />
       </div>
       <div className="m-5">
         <FormPreview
-          schema={schema}
-          onSubmit={({ formData }) => {
-            if (onPreviewSubmitted) {
-              onPreviewSubmitted(formData);
-            }
-          }}
+          name={name}
           activeField={activeField}
           setActiveField={setActiveField}
         />

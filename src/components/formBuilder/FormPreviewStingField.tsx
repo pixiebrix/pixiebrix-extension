@@ -20,12 +20,11 @@
 import { FieldProps, utils } from "@rjsf/core";
 import React from "react";
 import { SetActiveField } from "./formBuilderTypes";
+import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 
 interface FormPreviewStingFieldProps extends FieldProps {
   setActiveField: SetActiveField;
 }
-
-export const UI_SCHEMA_ACTIVE = "ui:active";
 
 const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
 
@@ -46,9 +45,13 @@ const FormPreviewStingField: React.FC<FormPreviewStingFieldProps> = ({
       style={
         isActive
           ? {
-              border: "1px solid black",
+              border: "1px solid #a4caef",
+              padding: "4px",
             }
-          : null
+          : {
+              border: "1px solid transparent",
+              padding: "4px",
+            }
       }
       role="group"
     >
