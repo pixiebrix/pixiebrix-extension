@@ -126,18 +126,24 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
 
   console.log(rawRecipes);
   const [query, setQuery] = useState("");
-  const { flags } = useContext(AuthContext);
+  const { flags, scope } = useContext(AuthContext);
 
   const recipes = useMemo(() => {
-    const normalQuery = (query ?? "").toLowerCase();
-    const filtered = (rawRecipes ?? []).filter(
-      (x) =>
-        query.trim() === "" ||
-        x.metadata.name.toLowerCase().includes(normalQuery) ||
-        x.metadata.description?.toLowerCase().includes(normalQuery)
+    // const normalQuery = (query ?? "").toLowerCase();
+    // const filtered = (rawRecipes ?? []).filter(
+    //   (x) =>
+    //     query.trim() === "" ||
+    //     x.metadata.name.toLowerCase().includes(normalQuery) ||
+    //     x.metadata.description?.toLowerCase().includes(normalQuery)
+    // );
+    // return sortBy(filtered, (x) => x.metadata.name);
+
+    return (rawRecipes ?? []).filter(
+      (recipe) =>
+        recipe.sharing.organizations.length > 0 ||
+        recipe.metadata.id.includes(scope)
     );
-    return sortBy(filtered, (x) => x.metadata.name);
-  }, [rawRecipes, query]);
+  }, [rawRecipes, query, scope]);
 
   return (
     <div className="marketplace-component">

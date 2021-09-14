@@ -26,8 +26,8 @@ import {
   faHammer,
   faInfoCircle,
   faScroll,
+  faSeedling,
   faStoreAlt,
-  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import AuthContext from "@/auth/AuthContext";
@@ -93,7 +93,7 @@ const Sidebar: React.FunctionComponent = () => {
               className="nav-link"
             >
               <span className="menu-title">Community</span>
-              <FontAwesomeIcon icon={faUsers} className="menu-icon" />
+              <FontAwesomeIcon icon={faSeedling} className="menu-icon" />
             </a>
           </li>
 
