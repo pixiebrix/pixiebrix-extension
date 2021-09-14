@@ -23,7 +23,7 @@ import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
-import { evaluableFunction } from "@/utils";
+import { evaluableFunction, isRejectedResult } from "@/utils";
 import pTimeout from "p-timeout";
 
 export type Target = {
@@ -188,16 +188,21 @@ export async function showErrorInOptions(
   });
 }
 
-// TODO: Only include PixieBrix tabs, this will reduce the chance of errors
-async function getAllTabs() {
-  return browser.tabs.query({});
-}
-
-export async function mapTabs<
+export async function notifyTabs<
   TReturnValue,
   TCallback extends (target: { tabId: number }) => Promise<TReturnValue>
->(callback: TCallback): Promise<Array<PromiseSettledResult<TReturnValue>>> {
-  const tabs = await getAllTabs();
+>(callback: TCallback, message: string): Promise<void> {
+  // TODO: Only include PixieBrix tabs, this will reduce the chance of errors
+  const tabs = await browser.tabs.query({});
   const promises = tabs.map(async ({ id }) => callback({ tabId: id }));
-  return Promise.allSettled(promises);
+  const settledPromises = await Promise.allSettled(promises);
+  const errors = settledPromises
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- Needed for the type guard to work
+    .filter(isRejectedResult)
+    .map(({ reason }) => reason);
+  if (errors.length > 0) {
+    console.warn(message, {
+      errors,
+    });
+  }
 }

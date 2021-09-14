@@ -20,8 +20,7 @@ import * as contentScript from "@/contentScript/lifecycle";
 import { liftBackground } from "@/background/protocol";
 import { browser, WebNavigation } from "webextension-polyfill-ts";
 import { reactivateTab } from "@/contentScript/messenger/api";
-import { mapTabs } from "@/background/util";
-import { logSettledErrors } from "@/utils";
+import { notifyTabs } from "@/background/util";
 
 async function historyListener(
   details: WebNavigation.OnHistoryStateUpdatedDetailsType
@@ -45,10 +44,7 @@ export const reactivate = liftBackground(
   "REACTIVATE",
   async () => {
     console.debug("Reactivate all tabs");
-    logSettledErrors(
-      await mapTabs(reactivateTab),
-      "Reactivation failed for some tabs"
-    );
+    await notifyTabs(reactivateTab, "Reactivation failed for some tabs");
   },
   { asyncResponse: false }
 );
