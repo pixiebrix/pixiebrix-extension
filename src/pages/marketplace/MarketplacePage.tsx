@@ -94,17 +94,19 @@ const Entry: React.FunctionComponent<
               <p className="mb-1 mt-1">{description}</p>
             </div>
             <div className="small">
-              {author && (
-                <p className="mb-1 mt-1">
-                  Personal <FontAwesomeIcon icon={faEyeSlash} />
-                </p>
-              )}
+              <p className="mb-1 mt-1">
+                {author && (
+                  <>
+                    Personal <FontAwesomeIcon icon={faEyeSlash} />
+                  </>
+                )}
 
-              {organization && (
-                <p className="mb-1 mt-1">
-                  {organization} <FontAwesomeIcon icon={faUsers} />
-                </p>
-              )}
+                {organization && (
+                  <>
+                    {organization} <FontAwesomeIcon icon={faUsers} />
+                  </>
+                )}
+              </p>
             </div>
           </div>
         </div>
