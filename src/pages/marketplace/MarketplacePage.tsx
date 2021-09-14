@@ -19,7 +19,11 @@ import React, { useContext, useMemo, useState } from "react";
 import GridLoader from "react-spinners/GridLoader";
 import { PageTitle } from "@/layout/Page";
 import { sortBy } from "lodash";
-import { faExternalLinkAlt, faScroll } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExternalLinkAlt,
+  faEyeSlash,
+  faScroll,
+} from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
@@ -58,14 +62,14 @@ const Entry: React.FunctionComponent<
     if (!installed) {
       return (
         <Button size="sm" variant="info" {...buttonProps} onClick={onInstall}>
-          Add
+          Activate
         </Button>
       );
     }
 
     return (
       <Button size="sm" variant="info" {...buttonProps} disabled>
-        Added
+        Activated
       </Button>
     );
   }, [onInstall, installed]);
@@ -83,8 +87,16 @@ const Entry: React.FunctionComponent<
               <code className="pl-0 ml-0">{id}</code>
             </div>
           </div>
-          <div>
-            <p className="mb-1 mt-1">{description}</p>
+
+          <div className="d-flex justify-content-between">
+            <div>
+              <p className="mb-1 mt-1">{description}</p>
+            </div>
+            <div className="small">
+              <p className="mb-1 mt-1">
+                Personal <FontAwesomeIcon icon={faEyeSlash} />
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -123,8 +135,6 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installedRecipes,
 }) => {
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
-
-  console.log(rawRecipes);
   const [query, setQuery] = useState("");
   const { flags, scope } = useContext(AuthContext);
 
@@ -138,11 +148,13 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
     // );
     // return sortBy(filtered, (x) => x.metadata.name);
 
-    return (rawRecipes ?? []).filter(
+    const filtered = (rawRecipes ?? []).filter(
       (recipe) =>
         recipe.sharing.organizations.length > 0 ||
         recipe.metadata.id.includes(scope)
     );
+    console.log(filtered);
+    return filtered;
   }, [rawRecipes, query, scope]);
 
   return (
