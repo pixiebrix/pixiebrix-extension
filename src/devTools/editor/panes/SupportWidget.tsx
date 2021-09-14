@@ -22,7 +22,6 @@ import {
   faPhone,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { openTab } from "@/background/executor";
 import ChatWidget from "@/components/ChatWidget";
 
 const SupportWidget: React.FunctionComponent<{ onClose: () => void }> = ({
@@ -36,13 +35,9 @@ const SupportWidget: React.FunctionComponent<{ onClose: () => void }> = ({
             <FontAwesomeIcon icon={faPhone} />
           </span>{" "}
           <a
-            href="#"
-            onClick={async () =>
-              openTab({
-                url: "https://calendly.com/pixiebrix-todd/live-support-session",
-                active: true,
-              })
-            }
+            href="https://calendly.com/pixiebrix-todd/live-support-session"
+            target="_blank"
+            rel="noreferrer"
           >
             Schedule FREE Zoom session
           </a>
@@ -52,13 +47,9 @@ const SupportWidget: React.FunctionComponent<{ onClose: () => void }> = ({
             <FontAwesomeIcon icon={faExternalLinkAlt} />{" "}
           </span>
           <a
-            href="#"
-            onClick={async () =>
-              openTab({
-                url: "https://docs.pixiebrix.com/",
-                active: true,
-              })
-            }
+            href="https://docs.pixiebrix.com/"
+            target="_blank"
+            rel="noreferrer"
           >
             Open Documentation
           </a>

@@ -17,7 +17,6 @@
 
 import React from "react";
 import Centered from "@/devTools/editor/components/Centered";
-import { openTab } from "@/background/executor";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCommentAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
@@ -60,12 +59,8 @@ const NoExtensionsPane: React.FunctionComponent<{
         <Button
           className="ml-2"
           variant="info"
-          onClick={async () =>
-            openTab({
-              url: "https://calendly.com/pixiebrix-todd/live-support-session",
-              active: true,
-            })
-          }
+          href="https://calendly.com/pixiebrix-todd/live-support-session"
+          target="_blank"
         >
           <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom Session
         </Button>
