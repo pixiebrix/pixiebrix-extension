@@ -15,36 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.notifyjs-corner {
-  z-index: 9999999 !important;
-}
+import { Schema, UiSchema } from "@/core";
 
-.notifyjs-corner .notifyjs-wrapper {
-  z-index: 9999999 !important;
-}
+export type FormDefinition = {
+  schema: Schema;
+  uiSchema: UiSchema;
+  cancelable: boolean;
+  submitCaption: string;
+};
 
-.pixiebrix .collapse:not(.show) {
-  display: none;
-}
-
-.pixiebrix [data-toggle="collapse"] {
-  cursor: pointer;
-}
-
-.pixiebrix [data-toggle="collapse"]:after {
-  content: "\02795"; /* Unicode character for "plus" sign (+) */
-  font-size: 13px;
-  color: black;
-  float: right;
-  margin-left: 5px;
-}
-
-.pixiebrix [data-toggle="collapse"].active:after {
-  content: "\2796"; /* Unicode character for "minus" sign (-) */
-}
-
-body.pixiebrix-modal-open {
-  overflow: hidden !important;
-  /* Consider padding to avoid content jitter when opening/closing the modal */
-  /* padding-right: 15px; */
-}
+export const FORM_GET_DEFINITION = "@@forms/GET_FORM_DEFINITION";
+export const FORM_RESOLVE = "@@forms/FORM_RESOLVE";
+export const FORM_CANCEL = "@@forms/FORM_CANCEL";

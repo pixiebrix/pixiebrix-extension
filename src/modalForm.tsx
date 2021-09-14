@@ -15,36 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.notifyjs-corner {
-  z-index: 9999999 !important;
-}
+import "@/extensionContext";
 
-.notifyjs-corner .notifyjs-wrapper {
-  z-index: 9999999 !important;
-}
+// Init rollbar early so we get error reporting on the other initialization
+import "@/telemetry/rollbar";
 
-.pixiebrix .collapse:not(.show) {
-  display: none;
-}
+import React from "react";
+import { render } from "react-dom";
+import ModalForm from "@/blocks/transformers/modalForm/ModalForm";
 
-.pixiebrix [data-toggle="collapse"] {
-  cursor: pointer;
-}
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./modalForm.scss";
 
-.pixiebrix [data-toggle="collapse"]:after {
-  content: "\02795"; /* Unicode character for "plus" sign (+) */
-  font-size: 13px;
-  color: black;
-  float: right;
-  margin-left: 5px;
-}
-
-.pixiebrix [data-toggle="collapse"].active:after {
-  content: "\2796"; /* Unicode character for "minus" sign (-) */
-}
-
-body.pixiebrix-modal-open {
-  overflow: hidden !important;
-  /* Consider padding to avoid content jitter when opening/closing the modal */
-  /* padding-right: 15px; */
-}
+render(<ModalForm />, document.querySelector("#container"));
