@@ -23,8 +23,26 @@ import { browser } from "webextension-polyfill-ts";
 import { registerForm } from "@/contentScript/modalForms";
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
+// @ts-expect-error -- not installing types
+import Modal from "bootstrap/js/src/modal";
 
 const MODAL_OPEN_CLASS = "pixiebrix-modal-open";
+
+function getMaxZ() {
+  let max = -1;
+
+  $("body *").each(function () {
+    const $this = $(this);
+    if ($this.css("position") !== "static") {
+      const zIndex = Number($this.css("z-index")) || 1;
+      if (zIndex > max) {
+        max = zIndex;
+      }
+    }
+  });
+
+  return max;
+}
 
 export class ModalTransformer extends Transformer {
   constructor() {
@@ -107,16 +125,30 @@ export class ModalTransformer extends Transformer {
 
     document.body.append(container);
 
+    const modal = shadowRoot.querySelector("#" + id);
+    const modalController = new Modal(modal);
+    modalController._checkScrollbar();
+    modalController._setScrollbar();
+
     // Try to intercept click handler on the host page. Doesn't work on all sites, e.g., Trello that define a
     // `click` handler on document with `useCapture: true`.
     // See https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
-    const modal = shadowRoot.querySelector("#" + id);
+
     modal.addEventListener("click", (e) => {
       e.stopPropagation();
       e.stopImmediatePropagation();
     });
 
-    $(modal).find("iframe").trigger("focus");
+    const $modal = $(modal);
+
+    setTimeout(() => {
+      // Ensure we're the top-most element. Perform outside the main render loop because getMaxZ would otherwise cause
+      // a slight delay in rendering
+      const zIndex = getMaxZ();
+      $modal.css("z-index", Math.max(zIndex, 1050));
+    }, 0);
+
+    $modal.find("iframe").trigger("focus");
 
     try {
       return await registerForm(nonce, {
@@ -127,6 +159,7 @@ export class ModalTransformer extends Transformer {
       });
     } finally {
       container.remove();
+      modalController._hideModal();
       $(document.body).removeClass(MODAL_OPEN_CLASS);
     }
   }
