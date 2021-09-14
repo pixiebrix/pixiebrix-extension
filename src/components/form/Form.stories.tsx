@@ -22,7 +22,7 @@ import Form, { OnSubmit } from "./Form";
 import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import FormikField from "@/components/form/FormikField";
+import FormikField from "@/components/form/ConnectedFieldTemplate";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 
 const componentMeta: ComponentMeta<typeof Form> = {

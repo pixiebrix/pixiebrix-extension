@@ -47,9 +47,8 @@ import Form, {
   RenderSubmit,
 } from "@/components/form/Form";
 import { useOrganization } from "@/hooks/organization";
-import FormikField from "@/components/form/FormikField";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import Field from "@/components/form/Field";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const { attachExtension } = optionsSlice.actions;
 
@@ -150,7 +149,7 @@ const ShareExtensionModal: React.FC<{
 
   const renderBody: RenderBody = ({ values, setFieldValue }) => (
     <Modal.Body>
-      <FormikField
+      <ConnectedFieldTemplate
         name="name"
         layout="horizontal"
         label="Name"
@@ -163,7 +162,7 @@ const ShareExtensionModal: React.FC<{
         description="A name for the blueprint"
       />
       */}
-      <FormikField
+      <ConnectedFieldTemplate
         name="blueprintId"
         layout="horizontal"
         label="Registry Id"
@@ -186,7 +185,7 @@ const ShareExtensionModal: React.FC<{
         }
       />
       */}
-      <FormikField
+      <ConnectedFieldTemplate
         name="description"
         layout="horizontal"
         label="Description"
@@ -207,9 +206,10 @@ const ShareExtensionModal: React.FC<{
         </Col>
       </BootstrapForm.Group>
 
-      <FormikField
+      <ConnectedFieldTemplate
         name="public"
-        layout="horizontal"
+        layout="switch"
+        value={values.public}
         label={
           values.public ? (
             <span>
@@ -249,12 +249,11 @@ const ShareExtensionModal: React.FC<{
         (organization) => {
           const checked = values.organizations.includes(organization.id);
           return (
-            <Field
+            <FieldTemplate
               key={organization.id}
               name={organization.id}
-              layout="horizontal"
+              layout="switch"
               label={organization.name}
-              as={BootstrapSwitchButton}
               value={checked}
               onChange={() => {
                 const next = checked

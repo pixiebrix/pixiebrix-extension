@@ -18,13 +18,14 @@
 import React, { ReactElement, ReactNode } from "react";
 import { Col, Form as BootstrapForm, FormControlProps, Row } from "react-bootstrap";
 import { Except } from "type-fest";
+import ConnectedSwitchButton from "@/components/form/switchButton/ConnectedSwitchButton";
 
 export type FieldProps<As extends React.ElementType = React.ElementType>
   = FormControlProps
   & React.ComponentProps<As>
   & {
     name: string;
-    layout?: "horizontal" | "vertical" | undefined;
+    layout?: "horizontal" | "vertical" | "switch" | undefined;
     label?: string | ReactNode | undefined;
     description?: ReactNode | undefined;
     error?: string | undefined;
@@ -84,7 +85,7 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
   return (
     <BootstrapForm.Group as={Col} controlId={name}>
       {label && (
-        <BootstrapForm.Label as={Row}>
+        <BootstrapForm.Label as={Row} sm="3">
           {label}
         </BootstrapForm.Label>
       )}
@@ -109,11 +110,34 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
   );
 }
 
-const Field: React.FC<FieldProps> = ({
+const renderSwitch: (props: FieldRenderProps) => ReactElement = ({
+  name,
+  label,
+  value = false,
+  onChange
+}) => (
+  <ConnectedSwitchButton
+    name={name}
+    label={label}
+    value={value}
+    onChange={onChange}
+  />
+)
+
+const FieldTemplate: React.FC<FieldProps> = ({
   layout = "horizontal",
   ...restProps
-}) => layout === "horizontal"
-  ? renderHorizontal(restProps)
-  : renderVertical(restProps);
+}) => {
+  switch (layout) {
+    case "horizontal":
+      return renderHorizontal(restProps);
+    case "vertical":
+      return renderVertical(restProps);
+    case "switch":
+      return renderSwitch(restProps);
+    default:
+      return renderHorizontal(restProps);
+  }
+}
 
-export default Field;
+export default FieldTemplate;

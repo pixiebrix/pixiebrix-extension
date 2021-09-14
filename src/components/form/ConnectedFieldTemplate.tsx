@@ -17,26 +17,29 @@
 
 import React from "react";
 import { connect, getIn } from "formik";
-import Field, { FieldProps } from "@/components/form/Field";
+import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
 import { FormikContextType } from "formik/dist/types";
 
-export type FormikFieldProps<Values> = FieldProps & { formik: FormikContextType<Values> }
+export type ConnectedFieldProps<Values> = FieldProps & { formik: FormikContextType<Values> }
 
-function FormikField<Values>(props: FormikFieldProps<Values>) {
-  const fieldProps: FieldProps = props;
-
-  const { formik }: { formik: FormikContextType<Values>} = props;
-
-  const error = getIn(formik.errors, props.name);
-  const touched = getIn(formik.touched, props.name);
+const FormikFieldTemplate = <Values, >({
+  formik,
+  ...fieldProps
+}: ConnectedFieldProps<Values>) => {
+  const error = getIn(formik.errors, fieldProps.name);
+  const touched = getIn(formik.touched, fieldProps.name);
+  const value = getIn(formik.values, fieldProps.name);
 
   return (
-    <Field
-      {...fieldProps}
+    <FieldTemplate
+      value={value}
       error={error}
       touched={touched}
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      {...fieldProps}
     />
   );
 }
 
-export default connect<FieldProps>(FormikField);
+export default connect<FieldProps>(FormikFieldTemplate);
