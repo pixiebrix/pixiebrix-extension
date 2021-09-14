@@ -15,48 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema } from "@/core";
-import { FormConfig, FormField, FormFieldType } from "./formBuilderTypes";
-
-export const buildFormConfigFromSchema = (formSchema: Schema): FormConfig => {
-  const formConfig = {
-    title: formSchema.title,
-    description: formSchema.description,
-    fields: Object.entries(formSchema.properties).map(
-      ([name, { type, title }]: [string, Schema]) => {
-        const formField: FormField = {
-          name,
-          type: type as FormFieldType,
-          title,
-          isRequired: formSchema.required?.includes(name),
-        };
-        return formField;
-      }
-    ),
-  };
-
-  return formConfig;
-};
-
-export const buildFormSchemaFromConfig = (
-  currentSchema: Schema,
-  formConfig: FormConfig
-): Schema => {
-  const nextSchema = { ...currentSchema };
-  nextSchema.title = formConfig.title;
-  nextSchema.description = formConfig.description;
-  nextSchema.required = [];
-  nextSchema.properties = {};
-
-  for (const fieldConfig of formConfig.fields) {
-    nextSchema.properties[fieldConfig.name] = {
-      type: fieldConfig.type || "string",
-      title: fieldConfig.title || fieldConfig.name,
-    };
-    if (fieldConfig.isRequired) {
-      nextSchema.required.push(fieldConfig.name);
-    }
-  }
-
-  return nextSchema;
+export const replaceStringInArray = (
+  array: string[],
+  stringToBeReplaced: string,
+  newString: string
+) => {
+  const arr = [...array];
+  const index = arr.indexOf(stringToBeReplaced);
+  arr.splice(index, 1, newString);
+  return arr;
 };

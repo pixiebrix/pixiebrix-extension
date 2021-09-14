@@ -16,14 +16,10 @@
  */
 
 import { Schema, UiSchema } from "@/core";
-import { FieldArray, Formik, useField } from "formik";
-import React, { useEffect, useState } from "react";
-import { FormConfig, SetActiveField } from "./formBuilderTypes";
+import { useField } from "formik";
+import React, { useEffect } from "react";
+import { SetActiveField } from "./formBuilderTypes";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
-import {
-  buildFormConfigFromSchema,
-  buildFormSchemaFromConfig,
-} from "./formBuilderHelpers";
 import FormikHorizontalField from "@/components/form/fields/FormikHorizontalField";
 import FieldEditor from "./FieldEditor";
 
@@ -41,13 +37,21 @@ const FormEditor: React.FC<{
 
   useEffect(() => {
     // Set uiSchema order if needed
+    // eslint-disable-next-line security/detect-object-injection
     if (!uiSchema[uiOrderProperty]) {
       const properyKeys = Object.keys(schema.properties);
       setUiSchema({ ...uiSchema, [uiOrderProperty]: properyKeys });
     }
-  }, [schema, uiSchema]);
+  }, [schema, uiSchema, setUiSchema]);
 
   const propertyNameToShow = activeField || Object.keys(schema.properties)[0];
+
+  console.log(
+    "form editor",
+    propertyNameToShow,
+    schema?.properties,
+    schema?.properties ? schema?.properties[propertyNameToShow] : undefined
+  );
 
   return (
     <div>
@@ -64,10 +68,16 @@ const FormEditor: React.FC<{
         <h6>Edit fields</h6>
         <hr />
       </BootstrapForm.Group>
-      {/* eslint-disable-next-line security/detect-object-injection */}
-      {propertyNameToShow && Boolean(schema.properties[propertyNameToShow]) && (
-        <FieldEditor name={name} fieldName={propertyNameToShow} />
-      )}
+      {propertyNameToShow &&
+        /* eslint-disable-next-line security/detect-object-injection */
+        Boolean(schema.properties[propertyNameToShow]) && (
+          <FieldEditor
+            name={name}
+            propertyName={propertyNameToShow}
+            setActiveField={setActiveField}
+          />
+        )}
+      <Button>Add field</Button>
     </div>
   );
 };
