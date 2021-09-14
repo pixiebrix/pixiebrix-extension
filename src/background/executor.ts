@@ -51,6 +51,8 @@ interface Target {
 
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
+// TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
+
 // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 const tabReady: { [tabId: string]: { [frameId: string]: boolean } } = {};
 const nonceToTarget = new Map<string, Target>();
