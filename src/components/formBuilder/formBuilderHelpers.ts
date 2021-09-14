@@ -15,13 +15,82 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { SelectStringOption } from "./formBuilderTypes";
+
+export const DEFAULT_FIELD_TYPE = "string";
+
+export const parseUiType = (value: string) => {
+  const [propertyType, uiWidget, propertyFormat] = value.split(":");
+  return {
+    propertyType,
+    uiWidget: uiWidget === "" ? undefined : uiWidget,
+    propertyFormat: propertyFormat === "" ? undefined : propertyFormat,
+  };
+};
+
+export const stringifyUiType = ({
+  propertyType,
+  uiWidget,
+  propertyFormat,
+}: {
+  propertyType: string;
+  uiWidget?: string;
+  propertyFormat?: string;
+}) => `${propertyType}:${uiWidget ?? ""}:${propertyFormat ?? ""}`;
+
+export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
+  {
+    label: "Single line text",
+    value: stringifyUiType({ propertyType: "string" }),
+  },
+  {
+    label: "Paragraph text",
+    value: stringifyUiType({ propertyType: "string", uiWidget: "textarea" }),
+  },
+  {
+    label: "Email",
+    value: stringifyUiType({ propertyType: "string", propertyFormat: "email" }),
+  },
+  {
+    label: "Number",
+    value: stringifyUiType({ propertyType: "number" }),
+  },
+];
+
 export const replaceStringInArray = (
   array: string[],
   stringToBeReplaced: string,
-  newString: string
+  ...items: string[]
 ) => {
   const arr = [...array];
   const index = arr.indexOf(stringToBeReplaced);
-  arr.splice(index, 1, newString);
+  arr.splice(index, 1, ...items);
+  return arr;
+};
+
+const fieldNameRegex = /^field(\d+)$/;
+export const generateNewPropertyName = (existingProperties: string[]) => {
+  const prefix = "field";
+  const fieldIndexesUsed = existingProperties
+    .map((property) => fieldNameRegex.exec(property))
+    .filter((matches) => matches?.length > 1)
+    .map((matches) => Number(matches[1]))
+    .sort((a, b) => b - a);
+
+  // FixMe: possible integer overflow
+  const fieldIndex = fieldIndexesUsed.length > 0 ? fieldIndexesUsed[0] + 1 : 1;
+  return `${prefix}${fieldIndex}`;
+};
+
+export const moveStringInArray = (
+  array: string[],
+  stringToBeMoved: string,
+  direction: "up" | "down"
+) => {
+  const arr = [...array];
+  const fromIndex = arr.indexOf(stringToBeMoved);
+  const toIndex = direction === "up" ? fromIndex - 1 : fromIndex + 1;
+  // eslint-disable-next-line security/detect-object-injection
+  [arr[fromIndex], arr[toIndex]] = [arr[toIndex], arr[fromIndex]];
   return arr;
 };

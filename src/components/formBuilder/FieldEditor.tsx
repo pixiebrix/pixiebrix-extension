@@ -15,33 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { useField } from "formik";
-import React, { ChangeEvent } from "react";
+/* eslint-disable security/detect-object-injection */
+import { Field, useField, useFormikContext } from "formik";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import FormikHorizontalField from "@/components/form/fields/FormikHorizontalField";
 import HorizontalField from "@/components/form/fields/HorizontalField";
 import styles from "./FieldEditor.module.scss";
-import { FORM_FIELD_TYPES, SetActiveField } from "./formBuilderTypes";
+import {
+  RJSFSchema,
+  SelectStringOption,
+  SetActiveField,
+} from "./formBuilderTypes";
 import { Row, Form as BootstrapForm, Col } from "react-bootstrap";
 import Select from "react-select";
-import { UI_ORDER } from "./schemaFieldNames";
-import { replaceStringInArray } from "./formBuilderHelpers";
+import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
+import {
+  FIELD_TYPE_OPTIONS,
+  parseUiType,
+  replaceStringInArray,
+  stringifyUiType,
+} from "./formBuilderHelpers";
 import { UiSchema } from "@rjsf/core";
-import { Schema } from "js-yaml";
+import { Schema } from "@/core";
+import { uniq } from "lodash";
 
 const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
   setActiveField: SetActiveField;
 }> = ({ name, propertyName, setActiveField }) => {
-  const [{ value }, , { setValue }] = useField<{
-    schema: Schema;
-    uiSchema: UiSchema;
-  }>(name);
-  const [
-    { value: schemaProperties },
-    ,
-    { setValue: setSchemaProperties },
-  ] = useField(`${name}.schema.properties`);
+  const { setFieldValue } = useFormikContext<RJSFSchema>();
+  const [{ value: schema }, , { setValue: setSchema }] = useField<Schema>(
+    `${name}.schema`
+  );
   const [{ value: uiSchema }, , { setValue: setUiSchema }] = useField<UiSchema>(
     `${name}.uiSchema`
   );
@@ -56,85 +62,138 @@ const FieldEditor: React.FC<{
     { setValue: setPropertyUiSchema },
   ] = useField(`${name}.uiSchema.${propertyName}`);
 
-  const onFieldNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextName = event.target.value;
+  const [propertyNameError, setPropertyNameError] = useState<string>(null);
+  useEffect(() => {
+    setPropertyNameError(null);
+  }, [propertyName, schema]);
 
-    const nextSchemaProperties = { ...schemaProperties };
-    // eslint-disable-next-line security/detect-object-injection
+  const getFullFieldName = (fieldName: string) =>
+    `${name}.schema.properties.${propertyName}.${fieldName}`;
+  const getFullUiFieldName = (fieldName: string) =>
+    `${name}.uiSchema.${propertyName}.${fieldName}`;
+
+  const onPropertyNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextName = event.target.value;
+    if (nextName === "") {
+      setPropertyNameError("Name cannot be empty.");
+      return;
+    }
+
+    const existingProperties = Object.keys(schema.properties);
+    if (existingProperties.includes(nextName)) {
+      setPropertyNameError(
+        `Name must be uniq. Another roperty "${schema.properties[nextName].title}" already has the name "${nextName}".`
+      );
+      return;
+    }
+
+    if (propertyNameError) {
+      setPropertyNameError(null);
+    }
+
+    const nextSchemaProperties = { ...schema.properties };
     nextSchemaProperties[nextName] = nextSchemaProperties[propertyName];
-    // eslint-disable-next-line security/detect-object-injection, @typescript-eslint/no-dynamic-delete
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete nextSchemaProperties[propertyName];
 
     const nextSchema: Schema = {
-      ...value.schema,
+      ...schema,
       properties: nextSchemaProperties,
     };
 
-    // eslint-disable-next-line security/detect-object-injection
     const uiOrder: string[] = uiSchema[UI_ORDER];
-    const nextUiOrder = replaceStringInArray(uiOrder, propertyName, nextName);
+    const nextUiOrder = uniq(
+      replaceStringInArray(uiOrder, propertyName, nextName)
+    );
     const nextUiSchema: UiSchema = {
       ...uiSchema,
       [UI_ORDER]: nextUiOrder,
     };
 
-    setValue({
-      schema: nextSchema,
-      uiSchema: nextUiSchema,
-    });
+    setSchema(nextSchema);
+    setUiSchema(nextUiSchema);
     setActiveField(nextName);
   };
 
-  const getFullFieldName = (fieldName: string) =>
-    `${name}.schema.properties.${propertyName}.${fieldName}`;
-
-  const onPropertyTypeChange = ({
-    value,
-  }: {
-    label: string;
-    value: string;
-  }) => {
-    if (value === propertySchema.type) {
+  const onUiTypeChange = ({ value }: SelectStringOption) => {
+    if (!value) {
       return;
     }
 
-    const { title } = propertySchema;
-    setPropertySchema({
-      title,
-      type: value,
-    });
-    if (propertyUiSchema) {
-      setPropertyUiSchema(null);
-    }
+    const { propertyType, uiWidget, propertyFormat } = parseUiType(value);
+    setFieldValue(getFullFieldName("type"), propertyType);
+    setFieldValue(getFullFieldName("format"), propertyFormat);
+    setFieldValue(getFullUiFieldName(UI_WIDGET), uiWidget);
   };
 
-  const typeSelectOptions = FORM_FIELD_TYPES.map((fieldType) => ({
-    label: fieldType,
-    value: fieldType,
-  }));
+  const getSelectedUiTypeOption = () => {
+    const propertyType = propertySchema.type;
+    const uiWidget = propertyUiSchema ? propertyUiSchema[UI_WIDGET] : undefined;
+    const propertyFormat = propertySchema.format;
+
+    const uiType = stringifyUiType({
+      propertyType,
+      uiWidget,
+      propertyFormat,
+    });
+
+    const selected = FIELD_TYPE_OPTIONS.find(
+      (option) => option.value === uiType
+    );
+
+    return selected === null
+      ? {
+          label: "unknown",
+          value: null,
+        }
+      : selected;
+  };
 
   return (
     <div className={styles.active}>
       <HorizontalField
+        required
         name={`${name}.${propertyName}`}
-        label="Field name"
+        label="Name"
         value={propertyName}
-        onChange={onFieldNameChange}
+        onChange={onPropertyNameChange}
+        touched
+        error={propertyNameError}
       />
-      <FormikHorizontalField name={getFullFieldName("title")} label="Title" />
+      <FormikHorizontalField name={getFullFieldName("title")} label="Label" />
+      <FormikHorizontalField
+        name={getFullFieldName("description")}
+        label="Help text"
+      />
+      <FormikHorizontalField
+        name={getFullFieldName("default")}
+        label="Default value"
+      />
 
       <BootstrapForm.Group as={Row}>
         <BootstrapForm.Label column sm="3">
           Type
         </BootstrapForm.Label>
-        <Col sm="9">
+        <Col sm="9" className={styles.fieldColumn}>
           <Select
-            name={getFullFieldName("type")}
-            options={typeSelectOptions}
-            value={typeSelectOptions.find(
-              (x) => x.value === propertySchema.type
-            )}
-            onChange={onPropertyTypeChange}
+            className={styles.select}
+            name={getFullFieldName("uiType")}
+            options={FIELD_TYPE_OPTIONS}
+            value={getSelectedUiTypeOption()}
+            onChange={onUiTypeChange}
+          />
+        </Col>
+      </BootstrapForm.Group>
+
+      <BootstrapForm.Group as={Row}>
+        <BootstrapForm.Label column sm="3">
+          Required
+        </BootstrapForm.Label>
+        <Col sm="9" className={styles.fieldColumn}>
+          <Field
+            type="checkbox"
+            name={`${name}.schema.required`}
+            value={propertyName}
           />
         </Col>
       </BootstrapForm.Group>

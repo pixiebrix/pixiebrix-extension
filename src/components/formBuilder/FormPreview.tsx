@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable security/detect-object-injection */
 import React, { useCallback, useEffect, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
-import { FieldProps, IChangeEvent, UiSchema } from "@rjsf/core";
-import { SetActiveField } from "./formBuilderTypes";
+import { FieldProps, IChangeEvent } from "@rjsf/core";
+import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import FormPreviewStingField from "./FormPreviewStingField";
 import { useField } from "formik";
 import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
@@ -28,38 +29,38 @@ const FormPreview: React.FC<{
   activeField?: string;
   setActiveField: SetActiveField;
 }> = ({ name, activeField, setActiveField }) => {
+  const [{ value: rjsfSchema }] = useField<RJSFSchema>(name);
+
   const [data, setData] = useState(null);
   const onDataChanged = ({ formData }: IChangeEvent<unknown>) => {
     setData(formData);
   };
 
-  const [
-    uiSchemaWithActiveField,
-    setUiSchemaWithActiveField,
-  ] = useState<UiSchema>({});
-
-  const [
-    {
-      value: { schema, uiSchema },
-    },
-  ] = useField(name);
+  // Maintain a local version of the RJSF schema to reflect the active field
+  // Important to have schema and uiSchema always in sync, hence caching both
+  const [localRjsfSchema, setLocalRjsfSchema] = useState<RJSFSchema>(
+    rjsfSchema
+  );
 
   useEffect(() => {
     setData(null);
-  }, [schema, uiSchema]);
+  }, [rjsfSchema]);
 
   useEffect(() => {
     if (activeField) {
-      const localUiSchema = { ...uiSchema };
-      localUiSchema[activeField] = {
-        ...localUiSchema[activeField],
+      const uiSchema = { ...rjsfSchema.uiSchema };
+      uiSchema[activeField] = {
+        ...uiSchema[activeField],
         [UI_SCHEMA_ACTIVE]: true,
       };
-      setUiSchemaWithActiveField(localUiSchema);
+      setLocalRjsfSchema({
+        schema: rjsfSchema.schema,
+        uiSchema,
+      });
     } else {
-      setUiSchemaWithActiveField(uiSchema);
+      setLocalRjsfSchema(rjsfSchema);
     }
-  }, [activeField, uiSchema]);
+  }, [activeField, rjsfSchema]);
 
   const StringField = useCallback(
     (props: FieldProps) => (
@@ -77,8 +78,8 @@ const FormPreview: React.FC<{
       tagName="div"
       formData={data}
       fields={fields}
-      schema={schema}
-      uiSchema={uiSchemaWithActiveField}
+      schema={localRjsfSchema.schema}
+      uiSchema={localRjsfSchema.uiSchema}
       onChange={onDataChanged}
     >
       <div></div>

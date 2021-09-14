@@ -7,4 +7,9 @@ $color-border: #a4caef;
 .fieldColumn {
   display: flex;
   align-items: center;
+  padding-bottom: 0.5rem;
+}
+
+.select {
+  flex: 1;
 }

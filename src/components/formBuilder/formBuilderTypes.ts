@@ -15,20 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export const FORM_FIELD_TYPES = ["string", "number"];
-export type FormFieldType = "string" | "number";
+import { Schema, UiSchema } from "@/core";
 
-export type FormField = {
-  name: string;
-  type: FormFieldType;
-  title: string;
-  isRequired: boolean;
-};
-
-export type FormConfig = {
-  title: string;
-  description: string;
-  fields: FormField[];
+export type RJSFSchema = {
+  schema: Schema;
+  uiSchema: UiSchema;
 };
 
 export type SetActiveField = (fieldName: string) => void;
+
+export type SelectStringOption = {
+  label: string;
+  value: string;
+};

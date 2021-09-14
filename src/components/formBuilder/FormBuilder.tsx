@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable security/detect-object-injection */
 import React, { useState } from "react";
 import FormEditor from "./FormEditor";
 import FormPreview from "./FormPreview";
-import { Schema, UiSchema } from "@/core";
 import { useField } from "formik";
 import { UI_ORDER } from "./schemaFieldNames";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { RJSFSchema } from "./formBuilderTypes";
 
 const FormBuilder: React.FC<{
   name: string;
@@ -29,13 +31,25 @@ const FormBuilder: React.FC<{
     {
       value: { schema, uiSchema },
     },
-  ] = useField<{ schema: Schema; uiSchema: UiSchema }>(name);
+  ] = useField<RJSFSchema>(name);
 
-  const [activeField, setActiveField] = useState(
-    uiSchema[UI_ORDER]?.length
-      ? uiSchema[UI_ORDER][0]
-      : Object.keys(schema.properties)[0] ?? ""
-  );
+  const [activeField, setActiveField] = useState(() => {
+    const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
+    if (firstInOrder) {
+      return firstInOrder;
+    }
+
+    const firstInProperties = Object.keys(schema?.properties || {})[0];
+    if (firstInProperties) {
+      return firstInProperties;
+    }
+
+    return "";
+  });
+
+  if (!schema || !uiSchema) {
+    return <div>Schema and UiSchema are required</div>;
+  }
 
   return (
     <div className="d-flex">
@@ -47,11 +61,13 @@ const FormBuilder: React.FC<{
         />
       </div>
       <div className="m-5">
-        <FormPreview
-          name={name}
-          activeField={activeField}
-          setActiveField={setActiveField}
-        />
+        <ErrorBoundary>
+          <FormPreview
+            name={name}
+            activeField={activeField}
+            setActiveField={setActiveField}
+          />
+        </ErrorBoundary>
       </div>
     </div>
   );

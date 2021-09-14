@@ -29,21 +29,19 @@ const schema: Schema = {
   title: "A form",
   description: "A form example.",
   type: "object",
-  required: [],
   properties: {
     firstName: {
       type: "string",
       title: "First name",
       default: "Chuck",
     },
-    lastName: {
-      type: "string",
-      title: "Last name",
+    age: {
+      type: "number",
+      title: "Age",
     },
     telephone: {
       type: "string",
       title: "Telephone",
-      minLength: 10,
     },
   },
 };
@@ -54,17 +52,7 @@ const componentMeta: ComponentMeta<typeof FormBuilder> = {
   component: FormBuilder,
 };
 
-export const Default: ComponentStory<typeof FormBuilder> = (args) => (
-  <FormBuilder {...args} />
-);
-Default.args = {
-  schema,
-  onChange: action("onChange"),
-  onSave: action("onSave"),
-  onPreviewSubmitted: action("ui form submitted"),
-};
-
-const SchemaShape: yup.ObjectSchema = yup.object().shape({
+const schemaShape: yup.ObjectSchema = yup.object().shape({
   dynamicForm: yup.object(),
 });
 const initialValues = {
@@ -74,13 +62,13 @@ const initialValues = {
   },
 };
 
-export const FormikForm: ComponentStory<typeof Formik> = (args) => (
+const FormBuilderTemplate: ComponentStory<typeof Formik> = (args) => (
   <Formik
-    validationSchema={SchemaShape}
+    validationSchema={schemaShape}
     onSubmit={action("onSubmit")}
     {...args}
   >
-    {({ values, setFieldValue, handleSubmit }) => (
+    {({ handleSubmit }) => (
       <BootstrapForm noValidate onSubmit={handleSubmit}>
         <FormBuilder name="dynamicForm" />
         <Button type="submit">Submit</Button>
@@ -88,8 +76,22 @@ export const FormikForm: ComponentStory<typeof Formik> = (args) => (
     )}
   </Formik>
 );
-FormikForm.args = {
+
+export const Default = FormBuilderTemplate.bind({});
+Default.args = {
   initialValues,
+};
+
+export const MinimumInitialSchema = FormBuilderTemplate.bind({});
+MinimumInitialSchema.args = {
+  initialValues: {
+    dynamicForm: {
+      schema: {
+        type: "object",
+      },
+      uiSchema: {},
+    },
+  },
 };
 
 export default componentMeta;

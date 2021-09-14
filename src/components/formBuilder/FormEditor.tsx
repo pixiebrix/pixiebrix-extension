@@ -15,43 +15,94 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, UiSchema } from "@/core";
-import { useField } from "formik";
+/* eslint-disable security/detect-object-injection */
+import { useField, useFormikContext } from "formik";
 import React, { useEffect } from "react";
-import { SetActiveField } from "./formBuilderTypes";
+import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import FormikHorizontalField from "@/components/form/fields/FormikHorizontalField";
 import FieldEditor from "./FieldEditor";
-
-const uiOrderProperty = "ui:order";
+import {
+  DEFAULT_FIELD_TYPE,
+  generateNewPropertyName,
+  moveStringInArray,
+  replaceStringInArray,
+} from "./formBuilderHelpers";
+import { UI_ORDER } from "./schemaFieldNames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faArrowDown,
+  faArrowUp,
+  faPlus,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
+import { Schema, UiSchema } from "@/core";
 
 const FormEditor: React.FC<{
   name: string;
   activeField?: string;
   setActiveField: SetActiveField;
 }> = ({ name, activeField, setActiveField }) => {
+  const { setFieldValue } = useFormikContext<RJSFSchema>();
   const [{ value: schema }] = useField<Schema>(`${name}.schema`);
-  const [{ value: uiSchema }, , { setValue: setUiSchema }] = useField<UiSchema>(
-    `${name}.uiSchema`
-  );
+  const [{ value: uiSchema }] = useField<UiSchema>(`${name}.uiSchema`);
+
+  const uiOrder = uiSchema[UI_ORDER];
 
   useEffect(() => {
     // Set uiSchema order if needed
-    // eslint-disable-next-line security/detect-object-injection
-    if (!uiSchema[uiOrderProperty]) {
-      const properyKeys = Object.keys(schema.properties);
-      setUiSchema({ ...uiSchema, [uiOrderProperty]: properyKeys });
+    if (!uiOrder) {
+      const properyKeys = Object.keys(schema.properties || {});
+      const nextUiOrder = [...properyKeys, "*"];
+      setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
     }
-  }, [schema, uiSchema, setUiSchema]);
+  }, [name, schema, uiOrder, setFieldValue]);
 
-  const propertyNameToShow = activeField || Object.keys(schema.properties)[0];
+  const addProperty = () => {
+    const propertyName = generateNewPropertyName(
+      Object.keys(schema.properties || {})
+    );
+    const newProperty = {
+      name: propertyName,
+      title: propertyName,
+      type: DEFAULT_FIELD_TYPE,
+    };
+    const nextUiOrder = replaceStringInArray(
+      uiOrder,
+      activeField,
+      activeField,
+      propertyName
+    );
+    setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
+    setFieldValue(`${name}.schema.properties.${propertyName}`, newProperty);
+    setActiveField(propertyName);
+  };
 
-  console.log(
-    "form editor",
-    propertyNameToShow,
-    schema?.properties,
-    schema?.properties ? schema?.properties[propertyNameToShow] : undefined
-  );
+  const moveProperty = (direction: "up" | "down") => {
+    const nextUiOrder = moveStringInArray(uiOrder, activeField, direction);
+    setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
+  };
+
+  const removePorperty = () => {
+    const nextProperties = { ...schema.properties };
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+    delete nextProperties[activeField];
+
+    const nextUiOrder = replaceStringInArray(uiOrder, activeField);
+
+    const nextActiveField = nextUiOrder[0];
+
+    setActiveField(nextActiveField);
+    setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
+    setFieldValue(`${name}.schema.properties`, nextProperties);
+  };
+
+  // There's always at least 1 item in uiOrder array, "*".
+  const propertyNameToShow =
+    activeField || (uiOrder?.length > 1 && uiOrder?.[0]);
+  const canMoveUp = uiOrder?.length > 2 && uiOrder[0] !== activeField;
+  const canMoveDown =
+    uiOrder?.length > 2 && uiOrder[uiOrder.length - 2] !== activeField;
 
   return (
     <div>
@@ -68,16 +119,40 @@ const FormEditor: React.FC<{
         <h6>Edit fields</h6>
         <hr />
       </BootstrapForm.Group>
-      {propertyNameToShow &&
-        /* eslint-disable-next-line security/detect-object-injection */
-        Boolean(schema.properties[propertyNameToShow]) && (
-          <FieldEditor
-            name={name}
-            propertyName={propertyNameToShow}
-            setActiveField={setActiveField}
-          />
-        )}
-      <Button>Add field</Button>
+      {propertyNameToShow && Boolean(schema.properties[propertyNameToShow]) && (
+        <FieldEditor
+          name={name}
+          propertyName={propertyNameToShow}
+          setActiveField={setActiveField}
+        />
+      )}
+
+      <Button onClick={addProperty} variant="success" size="sm">
+        <FontAwesomeIcon icon={faPlus} />
+      </Button>
+      <Button
+        onClick={() => {
+          moveProperty("up");
+        }}
+        disabled={!canMoveUp}
+        variant="light"
+        size="sm"
+      >
+        <FontAwesomeIcon icon={faArrowUp} />
+      </Button>
+      <Button
+        onClick={() => {
+          moveProperty("down");
+        }}
+        disabled={!canMoveDown}
+        variant="light"
+        size="sm"
+      >
+        <FontAwesomeIcon icon={faArrowDown} />
+      </Button>
+      <Button onClick={removePorperty} variant="danger" size="sm">
+        <FontAwesomeIcon icon={faTimes} />
+      </Button>
     </div>
   );
 };
