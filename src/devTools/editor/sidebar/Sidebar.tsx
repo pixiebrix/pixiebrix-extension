@@ -117,7 +117,7 @@ const Sidebar: React.FunctionComponent<
   return (
     <div className="Sidebar d-flex flex-column vh-100">
       <div className="Sidebar__actions flex-grow-0">
-        <div className="d-inline-flex flex-wrap">
+        <div className="d-inline-flex flex-wrap m-1">
           <a
             href="/options.html"
             target="_blank"
@@ -131,7 +131,7 @@ const Sidebar: React.FunctionComponent<
             size="sm"
             title="Add"
             id="add-extension-point"
-            className="mr-2 Sidebar__actions__dropdown"
+            className="ml-1 mr-2 Sidebar__actions__dropdown"
           >
             {sortBy([...ADAPTERS.values()], (x) => x.displayOrder).map(
               (element) => (
