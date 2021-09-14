@@ -25,11 +25,7 @@ import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
 import { allSettledRejections, evaluableFunction } from "@/utils";
 import pTimeout from "p-timeout";
-
-export type Target = {
-  tabId: number;
-  frameId: number;
-};
+import type { Target } from "@/types";
 
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {

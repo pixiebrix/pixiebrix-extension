@@ -300,3 +300,8 @@ export abstract class Reader extends Block implements IReader {
     return this.read(root);
   }
 }
+
+export type Target = {
+  tabId: number;
+  frameId: number;
+};
