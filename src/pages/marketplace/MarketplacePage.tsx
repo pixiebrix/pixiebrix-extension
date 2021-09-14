@@ -18,14 +18,13 @@
 import React, { useContext, useMemo, useState } from "react";
 import GridLoader from "react-spinners/GridLoader";
 import { PageTitle } from "@/layout/Page";
-import { sortBy } from "lodash";
 import {
   faExternalLinkAlt,
   faEyeSlash,
   faScroll,
   faUsers,
 } from "@fortawesome/free-solid-svg-icons";
-import { Metadata } from "@/core";
+import { Metadata, Sharing } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
 import { Col, InputGroup, ListGroup, Row, Button, Form } from "react-bootstrap";
 import "./MarketplacePage.scss";
@@ -33,6 +32,8 @@ import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
+import { useOrganization } from "@/hooks/organization";
+import { sortBy } from "lodash";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -43,6 +44,7 @@ export interface MarketplaceProps {
 
 interface RecipeProps {
   metadata: Metadata;
+  sharing?: Sharing;
   installed: boolean;
   onInstall?: () => void;
 }
@@ -50,11 +52,23 @@ interface RecipeProps {
 const Entry: React.FunctionComponent<
   RecipeProps & { buttonProps?: ButtonProps }
 > = ({
-  metadata: { id, name, description, author, organization },
+  metadata: { id, name, description },
+  sharing,
   buttonProps = {},
   onInstall,
   installed,
 }) => {
+  const { organizations = [] } = useOrganization();
+
+  const organization = useMemo(() => {
+    if (sharing.organizations.length === 0) {
+      return null;
+    }
+
+    // If more than one sharing organization, use the first
+    return organizations.find((org) => sharing.organizations.includes(org.id));
+  }, [organizations, sharing.organizations]);
+
   const installButton = useMemo(() => {
     if (!onInstall) {
       return null;
@@ -95,15 +109,13 @@ const Entry: React.FunctionComponent<
             </div>
             <div className="small">
               <p className="mb-1 mt-1">
-                {author && (
+                {organization ? (
                   <>
-                    Personal <FontAwesomeIcon icon={faEyeSlash} />
+                    <FontAwesomeIcon icon={faUsers} /> {organization.name}
                   </>
-                )}
-
-                {organization && (
+                ) : (
                   <>
-                    {organization} <FontAwesomeIcon icon={faUsers} />
+                    <FontAwesomeIcon icon={faEyeSlash} /> Personal
                   </>
                 )}
               </p>
@@ -150,21 +162,19 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   const { flags, scope } = useContext(AuthContext);
 
   const recipes = useMemo(() => {
-    // const normalQuery = (query ?? "").toLowerCase();
-    // const filtered = (rawRecipes ?? []).filter(
-    //   (x) =>
-    //     query.trim() === "" ||
-    //     x.metadata.name.toLowerCase().includes(normalQuery) ||
-    //     x.metadata.description?.toLowerCase().includes(normalQuery)
-    // );
-    // return sortBy(filtered, (x) => x.metadata.name);
-
-    const filtered = (rawRecipes ?? []).filter(
+    const personalOrTeamRecipes = (rawRecipes ?? []).filter(
       (recipe) =>
-        recipe.sharing.organizations.length > 0 || recipe.metadata.author
+        recipe.sharing.organizations.length > 0 ||
+        recipe.metadata.id.includes(scope)
     );
-    console.log(filtered);
-    return filtered;
+    const normalQuery = (query ?? "").toLowerCase();
+    const filtered = personalOrTeamRecipes.filter(
+      (x) =>
+        query.trim() === "" ||
+        x.metadata.name.toLowerCase().includes(normalQuery) ||
+        x.metadata.description?.toLowerCase().includes(normalQuery)
+    );
+    return sortBy(filtered, (x) => x.metadata.name);
   }, [rawRecipes, query, scope]);
 
   return (
@@ -186,8 +196,8 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
               href="https://www.pixiebrix.com/marketplace"
               className="btn btn-primary"
             >
-              Open Public Marketplace{" "}
-              <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-1" />
+              <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
+              Open Public Marketplace
             </a>
           </Col>
         )}

@@ -22,7 +22,6 @@ import {
   faCloud,
   faCogs,
   faCubes,
-  faExternalLinkAlt,
   faHammer,
   faInfoCircle,
   faScroll,
@@ -65,10 +64,7 @@ const Sidebar: React.FunctionComponent = () => {
 
           <hr />
           <li className="nav-text-item">
-            <span className="nav-text">
-              Quick Links
-              <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-2" />
-            </span>
+            <span className="nav-text">Quick Links</span>
           </li>
 
           {flags.includes("marketplace") && (
