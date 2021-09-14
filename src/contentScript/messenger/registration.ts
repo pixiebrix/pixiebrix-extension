@@ -19,43 +19,17 @@
 import { registerMethods } from "webext-messenger";
 import { browser } from "webextension-polyfill-ts";
 import { expectContext } from "@/utils/expectContext";
-import {
-  ensureContextMenu,
-  uninstallContextMenu,
-} from "@/background/contextMenus";
-import { openPopupPrompt } from "@/background/permissionPrompt";
-import {
-  activateTab,
-  closeTab,
-  markTabAsReady,
-  whoAmI,
-} from "@/background/executor";
+import { handleMenuAction } from "@/contentScript/contextMenus";
 
-expectContext("background");
+expectContext("contentScript");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;
 
 declare global {
   interface MessengerMethods {
-    CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
-    UNINSTALL_CONTEXT_MENU: typeof uninstallContextMenu;
-    ENSURE_CONTEXT_MENU: typeof ensureContextMenu;
-    OPEN_POPUP_PROMPT: typeof openPopupPrompt;
-    ECHO_SENDER: typeof whoAmI;
-    ACTIVATE_TAB: typeof activateTab;
-    CLOSE_TAB: typeof closeTab;
-    MARK_TAB_AS_READY: typeof markTabAsReady;
+    HANDLE_MENU_ACTION: typeof handleMenuAction;
   }
 }
 
-registerMethods({
-  CONTAINS_PERMISSIONS: browser.permissions.contains,
-  UNINSTALL_CONTEXT_MENU: uninstallContextMenu,
-  ENSURE_CONTEXT_MENU: ensureContextMenu,
-  OPEN_POPUP_PROMPT: openPopupPrompt,
-  ECHO_SENDER: whoAmI,
-  ACTIVATE_TAB: activateTab,
-  CLOSE_TAB: closeTab,
-  MARK_TAB_AS_READY: markTabAsReady,
-});
+registerMethods({ HANDLE_MENU_ACTION: handleMenuAction });
