@@ -123,6 +123,8 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installedRecipes,
 }) => {
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
+
+  console.log(rawRecipes);
   const [query, setQuery] = useState("");
   const { flags } = useContext(AuthContext);
 

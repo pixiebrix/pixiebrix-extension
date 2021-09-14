@@ -24,6 +24,32 @@
       padding-bottom: 60px;
     }
 
+    .nav-text-item {
+      padding: 0 $sidebar-menu-padding-x;
+      @include transition-duration(0.25s);
+      transition-property: background;
+      -webkit-transition-property: background;
+      .ReactCollapse--collapse {
+        transition: height 500ms;
+      }
+      .collapse {
+        z-index: 999;
+      }
+
+      cursor: default;
+
+      .nav-text {
+        @include display-flex;
+        @include align-items(center);
+        white-space: nowrap;
+        padding: $sidebar-menu-padding-y 0 $sidebar-menu-padding-y 0;
+        @include transition-duration(0.45s);
+        transition-property: color;
+        color: $sidebar-light-menu-icon-color;
+        font-weight: bold;
+      }
+    }
+
     .nav-item {
       padding: 0 $sidebar-menu-padding-x;
       @include transition-duration(0.25s);
@@ -152,6 +178,7 @@
       &:hover {
         background: $sidebar-light-menu-hover-bg;
       }
+
       &.nav-profile {
         .nav-link {
           height: auto;
@@ -258,6 +285,10 @@
       }
     }
   }
+}
+
+.sidebar-icon-only .nav-text-item {
+  display: none;
 }
 
 /* style for off-canvas menu*/

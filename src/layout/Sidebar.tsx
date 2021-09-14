@@ -22,9 +22,11 @@ import {
   faCloud,
   faCogs,
   faCubes,
+  faExternalLinkAlt,
   faHammer,
   faInfoCircle,
   faScroll,
+  faStoreAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import AuthContext from "@/auth/AuthContext";
@@ -48,19 +50,40 @@ const Sidebar: React.FunctionComponent = () => {
               location.pathname.startsWith("/extensions/")
             }
           />
-          {flags.includes("marketplace") && (
-            <SidebarLink
-              route="/my-blueprints"
-              title="My Blueprints"
-              icon={faScroll}
-            />
-          )}
+          <SidebarLink
+            route="/my-blueprints"
+            title="My Blueprints"
+            icon={faScroll}
+          />
           {flags.includes("workshop") && (
             <SidebarLink route="/workshop" title="Workshop" icon={faHammer} />
           )}
           {/* <ConnectedNavLink route="build" title="Build Brick" icon={faTools} /> */}
           <SidebarLink route="/services" title="Integrations" icon={faCloud} />
           <SidebarLink route="/settings" title="Settings" icon={faCogs} />
+
+          <hr />
+          <li className="nav-text-item">
+            <span className="nav-text">
+              Quick Links
+              <FontAwesomeIcon icon={faExternalLinkAlt} className="ml-2" />
+            </span>
+          </li>
+
+          {flags.includes("marketplace") && (
+            <li className={cx("nav-item")}>
+              <a
+                href="https://www.pixiebrix.com/marketplace"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="nav-link"
+              >
+                <span className="menu-title">Marketplace</span>
+                <FontAwesomeIcon icon={faStoreAlt} className="menu-icon" />
+              </a>
+            </li>
+          )}
+
           <li className={cx("nav-item")}>
             <a
               href="https://docs.pixiebrix.com/"
