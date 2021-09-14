@@ -446,3 +446,24 @@ export function makeURL(
     result.search.replaceAll("+", SPACE_ENCODED_VALUE)
   );
 }
+
+export function isRejectedResult(
+  promise: PromiseSettledResult<unknown>
+): promise is PromiseRejectedResult {
+  return promise.status === "rejected";
+}
+
+export function logSettledErrors(
+  settledPromises: Array<PromiseSettledResult<unknown>>,
+  message: string
+): void {
+  const errors = settledPromises
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- Needed for the type guard to work
+    .filter(isRejectedResult)
+    .map(({ reason }) => reason);
+  if (errors.length > 0) {
+    console.warn(message, {
+      errors,
+    });
+  }
+}

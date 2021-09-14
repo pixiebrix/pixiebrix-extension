@@ -187,3 +187,17 @@ export async function showErrorInOptions(
     index: tabIndex == null ? undefined : tabIndex + 1,
   });
 }
+
+// TODO: Only include PixieBrix tabs, this will reduce the chance of errors
+async function getAllTabs() {
+  return browser.tabs.query({});
+}
+
+export async function mapTabs<
+  TReturnValue,
+  TCallback extends (target: { tabId: number }) => Promise<TReturnValue>
+>(callback: TCallback): Promise<Array<PromiseSettledResult<TReturnValue>>> {
+  const tabs = await getAllTabs();
+  const promises = tabs.map(async ({ id }) => callback({ tabId: id }));
+  return Promise.allSettled(promises);
+}
