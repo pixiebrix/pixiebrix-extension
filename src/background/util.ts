@@ -23,7 +23,7 @@ import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
-import { evaluableFunction, isRejectedResult } from "@/utils";
+import { allSettledRejections, evaluableFunction } from "@/utils";
 import pTimeout from "p-timeout";
 
 export type Target = {
@@ -188,6 +188,7 @@ export async function showErrorInOptions(
   });
 }
 
+// This function should never throw, it should just log warnings to the console
 export async function notifyTabs<
   TReturnValue,
   TCallback extends (target: { tabId: number }) => Promise<TReturnValue>
@@ -195,11 +196,7 @@ export async function notifyTabs<
   // TODO: Only include PixieBrix tabs, this will reduce the chance of errors
   const tabs = await browser.tabs.query({});
   const promises = tabs.map(async ({ id }) => callback({ tabId: id }));
-  const settledPromises = await Promise.allSettled(promises);
-  const errors = settledPromises
-    // eslint-disable-next-line unicorn/no-array-callback-reference -- Needed for the type guard to work
-    .filter(isRejectedResult)
-    .map(({ reason }) => reason);
+  const errors = await allSettledRejections(promises);
   if (errors.length > 0) {
     console.warn(message, {
       errors,

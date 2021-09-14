@@ -447,8 +447,13 @@ export function makeURL(
   );
 }
 
-export function isRejectedResult(
-  promise: PromiseSettledResult<unknown>
-): promise is PromiseRejectedResult {
-  return promise.status === "rejected";
+export async function allSettledRejections(
+  promises: Array<Promise<unknown>>
+): Promise<unknown[]> {
+  return (await Promise.allSettled(promises))
+    .filter(
+      (promise): promise is PromiseRejectedResult =>
+        promise.status === "rejected"
+    )
+    .map(({ reason }) => reason);
 }
