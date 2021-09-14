@@ -27,6 +27,7 @@ import {
   faInfoCircle,
   faScroll,
   faStoreAlt,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import cx from "classnames";
 import AuthContext from "@/auth/AuthContext";
@@ -83,6 +84,18 @@ const Sidebar: React.FunctionComponent = () => {
               </a>
             </li>
           )}
+
+          <li className={cx("nav-item")}>
+            <a
+              href="https://community.pixiebrix.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="nav-link"
+            >
+              <span className="menu-title">Community</span>
+              <FontAwesomeIcon icon={faUsers} className="menu-icon" />
+            </a>
+          </li>
 
           <li className={cx("nav-item")}>
             <a
