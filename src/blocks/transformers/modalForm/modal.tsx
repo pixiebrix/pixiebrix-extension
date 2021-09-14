@@ -24,6 +24,8 @@ import { registerForm } from "@/contentScript/modalForms";
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
 
+const MODAL_OPEN_CLASS = "pixiebrix-modal-open";
+
 export class ModalTransformer extends Transformer {
   constructor() {
     super(
@@ -101,20 +103,20 @@ export class ModalTransformer extends Transformer {
         </div>
     `);
 
+    $(document.body).addClass(MODAL_OPEN_CLASS);
+
     document.body.append(container);
 
+    // Try to intercept click handler on the host page. Doesn't work on all sites, e.g., Trello that define a
+    // `click` handler on document with `useCapture: true`.
+    // See https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
     const modal = shadowRoot.querySelector("#" + id);
+    modal.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+    });
 
-    if (modal) {
-      // Try to intercept click handler on the host page. Doesn't work on all sites, e.g., Trello that define a
-      // `click` handler on document with `useCapture: true`.
-      // See https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener
-
-      modal.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-      });
-    }
+    $(modal).find("iframe").trigger("focus");
 
     try {
       return await registerForm(nonce, {
@@ -125,6 +127,7 @@ export class ModalTransformer extends Transformer {
       });
     } finally {
       container.remove();
+      $(document.body).removeClass(MODAL_OPEN_CLASS);
     }
   }
 }

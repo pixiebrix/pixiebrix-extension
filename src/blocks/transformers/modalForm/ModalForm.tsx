@@ -31,7 +31,7 @@ import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 
 const ModalLayout: React.FC = ({ children }) => (
-  // Don;t use React Bootstrap's Modal because we want to customize the classes in the layout
+  // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
   <div className="modal-content">
     <div className="modal-body">{children}</div>
   </div>
@@ -40,7 +40,7 @@ const ModalLayout: React.FC = ({ children }) => (
 const ModalForm: React.FC = () => {
   const params = new URLSearchParams(location.search);
   const nonce = params.get("nonce");
-  const sourceFrameId = Number.parseInt(params.get("frameId") ?? "0", 10);
+  const sourceFrameId = Number(params.get("frameId"));
 
   const [state, isLoading, error] = useAsyncState(async () => {
     const tab = await whoAmI();
