@@ -22,8 +22,7 @@ import Form, { OnSubmit } from "./Form";
 import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
-import FormikField from "@/components/form/ConnectedFieldTemplate";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -55,17 +54,17 @@ export const WithFormikHorizontalField: ComponentStory<typeof Form> = (
   args
 ) => (
   <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
-    <FormikField
+    <ConnectedFieldTemplate
       name="title"
       layout="horizontal"
       placeholder="Title"
     />
-    <FormikField
+    <ConnectedFieldTemplate
       name="name"
       label="Name"
       description="A name"
     />
-    <FormikField
+    <ConnectedFieldTemplate
       name="age"
       label="Age"
       description="Your age"
@@ -78,18 +77,18 @@ export const WithFormikVerticalField: ComponentStory<typeof Form> = (
   args
 ) => (
   <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
-    <FormikField
+    <ConnectedFieldTemplate
       name="title"
       layout="vertical"
       placeholder="Title"
     />
-    <FormikField
+    <ConnectedFieldTemplate
       name="name"
       layout="vertical"
       label="Name"
       description="A name"
     />
-    <FormikField
+    <ConnectedFieldTemplate
       name="age"
       layout="vertical"
       label="Age"
@@ -106,17 +105,17 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
     {...args}
     renderSubmit={() => <button type="submit">Click to submit</button>}
   >
-    <FormikField
+    <ConnectedFieldTemplate
       name="title"
       layout="horizontal"
       placeholder="Title"
     />
-    <FormikField
+    <ConnectedFieldTemplate
       name="name"
       label="Name"
       description="A name"
     />
-    <FormikField
+    <ConnectedFieldTemplate
       name="age"
       label="Age"
       description="Your age"
@@ -140,13 +139,13 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
     initialValues={allFieldsInitialValues}
     {...args}
   >
-    <FormikField
+    <ConnectedFieldTemplate
       name="name"
       layout="horizontal"
       label="Name"
       description="A name"
     />
-    <FormikField
+    <ConnectedFieldTemplate
       name="story"
       layout="horizontal"
       label="Story"
@@ -154,12 +153,9 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       description="Tell me your story"
       rows={10}
     />
-    <FormikField
+    <ConnectedFieldTemplate
       name="public"
-      layout="horizontal"
-      as={BootstrapSwitchButton}
-      offlabel=" "
-      onlabel=" "
+      layout="switch"
       label={
         <span>
           <FontAwesomeIcon icon={faGlobe} /> Public
