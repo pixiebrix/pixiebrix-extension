@@ -23,6 +23,7 @@ import {
   faExternalLinkAlt,
   faEyeSlash,
   faScroll,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { Metadata } from "@/core";
 import { RecipeDefinition } from "@/types/definitions";
@@ -49,7 +50,7 @@ interface RecipeProps {
 const Entry: React.FunctionComponent<
   RecipeProps & { buttonProps?: ButtonProps }
 > = ({
-  metadata: { id, name, description },
+  metadata: { id, name, description, author, organization },
   buttonProps = {},
   onInstall,
   installed,
@@ -93,9 +94,17 @@ const Entry: React.FunctionComponent<
               <p className="mb-1 mt-1">{description}</p>
             </div>
             <div className="small">
-              <p className="mb-1 mt-1">
-                Personal <FontAwesomeIcon icon={faEyeSlash} />
-              </p>
+              {author && (
+                <p className="mb-1 mt-1">
+                  Personal <FontAwesomeIcon icon={faEyeSlash} />
+                </p>
+              )}
+
+              {organization && (
+                <p className="mb-1 mt-1">
+                  {organization} <FontAwesomeIcon icon={faUsers} />
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -150,8 +159,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
 
     const filtered = (rawRecipes ?? []).filter(
       (recipe) =>
-        recipe.sharing.organizations.length > 0 ||
-        recipe.metadata.id.includes(scope)
+        recipe.sharing.organizations.length > 0 || recipe.metadata.author
     );
     console.log(filtered);
     return filtered;
