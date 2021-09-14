@@ -34,7 +34,7 @@ import {
   containsPermissions,
 } from "@/background/messenger/api";
 import { deploymentPermissions } from "@/permissions";
-import { IExtension } from "@/core";
+import { IExtension, UUID, RegistryId } from "@/core";
 import { ExtensionOptionsState } from "@/store/extensions";
 import { getLinkedApiClient } from "@/services/apiClient";
 
@@ -99,7 +99,9 @@ function installDeployment(
       extensionPoints: deployment.package.config.extensionPoints,
       deployment,
       services: Object.fromEntries(
-        deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
+        deployment.bindings.map(
+          (x) => [x.auth.service_id, x.auth.id] as [RegistryId, UUID]
+        )
       ),
     })
   );

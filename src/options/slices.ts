@@ -257,7 +257,6 @@ export const optionsSlice = createSlice({
           services: Object.entries(services).map(
             ([outputKey, id]: [string, RegistryId]) => ({
               outputKey,
-              // @ts-expect-error -- TypeScript is complaining that RegistryId can't index Record<RegistryId, ...>
               config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
               id,
             })
