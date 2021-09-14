@@ -41,7 +41,6 @@ const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
 const MESSAGE_RUN_BLOCK_BROADCAST = `${MESSAGE_PREFIX}RUN_BLOCK_BROADCAST`;
 const MESSAGE_RUN_BLOCK_FRAME_NONCE = `${MESSAGE_PREFIX}RUN_BLOCK_FRAME_NONCE`;
-const MESSAGE_OPEN_TAB = `${MESSAGE_PREFIX}MESSAGE_OPEN_TAB`;
 
 const TOP_LEVEL_FRAME = 0;
 
@@ -60,11 +59,6 @@ interface WaitOptions {
   maxWaitMillis?: number;
   isAvailable?: Availability;
 }
-
-type OpenTabAction = {
-  type: typeof MESSAGE_OPEN_TAB;
-  payload: Tabs.CreateCreatePropertiesType;
-};
 
 interface ObjectPayloadMessage<T extends ActionType = ActionType>
   extends Message<T> {
@@ -274,12 +268,18 @@ handlers.set(
   }
 );
 
-handlers.set(MESSAGE_OPEN_TAB, async (request: OpenTabAction, sender) => {
-  const tab = await browser.tabs.create(request.payload);
+export async function openTab(
+  this: MessengerMeta,
+  createProperties: Tabs.CreateCreatePropertiesType
+): Promise<void> {
+  // Natively links the new tab to its opener + opens it right next to it
+  const openerTabId = this.tab.id;
+  const tab = await browser.tabs.create({ ...createProperties, openerTabId });
+
   // FIXME: include frame information here
-  tabToTarget.set(sender.tab.id, tab.id);
-  tabToOpener.set(tab.id, sender.tab.id);
-});
+  tabToTarget.set(openerTabId, tab.id);
+  tabToOpener.set(tab.id, openerTabId);
+}
 
 export async function markTabAsReady(this: MessengerMeta) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias, unicorn/no-this-assignment -- Not applicable to this pattern
@@ -343,15 +343,6 @@ export async function whoAmI(
   this: MessengerMeta
 ): Promise<Runtime.MessageSender> {
   return this;
-}
-
-export async function openTab(
-  options: Tabs.CreateCreatePropertiesType
-): Promise<void> {
-  return browser.runtime.sendMessage({
-    type: MESSAGE_OPEN_TAB,
-    payload: options,
-  });
 }
 
 const DEFAULT_MAX_RETRIES = 5;
