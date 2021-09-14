@@ -22,7 +22,7 @@ import { useCallback } from "react";
 import { uninstallContextMenu } from "@/background/messenger/api";
 import { optionsSlice } from "@/options/slices";
 import { groupBy, uniq } from "lodash";
-import { IExtension, UUID, RegistryId, ServiceDependency } from "@/core";
+import { IExtension, UUID, RegistryId } from "@/core";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
@@ -34,9 +34,7 @@ function selectAuths(extensions: IExtension[]): Record<RegistryId, UUID> {
     (x) => x.id
   );
   const result: Record<RegistryId, UUID> = {};
-  for (const [id, auths] of Object.entries(serviceAuths) as Array<
-    [RegistryId, ServiceDependency[]]
-  >) {
+  for (const [id, auths] of Object.entries(serviceAuths)) {
     const configs = uniq(auths.map(({ config }) => config));
     if (configs.length === 0) {
       throw new Error(`Service ${id} is not configured`);
@@ -45,7 +43,7 @@ function selectAuths(extensions: IExtension[]): Record<RegistryId, UUID> {
     }
 
     // eslint-disable-next-line security/detect-object-injection -- safe because it's from Object.entries
-    result[id] = configs[0];
+    result[id as RegistryId] = configs[0];
   }
 
   return result;
