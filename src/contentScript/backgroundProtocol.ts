@@ -31,6 +31,7 @@ import { deserializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { expectContext } from "@/utils/expectContext";
 import { getErrorMessage } from "@/errors";
+import type { Target } from "@/types";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
 export const ROOT_FRAME_ID = 0;
@@ -141,11 +142,6 @@ export function notifyContentScripts(
     }
   };
 }
-
-export type Target = {
-  tabId: number;
-  frameId: number;
-};
 
 /**
  * Lift a method to be run in the contentScript

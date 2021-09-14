@@ -31,9 +31,9 @@ import {
   PORT_NAME,
   PromiseHandler,
   TabId,
-  Target,
   Meta,
 } from "@/background/devtools/contract";
+import type { Target } from "@/types";
 import { reportError } from "@/telemetry/logging";
 import { isBackgroundPage } from "webext-detect-page";
 import { uuidv4 } from "@/types/helpers";
