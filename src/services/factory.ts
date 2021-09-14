@@ -200,8 +200,8 @@ class LocalDefinedService<
 
     const result = produce(requestConfig, (draft) => {
       requestConfig.baseURL = baseURL;
-      draft.headers = { ...(draft.headers ?? {}), ...headers };
-      draft.params = { ...(draft.params ?? {}), ...params };
+      draft.headers = { ...draft.headers, ...headers };
+      draft.params = { ...draft.params, ...params };
     });
 
     this.checkRequestUrl(baseURL, requestConfig);
@@ -233,7 +233,7 @@ class LocalDefinedService<
 
     const result = produce(requestConfig, (draft) => {
       requestConfig.baseURL = baseURL;
-      draft.headers = { ...(draft.headers ?? {}), ...headers };
+      draft.headers = { ...draft.headers, ...headers };
     });
 
     this.checkRequestUrl(baseURL, requestConfig);
