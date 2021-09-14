@@ -23,8 +23,6 @@ import { browser } from "webextension-polyfill-ts";
 import { registerForm } from "@/contentScript/modalForms";
 import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
-// @ts-expect-error -- not installing types
-import Modal from "bootstrap/js/src/modal";
 
 const MODAL_OPEN_CLASS = "pixiebrix-modal-open";
 
@@ -88,11 +86,10 @@ export class ModalTransformer extends Transformer {
     cancelable = true,
     submitCaption = "Submit",
   }: BlockArg): Promise<unknown> {
-    // Future improvements:
-    // - Bootstrap 4 modals prevent page scroll when the modal is showing
-    // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
-
     expectContext("contentScript");
+
+    // Future improvements:
+    // - Support draggable modals. This will require showing the modal header on the host page so there's a drag handle?
 
     const container = document.createElement("div");
     const shadowRoot = container.attachShadow({ mode: "closed" });
@@ -126,9 +123,6 @@ export class ModalTransformer extends Transformer {
     document.body.append(container);
 
     const modal = shadowRoot.querySelector("#" + id);
-    const modalController = new Modal(modal);
-    modalController._checkScrollbar();
-    modalController._setScrollbar();
 
     // Try to intercept click handler on the host page. Doesn't work on all sites, e.g., Trello that define a
     // `click` handler on document with `useCapture: true`.
@@ -141,9 +135,19 @@ export class ModalTransformer extends Transformer {
 
     const $modal = $(modal);
 
+    // Isolated use; not worth installing types
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let modalController: any;
+    // @ts-expect-error -- isolated use
+    void import("bootstrap/js/src/modal").then(({ default: Modal }) => {
+      modalController = new Modal(modal);
+      modalController._checkScrollbar();
+      modalController._setScrollbar();
+    });
+
     setTimeout(() => {
       // Ensure we're the top-most element. Perform outside the main render loop because getMaxZ would otherwise cause
-      // a slight delay in rendering
+      // a slight delay in rendering. 1050 is the default Bootstrap 4 z-index for modals.
       const zIndex = getMaxZ();
       $modal.css("z-index", Math.max(zIndex, 1050));
     }, 0);
@@ -159,8 +163,11 @@ export class ModalTransformer extends Transformer {
       });
     } finally {
       container.remove();
-      modalController._hideModal();
       $(document.body).removeClass(MODAL_OPEN_CLASS);
+
+      if (modalController) {
+        modalController._hideModal();
+      }
     }
   }
 }
