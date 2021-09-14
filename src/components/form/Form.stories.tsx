@@ -19,11 +19,11 @@ import React from "react";
 import * as yup from "yup";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import Form, { OnSubmit } from "./Form";
-import FormikHorizontalField from "./fields/FormikHorizontalField";
-import FormikSwitchButton from "./fields/FormikSwitchButton";
 import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
+import FormikField from "@/components/form/FormikField";
+import BootstrapSwitchButton from "bootstrap-switch-button-react";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -55,12 +55,49 @@ export const WithFormikHorizontalField: ComponentStory<typeof Form> = (
   args
 ) => (
   <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
-    <FormikHorizontalField placeholder="Title" name="title" />
-    <FormikHorizontalField label="Name" name="name" description="A name" />
-    <FormikHorizontalField label="Age" name="age" description="Your age" />
+    <FormikField
+      name="title"
+      layout="horizontal"
+      placeholder="Title"
+    />
+    <FormikField
+      name="name"
+      label="Name"
+      description="A name"
+    />
+    <FormikField
+      name="age"
+      label="Age"
+      description="Your age"
+    />
   </Form>
 );
-WithFormikHorizontalField.storyName = "With FormikHorizontalField";
+WithFormikHorizontalField.storyName = "With Horizontal FormikField";
+
+export const WithFormikVerticalField: ComponentStory<typeof Form> = (
+  args
+) => (
+  <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
+    <FormikField
+      name="title"
+      layout="vertical"
+      placeholder="Title"
+    />
+    <FormikField
+      name="name"
+      layout="vertical"
+      label="Name"
+      description="A name"
+    />
+    <FormikField
+      name="age"
+      layout="vertical"
+      label="Age"
+      description="Your age"
+    />
+  </Form>
+);
+WithFormikVerticalField.storyName = "With Vertical FormikField";
 
 export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
   <Form
@@ -69,9 +106,21 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
     {...args}
     renderSubmit={() => <button type="submit">Click to submit</button>}
   >
-    <FormikHorizontalField placeholder="Title" name="title" />
-    <FormikHorizontalField label="Name" name="name" description="A name" />
-    <FormikHorizontalField label="Age" name="age" description="Your age" />
+    <FormikField
+      name="title"
+      layout="horizontal"
+      placeholder="Title"
+    />
+    <FormikField
+      name="name"
+      label="Name"
+      description="A name"
+    />
+    <FormikField
+      name="age"
+      label="Age"
+      description="Your age"
+    />
   </Form>
 );
 
@@ -91,21 +140,31 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
     initialValues={allFieldsInitialValues}
     {...args}
   >
-    <FormikHorizontalField label="Name" name="name" description="A name" />
-    <FormikHorizontalField
-      label="Story"
+    <FormikField
+      name="name"
+      layout="horizontal"
+      label="Name"
+      description="A name"
+    />
+    <FormikField
       name="story"
+      layout="horizontal"
+      label="Story"
+      as="textarea"
       description="Tell me your story"
-      type="textarea"
       rows={10}
     />
-    <FormikSwitchButton
+    <FormikField
+      name="public"
+      layout="horizontal"
+      as={BootstrapSwitchButton}
+      offlabel=" "
+      onlabel=" "
       label={
         <span>
           <FontAwesomeIcon icon={faGlobe} /> Public
         </span>
       }
-      name="public"
     />
   </Form>
 );

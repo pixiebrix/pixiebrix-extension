@@ -15,10 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import HorizontalField, { HorizontalFieldProps } from "./HorizontalField";
-import { withFormikField } from "./withFormikField";
+import React from "react";
+import { connect, getIn } from "formik";
+import Field, { FieldProps } from "@/components/form/Field";
+import { FormikContextType } from "formik/dist/types";
 
-const FormikHorizontalField = withFormikField<unknown, HorizontalFieldProps>(
-  HorizontalField
-);
-export default FormikHorizontalField;
+export type FormikFieldProps<Values> = FieldProps & { formik: FormikContextType<Values> }
+
+function FormikField<Values>(props: FormikFieldProps<Values>) {
+  const fieldProps: FieldProps = props;
+
+  const { formik }: { formik: FormikContextType<Values>} = props;
+
+  const error = getIn(formik.errors, props.name);
+  const touched = getIn(formik.touched, props.name);
+
+  return (
+    <Field
+      {...fieldProps}
+      error={error}
+      touched={touched}
+    />
+  );
+}
+
+export default connect<FieldProps>(FormikField);
