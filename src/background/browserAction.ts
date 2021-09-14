@@ -166,7 +166,7 @@ async function forwardWhenReady(
 
   const messageWithSequenceNumber = {
     ...message,
-    meta: { ...(message.meta ?? {}), $seq: seqNum },
+    meta: { ...message.meta, $seq: seqNum },
   };
 
   console.debug(
