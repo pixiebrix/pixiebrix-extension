@@ -85,7 +85,7 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
   return (
     <BootstrapForm.Group as={Col} controlId={name}>
       {label && (
-        <BootstrapForm.Label as={Row} sm="3">
+        <BootstrapForm.Label as={Row} className="pb-1">
           {label}
         </BootstrapForm.Label>
       )}
