@@ -19,6 +19,7 @@ import React, { ReactElement, ReactNode } from "react";
 import { Col, Form as BootstrapForm, FormControlProps, Row } from "react-bootstrap";
 import { Except } from "type-fest";
 import ConnectedSwitchButton from "@/components/form/switchButton/ConnectedSwitchButton";
+import cx from "classnames";
 
 export type FieldProps<As extends React.ElementType = React.ElementType>
   = FormControlProps
@@ -83,26 +84,24 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
   const hasError = Boolean(error);
 
   return (
-    <BootstrapForm.Group as={Col} controlId={name}>
+    <BootstrapForm.Group as={Col} controlId={name} className="pl-0">
       {label && (
-        <BootstrapForm.Label as={Row} className="pb-1">
+        <BootstrapForm.Label className="pb-1">
           {label}
         </BootstrapForm.Label>
       )}
-      <Row>
-        <BootstrapForm.Control
-          name={name}
-          isInvalid={hasError}
-          {...restFieldProps}
-        />
-      </Row>
+      <BootstrapForm.Control
+        name={name}
+        isInvalid={hasError}
+        {...restFieldProps}
+      />a
       {description && (
-        <BootstrapForm.Text as={Row} className="text-muted">
+        <BootstrapForm.Text className="text-muted">
           {description}
         </BootstrapForm.Text>
       )}
       {touched && hasError && (
-        <BootstrapForm.Control.Feedback as={Row} type="invalid">
+        <BootstrapForm.Control.Feedback type="invalid">
           {error}
         </BootstrapForm.Control.Feedback>
       )}
