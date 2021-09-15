@@ -46,10 +46,9 @@ import Form, {
   RenderBody,
   RenderSubmit,
 } from "@/components/form/Form";
-import FormikHorizontalField from "@/components/form/fields/FormikHorizontalField";
-import FormikSwitchButton from "@/components/form/fields/FormikSwitchButton";
-import SwitchButton from "@/components/form/fields/SwitchButton";
 import { useOrganization } from "@/hooks/organization";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const { attachExtension } = optionsSlice.actions;
 
@@ -150,14 +149,16 @@ const ShareExtensionModal: React.FC<{
 
   const renderBody: RenderBody = ({ values, setFieldValue }) => (
     <Modal.Body>
-      <FormikHorizontalField
-        label="Name"
+      <ConnectedFieldTemplate
         name="name"
+        layout="horizontal"
+        label="Name"
         description="A name for the blueprint"
       />
-      <FormikHorizontalField
-        label="Registry Id"
+      <ConnectedFieldTemplate
         name="blueprintId"
+        layout="horizontal"
+        label="Registry Id"
         description={
           <span>
             A unique id for the blueprint.{" "}
@@ -165,9 +166,10 @@ const ShareExtensionModal: React.FC<{
           </span>
         }
       />
-      <FormikHorizontalField
-        label="Description"
+      <ConnectedFieldTemplate
         name="description"
+        layout="horizontal"
+        label="Description"
         description="A short description of the blueprint"
       />
 
@@ -178,8 +180,10 @@ const ShareExtensionModal: React.FC<{
         </Col>
       </BootstrapForm.Group>
 
-      <FormikSwitchButton
+      <ConnectedFieldTemplate
         name="public"
+        layout="switch"
+        value={values.public}
         label={
           values.public ? (
             <span>
@@ -200,9 +204,10 @@ const ShareExtensionModal: React.FC<{
         (organization) => {
           const checked = values.organizations.includes(organization.id);
           return (
-            <SwitchButton
+            <FieldTemplate
               key={organization.id}
               name={organization.id}
+              layout="switch"
               label={organization.name}
               value={checked}
               onChange={() => {
@@ -237,7 +242,6 @@ const ShareExtensionModal: React.FC<{
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>
       <Form
-        validateOnMount
         validationSchema={ShareSchema}
         initialValues={initialValues}
         onSubmit={handleShare}
