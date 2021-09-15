@@ -22,7 +22,7 @@ import EditorNode from "./EditorNode";
 
 export default {
   title: "PageEditor/Node",
-  component: EditorNode
+  component: EditorNode,
 } as ComponentMeta<typeof EditorNode>;
 
 const Story: ComponentStory<typeof EditorNode> = (args) => (
@@ -32,5 +32,5 @@ const Story: ComponentStory<typeof EditorNode> = (args) => (
 export const Reader = Story.bind({});
 Reader.args = {
   title: "Read",
-  icon: faBook
+  icon: faBook,
 };

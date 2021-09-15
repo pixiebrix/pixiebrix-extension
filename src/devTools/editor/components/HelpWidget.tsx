@@ -18,14 +18,22 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Dropdown } from "react-bootstrap";
-import { faCommentAlt, faExternalLinkAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCommentAlt,
+  faExternalLinkAlt,
+  faPhone,
+} from "@fortawesome/free-solid-svg-icons";
 
 const HelpWidget: React.FunctionComponent<{
   className?: string;
   toggleButtonClassName?: string;
-}> = ({ className = "", toggleButtonClassName= "" }) => (
+}> = ({ className = "", toggleButtonClassName = "" }) => (
   <Dropdown className={className}>
-    <Dropdown.Toggle id="support-dropdown" variant="info" className={toggleButtonClassName}>
+    <Dropdown.Toggle
+      id="support-dropdown"
+      variant="info"
+      className={toggleButtonClassName}
+    >
       <FontAwesomeIcon icon={faCommentAlt} /> Live Support
     </Dropdown.Toggle>
     <Dropdown.Menu>
@@ -37,7 +45,6 @@ const HelpWidget: React.FunctionComponent<{
       </Dropdown.Item>
     </Dropdown.Menu>
   </Dropdown>
-
 );
 
 export default HelpWidget;

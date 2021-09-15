@@ -122,9 +122,7 @@ const Editor: React.FunctionComponent = () => {
     ) {
       return <NoExtensionSelectedPane />;
     } else if (installed.length > 0) {
-      return (
-        <NoExtensionsPane unavailableCount={unavailableCount}/>
-      );
+      return <NoExtensionsPane unavailableCount={unavailableCount} />;
     } else {
       return <WelcomePane />;
     }

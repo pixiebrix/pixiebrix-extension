@@ -22,7 +22,7 @@ import ChatWidget from "@/components/ChatWidget";
 import { Tab } from "react-bootstrap";
 
 const HelpTab: React.FC<{
-  eventKey: string
+  eventKey: string;
 }> = ({ eventKey }) => (
   <Tab.Pane eventKey={eventKey} className="h-100">
     <div className="d-flex pl-2">

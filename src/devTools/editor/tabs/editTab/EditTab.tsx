@@ -65,11 +65,14 @@ const EditTab: React.FC<{
     pipelineFieldHelpers,
   ] = useField<BlockPipeline>(fieldName);
 
-  const blockName = useMemo(() =>
-    [fieldName, activeNodeIndex - 1].join(".")
-    , [fieldName, activeNodeIndex]);
+  const blockName = useMemo(() => [fieldName, activeNodeIndex - 1].join("."), [
+    fieldName,
+    activeNodeIndex,
+  ]);
 
-  const [{ value: blockInstanceId }] = useField<UUID>(`${blockName}.instanceId`);
+  const [{ value: blockInstanceId }] = useField<UUID>(
+    `${blockName}.instanceId`
+  );
 
   // Load once
   const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);

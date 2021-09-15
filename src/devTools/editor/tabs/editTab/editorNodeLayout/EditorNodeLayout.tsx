@@ -21,13 +21,21 @@ import EditorNode, {
   EditorNodeProps,
 } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowDown, faPlus, faPlusCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowDown,
+  faPlus,
+  faPlusCircle,
+} from "@fortawesome/free-solid-svg-icons";
 import { IBlock } from "@/core";
 import BlockModal from "@/components/fields/BlockModal";
 
 const renderAppend = ({ show }: { show: () => void }) => (
   <>
-    <FontAwesomeIcon icon={faArrowDown} size="lg" className={styles.appendArrow} />
+    <FontAwesomeIcon
+      icon={faArrowDown}
+      size="lg"
+      className={styles.appendArrow}
+    />
     <EditorNode muted title="Add" icon={faPlus} onClick={show} />
   </>
 );
@@ -38,12 +46,22 @@ const EditorNodeLayout: React.FC<{
   relevantBlocksToAdd: IBlock[];
   addBlock: (block: IBlock, atIndex: number) => void;
   showAppend: boolean;
-}> = ({ nodes, activeNodeIndex, relevantBlocksToAdd, addBlock, showAppend }) => {
+}> = ({
+  nodes,
+  activeNodeIndex,
+  relevantBlocksToAdd,
+  addBlock,
+  showAppend,
+}) => {
   const renderInsert = useCallback(
     ({ show }) => (
       // Don't use bootstrap styling
       <button type="button" className={styles.insertButton} onClick={show}>
-        <FontAwesomeIcon icon={faPlusCircle} size="lg" className={styles.plus} />
+        <FontAwesomeIcon
+          icon={faPlusCircle}
+          size="lg"
+          className={styles.plus}
+        />
       </button>
     ),
     []
@@ -52,20 +70,20 @@ const EditorNodeLayout: React.FC<{
   return (
     <div className={styles.root}>
       {nodes.length > 0 &&
-      nodes.map((nodeProps, index) => (
-        <React.Fragment key={index}>
-          {index !== 0 && (
-            <BlockModal
-              blocks={relevantBlocksToAdd}
-              renderButton={renderInsert}
-              onSelect={(block) => {
-                addBlock(block, index);
-              }}
-            />
-          )}
-          <EditorNode active={index === activeNodeIndex} {...nodeProps} />
-        </React.Fragment>
-      ))}
+        nodes.map((nodeProps, index) => (
+          <React.Fragment key={index}>
+            {index !== 0 && (
+              <BlockModal
+                blocks={relevantBlocksToAdd}
+                renderButton={renderInsert}
+                onSelect={(block) => {
+                  addBlock(block, index);
+                }}
+              />
+            )}
+            <EditorNode active={index === activeNodeIndex} {...nodeProps} />
+          </React.Fragment>
+        ))}
       {showAppend && (
         <BlockModal
           blocks={relevantBlocksToAdd}

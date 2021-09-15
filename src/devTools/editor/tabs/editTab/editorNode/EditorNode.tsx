@@ -49,7 +49,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
         onClick={onClick}
         className={cx(styles.box, {
           [styles.mutedNode]: muted,
-          [styles.activeNode]: active
+          [styles.activeNode]: active,
         })}
       >
         <FontAwesomeIcon icon={icon} size="2x" fixedWidth />
@@ -57,6 +57,6 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       <div className={styles.title}>{title}</div>
     </div>
   );
-}
+};
 
 export default EditorNode;

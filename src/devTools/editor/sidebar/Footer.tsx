@@ -29,8 +29,9 @@ const Footer: React.FunctionComponent = () => {
 
   const hasBetaFeatureFlag = flags.includes("page-editor-beta");
 
-  const isBetaUI = useSelector((rootState: RootState) =>
-    rootState.editor.isBetaUI);
+  const isBetaUI = useSelector(
+    (rootState: RootState) => rootState.editor.isBetaUI
+  );
 
   const dispatch = useDispatch();
 
@@ -40,17 +41,14 @@ const Footer: React.FunctionComponent = () => {
 
   return (
     <div className="Sidebar__footer flex-grow-0">
-      {hasBetaFeatureFlag &&
+      {hasBetaFeatureFlag && (
         <div>
           <label>
             Enable Beta UI
-            <input
-              type="checkbox"
-              checked={isBetaUI}
-              onChange={toggleBetaUI}/>
+            <input type="checkbox" checked={isBetaUI} onChange={toggleBetaUI} />
           </label>
         </div>
-      }
+      )}
       <div className="d-flex">
         <div className="flex-grow-1">
           Scope: <code>{scope}</code>

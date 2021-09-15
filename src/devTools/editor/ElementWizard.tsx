@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
 import { isEmpty, groupBy } from "lodash";
@@ -96,21 +102,20 @@ const ElementWizard: React.FunctionComponent<{
   installed: IExtension[];
   element: FormState;
   editable: Set<string>;
-}> = ({ element, editable, installed}) => {
+}> = ({ element, editable, installed }) => {
   const { port } = useContext(DevToolsContext);
 
-  const isBetaUI = useSelector((state: RootState) =>
-    state.editor.isBetaUI);
+  const isBetaUI = useSelector((state: RootState) => state.editor.isBetaUI);
 
-  const wizard = useMemo(() => isBetaUI
-      ? betaWizard
-      : ADAPTERS.get(element.type).wizard,
-    [element.type, isBetaUI]);
+  const wizard = useMemo(
+    () => (isBetaUI ? betaWizard : ADAPTERS.get(element.type).wizard),
+    [element.type, isBetaUI]
+  );
 
   const [step, setStep] = useState(wizard[0].step);
 
   useEffect(() => {
-    setStep(wizard[0].step)
+    setStep(wizard[0].step);
   }, [isBetaUI, wizard, setStep]);
 
   const isLocked =

@@ -22,12 +22,16 @@ import { Button } from "react-bootstrap";
 import styles from "./EditorNodeConfigPanel.module.scss";
 
 const EditorNodeConfigPanel: React.FC<{
-  onRemoveNode?: () => void
+  onRemoveNode?: () => void;
 }> = ({ onRemoveNode, children }) => (
   <div>
     {children}
     {onRemoveNode && (
-      <Button variant="danger" onClick={onRemoveNode} className={styles.removeButton}>
+      <Button
+        variant="danger"
+        onClick={onRemoveNode}
+        className={styles.removeButton}
+      >
         <FontAwesomeIcon icon={faTrash} /> Remove Node
       </Button>
     )}

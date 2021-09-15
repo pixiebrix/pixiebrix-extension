@@ -76,7 +76,7 @@ export interface EditorState {
   /**
    * Is the user using the new page editor beta UI?
    */
-  isBetaUI: boolean
+  isBetaUI: boolean;
 }
 
 export const initialState: EditorState = {
@@ -88,7 +88,7 @@ export const initialState: EditorState = {
   knownEditable: [],
   dirty: {},
   inserting: null,
-  isBetaUI: false
+  isBetaUI: false,
 };
 
 export const editorSlice = createSlice({
@@ -233,7 +233,7 @@ export const editorSlice = createSlice({
       void clearExtensionTraces(uuid);
     },
     setBetaUIEnabled: (state, action: PayloadAction<boolean>) => {
-      state.isBetaUI = action.payload
+      state.isBetaUI = action.payload;
     },
   },
 });
