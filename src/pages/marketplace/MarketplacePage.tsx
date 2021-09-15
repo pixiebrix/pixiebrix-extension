@@ -221,7 +221,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
         <Col className="text-right">
           <a
             href="https://www.pixiebrix.com/marketplace"
-            className="btn btn-primary"
+            className="btn btn-info"
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
             Open Public Marketplace
