@@ -67,7 +67,7 @@ const Sidebar: React.FunctionComponent = () => {
             <span className="nav-text">Quick Links</span>
           </li>
 
-          {flags.includes("marketplace") && (
+          {flags.includes("public_marketplace") && (
             <li className={cx("nav-item")}>
               <a
                 href="https://www.pixiebrix.com/marketplace"
