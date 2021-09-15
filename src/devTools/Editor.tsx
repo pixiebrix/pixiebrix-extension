@@ -157,9 +157,7 @@ const Editor: React.FunctionComponent = () => {
           activeElement={activeElement}
           inserting={inserting}
         />
-        <div className="d-flex h-100">
-          <div className="h-100 flex-grow-1">{body}</div>
-        </div>
+        {body}
       </SplitPane>
     </Container>
   );

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
 import { isEmpty, groupBy } from "lodash";
@@ -31,12 +31,22 @@ import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
-import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
+import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
+import { useSelector } from "react-redux";
+import { RootState } from "@/devTools/store";
+import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import styles from "./ElementWizard.module.scss";
+import cx from "classnames";
 
 // Step names to show lock icon for if the user is using a foundation they don't have edit access for
 const LOCKABLE_STEP_NAMES = ["Foundation", "Availability", "Location", "Data"];
 const LOG_STEP_NAME = "Logs";
+
+const betaWizard: WizardStep[] = [
+  { step: "Edit", Component: EditTab },
+  { step: "Logs", Component: LogsTab },
+];
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
@@ -89,10 +99,19 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable, installed}) => {
   const { port } = useContext(DevToolsContext);
 
-  const wizard = useMemo(() => ADAPTERS.get(element.type).wizard, [
-    element.type,
-  ]);
+  const isBetaUI = useSelector((state: RootState) =>
+    state.editor.isBetaUI);
+
+  const wizard = useMemo(() => isBetaUI
+      ? betaWizard
+      : ADAPTERS.get(element.type).wizard,
+    [element.type, isBetaUI]);
+
   const [step, setStep] = useState(wizard[0].step);
+
+  useEffect(() => {
+    setStep(wizard[0].step)
+  }, [isBetaUI, wizard, setStep]);
 
   const isLocked =
     element.installed &&
@@ -138,9 +157,14 @@ const ElementWizard: React.FunctionComponent<{
         noValidate
         onSubmit={handleSubmit}
         onReset={handleReset}
-        className="h-100"
+        className={styles.form}
       >
-        <Nav variant="pills" activeKey={step} onSelect={selectTabHandler}>
+        <Nav
+          variant="pills"
+          activeKey={step}
+          onSelect={selectTabHandler}
+          className={cx({ [styles.nav]: isBetaUI })}
+        >
           {wizard.map((step) => (
             <WizardNavItem key={step.step} step={step} isLocked={isLocked} />
           ))}
@@ -166,7 +190,7 @@ const ElementWizard: React.FunctionComponent<{
         </Nav>
 
         {status && <div className="text-danger">{status}</div>}
-        <Tab.Content className="h-100">
+        <Tab.Content className={styles.tabContent}>
           {wizard.map(({ Component, step, extraProps = {} }) => (
             <Component
               key={step}
