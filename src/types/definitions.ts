@@ -23,6 +23,7 @@ import {
   RegistryId,
   Schema,
   TemplateEngine,
+  UUID,
 } from "@/core";
 import { Permissions } from "webextension-polyfill-ts";
 import { UiSchema } from "@rjsf/core";
@@ -66,6 +67,11 @@ export interface OptionsDefinition {
   uiSchema?: UiSchema;
 }
 
+export interface SharingDefinition {
+  public: boolean;
+  organizations: UUID[];
+}
+
 type Kind = "recipe" | "service" | "reader" | "component";
 
 /**
@@ -82,6 +88,7 @@ export interface RecipeDefinition extends Definition {
   extensionPoints: ExtensionPointConfig[];
   definitions?: InnerDefinitions;
   options?: OptionsDefinition;
+  sharing?: SharingDefinition;
 }
 
 export interface KeyAuthenticationDefinition {

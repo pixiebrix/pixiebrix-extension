@@ -29,7 +29,7 @@ const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
 
   const matchRoot = useRouteMatch({ path: "/", exact: true });
   const matchInstalled = useRouteMatch({ path: "/installed", exact: true });
-  const matchMarketplace = useRouteMatch({ path: "/marketplace", exact: true });
+  const matchMarketplace = useRouteMatch({ path: "/blueprints", exact: true });
   const matchTemplates = useRouteMatch({ path: "/templates", exact: true });
 
   if (!hasUpdate) {
