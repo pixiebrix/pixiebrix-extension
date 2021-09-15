@@ -42,6 +42,7 @@ export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 export interface MarketplaceProps {
   installedRecipes: Set<string>;
   installRecipe: InstallRecipe;
+  recipesPerPage?: number;
 }
 
 interface RecipeProps {
@@ -78,14 +79,26 @@ const Entry: React.FunctionComponent<
 
     if (!installed) {
       return (
-        <Button size="sm" variant="info" {...buttonProps} onClick={onInstall}>
+        <Button
+          size="sm"
+          variant="info"
+          className="activate-button"
+          {...buttonProps}
+          onClick={onInstall}
+        >
           Activate
         </Button>
       );
     }
 
     return (
-      <Button size="sm" variant="info" {...buttonProps} disabled>
+      <Button
+        size="sm"
+        variant="info"
+        className="activate-button"
+        {...buttonProps}
+        disabled
+      >
         Activated
       </Button>
     );
@@ -159,13 +172,13 @@ export const RecipeList: React.FunctionComponent<
 const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installRecipe,
   installedRecipes,
+  recipesPerPage = 10,
 }) => {
   const { organizations } = useOrganization();
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
-  const { flags, scope } = useContext(AuthContext);
+  const { scope } = useContext(AuthContext);
   const [page, setPage] = useState(0);
-  const perPage = 5;
 
   const recipes = useMemo(() => {
     const personalOrTeamRecipes = (rawRecipes ?? []).filter(
@@ -183,12 +196,13 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
     return sortBy(filtered, (x) => x.metadata.name);
   }, [rawRecipes, query, scope]);
 
-  const numPages = useMemo(() => Math.ceil(recipes.length / perPage), [
+  const numPages = useMemo(() => Math.ceil(recipes.length / recipesPerPage), [
     recipes,
+    recipesPerPage,
   ]);
   const pageRecipes = useMemo(
-    () => recipes.slice(page * perPage, (page + 1) * perPage),
-    [recipes, page]
+    () => recipes.slice(page * recipesPerPage, (page + 1) * recipesPerPage),
+    [recipes, recipesPerPage, page]
   );
 
   return (
@@ -204,17 +218,15 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
           </div>
         </Col>
 
-        {flags.includes("public_marketplace") && (
-          <Col className="text-right">
-            <a
-              href="https://www.pixiebrix.com/marketplace"
-              className="btn btn-primary"
-            >
-              <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
-              Open Public Marketplace
-            </a>
-          </Col>
-        )}
+        <Col className="text-right">
+          <a
+            href="https://www.pixiebrix.com/marketplace"
+            className="btn btn-primary"
+          >
+            <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
+            Open Public Marketplace
+          </a>
+        </Col>
       </Row>
 
       <Row>
@@ -261,11 +273,11 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
             className="d-flex justify-content-between py-2"
           >
             <p className="text-muted py-2">
-              Showing {page * perPage + 1} to{" "}
-              {perPage * page + pageRecipes.length} of {recipes.length}{" "}
+              Showing {page * recipesPerPage + 1} to{" "}
+              {recipesPerPage * page + pageRecipes.length} of {recipes.length}{" "}
               blueprints
             </p>
-            {recipes.length > perPage && (
+            {recipes.length > recipesPerPage && (
               <Pagination page={page} setPage={setPage} numPages={numPages} />
             )}
           </Col>
