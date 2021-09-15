@@ -19,7 +19,6 @@ import React, { ReactElement, ReactNode } from "react";
 import { Col, Form as BootstrapForm, FormControlProps, Row } from "react-bootstrap";
 import { Except } from "type-fest";
 import ConnectedSwitchButton from "@/components/form/switchButton/ConnectedSwitchButton";
-import cx from "classnames";
 
 export type FieldProps<As extends React.ElementType = React.ElementType>
   = FormControlProps
