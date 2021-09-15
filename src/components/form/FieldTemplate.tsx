@@ -24,6 +24,7 @@ import {
 } from "react-bootstrap";
 import { Except } from "type-fest";
 import SwitchButton from "@/components/form/switchButton/SwitchButton";
+import styles from "./FieldTemplate.module.scss";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -85,16 +86,22 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
   touched,
   ...restFieldProps
 }) => {
-  const hasError = Boolean(error);
+  const isInvalid = touched && Boolean(error);
 
   return (
-    <BootstrapForm.Group as={Col} controlId={name} className="pl-0">
+    <BootstrapForm.Group
+      as={Col}
+      controlId={name}
+      className={styles.verticalFormGroup}
+    >
       {label && (
-        <BootstrapForm.Label className="pb-1">{label}</BootstrapForm.Label>
+        <BootstrapForm.Label className={styles.verticalFormLabel}>
+          {label}
+        </BootstrapForm.Label>
       )}
       <BootstrapForm.Control
         name={name}
-        isInvalid={hasError}
+        isInvalid={isInvalid}
         {...restFieldProps}
       />
       {description && (
@@ -102,7 +109,7 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
           {description}
         </BootstrapForm.Text>
       )}
-      {touched && hasError && (
+      {isInvalid && (
         <BootstrapForm.Control.Feedback type="invalid">
           {error}
         </BootstrapForm.Control.Feedback>
