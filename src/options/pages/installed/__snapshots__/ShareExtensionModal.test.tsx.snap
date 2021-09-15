@@ -99,7 +99,7 @@ exports[`renders modal 1`] = `
               class="col-sm-9"
             >
               <input
-                class="form-control is-invalid"
+                class="form-control"
                 id="description"
                 name="description"
                 value=""
