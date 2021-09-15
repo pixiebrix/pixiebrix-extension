@@ -40,10 +40,7 @@ import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { getHumanDetail } from "@/hooks/useUserAction";
 import { isAxiosError } from "@/errors";
-import {
-  faGlobe,
-  faInfoCircle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faGlobe, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import Form, {
   OnSubmit,
   RenderBody,
