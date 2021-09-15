@@ -46,7 +46,6 @@ exports[`renders modal 1`] = `
                 class="form-control"
                 id="name"
                 name="name"
-                type="text"
                 value="testExtension"
               />
               <small
@@ -72,7 +71,6 @@ exports[`renders modal 1`] = `
                 class="form-control"
                 id="blueprintId"
                 name="blueprintId"
-                type="text"
                 value="testextension"
               />
               <small
@@ -104,7 +102,6 @@ exports[`renders modal 1`] = `
                 class="form-control is-invalid"
                 id="description"
                 name="description"
-                type="text"
                 value=""
               />
               <small
