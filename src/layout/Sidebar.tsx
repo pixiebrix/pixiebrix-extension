@@ -51,7 +51,7 @@ const Sidebar: React.FunctionComponent = () => {
             }
           />
           <SidebarLink
-            route="/my-blueprints"
+            route="/blueprints"
             title="My Blueprints"
             icon={faScroll}
           />

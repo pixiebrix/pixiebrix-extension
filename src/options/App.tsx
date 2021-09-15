@@ -96,11 +96,7 @@ const Layout = () => {
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
-                  <Route
-                    exact
-                    path="/my-blueprints"
-                    component={MarketplacePage}
-                  />
+                  <Route exact path="/blueprints" component={MarketplacePage} />
                   <Route
                     exact
                     path="/extensions/install/:extensionId"

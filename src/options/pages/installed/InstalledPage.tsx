@@ -155,7 +155,7 @@ const InstalledPage: React.FunctionComponent<{
                 {flags.includes("marketplace") ? (
                   <>
                     You can find more to activate in{" "}
-                    <Link to={"/my-blueprints"}>My Blueprints</Link>
+                    <Link to={"/blueprints"}>My Blueprints</Link>
                   </>
                 ) : (
                   <>

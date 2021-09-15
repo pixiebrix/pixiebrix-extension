@@ -35,6 +35,7 @@ import AuthContext from "@/auth/AuthContext";
 import { useOrganization } from "@/hooks/organization";
 import { sortBy } from "lodash";
 import Pagination from "@/components/pagination/Pagination";
+import { Organization } from "@/types/contract";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -46,6 +47,7 @@ export interface MarketplaceProps {
 interface RecipeProps {
   metadata: Metadata;
   sharing?: Sharing;
+  organizations?: Organization[];
   installed: boolean;
   onInstall?: () => void;
 }
@@ -55,12 +57,11 @@ const Entry: React.FunctionComponent<
 > = ({
   metadata: { id, name, description },
   sharing,
+  organizations,
   buttonProps = {},
   onInstall,
   installed,
 }) => {
-  const { organizations } = useOrganization();
-
   const organization = useMemo(() => {
     if (sharing.organizations.length === 0) {
       return null;
@@ -132,13 +133,21 @@ export const RecipeList: React.FunctionComponent<
   MarketplaceProps & {
     buttonProps?: ButtonProps;
     recipes: RecipeDefinition[];
+    organizations: Organization[];
   }
-> = ({ buttonProps, recipes, installedRecipes, installRecipe }) => (
+> = ({
+  buttonProps,
+  recipes,
+  organizations,
+  installedRecipes,
+  installRecipe,
+}) => (
   <ListGroup>
     {(recipes ?? []).slice(0, 10).map((x) => (
       <Entry
         {...x}
         buttonProps={buttonProps}
+        organizations={organizations}
         key={x.metadata.id}
         onInstall={async () => installRecipe(x)}
         installed={installedRecipes.has(x.metadata.id)}
@@ -151,6 +160,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installRecipe,
   installedRecipes,
 }) => {
+  const { organizations } = useOrganization();
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
   const { flags, scope } = useContext(AuthContext);
@@ -173,7 +183,9 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
     return sortBy(filtered, (x) => x.metadata.name);
   }, [rawRecipes, query, scope]);
 
-  const numPages = useMemo(() => recipes.length / perPage, [recipes]);
+  const numPages = useMemo(() => Math.ceil(recipes.length / perPage), [
+    recipes,
+  ]);
   const pageRecipes = useMemo(
     () => recipes.slice(page * perPage, (page + 1) * perPage),
     [recipes, page]
@@ -234,6 +246,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
               installedRecipes={installedRecipes}
               installRecipe={installRecipe}
               recipes={pageRecipes}
+              organizations={organizations}
             />
           )}
         </Col>
