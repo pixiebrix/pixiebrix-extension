@@ -48,7 +48,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
   touched,
   ...restFieldProps
 }) => {
-  const hasError = Boolean(error);
+  const isInvalid = touched && Boolean(error);
 
   return (
     <BootstrapForm.Group as={Row} controlId={name}>
@@ -60,7 +60,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
       <Col sm={label ? "9" : "12"}>
         <BootstrapForm.Control
           name={name}
-          isInvalid={hasError}
+          isInvalid={isInvalid}
           {...restFieldProps}
         />
         {description && (
@@ -68,7 +68,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
             {description}
           </BootstrapForm.Text>
         )}
-        {touched && hasError && (
+        {isInvalid && (
           <BootstrapForm.Control.Feedback type="invalid">
             {error}
           </BootstrapForm.Control.Feedback>
