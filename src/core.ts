@@ -145,6 +145,11 @@ export interface Metadata {
   readonly author?: string;
 }
 
+export interface Sharing {
+  readonly public: boolean;
+  readonly organizations: string[];
+}
+
 export function selectMetadata(metadata: Metadata): Metadata {
   return pick(metadata, ["id", "name", "version", "description"]);
 }

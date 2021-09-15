@@ -16,7 +16,7 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import { PageTitle } from "@/layout/Page";
+import Page from "@/layout/Page";
 import {
   faBars,
   faBolt,
@@ -33,33 +33,30 @@ import {
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import {
-  Row,
-  Col,
+  Button,
   Card,
+  Col,
   Form,
   InputGroup,
+  Row,
   Table,
-  Button,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import AuthContext from "@/auth/AuthContext";
-import { orderBy, uniq, compact, sortBy, isEmpty } from "lodash";
+import { compact, isEmpty, orderBy, sortBy, uniq } from "lodash";
 import Select from "react-select";
 import { Kind, PACKAGE_NAME_REGEX } from "@/registry/localRegistry";
-import { WorkshopState, workshopSlice } from "@/options/slices";
+import { workshopSlice, WorkshopState } from "@/options/slices";
 import { connect, useDispatch, useSelector } from "react-redux";
-
-const { actions } = workshopSlice;
-
 import Fuse from "fuse.js";
-
 import "./WorkshopPage.scss";
-import { useTitle } from "@/hooks/title";
 import { Brick } from "@/types/contract";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import useFetch from "@/hooks/useFetch";
 import { push } from "connected-react-router";
+
+const { actions } = workshopSlice;
 
 interface OwnProps {
   navigate: (url: string) => void;
@@ -174,7 +171,7 @@ const CustomBricksSection: React.FunctionComponent<OwnProps> = ({
 
   return (
     <>
-      <Row className="mt-4">
+      <Row>
         <Col md="12" lg="8">
           <Form>
             <InputGroup className="mb-2 mr-sm-2">
@@ -370,13 +367,13 @@ const CustomBricksCard: React.FunctionComponent<
 );
 
 const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
-  useTitle("Workshop");
   const { isLoggedIn, flags } = useContext(AuthContext);
 
   return (
-    <div>
-      <PageTitle icon={faHammer} title="Workshop" />
-      <div className="pb-4">
+    <Page
+      title="Workshop"
+      icon={faHammer}
+      description={
         <p>
           Build and attach bricks.{" "}
           {flags.includes("marketplace") && (
@@ -386,25 +383,22 @@ const WorkshopPage: React.FunctionComponent<OwnProps> = ({ navigate }) => {
             </>
           )}
         </p>
-      </div>
-      {isLoggedIn && (
-        <>
-          <Row>
-            <Col md="12" lg="8">
-              <Button
-                variant="info"
-                onClick={() => {
-                  navigate("/workshop/create/");
-                }}
-              >
-                <FontAwesomeIcon icon={faPlus} /> Create New Brick
-              </Button>
-            </Col>
-          </Row>
-          <CustomBricksSection navigate={navigate} />
-        </>
-      )}
-    </div>
+      }
+      toolbar={
+        isLoggedIn && (
+          <Button
+            variant="info"
+            onClick={() => {
+              navigate("/workshop/create/");
+            }}
+          >
+            <FontAwesomeIcon icon={faPlus} /> Create New Brick
+          </Button>
+        )
+      }
+    >
+      <CustomBricksSection navigate={navigate} />
+    </Page>
   );
 };
 
