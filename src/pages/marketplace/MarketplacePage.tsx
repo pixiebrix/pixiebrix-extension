@@ -147,7 +147,7 @@ export const RecipeList: React.FunctionComponent<
   </ListGroup>
 );
 
-const MyBlueprintsPage: React.FunctionComponent<MarketplaceProps> = ({
+const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installRecipe,
   installedRecipes,
 }) => {
@@ -259,8 +259,8 @@ const MyBlueprintsPage: React.FunctionComponent<MarketplaceProps> = ({
   );
 };
 
-MyBlueprintsPage.defaultProps = {
+MarketplacePage.defaultProps = {
   installedRecipes: new Set(),
 };
 
-export default MyBlueprintsPage;
+export default MarketplacePage;
