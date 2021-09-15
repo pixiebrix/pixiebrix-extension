@@ -24,8 +24,10 @@ import { RootState } from "@/devTools/store";
 import { actions } from "@/devTools/editor/editorSlice";
 
 const Footer: React.FunctionComponent = () => {
-  const { scope } = useContext(AuthContext);
+  const { scope, flags } = useContext(AuthContext);
   const { connecting } = useContext(DevToolsContext);
+
+  const hasBetaFeatureFlag = flags.includes("page-editor-beta");
 
   const isBetaUI = useSelector((rootState: RootState) =>
     rootState.editor.isBetaUI);
@@ -38,15 +40,17 @@ const Footer: React.FunctionComponent = () => {
 
   return (
     <div className="Sidebar__footer flex-grow-0">
-      <div>
-        <label>
-          Enable Beta UI
-          <input
-            type="checkbox"
-            checked={isBetaUI}
-            onChange={toggleBetaUI}/>
-        </label>
-      </div>
+      {hasBetaFeatureFlag &&
+        <div>
+          <label>
+            Enable Beta UI
+            <input
+              type="checkbox"
+              checked={isBetaUI}
+              onChange={toggleBetaUI}/>
+          </label>
+        </div>
+      }
       <div className="d-flex">
         <div className="flex-grow-1">
           Scope: <code>{scope}</code>
