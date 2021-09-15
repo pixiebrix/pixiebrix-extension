@@ -21,10 +21,10 @@ import { compact } from "lodash";
 import GenericMarketplacePage from "@/pages/marketplace/MarketplacePage";
 import { push } from "connected-react-router";
 import { RecipeDefinition } from "@/types/definitions";
-import { useTitle } from "@/hooks/title";
 import { selectExtensions } from "@/options/selectors";
 import { RegistryId } from "@/core";
 import { OptionsState } from "@/store/extensions";
+import { useTitle } from "@/hooks/title";
 
 interface MarketplaceProps {
   installedRecipes: Set<RegistryId>;
@@ -35,7 +35,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installedRecipes,
   navigate,
 }) => {
-  useTitle("Marketplace");
+  useTitle("My Blueprints");
 
   const install = useCallback(
     async (x: RecipeDefinition) => {

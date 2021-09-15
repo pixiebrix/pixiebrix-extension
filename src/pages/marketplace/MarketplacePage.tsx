@@ -222,6 +222,8 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
           <a
             href="https://www.pixiebrix.com/marketplace"
             className="btn btn-info"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
             Open Public Marketplace
@@ -302,7 +304,11 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
               <ul>
                 <li>
                   Browse public blueprints in the{" "}
-                  <a href="https://www.pixiebrix.com/marketplace">
+                  <a
+                    href="https://www.pixiebrix.com/marketplace"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     Marketplace
                   </a>
                 </li>
