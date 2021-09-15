@@ -17,7 +17,6 @@
 
 import { registerBlock } from "@/blocks/registry";
 import { LogEffect } from "./logger";
-import { ShowNotificationEffect } from "./notification";
 import { NavigateURLEffect, OpenURLEffect } from "./redirectPage";
 import { CopyToClipboard } from "./clipboard";
 import { FormFill, SetInputValue } from "./forms";
@@ -26,7 +25,6 @@ import { HighlightEffect } from "./highlight";
 import { SetVueValues } from "./vue";
 import { ElementEvent } from "./event";
 import { WaitElementEffect } from "./wait";
-import { SoundEffect } from "./sound";
 import { AlertEffect } from "./alert";
 import { GetPageState, SetPageState } from "./pageState";
 import { HideEffect } from "./hide";
@@ -39,7 +37,6 @@ import { TelemetryEffect } from "./telemetry";
 
 function registerEffects(): void {
   registerBlock(new LogEffect());
-  registerBlock(new ShowNotificationEffect());
   registerBlock(new OpenURLEffect());
   registerBlock(new NavigateURLEffect());
   registerBlock(new CopyToClipboard());
@@ -51,7 +48,6 @@ function registerEffects(): void {
   registerBlock(new SetVueValues());
   registerBlock(new ElementEvent());
   registerBlock(new WaitElementEffect());
-  registerBlock(new SoundEffect());
   registerBlock(new AlertEffect());
   registerBlock(new GetPageState());
   registerBlock(new SetPageState());
