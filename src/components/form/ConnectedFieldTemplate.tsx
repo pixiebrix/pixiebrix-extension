@@ -20,9 +20,11 @@ import { connect, getIn } from "formik";
 import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
 import { FormikContextType } from "formik/dist/types";
 
-export type ConnectedFieldProps<Values> = FieldProps & { formik: FormikContextType<Values> }
+export type ConnectedFieldProps<Values> = FieldProps & {
+  formik: FormikContextType<Values>;
+};
 
-const FormikFieldTemplate = <Values, >({
+const FormikFieldTemplate = <Values,>({
   formik,
   ...fieldProps
 }: ConnectedFieldProps<Values>) => {
@@ -40,6 +42,6 @@ const FormikFieldTemplate = <Values, >({
       {...fieldProps}
     />
   );
-}
+};
 
 export default connect<FieldProps>(FormikFieldTemplate);

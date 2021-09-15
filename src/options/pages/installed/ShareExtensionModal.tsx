@@ -40,7 +40,11 @@ import useNotifications from "@/hooks/useNotifications";
 import { push } from "connected-react-router";
 import { getHumanDetail } from "@/hooks/useUserAction";
 import { isAxiosError } from "@/errors";
-import { faGlobe, faInfoCircle, faLock } from "@fortawesome/free-solid-svg-icons";
+import {
+  faGlobe,
+  faInfoCircle,
+  faLock,
+} from "@fortawesome/free-solid-svg-icons";
 import Form, {
   OnSubmit,
   RenderBody,
@@ -213,8 +217,8 @@ const ShareExtensionModal: React.FC<{
               onChange={() => {
                 const next = checked
                   ? values.organizations.filter(
-                    (x: string) => x !== organization.id
-                  )
+                      (x: string) => x !== organization.id
+                    )
                   : uniq([...values.organizations, organization.id]);
                 setFieldValue("organizations", next);
               }}

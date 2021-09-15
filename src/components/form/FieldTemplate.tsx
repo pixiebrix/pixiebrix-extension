@@ -16,14 +16,19 @@
  */
 
 import React, { ReactElement, ReactNode } from "react";
-import { Col, Form as BootstrapForm, FormControlProps, Row } from "react-bootstrap";
+import {
+  Col,
+  Form as BootstrapForm,
+  FormControlProps,
+  Row,
+} from "react-bootstrap";
 import { Except } from "type-fest";
 import SwitchButton from "@/components/form/switchButton/SwitchButton";
 
-export type FieldProps<As extends React.ElementType = React.ElementType>
-  = FormControlProps
-  & React.ComponentProps<As>
-  & {
+export type FieldProps<
+  As extends React.ElementType = React.ElementType
+> = FormControlProps &
+  React.ComponentProps<As> & {
     name: string;
     layout?: "horizontal" | "vertical" | "switch" | undefined;
     label?: string | ReactNode | undefined;
@@ -70,7 +75,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
       </Col>
     </BootstrapForm.Group>
   );
-}
+};
 
 const renderVertical: (props: FieldRenderProps) => ReactElement = ({
   name,
@@ -85,9 +90,7 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
   return (
     <BootstrapForm.Group as={Col} controlId={name} className="pl-0">
       {label && (
-        <BootstrapForm.Label className="pb-1">
-          {label}
-        </BootstrapForm.Label>
+        <BootstrapForm.Label className="pb-1">{label}</BootstrapForm.Label>
       )}
       <BootstrapForm.Control
         name={name}
@@ -106,21 +109,16 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
       )}
     </BootstrapForm.Group>
   );
-}
+};
 
 const renderSwitch: (props: FieldRenderProps) => ReactElement = ({
   name,
   label,
   value = false,
-  onChange
+  onChange,
 }) => (
-  <SwitchButton
-    name={name}
-    label={label}
-    value={value}
-    onChange={onChange}
-  />
-)
+  <SwitchButton name={name} label={label} value={value} onChange={onChange} />
+);
 
 const FieldTemplate: React.FC<FieldProps> = ({
   layout = "horizontal",
@@ -136,6 +134,6 @@ const FieldTemplate: React.FC<FieldProps> = ({
     default:
       return renderHorizontal(restProps);
   }
-}
+};
 
 export default FieldTemplate;

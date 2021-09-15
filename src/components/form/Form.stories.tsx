@@ -59,23 +59,13 @@ export const WithFormikHorizontalField: ComponentStory<typeof Form> = (
       layout="horizontal"
       placeholder="Title"
     />
-    <ConnectedFieldTemplate
-      name="name"
-      label="Name"
-      description="A name"
-    />
-    <ConnectedFieldTemplate
-      name="age"
-      label="Age"
-      description="Your age"
-    />
+    <ConnectedFieldTemplate name="name" label="Name" description="A name" />
+    <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
   </Form>
 );
 WithFormikHorizontalField.storyName = "With Horizontal FormikField";
 
-export const WithFormikVerticalField: ComponentStory<typeof Form> = (
-  args
-) => (
+export const WithFormikVerticalField: ComponentStory<typeof Form> = (args) => (
   <Form validationSchema={SchemaShape} initialValues={initialValues} {...args}>
     <ConnectedFieldTemplate
       name="title"
@@ -110,16 +100,8 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
       layout="horizontal"
       placeholder="Title"
     />
-    <ConnectedFieldTemplate
-      name="name"
-      label="Name"
-      description="A name"
-    />
-    <ConnectedFieldTemplate
-      name="age"
-      label="Age"
-      description="Your age"
-    />
+    <ConnectedFieldTemplate name="name" label="Name" description="A name" />
+    <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
   </Form>
 );
 
