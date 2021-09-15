@@ -20,7 +20,6 @@ import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import { FastField, FieldInputProps, useFormikContext } from "formik";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import { FormState } from "@/devTools/editor/editorSlice";
-import { openTab } from "@/background/executor";
 import {
   createDomainPattern,
   createSitePattern,
@@ -116,14 +115,9 @@ const AvailabilityTab: React.FunctionComponent<{
           <Form.Text className="text-muted">
             URL match pattern for which pages to run the extension on. See{" "}
             <a
-              href="#"
-              onClick={async () =>
-                openTab({
-                  url:
-                    "https://developer.chrome.com/docs/extensions/mv2/match_patterns/",
-                  active: true,
-                })
-              }
+              href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+              target="_blank"
+              rel="noreferrer"
             >
               Patterns Documentation
             </a>{" "}

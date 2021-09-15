@@ -43,6 +43,7 @@ export const markTabAsReady = getMethod("MARK_TAB_AS_READY");
  */
 export const uninstallContextMenu = getMethod("UNINSTALL_CONTEXT_MENU");
 export const ensureContextMenu = getMethod("ENSURE_CONTEXT_MENU");
+export const openTab = getMethod("OPEN_TAB");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;

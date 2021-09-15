@@ -18,10 +18,7 @@
 import { loadOptions } from "@/options/loader";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
-import {
-  liftContentScript,
-  notifyContentScripts,
-} from "@/contentScript/backgroundProtocol";
+import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import * as context from "@/contentScript/context";
 import * as actionPanel from "@/actionPanel/native";
 import { PromiseCancelled, sleep } from "@/utils";
@@ -368,16 +365,13 @@ export const notifyNavigation = liftContentScript(
   { asyncResponse: false }
 );
 
-export const queueReactivate = notifyContentScripts(
-  "QUEUE_REACTIVATE",
-  async () => {
-    console.debug("contentScript will reload extensions on next navigation");
-    _reloadOnNextNavigate = true;
-  }
-);
+export async function queueReactivateTab() {
+  console.debug("contentScript will reload extensions on next navigation");
+  _reloadOnNextNavigate = true;
+}
 
-export const reactivate = notifyContentScripts("REACTIVATE", async () => {
+export async function reactivateTab() {
   await loadExtensions();
   // Force navigate event even though the href hasn't changed
   await handleNavigate({ force: true });
-});
+}

@@ -24,7 +24,6 @@ import {
   useField,
   useFormikContext,
 } from "formik";
-import { openTab } from "@/background/executor";
 import Select from "react-select";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
@@ -173,14 +172,9 @@ const AvailabilityTab: React.FunctionComponent<{
           <Form.Text className="text-muted">
             Show context menu on documents whose URL matches the pattern. See{" "}
             <a
-              href="#"
-              onClick={async () =>
-                openTab({
-                  url:
-                    "https://developer.chrome.com/docs/extensions/mv2/match_patterns/",
-                  active: true,
-                })
-              }
+              href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
+              target="_blank"
+              rel="noreferrer"
             >
               Patterns Documentation
             </a>{" "}

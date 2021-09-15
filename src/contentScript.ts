@@ -20,6 +20,7 @@ import { uuidv4 } from "@/types/helpers";
 const start = Date.now();
 
 import "@/extensionContext";
+import "@/contentScript/messenger/registration";
 import addErrorListeners from "@/contentScript/errors";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
@@ -29,6 +30,7 @@ import "@/contentScript/browserAction";
 import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import addExecutorListener from "@/contentScript/executor";
+import { initFormListener } from "@/contentScript/modalForms";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "@/vendors/notify";
@@ -57,6 +59,7 @@ async function init(): Promise<void> {
   addContentScriptListener();
   addExecutorListener();
   initTelemetry();
+  initFormListener();
 
   const sender = await whoAmI();
 
