@@ -239,22 +239,56 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
         </Col>
       </Row>
 
-      <Row>
-        <Col
-          xl={8}
-          lg={10}
-          md={12}
-          className="d-flex justify-content-between py-2"
-        >
-          <p className="text-muted py-2">
-            Showing {page * perPage + 1} to{" "}
-            {perPage * page + pageRecipes.length} of {recipes.length} blueprints
-          </p>
-          {recipes.length > perPage && (
-            <Pagination page={page} setPage={setPage} numPages={numPages} />
-          )}
-        </Col>
-      </Row>
+      {rawRecipes != null && recipes.length > 0 && (
+        <Row>
+          <Col
+            xl={8}
+            lg={10}
+            md={12}
+            className="d-flex justify-content-between py-2"
+          >
+            <p className="text-muted py-2">
+              Showing {page * perPage + 1} to{" "}
+              {perPage * page + pageRecipes.length} of {recipes.length}{" "}
+              blueprints
+            </p>
+            {recipes.length > perPage && (
+              <Pagination page={page} setPage={setPage} numPages={numPages} />
+            )}
+          </Col>
+        </Row>
+      )}
+
+      {rawRecipes != null && recipes.length === 0 && (
+        <Row>
+          <Col xl={8} lg={10} md={12} className="my-3 text-muted">
+            <p>
+              No personal or team blueprints{" "}
+              {query && (
+                <>
+                  matching the search key <b>&quot;{query}&quot;</b>
+                </>
+              )}{" "}
+              available.
+            </p>
+
+            <p>
+              Suggestions:
+              <ul>
+                <li>
+                  Browse public blueprints in the{" "}
+                  <a href="https://www.pixiebrix.com/marketplace">
+                    Marketplace
+                  </a>
+                </li>
+                <li>
+                  Create blueprints in the <a href={"#/workshop"}>Workshop</a>
+                </li>
+              </ul>
+            </p>
+          </Col>
+        </Row>
+      )}
     </div>
   );
 };
