@@ -18,7 +18,7 @@
 import React, { ReactElement, ReactNode } from "react";
 import { Col, Form as BootstrapForm, FormControlProps, Row } from "react-bootstrap";
 import { Except } from "type-fest";
-import ConnectedSwitchButton from "@/components/form/switchButton/ConnectedSwitchButton";
+import SwitchButton from "@/components/form/switchButton/SwitchButton";
 
 export type FieldProps<As extends React.ElementType = React.ElementType>
   = FormControlProps
@@ -93,7 +93,7 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
         name={name}
         isInvalid={hasError}
         {...restFieldProps}
-      />a
+      />
       {description && (
         <BootstrapForm.Text className="text-muted">
           {description}
@@ -114,7 +114,7 @@ const renderSwitch: (props: FieldRenderProps) => ReactElement = ({
   value = false,
   onChange
 }) => (
-  <ConnectedSwitchButton
+  <SwitchButton
     name={name}
     label={label}
     value={value}
