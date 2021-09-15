@@ -19,7 +19,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Dropdown } from "react-bootstrap";
 import { faCommentAlt, faExternalLinkAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
-import { openTab } from "@/background/executor";
 
 const HelpWidget: React.FunctionComponent<{
   className?: string;
@@ -30,20 +29,10 @@ const HelpWidget: React.FunctionComponent<{
       <FontAwesomeIcon icon={faCommentAlt} /> Live Support
     </Dropdown.Toggle>
     <Dropdown.Menu>
-      <Dropdown.Item onClick={async () =>
-        openTab({
-          url: "https://calendly.com/pixiebrix-todd/live-support-session",
-          active: true,
-        })
-      }>
+      <Dropdown.Item href="https://calendly.com/pixiebrix-todd/live-support-session">
         <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom session
       </Dropdown.Item>
-      <Dropdown.Item onClick={async () =>
-        openTab({
-          url: "https://docs.pixiebrix.com/",
-          active: true,
-        })
-      }>
+      <Dropdown.Item href="https://docs.pixiebrix.com/">
         <FontAwesomeIcon icon={faExternalLinkAlt} /> Open Documentation
       </Dropdown.Item>
     </Dropdown.Menu>

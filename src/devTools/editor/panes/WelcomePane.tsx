@@ -17,7 +17,6 @@
 
 import React from "react";
 import Centered from "@/devTools/editor/components/Centered";
-import { openTab } from "@/background/executor";
 import HelpWidget from "@/devTools/editor/components/HelpWidget";
 
 const WelcomePane: React.FunctionComponent = () => (
