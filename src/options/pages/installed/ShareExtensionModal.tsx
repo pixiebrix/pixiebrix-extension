@@ -155,13 +155,6 @@ const ShareExtensionModal: React.FC<{
         label="Name"
         description="A name for the blueprint"
       />
-      {/*
-      <FormikHorizontalField
-        label="Name"
-        name="name"
-        description="A name for the blueprint"
-      />
-      */}
       <ConnectedFieldTemplate
         name="blueprintId"
         layout="horizontal"
@@ -173,31 +166,12 @@ const ShareExtensionModal: React.FC<{
           </span>
         }
       />
-      {/*
-      <FormikHorizontalField
-        label="Registry Id"
-        name="blueprintId"
-        description={
-          <span>
-            A unique id for the blueprint.{" "}
-            <i>Cannot be modified once shared.</i>
-          </span>
-        }
-      />
-      */}
       <ConnectedFieldTemplate
         name="description"
         layout="horizontal"
         label="Description"
         description="A short description of the blueprint"
       />
-      {/*
-      <FormikHorizontalField
-        label="Description"
-        name="description"
-        description="A short description of the blueprint"
-      />
-      */}
 
       <BootstrapForm.Group as={Row}>
         <Col sm="12" className="text-info">
@@ -225,25 +199,6 @@ const ShareExtensionModal: React.FC<{
           )
         }
       />
-      {/*
-      <FormikSwitchButton
-        name="public"
-        label={
-          values.public ? (
-            <span>
-              <FontAwesomeIcon icon={faGlobe} /> Public{" "}
-              <span className="text-primary">
-                <i> &ndash; visible to all PixieBrix users</i>
-              </span>
-            </span>
-          ) : (
-            <span>
-              <FontAwesomeIcon icon={faGlobe} /> Public
-            </span>
-          )
-        }
-      />
-      */}
 
       {sortBy(organizations, (organization) => organization.name).map(
         (organization) => {
@@ -265,20 +220,6 @@ const ShareExtensionModal: React.FC<{
               }}
             />
           );
-          // <SwitchButton
-          //   key={organization.id}
-          //   name={organization.id}
-          //   label={organization.name}
-          //   value={checked}
-          //   onChange={() => {
-          //     const next = checked
-          //       ? values.organizations.filter(
-          //         (x: string) => x !== organization.id
-          //       )
-          //       : uniq([...values.organizations, organization.id]);
-          //     setFieldValue("organizations", next);
-          //   }}
-          // />
         }
       )}
     </Modal.Body>
