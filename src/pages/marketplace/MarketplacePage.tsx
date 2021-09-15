@@ -34,6 +34,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
 import { useOrganization } from "@/hooks/organization";
 import { sortBy } from "lodash";
+import Pagination from "@/components/pagination/Pagination";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -87,7 +88,7 @@ const Entry: React.FunctionComponent<
         Activated
       </Button>
     );
-  }, [onInstall, installed]);
+  }, [onInstall, installed, buttonProps]);
 
   return (
     <ListGroup.Item>
@@ -143,13 +144,6 @@ export const RecipeList: React.FunctionComponent<
         installed={installedRecipes.has(x.metadata.id)}
       />
     ))}
-    {recipes.length >= 10 && (
-      <ListGroup.Item>
-        <span className="text-muted">
-          {recipes.length - 10} more result(s) not shown
-        </span>
-      </ListGroup.Item>
-    )}
   </ListGroup>
 );
 
@@ -160,6 +154,8 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
   const { flags, scope } = useContext(AuthContext);
+  const [page, setPage] = useState(0);
+  const perPage = 5;
 
   const recipes = useMemo(() => {
     const personalOrTeamRecipes = (rawRecipes ?? []).filter(
@@ -176,6 +172,12 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
     );
     return sortBy(filtered, (x) => x.metadata.name);
   }, [rawRecipes, query, scope]);
+
+  const numPages = useMemo(() => recipes.length / perPage, [recipes]);
+  const pageRecipes = useMemo(
+    () => recipes.slice(page * perPage, (page + 1) * perPage),
+    [recipes, page]
+  );
 
   return (
     <div className="marketplace-component">
@@ -231,8 +233,25 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
             <RecipeList
               installedRecipes={installedRecipes}
               installRecipe={installRecipe}
-              recipes={recipes}
+              recipes={pageRecipes}
             />
+          )}
+        </Col>
+      </Row>
+
+      <Row>
+        <Col
+          xl={8}
+          lg={10}
+          md={12}
+          className="d-flex justify-content-between py-2"
+        >
+          <p className="text-muted py-2">
+            Showing {page * perPage + 1} to{" "}
+            {perPage * page + pageRecipes.length} of {recipes.length} blueprints
+          </p>
+          {recipes.length > perPage && (
+            <Pagination page={page} setPage={setPage} numPages={numPages} />
           )}
         </Col>
       </Row>
