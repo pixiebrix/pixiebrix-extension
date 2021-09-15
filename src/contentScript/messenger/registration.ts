@@ -15,36 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.notifyjs-corner {
-  z-index: 9999999 !important;
+/* Do not use `getMethod` in this file; Keep only registrations here, not implementations */
+import { registerMethods } from "webext-messenger";
+import { browser } from "webextension-polyfill-ts";
+import { expectContext } from "@/utils/expectContext";
+import { queueReactivateTab, reactivateTab } from "@/contentScript/lifecycle";
+
+expectContext("contentScript");
+
+// Temporary, webext-messenger depends on this global
+(globalThis as any).browser = browser;
+
+declare global {
+  interface MessengerMethods {
+    QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
+    REACTIVATE_TAB: typeof reactivateTab;
+  }
 }
 
-.notifyjs-corner .notifyjs-wrapper {
-  z-index: 9999999 !important;
-}
-
-.pixiebrix .collapse:not(.show) {
-  display: none;
-}
-
-.pixiebrix [data-toggle="collapse"] {
-  cursor: pointer;
-}
-
-.pixiebrix [data-toggle="collapse"]:after {
-  content: "\02795"; /* Unicode character for "plus" sign (+) */
-  font-size: 13px;
-  color: black;
-  float: right;
-  margin-left: 5px;
-}
-
-.pixiebrix [data-toggle="collapse"].active:after {
-  content: "\2796"; /* Unicode character for "minus" sign (-) */
-}
-
-body.pixiebrix-modal-open {
-  overflow: hidden !important;
-  /* Consider padding to avoid content jitter when opening/closing the modal */
-  /* padding-right: 15px; */
-}
+registerMethods({
+  QUEUE_REACTIVATE_TAB: queueReactivateTab,
+  REACTIVATE_TAB: reactivateTab,
+});

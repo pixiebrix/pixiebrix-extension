@@ -30,13 +30,9 @@ const WelcomePane: React.FunctionComponent = () => (
       <p>
         Learn how to use the Page Editor in our{" "}
         <a
-          href="#"
-          onClick={async () =>
-            openTab({
-              url: "https://docs.pixiebrix.com/quick-start-guide",
-              active: true,
-            })
-          }
+          href="https://docs.pixiebrix.com/quick-start-guide"
+          target="_blank"
+          rel="noreferrer"
         >
           Quick Start Guide
         </a>

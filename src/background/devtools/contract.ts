@@ -17,6 +17,7 @@
 
 import { Runtime, WebNavigation } from "webextension-polyfill-ts";
 import { HandlerOptions } from "@/messaging/protocol";
+import type { Target } from "@/types";
 
 export const PORT_NAME = "devtools-page";
 export const MESSAGE_PREFIX = "@@pixiebrix/devtools/";
@@ -56,11 +57,6 @@ export interface BackgroundResponse {
   meta: Meta;
   payload: unknown;
 }
-
-export type Target = {
-  tabId: number;
-  frameId: number;
-};
 
 export interface HandlerEntry {
   handler: (

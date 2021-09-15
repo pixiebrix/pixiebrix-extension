@@ -192,7 +192,7 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
     }
   }
 
-  console.debug(`Cleared %d trace entries for extension %s`, cnt, extensionId);
+  console.debug("Cleared %d trace entries for extension %s", cnt, extensionId);
 }
 
 export async function getByInstanceId(

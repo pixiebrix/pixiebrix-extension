@@ -166,7 +166,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
     if (this.extensions.length === 0) {
       console.debug(
-        `actionPanel extension point %s has no installed extensions`,
+        "actionPanel extension point %s has no installed extensions",
         this.id
       );
       return;
@@ -174,7 +174,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
     if (!isActionPanelVisible()) {
       console.debug(
-        `Skipping run for %s because actionPanel is not visible`,
+        "Skipping run for %s because actionPanel is not visible",
         this.id
       );
       return;

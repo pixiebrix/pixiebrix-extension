@@ -17,7 +17,7 @@
 
 import { Effect } from "@/types";
 import { BlockArg } from "@/core";
-import { openTab } from "@/background/executor";
+import { openTab } from "@/background/messenger/api";
 import {
   URL_INPUT_SPACE_ENCODING_DEFAULT,
   URL_INPUT_SPEC,
@@ -64,7 +64,6 @@ export class OpenURLEffect extends Effect {
   }: BlockArg): Promise<void> {
     await openTab({
       url: makeURL(url, params, spaceEncoding),
-      active: true,
     });
   }
 }

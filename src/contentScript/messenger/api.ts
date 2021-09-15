@@ -15,36 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.notifyjs-corner {
-  z-index: 9999999 !important;
+/* Do not use `registerMethod` in this file */
+import { getContentScriptMethod } from "webext-messenger";
+import { browser } from "webextension-polyfill-ts";
+import { isContentScript } from "webext-detect-page";
+
+// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
+if (isContentScript()) {
+  console.trace(
+    "This should not have been imported in the content script. Use the API directly instead."
+  );
 }
 
-.notifyjs-corner .notifyjs-wrapper {
-  z-index: 9999999 !important;
-}
+export const queueReactivateTab = getContentScriptMethod(
+  "QUEUE_REACTIVATE_TAB"
+);
+export const reactivateTab = getContentScriptMethod("REACTIVATE_TAB");
 
-.pixiebrix .collapse:not(.show) {
-  display: none;
-}
-
-.pixiebrix [data-toggle="collapse"] {
-  cursor: pointer;
-}
-
-.pixiebrix [data-toggle="collapse"]:after {
-  content: "\02795"; /* Unicode character for "plus" sign (+) */
-  font-size: 13px;
-  color: black;
-  float: right;
-  margin-left: 5px;
-}
-
-.pixiebrix [data-toggle="collapse"].active:after {
-  content: "\2796"; /* Unicode character for "minus" sign (-) */
-}
-
-body.pixiebrix-modal-open {
-  overflow: hidden !important;
-  /* Consider padding to avoid content jitter when opening/closing the modal */
-  /* padding-right: 15px; */
-}
+// Temporary, webext-messenger depends on this global
+(globalThis as any).browser = browser;

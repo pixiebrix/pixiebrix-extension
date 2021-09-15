@@ -40,7 +40,7 @@ export async function ensureAuth(
     throw new Error(`Cannot get Chrome OAuth token: ${getErrorMessage(error)}`);
   }
 
-  throw new Error(`Cannot get Chrome OAuth token`);
+  throw new Error("Cannot get Chrome OAuth token");
 }
 
 class PermissionsError extends Error {

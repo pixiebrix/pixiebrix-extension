@@ -82,7 +82,7 @@ handlers.set(RENDER_PANELS_MESSAGE, async (message: RenderPanelsMessage) => {
 
   if (messageSeq < seqNumber) {
     console.debug(
-      `Skipping stale message (seq: %d, current: %d)`,
+      "Skipping stale message (seq: %d, current: %d)",
       seqNumber,
       messageSeq,
       message

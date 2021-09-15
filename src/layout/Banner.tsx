@@ -52,7 +52,7 @@ const EnvironmentBanner: React.FunctionComponent = () => {
 
   const syncText = hostname
     ? `synced with ${hostname}`
-    : `not synced with server`;
+    : "not synced with server";
 
   return (
     <div

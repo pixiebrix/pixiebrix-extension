@@ -199,7 +199,7 @@ export async function resolveDefinitions(
     return extension as ResolvedExtension;
   }
 
-  console.debug(`Resolving definitions for extension: %s`, extension.id, {
+  console.debug("Resolving definitions for extension: %s", extension.id, {
     extension,
   });
 

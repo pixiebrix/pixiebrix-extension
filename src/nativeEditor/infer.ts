@@ -194,7 +194,7 @@ function commonButtonStructure(
   if (ICON_TAGS.includes(proto.tagName.toLowerCase())) {
     // TODO: need to provide a way of adding additional classes to the button. E.g. some classes
     //  may provide for the margin, etc.
-    return [$(document.createTextNode(`{{{ icon }}}`)), currentCaptioned];
+    return [$(document.createTextNode("{{{ icon }}}")), currentCaptioned];
   }
 
   const $common = $(`<${proto.tagName.toLowerCase()}>`);
@@ -419,7 +419,7 @@ export function buildSinglePanelElement(
 
 function commonButtonHTML(tag: string, $items: JQuery): string {
   if ($items.length === 0) {
-    throw new Error(`No items provided`);
+    throw new Error("No items provided");
   }
 
   const elements = compact(
@@ -438,7 +438,7 @@ function commonButtonHTML(tag: string, $items: JQuery): string {
 
 function commonPanelHTML(tag: string, $items: JQuery): string {
   if ($items.length === 0) {
-    throw new Error(`No items provided`);
+    throw new Error("No items provided");
   }
 
   const [$common, { bodyInserted, headingInserted }] = commonPanelStructure(

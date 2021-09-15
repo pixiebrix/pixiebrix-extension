@@ -31,7 +31,7 @@ import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill-ts";
-import { IExtension } from "@/core";
+import { IExtension, UUID, RegistryId } from "@/core";
 import { getLinkedApiClient } from "@/services/apiClient";
 
 const { actions } = optionsSlice;
@@ -97,7 +97,9 @@ function activateDeployments(
         recipe: deployment.package.config,
         extensionPoints: deployment.package.config.extensionPoints,
         services: Object.fromEntries(
-          deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
+          deployment.bindings.map(
+            (x) => [x.auth.service_id, x.auth.id] as [RegistryId, UUID]
+          )
         ),
         deployment,
       })

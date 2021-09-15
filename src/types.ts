@@ -151,7 +151,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     this.extensions.splice(0, this.extensions.length);
     this.extensions.push(...extensions);
 
-    console.debug(`syncExtensions for extension point %s`, this.id, {
+    console.debug("syncExtensions for extension point %s", this.id, {
       before,
       after: extensions.map((x) => x.id),
       removed: removed.map((x) => x.id),
@@ -300,3 +300,8 @@ export abstract class Reader extends Block implements IReader {
     return this.read(root);
   }
 }
+
+export type Target = {
+  tabId: number;
+  frameId: number;
+};
