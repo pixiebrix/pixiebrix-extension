@@ -43,7 +43,6 @@ import { isAxiosError } from "@/errors";
 import {
   faGlobe,
   faInfoCircle,
-  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import Form, {
   OnSubmit,
@@ -198,7 +197,7 @@ const ShareExtensionModal: React.FC<{
             </span>
           ) : (
             <span>
-              <FontAwesomeIcon icon={faLock} /> Private
+              <FontAwesomeIcon icon={faGlobe} /> Public
             </span>
           )
         }
