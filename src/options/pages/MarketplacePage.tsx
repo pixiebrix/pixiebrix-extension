@@ -18,7 +18,7 @@
 import React, { useCallback } from "react";
 import { connect } from "react-redux";
 import { compact } from "lodash";
-import GenericMarketplacePage from "@/pages/marketplace/MarketplacePage";
+import GenericMarketplacePage from "@/pages/marketplace/MyBlueprintsPage";
 import { push } from "connected-react-router";
 import { RecipeDefinition } from "@/types/definitions";
 import { useTitle } from "@/hooks/title";

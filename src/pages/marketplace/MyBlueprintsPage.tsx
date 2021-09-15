@@ -59,7 +59,7 @@ const Entry: React.FunctionComponent<
   onInstall,
   installed,
 }) => {
-  const { organizations = [] } = useOrganization();
+  const { organizations } = useOrganization();
 
   const organization = useMemo(() => {
     if (sharing.organizations.length === 0) {
@@ -147,7 +147,7 @@ export const RecipeList: React.FunctionComponent<
   </ListGroup>
 );
 
-const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
+const MyBlueprintsPage: React.FunctionComponent<MarketplaceProps> = ({
   installRecipe,
   installedRecipes,
 }) => {
@@ -259,8 +259,8 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   );
 };
 
-MarketplacePage.defaultProps = {
+MyBlueprintsPage.defaultProps = {
   installedRecipes: new Set(),
 };
 
-export default MarketplacePage;
+export default MyBlueprintsPage;
