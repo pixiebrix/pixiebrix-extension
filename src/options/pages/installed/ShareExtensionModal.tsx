@@ -242,7 +242,6 @@ const ShareExtensionModal: React.FC<{
         <Modal.Title>Share as Blueprint</Modal.Title>
       </Modal.Header>
       <Form
-        validateOnMount
         validationSchema={ShareSchema}
         initialValues={initialValues}
         onSubmit={handleShare}
