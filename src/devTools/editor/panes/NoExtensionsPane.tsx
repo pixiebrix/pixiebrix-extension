@@ -17,7 +17,6 @@
 
 import React from "react";
 import Centered from "@/devTools/editor/components/Centered";
-import HelpWidget from "@/devTools/editor/components/HelpWidget";
 
 const NoExtensionsPane: React.FunctionComponent<{
   unavailableCount: number;
@@ -48,9 +47,16 @@ const NoExtensionsPane: React.FunctionComponent<{
         </a>
       </p>
 
-      <div className="text-center">
-        <HelpWidget />
-      </div>
+      <p>
+        Or, schedule a{" "}
+        <a
+          href="https://calendly.com/pixiebrix-todd/live-support-session"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          FREE Zoom support session
+        </a>
+      </p>
     </div>
   </Centered>
 );
