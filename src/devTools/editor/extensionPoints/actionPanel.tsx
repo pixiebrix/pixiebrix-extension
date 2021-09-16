@@ -55,6 +55,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
 import { BlockPipeline } from "@/blocks/types";
+import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -68,6 +69,15 @@ const wizard: WizardStep[] = [
     extraProps: { fieldName: "extension.body" },
   },
   { step: "Availability", Component: AvailabilityTab },
+  { step: "Logs", Component: LogsTab },
+];
+
+const betaWizard: WizardStep[] = [
+  {
+    step: "Edit",
+    Component: EditTab,
+    extraProps: { pipelineFieldName: "extension.body" },
+  },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -241,6 +251,7 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   selectExtension,
   fromExtension,
   wizard,
+  betaWizard,
   insertModeHelp: (
     <div>
       <p>

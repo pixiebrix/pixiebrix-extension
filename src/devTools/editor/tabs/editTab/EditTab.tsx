@@ -18,8 +18,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { useField } from "formik";
-import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
+import { useField, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
@@ -37,6 +36,8 @@ import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConf
 import styles from "./EditTab.module.scss";
 import TraceView from "@/devTools/editor/tabs/effect/TraceView";
 import { uuidv4 } from "@/types/helpers";
+import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
+import { FormState } from "@/devTools/editor/editorSlice";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -50,28 +51,38 @@ async function filterBlocks(
 }
 
 const EditTab: React.FC<{
-  eventKey?: string;
-  fieldName?: string;
-}> = ({ eventKey = "editTab", fieldName = "extension.body" }) => {
-  const [{ value: elementType }] = useField<ElementType>("type");
+  eventKey: string;
+  editable?: Set<string>;
+  pipelineFieldName?: string;
+}> = ({ eventKey, pipelineFieldName = "extension.body", editable }) => {
+  const {
+    installed,
+    extensionPoint,
+    type: elementType,
+  } = useFormikContext<FormState>().values;
 
-  const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
+  const isLocked = useMemo(
+    () => installed && !editable?.has(extensionPoint.metadata.id),
+    [editable, installed, extensionPoint.metadata.id]
+  );
 
   const { label, icon } = ADAPTERS.get(elementType);
+
+  const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 
   const [
     { value: blockPipeline = [] },
     ,
     pipelineFieldHelpers,
-  ] = useField<BlockPipeline>(fieldName);
+  ] = useField<BlockPipeline>(pipelineFieldName);
 
-  const blockName = useMemo(() => [fieldName, activeNodeIndex - 1].join("."), [
-    fieldName,
-    activeNodeIndex,
-  ]);
+  const blockFieldName = useMemo(
+    () => `${pipelineFieldName}[${activeNodeIndex - 1}]`,
+    [pipelineFieldName, activeNodeIndex]
+  );
 
   const [{ value: blockInstanceId }] = useField<UUID>(
-    `${blockName}.instanceId`
+    `${blockFieldName}.instanceId`
   );
 
   // Load once
@@ -180,11 +191,7 @@ const EditTab: React.FC<{
           />
         </div>
         <div className={styles.configPanel}>
-          {activeNodeIndex === 0 && (
-            <EditorNodeConfigPanel>
-              {/* <FoundationForm /> */}
-            </EditorNodeConfigPanel>
-          )}
+          {activeNodeIndex === 0 && <PanelConfiguration isLocked={isLocked} />}
 
           {activeNodeIndex > 0 && (
             <EditorNodeConfigPanel
@@ -193,7 +200,7 @@ const EditTab: React.FC<{
               }}
             >
               <BlockConfiguration
-                name={blockName}
+                name={blockFieldName}
                 block={resolvedBlocks[activeNodeIndex - 1]}
                 showOutput={activeNodeIndex !== blockPipeline.length}
               />
