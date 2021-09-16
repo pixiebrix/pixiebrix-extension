@@ -17,7 +17,12 @@
 
 import React from "react";
 import { getCurrentURL } from "@/devTools/utils";
-import { createDomainPattern, createSitePattern, HTTPS_PATTERN, SITES_PATTERN } from "@/permissions/patterns";
+import {
+  createDomainPattern,
+  createSitePattern,
+  HTTPS_PATTERN,
+  SITES_PATTERN,
+} from "@/permissions/patterns";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { Alert, Button, Form } from "react-bootstrap";
 import styles from "./UrlMatchPatternWidget.module.scss";
@@ -27,29 +32,23 @@ const UrlMatchShortcut: React.FC<{
   caption: string;
   onClick: () => void;
 }> = ({ caption, onClick }) => (
-  <Button
-    variant="link"
-    size="sm"
-    className={styles.root}
-    onClick={onClick}>
+  <Button variant="link" size="sm" className={styles.root} onClick={onClick}>
     {caption}
   </Button>
 );
 
-const UrlMatchPatternWidget: CustomFieldWidget = (
-  props
-) => {
+const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
   const { name, disabled } = props;
 
   const { setValue } = useField(name)[2];
 
   return (
     <>
-      {disabled ?
+      {disabled ? (
         <Alert variant="info">
           You do not have permission to edit this foundation
         </Alert>
-        :
+      ) : (
         <div className="small">
           <span>Shortcuts:</span>
           <UrlMatchShortcut
@@ -71,22 +70,20 @@ const UrlMatchPatternWidget: CustomFieldWidget = (
           <UrlMatchShortcut
             caption="HTTPS"
             onClick={async () => {
-              setValue(HTTPS_PATTERN)
+              setValue(HTTPS_PATTERN);
             }}
           />
           <UrlMatchShortcut
             caption="All URLs"
             onClick={async () => {
-              setValue(SITES_PATTERN)
+              setValue(SITES_PATTERN);
             }}
           />
         </div>
-      }
-      <Form.Control
-        type="text"
-        {...props} />
+      )}
+      <Form.Control type="text" {...props} />
     </>
   );
-}
+};
 
 export default UrlMatchPatternWidget;

@@ -30,9 +30,7 @@ const PanelConfiguration: React.FC<{
       layout="vertical"
       label={
         <Row>
-          <Card.Header className={styles.cardHeader}>
-            Heading
-          </Card.Header>
+          <Card.Header className={styles.cardHeader}>Heading</Card.Header>
         </Row>
       }
       description="Panel heading to show in the sidebar"
@@ -44,9 +42,7 @@ const PanelConfiguration: React.FC<{
       disabled={isLocked}
       label={
         <Row>
-          <Card.Header className={styles.cardHeader}>
-            Sites
-          </Card.Header>
+          <Card.Header className={styles.cardHeader}>Sites</Card.Header>
         </Row>
       }
       description={
@@ -64,6 +60,6 @@ const PanelConfiguration: React.FC<{
       }
     />
   </Card>
-)
+);
 
 export default PanelConfiguration;

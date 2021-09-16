@@ -55,11 +55,7 @@ const EditTab: React.FC<{
   eventKey?: string;
   fieldName?: string;
   editable: Set<string>;
-}> = ({
-  eventKey = "editTab",
-  fieldName = "extension.body",
-  editable,
-}) => {
+}> = ({ eventKey = "editTab", fieldName = "extension.body", editable }) => {
   const { values, getFieldHelpers } = useFormikContext<FormState>();
   const isLocked = useMemo(
     () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
@@ -193,9 +189,7 @@ const EditTab: React.FC<{
           />
         </div>
         <div className={styles.configPanel}>
-          {activeNodeIndex === 0 && (
-            <PanelConfiguration isLocked={isLocked} />
-          )}
+          {activeNodeIndex === 0 && <PanelConfiguration isLocked={isLocked} />}
 
           {activeNodeIndex > 0 && (
             <EditorNodeConfigPanel
