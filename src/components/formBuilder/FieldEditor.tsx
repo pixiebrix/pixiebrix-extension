@@ -51,16 +51,12 @@ const FieldEditor: React.FC<{
   const [{ value: uiSchema }, , { setValue: setUiSchema }] = useField<UiSchema>(
     `${name}.uiSchema`
   );
-  const [
-    { value: propertySchema },
-    ,
-    { setValue: setPropertySchema },
-  ] = useField(`${name}.schema.properties.${propertyName}`);
-  const [
-    { value: propertyUiSchema },
-    ,
-    { setValue: setPropertyUiSchema },
-  ] = useField(`${name}.uiSchema.${propertyName}`);
+  const [{ value: propertySchema }, ,] = useField(
+    `${name}.schema.properties.${propertyName}`
+  );
+  const [{ value: propertyUiSchema }, ,] = useField(
+    `${name}.uiSchema.${propertyName}`
+  );
 
   const [propertyNameError, setPropertyNameError] = useState<string>(null);
   useEffect(() => {
@@ -74,11 +70,16 @@ const FieldEditor: React.FC<{
 
   const onPropertyNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextName = event.target.value;
+
+    // Validation
     if (nextName === "") {
       setPropertyNameError("Name cannot be empty.");
       return;
     }
-
+    if (nextName.includes(".")) {
+      setPropertyNameError("Name must not contain dots.");
+      return;
+    }
     const existingProperties = Object.keys(schema.properties);
     if (existingProperties.includes(nextName)) {
       setPropertyNameError(
