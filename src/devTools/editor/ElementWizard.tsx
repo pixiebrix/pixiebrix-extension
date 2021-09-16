@@ -37,22 +37,16 @@ import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
-import LogsTab, { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
+import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
-import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import styles from "./ElementWizard.module.scss";
 import cx from "classnames";
 
 // Step names to show lock icon for if the user is using a foundation they don't have edit access for
 const LOCKABLE_STEP_NAMES = ["Foundation", "Availability", "Location", "Data"];
 const LOG_STEP_NAME = "Logs";
-
-const betaWizard: WizardStep[] = [
-  { step: "Edit", Component: EditTab },
-  { step: "Logs", Component: LogsTab },
-];
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
@@ -108,7 +102,10 @@ const ElementWizard: React.FunctionComponent<{
   const isBetaUI = useSelector((state: RootState) => state.editor.isBetaUI);
 
   const wizard = useMemo(
-    () => (isBetaUI ? betaWizard : ADAPTERS.get(element.type).wizard),
+    () =>
+      isBetaUI
+        ? ADAPTERS.get(element.type).betaWizard
+        : ADAPTERS.get(element.type).wizard,
     [element.type, isBetaUI]
   );
 
