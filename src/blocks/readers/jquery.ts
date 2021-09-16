@@ -45,7 +45,7 @@ type Selector = CommonSelector & {
   maxWaitMillis?: number;
 };
 
-type SelectorMap = Record<string, string | Selector>;
+export type SelectorMap = Record<string, string | Selector>;
 
 type Result =
   | string

@@ -27,16 +27,17 @@ import { optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { liftBackground } from "@/background/protocol";
-import * as contentScript from "@/contentScript/lifecycle";
 import { selectExtensions } from "@/options/selectors";
 import {
   uninstallContextMenu,
   containsPermissions,
 } from "@/background/messenger/api";
 import { deploymentPermissions } from "@/permissions";
-import { IExtension } from "@/core";
+import { IExtension, UUID, RegistryId } from "@/core";
 import { ExtensionOptionsState } from "@/store/extensions";
 import { getLinkedApiClient } from "@/services/apiClient";
+import { queueReactivateTab } from "@/contentScript/messenger/api";
+import { notifyTabs } from "./util";
 
 const { reducer, actions } = optionsSlice;
 
@@ -66,7 +67,10 @@ export function activeDeployments(
 export const queueReactivate = liftBackground(
   "QUEUE_REACTIVATE",
   async () => {
-    await contentScript.queueReactivate(null);
+    await notifyTabs(
+      queueReactivateTab,
+      "Reactivation queue failed for some tabs"
+    );
   },
   { asyncResponse: false }
 );
@@ -99,7 +103,9 @@ function installDeployment(
       extensionPoints: deployment.package.config.extensionPoints,
       deployment,
       services: Object.fromEntries(
-        deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
+        deployment.bindings.map(
+          (x) => [x.auth.service_id, x.auth.id] as [RegistryId, UUID]
+        )
       ),
     })
   );

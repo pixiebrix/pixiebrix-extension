@@ -84,7 +84,8 @@ const Navbar: React.FunctionComponent = () => {
               target="_blank"
               href={serviceURL ?? DEFAULT_SERVICE_URL}
             >
-              Open Web App <FontAwesomeIcon icon={faExternalLinkAlt} />
+              <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
+              Open Admin Console
             </Nav.Link>
           )}
 

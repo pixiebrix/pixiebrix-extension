@@ -37,9 +37,8 @@ const { updateElement } = editorSlice.actions;
 
 const EditorPane: React.FunctionComponent<{
   selectedElement: FormState;
-  toggleChat: (on: boolean) => void;
   selectionSeq: number;
-}> = ({ selectedElement, toggleChat, selectionSeq }) => {
+}> = ({ selectedElement, selectionSeq }) => {
   const create = useCreate();
   const dispatch = useDispatch();
   const installed = useSelector(selectExtensions);
@@ -72,7 +71,6 @@ const EditorPane: React.FunctionComponent<{
                 element={values}
                 editable={editable}
                 installed={installed}
-                toggleChat={toggleChat}
               />
             </LogContextWrapper>
           </>

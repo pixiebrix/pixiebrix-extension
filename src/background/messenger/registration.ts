@@ -29,6 +29,7 @@ import {
   closeTab,
   markTabAsReady,
   whoAmI,
+  openTab,
 } from "@/background/executor";
 
 expectContext("background");
@@ -46,6 +47,7 @@ declare global {
     ACTIVATE_TAB: typeof activateTab;
     CLOSE_TAB: typeof closeTab;
     MARK_TAB_AS_READY: typeof markTabAsReady;
+    OPEN_TAB: typeof openTab;
   }
 }
 
@@ -58,4 +60,5 @@ registerMethods({
   ACTIVATE_TAB: activateTab,
   CLOSE_TAB: closeTab,
   MARK_TAB_AS_READY: markTabAsReady,
+  OPEN_TAB: openTab,
 });

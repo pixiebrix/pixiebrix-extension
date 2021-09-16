@@ -17,14 +17,8 @@
 
 import React from "react";
 import Centered from "@/devTools/editor/components/Centered";
-import { openTab } from "@/background/executor";
-import { Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCommentAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
 
-const WelcomePane: React.FunctionComponent<{ showSupport: () => void }> = ({
-  showSupport,
-}) => (
+const WelcomePane: React.FunctionComponent = () => (
   <Centered isScrollable>
     <div className="PaneTitle">Welcome to the PixieBrix Page Editor!</div>
 
@@ -34,36 +28,24 @@ const WelcomePane: React.FunctionComponent<{ showSupport: () => void }> = ({
       <p>
         Learn how to use the Page Editor in our{" "}
         <a
-          href="#"
-          onClick={async () =>
-            openTab({
-              url: "https://docs.pixiebrix.com/quick-start-guide",
-              active: true,
-            })
-          }
+          href="https://docs.pixiebrix.com/quick-start-guide"
+          target="_blank"
+          rel="noreferrer"
         >
           Quick Start Guide
         </a>
       </p>
 
-      <div className="text-center">
-        <Button variant="info" onClick={showSupport}>
-          <FontAwesomeIcon icon={faCommentAlt} /> Live Chat Support
-        </Button>
-
-        <Button
-          className="ml-2"
-          variant="info"
-          onClick={async () =>
-            openTab({
-              url: "https://calendly.com/pixiebrix-todd/live-support-session",
-              active: true,
-            })
-          }
+      <p>
+        Or, schedule a{" "}
+        <a
+          href="https://calendly.com/pixiebrix-todd/live-support-session"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom Session
-        </Button>
-      </div>
+          FREE Zoom support session
+        </a>
+      </p>
     </div>
   </Centered>
 );

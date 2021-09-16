@@ -20,6 +20,7 @@ import { registerMethods } from "webext-messenger";
 import { browser } from "webextension-polyfill-ts";
 import { expectContext } from "@/utils/expectContext";
 import { handleMenuAction } from "@/contentScript/contextMenus";
+import { queueReactivateTab, reactivateTab } from "@/contentScript/lifecycle";
 
 expectContext("contentScript");
 
@@ -28,8 +29,14 @@ expectContext("contentScript");
 
 declare global {
   interface MessengerMethods {
+    QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
+    REACTIVATE_TAB: typeof reactivateTab;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
   }
 }
 
-registerMethods({ HANDLE_MENU_ACTION: handleMenuAction });
+registerMethods({
+  QUEUE_REACTIVATE_TAB: queueReactivateTab,
+  REACTIVATE_TAB: reactivateTab,
+  HANDLE_MENU_ACTION: handleMenuAction,
+});

@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,10 +15,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import SwitchButton, { SwitchButtonProps } from "./SwitchButton";
-import { withFormikField } from "./withFormikField";
+.root {
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-bottom: 6px;
+}
 
-const FormikSwitchButton = withFormikField<boolean, SwitchButtonProps>(
-  SwitchButton
-);
-export default FormikSwitchButton;
+.insertButton {
+  border: none;
+  background: none;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.plus {
+  border: none;
+  border-radius: 50%;
+
+  &:hover {
+    color: #a462e6;
+    box-shadow: 1px 1px 1px gray;
+  }
+}
+
+.appendArrow {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}

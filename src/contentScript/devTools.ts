@@ -35,11 +35,7 @@ import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
 import { isNullOrBlank, resolveObj } from "@/utils";
-
-export type Target = {
-  tabId: number;
-  frameId: number;
-};
+import type { Target } from "@/types";
 
 if (isContentScript()) {
   addListenerForUpdateSelectedElement();

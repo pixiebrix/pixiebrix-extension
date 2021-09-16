@@ -18,10 +18,19 @@
 /* Do not use `registerMethod` in this file */
 import { getContentScriptMethod } from "webext-messenger";
 import { browser } from "webextension-polyfill-ts";
-import { forbidContext } from "@/utils/expectContext";
+import { isContentScript } from "webext-detect-page";
 
-forbidContext("contentScript");
+// TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
+if (isContentScript()) {
+  console.trace(
+    "This should not have been imported in the content script. Use the API directly instead."
+  );
+}
 
+export const queueReactivateTab = getContentScriptMethod(
+  "QUEUE_REACTIVATE_TAB"
+);
+export const reactivateTab = getContentScriptMethod("REACTIVATE_TAB");
 export const handleMenuAction = getContentScriptMethod("HANDLE_MENU_ACTION");
 
 // Temporary, webext-messenger depends on this global

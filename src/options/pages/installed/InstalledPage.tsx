@@ -154,8 +154,8 @@ const InstalledPage: React.FunctionComponent<{
                 Here&apos;s a list of bricks you currently have activated.{" "}
                 {flags.includes("marketplace") ? (
                   <>
-                    You can find more to activate in the{" "}
-                    <Link to={"/marketplace"}>Marketplace</Link>
+                    You can find more to activate in{" "}
+                    <Link to={"/blueprints"}>My Blueprints</Link>
                   </>
                 ) : (
                   <>
