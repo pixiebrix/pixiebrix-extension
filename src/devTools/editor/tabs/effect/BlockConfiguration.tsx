@@ -16,15 +16,13 @@
  */
 
 import React from "react";
-import { RegistryId, UUID } from "@/core";
+import { RegistryId } from "@/core";
 import { FastField, FieldInputProps, getIn, useFormikContext } from "formik";
 import { useBlockOptions } from "@/components/fields/BlockField";
 import { Card, Form } from "react-bootstrap";
 import { RendererContext } from "@/components/fields/blockOptions";
 import devtoolFields from "@/devTools/editor/fields/Fields";
 import GridLoader from "react-spinners/GridLoader";
-import TraceView from "@/devTools/editor/tabs/effect/TraceView";
-import ErrorBoundary from "@/components/ErrorBoundary";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -101,18 +99,6 @@ const BlockConfiguration: React.FunctionComponent<{
             The template engine controls how PixieBrix fills in{" "}
             <code>{"{{variables}}"}</code> in the inputs.
           </Form.Text>
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Header className="BlockAccordion__header">Trace</Card.Header>
-        <Card.Body>
-          <ErrorBoundary>
-            <FastField name={`${name}.instanceId`}>
-              {({ field }: { field: FieldInputProps<UUID> }) => (
-                <TraceView instanceId={field.value} />
-              )}
-            </FastField>
-          </ErrorBoundary>
         </Card.Body>
       </Card>
     </div>

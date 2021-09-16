@@ -33,7 +33,7 @@ import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
-import TraceView from "@/devTools/editor/tabs/effect/TraceView";
+import TraceView from "@/devTools/editor/tabs/editTab/TraceView";
 import { uuidv4 } from "@/types/helpers";
 import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
 import { FormState } from "@/devTools/editor/editorSlice";

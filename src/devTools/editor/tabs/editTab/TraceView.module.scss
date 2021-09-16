@@ -15,36 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.tabPane {
-  height: 100%;
-}
-
-.paneContent {
-  height: 100%;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: stretch;
-}
-
-.nodeLayout {
-  flex-grow: 0;
-  flex-shrink: 0;
-  height: 100%;
-  width: 120px;
-  overflow-y: auto;
-  padding-top: 10px;
-}
-
-.configPanel {
-  flex-grow: 2;
-  flex-basis: 0;
-  padding: 10px;
-  overflow-y: auto;
-}
-
-.tracePanel {
-  flex-grow: 1;
-  flex-basis: 0;
-  padding: 10px;
-  overflow: auto;
+.tab {
+  font-size: small;
 }
