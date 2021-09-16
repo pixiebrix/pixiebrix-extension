@@ -17,6 +17,7 @@
 
 import { registerBlock } from "@/blocks/registry";
 
+import { JQueryReader } from "@/blocks/transformers/jquery/JQueryReader";
 import { JQTransformer } from "./jq";
 import { JSONPathTransformer } from "./jsonPath";
 import { GetAPITransformer } from "./httpGet";
@@ -50,6 +51,7 @@ function registerTransformers() {
   registerBlock(new Base64Decode());
   registerBlock(new TemplateTransformer());
   registerBlock(new UrlParams());
+  registerBlock(new JQueryReader());
 }
 
 export default registerTransformers;

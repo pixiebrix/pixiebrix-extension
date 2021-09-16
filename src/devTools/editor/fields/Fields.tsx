@@ -51,18 +51,40 @@ export const SelectorControl: React.FunctionComponent<{ name: string }> = ({
   name,
 }) => <SelectorSelectorField isClearable sort name={name} />;
 
+function isSelectorField(fieldSchema: Schema): boolean {
+  if (fieldSchema.type === "string" && fieldSchema.format === "selector") {
+    return true;
+  }
+
+  if (
+    (fieldSchema.oneOf ?? []).some(
+      (x) => typeof x !== "boolean" && isSelectorField(x)
+    )
+  ) {
+    return true;
+  }
+
+  if (
+    (fieldSchema.anyOf ?? []).some(
+      (x) => typeof x !== "boolean" && isSelectorField(x)
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 const devtoolFields: IRenderContext = {
   customRenderers: [
     {
-      match: (fieldSchema: Schema) =>
-        fieldSchema.type === "string" && fieldSchema.format === "selector",
+      match: isSelectorField,
       Component: SelectorRenderer,
     },
   ],
   customControls: [
     {
-      match: (fieldSchema: Schema) =>
-        fieldSchema.type === "string" && fieldSchema.format === "selector",
+      match: isSelectorField,
       Component: SelectorControl,
     },
   ],
