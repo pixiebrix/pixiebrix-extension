@@ -39,6 +39,7 @@ import {
   faMousePointer,
   faRandom,
   faWindowMaximize,
+  faAmazon,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BlockType, getType } from "@/blocks/util";
@@ -53,6 +54,15 @@ import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
 import { OfficialBadge } from "@/components/OfficialBadge";
+
+import useFetch from "@/hooks/useFetch";
+
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fab } from "@fortawesome/free-brands-svg-icons";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { far } from "@fortawesome/free-regular-svg-icons";
+
+library.add(fas, fab, far);
 
 export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
   if ("schema" in block) {
@@ -97,9 +107,23 @@ export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
 
 const BlockResult: React.FunctionComponent<{
   block: IBlock;
+  listing?: MarketplaceListing;
   onSelect: () => void;
-}> = ({ block, onSelect }) => {
+}> = ({ block, onSelect, listing }) => {
   const [type, setType] = useState<BlockType>(null);
+
+  const fa_icon = useMemo(() => {
+    if (listing?.fa_icon) {
+      // The fa_icon database value includes the css class e.g. far, fab, etc.
+      const icon = listing.fa_icon.split(" ");
+      icon[1] = icon[1].replace("fa-", "");
+      return icon as IconProp;
+    }
+
+    return getIcon(block, type);
+  }, [block, type, listing]);
+
+  console.log(fa_icon);
 
   useAsyncEffect(async () => {
     setType(await getType(block));
@@ -109,7 +133,7 @@ const BlockResult: React.FunctionComponent<{
     <ListGroup.Item onClick={onSelect}>
       <div className="d-flex">
         <div className="mr-2 text-muted">
-          <FontAwesomeIcon icon={getIcon(block, type)} fixedWidth />
+          <FontAwesomeIcon icon={fa_icon} fixedWidth />
         </div>
         <div className="flex-grow-1">
           <div className="d-flex BlockModal__title">
@@ -161,16 +185,33 @@ function makeBlockOption(block: IBlock): BlockOption {
   };
 }
 
+// Would this type be swagger auto-generated?
+type MarketplaceListing = {
+  id: string;
+  package: Record<string, unknown>;
+  fa_icon: string;
+  icon_color: string;
+};
+
 const BlockModal: React.FunctionComponent<{
   onSelect: (service: IBlock) => void;
   blocks: IBlock[];
+  recommendedBricks?: string[];
   caption?: string | React.ReactNode;
   renderButton?: ({ show }: { show: () => void }) => React.ReactNode;
 }> = ({ onSelect, blocks, caption = "Select a brick", renderButton }) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState("");
-
+  const { data: listings = [] } = useFetch<MarketplaceListing[]>(
+    "/api/marketplace/listings/?show_detail=true"
+  );
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
+
+  const blockListings = useMemo(() => {
+    return listings.filter((listing) => {
+      return blocks.map((block) => block.id).includes(listing.package.name);
+    });
+  }, [listings, blocks]);
 
   const blockOptions = useMemo(
     () => (blocks ?? []).map(unary(makeBlockOption)),
@@ -228,6 +269,9 @@ const BlockModal: React.FunctionComponent<{
                         <BlockResult
                           key={x.block.id}
                           block={x.block}
+                          listing={blockListings.find(
+                            (listing) => x.block.id === listing.package.name
+                          )}
                           onSelect={() => {
                             onSelect(x.block);
                             // Reset the query for the next time it opens
