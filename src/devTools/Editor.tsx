@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { Container } from "react-bootstrap";
 import Sidebar from "@/devTools/editor/sidebar/Sidebar";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +25,6 @@ import { DevToolsContext } from "@/devTools/context";
 import { selectExtensions } from "@/options/selectors";
 import PermissionsPane from "@/devTools/editor/panes/PermissionsPane";
 import BetaPane from "@/devTools/editor/panes/BetaPane";
-import SupportWidget from "@/devTools/editor/panes/SupportWidget";
 import InsertMenuItemPane from "@/devTools/editor/panes/insert/InsertMenuItemPane";
 import InsertPanelPane from "@/devTools/editor/panes/insert/InsertPanelPane";
 import NoExtensionSelectedPane from "@/devTools/editor/panes/NoExtensionsSelectedPane";
@@ -47,14 +46,6 @@ const Editor: React.FunctionComponent = () => {
   const { tabState, port, connecting } = useContext(DevToolsContext);
   const installed = useSelector(selectExtensions);
   const dispatch = useDispatch();
-
-  const [showChat, setShowChat] = useState<boolean>(false);
-  const showSupport = useCallback(() => {
-    setShowChat(true);
-  }, [setShowChat]);
-  const hideSupport = useCallback(() => {
-    setShowChat(false);
-  }, [setShowChat]);
 
   const {
     selectionSeq,
@@ -122,7 +113,6 @@ const Editor: React.FunctionComponent = () => {
       return (
         <EditorPane
           selectedElement={selectedElement}
-          toggleChat={setShowChat}
           selectionSeq={selectionSeq}
         />
       );
@@ -132,14 +122,9 @@ const Editor: React.FunctionComponent = () => {
     ) {
       return <NoExtensionSelectedPane />;
     } else if (installed.length > 0) {
-      return (
-        <NoExtensionsPane
-          unavailableCount={unavailableCount}
-          showSupport={showSupport}
-        />
-      );
+      return <NoExtensionsPane unavailableCount={unavailableCount} />;
     } else {
-      return <WelcomePane showSupport={showSupport} />;
+      return <WelcomePane />;
     }
   }, [
     connecting,
@@ -150,7 +135,6 @@ const Editor: React.FunctionComponent = () => {
     error,
     installed,
     selectionSeq,
-    showSupport,
     availableDynamicIds?.size,
     unavailableCount,
     tabState,
@@ -171,14 +155,7 @@ const Editor: React.FunctionComponent = () => {
           activeElement={activeElement}
           inserting={inserting}
         />
-        <div className="d-flex h-100">
-          <div className="h-100 flex-grow-1">{body}</div>
-          {showChat && (
-            <div className="SupportPane h-100">
-              <SupportWidget onClose={hideSupport} />
-            </div>
-          )}
-        </div>
+        {body}
       </SplitPane>
     </Container>
   );

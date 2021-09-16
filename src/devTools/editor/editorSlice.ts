@@ -72,6 +72,11 @@ export interface EditorState {
    * True if error is because user does not have access to beta features
    */
   beta?: boolean;
+
+  /**
+   * Is the user using the new page editor beta UI?
+   */
+  isBetaUI: boolean;
 }
 
 export const initialState: EditorState = {
@@ -83,6 +88,7 @@ export const initialState: EditorState = {
   knownEditable: [],
   dirty: {},
   inserting: null,
+  isBetaUI: false,
 };
 
 export const editorSlice = createSlice({
@@ -225,6 +231,9 @@ export const editorSlice = createSlice({
 
       // Make sure we're not keeping any private data around from Page Editor sessions
       void clearExtensionTraces(uuid);
+    },
+    setBetaUIEnabled: (state, action: PayloadAction<boolean>) => {
+      state.isBetaUI = action.payload;
     },
   },
 });
