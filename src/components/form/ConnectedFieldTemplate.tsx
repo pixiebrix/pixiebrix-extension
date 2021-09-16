@@ -34,7 +34,7 @@ const FormikFieldTemplate = <Values,>({
 
   return (
     <FieldTemplate
-      value={value}
+      value={value || ""}
       error={error}
       touched={touched}
       onChange={formik.handleChange}

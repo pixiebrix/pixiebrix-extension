@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { IBlock, UUID } from "@/core";
+import { RegistryId, UUID } from "@/core";
 import { FastField, FieldInputProps, getIn, useFormikContext } from "formik";
 import { useBlockOptions } from "@/components/fields/BlockField";
 import { Card, Form } from "react-bootstrap";
@@ -28,14 +28,14 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
-  block: IBlock;
+  blockId: RegistryId;
   showOutput: boolean;
-}> = ({ name, block, showOutput }) => {
+}> = ({ name, blockId, showOutput }) => {
   const context = useFormikContext();
 
   const blockErrors = getIn(context.errors, name);
 
-  const [{ error }, BlockOptions] = useBlockOptions(block.id);
+  const [{ error }, BlockOptions] = useBlockOptions(blockId);
 
   return (
     <div className="BlockAccordion">
@@ -46,7 +46,7 @@ const BlockConfiguration: React.FunctionComponent<{
             <RendererContext.Provider value={devtoolFields}>
               {blockErrors?.id && (
                 <div className="invalid-feedback d-block mb-4">
-                  Unknown block {block.id}
+                  Unknown block {blockId}
                 </div>
               )}
               {BlockOptions ? (

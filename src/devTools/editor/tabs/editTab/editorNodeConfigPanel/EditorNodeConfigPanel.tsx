@@ -16,26 +16,52 @@
  */
 
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Button } from "react-bootstrap";
-import styles from "./EditorNodeConfigPanel.module.scss";
+// import styles from "./EditorNodeConfigPanel.module.scss";
+import { Form, InputGroup } from "react-bootstrap";
+import { RegistryId } from "@/core";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
+import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
+
+const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
+  <InputGroup>
+    <InputGroup.Prepend>
+      <InputGroup.Text>@</InputGroup.Text>
+    </InputGroup.Prepend>
+    <Form.Control {...props} />
+  </InputGroup>
+);
 
 const EditorNodeConfigPanel: React.FC<{
-  onRemoveNode?: () => void;
-}> = ({ onRemoveNode, children }) => (
-  <div>
-    {children}
-    {onRemoveNode && (
-      <Button
-        variant="danger"
-        onClick={onRemoveNode}
-        className={styles.removeButton}
-      >
-        <FontAwesomeIcon icon={faTrash} /> Remove Node
-      </Button>
-    )}
-  </div>
+  blockFieldName: string;
+  blockId: RegistryId;
+}> = ({ blockFieldName, blockId }) => (
+  <>
+    <ConnectedFieldTemplate
+      name={`${blockFieldName}.label`}
+      layout="horizontal"
+      label="Step Name"
+    />
+    <ConnectedFieldTemplate
+      name={`${blockFieldName}.outputKey`}
+      layout="horizontal"
+      label="Output"
+      as={OutputKeyWidget}
+      description={
+        <p>
+          Provide a output key to refer to the outputs of this block later. For
+          example, if you provide the name <code>myOutput</code>, you can use
+          the output later with <code>@myOutput</code>.
+        </p>
+      }
+    />
+
+    <BlockConfiguration
+      name={blockFieldName}
+      blockId={blockId}
+      showOutput={false}
+    />
+  </>
 );
 
 export default EditorNodeConfigPanel;

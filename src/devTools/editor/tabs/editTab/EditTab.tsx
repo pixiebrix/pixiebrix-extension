@@ -28,7 +28,6 @@ import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { noop, zip } from "lodash";
 import { IBlock, UUID } from "@/core";
-import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
 import hash from "object-hash";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
@@ -111,6 +110,17 @@ const EditTab: React.FC<{
     [setActiveNodeIndex]
   );
 
+  const removeBlock = (pipelineIndex: number) => {
+    const newPipeline = produce(blockPipeline, (draft) => {
+      if (activeNodeIndex > pipelineIndex) {
+        setActiveNodeIndex(activeNodeIndex - 1);
+      }
+
+      draft.splice(pipelineIndex, 1);
+    });
+    pipelineFieldHelpers.setValue(newPipeline);
+  };
+
   const blockNodes: EditorNodeProps[] = zip(
     blockPipeline,
     resolvedBlocks,
@@ -123,6 +133,9 @@ const EditTab: React.FC<{
           icon: getIcon(block, type),
           onClick: () => {
             onSelectNode(index + 1);
+          },
+          onRemove: () => {
+            removeBlock(index);
           },
         }
       : {
@@ -166,14 +179,6 @@ const EditTab: React.FC<{
     [pipelineFieldHelpers, blockPipeline]
   );
 
-  const removeBlock = (pipelineIndex: number) => {
-    const newPipeline = produce(blockPipeline, (draft) => {
-      setActiveNodeIndex(null);
-      draft.splice(pipelineIndex, 1);
-    });
-    pipelineFieldHelpers.setValue(newPipeline);
-  };
-
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
@@ -195,16 +200,9 @@ const EditTab: React.FC<{
 
           {activeNodeIndex > 0 && (
             <EditorNodeConfigPanel
-              onRemoveNode={() => {
-                removeBlock(activeNodeIndex - 1);
-              }}
-            >
-              <BlockConfiguration
-                name={blockFieldName}
-                block={resolvedBlocks[activeNodeIndex - 1]}
-                showOutput={activeNodeIndex !== blockPipeline.length}
-              />
-            </EditorNodeConfigPanel>
+              blockFieldName={blockFieldName}
+              blockId={resolvedBlocks[activeNodeIndex - 1].id}
+            />
           )}
         </div>
         <div className={styles.tracePanel}>
