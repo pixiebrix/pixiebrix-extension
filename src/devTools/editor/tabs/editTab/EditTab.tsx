@@ -56,7 +56,7 @@ const EditTab: React.FC<{
   fieldName?: string;
   editable: Set<string>;
 }> = ({ eventKey = "editTab", fieldName = "extension.body", editable }) => {
-  const { values, getFieldHelpers } = useFormikContext<FormState>();
+  const { values } = useFormikContext<FormState>();
   const isLocked = useMemo(
     () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
     [editable, values.installed, values.extensionPoint.metadata.id]
