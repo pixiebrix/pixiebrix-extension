@@ -38,6 +38,8 @@ export type FieldProps<
     touched?: boolean | undefined;
   };
 
+export type CustomFieldWidget = React.ComponentType<FieldProps>;
+
 type FieldRenderProps = Except<FieldProps, "layout">;
 
 const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
