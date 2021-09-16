@@ -52,8 +52,8 @@ const FormEditor: React.FC<{
   useEffect(() => {
     // Set uiSchema order if needed
     if (!uiOrder) {
-      const properyKeys = Object.keys(schema.properties || {});
-      const nextUiOrder = [...properyKeys, "*"];
+      const propertyKeys = Object.keys(schema.properties || {});
+      const nextUiOrder = [...propertyKeys, "*"];
       setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
     }
   }, [name, schema, uiOrder, setFieldValue]);
@@ -67,12 +67,10 @@ const FormEditor: React.FC<{
       title: propertyName,
       type: DEFAULT_FIELD_TYPE,
     };
-    const nextUiOrder = replaceStringInArray(
-      uiOrder,
-      activeField,
-      activeField,
-      propertyName
-    );
+    const nextUiOrder = activeField
+      ? replaceStringInArray(uiOrder, activeField, activeField, propertyName)
+      : replaceStringInArray(uiOrder, "*", propertyName, "*");
+
     setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
     setFieldValue(`${name}.schema.properties.${propertyName}`, newProperty);
     setActiveField(propertyName);
@@ -84,17 +82,24 @@ const FormEditor: React.FC<{
   };
 
   const removePorperty = () => {
-    const nextProperties = { ...schema.properties };
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    delete nextProperties[activeField];
-
-    const nextUiOrder = replaceStringInArray(uiOrder, activeField);
-
+    const propertyToRemove = activeField;
+    const nextUiOrder = replaceStringInArray(uiOrder, propertyToRemove);
     const nextActiveField = nextUiOrder[0];
 
     setActiveField(nextActiveField);
+    if (schema.required?.length > 0) {
+      const nextRequired = replaceStringInArray(
+        schema.required,
+        propertyToRemove
+      );
+      setFieldValue(`${name}.schema.required`, nextRequired);
+    }
+
     setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
-    setFieldValue(`${name}.schema.properties`, nextProperties);
+    // eslint-disable-next-line unicorn/no-useless-undefined -- required for Formik to remove the field
+    setFieldValue(`${name}.schema.properties.${propertyToRemove}`, undefined);
+    // eslint-disable-next-line unicorn/no-useless-undefined -- required for Formik to remove the field
+    setFieldValue(`${name}.uiSchema.${propertyToRemove}`, undefined);
   };
 
   // There's always at least 1 item in uiOrder array, "*".

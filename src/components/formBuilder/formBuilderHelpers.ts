@@ -64,7 +64,12 @@ export const replaceStringInArray = (
 ) => {
   const arr = [...array];
   const index = arr.indexOf(stringToBeReplaced);
-  arr.splice(index, 1, ...items);
+  if (index === -1 && items?.length) {
+    arr.push(...items);
+  } else {
+    arr.splice(index, 1, ...items);
+  }
+
   return arr;
 };
 
