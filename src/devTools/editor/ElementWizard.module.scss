@@ -26,7 +26,10 @@ $nav-height: 32px;
 
 .tabContent {
   height: calc(100% - #{$nav-height});
-  padding-bottom: 5px;
+}
+
+.tabPadding {
+  padding-bottom: 5px !important;
 }
 
 .form {

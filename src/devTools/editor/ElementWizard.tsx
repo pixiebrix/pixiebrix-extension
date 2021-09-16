@@ -192,7 +192,11 @@ const ElementWizard: React.FunctionComponent<{
         </Nav>
 
         {status && <div className="text-danger">{status}</div>}
-        <Tab.Content className={styles.tabContent}>
+        <Tab.Content
+          className={cx(styles.tabContent, {
+            [styles.tabPadding]: isBetaUI,
+          })}
+        >
           {wizard.map(({ Component, step, extraProps = {} }) => (
             <Component
               key={step}
