@@ -15,15 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  FORM_CANCEL,
-  FormDefinition,
-  FORM_GET_DEFINITION,
-  FORM_RESOLVE,
-} from "@/blocks/transformers/modalForm/formTypes";
+import { FormDefinition } from "@/blocks/transformers/modalForm/formTypes";
 import { UUID } from "@/core";
 import { expectContext } from "@/utils/expectContext";
-import { HandlerMap } from "@/messaging/protocol";
 import { CancelError } from "@/errors";
 import pDefer, { DeferredPromise } from "p-defer";
 
@@ -59,44 +53,18 @@ function unregisterForm(nonce: UUID) {
   forms.delete(nonce);
 }
 
-const handlers = new HandlerMap();
+export async function getFormDefinition(nonce: UUID): Promise<FormDefinition> {
+  return forms.get(nonce).definition;
+}
 
-type GetFormDefinitionMessage = {
-  type: typeof FORM_GET_DEFINITION;
-  payload: { nonce: UUID };
-};
-
-type ResolveFormMessage = {
-  type: typeof FORM_RESOLVE;
-  payload: { nonce: UUID; values: unknown };
-};
-
-type CancelFormMessage = {
-  type: typeof FORM_CANCEL;
-  payload: { nonce: UUID };
-};
-
-handlers.set(
-  FORM_GET_DEFINITION,
-  async (request: GetFormDefinitionMessage) =>
-    forms.get(request.payload.nonce).definition
-);
-
-handlers.set(FORM_RESOLVE, async (request: ResolveFormMessage) => {
-  const { nonce, values } = request.payload;
+export async function resolveForm(nonce: UUID, values: unknown): Promise<void> {
   forms.get(nonce).registration.resolve(values);
   unregisterForm(nonce);
-});
+}
 
-handlers.set(FORM_CANCEL, async (request: CancelFormMessage) => {
-  const { nonce } = request.payload;
+export async function cancelForm(nonce: UUID) {
   forms
     .get(nonce)
     .registration.reject(new CancelError("User cancelled the action"));
   unregisterForm(nonce);
-});
-
-export function initFormListener() {
-  expectContext("contentScript");
-  browser.runtime.onMessage.addListener(handlers.asListener());
 }

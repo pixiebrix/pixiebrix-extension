@@ -27,6 +27,9 @@ if (isContentScript()) {
   );
 }
 
+export const getFormDefinition = getContentScriptMethod("FORM_GET_DEFINITION");
+export const resolveForm = getContentScriptMethod("FORM_RESOLVE");
+export const cancelForm = getContentScriptMethod("FORM_CANCEL");
 export const queueReactivateTab = getContentScriptMethod(
   "QUEUE_REACTIVATE_TAB"
 );
