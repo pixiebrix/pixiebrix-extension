@@ -27,8 +27,9 @@ import {
   Container,
 } from "react-bootstrap";
 import { sortBy, truncate, unary } from "lodash";
-import { IBlock, IService } from "@/core";
+import { IBlock, IService, RegistryId } from "@/core";
 import {
+  fas,
   faBars,
   faBolt,
   faBookReader,
@@ -39,11 +40,9 @@ import {
   faMousePointer,
   faRandom,
   faWindowMaximize,
-  faAmazon,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BlockType, getType } from "@/blocks/util";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
 
@@ -57,12 +56,12 @@ import { OfficialBadge } from "@/components/OfficialBadge";
 
 import useFetch from "@/hooks/useFetch";
 
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { library, IconProp } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
-import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 
-// TODO: surely there is a better way to do this?
+// TODO: Unable to use dynamic font awesome icons without importing them first
+//  maybe there is a better way to do this?
 library.add(fas, fab, far);
 
 export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
@@ -132,11 +131,19 @@ const BlockResult: React.FunctionComponent<{
     <ListGroup.Item onClick={onSelect}>
       <div className="d-flex">
         <div className="mr-2 text-muted">
-          <FontAwesomeIcon
-            icon={fa_icon}
-            color={listing?.icon_color}
-            fixedWidth
-          />
+          {listing?.image == null ? (
+            <FontAwesomeIcon
+              icon={fa_icon}
+              color={listing?.icon_color}
+              fixedWidth
+            />
+          ) : (
+            // Setting height and width to 1em allows for scaling with font size
+            // TODO: refactor this and above into BlockIcon component
+            <svg width="1em" height="1em">
+              <image xlinkHref={listing?.image.url} width="1em" height="1em" />
+            </svg>
+          )}
         </div>
         <div className="flex-grow-1">
           <div className="d-flex BlockModal__title">
@@ -194,6 +201,7 @@ type MarketplaceListing = {
   package: Record<string, unknown>;
   fa_icon: string;
   icon_color: string;
+  image?: Record<string, string>;
 };
 
 const BlockModal: React.FunctionComponent<{
@@ -210,11 +218,15 @@ const BlockModal: React.FunctionComponent<{
   );
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
 
-  const blockListings = useMemo(() => {
-    return listings.filter((listing) => {
-      return blocks.map((block) => block.id).includes(listing.package.name);
-    });
-  }, [listings, blocks]);
+  const blockListings = useMemo(
+    () =>
+      listings.filter((listing) =>
+        blocks
+          .map((block) => block.id)
+          .includes(listing.package.name as RegistryId)
+      ),
+    [listings, blocks]
+  );
 
   const blockOptions = useMemo(
     () => (blocks ?? []).map(unary(makeBlockOption)),
@@ -236,7 +248,7 @@ const BlockModal: React.FunctionComponent<{
         <Modal
           className="BlockModal"
           show={show}
-          size="lg"
+          size="xl"
           onHide={close}
           backdrop={true}
           keyboard={false}
@@ -247,44 +259,53 @@ const BlockModal: React.FunctionComponent<{
           <Modal.Body>
             <Container>
               <Row>
-                <Col>
-                  <Form>
-                    <InputGroup className="mb-2 mr-sm-2">
-                      <InputGroup.Prepend>
-                        <InputGroup.Text>Search</InputGroup.Text>
-                      </InputGroup.Prepend>
-                      <Form.Control
-                        placeholder="Start typing to find results"
-                        value={query}
-                        onChange={(e) => {
-                          setQuery(e.target.value);
-                        }}
-                      />
-                    </InputGroup>
-                  </Form>
+                <Col xs={5}>
+                  <Row>
+                    <Col>
+                      <Form>
+                        <InputGroup className="mb-2 mr-sm-2">
+                          <InputGroup.Prepend>
+                            <InputGroup.Text>Search</InputGroup.Text>
+                          </InputGroup.Prepend>
+                          <Form.Control
+                            placeholder="Start typing to find results"
+                            value={query}
+                            onChange={(e) => {
+                              setQuery(e.target.value);
+                            }}
+                          />
+                        </InputGroup>
+                      </Form>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <div className="BlockModal__results">
+                        <ListGroup>
+                          {filteredOptions.map((x) => (
+                            <BlockResult
+                              key={x.block.id}
+                              block={x.block}
+                              listing={blockListings.find(
+                                (listing) => x.block.id === listing.package.name
+                              )}
+                              onSelect={() => {
+                                onSelect(x.block);
+                                // Reset the query for the next time it opens
+                                setQuery("");
+                                close();
+                              }}
+                            />
+                          ))}
+                        </ListGroup>
+                      </div>
+                    </Col>
+                  </Row>
                 </Col>
-              </Row>
-              <Row>
-                <Col>
-                  <div className="BlockModal__results">
-                    <ListGroup>
-                      {filteredOptions.map((x) => (
-                        <BlockResult
-                          key={x.block.id}
-                          block={x.block}
-                          listing={blockListings.find(
-                            (listing) => x.block.id === listing.package.name
-                          )}
-                          onSelect={() => {
-                            onSelect(x.block);
-                            // Reset the query for the next time it opens
-                            setQuery("");
-                            close();
-                          }}
-                        />
-                      ))}
-                    </ListGroup>
-                  </div>
+                <Col xs={7}>
+                  <Row>
+                    <p>Details!</p>
+                  </Row>
                 </Col>
               </Row>
             </Container>
