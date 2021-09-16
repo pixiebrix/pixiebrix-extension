@@ -19,10 +19,11 @@
 import React, { useState } from "react";
 import FormEditor from "./FormEditor";
 import FormPreview from "./FormPreview";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { UI_ORDER } from "./schemaFieldNames";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { RJSFSchema } from "./formBuilderTypes";
+import { MINIMAL_SCHEMA, MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
 
 const FormBuilder: React.FC<{
   name: string;
@@ -32,6 +33,7 @@ const FormBuilder: React.FC<{
       value: { schema, uiSchema },
     },
   ] = useField<RJSFSchema>(name);
+  const { setFieldValue } = useFormikContext();
 
   const [activeField, setActiveField] = useState(() => {
     const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
@@ -47,8 +49,16 @@ const FormBuilder: React.FC<{
     return "";
   });
 
+  if (!schema) {
+    setFieldValue(`${name}.schema`, MINIMAL_SCHEMA);
+  }
+
+  if (!uiSchema) {
+    setFieldValue(`${name}.uiSchema`, MINIMAL_UI_SCHEMA);
+  }
+
   if (!schema || !uiSchema) {
-    return <div>Schema and UiSchema are required</div>;
+    return null;
   }
 
   return (

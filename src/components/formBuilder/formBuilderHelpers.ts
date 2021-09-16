@@ -15,7 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Schema, UiSchema } from "@/core";
 import { SelectStringOption } from "./formBuilderTypes";
+import { UI_ORDER } from "./schemaFieldNames";
+
+export const MINIMAL_SCHEMA: Schema = {
+  type: "object",
+};
+
+export const MINIMAL_UI_SCHEMA: UiSchema = {
+  [UI_ORDER]: ["*"],
+};
 
 export const DEFAULT_FIELD_TYPE = "string";
 

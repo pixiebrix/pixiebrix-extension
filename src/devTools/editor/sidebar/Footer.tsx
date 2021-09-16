@@ -27,7 +27,7 @@ const Footer: React.FunctionComponent = () => {
   const { scope, flags } = useContext(AuthContext);
   const { connecting } = useContext(DevToolsContext);
 
-  const hasBetaFeatureFlag = flags.includes("page-editor-beta");
+  const hasBetaFeatureFlag = flags.includes("page-editor-beta") || true;
 
   const isBetaUI = useSelector(
     (rootState: RootState) => rootState.editor.isBetaUI

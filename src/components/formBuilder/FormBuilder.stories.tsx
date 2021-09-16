@@ -85,12 +85,7 @@ Default.args = {
 export const MinimumInitialSchema = FormBuilderTemplate.bind({});
 MinimumInitialSchema.args = {
   initialValues: {
-    dynamicForm: {
-      schema: {
-        type: "object",
-      },
-      uiSchema: {},
-    },
+    dynamicForm: {},
   },
 };
 
