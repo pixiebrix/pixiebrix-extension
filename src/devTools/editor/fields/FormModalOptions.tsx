@@ -17,29 +17,58 @@
 
 import { FieldRenderer } from "@/components/fields/blockOptions";
 import FormBuilder from "@/components/formBuilder/FormBuilder";
+import { Schema } from "@/core";
 import React from "react";
 
 export const FORM_MODAL_ID = "@pixiebrix/form-modal";
+
+const cancelableSchema: Schema = {
+  type: "boolean",
+  description: "Whether or not the user can cancel the form (default=true)",
+  default: true,
+};
+
+const submitCaptionSchema: Schema = {
+  type: "string",
+  description: "The submit button caption (default='Submit')",
+  default: "Submit",
+};
+
+const outputKeySchema: Schema = {
+  type: "string",
+  description: "A name to refer to this brick in subsequent bricks",
+};
 
 const FormModalOptions: React.FC<{
   name: string;
   configKey: string;
   showOutputKey: boolean;
-}> = ({ name, configKey, showOutputKey }) => (
-  <div>
-    <FormBuilder name={`${name}.${configKey}`} />
+}> = ({ name, configKey, showOutputKey }) => {
+  const configName = `${name}.${configKey}`;
 
-    {showOutputKey && (
+  return (
+    <div>
+      <FormBuilder name={configName} />
+
       <FieldRenderer
-        name={`${name}.outputKey`}
-        label="Output Variable"
-        schema={{
-          type: "string",
-          description: "A name to refer to this brick in subsequent bricks",
-        }}
+        name={`${configName}.cancelable`}
+        schema={cancelableSchema}
       />
-    )}
-  </div>
-);
+
+      <FieldRenderer
+        name={`${configName}.submitCaption`}
+        schema={submitCaptionSchema}
+      />
+
+      {showOutputKey && (
+        <FieldRenderer
+          name={`${name}.outputKey`}
+          label="Output Variable"
+          schema={outputKeySchema}
+        />
+      )}
+    </div>
+  );
+};
 
 export default FormModalOptions;
