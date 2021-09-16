@@ -18,8 +18,6 @@
 /* eslint-disable security/detect-object-injection */
 import { Field, useField, useFormikContext } from "formik";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import FormikHorizontalField from "@/components/form/fields/FormikHorizontalField";
-import HorizontalField from "@/components/form/fields/HorizontalField";
 import styles from "./FieldEditor.module.scss";
 import {
   RJSFSchema,
@@ -35,9 +33,11 @@ import {
   replaceStringInArray,
   stringifyUiType,
 } from "./formBuilderHelpers";
-import { UiSchema } from "@rjsf/core";
-import { Schema } from "@/core";
+import { Schema, UiSchema } from "@/core";
 import { uniq } from "lodash";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import { JSONSchema7 } from "json-schema";
 
 const FieldEditor: React.FC<{
   name: string;
@@ -76,14 +76,18 @@ const FieldEditor: React.FC<{
       setPropertyNameError("Name cannot be empty.");
       return;
     }
+
     if (nextName.includes(".")) {
       setPropertyNameError("Name must not contain dots.");
       return;
     }
+
     const existingProperties = Object.keys(schema.properties);
     if (existingProperties.includes(nextName)) {
       setPropertyNameError(
-        `Name must be uniq. Another roperty "${schema.properties[nextName].title}" already has the name "${nextName}".`
+        `Name must be uniq. Another roperty "${
+          (schema.properties[nextName] as JSONSchema7).title
+        }" already has the name "${nextName}".`
       );
       return;
     }
@@ -152,7 +156,7 @@ const FieldEditor: React.FC<{
 
   return (
     <div className={styles.active}>
-      <HorizontalField
+      <FieldTemplate
         required
         name={`${name}.${propertyName}`}
         label="Name"
@@ -161,12 +165,12 @@ const FieldEditor: React.FC<{
         touched
         error={propertyNameError}
       />
-      <FormikHorizontalField name={getFullFieldName("title")} label="Label" />
-      <FormikHorizontalField
+      <ConnectedFieldTemplate name={getFullFieldName("title")} label="Label" />
+      <ConnectedFieldTemplate
         name={getFullFieldName("description")}
         label="Help text"
       />
-      <FormikHorizontalField
+      <ConnectedFieldTemplate
         name={getFullFieldName("default")}
         label="Default value"
       />

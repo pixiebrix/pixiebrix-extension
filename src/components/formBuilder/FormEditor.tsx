@@ -20,7 +20,6 @@ import { useField, useFormikContext } from "formik";
 import React, { useEffect } from "react";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
-import FormikHorizontalField from "@/components/form/fields/FormikHorizontalField";
 import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
@@ -37,6 +36,7 @@ import {
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import { Schema, UiSchema } from "@/core";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 const FormEditor: React.FC<{
   name: string;
@@ -115,8 +115,8 @@ const FormEditor: React.FC<{
         <h5>Edit form</h5>
         <hr />
       </BootstrapForm.Group>
-      <FormikHorizontalField name={`${name}.schema.title`} label="Title" />
-      <FormikHorizontalField
+      <ConnectedFieldTemplate name={`${name}.schema.title`} label="Title" />
+      <ConnectedFieldTemplate
         name={`${name}.schema.description`}
         label="Description"
       />
