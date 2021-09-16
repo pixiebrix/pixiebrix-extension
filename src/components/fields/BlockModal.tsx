@@ -62,6 +62,7 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 
+// TODO: surely there is a better way to do this?
 library.add(fas, fab, far);
 
 export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
@@ -123,8 +124,6 @@ const BlockResult: React.FunctionComponent<{
     return getIcon(block, type);
   }, [block, type, listing]);
 
-  console.log(fa_icon);
-
   useAsyncEffect(async () => {
     setType(await getType(block));
   }, [block, setType]);
@@ -133,7 +132,11 @@ const BlockResult: React.FunctionComponent<{
     <ListGroup.Item onClick={onSelect}>
       <div className="d-flex">
         <div className="mr-2 text-muted">
-          <FontAwesomeIcon icon={fa_icon} fixedWidth />
+          <FontAwesomeIcon
+            icon={fa_icon}
+            color={listing?.icon_color}
+            fixedWidth
+          />
         </div>
         <div className="flex-grow-1">
           <div className="d-flex BlockModal__title">
