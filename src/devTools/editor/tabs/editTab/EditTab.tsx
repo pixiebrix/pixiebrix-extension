@@ -18,7 +18,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { BlockPipeline } from "@/blocks/types";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
@@ -37,6 +37,8 @@ import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConf
 import styles from "./EditTab.module.scss";
 import TraceView from "@/devTools/editor/tabs/effect/TraceView";
 import { uuidv4 } from "@/types/helpers";
+import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
+import { FormState } from "@/devTools/editor/editorSlice";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -52,7 +54,18 @@ async function filterBlocks(
 const EditTab: React.FC<{
   eventKey?: string;
   fieldName?: string;
-}> = ({ eventKey = "editTab", fieldName = "extension.body" }) => {
+  editable: Set<string>;
+}> = ({
+  eventKey = "editTab",
+  fieldName = "extension.body",
+  editable,
+}) => {
+  const { values, getFieldHelpers } = useFormikContext<FormState>();
+  const isLocked = useMemo(
+    () => values.installed && !editable?.has(values.extensionPoint.metadata.id),
+    [editable, values.installed, values.extensionPoint.metadata.id]
+  );
+
   const [{ value: elementType }] = useField<ElementType>("type");
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
@@ -181,9 +194,7 @@ const EditTab: React.FC<{
         </div>
         <div className={styles.configPanel}>
           {activeNodeIndex === 0 && (
-            <EditorNodeConfigPanel>
-              {/* <FoundationForm /> */}
-            </EditorNodeConfigPanel>
+            <PanelConfiguration isLocked={isLocked} />
           )}
 
           {activeNodeIndex > 0 && (
