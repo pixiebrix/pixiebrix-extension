@@ -43,7 +43,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   return (
     // Use our own custom style here, not bootstrap
     <div className={styles.root}>
-      <div className={styles.outputKey}>{outputName}</div>
+      <div className={styles.title}>{title}</div>
       <button
         type="button"
         onClick={onClick}
@@ -54,7 +54,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       >
         <FontAwesomeIcon icon={icon} size="2x" fixedWidth />
       </button>
-      <div className={styles.title}>{title}</div>
+      <div className={styles.outputKey}>{outputName}</div>
     </div>
   );
 };
