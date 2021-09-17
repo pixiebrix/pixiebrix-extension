@@ -57,12 +57,16 @@
   background-color: #b66dff;
 }
 
+.title {
+  text-align: center;
+  vertical-align: top;
+  margin-bottom: 0.25rem;
+  max-width: 120px;
+}
+
 .outputKey {
   font-family: monospace;
   overflow-x: auto;
-}
-
-.title {
   text-align: center;
   vertical-align: top;
   margin-top: 0.25rem;
