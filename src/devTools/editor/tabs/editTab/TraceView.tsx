@@ -82,7 +82,11 @@ const TraceView: React.FunctionComponent<{
   }
 
   if (!record) {
-    return <div className="text-muted">No trace available</div>;
+    return (
+      <div className="text-muted">
+        No trace available, run the extension to generate data
+      </div>
+    );
   }
 
   return (

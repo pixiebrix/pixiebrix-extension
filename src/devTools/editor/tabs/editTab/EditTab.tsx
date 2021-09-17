@@ -205,11 +205,9 @@ const EditTab: React.FC<{
             />
           )}
         </div>
-        {activeNodeIndex > 0 && (
-          <div className={styles.tracePanel}>
-            <TraceView instanceId={blockInstanceId} />
-          </div>
-        )}
+        <div className={styles.tracePanel}>
+          <TraceView instanceId={blockInstanceId} />
+        </div>
       </div>
     </Tab.Pane>
   );
