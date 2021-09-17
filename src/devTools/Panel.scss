@@ -200,40 +200,6 @@
     border-color: transparent;
   }
 
-  .RecommendationContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 200px);
-    grid-gap: 2rem;
-
-    .RecommendationCard {
-      &:hover {
-        cursor: pointer;
-        background-color: #ececff;
-      }
-
-      &__image {
-        font-size: 50px;
-        height: 80px;
-
-        div {
-          margin: auto;
-
-          svg {
-            vertical-align: middle;
-          }
-        }
-      }
-
-      .card-body:nth-child(1) {
-        padding-bottom: 10px;
-      }
-
-      .card-body {
-        padding-top: 10px;
-      }
-    }
-  }
-
   .BlockAccordion {
     .card {
       border-radius: 0;

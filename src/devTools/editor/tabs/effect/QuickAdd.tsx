@@ -16,6 +16,7 @@
  */
 
 import React, { useMemo } from "react";
+import "./QuickAdd.scss";
 import { IBlock } from "@/core";
 import { useFormikContext } from "formik";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
