@@ -27,7 +27,7 @@ import {
   Container,
 } from "react-bootstrap";
 import { sortBy, truncate, unary } from "lodash";
-import { IBlock, IService, RegistryId } from "@/core";
+import { IBlock, IService } from "@/core";
 import {
   fas,
   faBars,
@@ -40,6 +40,8 @@ import {
   faMousePointer,
   faRandom,
   faWindowMaximize,
+  faExternalLinkAlt,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { BlockType, getType } from "@/blocks/util";
@@ -59,6 +61,7 @@ import useFetch from "@/hooks/useFetch";
 import { library, IconProp } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
 
 // TODO: Unable to use dynamic font awesome icons without importing them first
 //  maybe there is a better way to do this?
@@ -105,12 +108,15 @@ export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
   return faCube;
 }
 
-const BlockResult: React.FunctionComponent<{
+const BlockIcon: React.FunctionComponent<{
   block: IBlock;
   listing?: MarketplaceListing;
-  onSelect: () => void;
-}> = ({ block, onSelect, listing }) => {
+}> = ({ block, listing }) => {
   const [type, setType] = useState<BlockType>(null);
+
+  useAsyncEffect(async () => {
+    setType(await getType(block));
+  }, [block, setType]);
 
   const fa_icon = useMemo(() => {
     if (listing?.fa_icon) {
@@ -123,6 +129,32 @@ const BlockResult: React.FunctionComponent<{
     return getIcon(block, type);
   }, [block, type, listing]);
 
+  return (
+    <>
+      {listing?.image == null ? (
+        <FontAwesomeIcon
+          icon={fa_icon}
+          color={listing?.icon_color}
+          className={`${listing?.icon_color ? "" : "text-muted"}`}
+          fixedWidth
+        />
+      ) : (
+        // Setting height and width to 1em allows for scaling with font size
+        <svg width="1em" height="1em">
+          <image xlinkHref={listing?.image.url} width="1em" height="1em" />
+        </svg>
+      )}
+    </>
+  );
+};
+
+const BlockResult: React.FunctionComponent<{
+  block: IBlock;
+  listing?: MarketplaceListing;
+  onSelect: () => void;
+}> = ({ block, onSelect, listing }) => {
+  const [type, setType] = useState<BlockType>(null);
+
   useAsyncEffect(async () => {
     setType(await getType(block));
   }, [block, setType]);
@@ -131,19 +163,7 @@ const BlockResult: React.FunctionComponent<{
     <ListGroup.Item onClick={onSelect}>
       <div className="d-flex">
         <div className="mr-2 text-muted">
-          {listing?.image == null ? (
-            <FontAwesomeIcon
-              icon={fa_icon}
-              color={listing?.icon_color}
-              fixedWidth
-            />
-          ) : (
-            // Setting height and width to 1em allows for scaling with font size
-            // TODO: refactor this and above into BlockIcon component
-            <svg width="1em" height="1em">
-              <image xlinkHref={listing?.image.url} width="1em" height="1em" />
-            </svg>
-          )}
+          <BlockIcon listing={listing} block={block} />
         </div>
         <div className="flex-grow-1">
           <div className="d-flex BlockModal__title">
@@ -204,6 +224,49 @@ type MarketplaceListing = {
   image?: Record<string, string>;
 };
 
+const BlockDetail: React.FunctionComponent<{
+  block: IBlock;
+  listing?: MarketplaceListing;
+  onSelect: () => void;
+}> = ({ block, listing, onSelect }) => {
+  return (
+    <Row className="BlockDetail">
+      <Col xs={12} className="d-flex justify-content-between">
+        <div>
+          <h4>
+            {block.name} <BlockIcon block={block} listing={listing} />
+          </h4>
+          <code>{block.id}</code>
+          <p>{block.description}</p>
+          {listing && (
+            <a
+              href={"https://pixiebrix.com/marketplace/" + listing.id}
+              className="text-info mr-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
+              View in Marketplace
+            </a>
+          )}
+        </div>
+        <div>
+          <Button variant="primary mr-1 text-nowrap" onClick={onSelect}>
+            <FontAwesomeIcon icon={faPlus} className="mr-1" />
+            Add brick
+          </Button>
+        </div>
+      </Col>
+      <Col xs={12}>
+        <h5 className="my-3">Input Schema</h5>
+        <SchemaTree schema={block.inputSchema} />
+        <h5 className="my-3">Output Schema</h5>
+        <SchemaTree schema={block.outputSchema} />
+      </Col>
+    </Row>
+  );
+};
+
 const BlockModal: React.FunctionComponent<{
   onSelect: (service: IBlock) => void;
   blocks: IBlock[];
@@ -213,20 +276,11 @@ const BlockModal: React.FunctionComponent<{
 }> = ({ onSelect, blocks, caption = "Select a brick", renderButton }) => {
   const [show, setShow] = useState(false);
   const [query, setQuery] = useState("");
+  const [detailBlock, setDetailBlock] = useState(null);
   const { data: listings = [] } = useFetch<MarketplaceListing[]>(
     "/api/marketplace/listings/?show_detail=true"
   );
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
-
-  const blockListings = useMemo(
-    () =>
-      listings.filter((listing) =>
-        blocks
-          .map((block) => block.id)
-          .includes(listing.package.name as RegistryId)
-      ),
-    [listings, blocks]
-  );
 
   const blockOptions = useMemo(
     () => (blocks ?? []).map(unary(makeBlockOption)),
@@ -286,14 +340,11 @@ const BlockModal: React.FunctionComponent<{
                             <BlockResult
                               key={x.block.id}
                               block={x.block}
-                              listing={blockListings.find(
+                              listing={listings.find(
                                 (listing) => x.block.id === listing.package.name
                               )}
                               onSelect={() => {
-                                onSelect(x.block);
-                                // Reset the query for the next time it opens
-                                setQuery("");
-                                close();
+                                setDetailBlock(x.block);
                               }}
                             />
                           ))}
@@ -303,9 +354,20 @@ const BlockModal: React.FunctionComponent<{
                   </Row>
                 </Col>
                 <Col xs={7}>
-                  <Row>
-                    <p>Details!</p>
-                  </Row>
+                  {detailBlock && (
+                    <BlockDetail
+                      block={detailBlock}
+                      listing={listings.find(
+                        (listing) => detailBlock.id === listing.package.name
+                      )}
+                      onSelect={() => {
+                        onSelect(detailBlock);
+                        // Reset the query for the next time it opens
+                        setQuery("");
+                        close();
+                      }}
+                    />
+                  )}
                 </Col>
               </Row>
             </Container>
