@@ -66,6 +66,28 @@ export class UrlParser extends Transformer {
     ["url"]
   );
 
+  outputSchema: Schema = {
+    type: "object",
+    properties: {
+      searchParams: {
+        type: "object",
+        additionalProperties: { type: "string" },
+      },
+      publicSuffix: {
+        type: "string",
+        description: "Public suffix (see https://publicsuffix.org/)",
+      },
+      ...Object.fromEntries(
+        URL_PROPERTIES.map((prop) => [
+          prop,
+          {
+            type: "string",
+          },
+        ])
+      ),
+    },
+  };
+
   async transform({ url, base }: BlockArg): Promise<unknown> {
     const { isValid, parse } = await import("psl");
 

@@ -37,4 +37,8 @@ export class BlankReader extends Reader {
   async isAvailable() {
     return true;
   }
+
+  async isPure(): Promise<boolean> {
+    return true;
+  }
 }

@@ -27,6 +27,10 @@ export class PageMetadataReader extends Reader {
     );
   }
 
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   async read() {
     const { getMetadata } = await import(
       // @ts-expect-error no type definitions available

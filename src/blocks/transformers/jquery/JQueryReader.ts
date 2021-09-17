@@ -81,6 +81,10 @@ export class JQueryReader extends Transformer {
     },
   };
 
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   async transform(
     { selectors }: { selectors: SelectorMap },
     { root }: BlockOptions

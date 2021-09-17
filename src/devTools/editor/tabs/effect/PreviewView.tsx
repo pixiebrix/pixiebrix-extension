@@ -20,7 +20,6 @@ import { BlockConfig } from "@/blocks/types";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { runBlock } from "@/background/devtools";
-import { useTrace } from "@/devTools/editor/tabs/effect/useTrace";
 import { DevToolsContext } from "@/devTools/context";
 import { useDebouncedCallback } from "use-debounce";
 import { Button } from "react-bootstrap";
@@ -28,17 +27,19 @@ import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
-import useInterval from "@/hooks/useInterval";
 import objectHash from "object-hash";
 import JsonTree from "@/components/JsonTree";
+import { isEmpty } from "lodash";
+import { TraceRecord } from "@/telemetry/trace";
 
 const PreviewView: React.FunctionComponent<{
+  traceRecord: TraceRecord;
   blockConfig: BlockConfig;
-  previewRefreshMillis?: 150;
-  traceReloadMillis?: 300;
-}> = ({ blockConfig, previewRefreshMillis, traceReloadMillis }) => {
+  previewRefreshMillis?: 250;
+}> = ({ blockConfig, traceRecord, previewRefreshMillis }) => {
   const { port } = useContext(DevToolsContext);
 
+  const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState<unknown | undefined>();
 
   const [blockInfo, blockLoading, blockError] = useAsyncState(async () => {
@@ -49,24 +50,23 @@ const PreviewView: React.FunctionComponent<{
     };
   }, [blockConfig.id]);
 
-  const traceInfo = useTrace(blockConfig.instanceId);
-
   const debouncedRun = useDebouncedCallback(
     async (blockConfig: BlockConfig, args: Record<string, unknown>) => {
+      setIsRunning(true);
       try {
         const result = await runBlock(port, { blockConfig, args });
         setOutput(result);
       } catch (error: unknown) {
         setOutput(error);
+      } finally {
+        setIsRunning(false);
       }
     },
     previewRefreshMillis,
     { trailing: true, leading: false }
   );
 
-  const context = traceInfo.record?.templateContext;
-
-  useInterval(traceInfo.recalculate, traceReloadMillis);
+  const context = traceRecord?.templateContext;
 
   useEffect(() => {
     if (context && blockInfo?.isPure) {
@@ -75,7 +75,7 @@ const PreviewView: React.FunctionComponent<{
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo?.isPure, objectHash(context ?? {})]);
 
-  if (blockLoading || traceInfo.isLoading) {
+  if (blockLoading || isRunning) {
     return (
       <div>
         <GridLoader />
@@ -83,16 +83,16 @@ const PreviewView: React.FunctionComponent<{
     );
   }
 
-  if (blockError || traceInfo.error) {
+  if (blockError) {
     return (
       <div className="text-danger">
-        Error loading brick or trace:{" "}
-        {getErrorMessage(blockError ?? traceInfo.error)}
+        Error loading brick from registry
+        {getErrorMessage(blockError)}
       </div>
     );
   }
 
-  if (!traceInfo.record) {
+  if (!traceRecord) {
     return (
       <div className="text-info">
         <FontAwesomeIcon icon={faInfoCircle} /> Run the brick once to enable
@@ -107,7 +107,7 @@ const PreviewView: React.FunctionComponent<{
         <Button
           variant="info"
           size="sm"
-          disabled={!traceInfo.record}
+          disabled={!traceRecord}
           onClick={() => {
             void debouncedRun(blockConfig, context);
           }}
@@ -116,7 +116,13 @@ const PreviewView: React.FunctionComponent<{
         </Button>
       )}
 
-      {output && !(output instanceof Error) && <JsonTree data={output} />}
+      {output && !(output instanceof Error) && !isEmpty(output) && (
+        <JsonTree data={output} />
+      )}
+
+      {output && !(output instanceof Error) && isEmpty(output) && (
+        <div>Brick produced empty output</div>
+      )}
 
       {output && output instanceof Error && (
         <div className="text-danger">{getErrorMessage(output)}</div>
