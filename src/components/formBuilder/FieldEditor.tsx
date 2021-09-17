@@ -16,7 +16,7 @@
  */
 
 /* eslint-disable security/detect-object-injection */
-import { Field, useField, useFormikContext } from "formik";
+import { Field, useField } from "formik";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "./FieldEditor.module.scss";
 import {
@@ -33,23 +33,22 @@ import {
   replaceStringInArray,
   stringifyUiType,
 } from "./formBuilderHelpers";
-import { Schema, UiSchema } from "@/core";
-import { uniq } from "lodash";
+import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
+import { produce } from "immer";
 
 const FieldEditor: React.FC<{
   name: string;
   propertyName: string;
   setActiveField: SetActiveField;
 }> = ({ name, propertyName, setActiveField }) => {
-  const { setFieldValue } = useFormikContext<RJSFSchema>();
-  const [{ value: schema }, , { setValue: setSchema }] = useField<Schema>(
-    `${name}.schema`
-  );
-  const [{ value: uiSchema }, , { setValue: setUiSchema }] = useField<UiSchema>(
-    `${name}.uiSchema`
-  );
+  const [
+    { value: rjsfSchema },
+    ,
+    { setValue: setRjsfSchema },
+  ] = useField<RJSFSchema>(name);
+  const { schema } = rjsfSchema;
   const [{ value: propertySchema }] = useField(
     `${name}.schema.properties.${propertyName}`
   );
@@ -64,8 +63,6 @@ const FieldEditor: React.FC<{
 
   const getFullFieldName = (fieldName: string) =>
     `${name}.schema.properties.${propertyName}.${fieldName}`;
-  const getFullUiFieldName = (fieldName: string) =>
-    `${name}.uiSchema.${propertyName}.${fieldName}`;
 
   const onPropertyNameChange = (event: ChangeEvent<HTMLInputElement>) => {
     const nextName = event.target.value;
@@ -95,27 +92,19 @@ const FieldEditor: React.FC<{
       setPropertyNameError(null);
     }
 
-    const nextSchemaProperties = { ...schema.properties };
-    nextSchemaProperties[nextName] = nextSchemaProperties[propertyName];
-    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
-    delete nextSchemaProperties[propertyName];
+    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      draft.schema.properties[nextName] = draft.schema.properties[propertyName];
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete draft.schema.properties[propertyName];
 
-    const nextSchema: Schema = {
-      ...schema,
-      properties: nextSchemaProperties,
-    };
-
-    const uiOrder: string[] = uiSchema[UI_ORDER];
-    const nextUiOrder = uniq(
-      replaceStringInArray(uiOrder, propertyName, nextName)
-    );
-    const nextUiSchema: UiSchema = {
-      ...uiSchema,
-      [UI_ORDER]: nextUiOrder,
-    };
-
-    setSchema(nextSchema);
-    setUiSchema(nextUiSchema);
+      const nextUiOrder = replaceStringInArray(
+        draft.uiSchema[UI_ORDER],
+        propertyName,
+        nextName
+      );
+      draft.uiSchema[UI_ORDER] = nextUiOrder;
+    });
+    setRjsfSchema(nextRjsfSchema);
     setActiveField(nextName);
   };
 
@@ -125,9 +114,30 @@ const FieldEditor: React.FC<{
     }
 
     const { propertyType, uiWidget, propertyFormat } = parseUiType(value);
-    setFieldValue(getFullFieldName("type"), propertyType);
-    setFieldValue(getFullFieldName("format"), propertyFormat);
-    setFieldValue(getFullUiFieldName(UI_WIDGET), uiWidget);
+    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      (draft.schema.properties[propertyName] as Schema).type = propertyType;
+
+      if (propertyFormat) {
+        (draft.schema.properties[
+          propertyName
+        ] as Schema).format = propertyFormat;
+      } else {
+        delete (draft.schema.properties[propertyName] as Schema).format;
+      }
+
+      if (uiWidget) {
+        if (!draft.uiSchema[propertyName]) {
+          draft.uiSchema[propertyName] = {};
+        }
+
+        draft.uiSchema[propertyName][UI_WIDGET] = uiWidget;
+      } else if (draft.uiSchema[propertyName]) {
+        // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+        delete draft.uiSchema[propertyName][UI_WIDGET];
+      }
+    });
+
+    setRjsfSchema(nextRjsfSchema);
   };
 
   const getSelectedUiTypeOption = () => {

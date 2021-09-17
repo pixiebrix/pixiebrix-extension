@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SafeString, Schema, UiSchema } from "@/core";
+import { SafeString, Schema, SchemaPropertyType, UiSchema } from "@/core";
 import { SelectStringOption } from "./formBuilderTypes";
 import { UI_ORDER } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
@@ -33,7 +33,7 @@ export const DEFAULT_FIELD_TYPE = "string";
 export const parseUiType = (value: string) => {
   const [propertyType, uiWidget, propertyFormat] = value.split(":");
   return {
-    propertyType,
+    propertyType: propertyType as SchemaPropertyType,
     uiWidget: uiWidget === "" ? undefined : uiWidget,
     propertyFormat: propertyFormat === "" ? undefined : propertyFormat,
   };
@@ -44,7 +44,7 @@ export const stringifyUiType = ({
   uiWidget,
   propertyFormat,
 }: {
-  propertyType: string;
+  propertyType: SchemaPropertyType;
   uiWidget?: string;
   propertyFormat?: string;
 }) => `${propertyType}:${uiWidget ?? ""}:${propertyFormat ?? ""}`;

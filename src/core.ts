@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JSONSchema7, JSONSchema7Definition } from "json-schema";
+import {
+  JSONSchema7,
+  JSONSchema7Definition,
+  JSONSchema7TypeName,
+} from "json-schema";
 import { UiSchema as StandardUiSchema } from "@rjsf/core";
 import { AxiosRequestConfig } from "axios";
 import { Except, Primitive } from "type-fest";
@@ -29,6 +33,7 @@ export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = Record<string, SchemaDefinition>;
+export type SchemaPropertyType = JSONSchema7TypeName;
 
 export type RenderedHTML = string;
 

@@ -18,25 +18,27 @@
 import React, { useState } from "react";
 import FormEditor from "./FormEditor";
 import FormPreview from "./FormPreview";
-import { useField, useFormikContext } from "formik";
+import { useField } from "formik";
 import { UI_ORDER } from "./schemaFieldNames";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { RJSFSchema } from "./formBuilderTypes";
 import { MINIMAL_SCHEMA, MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
+import { produce } from "immer";
 
 const FormBuilder: React.FC<{
   name: string;
 }> = ({ name }) => {
   const [
-    {
-      value: { schema, uiSchema },
-    },
+    { value: rjsfSchema },
+    ,
+    { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
-  const { setFieldValue } = useFormikContext();
+  const { schema, uiSchema } = rjsfSchema;
 
   const [activeField, setActiveField] = useState(() => {
-    // eslint-disable-next-line security/detect-object-injection -- is a constant
-    const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
+    const firstInOrder =
+      // eslint-disable-next-line security/detect-object-injection -- is a constant
+      uiSchema?.[UI_ORDER]?.length > 1 ? uiSchema[UI_ORDER][0] : undefined;
     if (firstInOrder) {
       return firstInOrder;
     }
@@ -49,15 +51,18 @@ const FormBuilder: React.FC<{
     return "";
   });
 
-  if (!schema) {
-    setFieldValue(`${name}.schema`, MINIMAL_SCHEMA);
-  }
-
-  if (!uiSchema) {
-    setFieldValue(`${name}.uiSchema`, MINIMAL_UI_SCHEMA);
-  }
-
   if (!schema || !uiSchema) {
+    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      if (!draft.schema) {
+        draft.schema = MINIMAL_SCHEMA;
+      }
+
+      if (!draft.uiSchema) {
+        draft.uiSchema = MINIMAL_UI_SCHEMA;
+      }
+    });
+    setRjsfSchema(nextRjsfSchema);
+
     return null;
   }
 
