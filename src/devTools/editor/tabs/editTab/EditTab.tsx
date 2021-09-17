@@ -136,9 +136,6 @@ const EditTab: React.FC<{
           onClick: () => {
             onSelectNode(index + 1);
           },
-          onRemove: () => {
-            removeBlock(index);
-          },
         }
       : {
           title: "Loading...",
@@ -213,6 +210,9 @@ const EditTab: React.FC<{
             <EditorNodeConfigPanel
               blockFieldName={blockFieldName}
               blockId={resolvedBlocks[activeNodeIndex - 1].id}
+              onRemoveNode={() => {
+                removeBlock(activeNodeIndex - 1);
+              }}
             />
           )}
         </div>

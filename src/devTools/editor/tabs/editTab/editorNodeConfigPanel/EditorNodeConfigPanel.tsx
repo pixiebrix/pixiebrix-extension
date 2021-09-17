@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Form, InputGroup } from "react-bootstrap";
+import { Button, Form, InputGroup } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
@@ -25,6 +25,9 @@ import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
 import { showOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import styles from "./EditorNodeConfigPanel.module.scss";
 
 const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
   <InputGroup>
@@ -38,7 +41,8 @@ const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
 const EditorNodeConfigPanel: React.FC<{
   blockFieldName: string;
   blockId: RegistryId;
-}> = ({ blockFieldName, blockId }) => {
+  onRemoveNode: () => void;
+}> = ({ blockFieldName, blockId, onRemoveNode }) => {
   const [blockInfo] = useAsyncState(async () => {
     const block = await blockRegistry.lookup(blockId);
     return {
@@ -80,6 +84,14 @@ const EditorNodeConfigPanel: React.FC<{
           description={<p>Effect and renderer bricks do not produce outputs</p>}
         />
       )}
+
+      <Button
+        variant="danger"
+        onClick={onRemoveNode}
+        className={styles.removeButton}
+      >
+        <FontAwesomeIcon icon={faTrash} /> Remove Node
+      </Button>
 
       <BlockConfiguration
         name={blockFieldName}
