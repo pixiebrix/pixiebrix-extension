@@ -31,7 +31,7 @@ import {
 } from "@/background/devtools/internal";
 import { ensureContentScript } from "@/background/util";
 import { isEmpty } from "lodash";
-import { Target } from "@/background/devtools/contract";
+import type { Target } from "@/types";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { RegistryId, UUID } from "@/core";
 

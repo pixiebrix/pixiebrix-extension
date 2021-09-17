@@ -62,7 +62,10 @@ const DropdownEntry: React.FunctionComponent<{
 );
 
 const Sidebar: React.FunctionComponent<
-  Except<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
+  Except<
+    EditorState,
+    "error" | "dirty" | "knownEditable" | "selectionSeq" | "isBetaUI"
+  > & {
     installed: IExtension[];
   }
 > = ({ inserting, activeElement, installed, elements }) => {

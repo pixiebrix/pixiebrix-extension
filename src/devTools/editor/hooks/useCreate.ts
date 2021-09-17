@@ -136,7 +136,7 @@ export function useCreate(): CreateCallback {
       const onStepError = (error: unknown, step: string) => {
         const message = selectErrorMessage(error);
         reportError(error);
-        console.warn(`Error %s: %s`, step, message, { error });
+        console.warn("Error %s: %s", step, message, { error });
         setStatus(`Error ${step}: ${message}`);
         addToast(`Error ${step}: ${message}`, {
           appearance: "error",

@@ -23,13 +23,9 @@ import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
-import { evaluableFunction } from "@/utils";
+import { allSettledRejections, evaluableFunction } from "@/utils";
 import pTimeout from "p-timeout";
-
-export type Target = {
-  tabId: number;
-  frameId: number;
-};
+import type { Target } from "@/types";
 
 /** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
@@ -107,7 +103,7 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
 export async function ensureContentScript(target: Target): Promise<void> {
   expectContext("background");
 
-  console.debug(`ensureContentScript: requested`, target);
+  console.debug("ensureContentScript: requested", target);
 
   const controller = new AbortController();
 
@@ -123,14 +119,14 @@ export async function ensureContentScript(target: Target): Promise<void> {
 
     if (!result) {
       console.debug(
-        `ensureContentScript: script messaged us back while waiting`,
+        "ensureContentScript: script messaged us back while waiting",
         target
       );
       return;
     }
 
     if (result.ready) {
-      console.debug(`ensureContentScript: already exists and is ready`, target);
+      console.debug("ensureContentScript: already exists and is ready", target);
       return;
     }
 
@@ -144,11 +140,11 @@ export async function ensureContentScript(target: Target): Promise<void> {
 
     if (result.installed || (await isContentScriptRegistered(result.url))) {
       console.debug(
-        `ensureContentScript: already exists or will be injected automatically`,
+        "ensureContentScript: already exists or will be injected automatically",
         target
       );
     } else {
-      console.debug(`ensureContentScript: injecting`, target);
+      console.debug("ensureContentScript: injecting", target);
       const loadingScripts = chrome.runtime
         .getManifest()
         .content_scripts.map(async (script) => {
@@ -165,7 +161,7 @@ export async function ensureContentScript(target: Target): Promise<void> {
       4000,
       "contentScript not ready in 4s"
     );
-    console.debug(`ensureContentScript: ready`, target);
+    console.debug("ensureContentScript: ready", target);
   } finally {
     controller.abort();
   }
@@ -186,4 +182,20 @@ export async function showErrorInOptions(
     url: `options.html#/?error=${errorId}`,
     index: tabIndex == null ? undefined : tabIndex + 1,
   });
+}
+
+// This function should never throw, it should just log warnings to the console
+export async function notifyTabs<
+  TReturnValue,
+  TCallback extends (target: { tabId: number }) => Promise<TReturnValue>
+>(callback: TCallback, message: string): Promise<void> {
+  // TODO: Only include PixieBrix tabs, this will reduce the chance of errors
+  const tabs = await browser.tabs.query({});
+  const promises = tabs.map(async ({ id }) => callback({ tabId: id }));
+  const errors = await allSettledRejections(promises);
+  if (errors.length > 0) {
+    console.warn(message, {
+      errors,
+    });
+  }
 }

@@ -17,15 +17,10 @@
 
 import React from "react";
 import Centered from "@/devTools/editor/components/Centered";
-import { openTab } from "@/background/executor";
-import { Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCommentAlt, faPhone } from "@fortawesome/free-solid-svg-icons";
 
 const NoExtensionsPane: React.FunctionComponent<{
   unavailableCount: number;
-  showSupport: () => void;
-}> = ({ unavailableCount, showSupport }) => (
+}> = ({ unavailableCount }) => (
   <Centered isScrollable>
     <div className="PaneTitle">No custom extensions on the page</div>
 
@@ -52,24 +47,16 @@ const NoExtensionsPane: React.FunctionComponent<{
         </a>
       </p>
 
-      <div className="text-center">
-        <Button variant="info" onClick={showSupport}>
-          <FontAwesomeIcon icon={faCommentAlt} /> Live Chat Support
-        </Button>
-
-        <Button
-          className="ml-2"
-          variant="info"
-          onClick={async () =>
-            openTab({
-              url: "https://calendly.com/pixiebrix-todd/live-support-session",
-              active: true,
-            })
-          }
+      <p>
+        Or, schedule a{" "}
+        <a
+          href="https://calendly.com/pixiebrix-todd/live-support-session"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <FontAwesomeIcon icon={faPhone} /> Schedule FREE Zoom Session
-        </Button>
-      </div>
+          FREE Zoom support session
+        </a>
+      </p>
     </div>
   </Centered>
 );

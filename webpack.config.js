@@ -257,6 +257,7 @@ module.exports = (env, options) =>
           "devtools",
           "devtoolsPanel",
           "frame",
+          "modalForm",
           "options",
           "support",
           "action",

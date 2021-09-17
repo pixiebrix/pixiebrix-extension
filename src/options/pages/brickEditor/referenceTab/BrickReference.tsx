@@ -30,7 +30,7 @@ import { sortBy } from "lodash";
 import styles from "./BrickReference.module.scss";
 import GridLoader from "react-spinners/GridLoader";
 import BrickDetail from "./BrickDetail";
-import { ReferenceEntry } from "../brickEditorTypes";
+import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import BlockResult from "./BlockResult";
 import cx from "classnames";
 import { isOfficial } from "@/blocks/util";

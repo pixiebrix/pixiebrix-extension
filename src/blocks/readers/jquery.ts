@@ -45,7 +45,7 @@ type Selector = CommonSelector & {
   maxWaitMillis?: number;
 };
 
-type SelectorMap = Record<string, string | Selector>;
+export type SelectorMap = Record<string, string | Selector>;
 
 type Result =
   | string
@@ -197,7 +197,7 @@ async function select(
   if ($elt.length > 1 && !normalizedSelector.multi) {
     throw new MultipleElementsFoundError(
       normalizedSelector.selector,
-      `Multiple elements found for selector. To return a list of values, supply multi=true`
+      "Multiple elements found for selector. To return a list of values, supply multi=true"
     );
   } else if ("find" in normalizedSelector) {
     const values = await Promise.all(

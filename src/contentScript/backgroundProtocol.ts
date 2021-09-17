@@ -31,6 +31,7 @@ import { deserializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { expectContext } from "@/utils/expectContext";
 import { getErrorMessage } from "@/errors";
+import type { Target } from "@/types";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
 export const ROOT_FRAME_ID = 0;
@@ -71,81 +72,6 @@ async function handleRequest(
     );
   }
 }
-
-async function getTabIds(): Promise<number[]> {
-  const tabs = await browser.tabs.query({});
-  return tabs.map((x) => x.id);
-}
-
-export function notifyContentScripts(
-  type: string,
-  method: () => void
-): (tabId: number | null) => Promise<void>;
-export function notifyContentScripts<T>(
-  type: string,
-  method: (a0: T) => void
-): (tabId: number | null, a0: T) => Promise<void>;
-export function notifyContentScripts<T0, T1>(
-  type: string,
-  method: (a0: T0, a1: T1) => void
-): (tabId: number | null, a0: T0, a1: T1) => Promise<void>;
-export function notifyContentScripts(
-  type: string,
-  method: (...args: unknown[]) => void
-): (tabId: number | null, ...args: unknown[]) => Promise<void> {
-  const fullType = `${MESSAGE_PREFIX}${type}`;
-
-  if (isContentScript()) {
-    // AddContentScriptListener logs to console when the handler is installed on the window. So it would be confusing
-    // to include a console.debug statement here
-    handlers.set(fullType, {
-      // HandlerEntry's Handler field has a return value, not void
-      handler: method as (...args: unknown[]) => null,
-      options: { asyncResponse: false },
-    });
-  }
-
-  return async (tabId: number | null, ...args: unknown[]) => {
-    expectContext("background", ContentScriptActionError);
-
-    console.debug(
-      `Broadcasting content script notification ${fullType} to tab: ${
-        tabId ?? "<all>"
-      }`
-    );
-    const messageOne = async (tabId: number) =>
-      browser.tabs.sendMessage(
-        tabId,
-        { type: fullType, payload: args },
-        { frameId: ROOT_FRAME_ID }
-      );
-
-    const tabIds = tabId ? [tabId] : await getTabIds();
-    // `notifyContentScripts` should never throw an error due to connectivity with content scripts. Some tabs are
-    // expected to fail, because getTabIds will return tab ids that PixieBrix does not have access to
-    const results = await Promise.allSettled(
-      tabIds.map(async (tabId) => messageOne(tabId))
-    );
-
-    const failed = results.filter(
-      (x) => x.status === "rejected"
-    ) as PromiseRejectedResult[];
-    if (failed.length > 0) {
-      console.warn(
-        `${failed.length} error(s) broadcasting content script notification: %s`,
-        fullType,
-        {
-          errors: failed.map((x) => x.reason),
-        }
-      );
-    }
-  };
-}
-
-export type Target = {
-  tabId: number;
-  frameId: number;
-};
 
 /**
  * Lift a method to be run in the contentScript

@@ -21,8 +21,14 @@ import ShareExtensionModal from "./ShareExtensionModal";
 import { extensionFactory } from "@/tests/factories";
 import { waitForEffect } from "@/tests/testHelpers";
 import userEvent from "@testing-library/user-event";
+import { Organization } from "@/types/contract";
 
-test.skip("renders modal", async () => {
+jest.mock("@/hooks/useNotifications");
+jest.mock("@/hooks/organization", () => ({
+  useOrganization: () => ({ organizations: [] as Organization[] }),
+}));
+
+test("renders modal", async () => {
   render(
     <ShareExtensionModal
       extension={extensionFactory({
@@ -36,7 +42,7 @@ test.skip("renders modal", async () => {
   expect(dialogRoot).toMatchSnapshot();
 });
 
-test.skip("prints 'Convert' when not Public", async () => {
+test("prints 'Convert' when not Public", async () => {
   render(
     <ShareExtensionModal
       extension={extensionFactory({
@@ -47,10 +53,11 @@ test.skip("prints 'Convert' when not Public", async () => {
   );
   await waitForEffect();
   const dialogRoot = screen.getByRole("dialog");
+  const submitButton = dialogRoot.querySelector('.btn[type="submit"]');
+  expect(submitButton.textContent).toBe("Share");
   const publicSwitch = dialogRoot.querySelector(
     ".form-group:nth-child(5) .switch.btn"
   );
   userEvent.click(publicSwitch);
-  const submitButton = dialogRoot.querySelector('.btn[type="submit"]');
   expect(submitButton.textContent).toBe("Convert");
 });

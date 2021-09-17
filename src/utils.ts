@@ -446,3 +446,14 @@ export function makeURL(
     result.search.replaceAll("+", SPACE_ENCODED_VALUE)
   );
 }
+
+export async function allSettledRejections(
+  promises: Array<Promise<unknown>>
+): Promise<unknown[]> {
+  return (await Promise.allSettled(promises))
+    .filter(
+      (promise): promise is PromiseRejectedResult =>
+        promise.status === "rejected"
+    )
+    .map(({ reason }) => reason);
+}

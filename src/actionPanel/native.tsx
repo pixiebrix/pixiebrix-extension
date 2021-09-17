@@ -245,7 +245,7 @@ export function updateHeading(extensionId: string, heading: string): void {
     renderPanels();
   } else {
     console.warn(
-      `updateHeading: No panel exists for extension %s`,
+      "updateHeading: No panel exists for extension %s",
       extensionId
     );
   }

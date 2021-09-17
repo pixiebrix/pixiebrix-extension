@@ -162,7 +162,7 @@ class LazyLocatorFactory {
     this.makeOptions();
     this._initialized = true;
     this.updateTimestamp = timestamp;
-    console.debug(`Refreshed service configuration locator`, {
+    console.debug("Refreshed service configuration locator", {
       updateTimestamp: this.updateTimestamp,
     });
   }

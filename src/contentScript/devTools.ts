@@ -36,15 +36,11 @@ import "@/nativeEditor/insertButton";
 import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
 import { isNullOrBlank, resolveObj } from "@/utils";
+import type { Target } from "@/types";
 import { BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { SerializableResponse } from "@/messaging/protocol";
-
-export type Target = {
-  tabId: number;
-  frameId: number;
-};
 
 if (isContentScript()) {
   addListenerForUpdateSelectedElement();

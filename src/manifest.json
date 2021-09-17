@@ -49,6 +49,8 @@
     "action.css",
     "devtoolsPanel.css",
     "script.js",
+    "modalForm.html",
+    "modalForm.css",
     "audio/*",
     "user-icons/*"
   ],

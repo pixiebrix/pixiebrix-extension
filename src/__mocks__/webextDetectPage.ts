@@ -16,7 +16,7 @@
  */
 /* eslint-disable import/export -- These are overrides, it's on purpose */
 
-// The node_modules path is to avoid self-references due to webpack alias to this file
+// eslint-disable-next-line no-restricted-imports -- The node_modules path is to avoid self-references due to webpack alias to this file
 export * from "../../node_modules/webext-detect-page";
 
 export function isExtensionContext() {

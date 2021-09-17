@@ -17,7 +17,6 @@
 
 import { registerBlock } from "@/blocks/registry";
 import {
-  ChromeProfileReader,
   DocumentReader,
   ManifestReader,
   PixieBrixProfileReader,
@@ -38,7 +37,6 @@ function registerReaders(): void {
   // Built-in readers
   registerBlock(new DocumentReader());
   registerBlock(new ManifestReader());
-  registerBlock(new ChromeProfileReader());
   registerBlock(new PixieBrixProfileReader());
   registerBlock(new PixieBrixSessionReader());
   registerBlock(new TimestampReader());

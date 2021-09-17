@@ -34,7 +34,7 @@ import { useDebounce } from "use-debounce";
 import "./BlockModal.scss";
 import { ServiceDefinition } from "@/types/definitions";
 import { ButtonVariant } from "react-bootstrap/types";
-import { OfficialBadge } from "../OfficialBadge";
+import { OfficialBadge } from "@/components/OfficialBadge";
 
 const ServiceResult: React.FunctionComponent<{
   service: ServiceDefinition;

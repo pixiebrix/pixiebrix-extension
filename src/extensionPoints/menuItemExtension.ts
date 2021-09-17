@@ -366,11 +366,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
    */
   private async installMenus(): Promise<boolean> {
     if (this.uninstalled) {
-      console.error(`Menu item extension point is uninstalled`, {
+      console.error("Menu item extension point is uninstalled", {
         extensionId: this.instanceId,
       });
       throw new Error(
-        `Cannot install menu item because extension point was uninstalled`
+        "Cannot install menu item because extension point was uninstalled"
       );
     }
 
@@ -509,7 +509,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       e.preventDefault();
       e.stopPropagation();
 
-      console.debug(`Run menu item`, this.logger.context);
+      console.debug("Run menu item", this.logger.context);
 
       reportEvent("MenuItemClick", selectEventData(extension));
 
@@ -825,12 +825,12 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
       if ($elt.length > 1) {
         throw new MultipleElementsFoundError(
           selector,
-          `Multiple elements found for reader selector`
+          "Multiple elements found for reader selector"
         );
       } else if ($elt.length === 0) {
         throw new NoElementsFoundError(
           selector,
-          `No elements found for reader selector`
+          "No elements found for reader selector"
         );
       }
 

@@ -43,6 +43,7 @@
     .nav-item {
       margin-right: 0;
       margin-left: 0;
+      white-space: nowrap;
 
       .nav-link {
         &.active {

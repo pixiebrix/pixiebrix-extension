@@ -115,7 +115,7 @@ const keyMap = {
 function useTouchBrick(id: string): void {
   const dispatch = useDispatch();
   useEffect(() => {
-    console.debug(`Marking brick as touched: %s`, id);
+    console.debug("Marking brick as touched: %s", id);
     dispatch(touchBrick({ id }));
   }, [dispatch, id]);
 }

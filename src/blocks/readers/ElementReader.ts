@@ -31,7 +31,7 @@ export class ElementReader extends Reader {
     const element = elementOrDocument as HTMLElement;
 
     if (!element?.tagName) {
-      throw new Error(`Expected an HTML Element`);
+      throw new Error("Expected an HTML Element");
     }
 
     const $element = $(element);

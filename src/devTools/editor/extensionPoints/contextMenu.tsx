@@ -55,6 +55,7 @@ import {
 import { Menus } from "webextension-polyfill-ts";
 import { BlockPipeline } from "@/blocks/types";
 import React from "react";
+import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 const wizard: WizardStep[] = [
   { step: "Menu Item", Component: MenuItemTab },
@@ -62,6 +63,15 @@ const wizard: WizardStep[] = [
   { step: "Data", Component: ReaderTab },
   { step: "Integrations", Component: ServicesTab },
   { step: "Action", Component: EffectTab },
+  { step: "Logs", Component: LogsTab },
+];
+
+const betaWizard: WizardStep[] = [
+  {
+    step: "Edit",
+    Component: EditTab,
+    extraProps: { pipelineFieldName: "extension.action" },
+  },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -262,6 +272,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtension,
   fromExtension,
   wizard,
+  betaWizard,
   insertModeHelp: (
     <div>
       <p>

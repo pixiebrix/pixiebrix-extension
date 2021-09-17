@@ -1,0 +1,15 @@
+$color-border: #a4caef;
+
+.root {
+  border: 1px solid $color-border;
+}
+
+.fieldColumn {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.5rem;
+}
+
+.select {
+  flex: 1;
+}

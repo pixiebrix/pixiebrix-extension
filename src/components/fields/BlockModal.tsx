@@ -52,7 +52,7 @@ import { MenuItemExtensionPoint } from "@/extensionPoints/menuItemExtension";
 import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
-import { OfficialBadge } from "../OfficialBadge";
+import { OfficialBadge } from "@/components/OfficialBadge";
 
 export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
   if ("schema" in block) {

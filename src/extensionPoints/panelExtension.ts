@@ -82,10 +82,10 @@ function detectLoop(timestamps: Date[]): void {
     const diffs = timestamps.map((x) =>
       Math.abs(current.getTime() - x.getTime())
     );
-    console.error(`Panel is stuck in a render loop`, {
+    console.error("Panel is stuck in a render loop", {
       diffs,
     });
-    throw new Error(`Panel is stuck in a render loop`);
+    throw new Error("Panel is stuck in a render loop");
   }
 }
 
@@ -535,7 +535,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
     const { position = "append" } = this._definition;
 
     if (typeof position !== "string") {
-      throw new TypeError(`Expected string for panel position`);
+      throw new TypeError("Expected string for panel position");
     }
 
     switch (position) {
