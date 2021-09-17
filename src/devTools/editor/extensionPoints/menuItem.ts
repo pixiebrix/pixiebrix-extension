@@ -60,6 +60,7 @@ import {
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { BlockPipeline } from "@/blocks/types";
+import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 const wizard: WizardStep[] = [
@@ -275,6 +276,7 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   label: "Button",
   icon: faMousePointer,
   baseClass: MenuItemExtensionPoint,
+  EditorNode: MenuItemConfiguration,
   selectNativeElement: nativeOperations.insertButton,
   wizard,
   betaWizard,

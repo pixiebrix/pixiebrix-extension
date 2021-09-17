@@ -123,6 +123,8 @@ export interface ElementConfig<
   // eslint-disable-next-line @typescript-eslint/ban-types -- we want to Ctor here for the extension point
   readonly baseClass: Function;
 
+  readonly EditorNode?: React.ComponentType<{ isLocked: boolean }>;
+
   /**
    * Order to display this element in the new element dropdown in the sidebar
    */
