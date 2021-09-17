@@ -261,7 +261,6 @@ const BlockDetail: React.FunctionComponent<{
 const BlockModal: React.FunctionComponent<{
   onSelect: (service: IBlock) => void;
   blocks: IBlock[];
-  recommendedBricks?: string[];
   caption?: string | React.ReactNode;
   renderButton?: ({ show }: { show: () => void }) => React.ReactNode;
 }> = ({ onSelect, blocks, caption = "Select a brick", renderButton }) => {
