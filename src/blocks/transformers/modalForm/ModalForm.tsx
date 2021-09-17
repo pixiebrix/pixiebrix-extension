@@ -17,18 +17,16 @@
 
 import React from "react";
 import Form from "@rjsf/core";
-import { Message } from "@/core";
-import { browser } from "webextension-polyfill-ts";
+import { UUID } from "@/core";
 import { useAsyncState } from "@/hooks/common";
-import { whoAmI } from "@/background/messenger/api";
 import {
-  FORM_CANCEL,
-  FORM_GET_DEFINITION,
-  FORM_RESOLVE,
-  FormDefinition,
-} from "@/blocks/transformers/modalForm/formTypes";
+  getFormDefinition,
+  resolveForm,
+  cancelForm,
+} from "@/contentScript/messenger/api";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
+import { Target } from "@/types";
 
 const ModalLayout: React.FC = ({ children }) => (
   // Don't use React Bootstrap's Modal because we want to customize the classes in the layout
@@ -39,26 +37,13 @@ const ModalLayout: React.FC = ({ children }) => (
 
 const ModalForm: React.FC = () => {
   const params = new URLSearchParams(location.search);
-  const nonce = params.get("nonce");
-  const sourceFrameId = Number(params.get("frameId"));
+  const nonce = params.get("nonce") as UUID;
+  const opener = JSON.parse(params.get("opener")) as Target;
 
-  const [state, isLoading, error] = useAsyncState(async () => {
-    const tab = await whoAmI();
-
-    async function sendMessage<T = unknown>(message: Message) {
-      return browser.tabs.sendMessage(tab.tab.id, message, {
-        frameId: sourceFrameId,
-      }) as Promise<T>;
-    }
-
-    return {
-      definition: await sendMessage<FormDefinition>({
-        type: FORM_GET_DEFINITION,
-        payload: { nonce },
-      }),
-      sendMessage,
-    };
-  }, [nonce]);
+  const [definition, isLoading, error] = useAsyncState(
+    async () => getFormDefinition(opener, nonce),
+    [nonce]
+  );
 
   if (isLoading) {
     return (
@@ -79,31 +64,22 @@ const ModalForm: React.FC = () => {
   return (
     <ModalLayout>
       <Form
-        schema={state.definition.schema}
-        uiSchema={state.definition.uiSchema}
+        schema={definition.schema}
+        uiSchema={definition.uiSchema}
         onSubmit={({ formData: values }) => {
-          void state.sendMessage({
-            type: FORM_RESOLVE,
-            payload: {
-              nonce,
-              values,
-            },
-          });
+          void resolveForm(opener, nonce, values);
         }}
       >
         <div>
           <button className="btn btn-primary" type="submit">
-            {state.definition.submitCaption}
+            {definition.submitCaption}
           </button>
-          {state.definition.cancelable && (
+          {definition.cancelable && (
             <button
               className="btn btn-link"
               type="button"
               onClick={() => {
-                void state.sendMessage({
-                  type: FORM_CANCEL,
-                  payload: { nonce },
-                });
+                void cancelForm(opener, nonce);
               }}
             >
               Cancel

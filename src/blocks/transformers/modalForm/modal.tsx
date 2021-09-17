@@ -101,7 +101,10 @@ export class ModalTransformer extends Transformer {
 
     const frameSrc = new URL(browser.runtime.getURL("modalForm.html"));
     frameSrc.searchParams.set("nonce", nonce);
-    frameSrc.searchParams.set("frameId", String(tab.frameId));
+    frameSrc.searchParams.set(
+      "opener",
+      JSON.stringify({ tabId: tab.tab.id, frameId: tab.frameId })
+    );
 
     // By setting the modal-content 100vh, the iframe form content can expand to fit the available vertical size as
     // needed. Otherwise, we'd need to have the form message the content script with a requested vertical height.

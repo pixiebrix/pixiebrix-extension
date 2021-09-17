@@ -30,7 +30,6 @@ import "@/contentScript/browserAction";
 import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import addExecutorListener from "@/contentScript/executor";
-import { initFormListener } from "@/contentScript/modalForms";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "@/vendors/notify";
@@ -59,7 +58,6 @@ async function init(): Promise<void> {
   addContentScriptListener();
   addExecutorListener();
   initTelemetry();
-  initFormListener();
 
   const sender = await whoAmI();
 

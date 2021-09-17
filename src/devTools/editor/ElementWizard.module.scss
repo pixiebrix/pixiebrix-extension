@@ -21,11 +21,14 @@ $nav-height: 32px;
   height: $nav-height;
   border-bottom: 1px grey solid;
   flex-wrap: nowrap !important;
-  overflow-x: scroll;
 }
 
 .tabContent {
   height: calc(100% - #{$nav-height});
+}
+
+.tabPadding {
+  padding-bottom: 5px !important;
 }
 
 .form {

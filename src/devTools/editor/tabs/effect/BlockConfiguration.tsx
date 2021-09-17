@@ -16,26 +16,24 @@
  */
 
 import React from "react";
-import { IBlock, UUID } from "@/core";
+import { RegistryId } from "@/core";
 import { FastField, FieldInputProps, getIn, useFormikContext } from "formik";
 import { useBlockOptions } from "@/components/fields/BlockField";
 import { Card, Form } from "react-bootstrap";
 import { RendererContext } from "@/components/fields/blockOptions";
 import devtoolFields from "@/devTools/editor/fields/Fields";
 import GridLoader from "react-spinners/GridLoader";
-import TraceView from "@/devTools/editor/tabs/effect/TraceView";
-import ErrorBoundary from "@/components/ErrorBoundary";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
-  block: IBlock;
+  blockId: RegistryId;
   showOutput: boolean;
-}> = ({ name, block, showOutput }) => {
+}> = ({ name, blockId, showOutput }) => {
   const context = useFormikContext();
 
   const blockErrors = getIn(context.errors, name);
 
-  const [{ error }, BlockOptions] = useBlockOptions(block.id);
+  const [{ error }, BlockOptions] = useBlockOptions(blockId);
 
   return (
     <div className="BlockAccordion">
@@ -46,7 +44,7 @@ const BlockConfiguration: React.FunctionComponent<{
             <RendererContext.Provider value={devtoolFields}>
               {blockErrors?.id && (
                 <div className="invalid-feedback d-block mb-4">
-                  Unknown block {block.id}
+                  Unknown block {blockId}
                 </div>
               )}
               {BlockOptions ? (
@@ -101,18 +99,6 @@ const BlockConfiguration: React.FunctionComponent<{
             The template engine controls how PixieBrix fills in{" "}
             <code>{"{{variables}}"}</code> in the inputs.
           </Form.Text>
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Header className="BlockAccordion__header">Trace</Card.Header>
-        <Card.Body>
-          <ErrorBoundary>
-            <FastField name={`${name}.instanceId`}>
-              {({ field }: { field: FieldInputProps<UUID> }) => (
-                <TraceView instanceId={field.value} />
-              )}
-            </FastField>
-          </ErrorBoundary>
         </Card.Body>
       </Card>
     </div>

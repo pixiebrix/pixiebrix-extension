@@ -21,25 +21,30 @@
 
 .paneContent {
   height: 100%;
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   align-items: stretch;
 }
 
 .nodeLayout {
+  flex-grow: 0;
+  flex-shrink: 0;
   height: 100%;
-  overflow-y: scroll;
+  width: 120px;
+  overflow-y: auto;
   padding-top: 10px;
 }
 
 .configPanel {
-  flex-grow: 1;
+  flex-grow: 2;
+  flex-basis: 0;
   padding: 10px;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .tracePanel {
   flex-grow: 1;
+  flex-basis: 0;
   padding: 10px;
-  overflow-y: scroll;
+  overflow: auto;
 }
