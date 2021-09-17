@@ -68,3 +68,9 @@
     }
   }
 }
+
+.BlockDetail {
+  // 129px to match height of BlockModal results above
+  max-height: Min(calc(100vh - 129px), 600px);
+  overflow-y: scroll;
+}
