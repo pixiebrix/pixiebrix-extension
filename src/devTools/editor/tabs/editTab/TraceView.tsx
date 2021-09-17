@@ -31,7 +31,7 @@ import { FastField, FieldInputProps } from "formik";
 import { BlockConfig } from "@/blocks/types";
 
 // https://overreacted.io/making-setinterval-declarative-with-react-hooks/
-function useInterval(callback: () => void, delayMillis: number) {
+export function useInterval(callback: () => void, delayMillis: number) {
   const savedCallback = useRef<() => void>();
 
   // Remember the latest callback.
@@ -54,12 +54,8 @@ function useInterval(callback: () => void, delayMillis: number) {
   }, [delayMillis]);
 }
 
-const TraceView: React.FunctionComponent<{
-  blockFieldName: string;
-  instanceId: UUID;
-  traceReloadMillis?: number;
-}> = ({ blockFieldName, instanceId, traceReloadMillis = 750 }) => {
-  const [record, isLoading, error, recalculate] = useAsyncState(async () => {
+export function useLatestTraceRecord(instanceId: UUID) {
+  return useAsyncState(async () => {
     if (instanceId == null) {
       throw new Error("No instance id found");
     }
@@ -67,6 +63,16 @@ const TraceView: React.FunctionComponent<{
     const records = await getByInstanceId(instanceId);
     return sortBy(records, (x) => new Date(x.timestamp)).reverse()[0];
   }, [instanceId]);
+}
+
+const TraceView: React.FunctionComponent<{
+  blockFieldName: string;
+  instanceId: UUID;
+  traceReloadMillis?: number;
+}> = ({ blockFieldName, instanceId, traceReloadMillis = 750 }) => {
+  const [record, isLoading, error, recalculate] = useLatestTraceRecord(
+    instanceId
+  );
 
   useInterval(recalculate, traceReloadMillis);
 

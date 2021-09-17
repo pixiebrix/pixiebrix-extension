@@ -37,6 +37,7 @@ import TraceView from "@/devTools/editor/tabs/editTab/TraceView";
 import { uuidv4 } from "@/types/helpers";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
+import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -224,10 +225,16 @@ const EditTab: React.FC<{
           )}
         </div>
         <div className={styles.tracePanel}>
-          <TraceView
-            blockFieldName={blockFieldName}
-            instanceId={blockInstanceId}
-          />
+          {activeNodeIndex === 0 && (
+            <FoundationTraceView instanceId={blockPipeline[0]?.instanceId} />
+          )}
+
+          {activeNodeIndex > 0 && (
+            <TraceView
+              blockFieldName={blockFieldName}
+              instanceId={blockInstanceId}
+            />
+          )}
         </div>
       </div>
     </Tab.Pane>
