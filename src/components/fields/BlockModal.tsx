@@ -300,9 +300,6 @@ const BlockModal: React.FunctionComponent<{
           backdrop={true}
           keyboard={false}
         >
-          <Modal.Header closeButton>
-            <Modal.Title>{caption}</Modal.Title>
-          </Modal.Header>
           <Modal.Body>
             <Container>
               <Row>
