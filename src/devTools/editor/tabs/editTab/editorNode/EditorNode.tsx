@@ -20,7 +20,6 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import cx from "classnames";
-import { faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
 export type EditorNodeProps = {
   title: string;
@@ -29,7 +28,6 @@ export type EditorNodeProps = {
   onClick: () => void;
   muted?: boolean | undefined;
   active?: boolean | undefined;
-  onRemove?: (() => void) | undefined;
 };
 
 const EditorNode: React.FC<EditorNodeProps> = ({
@@ -39,7 +37,6 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   outputKey,
   muted,
   active,
-  onRemove,
 }) => {
   const outputName = outputKey ? `@${outputKey}` : "";
 
@@ -47,14 +44,6 @@ const EditorNode: React.FC<EditorNodeProps> = ({
     // Use our own custom style here, not bootstrap
     <div className={styles.root}>
       <div className={styles.outputKey}>{outputName}</div>
-      {onRemove && (
-        <FontAwesomeIcon
-          icon={faTimesCircle}
-          size="lg"
-          className={styles.remove}
-          onClick={onRemove}
-        />
-      )}
       <button
         type="button"
         onClick={onClick}
