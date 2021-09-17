@@ -62,6 +62,7 @@ import { library, IconProp } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
+import QuickAdd from "@/devTools/editor/tabs/effect/QuickAdd";
 
 // TODO: Unable to use dynamic font awesome icons without importing them first
 //  maybe there is a better way to do this?
@@ -152,39 +153,31 @@ const BlockResult: React.FunctionComponent<{
   block: IBlock;
   listing?: MarketplaceListing;
   onSelect: () => void;
-}> = ({ block, onSelect, listing }) => {
-  const [type, setType] = useState<BlockType>(null);
-
-  useAsyncEffect(async () => {
-    setType(await getType(block));
-  }, [block, setType]);
-
-  return (
-    <ListGroup.Item onClick={onSelect}>
-      <div className="d-flex">
-        <div className="mr-2 text-muted">
-          <BlockIcon listing={listing} block={block} />
+}> = ({ block, onSelect, listing }) => (
+  <ListGroup.Item onClick={onSelect}>
+    <div className="d-flex">
+      <div className="mr-2 text-muted">
+        <BlockIcon listing={listing} block={block} />
+      </div>
+      <div className="flex-grow-1">
+        <div className="d-flex BlockModal__title">
+          <div className="flex-grow-1">{block.name}</div>
+          <div className="flex-grow-0 BlockModal__badges">
+            <OfficialBadge id={block.id} />
+          </div>
         </div>
-        <div className="flex-grow-1">
-          <div className="d-flex BlockModal__title">
-            <div className="flex-grow-1">{block.name}</div>
-            <div className="flex-grow-0 BlockModal__badges">
-              <OfficialBadge id={block.id} />
-            </div>
-          </div>
-          <div className="BlockModal__id">
-            <code className="small">{block.id}</code>
-          </div>
-          <div>
-            <p className="mb-0 small">
-              {truncate(block.description, { length: 256 })}
-            </p>
-          </div>
+        <div className="BlockModal__id">
+          <code className="small">{block.id}</code>
+        </div>
+        <div>
+          <p className="mb-0 small">
+            {truncate(block.description, { length: 256 })}
+          </p>
         </div>
       </div>
-    </ListGroup.Item>
-  );
-};
+    </div>
+  </ListGroup.Item>
+);
 
 type BlockOption = {
   block: IBlock;
@@ -228,44 +221,42 @@ const BlockDetail: React.FunctionComponent<{
   block: IBlock;
   listing?: MarketplaceListing;
   onSelect: () => void;
-}> = ({ block, listing, onSelect }) => {
-  return (
-    <Row className="BlockDetail">
-      <Col xs={12} className="d-flex justify-content-between">
-        <div>
-          <h4>
-            {block.name} <BlockIcon block={block} listing={listing} />
-          </h4>
-          <code>{block.id}</code>
-          <p>{block.description}</p>
-          {listing && (
-            <a
-              href={"https://pixiebrix.com/marketplace/" + listing.id}
-              className="text-info mr-2"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
-              View in Marketplace
-            </a>
-          )}
-        </div>
-        <div>
-          <Button variant="primary mr-1 text-nowrap" onClick={onSelect}>
-            <FontAwesomeIcon icon={faPlus} className="mr-1" />
-            Add brick
-          </Button>
-        </div>
-      </Col>
-      <Col xs={12}>
-        <h5 className="my-3">Input Schema</h5>
-        <SchemaTree schema={block.inputSchema} />
-        <h5 className="my-3">Output Schema</h5>
-        <SchemaTree schema={block.outputSchema} />
-      </Col>
-    </Row>
-  );
-};
+}> = ({ block, listing, onSelect }) => (
+  <Row>
+    <Col xs={12} className="d-flex justify-content-between">
+      <div>
+        <h4>
+          {block.name} <BlockIcon block={block} listing={listing} />
+        </h4>
+        <code>{block.id}</code>
+        <p>{block.description}</p>
+        {listing && (
+          <a
+            href={"https://pixiebrix.com/marketplace/" + listing.id}
+            className="text-info mr-2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
+            View in Marketplace
+          </a>
+        )}
+      </div>
+      <div>
+        <Button variant="primary mr-1 text-nowrap" onClick={onSelect}>
+          <FontAwesomeIcon icon={faPlus} className="mr-1" />
+          Add brick
+        </Button>
+      </div>
+    </Col>
+    <Col xs={12}>
+      <h5 className="my-3">Input Schema</h5>
+      <SchemaTree schema={block.inputSchema} />
+      <h5 className="my-3">Output Schema</h5>
+      <SchemaTree schema={block.outputSchema} />
+    </Col>
+  </Row>
+);
 
 const BlockModal: React.FunctionComponent<{
   onSelect: (service: IBlock) => void;
@@ -294,6 +285,7 @@ const BlockModal: React.FunctionComponent<{
 
   const close = useCallback(() => {
     setShow(false);
+    setDetailBlock(null);
   }, [setShow]);
 
   return (
@@ -353,8 +345,8 @@ const BlockModal: React.FunctionComponent<{
                     </Col>
                   </Row>
                 </Col>
-                <Col xs={7}>
-                  {detailBlock && (
+                <Col xs={7} className="BlockDetail">
+                  {detailBlock ? (
                     <BlockDetail
                       block={detailBlock}
                       listing={listings.find(
@@ -364,9 +356,12 @@ const BlockModal: React.FunctionComponent<{
                         onSelect(detailBlock);
                         // Reset the query for the next time it opens
                         setQuery("");
+                        setDetailBlock(null);
                         close();
                       }}
                     />
+                  ) : (
+                    <QuickAdd blocks={blocks} onSelect={onSelect} />
                   )}
                 </Col>
               </Row>
