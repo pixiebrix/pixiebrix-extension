@@ -22,17 +22,18 @@ import React from "react";
 import { SetActiveField } from "./formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 
-interface FormPreviewStingFieldProps extends FieldProps {
+interface FormPreviewStringFieldProps extends FieldProps {
   setActiveField: SetActiveField;
 }
 
 const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
 
-const FormPreviewStingField: React.FC<FormPreviewStingFieldProps> = ({
+const FormPreviewStringField: React.FC<FormPreviewStringFieldProps> = ({
   setActiveField,
   ...rest
 }) => {
   const { name, uiSchema = {} } = rest;
+  // eslint-disable-next-line security/detect-object-injection -- is a constant
   const isActive = Boolean(uiSchema[UI_SCHEMA_ACTIVE]);
 
   return (
@@ -60,4 +61,4 @@ const FormPreviewStingField: React.FC<FormPreviewStingFieldProps> = ({
   );
 };
 
-export default FormPreviewStingField;
+export default FormPreviewStringField;

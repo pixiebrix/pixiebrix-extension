@@ -32,6 +32,9 @@ import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/run
 import FormModalOptions, {
   FORM_MODAL_ID,
 } from "@/devTools/editor/fields/FormModalOptions";
+import FormRendererOptions, {
+  FORM_RENDERER_ID,
+} from "@/devTools/editor/fields/FormRendererOptions";
 
 optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
 optionsRegistry.set(ZAPIER_ID, PushOptions);
@@ -40,3 +43,4 @@ optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);
 optionsRegistry.set(GOOGLE_SHEETS_API_ID, AppendSpreadsheetOptions);
 optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);
 optionsRegistry.set(FORM_MODAL_ID, FormModalOptions);
+optionsRegistry.set(FORM_RENDERER_ID, FormRendererOptions);

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable security/detect-object-injection */
 import React, { useState } from "react";
 import FormEditor from "./FormEditor";
 import FormPreview from "./FormPreview";
@@ -36,6 +35,7 @@ const FormBuilder: React.FC<{
   const { setFieldValue } = useFormikContext();
 
   const [activeField, setActiveField] = useState(() => {
+    // eslint-disable-next-line security/detect-object-injection -- is a constant
     const firstInOrder = uiSchema?.[UI_ORDER]?.[0];
     if (firstInOrder) {
       return firstInOrder;
@@ -63,14 +63,14 @@ const FormBuilder: React.FC<{
 
   return (
     <div className="d-flex">
-      <div className="m-5">
+      <div className="flex-grow-1 mr-3">
         <FormEditor
           name={name}
           activeField={activeField}
           setActiveField={setActiveField}
         />
       </div>
-      <div className="m-5">
+      <div className="flex-grow-1 mr-3">
         <ErrorBoundary>
           <FormPreview
             name={name}

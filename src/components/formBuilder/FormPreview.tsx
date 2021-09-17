@@ -20,7 +20,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { FieldProps, IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
-import FormPreviewStingField from "./FormPreviewStingField";
+import FormPreviewStringField from "./FormPreviewStringField";
 import { useField } from "formik";
 import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 
@@ -64,7 +64,7 @@ const FormPreview: React.FC<{
 
   const StringField = useCallback(
     (props: FieldProps) => (
-      <FormPreviewStingField setActiveField={setActiveField} {...props} />
+      <FormPreviewStringField setActiveField={setActiveField} {...props} />
     ),
     [setActiveField]
   );

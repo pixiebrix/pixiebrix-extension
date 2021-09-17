@@ -81,7 +81,7 @@ const FormEditor: React.FC<{
     setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
   };
 
-  const removePorperty = () => {
+  const removeProperty = () => {
     const propertyToRemove = activeField;
     const nextUiOrder = replaceStringInArray(uiOrder, propertyToRemove);
     const nextActiveField = nextUiOrder[0];
@@ -155,7 +155,7 @@ const FormEditor: React.FC<{
       >
         <FontAwesomeIcon icon={faArrowDown} />
       </Button>
-      <Button onClick={removePorperty} variant="danger" size="sm">
+      <Button onClick={removeProperty} variant="danger" size="sm">
         <FontAwesomeIcon icon={faTimes} />
       </Button>
     </div>
