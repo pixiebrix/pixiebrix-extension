@@ -49,6 +49,7 @@ import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
+import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
 import {
   BaseFormState,
   ElementConfig,
@@ -252,6 +253,7 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   fromExtension,
   wizard,
   betaWizard,
+  EditorNode: PanelConfiguration,
   insertModeHelp: (
     <div>
       <p>

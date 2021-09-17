@@ -35,9 +35,9 @@ import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConf
 import styles from "./EditTab.module.scss";
 import TraceView from "@/devTools/editor/tabs/editTab/TraceView";
 import { uuidv4 } from "@/types/helpers";
-import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
+import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -49,6 +49,10 @@ async function filterBlocks(
     .filter(([, type]) => type != null && !excludeTypes.includes(type))
     .map(([block]) => block);
 }
+
+const NotImplementedFoundationEditor: React.FC<{ isLocked: boolean }> = () => (
+  <div>Configuration pane not implement for this extension type yet.</div>
+);
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -66,7 +70,11 @@ const EditTab: React.FC<{
     [editable, installed, extensionPoint.metadata.id]
   );
 
-  const { label, icon } = ADAPTERS.get(elementType);
+  const {
+    label,
+    icon,
+    EditorNode: FoundationNode = NotImplementedFoundationEditor,
+  } = ADAPTERS.get(elementType);
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 
@@ -204,7 +212,7 @@ const EditTab: React.FC<{
           />
         </div>
         <div className={styles.configPanel}>
-          {activeNodeIndex === 0 && <PanelConfiguration isLocked={isLocked} />}
+          {activeNodeIndex === 0 && <FoundationNode isLocked={isLocked} />}
 
           {activeNodeIndex > 0 && (
             <EditorNodeConfigPanel
@@ -217,10 +225,16 @@ const EditTab: React.FC<{
           )}
         </div>
         <div className={styles.tracePanel}>
-          <TraceView
-            blockFieldName={blockFieldName}
-            instanceId={blockInstanceId}
-          />
+          {activeNodeIndex === 0 && (
+            <FoundationTraceView instanceId={blockPipeline[0]?.instanceId} />
+          )}
+
+          {activeNodeIndex > 0 && (
+            <TraceView
+              blockFieldName={blockFieldName}
+              instanceId={blockInstanceId}
+            />
+          )}
         </div>
       </div>
     </Tab.Pane>
