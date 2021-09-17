@@ -15,44 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { getByInstanceId } from "@/telemetry/trace";
 import { useAsyncState } from "@/hooks/common";
 import { UUID } from "@/core";
 import { sortBy } from "lodash";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
-import JsonTree from "@/components/JsonTree";
+import PlainJsonTree from "@/components/JsonTree";
 import { Tab, Tabs } from "react-bootstrap";
 import styles from "./TraceView.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PreviewView from "@/devTools/editor/tabs/effect/PreviewView";
 import { FastField, FieldInputProps } from "formik";
 import { BlockConfig } from "@/blocks/types";
-
-// https://overreacted.io/making-setinterval-declarative-with-react-hooks/
-export function useInterval(callback: () => void, delayMillis: number) {
-  const savedCallback = useRef<() => void>();
-
-  // Remember the latest callback.
-  useEffect(() => {
-    savedCallback.current = callback;
-  }, [callback]);
-
-  // Set up the interval.
-  useEffect(() => {
-    function tick() {
-      savedCallback.current();
-    }
-
-    if (delayMillis !== null) {
-      const id = setInterval(tick, delayMillis);
-      return () => {
-        clearInterval(id);
-      };
-    }
-  }, [delayMillis]);
-}
+import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
+import useInterval from "@/hooks/useInterval";
+import { jsonTreeTheme as theme } from "@/themes/light";
+import JSONTree from "react-json-tree";
 
 export function useLatestTraceRecord(instanceId: UUID) {
   return useAsyncState(async () => {
@@ -75,6 +55,18 @@ const TraceView: React.FunctionComponent<{
   );
 
   useInterval(recalculate, traceReloadMillis);
+
+  const dataLabelRenderer = useLabelRenderer();
+
+  const jsonTree = (data: unknown) => (
+    <JSONTree
+      data={data}
+      labelRenderer={dataLabelRenderer}
+      theme={theme}
+      invertTheme
+      hideRoot
+    />
+  );
 
   if (isLoading) {
     return (
@@ -103,23 +95,23 @@ const TraceView: React.FunctionComponent<{
   return (
     <Tabs defaultActiveKey="output">
       <Tab eventKey="context" title="Context" tabClassName={styles.tab}>
-        <JsonTree data={record.templateContext} />
+        {jsonTree(record.templateContext)}
       </Tab>
       <Tab eventKey="rendered" title="Rendered Input" tabClassName={styles.tab}>
-        <JsonTree data={record.renderedArgs} />
+        {jsonTree(record.renderedArgs)}
       </Tab>
       <Tab eventKey="output" title="Output" tabClassName={styles.tab}>
         {"output" in record && (
           <>
             <span>Data</span>
-            <JsonTree data={record.output} />
+            {jsonTree(record.output)}
           </>
         )}
 
         {"error" in record && (
           <>
             <span className="text-danger">Error</span>
-            <JsonTree data={record.error} />
+            <PlainJsonTree data={record.error} />
           </>
         )}
       </Tab>
