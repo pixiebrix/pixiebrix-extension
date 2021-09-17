@@ -30,6 +30,8 @@ export class RemoteMethod extends Transformer {
     );
   }
 
+  defaultOutputKey = "response";
+
   inputSchema: Schema = propertiesToSchema(
     {
       url: {

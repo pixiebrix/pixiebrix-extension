@@ -36,6 +36,13 @@ export type ActionType = string;
 
 export type OutputKey = string;
 
+/**
+ * A string known not to not be tainted with user-generated input.
+ */
+export type SafeString = string & {
+  _safeStringBrand: never;
+};
+
 export type UUID = string & {
   // Nominal subtyping
   _uuidBrand: never;
@@ -399,6 +406,15 @@ export interface IBlock extends Metadata {
    * - Writing to the session state
    */
   isPure?: () => Promise<boolean>;
+
+  /**
+   * (Optional) default root output key to use when this block is added in the page editor.
+   *
+   * If not provided, the Page Editor will use a generic name, potentially based on the inferred type of the brick.
+   *
+   * For example, "foo" will produce: foo, foo2, foo3, foo4, etc.
+   */
+  defaultOutputKey?: string;
 
   run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
 }

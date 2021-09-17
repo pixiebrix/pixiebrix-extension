@@ -20,6 +20,8 @@ import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class FormData extends Transformer {
+  defaultOutputKey = "form";
+
   constructor() {
     super(
       "@pixiebrix/forms/data",

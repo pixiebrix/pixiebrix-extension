@@ -34,6 +34,8 @@ export class RegexTransformer extends Transformer {
     );
   }
 
+  defaultOutputKey = "extracted";
+
   inputSchema: Schema = propertiesToSchema(
     {
       regex: {

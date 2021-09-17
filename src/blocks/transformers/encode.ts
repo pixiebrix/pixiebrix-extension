@@ -20,6 +20,8 @@ import { BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class Base64Encode extends Transformer {
+  defaultOutputKey = "encoded";
+
   async isPure(): Promise<boolean> {
     return true;
   }
@@ -49,6 +51,8 @@ export class Base64Encode extends Transformer {
 }
 
 export class Base64Decode extends Transformer {
+  defaultOutputKey = "decoded";
+
   constructor() {
     super(
       "@pixiebrix/encode/atob",

@@ -35,6 +35,7 @@ import {
 } from "lodash";
 import { Primitive } from "type-fest";
 import { getErrorMessage } from "@/errors";
+import { SafeString } from "@/core";
 
 export function mostCommonElement<T>(items: T[]): T {
   // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
@@ -456,4 +457,33 @@ export async function allSettledRejections(
         promise.status === "rejected"
     )
     .map(({ reason }) => reason);
+}
+
+export function freshIdentifier(
+  root: SafeString,
+  identifiers: string[],
+  options: { includeFirstNumber?: boolean; startNumber?: number } = {}
+): string {
+  const { includeFirstNumber, startNumber } = {
+    includeFirstNumber: false,
+    startNumber: 1,
+    ...options,
+  };
+
+  // eslint-disable-next-line security/detect-non-literal-regexp -- guarding with SafeString
+  const regexp = new RegExp(`^${root}(?<number>\\d+)$`);
+
+  const used = identifiers
+    .map((identifier) =>
+      identifier === root ? startNumber : regexp.exec(identifier)?.groups.number
+    )
+    .filter((x) => x != null)
+    .map((x) => Number(x));
+  const next = Math.max(startNumber - 1, ...used) + 1;
+
+  if (next === startNumber && !includeFirstNumber) {
+    return root;
+  }
+
+  return `${root}${next}`;
 }

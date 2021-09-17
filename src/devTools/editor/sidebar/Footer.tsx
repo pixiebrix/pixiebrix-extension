@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import AuthContext from "@/auth/AuthContext";
 import { DevToolsContext } from "@/devTools/context";
 import BeatLoader from "react-spinners/BeatLoader";
@@ -38,6 +38,12 @@ const Footer: React.FunctionComponent = () => {
   const toggleBetaUI = useCallback(() => {
     dispatch(actions.setBetaUIEnabled(!isBetaUI));
   }, [isBetaUI, dispatch]);
+
+  useEffect(() => {
+    if (flags.includes("beta-auto")) {
+      dispatch(actions.setBetaUIEnabled(true));
+    }
+  }, [dispatch, flags]);
 
   return (
     <div className="Sidebar__footer flex-grow-0">

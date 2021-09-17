@@ -20,6 +20,8 @@ import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class DetectElement extends Transformer {
+  defaultOutputKey = "match";
+
   constructor() {
     super(
       "@pixiebrix/dom/detect",

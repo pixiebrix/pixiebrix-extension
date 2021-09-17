@@ -28,6 +28,8 @@ export class JQueryReader extends Transformer {
     );
   }
 
+  defaultOutputKey = "data";
+
   inputSchema: Schema = {
     type: "object",
     required: ["selectors"],

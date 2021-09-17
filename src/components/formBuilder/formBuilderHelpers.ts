@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, UiSchema } from "@/core";
+import { SafeString, Schema, UiSchema } from "@/core";
 import { SelectStringOption } from "./formBuilderTypes";
 import { UI_ORDER } from "./schemaFieldNames";
+import { freshIdentifier } from "@/utils";
 
 export const MINIMAL_SCHEMA: Schema = {
   type: "object",
@@ -83,19 +84,10 @@ export const replaceStringInArray = (
   return arr;
 };
 
-const fieldNameRegex = /^field(\d+)$/;
-export const generateNewPropertyName = (existingProperties: string[]) => {
-  const prefix = "field";
-  const fieldIndexesUsed = existingProperties
-    .map((property) => fieldNameRegex.exec(property))
-    .filter((matches) => matches?.length > 1)
-    .map((matches) => Number(matches[1]))
-    .sort((a, b) => b - a);
-
-  // FixMe: possible integer overflow
-  const fieldIndex = fieldIndexesUsed.length > 0 ? fieldIndexesUsed[0] + 1 : 1;
-  return `${prefix}${fieldIndex}`;
-};
+export const generateNewPropertyName = (existingProperties: string[]) =>
+  freshIdentifier("field" as SafeString, existingProperties, {
+    includeFirstNumber: true,
+  });
 
 export const moveStringInArray = (
   array: string[],
