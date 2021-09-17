@@ -23,6 +23,8 @@ import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
 import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
+import { getType } from "@/blocks/util";
+import { showOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 
 const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
   <InputGroup>
@@ -37,9 +39,13 @@ const EditorNodeConfigPanel: React.FC<{
   blockFieldName: string;
   blockId: RegistryId;
 }> = ({ blockFieldName, blockId }) => {
-  const [block] = useAsyncState(async () => blockRegistry.lookup(blockId), [
-    blockId,
-  ]);
+  const [blockInfo] = useAsyncState(async () => {
+    const block = await blockRegistry.lookup(blockId);
+    return {
+      block,
+      type: await getType(block),
+    };
+  }, [blockId]);
 
   return (
     <>
@@ -47,21 +53,33 @@ const EditorNodeConfigPanel: React.FC<{
         name={`${blockFieldName}.label`}
         layout="horizontal"
         label="Step Name"
-        placeholder={block?.name}
+        placeholder={blockInfo?.block.name}
       />
-      <ConnectedFieldTemplate
-        name={`${blockFieldName}.outputKey`}
-        layout="horizontal"
-        label="Output"
-        as={OutputKeyWidget}
-        description={
-          <p>
-            Provide a output key to refer to the outputs of this block later.
-            For example, if you provide the name <code>myOutput</code>, you can
-            use the output later with <code>@myOutput</code>.
-          </p>
-        }
-      />
+
+      {blockInfo == null || showOutputKey(blockInfo?.type) ? (
+        <ConnectedFieldTemplate
+          name={`${blockFieldName}.outputKey`}
+          layout="horizontal"
+          label="Output"
+          as={OutputKeyWidget}
+          description={
+            <p>
+              Provide a output key to refer to the outputs of this block later.
+              For example, if you provide the name <code>myOutput</code>, you
+              can use the output later with <code>@myOutput</code>.
+            </p>
+          }
+        />
+      ) : (
+        <ConnectedFieldTemplate
+          name={`${blockFieldName}.outputKey`}
+          layout="horizontal"
+          label="Output"
+          disabled
+          as={OutputKeyWidget}
+          description={<p>Effect and renderer bricks do not produce outputs</p>}
+        />
+      )}
 
       <BlockConfiguration
         name={blockFieldName}

@@ -16,8 +16,12 @@
  */
 
 import { IBlock, SafeString } from "@/core";
-import { getType } from "@/blocks/util";
+import { BlockType, getType } from "@/blocks/util";
 import { freshIdentifier } from "@/utils";
+
+export function showOutputKey(blockType: BlockType): boolean {
+  return blockType !== "effect" && blockType !== "renderer";
+}
 
 /**
  * Generate a fresh outputKey for `block`
@@ -27,8 +31,25 @@ import { freshIdentifier } from "@/utils";
 export async function generateFreshOutputKey(
   block: IBlock,
   outputKeys: string[]
-): Promise<string> {
-  const root = block.defaultOutputKey ?? (await getType(block));
+): Promise<string | undefined> {
+  const type = await getType(block);
 
-  return freshIdentifier(root as SafeString, outputKeys);
+  if (!showOutputKey(type)) {
+    // Output keys for effects are ignored by the runtime (and generate a warning at runtime)
+    return undefined;
+  }
+
+  if (block.defaultOutputKey) {
+    return freshIdentifier(block.defaultOutputKey as SafeString, outputKeys);
+  }
+
+  if (type === "reader") {
+    return freshIdentifier("data" as SafeString, outputKeys);
+  }
+
+  if (type === "transform") {
+    return freshIdentifier("transformed" as SafeString, outputKeys);
+  }
+
+  return freshIdentifier(type as SafeString, outputKeys);
 }

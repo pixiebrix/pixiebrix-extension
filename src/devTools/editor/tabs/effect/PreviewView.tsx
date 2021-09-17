@@ -31,6 +31,7 @@ import objectHash from "object-hash";
 import JsonTree from "@/components/JsonTree";
 import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
+import { getType } from "@/blocks/util";
 
 const PreviewView: React.FunctionComponent<{
   traceRecord: TraceRecord;
@@ -47,6 +48,7 @@ const PreviewView: React.FunctionComponent<{
     return {
       block,
       isPure: await block.isPure(),
+      type: await getType(block),
     };
   }, [blockConfig.id]);
 
@@ -79,6 +81,14 @@ const PreviewView: React.FunctionComponent<{
     return (
       <div>
         <GridLoader />
+      </div>
+    );
+  }
+
+  if (blockInfo?.type === "renderer") {
+    return (
+      <div className="text-muted">
+        Output previews are not currently available for renderers
       </div>
     );
   }
