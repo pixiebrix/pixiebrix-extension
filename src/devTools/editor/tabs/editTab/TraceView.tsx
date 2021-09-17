@@ -22,17 +22,14 @@ import { UUID } from "@/core";
 import { sortBy } from "lodash";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
-import PlainJsonTree from "@/components/JsonTree";
+import JsonTree from "@/components/JsonTree";
 import { Tab, Tabs } from "react-bootstrap";
 import styles from "./TraceView.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PreviewView from "@/devTools/editor/tabs/effect/PreviewView";
 import { FastField, FieldInputProps } from "formik";
 import { BlockConfig } from "@/blocks/types";
-import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import useInterval from "@/hooks/useInterval";
-import { jsonTreeTheme as theme } from "@/themes/light";
-import JSONTree from "react-json-tree";
 
 export function useLatestTraceRecord(instanceId: UUID) {
   return useAsyncState(async () => {
@@ -55,18 +52,6 @@ const TraceView: React.FunctionComponent<{
   );
 
   useInterval(recalculate, traceReloadMillis);
-
-  const dataLabelRenderer = useLabelRenderer();
-
-  const jsonTree = (data: unknown) => (
-    <JSONTree
-      data={data}
-      labelRenderer={dataLabelRenderer}
-      theme={theme}
-      invertTheme
-      hideRoot
-    />
-  );
 
   if (isLoading) {
     return (
@@ -95,25 +80,17 @@ const TraceView: React.FunctionComponent<{
   return (
     <Tabs defaultActiveKey="output">
       <Tab eventKey="context" title="Context" tabClassName={styles.tab}>
-        {jsonTree(record.templateContext)}
+        <JsonTree data={record.templateContext} copyable searchable />
       </Tab>
       <Tab eventKey="rendered" title="Rendered Input" tabClassName={styles.tab}>
-        {jsonTree(record.renderedArgs)}
+        <JsonTree data={record.renderedArgs} copyable searchable />
       </Tab>
       <Tab eventKey="output" title="Output" tabClassName={styles.tab}>
         {"output" in record && (
-          <>
-            <span>Data</span>
-            {jsonTree(record.output)}
-          </>
+          <JsonTree data={record.output} copyable searchable label="Data" />
         )}
 
-        {"error" in record && (
-          <>
-            <span className="text-danger">Error</span>
-            <PlainJsonTree data={record.error} />
-          </>
-        )}
+        {"error" in record && <JsonTree data={record.error} label="Error" />}
       </Tab>
       <Tab
         eventKey="preview"

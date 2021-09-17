@@ -17,10 +17,75 @@
 
 import VendorJSONTree from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
-import React from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import { useDebounce } from "use-debounce";
+import { searchData } from "@/devTools/editor/tabs/reader/ReaderConfig";
+import FieldTemplate from "@/components/form/FieldTemplate";
+import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 
-const JsonTree: React.FunctionComponent<Partial<VendorJSONTree["props"]>> = (
-  props
-) => <VendorJSONTree hideRoot theme={theme} invertTheme {...props} />;
+export type JsonTreeProps = Partial<VendorJSONTree["props"]> & {
+  copyable?: boolean | undefined;
+  searchable?: boolean | undefined;
+  label?: string | undefined;
+};
+
+const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
+  copyable = false,
+  searchable = false,
+  label,
+  ...restProps
+}) => {
+  const { data } = restProps;
+
+  const [query, setQuery] = useState("");
+
+  const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
+
+  const searchResults = useMemo(() => {
+    if (debouncedQuery === "" || data == null) {
+      return data;
+    }
+
+    return searchData(debouncedQuery, data);
+  }, [debouncedQuery, data]);
+
+  const copyLabelRenderer = useLabelRenderer();
+
+  const labelRenderer = copyable ? copyLabelRenderer : undefined;
+
+  const onChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(e.target.value);
+    },
+    [setQuery]
+  );
+
+  return (
+    <>
+      {searchable && (
+        <FieldTemplate
+          name="readerSearch"
+          label="Search"
+          layout="horizontal"
+          placeholder="Search for a property or value"
+          onChange={onChange}
+        />
+      )}
+      {label ? (
+        <span>{query ? `Search Results: ${query}` : label}</span>
+      ) : (
+        query && <span>{`Search Results: ${query}`}</span>
+      )}
+      <VendorJSONTree
+        data={searchResults}
+        labelRenderer={labelRenderer}
+        hideRoot
+        theme={theme}
+        invertTheme
+        {...restProps}
+      />
+    </>
+  );
+};
 
 export default JsonTree;
