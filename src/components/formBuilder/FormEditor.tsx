@@ -149,7 +149,7 @@ const FormEditor: React.FC<{
         />
       )}
 
-      <Button onClick={addProperty} variant="success" size="sm">
+      <Button onClick={addProperty} variant="primary" size="sm">
         <FontAwesomeIcon icon={faPlus} />
       </Button>
       <Button

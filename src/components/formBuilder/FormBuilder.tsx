@@ -24,6 +24,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { RJSFSchema } from "./formBuilderTypes";
 import { MINIMAL_SCHEMA, MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
 import { produce } from "immer";
+import styles from "./FormBuilder.module.scss";
 
 const FormBuilder: React.FC<{
   name: string;
@@ -67,15 +68,15 @@ const FormBuilder: React.FC<{
   }
 
   return (
-    <div className="d-flex">
-      <div className="flex-grow-1 mr-3">
+    <div className={styles.root}>
+      <div className={styles.column}>
         <FormEditor
           name={name}
           activeField={activeField}
           setActiveField={setActiveField}
         />
       </div>
-      <div className="flex-grow-1 mr-3">
+      <div className={styles.column}>
         <ErrorBoundary>
           <FormPreview
             name={name}
