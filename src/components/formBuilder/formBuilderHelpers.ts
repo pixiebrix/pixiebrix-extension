@@ -68,6 +68,14 @@ export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
   },
 ];
 
+/**
+ * Finds a string in an array, if found removes it from the array and, if necessary, inserts new elements in its place.
+ * Does not mutate the source array.
+ * @param array The source array.
+ * @param stringToBeReplaced The string item to look for and remove.
+ * @param items Elements to insert into the array in place of the deleted element.
+ * @returns An array having the specified element removed or replaced for the new items.
+ */
 export const replaceStringInArray = (
   array: string[],
   stringToBeReplaced: string,
@@ -75,11 +83,11 @@ export const replaceStringInArray = (
 ) => {
   const arr = [...array];
   const index = arr.indexOf(stringToBeReplaced);
-  if (index === -1 && items?.length) {
-    arr.push(...items);
-  } else {
-    arr.splice(index, 1, ...items);
+  if (index === -1) {
+    return arr;
   }
+
+  arr.splice(index, 1, ...items);
 
   return arr;
 };

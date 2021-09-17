@@ -37,7 +37,6 @@ import { Schema, UiSchema } from "@/core";
 import { uniq } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { JSONSchema7 } from "json-schema";
 
 const FieldEditor: React.FC<{
   name: string;
@@ -51,10 +50,10 @@ const FieldEditor: React.FC<{
   const [{ value: uiSchema }, , { setValue: setUiSchema }] = useField<UiSchema>(
     `${name}.uiSchema`
   );
-  const [{ value: propertySchema }, ,] = useField(
+  const [{ value: propertySchema }] = useField(
     `${name}.schema.properties.${propertyName}`
   );
-  const [{ value: propertyUiSchema }, ,] = useField(
+  const [{ value: propertyUiSchema }] = useField(
     `${name}.uiSchema.${propertyName}`
   );
 
@@ -78,15 +77,15 @@ const FieldEditor: React.FC<{
     }
 
     if (nextName.includes(".")) {
-      setPropertyNameError("Name must not contain dots.");
+      setPropertyNameError("Name must not contain periods.");
       return;
     }
 
     const existingProperties = Object.keys(schema.properties);
     if (existingProperties.includes(nextName)) {
       setPropertyNameError(
-        `Name must be uniq. Another roperty "${
-          (schema.properties[nextName] as JSONSchema7).title
+        `Name must be unique. Another property "${
+          (schema.properties[nextName] as Schema).title
         }" already has the name "${nextName}".`
       );
       return;

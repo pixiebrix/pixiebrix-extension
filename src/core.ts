@@ -37,7 +37,7 @@ export type ActionType = string;
 export type OutputKey = string;
 
 /**
- * A string known not to not be tainted with user-generated input.
+ * A string known not to be tainted with user-generated input.
  */
 export type SafeString = string & {
   _safeStringBrand: never;
