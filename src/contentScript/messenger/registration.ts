@@ -20,6 +20,11 @@ import { registerMethods } from "webext-messenger";
 import { browser } from "webextension-polyfill-ts";
 import { expectContext } from "@/utils/expectContext";
 import { queueReactivateTab, reactivateTab } from "@/contentScript/lifecycle";
+import {
+  getFormDefinition,
+  resolveForm,
+  cancelForm,
+} from "@/contentScript/modalForms";
 
 expectContext("contentScript");
 
@@ -28,12 +33,18 @@ expectContext("contentScript");
 
 declare global {
   interface MessengerMethods {
+    FORM_GET_DEFINITION: typeof getFormDefinition;
+    FORM_RESOLVE: typeof resolveForm;
+    FORM_CANCEL: typeof cancelForm;
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
   }
 }
 
 registerMethods({
+  FORM_GET_DEFINITION: getFormDefinition,
+  FORM_RESOLVE: resolveForm,
+  FORM_CANCEL: cancelForm,
   QUEUE_REACTIVATE_TAB: queueReactivateTab,
   REACTIVATE_TAB: reactivateTab,
 });
