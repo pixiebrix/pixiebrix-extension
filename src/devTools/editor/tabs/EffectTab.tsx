@@ -195,7 +195,7 @@ const EffectTab: React.FunctionComponent<{
               <ErrorBoundary key={`${activeIndex}-${activeBlock.id}`}>
                 <BlockConfiguration
                   name={`${fieldName}[${activeIndex}]`}
-                  block={activeBlock}
+                  blockId={activeBlock.id}
                   showOutput={activeIndex !== count}
                 />
               </ErrorBoundary>

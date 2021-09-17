@@ -23,6 +23,8 @@ import { sortBy } from "lodash";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import JsonTree from "@/components/JsonTree";
+import { Tab, Tabs } from "react-bootstrap";
+import styles from "./TraceView.module.scss";
 
 // https://overreacted.io/making-setinterval-declarative-with-react-hooks/
 function useInterval(callback: () => void, delayMillis: number) {
@@ -80,37 +82,41 @@ const TraceView: React.FunctionComponent<{
   }
 
   if (!record) {
-    return <div className="text-muted">No trace available</div>;
+    return (
+      <div className="text-muted">
+        No trace available, run the extension to generate data
+      </div>
+    );
   }
 
   return (
-    <div className="row">
-      <div className="col-4 overflow-auto">
-        <span>Context</span>
+    <Tabs defaultActiveKey="output">
+      <Tab eventKey="context" title="Context" tabClassName={styles.tab}>
         <JsonTree data={record.templateContext} />
-      </div>
-
-      <div className="col-4 overflow-auto">
-        <span>Rendered Arguments</span>
+      </Tab>
+      <Tab
+        eventKey="rendered"
+        title="Rendered Arguments"
+        tabClassName={styles.tab}
+      >
         <JsonTree data={record.renderedArgs} />
-      </div>
-
-      <div className="col-4 overflow-auto">
+      </Tab>
+      <Tab eventKey="output" title="Outputs" tabClassName={styles.tab}>
         {"output" in record && (
           <>
-            <span>Output</span>
+            <span>Data</span>
             <JsonTree data={record.output} />
           </>
         )}
 
         {"error" in record && (
           <>
-            <span>Error</span>
+            <span>Errors</span>
             <JsonTree data={record.error} />
           </>
         )}
-      </div>
-    </div>
+      </Tab>
+    </Tabs>
   );
 };
 
