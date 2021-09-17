@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { SafeString, Schema, UiSchema } from "@/core";
+import { SafeString, Schema, SchemaPropertyType, UiSchema } from "@/core";
 import { SelectStringOption } from "./formBuilderTypes";
 import { UI_ORDER } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
@@ -33,7 +33,7 @@ export const DEFAULT_FIELD_TYPE = "string";
 export const parseUiType = (value: string) => {
   const [propertyType, uiWidget, propertyFormat] = value.split(":");
   return {
-    propertyType,
+    propertyType: propertyType as SchemaPropertyType,
     uiWidget: uiWidget === "" ? undefined : uiWidget,
     propertyFormat: propertyFormat === "" ? undefined : propertyFormat,
   };
@@ -44,7 +44,7 @@ export const stringifyUiType = ({
   uiWidget,
   propertyFormat,
 }: {
-  propertyType: string;
+  propertyType: SchemaPropertyType;
   uiWidget?: string;
   propertyFormat?: string;
 }) => `${propertyType}:${uiWidget ?? ""}:${propertyFormat ?? ""}`;
@@ -68,6 +68,14 @@ export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
   },
 ];
 
+/**
+ * Finds a string in an array, if found removes it from the array and, if necessary, inserts new elements in its place.
+ * Does not mutate the source array.
+ * @param array The source array.
+ * @param stringToBeReplaced The string item to look for and remove.
+ * @param items Elements to insert into the array in place of the deleted element.
+ * @returns An array having the specified element removed or replaced for the new items.
+ */
 export const replaceStringInArray = (
   array: string[],
   stringToBeReplaced: string,
@@ -75,11 +83,11 @@ export const replaceStringInArray = (
 ) => {
   const arr = [...array];
   const index = arr.indexOf(stringToBeReplaced);
-  if (index === -1 && items?.length) {
-    arr.push(...items);
-  } else {
-    arr.splice(index, 1, ...items);
+  if (index === -1) {
+    return arr;
   }
+
+  arr.splice(index, 1, ...items);
 
   return arr;
 };

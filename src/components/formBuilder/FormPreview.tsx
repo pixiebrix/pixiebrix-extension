@@ -23,6 +23,7 @@ import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
 import { useField } from "formik";
 import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
+import { Card } from "react-bootstrap";
 
 const FormPreview: React.FC<{
   name: string;
@@ -74,16 +75,21 @@ const FormPreview: React.FC<{
   };
 
   return (
-    <JsonSchemaForm
-      tagName="div"
-      formData={data}
-      fields={fields}
-      schema={localRjsfSchema.schema}
-      uiSchema={localRjsfSchema.uiSchema}
-      onChange={onDataChanged}
-    >
-      <div></div>
-    </JsonSchemaForm>
+    <Card>
+      <Card.Header>Preview</Card.Header>
+      <Card.Body>
+        <JsonSchemaForm
+          tagName="div"
+          formData={data}
+          fields={fields}
+          schema={localRjsfSchema.schema}
+          uiSchema={localRjsfSchema.uiSchema}
+          onChange={onDataChanged}
+        >
+          <div></div>
+        </JsonSchemaForm>
+      </Card.Body>
+    </Card>
   );
 };
 

@@ -16,7 +16,7 @@
  */
 
 /* eslint-disable security/detect-object-injection */
-import { useField, useFormikContext } from "formik";
+import { useField } from "formik";
 import React, { useEffect } from "react";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
@@ -35,34 +35,41 @@ import {
   faPlus,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
-import { Schema, UiSchema } from "@/core";
+import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { produce } from "immer";
 
 const FormEditor: React.FC<{
   name: string;
   activeField?: string;
   setActiveField: SetActiveField;
 }> = ({ name, activeField, setActiveField }) => {
-  const { setFieldValue } = useFormikContext<RJSFSchema>();
-  const [{ value: schema }] = useField<Schema>(`${name}.schema`);
-  const [{ value: uiSchema }] = useField<UiSchema>(`${name}.uiSchema`);
+  const [
+    { value: rjsfSchema },
+    ,
+    { setValue: setRjsfSchema },
+  ] = useField<RJSFSchema>(name);
+  const [{ value: uiOrder }, , { setValue: setUiOrder }] = useField<string[]>(
+    `${name}.uiSchema.${UI_ORDER}`
+  );
 
-  const uiOrder = uiSchema[UI_ORDER];
+  const { schema } = rjsfSchema;
 
   useEffect(() => {
     // Set uiSchema order if needed
     if (!uiOrder) {
       const propertyKeys = Object.keys(schema.properties || {});
       const nextUiOrder = [...propertyKeys, "*"];
-      setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
+      setUiOrder(nextUiOrder);
     }
-  }, [name, schema, uiOrder, setFieldValue]);
+  }, [schema, uiOrder, setUiOrder]);
 
   const addProperty = () => {
     const propertyName = generateNewPropertyName(
       Object.keys(schema.properties || {})
     );
-    const newProperty = {
+    const newProperty: Schema = {
+      // @ts-expect-error -- name is valid in a property definition
       name: propertyName,
       title: propertyName,
       type: DEFAULT_FIELD_TYPE,
@@ -71,40 +78,50 @@ const FormEditor: React.FC<{
       ? replaceStringInArray(uiOrder, activeField, activeField, propertyName)
       : replaceStringInArray(uiOrder, "*", propertyName, "*");
 
-    setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
-    setFieldValue(`${name}.schema.properties.${propertyName}`, newProperty);
+    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      draft.uiSchema[UI_ORDER] = nextUiOrder;
+      if (!draft.schema.properties) {
+        draft.schema.properties = {};
+      }
+
+      draft.schema.properties[propertyName] = newProperty;
+    });
+    setRjsfSchema(nextRjsfSchema);
     setActiveField(propertyName);
   };
 
   const moveProperty = (direction: "up" | "down") => {
     const nextUiOrder = moveStringInArray(uiOrder, activeField, direction);
-    setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
+    setUiOrder(nextUiOrder);
   };
 
   const removeProperty = () => {
     const propertyToRemove = activeField;
     const nextUiOrder = replaceStringInArray(uiOrder, propertyToRemove);
-    const nextActiveField = nextUiOrder[0];
+    const nextActiveField = nextUiOrder.length > 1 ? nextUiOrder[0] : undefined;
 
     setActiveField(nextActiveField);
-    if (schema.required?.length > 0) {
-      const nextRequired = replaceStringInArray(
-        schema.required,
-        propertyToRemove
-      );
-      setFieldValue(`${name}.schema.required`, nextRequired);
-    }
 
-    setFieldValue(`${name}.uiSchema.${UI_ORDER}`, nextUiOrder);
-    // eslint-disable-next-line unicorn/no-useless-undefined -- required for Formik to remove the field
-    setFieldValue(`${name}.schema.properties.${propertyToRemove}`, undefined);
-    // eslint-disable-next-line unicorn/no-useless-undefined -- required for Formik to remove the field
-    setFieldValue(`${name}.uiSchema.${propertyToRemove}`, undefined);
+    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      if (schema.required?.length > 0) {
+        const nextRequired = replaceStringInArray(
+          schema.required,
+          propertyToRemove
+        );
+        draft.schema.required = nextRequired;
+      }
+
+      draft.uiSchema[UI_ORDER] = nextUiOrder;
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete draft.schema.properties[propertyToRemove];
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete draft.uiSchema[propertyToRemove];
+    });
+
+    setRjsfSchema(nextRjsfSchema);
   };
 
   // There's always at least 1 item in uiOrder array, "*".
-  const propertyNameToShow =
-    activeField || (uiOrder?.length > 1 && uiOrder?.[0]);
   const canMoveUp = uiOrder?.length > 2 && uiOrder[0] !== activeField;
   const canMoveDown =
     uiOrder?.length > 2 && uiOrder[uiOrder.length - 2] !== activeField;
@@ -124,15 +141,15 @@ const FormEditor: React.FC<{
         <h6>Edit fields</h6>
         <hr />
       </BootstrapForm.Group>
-      {propertyNameToShow && Boolean(schema.properties[propertyNameToShow]) && (
+      {activeField && Boolean(schema.properties?.[activeField]) && (
         <FieldEditor
           name={name}
-          propertyName={propertyNameToShow}
+          propertyName={activeField}
           setActiveField={setActiveField}
         />
       )}
 
-      <Button onClick={addProperty} variant="success" size="sm">
+      <Button onClick={addProperty} variant="primary" size="sm">
         <FontAwesomeIcon icon={faPlus} />
       </Button>
       <Button

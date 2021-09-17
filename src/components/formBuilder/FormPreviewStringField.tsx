@@ -21,6 +21,8 @@ import { FieldProps, utils } from "@rjsf/core";
 import React from "react";
 import { SetActiveField } from "./formBuilderTypes";
 import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
+import styles from "./FormPreviewStringField.module.scss";
+import cx from "classnames";
 
 interface FormPreviewStringFieldProps extends FieldProps {
   setActiveField: SetActiveField;
@@ -43,17 +45,7 @@ const FormPreviewStringField: React.FC<FormPreviewStringFieldProps> = ({
           setActiveField(name);
         }
       }}
-      style={
-        isActive
-          ? {
-              border: "1px solid #a4caef",
-              padding: "4px",
-            }
-          : {
-              border: "1px solid transparent",
-              padding: "4px",
-            }
-      }
+      className={cx(styles.root, { [styles.isActive]: isActive })}
       role="group"
     >
       <RjsfStringField {...rest} />
