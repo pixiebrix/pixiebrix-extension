@@ -15,15 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import VendorJSONTree from "react-json-tree";
+import JSONTree from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { searchData } from "@/devTools/editor/tabs/reader/ReaderConfig";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
+import styles from "./JsonTree.module.scss";
+import GridLoader from "react-spinners/GridLoader";
 
-export type JsonTreeProps = Partial<VendorJSONTree["props"]> & {
+export type JsonTreeProps = Partial<JSONTree["props"]> & {
   copyable?: boolean | undefined;
   searchable?: boolean | undefined;
   label?: string | undefined;
@@ -33,9 +35,9 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
   searchable = false,
   label,
-  ...restProps
+  ...jsonProps
 }) => {
-  const { data } = restProps;
+  const { data, ...restProps } = jsonProps;
 
   const [query, setQuery] = useState("");
 
@@ -53,7 +55,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
 
   const labelRenderer = copyable ? copyLabelRenderer : undefined;
 
-  const onChange = useCallback(
+  const onChangeQuery = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setQuery(e.target.value);
     },
@@ -61,14 +63,15 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   );
 
   return (
-    <>
+    <div className={styles.root}>
       {searchable && (
         <FieldTemplate
-          name="readerSearch"
+          value={query}
+          name="traceSearch"
           label="Search"
           layout="horizontal"
           placeholder="Search for a property or value"
-          onChange={onChange}
+          onChange={onChangeQuery}
         />
       )}
       {label ? (
@@ -76,15 +79,19 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
       ) : (
         query && <span>{`Search Results: ${query}`}</span>
       )}
-      <VendorJSONTree
-        data={searchResults}
-        labelRenderer={labelRenderer}
-        hideRoot
-        theme={theme}
-        invertTheme
-        {...restProps}
-      />
-    </>
+      {searchResults === undefined ? (
+        <GridLoader />
+      ) : (
+        <JSONTree
+          data={searchResults}
+          labelRenderer={labelRenderer}
+          hideRoot
+          theme={theme}
+          invertTheme
+          {...restProps}
+        />
+      )}
+    </div>
   );
 };
 
