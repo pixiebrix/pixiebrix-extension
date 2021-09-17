@@ -285,6 +285,8 @@ const BlockModal: React.FunctionComponent<{
 
   const close = useCallback(() => {
     setShow(false);
+    // Reset the query for the next time it opens
+    setQuery("");
     setDetailBlock(null);
   }, [setShow]);
 
@@ -354,14 +356,17 @@ const BlockModal: React.FunctionComponent<{
                       )}
                       onSelect={() => {
                         onSelect(detailBlock);
-                        // Reset the query for the next time it opens
-                        setQuery("");
-                        setDetailBlock(null);
                         close();
                       }}
                     />
                   ) : (
-                    <QuickAdd blocks={blocks} onSelect={onSelect} />
+                    <QuickAdd
+                      blocks={blocks}
+                      onSelect={(block) => {
+                        onSelect(block);
+                        close();
+                      }}
+                    />
                   )}
                 </Col>
               </Row>
