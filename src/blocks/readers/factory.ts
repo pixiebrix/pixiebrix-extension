@@ -114,6 +114,10 @@ export function readerFactory(component: unknown): IReader {
       return checkAvailable(isAvailable);
     }
 
+    async isPure(): Promise<boolean> {
+      return true;
+    }
+
     async read(root: ReaderRoot): Promise<ReaderOutput> {
       const doRead = _readerFactories.get(reader.type);
       if (doRead) {

@@ -24,6 +24,7 @@ import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
 import blockRegistry from "@/blocks/registry";
 import { getCssSelector } from "css-selector-generator";
+import { runStage } from "@/blocks/combinators";
 import { IReader, RegistryId } from "@/core";
 import {
   addListenerForUpdateSelectedElement,
@@ -36,6 +37,10 @@ import "@/nativeEditor/insertPanel";
 import "@/nativeEditor/dynamic";
 import { isNullOrBlank, resolveObj } from "@/utils";
 import type { Target } from "@/types";
+import { BlockConfig } from "@/blocks/types";
+import { cloneDeep } from "lodash";
+import ConsoleLogger from "@/tests/ConsoleLogger";
+import { SerializableResponse } from "@/messaging/protocol";
 
 if (isContentScript()) {
   addListenerForUpdateSelectedElement();
@@ -64,6 +69,31 @@ export const searchWindow: (
 ) => Promise<{ results: unknown[] }> = liftContentScript(
   "SEARCH_WINDOW",
   async (query: string) => withSearchWindow({ query })
+);
+
+export type RunBlockArgs = {
+  blockConfig: BlockConfig;
+  args: Record<string, unknown>;
+};
+
+export const runBlock = liftContentScript(
+  "RUN_SINGLE_BLOCK",
+  async ({ blockConfig, args }: RunBlockArgs) => {
+    const block = await blockRegistry.lookup(blockConfig.id);
+
+    const result = await runStage(block, blockConfig, args, {
+      context: args,
+      logger: new ConsoleLogger(),
+      headless: true,
+      validate: true,
+      logValues: false,
+      // TODO: need to support other roots for triggers. Or we at least need to throw an error so we can show a message
+      //  in the UX that non-root contexts aren't supported
+      root: null,
+    });
+
+    return cloneDeep(result) as SerializableResponse;
+  }
 );
 
 export const runReaderBlock = liftContentScript(

@@ -20,7 +20,7 @@ import { BlockArg } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class Base64Encode extends Transformer {
-  get isPure() {
+  async isPure(): Promise<boolean> {
     return true;
   }
 

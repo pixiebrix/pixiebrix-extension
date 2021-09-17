@@ -25,7 +25,7 @@ import { BusinessError } from "@/errors";
  * Transformer that fills a template using the current context.
  */
 export class TemplateTransformer extends Transformer {
-  get isPure() {
+  async isPure(): Promise<boolean> {
     return true;
   }
 

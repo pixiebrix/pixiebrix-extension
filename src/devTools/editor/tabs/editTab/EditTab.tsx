@@ -206,7 +206,10 @@ const EditTab: React.FC<{
           )}
         </div>
         <div className={styles.tracePanel}>
-          <TraceView instanceId={blockInstanceId} />
+          <TraceView
+            blockFieldName={blockFieldName}
+            instanceId={blockInstanceId}
+          />
         </div>
       </div>
     </Tab.Pane>

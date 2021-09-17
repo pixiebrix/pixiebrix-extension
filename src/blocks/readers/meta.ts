@@ -71,6 +71,10 @@ export class PixieBrixSessionReader extends Reader {
     };
   }
 
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
@@ -125,6 +129,10 @@ export class PixieBrixProfileReader extends Reader {
     return getExtensionAuth() as Promise<ReaderOutput>;
   }
 
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
@@ -163,6 +171,10 @@ export class DocumentReader extends Reader {
     };
   }
 
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
@@ -196,6 +208,10 @@ export class ManifestReader extends Reader {
   }
 
   async isAvailable() {
+    return true;
+  }
+
+  async isPure(): Promise<boolean> {
     return true;
   }
 

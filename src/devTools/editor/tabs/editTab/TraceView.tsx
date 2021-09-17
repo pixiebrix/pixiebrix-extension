@@ -25,6 +25,10 @@ import { getErrorMessage } from "@/errors";
 import JsonTree from "@/components/JsonTree";
 import { Tab, Tabs } from "react-bootstrap";
 import styles from "./TraceView.module.scss";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import PreviewView from "@/devTools/editor/tabs/effect/PreviewView";
+import { FastField, FieldInputProps } from "formik";
+import { BlockConfig } from "@/blocks/types";
 
 // https://overreacted.io/making-setinterval-declarative-with-react-hooks/
 function useInterval(callback: () => void, delayMillis: number) {
@@ -51,9 +55,10 @@ function useInterval(callback: () => void, delayMillis: number) {
 }
 
 const TraceView: React.FunctionComponent<{
+  blockFieldName: string;
   instanceId: UUID;
   traceReloadMillis?: number;
-}> = ({ instanceId, traceReloadMillis = 750 }) => {
+}> = ({ blockFieldName, instanceId, traceReloadMillis = 750 }) => {
   const [record, isLoading, error, recalculate] = useAsyncState(async () => {
     if (instanceId == null) {
       throw new Error("No instance id found");
@@ -94,14 +99,10 @@ const TraceView: React.FunctionComponent<{
       <Tab eventKey="context" title="Context" tabClassName={styles.tab}>
         <JsonTree data={record.templateContext} />
       </Tab>
-      <Tab
-        eventKey="rendered"
-        title="Rendered Arguments"
-        tabClassName={styles.tab}
-      >
+      <Tab eventKey="rendered" title="Rendered Input" tabClassName={styles.tab}>
         <JsonTree data={record.renderedArgs} />
       </Tab>
-      <Tab eventKey="output" title="Outputs" tabClassName={styles.tab}>
+      <Tab eventKey="output" title="Output" tabClassName={styles.tab}>
         {"output" in record && (
           <>
             <span>Data</span>
@@ -111,10 +112,26 @@ const TraceView: React.FunctionComponent<{
 
         {"error" in record && (
           <>
-            <span>Errors</span>
+            <span className="text-danger">Error</span>
             <JsonTree data={record.error} />
           </>
         )}
+      </Tab>
+      <Tab
+        eventKey="preview"
+        title="Preview"
+        tabClassName={styles.tab}
+        // Only mount if the user is viewing it, because output previews take up resources to run
+        mountOnEnter
+        unmountOnExit
+      >
+        <ErrorBoundary>
+          <FastField name={blockFieldName}>
+            {({ field }: { field: FieldInputProps<BlockConfig> }) => (
+              <PreviewView traceRecord={record} blockConfig={field.value} />
+            )}
+          </FastField>
+        </ErrorBoundary>
       </Tab>
     </Tabs>
   );

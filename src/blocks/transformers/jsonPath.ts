@@ -19,7 +19,7 @@ import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 
 export class JSONPathTransformer extends Transformer {
-  get isPure() {
+  async isPure(): Promise<boolean> {
     return true;
   }
 

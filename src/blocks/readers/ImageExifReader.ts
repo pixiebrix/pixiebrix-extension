@@ -79,6 +79,10 @@ export class ImageExifReader extends Reader {
     );
   }
 
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",

@@ -15,29 +15,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+// https://overreacted.io/making-setinterval-declarative-with-react-hooks/
+import { useEffect, useRef } from "react";
 
-export class IdentityTransformer extends Transformer {
-  async isPure(): Promise<boolean> {
-    return true;
-  }
+function useInterval(callback: () => void, delayMillis: number) {
+  const savedCallback = useRef<() => void>();
 
-  constructor() {
-    super(
-      "@pixiebrix/identity",
-      "Identity function",
-      "Returns the object passed into it",
-      "faCode"
-    );
-  }
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
 
-  inputSchema: Schema = {
-    type: "object",
-    additionalProperties: true,
-  };
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
 
-  async transform(arg: BlockArg): Promise<BlockArg> {
-    return arg;
-  }
+    if (delayMillis !== null) {
+      const id = setInterval(tick, delayMillis);
+      return () => {
+        clearInterval(id);
+      };
+    }
+  }, [delayMillis]);
 }
+
+export default useInterval;

@@ -17,7 +17,7 @@
 
 import { Reader } from "@/types";
 import { IReader, ReaderOutput, Schema } from "@/core";
-import { mapValues, identity } from "lodash";
+import { mapValues } from "lodash";
 
 class CompositeReader extends Reader {
   public readonly outputSchema: Schema;
@@ -41,7 +41,14 @@ class CompositeReader extends Reader {
     const availability = await Promise.all(
       readerArray.map(async (x) => x.isAvailable())
     );
-    return availability.every(identity);
+    return availability.every((x) => x);
+  }
+
+  async isPure(): Promise<boolean> {
+    const readerArray = Object.values(this._readers);
+    // PERFORMANCE: could return quicker if any came back false using Promise.any
+    const purity = await Promise.all(readerArray.map(async (x) => x.isPure()));
+    return purity.every((x) => x);
   }
 
   async read(root: HTMLElement | Document): Promise<ReaderOutput> {

@@ -20,7 +20,7 @@ import { BlockArg, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 
 export class MappingTransformer extends Transformer {
-  get isPure() {
+  async isPure(): Promise<boolean> {
     return true;
   }
 
