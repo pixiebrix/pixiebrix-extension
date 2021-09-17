@@ -16,7 +16,6 @@
  */
 
 import React from "react";
-// import styles from "./EditorNodeConfigPanel.module.scss";
 import { Form, InputGroup } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
