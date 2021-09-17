@@ -19,6 +19,8 @@ import { Reader } from "@/types";
 import { ReaderOutput, Schema } from "@/core";
 
 export class PageSemanticReader extends Reader {
+  defaultOutputKey = "metadata";
+
   constructor() {
     super(
       "@pixiebrix/document-semantic",

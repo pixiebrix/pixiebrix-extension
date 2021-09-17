@@ -42,6 +42,8 @@ export class UrlParser extends Transformer {
     return true;
   }
 
+  defaultOutputKey = "parsedUrl";
+
   constructor() {
     super(
       "@pixiebrix/parse-url",

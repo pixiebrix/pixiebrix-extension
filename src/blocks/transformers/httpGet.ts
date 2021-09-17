@@ -27,6 +27,8 @@ export class GetAPITransformer extends Transformer {
     super("@pixiebrix/get", "HTTP GET", "Fetch data from an API", "faCloud");
   }
 
+  defaultOutputKey = "response";
+
   inputSchema: Schema = propertiesToSchema(
     {
       url: {

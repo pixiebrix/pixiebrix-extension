@@ -56,6 +56,8 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
 }
 
 export class ImageExifReader extends Reader {
+  defaultOutputKey = "image";
+
   constructor() {
     super(
       "@pixiebrix/image/exif",

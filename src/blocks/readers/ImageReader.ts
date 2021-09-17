@@ -40,6 +40,8 @@ function getBase64Image(img: HTMLImageElement) {
 }
 
 export class ImageReader extends Reader {
+  defaultOutputKey = "image";
+
   constructor() {
     super(
       "@pixiebrix/image",

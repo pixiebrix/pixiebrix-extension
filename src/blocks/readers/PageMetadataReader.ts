@@ -19,6 +19,8 @@ import { Reader } from "@/types";
 import { Schema } from "@/core";
 
 export class PageMetadataReader extends Reader {
+  defaultOutputKey = "metadata";
+
   constructor() {
     super(
       "@pixiebrix/document-metadata",

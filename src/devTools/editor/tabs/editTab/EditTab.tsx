@@ -26,7 +26,7 @@ import { getIcon } from "@/components/fields/BlockModal";
 import { BlockType, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { noop, zip } from "lodash";
+import { compact, noop, zip } from "lodash";
 import { IBlock, UUID } from "@/core";
 import hash from "object-hash";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
@@ -37,6 +37,7 @@ import TraceView from "@/devTools/editor/tabs/editTab/TraceView";
 import { uuidv4 } from "@/types/helpers";
 import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
 import { FormState } from "@/devTools/editor/editorSlice";
+import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -104,6 +105,7 @@ const EditTab: React.FC<{
   );
 
   const onSelectNode = useCallback(
+    // Wrapper only taking a number (and not a state update method)
     (index: number) => {
       setActiveNodeIndex(index);
     },
@@ -169,14 +171,23 @@ const EditTab: React.FC<{
   }, [allBlocks, elementType]);
 
   const addBlock = useCallback(
-    (block: IBlock, nodeIndex: number) => {
+    async (block: IBlock, nodeIndex: number) => {
       const pipelineIndex = nodeIndex - 1;
       const prev = blockPipeline.slice(0, pipelineIndex);
       const next = blockPipeline.slice(pipelineIndex, blockPipeline.length);
-      const newBlock = { id: block.id, instanceId: uuidv4(), config: {} };
+      const newBlock = {
+        id: block.id,
+        outputKey: await generateFreshOutputKey(
+          block,
+          compact(["@input", ...blockPipeline.map((x) => x.outputKey)])
+        ),
+        instanceId: uuidv4(),
+        config: {},
+      };
       pipelineFieldHelpers.setValue([...prev, newBlock, ...next]);
+      onSelectNode(nodeIndex);
     },
-    [pipelineFieldHelpers, blockPipeline]
+    [onSelectNode, pipelineFieldHelpers, blockPipeline]
   );
 
   return (

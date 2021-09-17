@@ -19,6 +19,8 @@ import { Reader } from "@/types";
 import { Schema } from "@/core";
 
 export class ElementReader extends Reader {
+  defaultOutputKey = "element";
+
   constructor() {
     super(
       "@pixiebrix/html/element",

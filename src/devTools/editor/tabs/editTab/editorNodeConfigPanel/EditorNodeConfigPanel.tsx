@@ -21,6 +21,10 @@ import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
 import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
+import { useAsyncState } from "@/hooks/common";
+import blockRegistry from "@/blocks/registry";
+import { getType } from "@/blocks/util";
+import { showOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 
 const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
   <InputGroup>
@@ -34,33 +38,56 @@ const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
 const EditorNodeConfigPanel: React.FC<{
   blockFieldName: string;
   blockId: RegistryId;
-}> = ({ blockFieldName, blockId }) => (
-  <>
-    <ConnectedFieldTemplate
-      name={`${blockFieldName}.label`}
-      layout="horizontal"
-      label="Step Name"
-    />
-    <ConnectedFieldTemplate
-      name={`${blockFieldName}.outputKey`}
-      layout="horizontal"
-      label="Output"
-      as={OutputKeyWidget}
-      description={
-        <p>
-          Provide a output key to refer to the outputs of this block later. For
-          example, if you provide the name <code>myOutput</code>, you can use
-          the output later with <code>@myOutput</code>.
-        </p>
-      }
-    />
+}> = ({ blockFieldName, blockId }) => {
+  const [blockInfo] = useAsyncState(async () => {
+    const block = await blockRegistry.lookup(blockId);
+    return {
+      block,
+      type: await getType(block),
+    };
+  }, [blockId]);
 
-    <BlockConfiguration
-      name={blockFieldName}
-      blockId={blockId}
-      showOutput={false}
-    />
-  </>
-);
+  return (
+    <>
+      <ConnectedFieldTemplate
+        name={`${blockFieldName}.label`}
+        layout="horizontal"
+        label="Step Name"
+        placeholder={blockInfo?.block.name}
+      />
+
+      {blockInfo == null || showOutputKey(blockInfo?.type) ? (
+        <ConnectedFieldTemplate
+          name={`${blockFieldName}.outputKey`}
+          layout="horizontal"
+          label="Output"
+          as={OutputKeyWidget}
+          description={
+            <p>
+              Provide a output key to refer to the outputs of this block later.
+              For example, if you provide the name <code>myOutput</code>, you
+              can use the output later with <code>@myOutput</code>.
+            </p>
+          }
+        />
+      ) : (
+        <ConnectedFieldTemplate
+          name={`${blockFieldName}.outputKey`}
+          layout="horizontal"
+          label="Output"
+          disabled
+          as={OutputKeyWidget}
+          description={<p>Effect and renderer bricks do not produce outputs</p>}
+        />
+      )}
+
+      <BlockConfiguration
+        name={blockFieldName}
+        blockId={blockId}
+        showOutput={false}
+      />
+    </>
+  );
+};
 
 export default EditorNodeConfigPanel;

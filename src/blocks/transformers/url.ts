@@ -50,6 +50,8 @@ export class UrlParams extends Transformer {
     return true;
   }
 
+  defaultOutputKey = "url";
+
   constructor() {
     super(
       "@pixiebrix/url-params",

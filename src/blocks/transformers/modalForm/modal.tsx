@@ -43,6 +43,8 @@ function getMaxZ() {
 }
 
 export class ModalTransformer extends Transformer {
+  defaultOutputKey = "form";
+
   constructor() {
     super(
       "@pixiebrix/form-modal",

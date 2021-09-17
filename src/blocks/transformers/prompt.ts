@@ -30,6 +30,8 @@ export class Prompt extends Transformer {
     );
   }
 
+  defaultOutputKey = "userInput";
+
   inputSchema: Schema = propertiesToSchema(
     {
       message: {
