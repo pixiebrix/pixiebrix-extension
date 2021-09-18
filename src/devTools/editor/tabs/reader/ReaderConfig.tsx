@@ -18,7 +18,7 @@
 import React, { useContext, useMemo, useState } from "react";
 import { FormState } from "@/devTools/editor/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
-import { compact, isEmpty, mapValues, partial, pick, pickBy } from "lodash";
+import { partial, pick } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Alert, Col, Form, Row } from "react-bootstrap";
 import Select from "react-select";
@@ -39,12 +39,12 @@ import {
 import devtoolFields from "@/devTools/editor/fields/Fields";
 // @ts-expect-error no type definitions?
 import GenerateSchema from "generate-schema";
-import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import type { ReadOptions } from "@/pageScript/protocol";
-import { Primitive } from "type-fest";
+import { searchData } from "@/devTools/utils";
+import { useLabelRenderer } from "@/components/jsonTree/treeHooks";
 
 type ReaderSelector = (
   options: ReadOptions & {
@@ -138,37 +138,6 @@ const FrameworkSelector: React.FunctionComponent<{
     />
   );
 };
-
-function normalize(value: Primitive): string {
-  return value.toString().toLowerCase();
-}
-
-export function searchData(query: string, data: unknown): unknown {
-  const normalized = normalize(query);
-  if (data == null) {
-    return null;
-  }
-
-  if (typeof data === "object") {
-    const values = mapValues(data, (value, key) =>
-      normalize(key).includes(query) ? value : searchData(query, value)
-    );
-    return pickBy(values, (value, key) => {
-      const keyMatch = normalize(key).includes(normalized);
-      const valueMatch =
-        typeof value === "object" || Array.isArray(value)
-          ? !isEmpty(value)
-          : value != null;
-      return keyMatch || valueMatch;
-    });
-  }
-
-  if (Array.isArray(data)) {
-    return compact(data.map(partial(searchData, query)));
-  }
-
-  return normalize(data as Primitive).includes(normalized) ? data : undefined;
-}
 
 const FrameworkFields: React.FunctionComponent<{
   name: string;

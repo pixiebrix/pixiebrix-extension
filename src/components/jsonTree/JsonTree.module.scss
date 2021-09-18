@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,12 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import VendorJSONTree from "react-json-tree";
-import { jsonTreeTheme as theme } from "@/themes/light";
-import React from "react";
+.root {
+  width: 100%;
+  overflow-x: hidden;
+  padding-top: 0.5rem;
+}
 
-const JsonTree: React.FunctionComponent<Partial<VendorJSONTree["props"]>> = (
-  props
-) => <VendorJSONTree hideRoot theme={theme} invertTheme {...props} />;
-
-export default JsonTree;
+.copyPath {
+  cursor: pointer;
+  color: lightgray;
+  margin-left: 5px;
+  &:hover {
+    color: #007bff;
+  }
+}

@@ -18,7 +18,7 @@
 import React from "react";
 import { LogEntry } from "@/background/logging";
 import { Col, Row } from "react-bootstrap";
-import JsonTree from "@/components/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 
 const InputDetail: React.FunctionComponent<{ entry: LogEntry }> = ({
   entry,

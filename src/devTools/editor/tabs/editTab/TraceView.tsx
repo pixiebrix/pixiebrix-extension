@@ -15,24 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { getByInstanceId } from "@/telemetry/trace";
 import { useAsyncState } from "@/hooks/common";
 import { UUID } from "@/core";
-import { sortBy } from "lodash";
+import { isEmpty, pickBy, sortBy } from "lodash";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
-import PlainJsonTree from "@/components/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 import { Tab, Tabs } from "react-bootstrap";
 import styles from "./TraceView.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PreviewView from "@/devTools/editor/tabs/effect/PreviewView";
 import { FastField, FieldInputProps } from "formik";
 import { BlockConfig } from "@/blocks/types";
-import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import useInterval from "@/hooks/useInterval";
-import { jsonTreeTheme as theme } from "@/themes/light";
-import JSONTree from "react-json-tree";
 
 export function useLatestTraceRecord(instanceId: UUID) {
   return useAsyncState(async () => {
@@ -45,6 +42,21 @@ export function useLatestTraceRecord(instanceId: UUID) {
   }, [instanceId]);
 }
 
+const contextFilter = (value: unknown, key: string) => {
+  if (!key.startsWith("@")) {
+    return false;
+  }
+
+  // `@options` comes from marketplace-installed extensions. There's a chance the user might add a brick that has
+  // @options as an output key. In that case, we'd expect values to flow into it. So just checking to see if there's
+  // any data is a good compromise even though we miss the corner-case where @options is user-defined but empty
+  if (key === "@options" && isEmpty(value)) {
+    return false;
+  }
+
+  return true;
+};
+
 const TraceView: React.FunctionComponent<{
   blockFieldName: string;
   instanceId: UUID;
@@ -56,16 +68,9 @@ const TraceView: React.FunctionComponent<{
 
   useInterval(recalculate, traceReloadMillis);
 
-  const dataLabelRenderer = useLabelRenderer();
-
-  const jsonTree = (data: unknown) => (
-    <JSONTree
-      data={data}
-      labelRenderer={dataLabelRenderer}
-      theme={theme}
-      invertTheme
-      hideRoot
-    />
+  const relevantContext = useMemo(
+    () => pickBy(record?.templateContext ?? {}, contextFilter),
+    [record?.templateContext]
   );
 
   if (isLoading) {
@@ -95,25 +100,17 @@ const TraceView: React.FunctionComponent<{
   return (
     <Tabs defaultActiveKey="output">
       <Tab eventKey="context" title="Context" tabClassName={styles.tab}>
-        {jsonTree(record.templateContext)}
+        <JsonTree data={relevantContext} copyable searchable />
       </Tab>
       <Tab eventKey="rendered" title="Rendered Input" tabClassName={styles.tab}>
-        {jsonTree(record.renderedArgs)}
+        <JsonTree data={record.renderedArgs} copyable searchable />
       </Tab>
       <Tab eventKey="output" title="Output" tabClassName={styles.tab}>
         {"output" in record && (
-          <>
-            <span>Data</span>
-            {jsonTree(record.output)}
-          </>
+          <JsonTree data={record.output} copyable searchable label="Data" />
         )}
 
-        {"error" in record && (
-          <>
-            <span className="text-danger">Error</span>
-            <PlainJsonTree data={record.error} />
-          </>
-        )}
+        {"error" in record && <JsonTree data={record.error} label="Error" />}
       </Tab>
       <Tab
         eventKey="preview"

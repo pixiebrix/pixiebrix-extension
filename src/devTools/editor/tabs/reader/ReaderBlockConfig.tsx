@@ -24,19 +24,19 @@ import GridLoader from "react-spinners/GridLoader";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { useDebounce } from "use-debounce";
-import { searchData } from "@/devTools/editor/tabs/reader/ReaderConfig";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import { IReader } from "@/core";
 import { runReaderBlock } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
-import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import { SelectorSelectorControl } from "@/devTools/editor/fields/SelectorSelectorField";
 import { faCode, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import copy from "copy-to-clipboard";
 import { useToasts } from "react-toast-notifications";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
+import { searchData } from "@/devTools/utils";
+import { useLabelRenderer } from "@/components/jsonTree/treeHooks";
 
 export const ReaderBlockForm: React.FunctionComponent<{
   reader: IReader;

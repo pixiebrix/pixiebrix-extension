@@ -28,7 +28,7 @@ import { getErrorMessage } from "@/errors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
-import JsonTree from "@/components/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
 import { getType } from "@/blocks/util";

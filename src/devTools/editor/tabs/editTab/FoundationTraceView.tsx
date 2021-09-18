@@ -19,7 +19,7 @@ import React from "react";
 import { UUID } from "@/core";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
-import JsonTree from "@/components/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 import { Tab, Tabs } from "react-bootstrap";
 import styles from "./TraceView.module.scss";
 import useInterval from "@/hooks/useInterval";
