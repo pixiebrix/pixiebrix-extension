@@ -60,6 +60,7 @@ import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { BlockPipeline } from "@/blocks/types";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 
 const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -293,6 +294,7 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   icon: faWindowMaximize,
   baseClass: PanelExtensionPoint,
   selectNativeElement: nativeOperations.insertPanel,
+  EditorNode: PanelConfiguration,
   wizard,
   betaWizard,
   fromNativeElement,

@@ -57,6 +57,7 @@ export type TriggerConfig = {
 export type Trigger =
   | "load"
   | "click"
+  | "blur"
   | "dblclick"
   | "mouseover"
   | "appear"

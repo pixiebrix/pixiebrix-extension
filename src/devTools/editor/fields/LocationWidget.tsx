@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.cardHeader {
-  width: 100%;
-}
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { useField } from "formik";
+import React from "react";
+import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
+import type { SelectMode } from "@/nativeEditor/selector";
+
+type OwnProps = {
+  selectMode?: SelectMode;
+};
+
+const LocationWidget: CustomFieldWidget<OwnProps> = ({
+  selectMode = "container",
+  ...props
+}) => {
+  const [containerInfoField] = useField("containerInfo");
+
+  return (
+    <SelectorSelectorField
+      {...props}
+      initialElement={containerInfoField.value}
+      selectMode={selectMode}
+    />
+  );
+};
+
+export default LocationWidget;
