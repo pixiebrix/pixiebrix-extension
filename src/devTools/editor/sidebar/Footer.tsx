@@ -21,7 +21,7 @@ import { DevToolsContext } from "@/devTools/context";
 import BeatLoader from "react-spinners/BeatLoader";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";
-import { actions } from "@/devTools/editor/editorSlice";
+import { actions } from "@/devTools/editor/slices/editorSlice";
 
 const Footer: React.FunctionComponent = () => {
   const { scope, flags } = useContext(AuthContext);

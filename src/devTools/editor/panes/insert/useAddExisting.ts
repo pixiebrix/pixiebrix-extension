@@ -21,7 +21,7 @@ import { reportError } from "@/telemetry/logging";
 import { useDispatch } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { DevToolsContext } from "@/devTools/context";
-import { editorSlice, FormState } from "@/devTools/editor/editorSlice";
+import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { getCurrentURL } from "@/devTools/utils";

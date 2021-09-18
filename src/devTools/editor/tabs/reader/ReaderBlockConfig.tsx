@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useContext, useMemo, useState } from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useFormikContext } from "formik";
 import { Alert, Col, Form, Row } from "react-bootstrap";
 import { useAsyncEffect } from "use-async-effect";

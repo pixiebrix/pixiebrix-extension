@@ -15,9 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { RegistryId, UUID } from "@/core";
+
 export interface AuthOption {
-  value: string;
   label: string;
-  serviceId: string;
+  /** The UUID of the auth credential **/
+  value: UUID;
+  serviceId: RegistryId;
   local: boolean;
 }

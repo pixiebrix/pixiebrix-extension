@@ -19,7 +19,7 @@ import React, { useCallback, useMemo, useRef } from "react";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 
 const FoundationTab: React.FunctionComponent<{
   eventKey?: string;

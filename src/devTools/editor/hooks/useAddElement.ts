@@ -20,7 +20,7 @@ import { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
-import { actions, FormState } from "@/devTools/editor/editorSlice";
+import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import * as nativeOperations from "@/background/devtools";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
 import { reportError } from "@/telemetry/logging";

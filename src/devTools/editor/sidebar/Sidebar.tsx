@@ -16,7 +16,7 @@
  */
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
-import { EditorState } from "@/devTools/editor/editorSlice";
+import { EditorState } from "@/devTools/editor/slices/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { sortBy } from "lodash";
 import {

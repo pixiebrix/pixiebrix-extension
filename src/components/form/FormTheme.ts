@@ -15,15 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { IExtension } from "@/core";
+import { createContext } from "react";
 
-export type SidebarItem = IExtension | FormState;
+export type ThemeProps = {
+  layout: "horizontal" | "vertical";
+};
 
-export function getLabel(extension: FormState): string {
-  return extension.label ?? extension.extensionPoint.metadata.name;
-}
+const defaultTheme: ThemeProps = {
+  layout: "horizontal",
+};
 
-export function isExtension(value: SidebarItem): value is IExtension {
-  return "extensionPointId" in value;
-}
+const FormTheme = createContext(defaultTheme);
+
+export default FormTheme;

@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import { actions, FormState } from "@/devTools/editor/editorSlice";
+import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { Runtime } from "webextension-polyfill-ts";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/devTools/store";

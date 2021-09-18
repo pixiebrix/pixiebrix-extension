@@ -35,9 +35,10 @@ import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConf
 import styles from "./EditTab.module.scss";
 import TraceView from "@/devTools/editor/tabs/editTab/TraceView";
 import { uuidv4 } from "@/types/helpers";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
+import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -53,6 +54,10 @@ async function filterBlocks(
 const NotImplementedFoundationEditor: React.FC<{ isLocked: boolean }> = () => (
   <div>Configuration pane not implement for this extension type yet.</div>
 );
+
+const blockConfigTheme: ThemeProps = {
+  layout: "vertical",
+};
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -212,17 +217,20 @@ const EditTab: React.FC<{
           />
         </div>
         <div className={styles.configPanel}>
-          {activeNodeIndex === 0 && <FoundationNode isLocked={isLocked} />}
+          <FormTheme.Provider value={blockConfigTheme}>
+            {activeNodeIndex === 0 && <FoundationNode isLocked={isLocked} />}
 
-          {activeNodeIndex > 0 && (
-            <EditorNodeConfigPanel
-              blockFieldName={blockFieldName}
-              blockId={resolvedBlocks[activeNodeIndex - 1].id}
-              onRemoveNode={() => {
-                removeBlock(activeNodeIndex - 1);
-              }}
-            />
-          )}
+            {activeNodeIndex > 0 && (
+              <EditorNodeConfigPanel
+                key={blockPipeline[activeNodeIndex - 1].instanceId}
+                blockFieldName={blockFieldName}
+                blockId={resolvedBlocks[activeNodeIndex - 1].id}
+                onRemoveNode={() => {
+                  removeBlock(activeNodeIndex - 1);
+                }}
+              />
+            )}
+          </FormTheme.Provider>
         </div>
         <div className={styles.tracePanel}>
           {activeNodeIndex === 0 && (

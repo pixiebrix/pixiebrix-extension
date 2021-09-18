@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { IBlock } from "@/core";
 import { useFormikContext } from "formik";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { Card } from "react-bootstrap";
 import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

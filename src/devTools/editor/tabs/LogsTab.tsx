@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { Tab } from "react-bootstrap";
 import RunLogCard from "./RunLogCard";
 import { useFormikContext } from "formik";

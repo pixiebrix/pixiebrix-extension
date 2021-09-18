@@ -16,7 +16,7 @@
  */
 
 import { IExtension } from "@/core";
-import { actions, FormState } from "@/devTools/editor/editorSlice";
+import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useModals } from "@/components/ConfirmationModal";
 import { useCallback } from "react";

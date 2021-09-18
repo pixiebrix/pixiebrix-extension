@@ -22,9 +22,8 @@ import { getUID } from "@/background/telemetry";
 import { AuthOption } from "@/auth/authTypes";
 import { useAsyncState } from "./common";
 import { readRawConfigurations } from "@/services/registry";
-import { SanitizedAuth } from "@/types/contract";
 import { useMemo, useCallback } from "react";
-import useFetch from "./useFetch";
+import { useGetServiceAuthsQuery } from "@/services/api";
 
 interface OrganizationResponse {
   readonly id: string;
@@ -89,7 +88,10 @@ function defaultLabel(label: string): string {
   return normalized === "" ? "Default" : normalized;
 }
 
-export function useAuthOptions(): [AuthOption[], () => Promise<void>] {
+export function useAuthOptions(): [AuthOption[], () => void] {
+  // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
+  // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
+  // store to reload if it's changed on another tab
   const [
     configuredServices,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
@@ -99,9 +101,10 @@ export function useAuthOptions(): [AuthOption[], () => Promise<void>] {
     refreshLocal,
   ] = useAsyncState<RawServiceConfiguration[]>(readRawConfigurations);
 
-  const { data: remoteAuths, refresh: refreshRemote } = useFetch<
-    SanitizedAuth[]
-  >("/api/services/shared/?meta=1");
+  const {
+    data: remoteAuths,
+    refetch: refreshRemote,
+  } = useGetServiceAuthsQuery();
 
   const authOptions = useMemo(() => {
     const localOptions = (configuredServices ?? []).map((x) => ({
@@ -123,8 +126,9 @@ export function useAuthOptions(): [AuthOption[], () => Promise<void>] {
     return [...localOptions, ...sharedOptions];
   }, [remoteAuths, configuredServices]);
 
-  const refresh = useCallback(async () => {
-    await Promise.all([refreshRemote(), refreshLocal()]);
+  const refresh = useCallback(() => {
+    refreshRemote();
+    void refreshLocal();
   }, [refreshRemote, refreshLocal]);
 
   return [authOptions, refresh];
