@@ -14,31 +14,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 import React from "react";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
-import UrlMatchPatternField from "@/devTools/editor/fields/UrlMatchPatternField";
-import FieldSection from "@/devTools/editor/fields/FieldSection";
+import styles from "./FieldSection.module.scss";
 
-const PanelConfiguration: React.FC<{
-  isLocked: boolean;
-}> = ({ isLocked = false }) => (
-  <Card>
-    <FieldSection title="Configuration">
-      <ConnectedFieldTemplate
-        name="extension.heading"
-        label="Heading"
-        description="Panel heading to show in the sidebar"
-      />
-
-      <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        label="Sites"
-        disabled={isLocked}
-      />
-    </FieldSection>
-  </Card>
+/**
+ * A Page Editor edit tab field section.
+ */
+const FieldSection: React.FC<{ title: string }> = ({ title, children }) => (
+  <>
+    <Card.Header className={styles.cardHeader}>{title}</Card.Header>
+    <Card.Body className={styles.cardBody}>{children}</Card.Body>
+  </>
 );
 
-export default PanelConfiguration;
+export default FieldSection;

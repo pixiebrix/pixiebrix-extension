@@ -39,7 +39,9 @@ export type FieldProps<
     touched?: boolean | undefined;
   };
 
-export type CustomFieldWidget = React.ComponentType<FieldProps>;
+export type CustomFieldWidget<
+  TExtra extends Record<string, unknown> = never
+> = React.ComponentType<FieldProps & TExtra>;
 
 type FieldRenderProps = Except<FieldProps, "layout">;
 

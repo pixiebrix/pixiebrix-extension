@@ -36,7 +36,7 @@ import {
 import { ContextMenuFormState } from "@/devTools/editor/extensionPoints/contextMenu";
 import { getCurrentURL } from "@/devTools/utils";
 
-const CONTEXTS = [
+export const CONTEXTS = [
   "page",
   "all",
   "frame",
@@ -48,7 +48,10 @@ const CONTEXTS = [
   "audio",
 ];
 
-const contextOptions = CONTEXTS.map((value) => ({ value, label: value }));
+export const contextOptions = CONTEXTS.map((value) => ({
+  value,
+  label: value,
+}));
 
 interface ContextOption {
   value: string;

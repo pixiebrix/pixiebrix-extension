@@ -17,5 +17,12 @@
 
 .cardHeader {
   width: 100%;
-  margin-bottom: 1em;
+  // Avoid double-border from the card border
+  &:not(:first-child) {
+    border-top: 1px solid rgba(0, 0, 0, 0.125);
+  }
+}
+
+.cardBody {
+  padding: 0.5em;
 }

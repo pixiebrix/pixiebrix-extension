@@ -56,6 +56,7 @@ import { Menus } from "webextension-polyfill-ts";
 import { BlockPipeline } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 
 const wizard: WizardStep[] = [
   { step: "Menu Item", Component: MenuItemTab },
@@ -263,6 +264,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   elementType: "contextMenu",
   label: "Context Menu",
   baseClass: ContextMenuExtensionPoint,
+  EditorNode: ContextMenuConfiguration,
   selectNativeElement: undefined,
   icon: faBars,
   fromNativeElement,

@@ -18,35 +18,27 @@
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
+import UrlMatchPatternField from "@/devTools/editor/fields/UrlMatchPatternField";
+import FieldSection from "@/devTools/editor/fields/FieldSection";
 import TemplateWidget, {
   Snippet,
 } from "@/devTools/editor/fields/TemplateWidget";
-import FieldSection from "@/devTools/editor/fields/FieldSection";
-import UrlMatchPatternField from "@/devTools/editor/fields/UrlMatchPatternField";
-import IconWidget from "@/components/fields/IconWidget";
 import LocationWidget from "@/devTools/editor/fields/LocationWidget";
-import SelectWidget, { Option } from "@/devTools/editor/fields/SelectWidget";
 
-const menuSnippets: Snippet[] = [
-  { label: "caption", value: "{{{caption}}}" },
-  { label: "icon", value: "{{{icon}}}" },
-  { label: "space", value: "&nbsp;" },
+const panelSnippets: Snippet[] = [
+  { label: "heading", value: "{{{heading}}}" },
+  { label: "body", value: "{{{body}}}" },
 ];
 
-const positionOptions: Option[] = [
-  { value: "append", label: "End" },
-  { value: "prepend", label: "Start" },
-];
-
-const MenuItemConfiguration: React.FC<{
+const PanelConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
   <Card>
     <FieldSection title="Configuration">
       <ConnectedFieldTemplate
-        name="extension.caption"
-        label="Caption"
-        description="Button caption"
+        name="extension.heading"
+        label="Heading"
+        description="Panel heading"
       />
 
       <ConnectedFieldTemplate
@@ -63,31 +55,30 @@ const MenuItemConfiguration: React.FC<{
       />
     </FieldSection>
 
-    <FieldSection title="Advanced">
+    <FieldSection title="Configuration">
       <ConnectedFieldTemplate
-        name="extension.icon"
-        label="Icon"
-        as={IconWidget}
-        description="Icon to place in the icon placeholder of the template"
+        name="extension.collapsible"
+        layout="switch"
+        label="Collapsible"
+        description="Panel heading to show in the sidebar"
       />
 
       <ConnectedFieldTemplate
-        name="extensionPoint.definition.position"
-        label="Order/Position"
-        description="Position relative to other menu items/buttons"
-        as={SelectWidget}
-        options={positionOptions}
+        name="extension.shadowDOM"
+        layout="switch"
+        label="Shadow DOM"
+        description="Isolate the panel style with a Shadow DOM"
       />
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.template"
         label="Template"
         as={TemplateWidget}
-        description="A template for the item, with a placeholder for the caption and/or icon"
-        snippets={menuSnippets}
+        description="A template for the item, with a placeholder for the heading and body"
+        snippets={panelSnippets}
       />
     </FieldSection>
   </Card>
 );
 
-export default MenuItemConfiguration;
+export default PanelConfiguration;

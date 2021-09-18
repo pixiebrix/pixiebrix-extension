@@ -56,6 +56,7 @@ import {
 import { BlockPipeline } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
 
 const wizard: WizardStep[] = [
   { step: "Name", Component: MetaTab },
@@ -238,6 +239,7 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   elementType: "trigger",
   label: "Trigger",
   baseClass: TriggerExtensionPoint,
+  EditorNode: TriggerConfiguration,
   selectNativeElement: undefined,
   icon: faBolt,
   fromNativeElement,
