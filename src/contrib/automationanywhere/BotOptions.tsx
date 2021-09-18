@@ -19,7 +19,6 @@ import React, { useMemo } from "react";
 import {
   BlockOptionProps,
   FieldRenderer,
-  ServiceField,
 } from "@/components/fields/blockOptions";
 import { isEmpty, compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
@@ -43,6 +42,7 @@ import {
 } from "@/contrib/automationanywhere/contract";
 import { getErrorMessage } from "@/errors";
 import { validateRegistryId } from "@/types/helpers";
+import ServiceField from "@/components/fields/schemaFields/ServiceField";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"

@@ -23,7 +23,7 @@ import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExt
 import Centered from "@/devTools/editor/components/Centered";
 import { Button } from "react-bootstrap";
 import BlockModal from "@/components/fields/BlockModal";
-import { editorSlice, FormState } from "@/devTools/editor/editorSlice";
+import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faPlus } from "@fortawesome/free-solid-svg-icons";
 import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";

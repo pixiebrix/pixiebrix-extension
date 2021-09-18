@@ -23,7 +23,7 @@ import {
   extensionToFormState,
   selectType,
 } from "@/devTools/editor/extensionPoints/adapter";
-import { actions } from "@/devTools/editor/editorSlice";
+import { actions } from "@/devTools/editor/slices/editorSlice";
 import { reportError } from "@/telemetry/logging";
 import { ListGroup } from "react-bootstrap";
 import {

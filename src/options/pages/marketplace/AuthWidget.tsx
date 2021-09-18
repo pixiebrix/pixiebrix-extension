@@ -50,7 +50,7 @@ const AuthWidget: React.FunctionComponent<{
   /**
    * Optional callback to refresh the authOptions.
    */
-  onRefresh?: () => Promise<void>;
+  onRefresh?: () => void;
 }> = ({ name, serviceId, authOptions, onRefresh }) => {
   const helpers = useField<UUID>(name)[2];
   const dispatch = useDispatch();
@@ -87,7 +87,7 @@ const AuthWidget: React.FunctionComponent<{
       await refreshBackgroundLocator({ remote: false, local: true });
 
       if (onRefresh) {
-        await onRefresh();
+        onRefresh();
       }
 
       notify.success("Added configuration for integration");

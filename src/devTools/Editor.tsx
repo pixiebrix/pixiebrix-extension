@@ -36,7 +36,7 @@ import useEscapeHandler from "@/devTools/editor/hooks/useEscapeHandler";
 import GenericInsertPane from "@/devTools/editor/panes/insert/GenericInsertPane";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
-import { actions } from "@/devTools/editor/editorSlice";
+import { actions } from "@/devTools/editor/slices/editorSlice";
 
 const selectEditor = ({ editor }: RootState) => editor;
 

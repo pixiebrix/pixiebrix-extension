@@ -16,7 +16,7 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { partial, pick } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";

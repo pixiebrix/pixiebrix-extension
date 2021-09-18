@@ -19,7 +19,7 @@ import React from "react";
 import { Field, FieldInputProps, useFormikContext } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import LockedFoundationTab from "@/devTools/editor/tabs/LockedFoundationTab";
 
 const FoundationTab: React.FunctionComponent<{

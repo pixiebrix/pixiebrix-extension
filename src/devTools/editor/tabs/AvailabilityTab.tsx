@@ -19,7 +19,7 @@ import React, { useCallback, useMemo } from "react";
 import { Alert, Col, Form, Row, Tab } from "react-bootstrap";
 import { FastField, FieldInputProps, useFormikContext } from "formik";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import {
   createDomainPattern,
   createSitePattern,

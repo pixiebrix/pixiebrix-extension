@@ -19,7 +19,6 @@ import React, { useEffect, useMemo } from "react";
 import {
   BlockOptionProps,
   FieldRenderer,
-  ServiceField,
 } from "@/components/fields/blockOptions";
 import { compact } from "lodash";
 import {
@@ -38,6 +37,7 @@ import { parseAssemblyQualifiedName } from "csharp-helpers";
 import { inputProperties } from "@/helpers";
 import useDependency from "@/services/useDependency";
 import { BusinessError, getErrorMessage } from "@/errors";
+import ServiceField from "@/components/fields/schemaFields/ServiceField";
 
 interface Argument {
   name: string;

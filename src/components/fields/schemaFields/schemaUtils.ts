@@ -15,15 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { IExtension } from "@/core";
+import { Schema } from "@/core";
 
-export type SidebarItem = IExtension | FormState;
+type TypePredicate = (schema: Schema) => boolean;
 
-export function getLabel(extension: FormState): string {
-  return extension.label ?? extension.extensionPoint.metadata.name;
-}
+export const textPredicate = (schema: Schema) => schema.type === "string";
+export const booleanPredicate = (schema: Schema) => schema.type === "boolean";
 
-export function isExtension(value: SidebarItem): value is IExtension {
-  return "extensionPointId" in value;
+export function findOneOf(schema: Schema, predicate: TypePredicate): Schema {
+  return schema.oneOf?.find(
+    (x) => typeof x === "object" && predicate(x)
+  ) as Schema;
 }

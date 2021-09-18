@@ -37,6 +37,8 @@ import {
   installedPageSlice,
   InstalledPageState,
 } from "./pages/installed/installedPageSlice";
+import { appApi } from "@/services/api";
+import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -55,7 +57,7 @@ export interface RootState {
   installedPage: InstalledPageState;
 }
 
-const middleware = [routerMiddleware(hashHistory)];
+const middleware = [routerMiddleware(hashHistory), appApi.middleware];
 if (process.env.NODE_ENV === "development") {
   // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
@@ -77,5 +79,10 @@ const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+// https://redux-toolkit.js.org/rtk-query/overview#configure-the-store
+// Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
+// callback as the 2nd arg for customization
+setupListeners(store.dispatch);
 
 export default store;

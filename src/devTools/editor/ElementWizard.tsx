@@ -27,7 +27,7 @@ import { useFormikContext } from "formik";
 import { isEmpty, groupBy } from "lodash";
 import { checkAvailable } from "@/background/devtools";
 import { Badge, Form, Nav, Tab } from "react-bootstrap";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";

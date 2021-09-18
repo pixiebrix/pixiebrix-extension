@@ -21,18 +21,16 @@ import { FieldArray, useField } from "formik";
 import { ServiceDependency } from "@/core";
 import DependencyRow from "./DependencyRow";
 import { head } from "lodash";
-import { ServiceDefinition } from "@/types/definitions";
 import ServiceModal from "@/components/fields/ServiceModal";
 import { PACKAGE_REGEX } from "@/types/helpers";
-import useFetch from "@/hooks/useFetch";
 import AsyncButton from "@/components/AsyncButton";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud, faPlus, faSync } from "@fortawesome/free-solid-svg-icons";
 import { browser } from "webextension-polyfill-ts";
 import { useToasts } from "react-toast-notifications";
-
 import "./ServicesTab.scss";
 import { useAuthOptions } from "@/hooks/auth";
+import { useGetServicesQuery } from "@/services/api";
 
 function defaultOutputKey(serviceId: string): string {
   const match = PACKAGE_REGEX.exec(serviceId);
@@ -48,14 +46,13 @@ const ServicesTab: React.FunctionComponent<{
   const [selectKey, setKey] = useState(0);
 
   const [authOptions, refreshAuths] = useAuthOptions();
-  const { data: services, refresh: refreshServices } = useFetch<
-    ServiceDefinition[]
-  >("/api/services/");
 
-  const refresh = useCallback(
-    async () => Promise.all([refreshServices(), refreshAuths()]),
-    [refreshAuths, refreshServices]
-  );
+  const { data: services, refetch: refreshServices } = useGetServicesQuery();
+
+  const refresh = useCallback(() => {
+    refreshServices();
+    refreshAuths();
+  }, [refreshAuths, refreshServices]);
 
   return (
     <Tab.Pane eventKey={eventKey} className="h-100">
@@ -114,7 +111,7 @@ const ServicesTab: React.FunctionComponent<{
                 </Button>
                 <AsyncButton
                   onClick={async () => {
-                    await refresh();
+                    refresh();
                     addToast("Refreshed available integration configurations", {
                       appearance: "success",
                       autoDismiss: true,

@@ -19,7 +19,7 @@ import React, { useContext, useState } from "react";
 import { Button, ListGroup, Tab } from "react-bootstrap";
 import { FieldArray, useField, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FormState, actions } from "@/devTools/editor/editorSlice";
+import { FormState, actions } from "@/devTools/editor/slices/editorSlice";
 import ReaderConfig from "@/devTools/editor/tabs/reader/ReaderConfig";
 import { makeDefaultReader } from "@/devTools/editor/extensionPoints/base";
 import { DevToolsContext } from "@/devTools/context";
