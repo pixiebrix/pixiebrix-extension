@@ -19,37 +19,45 @@ import JSONTree from "react-json-tree";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
-import { searchData } from "@/devTools/editor/tabs/reader/ReaderConfig";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import styles from "./JsonTree.module.scss";
 import GridLoader from "react-spinners/GridLoader";
+import { searchData } from "@/devTools/utils";
 
 export type JsonTreeProps = Partial<JSONTree["props"]> & {
   copyable?: boolean | undefined;
   searchable?: boolean | undefined;
   label?: string | undefined;
+  prefixFilter?: string | undefined;
 };
 
 const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
   searchable = false,
   label,
+  prefixFilter,
   ...jsonProps
 }) => {
   const { data, ...restProps } = jsonProps;
+
+  const filteredData = useMemo(
+    () =>
+      prefixFilter === undefined ? data : searchData(prefixFilter, data, true),
+    [prefixFilter, data]
+  );
 
   const [query, setQuery] = useState("");
 
   const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
 
   const searchResults = useMemo(() => {
-    if (debouncedQuery === "" || data == null) {
-      return data;
+    if (debouncedQuery === "" || filteredData == null) {
+      return filteredData;
     }
 
-    return searchData(debouncedQuery, data);
-  }, [debouncedQuery, data]);
+    return searchData(debouncedQuery, filteredData);
+  }, [debouncedQuery, filteredData]);
 
   const copyLabelRenderer = useLabelRenderer();
 

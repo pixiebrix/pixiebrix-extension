@@ -16,6 +16,15 @@
  */
 
 import { browser } from "webextension-polyfill-ts";
+import { Primitive } from "type-fest";
+import {
+  compact,
+  includes,
+  isEmpty,
+  mapValues,
+  pickBy,
+  startsWith,
+} from "lodash";
 
 function printf(string: string, arguments_: string[]): string {
   // eslint-disable-next-line unicorn/no-array-reduce -- Short and already described by "printf"
@@ -42,4 +51,46 @@ export async function getCurrentURL(): Promise<string> {
   }
 
   return response;
+}
+
+function normalize(value: Primitive): string {
+  return value.toString().toLowerCase();
+}
+
+export function searchData(
+  query: string,
+  data: unknown,
+  prefixOnly = false
+): unknown {
+  const normalizedQuery = normalize(query);
+  if (data == null) {
+    return null;
+  }
+
+  const matches = (str: string, q: string) =>
+    prefixOnly ? startsWith(str, q) : includes(str, q);
+
+  if (typeof data === "object") {
+    const values = mapValues(data, (value, key) =>
+      matches(normalize(key), normalizedQuery)
+        ? value
+        : searchData(query, value)
+    );
+    return pickBy(values, (value, key) => {
+      const keyMatch = matches(normalize(key), normalizedQuery);
+      const valueMatch =
+        typeof value === "object" || Array.isArray(value)
+          ? !isEmpty(value)
+          : value != null;
+      return keyMatch || valueMatch;
+    });
+  }
+
+  if (Array.isArray(data)) {
+    return compact(data.map((d) => searchData(query, d)));
+  }
+
+  return matches(normalize(data as Primitive), normalizedQuery)
+    ? data
+    : undefined;
 }

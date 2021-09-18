@@ -80,7 +80,12 @@ const TraceView: React.FunctionComponent<{
   return (
     <Tabs defaultActiveKey="output">
       <Tab eventKey="context" title="Context" tabClassName={styles.tab}>
-        <JsonTree data={record.templateContext} copyable searchable />
+        <JsonTree
+          data={record.templateContext}
+          copyable
+          searchable
+          prefixFilter="@"
+        />
       </Tab>
       <Tab eventKey="rendered" title="Rendered Input" tabClassName={styles.tab}>
         <JsonTree data={record.renderedArgs} copyable searchable />
