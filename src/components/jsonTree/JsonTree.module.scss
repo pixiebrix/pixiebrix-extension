@@ -20,3 +20,12 @@
   overflow-x: hidden;
   padding-top: 0.5rem;
 }
+
+.copyPath {
+  cursor: pointer;
+  color: lightgray;
+  margin-left: 5px;
+  &:hover {
+    color: #007bff;
+  }
+}

@@ -150,24 +150,6 @@
     font-size: 0.875rem;
   }
 
-  //.col {
-  //  padding-left: 0;
-  //  padding-right: 0;
-  //}
-
-  .ReaderTree {
-    &__copy-path {
-      cursor: pointer;
-      color: lightgray;
-      margin-left: 5px;
-      &:hover {
-        color: #007bff;
-      }
-    }
-  }
-
-  // https://github.com/tomkp/react-split-pane
-
   .Resizer {
     background: #000;
     opacity: 0.2;

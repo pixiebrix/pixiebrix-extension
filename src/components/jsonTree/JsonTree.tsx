@@ -20,48 +20,52 @@ import { jsonTreeTheme as theme } from "@/themes/light";
 import React, { useCallback, useMemo, useState } from "react";
 import { useDebounce } from "use-debounce";
 import FieldTemplate from "@/components/form/FieldTemplate";
-import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import styles from "./JsonTree.module.scss";
 import GridLoader from "react-spinners/GridLoader";
 import { searchData } from "@/devTools/utils";
+import { useLabelRenderer } from "./treeHooks";
+
+const SEARCH_DEBOUNCE_MS = 100;
 
 export type JsonTreeProps = Partial<JSONTree["props"]> & {
-  copyable?: boolean | undefined;
-  searchable?: boolean | undefined;
-  label?: string | undefined;
-  prefixFilter?: string | undefined;
+  /**
+   * True if user can copy the path properties (default=false)
+   */
+  copyable?: boolean;
+  /**
+   * True to show a search widget (default=false)
+   */
+  searchable?: boolean;
+
+  /**
+   * A label to show above the tree when no search query is active
+   */
+  label?: string;
 };
 
 const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
   copyable = false,
   searchable = false,
   label,
-  prefixFilter,
-  ...jsonProps
+  data,
+  ...restProps
 }) => {
-  const { data, ...restProps } = jsonProps;
-
-  const filteredData = useMemo(
-    () =>
-      prefixFilter === undefined ? data : searchData(prefixFilter, data, true),
-    [prefixFilter, data]
-  );
-
   const [query, setQuery] = useState("");
 
-  const [debouncedQuery] = useDebounce(query, 100, { trailing: true });
+  const [debouncedQuery] = useDebounce(query, SEARCH_DEBOUNCE_MS, {
+    trailing: true,
+    leading: false,
+  });
 
   const searchResults = useMemo(() => {
-    if (debouncedQuery === "" || filteredData == null) {
-      return filteredData;
+    if (debouncedQuery === "" || data == null) {
+      return data;
     }
 
-    return searchData(debouncedQuery, filteredData);
-  }, [debouncedQuery, filteredData]);
+    return searchData(debouncedQuery, data);
+  }, [debouncedQuery, data]);
 
   const copyLabelRenderer = useLabelRenderer();
-
-  const labelRenderer = copyable ? copyLabelRenderer : undefined;
 
   const onChangeQuery = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,6 +73,8 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
     },
     [setQuery]
   );
+
+  const labelText = query ? `Search Results: ${query}` : label;
 
   return (
     <div className={styles.root}>
@@ -82,17 +88,13 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
           onChange={onChangeQuery}
         />
       )}
-      {label ? (
-        <span>{query ? `Search Results: ${query}` : label}</span>
-      ) : (
-        query && <span>{`Search Results: ${query}`}</span>
-      )}
+      {labelText && <span>{label}</span>}
       {searchResults === undefined ? (
         <GridLoader />
       ) : (
         <JSONTree
           data={searchResults}
-          labelRenderer={labelRenderer}
+          labelRenderer={copyable ? copyLabelRenderer : undefined}
           hideRoot
           theme={theme}
           invertTheme

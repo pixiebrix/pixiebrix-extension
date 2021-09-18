@@ -90,7 +90,7 @@ const EditorNodeConfigPanel: React.FC<{
         onClick={onRemoveNode}
         className={styles.removeButton}
       >
-        <FontAwesomeIcon icon={faTrash} /> Remove Node
+        <FontAwesomeIcon icon={faTrash} /> Remove Brick
       </Button>
 
       <BlockConfiguration

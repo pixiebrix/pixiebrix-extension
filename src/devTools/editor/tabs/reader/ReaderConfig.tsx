@@ -39,12 +39,12 @@ import {
 import devtoolFields from "@/devTools/editor/fields/Fields";
 // @ts-expect-error no type definitions?
 import GenerateSchema from "generate-schema";
-import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import type { ReadOptions } from "@/pageScript/protocol";
 import { searchData } from "@/devTools/utils";
+import { useLabelRenderer } from "@/components/jsonTree/treeHooks";
 
 type ReaderSelector = (
   options: ReadOptions & {

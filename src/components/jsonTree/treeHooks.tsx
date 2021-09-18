@@ -20,6 +20,7 @@ import copy from "copy-to-clipboard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import { useToasts } from "react-toast-notifications";
+import styles from "./JsonTree.module.scss";
 
 export function useLabelRenderer() {
   const { addToast } = useToasts();
@@ -31,14 +32,16 @@ export function useLabelRenderer() {
       nodeType: string,
       expanded: boolean
     ) => (
-      <span>
+      <div>
         <span>{key}</span>
         {!expanded && ": "}
         <span
-          className="ReaderTree__copy-path"
+          role="button"
+          className={styles.copyPath}
           aria-label="copy path"
-          onClick={() => {
+          onClick={(e) => {
             copy([key, ...rest].reverse().join("."));
+            e.stopPropagation();
             addToast("Copied property path to the clipboard", {
               appearance: "info",
               autoDismiss: true,
@@ -47,7 +50,7 @@ export function useLabelRenderer() {
         >
           <FontAwesomeIcon icon={faCopy} aria-hidden />
         </span>
-      </span>
+      </div>
     ),
     [addToast]
   );

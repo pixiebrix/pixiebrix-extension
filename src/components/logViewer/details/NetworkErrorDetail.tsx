@@ -25,7 +25,7 @@ import {
   faCheck,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-import JsonTree from "@/components/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 import urljoin from "url-join";
 import { getReasonPhrase } from "http-status-codes";
 import { isAbsoluteUrl } from "@/utils";
