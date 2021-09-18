@@ -26,7 +26,7 @@ import ServiceField, {
   SERVICE_BASE_SCHEMA,
 } from "@/components/fields/schemaFields/ServiceField";
 import BooleanField from "@/components/fields/schemaFields/BooleanField";
-import TextField from "@/components/fields/schemaFields/TextFields";
+import TextField from "@/components/fields/schemaFields/TextField";
 import ArrayField from "@/components/fields/schemaFields/ArrayField";
 import {
   booleanPredicate,
