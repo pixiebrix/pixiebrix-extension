@@ -38,6 +38,7 @@ import QuickAdd from "@/devTools/editor/tabs/effect/QuickAdd";
 import { MarketplaceListing } from "@/types/contract";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BlockIcon from "@/components/BlockIcon";
+import { isNullOrBlank } from "@/utils";
 
 const BlockResult: React.FunctionComponent<{
   block: IBlock;
@@ -75,10 +76,9 @@ type BlockOption = {
 };
 
 function searchBlocks(query: string, options: BlockOption[]): BlockOption[] {
-  let filtered = options;
-  if (query?.trim() !== "") {
+  if (!isNullOrBlank(query?.trim())) {
     const normalizedQuery = query.toLowerCase();
-    filtered = options.filter(
+    return options.filter(
       (x) =>
         x.label.toLowerCase().includes(normalizedQuery) ||
         x.block.id.includes(normalizedQuery) ||
@@ -86,7 +86,7 @@ function searchBlocks(query: string, options: BlockOption[]): BlockOption[] {
     );
   }
 
-  return sortBy(filtered, (x) => x.label);
+  return options;
 }
 
 function makeBlockOption(block: IBlock): BlockOption {
@@ -148,13 +148,13 @@ const BlockModal: React.FunctionComponent<{
   const [query, setQuery] = useState("");
   const [detailBlock, setDetailBlock] = useState(null);
   const { data: listings = [] } = useGetMarketplaceListingsQuery();
-  const [debouncedQuery] = useDebounce(query, 150, {
+  const [debouncedQuery] = useDebounce(query, 100, {
     trailing: true,
     leading: false,
   });
 
   const blockOptions = useMemo(
-    () => (blocks ?? []).map(unary(makeBlockOption)),
+    () => sortBy((blocks ?? []).map(unary(makeBlockOption)), (x) => x.label),
     [blocks]
   );
 
