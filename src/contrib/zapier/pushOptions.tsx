@@ -19,15 +19,15 @@
 import React, { useCallback, useMemo, useState } from "react";
 import {
   BlockOptionProps,
-  FieldRenderer,
-} from "@/components/fields/blockOptions";
+  OUTPUT_KEY_SCHEMA,
+} from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Webhook } from "@/contrib/zapier/contract";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
@@ -38,6 +38,7 @@ import { containsPermissions } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -145,13 +146,10 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
       )}
 
       {showOutputKey && (
-        <FieldRenderer
+        <SchemaField
           name={`${name}.outputKey`}
           label="Output Variable"
-          schema={{
-            type: "string",
-            description: "A name to refer to this brick in subsequent bricks",
-          }}
+          schema={OUTPUT_KEY_SCHEMA}
         />
       )}
     </div>

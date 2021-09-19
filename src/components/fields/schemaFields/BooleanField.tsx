@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 

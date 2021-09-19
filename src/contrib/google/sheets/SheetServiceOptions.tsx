@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { BlockOptionProps } from "@/components/fields/blockOptions";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 

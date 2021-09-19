@@ -38,6 +38,11 @@ import QuickAdd from "@/devTools/editor/tabs/effect/QuickAdd";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { BlockPipeline } from "@/blocks/types";
 import { uuidv4 } from "@/types/helpers";
+import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
+
+const formTheme: ThemeProps = {
+  layout: "vertical",
+};
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -135,74 +140,77 @@ const EffectTab: React.FunctionComponent<{
 
   return (
     <Tab.Pane eventKey={eventKey} className="EffectTab h-100">
-      <div className="d-flex h-100">
-        <FieldArray
-          name={fieldName}
-          render={({ move, remove }) => (
-            <div className="h-100 ReaderSidebar flex-grow-0">
-              <div className="d-flex">
-                <BlockModalWrapper
-                  blocks={relevantBlocks}
-                  appendBlock={appendBlock}
-                />
+      <FormTheme.Provider value={formTheme}>
+        <div className="d-flex h-100">
+          <FieldArray
+            name={fieldName}
+            render={({ move, remove }) => (
+              <div className="h-100 ReaderSidebar flex-grow-0">
+                <div className="d-flex">
+                  <BlockModalWrapper
+                    blocks={relevantBlocks}
+                    appendBlock={appendBlock}
+                  />
+                </div>
+
+                <DragDropContext
+                  onDragEnd={(x) => {
+                    move(x.source.index, x.destination.index);
+                    setActiveIndex(x.destination.index);
+                  }}
+                >
+                  <Droppable droppableId="reader-list">
+                    {(provided) => (
+                      <ListGroup
+                        className="ReaderList"
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                      >
+                        {zip(actions, resolvedBlocks).map(
+                          ([blockConfig, block], index) => (
+                            <BlockEntry
+                              key={`${index}-${blockConfig.id}`}
+                              index={index}
+                              isActive={activeIndex === index}
+                              isDragDisabled={actions.length === 1}
+                              block={block}
+                              outputKey={blockConfig.outputKey}
+                              onSelect={() => {
+                                setActiveIndex(index);
+                              }}
+                              onRemove={() => {
+                                setActiveIndex(Math.max(0, index - 1));
+                                remove(index);
+                              }}
+                            />
+                          )
+                        )}
+                      </ListGroup>
+                    )}
+                  </Droppable>
+                </DragDropContext>
               </div>
-              <DragDropContext
-                onDragEnd={(x) => {
-                  move(x.source.index, x.destination.index);
-                  setActiveIndex(x.destination.index);
-                }}
-              >
-                <Droppable droppableId="reader-list">
-                  {(provided) => (
-                    <ListGroup
-                      className="ReaderList"
-                      {...provided.droppableProps}
-                      ref={provided.innerRef}
-                    >
-                      {zip(actions, resolvedBlocks).map(
-                        ([blockConfig, block], index) => (
-                          <BlockEntry
-                            key={`${index}-${blockConfig.id}`}
-                            index={index}
-                            isActive={activeIndex === index}
-                            isDragDisabled={actions.length === 1}
-                            block={block}
-                            outputKey={blockConfig.outputKey}
-                            onSelect={() => {
-                              setActiveIndex(index);
-                            }}
-                            onRemove={() => {
-                              setActiveIndex(Math.max(0, index - 1));
-                              remove(index);
-                            }}
-                          />
-                        )
-                      )}
-                    </ListGroup>
-                  )}
-                </Droppable>
-              </DragDropContext>
-            </div>
-          )}
-        />
-        <div className="h-100 flex-grow-1">
-          <div className="overflow-auto">
-            {activeBlockConfig == null ? (
-              <ErrorBoundary>
-                <QuickAdd blocks={relevantBlocks} onSelect={appendBlock} />
-              </ErrorBoundary>
-            ) : (
-              <ErrorBoundary key={`${activeIndex}-${activeBlock.id}`}>
-                <BlockConfiguration
-                  name={`${fieldName}[${activeIndex}]`}
-                  blockId={activeBlock.id}
-                  showOutput={activeIndex !== count}
-                />
-              </ErrorBoundary>
             )}
+          />
+          <div className="h-100 flex-grow-1">
+            <div className="overflow-auto">
+              {activeBlockConfig == null ? (
+                <ErrorBoundary>
+                  <QuickAdd blocks={relevantBlocks} onSelect={appendBlock} />
+                </ErrorBoundary>
+              ) : (
+                <ErrorBoundary key={`${activeIndex}-${activeBlock.id}`}>
+                  <BlockConfiguration
+                    name={`${fieldName}[${activeIndex}]`}
+                    blockId={activeBlock.id}
+                    showOutput={activeIndex !== count}
+                  />
+                </ErrorBoundary>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </FormTheme.Provider>
     </Tab.Pane>
   );
 };

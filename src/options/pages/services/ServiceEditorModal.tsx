@@ -24,7 +24,7 @@ import { Formik, FormikHelpers } from "formik";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, truncate } from "lodash";
 import { useAsyncState } from "@/hooks/common";
-import genericOptionsFactory from "@/components/fields/blockOptions";
+import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
 import { reportError } from "@/telemetry/logging";

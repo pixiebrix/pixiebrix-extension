@@ -16,10 +16,9 @@
  */
 
 import React from "react";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Card } from "react-bootstrap";
 import { inputProperties } from "@/helpers";
-import { FieldRenderer } from "@/components/fields/blockOptions";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import GridLoader from "react-spinners/GridLoader";
@@ -27,6 +26,7 @@ import { getErrorMessage } from "@/errors";
 import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 import { Schema } from "@/core";
 import { isEmpty } from "lodash";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const FALLBACK_SCHEMA: Schema = {
   type: "object",
@@ -93,7 +93,7 @@ const ChildObjectWidget: CustomFieldWidget<
           }
 
           return (
-            <FieldRenderer
+            <SchemaField
               key={prop}
               name={[name, prop].join(".")}
               schema={schema}

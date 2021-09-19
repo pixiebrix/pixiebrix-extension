@@ -15,13 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useContext, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { Form } from "react-bootstrap";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import SchemaFieldContext, {
+  getDefaultField,
+} from "@/components/fields/schemaFields/SchemaFieldContext";
 
-const ComplexObjectWidget: CustomFieldWidget<
-  SchemaFieldProps<unknown>
-> = () => <Form.Control plaintext readOnly defaultValue="Complex object" />;
+/**
+ * A schema-based field that automatically determines it's layout/widget based on the schema and uiSchema.
+ */
+const SchemaField: React.FunctionComponent<SchemaFieldProps<unknown>> = ({
+  schema,
+  uiSchema,
+  ...props
+}) => {
+  const { customFields } = useContext(SchemaFieldContext);
+  const Field = useMemo(() => {
+    const match = customFields.find((x) => x.match(schema));
+    return match ? match.Component : getDefaultField(schema);
+  }, [schema, customFields]);
+  return <Field schema={schema} uiSchema={uiSchema} {...props} />;
+};
 
-export default ComplexObjectWidget;
+export default SchemaField;

@@ -16,9 +16,9 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import { BlockOptionProps } from "@/components/fields/blockOptions";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import { Schema } from "@/core";
 import { compact, uniq } from "lodash";

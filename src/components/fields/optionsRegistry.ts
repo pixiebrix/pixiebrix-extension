@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { BlockOptionProps } from "@/components/fields/blockOptions";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 
 /**
  * Mapping from block id to block editor.

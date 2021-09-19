@@ -18,8 +18,8 @@
 import React, { useMemo } from "react";
 import {
   BlockOptionProps,
-  FieldRenderer,
-} from "@/components/fields/blockOptions";
+  OUTPUT_KEY_SCHEMA,
+} from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
 import { Schema } from "@/core";
@@ -28,7 +28,7 @@ import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
 import { Button } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useDependency from "@/services/useDependency";
 import {
   Bot,
@@ -42,15 +42,11 @@ import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
 );
-
-const OUTPUT_KEY_SCHEMA: Schema = {
-  type: "string",
-  description: "A name to refer to this brick in subsequent bricks",
-};
 
 function useBots(): {
   bots: Bot[];
@@ -240,7 +236,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       )}
 
       {showOutputKey && (
-        <FieldRenderer
+        <SchemaField
           name={[name, "outputKey"].join(".")}
           label="Output Variable"
           schema={OUTPUT_KEY_SCHEMA}

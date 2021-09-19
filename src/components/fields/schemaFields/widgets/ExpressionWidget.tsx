@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
 

@@ -15,100 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// Ok to use object here since we don't have any key-specific logic
-// eslint-disable-next-line @typescript-eslint/ban-types
 import React from "react";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
-import { FieldArray, useField } from "formik";
-import { Schema } from "@/core";
-import { Button, Form } from "react-bootstrap";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import { getDefaultField } from "@/components/fields/blockOptions";
-import { booleanPredicate, findOneOf, textPredicate } from "./schemaUtils";
 
-function getDefaultArrayItem(schema: Schema): unknown {
-  if (schema.default) {
-    return schema.default;
-  }
-
-  if (textPredicate(schema)) {
-    return "";
-  }
-
-  if (schema.type === "object") {
-    return {};
-  }
-
-  if (findOneOf(schema, booleanPredicate)) {
-    return false;
-  }
-
-  if (findOneOf(schema, textPredicate)) {
-    return "";
-  }
-
-  return null;
-}
-
-const ArrayField: React.FunctionComponent<SchemaFieldProps<object[]>> = ({
-  schema,
-  label,
-  ...props
-}) => {
-  const [field] = useField(props);
-
-  if (Array.isArray(schema.items)) {
-    throw new TypeError("Support for arrays of mixed types is not implemented");
-  } else if (typeof schema.items === "boolean") {
-    throw new TypeError("Schema required for items");
-  }
-
-  const schemaItems = schema.items as Schema;
+const ArrayField: React.FunctionComponent<
+  SchemaFieldProps<Array<Record<string, unknown>>>
+> = (props) => {
+  const { name, label, schema } = props;
 
   return (
-    <Form.Group controlId={field.name}>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
-      {schema.description && (
-        <Form.Text className="text-muted">{schema.description}</Form.Text>
-      )}
-      <FieldArray name={field.name}>
-        {({ remove, push }) => (
-          <>
-            <ul className="list-group">
-              {(field.value ?? []).map((item: unknown, index: number) => {
-                const Renderer = getDefaultField(schemaItems);
-                return (
-                  <li className="list-group-item" key={index}>
-                    <Renderer
-                      key={index}
-                      name={`${field.name}.${index}`}
-                      schema={schemaItems}
-                      label={`${label ?? fieldLabel(field.name)} #${index + 1}`}
-                    />
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => {
-                        remove(index);
-                      }}
-                    >
-                      Remove Item
-                    </Button>
-                  </li>
-                );
-              })}
-            </ul>
-            <Button
-              onClick={() => {
-                push(getDefaultArrayItem(schemaItems));
-              }}
-            >
-              Add Item
-            </Button>
-          </>
-        )}
-      </FieldArray>
-    </Form.Group>
+    <ConnectedFieldTemplate
+      {...props}
+      label={label ?? fieldLabel(name)}
+      description={schema.description}
+      as={ArrayWidget}
+    />
   );
 };
 

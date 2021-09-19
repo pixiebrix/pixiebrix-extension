@@ -17,8 +17,13 @@
 
 import * as PropTypes from "prop-types";
 import { Schema, UiSchema } from "@/core";
+import React from "react";
 
 // https://json-schema.org/understanding-json-schema/reference/generic.html
+
+export type FieldComponent<T = unknown> = React.FunctionComponent<
+  SchemaFieldProps<T>
+>;
 
 export const schemaPropTypes = {
   type: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,

@@ -32,11 +32,10 @@ import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import { useDebounce } from "use-debounce";
 import { Schema } from "@/core";
-import {
+import SchemaFieldContext, {
   getDefaultField,
-  RendererContext,
-} from "@/components/fields/blockOptions";
-import devtoolFields from "@/devTools/editor/fields/Fields";
+} from "@/components/fields/schemaFields/SchemaFieldContext";
+import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
 // @ts-expect-error no type definitions?
 import GenerateSchema from "generate-schema";
 import ToggleField from "@/devTools/editor/components/ToggleField";
@@ -411,7 +410,7 @@ const ReaderConfig: React.FunctionComponent<{
 
   return (
     <div className="h-100">
-      <RendererContext.Provider value={devtoolFields}>
+      <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
         <Form.Group as={Row} controlId="formReaderId">
           <Form.Label column sm={2}>
             Name
@@ -522,7 +521,7 @@ const ReaderConfig: React.FunctionComponent<{
             </Col>
           </Row>
         )}
-      </RendererContext.Provider>
+      </SchemaFieldContext.Provider>
     </div>
   );
 };

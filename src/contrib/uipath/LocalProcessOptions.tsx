@@ -16,10 +16,6 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import {
-  BlockOptionProps,
-  FieldRenderer,
-} from "@/components/fields/blockOptions";
 import { compact } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/localProcess";
 import { Schema } from "@/core";
@@ -27,7 +23,7 @@ import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { Button } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useAsyncEffect } from "use-async-effect";
 import {
   getUiPathProcesses,
@@ -46,6 +42,11 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { releaseSchema } from "@/contrib/uipath/typeUtils";
+import {
+  BlockOptionProps,
+  OUTPUT_KEY_SCHEMA,
+} from "@/components/fields/schemaFields/genericOptionsFactory";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 interface Process {
   id: string;
@@ -242,13 +243,10 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       )}
 
       {showOutputKey && (
-        <FieldRenderer
+        <SchemaField
           name={`${name}.outputKey`}
           label="Output Variable"
-          schema={{
-            type: "string",
-            description: "A name to refer to this brick in subsequent bricks",
-          }}
+          schema={OUTPUT_KEY_SCHEMA}
         />
       )}
     </div>

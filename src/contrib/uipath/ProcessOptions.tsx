@@ -18,8 +18,8 @@
 import React, { useEffect, useMemo } from "react";
 import {
   BlockOptionProps,
-  FieldRenderer,
-} from "@/components/fields/blockOptions";
+  OUTPUT_KEY_SCHEMA,
+} from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import {
   UIPATH_PROPERTIES,
@@ -31,7 +31,7 @@ import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
 import { Button } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useDependency from "@/services/useDependency";
 import { getErrorMessage } from "@/errors";
 import ServiceField from "@/components/fields/schemaFields/ServiceField";
@@ -41,6 +41,7 @@ import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 import { ODataResponseData, Release, Robot } from "./uipathContract";
 import { releaseSchema } from "@/contrib/uipath/typeUtils";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 export function useReleases(): {
   releases: Release[];
@@ -211,7 +212,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         releases={releases}
         fetchError={releasesError}
       />
-      <FieldRenderer
+      <SchemaField
         name={`${basePath}.strategy`}
         schema={UIPATH_PROPERTIES.strategy as Schema}
       />
@@ -223,12 +224,12 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         />
       )}
       {strategy === "JobsCount" && (
-        <FieldRenderer
+        <SchemaField
           name={`${basePath}.jobsCount`}
           schema={UIPATH_PROPERTIES.jobsCount as Schema}
         />
       )}
-      <FieldRenderer
+      <SchemaField
         name={`${basePath}.awaitResult`}
         schema={UIPATH_PROPERTIES.awaitResult as Schema}
       />
@@ -240,13 +241,10 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       />
 
       {showOutputKey && (
-        <FieldRenderer
+        <SchemaField
           name={`${name}.outputKey`}
           label="Output Variable"
-          schema={{
-            type: "string",
-            description: "A name to refer to this brick in subsequent bricks",
-          }}
+          schema={OUTPUT_KEY_SCHEMA}
         />
       )}
     </div>

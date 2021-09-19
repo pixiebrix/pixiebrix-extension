@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo } from "react";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField, useFormikContext } from "formik";
 import { RegistryId, SafeString, Schema, ServiceDependency } from "@/core";
 import { fieldLabel } from "@/components/fields/fieldUtils";

@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FieldRenderer } from "@/components/fields/blockOptions";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import FormBuilder from "@/components/formBuilder/FormBuilder";
 import { Schema } from "@/core";
 import React from "react";
+import { OUTPUT_KEY_SCHEMA } from "@/components/fields/schemaFields/genericOptionsFactory";
 
 export const FORM_MODAL_ID = "@pixiebrix/form-modal";
 
@@ -34,11 +35,6 @@ const submitCaptionSchema: Schema = {
   default: "Submit",
 };
 
-const outputKeySchema: Schema = {
-  type: "string",
-  description: "A name to refer to this brick in subsequent bricks",
-};
-
 const FormModalOptions: React.FC<{
   name: string;
   configKey: string;
@@ -50,21 +46,21 @@ const FormModalOptions: React.FC<{
     <div>
       <FormBuilder name={configName} />
 
-      <FieldRenderer
+      <SchemaField
         name={`${configName}.cancelable`}
         schema={cancelableSchema}
       />
 
-      <FieldRenderer
+      <SchemaField
         name={`${configName}.submitCaption`}
         schema={submitCaptionSchema}
       />
 
       {showOutputKey && (
-        <FieldRenderer
+        <SchemaField
           name={`${name}.outputKey`}
           label="Output Variable"
-          schema={outputKeySchema}
+          schema={OUTPUT_KEY_SCHEMA}
         />
       )}
     </div>

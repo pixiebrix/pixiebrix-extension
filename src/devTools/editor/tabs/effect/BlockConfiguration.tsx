@@ -18,10 +18,10 @@
 import React from "react";
 import { RegistryId } from "@/core";
 import { FastField, FieldInputProps, getIn, useFormikContext } from "formik";
-import { useBlockOptions } from "@/components/fields/BlockField";
+import { useBlockOptions } from "@/hooks/useBlockOptions";
 import { Card, Form } from "react-bootstrap";
-import { RendererContext } from "@/components/fields/blockOptions";
-import devtoolFields from "@/devTools/editor/fields/Fields";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
+import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
 import GridLoader from "react-spinners/GridLoader";
 
 const BlockConfiguration: React.FunctionComponent<{
@@ -41,7 +41,7 @@ const BlockConfiguration: React.FunctionComponent<{
         <Card.Header className="BlockAccordion__header">Input</Card.Header>
         <Card.Body>
           <div>
-            <RendererContext.Provider value={devtoolFields}>
+            <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
               {blockErrors?.id && (
                 <div className="invalid-feedback d-block mb-4">
                   Unknown block {blockId}
@@ -58,7 +58,7 @@ const BlockConfiguration: React.FunctionComponent<{
               ) : (
                 <GridLoader />
               )}
-            </RendererContext.Provider>
+            </SchemaFieldContext.Provider>
           </div>
         </Card.Body>
       </Card>

@@ -18,12 +18,8 @@
 import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { Button, Form, Table } from "react-bootstrap";
 import { SafeString, Schema } from "@/core";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty } from "lodash";
-import {
-  getDefaultField,
-  RendererContext,
-} from "@/components/fields/blockOptions";
 import { useField, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -32,6 +28,9 @@ import { freshIdentifier } from "@/utils";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import ComplexObjectValue from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 import ExpressionWidget from "@/components/fields/schemaFields/widgets/ExpressionWidget";
+import SchemaFieldContext, {
+  getDefaultField,
+} from "@/components/fields/schemaFields/SchemaFieldContext";
 
 type PropertyRowProps = {
   name: string;
@@ -79,7 +78,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 }) => {
   const [field] = useField(props);
 
-  const { customControls } = useContext(RendererContext);
+  const { customWidgets } = useContext(SchemaFieldContext);
 
   const isComplex = typeof field.value === "object";
 
@@ -88,9 +87,9 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
       return ComplexObjectValue;
     }
 
-    const { Component } = customControls.find((x) => x.match(schema)) ?? {};
+    const { Component } = customWidgets.find((x) => x.match(schema)) ?? {};
     return Component ?? ExpressionWidget;
-  }, [isComplex, customControls, schema]);
+  }, [isComplex, customWidgets, schema]);
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
