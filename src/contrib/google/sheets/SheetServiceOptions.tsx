@@ -19,8 +19,9 @@ import React from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { validateRegistryId } from "@/types/helpers";
 
-export const SERVICE_GOOGLE_SHEET_ID = "google/sheet";
+export const SERVICE_GOOGLE_SHEET_ID = validateRegistryId("google/sheet");
 
 const SheetServiceOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,

@@ -24,9 +24,23 @@ import TemplateWidget, {
   Snippet,
 } from "@/devTools/editor/fields/TemplateWidget";
 import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
-import { contextOptions } from "@/devTools/editor/tabs/contextMenu/AvailabilityTab";
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
+
+const contextOptions = [
+  "page",
+  "all",
+  "frame",
+  "selection",
+  "link",
+  "editable",
+  "image",
+  "video",
+  "audio",
+].map((value) => ({
+  value,
+  label: value,
+}));
 
 const ContextMenuConfiguration: React.FC<{
   isLocked: boolean;

@@ -17,10 +17,7 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import {
-  BlockOptionProps,
-  OutputKeyField,
-} from "@/components/fields/schemaFields/genericOptionsFactory";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import { Schema } from "@/core";
 import { useField } from "formik";
@@ -91,7 +88,6 @@ export const ZapField: React.FunctionComponent<
 const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
-  showOutputKey,
 }) => {
   const basePath = compact([name, configKey]).join(".");
 
@@ -143,8 +139,6 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
         // Using ObjectField instead of ChildObjectField here to allow for additionalProperties.
         <ObjectField name={`${basePath}.data`} schema={hook.input_schema} />
       )}
-
-      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };

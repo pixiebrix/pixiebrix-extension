@@ -24,13 +24,11 @@ import React, {
 } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
-import { isEmpty, groupBy } from "lodash";
+import { groupBy, isEmpty } from "lodash";
 import { checkAvailable } from "@/background/devtools";
 import { Badge, Form, Nav, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useAsyncState } from "@/hooks/common";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faLock } from "@fortawesome/free-solid-svg-icons";
 import { IExtension } from "@/core";
 import ReloadToolbar from "@/devTools/editor/toolbar/ReloadToolbar";
 import ActionToolbar from "@/devTools/editor/toolbar/ActionToolbar";
@@ -39,20 +37,14 @@ import PermissionsToolbar from "@/devTools/editor/toolbar/PermissionsToolbar";
 import LogContext from "@/components/logViewer/LogContext";
 import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { useSelector } from "react-redux";
-import { RootState } from "@/devTools/store";
 import styles from "./ElementWizard.module.scss";
 import cx from "classnames";
 
-// Step names to show lock icon for if the user is using a foundation they don't have edit access for
-const LOCKABLE_STEP_NAMES = ["Foundation", "Availability", "Location", "Data"];
 const LOG_STEP_NAME = "Logs";
 
 const WizardNavItem: React.FunctionComponent<{
   step: WizardStep;
-  isLocked: boolean;
-  lockableStepNames?: string[];
-}> = ({ step, isLocked, lockableStepNames = LOCKABLE_STEP_NAMES }) => {
+}> = ({ step }) => {
   const { unread } = useContext(LogContext);
 
   const logBadge = useMemo(() => {
@@ -83,9 +75,6 @@ const WizardNavItem: React.FunctionComponent<{
     <Nav.Item>
       <Nav.Link eventKey={step.step}>
         {step.step}
-        {lockableStepNames.includes(step.step) && isLocked && (
-          <FontAwesomeIcon className="ml-2" icon={faLock} />
-        )}
         {logBadge}
       </Nav.Link>
     </Nav.Item>
@@ -99,26 +88,15 @@ const ElementWizard: React.FunctionComponent<{
 }> = ({ element, editable, installed }) => {
   const { port } = useContext(DevToolsContext);
 
-  const isBetaUI = useSelector((state: RootState) => state.editor.isBetaUI);
-
-  const wizard = useMemo(
-    () =>
-      isBetaUI
-        ? ADAPTERS.get(element.type).betaWizard
-        : ADAPTERS.get(element.type).wizard,
-    [element.type, isBetaUI]
-  );
+  const wizard = useMemo(() => ADAPTERS.get(element.type).wizard, [
+    element.type,
+  ]);
 
   const [step, setStep] = useState(wizard[0].step);
 
   useEffect(() => {
     setStep(wizard[0].step);
-  }, [isBetaUI, wizard, setStep]);
-
-  const isLocked =
-    element.installed &&
-    editable &&
-    !editable.has(element.extensionPoint.metadata.id);
+  }, [wizard, setStep]);
 
   const { refresh: refreshLogs } = useContext(LogContext);
 
@@ -165,10 +143,10 @@ const ElementWizard: React.FunctionComponent<{
           variant="pills"
           activeKey={step}
           onSelect={selectTabHandler}
-          className={cx({ [styles.nav]: isBetaUI })}
+          className={styles.nav}
         >
           {wizard.map((step) => (
-            <WizardNavItem key={step.step} step={step} isLocked={isLocked} />
+            <WizardNavItem key={step.step} step={step} />
           ))}
 
           {/* spacer */}
@@ -192,11 +170,7 @@ const ElementWizard: React.FunctionComponent<{
         </Nav>
 
         {status && <div className="text-danger">{status}</div>}
-        <Tab.Content
-          className={cx(styles.tabContent, {
-            [styles.tabPadding]: isBetaUI,
-          })}
-        >
+        <Tab.Content className={cx(styles.tabContent, styles.tabPadding)}>
           {wizard.map(({ Component, step, extraProps = {} }) => (
             <Component
               key={step}

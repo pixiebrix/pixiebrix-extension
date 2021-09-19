@@ -40,13 +40,7 @@ import {
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
-import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
-import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
-import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
-import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
-import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -59,16 +53,6 @@ import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
 
 const wizard: WizardStep[] = [
-  { step: "Name", Component: MetaTab },
-  { step: "Foundation", Component: FoundationTab },
-  { step: "Data", Component: ReaderTab },
-  { step: "Integrations", Component: ServicesTab },
-  { step: "Action", Component: EffectTab },
-  { step: "Availability", Component: AvailabilityTab },
-  { step: "Logs", Component: LogsTab },
-];
-
-const betaWizard: WizardStep[] = [
   {
     step: "Edit",
     Component: EditTab,
@@ -249,7 +233,6 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   fromExtension,
   fromExtensionPoint,
   wizard,
-  betaWizard,
   insertModeHelp: (
     <div>
       <p>

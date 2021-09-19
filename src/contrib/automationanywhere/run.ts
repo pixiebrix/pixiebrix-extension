@@ -19,9 +19,11 @@ import { proxyService } from "@/background/requests";
 import { Effect } from "@/types";
 import { mapValues } from "lodash";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
+import { validateRegistryId } from "@/types/helpers";
 
-export const AUTOMATION_ANYWHERE_RUN_BOT_ID =
-  "@pixiebrix/automation-anywhere/run-bot";
+export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
+  "@pixiebrix/automation-anywhere/run-bot"
+);
 
 export const AUTOMATION_ANYWHERE_PROPERTIES: SchemaProperties = {
   service: {

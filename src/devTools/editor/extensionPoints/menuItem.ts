@@ -23,16 +23,16 @@ import {
 } from "@/nativeEditor/insertButton";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
+  baseSelectExtensionPoint,
+  excludeInstanceIds,
+  lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
-  WizardStep,
   selectIsAvailable,
-  lookupExtensionPoint,
-  baseSelectExtensionPoint,
   withInstanceIds,
-  excludeInstanceIds,
+  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import {
   MenuDefinition,
@@ -42,14 +42,7 @@ import {
 } from "@/extensionPoints/menuItemExtension";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
-import FoundationTab from "@/devTools/editor/tabs/menuItem/FoundationTab";
-import MenuItemTab from "@/devTools/editor/tabs/menuItem/MenuItemTab";
-import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
-import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
-import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
-import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faMousePointer } from "@fortawesome/free-solid-svg-icons";
@@ -64,17 +57,6 @@ import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfi
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 const wizard: WizardStep[] = [
-  { step: "Name", Component: MetaTab },
-  { step: "Foundation", Component: FoundationTab },
-  { step: "Data", Component: ReaderTab },
-  { step: "Menu Item", Component: MenuItemTab },
-  { step: "Integrations", Component: ServicesTab },
-  { step: "Action", Component: EffectTab },
-  { step: "Availability", Component: AvailabilityTab },
-  { step: "Logs", Component: LogsTab },
-];
-
-const betaWizard: WizardStep[] = [
   {
     step: "Edit",
     Component: EditTab,
@@ -279,7 +261,6 @@ const config: ElementConfig<ButtonSelectionResult, ActionFormState> = {
   EditorNode: MenuItemConfiguration,
   selectNativeElement: nativeOperations.insertButton,
   wizard,
-  betaWizard,
   fromExtensionPoint,
   fromNativeElement,
   asDynamicElement,

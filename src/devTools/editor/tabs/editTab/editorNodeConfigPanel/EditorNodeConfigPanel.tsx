@@ -39,6 +39,10 @@ const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
 );
 
 const EditorNodeConfigPanel: React.FC<{
+  /**
+   * The block field name in the form
+   * @see BlockConfig
+   */
   blockFieldName: string;
   blockId: RegistryId;
   onRemoveNode: () => void;
@@ -93,11 +97,7 @@ const EditorNodeConfigPanel: React.FC<{
         <FontAwesomeIcon icon={faTrash} /> Remove Brick
       </Button>
 
-      <BlockConfiguration
-        name={blockFieldName}
-        blockId={blockId}
-        showOutput={false}
-      />
+      <BlockConfiguration name={blockFieldName} blockId={blockId} />
     </>
   );
 };

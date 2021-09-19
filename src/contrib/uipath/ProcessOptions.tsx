@@ -16,10 +16,7 @@
  */
 
 import React, { useEffect, useMemo } from "react";
-import {
-  BlockOptionProps,
-  OutputKeyField,
-} from "@/components/fields/schemaFields/genericOptionsFactory";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import {
   UIPATH_PROPERTIES,
@@ -154,7 +151,6 @@ export const ReleaseField: React.FunctionComponent<
 const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
-  showOutputKey,
 }) => {
   const basePath = compact([name, configKey]).join(".");
 
@@ -239,8 +235,6 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         schema={schema}
         name={compact([name, configKey, "inputArguments"]).join(".")}
       />
-
-      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };

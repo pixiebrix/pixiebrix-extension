@@ -23,10 +23,10 @@ import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
 import { Webhook } from "@/contrib/zapier/contract";
 import { Permissions } from "webextension-polyfill-ts";
-import { uuidv4 } from "@/types/helpers";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors";
 
-export const ZAPIER_ID = "@pixiebrix/zapier/push-data";
+export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 
 export const ZAPIER_PROPERTIES: SchemaProperties = {
   pushKey: {
