@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import {
   BlockOptionProps,
-  OUTPUT_KEY_SCHEMA,
+  OutputKeyField,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
@@ -42,7 +42,6 @@ import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
@@ -235,13 +234,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
         />
       )}
 
-      {showOutputKey && (
-        <SchemaField
-          name={[name, "outputKey"].join(".")}
-          label="Output Variable"
-          schema={OUTPUT_KEY_SCHEMA}
-        />
-      )}
+      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };

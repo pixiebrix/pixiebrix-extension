@@ -19,7 +19,7 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import FormBuilder from "@/components/formBuilder/FormBuilder";
 import { Schema } from "@/core";
 import React from "react";
-import { OUTPUT_KEY_SCHEMA } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { OutputKeyField } from "@/components/fields/schemaFields/genericOptionsFactory";
 
 export const FORM_RENDERER_ID = "@pixiebrix/form";
 
@@ -41,13 +41,7 @@ const FormRendererOptions: React.FC<{
 
       <SchemaField name={`${configName}.recordId`} schema={recordIdSchema} />
 
-      {showOutputKey && (
-        <SchemaField
-          name={`${name}.outputKey`}
-          label="Output Variable"
-          schema={OUTPUT_KEY_SCHEMA}
-        />
-      )}
+      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };

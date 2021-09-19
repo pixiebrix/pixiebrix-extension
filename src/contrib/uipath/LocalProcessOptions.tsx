@@ -31,7 +31,6 @@ import {
 } from "@/background/devtools/protocol";
 import { DevToolsContext } from "@/devTools/context";
 import { RobotProcess } from "@uipath/robot/dist/models";
-import ObjectField from "@/components/fields/schemaFields/ObjectField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useReleases } from "@/contrib/uipath/ProcessOptions";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
@@ -44,7 +43,7 @@ import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField"
 import { releaseSchema } from "@/contrib/uipath/typeUtils";
 import {
   BlockOptionProps,
-  OUTPUT_KEY_SCHEMA,
+  OutputKeyField,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
@@ -52,6 +51,11 @@ interface Process {
   id: string;
   name: string;
 }
+
+const FALLBACK_PROCESS_SCHEMA: Schema = {
+  type: "object",
+  additionalProperties: true,
+};
 
 export const ProcessField: React.FunctionComponent<
   SchemaFieldProps<string> & {
@@ -235,20 +239,14 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
           schema={schema}
         />
       ) : (
-        <ObjectField
+        <SchemaField
           name={argumentsName}
           label={process?.name ?? "inputArguments"}
-          schema={{ type: "object", additionalProperties: true }}
+          schema={FALLBACK_PROCESS_SCHEMA}
         />
       )}
 
-      {showOutputKey && (
-        <SchemaField
-          name={`${name}.outputKey`}
-          label="Output Variable"
-          schema={OUTPUT_KEY_SCHEMA}
-        />
-      )}
+      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };

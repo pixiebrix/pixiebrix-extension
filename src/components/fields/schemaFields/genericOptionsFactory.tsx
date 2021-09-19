@@ -21,16 +21,26 @@ import { Schema, UiSchema } from "@/core";
 import { compact, isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
-export interface BlockOptionProps {
+export type BlockOptionProps = {
   name: string;
   configKey?: string;
   showOutputKey?: boolean;
-}
+};
 
-export const OUTPUT_KEY_SCHEMA: Schema = {
+const OUTPUT_KEY_SCHEMA: Schema = {
   type: "string",
   description: "A key to refer to this brick in subsequent bricks",
 };
+
+export const OutputKeyField: React.FC<{ baseName: string }> = ({
+  baseName,
+}) => (
+  <SchemaField
+    name={`${baseName}.outputKey`}
+    label="Output Variable"
+    schema={OUTPUT_KEY_SCHEMA}
+  />
+);
 
 /**
  * Return the Options for configuring a block with the given schema.
@@ -62,13 +72,7 @@ function genericOptionsFactory(
           />
         );
       })}
-      {showOutputKey && (
-        <SchemaField
-          name={`${name}.outputKey`}
-          label="Output Variable"
-          schema={OUTPUT_KEY_SCHEMA}
-        />
-      )}
+      {showOutputKey && <OutputKeyField baseName={name} />}
       {isEmpty(schema) && <div>No options available</div>}
     </>
   );

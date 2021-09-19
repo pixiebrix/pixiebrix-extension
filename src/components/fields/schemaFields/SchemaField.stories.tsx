@@ -18,22 +18,22 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { Formik } from "formik";
-import TextField from "./TextField";
 import { noop } from "lodash";
+import SchemaField from "./SchemaField";
 
 export default {
-  title: "Fields/TextField",
-  component: TextField,
-} as ComponentMeta<typeof TextField>;
+  title: "Fields/SchemaField",
+  component: SchemaField,
+} as ComponentMeta<typeof SchemaField>;
 
-const Template: ComponentStory<typeof TextField> = (args) => (
+const Template: ComponentStory<typeof SchemaField> = (args) => (
   <Formik initialValues={{ [args.name]: null }} onSubmit={noop}>
-    <TextField {...args} />
+    <SchemaField {...args} />
   </Formik>
 );
 
-export const Normal = Template.bind({});
-Normal.args = {
+export const NormalText = Template.bind({});
+NormalText.args = {
   name: "testField",
   label: "Enter some text",
   schema: {
@@ -41,8 +41,8 @@ Normal.args = {
   },
 };
 
-export const Select = Template.bind({});
-Select.args = {
+export const SelectText = Template.bind({});
+SelectText.args = {
   name: "testField",
   label: "Select an option",
   schema: {
@@ -51,8 +51,8 @@ Select.args = {
   },
 };
 
-export const Examples = Template.bind({});
-Examples.args = {
+export const ExampleText = Template.bind({});
+ExampleText.args = {
   name: "testField",
   label: "Select an option",
   schema: {

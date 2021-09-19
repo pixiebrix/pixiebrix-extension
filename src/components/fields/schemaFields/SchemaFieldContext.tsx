@@ -24,16 +24,44 @@ import {
 import ServiceField, {
   SERVICE_BASE_SCHEMA,
 } from "@/components/fields/schemaFields/ServiceField";
-import ArrayField from "@/components/fields/schemaFields/ArrayField";
-import ObjectField from "@/components/fields/schemaFields/ObjectField";
 import {
   booleanPredicate,
   findOneOf,
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
 import BooleanField from "@/components/fields/schemaFields/BooleanField";
-import TextField from "@/components/fields/schemaFields/TextField";
 import { isEmpty } from "lodash";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { fieldLabel } from "@/components/fields/fieldUtils";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import TextWidget from "@/components/fields/schemaFields/widgets/TextWidget";
+import ArrayWidget from "@/components/fields/schemaFields/widgets/ArrayWidget";
+import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
+
+function defaultFieldFactory<T>(
+  Widget: CustomFieldWidget<SchemaFieldProps<T>>
+): FieldComponent {
+  const Field: React.FunctionComponent<SchemaFieldProps<unknown>> = (props) => {
+    const { name, label, schema, description } = props;
+    return (
+      <ConnectedFieldTemplate
+        {...props}
+        label={label ?? fieldLabel(name)}
+        description={description ?? schema.description}
+        as={Widget}
+      />
+    );
+  };
+
+  Field.displayName = `SchemaField(${Widget.displayName})`;
+  return Field;
+}
+
+const TextField = defaultFieldFactory(TextWidget);
+
+const ArrayField = defaultFieldFactory(ArrayWidget);
+
+export const ObjectField = defaultFieldFactory(ObjectWidget);
 
 function makeOneOfField(oneOf: Schema): FieldComponent {
   const Field = getDefaultField(oneOf);

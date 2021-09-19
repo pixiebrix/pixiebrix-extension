@@ -28,10 +28,10 @@ import { DevToolsContext } from "@/devTools/context";
 import { isNullOrBlank } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
-import ObjectField from "@/components/fields/schemaFields/ObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 import { getErrorMessage } from "@/errors";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 const DEFAULT_FIELDS_SCHEMA: Schema = {
   type: "object",
@@ -113,7 +113,7 @@ const PropertiesField: React.FunctionComponent<{
   }, [doc?.id, tabName]);
 
   return (
-    <ObjectField
+    <SchemaField
       name={name}
       label="Row Values"
       description={

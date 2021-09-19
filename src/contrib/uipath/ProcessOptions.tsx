@@ -18,7 +18,7 @@
 import React, { useEffect, useMemo } from "react";
 import {
   BlockOptionProps,
-  OUTPUT_KEY_SCHEMA,
+  OutputKeyField,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import {
@@ -240,13 +240,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         name={compact([name, configKey, "inputArguments"]).join(".")}
       />
 
-      {showOutputKey && (
-        <SchemaField
-          name={`${name}.outputKey`}
-          label="Output Variable"
-          schema={OUTPUT_KEY_SCHEMA}
-        />
-      )}
+      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };

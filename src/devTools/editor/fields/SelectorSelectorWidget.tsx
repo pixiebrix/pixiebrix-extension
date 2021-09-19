@@ -36,11 +36,23 @@ import SelectorListItem from "@/devTools/editor/fields/selectorListItem/Selector
 import { Framework } from "@/messaging/constants";
 import { SelectMode } from "@/nativeEditor/selector";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { useField } from "formik";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;
   elementInfo?: ElementInfo;
 }
+
+export type SelectorSelectorProps = {
+  initialElement?: ElementInfo;
+  framework?: Framework;
+  selectMode?: SelectMode;
+  traverseUp?: number;
+  isClearable?: boolean;
+  sort?: boolean;
+  root?: string;
+  disabled?: boolean;
+};
 
 function getSuggestionsForElement(
   elementInfo: ElementInfo | undefined
@@ -70,20 +82,9 @@ function renderSuggestion(suggestion: ElementSuggestion): React.ReactNode {
   );
 }
 
-export type SelectorSelectorProps = {
-  initialElement?: ElementInfo;
-  framework?: Framework;
-  selectMode?: SelectMode;
-  traverseUp?: number;
-  isClearable?: boolean;
-  sort?: boolean;
-  root?: string;
-  disabled?: boolean;
-};
-
 const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
+  name,
   value,
-  onSelect,
   initialElement,
   framework,
   selectMode = "element",
@@ -92,7 +93,11 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
   sort = false,
   root,
   disabled = false,
+  placeholder = "Choose a selector...",
 }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- placeholders in destructuring
+  const [_field, _meta, helpers] = useField<string>(name);
+
   const { port } = useContext(DevToolsContext);
   const notify = useNotifications();
   const [element, setElement] = useState(initialElement);
@@ -135,9 +140,9 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
     (value: string) => {
       disableSelector();
       enableSelector(value);
-      onSelect(value);
+      helpers.setValue(value);
     },
-    [disableSelector, enableSelector, onSelect]
+    [disableSelector, enableSelector, helpers]
   );
 
   const select = useCallback(async () => {
@@ -166,7 +171,7 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
         : selectors)[0];
 
       console.debug("Setting selector", { selected, firstSelector });
-      onSelect(firstSelector);
+      helpers.setValue(firstSelector);
     } catch (error: unknown) {
       notify.error(`Error selecting element: ${getErrorMessage(error)}`, {
         error,
@@ -183,7 +188,7 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
     traverseUp,
     selectMode,
     setElement,
-    onSelect,
+    helpers,
     root,
   ]);
 
@@ -205,7 +210,7 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
           isDisabled={isSelecting || disabled}
           suggestions={suggestions}
           inputValue={value}
-          inputPlaceholder="Choose a selector..."
+          inputPlaceholder={placeholder}
           renderSuggestion={renderSuggestion}
           onSuggestionHighlighted={onHighlighted}
           onSuggestionsClosed={disableSelector}

@@ -15,24 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import TextWidget from "./widgets/TextWidget";
+import React from "react";
 
-const TextField: React.FunctionComponent<SchemaFieldProps<string>> = (
-  props
-) => {
-  const { label, name, schema } = props;
-  return (
-    <ConnectedFieldTemplate
-      label={label ?? fieldLabel(name)}
-      description={schema.description}
-      as={TextWidget}
-      {...props}
-    />
-  );
-};
+const UnsupportedWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = ({
+  schema,
+}) => <div>Unsupported field type: {schema.type ?? "No type found"}</div>;
 
-export default TextField;
+export default UnsupportedWidget;

@@ -23,6 +23,9 @@ import SchemaFieldContext, {
 
 /**
  * A schema-based field that automatically determines it's layout/widget based on the schema and uiSchema.
+ *
+ * @see SchemaFieldContext
+ * @see getDefaultField
  */
 const SchemaField: React.FunctionComponent<SchemaFieldProps<unknown>> = ({
   schema,

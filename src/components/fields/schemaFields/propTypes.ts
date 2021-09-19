@@ -35,7 +35,25 @@ export const schemaPropTypes = {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TODO: Use the generic or drop it from FieldProps usage
 export interface SchemaFieldProps<TValue> {
   name: string;
-  label?: string;
+
+  /**
+   * The JSON Schema for the field property
+   */
   schema: Schema;
+
+  /**
+   * A label for the field. If not provided, the label is automatically generated from the field name/schema.
+   * @see fieldLabel
+   */
+  label?: string;
+
+  /**
+   * Description to override the description from the schema
+   */
+  description?: React.ReactNode;
+
+  /**
+   * The RJSF UiSchema for the field. WARNING: very little of the UiSchema surface area is supported
+   */
   uiSchema?: UiSchema;
 }

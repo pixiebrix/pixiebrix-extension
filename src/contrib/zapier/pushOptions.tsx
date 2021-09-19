@@ -19,7 +19,7 @@
 import React, { useCallback, useMemo, useState } from "react";
 import {
   BlockOptionProps,
-  OUTPUT_KEY_SCHEMA,
+  OutputKeyField,
 } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import { Schema } from "@/core";
@@ -32,13 +32,12 @@ import { Webhook } from "@/contrib/zapier/contract";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
-import ObjectField from "@/components/fields/schemaFields/ObjectField";
+import { ObjectField } from "@/components/fields/schemaFields/SchemaFieldContext";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -141,17 +140,11 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
       />
 
       {pushKey && hook && (
-        // Using ObjectField instead of ChildObjectFiled here to allow for additionalProperties.
+        // Using ObjectField instead of ChildObjectField here to allow for additionalProperties.
         <ObjectField name={`${basePath}.data`} schema={hook.input_schema} />
       )}
 
-      {showOutputKey && (
-        <SchemaField
-          name={`${name}.outputKey`}
-          label="Output Variable"
-          schema={OUTPUT_KEY_SCHEMA}
-        />
-      )}
+      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };
