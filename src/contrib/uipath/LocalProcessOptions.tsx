@@ -37,7 +37,7 @@ import { DevToolsContext } from "@/devTools/context";
 import { RobotProcess } from "@uipath/robot/dist/models";
 import ObjectField from "@/components/fields/schemaFields/ObjectField";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { releaseSchema, useReleases } from "@/contrib/uipath/ProcessOptions";
+import { useReleases } from "@/contrib/uipath/ProcessOptions";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import useDependency from "@/services/useDependency";
 import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
@@ -45,6 +45,7 @@ import { getErrorMessage } from "@/errors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import { releaseSchema } from "@/contrib/uipath/typeUtils";
 
 interface Process {
   id: string;

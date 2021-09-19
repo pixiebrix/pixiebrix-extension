@@ -26,9 +26,7 @@ import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
-import { Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import Select from "react-select";
 import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { Webhook } from "@/contrib/zapier/contract";
 import { pixieServiceFactory } from "@/services/locator";
@@ -38,7 +36,8 @@ import ObjectField from "@/components/fields/schemaFields/ObjectField";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
-import { getErrorMessage } from "@/errors";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 
 function useHooks(): {
   hooks: Webhook[];
@@ -64,7 +63,7 @@ function useHooks(): {
 export const ZapField: React.FunctionComponent<
   SchemaFieldProps<string> & { hooks: Webhook[]; error: unknown }
 > = ({ label, schema, hooks, error, ...props }) => {
-  const [{ value, ...field }, meta, helpers] = useField(props);
+  const [{ value, ...field }] = useField(props);
 
   const options = useMemo(
     () =>
@@ -77,27 +76,15 @@ export const ZapField: React.FunctionComponent<
   );
 
   return (
-    <Form.Group>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
-      <Select
-        options={options}
-        value={options.find((x) => x.value === value)}
-        onChange={(option) => {
-          helpers.setValue(option?.value);
-        }}
-      />
-      {schema.description && (
-        <Form.Text className="text-muted">The Zap to run</Form.Text>
-      )}
-      {error && (
-        <span className="text-danger small">
-          Error fetching Zaps: {getErrorMessage(error)}
-        </span>
-      )}
-      {meta.touched && meta.error && (
-        <span className="text-danger small">{meta.error}</span>
-      )}
-    </Form.Group>
+    <ConnectedFieldTemplate
+      name={props.name}
+      label={label ?? fieldLabel(field.name)}
+      description="The Zap to run"
+      as={SelectWidget}
+      options={options}
+      loadingMessage="Loading Zaps..."
+      loadingError={error}
+    />
   );
 };
 
@@ -153,6 +140,7 @@ const PushOptions: React.FunctionComponent<BlockOptionProps> = ({
       />
 
       {pushKey && hook && (
+        // Using ObjectField instead of ChildObjectFiled here to allow for additionalProperties.
         <ObjectField name={`${basePath}.data`} schema={hook.input_schema} />
       )}
 

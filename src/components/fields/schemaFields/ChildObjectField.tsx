@@ -17,35 +17,105 @@
 
 import React from "react";
 import { SchemaFieldProps } from "@/components/fields/propTypes";
-import { Card, Form } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { inputProperties } from "@/helpers";
 import { FieldRenderer } from "@/components/fields/blockOptions";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import GridLoader from "react-spinners/GridLoader";
+import { getErrorMessage } from "@/errors";
+import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
+import { Schema } from "@/core";
+import { isEmpty } from "lodash";
+
+const FALLBACK_SCHEMA: Schema = {
+  type: "object",
+  additionalProperties: true,
+};
+
+type OwnProps = {
+  heading: string;
+
+  /**
+   * The error, if there was an error fetching the child schema
+   */
+  schemaError?: unknown;
+
+  /**
+   * True if the child schema is loading
+   */
+  schemaLoading?: boolean;
+};
+
+const ChildContainer: React.FC<{ heading: string }> = ({
+  heading,
+  children,
+}) => (
+  <Card>
+    <Card.Header>{heading}</Card.Header>
+    <Card.Body>{children}</Card.Body>
+  </Card>
+);
+
+const ChildObjectWidget: CustomFieldWidget<
+  SchemaFieldProps<Record<string, unknown>> & OwnProps
+> = ({ name, schema, schemaLoading, schemaError, heading }) => {
+  if (schemaLoading) {
+    return (
+      <ChildContainer heading={heading}>
+        <GridLoader />
+      </ChildContainer>
+    );
+  }
+
+  if (schemaError) {
+    return (
+      <ChildContainer heading={heading}>
+        <ObjectWidget name={name} schema={FALLBACK_SCHEMA} />
+      </ChildContainer>
+    );
+  }
+
+  if (isEmpty(schema.properties)) {
+    return (
+      <ChildContainer heading={heading}>
+        <span className="text-muted">No parameters</span>
+      </ChildContainer>
+    );
+  }
+
+  return (
+    <ChildContainer heading={heading}>
+      {schema &&
+        Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
+          if (typeof fieldSchema === "boolean") {
+            throw new TypeError("Expected schema for input property type");
+          }
+
+          return (
+            <FieldRenderer
+              key={prop}
+              name={[name, prop].join(".")}
+              schema={schema}
+            />
+          );
+        })}
+    </ChildContainer>
+  );
+};
 
 const ChildObjectField: React.FunctionComponent<
-  SchemaFieldProps<Record<string, unknown>> & { heading: string }
-> = ({ name, heading, schema, label }) => (
-  <Form.Group>
-    <Form.Label>{label}</Form.Label>
-    <Card>
-      <Card.Header>{heading}</Card.Header>
-      <Card.Body>
-        {schema &&
-          Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
-            if (typeof fieldSchema === "boolean") {
-              throw new TypeError("Expected schema for input property type");
-            }
-
-            return (
-              <FieldRenderer
-                key={prop}
-                name={`${name}.${prop}`}
-                schema={schema}
-              />
-            );
-          })}
-      </Card.Body>
-    </Card>
-  </Form.Group>
+  SchemaFieldProps<Record<string, unknown>> & OwnProps
+> = (props) => (
+  <ConnectedFieldTemplate
+    {...props}
+    description={
+      props.schemaError
+        ? getErrorMessage(props.schemaError)
+        : props.schema.description
+    }
+    as={ChildObjectWidget}
+  />
 );
 
 export default ChildObjectField;

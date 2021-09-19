@@ -25,58 +25,22 @@ import {
   UIPATH_PROPERTIES,
   UIPATH_SERVICE_IDS,
 } from "@/contrib/uipath/process";
-import { Schema, SchemaProperties } from "@/core";
+import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
 import { Button } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { SchemaFieldProps } from "@/components/fields/propTypes";
-import { parseAssemblyQualifiedName } from "csharp-helpers";
 import useDependency from "@/services/useDependency";
-import { BusinessError, getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors";
 import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
-
-type Argument = {
-  name: string;
-  type: string;
-  required: boolean;
-  hasDefault: boolean;
-};
-
-type ODataResponseData<TValue> = {
-  "@odata.context": string;
-  "@odata.count": number;
-  value: TValue[];
-};
-
-type Robot = {
-  MachineName: string;
-  MachineId: number;
-  Name: string;
-  Username: string;
-  Description: string;
-  Type: string;
-  Id: number;
-};
-
-type Release = {
-  Key: string;
-  ProcessKey: string;
-  ProcessVersion: string;
-  IsLatestVersion: boolean;
-  Description: string;
-  Name: string;
-  Arguments: {
-    // Serialized input dict
-    Input: string | null;
-    Output: string | null;
-  };
-};
+import { ODataResponseData, Release, Robot } from "./uipathContract";
+import { releaseSchema } from "@/contrib/uipath/typeUtils";
 
 export function useReleases(): {
   releases: Release[];
@@ -186,48 +150,6 @@ export const ReleaseField: React.FunctionComponent<
   );
 };
 
-function toType(type: string) {
-  const { namespace, typeName } = parseAssemblyQualifiedName(type);
-  // https://docs.microsoft.com/en-us/dotnet/api/system.valuetype?view=net-5.0
-  if (namespace === "System" && typeName === "String") {
-    return "string";
-  }
-
-  if (namespace === "System" && typeName === "Boolean") {
-    return "boolean";
-  }
-
-  if (
-    namespace === "System" &&
-    ["Int64", "Int32", "Int16", "UInt64", "UInt32", "UInt16"].includes(typeName)
-  ) {
-    return "integer";
-  }
-
-  if (namespace === "System" && ["Decimal", "Double"].includes(typeName)) {
-    return "number";
-  }
-
-  throw new BusinessError(`Unsupported input type: ${type}`);
-}
-
-export function releaseSchema(release: Release): Schema {
-  if (!release.Arguments.Input) {
-    return {};
-  }
-
-  const inputs = JSON.parse(release.Arguments.Input) as Argument[];
-
-  const properties = Object.fromEntries(
-    inputs.map((input) => [input.name, { type: toType(input.type) }])
-  ) as SchemaProperties;
-
-  return {
-    properties,
-    required: inputs.filter((input) => input.required).map((x) => x.name),
-  };
-}
-
 const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
@@ -310,13 +232,12 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         name={`${basePath}.awaitResult`}
         schema={UIPATH_PROPERTIES.awaitResult as Schema}
       />
-      {releaseKey && release && (
-        <ChildObjectField
-          heading={release.Name}
-          schema={schema}
-          name={compact([name, configKey, "inputArguments"]).join(".")}
-        />
-      )}
+
+      <ChildObjectField
+        heading={release?.Name ?? "Process"}
+        schema={schema}
+        name={compact([name, configKey, "inputArguments"]).join(".")}
+      />
 
       {showOutputKey && (
         <FieldRenderer

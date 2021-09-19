@@ -15,21 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { SchemaFieldProps } from "@/components/fields/propTypes";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+export type Argument = {
+  name: string;
+  type: string;
+  required: boolean;
+  hasDefault: boolean;
+};
 
-const BooleanField: React.FunctionComponent<SchemaFieldProps<boolean>> = ({
-  name,
-  label,
-  schema,
-}) => (
-  <ConnectedFieldTemplate
-    layout="switch"
-    label={label ?? fieldLabel(name)}
-    description={schema.description}
-  />
-);
+export type ODataResponseData<TValue> = {
+  "@odata.context": string;
+  "@odata.count": number;
+  value: TValue[];
+};
 
-export default BooleanField;
+export type Robot = {
+  MachineName: string;
+  MachineId: number;
+  Name: string;
+  Username: string;
+  Description: string;
+  Type: string;
+  Id: number;
+};
+
+export type Release = {
+  Key: string;
+  ProcessKey: string;
+  ProcessVersion: string;
+  IsLatestVersion: boolean;
+  Description: string;
+  Name: string;
+  Arguments: {
+    // Serialized input dict
+    Input: string | null;
+    Output: string | null;
+  };
+};

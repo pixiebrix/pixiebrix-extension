@@ -20,17 +20,15 @@ import {
   BlockOptionProps,
   FieldRenderer,
 } from "@/components/fields/blockOptions";
-import { isEmpty, compact } from "lodash";
+import { compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
-import { Button, Card, Form } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { SchemaFieldProps } from "@/components/fields/propTypes";
-import { inputProperties } from "@/helpers";
-import GridLoader from "react-spinners/GridLoader";
 import useDependency from "@/services/useDependency";
 import {
   Bot,
@@ -39,11 +37,11 @@ import {
   Interface,
   ListResponse,
 } from "@/contrib/automationanywhere/contract";
-import { getErrorMessage } from "@/errors";
 import { validateRegistryId } from "@/types/helpers";
 import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
@@ -232,43 +230,13 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       />
 
       {fileId != null && (
-        <Form.Group>
-          <Form.Label>inputArguments</Form.Label>
-          <Card>
-            <Card.Header>inputArguments</Card.Header>
-            <Card.Body>
-              {inputSchema &&
-                Object.entries(inputProperties(inputSchema)).map(
-                  ([prop, fieldSchema]) => {
-                    if (typeof fieldSchema === "boolean") {
-                      throw new TypeError(
-                        "Expected schema for input property type"
-                      );
-                    }
-
-                    return (
-                      <FieldRenderer
-                        key={prop}
-                        name={compact([name, configKey, "data", prop]).join(
-                          "."
-                        )}
-                        schema={fieldSchema}
-                      />
-                    );
-                  }
-                )}
-              {inputSchema != null &&
-                isEmpty(inputSchema.properties) &&
-                !schemaPending && <span>Bot does not take any inputs</span>}
-              {schemaPending && <GridLoader />}
-              {schemaError && (
-                <span className="text-danger">
-                  Error fetching schema: {getErrorMessage(schemaError)}
-                </span>
-              )}
-            </Card.Body>
-          </Card>
-        </Form.Group>
+        <ChildObjectField
+          heading="inputArguments"
+          schema={inputSchema}
+          name={compact([basePath, "data"]).join(".")}
+          schemaError={schemaError}
+          schemaLoading={schemaPending}
+        />
       )}
 
       {showOutputKey && (
