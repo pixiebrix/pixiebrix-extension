@@ -24,7 +24,7 @@ import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget"
 type OwnProps = {
   /**
    * A manual description field. Allows custom options pages to pass in status messages about the field, e.g., that
-   * an exact schema could not be determined.
+   * an exact schema could not be retrieved (e.g., if retrieving the schema from a remote source)
    */
   description?: React.ReactNode;
 };
