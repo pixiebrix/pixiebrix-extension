@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.BlockCard {
-  &.invalid {
-    border: 1px solid #fe7c96;
-  }
+import React from "react";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { Form } from "react-bootstrap";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 
-  &.card {
-    border-radius: 0;
+const ComplexObjectWidget: CustomFieldWidget<
+  SchemaFieldProps<unknown>
+> = () => <Form.Control plaintext readOnly defaultValue="Complex object" />;
 
-    .card-body {
-      padding: 1rem;
-    }
-  }
-}
+export default ComplexObjectWidget;

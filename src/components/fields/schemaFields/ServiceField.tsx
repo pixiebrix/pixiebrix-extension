@@ -16,11 +16,10 @@
  */
 
 import React, { useCallback, useEffect, useMemo } from "react";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField, useFormikContext } from "formik";
 import { RegistryId, SafeString, Schema, ServiceDependency } from "@/core";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import Select from "react-select";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useAuthOptions } from "@/hooks/auth";
 import { AuthOption } from "@/auth/authTypes";
@@ -30,6 +29,7 @@ import { freshIdentifier } from "@/utils";
 import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
+import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 
 export const SERVICE_BASE_SCHEMA =
   "https://app.pixiebrix.com/schemas/services/";
@@ -68,7 +68,7 @@ function keyToFieldValue(serviceKey: string): string {
  * @see ServiceDependency
  */
 const ServiceField: React.FunctionComponent<
-  FieldProps<string> & {
+  SchemaFieldProps<string> & {
     /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */
     detectDefault?: boolean;
   }
@@ -172,11 +172,6 @@ const ServiceField: React.FunctionComponent<
     [serviceIds, options]
   );
 
-  const Widget = useCallback(
-    () => <Select options={options} value={option} onChange={onChange} />,
-    [option, options, onChange]
-  );
-
   return (
     <ConnectedFieldTemplate
       name={field.name}
@@ -194,7 +189,10 @@ const ServiceField: React.FunctionComponent<
           </a>
         </span>
       }
-      as={Widget}
+      as={SelectWidget}
+      options={options}
+      onChange={onChange}
+      value={option}
     />
   );
 };

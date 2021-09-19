@@ -44,7 +44,7 @@ const MultiSelectWidget: CustomFieldWidget<OwnProps> = ({
       isClearable={isClearable}
       options={options}
       value={options.filter((option: Option) =>
-        field.value.includes(option.value)
+        (field.value ?? []).includes(option.value)
       )}
       onChange={(values) => {
         helpers.setValue(values.map((x) => x.value));

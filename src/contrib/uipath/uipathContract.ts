@@ -15,15 +15,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+export type Argument = {
+  name: string;
+  type: string;
+  required: boolean;
+  hasDefault: boolean;
+};
 
-/**
- * Mapping from block id to block editor.
- */
-const optionsRegistry = new Map<
-  string,
-  React.FunctionComponent<BlockOptionProps>
->();
+export type ODataResponseData<TValue> = {
+  "@odata.context": string;
+  "@odata.count": number;
+  value: TValue[];
+};
 
-export default optionsRegistry;
+export type Robot = {
+  MachineName: string;
+  MachineId: number;
+  Name: string;
+  Username: string;
+  Description: string;
+  Type: string;
+  Id: number;
+};
+
+export type Release = {
+  Key: string;
+  ProcessKey: string;
+  ProcessVersion: string;
+  IsLatestVersion: boolean;
+  Description: string;
+  Name: string;
+  Arguments: {
+    // Serialized input dict
+    Input: string | null;
+    Output: string | null;
+  };
+};

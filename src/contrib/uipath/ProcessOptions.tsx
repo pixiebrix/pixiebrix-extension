@@ -18,63 +18,30 @@
 import React, { useEffect, useMemo } from "react";
 import {
   BlockOptionProps,
-  FieldRenderer,
-} from "@/components/fields/blockOptions";
+  OutputKeyField,
+} from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import {
   UIPATH_PROPERTIES,
   UIPATH_SERVICE_IDS,
 } from "@/contrib/uipath/process";
-import { Schema, SchemaProperties } from "@/core";
+import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
-import { Button, Card, Form } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import Select from "react-select";
-import { FieldProps } from "@/components/fields/propTypes";
-import { parseAssemblyQualifiedName } from "csharp-helpers";
-import { inputProperties } from "@/helpers";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useDependency from "@/services/useDependency";
-import { BusinessError, getErrorMessage } from "@/errors";
+import { getErrorMessage } from "@/errors";
 import ServiceField from "@/components/fields/schemaFields/ServiceField";
-
-interface Argument {
-  name: string;
-  type: string;
-  required: boolean;
-  hasDefault: boolean;
-}
-
-interface ODataResponseData<TValue> {
-  "@odata.context": string;
-  "@odata.count": number;
-  value: TValue[];
-}
-
-interface Robot {
-  MachineName: string;
-  MachineId: number;
-  Name: string;
-  Username: string;
-  Description: string;
-  Type: string;
-  Id: number;
-}
-
-interface Release {
-  Key: string;
-  ProcessKey: string;
-  ProcessVersion: string;
-  IsLatestVersion: boolean;
-  Description: string;
-  Name: string;
-  Arguments: {
-    // Serialized input dict
-    Input: string | null;
-    Output: string | null;
-  };
-}
+import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
+import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import { ODataResponseData, Release, Robot } from "./uipathContract";
+import { releaseSchema } from "@/contrib/uipath/typeUtils";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 export function useReleases(): {
   releases: Release[];
@@ -116,13 +83,11 @@ function useRobots(): { robots: Robot[]; isPending: boolean; error: unknown } {
   return { robots, isPending, error };
 }
 
-const RobotsField: React.FunctionComponent<FieldProps<number[]>> = ({
+const RobotsField: React.FunctionComponent<SchemaFieldProps<number[]>> = ({
   label,
   schema,
   ...props
 }) => {
-  const [{ value = [], ...field }, meta, helper] = useField<number[]>(props);
-
   const { robots, error } = useRobots();
 
   const options = useMemo(
@@ -130,38 +95,31 @@ const RobotsField: React.FunctionComponent<FieldProps<number[]>> = ({
     [robots]
   );
 
+  let description: React.ReactNode =
+    "One or more robots on which to run the process";
+
+  if (error) {
+    description = (
+      <span className="text-danger small">
+        Error fetching robots: {getErrorMessage(error)}
+      </span>
+    );
+  }
+
   return (
-    <Form.Group>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
-      <Select
-        isMulti
-        options={options}
-        value={options.filter((x) => value.includes(x.value))}
-        onChange={(values) => {
-          console.debug("Selected values", { values });
-          helper.setValue(values?.map((x) => x.value) ?? []);
-        }}
-      />
-      {schema.description && (
-        <Form.Text className="text-muted">The UIPath process to run</Form.Text>
-      )}
-      {error && (
-        <span className="text-danger small">
-          Error fetching robots: {getErrorMessage(error)}
-        </span>
-      )}
-      {meta.touched && meta.error && (
-        <span className="text-danger small">{meta.error}</span>
-      )}
-    </Form.Group>
+    <ConnectedFieldTemplate
+      {...props}
+      label={label ?? fieldLabel(props.name)}
+      description={description}
+      as={MultiSelectWidget}
+      options={options}
+    />
   );
 };
 
 export const ReleaseField: React.FunctionComponent<
-  FieldProps<string> & { releases: Release[]; fetchError: unknown }
+  SchemaFieldProps<string> & { releases: Release[]; fetchError: unknown }
 > = ({ label, schema, releases, fetchError, ...props }) => {
-  const [{ value, ...field }, meta, helpers] = useField(props);
-
   const options = useMemo(
     () =>
       (releases ?? []).map((x) => ({
@@ -172,99 +130,26 @@ export const ReleaseField: React.FunctionComponent<
     [releases]
   );
 
+  let description: React.ReactNode = "The UIPath process to run";
+
+  if (fetchError) {
+    description = (
+      <span className="text-danger small">
+        Error fetching releases: {getErrorMessage(fetchError)}
+      </span>
+    );
+  }
+
   return (
-    <Form.Group>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
-      <Select
-        options={options}
-        value={options.find((x) => x.value === value)}
-        onChange={(option) => {
-          helpers.setValue(option.value);
-        }}
-      />
-      {schema.description && (
-        <Form.Text className="text-muted">The UIPath process to run</Form.Text>
-      )}
-      {fetchError && (
-        <span className="text-danger small">
-          Error fetching releases: {getErrorMessage(fetchError)}
-        </span>
-      )}
-      {meta.touched && meta.error && (
-        <span className="text-danger small">{meta.error}</span>
-      )}
-    </Form.Group>
+    <ConnectedFieldTemplate
+      {...props}
+      label={label ?? fieldLabel(props.name)}
+      description={description}
+      as={SelectWidget}
+      options={options}
+    />
   );
 };
-
-function toType(type: string) {
-  const { namespace, typeName } = parseAssemblyQualifiedName(type);
-  // https://docs.microsoft.com/en-us/dotnet/api/system.valuetype?view=net-5.0
-  if (namespace === "System" && typeName === "String") {
-    return "string";
-  }
-
-  if (namespace === "System" && typeName === "Boolean") {
-    return "boolean";
-  }
-
-  if (
-    namespace === "System" &&
-    ["Int64", "Int32", "Int16", "UInt64", "UInt32", "UInt16"].includes(typeName)
-  ) {
-    return "integer";
-  }
-
-  if (namespace === "System" && ["Decimal", "Double"].includes(typeName)) {
-    return "number";
-  }
-
-  throw new BusinessError(`Unsupported input type: ${type}`);
-}
-
-export function releaseSchema(release: Release): Schema {
-  if (!release.Arguments.Input) {
-    return {};
-  }
-
-  const inputs = JSON.parse(release.Arguments.Input) as Argument[];
-
-  const properties = Object.fromEntries(
-    inputs.map((input) => [input.name, { type: toType(input.type) }])
-  ) as SchemaProperties;
-
-  return {
-    properties,
-    required: inputs.filter((input) => input.required).map((x) => x.name),
-  };
-}
-
-export const InputArgumentsField: React.FunctionComponent<
-  FieldProps<Record<string, unknown>>
-> = ({ name, schema, label }) => (
-  <Form.Group>
-    <Form.Label>inputArguments</Form.Label>
-    <Card>
-      <Card.Header>{label}</Card.Header>
-      <Card.Body>
-        {schema &&
-          Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
-            if (typeof fieldSchema === "boolean") {
-              throw new TypeError("Expected schema for input property type");
-            }
-
-            return (
-              <FieldRenderer
-                key={prop}
-                name={`${name}.${prop}`}
-                schema={schema}
-              />
-            );
-          })}
-      </Card.Body>
-    </Card>
-  </Form.Group>
-);
 
 const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
@@ -327,7 +212,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         releases={releases}
         fetchError={releasesError}
       />
-      <FieldRenderer
+      <SchemaField
         name={`${basePath}.strategy`}
         schema={UIPATH_PROPERTIES.strategy as Schema}
       />
@@ -339,33 +224,23 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
         />
       )}
       {strategy === "JobsCount" && (
-        <FieldRenderer
+        <SchemaField
           name={`${basePath}.jobsCount`}
           schema={UIPATH_PROPERTIES.jobsCount as Schema}
         />
       )}
-      <FieldRenderer
+      <SchemaField
         name={`${basePath}.awaitResult`}
         schema={UIPATH_PROPERTIES.awaitResult as Schema}
       />
-      {releaseKey && release && (
-        <InputArgumentsField
-          label={release.Name}
-          schema={schema}
-          name={compact([name, configKey, "inputArguments"]).join(".")}
-        />
-      )}
 
-      {showOutputKey && (
-        <FieldRenderer
-          name={`${name}.outputKey`}
-          label="Output Variable"
-          schema={{
-            type: "string",
-            description: "A name to refer to this brick in subsequent bricks",
-          }}
-        />
-      )}
+      <ChildObjectField
+        heading={release?.Name ?? "Process"}
+        schema={schema}
+        name={compact([name, configKey, "inputArguments"]).join(".")}
+      />
+
+      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };

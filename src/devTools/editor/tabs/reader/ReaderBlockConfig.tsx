@@ -29,7 +29,7 @@ import { useAsyncState } from "@/hooks/common";
 import { IReader } from "@/core";
 import { runReaderBlock } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
-import { SelectorSelectorControl } from "@/devTools/editor/fields/SelectorSelectorField";
+import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
 import { faCode, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import copy from "copy-to-clipboard";
@@ -140,9 +140,9 @@ export const ReaderBlockForm: React.FunctionComponent<{
             Test Element
           </Form.Label>
           <Col sm={10}>
-            <SelectorSelectorControl
+            <SelectorSelectorWidget
               value={testSelector}
-              onSelect={(selector) => {
+              onSelect={(selector: string) => {
                 setTestSelector(selector);
               }}
               isClearable

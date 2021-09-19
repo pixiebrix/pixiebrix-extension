@@ -26,6 +26,7 @@ import { Except } from "type-fest";
 import SwitchButton from "@/components/form/switchButton/SwitchButton";
 import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
+import { getErrorMessage } from "@/errors";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -39,9 +40,9 @@ export type FieldProps<
     touched?: boolean | undefined;
   };
 
-export type CustomFieldWidget<
-  TExtra extends Record<string, unknown> = never
-> = React.ComponentType<FieldProps & TExtra>;
+export type CustomFieldWidget<TExtra = never> = React.ComponentType<
+  FieldProps & TExtra
+>;
 
 type FieldRenderProps = Except<FieldProps, "layout">;
 
@@ -78,7 +79,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
         )}
         {isInvalid && (
           <BootstrapForm.Control.Feedback type="invalid">
-            {error}
+            {getErrorMessage(error)}
           </BootstrapForm.Control.Feedback>
         )}
       </Col>
@@ -122,7 +123,7 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
       )}
       {isInvalid && (
         <BootstrapForm.Control.Feedback type="invalid">
-          {error}
+          {getErrorMessage(error)}
         </BootstrapForm.Control.Feedback>
       )}
     </BootstrapForm.Group>

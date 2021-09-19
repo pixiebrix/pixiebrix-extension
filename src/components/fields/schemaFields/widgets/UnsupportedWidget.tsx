@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import React from "react";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 
-/**
- * Mapping from block id to block editor.
- */
-const optionsRegistry = new Map<
-  string,
-  React.FunctionComponent<BlockOptionProps>
->();
+const UnsupportedWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = ({
+  schema,
+}) => <div>Unsupported field type: {schema.type ?? "No type found"}</div>;
 
-export default optionsRegistry;
+export default UnsupportedWidget;

@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, Suspense } from "react";
-import { FieldProps } from "@/components/fields/propTypes";
+import React, { useCallback, lazy, Suspense } from "react";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { Form, Row, Col } from "react-bootstrap";
 
 import { IconOption } from "@/icons/types";
@@ -24,7 +24,7 @@ import { useField } from "formik";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { IconConfig, Schema } from "@/core";
 
-const IconSelector = React.lazy(
+const IconSelector = lazy(
   async () =>
     import(
       /* webpackChunkName: "icons" */
@@ -48,7 +48,10 @@ export const iconSchema: Schema = {
   required: ["id", "library"],
 };
 
-const IconField: React.FunctionComponent<FieldProps<IconConfig>> = ({
+/**
+ * @deprecated Will be removed when we remove the old Page Editor code
+ */
+const IconField: React.FunctionComponent<SchemaFieldProps<IconConfig>> = ({
   label,
   ...props
 }) => {

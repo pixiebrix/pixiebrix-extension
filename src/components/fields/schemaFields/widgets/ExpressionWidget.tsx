@@ -16,14 +16,22 @@
  */
 
 import React from "react";
-import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import { useField } from "formik";
+import { Form } from "react-bootstrap";
 
-/**
- * Mapping from block id to block editor.
- */
-const optionsRegistry = new Map<
-  string,
-  React.FunctionComponent<BlockOptionProps>
->();
+const ExpressionWidget: React.FunctionComponent<SchemaFieldProps<unknown>> = (
+  props
+) => {
+  const [field, meta] = useField(props);
+  return (
+    <Form.Control
+      type="text"
+      {...props}
+      value={field.value ?? ""}
+      isInvalid={meta.error != null}
+    />
+  );
+};
 
-export default optionsRegistry;
+export default ExpressionWidget;

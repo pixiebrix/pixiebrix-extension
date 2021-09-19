@@ -15,21 +15,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useContext, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SchemaFieldContext, {
+  getDefaultField,
+} from "@/components/fields/schemaFields/SchemaFieldContext";
 
-const BooleanField: React.FunctionComponent<SchemaFieldProps<boolean>> = ({
-  name,
-  label,
+/**
+ * A schema-based field that automatically determines it's layout/widget based on the schema and uiSchema.
+ *
+ * @see SchemaFieldContext
+ * @see getDefaultField
+ */
+const SchemaField: React.FunctionComponent<SchemaFieldProps<unknown>> = ({
   schema,
-}) => (
-  <ConnectedFieldTemplate
-    layout="switch"
-    label={label ?? fieldLabel(name)}
-    description={schema.description}
-  />
-);
+  uiSchema,
+  ...props
+}) => {
+  const { customFields } = useContext(SchemaFieldContext);
+  const Field = useMemo(() => {
+    const match = customFields.find((x) => x.match(schema));
+    return match ? match.Component : getDefaultField(schema);
+  }, [schema, customFields]);
+  return <Field schema={schema} uiSchema={uiSchema} {...props} />;
+};
 
-export default BooleanField;
+export default SchemaField;

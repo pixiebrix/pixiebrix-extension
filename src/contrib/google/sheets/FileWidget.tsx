@@ -15,8 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useContext, useState } from "react";
-import { FieldProps } from "@/components/fields/propTypes";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { Data, SheetMeta } from "@/contrib/google/sheets/types";
 import { DevToolsContext } from "@/devTools/context";
 import { useField } from "formik";
@@ -31,24 +30,42 @@ import { ensureAuth } from "@/contrib/google/auth";
 import { partial } from "lodash";
 import { isOptionsPage } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { Form, InputGroup } from "react-bootstrap";
 import useNotifications from "@/hooks/useNotifications";
 import { getErrorMessage } from "@/errors";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import AsyncButton from "@/components/AsyncButton";
 
 const API_KEY = process.env.GOOGLE_API_KEY;
 const APP_ID = process.env.GOOGLE_APP_ID;
 
-const FileField: React.FunctionComponent<
-  FieldProps<string> & {
-    doc: SheetMeta | null;
-    onSelect: (doc: SheetMeta) => void;
-  }
-> = ({ name, onSelect, doc }) => {
+type OwnProps = {
+  doc: SheetMeta | null;
+  onSelect: (doc: SheetMeta) => void;
+};
+
+const FileWidget: CustomFieldWidget<OwnProps> = ({
+  doc,
+  onSelect,
+  ...props
+}) => {
   const { port } = useContext(DevToolsContext);
   const notify = useNotifications();
 
-  const [field, meta, helpers] = useField<string>(name);
+  const [field, , helpers] = useField<string>(props);
   const [sheetError, setSheetError] = useState(null);
+
+  useEffect(
+    () => {
+      if (sheetError?.toString().includes("not found")) {
+        helpers.setError(
+          "The sheet does not exist, or you do not have access to it"
+        );
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- there's a bug in Formik where changes every render
+    [sheetError]
+  );
 
   useAsyncEffect(
     async (isMounted) => {
@@ -141,40 +158,24 @@ const FileField: React.FunctionComponent<
   }, [notify, helpers, onSelect]);
 
   return (
-    <Form.Group>
-      <Form.Label>Spreadsheet ID</Form.Label>
-
-      <InputGroup>
-        {doc ? (
-          <Form.Control type="text" disabled value={doc.name} />
-        ) : (
-          <Form.Control
-            type="text"
-            disabled
-            value={field.value ?? ""}
-            {...field}
-          />
-        )}
-        <InputGroup.Append>
-          <Button variant="info" onClick={showPicker}>
-            Select
-          </Button>
-        </InputGroup.Append>
-      </InputGroup>
-
-      <Form.Text className="text-muted">The Google spreadsheet</Form.Text>
-
-      {sheetError?.toString().includes("not found") && (
-        <span className="text-danger small">
-          The sheet does not exist, or you do not have access to it
-        </span>
+    <InputGroup>
+      {doc ? (
+        <Form.Control type="text" disabled value={doc.name} />
+      ) : (
+        <Form.Control
+          type="text"
+          disabled
+          value={field.value ?? ""}
+          {...field}
+        />
       )}
-
-      {meta.touched && meta.error && (
-        <span className="text-danger small">{meta.error}</span>
-      )}
-    </Form.Group>
+      <InputGroup.Append>
+        <AsyncButton variant="info" onClick={showPicker}>
+          Select
+        </AsyncButton>
+      </InputGroup.Append>
+    </InputGroup>
   );
 };
 
-export default FileField;
+export default FileWidget;

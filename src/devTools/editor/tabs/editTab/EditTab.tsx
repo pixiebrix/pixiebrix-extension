@@ -39,6 +39,7 @@ import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -217,20 +218,22 @@ const EditTab: React.FC<{
           />
         </div>
         <div className={styles.configPanel}>
-          <FormTheme.Provider value={blockConfigTheme}>
-            {activeNodeIndex === 0 && <FoundationNode isLocked={isLocked} />}
+          <ErrorBoundary>
+            <FormTheme.Provider value={blockConfigTheme}>
+              {activeNodeIndex === 0 && <FoundationNode isLocked={isLocked} />}
 
-            {activeNodeIndex > 0 && (
-              <EditorNodeConfigPanel
-                key={blockPipeline[activeNodeIndex - 1].instanceId}
-                blockFieldName={blockFieldName}
-                blockId={resolvedBlocks[activeNodeIndex - 1].id}
-                onRemoveNode={() => {
-                  removeBlock(activeNodeIndex - 1);
-                }}
-              />
-            )}
-          </FormTheme.Provider>
+              {activeNodeIndex > 0 && (
+                <EditorNodeConfigPanel
+                  key={blockPipeline[activeNodeIndex - 1].instanceId}
+                  blockFieldName={blockFieldName}
+                  blockId={resolvedBlocks[activeNodeIndex - 1].id}
+                  onRemoveNode={() => {
+                    removeBlock(activeNodeIndex - 1);
+                  }}
+                />
+              )}
+            </FormTheme.Provider>
+          </ErrorBoundary>
         </div>
         <div className={styles.tracePanel}>
           {activeNodeIndex === 0 && (

@@ -16,37 +16,42 @@
  */
 
 import React, { useCallback, useContext, useMemo, useRef } from "react";
-import { Form, Button, Table } from "react-bootstrap";
-import { Schema } from "@/core";
-import { FieldProps } from "@/components/fields/propTypes";
+import { Button, Form, Table } from "react-bootstrap";
+import { SafeString, Schema } from "@/core";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { isEmpty } from "lodash";
-import {
-  getDefaultField,
-  RendererContext,
-} from "@/components/fields/blockOptions";
 import { useField, useFormikContext } from "formik";
-import { fieldLabel } from "@/components/fields/fieldUtils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
+import { freshIdentifier } from "@/utils";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import ComplexObjectValue from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
+import ExpressionWidget from "@/components/fields/schemaFields/widgets/ExpressionWidget";
+import SchemaFieldContext, {
+  getDefaultField,
+} from "@/components/fields/schemaFields/SchemaFieldContext";
 
-interface PropertyRowProps {
+type PropertyRowProps = {
   name: string;
   showActions?: boolean;
   readOnly: boolean;
   schema: Schema;
   onDelete: () => void;
   onRename: (newName: string) => void;
-}
+};
 
-interface RowProps {
+type RowProps = {
   parentSchema: Schema;
   name: string;
   property: string;
   defined: boolean;
   onDelete: (prop: string) => void;
   onRename: (oldProp: string, newProp: string) => void;
-}
+};
+
+const BOOLEAN_SCHEMA: Schema = { type: "string" };
+const FALLBACK_SCHEMA: Schema = { type: "string" };
 
 const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   name,
@@ -63,22 +68,6 @@ const CompositePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   );
 };
 
-export const ComplexObjectValue: React.FunctionComponent<
-  FieldProps<unknown>
-> = () => <Form.Control plaintext readOnly defaultValue="Complex object" />;
-
-const SimpleValue: React.FunctionComponent<FieldProps<unknown>> = (props) => {
-  const [field, meta] = useField(props);
-  return (
-    <Form.Control
-      type="text"
-      {...props}
-      value={field.value ?? ""}
-      isInvalid={meta.error != null}
-    />
-  );
-};
-
 const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
   readOnly,
   onDelete,
@@ -89,7 +78,7 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
 }) => {
   const [field] = useField(props);
 
-  const { customControls } = useContext(RendererContext);
+  const { customWidgets } = useContext(SchemaFieldContext);
 
   const isComplex = typeof field.value === "object";
 
@@ -98,9 +87,9 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
       return ComplexObjectValue;
     }
 
-    const { Component } = customControls.find((x) => x.match(schema)) ?? {};
-    return Component ?? SimpleValue;
-  }, [isComplex, customControls, schema]);
+    const { Component } = customWidgets.find((x) => x.match(schema)) ?? {};
+    return Component ?? ExpressionWidget;
+  }, [isComplex, customWidgets, schema]);
 
   const updateName = useCallback(
     (e: React.FocusEvent<HTMLInputElement>) => {
@@ -137,18 +126,6 @@ const ValuePropertyRow: React.FunctionComponent<PropertyRowProps> = ({
     </tr>
   );
 };
-
-function freshPropertyName(obj: Record<string, unknown>) {
-  let x = 1;
-  while (Object.prototype.hasOwnProperty.call(obj, `property${x}`)) {
-    x++;
-  }
-
-  return `property${x}`;
-}
-
-const BOOLEAN_SCHEMA: Schema = { type: "string" };
-const FALLBACK_SCHEMA: Schema = { type: "string" };
 
 const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
   parentSchema,
@@ -199,14 +176,23 @@ const ObjectFieldRow: React.FunctionComponent<RowProps> = ({
   );
 };
 
+export function getPropertyRow(
+  schema: Schema
+): React.FunctionComponent<PropertyRowProps> {
+  switch (schema?.type) {
+    case "array":
+    case "object":
+      return CompositePropertyRow;
+    default: {
+      return ValuePropertyRow;
+    }
+  }
+}
+
 type ObjectValue = Record<string, unknown>;
 
-export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
-  label,
-  schema,
-  ...props
-}) => {
-  const { name } = props;
+const ObjectWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = (props) => {
+  const { name, schema } = props;
 
   // Allow additional properties for empty schema (empty schema allows shape)
   const additionalProperties = isEmpty(schema) || schema.additionalProperties;
@@ -271,14 +257,17 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
     setFieldValue(
       name,
       produce(valueRef.current, (draft) => {
-        draft[freshPropertyName(draft)] = "";
+        const prop = freshIdentifier("property" as SafeString, [
+          ...Object.keys(draft),
+        ]);
+        // eslint-disable-next-line security/detect-object-injection -- generated via constant
+        draft[prop] = "";
       })
     );
   }, [name, setFieldValue, valueRef]);
 
   return (
-    <Form.Group controlId={field.name}>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
+    <div>
       <Table size="sm">
         <thead>
           <tr>
@@ -307,19 +296,8 @@ export const ObjectField: React.FunctionComponent<FieldProps<unknown>> = ({
       {additionalProperties && (
         <Button onClick={addProperty}>Add Property</Button>
       )}
-    </Form.Group>
+    </div>
   );
 };
 
-export function getPropertyRow(
-  schema: Schema
-): React.FunctionComponent<PropertyRowProps> {
-  switch (schema?.type) {
-    case "array":
-    case "object":
-      return CompositePropertyRow;
-    default: {
-      return ValuePropertyRow;
-    }
-  }
-}
+export default ObjectWidget;

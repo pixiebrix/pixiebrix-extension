@@ -16,22 +16,22 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField } from "formik";
 import Select, { OptionsType } from "react-select";
 import { sortBy, uniq } from "lodash";
 import Creatable from "react-select/creatable";
 import { Form } from "react-bootstrap";
-import { fieldLabel } from "@/components/fields/fieldUtils";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 
-const TextField: React.FunctionComponent<FieldProps<string>> = ({
+const TextWidget: CustomFieldWidget<SchemaFieldProps<string>> = ({
   schema,
   uiSchema,
   label,
   ...props
 }) => {
   const [created, setCreated] = useState([]);
-  const [{ value, ...field }, meta, helpers] = useField(props);
+  const [{ value, ...field }, meta, helpers] = useField<string>(props);
 
   const [creatable, options]: [
     boolean,
@@ -50,10 +50,8 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
     return [schema?.enum == null, options];
   }, [schema.examples, schema.enum, created, value, schema.type]);
 
-  let control;
-
   if (options.length > 0 && creatable) {
-    control = (
+    return (
       <Creatable
         isClearable
         options={options}
@@ -67,8 +65,10 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         }}
       />
     );
-  } else if (options.length > 0 && !creatable) {
-    control = (
+  }
+
+  if (options.length > 0 && !creatable) {
+    return (
       <Select
         isClearable
         options={options}
@@ -78,25 +78,17 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
         }}
       />
     );
-  } else if (typeof value === "object") {
+  }
+
+  if (typeof value === "object") {
     console.warn("Cannot edit object as text", { schema, value });
-    control = <div>Cannot edit object value as text</div>;
-  } else if (
-    schema.format === "markdown" ||
-    uiSchema?.["ui:widget"] === "textarea"
-  ) {
-    control = (
+    return <div>Cannot edit object value as text</div>;
+  }
+
+  if (schema.format === "markdown" || uiSchema?.["ui:widget"] === "textarea") {
+    return (
       <Form.Control
         as="textarea"
-        value={value ?? ""}
-        {...field}
-        isInvalid={Boolean(meta.error)}
-      />
-    );
-  } else {
-    control = (
-      <Form.Control
-        type="text"
         value={value ?? ""}
         {...field}
         isInvalid={Boolean(meta.error)}
@@ -105,19 +97,13 @@ const TextField: React.FunctionComponent<FieldProps<string>> = ({
   }
 
   return (
-    <Form.Group>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
-      {control}
-      {schema.description && (
-        <Form.Text className="text-muted">{schema.description}</Form.Text>
-      )}
-      {meta.touched && meta.error && (
-        <Form.Control.Feedback type="invalid">
-          {meta.error}
-        </Form.Control.Feedback>
-      )}
-    </Form.Group>
+    <Form.Control
+      type="text"
+      value={value ?? ""}
+      {...field}
+      isInvalid={Boolean(meta.error)}
+    />
   );
 };
 
-export default TextField;
+export default TextWidget;

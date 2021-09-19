@@ -18,43 +18,49 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { Formik } from "formik";
-import TextField from "@/components/fields/TextField";
 import { noop } from "lodash";
+import SchemaField from "./SchemaField";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 
 export default {
-  title: "Fields/TextField",
-  component: TextField,
-} as ComponentMeta<typeof TextField>;
+  title: "Fields/SchemaField",
+  component: SchemaField,
+} as ComponentMeta<typeof SchemaField>;
 
-const Template: ComponentStory<typeof TextField> = (args) => (
-  <Formik initialValues={{ [args.name]: null }} onSubmit={noop}>
-    <TextField {...args} />
+const Template: ComponentStory<
+  React.FunctionComponent<SchemaFieldProps<string> & { defaultValue: string }>
+> = (args) => (
+  <Formik initialValues={{ [args.name]: args.defaultValue }} onSubmit={noop}>
+    <SchemaField {...args} />
   </Formik>
 );
 
-export const Normal = Template.bind({});
-Normal.args = {
+export const NormalText = Template.bind({});
+NormalText.args = {
   name: "testField",
+  defaultValue: "",
   label: "Enter some text",
   schema: {
     type: "string",
   },
 };
 
-export const Select = Template.bind({});
-Select.args = {
+export const SelectText = Template.bind({});
+SelectText.args = {
   name: "testField",
   label: "Select an option",
+  defaultValue: null,
   schema: {
     type: "string",
     enum: ["Foo", "Bar"],
   },
 };
 
-export const Examples = Template.bind({});
-Examples.args = {
+export const ExampleText = Template.bind({});
+ExampleText.args = {
   name: "testField",
   label: "Select an option",
+  defaultValue: null,
   schema: {
     type: "string",
     examples: ["Foo", "Bar"],
