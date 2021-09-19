@@ -86,3 +86,18 @@ export type CloudExtension<T extends Config = EmptyConfig> = Except<
   _deployment: undefined;
   _recipe: undefined;
 };
+
+/**
+ * Detailed MarketplaceListing
+ * TODO: generate type using swagger
+ */
+export type MarketplaceListing = {
+  id: string;
+  package: Record<string, unknown>;
+  fa_icon: string;
+  icon_color: string;
+  image?: {
+    url: string;
+    alt_text: string;
+  };
+};

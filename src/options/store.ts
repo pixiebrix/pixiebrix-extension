@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, Middleware } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
 import {
@@ -57,11 +57,11 @@ export interface RootState {
   installedPage: InstalledPageState;
 }
 
-const middleware = [routerMiddleware(hashHistory), appApi.middleware];
+const conditionalMiddleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") {
   // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
-  middleware.push(createLogger());
+  conditionalMiddleware.push(createLogger());
 }
 
 const store = configureStore({
@@ -73,8 +73,14 @@ const store = configureStore({
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistSettingsConfig, workshopSlice.reducer),
     installedPage: installedPageSlice.reducer,
+    [appApi.reducerPath]: appApi.reducer,
   },
-  middleware,
+  middleware: (getDefaultMiddleware) => [
+    ...getDefaultMiddleware(),
+    appApi.middleware,
+    routerMiddleware(hashHistory),
+    ...conditionalMiddleware,
+  ],
   devTools: REDUX_DEV_TOOLS,
 });
 

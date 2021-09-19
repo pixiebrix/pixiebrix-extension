@@ -20,7 +20,7 @@ import { ServiceDefinition } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
-import { SanitizedAuth } from "@/types/contract";
+import { MarketplaceListing, SanitizedAuth } from "@/types/contract";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery = (): BaseQueryFn<{
@@ -56,7 +56,17 @@ export const appApi = createApi({
     getServiceAuths: builder.query<SanitizedAuth[], void>({
       query: () => ({ url: "/api/services/shared/?meta=1", method: "get" }),
     }),
+    getMarketplaceListings: builder.query<MarketplaceListing[], void>({
+      query: () => ({
+        url: "/api/marketplace/listings/?show_detail=true",
+        method: "get",
+      }),
+    }),
   }),
 });
 
-export const { useGetServicesQuery, useGetServiceAuthsQuery } = appApi;
+export const {
+  useGetServicesQuery,
+  useGetServiceAuthsQuery,
+  useGetMarketplaceListingsQuery,
+} = appApi;
