@@ -19,20 +19,28 @@ import React from "react";
 import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import TextWidget from "./widgets/TextWidget";
+import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget";
 
-const TextField: React.FunctionComponent<SchemaFieldProps<string>> = (
-  props
-) => {
-  const { label, name, schema } = props;
+type OwnProps = {
+  /**
+   * A manual description field. Allows custom options pages to pass in status messages about the field, e.g., that
+   * an exact schema could not be determined.
+   */
+  description?: React.ReactNode;
+};
+
+const ObjectField: React.FunctionComponent<
+  SchemaFieldProps<unknown> & OwnProps
+> = (props) => {
+  const { name, label, schema, description } = props;
   return (
     <ConnectedFieldTemplate
-      label={label ?? fieldLabel(name)}
-      description={schema.description}
-      as={TextWidget}
       {...props}
+      label={label ?? fieldLabel(name)}
+      description={description ?? schema.description}
+      as={ObjectWidget}
     />
   );
 };
 
-export default TextField;
+export default ObjectField;

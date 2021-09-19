@@ -18,7 +18,7 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { Formik } from "formik";
-import TextField from "@/components/fields/TextField";
+import TextField from "./TextField";
 import { noop } from "lodash";
 
 export default {

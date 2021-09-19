@@ -18,7 +18,7 @@
 // Ok to use object here since we don't have any key-specific logic
 // eslint-disable-next-line @typescript-eslint/ban-types
 import React from "react";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { FieldArray, useField } from "formik";
 import { Schema } from "@/core";
 import { Button, Form } from "react-bootstrap";
@@ -50,7 +50,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
   return null;
 }
 
-const ArrayField: React.FunctionComponent<FieldProps<object[]>> = ({
+const ArrayField: React.FunctionComponent<SchemaFieldProps<object[]>> = ({
   schema,
   label,
   ...props

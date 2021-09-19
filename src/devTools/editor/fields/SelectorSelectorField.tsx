@@ -36,7 +36,7 @@ import CreatableAutosuggest, {
 import SelectorListItem from "@/devTools/editor/fields/selectorListItem/SelectorListItem";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
-import { ComplexObjectValue } from "@/components/fields/FieldTable";
+import ComplexObjectValue from "@/components/fields/schemaFields/widgets/ComplexObjectWidget";
 
 interface ElementSuggestion extends SuggestionTypeBase {
   value: string;

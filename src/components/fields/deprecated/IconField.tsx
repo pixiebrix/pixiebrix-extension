@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, Suspense } from "react";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { Form, Row, Col } from "react-bootstrap";
 
 import { IconOption } from "@/icons/types";
@@ -48,7 +48,10 @@ export const iconSchema: Schema = {
   required: ["id", "library"],
 };
 
-const IconField: React.FunctionComponent<FieldProps<IconConfig>> = ({
+/**
+ * @deprecated Will be removed when we remove the old Page Editor code
+ */
+const IconField: React.FunctionComponent<SchemaFieldProps<IconConfig>> = ({
   label,
   ...props
 }) => {

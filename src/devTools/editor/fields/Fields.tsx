@@ -17,7 +17,7 @@
  */
 
 import React from "react";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { useField } from "formik";
 import { Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
@@ -25,11 +25,9 @@ import SelectorSelectorField from "./SelectorSelectorField";
 import { IRenderContext } from "@/components/fields/blockOptions";
 import { Schema } from "@/core";
 
-export const SelectorRenderer: React.FunctionComponent<FieldProps<string>> = ({
-  label,
-  schema,
-  ...props
-}) => {
+export const SelectorRenderer: React.FunctionComponent<
+  SchemaFieldProps<string>
+> = ({ label, schema, ...props }) => {
   const [field, meta] = useField(props);
   return (
     <Form.Group>

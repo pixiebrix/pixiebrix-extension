@@ -15,42 +15,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Form, Row, Col } from "react-bootstrap";
-import React, { FunctionComponent, useMemo, useState } from "react";
-import { uniq } from "lodash";
-import { FieldProps } from "@/components/fields/propTypes";
+import React, { useMemo, useState } from "react";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { useField } from "formik";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import Creatable from "react-select/creatable";
 import Select, { OptionsType } from "react-select";
+import { sortBy, uniq } from "lodash";
+import Creatable from "react-select/creatable";
+import { Form } from "react-bootstrap";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 
-const TextField: FunctionComponent<FieldProps<string>> = ({
-  label,
+const TextWidget: CustomFieldWidget<SchemaFieldProps<string>> = ({
   schema,
+  uiSchema,
+  label,
   ...props
 }) => {
   const [created, setCreated] = useState([]);
-  const [{ value, ...field }, meta, helpers] = useField(props);
+  const [{ value, ...field }, meta, helpers] = useField<string>(props);
 
   const [creatable, options]: [
     boolean,
     OptionsType<{ value: string }>
   ] = useMemo(() => {
-    const values = schema?.examples ?? schema?.enum;
-    const options = Array.isArray(values)
-      ? uniq([...created, ...values]).map((x) => ({ value: x, label: x }))
-      : [];
+    const values = schema.examples ?? schema.enum;
+    const options =
+      schema.type === "string" && Array.isArray(values)
+        ? sortBy(
+            uniq([...created, ...values, value].filter((x) => x != null))
+          ).map((value) => ({
+            value,
+            label: value,
+          }))
+        : [];
     return [schema?.enum == null, options];
-  }, [created, schema?.examples, schema?.enum]);
-
-  let control;
+  }, [schema.examples, schema.enum, created, value, schema.type]);
 
   if (options.length > 0 && creatable) {
-    control = (
+    return (
       <Creatable
         isClearable
         options={options}
         onCreateOption={(value) => {
+          helpers.setValue(value);
           setCreated(uniq([...created, value]));
         }}
         value={options.find((x) => x.value === value)}
@@ -59,8 +65,10 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         }}
       />
     );
-  } else if (options.length > 0 && !creatable) {
-    control = (
+  }
+
+  if (options.length > 0 && !creatable) {
+    return (
       <Select
         isClearable
         options={options}
@@ -70,19 +78,17 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
         }}
       />
     );
-  } else if (schema.format === "markdown") {
-    control = (
+  }
+
+  if (typeof value === "object") {
+    console.warn("Cannot edit object as text", { schema, value });
+    return <div>Cannot edit object value as text</div>;
+  }
+
+  if (schema.format === "markdown" || uiSchema?.["ui:widget"] === "textarea") {
+    return (
       <Form.Control
         as="textarea"
-        value={value ?? ""}
-        {...field}
-        isInvalid={Boolean(meta.error)}
-      />
-    );
-  } else {
-    control = (
-      <Form.Control
-        type="text"
         value={value ?? ""}
         {...field}
         isInvalid={Boolean(meta.error)}
@@ -91,23 +97,13 @@ const TextField: FunctionComponent<FieldProps<string>> = ({
   }
 
   return (
-    <Form.Group as={Row} controlId={field.name}>
-      <Form.Label column sm="2">
-        {label ?? fieldLabel(field.name)}
-      </Form.Label>
-      <Col sm="10">
-        {control}
-        {schema.description && (
-          <Form.Text className="text-muted">{schema.description}</Form.Text>
-        )}
-        {meta.touched && meta.error && (
-          <Form.Control.Feedback type="invalid">
-            {meta.error}
-          </Form.Control.Feedback>
-        )}
-      </Col>
-    </Form.Group>
+    <Form.Control
+      type="text"
+      value={value ?? ""}
+      {...field}
+      isInvalid={Boolean(meta.error)}
+    />
   );
 };
 
-export default TextField;
+export default TextWidget;

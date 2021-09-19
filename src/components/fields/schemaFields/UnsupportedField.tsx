@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -16,36 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Col, Form, Row } from "react-bootstrap";
 import React, { FunctionComponent } from "react";
-import { FieldProps } from "@/components/fields/propTypes";
-import { useField } from "formik";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { fieldLabel } from "@/components/fields/fieldUtils";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
-const UnsupportedField: FunctionComponent<FieldProps<unknown>> = ({
-  label,
+const UnsupportedWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = ({
   schema,
-  ...props
-}) => {
-  const [{ ...field }, meta] = useField(props);
+}) => <div>Unsupported field type: {schema.type ?? "No type found"}</div>;
 
+const UnsupportedField: FunctionComponent<SchemaFieldProps<unknown>> = (
+  props
+) => {
+  const { label, name, schema } = props;
   return (
-    <Form.Group as={Row} controlId={field.name}>
-      <Form.Label column sm="2">
-        {label ?? fieldLabel(field.name)}
-      </Form.Label>
-      <Col sm="10">
-        <div>Unsupported field type: {schema.type ?? "<No type found>"}</div>
-        {schema.description && (
-          <Form.Text className="text-muted">{schema.description}</Form.Text>
-        )}
-        {meta.touched && meta.error && (
-          <Form.Control.Feedback type="invalid">
-            {meta.error}
-          </Form.Control.Feedback>
-        )}
-      </Col>
-    </Form.Group>
+    <ConnectedFieldTemplate
+      label={label ?? fieldLabel(name)}
+      description={schema.description}
+      as={UnsupportedWidget}
+    />
   );
 };
 

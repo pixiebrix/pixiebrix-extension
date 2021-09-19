@@ -17,22 +17,21 @@
 
 import React from "react";
 import { SchemaFieldProps } from "@/components/fields/propTypes";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import TextWidget from "./widgets/TextWidget";
+import { useField } from "formik";
+import { Form } from "react-bootstrap";
 
-const TextField: React.FunctionComponent<SchemaFieldProps<string>> = (
+const ExpressionWidget: React.FunctionComponent<SchemaFieldProps<unknown>> = (
   props
 ) => {
-  const { label, name, schema } = props;
+  const [field, meta] = useField(props);
   return (
-    <ConnectedFieldTemplate
-      label={label ?? fieldLabel(name)}
-      description={schema.description}
-      as={TextWidget}
+    <Form.Control
+      type="text"
       {...props}
+      value={field.value ?? ""}
+      isInvalid={meta.error != null}
     />
   );
 };
 
-export default TextField;
+export default ExpressionWidget;

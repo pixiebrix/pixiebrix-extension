@@ -34,6 +34,8 @@ const FormikFieldTemplate = <Values,>({
 
   return (
     <FieldTemplate
+      // FIXME: string values are not valid for all input types. The caller should be responsible for ensuring
+      //  a value is passed into FormikFieldTemplate
       value={value ?? ""}
       error={error}
       touched={touched}

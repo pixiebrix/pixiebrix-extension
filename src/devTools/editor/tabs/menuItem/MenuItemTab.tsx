@@ -18,7 +18,9 @@
 import React from "react";
 import { FastField, FieldInputProps } from "formik";
 import { Col, Form, Row, Tab } from "react-bootstrap";
-import IconField, { iconSchema } from "@/components/fields/IconField";
+import IconField, {
+  iconSchema,
+} from "@/components/fields/deprecated/IconField";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 
 const MenuItemTab: React.FunctionComponent<{

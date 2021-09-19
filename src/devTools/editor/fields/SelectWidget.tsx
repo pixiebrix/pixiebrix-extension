@@ -19,6 +19,7 @@ import React from "react";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
 import Select from "react-select";
+import { getErrorMessage } from "@/errors";
 
 export type Option = {
   label: string;
@@ -28,22 +29,39 @@ export type Option = {
 type OwnProps = {
   isClearable?: boolean;
   options: Option[];
+  isLoading?: boolean;
+  loadingMessage?: string;
+  error?: unknown;
 };
 
 const SelectWidget: CustomFieldWidget<OwnProps> = ({
   options,
   isClearable = false,
+  isLoading,
+  loadingMessage: string,
+  loadError,
   disabled,
   ...props
 }) => {
   const [field, , helpers] = useField<unknown>(props);
+
+  if (loadError) {
+    return (
+      <div className="text-danger">
+        Error loading options: {getErrorMessage(loadError)}
+      </div>
+    );
+  }
+
   return (
     <Select
       isDisabled={disabled}
+      isLoading={isLoading}
       isClearable={isClearable}
       options={options}
       value={options.filter((option: Option) => field.value === option.value)}
       onChange={(option) => {
+        console.debug("Selecting option", { options, option, field });
         helpers.setValue(option.value);
       }}
     />

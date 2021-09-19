@@ -1,4 +1,3 @@
-/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -16,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* eslint-disable filenames/match-exported */
 import React, { createContext, useContext, useMemo } from "react";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
 import { Schema, UiSchema } from "@/core";
-import { ObjectField } from "@/components/fields/FieldTable";
 import { compact, isEmpty } from "lodash";
 import ServiceField, {
   SERVICE_BASE_SCHEMA,
@@ -33,12 +32,13 @@ import {
   findOneOf,
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
+import ObjectField from "@/components/fields/schemaFields/ObjectField";
 
-type FieldComponent<T = unknown> = React.FunctionComponent<FieldProps<T>>;
+type FieldComponent<T = unknown> = React.FunctionComponent<SchemaFieldProps<T>>;
 
 function makeOneOfField(oneOf: Schema): FieldComponent {
   const Renderer = getDefaultField(oneOf);
-  const Component = (props: FieldProps<unknown>) => (
+  const Component = (props: SchemaFieldProps<unknown>) => (
     <Renderer {...props} schema={oneOf} />
   );
   Component.displayName = Renderer.displayName;
@@ -111,11 +111,9 @@ export const RendererContext = createContext<IRenderContext>({
   customControls: [],
 });
 
-export const FieldRenderer: React.FunctionComponent<FieldProps<unknown>> = ({
-  schema,
-  uiSchema,
-  ...props
-}) => {
+export const FieldRenderer: React.FunctionComponent<
+  SchemaFieldProps<unknown>
+> = ({ schema, uiSchema, ...props }) => {
   const { customRenderers } = useContext(RendererContext);
   const Renderer = useMemo(() => {
     const match = customRenderers.find((x) => x.match(schema));

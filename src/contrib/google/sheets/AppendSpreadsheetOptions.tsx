@@ -17,29 +17,33 @@
 
 import React, { useContext, useMemo, useState } from "react";
 import { BlockOptionProps } from "@/components/fields/blockOptions";
-import { Form } from "react-bootstrap";
 import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { useField } from "formik";
 import { Schema } from "@/core";
 import { compact, uniq } from "lodash";
-import Select from "react-select";
 import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
 import { DevToolsContext } from "@/devTools/context";
-import { ObjectField } from "@/components/fields/FieldTable";
-import GridLoader from "react-spinners/GridLoader";
 import { isNullOrBlank } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
-import FileField from "@/contrib/google/sheets/FileField";
+import FileWidget from "@/contrib/google/sheets/FileWidget";
+import ObjectField from "@/components/fields/schemaFields/ObjectField";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 import { getErrorMessage } from "@/errors";
 
+const DEFAULT_FIELDS_SCHEMA: Schema = {
+  type: "object",
+  additionalProperties: true,
+};
+
 const TabField: React.FunctionComponent<
-  FieldProps<string> & { doc: SheetMeta | null }
+  SchemaFieldProps<string> & { doc: SheetMeta | null }
 > = ({ name, doc }) => {
   const { port } = useContext(DevToolsContext);
 
-  const [field, meta, helpers] = useField<string>(name);
+  const [field] = useField<string>(name);
 
   const [tabNames, tabsPending, tabsError] = useAsyncState(async () => {
     if (doc?.id && port) {
@@ -58,41 +62,27 @@ const TabField: React.FunctionComponent<
     [tabNames, field.value]
   );
 
+  // TODO: re-add info message that tab will be created
+  // {!tabsPending &&
+  // !isNullOrBlank(field.value) &&
+  // !tabNames.includes(field.value) &&
+  // doc != null && (
+  //   <span className="text-info small">
+  //           Tab does not exist in the sheet, it will be created
+  //         </span>
+  // )}
+
   return (
-    <Form.Group>
-      <Form.Label>Tab Name</Form.Label>
-      <Select
-        value={sheetOptions?.filter((x) => x.value === field.value)}
-        options={sheetOptions ?? []}
-        onChange={(option) => {
-          helpers.setValue(option?.value);
-        }}
-      />
-      <Form.Text className="text-muted">The spreadsheet tab</Form.Text>
-
-      {tabsPending && (
-        <span className="text-info small">Fetching sheet names...</span>
-      )}
-
-      {tabsError && (
-        <span className="text-danger small">
-          Error fetching sheet names: {getErrorMessage(tabsError)}
-        </span>
-      )}
-
-      {!tabsPending &&
-        !isNullOrBlank(field.value) &&
-        !tabNames.includes(field.value) &&
-        doc != null && (
-          <span className="text-info small">
-            Tab does not exist in the sheet, it will be created
-          </span>
-        )}
-
-      {meta.touched && meta.error && (
-        <span className="text-danger small">{meta.error}</span>
-      )}
-    </Form.Group>
+    <ConnectedFieldTemplate
+      name={name}
+      label="Tab Name"
+      description="The spreadsheet tab"
+      as={SelectWidget}
+      loadError={tabsError}
+      isLoading={tabsPending}
+      options={sheetOptions}
+      loadingMessage="Fetching sheet names..."
+    />
   );
 };
 
@@ -103,7 +93,7 @@ const PropertiesField: React.FunctionComponent<{
 }> = ({ name, tabName, doc }) => {
   const { port } = useContext(DevToolsContext);
 
-  const [sheetSchema, schemaPending, schemaError] = useAsyncState(async () => {
+  const [sheetSchema, , schemaError] = useAsyncState(async () => {
     if (doc?.id && tabName) {
       const headers = await devtoolsProtocol.getHeaders(port, {
         spreadsheetId: doc.id,
@@ -119,21 +109,23 @@ const PropertiesField: React.FunctionComponent<{
       } as Schema;
     }
 
-    return {
-      type: "object",
-      additionalProperties: true,
-    } as Schema;
+    return DEFAULT_FIELDS_SCHEMA;
   }, [doc?.id, tabName]);
 
-  if (schemaPending) {
-    return <GridLoader />;
-  }
-
-  if (schemaError) {
-    return <span className="text-danger">Error fetching column headers</span>;
-  }
-
-  return <ObjectField label="Row Values" name={name} schema={sheetSchema} />;
+  return (
+    <ObjectField
+      name={name}
+      label="Row Values"
+      description={
+        schemaError ? (
+          <span className="text-warning">
+            Error determining columns: {getErrorMessage(schemaError)}
+          </span>
+        ) : null
+      }
+      schema={sheetSchema ?? DEFAULT_FIELDS_SCHEMA}
+    />
+  );
 };
 
 const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
@@ -148,9 +140,11 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   return (
     <div className="my-2">
-      <FileField
+      <ConnectedFieldTemplate
         name={`${basePath}.spreadsheetId`}
-        schema={APPEND_SCHEMA.properties.spreadsheetId as Schema}
+        label="Google Sheet"
+        description="Select a Google Sheet"
+        as={FileWidget}
         doc={doc}
         onSelect={setDoc}
       />

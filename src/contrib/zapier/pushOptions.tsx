@@ -29,12 +29,12 @@ import { proxyService } from "@/background/requests";
 import { Form } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import Select from "react-select";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { Webhook } from "@/contrib/zapier/contract";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { ZAPIER_PERMISSIONS, ZAPIER_PROPERTIES } from "@/contrib/zapier/push";
-import { ObjectField } from "@/components/fields/FieldTable";
+import ObjectField from "@/components/fields/schemaFields/ObjectField";
 import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
@@ -62,7 +62,7 @@ function useHooks(): {
 }
 
 export const ZapField: React.FunctionComponent<
-  FieldProps<string> & { hooks: Webhook[]; error: unknown }
+  SchemaFieldProps<string> & { hooks: Webhook[]; error: unknown }
 > = ({ label, schema, hooks, error, ...props }) => {
   const [{ value, ...field }, meta, helpers] = useField(props);
 

@@ -17,22 +17,11 @@
 
 import React from "react";
 import { SchemaFieldProps } from "@/components/fields/propTypes";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import TextWidget from "./widgets/TextWidget";
+import { Form } from "react-bootstrap";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 
-const TextField: React.FunctionComponent<SchemaFieldProps<string>> = (
-  props
-) => {
-  const { label, name, schema } = props;
-  return (
-    <ConnectedFieldTemplate
-      label={label ?? fieldLabel(name)}
-      description={schema.description}
-      as={TextWidget}
-      {...props}
-    />
-  );
-};
+const ComplexObjectWidget: CustomFieldWidget<
+  SchemaFieldProps<unknown>
+> = () => <Form.Control plaintext readOnly defaultValue="Complex object" />;
 
-export default TextField;
+export default ComplexObjectWidget;

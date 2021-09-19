@@ -20,7 +20,7 @@ import genericOptionsFactory, { BlockOptionProps } from "./blockOptions";
 import cx from "classnames";
 import { Form, Row, Col, Card, Button } from "react-bootstrap";
 import { castArray, isEmpty } from "lodash";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { inputProperties } from "@/helpers";
 import { IBlock, RegistryId } from "@/core";
 import ErrorBoundary from "@/components/ErrorBoundary";
@@ -43,21 +43,6 @@ import GridLoader from "react-spinners/GridLoader";
 import { reportError } from "@/telemetry/logging";
 import BlockModal from "@/components/fields/BlockModal";
 import optionsRegistry from "@/components/fields/optionsRegistry";
-
-export const SCHEMA_TYPE_TO_BLOCK_PROPERTY: Record<string, string> = {
-  "#/definitions/renderer": "render",
-  "#/definitions/effect": "effect",
-  "#/definitions/reader": "read",
-  "#/definitions/transformer": "transform",
-  "https://app.pixiebrix.com/schemas/renderer#": "render",
-  "https://app.pixiebrix.com/schemas/effect#": "effect",
-  "https://app.pixiebrix.com/schemas/reader#": "read",
-  "https://app.pixiebrix.com/schemas/transformer#": "transform",
-  "https://app.pixiebrix.com/schemas/renderer": "render",
-  "https://app.pixiebrix.com/schemas/effect": "effect",
-  "https://app.pixiebrix.com/schemas/reader": "read",
-  "https://app.pixiebrix.com/schemas/transformer": "transform",
-};
 
 type ConfigValue = Record<string, string>;
 
@@ -207,7 +192,7 @@ function makeKey(blockId: string, index: number): string {
 }
 
 const BlockField: React.FunctionComponent<
-  FieldProps<BlockConfig | BlockConfig[]> & ExtraProps
+  SchemaFieldProps<BlockConfig | BlockConfig[]> & ExtraProps
 > = ({ label, blocks, ...props }) => {
   const [field, meta] = useField(props);
 

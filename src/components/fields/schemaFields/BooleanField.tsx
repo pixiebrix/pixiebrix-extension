@@ -16,41 +16,21 @@
  */
 
 import React from "react";
-import { FieldProps } from "@/components/fields/propTypes";
-import { useField } from "formik";
-import { Form } from "react-bootstrap";
+import { SchemaFieldProps } from "@/components/fields/propTypes";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import BootstrapSwitchButton from "bootstrap-switch-button-react";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
-const BooleanField: React.FunctionComponent<FieldProps<boolean>> = ({
+const BooleanField: React.FunctionComponent<SchemaFieldProps<boolean>> = ({
+  name,
   label,
   schema,
-  ...props
 }) => {
-  const [field, , helpers] = useField(props);
-
   return (
-    <Form.Group>
-      <div>
-        <Form.Label className="mr-2">
-          {label ?? fieldLabel(field.name)}
-        </Form.Label>
-      </div>
-      <BootstrapSwitchButton
-        size="sm"
-        onstyle="info"
-        offstyle="light"
-        onlabel="On"
-        offlabel="Off"
-        checked={field.value ?? false}
-        onChange={(value) => {
-          helpers.setValue(value);
-        }}
-      />
-      {schema.description && (
-        <Form.Text className="text-muted">{schema.description}</Form.Text>
-      )}
-    </Form.Group>
+    <ConnectedFieldTemplate
+      layout="switch"
+      label={label ?? fieldLabel(name)}
+      description={schema.description}
+    />
   );
 };
 

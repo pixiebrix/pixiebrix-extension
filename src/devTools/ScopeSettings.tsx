@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import { Formik, FormikBag, FormikValues, useField } from "formik";
+import { Formik, FormikBag, FormikValues } from "formik";
 import { Alert, Button, Col, Form, Row } from "react-bootstrap";
 import * as Yup from "yup";
 import { castArray, mapValues } from "lodash";
@@ -27,58 +27,13 @@ import { StatusCodes } from "http-status-codes";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 interface Profile {
   scope: string | null;
 }
 
 const SCOPE_REGEX = /^@[\da-z~-][\d._a-z~-]*$/;
-
-interface FieldProps {
-  placeholder?: string;
-  name: string;
-  label: string;
-  description?: string;
-  readonly?: boolean;
-}
-
-const TextField: React.FunctionComponent<FieldProps> = ({
-  name,
-  placeholder,
-  label,
-  description,
-  readonly,
-}) => {
-  const [{ value, ...field }, meta] = useField(name);
-  return (
-    <Form.Group as={Row} controlId={field.name}>
-      <Form.Label column sm="2">
-        {label}
-      </Form.Label>
-      <Col sm="10">
-        {readonly ? (
-          <Form.Control plaintext readOnly value={value} />
-        ) : (
-          <Form.Control
-            type="text"
-            placeholder={placeholder}
-            value={value ?? ""}
-            {...field}
-            isInvalid={Boolean(meta.error)}
-          />
-        )}
-        {description && (
-          <Form.Text className="text-muted">{description}</Form.Text>
-        )}
-        {meta.touched && meta.error && (
-          <Form.Control.Feedback type="invalid">
-            {meta.error}
-          </Form.Control.Feedback>
-        )}
-      </Col>
-    </Form.Group>
-  );
-};
 
 const VALIDATION_SCHEMA = Yup.object({
   scope: Yup.string()
@@ -168,11 +123,12 @@ const ScopeSettings: React.FunctionComponent = () => {
         >
           {({ handleSubmit, isSubmitting, isValid }) => (
             <Form noValidate onSubmit={handleSubmit} className="mt-2">
-              <TextField
-                placeholder="@peter-parker"
+              <ConnectedFieldTemplate
                 name="scope"
-                description="Your @alias for publishing bricks, e.g., @peter-parker"
+                layout="horizontal"
                 label="Account Alias"
+                placeholder="@peter-parker"
+                description="Your @alias for publishing bricks, e.g., @peter-parker"
               />
               <Button type="submit" disabled={isSubmitting || !isValid}>
                 Set My Account Alias
