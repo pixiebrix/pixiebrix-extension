@@ -88,7 +88,7 @@ const JsonTree: React.FunctionComponent<JsonTreeProps> = ({
           onChange={onChangeQuery}
         />
       )}
-      {labelText && <span>{label}</span>}
+      {labelText && <span>{labelText}</span>}
       {searchResults === undefined ? (
         <GridLoader />
       ) : (
