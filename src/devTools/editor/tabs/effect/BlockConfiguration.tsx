@@ -27,8 +27,7 @@ import GridLoader from "react-spinners/GridLoader";
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
   blockId: RegistryId;
-  showOutput: boolean;
-}> = ({ name, blockId, showOutput }) => {
+}> = ({ name, blockId }) => {
   const context = useFormikContext();
 
   const blockErrors = getIn(context.errors, name);
@@ -48,11 +47,7 @@ const BlockConfiguration: React.FunctionComponent<{
                 </div>
               )}
               {BlockOptions ? (
-                <BlockOptions
-                  name={name}
-                  configKey="config"
-                  showOutputKey={false}
-                />
+                <BlockOptions name={name} configKey="config" />
               ) : error ? (
                 <div className="invalid-feedback d-block mb-4">{error}</div>
               ) : (
@@ -62,24 +57,6 @@ const BlockConfiguration: React.FunctionComponent<{
           </div>
         </Card.Body>
       </Card>
-      {showOutput && (
-        <Card>
-          <Card.Header className="BlockAccordion__header">Output</Card.Header>
-          <Card.Body>
-            <Form.Label>Output key</Form.Label>
-            <FastField name={`${name}.outputKey`}>
-              {({ field }: { field: FieldInputProps<string> }) => (
-                <Form.Control type="text" {...field} />
-              )}
-            </FastField>
-            <Form.Text className="text-muted">
-              Provide a output key to refer to the outputs of this block later.
-              For example, if you provide the name <code>output</code>, you can
-              use the output later with <code>@output</code>.
-            </Form.Text>
-          </Card.Body>
-        </Card>
-      )}
       <Card>
         <Card.Header className="BlockAccordion__header">
           Advanced: Template Engine

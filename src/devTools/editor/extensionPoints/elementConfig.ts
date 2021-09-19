@@ -210,6 +210,4 @@ export interface ElementConfig<
   readonly insertModeHelp?: React.ReactNode;
 
   readonly wizard: WizardStep[];
-
-  readonly betaWizard: WizardStep[];
 }

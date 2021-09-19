@@ -41,10 +41,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { releaseSchema } from "@/contrib/uipath/typeUtils";
-import {
-  BlockOptionProps,
-  OutputKeyField,
-} from "@/components/fields/schemaFields/genericOptionsFactory";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 interface Process {
@@ -109,7 +106,6 @@ function useReleaseSchema(releaseKey: string) {
 const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
-  showOutputKey,
 }) => {
   const { port } = useContext(DevToolsContext);
   const basePath = compact([name, configKey]).join(".");
@@ -245,8 +241,6 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
           schema={FALLBACK_PROCESS_SCHEMA}
         />
       )}
-
-      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };

@@ -18,8 +18,8 @@
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { useField } from "formik";
 import React from "react";
-import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
 import type { SelectMode } from "@/nativeEditor/selector";
+import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
 
 type OwnProps = {
   selectMode?: SelectMode;
@@ -32,7 +32,7 @@ const LocationWidget: CustomFieldWidget<OwnProps> = ({
   const [containerInfoField] = useField("containerInfo");
 
   return (
-    <SelectorSelectorField
+    <SelectorSelectorWidget
       {...props}
       initialElement={containerInfoField.value}
       selectMode={selectMode}

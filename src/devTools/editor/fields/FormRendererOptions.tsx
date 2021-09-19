@@ -19,9 +19,9 @@ import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import FormBuilder from "@/components/formBuilder/FormBuilder";
 import { Schema } from "@/core";
 import React from "react";
-import { OutputKeyField } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { validateRegistryId } from "@/types/helpers";
 
-export const FORM_RENDERER_ID = "@pixiebrix/form";
+export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
 const recordIdSchema: Schema = {
   type: "string",
@@ -31,8 +31,7 @@ const recordIdSchema: Schema = {
 const FormRendererOptions: React.FC<{
   name: string;
   configKey: string;
-  showOutputKey: boolean;
-}> = ({ name, configKey, showOutputKey }) => {
+}> = ({ name, configKey }) => {
   const configName = `${name}.${configKey}`;
 
   return (
@@ -40,8 +39,6 @@ const FormRendererOptions: React.FC<{
       <FormBuilder name={configName} />
 
       <SchemaField name={`${configName}.recordId`} schema={recordIdSchema} />
-
-      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };

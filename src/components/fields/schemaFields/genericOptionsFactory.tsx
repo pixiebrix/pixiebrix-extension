@@ -22,38 +22,26 @@ import { compact, isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 export type BlockOptionProps = {
+  /**
+   * The root field name for the block configuration.
+   */
   name: string;
+
+  /**
+   * The property name of the block configuration -- in general this should be "config"
+   * @see BlockConfig
+   */
   configKey?: string;
-  showOutputKey?: boolean;
 };
-
-const OUTPUT_KEY_SCHEMA: Schema = {
-  type: "string",
-  description: "A key to refer to this brick in subsequent bricks",
-};
-
-export const OutputKeyField: React.FC<{ baseName: string }> = ({
-  baseName,
-}) => (
-  <SchemaField
-    name={`${baseName}.outputKey`}
-    label="Output Variable"
-    schema={OUTPUT_KEY_SCHEMA}
-  />
-);
 
 /**
- * Return the Options for configuring a block with the given schema.
+ * Return the Options fields for configuring a block with the given schema.
  */
 function genericOptionsFactory(
   schema: Schema,
   uiSchema?: UiSchema
 ): React.FunctionComponent<BlockOptionProps> {
-  const OptionsFields = ({
-    name,
-    configKey,
-    showOutputKey,
-  }: BlockOptionProps) => (
+  const OptionsFields = ({ name, configKey }: BlockOptionProps) => (
     <>
       {Object.entries(inputProperties(schema)).map(([prop, fieldSchema]) => {
         if (typeof fieldSchema === "boolean") {
@@ -72,7 +60,6 @@ function genericOptionsFactory(
           />
         );
       })}
-      {showOutputKey && <OutputKeyField baseName={name} />}
       {isEmpty(schema) && <div>No options available</div>}
     </>
   );

@@ -16,10 +16,7 @@
  */
 
 import React, { useMemo } from "react";
-import {
-  BlockOptionProps,
-  OutputKeyField,
-} from "@/components/fields/schemaFields/genericOptionsFactory";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
 import { Schema } from "@/core";
@@ -164,7 +161,6 @@ const DeviceField: React.FunctionComponent<SchemaFieldProps<string>> = ({
 const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
-  showOutputKey,
 }) => {
   const basePath = compact([name, configKey]).join(".");
   const { hasPermissions, requestPermissions, config } = useDependency(
@@ -233,8 +229,6 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
           schemaLoading={schemaPending}
         />
       )}
-
-      {showOutputKey && <OutputKeyField baseName={name} />}
     </div>
   );
 };
