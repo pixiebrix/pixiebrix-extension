@@ -15,7 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Schema, SchemaDefinition } from "@/core";
+
 export function fieldLabel(name: string): string {
   const parts = name.split(".");
   return parts[parts.length - 1];
+}
+
+type TypePredicate = (fieldDefinition: Schema) => boolean;
+
+export function createTypePredicate(predicate: TypePredicate): TypePredicate {
+  return (fieldDefinition: Schema) => {
+    if (predicate(fieldDefinition)) {
+      return true;
+    }
+
+    const matches = (x: SchemaDefinition) =>
+      typeof x !== "boolean" && predicate(x);
+
+    if ((fieldDefinition.oneOf ?? []).some((x) => matches(x))) {
+      return true;
+    }
+
+    if ((fieldDefinition.anyOf ?? []).some((x) => matches(x))) {
+      return true;
+    }
+
+    if ((fieldDefinition.allOf ?? []).some((x) => matches(x))) {
+      return true;
+    }
+
+    return false;
+  };
 }

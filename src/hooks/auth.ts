@@ -24,6 +24,7 @@ import { useAsyncState } from "./common";
 import { readRawConfigurations } from "@/services/registry";
 import { useMemo, useCallback } from "react";
 import { useGetServiceAuthsQuery } from "@/services/api";
+import { sortBy } from "lodash";
 
 interface OrganizationResponse {
   readonly id: string;
@@ -107,21 +108,27 @@ export function useAuthOptions(): [AuthOption[], () => void] {
   } = useGetServiceAuthsQuery();
 
   const authOptions = useMemo(() => {
-    const localOptions = (configuredServices ?? []).map((x) => ({
-      value: x.id,
-      label: `${defaultLabel(x.label)} — Private`,
-      local: true,
-      serviceId: x.serviceId,
-    }));
+    const localOptions = sortBy(
+      (configuredServices ?? []).map((x) => ({
+        value: x.id,
+        label: `${defaultLabel(x.label)} — Private`,
+        local: true,
+        serviceId: x.serviceId,
+      })),
+      (x) => x.label
+    );
 
-    const sharedOptions = (remoteAuths ?? []).map((x) => ({
-      value: x.id,
-      label: `${defaultLabel(x.label)} — ${
-        x.organization?.name ?? "✨ Built-in"
-      }`,
-      local: false,
-      serviceId: x.service.config.metadata.id,
-    }));
+    const sharedOptions = sortBy(
+      (remoteAuths ?? []).map((x) => ({
+        value: x.id,
+        label: `${defaultLabel(x.label)} — ${
+          x.organization?.name ?? "✨ Built-in"
+        }`,
+        local: false,
+        serviceId: x.service.config.metadata.id,
+      })),
+      (x) => x.label
+    );
 
     return [...localOptions, ...sharedOptions];
   }, [remoteAuths, configuredServices]);

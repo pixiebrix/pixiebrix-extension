@@ -19,7 +19,10 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField, useFormikContext } from "formik";
 import { RegistryId, SafeString, Schema, ServiceDependency } from "@/core";
-import { fieldLabel } from "@/components/fields/fieldUtils";
+import {
+  createTypePredicate,
+  fieldLabel,
+} from "@/components/fields/fieldUtils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useAuthOptions } from "@/hooks/auth";
 import { AuthOption } from "@/auth/authTypes";
@@ -30,24 +33,47 @@ import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import { isEmpty } from "lodash";
+
+const DEFAULT_SERVICE_OUTPUT_KEY = "service";
+
+export const SERVICE_FIELD_REFS = [
+  "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",
+  "https://app.pixiebrix.com/schemas/service#/definitions/configuredService",
+];
 
 export const SERVICE_BASE_SCHEMA =
   "https://app.pixiebrix.com/schemas/services/";
 
+const SERVICE_ID_REGEX = /^https:\/\/app\.pixiebrix\.com\/schemas\/services\/(?<id>\S+)$/;
+
+export const isServiceField = createTypePredicate(
+  (x) =>
+    x.$ref?.startsWith(SERVICE_BASE_SCHEMA) ||
+    SERVICE_FIELD_REFS.includes(x.$ref)
+);
+
 function defaultOutputKey(
-  serviceId: RegistryId,
+  serviceId: RegistryId | null,
   otherOutputKeys: string[]
 ): string {
-  const match = PACKAGE_REGEX.exec(serviceId);
-  const rawKey =
-    match.groups.collection?.replace(".", "_").replace("-", "_") ?? "service";
+  let rawKey = DEFAULT_SERVICE_OUTPUT_KEY;
+
+  if (serviceId) {
+    const match = PACKAGE_REGEX.exec(serviceId);
+    rawKey =
+      match.groups.collection?.replace(".", "_").replace("-", "_") ??
+      DEFAULT_SERVICE_OUTPUT_KEY;
+  }
+
   // OK to cast to SafeString since defaultOutputKey checks it's a valid PACKAGE_REGEX
   return freshIdentifier(rawKey as SafeString, otherOutputKeys);
 }
 
 function extractServiceIds(schema: Schema): RegistryId[] {
   if ("$ref" in schema) {
-    return [schema.$ref.slice(SERVICE_BASE_SCHEMA.length) as RegistryId];
+    const match = SERVICE_ID_REGEX.exec(schema.$ref ?? "");
+    return match ? [match.groups.id as RegistryId] : [];
   }
 
   if ("anyOf" in schema) {
@@ -84,7 +110,9 @@ const ServiceField: React.FunctionComponent<
     const serviceIds = extractServiceIds(schema);
     return {
       serviceIds,
-      options: authOptions.filter((x) => serviceIds.includes(x.serviceId)),
+      options: isEmpty(serviceIds)
+        ? authOptions
+        : authOptions.filter((x) => serviceIds.includes(x.serviceId)),
     };
   }, [authOptions, schema]);
 
@@ -103,8 +131,8 @@ const ServiceField: React.FunctionComponent<
 
   const onChange = useCallback(
     (option: AuthOption) => {
-      // Key Assumption: only one service of each type is configured. If a user changes the auth for one brick, it changes
-      // the auth for all the bricks.
+      // Key Assumption: only one service of each type is configured. If a user changes the auth for one brick,
+      // it changes the auth for all the bricks.
 
       let outputKey: string;
 

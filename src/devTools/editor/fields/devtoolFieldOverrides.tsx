@@ -18,31 +18,16 @@
 import React from "react";
 import SelectorSelectorField from "@/components/fields/schemaFields/SelectorSelectorField";
 import { CustomFieldDefinitions } from "@/components/fields/schemaFields/SchemaFieldContext";
-import { Schema, SchemaDefinition } from "@/core";
 import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
+import { createTypePredicate } from "@/components/fields/fieldUtils";
 
 export const ClearableSelectorWidget: React.FunctionComponent<{
   name: string;
 }> = ({ name }) => <SelectorSelectorWidget isClearable sort name={name} />;
 
-function isSelectorField(fieldSchema: Schema): boolean {
-  if (fieldSchema.type === "string" && fieldSchema.format === "selector") {
-    return true;
-  }
-
-  const isSelector = (x: SchemaDefinition) =>
-    typeof x !== "boolean" && isSelectorField(x);
-
-  if ((fieldSchema.oneOf ?? []).some((x) => isSelector(x))) {
-    return true;
-  }
-
-  if ((fieldSchema.anyOf ?? []).some((x) => isSelector(x))) {
-    return true;
-  }
-
-  return false;
-}
+const isSelectorField = createTypePredicate(
+  (x) => x.type === "string" && x.format === "selector"
+);
 
 const devtoolFieldOverrides: CustomFieldDefinitions = {
   customFields: [
