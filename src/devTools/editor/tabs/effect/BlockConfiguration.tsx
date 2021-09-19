@@ -16,26 +16,23 @@
  */
 
 import React from "react";
-import { IBlock, UUID } from "@/core";
+import { RegistryId } from "@/core";
 import { FastField, FieldInputProps, getIn, useFormikContext } from "formik";
-import { useBlockOptions } from "@/components/fields/BlockField";
+import { useBlockOptions } from "@/hooks/useBlockOptions";
 import { Card, Form } from "react-bootstrap";
-import { RendererContext } from "@/components/fields/blockOptions";
-import devtoolFields from "@/devTools/editor/fields/Fields";
+import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
+import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
 import GridLoader from "react-spinners/GridLoader";
-import TraceView from "@/devTools/editor/tabs/effect/TraceView";
-import ErrorBoundary from "@/components/ErrorBoundary";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
-  block: IBlock;
-  showOutput: boolean;
-}> = ({ name, block, showOutput }) => {
+  blockId: RegistryId;
+}> = ({ name, blockId }) => {
   const context = useFormikContext();
 
   const blockErrors = getIn(context.errors, name);
 
-  const [{ error }, BlockOptions] = useBlockOptions(block.id);
+  const [{ error }, BlockOptions] = useBlockOptions(blockId);
 
   return (
     <div className="BlockAccordion">
@@ -43,45 +40,23 @@ const BlockConfiguration: React.FunctionComponent<{
         <Card.Header className="BlockAccordion__header">Input</Card.Header>
         <Card.Body>
           <div>
-            <RendererContext.Provider value={devtoolFields}>
+            <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
               {blockErrors?.id && (
                 <div className="invalid-feedback d-block mb-4">
-                  Unknown block {block.id}
+                  Unknown block {blockId}
                 </div>
               )}
               {BlockOptions ? (
-                <BlockOptions
-                  name={name}
-                  configKey="config"
-                  showOutputKey={false}
-                />
+                <BlockOptions name={name} configKey="config" />
               ) : error ? (
                 <div className="invalid-feedback d-block mb-4">{error}</div>
               ) : (
                 <GridLoader />
               )}
-            </RendererContext.Provider>
+            </SchemaFieldContext.Provider>
           </div>
         </Card.Body>
       </Card>
-      {showOutput && (
-        <Card>
-          <Card.Header className="BlockAccordion__header">Output</Card.Header>
-          <Card.Body>
-            <Form.Label>Output key</Form.Label>
-            <FastField name={`${name}.outputKey`}>
-              {({ field }: { field: FieldInputProps<string> }) => (
-                <Form.Control type="text" {...field} />
-              )}
-            </FastField>
-            <Form.Text className="text-muted">
-              Provide a output key to refer to the outputs of this block later.
-              For example, if you provide the name <code>output</code>, you can
-              use the output later with <code>@output</code>.
-            </Form.Text>
-          </Card.Body>
-        </Card>
-      )}
       <Card>
         <Card.Header className="BlockAccordion__header">
           Advanced: Template Engine
@@ -101,18 +76,6 @@ const BlockConfiguration: React.FunctionComponent<{
             The template engine controls how PixieBrix fills in{" "}
             <code>{"{{variables}}"}</code> in the inputs.
           </Form.Text>
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Header className="BlockAccordion__header">Trace</Card.Header>
-        <Card.Body>
-          <ErrorBoundary>
-            <FastField name={`${name}.instanceId`}>
-              {({ field }: { field: FieldInputProps<UUID> }) => (
-                <TraceView instanceId={field.value} />
-              )}
-            </FastField>
-          </ErrorBoundary>
         </Card.Body>
       </Card>
     </div>

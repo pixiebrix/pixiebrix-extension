@@ -21,6 +21,8 @@ import * as session from "@/contentScript/context";
 import { ReaderOutput, Schema } from "@/core";
 
 export class TimestampReader extends Reader {
+  defaultOutputKey = "instant";
+
   constructor() {
     super(
       "@pixiebrix/timestamp",
@@ -53,6 +55,8 @@ export class TimestampReader extends Reader {
 }
 
 export class PixieBrixSessionReader extends Reader {
+  defaultOutputKey = "session";
+
   constructor() {
     super(
       "@pixiebrix/session",
@@ -69,6 +73,10 @@ export class PixieBrixSessionReader extends Reader {
       navigationTimestamp: session.navigationTimestamp.toISOString(),
       ...(await getExtensionAuth()),
     };
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   outputSchema: Schema = {
@@ -113,6 +121,8 @@ export class PixieBrixSessionReader extends Reader {
 }
 
 export class PixieBrixProfileReader extends Reader {
+  defaultOutputKey = "profile";
+
   constructor() {
     super(
       "@pixiebrix/profile",
@@ -123,6 +133,10 @@ export class PixieBrixProfileReader extends Reader {
 
   async read() {
     return getExtensionAuth() as Promise<ReaderOutput>;
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   outputSchema: Schema = {
@@ -148,6 +162,8 @@ export class PixieBrixProfileReader extends Reader {
 }
 
 export class DocumentReader extends Reader {
+  defaultOutputKey = "context";
+
   constructor() {
     super(
       "@pixiebrix/document-context",
@@ -161,6 +177,10 @@ export class DocumentReader extends Reader {
       url: document.location.href,
       timestamp: new Date().toISOString(),
     };
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   outputSchema: Schema = {
@@ -187,6 +207,8 @@ export class DocumentReader extends Reader {
 }
 
 export class ManifestReader extends Reader {
+  defaultOutputKey = "manifest";
+
   constructor() {
     super(
       "@pixiebrix/chrome-extension-manifest",
@@ -196,6 +218,10 @@ export class ManifestReader extends Reader {
   }
 
   async isAvailable() {
+    return true;
+  }
+
+  async isPure(): Promise<boolean> {
     return true;
   }
 

@@ -46,9 +46,11 @@ export const URL_INPUT_SPEC: Schema = {
 };
 
 export class UrlParams extends Transformer {
-  get isPure() {
+  async isPure(): Promise<boolean> {
     return true;
   }
+
+  defaultOutputKey = "url";
 
   constructor() {
     super(

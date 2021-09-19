@@ -18,7 +18,7 @@
 import React from "react";
 import { InputValidationError } from "@/blocks/errors";
 import { Col, Row } from "react-bootstrap";
-import JsonTree from "@/components/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 
 const InputValidationErrorDetail: React.FunctionComponent<{
   error: InputValidationError;

@@ -40,6 +40,7 @@ const UrlMatchShortcut: React.FC<{
 const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
   const { name, disabled } = props;
 
+  // XXX: can we use props.onChange here? Maybe not unless we construct an event?
   const { setValue } = useField(name)[2];
 
   return (

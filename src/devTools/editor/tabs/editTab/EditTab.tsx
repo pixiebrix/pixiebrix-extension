@@ -26,18 +26,20 @@ import { getIcon } from "@/components/fields/BlockModal";
 import { BlockType, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { noop, zip } from "lodash";
+import { compact, noop, zip } from "lodash";
 import { IBlock, UUID } from "@/core";
-import BlockConfiguration from "@/devTools/editor/tabs/effect/BlockConfiguration";
 import hash from "object-hash";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
-import TraceView from "@/devTools/editor/tabs/effect/TraceView";
+import TraceView from "@/devTools/editor/tabs/editTab/TraceView";
 import { uuidv4 } from "@/types/helpers";
-import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
+import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
+import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -49,6 +51,14 @@ async function filterBlocks(
     .filter(([, type]) => type != null && !excludeTypes.includes(type))
     .map(([block]) => block);
 }
+
+const NotImplementedFoundationEditor: React.FC<{ isLocked: boolean }> = () => (
+  <div>Configuration pane not implement for this extension type yet.</div>
+);
+
+const blockConfigTheme: ThemeProps = {
+  layout: "vertical",
+};
 
 const EditTab: React.FC<{
   eventKey: string;
@@ -66,7 +76,11 @@ const EditTab: React.FC<{
     [editable, installed, extensionPoint.metadata.id]
   );
 
-  const { label, icon } = ADAPTERS.get(elementType);
+  const {
+    label,
+    icon,
+    EditorNode: FoundationNode = NotImplementedFoundationEditor,
+  } = ADAPTERS.get(elementType);
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 
@@ -105,11 +119,23 @@ const EditTab: React.FC<{
   );
 
   const onSelectNode = useCallback(
+    // Wrapper only taking a number (and not a state update method)
     (index: number) => {
       setActiveNodeIndex(index);
     },
     [setActiveNodeIndex]
   );
+
+  const removeBlock = (pipelineIndex: number) => {
+    const newPipeline = produce(blockPipeline, (draft) => {
+      if (activeNodeIndex > pipelineIndex) {
+        setActiveNodeIndex(activeNodeIndex - 1);
+      }
+
+      draft.splice(pipelineIndex, 1);
+    });
+    pipelineFieldHelpers.setValue(newPipeline);
+  };
 
   const blockNodes: EditorNodeProps[] = zip(
     blockPipeline,
@@ -156,23 +182,24 @@ const EditTab: React.FC<{
   }, [allBlocks, elementType]);
 
   const addBlock = useCallback(
-    (block: IBlock, nodeIndex: number) => {
+    async (block: IBlock, nodeIndex: number) => {
       const pipelineIndex = nodeIndex - 1;
       const prev = blockPipeline.slice(0, pipelineIndex);
       const next = blockPipeline.slice(pipelineIndex, blockPipeline.length);
-      const newBlock = { id: block.id, instanceId: uuidv4(), config: {} };
+      const newBlock = {
+        id: block.id,
+        outputKey: await generateFreshOutputKey(
+          block,
+          compact(["@input", ...blockPipeline.map((x) => x.outputKey)])
+        ),
+        instanceId: uuidv4(),
+        config: {},
+      };
       pipelineFieldHelpers.setValue([...prev, newBlock, ...next]);
+      onSelectNode(nodeIndex);
     },
-    [pipelineFieldHelpers, blockPipeline]
+    [onSelectNode, pipelineFieldHelpers, blockPipeline]
   );
-
-  const removeBlock = (pipelineIndex: number) => {
-    const newPipeline = produce(blockPipeline, (draft) => {
-      setActiveNodeIndex(null);
-      draft.splice(pipelineIndex, 1);
-    });
-    pipelineFieldHelpers.setValue(newPipeline);
-  };
 
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
@@ -191,24 +218,34 @@ const EditTab: React.FC<{
           />
         </div>
         <div className={styles.configPanel}>
-          {activeNodeIndex === 0 && <PanelConfiguration isLocked={isLocked} />}
+          <ErrorBoundary>
+            <FormTheme.Provider value={blockConfigTheme}>
+              {activeNodeIndex === 0 && <FoundationNode isLocked={isLocked} />}
 
-          {activeNodeIndex > 0 && (
-            <EditorNodeConfigPanel
-              onRemoveNode={() => {
-                removeBlock(activeNodeIndex - 1);
-              }}
-            >
-              <BlockConfiguration
-                name={blockFieldName}
-                block={resolvedBlocks[activeNodeIndex - 1]}
-                showOutput={activeNodeIndex !== blockPipeline.length}
-              />
-            </EditorNodeConfigPanel>
-          )}
+              {activeNodeIndex > 0 && (
+                <EditorNodeConfigPanel
+                  key={blockPipeline[activeNodeIndex - 1].instanceId}
+                  blockFieldName={blockFieldName}
+                  blockId={resolvedBlocks[activeNodeIndex - 1].id}
+                  onRemoveNode={() => {
+                    removeBlock(activeNodeIndex - 1);
+                  }}
+                />
+              )}
+            </FormTheme.Provider>
+          </ErrorBoundary>
         </div>
         <div className={styles.tracePanel}>
-          <TraceView instanceId={blockInstanceId} />
+          {activeNodeIndex === 0 && (
+            <FoundationTraceView instanceId={blockPipeline[0]?.instanceId} />
+          )}
+
+          {activeNodeIndex > 0 && (
+            <TraceView
+              blockFieldName={blockFieldName}
+              instanceId={blockInstanceId}
+            />
+          )}
         </div>
       </div>
     </Tab.Pane>

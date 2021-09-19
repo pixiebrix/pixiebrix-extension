@@ -15,29 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
-import { BlockOptionProps } from "@/components/fields/blockOptions";
-import { Schema } from "@/core";
-import { SheetMeta } from "@/contrib/google/sheets/types";
-import FileField from "@/contrib/google/sheets/FileField";
-import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
+import React from "react";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import FileWidget from "@/contrib/google/sheets/FileWidget";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { validateRegistryId } from "@/types/helpers";
 
-export const SERVICE_GOOGLE_SHEET_ID = "google/sheet";
+export const SERVICE_GOOGLE_SHEET_ID = validateRegistryId("google/sheet");
 
 const SheetServiceOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
-}) => {
-  const [doc, setDoc] = useState<SheetMeta>(null);
-  return (
-    <div className="my-2">
-      <FileField
-        name={`${name}.spreadsheetId`}
-        schema={APPEND_SCHEMA.properties.spreadsheetId as Schema}
-        doc={doc}
-        onSelect={setDoc}
-      />
-    </div>
-  );
-};
+}) => (
+  <div className="my-2">
+    <ConnectedFieldTemplate
+      name={`${name}.spreadsheetId`}
+      description="The ID of the spreadsheet to update."
+      label="Google Sheet"
+      as={FileWidget}
+    />
+  </div>
+);
 
 export default SheetServiceOptions;

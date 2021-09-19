@@ -24,7 +24,7 @@ import { OutputUnit } from "@cfworker/json-schema";
 import { isErrorObject } from "@/errors";
 
 export class JQTransformer extends Transformer {
-  get isPure() {
+  async isPure(): Promise<boolean> {
     return true;
   }
 

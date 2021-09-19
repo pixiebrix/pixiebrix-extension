@@ -21,7 +21,7 @@ import { propertiesToSchema } from "@/validators/generic";
 import { unary } from "lodash";
 
 export class RegexTransformer extends Transformer {
-  get isPure() {
+  async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -33,6 +33,8 @@ export class RegexTransformer extends Transformer {
       "faCode"
     );
   }
+
+  defaultOutputKey = "extracted";
 
   inputSchema: Schema = propertiesToSchema(
     {

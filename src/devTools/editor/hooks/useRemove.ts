@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { actions, FormState } from "@/devTools/editor/editorSlice";
+import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useToasts } from "react-toast-notifications";

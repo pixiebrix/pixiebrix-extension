@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { Card } from "react-bootstrap";
 import { RecipeDefinition } from "@/types/definitions";
-import genericOptionsFactory from "@/components/fields/blockOptions";
+import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";

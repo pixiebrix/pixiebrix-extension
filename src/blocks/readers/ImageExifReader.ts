@@ -56,6 +56,8 @@ async function getData(img: HTMLImageElement): Promise<ArrayBuffer> {
 }
 
 export class ImageExifReader extends Reader {
+  defaultOutputKey = "image";
+
   constructor() {
     super(
       "@pixiebrix/image/exif",
@@ -77,6 +79,10 @@ export class ImageExifReader extends Reader {
     throw new Error(
       `Expected an image element, got ${element.tagName ?? "document"}`
     );
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   outputSchema: Schema = {

@@ -28,6 +28,8 @@ export class JQueryReader extends Transformer {
     );
   }
 
+  defaultOutputKey = "data";
+
   inputSchema: Schema = {
     type: "object",
     required: ["selectors"],
@@ -80,6 +82,10 @@ export class JQueryReader extends Transformer {
       },
     },
   };
+
+  async isPure(): Promise<boolean> {
+    return true;
+  }
 
   async transform(
     { selectors }: { selectors: SelectorMap },

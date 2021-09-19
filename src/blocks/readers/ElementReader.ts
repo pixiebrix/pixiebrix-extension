@@ -19,6 +19,8 @@ import { Reader } from "@/types";
 import { Schema } from "@/core";
 
 export class ElementReader extends Reader {
+  defaultOutputKey = "element";
+
   constructor() {
     super(
       "@pixiebrix/html/element",
@@ -44,6 +46,10 @@ export class ElementReader extends Reader {
       text: $element.text().trim(),
       data: $element.data(),
     };
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   outputSchema: Schema = {

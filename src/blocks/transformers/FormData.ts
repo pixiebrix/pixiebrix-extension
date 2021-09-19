@@ -20,9 +20,7 @@ import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class FormData extends Transformer {
-  get isPure() {
-    return true;
-  }
+  defaultOutputKey = "form";
 
   constructor() {
     super(
@@ -30,6 +28,10 @@ export class FormData extends Transformer {
       "Read data from a form",
       "Read data from all inputs on a form"
     );
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   inputSchema: Schema = propertiesToSchema({

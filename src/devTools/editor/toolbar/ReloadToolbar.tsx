@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useContext } from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { useDebouncedCallback } from "use-debounce";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";

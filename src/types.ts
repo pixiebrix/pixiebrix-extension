@@ -204,7 +204,7 @@ export abstract class Block implements IBlock {
 
   readonly defaultOptions = {};
 
-  get isPure() {
+  async isPure(): Promise<boolean> {
     // Safe default
     return false;
   }

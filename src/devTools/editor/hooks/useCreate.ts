@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { editorSlice, FormState } from "@/devTools/editor/editorSlice";
+import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback, useState } from "react";
 import { AxiosError } from "axios";

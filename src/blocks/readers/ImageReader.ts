@@ -40,6 +40,8 @@ function getBase64Image(img: HTMLImageElement) {
 }
 
 export class ImageReader extends Reader {
+  defaultOutputKey = "image";
+
   constructor() {
     super(
       "@pixiebrix/image",
@@ -59,6 +61,11 @@ export class ImageReader extends Reader {
     }
 
     throw new Error(`Expected an image, got ${element.tagName ?? "document"}`);
+  }
+
+  async isPure(): Promise<boolean> {
+    // This is Pure, but produces very large values. So let's leave as impure for now
+    return false;
   }
 
   outputSchema: Schema = {

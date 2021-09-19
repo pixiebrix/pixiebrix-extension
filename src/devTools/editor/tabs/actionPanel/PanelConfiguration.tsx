@@ -17,48 +17,27 @@
 
 import React from "react";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import UrlMatchPatternWidget from "@/devTools/editor/components/UrlMatchPatternWidget";
-import { Card, Row } from "react-bootstrap";
-import styles from "./PanelConfiguration.module.scss";
+import { Card } from "react-bootstrap";
+import UrlMatchPatternField from "@/devTools/editor/fields/UrlMatchPatternField";
+import FieldSection from "@/devTools/editor/fields/FieldSection";
 
 const PanelConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
   <Card>
-    <ConnectedFieldTemplate
-      name="extension.heading"
-      layout="vertical"
-      label={
-        <Row>
-          <Card.Header className={styles.cardHeader}>Heading</Card.Header>
-        </Row>
-      }
-      description="Panel heading to show in the sidebar"
-    />
-    <ConnectedFieldTemplate
-      name="extensionPoint.definition.isAvailable.matchPatterns"
-      layout="vertical"
-      as={UrlMatchPatternWidget}
-      disabled={isLocked}
-      label={
-        <Row>
-          <Card.Header className={styles.cardHeader}>Sites</Card.Header>
-        </Row>
-      }
-      description={
-        <span>
-          URL match pattern for which pages to run the extension on. See{" "}
-          <a
-            href="https://developer.chrome.com/docs/extensions/mv2/match_patterns/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Patterns Documentation
-          </a>{" "}
-          for examples
-        </span>
-      }
-    />
+    <FieldSection title="Configuration">
+      <ConnectedFieldTemplate
+        name="extension.heading"
+        label="Heading"
+        description="Panel heading to show in the sidebar"
+      />
+
+      <UrlMatchPatternField
+        name="extensionPoint.definition.isAvailable.matchPatterns"
+        label="Sites"
+        disabled={isLocked}
+      />
+    </FieldSection>
   </Card>
 );
 

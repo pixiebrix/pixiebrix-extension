@@ -23,7 +23,3 @@ export type FormDefinition = {
   cancelable: boolean;
   submitCaption: string;
 };
-
-export const FORM_GET_DEFINITION = "@@forms/GET_FORM_DEFINITION";
-export const FORM_RESOLVE = "@@forms/FORM_RESOLVE";
-export const FORM_CANCEL = "@@forms/FORM_CANCEL";

@@ -19,16 +19,16 @@
 import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
+  baseSelectExtensionPoint,
+  excludeInstanceIds,
+  lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
-  WizardStep,
   selectIsAvailable,
-  lookupExtensionPoint,
-  baseSelectExtensionPoint,
   withInstanceIds,
-  excludeInstanceIds,
+  WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
@@ -37,16 +37,9 @@ import {
   PanelDefinition,
   PanelExtensionPoint,
 } from "@/extensionPoints/panelExtension";
-import FoundationTab from "@/devTools/editor/tabs/panel/FoundationTab";
-import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
-import PanelTab from "@/devTools/editor/tabs/panel/PanelTab";
-import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
-import EffectTab from "@/devTools/editor/tabs/EffectTab";
-import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { uuidv4 } from "@/types/helpers";
 import { boolean } from "@/utils";
 import { getDomain } from "@/permissions/patterns";
@@ -60,23 +53,9 @@ import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
 import { BlockPipeline } from "@/blocks/types";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 
 const wizard: WizardStep[] = [
-  { step: "Name", Component: MetaTab },
-  { step: "Foundation", Component: FoundationTab },
-  { step: "Data", Component: ReaderTab },
-  { step: "Panel", Component: PanelTab },
-  { step: "Integrations", Component: ServicesTab },
-  {
-    step: "Content",
-    Component: EffectTab,
-    extraProps: { fieldName: "extension.body" },
-  },
-  { step: "Availability", Component: AvailabilityTab },
-  { step: "Logs", Component: LogsTab },
-];
-
-const betaWizard: WizardStep[] = [
   {
     step: "Edit",
     Component: EditTab,
@@ -293,8 +272,8 @@ const config: ElementConfig<PanelSelectionResult, PanelFormState> = {
   icon: faWindowMaximize,
   baseClass: PanelExtensionPoint,
   selectNativeElement: nativeOperations.insertPanel,
+  EditorNode: PanelConfiguration,
   wizard,
-  betaWizard,
   fromNativeElement,
   asDynamicElement,
   fromExtensionPoint,

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactElement, ReactNode } from "react";
+import React, { ReactElement, ReactNode, useContext } from "react";
 import {
   Col,
   Form as BootstrapForm,
@@ -25,6 +25,8 @@ import {
 import { Except } from "type-fest";
 import SwitchButton from "@/components/form/switchButton/SwitchButton";
 import styles from "./FieldTemplate.module.scss";
+import FormTheme from "@/components/form/FormTheme";
+import { getErrorMessage } from "@/errors";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -38,7 +40,9 @@ export type FieldProps<
     touched?: boolean | undefined;
   };
 
-export type CustomFieldWidget = React.ComponentType<FieldProps>;
+export type CustomFieldWidget<TExtra = never> = React.ComponentType<
+  FieldProps & TExtra
+>;
 
 type FieldRenderProps = Except<FieldProps, "layout">;
 
@@ -48,9 +52,11 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
   description,
   error,
   touched,
+  value,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
+  const nonUndefinedValue = typeof value === "undefined" ? "" : value;
 
   return (
     <BootstrapForm.Group as={Row} controlId={name}>
@@ -63,6 +69,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
         <BootstrapForm.Control
           name={name}
           isInvalid={isInvalid}
+          value={nonUndefinedValue}
           {...restFieldProps}
         />
         {description && (
@@ -72,7 +79,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
         )}
         {isInvalid && (
           <BootstrapForm.Control.Feedback type="invalid">
-            {error}
+            {getErrorMessage(error)}
           </BootstrapForm.Control.Feedback>
         )}
       </Col>
@@ -86,9 +93,11 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
   description,
   error,
   touched,
+  value,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
+  const nonUndefinedValue = typeof value === "undefined" ? "" : value;
 
   return (
     <BootstrapForm.Group
@@ -104,6 +113,7 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
       <BootstrapForm.Control
         name={name}
         isInvalid={isInvalid}
+        value={nonUndefinedValue}
         {...restFieldProps}
       />
       {description && (
@@ -113,7 +123,7 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
       )}
       {isInvalid && (
         <BootstrapForm.Control.Feedback type="invalid">
-          {error}
+          {getErrorMessage(error)}
         </BootstrapForm.Control.Feedback>
       )}
     </BootstrapForm.Group>
@@ -129,17 +139,15 @@ const renderSwitch: (props: FieldRenderProps) => ReactElement = ({
   <SwitchButton name={name} label={label} value={value} onChange={onChange} />
 );
 
-const FieldTemplate: React.FC<FieldProps> = ({
-  layout = "horizontal",
-  ...restProps
-}) => {
-  switch (layout) {
-    case "horizontal":
-      return renderHorizontal(restProps);
+const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProps }) => {
+  const theme = useContext(FormTheme);
+
+  switch (layout ?? theme.layout) {
     case "vertical":
       return renderVertical(restProps);
     case "switch":
       return renderSwitch(restProps);
+    case "horizontal":
     default:
       return renderHorizontal(restProps);
   }

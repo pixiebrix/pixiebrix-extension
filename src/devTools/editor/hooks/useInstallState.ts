@@ -16,7 +16,7 @@
  */
 
 import { IExtension } from "@/core";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useContext, useMemo } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useAsyncState } from "@/hooks/common";

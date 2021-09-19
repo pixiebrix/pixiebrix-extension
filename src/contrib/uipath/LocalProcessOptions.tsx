@@ -16,19 +16,14 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import {
-  BlockOptionProps,
-  FieldRenderer,
-} from "@/components/fields/blockOptions";
 import { compact } from "lodash";
 import { UIPATH_PROPERTIES } from "@/contrib/uipath/localProcess";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
-import { Button, Form } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import Select from "react-select";
-import { FieldProps } from "@/components/fields/propTypes";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useAsyncEffect } from "use-async-effect";
 import {
   getUiPathProcesses,
@@ -36,31 +31,37 @@ import {
 } from "@/background/devtools/protocol";
 import { DevToolsContext } from "@/devTools/context";
 import { RobotProcess } from "@uipath/robot/dist/models";
-import { ObjectField } from "@/components/fields/FieldTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  InputArgumentsField,
-  releaseSchema,
-  useReleases,
-} from "@/contrib/uipath/ProcessOptions";
+import { useReleases } from "@/contrib/uipath/ProcessOptions";
 import { faInfo } from "@fortawesome/free-solid-svg-icons";
 import useDependency from "@/services/useDependency";
 import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
 import { getErrorMessage } from "@/errors";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import { releaseSchema } from "@/contrib/uipath/typeUtils";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
 
 interface Process {
   id: string;
   name: string;
 }
 
+const FALLBACK_PROCESS_SCHEMA: Schema = {
+  type: "object",
+  additionalProperties: true,
+};
+
 export const ProcessField: React.FunctionComponent<
-  FieldProps<string> & {
+  SchemaFieldProps<string> & {
     processes: Process[];
     isPending: boolean;
     fetchError: unknown;
   }
 > = ({ label, schema, processes, fetchError, isPending, ...props }) => {
-  const [{ value, ...field }, meta, helpers] = useField(props);
+  const [{ value, ...field }] = useField(props);
 
   const options = useMemo(
     () =>
@@ -73,32 +74,16 @@ export const ProcessField: React.FunctionComponent<
   );
 
   return (
-    <Form.Group>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
-      <Select
-        options={options}
-        value={options.find((x) => x.value === value)}
-        onChange={(option) => {
-          helpers.setValue(option.value);
-        }}
-      />
-      {schema.description && (
-        <Form.Text className="text-muted">The UiPath process to run</Form.Text>
-      )}
-      {isPending && (
-        <span className="text-info small">
-          Fetching processes from UiPath Assistant...
-        </span>
-      )}
-      {fetchError && (
-        <span className="text-danger small">
-          Error fetching processes: {getErrorMessage(fetchError)}
-        </span>
-      )}
-      {meta.touched && meta.error && (
-        <span className="text-danger small">{meta.error}</span>
-      )}
-    </Form.Group>
+    <ConnectedFieldTemplate
+      label={label ?? fieldLabel(field.name)}
+      description="The UiPath process to run"
+      as={SelectWidget}
+      isLoading={isPending}
+      error={fetchError}
+      loadingMessage="Loading processes from UiPath Assistant"
+      options={options}
+      value={options.find((x) => x.value === value)}
+    />
   );
 };
 
@@ -121,7 +106,6 @@ function useReleaseSchema(releaseKey: string) {
 const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
-  showOutputKey,
 }) => {
   const { port } = useContext(DevToolsContext);
   const basePath = compact([name, configKey]).join(".");
@@ -245,27 +229,16 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
       )}
 
       {schema ? (
-        <InputArgumentsField
+        <ChildObjectField
+          heading={process?.name}
           name={argumentsName}
-          label={process?.name ?? "inputArguments"}
           schema={schema}
         />
       ) : (
-        <ObjectField
+        <SchemaField
           name={argumentsName}
           label={process?.name ?? "inputArguments"}
-          schema={{ type: "object", additionalProperties: true }}
-        />
-      )}
-
-      {showOutputKey && (
-        <FieldRenderer
-          name={`${name}.outputKey`}
-          label="Output Variable"
-          schema={{
-            type: "string",
-            description: "A name to refer to this brick in subsequent bricks",
-          }}
+          schema={FALLBACK_PROCESS_SCHEMA}
         />
       )}
     </div>

@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { getPropByPath } from "@/utils";
+import { freshIdentifier, getPropByPath } from "@/utils";
+import type { SafeString } from "@/core";
 
 test("can get array element by index", () => {
   expect(getPropByPath({ array: [1, 2, 3] }, "array.0")).toBe(1);
@@ -31,4 +32,17 @@ test("can get object path in array", () => {
 
 test("can apply null coalescing to array index", () => {
   expect(getPropByPath({ array: [{ key: "foo" }] }, "array.1?.key")).toBeNull();
+});
+
+test("can generate fresh identifier", () => {
+  const root = "field" as SafeString;
+  expect(freshIdentifier(root, [])).toBe("field");
+  expect(freshIdentifier(root, [], { includeFirstNumber: true })).toBe(
+    "field1"
+  );
+  expect(
+    freshIdentifier(root, [], { includeFirstNumber: true, startNumber: 0 })
+  ).toBe("field0");
+  expect(freshIdentifier(root, ["field"])).toBe("field2");
+  expect(freshIdentifier(root, ["foo", "bar"])).toBe("field");
 });

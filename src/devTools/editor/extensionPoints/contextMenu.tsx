@@ -34,9 +34,6 @@ import { uuidv4 } from "@/types/helpers";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
-import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
-import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import {
   ContextMenuConfig,
@@ -44,8 +41,6 @@ import {
   MenuDefaultOptions as ContextMenuDefaultOptions,
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
-import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
-import AvailabilityTab from "@/devTools/editor/tabs/contextMenu/AvailabilityTab";
 import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -56,17 +51,9 @@ import { Menus } from "webextension-polyfill-ts";
 import { BlockPipeline } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 
 const wizard: WizardStep[] = [
-  { step: "Menu Item", Component: MenuItemTab },
-  { step: "Location", Component: AvailabilityTab },
-  { step: "Data", Component: ReaderTab },
-  { step: "Integrations", Component: ServicesTab },
-  { step: "Action", Component: EffectTab },
-  { step: "Logs", Component: LogsTab },
-];
-
-const betaWizard: WizardStep[] = [
   {
     step: "Edit",
     Component: EditTab,
@@ -263,6 +250,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   elementType: "contextMenu",
   label: "Context Menu",
   baseClass: ContextMenuExtensionPoint,
+  EditorNode: ContextMenuConfiguration,
   selectNativeElement: undefined,
   icon: faBars,
   fromNativeElement,
@@ -272,7 +260,6 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   selectExtension,
   fromExtension,
   wizard,
-  betaWizard,
   insertModeHelp: (
     <div>
       <p>

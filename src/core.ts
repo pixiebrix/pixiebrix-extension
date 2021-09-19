@@ -15,7 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JSONSchema7, JSONSchema7Definition } from "json-schema";
+import {
+  JSONSchema7,
+  JSONSchema7Definition,
+  JSONSchema7TypeName,
+} from "json-schema";
 import { UiSchema as StandardUiSchema } from "@rjsf/core";
 import { AxiosRequestConfig } from "axios";
 import { Except, Primitive } from "type-fest";
@@ -29,12 +33,20 @@ export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = Record<string, SchemaDefinition>;
+export type SchemaPropertyType = JSONSchema7TypeName;
 
 export type RenderedHTML = string;
 
 export type ActionType = string;
 
 export type OutputKey = string;
+
+/**
+ * A string known not to be tainted with user-generated input.
+ */
+export type SafeString = string & {
+  _safeStringBrand: never;
+};
 
 export type UUID = string & {
   // Nominal subtyping
@@ -356,6 +368,9 @@ export interface IExtensionPoint extends Metadata {
    */
   syncExtensions(extensions: IExtension[]): void;
 
+  /**
+   * Run the installed extensions for extension point.
+   */
   run(): Promise<void>;
 
   /**
@@ -380,14 +395,31 @@ export interface IBlock extends Metadata {
   permissions: Permissions.Permissions;
 
   /**
-   * True iff the block is guaranteed to be side-effect free, (i.e., it can be safely re-run).
+   * Returns true iff the block is guaranteed to be side-effect free, (i.e., it can be safely re-run).
+   *
+   * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
+   * the other blocks to resolve their purity).
+   *
+   * FIXME: isPure is marked as optional because we're using IBlock to represent packages/bricks in some places, e.g.,
+   *  the BrickModal. We need to make this require and fix the types in the places that break. For example, some places
+   *  take advantages the IExtensionPoint is compatible with the the IBlock interface even though they represent two
+   *  different concepts
    *
    * Examples of impure actions:
    * - Calling an API
    * - Showing a prompt
    * - Writing to the session state
    */
-  isPure?: boolean;
+  isPure?: () => Promise<boolean>;
+
+  /**
+   * (Optional) default root output key to use when this block is added in the page editor.
+   *
+   * If not provided, the Page Editor will use a generic name, potentially based on the inferred type of the brick.
+   *
+   * For example, "foo" will produce: foo, foo2, foo3, foo4, etc.
+   */
+  defaultOutputKey?: string;
 
   run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
 }

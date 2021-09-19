@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { editorSlice, FormState } from "@/devTools/editor/editorSlice";
+import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useCreate } from "@/devTools/editor/hooks/useCreate";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";

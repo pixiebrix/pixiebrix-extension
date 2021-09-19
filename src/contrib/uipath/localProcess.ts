@@ -20,10 +20,11 @@ import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import UiPathRobot from "@/contrib/uipath/UiPathRobot";
 import { JobResult } from "@uipath/robot/dist/models";
 import { BusinessError } from "@/errors";
+import { validateRegistryId } from "@/types/helpers";
 
 UiPathRobot.settings.disableTelemetry = true;
 
-export const UIPATH_ID = "@pixiebrix/uipath/local-process";
+export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/local-process");
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
   releaseKey: {

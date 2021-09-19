@@ -38,6 +38,11 @@
   &:hover {
     color: #a462e6;
     box-shadow: 1px 1px 1px gray;
+
+    &:active {
+      box-shadow: none;
+      color: #b66dff;
+    }
   }
 }
 

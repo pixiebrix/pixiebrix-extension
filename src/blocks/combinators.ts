@@ -126,7 +126,7 @@ type StageOptions = {
   trace?: TraceOptions;
 };
 
-async function runStage(
+export async function runStage(
   block: IBlock,
   stage: BlockConfig,
   args: RenderedArgs,

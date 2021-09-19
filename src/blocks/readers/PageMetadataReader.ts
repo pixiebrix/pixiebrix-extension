@@ -19,12 +19,18 @@ import { Reader } from "@/types";
 import { Schema } from "@/core";
 
 export class PageMetadataReader extends Reader {
+  defaultOutputKey = "metadata";
+
   constructor() {
     super(
       "@pixiebrix/document-metadata",
       "Page metadata reader",
       "Read OpenGraph, Twitter, and Meta tags"
     );
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   async read() {
