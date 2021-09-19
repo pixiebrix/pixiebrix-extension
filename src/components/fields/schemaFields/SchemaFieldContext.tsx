@@ -22,7 +22,7 @@ import {
   SchemaFieldProps,
 } from "@/components/fields/schemaFields/propTypes";
 import ServiceField, {
-  SERVICE_BASE_SCHEMA,
+  isServiceField,
 } from "@/components/fields/schemaFields/ServiceField";
 import {
   booleanPredicate,
@@ -73,7 +73,7 @@ function makeOneOfField(oneOf: Schema): FieldComponent {
 }
 
 export function getDefaultField(fieldSchema: Schema): FieldComponent {
-  if (fieldSchema.$ref?.startsWith(SERVICE_BASE_SCHEMA)) {
+  if (isServiceField(fieldSchema)) {
     return ServiceField;
   }
 
