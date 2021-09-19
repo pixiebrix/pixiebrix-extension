@@ -22,7 +22,6 @@ import { useField, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { getIcon } from "@/components/fields/BlockModal";
 import { BlockType, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
@@ -40,6 +39,7 @@ import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpe
 import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import BlockIcon from "@/components/BlockIcon";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -119,7 +119,7 @@ const EditTab: React.FC<{
   );
 
   const onSelectNode = useCallback(
-    // Wrapper only taking a number (and not a state update method)
+    // Wrapper only accepting a number (i.e., does not accept a state update method)
     (index: number) => {
       setActiveNodeIndex(index);
     },
@@ -137,25 +137,22 @@ const EditTab: React.FC<{
     pipelineFieldHelpers.setValue(newPipeline);
   };
 
-  const blockNodes: EditorNodeProps[] = zip(
-    blockPipeline,
-    resolvedBlocks,
-    blockTypes
-  ).map(([action, block, type], index) =>
-    block
-      ? {
-          title: action.label ?? block?.name,
-          outputKey: action.outputKey,
-          icon: getIcon(block, type),
-          onClick: () => {
-            onSelectNode(index + 1);
-          },
-        }
-      : {
-          title: "Loading...",
-          icon: faSpinner,
-          onClick: noop,
-        }
+  const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
+    ([action, block], index) =>
+      block
+        ? {
+            title: action.label ?? block?.name,
+            outputKey: action.outputKey,
+            icon: <BlockIcon block={block} size="2x" />,
+            onClick: () => {
+              onSelectNode(index + 1);
+            },
+          }
+        : {
+            title: "Loading...",
+            icon: faSpinner,
+            onClick: noop,
+          }
   );
 
   const initialNode: EditorNodeProps = useMemo(

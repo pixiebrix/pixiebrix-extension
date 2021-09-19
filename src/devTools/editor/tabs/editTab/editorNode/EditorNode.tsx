@@ -24,21 +24,36 @@ import cx from "classnames";
 export type EditorNodeProps = {
   title: string;
   outputKey?: string;
-  icon: IconProp;
+  icon: IconProp | React.ReactNode;
   onClick: () => void;
   muted?: boolean | undefined;
   active?: boolean | undefined;
 };
 
+function isFontAwesomeIcon(
+  maybeIcon: IconProp | React.ReactNode
+): maybeIcon is IconProp {
+  return (
+    typeof maybeIcon === "string" ||
+    (typeof maybeIcon === "object" && "icon" in maybeIcon)
+  );
+}
+
 const EditorNode: React.FC<EditorNodeProps> = ({
   onClick,
-  icon,
+  icon: iconProp,
   title,
   outputKey,
   muted,
   active,
 }) => {
   const outputName = outputKey ? `@${outputKey}` : "";
+
+  const icon = isFontAwesomeIcon(iconProp) ? (
+    <FontAwesomeIcon icon={iconProp as IconProp} size="2x" fixedWidth />
+  ) : (
+    iconProp
+  );
 
   return (
     // Use our own custom style here, not bootstrap
@@ -52,7 +67,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
           [styles.activeNode]: active,
         })}
       >
-        <FontAwesomeIcon icon={icon} size="2x" fixedWidth />
+        {icon}
       </button>
       <div className={styles.outputKey}>{outputName}</div>
     </div>
