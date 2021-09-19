@@ -38,6 +38,7 @@ import QuickAdd from "@/devTools/editor/tabs/effect/QuickAdd";
 import { MarketplaceListing } from "@/types/contract";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BlockIcon from "@/components/BlockIcon";
+import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 
 const BlockResult: React.FunctionComponent<{
@@ -74,20 +75,6 @@ type BlockOption = {
   value: string;
   label: string;
 };
-
-function searchBlocks(query: string, options: BlockOption[]): BlockOption[] {
-  if (!isNullOrBlank(query?.trim())) {
-    const normalizedQuery = query.toLowerCase();
-    return options.filter(
-      (x) =>
-        x.label.toLowerCase().includes(normalizedQuery) ||
-        x.block.id.includes(normalizedQuery) ||
-        (x.block.description ?? "").toLowerCase().includes(normalizedQuery)
-    );
-  }
-
-  return options;
-}
 
 function makeBlockOption(block: IBlock): BlockOption {
   return {
@@ -153,14 +140,24 @@ const BlockModal: React.FunctionComponent<{
     leading: false,
   });
 
-  const blockOptions = useMemo(
-    () => sortBy((blocks ?? []).map(unary(makeBlockOption)), (x) => x.label),
-    [blocks]
-  );
+  const { fuse, blockOptions } = useMemo(() => {
+    const blockOptions = sortBy(
+      (blocks ?? []).map(unary(makeBlockOption)),
+      (x) => x.label
+    );
+    const fuse: Fuse<BlockOption> = new Fuse(blockOptions, {
+      keys: ["label", "block.id", "block.description"],
+    });
 
-  const filteredOptions = useMemo(
-    () => searchBlocks(debouncedQuery, blockOptions),
-    [blockOptions, debouncedQuery]
+    return { blockOptions, fuse };
+  }, [blocks]);
+
+  const searchResults = useMemo(
+    () =>
+      isNullOrBlank(debouncedQuery)
+        ? blockOptions
+        : fuse.search(debouncedQuery).map((x) => x.item),
+    [debouncedQuery, fuse, blockOptions]
   );
 
   const close = useCallback(() => {
@@ -207,12 +204,12 @@ const BlockModal: React.FunctionComponent<{
                     <Col>
                       <div className="BlockModal__results">
                         <ListGroup>
-                          {filteredOptions.map((x) => (
+                          {searchResults.map(({ block }) => (
                             <BlockResult
-                              key={x.block.id}
-                              block={x.block}
+                              key={block.id}
+                              block={block}
                               onSelect={() => {
-                                setDetailBlock(x.block);
+                                setDetailBlock(block);
                               }}
                             />
                           ))}
