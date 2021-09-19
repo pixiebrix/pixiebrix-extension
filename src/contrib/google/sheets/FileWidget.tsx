@@ -30,7 +30,7 @@ import { ensureAuth } from "@/contrib/google/auth";
 import { partial } from "lodash";
 import { isOptionsPage } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { Form, InputGroup } from "react-bootstrap";
 import useNotifications from "@/hooks/useNotifications";
 import { getErrorMessage } from "@/errors";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
