@@ -56,40 +56,53 @@ const FieldEditor: React.FC<{
     `${name}.uiSchema.${propertyName}`
   );
 
-  const [propertyNameError, setPropertyNameError] = useState<string>(null);
-  useEffect(() => {
-    setPropertyNameError(null);
-  }, [propertyName, schema]);
-
   const getFullFieldName = (fieldName: string) =>
     `${name}.schema.properties.${propertyName}.${fieldName}`;
 
-  const onPropertyNameChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextName = event.target.value;
+  const [internalPropertyName, setInternalPropertyName] = useState<string>(
+    null
+  );
+  const [propertyNameError, setPropertyNameError] = useState<string>(null);
+  useEffect(() => {
+    setInternalPropertyName(propertyName);
+    setPropertyNameError(null);
+  }, [propertyName, schema]);
 
-    // Validation
+  const validatePropertyName = (nextName: string) => {
+    let error: string = null;
+
     if (nextName === "") {
-      setPropertyNameError("Name cannot be empty.");
-      return;
+      error = "Name cannot be empty.";
     }
 
     if (nextName.includes(".")) {
-      setPropertyNameError("Name must not contain periods.");
-      return;
+      error = "Name must not contain periods.";
     }
 
     const existingProperties = Object.keys(schema.properties);
     if (existingProperties.includes(nextName)) {
-      setPropertyNameError(
-        `Name must be unique. Another property "${
-          (schema.properties[nextName] as Schema).title
-        }" already has the name "${nextName}".`
-      );
-      return;
+      error = `Name must be unique. Another property "${
+        (schema.properties[nextName] as Schema).title
+      }" already has the name "${nextName}".`;
     }
 
-    if (propertyNameError) {
-      setPropertyNameError(null);
+    setPropertyNameError(error);
+
+    return error;
+  };
+
+  const onPropertyNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextName = event.target.value;
+    validatePropertyName(nextName);
+    setInternalPropertyName(nextName);
+  };
+
+  const updatePropertyName = () => {
+    const nextName = internalPropertyName;
+
+    const error = validatePropertyName(nextName);
+    if (error) {
+      return;
     }
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
@@ -169,8 +182,9 @@ const FieldEditor: React.FC<{
         required
         name={`${name}.${propertyName}`}
         label="Name"
-        value={propertyName}
+        value={internalPropertyName}
         onChange={onPropertyNameChange}
+        onBlur={updatePropertyName}
         touched
         error={propertyNameError}
       />
