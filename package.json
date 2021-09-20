@@ -110,6 +110,7 @@
     "react-split-pane": "^0.1.92",
     "react-toast-notifications": "^2.4.4",
     "react-virtualized": "^9.22.3",
+    "react-window": "^1.8.6",
     "redux": "^4.1.0",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
