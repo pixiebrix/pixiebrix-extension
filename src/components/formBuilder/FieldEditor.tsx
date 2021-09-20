@@ -28,11 +28,12 @@ import {
   replaceStringInArray,
   stringifyUiType,
 } from "./formBuilderHelpers";
-import { Schema } from "@/core";
+import { Schema, SchemaPropertyType } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
+import OptionsWidget from "@/components/form/widgets/OptionsWidget";
 
 const FieldEditor: React.FC<{
   name: string;
@@ -45,7 +46,7 @@ const FieldEditor: React.FC<{
     { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
   const { schema } = rjsfSchema;
-  const [{ value: propertySchema }] = useField(
+  const [{ value: propertySchema }] = useField<Schema>(
     `${name}.schema.properties.${propertyName}`
   );
   const [{ value: propertyUiSchema }] = useField(
@@ -125,14 +126,18 @@ const FieldEditor: React.FC<{
 
     const { propertyType, uiWidget, propertyFormat } = parseUiType(value);
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      (draft.schema.properties[propertyName] as Schema).type = propertyType;
+      const draftPropertySchema = draft.schema.properties[
+        propertyName
+      ] as Schema;
+      if (propertySchema.type !== propertyType) {
+        draftPropertySchema.default = undefined;
+        draftPropertySchema.type = propertyType;
+      }
 
       if (propertyFormat) {
-        (draft.schema.properties[
-          propertyName
-        ] as Schema).format = propertyFormat;
+        draftPropertySchema.format = propertyFormat;
       } else {
-        delete (draft.schema.properties[propertyName] as Schema).format;
+        delete draftPropertySchema.format;
       }
 
       if (uiWidget) {
@@ -145,13 +150,15 @@ const FieldEditor: React.FC<{
         // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
         delete draft.uiSchema[propertyName][UI_WIDGET];
       }
+
+      draftPropertySchema.enum = uiWidget === "select" ? [] : undefined;
     });
 
     setRjsfSchema(nextRjsfSchema);
   };
 
   const getSelectedUiTypeOption = () => {
-    const propertyType = propertySchema.type;
+    const propertyType = propertySchema.type as SchemaPropertyType;
     const uiWidget = propertyUiSchema ? propertyUiSchema[UI_WIDGET] : undefined;
     const propertyFormat = propertySchema.format;
 
@@ -203,6 +210,14 @@ const FieldEditor: React.FC<{
         value={getSelectedUiTypeOption().value}
         onChange={onUiTypeChange}
       />
+
+      {propertySchema.enum && (
+        <ConnectedFieldTemplate
+          name={getFullFieldName("enum")}
+          label="Options"
+          as={OptionsWidget}
+        />
+      )}
 
       <BootstrapForm.Group as={Row}>
         <BootstrapForm.Label column sm="3">
