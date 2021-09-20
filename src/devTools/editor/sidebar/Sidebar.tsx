@@ -126,7 +126,13 @@ const Sidebar: React.FunctionComponent<
             target="_blank"
             title="Open PixieBrix Options"
           >
-            <img src={logoUrl} alt="" width={31} height={31} />
+            <img
+              src={logoUrl}
+              alt=""
+              width={31}
+              height={31}
+              className="Sidebar__logo"
+            />
           </a>
           <DropdownButton
             disabled={Boolean(inserting) || !hasPermissions}
