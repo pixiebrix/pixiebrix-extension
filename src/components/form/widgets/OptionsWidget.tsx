@@ -32,7 +32,7 @@ const OptionsWidget: CustomFieldWidget<OwnProps> = ({ name, value }) => (
     name={name}
     render={(arrayHelpers) =>
       value.length > 0 ? (
-        value.map((_, index: number) => (
+        value.map((_: string, index: number) => (
           <div key={index} className={styles.controlsContainer}>
             <Field
               name={`${name}.${index}`}

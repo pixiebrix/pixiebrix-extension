@@ -16,11 +16,11 @@
  */
 
 /* eslint-disable security/detect-object-injection */
-import { Field, FieldArray, useField } from "formik";
+import { Field, useField } from "formik";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "./FieldEditor.module.scss";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
-import { Row, Form as BootstrapForm, Col, Button } from "react-bootstrap";
+import { Row, Form as BootstrapForm, Col } from "react-bootstrap";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import {
   FIELD_TYPE_OPTIONS,
@@ -28,14 +28,12 @@ import {
   replaceStringInArray,
   stringifyUiType,
 } from "./formBuilderHelpers";
-import { Schema } from "@/core";
+import { Schema, SchemaPropertyType } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
-import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import OptionsWidget from "../form/widgets/OptionsWidget";
+import OptionsWidget from "@/components/form/widgets/OptionsWidget";
 
 const FieldEditor: React.FC<{
   name: string;
@@ -160,7 +158,7 @@ const FieldEditor: React.FC<{
   };
 
   const getSelectedUiTypeOption = () => {
-    const propertyType = propertySchema.type;
+    const propertyType = propertySchema.type as SchemaPropertyType;
     const uiWidget = propertyUiSchema ? propertyUiSchema[UI_WIDGET] : undefined;
     const propertyFormat = propertySchema.format;
 
