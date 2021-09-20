@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { configureStore } from "@reduxjs/toolkit";
-import { persistStore, persistReducer } from "redux-persist";
+import { configureStore, Middleware } from "@reduxjs/toolkit";
+import { persistReducer, persistStore } from "redux-persist";
 import { localStorage } from "redux-persist-webextension-storage";
 import {
   optionsSlice,
-  OptionsState,
   servicesSlice,
   ServicesState,
   settingsSlice,
@@ -32,20 +31,18 @@ import { createLogger } from "redux-logger";
 import { connectRouter, routerMiddleware } from "connected-react-router";
 import { createHashHistory } from "history";
 import { boolean } from "@/utils";
+import { OptionsState, persistOptionsConfig } from "@/store/extensions";
+import { persistServicesConfig } from "@/store/services";
+import {
+  installedPageSlice,
+  InstalledPageState,
+} from "./pages/installed/installedPageSlice";
+import { appApi } from "@/services/api";
+import { setupListeners } from "@reduxjs/toolkit/dist/query/react";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
-const persistOptionsConfig = {
-  key: "extensionOptions",
-  storage: localStorage,
-};
-
 export const hashHistory = createHashHistory({ hashType: "slash" });
-
-const persistServicesConfig = {
-  key: "servicesOptions",
-  storage: localStorage,
-};
 
 const persistSettingsConfig = {
   key: "settings",
@@ -57,13 +54,14 @@ export interface RootState {
   services: ServicesState;
   settings: SettingsState;
   workshop: WorkshopState;
+  installedPage: InstalledPageState;
 }
 
-const middleware = [routerMiddleware(hashHistory)];
+const conditionalMiddleware: Middleware[] = [];
 if (process.env.NODE_ENV === "development") {
   // Allow tree shaking of logger in production
   // https://github.com/LogRocket/redux-logger/issues/6
-  middleware.push(createLogger());
+  conditionalMiddleware.push(createLogger());
 }
 
 const store = configureStore({
@@ -71,13 +69,26 @@ const store = configureStore({
     router: connectRouter(hashHistory),
     options: persistReducer(persistOptionsConfig, optionsSlice.reducer),
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
+    // XXX: settings and workshop use the same persistor config?
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     workshop: persistReducer(persistSettingsConfig, workshopSlice.reducer),
+    installedPage: installedPageSlice.reducer,
+    [appApi.reducerPath]: appApi.reducer,
   },
-  middleware,
+  middleware: (getDefaultMiddleware) => [
+    ...getDefaultMiddleware(),
+    appApi.middleware,
+    routerMiddleware(hashHistory),
+    ...conditionalMiddleware,
+  ],
   devTools: REDUX_DEV_TOOLS,
 });
 
 export const persistor = persistStore(store);
+
+// https://redux-toolkit.js.org/rtk-query/overview#configure-the-store
+// Optional, but required for refetchOnFocus/refetchOnReconnect behaviors see `setupListeners` docs - takes an optional
+// callback as the 2nd arg for customization
+setupListeners(store.dispatch);
 
 export default store;

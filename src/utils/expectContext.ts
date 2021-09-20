@@ -15,19 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isBackgroundPage, isContentScript } from "webext-detect-page";
+import {
+  isBackgroundPage,
+  isContentScript,
+  isExtensionContext,
+} from "webext-detect-page";
 
 /**
  * Accepts 'This is my error' | new Error('This is my error') | Error;
  * The constructor would be used to create a custom error with the defalt message
  */
-type ErrorBaseType = string | Error | { new (message?: string): Error };
+type ErrorBaseType = string | Error | (new (message?: string) => Error);
 function createError(
   defaultMessage: string,
   error: ErrorBaseType = Error
 ): Error {
   if (typeof error === "string") {
-    // eslint-disable-next-line unicorn/prefer-type-error
     return new Error(error);
   }
 
@@ -35,53 +38,60 @@ function createError(
     return error;
   }
 
+  // eslint-disable-next-line new-cap -- ctor passed in as argument
   return new error(defaultMessage);
 }
 
+const contexts = ["extension", "background", "contentScript"] as const;
+const contextMap = new Map<typeof contexts[number], () => boolean>([
+  ["extension", isExtensionContext],
+  ["background", isBackgroundPage],
+  ["contentScript", isContentScript],
+  ["extension", isExtensionContext],
+]);
+
 /**
- * @example expectBackgroundPage()
- * @example expectBackgroundPage(WrongContextError)
- * @example expectBackgroundPage('Wrong context and this is my custom error')
- * @example expectBackgroundPage(new Error('Wrong context and this is my custom error'))
+ * @example expectContext('extension')
+ * @example expectContext('extension', WrongContextError)
+ * @example expectContext('extension', 'Wrong context and this is my custom error')
+ * @example expectContext('extension', new Error('Wrong context and this is my custom error'))
  */
-export function expectBackgroundPage(error?: ErrorBaseType): void {
-  if (!isBackgroundPage()) {
-    throw createError("This code can only run in the background page", error);
+export function expectContext(
+  context: typeof contexts[number],
+  error?: ErrorBaseType
+): void {
+  const isContext = contextMap.get(context);
+  if (!isContext) {
+    throw new TypeError(`Context "${context}" not found`);
+  }
+
+  if (!isContext()) {
+    throw createError(
+      `This code can only run in the "${context}" context`,
+      error
+    );
   }
 }
 
 /**
- * @example expectContentScript()
- * @example expectContentScript(WrongContextError)
- * @example expectContentScript('Wrong context and this is my custom error')
- * @example expectContentScript(new Error('Wrong context and this is my custom error'))
+ * @example forbidContext('extension')
+ * @example forbidContext('extension', WrongContextError)
+ * @example forbidContext('extension', 'Wrong context and this is my custom error')
+ * @example forbidContext('extension', new Error('Wrong context and this is my custom error'))
  */
-export function expectContentScript(error?: ErrorBaseType): void {
-  if (!isContentScript()) {
-    throw createError("This code can only run in the content script", error);
+export function forbidContext(
+  context: typeof contexts[number],
+  error?: ErrorBaseType
+): void {
+  const isContext = contextMap.get(context);
+  if (!isContext) {
+    throw new TypeError(`Context "${context}" not found`);
   }
-}
 
-/**
- * @example expectBackgroundPage()
- * @example expectBackgroundPage(WrongContextError)
- * @example expectBackgroundPage('Wrong context and this is my custom error')
- * @example expectBackgroundPage(new Error('Wrong context and this is my custom error'))
- */
-export function forbidBackgroundPage(error?: ErrorBaseType): void {
-  if (isBackgroundPage()) {
-    throw createError("This code cannot run in the background page", error);
-  }
-}
-
-/**
- * @example forbidContentScript()
- * @example forbidContentScript(WrongContextError)
- * @example forbidContentScript('Wrong context and this is my custom error')
- * @example forbidContentScript(new Error('Wrong context and this is my custom error'))
- */
-export function forbidContentScript(error?: ErrorBaseType): void {
-  if (isContentScript()) {
-    throw createError(`This code cannot run in the content script`, error);
+  if (isContext()) {
+    throw createError(
+      `This code cannot run in the "${context}" context`,
+      error
+    );
   }
 }

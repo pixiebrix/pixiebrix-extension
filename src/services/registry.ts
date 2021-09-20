@@ -15,31 +15,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readStorage } from "@/chrome";
+import { readReduxStorage, ReduxStorageKey } from "@/chrome";
 import BaseRegistry from "@/baseRegistry";
 import { fromJS } from "@/services/factory";
-import { RawServiceConfiguration } from "@/core";
+import { RawServiceConfiguration, RegistryId } from "@/core";
 import { Service } from "@/types";
 
-export const PIXIEBRIX_SERVICE_ID = "@pixiebrix/api";
+const storageKey = "persist:servicesOptions" as ReduxStorageKey;
 
-const storageKey = "persist:servicesOptions";
+const registry = new BaseRegistry<RegistryId, Service>(
+  ["service"],
+  "services",
+  fromJS
+);
 
-const registry = new BaseRegistry<Service>(["service"], "services", fromJS);
+// See the ServicesState slice
+type PersistedServicesState = {
+  // XXX: in practice, only one of these should be true. Need to better understand/document how redux-persist stores
+  // each leave of state
+  configured: string | Record<string, RawServiceConfiguration>;
+};
 
 export async function readRawConfigurations(): Promise<
   RawServiceConfiguration[]
 > {
-  const rawConfigs = await readStorage(storageKey);
+  const base = (await readReduxStorage(storageKey)) as PersistedServicesState;
 
-  if (!rawConfigs) {
+  if (typeof base?.configured === "string") {
+    // Not really sure why redux-persist stores the next level down as escaped JSON?
+    return Object.values(JSON.parse(base.configured));
+  }
+
+  if (!base?.configured) {
     return [];
   }
 
-  // Not really sure why the next level down is escaped JSON?
-  const base = JSON.parse(rawConfigs as string);
-  const configured = JSON.parse(base.configured);
-  return Object.values(configured);
+  return Object.values(base.configured);
 }
 
 export default registry;

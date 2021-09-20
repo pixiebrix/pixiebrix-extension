@@ -79,10 +79,10 @@ export function mapArgs(
 
   if (typeof config === "string") {
     if (isSimplePath(config, ctxt)) {
-      const prop = getPropByPath(ctxt as { [prop: string]: unknown }, config);
+      const prop = getPropByPath(ctxt as Record<string, unknown>, config);
       if (prop && typeof prop === "object" && "__service" in prop) {
         // If we're returning the root service context, return the service itself
-        // @ts-ignore: not sure why the "in" check isn't working
+        // @ts-expect-error not sure why the "in" check isn't working
         return prop.__service;
       }
 
@@ -100,7 +100,7 @@ export function mapArgs(
  */
 export function missingProperties(
   schema: Schema,
-  obj: { [key: string]: any }
+  obj: Record<string, any>
 ): string[] {
   const acc = [];
   for (const propertyKey of schema.required ?? []) {
@@ -124,16 +124,8 @@ export function inputProperties(inputSchema: Schema): SchemaProperties {
   return inputSchema as SchemaProperties;
 }
 
-export const isChrome =
-  typeof navigator === "object" &&
-  navigator.userAgent.toLowerCase().includes("chrome");
-
-export const isFirefox =
-  typeof navigator === "object" &&
-  navigator.userAgent.toLowerCase().includes("firefox");
-
 /**
  * True if the script is executing in a web browser context.
  */
-export const isBrowser =
+export const IS_BROWSER =
   typeof window !== "undefined" && typeof window.document !== "undefined";

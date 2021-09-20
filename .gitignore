@@ -22,6 +22,7 @@ staticfiles
 .idea/dynamic.xml
 .idea/uiDesigner.xml
 .idea/misc.xml
+.idea/runConfigurations.xml
 *.log
 
 # MacOS files
@@ -29,6 +30,7 @@ staticfiles
 
 # Testing Artifacts
 .coverage
+coverage
 
 # NPM/Webpack
 webpack-stats.json
@@ -36,6 +38,7 @@ assets/bundles
 browsers/**/bundles/**
 browsers/dist
 dist
+.transpiled
 
 # Other artifacts
 artifacts

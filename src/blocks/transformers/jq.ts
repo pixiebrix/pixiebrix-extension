@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
@@ -25,6 +24,10 @@ import { OutputUnit } from "@cfworker/json-schema";
 import { isErrorObject } from "@/errors";
 
 export class JQTransformer extends Transformer {
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/jq",
@@ -57,13 +60,15 @@ export class JQTransformer extends Transformer {
     const jq = (
       await import(
         /* webpackChunkName: "jq-web" */
-        // @ts-ignore: no existing definitions exist
+        // @ts-expect-error no existing definitions exist
         "jq-web"
       )
     ).default;
 
     logger.debug("Running jq transform", { filter, data, ctxt, input });
+
     try {
+      // eslint-disable-next-line @typescript-eslint/return-await -- Type is `any`, it throws the rule off
       return await jq.promised.json(input, filter);
     } catch (error: unknown) {
       if (isErrorObject(error) && error.message.includes("compile error")) {
@@ -97,5 +102,3 @@ export class JQTransformer extends Transformer {
     }
   }
 }
-
-registerBlock(new JQTransformer());

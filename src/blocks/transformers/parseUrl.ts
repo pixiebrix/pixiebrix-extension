@@ -16,11 +16,13 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { pick } from "lodash";
-import psl, { ParsedDomain } from "psl";
+import { isNullOrBlank } from "@/utils";
+
+// Methods imported async in the brick
+import type { ParsedDomain } from "psl";
 
 const URL_PROPERTIES = [
   "port",
@@ -36,6 +38,12 @@ const URL_PROPERTIES = [
 ];
 
 export class UrlParser extends Transformer {
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
+  defaultOutputKey = "parsedUrl";
+
   constructor() {
     super(
       "@pixiebrix/parse-url",
@@ -60,15 +68,40 @@ export class UrlParser extends Transformer {
     ["url"]
   );
 
+  outputSchema: Schema = {
+    type: "object",
+    properties: {
+      searchParams: {
+        type: "object",
+        additionalProperties: { type: "string" },
+      },
+      publicSuffix: {
+        type: "string",
+        description: "Public suffix (see https://publicsuffix.org/)",
+      },
+      ...Object.fromEntries(
+        URL_PROPERTIES.map((prop) => [
+          prop,
+          {
+            type: "string",
+          },
+        ])
+      ),
+    },
+  };
+
   async transform({ url, base }: BlockArg): Promise<unknown> {
+    const { isValid, parse } = await import("psl");
+
     const parsed = new URL(url, base);
 
     let publicSuffix: string;
 
-    if (parsed.host ?? "" !== "") {
-      const domain = parsed.host.split(":")[0];
-      if (psl.isValid(domain)) {
-        const result = psl.parse(domain);
+    if (!isNullOrBlank(parsed.host)) {
+      // `host` includes the port
+      const [domain] = parsed.host.split(":");
+      if (isValid(domain)) {
+        const result = parse(domain);
         if (!("error" in result)) {
           publicSuffix = (result as ParsedDomain).domain;
         }
@@ -89,5 +122,3 @@ export class UrlParser extends Transformer {
     };
   }
 }
-
-registerBlock(new UrlParser());

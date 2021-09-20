@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -18,6 +19,8 @@
 import * as contentScript from "@/contentScript/lifecycle";
 import { liftBackground } from "@/background/protocol";
 import { browser, WebNavigation } from "webextension-polyfill-ts";
+import { reactivateTab } from "@/contentScript/messenger/api";
+import { notifyTabs } from "@/background/util";
 
 async function historyListener(
   details: WebNavigation.OnHistoryStateUpdatedDetailsType
@@ -40,8 +43,8 @@ function initNavigation(): void {
 export const reactivate = liftBackground(
   "REACTIVATE",
   async () => {
-    console.debug("contentScript.reactivate on all tabs");
-    await contentScript.reactivate(null);
+    console.debug("Reactivate all tabs");
+    await notifyTabs(reactivateTab, "Reactivation failed for some tabs");
   },
   { asyncResponse: false }
 );

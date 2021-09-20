@@ -1,27 +1,38 @@
 {
+  // You can see the full details at https://github.com/sindresorhus/tsconfig/blob/main/tsconfig.json
+  // Note: `strict: true` enables many flags that aren’t explicitly listed in that file
+  "extends": "@sindresorhus/tsconfig/tsconfig.json",
   "compilerOptions": {
     "sourceMap": true,
-    "noImplicitAny": true,
-    "module": "es2020",
     "target": "es2020",
-    "jsx": "react",
-    "allowJs": false,
-    "strictBindCallApply": true,
-    "resolveJsonModule": true,
-    "moduleResolution": "Node",
-    "noUnusedLocals": true,
-    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
-    "downlevelIteration": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
     "baseUrl": ".",
+    "skipLibCheck": false,
+
+    // TODO: Drop these lines to make TS stricter https://github.com/pixiebrix/pixiebrix-extension/issues/775
+    "strictNullChecks": false,
+    "noImplicitOverride": false,
+    "strictFunctionTypes": false,
+    "noPropertyAccessFromIndexSignature": false,
+    "noImplicitReturns": false,
+    "noUnusedParameters": false,
+    "useDefineForClassFields": false,
+    "useUnknownInCatchVariables": false, // https://github.com/pixiebrix/pixiebrix-extension/issues/779
     "paths": {
       "@/*": ["src/*"],
       "@img/*": ["img/*"],
       "@contrib/*": ["contrib/*"],
       "@schemas/*": ["schemas/*"],
-      "vendors/*": ["src/vendors/*"]
+      "@microsoft/applicationinsights-web/*": [
+        "src/contrib/uipath/quietLogger/*"
+      ],
+
+      // Silently improve tree-shakeability and AMD-related errors like #943
+      "lodash": ["node_modules/lodash-es"]
     },
-    "lib": ["dom", "es2019", "es2020", "DOM.Iterable"]
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "exclude": ["venv", "dist", "node_modules"]
 }

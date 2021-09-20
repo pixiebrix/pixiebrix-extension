@@ -17,7 +17,7 @@
 
 import { Reader } from "@/types";
 import { IReader, ReaderOutput, Schema } from "@/core";
-import { identity, zip } from "lodash";
+import { zip } from "lodash";
 
 class ArrayCompositeReader extends Reader {
   public readonly outputSchema: Schema;
@@ -55,15 +55,22 @@ class ArrayCompositeReader extends Reader {
 
   async isAvailable(): Promise<boolean> {
     const availability = await Promise.all(
-      this._readers.map((x) => x.isAvailable())
+      this._readers.map(async (x) => x.isAvailable())
     );
-    return availability.every(identity);
+    return availability.every((x) => x);
+  }
+
+  async isPure(): Promise<boolean> {
+    const availability = await Promise.all(
+      this._readers.map(async (x) => x.isPure())
+    );
+    return availability.every((x) => x);
   }
 
   async read(root: HTMLElement | Document): Promise<ReaderOutput> {
     let result = {};
     const readResults = await Promise.all(
-      this._readers.map((x) => x.read(root))
+      this._readers.map(async (x) => x.read(root))
     );
     for (const [reader, readerResult] of zip(this._readers, readResults)) {
       console.debug(`ArrayCompositeReader:${reader.name}`, readerResult);

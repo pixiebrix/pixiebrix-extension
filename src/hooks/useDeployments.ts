@@ -20,24 +20,19 @@ import { useCallback, useMemo } from "react";
 import { useAsyncState } from "@/hooks/common";
 import { blueprintPermissions, ensureAllPermissions } from "@/permissions";
 import { useDispatch, useSelector } from "react-redux";
-import { fromPairs } from "lodash";
 import { reportEvent } from "@/telemetry/events";
 import { optionsSlice } from "@/options/slices";
-import {
-  InstalledExtension,
-  selectInstalledExtensions,
-} from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
-import { getExtensionToken } from "@/auth/token";
-import axios from "axios";
-import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
 import { activeDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
 import { Permissions } from "webextension-polyfill-ts";
+import { IExtension, UUID, RegistryId } from "@/core";
+import { getLinkedApiClient } from "@/services/apiClient";
 
 const { actions } = optionsSlice;
 
@@ -54,24 +49,19 @@ async function selectDeploymentPermissions(
 }
 
 async function fetchDeployments(
-  installedExtensions: InstalledExtension[]
+  installedExtensions: IExtension[]
 ): Promise<Deployment[]> {
-  const token = await getExtensionToken();
-  const { data: deployments } = await axios.post<Deployment[]>(
-    `${await getBaseURL()}/api/deployments/`,
-    {
-      uid: await getUID(),
-      version: await getExtensionVersion(),
-      active: activeDeployments(installedExtensions),
-    },
-    {
-      headers: { Authorization: `Token ${token}` },
-    }
-  );
+  const { data: deployments } = await (await getLinkedApiClient()).post<
+    Deployment[]
+  >("/api/deployments/", {
+    uid: await getUID(),
+    version: await getExtensionVersion(),
+    active: activeDeployments(installedExtensions),
+  });
   return deployments;
 }
 
-const makeUpdatedFilter = (installed: InstalledExtension[]) => (
+const makeUpdatedFilter = (installed: IExtension[]) => (
   deployment: Deployment
 ) => {
   const match = installed.find(
@@ -86,15 +76,15 @@ const makeUpdatedFilter = (installed: InstalledExtension[]) => (
 function activateDeployments(
   dispatch: Dispatch,
   deployments: Deployment[],
-  installed: InstalledExtension[]
+  installed: IExtension[]
 ) {
   for (const deployment of deployments) {
     // Clear existing installs of the blueprint
     for (const extension of installed) {
-      if (extension._recipe.id === deployment.package.package_id) {
+      // Extension won't have recipe if it was locally created by a developer
+      if (extension._recipe?.id === deployment.package.package_id) {
         dispatch(
           actions.removeExtension({
-            extensionPointId: extension.extensionPointId,
             extensionId: extension.id,
           })
         );
@@ -106,8 +96,10 @@ function activateDeployments(
       actions.installRecipe({
         recipe: deployment.package.config,
         extensionPoints: deployment.package.config.extensionPoints,
-        services: fromPairs(
-          deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
+        services: Object.fromEntries(
+          deployment.bindings.map(
+            (x) => [x.auth.service_id, x.auth.id] as [RegistryId, UUID]
+          )
         ),
         deployment,
       })
@@ -127,16 +119,16 @@ type DeploymentState = {
 function useDeployments(): DeploymentState {
   const notify = useNotifications();
   const dispatch = useDispatch();
-  const installed = useSelector(selectInstalledExtensions);
+  const installed = useSelector(selectExtensions);
 
   const [deployments] = useAsyncState(async () => fetchDeployments(installed), [
     installed,
   ]);
 
-  const updatedDeployments = useMemo(
-    () => (deployments ?? []).filter(makeUpdatedFilter(installed)),
-    [installed, deployments]
-  );
+  const updatedDeployments = useMemo(() => {
+    const isUpdated = makeUpdatedFilter(installed);
+    return (deployments ?? []).filter((x) => isUpdated(x));
+  }, [installed, deployments]);
 
   const handleUpdate = useCallback(async () => {
     if (!deployments) {

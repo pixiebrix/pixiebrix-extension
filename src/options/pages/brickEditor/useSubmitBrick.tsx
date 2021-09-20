@@ -16,45 +16,45 @@
  */
 
 import yaml from "js-yaml";
-import { makeURL } from "@/hooks/fetch";
-import { castArray, isPlainObject } from "lodash";
+import { castArray } from "lodash";
 import { useCallback } from "react";
 import { useHistory } from "react-router";
 import { push } from "connected-react-router";
 import { useDispatch } from "react-redux";
-import { useToasts } from "react-toast-notifications";
 import { EditorValues } from "./Editor";
-import { validateSchema } from "./validate";
-import axios from "axios";
-import { getExtensionToken } from "@/auth/token";
+import { BrickValidationResult, validateSchema } from "./validate";
 import useRefresh from "@/hooks/useRefresh";
 import { reactivate } from "@/background/navigation";
-import { RecipeDefinition, Definition } from "@/types/definitions";
-import { reportError } from "@/telemetry/logging";
+import { Definition, RecipeDefinition } from "@/types/definitions";
 import useReinstall from "@/pages/marketplace/useReinstall";
+import useNotifications from "@/hooks/useNotifications";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { getErrorMessage, isAxiosError } from "@/errors";
+import { UUID } from "@/core";
+import { clearServiceCache } from "@/background/requests";
 
-interface SubmitOptions {
+type SubmitOptions = {
   create: boolean;
   url: string;
-}
+};
 
-interface SubmitCallbacks {
-  validate: (values: EditorValues) => Promise<any>;
+type SubmitCallbacks = {
+  validate: (values: EditorValues) => Promise<BrickValidationResult>;
   remove: () => Promise<void>;
   submit: (
     values: EditorValues,
-    helpers: { setErrors: (errors: any) => void }
+    helpers: { setErrors: (errors: unknown) => void }
   ) => Promise<void>;
-}
+};
 
 function useSubmitBrick({
   create = false,
   url,
 }: SubmitOptions): SubmitCallbacks {
-  const [, refresh] = useRefresh(false);
+  const [, refresh] = useRefresh({ refreshOnMount: false });
   const reinstall = useReinstall();
   const history = useHistory();
-  const { addToast } = useToasts();
+  const notify = useNotifications();
   const dispatch = useDispatch();
 
   const validate = useCallback(
@@ -64,25 +64,20 @@ function useSubmitBrick({
 
   const remove = useCallback(async () => {
     try {
-      await axios({
-        url: await makeURL(url),
-        method: "delete",
-        headers: { Authorization: `Token ${await getExtensionToken()}` },
-      });
-    } catch {
-      addToast("Error deleting brick", {
-        appearance: "success",
-        autoDismiss: true,
+      await (await getLinkedApiClient()).delete(url);
+    } catch (error: unknown) {
+      notify.error("Error deleting brick", {
+        error,
       });
       return;
     }
 
-    addToast("Deleted brick", {
-      appearance: "success",
-      autoDismiss: true,
+    notify.success("Deleted brick", {
+      event: "BrickDelete",
     });
+
     dispatch(push("/workshop"));
-  }, [addToast, url, dispatch]);
+  }, [notify, url, dispatch]);
 
   const submit = useCallback(
     async (values, { setErrors, resetForm }) => {
@@ -92,36 +87,38 @@ function useSubmitBrick({
       const { kind, metadata } = json;
 
       try {
-        const response = await axios({
-          url: await makeURL(url),
-          method: create ? "post" : "put",
-          data: { ...values, kind },
-          headers: { Authorization: `Token ${await getExtensionToken()}` },
-        });
-
-        const { data } = response;
+        const client = await getLinkedApiClient();
+        const { data } = await client[create ? "post" : "put"]<{ id: UUID }>(
+          url,
+          {
+            ...values,
+            kind,
+          }
+        );
 
         // We attach the handler below, and don't want it to block the save
-        // noinspection ES6MissingAwait
-        const refreshPromise =
-          kind === "recipe" && reinstallBlueprint
-            ? reinstall(json as RecipeDefinition)
-            : refresh();
+        let refreshPromise: Promise<void>;
+        if (kind === "recipe" && reinstallBlueprint) {
+          refreshPromise = reinstall(json as RecipeDefinition);
+        } else if (kind === "service") {
+          // Fetch the remote definitions, then clear the background page's service cache so it's forced to read the
+          // updated service definition.
+          refreshPromise = refresh().then(async () => clearServiceCache());
+        } else {
+          refreshPromise = refresh();
+        }
 
-        addToast(`${create ? "Created" : "Updated"} ${metadata.name}`, {
-          appearance: "success",
-          autoDismiss: true,
-        });
+        notify.success(`${create ? "Created" : "Updated"} ${metadata.name}`);
 
         refreshPromise
-          .then(() => reactivate())
+          .then(async () => reactivate())
           .catch((error: unknown) => {
-            reportError(error);
-            console.warn("An error occurred when re-activating bricks", error);
-            addToast(`Error re-activating bricks: ${error}`, {
-              appearance: "warning",
-              autoDismiss: true,
-            });
+            notify.warning(
+              `Error re-activating bricks: ${getErrorMessage(error)}`,
+              {
+                error,
+              }
+            );
           });
 
         // Reset initial values of the form so dirty=false
@@ -130,30 +127,24 @@ function useSubmitBrick({
         if (create) {
           history.push(`/workshop/bricks/${data.id}/`);
         }
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-      } catch (error) {
+      } catch (error: unknown) {
         console.debug("Got validation error", error);
-        if (isPlainObject(error.response?.data)) {
+
+        if (isAxiosError(error)) {
           for (const message of castArray(error.response.data.__all__ ?? [])) {
-            addToast(`Error: ${message} `, {
-              appearance: "error",
-              autoDismiss: true,
-            });
+            notify.error(message);
           }
 
           setErrors(error.response.data);
         } else {
-          addToast(error.toString(), {
-            appearance: "error",
-            autoDismiss: true,
-          });
+          notify.error(error);
         }
       }
     },
-    [history, refresh, reinstall, url, create, addToast]
+    [history, refresh, reinstall, url, create, notify]
   );
 
-  return { submit, validate, remove: !create ? remove : null };
+  return { submit, validate, remove: create ? null : remove };
 }
 
 export default useSubmitBrick;

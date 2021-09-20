@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { actions, FormState } from "@/devTools/editor/editorSlice";
+import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useToasts } from "react-toast-notifications";
@@ -26,6 +26,7 @@ import * as nativeOperations from "@/background/devtools";
 import { optionsSlice } from "@/options/slices";
 import { reportError } from "@/telemetry/logging";
 import { getErrorMessage } from "@/errors";
+import { uninstallContextMenu } from "@/background/messenger/api";
 
 /**
  * Remove the current element from the page and installed extensions
@@ -51,7 +52,7 @@ function useRemove(element: FormState): () => void {
       return;
     }
 
-    const target = {
+    const ref = {
       extensionPointId: values.extensionPoint.metadata.id,
       extensionId: values.uuid,
     };
@@ -59,12 +60,12 @@ function useRemove(element: FormState): () => void {
     try {
       // Remove from storage first so it doesn't get re-added by any subsequent steps
       if (values.installed) {
-        dispatch(optionsSlice.actions.removeExtension(target));
+        dispatch(optionsSlice.actions.removeExtension(ref));
       }
 
       void Promise.allSettled([
-        nativeOperations.uninstallContextMenu(port, target),
-        nativeOperations.uninstallActionPanelPanel(port, target),
+        uninstallContextMenu(ref),
+        nativeOperations.uninstallActionPanelPanel(port, ref),
       ]);
 
       // Remove from page editor

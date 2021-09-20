@@ -17,14 +17,17 @@
 
 import React, { useCallback } from "react";
 import { connect } from "react-redux";
-import { OptionsState } from "../slices";
+import { compact } from "lodash";
 import GenericMarketplacePage from "@/pages/marketplace/MarketplacePage";
 import { push } from "connected-react-router";
 import { RecipeDefinition } from "@/types/definitions";
+import { selectExtensions } from "@/options/selectors";
+import { RegistryId } from "@/core";
+import { OptionsState } from "@/store/extensions";
 import { useTitle } from "@/hooks/title";
 
-export interface MarketplaceProps {
-  installedRecipes: Set<string>;
+interface MarketplaceProps {
+  installedRecipes: Set<RegistryId>;
   navigate: (url: string) => void;
 }
 
@@ -32,7 +35,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installedRecipes,
   navigate,
 }) => {
-  useTitle("Marketplace");
+  useTitle("My Blueprints");
 
   const install = useCallback(
     async (x: RecipeDefinition) => {
@@ -50,13 +53,9 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
 };
 
 export default connect(
-  ({ options }: { options: OptionsState }) => ({
+  (state: { options: OptionsState }) => ({
     installedRecipes: new Set(
-      Object.values(options.extensions).flatMap((extensionPoint) =>
-        Object.values(extensionPoint)
-          .map((x) => x._recipeId)
-          .filter((x) => x)
-      )
+      compact(selectExtensions(state).map((x) => x._recipe?.id))
     ),
   }),
   { navigate: push }

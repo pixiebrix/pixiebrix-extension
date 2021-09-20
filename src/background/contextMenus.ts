@@ -16,33 +16,37 @@
  */
 
 import pTimeout from "p-timeout";
-import { liftBackground } from "@/background/protocol";
 import { browser, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
-import { handleMenuAction } from "@/contentScript/contextMenus";
+import { noop } from "lodash";
+import { handleMenuAction } from "@/contentScript/messenger/api";
 import { showNotification } from "@/contentScript/notify";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage, hasCancelRootCause } from "@/errors";
+import { UUID } from "@/core";
 
-type ExtensionId = string;
+type ExtensionId = UUID;
+// This is the type the browser API has for menu ids. In practice they should be strings because that's what we're
+// creating via `makeMenuId`
 type MenuItemId = number | string;
 
 const extensionMenuItems = new Map<ExtensionId, MenuItemId>();
+const pendingRegistration = new Set<ExtensionId>();
 
 const MENU_PREFIX = "pixiebrix-";
 const CONTEXT_SCRIPT_INSTALL_MS = 1000;
 const CONTEXT_MENU_INSTALL_MS = 1000;
 
-interface SelectionMenuOptions {
-  extensionId: string;
+export type SelectionMenuOptions = {
+  extensionId: UUID;
   title: string;
   contexts: Menus.ContextType[];
   documentUrlPatterns: string[];
-}
+};
 
-function makeMenuId(extensionId: string): string {
+function makeMenuId(extensionId: UUID): string {
   return `${MENU_PREFIX}${extensionId}`;
 }
 
@@ -112,99 +116,118 @@ function menuListener(info: Menus.OnClickData, tab: Tabs.Tab) {
  * Uninstall contextMenu for `extensionId`. Returns true if the contextMenu was removed, or false if the contextMenu was
  * not found.
  */
-export async function uninstall(extensionId: string): Promise<boolean> {
+export async function uninstallContextMenu({
+  extensionId,
+}: {
+  extensionId: UUID;
+}): Promise<boolean> {
   try {
-    extensionMenuItems.delete(extensionId);
-    await browser.contextMenus.remove(makeMenuId(extensionId));
+    const menuItemId = extensionMenuItems.get(extensionId);
+
+    if (menuItemId) {
+      extensionMenuItems.delete(extensionId);
+      await browser.contextMenus.remove(menuItemId);
+    } else {
+      // Our bookkeeping in `extensionMenuItems` might be off. Try removing the expected menuId just in case.
+      await browser.contextMenus.remove(makeMenuId(extensionId));
+    }
+
     console.debug(`Uninstalled context menu ${extensionId}`);
     return true;
   } catch (error: unknown) {
     // Will throw if extensionId doesn't refer to a context menu. The callers don't have an easy way to check the type
     // without having to resolve the extensionPointId. So instead we'll just expect some of the calls to fail.
-    console.debug(`Could not uninstall context menu %s`, extensionId, {
+    console.debug("Could not uninstall context menu %s", extensionId, {
       error,
     });
     return false;
   }
 }
 
-export const uninstallContextMenu = liftBackground(
-  "UNINSTALL_CONTEXT_MENU",
-  async ({ extensionId }: { extensionId: string }) => uninstall(extensionId)
-);
-
-export const ensureContextMenu = liftBackground(
-  "ENSURE_CONTEXT_MENU",
-  async ({
-    extensionId,
-    contexts,
-    title,
-    documentUrlPatterns,
-  }: SelectionMenuOptions) => {
-    if (!extensionId) {
-      throw new Error("extensionId is required");
-    }
-
-    const createProperties: Menus.CreateCreatePropertiesType = {
-      type: "normal",
-      title,
-      contexts,
-      documentUrlPatterns,
-    };
-
-    try {
-      // https://developer.chrome.com/extensions/contextMenus#method-create
-      if (extensionMenuItems.has(extensionId)) {
-        const menuId = extensionMenuItems.get(extensionId);
-
-        try {
-          await browser.contextMenus.update(menuId, createProperties);
-          console.debug(`Updated context menu: ${extensionId}`, {
-            menuId,
-            title,
-            contexts,
-            documentUrlPatterns,
-            extensionId,
-          });
-        } catch (error: unknown) {
-          console.debug("Cannot update context menu", { error });
-          const menuId = browser.contextMenus.create({
-            ...createProperties,
-            id: makeMenuId(extensionId),
-          });
-          extensionMenuItems.set(extensionId, menuId);
-          console.debug(
-            `Created new context menu (update failed): ${extensionId}`,
-            {
-              menuId,
-              title,
-              contexts,
-              documentUrlPatterns,
-              extensionId,
-            }
-          );
-        }
-      } else {
-        const menuId = browser.contextMenus.create({
-          ...createProperties,
-          id: makeMenuId(extensionId),
-        });
-        extensionMenuItems.set(extensionId, menuId);
-
-        console.debug(`Created new context menu: ${extensionId}`, {
-          menuId,
-          title,
-          contexts,
-          documentUrlPatterns,
-          extensionId,
-        });
-      }
-    } catch (error: unknown) {
-      console.error(`Error registering context menu item`, error);
-      throw error;
-    }
+export async function ensureContextMenu({
+  extensionId,
+  contexts,
+  title,
+  documentUrlPatterns,
+}: SelectionMenuOptions) {
+  if (!extensionId) {
+    throw new Error("extensionId is required");
   }
-);
+
+  // Handle the thundering herd of re-registrations when a contentScript.reactivate is broadcast
+  if (pendingRegistration.has(extensionId)) {
+    console.debug("contextMenu registration pending for %s", extensionId);
+
+    // Is it OK to return immediately? Or do we need to track the common promise that all callers should see?
+    return;
+  }
+
+  pendingRegistration.add(extensionId);
+
+  const updateProperties: Menus.UpdateUpdatePropertiesType = {
+    type: "normal",
+    title,
+    contexts,
+    documentUrlPatterns,
+  };
+
+  const expectedMenuId = makeMenuId(extensionId);
+
+  try {
+    let menuId = extensionMenuItems.get(extensionId);
+
+    if (menuId) {
+      try {
+        await browser.contextMenus.update(menuId, updateProperties);
+        return;
+      } catch (error: unknown) {
+        console.debug("Cannot update context menu", { error });
+      }
+    } else {
+      // Just to be safe if our `extensionMenuItems` bookkeeping is off, remove any stale menu item
+      await browser.contextMenus.remove(expectedMenuId).catch(noop);
+    }
+
+    // The update failed, or this is a new context menu
+    extensionMenuItems.delete(extensionId);
+
+    // The types of browser.contextMenus.create are wacky. I verified on Chrome that the method does take a callback
+    // even when using the browser polyfill
+    let createdMenuId: string | number;
+    menuId = await new Promise((resolve, reject) => {
+      // `browser.contextMenus.create` returns immediately with the assigned menu id
+      createdMenuId = browser.contextMenus.create(
+        {
+          ...updateProperties,
+          id: makeMenuId(extensionId),
+        },
+        () => {
+          if (browser.runtime.lastError) {
+            reject(new Error(browser.runtime.lastError.message));
+          }
+
+          resolve(createdMenuId);
+        }
+      );
+    });
+
+    extensionMenuItems.set(extensionId, menuId);
+  } catch (error: unknown) {
+    if (
+      getErrorMessage(error).includes("Cannot create item with duplicate id")
+    ) {
+      // Likely caused by a concurrent update. In practice, our `pendingRegistration` set and `extensionMenuItems`
+      // should prevent this from happening
+      console.debug("Error registering context menu item", { error });
+      return;
+    }
+
+    console.error("Error registering context menu item", { error });
+    throw error;
+  } finally {
+    pendingRegistration.delete(extensionId);
+  }
+}
 
 if (isBackgroundPage()) {
   browser.contextMenus.onClicked.addListener(menuListener);

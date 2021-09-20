@@ -15,17 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { checkAvailable } from "@/blocks/available";
-import { castArray, once, debounce } from "lodash";
+import { castArray, once, debounce, cloneDeep } from "lodash";
 import {
   reducePipeline,
   mergeReaders,
   blockList,
-  BlockConfig,
-  BlockPipeline,
   makeServiceContext,
 } from "@/blocks/combinators";
 import { reportError } from "@/telemetry/logging";
@@ -51,7 +49,11 @@ import {
 import { propertiesToSchema } from "@/validators/generic";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
-import { hasCancelRootCause } from "@/errors";
+import {
+  hasCancelRootCause,
+  MultipleElementsFoundError,
+  NoElementsFoundError,
+} from "@/errors";
 import {
   DEFAULT_ACTION_RESULTS,
   mergeConfig,
@@ -62,9 +64,10 @@ import {
 import { getNavigationId } from "@/contentScript/context";
 import { rejectOnCancelled, PromiseCancelled } from "@/utils";
 import { PanelDefinition } from "@/extensionPoints/panelExtension";
-import iconAsSVG from "@/icons/svgIcons";
+import getSvgIcon from "@/icons/getSvgIcon";
 import { engineRenderer } from "@/utils/renderers";
 import { selectEventData } from "@/telemetry/deployments";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 interface ShadowDOM {
   mode?: "open" | "closed";
@@ -75,18 +78,44 @@ export const DATA_ATTR = "data-pb-uuid";
 
 const MENU_INSTALL_ERROR_DEBOUNCE_MS = 1000;
 
-export interface MenuItemExtensionConfig {
+export type MenuItemExtensionConfig = {
+  /**
+   * The button caption to supply to the `caption` in the extension point template.
+   * If `dynamicCaption` is true, can include template expressions.
+   */
   caption: string;
-  if?: BlockConfig | BlockPipeline;
-  dependencies?: string[];
-  action: BlockConfig | BlockPipeline;
+
+  /**
+   * (Optional) the icon to supply to the icon in the extension point template
+   */
   icon?: IconConfig;
+
+  /**
+   * The action to perform when the button is clicked
+   */
+  action: BlockConfig | BlockPipeline;
+
+  /**
+   * (Experimental) condition to determine whether or not to show the menu item
+   * @see if
+   */
+  if?: BlockConfig | BlockPipeline;
+
+  /**
+   * (Experimental) re-install the menu if an off the selectors change.
+   * @see if
+   */
+  dependencies?: string[];
+
+  /**
+   * True if caption is determined dynamically (using the reader and templating)
+   */
   dynamicCaption?: boolean;
 
   onError?: MessageConfig;
   onCancel?: MessageConfig;
   onSuccess?: MessageConfig;
-}
+};
 
 export const actionSchema: Schema = {
   oneOf: [
@@ -337,11 +366,11 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
    */
   private async installMenus(): Promise<boolean> {
     if (this.uninstalled) {
-      console.error(`Menu item extension point is uninstalled`, {
+      console.error("Menu item extension point is uninstalled", {
         extensionId: this.instanceId,
       });
       throw new Error(
-        `Cannot install menu item because extension point was uninstalled`
+        "Cannot install menu item because extension point was uninstalled"
       );
     }
 
@@ -465,12 +494,12 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       const extensionContext = { ...ctxt, ...serviceContext };
       html = Mustache.render(this.getTemplate(), {
         caption: renderTemplate(caption, extensionContext),
-        icon: await iconAsSVG?.(icon),
+        icon: icon ? await getSvgIcon(icon) : null,
       });
     } else {
       html = Mustache.render(this.getTemplate(), {
         caption,
-        icon: await iconAsSVG?.(icon),
+        icon: icon ? await getSvgIcon(icon) : null,
       });
     }
 
@@ -480,7 +509,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
       e.preventDefault();
       e.stopPropagation();
 
-      console.debug(`Run menu item`, this.logger.context);
+      console.debug("Run menu item", this.logger.context);
 
       reportEvent("MenuItemClick", selectEventData(extension));
 
@@ -565,13 +594,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
         // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
         const $dependency = $(document).find(dependency);
         if ($dependency.length > 0) {
-          $dependency.each((index, element) => {
+          for (const element of $dependency) {
             elementCount++;
             observer.observe(element, {
               childList: true,
               subtree: true,
             });
-          });
+          }
         } else {
           const [elementPromise, cancel] = awaitElementOnce(dependency);
           cancellers.push(cancel);
@@ -734,11 +763,13 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
   }
 
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
+    // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
+    const cloned = cloneDeep(config);
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
-    this._definition = config.definition;
-    this.rawConfig = config;
-    const { isAvailable } = config.definition;
+    this._definition = cloned.definition;
+    this.rawConfig = cloned;
+    const { isAvailable } = cloned.definition;
     this.permissions = {
       permissions: ["tabs", "webNavigation"],
       origins: castArray(isAvailable.matchPatterns),
@@ -792,11 +823,15 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
       const $elt = $containerElement.parents(selector);
       if ($elt.length > 1) {
-        throw new Error(
-          `Found multiple elements for reader selector: ${selector}`
+        throw new MultipleElementsFoundError(
+          selector,
+          "Multiple elements found for reader selector"
         );
       } else if ($elt.length === 0) {
-        throw new Error(`Found no elements for  reader selector: ${selector}`);
+        throw new NoElementsFoundError(
+          selector,
+          "No elements found for reader selector"
+        );
       }
 
       return $elt.get(0);

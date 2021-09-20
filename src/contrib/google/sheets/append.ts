@@ -16,7 +16,6 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import {
   appendRows,
   createTab,
@@ -25,6 +24,8 @@ import {
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
+import { unary } from "lodash";
+import { validateRegistryId } from "@/types/helpers";
 
 type CellValue = string | number | null;
 
@@ -77,7 +78,7 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
   const row = [];
   const matched = new Set();
 
-  const fields = headerRow.map(normalizeHeader);
+  const fields = headerRow.map(unary(normalizeHeader));
   console.debug(`Normalized headers: ${fields.join(", ")}`);
 
   for (const header of fields) {
@@ -105,7 +106,9 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
   return row;
 }
 
-export const GOOGLE_SHEETS_API_ID = "@pixiebrix/google/sheets-append";
+export const GOOGLE_SHEETS_API_ID = validateRegistryId(
+  "@pixiebrix/google/sheets-append"
+);
 
 function isAuthError(error: { code: number }): boolean {
   return [404, 401, 403].includes(error.code);
@@ -165,5 +168,3 @@ export class GoogleSheetsAppend extends Effect {
     ]);
   }
 }
-
-registerBlock(new GoogleSheetsAppend());

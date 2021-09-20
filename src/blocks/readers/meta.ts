@@ -16,59 +16,13 @@
  */
 
 import { Reader } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { getExtensionAuth } from "@/auth/token";
 import * as session from "@/contentScript/context";
 import { ReaderOutput, Schema } from "@/core";
-import { Manifest, Permissions } from "webextension-polyfill-ts";
-import chromeP from "webext-polyfill-kinda";
 
-class ChromeProfileReader extends Reader {
-  constructor() {
-    super(
-      "@pixiebrix/chrome-profile",
-      "Chrome user profile reader",
-      "Read data from the Chrome user profile"
-    );
-  }
+export class TimestampReader extends Reader {
+  defaultOutputKey = "instant";
 
-  permissions: Permissions.Permissions = {
-    permissions: ["identity.email" as Manifest.OptionalPermission],
-    origins: [],
-  };
-
-  async read(): Promise<ReaderOutput> {
-    if (!chrome.identity) {
-      throw new Error("No access to the Chrome Identity API");
-    }
-
-    const userInfo = await chromeP.identity.getProfileUserInfo();
-    return { ...userInfo };
-  }
-
-  outputSchema: Schema = {
-    $schema: "https://json-schema.org/draft/2019-09/schema#",
-    type: "object",
-    properties: {
-      id: {
-        type: "string",
-        description: "A unique identifier for the account",
-      },
-      email: {
-        type: "string",
-        format: "email",
-        description:
-          "An email address for the user account signed into the current profile.",
-      },
-    },
-  };
-
-  async isAvailable(): Promise<boolean> {
-    return !!chrome?.identity;
-  }
-}
-
-class TimestampReader extends Reader {
   constructor() {
     super(
       "@pixiebrix/timestamp",
@@ -100,7 +54,9 @@ class TimestampReader extends Reader {
   }
 }
 
-class PixieBrixSessionReader extends Reader {
+export class PixieBrixSessionReader extends Reader {
+  defaultOutputKey = "session";
+
   constructor() {
     super(
       "@pixiebrix/session",
@@ -117,6 +73,10 @@ class PixieBrixSessionReader extends Reader {
       navigationTimestamp: session.navigationTimestamp.toISOString(),
       ...(await getExtensionAuth()),
     };
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   outputSchema: Schema = {
@@ -160,7 +120,9 @@ class PixieBrixSessionReader extends Reader {
   }
 }
 
-class PixieBrixProfileReader extends Reader {
+export class PixieBrixProfileReader extends Reader {
+  defaultOutputKey = "profile";
+
   constructor() {
     super(
       "@pixiebrix/profile",
@@ -171,6 +133,10 @@ class PixieBrixProfileReader extends Reader {
 
   async read() {
     return getExtensionAuth() as Promise<ReaderOutput>;
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   outputSchema: Schema = {
@@ -195,7 +161,9 @@ class PixieBrixProfileReader extends Reader {
   }
 }
 
-class DocumentReader extends Reader {
+export class DocumentReader extends Reader {
+  defaultOutputKey = "context";
+
   constructor() {
     super(
       "@pixiebrix/document-context",
@@ -209,6 +177,10 @@ class DocumentReader extends Reader {
       url: document.location.href,
       timestamp: new Date().toISOString(),
     };
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   outputSchema: Schema = {
@@ -234,7 +206,9 @@ class DocumentReader extends Reader {
   }
 }
 
-class ManifestReader extends Reader {
+export class ManifestReader extends Reader {
+  defaultOutputKey = "manifest";
+
   constructor() {
     super(
       "@pixiebrix/chrome-extension-manifest",
@@ -244,6 +218,10 @@ class ManifestReader extends Reader {
   }
 
   async isAvailable() {
+    return true;
+  }
+
+  async isPure(): Promise<boolean> {
     return true;
   }
 
@@ -276,10 +254,3 @@ class ManifestReader extends Reader {
     return chrome.runtime.getManifest();
   }
 }
-
-registerBlock(new DocumentReader());
-registerBlock(new ManifestReader());
-registerBlock(new ChromeProfileReader());
-registerBlock(new PixieBrixProfileReader());
-registerBlock(new PixieBrixSessionReader());
-registerBlock(new TimestampReader());

@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { editorSlice, FormState } from "@/devTools/editor/editorSlice";
+import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
 import { useCallback, useState } from "react";
-import axios, { AxiosError } from "axios";
-import { makeURL } from "@/hooks/fetch";
-import { dump } from "js-yaml";
-import { getExtensionToken } from "@/auth/token";
+import { AxiosError } from "axios";
 import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
 import { uniq } from "lodash";
@@ -33,12 +30,13 @@ import { makeExtensionReaders } from "@/devTools/editor/extensionPoints/base";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { reactivate } from "@/background/navigation";
 import { reportEvent } from "@/telemetry/events";
-import { removeUndefined } from "@/utils";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { extensionPermissions } from "@/permissions";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 import { requestPermissions } from "@/utils/permissions";
 import { getErrorMessage } from "@/errors";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { objToYaml } from "@/utils/objToYaml";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -53,25 +51,16 @@ async function upsertConfig(
   kind: "reader" | "extensionPoint",
   config: unknown
 ): Promise<void> {
-  const common = {
-    data: { config: configToYaml(config), kind },
-    headers: { Authorization: `Token ${await getExtensionToken()}` },
-  };
+  const client = await getLinkedApiClient();
+
+  const data = { config: objToYaml(config as Record<string, unknown>), kind };
 
   if (packageUUID) {
-    await axios({
-      url: await makeURL(`api/bricks/${packageUUID}/`),
-      method: "put",
-      ...common,
-    });
+    await client.put(`api/bricks/${packageUUID}/`, data);
     return;
   }
 
-  await axios({
-    url: await makeURL("api/bricks/"),
-    method: "post",
-    ...common,
-  });
+  await client.post("api/bricks/", data);
 }
 
 function selectErrorMessage(error: unknown): string {
@@ -86,13 +75,6 @@ function selectErrorMessage(error: unknown): string {
   }
 
   return getErrorMessage(error);
-}
-
-/**
- * Dump to YAML, removing keys with undefined values.
- */
-export function configToYaml(content: unknown): string {
-  return dump(removeUndefined(content));
 }
 
 async function ensurePermissions(element: FormState, addToast: AddToast) {
@@ -154,7 +136,7 @@ export function useCreate(): CreateCallback {
       const onStepError = (error: unknown, step: string) => {
         const message = selectErrorMessage(error);
         reportError(error);
-        console.warn(`Error %s: %s`, step, message, { error });
+        console.warn("Error %s: %s", step, message, { error });
         setStatus(`Error ${step}: ${message}`);
         addToast(`Error ${step}: ${message}`, {
           appearance: "error",
@@ -183,12 +165,9 @@ export function useCreate(): CreateCallback {
 
         // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
         // number of bricks implemented and frequency of saves
-        const { data: editablePackages } = await axios.get<EditablePackage[]>(
-          await makeURL("api/bricks/"),
-          {
-            headers: { Authorization: `Token ${await getExtensionToken()}` },
-          }
-        );
+        const { data: editablePackages } = await (
+          await getLinkedApiClient()
+        ).get<EditablePackage[]>("api/bricks/");
 
         const isEditable = editablePackages.some(
           (x) => x.name === element.extensionPoint.metadata.id

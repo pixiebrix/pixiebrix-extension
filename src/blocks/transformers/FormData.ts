@@ -17,16 +17,21 @@
 
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class FormData extends Transformer {
+  defaultOutputKey = "form";
+
   constructor() {
     super(
       "@pixiebrix/forms/data",
       "Read data from a form",
       "Read data from all inputs on a form"
     );
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   inputSchema: Schema = propertiesToSchema({
@@ -57,5 +62,3 @@ export class FormData extends Transformer {
     return result;
   }
 }
-
-registerBlock(new FormData());

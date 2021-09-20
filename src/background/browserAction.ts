@@ -16,7 +16,6 @@
  */
 
 import { isBackgroundPage } from "webext-detect-page";
-import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import { browser } from "webextension-polyfill-ts";
@@ -24,6 +23,12 @@ import { sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
 import { HandlerMap } from "@/messaging/protocol";
 import { getErrorMessage, isPrivatePageError } from "@/errors";
+import { emitDevtools } from "@/background/devtools/internal";
+import {
+  hideActionPanel,
+  showActionPanel,
+  toggleActionPanel,
+} from "@/contentScript/messenger/api";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
@@ -43,14 +48,14 @@ const tabSeqNumber = new Map<number, number>();
 /**
  * Mapping from tabId to the nonce for the browser action iframe
  */
-const tabNonces = new Map<number, string>();
+const tabNonces = new Map<number, string | void>();
 
 /**
  * Mapping from tabId to the browser frame id for the browser action iframe
  */
 const tabFrames = new Map<number, number>();
 
-async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
+async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
   // We're either getting a new frame, or getting rid of the existing one. Forget the old frame
   // id so we're not sending messages to a dead frame
   tabFrames.delete(tab.id);
@@ -58,11 +63,17 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
 
   try {
     await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
-    const nonce = await contentScript.toggleActionPanel({
+    const nonce = await toggleActionPanel({
       tabId: tab.id,
       frameId: TOP_LEVEL_FRAME_ID,
     });
     tabNonces.set(tab.id, nonce);
+
+    // Inform editor that it now has the ActiveTab permission, if it's open
+    emitDevtools("HistoryStateUpdate", {
+      tabId: tab.id,
+      frameId: TOP_LEVEL_FRAME_ID,
+    });
   } catch (error: unknown) {
     if (isPrivatePageError(error)) {
       void showErrorInOptions(
@@ -75,6 +86,7 @@ async function handleBrowserAction(tab: chrome.tabs.Tab): Promise<void> {
     // Firefox does not catch injection errors so we don't get a specific error message
     // https://github.com/pixiebrix/pixiebrix-extension/issues/579#issuecomment-866451242
     await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
+    console.error(error);
 
     // Only report unknown-reason errors
     reportError(error);
@@ -158,11 +170,11 @@ async function forwardWhenReady(
 
   const messageWithSequenceNumber = {
     ...message,
-    meta: { ...(message.meta ?? {}), $seq: seqNum },
+    meta: { ...message.meta, $seq: seqNum },
   };
 
   console.debug(
-    `Forwarding message %s to action frame for tab: %d (seq: %d)`,
+    "Forwarding message %s to action frame for tab: %d (seq: %d)",
     message.type,
     tabId,
     seqNum
@@ -185,7 +197,7 @@ async function forwardWhenReady(
         frameId,
       });
       console.debug(
-        `Forwarded message %s to action frame for tab: %d (seq: %d)`,
+        "Forwarded message %s to action frame for tab: %d (seq: %d)",
         message.type,
         tabId,
         seqNum
@@ -234,18 +246,16 @@ handlers.set(
   FORWARD_FRAME_NOTIFICATION,
   async (request: ForwardActionFrameNotification, sender) => {
     const tabId = sender.tab.id;
-    return forwardWhenReady(
-      tabId,
-      request.meta.$seq,
-      request.payload
-    ).catch((error) => reportError(error));
+    return forwardWhenReady(tabId, request.meta.$seq, request.payload).catch(
+      reportError
+    );
   }
 );
 
 handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
   const tabId = sender.tab.id;
   tabFrames.delete(tabId);
-  const nonce = await contentScript.showActionPanel({
+  const nonce = await showActionPanel({
     tabId,
     frameId: TOP_LEVEL_FRAME_ID,
   });
@@ -257,14 +267,14 @@ handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
 handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
   const tabId = sender.tab.id;
   tabFrames.delete(tabId);
-  await contentScript.hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
+  await hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
   console.debug("Clearing action frame nonce", { sender });
   tabNonces.delete(tabId);
   tabSeqNumber.delete(tabId);
 });
 
 if (isBackgroundPage()) {
-  chrome.browserAction.onClicked.addListener(handleBrowserAction);
+  browser.browserAction.onClicked.addListener(handleBrowserAction);
   console.debug("Installed browserAction click listener");
   browser.runtime.onMessage.addListener(handlers.asListener());
 }

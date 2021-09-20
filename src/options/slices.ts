@@ -15,20 +15,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { v4 as uuidv4 } from "uuid";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  DeploymentContext,
+  IExtension,
   Metadata,
+  PersistedExtension,
   RawServiceConfiguration,
-  ServiceDependency,
+  RegistryId,
+  UserOptions,
+  UUID,
 } from "@/core";
 import { orderBy } from "lodash";
-import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { preloadMenus } from "@/background/preload";
-import { Primitive } from "type-fest";
 import { selectEventData } from "@/telemetry/deployments";
+import { uuidv4 } from "@/types/helpers";
+import { Except } from "type-fest";
+import { ExtensionOptionsState, requireLatestState } from "@/store/extensions";
+import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
+import { CloudExtension, Deployment } from "@/types/contract";
+import { saveUserExtension } from "@/services/apiClient";
+import { reportError } from "@/telemetry/logging";
+import { clearExtensionTraces } from "@/background/trace";
 
 type InstallMode = "local" | "remote";
 
@@ -58,31 +66,6 @@ const initialServicesState: ServicesState = {
   configured: {},
 };
 
-type BaseConfig = Record<string, unknown>;
-type UserOptions = Record<string, Primitive>;
-
-export interface ExtensionOptions<TConfig = BaseConfig> {
-  id: string;
-  _deployment?: DeploymentContext;
-  _recipeId?: string;
-  _recipe: Metadata | null;
-  extensionPointId: string;
-  active: boolean;
-  label: string;
-  optionsArgs?: UserOptions;
-  permissions?: Permissions.Permissions;
-  services: ServiceDependency[];
-  config: TConfig;
-}
-
-export interface OptionsState {
-  extensions: {
-    [extensionPointId: string]: {
-      [extensionId: string]: ExtensionOptions;
-    };
-  };
-}
-
 type RecentBrick = {
   id: string;
   timestamp: number;
@@ -111,12 +94,9 @@ const initialWorkshopState: WorkshopState = {
   },
 };
 
-const initialOptionsState: OptionsState = {
-  extensions: {},
+const initialOptionsState: ExtensionOptionsState = {
+  extensions: [],
 };
-
-/* The object access in servicesSlice and optionsSlice should be safe because slice reducers use immer under the hood */
-/* eslint-disable security/detect-object-injection */
 
 export const workshopSlice = createSlice({
   name: "workshop",
@@ -156,30 +136,39 @@ export const workshopSlice = createSlice({
 });
 
 export const servicesSlice = createSlice({
+  /* The object access in servicesSlice and optionsSlice should be safe because type-checker enforced UUID */
+  /* eslint-disable security/detect-object-injection */
+
   name: "services",
   initialState: initialServicesState,
   reducers: {
-    deleteServiceConfig(state, { payload: { id } }) {
+    deleteServiceConfig(
+      state,
+      { payload: { id } }: PayloadAction<{ id: UUID }>
+    ) {
       if (!state.configured[id]) {
         throw new Error(`Service configuration ${id} does not exist`);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete -- type-checked as UUID
       delete state.configured[id];
       return state;
     },
     updateServiceConfig(state, { payload: { id, serviceId, label, config } }) {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions -- branding with nominal type
       state.configured[id] = {
-        _rawServiceConfigurationBrand: undefined,
         id,
         serviceId,
         label,
         config,
-      };
+      } as RawServiceConfiguration;
     },
     resetServices(state) {
       state.configured = {};
     },
   },
+
+  /* eslint-enable security/detect-object-injection */
 });
 
 export const optionsSlice = createSlice({
@@ -187,13 +176,50 @@ export const optionsSlice = createSlice({
   initialState: initialOptionsState,
   reducers: {
     resetOptions(state) {
-      state.extensions = {};
+      state.extensions = [];
     },
-    toggleExtension(state, { payload }) {
-      const { extensionPointId, extensionId, active } = payload;
-      state.extensions[extensionPointId][extensionId].active = active;
+
+    installCloudExtension(
+      state,
+      { payload }: PayloadAction<{ extension: CloudExtension }>
+    ) {
+      const { extension } = payload;
+
+      reportEvent("ExtensionCloudActivate", selectEventData(extension));
+
+      // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
+      // or activate the deployment again
+
+      state.extensions.push({ ...extension, active: true });
+
+      void preloadMenus({ extensions: [extension] });
     },
-    installRecipe(state, { payload }) {
+
+    attachExtension(
+      state,
+      {
+        payload,
+      }: PayloadAction<{ extensionId: UUID; recipeMetadata: Metadata }>
+    ) {
+      const { extensionId, recipeMetadata } = payload;
+      const extension = state.extensions.find((x) => x.id === extensionId);
+      extension._recipe = recipeMetadata;
+    },
+
+    installRecipe(
+      state,
+      {
+        payload,
+      }: PayloadAction<{
+        recipe: RecipeDefinition;
+        services?: Record<RegistryId, UUID>;
+        extensionPoints: ExtensionPointConfig[];
+        optionsArgs?: UserOptions;
+        deployment?: Pick<Deployment, "id" | "updated_at">;
+      }>
+    ) {
+      requireLatestState(state);
+
       const {
         recipe,
         services: auths,
@@ -204,19 +230,18 @@ export const optionsSlice = createSlice({
       for (const {
         id: extensionPointId,
         label,
-        services,
+        services = {},
         config,
       } of extensionPoints) {
         const extensionId = uuidv4();
+
+        const timestamp = new Date().toISOString();
+
         if (extensionPointId == null) {
           throw new Error("extensionPointId is required");
         }
 
-        if (state.extensions[extensionPointId] == null) {
-          state.extensions[extensionPointId] = {};
-        }
-
-        const extensionConfig: ExtensionOptions = {
+        const extension: PersistedExtension = {
           id: extensionId,
           _deployment: deployment
             ? {
@@ -224,30 +249,52 @@ export const optionsSlice = createSlice({
                 timestamp: deployment.updated_at,
               }
             : undefined,
-          _recipeId: recipe.metadata.id,
           _recipe: recipe.metadata,
+          // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
+          // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
+          definitions: recipe.definitions ?? {},
           optionsArgs,
-          services: Object.entries(services ?? {}).map(
-            ([outputKey, id]: [string, string]) => ({
+          services: Object.entries(services).map(
+            ([outputKey, id]: [string, RegistryId]) => ({
               outputKey,
-              config: auths[id],
+              config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
               id,
             })
           ),
           label,
           extensionPointId,
-          active: true,
           config,
+          active: true,
+          createTimestamp: timestamp,
+          updateTimestamp: timestamp,
         };
 
-        reportEvent("ExtensionActivate", selectEventData(extensionConfig));
+        reportEvent("ExtensionActivate", selectEventData(extension));
 
-        state.extensions[extensionPointId][extensionId] = extensionConfig;
+        // NOTE: do not save the extensions in the cloud (because the user can just install from the marketplace /
+        // or activate the deployment again
 
-        void preloadMenus({ extensions: [extensionConfig] });
+        state.extensions.push(extension);
+
+        void preloadMenus({ extensions: [extension] });
       }
     },
-    saveExtension(state, { payload }) {
+    // XXX: why do we expose a `extensionId` in addition IExtension's `id` prop here?
+    saveExtension(
+      state,
+      {
+        payload,
+      }: PayloadAction<
+        Except<IExtension | PersistedExtension, "_recipe"> & {
+          extensionId?: UUID;
+          createTimestamp?: string;
+        }
+      >
+    ) {
+      requireLatestState(state);
+
+      const timestamp = new Date().toISOString();
+
       const {
         id,
         extensionId,
@@ -256,42 +303,58 @@ export const optionsSlice = createSlice({
         label,
         optionsArgs,
         services,
+        _deployment,
+        createTimestamp = timestamp,
       } = payload;
+
+      const persistedId = extensionId ?? id;
+
       // Support both extensionId and id to keep the API consistent with the shape of the stored extension
-      if (extensionId == null && id == null) {
-        throw new Error("extensionId is required");
+      if (persistedId == null) {
+        throw new Error("id or extensionId is required");
       } else if (extensionPointId == null) {
         throw new Error("extensionPointId is required");
       }
 
-      if (state.extensions[extensionPointId] == null) {
-        state.extensions[extensionPointId] = {};
-      }
-
-      state.extensions[extensionPointId][extensionId ?? id] = {
-        id: extensionId ?? id,
+      const extension: PersistedExtension = {
+        id: persistedId,
         extensionPointId,
+        // If the user updates an extension, detach it from the recipe -- it's now a personal extension
         _recipe: null,
         label,
         optionsArgs,
         services,
-        active: true,
         config,
+        createTimestamp,
+        updateTimestamp: timestamp,
+        active: true,
       };
-    },
-    removeExtension(state, { payload }) {
-      const { extensionPointId, extensionId } = payload;
-      const extensions = state.extensions[extensionPointId] ?? {};
-      if (extensions[extensionId]) {
-        delete extensions[extensionId];
-      } else {
-        // It's already removed
-        console.debug(
-          `Extension id ${extensionId} does not exist for extension point ${extensionPointId}`
-        );
+
+      if (!_deployment) {
+        // In the future, we'll want to make the Redux action async. For now, just fail silently in the interface
+        void saveUserExtension(extension).catch(reportError);
       }
+
+      const index = state.extensions.findIndex((x) => x.id === persistedId);
+
+      if (index >= 0) {
+        // eslint-disable-next-line security/detect-object-injection -- array index from findIndex
+        state.extensions[index] = extension;
+      } else {
+        state.extensions.push(extension);
+      }
+    },
+    removeExtension(
+      state,
+      { payload: { extensionId } }: PayloadAction<{ extensionId: UUID }>
+    ) {
+      requireLatestState(state);
+
+      // Make sure we're not keeping any private data around from Page Editor sessions
+      void clearExtensionTraces(extensionId);
+
+      // NOTE: we aren't deleting the extension on the server. The must do that separately from the dashboard
+      state.extensions = state.extensions.filter((x) => x.id !== extensionId);
     },
   },
 });
-
-/* eslint-enable security/detect-object-injection */

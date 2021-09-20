@@ -16,10 +16,9 @@
  */
 
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { activateTab, closeTab } from "@/background/executor";
+import { activateTab, closeTab } from "@/background/messenger/api";
 
 export class ActivateTabEffect extends Effect {
   constructor() {
@@ -48,6 +47,3 @@ export class CloseTabEffect extends Effect {
     await closeTab();
   }
 }
-
-registerBlock(new ActivateTabEffect());
-registerBlock(new CloseTabEffect());

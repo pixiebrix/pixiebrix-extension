@@ -19,24 +19,31 @@ import optionsRegistry from "@/components/fields/optionsRegistry";
 import React, { useCallback, useMemo } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import AsyncButton from "@/components/AsyncButton";
-import { IService, RawServiceConfiguration } from "@/core";
+import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { Formik, FormikHelpers } from "formik";
 import { dereference } from "@/validators/generic";
 import { cloneDeep, truncate } from "lodash";
 import { useAsyncState } from "@/hooks/common";
-import genericOptionsFactory from "@/components/fields/blockOptions";
+import genericOptionsFactory from "@/components/fields/schemaFields/genericOptionsFactory";
 import { buildYup } from "schema-to-yup";
 import * as Yup from "yup";
 import { reportError } from "@/telemetry/logging";
 import { useTitle } from "@/hooks/title";
+import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 interface OwnProps {
   configuration: RawServiceConfiguration;
   service: IService;
   onClose: () => void;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: UUID) => void;
   onSave: (config: RawServiceConfiguration) => Promise<void>;
 }
+
+const formTheme: ThemeProps = {
+  layout: "vertical",
+};
 
 const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   configuration: originalConfiguration,
@@ -67,7 +74,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
   }, [service]);
 
   const schemaPromise = useMemo(
-    () =>
+    async () =>
       dereference({
         type: "object",
         properties: {
@@ -106,7 +113,7 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
 
   return (
     <Modal
-      style={{ zIndex: "999" }}
+      style={{ zIndex: 999 }}
       show
       onHide={onClose}
       backdrop="static"
@@ -121,35 +128,25 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
         initialValues={originalConfiguration}
         validationSchema={validationSchema}
       >
-        {({
-          handleSubmit,
-          handleChange,
-          values,
-          touched,
-          isValid,
-          isSubmitting,
-          errors,
-        }) => (
+        {({ handleSubmit, isValid, isSubmitting }) => (
           <Form noValidate onSubmit={handleSubmit}>
             <Modal.Body>
-              <Form.Group>
-                <Form.Group controlId="label">
-                  <Form.Label>Label</Form.Label>
-                  <Form.Control
-                    defaultValue={values.label}
-                    onChange={handleChange}
-                    isValid={touched.label && !errors.label}
-                  />
-                  <Form.Text className="text-muted">
-                    A label to help identify this integration
-                  </Form.Text>
-                </Form.Group>
-              </Form.Group>
-              <Form.Group>
-                <Form.Label>Service</Form.Label>
-                <Form.Control plaintext readOnly defaultValue={service.id} />
-              </Form.Group>
-              <Editor name="config" />
+              <FormTheme.Provider value={formTheme}>
+                <ConnectedFieldTemplate
+                  name="label"
+                  label="Label"
+                  description="A label to help identify this integration"
+                />
+                <FieldTemplate
+                  label="Integration"
+                  name="service"
+                  type="text"
+                  plaintext
+                  readOnly
+                  value={service.id}
+                />
+                <Editor name="config" />
+              </FormTheme.Provider>
             </Modal.Body>
             <Modal.Footer>
               <div className="d-flex w-100">
@@ -157,14 +154,15 @@ const ServiceEditorModal: React.FunctionComponent<OwnProps> = ({
                   {onDelete && (
                     <AsyncButton
                       variant="outline-danger"
-                      onClick={() => onDelete(originalConfiguration.id)}
+                      onClick={() => {
+                        onDelete(originalConfiguration.id);
+                      }}
                     >
                       Delete
                     </AsyncButton>
                   )}
                 </div>
                 <div>
-                  {/* @ts-ignore: ts doesn't like the default variant */}
                   <Button variant="default" onClick={onClose}>
                     Cancel
                   </Button>

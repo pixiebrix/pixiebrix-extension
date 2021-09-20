@@ -15,13 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { readStorage, setStorage } from "@/chrome";
-import equal from "fast-deep-equal";
 import { browser } from "webextension-polyfill-ts";
 import Cookies from "js-cookie";
 import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
+import { isEqual } from "lodash";
+import {
+  ManualStorageKey,
+  readStorageWithMigration,
+  setStorage,
+} from "@/chrome";
 
-const STORAGE_EXTENSION_KEY = "extensionKey";
+const STORAGE_EXTENSION_KEY = "extensionKey" as ManualStorageKey;
 
 interface UserData {
   email?: string;
@@ -35,38 +39,30 @@ export interface AuthData extends UserData {
   token: string;
 }
 
-export function readAuthFromWebsite(): AuthData {
-  const container = document.querySelector<HTMLElement>("#container");
-  const {
-    token,
-    email,
-    user,
-    organization,
-    telemetryOrganization,
-  } = container.dataset;
-  return {
-    token,
-    email,
-    user,
-    organizationId: organization,
-    telemetryOrganizationId: telemetryOrganization,
-    hostname: location.hostname,
-  };
+async function readAuthData(): Promise<AuthData | Partial<AuthData>> {
+  return readStorageWithMigration(STORAGE_EXTENSION_KEY, {});
 }
 
-export async function getExtensionToken(): Promise<string | null> {
-  const valueJSON = await readStorage(STORAGE_EXTENSION_KEY);
-  return valueJSON ? JSON.parse(valueJSON as string).token : undefined;
+export async function getExtensionToken(): Promise<string | undefined> {
+  const { token } = await readAuthData();
+  return token;
+}
+
+/**
+ * Return `true` if the extension is linked to the API.
+ *
+ * NOTE: do not use this as a check before making an authenticated API call. Instead use `maybeGetLinkedApiClient` which
+ * avoids a race condition between the time the check is made and underlying `getExtensionToken` call to get the token.
+ *
+ * @see maybeGetLinkedApiClient
+ */
+export async function isLinked(): Promise<boolean> {
+  return (await getExtensionToken()) != null;
 }
 
 export async function getExtensionAuth(): Promise<UserData> {
-  const valueJSON = await readStorage(STORAGE_EXTENSION_KEY);
-  if (valueJSON) {
-    const { user, email, hostname } = JSON.parse(valueJSON as string);
-    return { user, email, hostname };
-  }
-
-  return {};
+  const { user, email, hostname } = await readAuthData();
+  return { user, email, hostname };
 }
 
 export async function clearExtensionAuth(): Promise<void> {
@@ -76,27 +72,31 @@ export async function clearExtensionAuth(): Promise<void> {
 }
 
 /**
- * Refresh the Chrome extensions auth (user, email, token, hostname), and return true iff it was updated.
+ * Refresh the Chrome extensions auth (user, email, token, API hostname), and return true if it was updated.
  */
-export async function updateExtensionAuth(auth: AuthData): Promise<boolean> {
-  if (auth) {
-    let previous;
-    try {
-      const valueJSON = await readStorage(STORAGE_EXTENSION_KEY);
-      previous = JSON.parse(valueJSON as string);
-    } catch {
-      // Pass
-    }
-
-    console.debug(`Setting extension auth for ${auth.email}`, auth);
-    await updateRollbarAuth({
-      userId: auth.user,
-      email: auth.email,
-      organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
-    });
-    await setStorage(STORAGE_EXTENSION_KEY, JSON.stringify(auth));
-    return !equal(auth, previous);
+export async function updateExtensionAuth(
+  auth: AuthData & { browserId: string }
+): Promise<boolean> {
+  if (!auth) {
+    return false;
   }
 
-  return false;
+  void updateRollbarAuth({
+    userId: auth.user,
+    email: auth.email,
+    organizationId: auth.telemetryOrganizationId ?? auth.organizationId,
+    browserId: auth.browserId,
+  });
+
+  // Note: `auth` is a `Object.create(null)` object, which for some `isEqual` implementations
+  // isn't deeply equal to `{}`.  _.isEqual is fine, `fast-deep-equal` isn't
+  // https://github.com/pixiebrix/pixiebrix-extension/pull/1016
+  if (isEqual(auth, await readAuthData())) {
+    // The auth hasn't changed
+    return false;
+  }
+
+  console.debug(`Setting extension auth for ${auth.email}`, auth);
+  await setStorage(STORAGE_EXTENSION_KEY, auth);
+  return true;
 }

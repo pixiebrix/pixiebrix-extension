@@ -16,12 +16,13 @@
  */
 
 import { castArray } from "lodash";
-import { MessageContext, Schema } from "@/core";
+import { MessageContext, RegistryId, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 import { OutputUnit } from "@cfworker/json-schema";
-import { BlockConfig, BlockPipeline } from "@/blocks/combinators";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { JsonObject } from "type-fest";
 
-export class PipelineConfigurationError extends Error {
+export class PipelineConfigurationError extends BusinessError {
   readonly config: BlockPipeline;
 
   constructor(message: string, config: BlockConfig | BlockPipeline) {
@@ -38,7 +39,7 @@ export class PipelineConfigurationError extends Error {
  * different browser context (e.g., the PixieBrix sidebar)
  */
 export class HeadlessModeError extends Error {
-  public readonly blockId: string;
+  public readonly blockId: RegistryId;
 
   public readonly args: unknown;
 
@@ -47,7 +48,7 @@ export class HeadlessModeError extends Error {
   public readonly loggerContext: MessageContext;
 
   constructor(
-    blockId: string,
+    blockId: RegistryId,
     args: unknown,
     ctxt: unknown,
     loggerContext: MessageContext
@@ -109,5 +110,15 @@ export class OutputValidationError extends BusinessError {
     this.schema = schema;
     this.instance = instance;
     this.errors = errors;
+  }
+}
+
+export class RemoteExecutionError extends BusinessError {
+  readonly error: JsonObject;
+
+  constructor(message: string, error: JsonObject) {
+    super(message);
+    this.name = "RemoteExecutionError";
+    this.error = error;
   }
 }

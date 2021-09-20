@@ -17,11 +17,21 @@
 
 // https://stackoverflow.com/questions/43638454/webpack-typescript-image-import
 declare module "*.svg" {
-  const value: any;
-  export default value;
+  const CONTENT: string;
+  export default CONTENT;
+}
+
+declare module "*?loadAsUrl" {
+  const CONTENT: string;
+  export default CONTENT;
 }
 
 declare module "*.txt" {
-  const value: string;
-  export default value;
+  const CONTENT: string;
+  export default CONTENT;
+}
+
+declare module "*.yaml" {
+  const CONTENT: Record<string, unknown>;
+  export default CONTENT;
 }

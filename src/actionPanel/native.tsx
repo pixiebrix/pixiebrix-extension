@@ -17,7 +17,7 @@
 
 import { browser } from "webextension-polyfill-ts";
 import { reportError } from "@/telemetry/logging";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import {
   ActionPanelStore,
   PanelEntry,
@@ -26,20 +26,16 @@ import {
   RendererPayload,
 } from "@/actionPanel/protocol";
 import { FORWARD_FRAME_NOTIFICATION } from "@/background/browserAction";
-import { isBrowser } from "@/helpers";
+import { IS_BROWSER } from "@/helpers";
 import { reportEvent } from "@/telemetry/events";
-import { expectContentScript } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
+import { ExtensionRef } from "@/core";
 
 const SIDEBAR_WIDTH_PX = 400;
-const PANEL_CONTAINER_ID = "pixiebrix-chrome-extension";
+const PANEL_CONTAINER_ID = "pixiebrix-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
 
 let renderSequenceNumber = 0;
-
-type ExtensionRef = {
-  extensionId: string;
-  extensionPointId: string;
-};
 
 export type ShowCallback = () => void;
 
@@ -97,7 +93,7 @@ function insertActionPanel(): string {
   const actionURL = browser.runtime.getURL("action.html");
 
   const $panelContainer = $(
-    `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
+    `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border-left: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
   );
 
   // CSS approach not well supported? https://stackoverflow.com/questions/15494568/html-iframe-disable-scroll
@@ -145,17 +141,16 @@ export function hideActionPanel(): void {
   $(PANEL_CONTAINER_SELECTOR).remove();
 }
 
-export function toggleActionPanel(): string | null {
-  if (isActionPanelVisible()) {
-    hideActionPanel();
-    return null;
+export function toggleActionPanel(): string | void {
+  if (!isActionPanelVisible()) {
+    return showActionPanel();
   }
 
-  return showActionPanel();
+  hideActionPanel();
 }
 
 export function isActionPanelVisible(): boolean {
-  return document.querySelector(PANEL_CONTAINER_SELECTOR) != null;
+  return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
 export function getStore(): ActionPanelStore {
@@ -163,7 +158,7 @@ export function getStore(): ActionPanelStore {
 }
 
 function renderPanels() {
-  expectContentScript();
+  expectContext("contentScript");
 
   if (isActionPanelVisible()) {
     const seqNum = renderSequenceNumber;
@@ -185,7 +180,7 @@ function renderPanels() {
 }
 
 export function removeExtension(extensionId: string): void {
-  expectContentScript();
+  expectContext("contentScript");
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
@@ -194,7 +189,7 @@ export function removeExtension(extensionId: string): void {
 }
 
 export function removeExtensionPoint(extensionPointId: string): void {
-  expectContentScript();
+  expectContext("contentScript");
 
   // `panels` is const, so replace the contents
   const current = panels.splice(0, panels.length);
@@ -249,7 +244,7 @@ export function updateHeading(extensionId: string, heading: string): void {
     renderPanels();
   } else {
     console.warn(
-      `updateHeading: No panel exists for extension %s`,
+      "updateHeading: No panel exists for extension %s",
       extensionId
     );
   }
@@ -288,6 +283,6 @@ export function upsertPanel(
   renderPanels();
 }
 
-if (isBrowser) {
+if (IS_BROWSER) {
   storeOriginalCSS();
 }

@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -15,24 +16,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ExtensionOptions, loadOptions, saveOptions } from "@/options/loader";
+import { loadOptions, saveOptions } from "@/options/loader";
 import { Deployment } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
-import { fromPairs, partition, uniqBy } from "lodash";
+import { partition, uniqBy } from "lodash";
 import { reportError } from "@/telemetry/logging";
-import axios from "axios";
-import { getBaseURL } from "@/services/baseService";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
-import { getExtensionToken } from "@/auth/token";
-import { optionsSlice, OptionsState } from "@/options/slices";
+import { isLinked } from "@/auth/token";
+import { optionsSlice } from "@/options/slices";
 import { reportEvent } from "@/telemetry/events";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { liftBackground } from "@/background/protocol";
-import * as contentScript from "@/contentScript/lifecycle";
-import { selectInstalledExtensions } from "@/options/selectors";
-import { uninstallContextMenu } from "@/background/contextMenus";
-import { containsPermissions } from "@/utils/permissions";
+import { selectExtensions } from "@/options/selectors";
+import {
+  uninstallContextMenu,
+  containsPermissions,
+} from "@/background/messenger/api";
 import { deploymentPermissions } from "@/permissions";
+import { IExtension, UUID, RegistryId } from "@/core";
+import { ExtensionOptionsState } from "@/store/extensions";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { queueReactivateTab } from "@/contentScript/messenger/api";
+import { notifyTabs } from "./util";
 
 const { reducer, actions } = optionsSlice;
 
@@ -45,7 +50,7 @@ type ActiveDeployment = {
 };
 
 export function activeDeployments(
-  extensions: Array<Pick<ExtensionOptions, "_deployment" | "_recipe">>
+  extensions: Array<Pick<IExtension, "_deployment" | "_recipe">>
 ): ActiveDeployment[] {
   return uniqBy(
     extensions
@@ -62,17 +67,20 @@ export function activeDeployments(
 export const queueReactivate = liftBackground(
   "QUEUE_REACTIVATE",
   async () => {
-    await contentScript.queueReactivate(null);
+    await notifyTabs(
+      queueReactivateTab,
+      "Reactivation queue failed for some tabs"
+    );
   },
   { asyncResponse: false }
 );
 
 function installDeployment(
-  state: OptionsState,
+  state: ExtensionOptionsState,
   deployment: Deployment
-): OptionsState {
+): ExtensionOptionsState {
   let returnState = state;
-  const installed = selectInstalledExtensions({ options: state });
+  const installed = selectExtensions({ options: state });
 
   for (const extension of installed) {
     if (extension._recipe.id === deployment.package.package_id) {
@@ -81,9 +89,7 @@ function installDeployment(
         extensionId: extension.id,
       };
 
-      void uninstallContextMenu(identifier).catch((error) => {
-        reportError(error);
-      });
+      void uninstallContextMenu(identifier).catch(reportError);
 
       returnState = reducer(returnState, actions.removeExtension(identifier));
     }
@@ -96,8 +102,10 @@ function installDeployment(
       recipe: deployment.package.config,
       extensionPoints: deployment.package.config.extensionPoints,
       deployment,
-      services: fromPairs(
-        deployment.bindings.map((x) => [x.auth.service_id, x.auth.id])
+      services: Object.fromEntries(
+        deployment.bindings.map(
+          (x) => [x.auth.service_id, x.auth.id] as [RegistryId, UUID]
+        )
       ),
     })
   );
@@ -110,7 +118,7 @@ function installDeployment(
   return returnState;
 }
 
-function makeDeploymentTimestampLookup(extensions: ExtensionOptions[]) {
+function makeDeploymentTimestampLookup(extensions: IExtension[]) {
   const timestamps = new Map<string, Date>();
 
   for (const extension of extensions) {
@@ -126,33 +134,24 @@ function makeDeploymentTimestampLookup(extensions: ExtensionOptions[]) {
 }
 
 async function updateDeployments() {
-  const token = await getExtensionToken();
-
-  if (!token) {
+  if (!(await isLinked())) {
     return;
   }
 
-  const { extensions: extensionPointConfigs } = await loadOptions();
-  const extensions: ExtensionOptions[] = Object.entries(
-    extensionPointConfigs
-  ).flatMap(([, xs]) => Object.values(xs));
+  const { extensions } = await loadOptions();
 
   if (!extensions.some((x) => x._deployment?.id)) {
     console.debug("No deployments installed");
     return;
   }
 
-  const { data: deployments } = await axios.post<Deployment[]>(
-    `${await getBaseURL()}/api/deployments/`,
-    {
-      uid: await getUID(),
-      version: await getExtensionVersion(),
-      active: activeDeployments(extensions),
-    },
-    {
-      headers: { Authorization: `Token ${token}` },
-    }
-  );
+  const { data: deployments } = await (await getLinkedApiClient()).post<
+    Deployment[]
+  >("/api/deployments/", {
+    uid: await getUID(),
+    version: await getExtensionVersion(),
+    active: activeDeployments(extensions),
+  });
 
   const timestamps = makeDeploymentTimestampLookup(extensions);
 

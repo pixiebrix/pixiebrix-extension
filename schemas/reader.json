@@ -26,14 +26,14 @@
           "type": "string",
           "enum": ["react", "angularjs", "vue", "emberjs"]
         },
+        "selector": {
+          "type": "string",
+          "description": "The selector for the framework argument"
+        },
         "optional": {
           "type": "boolean",
           "description": "True if the reader should return an empty result if the element is not found",
           "default": false
-        },
-        "selector": {
-          "type": "string",
-          "description": "The selector for the framework argument"
         },
         "attrs": {
           "deprecationMessage": "Deprecated in a favor of pathSpec",
@@ -115,15 +115,13 @@
           "additionalProperties": {
             "oneOf": [
               {
-                "type": "string",
-                "format": "selector"
+                "type": "string"
               },
               {
                 "type": "object",
                 "properties": {
                   "selector": {
-                    "type": "string",
-                    "format": "selector"
+                    "type": "string"
                   },
                   "multi": {
                     "type": "boolean"
@@ -172,7 +170,7 @@
       "type": "object",
       "properties": {
         "reader": {
-          "oneOf": [
+          "anyOf": [
             {
               "$ref": "#/definitions/frameworkReader"
             },

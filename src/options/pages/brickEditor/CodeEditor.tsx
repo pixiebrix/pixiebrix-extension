@@ -28,14 +28,7 @@ import reactTemplate from "@contrib/templates/reader-react.txt";
 import menuTemplate from "@contrib/templates/foundation-menu-item.txt";
 import panelTemplate from "@contrib/templates/foundation-panel.txt";
 import blueprintTemplate from "@contrib/templates/blueprint-menu.txt";
-
-const AceEditor = React.lazy(
-  () =>
-    import(
-      /* webpackChunkName: "ace-editor" */
-      "@/vendors/AceEditor"
-    )
-);
+import AceEditor from "@/vendors/AceEditor";
 
 interface TemplateOption {
   value: string;
@@ -159,7 +152,7 @@ const CodeEditor: React.FunctionComponent<OwnProps> = ({
           <ListGroup>
             {castArray(meta.error).map((x) => (
               <ListGroup.Item
-                key={x as string}
+                key={x}
                 className="text-danger"
                 style={{ borderRadius: 0 }}
               >

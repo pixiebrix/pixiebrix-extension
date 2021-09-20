@@ -26,15 +26,16 @@ import ConfigureBody, {
   useSelectedExtensions,
 } from "./ConfigureBody";
 import ServicesBody from "./ServicesBody";
-import { WizardValues } from "./wizard";
-import ActivateBody, {
-  useEnsurePermissions,
-} from "@/options/pages/marketplace/ActivateBody";
+import { WizardValues } from "./wizardTypes";
+import ActivateBody from "@/options/pages/marketplace/ActivateBody";
 import OptionsBody from "@/options/pages/marketplace/OptionsBody";
 import { useTitle } from "@/hooks/title";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
 import useInstall from "@/pages/marketplace/useInstall";
 import AsyncButton from "@/components/AsyncButton";
+import { faMagic } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import useEnsurePermissions from "@/options/pages/marketplace/useEnsurePermissions";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
@@ -66,7 +67,7 @@ const ActivateButton: React.FunctionComponent<{
 
   return (
     <AsyncButton size="sm" disabled={isPending} onClick={activate}>
-      Activate
+      <FontAwesomeIcon icon={faMagic} /> Activate
     </AsyncButton>
   );
 };
@@ -96,8 +97,10 @@ function useWizard(blueprint: RecipeDefinition): [Step[], WizardValues] {
       }
     });
     const initialValues: WizardValues = {
-      extensions: Object.fromEntries(extensionPoints.map((x, i) => [i, true])),
-      services: Object.fromEntries(serviceIds.map((x) => [x, undefined])),
+      extensions: Object.fromEntries(
+        extensionPoints.map((x, index) => [index, true])
+      ),
+      services: serviceIds.map((id) => ({ id, config: undefined })),
       optionsArgs: mapValues(
         blueprint.options?.schema ?? {},
         (x) => (x as any).default

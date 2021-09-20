@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -19,21 +20,20 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
+  excludeInstanceIds,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
   selectIsAvailable,
+  withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
-import { v4 as uuidv4 } from "uuid";
-import { DynamicDefinition } from "@/nativeEditor";
+import { uuidv4 } from "@/types/helpers";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
-import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
-import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import {
   ContextMenuConfig,
@@ -41,8 +41,6 @@ import {
   MenuDefaultOptions as ContextMenuDefaultOptions,
   MenuDefinition,
 } from "@/extensionPoints/contextMenu";
-import MenuItemTab from "@/devTools/editor/tabs/contextMenu/MenuItemTab";
-import AvailabilityTab from "@/devTools/editor/tabs/contextMenu/AvailabilityTab";
 import { getDomain } from "@/permissions/patterns";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -50,15 +48,17 @@ import {
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Menus } from "webextension-polyfill-ts";
-import { BlockPipeline } from "@/blocks/combinators";
+import { BlockPipeline } from "@/blocks/types";
 import React from "react";
+import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
 
 const wizard: WizardStep[] = [
-  { step: "Menu Item", Component: MenuItemTab },
-  { step: "Location", Component: AvailabilityTab },
-  { step: "Data", Component: ReaderTab },
-  { step: "Integrations", Component: ServicesTab },
-  { step: "Action", Component: EffectTab },
+  {
+    step: "Edit",
+    Component: EditTab,
+    extraProps: { pipelineFieldName: "extension.action" },
+  },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -138,19 +138,19 @@ function selectExtensionPoint(
   };
 }
 
-function selectExtension({
-  uuid,
-  label,
-  extensionPoint,
-  extension,
-  services,
-}: ContextMenuFormState): IExtension<ContextMenuConfig> {
+function selectExtension(
+  { uuid, label, extensionPoint, extension, services }: ContextMenuFormState,
+  options: { includeInstanceIds?: boolean } = {}
+): IExtension<ContextMenuConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
     label,
     services,
-    config: extension,
+    config: options.includeInstanceIds
+      ? extension
+      : excludeInstanceIds(extension, "action"),
   };
 }
 
@@ -181,7 +181,7 @@ async function fromExtension(
 
     extension: {
       ...extensionConfig,
-      action: castArray(extensionConfig.action),
+      action: withInstanceIds(castArray(extensionConfig.action)),
     },
 
     extensionPoint: {
@@ -239,7 +239,7 @@ async function fromExtensionPoint(
 function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
   return {
     type: "contextMenu",
-    extension: selectExtension(element),
+    extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
@@ -250,6 +250,7 @@ const config: ElementConfig<undefined, ContextMenuFormState> = {
   elementType: "contextMenu",
   label: "Context Menu",
   baseClass: ContextMenuExtensionPoint,
+  EditorNode: ContextMenuConfiguration,
   selectNativeElement: undefined,
   icon: faBars,
   fromNativeElement,

@@ -41,7 +41,7 @@ export function globalSearch(
       }
 
       for (const key of Object.keys(obj)) {
-        // @ts-ignore: typing is tricky since it can be an array or object
+        // @ts-expect-error typing is tricky since it can be an array or object
         stack.push([obj[key], address + prefix + key + postfix]);
       }
 

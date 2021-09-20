@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import Mustache from "mustache";
@@ -26,6 +25,12 @@ import { BusinessError } from "@/errors";
  * Transformer that fills a template using the current context.
  */
 export class TemplateTransformer extends Transformer {
+  defaultOutputKey = "filled";
+
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/template",
@@ -63,5 +68,3 @@ export class TemplateTransformer extends Transformer {
     return Mustache.render(template, ctxt);
   }
 }
-
-registerBlock(new TemplateTransformer());

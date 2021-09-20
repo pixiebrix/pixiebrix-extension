@@ -17,7 +17,6 @@
 
 import { Effect } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { proxyService } from "@/background/requests";
 
 export class AddLead extends Effect {
@@ -77,5 +76,3 @@ export class AddLead extends Effect {
     });
   }
 }
-
-registerBlock(new AddLead());

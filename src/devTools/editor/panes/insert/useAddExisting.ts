@@ -16,15 +16,15 @@
  */
 
 import { useCallback, useContext } from "react";
-import { getTabInfo } from "@/background/devtools";
 import { reportEvent } from "@/telemetry/events";
 import { reportError } from "@/telemetry/logging";
 import { useDispatch } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import { DevToolsContext } from "@/devTools/context";
-import { editorSlice, FormState } from "@/devTools/editor/editorSlice";
+import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
+import { getCurrentURL } from "@/devTools/utils";
 
 const { addElement } = editorSlice.actions;
 
@@ -42,7 +42,7 @@ function useAddExisting<T extends { rawConfig: ExtensionPointConfig }>(
         // Cancel out of insert mode
         cancel();
 
-        const { url } = await getTabInfo(port);
+        const url = await getCurrentURL();
         const state = await config.fromExtensionPoint(
           url,
           extensionPoint.rawConfig

@@ -27,9 +27,27 @@ const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const RollbarSourceMapPlugin = require("rollbar-sourcemap-webpack-plugin");
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const CopyPlugin = require("copy-webpack-plugin");
-const { uniq, isEmpty } = require("lodash");
+const { uniq, compact } = require("lodash");
 const Policy = require("csp-parse");
-const { resolve } = require("./resolve.config.js");
+const mergeWithShared = require("./webpack.sharedConfig.js");
+
+function parseEnv(value) {
+  switch (String(value).toLowerCase()) {
+    case "undefined":
+      return;
+    case "null":
+      return null;
+    case "false":
+      return false;
+    case "true":
+      return true;
+    case "":
+      return "";
+    default:
+  }
+
+  return Number.isNaN(Number(value)) ? value : Number(value);
+}
 
 // Include defaults required for webpack here. Add defaults for the extension bundle to EnvironmentPlugin
 const defaults = {
@@ -47,7 +65,7 @@ dotenv.config({
 });
 
 for (const [env, defaultValue] of Object.entries(defaults)) {
-  if (isEmpty(process.env[env])) {
+  if (!process.env[env] || parseEnv(process.env[env]) == null) {
     process.env[env] = defaultValue;
   }
 }
@@ -63,38 +81,52 @@ if (!process.env.SOURCE_VERSION) {
     .trim();
 }
 
-const nodeConfig = {
-  global: true,
-};
+// Configure sourcemaps
+// Disable sourcemaps on CI unless it's a PUBLIC_RELEASE
+const produceSourcemap =
+  !parseEnv(process.env.CI) || parseEnv(process.env.PUBLIC_RELEASE);
+if (!produceSourcemap) {
+  console.log("No sourcemaps will be generated");
+}
 
-function rollbarPlugins() {
+const sourceMapPublicUrl =
+  parseEnv(process.env.PUBLIC_RELEASE) &&
+  `https://pixiebrix-extension-source-maps.s3.amazonaws.com/${process.env.SOURCE_MAP_PATH}/`;
+if (sourceMapPublicUrl) {
+  console.log("Source maps will be available at", sourceMapPublicUrl);
+}
+
+// Setup Rollbar
+const rollbarPlugin =
+  produceSourcemap &&
+  parseEnv(process.env.ROLLBAR_BROWSER_ACCESS_TOKEN) &&
+  parseEnv(process.env.ROLLBAR_BROWSER_ACCESS_TOKEN) &&
+  new RollbarSourceMapPlugin({
+    accessToken: process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN,
+    version: process.env.SOURCE_VERSION, // https://stackoverflow.com/a/43661131
+    publicPath: process.env.ROLLBAR_PUBLIC_PATH,
+  });
+if (rollbarPlugin) {
   console.log(
-    "ROLLBAR_BROWSER_ACCESS_TOKEN:",
+    "Rollbar was configured with",
     process.env.ROLLBAR_BROWSER_ACCESS_TOKEN
   );
-  if (
-    process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN &&
-    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN &&
-    process.env.ROLLBAR_BROWSER_ACCESS_TOKEN !== "undefined"
-  ) {
-    return [
-      new RollbarSourceMapPlugin({
-        accessToken: process.env.ROLLBAR_POST_SERVER_ITEM_TOKEN,
-        // https://stackoverflow.com/a/43661131
-        version: process.env.SOURCE_VERSION,
-        publicPath: process.env.ROLLBAR_PUBLIC_PATH,
-      }),
-    ];
-  }
+} else {
+  console.log("Rollbar was not configured");
+}
 
-  console.warn("ROLLBAR_POST_SERVER_ITEM_TOKEN not configured");
-  return [];
+function getVersion() {
+  // `manifest.json` only supports numbers in the version, so use the semver
+  const match = /^(?<version>\d+\.\d+\.\d+)/.exec(
+    process.env.npm_package_version
+  );
+  return match.groups.version;
 }
 
 function getVersionName(isProduction) {
   if (process.env.ENVIRONMENT === "staging") {
     // Staging builds (i.e., from CI) are production builds, so check ENVIRONMENT first
-    return `${process.env.npm_package_version}-alpha+${process.env.SOURCE_VERSION}`;
+    return `${getVersion()}-alpha+${process.env.SOURCE_VERSION}`;
   }
 
   if (isProduction) {
@@ -104,34 +136,10 @@ function getVersionName(isProduction) {
   return `${process.env.npm_package_version}-local+${new Date().toISOString()}`;
 }
 
-function getConditionalPlugins(isProduction) {
-  if (isProduction) {
-    return [
-      new BundleAnalyzerPlugin({
-        analyzerMode: "static",
-        reportFilename: path.resolve("report.html"),
-      }),
-      ...rollbarPlugins(),
-    ];
-  }
-
-  if (process.env.DEV_NOTIFY === "false") {
-    return [];
-  }
-
-  // Only notifies when watching. `zsh-notify` is suggested for the `build` script
-  return [
-    new WebpackBuildNotifierPlugin({
-      title: "PixieBrix build",
-      showDuration: true,
-    }),
-  ];
-}
-
 const isProd = (options) => options.mode === "production";
 
 function customizeManifest(manifest, isProduction) {
-  manifest.version = process.env.npm_package_version;
+  manifest.version = getVersion();
   manifest.version_name = getVersionName(isProduction);
 
   if (!isProduction) {
@@ -141,9 +149,16 @@ function customizeManifest(manifest, isProduction) {
   if (process.env.CHROME_MANIFEST_KEY) {
     manifest.key = process.env.CHROME_MANIFEST_KEY;
   }
+
   const internal = isProduction
     ? []
-    : ["http://127.0.0.1:8000/*", "http://127.0.0.1/*", "http://localhost/*"];
+    : // The port is part of the origin: https://developer.mozilla.org/en-US/docs/Web/API/URL/origin
+      [
+        "http://127.0.0.1:8000/*",
+        "http://127.0.0.1/*",
+        "http://localhost/*",
+        "http://localhost:8000/*",
+      ];
 
   const policy = new Policy(manifest.content_security_policy);
 
@@ -151,6 +166,14 @@ function customizeManifest(manifest, isProduction) {
   if (!isProduction) {
     policy.add("connect-src", "ws://localhost:9090/ http://127.0.0.1:8000");
   }
+
+  if (!isProduction) {
+    // React Dev Tools app. See https://github.com/pixiebrix/pixiebrix-extension/wiki/Local-build-setup#stand-alone
+    policy.add("script-src", "http://localhost:8097");
+    policy.add("connect-src", "ws://localhost:8097/");
+    policy.add("img-src", "https://pixiebrix-marketplace-dev.s3.amazonaws.com");
+  }
+
   manifest.content_security_policy = policy.toString();
 
   if (process.env.EXTERNALLY_CONNECTABLE) {
@@ -181,212 +204,211 @@ function customizeManifest(manifest, isProduction) {
   }
 }
 
-if (process.env.DEV_SLIM.toLowerCase() === "true") {
-  console.warn(
-    "Mocking dependencies for development build: svgIcons, uipath/robot"
-  );
-  resolve.alias = {
-    // Webpack resolves aliases in order, so our overrides need to be first
-    "@/icons/svgIcons": path.resolve("src/__mocks__/iconsMock"),
-    "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
-    ...resolve.alias,
-  };
+function mockHeavyDependencies() {
+  if (process.env.DEV_SLIM.toLowerCase() === "true") {
+    console.warn(
+      "Mocking dependencies for development build: @/icons/list, uipath/robot"
+    );
+    return {
+      "@/icons/list": path.resolve("src/__mocks__/iconsListMock"),
+      "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
+    };
+  }
 }
 
-module.exports = (env, options) => ({
-  node: nodeConfig,
+/**
+ * Ensure that a dependency is never included in a production build.
+ * May cause runtime errors if this isn't *also* handled in the code,
+ * for example by checking ENV === 'production'
+ */
+function devDependenciesOnly(options, ...dependencyName) {
+  if (isProd(options)) {
+    return Object.fromEntries(dependencyName.map((dep) => [dep, false]));
+  }
 
-  // https://stackoverflow.com/a/57460886/402560
-  devtool: isProd(options) ? "nosources-source-map" : "inline-source-map",
+  return {};
+}
 
-  // https://webpack.js.org/configuration/watch/#saving-in-webstorm
-  watchOptions: {
-    ignored: /node_modules/,
-  },
-
-  output: {
-    path: path.resolve("dist"),
-    globalObject: "window",
-    chunkFilename: "bundles/[name].bundle.js",
-  },
-  entry: Object.fromEntries(
-    [
-      "background",
-      "contentScript",
-      "devtools",
-      "devtoolsPanel",
-      // The script that gets injected into the host page
-      "script",
-      "frame",
-      "options",
-      "support",
-      "action",
-      "permissionsPopup",
-    ].map((name) => [name, `./src/${name}`])
-  ),
-
-  resolve: {
-    ...resolve,
-    // Need to set these fields manually as their default values rely on `web` target.
-    // See https://v4.webpack.js.org/configuration/resolve/#resolvemainfields
-    mainFields: ["browser", "module", "main"],
-    aliasFields: ["browser"],
-    fallback: {
-      fs: false,
-      crypto: false,
-      console: false,
-      vm: false,
-      path: false,
-    },
-  },
-
-  // https://github.com/webpack/webpack/issues/3017#issuecomment-285954512
-  // prevent lodash from overriding window._
-  amd: false,
-
-  optimization: {
-    // Chrome bug https://bugs.chromium.org/p/chromium/issues/detail?id=1108199
-    splitChunks: {
-      automaticNameDelimiter: "-",
-      cacheGroups: {
-        vendors: false,
-      },
+module.exports = (env, options) =>
+  mergeWithShared({
+    node: {
+      global: true,
     },
 
-    minimizer: [
-      new TerserJSPlugin({
-        terserOptions: {
-          output: { ascii_only: true },
-        },
-      }),
-      new CssMinimizerPlugin(),
-    ],
-  },
+    // Don't use `eval` maps https://stackoverflow.com/a/57460886/402560
+    // Explicitly handled by `SourceMapDevToolPlugin` below
+    devtool: false,
 
-  performance: {
-    maxEntrypointSize: 5_120_000,
-    maxAssetSize: 5_120_000,
-  },
-  plugins: [
-    ...getConditionalPlugins(isProd(options)),
+    // https://webpack.js.org/configuration/watch/#saving-in-webstorm
+    watchOptions: {
+      ignored: /node_modules/,
+    },
 
-    new NodePolyfillPlugin(),
-    new WebExtensionTarget(nodeConfig),
-    new webpack.ProvidePlugin({
-      $: "jquery",
-      jQuery: "jquery",
-    }),
+    output: {
+      path: path.resolve("dist"),
+      globalObject: "window",
+      chunkFilename: "bundles/[name].bundle.js",
+    },
+    entry: {
+      // All of these entries require the `vendors.js` file to be included first
+      ...Object.fromEntries(
+        [
+          "background",
+          "contentScript",
+          "devtools",
+          "devtoolsPanel",
+          "frame",
+          "modalForm",
+          "options",
+          "support",
+          "action",
+          "permissionsPopup",
+        ].map((name) => [
+          name,
+          { import: `./src/${name}`, dependOn: "vendors" },
+        ])
+      ),
 
-    // This will inject the current ENVs into the bundle, if found
-    new webpack.EnvironmentPlugin({
-      // If not found, these values will be used as defaults
-      DEBUG: !isProd(options),
-      REDUX_DEV_TOOLS: !isProd(options),
-      NPM_PACKAGE_VERSION: process.env.npm_package_version,
-      ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
-
-      // If not found, "undefined" will cause the build to fail
-      SERVICE_URL: undefined,
-      SOURCE_VERSION: undefined,
-      CHROME_EXTENSION_ID: undefined,
-      ROLLBAR_PUBLIC_PATH: undefined,
-
-      // If not found, "null" will leave the ENV unset in the bundle
-      ROLLBAR_BROWSER_ACCESS_TOKEN: null,
-      SUPPORT_WIDGET_ID: null,
-      GOOGLE_API_KEY: null,
-      GOOGLE_APP_ID: null,
-    }),
-
-    new MiniCssExtractPlugin({
-      chunkFilename: "css/[id].css",
-    }),
-    new CopyPlugin({
-      patterns: [
-        {
-          from: "src/manifest.json",
-          transform: (jsonString) => {
-            const manifest = JSON.parse(jsonString);
-            customizeManifest(manifest, isProd(options));
-            return JSON.stringify(manifest, null, 4);
-          },
-        },
-        {
-          from: "*.{css,html}",
-          context: "src",
-        },
-        "static",
+      // This creates a `vendors.js` file that must be included together with the bundles generated above
+      vendors: [
+        "react",
+        "react-dom",
+        "webextension-polyfill",
+        "jquery",
+        "lodash-es",
+        "js-beautify",
+        "css-selector-generator",
+        "@fortawesome/free-solid-svg-icons",
       ],
-    }),
-  ],
-  module: {
-    rules: [
-      {
-        test: /\.s?css$/,
-        use: [
-          MiniCssExtractPlugin.loader,
-          "css-loader",
-          { loader: "sass-loader", options: { sourceMap: true } },
-        ],
+      // The script that gets injected into the host page should not have a vendor chunk
+      script: "./src/script",
+    },
+
+    resolve: {
+      alias: {
+        ...mockHeavyDependencies(),
+        ...devDependenciesOnly(options, "redux-logger"),
+
+        // Enables static analysis and removal of dead code
+        "webext-detect-page": path.resolve("src/__mocks__/webextDetectPage"),
       },
-      {
-        test: /\.tsx?$/,
-        use: [
+    },
+
+    optimization: {
+      // Chrome bug https://bugs.chromium.org/p/chromium/issues/detail?id=1108199
+      splitChunks: {
+        automaticNameDelimiter: "-",
+        cacheGroups: {
+          vendors: false,
+        },
+      },
+
+      minimizer: [
+        new TerserJSPlugin({
+          terserOptions: {
+            output: { ascii_only: true },
+          },
+        }),
+        new CssMinimizerPlugin(),
+      ],
+    },
+
+    performance: {
+      maxEntrypointSize: 5_120_000,
+      maxAssetSize: 5_120_000,
+    },
+    plugins: compact([
+      rollbarPlugin,
+
+      produceSourcemap &&
+        new webpack.SourceMapDevToolPlugin({
+          publicPath: sourceMapPublicUrl,
+
+          // The sourcemap will be inlined if `undefined`. Only inlined sourcemaps work locally
+          // https://bugs.chromium.org/p/chromium/issues/detail?id=974543
+          filename: sourceMapPublicUrl && "[file].map[query]",
+        }),
+
+      // Only notifies when watching. `zsh-notify` is suggested for the `build` script
+      options.watch &&
+        process.env.DEV_NOTIFY !== "false" &&
+        new WebpackBuildNotifierPlugin({
+          title: "PB Extension",
+          showDuration: true,
+        }),
+
+      isProd(options) &&
+        new BundleAnalyzerPlugin({
+          analyzerMode: "static",
+          reportFilename: path.resolve("report.html"),
+        }),
+
+      new NodePolyfillPlugin(),
+      new WebExtensionTarget(),
+      new webpack.ProvidePlugin({
+        $: "jquery",
+        jQuery: "jquery",
+      }),
+
+      // This will inject the current ENVs into the bundle, if found
+      new webpack.EnvironmentPlugin({
+        // If not found, these values will be used as defaults
+        DEBUG: !isProd(options),
+        REDUX_DEV_TOOLS: !isProd(options),
+        NPM_PACKAGE_VERSION: process.env.npm_package_version,
+        ENVIRONMENT: process.env.ENVIRONMENT ?? options.mode,
+
+        // If not found, "undefined" will cause the build to fail
+        SERVICE_URL: undefined,
+        SOURCE_VERSION: undefined,
+        CHROME_EXTENSION_ID: undefined,
+        ROLLBAR_PUBLIC_PATH: undefined,
+
+        // If not found, "null" will leave the ENV unset in the bundle
+        ROLLBAR_BROWSER_ACCESS_TOKEN: null,
+        SUPPORT_WIDGET_ID: null,
+        GOOGLE_API_KEY: null,
+        GOOGLE_APP_ID: null,
+      }),
+
+      new MiniCssExtractPlugin({
+        chunkFilename: "css/[id].css",
+      }),
+      new CopyPlugin({
+        patterns: [
           {
-            loader: "ts-loader",
-            options: {
-              configFile: "tsconfig.webpack.json",
+            from: "src/manifest.json",
+            transform: (jsonString) => {
+              const manifest = JSON.parse(jsonString);
+              customizeManifest(manifest, isProd(options));
+              return JSON.stringify(manifest, null, 4);
             },
           },
+          {
+            from: "*.{css,html}",
+            context: "src",
+          },
+          "static",
         ],
-        exclude: /node_modules/,
-      },
-      {
-        test: /\.(svg|png|jpg|gif)?$/,
-        exclude: /(bootstrap-icons|simple-icons|custom-icons)/,
-        type: "asset/resource",
-        generator: {
-          filename: "img/[name][ext]",
+      }),
+    ]),
+    module: {
+      rules: [
+        {
+          test: /\.s?css$/,
+          resourceQuery: { not: [/loadAsUrl/] },
+          use: [
+            MiniCssExtractPlugin.loader,
+            "css-loader",
+            {
+              loader: "sass-loader",
+              options: {
+                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+                implementation: require("node-sass"),
+              },
+            },
+          ],
         },
-      },
-      {
-        test: /bootstrap-icons\/.*\.svg$/,
-        type: "asset/resource",
-        generator: {
-          filename: "user-icons/bootstrap-icons/[name][ext]",
-        },
-      },
-      {
-        test: /simple-icons\/.*\.svg$/,
-        type: "asset/resource",
-        generator: {
-          filename: "user-icons/simple-icons/[name][ext]",
-        },
-      },
-      {
-        test: /custom-icons\/.*\.svg$/,
-        type: "asset/resource",
-        generator: {
-          filename: "user-icons/custom-icons/[name][ext]",
-        },
-      },
-      {
-        test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
-        exclude: /(bootstrap-icons|simple-icons)/,
-        type: "asset/resource",
-        generator: {
-          filename: "fonts/[name][ext]",
-        },
-      },
-      {
-        test: /\.ya?ml$/,
-        type: "json", // Required by Webpack v4
-        use: "yaml-loader",
-      },
-      {
-        test: /\.txt/,
-        type: "asset/source",
-      },
-    ],
-  },
-});
+      ],
+    },
+  });

@@ -24,24 +24,30 @@ import {
   BlockArg,
   IBlock,
   IReader,
+  isEffectBlock,
+  isReader,
+  isRendererBlock,
   Logger,
-  OptionsArgs,
+  MessageContext,
+  OutputKey,
   ReaderRoot,
   RenderedArgs,
   SanitizedServiceConfiguration,
   Schema,
   ServiceDependency,
-  TemplateEngine,
+  UserOptions,
+  UUID,
 } from "@/core";
 import { validateInput, validateOutput } from "@/validators/generic";
-import { castArray, isPlainObject, mapValues, pickBy, isEmpty } from "lodash";
+import { castArray, isEmpty, isPlainObject, mapValues, pickBy } from "lodash";
 import { BusinessError, ContextError } from "@/errors";
 import {
   executeInAll,
   executeInOpener,
   executeInTarget,
+  executeOnServer,
 } from "@/background/executor";
-import { boolean } from "@/utils";
+import { boolean, excludeUndefined, resolveObj } from "@/utils";
 import { getLoggingConfig } from "@/background/logging";
 import { NotificationCallbacks, notifyProgress } from "@/contentScript/notify";
 import { sendDeploymentAlert } from "@/background/telemetry";
@@ -51,47 +57,14 @@ import {
   InputValidationError,
   OutputValidationError,
   PipelineConfigurationError,
+  RemoteExecutionError,
 } from "@/blocks/errors";
 import { engineRenderer } from "@/utils/renderers";
-
-export type ReaderConfig =
-  | string
-  // Can't use Record syntax because generics can't reference themselves
-  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-  | { [key: string]: ReaderConfig }
-  | ReaderConfig[];
-
-export interface BlockConfig {
-  id: string;
-
-  // (Optional) human-readable label for the step. Shown in the progress indicator
-  label?: string;
-
-  // (Optional) indicate the step is being run in the interface
-  notifyProgress?: boolean;
-
-  onError?: {
-    alert?: boolean;
-  };
-
-  window?: "self" | "opener" | "target" | "broadcast";
-
-  outputKey?: string;
-
-  // (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
-  // provided, the step is run unconditionally.
-  if?: string | boolean | number;
-
-  // (Optional) root selector for reader
-  root?: string;
-
-  // (Optional) template language to use for rendering the if and config properties. Default is mustache
-  templateEngine?: TemplateEngine;
-
-  config: Record<string, unknown>;
-}
-
-export type BlockPipeline = BlockConfig[];
+import { BlockConfig, BlockPipeline, ReaderConfig } from "./types";
+import { TraceRecordMeta } from "@/telemetry/trace";
+import { JsonObject } from "type-fest";
+import { recordTraceEntry, recordTraceExit } from "@/background/trace";
+import { uuidv4 } from "@/types/helpers";
 
 /** Return block definitions for all blocks referenced in a pipeline */
 export async function blockList(
@@ -115,14 +88,15 @@ interface ReduceOptions {
   validate?: boolean;
   logValues?: boolean;
   headless?: boolean;
-  optionsArgs?: OptionsArgs;
+  optionsArgs?: UserOptions;
   serviceArgs?: RenderedArgs;
+  runId?: UUID;
 }
 
-type SchemaProperties = { [key: string]: Schema };
+type SchemaProperties = Record<string, Schema>;
 
 function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
-  if (schemaOrProperties["type"] && schemaOrProperties["properties"]) {
+  if (schemaOrProperties.type && schemaOrProperties.properties) {
     return schemaOrProperties as Schema;
   }
 
@@ -132,29 +106,15 @@ function castSchema(schemaOrProperties: Schema | SchemaProperties): Schema {
   };
 }
 
-function excludeUndefined(obj: unknown): unknown {
-  if (isPlainObject(obj) && typeof obj === "object") {
-    return mapValues(
-      pickBy(obj, (x) => x !== undefined),
-      excludeUndefined
-    );
-  }
+type TraceOptions = {
+  runId: UUID;
+  blockInstanceId: UUID;
+};
 
-  return obj;
-}
-
-function isReader(block: IBlock): block is IReader {
-  return "read" in block;
-}
-
-function isRendererBlock(block: IBlock & { render?: Function }): boolean {
-  return typeof block.render === "function";
-}
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
-  return typeof block.effect === "function";
-}
+const defaultTraceOptions: TraceOptions = {
+  runId: undefined,
+  blockInstanceId: undefined,
+};
 
 type StageOptions = {
   context: RenderedArgs;
@@ -163,18 +123,38 @@ type StageOptions = {
   logger: Logger;
   headless?: boolean;
   root: ReaderRoot;
+  trace?: TraceOptions;
 };
 
-async function runStage(
+export async function runStage(
   block: IBlock,
   stage: BlockConfig,
   args: RenderedArgs,
-  { root, context, validate, logValues, logger, headless }: StageOptions
+  {
+    root,
+    context,
+    validate,
+    logValues,
+    logger,
+    headless,
+    trace = defaultTraceOptions,
+  }: StageOptions
 ): Promise<unknown> {
   const argContext = { ...context, ...args };
   const stageConfig = stage.config ?? {};
 
+  // If logValues not provided explicitly, default to the global setting
+  if (logValues === undefined) {
+    logValues = (await getLoggingConfig()).logValues ?? false;
+  }
+
   let blockArgs: BlockArg;
+
+  const tracePayload: TraceRecordMeta = {
+    ...trace,
+    blockId: block.id,
+    extensionId: logger.context.extensionId,
+  };
 
   if (isReader(block)) {
     if ((stage.window ?? "self") === "self") {
@@ -216,6 +196,13 @@ async function runStage(
         }
       );
     }
+
+    void recordTraceEntry({
+      ...tracePayload,
+      timestamp: new Date().toISOString(),
+      templateContext: argContext as JsonObject,
+      renderedArgs: blockArgs,
+    });
   }
 
   if (validate) {
@@ -255,49 +242,79 @@ async function runStage(
   }
 
   try {
-    if (stage.window === "opener") {
-      return await executeInOpener(stage.id, blockArgs, {
-        ctxt: args,
-        messageContext: logger.context,
-      });
-    }
+    const baseOptions = {
+      ctxt: args,
+      messageContext: logger.context,
+    };
 
-    if (stage.window === "target") {
-      return await executeInTarget(stage.id, blockArgs, {
-        ctxt: args,
-        messageContext: logger.context,
-      });
-    }
+    switch (stage.window ?? "self") {
+      case "opener": {
+        return await executeInOpener(stage.id, blockArgs, baseOptions);
+      }
 
-    if (stage.window === "broadcast") {
-      return await executeInAll(stage.id, blockArgs, {
-        ctxt: args,
-        messageContext: logger.context,
-      });
-    }
+      case "target": {
+        return await executeInTarget(stage.id, blockArgs, baseOptions);
+      }
 
-    if (stage.window ?? "self" === "self") {
-      return await block.run(blockArgs, { ctxt: args, logger, root, headless });
-    }
+      case "broadcast": {
+        return await executeInAll(stage.id, blockArgs, baseOptions);
+      }
 
-    throw new BusinessError(`Unexpected stage window ${stage.window}`);
+      case "remote": {
+        const { data, error } = (
+          await executeOnServer(stage.id, blockArgs)
+        ).data;
+        if (error) {
+          throw new RemoteExecutionError(
+            "Error while executing brick remotely",
+            error
+          );
+        }
+
+        return data;
+      }
+
+      case "self": {
+        return await block.run(blockArgs, {
+          ...baseOptions,
+          logger,
+          root,
+          headless,
+        });
+      }
+
+      default: {
+        throw new BusinessError(`Unexpected stage window ${stage.window}`);
+      }
+    }
   } finally {
-    progressCallbacks?.hide();
+    if (progressCallbacks) {
+      progressCallbacks.hide();
+    }
   }
+}
+
+function arraySchema(itemSchema: Schema): Schema {
+  return {
+    type: "array",
+    items: itemSchema,
+  };
 }
 
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
-  config: BlockConfig | BlockPipeline,
+  pipeline: BlockConfig | BlockPipeline,
   renderedArgs: RenderedArgs,
   logger: Logger,
   root: HTMLElement | Document = null,
   {
     validate = true,
-    logValues = false,
+    // Don't default `logValues`, will set async below using `getLoggingConfig` if not provided
+    logValues,
     headless = false,
     optionsArgs = {},
     serviceArgs = {},
+    runId = uuidv4(),
   }: ReduceOptions = {}
 ): Promise<unknown> {
   const extraContext: RenderedArgs = {
@@ -306,15 +323,18 @@ export async function reducePipeline(
     "@options": optionsArgs,
   };
 
-  // If logValues not provided explicitly by the extension point, use the global value
+  // If logValues not provided explicitly, default to the global setting
   if (logValues === undefined) {
     logValues = (await getLoggingConfig()).logValues ?? false;
   }
 
   let currentArgs: RenderedArgs = renderedArgs;
 
-  for (const [index, stage] of castArray(config).entries()) {
-    const stageContext = { blockId: stage.id };
+  for (const [index, stage] of castArray(pipeline).entries()) {
+    const stageContext: MessageContext = {
+      blockId: stage.id,
+      label: stage.label,
+    };
     const stageLogger = logger.childLogger(stageContext);
 
     try {
@@ -360,18 +380,37 @@ export async function reducePipeline(
         validate,
         headless,
         logger: stageLogger,
+        trace: {
+          runId,
+          blockInstanceId: stage.instanceId,
+        },
       });
 
       if (logValues) {
+        console.info(`Output for block #${index + 1}: ${stage.id}`, {
+          output,
+          outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
+        });
+
         logger.debug(`Output for block #${index + 1}: ${stage.id}`, {
           output,
           outputKey: stage.outputKey ? `@${stage.outputKey}` : null,
         });
       }
 
+      void recordTraceExit({
+        runId,
+        extensionId: logger.context.extensionId,
+        blockId: stage.id,
+        blockInstanceId: stage.instanceId,
+        outputKey: stage.outputKey,
+        output: output as JsonObject,
+      });
+
       if (validate && !isEmpty(block.outputSchema)) {
+        const baseSchema = castSchema(block.outputSchema);
         const validationResult = await validateOutput(
-          castSchema(block.outputSchema),
+          stage.window === "broadcast" ? arraySchema(baseSchema) : baseSchema,
           excludeUndefined(output)
         );
         if (!validationResult.valid) {
@@ -409,6 +448,14 @@ export async function reducePipeline(
         throw error;
       }
 
+      void recordTraceExit({
+        runId,
+        extensionId: logger.context.extensionId,
+        blockId: stage.id,
+        blockInstanceId: stage.instanceId,
+        error: serializeError(error),
+      });
+
       if (stage.onError?.alert) {
         if (logger.context.deploymentId) {
           void sendDeploymentAlert({
@@ -435,18 +482,6 @@ export async function reducePipeline(
   return currentArgs;
 }
 
-async function resolveObj<T>(
-  obj: Record<string, Promise<T>>
-): Promise<Record<string, T>> {
-  const result: Record<string, T> = {};
-  for (const [key, promise] of Object.entries(obj)) {
-    // eslint-disable-next-line security/detect-object-injection -- safe because we're using Object.entries
-    result[key] = await promise;
-  }
-
-  return result;
-}
-
 /** Instantiate a reader from a reader configuration. */
 export async function mergeReaders(
   readerConfig: ReaderConfig
@@ -470,28 +505,33 @@ export async function mergeReaders(
   throw new BusinessError("Unexpected value for readerConfig");
 }
 
-// Using indexed object to make it clear they key is an outputKey
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
-export type ServiceContext = {
-  [outputKey: string]: {
+export type ServiceContext = Record<
+  OutputKey,
+  {
     __service: SanitizedServiceConfiguration;
     [prop: string]: string | SanitizedServiceConfiguration | null;
-  };
-};
+  }
+>;
 
 /** Build the service context by locating the dependencies */
 export async function makeServiceContext(
   dependencies: ServiceDependency[]
 ): Promise<ServiceContext> {
-  const ctxt: ServiceContext = {};
-  for (const dependency of dependencies) {
+  const dependencyContext = async (dependency: ServiceDependency) => {
     const configuredService = await locate(dependency.id, dependency.config);
-    ctxt[`@${dependency.outputKey}`] = {
+    return {
       // Our JSON validator gets mad at undefined values
       ...pickBy(configuredService.config, (x) => x !== undefined),
       __service: configuredService,
     };
-  }
+  };
 
-  return ctxt;
+  return resolveObj(
+    Object.fromEntries(
+      dependencies.map((dependency) => [
+        `@${dependency.outputKey}`,
+        dependencyContext(dependency),
+      ])
+    )
+  );
 }

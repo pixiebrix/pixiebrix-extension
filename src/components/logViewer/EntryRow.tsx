@@ -16,7 +16,7 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { LogEntry } from "@/background/logging";
+import type { LogEntry } from "@/background/logging";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 import { ErrorObject } from "serialize-error";
@@ -117,13 +117,14 @@ const EntryRow: React.FunctionComponent<{ entry: LogEntry }> = ({ entry }) => {
         </td>
         <td>{dateFormat.format(new Date(Number(entry.timestamp)))}</td>
         <td>{entry.level.toUpperCase()}</td>
+        <td>{entry.context?.label}</td>
         <td>{entry.context?.blockId ?? entry.context?.serviceId ?? ""}</td>
         <td>{entry.message}</td>
       </tr>
       {expanded && expandable && (
         <tr>
           <td>&nbsp;</td>
-          <td colSpan={4}>
+          <td colSpan={5}>
             <Detail entry={entry} />
           </td>
         </tr>

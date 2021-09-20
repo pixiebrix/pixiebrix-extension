@@ -16,9 +16,7 @@
  */
 
 import {
-  BlockConfig,
   blockList,
-  BlockPipeline,
   makeServiceContext,
   mergeReaders,
   reducePipeline,
@@ -39,12 +37,12 @@ import {
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
-import { castArray, uniq, compact } from "lodash";
+import { castArray, uniq, compact, cloneDeep, isEmpty } from "lodash";
 import { checkAvailable } from "@/blocks/available";
 import {
   ensureContextMenu,
   uninstallContextMenu,
-} from "@/background/contextMenus";
+} from "@/background/messenger/api";
 import { registerHandler } from "@/contentScript/contextMenus";
 import { reportError } from "@/telemetry/logging";
 import { Manifest } from "webextension-polyfill-ts/lib/manifest";
@@ -54,11 +52,12 @@ import { reportEvent } from "@/telemetry/events";
 import { selectEventData } from "@/telemetry/deployments";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
 import { getErrorMessage, isErrorObject } from "@/errors";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
-export interface ContextMenuConfig {
+export type ContextMenuConfig = {
   title: string;
   action: BlockConfig | BlockPipeline;
-}
+};
 
 let clickedElement: HTMLElement = null;
 let selectionHandlerInstalled = false;
@@ -172,8 +171,9 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     super(id, name, description, icon);
   }
 
-  // eslint-disable-next-line @typescript-eslint/class-literal-property-style -- has to match parent type
-  public readonly syncInstall: boolean = true;
+  public get syncInstall() {
+    return true;
+  }
 
   abstract getBaseReader(): Promise<IReader>;
 
@@ -316,9 +316,11 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           reportError(error);
           extensionLogger.error(error);
         } else {
+          // XXX: If it's not an error object, it won't have an error message
           extensionLogger.warn(getErrorMessage(error));
         }
 
+        // XXX: Errors that are passed to `reportError` should not be re-thrown
         throw error;
       }
     });
@@ -359,23 +361,28 @@ class RemoteContextMenuExtensionPoint extends ContextMenuExtensionPoint {
   public readonly rawConfig: ExtensionPointConfig<MenuDefinition>;
 
   constructor(config: ExtensionPointConfig<MenuDefinition>) {
+    // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
+    const cloned = cloneDeep(config);
     const { id, name, description, icon } = config.metadata;
     super(id, name, description, icon);
-    this._definition = config.definition;
-    this.rawConfig = config;
-    const { isAvailable, documentUrlPatterns, contexts } = config.definition;
+    this._definition = cloned.definition;
+    this.rawConfig = cloned;
+    const { isAvailable, documentUrlPatterns, contexts } = cloned.definition;
     // If documentUrlPatterns not specified show everywhere
     this.documentUrlPatterns = castArray(documentUrlPatterns ?? ["*://*/*"]);
     this.contexts = castArray(contexts);
     this.permissions = {
-      origins: isAvailable.matchPatterns
+      origins: isAvailable?.matchPatterns
         ? castArray(isAvailable.matchPatterns)
         : [],
     };
   }
 
   async isAvailable(): Promise<boolean> {
-    if (await checkAvailable(this._definition.isAvailable)) {
+    if (
+      !isEmpty(this._definition.isAvailable) &&
+      (await checkAvailable(this._definition.isAvailable))
+    ) {
       return true;
     }
 

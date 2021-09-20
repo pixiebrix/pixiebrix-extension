@@ -18,7 +18,7 @@
 import React, { useEffect, useState } from "react";
 import { FormikValues } from "formik";
 import { useDebounce } from "use-debounce";
-import isEqual from "fast-deep-equal";
+import { isEqual } from "lodash";
 
 /**
  * Component that calls a callback on render if `values` object has changed.

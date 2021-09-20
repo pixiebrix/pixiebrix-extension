@@ -16,10 +16,13 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 
 export class IdentityTransformer extends Transformer {
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/identity",
@@ -38,5 +41,3 @@ export class IdentityTransformer extends Transformer {
     return arg;
   }
 }
-
-registerBlock(new IdentityTransformer());

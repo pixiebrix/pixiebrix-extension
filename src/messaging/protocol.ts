@@ -20,8 +20,7 @@ import { serializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import isPromise from "is-promise";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export type SerializableResponse = boolean | string | number | object;
+export type SerializableResponse = boolean | string | number | object | void;
 
 export interface RemoteProcedureCallRequest<TMeta extends Meta = Meta>
   extends Message<ActionType, TMeta> {
@@ -32,7 +31,7 @@ export type HandlerOptions = {
   asyncResponse?: boolean;
 };
 
-export type Handler = (...args: unknown[]) => SerializableResponse;
+export type Handler = (...args: unknown[]) => Promise<SerializableResponse>;
 
 export type HandlerEntry = {
   handler: Handler;

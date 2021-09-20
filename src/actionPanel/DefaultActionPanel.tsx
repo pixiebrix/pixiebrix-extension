@@ -25,7 +25,7 @@ import {
   faClipboardCheck,
   faExternalLinkAlt,
 } from "@fortawesome/free-solid-svg-icons";
-import { selectInstalledExtensions } from "@/options/selectors";
+import { selectExtensions } from "@/options/selectors";
 
 const OnboardingContent: React.FunctionComponent = () => (
   <Container>
@@ -66,7 +66,7 @@ const OnboardingContent: React.FunctionComponent = () => (
 
     <Row>
       <Col className="text-center">
-        <img src={marketplaceImage} alt="Marketplace image" width={300} />
+        <img src={marketplaceImage} alt="Marketplace" width={300} />
       </Col>
     </Row>
   </Container>
@@ -82,14 +82,14 @@ const NoAvailablePanelsContent: React.FunctionComponent = () => (
 
     <Row>
       <Col className="text-center">
-        <img src={workshopImage} alt="Workshop image" width={300} />
+        <img src={workshopImage} alt="Workshop" width={300} />
       </Col>
     </Row>
   </Container>
 );
 
 const DefaultActionPanel: React.FunctionComponent = () => {
-  const extensions = useSelector(selectInstalledExtensions);
+  const extensions = useSelector(selectExtensions);
 
   return (
     <div>

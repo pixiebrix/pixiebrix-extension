@@ -15,14 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import isEmpty from "lodash/isEmpty";
-import { readStorage, setStorage } from "@/chrome";
+import { isEmpty } from "lodash";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
 import { isExtensionContext } from "webext-detect-page";
-import useAsyncEffect from "use-async-effect";
-import { useState, useCallback } from "react";
+import { useAsyncEffect } from "use-async-effect";
+import { useCallback, useState } from "react";
 
 export const DEFAULT_SERVICE_URL = process.env.SERVICE_URL;
-export const SERVICE_STORAGE_KEY = "service-url";
+export const SERVICE_STORAGE_KEY = "service-url" as ManualStorageKey;
 
 type ConfiguredHost = string | null | undefined;
 
@@ -32,9 +32,7 @@ function withoutTrailingSlash(url: string): string {
 
 export async function getBaseURL(): Promise<string> {
   if (isExtensionContext()) {
-    const configured = (await readStorage(
-      SERVICE_STORAGE_KEY
-    )) as ConfiguredHost;
+    const configured = await readStorage<ConfiguredHost>(SERVICE_STORAGE_KEY);
     return withoutTrailingSlash(
       isEmpty(configured) ? DEFAULT_SERVICE_URL : configured
     );

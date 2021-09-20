@@ -19,12 +19,11 @@ import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import { liftBackground } from "@/background/protocol";
 import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
-import { getBaseURL } from "@/services/baseService";
 import { RemoteServiceError } from "@/services/errors";
-import serviceRegistry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
+import serviceRegistry from "@/services/registry";
 import { getExtensionToken } from "@/auth/token";
 import { locator } from "@/background/locator";
-import { ContextError } from "@/errors";
+import { ContextError, ExtensionNotLinkedError, isAxiosError } from "@/errors";
 import { isEmpty } from "lodash";
 import {
   deleteCachedAuthData,
@@ -32,9 +31,10 @@ import {
   getToken,
   launchOAuth2Flow,
 } from "@/background/auth";
-import { isAbsoluteURL } from "@/hooks/fetch";
-import urljoin from "url-join";
-import { expectBackgroundPage } from "@/utils/expectContext";
+import { isAbsoluteUrl } from "@/utils";
+import { expectContext } from "@/utils/expectContext";
+import { absoluteApiUrl } from "@/services/apiClient";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 interface ProxyResponseSuccessData {
   json: unknown;
@@ -98,7 +98,7 @@ function cleanResponse<T>(response: AxiosResponse<T>): SanitizedResponse<T> {
   );
 }
 
-const backgroundRequest = liftBackground<AxiosRequestConfig, SanitizedResponse>(
+const backgroundRequest = liftBackground(
   "HTTP_REQUEST",
   async (config: AxiosRequestConfig) => {
     try {
@@ -125,23 +125,19 @@ async function authenticate(
   config: SanitizedServiceConfiguration,
   request: AxiosRequestConfig
 ): Promise<AxiosRequestConfig> {
-  expectBackgroundPage();
+  expectContext("background");
 
   const service = await serviceRegistry.lookup(config.serviceId);
 
   if (service.id === PIXIEBRIX_SERVICE_ID) {
     const apiKey = await getExtensionToken();
     if (!apiKey) {
-      throw new Error("Extension not authenticated with PixieBrix web service");
+      throw new ExtensionNotLinkedError();
     }
-
-    const absoluteURL = !isAbsoluteURL(request.url)
-      ? urljoin(await getBaseURL(), request.url)
-      : request.url;
 
     return service.authenticateRequest(
       ({ apiKey } as unknown) as ServiceConfig,
-      { ...request, url: absoluteURL }
+      { ...request, url: await absoluteApiUrl(request.url) }
     );
   }
 
@@ -185,7 +181,7 @@ async function proxyRequest<T>(
   try {
     proxyResponse = (await backgroundRequest(
       await authenticate(await pixieServiceFactory(), {
-        url: `${await getBaseURL()}/api/proxy/`,
+        url: await absoluteApiUrl("/api/proxy/"),
         method: "post" as Method,
         data: {
           ...requestConfig,
@@ -206,7 +202,7 @@ async function proxyRequest<T>(
       remoteResponse.message ?? remoteResponse.reason,
       // FIXME: should fix the type of RemoteServiceError to support incomplete responses, e.g., because
       //  the proxy doesn't return header information from the remote service
-      proxyResponseToAxiosResponse(remoteResponse) as AxiosResponse
+      proxyResponseToAxiosResponse(remoteResponse)
     );
   } else {
     // The json payload from the proxy is the response from the remote server
@@ -242,7 +238,7 @@ const _proxyService = liftBackground(
         const service = await serviceRegistry.lookup(serviceConfig.serviceId);
         if (service.isOAuth2 || service.isToken) {
           await deleteCachedAuthData(serviceConfig.id);
-          return await backgroundRequest(
+          return backgroundRequest(
             await authenticate(serviceConfig, requestConfig)
           );
         }
@@ -259,6 +255,13 @@ const _proxyService = liftBackground(
   }
 );
 
+export const clearServiceCache = liftBackground(
+  "CLEAR_SERVICE_CACHE",
+  async () => {
+    serviceRegistry.clear();
+  }
+);
+
 export async function proxyService<TData>(
   serviceConfig: SanitizedServiceConfiguration | null,
   requestConfig: AxiosRequestConfig
@@ -267,19 +270,31 @@ export async function proxyService<TData>(
     throw new Error("expected configured service for serviceConfig");
   } else if (!serviceConfig) {
     // No service configuration provided. Perform request directly without authentication
+    if (!isAbsoluteUrl(requestConfig.url) && requestConfig.baseURL == null) {
+      throw new Error("expected absolute URL for request without service");
+    }
+
     try {
       return (await backgroundRequest(
         requestConfig
       )) as SanitizedResponse<TData>;
-      // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-    } catch (error) {
-      if (error.response) {
-        throw new RemoteServiceError(error.response.statusText, error.response);
-      } else {
-        const msg = "No response received; see browser network log for error.";
-        console.error(msg);
-        throw new RemoteServiceError(msg, null);
+    } catch (error: unknown) {
+      if (isAxiosError(error)) {
+        if (error.response) {
+          throw new RemoteServiceError(
+            error.response.statusText,
+            error.response
+          );
+        } else {
+          // XXX: most likely the browser blocked the network request (or perhaps the response timed out)
+          const msg =
+            "No response received; see browser network log for error.";
+          console.error(msg);
+          throw new RemoteServiceError(msg, null);
+        }
       }
+
+      throw error;
     }
   }
 
@@ -291,7 +306,7 @@ export async function proxyService<TData>(
     // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
   } catch (error) {
     throw new ContextError(error, {
-      serviceId: serviceConfig.id,
+      serviceId: serviceConfig.serviceId,
       authId: serviceConfig.id,
     });
   }

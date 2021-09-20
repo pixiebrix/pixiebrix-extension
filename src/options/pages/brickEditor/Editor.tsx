@@ -31,18 +31,17 @@ import SharingTable from "./Sharing";
 import { sortBy } from "lodash";
 import BrickLogs from "@/options/pages/brickEditor/BrickLogs";
 import { MessageContext } from "@/core";
-import BrickReference, {
-  ReferenceEntry,
-} from "@/options/pages/brickEditor/BrickReference";
+import BrickReference from "@/options/pages/brickEditor/referenceTab/BrickReference";
 import { useAsyncState } from "@/hooks/common";
 import serviceRegistry from "@/services/registry";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { useToasts } from "react-toast-notifications";
 import { fetch } from "@/hooks/fetch";
 import { Brick } from "@/types/contract";
 import { browser } from "webextension-polyfill-ts";
 import ConfirmNavigationModal from "@/components/ConfirmNavigationModal";
+import useNotifications from "@/hooks/useNotifications";
+import { ReferenceEntry } from "./brickEditorTypes";
 
 const SharingIcon: React.FunctionComponent<{
   isPublic: boolean;
@@ -78,24 +77,21 @@ function isMac(): boolean {
 }
 
 function useOpenEditorTab() {
-  const { addToast } = useToasts();
+  const notify = useNotifications();
   return useCallback(
     async (id: string) => {
       const available = await fetch<Brick[]>("/api/bricks/");
       const brick = available.find((x) => x.name === id);
-      if (!brick) {
-        addToast(`You cannot edit brick: ${id}`, {
-          appearance: "warning",
-          autoDismiss: true,
-        });
-      } else {
+      if (brick) {
         console.debug("Open editor for brick: %s", id, { brick });
         const url = browser.runtime.getURL("options.html");
         // eslint-disable-next-line security/detect-non-literal-fs-filename -- we're constructing via server response
         window.open(`${url}#/workshop/bricks/${brick.id}`);
+      } else {
+        notify.warning(`You cannot edit brick: ${id}`);
       }
     },
-    [addToast]
+    [notify]
   );
 }
 
@@ -104,39 +100,36 @@ const Editor: React.FunctionComponent<OwnProps> = ({
   showLogs = true,
   logContext,
 }) => {
-  const { addToast } = useToasts();
+  const notify = useNotifications();
   const [activeTab, setTab] = useState("edit");
   const [editorWidth, setEditorWidth] = useState();
   const [selectedReference, setSelectedReference] = useState<ReferenceEntry>();
   const { errors, values, dirty } = useFormikContext<EditorValues>();
 
-  const [blocks] = useAsyncState(async () => {
-    const [extensionPoints, blocks, services] = await Promise.all([
+  const [bricks] = useAsyncState(async () => {
+    const [extensionPoints, bricks, services] = await Promise.all([
       extensionPointRegistry.all(),
       blockRegistry.all(),
       serviceRegistry.all(),
     ]);
-    return [...extensionPoints, ...blocks, ...services];
+    return [...extensionPoints, ...bricks, ...services];
   }, []);
 
   const openReference = useCallback(
     (id: string) => {
-      const block = blocks?.find((x) => x.id === id);
-      if (!block) {
-        console.debug("Known bricks", {
-          blocks: sortBy(blocks.map((x) => x.id)),
-        });
-        addToast(`Cannot find block: ${id}`, {
-          appearance: "warning",
-          autoDismiss: true,
-        });
-      } else {
-        console.debug("Open reference for block: %s", block.id, { block });
-        setSelectedReference(block);
+      const brick = bricks?.find((x) => x.id === id);
+      if (brick) {
+        console.debug("Open reference for brick: %s", brick.id, { brick });
+        setSelectedReference(brick);
         setTab("reference");
+      } else {
+        console.debug("Known bricks", {
+          bricks: sortBy(bricks.map((x) => x.id)),
+        });
+        notify.warning(`Cannot find brick: ${id}`);
       }
     },
-    [setTab, blocks, setSelectedReference, addToast]
+    [setTab, bricks, setSelectedReference, notify]
   );
 
   const openEditorTab = useOpenEditorTab();
@@ -162,6 +155,9 @@ const Editor: React.FunctionComponent<OwnProps> = ({
           </li>
           <li className="list-inline-item mx-3">
             <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>O</kbd>: Open Brick
+          </li>
+          <li className="list-inline-item mx-3">
+            <kbd>{isMac() ? "Cmd" : "Ctrl"}</kbd> + <kbd>F</kbd>: Search
           </li>
         </ul>
       </div>
@@ -226,7 +222,7 @@ const Editor: React.FunctionComponent<OwnProps> = ({
             <Tab.Pane eventKey="reference" className="p-0">
               <BrickReference
                 key={selectedReference?.id}
-                blocks={blocks}
+                bricks={bricks}
                 initialSelected={selectedReference}
               />
             </Tab.Pane>

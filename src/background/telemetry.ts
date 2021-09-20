@@ -17,15 +17,18 @@
 
 import { liftBackground } from "@/background/protocol";
 import { JsonObject } from "type-fest";
-import { v4 as uuidv4 } from "uuid";
-import { debounce, uniq, throttle } from "lodash";
+import { uuidv4 } from "@/types/helpers";
+import { compact, debounce, throttle, uniq } from "lodash";
 import { browser } from "webextension-polyfill-ts";
-import { readStorage, setStorage } from "@/chrome";
-import { getExtensionToken } from "@/auth/token";
-import axios from "axios";
-import { getBaseURL } from "@/services/baseService";
+import { ManualStorageKey, readStorage, setStorage } from "@/chrome";
+import { isLinked } from "@/auth/token";
+import { Data, UUID } from "@/core";
 import { boolean } from "@/utils";
-import { ExtensionOptions, loadOptions } from "@/options/loader";
+import { loadOptions } from "@/options/loader";
+import {
+  getLinkedApiClient,
+  maybeGetLinkedApiClient,
+} from "@/services/apiClient";
 
 const EVENT_BUFFER_DEBOUNCE_MS = 2000;
 const EVENT_BUFFER_MAX_MS = 10_000;
@@ -37,24 +40,28 @@ interface UserEvent {
   data: JsonObject;
 }
 
-export const DNT_STORAGE_KEY = "DNT";
-const UUID_STORAGE_KEY = "USER_UUID";
+export const DNT_STORAGE_KEY = "DNT" as ManualStorageKey;
+const UUID_STORAGE_KEY = "USER_UUID" as ManualStorageKey;
 
-let _uid: string = null;
+let _uid: UUID = null;
 let _dnt: boolean;
 const buffer: UserEvent[] = [];
 
 /**
  * Return a random ID for this browser profile.
  */
-async function uid(): Promise<string> {
+async function uid(): Promise<UUID> {
   if (_uid != null) {
     return _uid;
   }
 
-  let uuid: string = await readStorage<string>(UUID_STORAGE_KEY);
+  let uuid = await readStorage<UUID>(UUID_STORAGE_KEY);
+
+  console.debug("Current browser UID", { uuid });
+
   if (!uuid || typeof uuid !== "string") {
     uuid = uuidv4();
+    console.debug("Generating UID for browser", { uuid });
     await setStorage(UUID_STORAGE_KEY, uuid);
   }
 
@@ -64,7 +71,7 @@ async function uid(): Promise<string> {
 
 export async function _toggleDNT(enable: boolean): Promise<boolean> {
   _dnt = enable;
-  await browser.storage.local.set({ [DNT_STORAGE_KEY]: enable });
+  await setStorage(DNT_STORAGE_KEY, enable);
   return enable;
 }
 
@@ -81,17 +88,11 @@ export async function _getDNT(): Promise<boolean> {
 
 async function flush(): Promise<void> {
   if (buffer.length > 0) {
-    const url = `${await getBaseURL()}/api/events/`;
-    const events = buffer.splice(0, buffer.length);
-    await axios.post(
-      url,
-      {
-        events,
-      },
-      {
-        headers: { Authorization: `Token ${await getExtensionToken()}` },
-      }
-    );
+    const client = await maybeGetLinkedApiClient();
+    if (client) {
+      const events = buffer.splice(0, buffer.length);
+      await client.post("/api/events/", { events });
+    }
   }
 }
 
@@ -124,14 +125,10 @@ async function userSummary() {
   let numActiveBlueprints: number = null;
 
   try {
-    const { extensions: extensionPointConfigs } = await loadOptions();
-    const extensions: ExtensionOptions[] = Object.entries(
-      extensionPointConfigs
-    ).flatMap(([, xs]) => Object.values(xs));
+    const { extensions } = await loadOptions();
     numActiveExtensions = extensions.length;
-    numActiveBlueprints = uniq(
-      extensions.filter((x) => x._recipeId).map((x) => x._recipeId)
-    ).length;
+    numActiveBlueprints = uniq(compact(extensions.map((x) => x._recipe?.id)))
+      .length;
     numActiveExtensionPoints = uniq(extensions.map((x) => x.extensionPointId))
       .length;
   } catch (error: unknown) {
@@ -147,19 +144,11 @@ async function userSummary() {
 }
 
 async function _init(): Promise<void> {
-  const url = `${await getBaseURL()}/api/identify/`;
-  const token = await getExtensionToken();
-  if (token) {
-    await axios.post(
-      url,
-      {
-        uid: await uid(),
-        data: await userSummary(),
-      },
-      {
-        headers: { Authorization: `Token ${token}` },
-      }
-    );
+  if (await isLinked()) {
+    await (await getLinkedApiClient()).post("/api/identify/", {
+      uid: await uid(),
+      data: await userSummary(),
+    });
   }
 }
 
@@ -203,15 +192,8 @@ export const recordEvent = liftBackground(
 
 export const sendDeploymentAlert = liftBackground(
   "SEND_DEPLOYMENT_ALERT",
-  async ({ deploymentId, data }: { deploymentId: string; data: object }) => {
-    const url = `${await getBaseURL()}/api/deployments/${deploymentId}/alerts/`;
-    const token = await getExtensionToken();
-    if (!token) {
-      throw new Error("Extension not linked to PixieBrix server");
-    }
-
-    await axios.post(url, data, {
-      headers: { Authorization: `Token ${token}` },
-    });
+  async ({ deploymentId, data }: { deploymentId: string; data: Data }) => {
+    const url = `/api/deployments/${deploymentId}/alerts/`;
+    await (await getLinkedApiClient()).post(url, data);
   }
 );

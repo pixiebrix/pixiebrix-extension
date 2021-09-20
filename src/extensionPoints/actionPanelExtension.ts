@@ -16,9 +16,7 @@
  */
 
 import {
-  BlockConfig,
   blockList,
-  BlockPipeline,
   makeServiceContext,
   mergeReaders,
   reducePipeline,
@@ -52,15 +50,17 @@ import {
 } from "@/actionPanel/native";
 import Mustache from "mustache";
 import { reportError } from "@/telemetry/logging";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { BusinessError, getErrorMessage } from "@/errors";
 import { HeadlessModeError } from "@/blocks/errors";
 import { selectExtensionContext } from "@/extensionPoints/helpers";
+import { cloneDeep } from "lodash";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
-export interface ActionPanelConfig {
+export type ActionPanelConfig = {
   heading: string;
   body: BlockConfig | BlockPipeline;
-}
+};
 
 export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPanelConfig> {
   readonly permissions: Permissions.Permissions = {};
@@ -166,7 +166,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
     if (this.extensions.length === 0) {
       console.debug(
-        `actionPanel extension point %s has no installed extensions`,
+        "actionPanel extension point %s has no installed extensions",
         this.id
       );
       return;
@@ -174,7 +174,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
     if (!isActionPanelVisible()) {
       console.debug(
-        `Skipping run for %s because actionPanel is not visible`,
+        "Skipping run for %s because actionPanel is not visible",
         this.id
       );
       return;
@@ -194,26 +194,28 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
       throw new Error("Reader returned null/undefined");
     }
 
-    const errors = [];
+    const errors: unknown[] = [];
 
-    for (const extension of this.extensions) {
-      if (extensionIds != null && !extensionIds.includes(extension.id)) {
-        continue;
-      }
+    const toRun = this.extensions.filter(
+      (x) => extensionIds == null || extensionIds.includes(x.id)
+    );
 
-      try {
-        await this.runExtension(readerContext, extension);
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-      } catch (error) {
-        errors.push(error);
-        this.logger
-          .childLogger({
-            deploymentId: extension._deployment?.id,
-            extensionId: extension.id,
-          })
-          .error(error);
-      }
-    }
+    // OK to run in parallel because we've fixed the order the panels appear in reservePanels
+    await Promise.all(
+      toRun.map(async (extension) => {
+        try {
+          await this.runExtension(readerContext, extension);
+        } catch (error: unknown) {
+          errors.push(error);
+          this.logger
+            .childLogger({
+              deploymentId: extension._deployment?.id,
+              extensionId: extension.id,
+            })
+            .error(error);
+        }
+      })
+    );
 
     if (errors.length > 0) {
       notifyError(`An error occurred adding ${errors.length} panels(s)`);
@@ -240,10 +242,12 @@ class RemotePanelExtensionPoint extends ActionPanelExtensionPoint {
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
-    const { id, name, description } = config.metadata;
+    // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
+    const cloned = cloneDeep(config);
+    const { id, name, description } = cloned.metadata;
     super(id, name, description);
-    this.rawConfig = config;
-    this.definition = config.definition;
+    this.rawConfig = cloned;
+    this.definition = cloned.definition;
   }
 
   async defaultReader(): Promise<IReader> {

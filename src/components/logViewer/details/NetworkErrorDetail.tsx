@@ -25,13 +25,13 @@ import {
   faCheck,
   faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-import JsonTree from "@/components/JsonTree";
-import { isAbsoluteURL } from "@/hooks/fetch";
+import JsonTree from "@/components/jsonTree/JsonTree";
 import urljoin from "url-join";
 import { getReasonPhrase } from "http-status-codes";
+import { isAbsoluteUrl } from "@/utils";
 
 function getAbsoluteUrl({ url, baseURL }: AxiosRequestConfig): string {
-  return isAbsoluteURL(url) ? url : urljoin(baseURL, url);
+  return isAbsoluteUrl(url) ? url : urljoin(baseURL, url);
 }
 
 function tryParse(value: unknown): unknown {
@@ -62,9 +62,11 @@ const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
     error.config,
   ]);
 
-  const [hasPermissions] = useAsyncState<boolean | undefined>(async () => {
+  const [hasPermissions, permissionsPending, permissionsError] = useAsyncState<
+    boolean | undefined
+  >(async () => {
     if (browser.permissions?.contains) {
-      return await browser.permissions.contains({
+      return browser.permissions.contains({
         origins: [absoluteUrl],
       });
     }
@@ -90,18 +92,19 @@ const NetworkErrorDetail: React.FunctionComponent<{ error: AxiosError }> = ({
   }, [error.response]);
 
   const status = error.response?.status;
+  const permissionsReady = !permissionsError && !permissionsPending;
 
   return (
     <Row>
       <Col>
         <span>Response</span>
-        {hasPermissions === false && (
+        {permissionsReady && !hasPermissions && (
           <div className="text-warning">
             <FontAwesomeIcon icon={faExclamationTriangle} /> PixieBrix does not
             have permission to access {absoluteUrl}
           </div>
         )}
-        {hasPermissions === true && (
+        {permissionsReady && hasPermissions && (
           <div className="text-info">
             <FontAwesomeIcon icon={faCheck} /> PixieBrix has permission to
             access {absoluteUrl}

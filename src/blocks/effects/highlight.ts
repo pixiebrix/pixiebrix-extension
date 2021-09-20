@@ -18,7 +18,6 @@
 import { Effect } from "@/types";
 import { Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { registerBlock } from "@/blocks/registry";
 import { boolean } from "@/utils";
 
 type ColorRule =
@@ -135,5 +134,3 @@ export class HighlightEffect extends Effect {
     });
   }
 }
-
-registerBlock(new HighlightEffect());

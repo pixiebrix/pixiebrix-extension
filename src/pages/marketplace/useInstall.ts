@@ -21,15 +21,16 @@ import { useDispatch } from "react-redux";
 import { useParams } from "react-router";
 import { useCallback } from "react";
 import { FormikHelpers } from "formik";
-import { WizardValues } from "@/options/pages/marketplace/wizard";
+import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { selectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
-import { pickBy, uniq } from "lodash";
-import { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
-import { containsPermissions, mergePermissions } from "@/utils/permissions";
+import { uniq } from "lodash";
+import { containsPermissions } from "@/background/messenger/api";
 import { collectPermissions } from "@/permissions";
 import { reactivate } from "@/background/navigation";
 import { push } from "connected-react-router";
 import { optionsSlice } from "@/options/slices";
+import { resolveRecipe } from "@/registry/internal";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
 
 const { installRecipe } = optionsSlice.actions;
 
@@ -53,19 +54,19 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           .flatMap((x) => Object.values(x.services ?? {}))
           .filter((x) => x !== PIXIEBRIX_SERVICE_ID)
       );
-      const missingServiceIds = Object.keys(
-        pickBy(
-          values.services,
-          (v, k) => requiredServiceIds.includes(k) && v == null
+      const missingServiceIds = values.services
+        .filter(
+          ({ id, config }) => requiredServiceIds.includes(id) && config == null
         )
-      );
+        .map((x) => x.id);
 
-      const configuredAuths = Object.entries(values.services)
-        .filter((x) => x[1])
-        .map(([id, config]) => ({ id, config }));
+      const configuredAuths = values.services.filter(({ config }) => config);
 
       const enabled = await containsPermissions(
-        mergePermissions(await collectPermissions(selected, configuredAuths))
+        await collectPermissions(
+          await resolveRecipe(recipe, selected),
+          configuredAuths
+        )
       );
 
       if (selected.length === 0) {
@@ -96,7 +97,9 @@ function useInstall(recipe: RecipeDefinition): InstallRecipe {
           installRecipe({
             recipe,
             extensionPoints: selected,
-            services: values.services,
+            services: Object.fromEntries(
+              values.services.map(({ id, config }) => [id, config])
+            ),
             optionsArgs: values.optionsArgs,
           })
         );

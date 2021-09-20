@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { IExtension } from "@/core";
 
 export type SidebarItem = IExtension | FormState;

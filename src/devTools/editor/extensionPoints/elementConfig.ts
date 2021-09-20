@@ -17,11 +17,11 @@
 import React from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Runtime } from "webextension-polyfill-ts";
-import { IExtension, Metadata, Schema, ServiceDependency } from "@/core";
+import { IExtension, Metadata, Schema, ServiceDependency, UUID } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
-import { DynamicDefinition } from "@/nativeEditor";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 
 export type ElementType =
   | "menuItem"
@@ -37,6 +37,12 @@ export type ReaderReferenceFormState = {
   metadata: Metadata;
 };
 
+export function isCustomReader(
+  reader: ReaderFormState | ReaderReferenceFormState
+): reader is ReaderFormState {
+  return "definition" in reader;
+}
+
 export interface ReaderFormState {
   _new?: boolean;
   metadata: Metadata;
@@ -47,15 +53,9 @@ export interface ReaderFormState {
      */
     type: string | null;
     selector: string | null;
-    selectors: { [field: string]: string };
+    selectors: Record<string, string>;
     optional: boolean;
   };
-}
-
-export function isCustomReader(
-  reader: ReaderFormState | ReaderReferenceFormState
-): reader is ReaderFormState {
-  return "definition" in reader;
 }
 
 export interface BaseExtensionPointState {
@@ -72,7 +72,7 @@ export interface BaseFormState {
   /**
    * The extension uuid
    */
-  readonly uuid: string;
+  readonly uuid: UUID;
 
   /**
    * The type of the extensionPoint
@@ -97,7 +97,7 @@ export interface BaseFormState {
 
   services: ServiceDependency[];
 
-  readers: (ReaderFormState | ReaderReferenceFormState)[];
+  readers: Array<ReaderFormState | ReaderReferenceFormState>;
 
   extensionPoint: BaseExtensionPointState;
 
@@ -122,6 +122,8 @@ export interface ElementConfig<
    */
   // eslint-disable-next-line @typescript-eslint/ban-types -- we want to Ctor here for the extension point
   readonly baseClass: Function;
+
+  readonly EditorNode?: React.ComponentType<{ isLocked: boolean }>;
 
   /**
    * Order to display this element in the new element dropdown in the sidebar

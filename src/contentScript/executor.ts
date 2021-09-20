@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -15,26 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser, Runtime } from "webextension-polyfill-ts";
+import { browser } from "webextension-polyfill-ts";
 import blockRegistry from "@/blocks/registry";
 import { BackgroundLogger } from "@/background/logging";
-import { MessageContext } from "@/core";
+import { MessageContext, RegistryId, RenderedArgs } from "@/core";
 import {
   liftContentScript,
   MESSAGE_PREFIX,
 } from "@/contentScript/backgroundProtocol";
 import { Availability } from "@/blocks/types";
 import { checkAvailable } from "@/blocks/available";
-import { markReady } from "./context";
-import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
-import { expectContentScript } from "@/utils/expectContext";
-import { ConnectionError } from "@/errors";
+import { expectContext } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
 
 export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
 export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
-export const MESSAGE_CONTENT_SCRIPT_READY = `${MESSAGE_PREFIX}SCRIPT_READY`;
-export const MESSAGE_CONTENT_SCRIPT_ECHO_SENDER = `${MESSAGE_PREFIX}ECHO_SENDER`;
 
 export interface RemoteBlockOptions {
   ctxt: unknown;
@@ -55,8 +51,8 @@ export interface RunBlockAction {
   payload: {
     sourceTabId?: number;
     nonce?: string;
-    blockId: string;
-    blockArgs: { [param: string]: unknown };
+    blockId: RegistryId;
+    blockArgs: RenderedArgs;
     options: RemoteBlockOptions;
   };
 }
@@ -66,18 +62,26 @@ const childTabs = new Set<number>();
 const handlers = new HandlerMap();
 
 handlers.set(MESSAGE_RUN_BLOCK, async (request: RunBlockAction) => {
+  // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
   const { blockId, blockArgs, options } = request.payload;
-  // FIXME: validate sourceTabId here
-  // if (!childTabs.has(sourceTabId)) {
-  //   return Promise.reject("Unknown source tab id");
-  // }
   const block = await blockRegistry.lookup(blockId);
   const logger = new BackgroundLogger(options.messageContext);
-  return block.run(blockArgs, {
-    ctxt: options.ctxt,
-    logger,
-    root: document,
-  });
+
+  try {
+    return await block.run(blockArgs, {
+      ctxt: options.ctxt,
+      logger,
+      root: document,
+    });
+  } catch (error: unknown) {
+    // Provide extra logging on the tab because `handlers` doesn't report errors. It's also nice to log here because
+    // we still have the original (non-serialized) error
+    console.info("Error running remote block on tab", {
+      request,
+      error,
+    });
+    throw error;
+  }
 });
 
 handlers.set(
@@ -96,39 +100,8 @@ export const linkChildTab = liftContentScript(
   { asyncResponse: false }
 );
 
-export async function whoAmI(): Promise<Runtime.MessageSender> {
-  const sender = await browser.runtime.sendMessage({
-    type: MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
-  });
-
-  if (sender == null) {
-    // If you see this error, it means the wrong message handler responded to the message.
-    // The most likely cause of this is that background listener function was accidentally marked
-    // with the "async" keyword as that prevents the method from returning "undefined" to indicate
-    // that it did not handle the message
-    throw new ConnectionError(
-      `Internal error: received null response for ${MESSAGE_CONTENT_SCRIPT_ECHO_SENDER}. Check use of async in message listeners`
-    );
-  }
-
-  return sender;
-}
-
-export async function notifyReady(): Promise<void> {
-  markReady();
-
-  // Inform `ensureContentScript` that the content script has loaded, if it's listening
-  void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
-
-  // Informs the standard background listener to track this tab
-  await browser.runtime.sendMessage({
-    type: MESSAGE_CONTENT_SCRIPT_READY,
-    payload: {},
-  });
-}
-
 function addExecutorListener(): void {
-  expectContentScript();
+  expectContext("contentScript");
 
   browser.runtime.onMessage.addListener(handlers.asListener());
 }

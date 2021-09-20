@@ -1,0 +1,96 @@
+/*!
+ * Copyright (C) 2021 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.root {
+  display: inline-flex;
+  flex-direction: column;
+  border: none;
+  background: none;
+  align-items: center;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid black;
+  border-radius: 20%;
+  width: 60px;
+  height: 60px;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    cursor: pointer;
+    color: #fff;
+    background-color: #c58aff;
+    box-shadow: 4px 4px 2px gray;
+    border: 2px solid black !important;
+
+    &:active {
+      box-shadow: none;
+      background-color: #b66dff;
+    }
+  }
+}
+
+.mutedNode {
+  border: 2px dashed #6c757d;
+  color: #6c757d;
+}
+
+.activeNode {
+  color: #fff;
+  background-color: #b66dff;
+}
+
+.title {
+  text-align: center;
+  vertical-align: top;
+  margin-bottom: 0.25rem;
+  max-width: 120px;
+}
+
+.outputKey {
+  font-family: monospace;
+  overflow-x: auto;
+  text-align: center;
+  vertical-align: top;
+  margin-top: 0.25rem;
+  max-width: 120px;
+}
+
+.remove {
+  border: none;
+  border-radius: 50%;
+  position: relative;
+  color: red;
+  background-color: white;
+  left: 28px;
+  top: 10px;
+  margin-top: -10px;
+
+  &:hover {
+    cursor: pointer;
+    color: hotpink;
+    box-shadow: 1px 1px 1px gray;
+
+    &:active {
+      box-shadow: none;
+      color: red;
+    }
+  }
+}

@@ -29,7 +29,9 @@ const ToggleField: React.FunctionComponent<{ name: string }> = ({ name }) => {
       onlabel=" "
       offlabel=" "
       checked={field.value ?? false}
-      onChange={(value) => helpers.setValue(value)}
+      onChange={(value) => {
+        helpers.setValue(value);
+      }}
     />
   );
 };

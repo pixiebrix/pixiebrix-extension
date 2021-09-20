@@ -20,10 +20,9 @@ import store, { hashHistory, persistor } from "./store";
 import { Provider, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import GridLoader from "react-spinners/GridLoader";
-import Container from "react-bootstrap/Container";
+import { Container } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import InstalledPage from "@/options/pages/installed/InstalledPage";
-import ExtensionEditor from "@/options/pages/extensionEditor/ExtensionEditor";
 import ServicesEditor from "@/options/pages/services/ServicesEditor";
 import BrickCreatePage from "@/options/pages/brickEditor/CreatePage";
 import BrickEditPage from "@/options/pages/brickEditor/EditPage";
@@ -35,39 +34,43 @@ import Sidebar from "@/layout/Sidebar";
 import { Route, Switch } from "react-router-dom";
 import { ConnectedRouter } from "connected-react-router";
 import { ToastProvider } from "react-toast-notifications";
-import "vendors/theme/app/app.scss";
+import "@/vendors/theme/app/app.scss";
 import AuthContext from "@/auth/AuthContext";
 import { useAsyncState } from "@/hooks/common";
 import Banner from "@/layout/Banner";
-import ErrorBanner from "@/layout/ErrorBanner";
-import ActivatePage from "@/options/pages/marketplace/ActivatePage";
+import ErrorModal from "@/layout/ErrorModal";
+import ActivateBlueprintPage from "@/options/pages/marketplace/ActivateBlueprintPage";
+import ActivateExtensionPage from "@/options/pages/activateExtension/ActivatePage";
 import { getAuth } from "@/hooks/auth";
 import useRefresh from "@/hooks/useRefresh";
 import { SettingsState } from "@/options/slices";
-import { getExtensionToken } from "@/auth/token";
+import { isLinked } from "@/auth/token";
 import SetupPage from "@/options/pages/SetupPage";
 import { AuthState } from "@/core";
-import TemplatesPage from "@/options/pages/templates/TemplatesPage";
 import { initTelemetry } from "@/telemetry/events";
-import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
 import UpdateBanner from "@/options/pages/UpdateBanner";
-
-// Import the built-in bricks
-import "@/blocks";
-import "@/contrib";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contrib/editors";
+import DeploymentBanner from "@/options/pages/deployments/DeploymentBanner";
+import { ModalProvider } from "@/components/ConfirmationModal";
+import WorkshopPage from "./pages/workshop/WorkshopPage";
+
+// Register the built-in bricks
+registerBuiltinBlocks();
+registerContribBlocks();
 
 const RequireInstall: React.FunctionComponent = ({ children }) => {
   const mode = useSelector<{ settings: SettingsState }, string>(
     ({ settings }) => settings.mode
   );
-  const [token, isPending] = useAsyncState(getExtensionToken);
+  const [linked, isPending] = useAsyncState(isLinked);
 
   if (isPending && mode === "remote") {
     return null;
   }
 
-  if (mode === "remote" && !token) {
+  if (mode === "remote" && !linked) {
     return <SetupPage />;
   }
 
@@ -86,35 +89,27 @@ const Layout = () => {
         <RequireInstall>
           <Sidebar />
           <div className="main-panel">
-            <ErrorBanner />
+            <ErrorModal />
             <Banner />
             <UpdateBanner />
             <DeploymentBanner />
             <div className="content-wrapper">
               <ErrorBoundary>
                 <Switch>
+                  <Route exact path="/blueprints" component={MarketplacePage} />
                   <Route
                     exact
-                    path="/marketplace"
-                    component={MarketplacePage}
+                    path="/extensions/install/:extensionId"
+                    component={ActivateExtensionPage}
                   />
-                  <Route exact path="/templates" component={TemplatesPage} />
                   <Route
                     exact
                     path="/:sourcePage/activate/:blueprintId"
-                    component={ActivatePage}
+                    component={ActivateBlueprintPage}
                   />
                   <Route exact path="/settings" component={SettingsPage} />
                   <Route path="/services/:id?" component={ServicesEditor} />
-                  <Route exact path="/workshop" component={ExtensionEditor} />
-                  <Route
-                    path="/workshop/install/:extensionPointId/:tab?"
-                    component={ExtensionEditor}
-                  />
-                  <Route
-                    path="/workshop/extensions/:extensionId/:tab?"
-                    component={ExtensionEditor}
-                  />
+                  <Route exact path="/workshop" component={WorkshopPage} />
                   <Route
                     exact
                     path="/workshop/create/"
@@ -124,6 +119,11 @@ const Layout = () => {
                     exact
                     path="/workshop/bricks/:id/"
                     component={BrickEditPage}
+                  />
+                  <Route
+                    exact
+                    path="/installed/share/:extensionId"
+                    component={InstalledPage}
                   />
                   <Route component={InstalledPage} />
                 </Switch>
@@ -156,9 +156,11 @@ const App: React.FunctionComponent = () => {
       <PersistGate loading={<GridLoader />} persistor={persistor}>
         <AuthContext.Provider value={authState ?? defaultState}>
           <ConnectedRouter history={hashHistory}>
-            <ToastProvider>
-              <Layout />
-            </ToastProvider>
+            <ModalProvider>
+              <ToastProvider>
+                <Layout />
+              </ToastProvider>
+            </ModalProvider>
           </ConnectedRouter>
         </AuthContext.Provider>
       </PersistGate>

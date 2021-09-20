@@ -15,17 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { liftBackground } from "@/background/protocol";
 import { rollbar } from "@/telemetry/rollbar";
 import { MessageContext, Logger as ILogger, SerializedError } from "@/core";
 import { Except, JsonObject } from "type-fest";
 import { deserializeError, serializeError } from "serialize-error";
 import { DBSchema, openDB } from "idb/with-async-ittr";
-import { reverse, sortBy, isEmpty } from "lodash";
+import { sortBy, isEmpty } from "lodash";
 import { _getDNT } from "@/background/telemetry";
 import { isContentScript } from "webext-detect-page";
-import { readStorage, setStorage } from "@/chrome";
+import {
+  ManualStorageKey,
+  readStorageWithMigration,
+  setStorage,
+} from "@/chrome";
 import {
   hasBusinessRootCause,
   hasCancelRootCause,
@@ -33,7 +37,7 @@ import {
   getErrorMessage,
 } from "@/errors";
 import { showConnectionLost } from "@/contentScript/connection";
-import { expectBackgroundPage } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 
 const STORAGE_KEY = "LOG";
 const ENTRY_OBJECT_STORE = "entries";
@@ -49,7 +53,7 @@ export const LOG_LEVELS: { [key in MessageLevel]: number } = {
   error: 4,
 };
 
-export interface LogEntry {
+export type LogEntry = {
   uuid: string;
   timestamp: string;
   message: string;
@@ -57,7 +61,7 @@ export interface LogEntry {
   context: MessageContext;
   data?: JsonObject;
   error?: SerializedError;
-}
+};
 
 interface LogDB extends DBSchema {
   [ENTRY_OBJECT_STORE]: {
@@ -75,7 +79,9 @@ interface LogDB extends DBSchema {
   };
 }
 
-const indexKeys: Array<keyof Except<MessageContext, "deploymentId">> = [
+const indexKeys: Array<
+  keyof Except<MessageContext, "deploymentId" | "label">
+> = [
   "extensionPointId",
   "extensionId",
   "blueprintId",
@@ -177,7 +183,7 @@ export async function getLog(
   }
 
   // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
-  return sortBy(reverse(matches), (x) => -Number.parseInt(x.timestamp, 10));
+  return sortBy(matches.reverse(), (x) => -Number.parseInt(x.timestamp, 10));
 }
 
 function buildContext(
@@ -206,9 +212,11 @@ export const recordError = liftBackground(
       const message = getErrorMessage(error);
 
       if (!(await _getDNT())) {
-        // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the
-        // object is the custom payload data
-        // https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+        // Deserialize the error before passing it to rollbar, otherwise rollbar will assume the object is the custom
+        // payload data. WARNING: the prototype chain is lost during deserialization, so make sure any predicate you
+        // call here also handles deserialized errors properly.
+        // See https://docs.rollbar.com/docs/rollbarjs-configuration-reference#rollbarlog
+        // See https://github.com/sindresorhus/serialize-error/issues/48
         const errorObj = deserializeError(error);
 
         if (hasCancelRootCause(error)) {
@@ -296,7 +304,7 @@ export class BackgroundLogger implements ILogger {
   }
 
   async error(error: unknown, data: JsonObject): Promise<void> {
-    console.error(`An error occurred: %s`, getErrorMessage(error), {
+    console.error("An error occurred: %s", getErrorMessage(error), {
       error,
       context: this.context,
       data,
@@ -314,25 +322,25 @@ export type LoggingConfig = {
   logValues: boolean;
 };
 
-const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS";
+const LOG_CONFIG_STORAGE_KEY = "LOG_OPTIONS" as ManualStorageKey;
 let _config: LoggingConfig = null;
 
 export async function _getLoggingConfig(): Promise<LoggingConfig> {
-  expectBackgroundPage();
+  expectContext("background");
 
   if (_config != null) {
     return _config;
   }
 
-  const raw = await readStorage<string>(LOG_CONFIG_STORAGE_KEY);
-  _config = raw ? JSON.parse(raw) : {};
-  return _config;
+  return readStorageWithMigration(LOG_CONFIG_STORAGE_KEY, {
+    logValues: false,
+  });
 }
 
 export async function _setLoggingConfig(config: LoggingConfig): Promise<void> {
-  expectBackgroundPage();
+  expectContext("background");
 
-  await setStorage(LOG_CONFIG_STORAGE_KEY, JSON.stringify(config));
+  await setStorage(LOG_CONFIG_STORAGE_KEY, config);
   _config = config;
 }
 

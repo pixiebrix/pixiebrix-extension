@@ -22,21 +22,26 @@ import { getAdditionalPermissions } from "webext-additional-permissions";
 import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
-import { expectBackgroundPage } from "@/utils/expectContext";
-import { evaluableFunction } from "@/utils";
+import { expectContext } from "@/utils/expectContext";
+import { allSettledRejections, evaluableFunction } from "@/utils";
+import pTimeout from "p-timeout";
+import type { Target } from "@/types";
 
-export type Target = {
-  tabId: number;
-  frameId: number;
-};
-
-/** Checks whether a URL has permanent permissions and therefore whether `webext-dynamic-content-scripts` already registered the scripts */
+/** Checks whether a URL will have the content scripts automatically injected */
 export async function isContentScriptRegistered(url: string): Promise<boolean> {
+  // Injected by the browser
+  const manifestScriptsOrigins = chrome.runtime
+    .getManifest()
+    .content_scripts.flatMap((script) => script.matches);
+
+  // Inejcted by `webext-dynamic-content-scripts`
   const { origins } = await getAdditionalPermissions({
     strictOrigins: false,
   });
 
-  return patternToRegex(...origins).test(url);
+  // Do not replace the 2 calls above with `permissions.getAll` because it might also
+  // include hosts that are permitted by the manifest but have no content script registered.
+  return patternToRegex(...origins, ...manifestScriptsOrigins).test(url);
 }
 
 interface TargetState {
@@ -50,7 +55,7 @@ interface TargetState {
  * @throws Error if background page doesn't have permission to access the tab
  * */
 export async function getTargetState(target: Target): Promise<TargetState> {
-  expectBackgroundPage();
+  expectContext("background");
 
   const [state] = await browser.tabs.executeScript(target.tabId, {
     // This imitates the new chrome.scripting API by wrapping a function in a IIFE
@@ -89,15 +94,16 @@ export async function onReadyNotification(signal: AbortSignal): Promise<void> {
   }
 }
 
+// TODO: Use https://github.com/sindresorhus/p-memoize/issues/20 to avoid multiple concurrent calls for every target
 /**
  * Ensures that the contentScript is ready on the specified page, regardless of its status.
  * - If it's not expected to be injected automatically, it also injects it into the page.
  * - If it's been injected, it will resolve once the content script is ready.
  */
 export async function ensureContentScript(target: Target): Promise<void> {
-  expectBackgroundPage();
+  expectContext("background");
 
-  console.debug(`ensureContentScript: requested`, target);
+  console.debug("ensureContentScript: requested", target);
 
   const controller = new AbortController();
 
@@ -113,24 +119,32 @@ export async function ensureContentScript(target: Target): Promise<void> {
 
     if (!result) {
       console.debug(
-        `ensureContentScript: script messaged us back while waiting`,
+        "ensureContentScript: script messaged us back while waiting",
         target
       );
       return;
     }
 
     if (result.ready) {
-      console.debug(`ensureContentScript: already exists and is ready`, target);
+      console.debug("ensureContentScript: already exists and is ready", target);
       return;
+    }
+
+    if (!result.url.startsWith("http")) {
+      console.debug(
+        "ensureContentScript: PixieBrix can’t run on this page",
+        result.url
+      );
+      throw new Error("PixieBrix can’t run on this page");
     }
 
     if (result.installed || (await isContentScriptRegistered(result.url))) {
       console.debug(
-        `ensureContentScript: already exists or will be injected automatically`,
+        "ensureContentScript: already exists or will be injected automatically",
         target
       );
     } else {
-      console.debug(`ensureContentScript: injecting`, target);
+      console.debug("ensureContentScript: injecting", target);
       const loadingScripts = chrome.runtime
         .getManifest()
         .content_scripts.map(async (script) => {
@@ -142,9 +156,13 @@ export async function ensureContentScript(target: Target): Promise<void> {
       await Promise.all(loadingScripts);
     }
 
-    await readyNotificationPromise;
+    await pTimeout(
+      readyNotificationPromise,
+      4000,
+      "contentScript not ready in 4s"
+    );
+    console.debug("ensureContentScript: ready", target);
   } finally {
-    console.debug(`ensureContentScript: ready`, target);
     controller.abort();
   }
 }
@@ -158,10 +176,26 @@ export async function showErrorInOptions(
   errorId: string,
   tabIndex?: number
 ): Promise<void> {
-  const url = new URL(browser.runtime.getURL("options.html"));
-  url.searchParams.set("error", errorId);
   await browser.tabs.create({
-    url: url.toString(),
+    // The Options application uses a hash-based history, so put error param after the hash so it's found by useLocation
+    // and useHistory.
+    url: `options.html#/?error=${errorId}`,
     index: tabIndex == null ? undefined : tabIndex + 1,
   });
+}
+
+// This function should never throw, it should just log warnings to the console
+export async function notifyTabs<
+  TReturnValue,
+  TCallback extends (target: { tabId: number }) => Promise<TReturnValue>
+>(callback: TCallback, message: string): Promise<void> {
+  // TODO: Only include PixieBrix tabs, this will reduce the chance of errors
+  const tabs = await browser.tabs.query({});
+  const promises = tabs.map(async ({ id }) => callback({ tabId: id }));
+  const errors = await allSettledRejections(promises);
+  if (errors.length > 0) {
+    console.warn(message, {
+      errors,
+    });
+  }
 }

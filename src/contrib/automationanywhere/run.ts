@@ -18,11 +18,12 @@
 import { proxyService } from "@/background/requests";
 import { Effect } from "@/types";
 import { mapValues } from "lodash";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
+import { validateRegistryId } from "@/types/helpers";
 
-export const AUTOMATION_ANYWHERE_RUN_BOT_ID =
-  "@pixiebrix/automation-anywhere/run-bot";
+export const AUTOMATION_ANYWHERE_RUN_BOT_ID = validateRegistryId(
+  "@pixiebrix/automation-anywhere/run-bot"
+);
 
 export const AUTOMATION_ANYWHERE_PROPERTIES: SchemaProperties = {
   service: {
@@ -71,10 +72,10 @@ export class RunBot extends Effect {
     options: BlockOptions
   ): Promise<void> {
     const { data: responseData } = await proxyService<DeployResponse>(service, {
-      url: `/v2/automations/deploy`,
+      url: "/v2/automations/deploy",
       method: "post",
       data: {
-        fileId: fileId,
+        fileId,
         botInput: mapValues(data, (x) => ({ type: "STRING", string: x })),
         rdpEnabled: false,
         runElevated: false,
@@ -89,5 +90,3 @@ export class RunBot extends Effect {
     options.logger.info(`Automation id ${responseData.automationId}`);
   }
 }
-
-registerBlock(new RunBot());

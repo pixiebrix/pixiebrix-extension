@@ -19,27 +19,16 @@ import { DataTable as RawDataTable } from "primereact/datatable";
 import { Column, ColumnProps } from "primereact/column";
 import React from "react";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-const theme = require("!!raw-loader!primereact/resources/themes/saga-blue/theme.css?esModule=false")
-  .default;
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-const primereact = require("!!raw-loader!primereact/resources/primereact.min.css?esModule=false")
-  .default;
+import theme from "primereact/resources/themes/saga-blue/theme.css?loadAsUrl";
+import primereact from "primereact/resources/primereact.min.css?loadAsUrl";
 
 const DataTableComponent: React.FunctionComponent<{
   columns: ColumnProps[];
-  rows: object[];
+  rows: Array<Record<string, unknown>>;
 }> = ({ columns, rows }) => (
   <React.Fragment>
-    <style
-      type="text/css"
-      dangerouslySetInnerHTML={{ __html: theme.toString() }}
-    />
-    <style
-      type="text/css"
-      dangerouslySetInnerHTML={{ __html: primereact.toString() }}
-    />
+    <link rel="stylesheet" href={theme} />
+    <link rel="stylesheet" href={primereact} />
     <RawDataTable value={rows}>
       {columns.map((column) => (
         <Column key={column.field} {...column} />

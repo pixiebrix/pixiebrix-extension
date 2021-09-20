@@ -15,32 +15,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { uuidv4 } from "@/types/helpers";
+
 const start = Date.now();
 
-import { v4 as uuidv4 } from "uuid";
 import "@/extensionContext";
+import "@/contentScript/messenger/registration";
 import addErrorListeners from "@/contentScript/errors";
-import "@/blocks";
-import "@/contrib";
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contentScript/devTools";
 import "@/contentScript/contextMenus";
-import "@/contentScript/browserAction";
 import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
-import addExternalListener from "@/contentScript/externalProtocol";
-import addExecutorListener, {
-  notifyReady,
-  whoAmI,
-} from "@/contentScript/executor";
+import addExecutorListener from "@/contentScript/executor";
 import "@/messaging/external";
 import "@/contentScript/script";
 import "@/vendors/notify";
-import { updateTabInfo } from "@/contentScript/context";
+import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
 import "@/contentScript/uipath";
+import { markTabAsReady, whoAmI } from "@/background/messenger/api";
+import { ENSURE_CONTENT_SCRIPT_READY } from "./messaging/constants";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
+
+registerBuiltinBlocks();
+registerContribBlocks();
 
 declare global {
   interface Window {
@@ -53,7 +55,6 @@ async function init(): Promise<void> {
   addErrorListeners();
 
   addContentScriptListener();
-  addExternalListener();
   addExecutorListener();
   initTelemetry();
 
@@ -73,7 +74,13 @@ async function init(): Promise<void> {
 
   try {
     // Notify the background script know we're ready to execute remote actions
-    await notifyReady();
+    markReady();
+
+    // Inform `ensureContentScript` that the content script has loaded, if it's listening
+    void browser.runtime.sendMessage({ type: ENSURE_CONTENT_SCRIPT_READY });
+
+    // Informs the standard background listener to track this tab
+    await markTabAsReady();
     console.info(`contentScript ready in ${Date.now() - start}ms`);
   } catch (error: unknown) {
     console.error("Error pinging the background script", error);

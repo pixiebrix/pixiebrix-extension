@@ -17,10 +17,15 @@
 
 import { Transformer } from "@/types";
 import { BlockArg } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class Base64Encode extends Transformer {
+  defaultOutputKey = "encoded";
+
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/encode/btoa",
@@ -46,6 +51,8 @@ export class Base64Encode extends Transformer {
 }
 
 export class Base64Decode extends Transformer {
+  defaultOutputKey = "decoded";
+
   constructor() {
     super(
       "@pixiebrix/encode/atob",
@@ -69,6 +76,3 @@ export class Base64Decode extends Transformer {
     return btoa(encodedData);
   }
 }
-
-registerBlock(new Base64Encode());
-registerBlock(new Base64Decode());

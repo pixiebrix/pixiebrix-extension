@@ -16,13 +16,15 @@
  */
 
 import React from "react";
-import { BlockOptionProps } from "@/components/fields/blockOptions";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { RegistryId } from "@/core";
 
 /**
  * Mapping from block id to block editor.
+ * @see genericOptionsFactory
  */
 const optionsRegistry = new Map<
-  string,
+  RegistryId,
   React.FunctionComponent<BlockOptionProps>
 >();
 

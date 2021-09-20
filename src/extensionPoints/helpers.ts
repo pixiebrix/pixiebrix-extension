@@ -16,10 +16,10 @@
  */
 
 import { castArray, noop, once } from "lodash";
-// @ts-ignore: no type definitions
-import initialize from "vendors/initialize";
+// @ts-expect-error no type definitions
+import initialize from "@/vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
-import { IExtension, MessageContext, Metadata } from "@/core";
+import { IExtension, MessageContext } from "@/core";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
@@ -53,29 +53,33 @@ export function onNodeRemoved(node: Node, callback: () => void): () => void {
   // Observe the whole path to the node. A node is removed if any of its ancestors are removed. Observe individual
   // nodes instead of the subtree on the document for efficiency on wide trees
   for (const ancestor of ancestors) {
-    if (ancestor?.parentNode) {
-      // https://stackoverflow.com/a/50397148/
-      const removalObserver = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          // https://stackoverflow.com/questions/51723962/typescript-nodelistofelement-is-not-an-array-type-or-a-string-type
-          for (const removedNode of (mutation.removedNodes as any) as Iterable<Node>) {
-            if (nodes.has(removedNode)) {
-              for (const observer of observers) {
-                try {
-                  observer.disconnect();
-                } catch (error: unknown) {
-                  console.warn("Error disconnecting mutation observer", error);
-                }
-              }
+    if (!ancestor?.parentNode) {
+      continue;
+    }
 
-              wrappedCallback();
-              break;
+    // https://stackoverflow.com/a/50397148/
+    const removalObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        // https://stackoverflow.com/questions/51723962/typescript-nodelistofelement-is-not-an-array-type-or-a-string-type
+        for (const removedNode of (mutation.removedNodes as any) as Iterable<Node>) {
+          if (!nodes.has(removedNode)) {
+            continue;
+          }
+
+          for (const observer of observers) {
+            try {
+              observer.disconnect();
+            } catch (error: unknown) {
+              console.warn("Error disconnecting mutation observer", error);
             }
           }
+
+          wrappedCallback();
+          break;
         }
-      });
-      removalObserver.observe(ancestor.parentNode, { childList: true });
-    }
+      }
+    });
+    removalObserver.observe(ancestor.parentNode, { childList: true });
   }
 
   return () => {
@@ -167,13 +171,18 @@ function mutationSelector(
   const promise = new Promise<JQuery>((resolve) => {
     observer = initialize(
       selector,
-      function () {
-        resolve($(this));
+      (i: number, element: HTMLElement) => {
+        resolve($(element));
       },
       { target: target ?? document }
     );
   });
-  return [promise, () => observer?.disconnect()];
+  return [
+    promise,
+    () => {
+      observer.disconnect();
+    },
+  ];
 }
 
 function _initialize(
@@ -190,18 +199,19 @@ function _initialize(
 
 /**
  * Recursively await an element using one or more JQuery selectors.
- * @param selector
- * @param rootElement
+ * @param selector selector, or an array of selectors to
+ * @param rootElement the root element, defaults to `document`
  */
 export function awaitElementOnce(
   selector: string | string[],
-  rootElement: JQuery<HTMLElement | Document> = undefined
+  rootElement?: JQuery<HTMLElement | Document>
 ): [Promise<JQuery<HTMLElement | Document>>, () => void] {
   if (selector == null) {
     throw new Error("awaitElementOnce expected selector");
   }
 
   const selectors = castArray(selector);
+  // Safe to pass rootElement to $ constructor since it's already a JQuery object
   const $root = rootElement ? $(rootElement) : $(document);
 
   if (selectors.length === 0) {
@@ -275,12 +285,9 @@ export function acquireElement(
   return onNodeRemoved(element, onRemove);
 }
 
-// FIXME: we have inconsistent typing of extensions, e.g., IExtension, InstalledExtension, ExtensionOptions. So handle
-//  common shape without referencing those modules: https://github.com/pixiebrix/pixiebrix-extension/issues/893
-type Extension = IExtension & { _recipe?: Metadata };
-
-export function selectExtensionContext(extension: Extension): MessageContext {
+export function selectExtensionContext(extension: IExtension): MessageContext {
   return {
+    label: extension.label,
     extensionId: extension.id,
     extensionPointId: extension.extensionPointId,
     deploymentId: extension._deployment?.id,

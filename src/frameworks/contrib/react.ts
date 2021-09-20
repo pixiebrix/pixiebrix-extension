@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -62,17 +63,17 @@ interface Fiber {
   /**
    * The props used to create the output.
    */
-  memoizedProps: { [prop: string]: unknown };
+  memoizedProps: Record<string, unknown>;
 
   /**
    * The resolved function/class associated with this fiber.
    */
-  type: string | object;
+  type: string | Record<string, unknown>;
 
   /**
    * The local state associated with this fiber.
    */
-  stateNode: Node | object;
+  stateNode: Node | Record<string, unknown>;
 }
 
 export function isManaged(node: Node): boolean {
@@ -85,7 +86,7 @@ export function hasReactProps(fiber: Fiber): boolean {
   return Object.keys(fiber.memoizedProps).some((x) => x !== "children");
 }
 
-export function readReactProps(fiber: Fiber): { [prop: string]: unknown } {
+export function readReactProps(fiber: Fiber): Record<string, unknown> {
   return pickBy(fiber.memoizedProps, (value, key) => key !== "children");
 }
 

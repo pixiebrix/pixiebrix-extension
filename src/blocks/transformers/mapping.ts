@@ -16,11 +16,16 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { BusinessError } from "@/errors";
 
 export class MappingTransformer extends Transformer {
+  defaultOutputKey = "value";
+
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/mapping",
@@ -78,5 +83,3 @@ export class MappingTransformer extends Transformer {
     throw new BusinessError(`Key ${key} not found in the mapping`);
   }
 }
-
-registerBlock(new MappingTransformer());

@@ -18,20 +18,14 @@
 import React from "react";
 import { Renderer } from "@/types";
 import { BlockArg, BlockOptions, RenderedHTML, Schema, UiSchema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import Form from "@rjsf/core";
 import { JsonObject } from "type-fest";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { reportError } from "@/telemetry/logging";
 import { notifyResult } from "@/contentScript/notify";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-const theme = require("!!raw-loader!bootstrap/dist/css/bootstrap.min.css?esModule=false")
-  .default;
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires, unicorn/prefer-module
-const custom = require("!!raw-loader!@/blocks/renderers/customForm.css?esModule=false")
-  .default;
+import theme from "bootstrap/dist/css/bootstrap.min.css?loadAsUrl";
+import custom from "@/blocks/renderers/customForm.css?loadAsUrl";
 
 const CustomFormComponent: React.FunctionComponent<{
   schema: Schema;
@@ -40,14 +34,8 @@ const CustomFormComponent: React.FunctionComponent<{
   onSubmit: (values: JsonObject) => Promise<void>;
 }> = ({ schema, uiSchema, formData, onSubmit }) => (
   <div className="CustomForm">
-    <style
-      type="text/css"
-      dangerouslySetInnerHTML={{ __html: theme.toString() }}
-    />
-    <style
-      type="text/css"
-      dangerouslySetInnerHTML={{ __html: custom.toString() }}
-    />
+    <link rel="stylesheet" href={theme} />
+    <link rel="stylesheet" href={custom} />
     <Form
       schema={schema}
       uiSchema={uiSchema}
@@ -65,7 +53,7 @@ const CustomFormComponent: React.FunctionComponent<{
   </div>
 );
 
-export class CustomForm extends Renderer {
+export class CustomFormRenderer extends Renderer {
   constructor() {
     super(
       "@pixiebrix/form",
@@ -130,5 +118,3 @@ export class CustomForm extends Renderer {
     } as any;
   }
 }
-
-registerBlock(new CustomForm());

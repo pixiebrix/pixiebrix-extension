@@ -16,8 +16,15 @@
  */
 
 import { fetch } from "@/hooks/fetch";
-import { AuthState } from "@/core";
+import { AuthState, RawServiceConfiguration } from "@/core";
 import { updateAuth as updateRollbarAuth } from "@/telemetry/rollbar";
+import { getUID } from "@/background/telemetry";
+import { AuthOption } from "@/auth/authTypes";
+import { useAsyncState } from "./common";
+import { readRawConfigurations } from "@/services/registry";
+import { useMemo, useCallback } from "react";
+import { useGetServiceAuthsQuery } from "@/services/api";
+import { sortBy } from "lodash";
 
 interface OrganizationResponse {
   readonly id: string;
@@ -60,6 +67,7 @@ export async function getAuth(): Promise<AuthState> {
       userId: id,
       email,
       organizationId: telemetryOrganization?.id ?? organization?.id,
+      browserId: await getUID(),
     });
     return {
       userId: id,
@@ -74,4 +82,61 @@ export async function getAuth(): Promise<AuthState> {
   }
 
   return anonAuth;
+}
+
+function defaultLabel(label: string): string {
+  const normalized = (label ?? "").trim();
+  return normalized === "" ? "Default" : normalized;
+}
+
+export function useAuthOptions(): [AuthOption[], () => void] {
+  // Using readRawConfigurations instead of the store for now so that we can refresh the list independent of the
+  // redux store. (The option may have been added in a different tab). At some point, we'll need parts of the redux
+  // store to reload if it's changed on another tab
+  const [
+    configuredServices,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
+    _localLoading,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars -- clarify which state values ignoring for now
+    _localError,
+    refreshLocal,
+  ] = useAsyncState<RawServiceConfiguration[]>(readRawConfigurations);
+
+  const {
+    data: remoteAuths,
+    refetch: refreshRemote,
+  } = useGetServiceAuthsQuery();
+
+  const authOptions = useMemo(() => {
+    const localOptions = sortBy(
+      (configuredServices ?? []).map((x) => ({
+        value: x.id,
+        label: `${defaultLabel(x.label)} — Private`,
+        local: true,
+        serviceId: x.serviceId,
+      })),
+      (x) => x.label
+    );
+
+    const sharedOptions = sortBy(
+      (remoteAuths ?? []).map((x) => ({
+        value: x.id,
+        label: `${defaultLabel(x.label)} — ${
+          x.organization?.name ?? "✨ Built-in"
+        }`,
+        local: false,
+        serviceId: x.service.config.metadata.id,
+      })),
+      (x) => x.label
+    );
+
+    return [...localOptions, ...sharedOptions];
+  }, [remoteAuths, configuredServices]);
+
+  const refresh = useCallback(() => {
+    refreshRemote();
+    void refreshLocal();
+  }, [refreshRemote, refreshLocal]);
+
+  return [authOptions, refresh];
 }

@@ -1,0 +1,85 @@
+name: Release Build
+
+on:
+  push:
+    branches:
+      - "release/**"
+
+env:
+  # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
+  PUBLIC_RELEASE: true
+
+jobs:
+  build-for-store:
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
+          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
+
+      - run: npm run upload:sourcemaps
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
+          AWS_DEFAULT_REGION: "us-east-2"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-for-store
+          path: |
+            dist
+            !dist/**/*.map
+          retention-days: 5
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
+          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
+          CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_PROD_PUBLIC_KEY }}
+      - run: npm run upload:sourcemaps
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
+          AWS_DEFAULT_REGION: "us-east-2"
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-production
+          path: |
+            dist
+            !dist/**/*.map
+          retention-days: 5
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_CHANNEL: "release"
+          SLACK_MESSAGE: "Chrome release build succeeded :rocket:"

@@ -16,8 +16,7 @@
  */
 
 import { Metadata } from "@/core";
-import { ReaderConfig } from "@/blocks/combinators";
-import { Availability } from "@/blocks/types";
+import { Availability, ReaderConfig } from "@/blocks/types";
 
 type ExtensionPointType =
   | "panel"

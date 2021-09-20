@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -19,12 +20,14 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
+  excludeInstanceIds,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
   selectIsAvailable,
+  withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
@@ -34,37 +37,26 @@ import {
   ActionPanelExtensionPoint,
   PanelDefinition,
 } from "@/extensionPoints/actionPanelExtension";
-import FoundationTab from "@/devTools/editor/tabs/actionPanel/FoundationTab";
-import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
-import PanelTab from "@/devTools/editor/tabs/actionPanel/PanelTab";
-import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
-import { DynamicDefinition } from "@/nativeEditor";
-import EffectTab from "@/devTools/editor/tabs/EffectTab";
-import MetaTab from "@/devTools/editor/tabs/MetaTab";
-import { v4 as uuidv4 } from "uuid";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
+import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
+import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
 import {
   BaseFormState,
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { BlockPipeline } from "@/blocks/combinators";
 import React from "react";
+import { BlockPipeline } from "@/blocks/types";
+import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 const wizard: WizardStep[] = [
-  { step: "Name", Component: MetaTab },
-  { step: "Foundation", Component: FoundationTab },
-  { step: "Data", Component: ReaderTab },
-  { step: "Panel", Component: PanelTab },
-  { step: "Integrations", Component: ServicesTab },
   {
-    step: "Content",
-    Component: EffectTab,
-    extraProps: { fieldName: "extension.body" },
+    step: "Edit",
+    Component: EditTab,
+    extraProps: { pipelineFieldName: "extension.body" },
   },
-  { step: "Availability", Component: AvailabilityTab },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -131,26 +123,26 @@ function selectExtensionPoint(
   };
 }
 
-function selectExtension({
-  uuid,
-  label,
-  extensionPoint,
-  extension,
-  services,
-}: ActionPanelFormState): IExtension<ActionPanelConfig> {
+function selectExtension(
+  { uuid, label, extensionPoint, extension, services }: ActionPanelFormState,
+  options: { includeInstanceIds?: boolean } = {}
+): IExtension<ActionPanelConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
     label,
     services,
-    config: extension,
+    config: options.includeInstanceIds
+      ? extension
+      : excludeInstanceIds(extension, "body"),
   };
 }
 
 function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
   return {
     type: "actionPanel",
-    extension: selectExtension(element),
+    extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
@@ -176,7 +168,7 @@ export async function fromExtensionPoint(
     services: [],
 
     extension: {
-      heading: heading,
+      heading,
       body: [],
     },
 
@@ -211,7 +203,7 @@ async function fromExtension(
     extension: {
       ...config.config,
       heading: config.config.heading,
-      body: castArray(config.config.body),
+      body: withInstanceIds(castArray(config.config.body)),
     },
 
     extensionPoint: {
@@ -238,6 +230,7 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   selectExtension,
   fromExtension,
   wizard,
+  EditorNode: PanelConfiguration,
   insertModeHelp: (
     <div>
       <p>

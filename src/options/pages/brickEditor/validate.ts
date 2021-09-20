@@ -20,11 +20,18 @@ import { KIND_SCHEMAS, validateKind } from "@/validators/generic";
 import { ValidationResult } from "@cfworker/json-schema";
 import { getErrorMessage } from "@/errors";
 
-interface PartialSchema {
+type PartialSchema = {
   kind?: string;
-}
+};
 
-export async function validateSchema(value: string): Promise<any> {
+export type BrickValidationResult =
+  | { config: string }
+  | { config: string[] }
+  | Record<never, unknown>;
+
+export async function validateSchema(
+  value: string
+): Promise<BrickValidationResult> {
   if (!value) {
     return {
       config: "A definition is required",

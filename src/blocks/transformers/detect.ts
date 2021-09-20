@@ -17,10 +17,11 @@
 
 import { Transformer } from "@/types";
 import { BlockArg, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 
 export class DetectElement extends Transformer {
+  defaultOutputKey = "match";
+
   constructor() {
     super(
       "@pixiebrix/dom/detect",
@@ -53,6 +54,7 @@ export class DetectElement extends Transformer {
   };
 
   async transform({ selector }: BlockArg): Promise<Record<string, unknown>> {
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
     const $result = $(document).find(selector);
     return {
       count: $result.length,
@@ -60,5 +62,3 @@ export class DetectElement extends Transformer {
     };
   }
 }
-
-registerBlock(new DetectElement());

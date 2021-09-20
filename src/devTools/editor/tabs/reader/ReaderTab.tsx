@@ -19,7 +19,7 @@ import React, { useContext, useState } from "react";
 import { Button, ListGroup, Tab } from "react-bootstrap";
 import { FieldArray, useField, useFormikContext } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { FormState, actions } from "@/devTools/editor/editorSlice";
+import { FormState, actions } from "@/devTools/editor/slices/editorSlice";
 import ReaderConfig from "@/devTools/editor/tabs/reader/ReaderConfig";
 import { makeDefaultReader } from "@/devTools/editor/extensionPoints/base";
 import { DevToolsContext } from "@/devTools/context";
@@ -126,7 +126,7 @@ const ReaderTab: React.FunctionComponent<{
 
   const { values: formValues } = useFormikContext<FormState>();
   const [{ value: readers }] = useField<
-    (ReaderReferenceFormState | ReaderFormState)[]
+    Array<ReaderReferenceFormState | ReaderFormState>
   >("readers");
 
   const locked =
@@ -225,7 +225,9 @@ const ReaderTab: React.FunctionComponent<{
                           key={`${index}-${reader.metadata.id}`}
                           index={index}
                           reader={reader}
-                          onSelect={() => setActive(index)}
+                          onSelect={() => {
+                            setActive(index);
+                          }}
                           onRemove={() => {
                             setActive(Math.max(0, index - 1));
                             remove(index);
@@ -241,7 +243,9 @@ const ReaderTab: React.FunctionComponent<{
                           isDragDisabled
                           index={readers.length}
                           reader={CONTEXT_MENU_READER}
-                          onSelect={() => setActive(readers.length)}
+                          onSelect={() => {
+                            setActive(readers.length);
+                          }}
                           isActive={active === readers.length}
                           isLocked={locked}
                         />
@@ -258,7 +262,10 @@ const ReaderTab: React.FunctionComponent<{
             <>
               {isCustomReader(reader) ? (
                 <ReaderConfig
-                  key={`${reader.metadata.id}-${active}`}
+                  // Re-render the reader content when the selected (active) reader changes. Can't include the brick id
+                  // as part of they key because it causes the component to re-render on every keypress when editing
+                  // the id field
+                  key={active}
                   editable={editable}
                   available={available}
                   readerIndex={active}
@@ -266,7 +273,10 @@ const ReaderTab: React.FunctionComponent<{
                 />
               ) : (
                 <ReaderBlockConfig
-                  key={`${reader.metadata.id}-${active}`}
+                  // Re-render the reader content when the selected (active) reader changes. Can't include the brick id
+                  // as part of they key because it causes the component to re-render on every keypress when editing
+                  // the id field
+                  key={active}
                   readerIndex={active}
                   available={available}
                   testElement={INCLUDE_TEST_ELEMENT.has(reader.metadata.id)}

@@ -1,0 +1,55 @@
+/*!
+ * Copyright (C) 2021 PixieBrix, Inc.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+$clearButtonPadding: 2px;
+
+// Changes the size of the browser-native 'x' button at the end of the input
+.input {
+  &::-webkit-search-cancel-button {
+    padding: $clearButtonPadding;
+  }
+  &::-ms-clear {
+    padding: $clearButtonPadding;
+  }
+}
+
+// Disables/hides the browser-native 'x' button at the end of the input
+.notClearable {
+  // Internet Explorer
+  &::-ms-clear {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  &::-ms-reveal {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  // Chrome
+  &::-webkit-search-decoration,
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-results-button,
+  &::-webkit-search-results-decoration {
+    display: none;
+  }
+}
+
+.suggestionList {
+  max-height: 60vh;
+  overflow-y: scroll;
+}

@@ -29,9 +29,9 @@ import {
   TabId,
 } from "@/background/devtools/contract";
 import { browser, Runtime, WebNavigation } from "webextension-polyfill-ts";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { SimpleEvent } from "@/hooks/events";
-import { forbidBackgroundPage } from "@/utils/expectContext";
+import { forbidContext } from "@/utils/expectContext";
 import { getErrorMessage } from "@/errors";
 
 const devtoolsHandlers = new Map<Nonce, PromiseHandler>();
@@ -74,7 +74,7 @@ function devtoolsMessageListener(response: BackgroundResponse) {
       reject(deserializeError(payload.$$error));
     }
 
-    return resolve(payload);
+    resolve(payload);
   }
 }
 
@@ -121,7 +121,8 @@ export async function callBackground(
 
 export function installPortListeners(port: Runtime.Port): void {
   // Can't use isDevtoolsPage since this will be called from the pane and other places
-  forbidBackgroundPage(
+  forbidContext(
+    "background",
     "installPortListeners should only be called from the devtools"
   );
 

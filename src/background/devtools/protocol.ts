@@ -22,19 +22,21 @@ import { Framework, FrameworkMeta } from "@/messaging/constants";
 import * as nativeSelectionProtocol from "@/nativeEditor/selector";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
-import * as browserActionProtocol from "@/contentScript/browserAction";
 import { Availability } from "@/blocks/types";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import {
   liftBackground,
   registerPort as internalRegisterPort,
 } from "@/background/devtools/internal";
-import { getTargetState, ensureContentScript } from "@/background/util";
+import { ensureContentScript } from "@/background/util";
 import { isEmpty } from "lodash";
-import * as contextMenuProtocol from "@/background/contextMenus";
-import { Target } from "@/background/devtools/contract";
-
-const TOP_LEVEL_FRAME = 0;
+import type { Target } from "@/types";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
+import { RegistryId, UUID } from "@/core";
+import {
+  removeActionPanel,
+  showActionPanel,
+} from "@/contentScript/messenger/api";
 
 export const registerPort = liftBackground(
   "REGISTER_PORT",
@@ -43,24 +45,18 @@ export const registerPort = liftBackground(
   }
 );
 
-export const getTabInfo = liftBackground(
-  "CURRENT_URL",
+export const checkTargetPermissions = liftBackground(
+  "CHECK_TARGET_PERMISSIONS",
   (target: Target) => async () => {
-    if (target.frameId !== TOP_LEVEL_FRAME) {
-      console.warn(
-        `getTabInfo called targeting non top-level frame: ${target.frameId}`
-      );
+    try {
+      await browser.tabs.executeScript(target.tabId, {
+        code: "true",
+        frameId: target.frameId,
+      });
+      return true;
+    } catch {
+      return false;
     }
-
-    const state = await getTargetState({
-      ...target,
-      frameId: TOP_LEVEL_FRAME,
-    }).catch(() => false);
-    const { url } = await browser.tabs.get(target.tabId);
-    return {
-      url,
-      hasPermissions: Boolean(state),
-    };
   }
 );
 
@@ -106,18 +102,13 @@ export const selectElement = liftBackground(
       traverseUp,
       root,
     });
+
     if (isEmpty(element)) {
       throw new Error("selectElement returned an empty element");
     }
 
     return element;
   }
-);
-
-export const dragButton = liftBackground(
-  "DRAG_BUTTON",
-  (target: Target) => async ({ uuid }: { uuid: string }) =>
-    nativeEditorProtocol.dragButton(target, { uuid })
 );
 
 export const insertButton = liftBackground(
@@ -134,45 +125,36 @@ export const insertPanel: (
 
 export const showBrowserActionPanel = liftBackground(
   "SHOW_BROWSER_ACTION_PANEL",
-  (target: Target) => async () => browserActionProtocol.showActionPanel(target)
+  (target: Target) => async () => showActionPanel(target)
 );
 
 export const updateDynamicElement = liftBackground(
   "UPDATE_DYNAMIC_ELEMENT",
-  (target: Target) => async (element: nativeEditorProtocol.DynamicDefinition) =>
+  (target: Target) => async (element: DynamicDefinition) =>
     nativeEditorProtocol.updateDynamicElement(target, element)
 );
 
 export const clearDynamicElements = liftBackground(
   "CLEAR_DYNAMIC",
-  (target: Target) => async ({ uuid }: { uuid?: string }) =>
+  (target: Target) => async ({ uuid }: { uuid?: UUID }) =>
     nativeEditorProtocol.clear(target, { uuid })
 );
 
-export const toggleOverlay = liftBackground(
-  "TOGGLE_ELEMENT",
-  (target: Target) => async ({
-    uuid,
-    on = true,
-  }: {
-    uuid: string;
-    on: boolean;
-  }) =>
-    nativeEditorProtocol.toggleOverlay(target, {
-      selector: `[data-uuid="${uuid}"]`,
-      on,
-    })
+export const enableDataOverlay = liftBackground(
+  "ENABLE_ELEMENT",
+  (target: Target) => async (uuid: UUID) =>
+    nativeEditorProtocol.enableOverlay(target, `[data-uuid="${uuid}"]`)
 );
 
-export const toggleSelector = liftBackground(
-  "TOGGLE_SELECTOR",
-  (target: Target) => async ({
-    selector,
-    on = true,
-  }: {
-    selector: string;
-    on: boolean;
-  }) => nativeEditorProtocol.toggleOverlay(target, { selector, on })
+export const enableSelectorOverlay = liftBackground(
+  "ENABLE_SELECTOR",
+  (target: Target) => async (selector: string) =>
+    nativeEditorProtocol.enableOverlay(target, selector)
+);
+
+export const disableOverlay = liftBackground(
+  "DISABLE_ELEMENT",
+  (target: Target) => async () => nativeEditorProtocol.disableOverlay(target)
 );
 
 export const getInstalledExtensionPointIds = liftBackground(
@@ -196,13 +178,19 @@ export const searchWindow: (
     contentScriptProtocol.searchWindow(target, query)
 );
 
+export const runBlock = liftBackground(
+  "RUN_BLOCK",
+  (target: Target) => async (args: contentScriptProtocol.RunBlockArgs) =>
+    contentScriptProtocol.runBlock(target, args)
+);
+
 export const runReaderBlock = liftBackground(
   "RUN_READER_BLOCK",
   (target: Target) => async ({
     id,
     rootSelector,
   }: {
-    id: string;
+    id: RegistryId;
     rootSelector?: string;
   }) =>
     contentScriptProtocol.runReaderBlock(target, {
@@ -226,20 +214,11 @@ export const runReader = liftBackground(
     })
 );
 
-export const uninstallContextMenu = liftBackground(
-  "UNINSTALL_CONTEXT_MENU",
-  // False positive - it's the inner method that should be async
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  () => async ({ extensionId }: { extensionId: string }) =>
-    contextMenuProtocol.uninstall(extensionId)
-);
-
 export const uninstallActionPanelPanel = liftBackground(
   "UNINSTALL_ACTION_PANEL_PANEL",
   // False positive - it's the inner method that should be async
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  (target) => async ({ extensionId }: { extensionId: string }) =>
-    browserActionProtocol.removeActionPanelPanel(target, extensionId)
+  (target) => async ({ extensionId }: { extensionId: UUID }) =>
+    removeActionPanel(target, extensionId)
 );
 
 export const initUiPathRobot = liftBackground(

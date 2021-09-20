@@ -18,7 +18,7 @@
 import React from "react";
 import { OutputValidationError } from "@/blocks/errors";
 import { Col, Row } from "react-bootstrap";
-import JsonTree from "@/components/JsonTree";
+import JsonTree from "@/components/jsonTree/JsonTree";
 
 const OutputValidationErrorDetail: React.FunctionComponent<{
   error: OutputValidationError;

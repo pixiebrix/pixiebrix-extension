@@ -17,10 +17,10 @@
 
 import { Reader } from "@/types";
 import { Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
-import { fromPairs } from "lodash";
 
-class ElementReader extends Reader {
+export class ElementReader extends Reader {
+  defaultOutputKey = "element";
+
   constructor() {
     super(
       "@pixiebrix/html/element",
@@ -33,19 +33,23 @@ class ElementReader extends Reader {
     const element = elementOrDocument as HTMLElement;
 
     if (!element?.tagName) {
-      throw new Error(`Expected an HTML Element`);
+      throw new Error("Expected an HTML Element");
     }
 
     const $element = $(element);
 
     return {
       tagName: element.tagName,
-      attrs: fromPairs(
+      attrs: Object.fromEntries(
         Object.values(element.attributes).map((x) => [x.name, x.value])
       ),
       text: $element.text().trim(),
       data: $element.data(),
     };
+  }
+
+  async isPure(): Promise<boolean> {
+    return true;
   }
 
   outputSchema: Schema = {
@@ -77,5 +81,3 @@ class ElementReader extends Reader {
     return true;
   }
 }
-
-registerBlock(new ElementReader());

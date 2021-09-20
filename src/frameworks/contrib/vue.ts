@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -19,7 +20,7 @@
 // https://github.com/vuejs/vue-devtools/blob/6d8fee4d058716fe72825c9ae22cf831ef8f5172/packages/app-backend/src/index.js#L185
 // https://github.com/vuejs/vue-devtools/blob/dev/packages/app-backend/src/utils.js
 
-import { pickBy, isEmpty } from "lodash";
+import { pickBy, isEmpty, set } from "lodash";
 import { RootInstanceVisitor } from "@/frameworks/scanner";
 import { WriteableComponentAdapter } from "@/frameworks/component";
 
@@ -54,7 +55,7 @@ interface Instance {
    * to the properties on its data object.
    * https://v3.vuejs.org/api/instance-properties.html#data
    */
-  $data: object;
+  $data: Record<string, unknown>;
 
   /**
    * The parent instance, if the current instance has one.
@@ -143,7 +144,7 @@ export function findRelatedComponent(el: HTMLElement): Instance | null {
   return isManaged(el) ? el.__vue__ : null;
 }
 
-function readVueData(instance: Instance): object {
+function readVueData(instance: Instance): Record<string, unknown> {
   // TODO: might want to read from $data here also
   return pickBy(
     instance,
@@ -162,8 +163,8 @@ const adapter: WriteableComponentAdapter<Instance> = {
   hasData: (instance: Instance) => !isEmpty(instance),
   getData: readVueData,
   setData: (instance: Instance, data) => {
-    for (const [key, value] of Object.entries(data)) {
-      (instance as any)[key] = value;
+    for (const [path, value] of Object.entries(data)) {
+      set(instance, path, value);
     }
   },
 };

@@ -20,13 +20,25 @@ import "@/layout/Banner";
 import cx from "classnames";
 import useDeployments from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
+import { useRouteMatch } from "react-router";
 
 const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
   className,
 }) => {
   const { hasUpdate, update } = useDeployments();
 
+  const matchRoot = useRouteMatch({ path: "/", exact: true });
+  const matchInstalled = useRouteMatch({ path: "/installed", exact: true });
+  const matchMarketplace = useRouteMatch({ path: "/blueprints", exact: true });
+  const matchTemplates = useRouteMatch({ path: "/templates", exact: true });
+
   if (!hasUpdate) {
+    return null;
+  }
+
+  if (!(matchRoot || matchInstalled || matchMarketplace || matchTemplates)) {
+    // Only show on certain pages where the user expects to see a top-level install button. It's especially confusing
+    // to show the banner on other pages with an activate button (e.g., the marketplace wizard, in the workshop, etc.)
     return null;
   }
 

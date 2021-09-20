@@ -16,27 +16,27 @@
  */
 
 import React, { useCallback, useContext, useMemo, useState } from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useFormikContext } from "formik";
 import { Alert, Col, Form, Row } from "react-bootstrap";
-import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import { jsonTreeTheme as theme } from "@/themes/light";
 import JSONTree from "react-json-tree";
 import { useDebounce } from "use-debounce";
-import { searchData } from "@/devTools/editor/tabs/reader/ReaderConfig";
 import blockRegistry from "@/blocks/registry";
 import { useAsyncState } from "@/hooks/common";
 import { IReader } from "@/core";
 import { runReaderBlock } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
-import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
-import { SelectorSelectorControl } from "@/devTools/editor/fields/SelectorSelectorField";
+import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
 import { faCode, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import copy from "copy-to-clipboard";
 import { useToasts } from "react-toast-notifications";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
+import { searchData } from "@/devTools/utils";
+import { useLabelRenderer } from "@/components/jsonTree/treeHooks";
 
 export const ReaderBlockForm: React.FunctionComponent<{
   reader: IReader;
@@ -140,9 +140,11 @@ export const ReaderBlockForm: React.FunctionComponent<{
             Test Element
           </Form.Label>
           <Col sm={10}>
-            <SelectorSelectorControl
+            <SelectorSelectorWidget
               value={testSelector}
-              onSelect={(selector) => setTestSelector(selector)}
+              onSelect={(selector: string) => {
+                setTestSelector(selector);
+              }}
               isClearable
             />
             <Form.Text>
@@ -161,7 +163,9 @@ export const ReaderBlockForm: React.FunctionComponent<{
           <Form.Control
             type="text"
             placeholder="Search for a property or value"
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+            }}
           />
         </Col>
       </Form.Group>
@@ -189,7 +193,7 @@ export const ReaderBlockForm: React.FunctionComponent<{
             </div>
 
             <div className="overflow-auto h-100 w-100">
-              {available === false && (
+              {!available && (
                 <span className="text-danger">
                   Extension not available on page
                 </span>

@@ -44,9 +44,11 @@ export class ParseDataUrl extends Transformer {
   outputSchema: Schema = propertiesToSchema({
     mimeType: {
       type: "string",
+      description: "The MIME media type",
     },
     body: {
       type: "string",
+      description: "The decoded body",
     },
   });
 

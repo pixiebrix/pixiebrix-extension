@@ -16,24 +16,17 @@
  */
 
 import React, { useMemo } from "react";
-import {
-  BlockOptionProps,
-  FieldRenderer,
-  ServiceField,
-} from "@/components/fields/blockOptions";
-import { fromPairs, identity, isEmpty } from "lodash";
+import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
+import { compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
 import { Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
-import { Button, Card, Form } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 import { fieldLabel } from "@/components/fields/fieldUtils";
-import Select from "react-select";
-import { FieldProps } from "@/components/fields/propTypes";
-import { inputProperties } from "@/helpers";
-import GridLoader from "react-spinners/GridLoader";
-import { useDependency } from "@/services/hooks";
+import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
+import useDependency from "@/services/useDependency";
 import {
   Bot,
   BOT_TYPE,
@@ -41,8 +34,15 @@ import {
   Interface,
   ListResponse,
 } from "@/contrib/automationanywhere/contract";
+import { validateRegistryId } from "@/types/helpers";
+import ServiceField from "@/components/fields/schemaFields/ServiceField";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
+import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 
-const AUTOMATION_ANYWHERE_SERVICE_ID = "automation-anywhere/control-room";
+const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
+  "automation-anywhere/control-room"
+);
 
 function useBots(): {
   bots: Bot[];
@@ -52,6 +52,10 @@ function useBots(): {
   const { config } = useDependency(AUTOMATION_ANYWHERE_SERVICE_ID);
 
   const [bots, isPending, error] = useAsyncState(async () => {
+    if (!config) {
+      return [];
+    }
+
     const response = await proxyService<ListResponse<Bot>>(config, {
       url: `/v2/repository/folders/${config.config.folderId}/list`,
       method: "POST",
@@ -71,6 +75,10 @@ function useDevices(): {
   const { config } = useDependency(AUTOMATION_ANYWHERE_SERVICE_ID);
 
   const [devices, isPending, error] = useAsyncState(async () => {
+    if (!config) {
+      return [];
+    }
+
     const response = await proxyService<ListResponse<Device>>(config, {
       url: "/v2/devices/list",
       method: "POST",
@@ -85,7 +93,7 @@ function useDevices(): {
 function interfaceToInputSchema(botInterface: Interface): Schema {
   return {
     type: "object",
-    properties: fromPairs(
+    properties: Object.fromEntries(
       botInterface.variables
         .filter((x) => x.input)
         .map((v) => [
@@ -99,13 +107,11 @@ function interfaceToInputSchema(botInterface: Interface): Schema {
   };
 }
 
-const RobotField: React.FunctionComponent<FieldProps<string>> = ({
+const RobotField: React.FunctionComponent<SchemaFieldProps<string>> = ({
   label,
   schema,
   ...props
 }) => {
-  const [{ value, ...field }, meta, helpers] = useField<string>(props);
-
   const { bots, error } = useBots();
 
   const options = useMemo(
@@ -114,40 +120,21 @@ const RobotField: React.FunctionComponent<FieldProps<string>> = ({
   );
 
   return (
-    <Form.Group>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
-      <Select
-        options={options}
-        value={options.find((x) => value === x.value)}
-        onChange={(option) => {
-          console.debug("Selected bot option", { option });
-          helpers.setValue((option as any).value);
-        }}
-      />
-      {schema.description && (
-        <Form.Text className="text-muted">
-          The Automation Anywhere bot to run
-        </Form.Text>
-      )}
-      {error && (
-        <span className="text-danger small">
-          Error fetching robots: {error.toString()}
-        </span>
-      )}
-      {meta.touched && meta.error && (
-        <span className="text-danger small">{meta.error}</span>
-      )}
-    </Form.Group>
+    <ConnectedFieldTemplate
+      label={label ?? fieldLabel(props.name)}
+      description="The Automation Anywhere bot to run"
+      as={SelectWidget}
+      options={options}
+      loadError={error}
+    />
   );
 };
 
-const DeviceField: React.FunctionComponent<FieldProps<string>> = ({
+const DeviceField: React.FunctionComponent<SchemaFieldProps<string>> = ({
   label,
   schema,
   ...props
 }) => {
-  const [{ value, ...field }, meta, helpers] = useField<string>(props);
-
   const { devices, error } = useDevices();
 
   const options = useMemo(
@@ -161,39 +148,21 @@ const DeviceField: React.FunctionComponent<FieldProps<string>> = ({
   );
 
   return (
-    <Form.Group>
-      <Form.Label>{label ?? fieldLabel(field.name)}</Form.Label>
-      <Select
-        options={options}
-        value={options.find((x) => value === x.value)}
-        onChange={(option) => {
-          console.debug("Selected device option", { option });
-          helpers.setValue((option as any).value);
-        }}
-      />
-      {schema.description && (
-        <Form.Text className="text-muted">
-          The device to run the bot on
-        </Form.Text>
-      )}
-      {error && (
-        <span className="text-danger small">
-          Error fetching devices: {error.toString()}
-        </span>
-      )}
-      {meta.touched && meta.error && (
-        <span className="text-danger small">{meta.error}</span>
-      )}
-    </Form.Group>
+    <ConnectedFieldTemplate
+      label={label ?? fieldLabel(props.name)}
+      description="The device to run the bot on"
+      as={SelectWidget}
+      options={options}
+      loadError={error}
+    />
   );
 };
 
 const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
-  showOutputKey,
 }) => {
-  const basePath = [name, configKey].filter(identity).join(".");
+  const basePath = compact([name, configKey]).join(".");
   const { hasPermissions, requestPermissions, config } = useDependency(
     AUTOMATION_ANYWHERE_SERVICE_ID
   );
@@ -208,7 +177,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       });
       return interfaceToInputSchema(response.data);
     }
-  }, [fileId, hasPermissions]);
+  }, [config, fileId, hasPermissions]);
 
   if (!config) {
     return (
@@ -252,53 +221,12 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       />
 
       {fileId != null && (
-        <Form.Group>
-          <Form.Label>inputArguments</Form.Label>
-          <Card>
-            <Card.Header>inputArguments</Card.Header>
-            <Card.Body>
-              {inputSchema &&
-                Object.entries(inputProperties(inputSchema)).map(
-                  ([prop, fieldSchema]) => {
-                    if (typeof fieldSchema === "boolean") {
-                      throw new TypeError(
-                        "Expected schema for input property type"
-                      );
-                    }
-
-                    return (
-                      <FieldRenderer
-                        key={prop}
-                        name={[name, configKey, "data", prop]
-                          .filter(identity)
-                          .join(".")}
-                        schema={fieldSchema}
-                      />
-                    );
-                  }
-                )}
-              {inputSchema != null &&
-                isEmpty(inputSchema.properties) &&
-                !schemaPending && <span>Bot does not take any inputs</span>}
-              {schemaPending && <GridLoader />}
-              {schemaError && (
-                <span className="text-danger">
-                  Error fetching schema: {schemaError.toString()}
-                </span>
-              )}
-            </Card.Body>
-          </Card>
-        </Form.Group>
-      )}
-
-      {showOutputKey && (
-        <FieldRenderer
-          name={`${name}.outputKey`}
-          label="Output Variable"
-          schema={{
-            type: "string",
-            description: "A name to refer to this brick in subsequent bricks",
-          }}
+        <ChildObjectField
+          heading="inputArguments"
+          schema={inputSchema}
+          name={compact([basePath, "data"]).join(".")}
+          schemaError={schemaError}
+          schemaLoading={schemaPending}
         />
       )}
     </div>

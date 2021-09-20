@@ -15,14 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Read, registerFactory } from "@/blocks/readers/factory";
+import { Read } from "@/blocks/readers/factory";
 import { Framework } from "@/messaging/constants";
 import { ReaderOutput, ReaderRoot } from "@/core";
-import { castArray, fromPairs, compact } from "lodash";
+import { castArray, compact } from "lodash";
 import { getComponentData, ReadPayload } from "@/pageScript/protocol";
 
 type FrameworkConfig = ReadPayload & {
-  // Legacy emberjs reader config; now handled via pathSpec
+  /**
+   * @deprecated Legacy emberjs reader config. Use patchSpec instead
+   */
   attrs: string | string[];
 };
 
@@ -41,7 +43,9 @@ async function asyncFastCssSelector(element: HTMLElement): Promise<string> {
   });
 }
 
-function makeRead(framework: Framework): Read<FrameworkConfig> {
+export function frameworkReadFactory(
+  framework: Framework
+): Read<FrameworkConfig> {
   async function read(
     reader: FrameworkConfig,
     root: ReaderRoot
@@ -57,7 +61,7 @@ function makeRead(framework: Framework): Read<FrameworkConfig> {
     } = reader;
 
     const rootSelector = isHTMLElement(root)
-      ? await asyncFastCssSelector(root as HTMLElement)
+      ? await asyncFastCssSelector(root)
       : null;
 
     return getComponentData({
@@ -68,16 +72,12 @@ function makeRead(framework: Framework): Read<FrameworkConfig> {
       optional,
       traverseUp,
       pathSpec: attrs
-        ? fromPairs(castArray(attrs).map((attr) => [attr, `attrs.${attr}`]))
+        ? Object.fromEntries(
+            castArray(attrs).map((attr) => [attr, `attrs.${attr}`])
+          )
         : pathSpec,
     });
   }
 
   return read;
 }
-
-registerFactory("angularjs", makeRead("angularjs"));
-registerFactory("emberjs", makeRead("emberjs"));
-registerFactory("react", makeRead("react"));
-registerFactory("vue", makeRead("vue"));
-registerFactory("vuejs", makeRead("vue"));

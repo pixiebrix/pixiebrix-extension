@@ -15,17 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { getChromeExtensionId, RuntimeNotFoundError } from "@/chrome";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { patternToRegex } from "webext-patterns";
 import chromeP from "webext-polyfill-kinda";
-import {
-  isExtensionContext,
-  isBackgroundPage,
-  isContentScript,
-  isOptionsPage,
-} from "webext-detect-page";
+import { isBackgroundPage, isExtensionContext } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 
 import {
@@ -93,25 +88,17 @@ async function handleRequest(
   }
 }
 
-export function getExtensionId(): string {
-  if (isContentScript() || isOptionsPage() || isBackgroundPage()) {
-    return browser.runtime.id;
-  }
-
-  if (chrome.runtime == null) {
+async function callBackground(
+  type: string,
+  args: unknown[],
+  options: HandlerOptions
+): Promise<unknown> {
+  if (!isExtensionContext() && chrome.runtime == null) {
     throw new RuntimeNotFoundError(
       "Browser runtime is unavailable; is the extension externally connectable?"
     );
   }
 
-  return getChromeExtensionId();
-}
-
-export async function callBackground(
-  type: string,
-  args: unknown[],
-  options: HandlerOptions
-): Promise<unknown> {
   const nonce = uuidv4();
   const message = { type, payload: args, meta: { nonce } };
 
@@ -120,7 +107,7 @@ export async function callBackground(
   const sendMessage = isExtensionContext()
     ? browser.runtime.sendMessage
     : chromeP.runtime.sendMessage;
-  const extensionId = isExtensionContext() ? null : getExtensionId();
+  const extensionId = isExtensionContext() ? null : getChromeExtensionId();
 
   if (isNotification(options)) {
     console.debug(`Sending background notification ${type} (nonce: ${nonce})`, {
@@ -166,36 +153,14 @@ export async function callBackground(
  * @param method the method to lift
  * @param options background action handler options
  */
-export function liftBackground<R extends SerializableResponse>(
+export function liftBackground<
+  TArguments extends unknown[],
+  R extends SerializableResponse
+>(
   type: string,
-  method: () => R | Promise<R>,
+  method: (...args: TArguments) => Promise<R>,
   options?: HandlerOptions
-): () => Promise<R>;
-export function liftBackground<T, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T) => R | Promise<R>,
-  options?: HandlerOptions
-): (a0: T) => Promise<R>;
-export function liftBackground<T0, T1, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1) => R | Promise<R>,
-  options?: HandlerOptions
-): (a0: T0, a1: T1) => Promise<R>;
-export function liftBackground<T0, T1, T2, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1, a2: T2) => R | Promise<R>,
-  options?: HandlerOptions
-): (a0: T0, a1: T1, a2: T2) => Promise<R>;
-export function liftBackground<T0, T1, T2, T3, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1, a2: T2, a3: T3) => R | Promise<R>,
-  options?: HandlerOptions
-): (a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>;
-export function liftBackground<R extends SerializableResponse>(
-  type: string,
-  method: (...args: unknown[]) => R | Promise<R>,
-  options?: HandlerOptions
-): (...args: unknown[]) => Promise<R> {
+): (...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isBackgroundPage()) {
@@ -204,16 +169,12 @@ export function liftBackground<R extends SerializableResponse>(
     } else {
       handlers.set(fullType, { handler: method, options });
     }
+
+    return method;
   }
 
-  return async (...args: unknown[]) => {
-    if (isBackgroundPage()) {
-      console.log(`Resolving ${type} immediately from background page`);
-      return method(...args);
-    }
-
-    return callBackground(fullType, args, options) as R;
-  };
+  return async (...args: TArguments) =>
+    callBackground(fullType, args, options) as R;
 }
 
 function backgroundListener(

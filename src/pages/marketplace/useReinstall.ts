@@ -19,24 +19,21 @@ import { RecipeDefinition } from "@/types/definitions";
 import { useDispatch, useSelector } from "react-redux";
 import { selectExtensions } from "@/options/selectors";
 import { useCallback } from "react";
-import { uninstallContextMenu } from "@/background/contextMenus";
-import { ExtensionOptions, optionsSlice } from "@/options/slices";
+import { uninstallContextMenu } from "@/background/messenger/api";
+import { optionsSlice } from "@/options/slices";
 import { groupBy, uniq } from "lodash";
+import { IExtension, UUID, RegistryId } from "@/core";
 
 const { installRecipe, removeExtension } = optionsSlice.actions;
 
 type Reinstall = (recipe: RecipeDefinition) => Promise<void>;
 
-type ServiceId = string;
-
-function selectAuths(
-  extensions: ExtensionOptions[]
-): Record<ServiceId, string> {
+function selectAuths(extensions: IExtension[]): Record<RegistryId, UUID> {
   const serviceAuths = groupBy(
     extensions.flatMap((x) => x.services),
     (x) => x.id
   );
-  const result: Record<ServiceId, string> = {};
+  const result: Record<RegistryId, UUID> = {};
   for (const [id, auths] of Object.entries(serviceAuths)) {
     const configs = uniq(auths.map(({ config }) => config));
     if (configs.length === 0) {
@@ -46,7 +43,7 @@ function selectAuths(
     }
 
     // eslint-disable-next-line security/detect-object-injection -- safe because it's from Object.entries
-    result[id] = configs[0];
+    result[id as RegistryId] = configs[0];
   }
 
   return result;
@@ -59,7 +56,7 @@ function useReinstall(): Reinstall {
   return useCallback(
     async (recipe: RecipeDefinition) => {
       const recipeExtensions = extensions.filter(
-        (x) => x._recipeId === recipe.metadata.id
+        (x) => x._recipe?.id === recipe.metadata.id
       );
 
       if (recipeExtensions.length === 0) {
@@ -74,7 +71,6 @@ function useReinstall(): Reinstall {
           await uninstallContextMenu({ extensionId: extension.id });
           dispatch(
             removeExtension({
-              extensionPointId: extension.extensionPointId,
               extensionId: extension.id,
             })
           );

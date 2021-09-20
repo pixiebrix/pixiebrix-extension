@@ -16,7 +16,7 @@
  */
 
 import { useCallback, useState } from "react";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import {
   getLoggingConfig,
   LoggingConfig,

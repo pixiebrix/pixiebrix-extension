@@ -16,6 +16,8 @@
  */
 
 const path = require("path");
+const webpack = require("webpack");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const rootDir = path.resolve(__dirname, "../");
 
@@ -34,19 +36,47 @@ module.exports = {
       "@contrib": path.resolve(rootDir, "contrib"),
       "@schemas": path.resolve(rootDir, "schemas"),
       vendors: path.resolve(rootDir, "src/vendors"),
+      "webextension-polyfill-ts": path.resolve(
+        rootDir,
+        "src/__mocks__/browserMocks.ts"
+      ),
     };
 
-    config.pl;
+    config.module.rules.push(
+      ...[
+        {
+          test: /\.ya?ml$/,
+          type: "json",
+          use: "yaml-loader",
+        },
+        {
+          test: /\.scss$/,
+          use: [
+            // style-loader loads the css into the DOM
+            "style-loader",
+            "css-loader",
+            {
+              loader: "sass-loader",
+              options: {
+                sourceMap: true,
+                // Due to warnings in dart-sass https://github.com/pixiebrix/pixiebrix-extension/pull/1070
+                implementation: require("node-sass"),
+              },
+            },
+          ],
+        },
+      ]
+    );
 
-    config.module.rules.push({
-      test: /\.scss$/,
-      use: [
-        // style-loader loads the css into the DOM
-        "style-loader",
-        "css-loader",
-        { loader: "sass-loader", options: { sourceMap: true } },
-      ],
-    });
+    config.plugins.push(
+      ...[
+        new NodePolyfillPlugin(),
+        new webpack.ProvidePlugin({
+          $: "jquery",
+          jQuery: "jquery",
+        }),
+      ]
+    );
 
     return config;
   },

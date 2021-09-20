@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import isEmpty from "lodash/isEmpty";
+import { isEmpty } from "lodash";
 import { proxyService } from "@/background/requests";
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, SanitizedServiceConfiguration, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 
@@ -48,9 +47,9 @@ interface AddressComponent {
 }
 
 interface GeocodeData {
-  results: {
+  results: Array<{
     address_components: AddressComponent[];
-  }[];
+  }>;
   // https://developers.google.com/maps/documentation/geocoding/overview
   status:
     | "OK"
@@ -121,5 +120,3 @@ export class GeocodeTransformer extends Transformer {
     return geocodeAddress(service, address);
   }
 }
-
-registerBlock(new GeocodeTransformer());

@@ -17,17 +17,23 @@
 
 import { proxyService } from "@/background/requests";
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
-import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
+import {
+  BlockArg,
+  BlockOptions,
+  RegistryId,
+  Schema,
+  SchemaProperties,
+} from "@/core";
 import { sleep } from "@/utils";
 import { BusinessError } from "@/errors";
+import { validateRegistryId } from "@/types/helpers";
 
-export const UIPATH_SERVICE_IDS = [
+export const UIPATH_SERVICE_IDS: RegistryId[] = [
   "uipath/cloud",
   "uipath/cloud-oauth",
   "uipath/orchestrator",
-];
-export const UIPATH_ID = "@pixiebrix/uipath/process";
+].map((x) => validateRegistryId(x));
+export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/process");
 
 const MAX_WAIT_MILLIS = 20_000;
 const POLL_MILLIS = 1000;
@@ -80,13 +86,13 @@ export const UIPATH_PROPERTIES: SchemaProperties = {
 interface JobsResponse {
   "@odata.context": "https://cloud.uipath.com/odata/$metadata#Jobs";
   "@odata.count": number;
-  value: {
+  value: Array<{
     Id: number;
     Key: string;
     State: "Successful" | "Pending" | "Faulted";
     OutputArguments: string;
     Info: string;
-  }[];
+  }>;
 }
 
 export class RunProcess extends Transformer {
@@ -118,7 +124,7 @@ export class RunProcess extends Transformer {
     { logger }: BlockOptions
   ): Promise<unknown> {
     const { data: startData } = await proxyService<JobsResponse>(uipath, {
-      url: `/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs`,
+      url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
       method: "post",
       data: {
         startInfo: {
@@ -140,6 +146,7 @@ export class RunProcess extends Transformer {
       }
 
       do {
+        // eslint-disable-next-line no-await-in-loop -- polling for response
         const { data: resultData } = await proxyService<JobsResponse>(uipath, {
           url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
           method: "get",
@@ -159,6 +166,7 @@ export class RunProcess extends Transformer {
           throw new BusinessError("UiPath job failed");
         }
 
+        // eslint-disable-next-line no-await-in-loop -- polling for response
         await sleep(POLL_MILLIS);
       } while (Date.now() - start < MAX_WAIT_MILLIS);
 
@@ -171,5 +179,3 @@ export class RunProcess extends Transformer {
     return {};
   }
 }
-
-registerBlock(new RunProcess());

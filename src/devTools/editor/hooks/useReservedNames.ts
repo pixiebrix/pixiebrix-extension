@@ -17,7 +17,7 @@
 
 import hash from "object-hash";
 import { useMemo } from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { sortBy, uniq } from "lodash";
 
 function selectIds(elements: FormState[]): string[] {

@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -19,47 +20,44 @@ import { IExtension, Metadata } from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
+  excludeInstanceIds,
   lookupExtensionPoint,
   makeBaseState,
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
   selectIsAvailable,
+  withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import {
   Trigger,
   TriggerConfig,
   TriggerDefinition,
   TriggerExtensionPoint,
 } from "@/extensionPoints/triggerExtension";
-import { DynamicDefinition } from "@/nativeEditor";
+import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { castArray, identity, pickBy } from "lodash";
-import ReaderTab from "@/devTools/editor/tabs/reader/ReaderTab";
-import ServicesTab from "@/devTools/editor/tabs/ServicesTab";
-import EffectTab from "@/devTools/editor/tabs/EffectTab";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
-import AvailabilityTab from "@/devTools/editor/tabs/AvailabilityTab";
-import FoundationTab from "@/devTools/editor/tabs/trigger/FoundationTab";
-import MetaTab from "@/devTools/editor/tabs/MetaTab";
 import { getDomain } from "@/permissions/patterns";
 import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import {
   BaseFormState,
   ElementConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { BlockPipeline } from "@/blocks/combinators";
+import { BlockPipeline } from "@/blocks/types";
 import React from "react";
+import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
+import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
 
 const wizard: WizardStep[] = [
-  { step: "Name", Component: MetaTab },
-  { step: "Foundation", Component: FoundationTab },
-  { step: "Data", Component: ReaderTab },
-  { step: "Integrations", Component: ServicesTab },
-  { step: "Action", Component: EffectTab },
-  { step: "Availability", Component: AvailabilityTab },
+  {
+    step: "Edit",
+    Component: EditTab,
+    extraProps: { pipelineFieldName: "extension.action" },
+  },
   { step: "Logs", Component: LogsTab },
 ];
 
@@ -126,26 +124,26 @@ function selectExtensionPoint(
   };
 }
 
-function selectExtension({
-  uuid,
-  label,
-  extensionPoint,
-  extension,
-  services,
-}: TriggerFormState): IExtension<TriggerConfig> {
+function selectExtension(
+  { uuid, label, extensionPoint, extension, services }: TriggerFormState,
+  options: { includeInstanceIds?: boolean } = {}
+): IExtension<TriggerConfig> {
   return {
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
+    _recipe: null,
     label,
     services,
-    config: extension,
+    config: options.includeInstanceIds
+      ? extension
+      : excludeInstanceIds(extension, "action"),
   };
 }
 
 function asDynamicElement(element: TriggerFormState): DynamicDefinition {
   return {
     type: "trigger",
-    extension: selectExtension(element),
+    extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
     readers: makeExtensionReaders(element),
   };
@@ -206,7 +204,7 @@ async function fromExtension(
 
     extension: {
       ...config.config,
-      action: castArray(config.config.action),
+      action: withInstanceIds(castArray(config.config.action)),
     },
 
     extensionPoint: {
@@ -225,6 +223,7 @@ const config: ElementConfig<undefined, TriggerFormState> = {
   elementType: "trigger",
   label: "Trigger",
   baseClass: TriggerExtensionPoint,
+  EditorNode: TriggerConfiguration,
   selectNativeElement: undefined,
   icon: faBolt,
   fromNativeElement,

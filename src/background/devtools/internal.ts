@@ -31,20 +31,17 @@ import {
   PORT_NAME,
   PromiseHandler,
   TabId,
-  Target,
   Meta,
 } from "@/background/devtools/contract";
+import type { Target } from "@/types";
 import { reportError } from "@/telemetry/logging";
 import { isBackgroundPage } from "webext-detect-page";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { reactivate } from "@/background/navigation";
-import {
-  expectBackgroundPage,
-  forbidBackgroundPage,
-} from "@/utils/expectContext";
+import { expectContext, forbidContext } from "@/utils/expectContext";
 import { getErrorMessage, isPrivatePageError } from "@/errors";
 
 const TOP_LEVEL_FRAME_ID = 0;
@@ -61,6 +58,7 @@ const permissionsListeners = new Map<TabId, PromiseHandler[]>();
  * Listener that runs on the background page.
  */
 function backgroundMessageListener(
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-arguments -- It defaults to a different `Meta`
   request: RemoteProcedureCallRequest<Meta>,
   port: Runtime.Port
 ) {
@@ -69,7 +67,7 @@ function backgroundMessageListener(
 
   if (!allowBackgroundSender(port.sender)) {
     console.debug(
-      `Ignoring devtools message to background page from unknown sender`,
+      "Ignoring devtools message to background page from unknown sender",
       port.sender
     );
   } else if (handler) {
@@ -151,24 +149,18 @@ function backgroundMessageListener(
  * @param method the method to lift
  * @param options background action handler options
  */
-export function liftBackground<R extends SerializableResponse>(
-  type: string,
-  method: (target: Target, port: Runtime.Port) => () => R | Promise<R>,
-  options?: HandlerOptions
-): (port: Runtime.Port) => Promise<R>;
-export function liftBackground<T, R extends SerializableResponse>(
-  type: string,
-  method: (target: Target, port: Runtime.Port) => (a0: T) => R | Promise<R>,
-  options?: HandlerOptions
-): (port: Runtime.Port, a0: T) => Promise<R>;
-export function liftBackground<R extends SerializableResponse>(
+
+export function liftBackground<
+  TArguments extends unknown[],
+  R extends SerializableResponse
+>(
   type: string,
   method: (
     target: Target,
     port: Runtime.Port
-  ) => (...args: unknown[]) => R | Promise<R>,
+  ) => (...args: TArguments) => Promise<R>,
   options?: HandlerOptions
-): (port: Runtime.Port, ...args: unknown[]) => Promise<R> {
+): (port: Runtime.Port, ...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isBackgroundPage()) {
@@ -180,7 +172,7 @@ export function liftBackground<R extends SerializableResponse>(
   }
 
   return async (port: Runtime.Port, ...args: unknown[]): Promise<R> => {
-    forbidBackgroundPage();
+    forbidContext("background");
 
     if (!port) {
       throw new Error("Devtools port is required");
@@ -197,18 +189,18 @@ async function resetTab(tabId: number): Promise<void> {
       {}
     );
   } catch (error: unknown) {
-    console.warn(`Error clearing dynamic elements for tab: %d`, tabId, {
+    console.warn("Error clearing dynamic elements for tab: %d", tabId, {
       error,
     });
     reportError(error);
   }
 
-  console.info(`Removed dynamic elements for tab: %d`, tabId);
+  console.info("Removed dynamic elements for tab: %d", tabId);
 
   // Re-activate the content script so any saved extensions are added to the page as "permanent" extensions
   await reactivate();
 
-  console.info(`Re-activated extensions for tab: %d`, tabId);
+  console.info("Re-activated extensions for tab: %d", tabId);
 }
 
 function deleteStaleConnections(port: Runtime.Port) {
@@ -223,7 +215,7 @@ function deleteStaleConnections(port: Runtime.Port) {
         const listeners = permissionsListeners.get(tabId);
         permissionsListeners.delete(tabId);
         for (const [, reject] of listeners) {
-          reject(new Error(`Cleaning up stale connection`));
+          reject(new Error("Cleaning up stale connection"));
         }
       }
     }
@@ -231,7 +223,7 @@ function deleteStaleConnections(port: Runtime.Port) {
 }
 
 function connectDevtools(port: Runtime.Port): void {
-  expectBackgroundPage();
+  expectContext("background");
 
   if (allowBackgroundSender(port.sender) && port.name === PORT_NAME) {
     // Sender.tab won't be available if we don't have permissions for it yet
@@ -287,7 +279,7 @@ async function attemptTemporaryAccess({
     return;
   }
 
-  console.debug(`attemptTemporaryAccess:`, { tabId, frameId, url });
+  console.debug("attemptTemporaryAccess:", { tabId, frameId, url });
 
   try {
     await ensureContentScript({ tabId, frameId });
@@ -298,9 +290,9 @@ async function attemptTemporaryAccess({
 
     // Side note: Cross-origin iframes lose the `activeTab` after navigation
     // https://github.com/pixiebrix/pixiebrix-extension/pull/661#discussion_r661590847
-    if (getErrorMessage(error).startsWith("Cannot access")) {
+    if (/Cannot access|missing host permission/.test(getErrorMessage(error))) {
       console.debug(
-        `Skipping attemptTemporaryAccess because no activeTab permissions`,
+        "Skipping attemptTemporaryAccess because no activeTab permissions",
         { tabId, frameId, url }
       );
       return;

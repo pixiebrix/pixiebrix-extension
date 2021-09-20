@@ -16,11 +16,8 @@
  */
 
 import { Reader } from "@/types";
-import startCase from "lodash/startCase";
+import { startCase, mapValues } from "lodash";
 import { withReadWindow } from "@/common";
-import mapValues from "lodash/mapValues";
-import { registerBlock } from "@/blocks/registry";
-import fromPairs from "lodash/fromPairs";
 import { PathSpec } from "@/blocks/readers/window";
 import { Schema } from "@/core";
 
@@ -31,8 +28,10 @@ export async function checkRoute(expectedRoute: string): Promise<boolean> {
   return route === expectedRoute;
 }
 
-class PipedriveReader extends Reader {
-  private readonly ROOT_PATH = "app.router.currentView.model.attributes";
+export class PipedriveReader extends Reader {
+  private get ROOT_PATH() {
+    return "app.router.currentView.model.attributes";
+  }
 
   public readonly outputSchema: Schema;
 
@@ -50,7 +49,9 @@ class PipedriveReader extends Reader {
     this.pathSpec = pathSpec;
     this.outputSchema = {
       type: "object",
-      properties: fromPairs(Object.keys(this.pathSpec).map((x) => [x, {}])),
+      properties: Object.fromEntries(
+        Object.keys(this.pathSpec).map((x) => [x, {}])
+      ),
     };
   }
 
@@ -88,7 +89,3 @@ export const DEAL_READER = new PipedriveReader("deal", {
   organizationId: "org_id",
   organizationName: "org_name",
 });
-
-registerBlock(ORGANIZATION_READER);
-registerBlock(PERSON_READER);
-registerBlock(DEAL_READER);

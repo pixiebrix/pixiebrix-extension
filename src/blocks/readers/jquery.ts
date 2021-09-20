@@ -16,9 +16,8 @@
  */
 
 import { ReaderOutput } from "@/core";
-import { registerFactory } from "@/blocks/readers/factory";
 import { asyncMapValues, sleep } from "@/utils";
-import { BusinessError } from "@/errors";
+import { BusinessError, MultipleElementsFoundError } from "@/errors";
 
 type CastType = "string" | "boolean" | "number";
 
@@ -46,7 +45,7 @@ type Selector = CommonSelector & {
   maxWaitMillis?: number;
 };
 
-type SelectorMap = { [key: string]: string | Selector };
+export type SelectorMap = Record<string, string | Selector>;
 
 type Result =
   | string
@@ -55,6 +54,7 @@ type Result =
   | null
   | undefined
   | Result[]
+  // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- can't use Record for recursive signature
   | { [key: string]: Result };
 
 export interface JQueryConfig {
@@ -77,19 +77,21 @@ function castValue(value: string, type?: CastType): Result {
     case "string":
       return value;
     default:
-      throw new BusinessError(`Cast type ${type} not supported`);
+      throw new BusinessError(`Cast type ${type as string} not supported`);
   }
 }
 
 async function processFind(
   $elt: JQuery<HTMLElement | Document>,
   selector: ChildrenSelector
-): Promise<{ [key: string]: Result }> {
-  return asyncMapValues(selector.find, (selector) => select(selector, $elt));
+): Promise<Record<string, Result>> {
+  return asyncMapValues(selector.find, async (selector) =>
+    select(selector, $elt)
+  );
 }
 
-function processElement($elt: JQuery<HTMLElement>, selector: SingleSelector) {
-  const CONTENT_TYPES: { [key: string]: number | undefined } = {
+function processElement($elt: JQuery, selector: SingleSelector) {
+  const CONTENT_TYPES: Record<string, number | undefined> = {
     text: Node.TEXT_NODE,
     comment: Node.COMMENT_NODE,
   };
@@ -148,7 +150,8 @@ async function select(
   do {
     if ($root) {
       $elt = normalizedSelector.selector
-        ? $root.find(normalizedSelector.selector)
+        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
+          $root.find(normalizedSelector.selector)
         : $root;
     } else {
       if (!normalizedSelector.selector) {
@@ -157,6 +160,7 @@ async function select(
         );
       }
 
+      // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery
       $elt = $(document).find(normalizedSelector.selector);
     }
 
@@ -191,13 +195,14 @@ async function select(
   }
 
   if ($elt.length > 1 && !normalizedSelector.multi) {
-    throw new BusinessError(
-      `Multiple elements found for ${normalizedSelector.selector}. To return a list of values, supply multi=true`
+    throw new MultipleElementsFoundError(
+      normalizedSelector.selector,
+      "Multiple elements found for selector. To return a list of values, supply multi=true"
     );
   } else if ("find" in normalizedSelector) {
     const values = await Promise.all(
       $elt
-        .map(function () {
+        .map(async function () {
           return processFind($(this), normalizedSelector);
         })
         .toArray()
@@ -210,17 +215,14 @@ async function select(
 
     const values = $elt
       .map(function () {
-        return processElement(
-          $(this) as JQuery<HTMLElement>,
-          normalizedSelector
-        );
+        return processElement($(this) as JQuery, normalizedSelector);
       })
       .toArray();
     return normalizedSelector.multi ? values : values[0];
   }
 }
 
-async function read(
+export async function readJQuery(
   reader: JQueryConfig,
   root: HTMLElement | Document
 ): Promise<ReaderOutput> {
@@ -230,7 +232,5 @@ async function read(
     throw new Error("JQuery reader requires the document or element(s)");
   }
 
-  return asyncMapValues(selectors, (selector) => select(selector, $root));
+  return asyncMapValues(selectors, async (selector) => select(selector, $root));
 }
-
-registerFactory("jquery", read);

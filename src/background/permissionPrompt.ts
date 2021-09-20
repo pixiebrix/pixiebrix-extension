@@ -16,8 +16,7 @@
  */
 
 import { browser, Tabs } from "webextension-polyfill-ts";
-import { isFirefox } from "@/helpers";
-import { liftBackground } from "@/background/protocol";
+import { isFirefox } from "webext-detect-page";
 
 const POPUP_WIDTH_PX = 400; // Makes the native prompt appear centered
 const POPUP_HEIGHT_PX = 215; // Includes titlebar height, must fit the content and error to avoid scrollbars
@@ -72,7 +71,7 @@ async function detectPopupSupport(
   // Firefox on Mac seems to be unable to handle popups in fullscreen mode, changing the macOS "space"
   // back to the desktop
   const isBuggy =
-    isFirefox &&
+    isFirefox() &&
     navigator.userAgent.includes("Macintosh") &&
     currentWindow.state === "fullscreen";
   return !isBuggy;
@@ -81,16 +80,13 @@ async function detectPopupSupport(
 /**
  * Show a popup prompt and await the popup closing
  */
-export const openPopupPrompt = liftBackground(
-  "OPEN_POPUP_PROMPT",
-  async (openerTabId: number, url: string) => {
-    const { windowId } = await browser.tabs.get(openerTabId);
-    const openerWindow = await browser.windows.get(windowId);
+export async function openPopupPrompt(openerTabId: number, url: string) {
+  const { windowId } = await browser.tabs.get(openerTabId);
+  const openerWindow = await browser.windows.get(windowId);
 
-    const popupTab = (await detectPopupSupport(openerWindow))
-      ? await openPopup(url, openerWindow)
-      : await openTab(url, openerTabId);
+  const popupTab = (await detectPopupSupport(openerWindow))
+    ? await openPopup(url, openerWindow)
+    : await openTab(url, openerTabId);
 
-    await onTabClose(popupTab.id);
-  }
-);
+  await onTabClose(popupTab.id);
+}

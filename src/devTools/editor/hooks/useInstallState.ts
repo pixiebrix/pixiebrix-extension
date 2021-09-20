@@ -16,7 +16,7 @@
  */
 
 import { IExtension } from "@/core";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useContext, useMemo } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useAsyncState } from "@/hooks/common";
@@ -53,7 +53,7 @@ function useInstallState(
   const [availableDynamicIds] = useAsyncState(async () => {
     if (meta) {
       const availability = await Promise.all(
-        elements.map((element) =>
+        elements.map(async (element) =>
           checkAvailable(port, element.extensionPoint.definition.isAvailable)
         )
       );

@@ -17,7 +17,6 @@
 
 import { Transformer } from "@/types";
 import { proxyService } from "@/background/requests";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors";
@@ -27,9 +26,11 @@ export class RemoteMethod extends Transformer {
     super(
       "@pixiebrix/http",
       "HTTP Request",
-      "Send an HTTP request, i.e., GET, PUT, POST, PATCH, DELETE"
+      "Send an RESTful HTTP request, i.e., GET, PUT, POST, PATCH, DELETE"
     );
   }
+
+  defaultOutputKey = "response";
 
   inputSchema: Schema = propertiesToSchema(
     {
@@ -51,7 +52,8 @@ export class RemoteMethod extends Transformer {
       },
       params: {
         type: "object",
-        additionalProperties: { type: "string" },
+        description: "Search/query params",
+        additionalProperties: { type: ["string", "number", "boolean"] },
       },
       headers: {
         type: "object",
@@ -61,8 +63,7 @@ export class RemoteMethod extends Transformer {
       // Match anything, as valid values are determined by the API being called
       data: {},
     },
-    // XXX: data should not be required for GET/DELETE requests
-    ["url", "data"]
+    ["url"]
   );
 
   async transform({ service, ...requestConfig }: BlockArg): Promise<unknown> {
@@ -79,5 +80,3 @@ export class RemoteMethod extends Transformer {
     return data;
   }
 }
-
-registerBlock(new RemoteMethod());

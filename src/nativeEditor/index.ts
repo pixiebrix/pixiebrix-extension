@@ -17,11 +17,11 @@
 
 export {
   clear,
-  toggleOverlay,
+  enableOverlay,
+  disableOverlay,
   updateDynamicElement,
   checkAvailable,
   getInstalledExtensionPointIds,
-  DynamicDefinition,
 } from "./dynamic";
-export { insertButton, dragButton } from "./insertButton";
+export { insertButton } from "./insertButton";
 export { insertPanel } from "./insertPanel";

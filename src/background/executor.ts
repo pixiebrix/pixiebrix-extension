@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -18,31 +19,28 @@
 import {
   linkChildTab,
   MESSAGE_CHECK_AVAILABILITY,
-  MESSAGE_CONTENT_SCRIPT_ECHO_SENDER,
-  MESSAGE_CONTENT_SCRIPT_READY,
   MESSAGE_RUN_BLOCK as CONTENT_MESSAGE_RUN_BLOCK,
   RemoteBlockOptions,
   RunBlockAction,
 } from "@/contentScript/executor";
-import { browser, Tabs } from "webextension-polyfill-ts";
-import { MESSAGE_PREFIX } from "@/background/protocol";
-import { ActionType, Message, RenderedArgs } from "@/core";
+import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
+import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
+import { ActionType, Message, RegistryId, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError, getErrorMessage } from "@/errors";
-import {
-  expectBackgroundPage,
-  expectContentScript,
-} from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { HandlerMap } from "@/messaging/protocol";
+import { sleep } from "@/utils";
+import { partition, zip } from "lodash";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { JsonObject } from "type-fest";
+import { MessengerMeta } from "webext-messenger";
 
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
 const MESSAGE_RUN_BLOCK_BROADCAST = `${MESSAGE_PREFIX}RUN_BLOCK_BROADCAST`;
 const MESSAGE_RUN_BLOCK_FRAME_NONCE = `${MESSAGE_PREFIX}RUN_BLOCK_FRAME_NONCE`;
-const MESSAGE_ACTIVATE_TAB = `${MESSAGE_PREFIX}MESSAGE_ACTIVATE_TAB`;
-const MESSAGE_CLOSE_TAB = `${MESSAGE_PREFIX}MESSAGE_CLOSE_TAB`;
-const MESSAGE_OPEN_TAB = `${MESSAGE_PREFIX}MESSAGE_OPEN_TAB`;
 
 const TOP_LEVEL_FRAME = 0;
 
@@ -53,22 +51,16 @@ interface Target {
 
 const tabToOpener = new Map<number, number>();
 const tabToTarget = new Map<number, number>();
+// TODO: One tab could have multiple targets, but `tabToTarget` currenly only supports one at a time
+
+// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- Record<> doesn't allow labelled keys
 const tabReady: { [tabId: string]: { [frameId: string]: boolean } } = {};
 const nonceToTarget = new Map<string, Target>();
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 interface WaitOptions {
   maxWaitMillis?: number;
   isAvailable?: Availability;
 }
-
-type OpenTabAction = {
-  type: typeof MESSAGE_OPEN_TAB;
-  payload: Tabs.CreateCreatePropertiesType;
-};
 
 interface ObjectPayloadMessage<T extends ActionType = ActionType>
   extends Message<T> {
@@ -77,7 +69,7 @@ interface ObjectPayloadMessage<T extends ActionType = ActionType>
 
 async function waitNonceReady(
   nonce: string,
-  { maxWaitMillis, isAvailable }: WaitOptions = { maxWaitMillis: 10_000 }
+  { maxWaitMillis = 10_000, isAvailable }: WaitOptions = {}
 ) {
   const startTime = Date.now();
 
@@ -106,6 +98,7 @@ async function waitNonceReady(
     return true;
   };
 
+  // eslint-disable-next-line no-await-in-loop -- retry loop
   while (!(await isReady())) {
     if (Date.now() - startTime > maxWaitMillis) {
       throw new BusinessError(
@@ -113,6 +106,7 @@ async function waitNonceReady(
       );
     }
 
+    // eslint-disable-next-line no-await-in-loop -- retry loop
     await sleep(50);
   }
 
@@ -121,7 +115,7 @@ async function waitNonceReady(
 
 async function waitReady(
   { tabId, frameId }: Target,
-  { maxWaitMillis }: WaitOptions = { maxWaitMillis: 10_000 }
+  { maxWaitMillis = 10_000 }: WaitOptions = {}
 ): Promise<boolean> {
   const startTime = Date.now();
   while (tabReady[tabId]?.[frameId] == null) {
@@ -131,6 +125,7 @@ async function waitReady(
       );
     }
 
+    // eslint-disable-next-line no-await-in-loop -- retry loop
     await sleep(50);
   }
 
@@ -166,20 +161,23 @@ handlers.set(
 handlers.set(
   MESSAGE_RUN_BLOCK_BROADCAST,
   async (request: ObjectPayloadMessage, sender) => {
-    const tabTargets = Object.entries(tabReady).filter(
-      ([tabId, ready]) =>
-        tabId !== String(sender.tab.id) && ready[TOP_LEVEL_FRAME]
-    );
+    const tabIds = Object.entries(tabReady)
+      .filter(
+        ([tabId, ready]) =>
+          tabId !== String(sender.tab.id) && ready[TOP_LEVEL_FRAME]
+      )
+      .map(([tabId]) => Number.parseInt(tabId, 10));
 
-    console.debug(`Broadcasting to ${tabTargets.length} top-level frames`, {
+    console.debug(`Broadcasting to ${tabIds.length} ready top-level frames`, {
+      // Convert to string for consistency with the types of `ready`
       sender: String(sender.tab.id),
-      known: Object.keys(tabReady),
+      ready: Object.keys(tabReady),
     });
 
     const results = await Promise.allSettled(
-      tabTargets.map(async ([tabId]) =>
+      tabIds.map(async (tabId) =>
         browser.tabs.sendMessage(
-          Number.parseInt(tabId, 10),
+          tabId,
           {
             type: CONTENT_MESSAGE_RUN_BLOCK,
             payload: {
@@ -192,9 +190,26 @@ handlers.set(
         )
       )
     );
-    return results
-      .filter((x) => x.status === "fulfilled")
-      .map((x) => (x as any).value);
+
+    const [fulfilled, rejected] = partition(
+      zip(tabIds, results),
+      ([, result]) => result.status === "fulfilled"
+    );
+
+    if (rejected.length > 0) {
+      console.warn(`Broadcast rejected for ${rejected.length} tabs`, {
+        reasons: Object.fromEntries(
+          rejected.map(([tabId, result]) => [
+            tabId,
+            (result as PromiseRejectedResult).reason,
+          ])
+        ),
+      });
+    }
+
+    return fulfilled.map(
+      ([, result]) => (result as PromiseFulfilledResult<unknown>).value
+    );
   }
 );
 
@@ -255,24 +270,22 @@ handlers.set(
   }
 );
 
-handlers.set(MESSAGE_ACTIVATE_TAB, async (_, sender) => {
-  await browser.tabs.update(sender.tab.id, {
-    active: true,
-  });
-});
+export async function openTab(
+  this: MessengerMeta,
+  createProperties: Tabs.CreateCreatePropertiesType
+): Promise<void> {
+  // Natively links the new tab to its opener + opens it right next to it
+  const openerTabId = this.tab.id;
+  const tab = await browser.tabs.create({ ...createProperties, openerTabId });
 
-handlers.set(MESSAGE_CLOSE_TAB, async (_, sender) =>
-  browser.tabs.remove(sender.tab.id)
-);
-
-handlers.set(MESSAGE_OPEN_TAB, async (request: OpenTabAction, sender) => {
-  const tab = await browser.tabs.create(request.payload);
   // FIXME: include frame information here
-  tabToTarget.set(sender.tab.id, tab.id);
-  tabToOpener.set(tab.id, sender.tab.id);
-});
+  tabToTarget.set(openerTabId, tab.id);
+  tabToOpener.set(tab.id, openerTabId);
+}
 
-handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (_, sender) => {
+export async function markTabAsReady(this: MessengerMeta) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias, unicorn/no-this-assignment -- Not applicable to this pattern
+  const sender = this;
   const tabId = sender.tab.id;
   const { frameId } = sender;
   console.debug(`Marked tab ${tabId} (frame: ${frameId}) as ready`, {
@@ -297,14 +310,7 @@ handlers.set(MESSAGE_CONTENT_SCRIPT_READY, async (_, sender) => {
 
   tabReady[tabId][frameId] = true;
   emitDevtools("ContentScriptReady", { tabId, frameId });
-});
-
-handlers.set(MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, async (_, sender) => {
-  console.debug("Responding %s", MESSAGE_CONTENT_SCRIPT_ECHO_SENDER, {
-    sender,
-  });
-  return sender;
-});
+}
 
 async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
@@ -319,40 +325,55 @@ async function linkTabListener(tab: Tabs.Tab): Promise<void> {
 }
 
 function initExecutor(): void {
-  expectBackgroundPage();
+  expectContext("background");
 
   browser.tabs.onCreated.addListener(linkTabListener);
   browser.runtime.onMessage.addListener(handlers.asListener());
 }
 
-export async function activateTab(): Promise<void> {
-  expectContentScript();
-
-  return browser.runtime.sendMessage({
-    type: MESSAGE_ACTIVATE_TAB,
-    payload: {},
+export async function activateTab(this: MessengerMeta): Promise<void> {
+  await browser.tabs.update(this.tab.id, {
+    active: true,
   });
 }
 
-export async function closeTab(): Promise<void> {
-  expectContentScript();
-
-  return browser.runtime.sendMessage({
-    type: MESSAGE_CLOSE_TAB,
-    payload: {},
-  });
+export async function closeTab(this: MessengerMeta): Promise<void> {
+  await browser.tabs.remove(this.tab.id);
 }
 
-export async function openTab(
-  options: Tabs.CreateCreatePropertiesType
-): Promise<void> {
-  return browser.runtime.sendMessage({
-    type: MESSAGE_OPEN_TAB,
-    payload: options,
-  });
+export async function whoAmI(
+  this: MessengerMeta
+): Promise<Runtime.MessageSender> {
+  return this;
 }
 
 const DEFAULT_MAX_RETRIES = 5;
+
+async function retrySend<T extends (...args: unknown[]) => Promise<unknown>>(
+  send: T,
+  maxRetries = DEFAULT_MAX_RETRIES
+) {
+  let retries = 0;
+
+  while (retries < maxRetries) {
+    try {
+      // eslint-disable-next-line no-await-in-loop -- retry loop
+      return await send();
+    } catch (error: unknown) {
+      if (getErrorMessage(error).includes("Could not establish connection")) {
+        console.debug(`Target not ready. Retrying in ${100 * (retries + 1)}ms`);
+        // eslint-disable-next-line no-await-in-loop -- retry loop
+        await sleep(250 * (retries + 1));
+      } else {
+        throw error;
+      }
+    }
+
+    retries++;
+  }
+
+  throw new Error("Could not establish connection");
+}
 
 export async function executeForNonce(
   nonce: string,
@@ -363,11 +384,10 @@ export async function executeForNonce(
   console.debug(`Running ${blockId} in content script with nonce ${nonce}`);
 
   const { maxRetries = DEFAULT_MAX_RETRIES } = options;
-  let retries = 0;
 
-  while (retries < maxRetries) {
-    try {
-      return await browser.runtime.sendMessage({
+  return retrySend(
+    async () =>
+      browser.runtime.sendMessage({
         type: MESSAGE_RUN_BLOCK_FRAME_NONCE,
         payload: {
           nonce,
@@ -375,24 +395,9 @@ export async function executeForNonce(
           blockArgs,
           options,
         },
-      });
-    } catch (error: unknown) {
-      if (getErrorMessage(error).includes("Could not establish connection")) {
-        console.debug(
-          `Target not ready for ${blockId}. Retrying in ${
-            100 * (retries + 1)
-          }ms`
-        );
-        await sleep(250 * (retries + 1));
-      } else {
-        throw error;
-      }
-    }
-
-    retries++;
-  }
-
-  throw new Error(`Unable to run ${blockId} after ${maxRetries} retries`);
+      }),
+    maxRetries
+  );
 }
 
 export async function executeInTarget(
@@ -403,35 +408,19 @@ export async function executeInTarget(
   console.debug(`Running ${blockId} in the target tab`);
 
   const { maxRetries = DEFAULT_MAX_RETRIES } = options;
-  let retries = 0;
 
-  while (retries < maxRetries) {
-    try {
-      return await browser.runtime.sendMessage({
+  return retrySend(
+    async () =>
+      browser.runtime.sendMessage({
         type: MESSAGE_RUN_BLOCK_TARGET,
         payload: {
           blockId,
           blockArgs,
           options,
         },
-      });
-    } catch (error: unknown) {
-      if (getErrorMessage(error).includes("Could not establish connection")) {
-        console.debug(
-          `Target not ready for ${blockId}. Retrying in ${
-            100 * (retries + 1)
-          }ms`
-        );
-        await sleep(250 * (retries + 1));
-      } else {
-        throw error;
-      }
-    }
-
-    retries++;
-  }
-
-  throw new Error(`Unable to run ${blockId} after ${maxRetries} retries`);
+      }),
+    maxRetries
+  );
 }
 
 export async function executeInAll(
@@ -439,7 +428,7 @@ export async function executeInAll(
   blockArgs: RenderedArgs,
   options: RemoteBlockOptions
 ): Promise<unknown> {
-  console.debug(`Running ${blockId} in all tabs`);
+  console.debug(`Running ${blockId} in all ready tabs`);
   return browser.runtime.sendMessage({
     type: MESSAGE_RUN_BLOCK_BROADCAST,
     payload: {
@@ -465,5 +454,19 @@ export async function executeInOpener(
     },
   });
 }
+
+export const executeOnServer = liftBackground(
+  "EXECUTE_ON_SERVER",
+  async (blockId: RegistryId, blockArgs: RenderedArgs) => {
+    console.debug(`Running ${blockId} on the server`);
+    return (await getLinkedApiClient()).post<{
+      data?: JsonObject;
+      error?: JsonObject;
+    }>("/api/run/", {
+      id: blockId,
+      args: blockArgs,
+    });
+  }
+);
 
 export default initExecutor;

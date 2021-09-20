@@ -15,92 +15,136 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { connect } from "react-redux";
-import React, { useContext, useMemo } from "react";
-import { groupBy, isEmpty, sortBy } from "lodash";
-import { optionsSlice, OptionsState } from "@/options/slices";
-import { PageTitle } from "@/layout/Page";
+import { connect, useSelector } from "react-redux";
+import React, { useCallback, useContext } from "react";
+import { optionsSlice } from "@/options/slices";
+import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
-import { Card, Col, Row, Table } from "react-bootstrap";
-import { ExtensionIdentifier } from "@/core";
+import { Link, Redirect, Route } from "react-router-dom";
+import { Col, Row } from "react-bootstrap";
+import { ExtensionRef, IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
-import { uninstallContextMenu } from "@/background/contextMenus";
+import { uninstallContextMenu } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
 import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import { reactivate } from "@/background/navigation";
 import { Dispatch } from "redux";
-import {
-  InstalledExtension,
-  selectInstalledExtensions,
-} from "@/options/selectors";
-import { useTitle } from "@/hooks/title";
+import { selectExtensions } from "@/options/selectors";
 import NoExtensionsPage from "@/options/pages/installed/NoExtensionsPage";
-import RecipeEntry from "@/options/pages/installed/RecipeEntry";
+import { OptionsState } from "@/store/extensions";
+import { useAsyncState } from "@/hooks/common";
+import { resolveDefinitions } from "@/registry/internal";
+import { getLinkedApiClient } from "@/services/apiClient";
+import { CloudExtension } from "@/types/contract";
+import { RemoveAction } from "@/options/pages/installed/installedPageTypes";
+import ActiveBricksCard from "@/options/pages/installed/ActiveBricksCard";
+import useNotifications from "@/hooks/useNotifications";
+import { exportBlueprint } from "./exportBlueprint";
+import ShareExtensionModal from "@/options/pages/installed/ShareExtensionModal";
+import { push } from "connected-react-router";
+import ExtensionLogsModal from "./ExtensionLogsModal";
+import { RootState } from "@/options/store";
+import { LogsContext } from "./installedPageSlice";
+import { selectShowLogsContext } from "./installedPageSelectors";
 
 const { removeExtension } = optionsSlice.actions;
 
-type RemoveAction = (identifier: ExtensionIdentifier) => void;
-
-const InstalledTable: React.FunctionComponent<{
-  extensions: InstalledExtension[];
-  onRemove: RemoveAction;
-}> = ({ extensions, onRemove }) => {
-  const recipeExtensions = useMemo(
-    () =>
-      sortBy(
-        Object.entries(groupBy(extensions, (x) => x._recipe?.id ?? "")),
-        (x) => (x[0] === "" ? 0 : 1)
-      ),
-    [extensions]
-  );
-
-  return (
-    <Row>
-      <Col xl={9} lg={10} md={12}>
-        <Card className="ActiveBricksCard">
-          <Card.Header>Active Bricks</Card.Header>
-          <Table>
-            <thead>
-              <tr>
-                <th>&nbsp;</th>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Uninstall</th>
-              </tr>
-            </thead>
-            {recipeExtensions.map(([recipeId, xs]) => (
-              <RecipeEntry
-                key={recipeId}
-                recipeId={recipeId}
-                extensions={xs}
-                onRemove={onRemove}
-              />
-            ))}
-          </Table>
-        </Card>
-      </Col>
-    </Row>
-  );
-};
-
 const InstalledPage: React.FunctionComponent<{
-  extensions: InstalledExtension[];
+  extensions: IExtension[];
+  push: (path: string) => void;
   onRemove: RemoveAction;
-}> = ({ extensions, onRemove }) => {
-  useTitle("Active Bricks");
-
+}> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
 
-  return (
-    <div>
-      <PageTitle icon={faCubes} title="Active Bricks" />
+  const [allExtensions] = useAsyncState(
+    async () => {
+      const lookup = new Set<UUID>(extensions.map((x) => x.id));
+      const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
+        "/api/extensions/"
+      );
+      const cloudExtensions = data
+        .filter((x) => !lookup.has(x.id))
+        .map((x) => ({ ...x, active: false }));
 
+      return [...extensions, ...cloudExtensions];
+    },
+    [extensions],
+    extensions ?? []
+  );
+
+  const [resolvedExtensions] = useAsyncState(
+    async () =>
+      Promise.all(
+        allExtensions.map(async (extension) => resolveDefinitions(extension))
+      ),
+    [allExtensions],
+    []
+  );
+
+  const showLogsContext = useSelector<RootState, LogsContext>(
+    selectShowLogsContext
+  );
+
+  const notify = useNotifications();
+
+  const onExportBlueprint = useCallback(
+    (extensionIdToExport: UUID) => {
+      const extension = allExtensions.find(
+        (extension) => extension.id === extensionIdToExport
+      );
+
+      if (extension == null) {
+        notify.error(
+          `Error exporting as blueprint: extension with id ${extensionIdToExport} not found.`
+        );
+        return;
+      }
+
+      exportBlueprint(extension);
+    },
+    [notify, allExtensions]
+  );
+
+  const noExtensions = allExtensions.length === 0;
+
+  return (
+    <Page title="Active Bricks" icon={faCubes}>
+      <Route
+        exact
+        path="/installed/share/:extensionId"
+        render={(routeProps) => {
+          // Avoid race condition with load when visiting the URL directly
+          if (!allExtensions) {
+            return null;
+          }
+
+          const toShare = allExtensions.find(
+            (x) => x.id === routeProps.match.params.extensionId
+          );
+
+          return toShare ? (
+            <ShareExtensionModal
+              extension={toShare}
+              onCancel={() => {
+                push("/installed");
+              }}
+            />
+          ) : (
+            <Redirect to="/installed" />
+          );
+        }}
+      />
+      {showLogsContext && (
+        <ExtensionLogsModal
+          title={showLogsContext.title}
+          context={showLogsContext.messageContext}
+        />
+      )}
       <Row>
         <Col>
           <div className="pb-4">
-            {isEmpty(extensions) ? (
+            {noExtensions ? (
               <p>
                 Once you&apos;ve activated templates or created your own bricks,
                 you&apos;ll be able to manage them here
@@ -110,14 +154,14 @@ const InstalledPage: React.FunctionComponent<{
                 Here&apos;s a list of bricks you currently have activated.{" "}
                 {flags.includes("marketplace") ? (
                   <>
-                    You can find more to activate in the{" "}
-                    <Link to={"/marketplace"}>Marketplace</Link>
+                    You can find more to activate in{" "}
+                    <Link to={"/blueprints"}>My Blueprints</Link>
                   </>
                 ) : (
                   <>
                     You can find more to activate on the{" "}
                     <Link to={"/templates"}>Templates</Link> page. Or, follow
-                    the
+                    the{" "}
                     <a
                       href="https://docs.pixiebrix.com/quick-start-guide"
                       target="_blank"
@@ -133,30 +177,36 @@ const InstalledPage: React.FunctionComponent<{
           </div>
         </Col>
       </Row>
-      {isEmpty(extensions) ? (
+      {noExtensions ? (
         <NoExtensionsPage />
       ) : (
-        <InstalledTable extensions={extensions} onRemove={onRemove} />
+        <ActiveBricksCard
+          extensions={resolvedExtensions}
+          onRemove={onRemove}
+          onExportBlueprint={onExportBlueprint}
+        />
       )}
-    </div>
+    </Page>
   );
 };
 
 const mapStateToProps = (state: { options: OptionsState }) => ({
-  extensions: selectInstalledExtensions(state),
+  extensions: selectExtensions(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-  onRemove: (ref: ExtensionIdentifier) => {
+  // IntelliJ doesn't detect use in the props
+  push: (path: string) => {
+    dispatch(push(path));
+  },
+  onRemove: (ref: ExtensionRef) => {
     reportEvent("ExtensionRemove", {
       extensionId: ref.extensionId,
     });
     // Remove from storage first so it doesn't get re-added in reactivate step below
     dispatch(removeExtension(ref));
-    // TODO: also remove remove side panel panels that are already open?
-    void uninstallContextMenu(ref).catch((error) => {
-      reportError(error);
-    });
+    // XXX: also remove remove side panel panels that are already open?
+    void uninstallContextMenu(ref).catch(reportError);
     void reactivate().catch((error: unknown) => {
       console.warn("Error re-activating content scripts", { error });
     });

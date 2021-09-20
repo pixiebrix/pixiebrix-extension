@@ -16,16 +16,15 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
-import { compact, isEmpty, mapValues, partial, pick, pickBy } from "lodash";
+import { partial, pick } from "lodash";
 import { Field, FieldInputProps, useField, useFormikContext } from "formik";
 import { Alert, Col, Form, Row } from "react-bootstrap";
 import Select from "react-select";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorField from "@/devTools/editor/fields/SelectorSelectorField";
-import { SchemaTree } from "@/options/pages/extensionEditor/DataSourceCard";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import GridLoader from "react-spinners/GridLoader";
 import { runReader } from "@/background/devtools";
 import { jsonTreeTheme as theme } from "@/themes/light";
@@ -33,21 +32,26 @@ import JSONTree from "react-json-tree";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import { useDebounce } from "use-debounce";
 import { Schema } from "@/core";
-import {
+import SchemaFieldContext, {
   getDefaultField,
-  RendererContext,
-} from "@/components/fields/blockOptions";
-import devtoolFields from "@/devTools/editor/fields/Fields";
-// @ts-ignore: no type definitions?
+} from "@/components/fields/schemaFields/SchemaFieldContext";
+import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
+// @ts-expect-error no type definitions?
 import GenerateSchema from "generate-schema";
-import { useLabelRenderer } from "@/devTools/editor/tabs/reader/hooks";
 import ToggleField from "@/devTools/editor/components/ToggleField";
 import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
+import SchemaTree from "@/components/schemaTree/SchemaTree";
+import type { ReadOptions } from "@/pageScript/protocol";
+import { searchData } from "@/devTools/utils";
+import { useLabelRenderer } from "@/components/jsonTree/treeHooks";
 
-type ReaderSelector = (options: {
-  type: string;
-  [prop: string]: unknown;
-}) => ReaderTypeConfig;
+type ReaderSelector = (
+  options: ReadOptions & {
+    type: string;
+    // `selectors` is JQuery-reader only
+    selectors?: Record<string, string>;
+  }
+) => ReaderTypeConfig;
 
 type FrameworkOption = {
   value: Framework;
@@ -59,7 +63,17 @@ type FrameworkOption = {
 export const defaultSelector: ReaderSelector = partial(
   pick,
   partial.placeholder,
-  ["type", "selector", "traverseUp", "optional"]
+  // Should be kept in sync with ReadOptions, otherwise behavior will differ between running a brick in the devtools
+  // vs. running a brick in the normal application
+  [
+    "type",
+    "pathSpec",
+    "waitMillis",
+    "retryMillis",
+    "selector",
+    "traverseUp",
+    "optional",
+  ]
 ) as ReaderSelector;
 
 export const readerOptions: FrameworkOption[] = [
@@ -117,41 +131,12 @@ const FrameworkSelector: React.FunctionComponent<{
     <Select
       options={frameworkOptions}
       value={frameworkOptions.find((x) => x.value === field.value)}
-      onChange={(option: FrameworkOption) => helpers.setValue(option.value)}
+      onChange={(option: FrameworkOption) => {
+        helpers.setValue(option.value);
+      }}
     />
   );
 };
-
-function normalize(value: unknown): string {
-  return value.toString().toLowerCase();
-}
-
-export function searchData(query: string, data: unknown): unknown {
-  const normalized = normalize(query);
-  if (data == null) {
-    return null;
-  }
-
-  if (typeof data === "object") {
-    const values = mapValues(data, (value, key) =>
-      normalize(key).includes(query) ? value : searchData(query, value)
-    );
-    return pickBy(values, (value, key) => {
-      const keyMatch = normalize(key).includes(normalized);
-      const valueMatch =
-        typeof value === "object" || Array.isArray(value)
-          ? !isEmpty(value)
-          : value != null;
-      return keyMatch || valueMatch;
-    });
-  }
-
-  if (Array.isArray(data)) {
-    return compact(data.map(partial(searchData, query)));
-  }
-
-  return normalize(data).includes(normalized) ? data : undefined;
-}
 
 const FrameworkFields: React.FunctionComponent<{
   name: string;
@@ -380,7 +365,9 @@ const ReaderConfig: React.FunctionComponent<{
             <Form.Control
               type="text"
               placeholder="Search for a property or value"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </Col>
         </Form.Group>
@@ -391,7 +378,7 @@ const ReaderConfig: React.FunctionComponent<{
               {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
             </span>
             <div className="overflow-auto h-100 w-100">
-              {available === false && (
+              {!available && (
                 <span className="text-danger">
                   Extension not available on page
                 </span>
@@ -423,7 +410,7 @@ const ReaderConfig: React.FunctionComponent<{
 
   return (
     <div className="h-100">
-      <RendererContext.Provider value={devtoolFields}>
+      <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
         <Form.Group as={Row} controlId="formReaderId">
           <Form.Label column sm={2}>
             Name
@@ -484,7 +471,9 @@ const ReaderConfig: React.FunctionComponent<{
             <Form.Control
               type="text"
               placeholder="Search for a property or value"
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+              }}
             />
           </Col>
         </Form.Group>
@@ -501,7 +490,7 @@ const ReaderConfig: React.FunctionComponent<{
                 {query ? `Search Results: ${query.toLowerCase()}` : "Raw Data"}
               </span>
               <div className="overflow-auto h-100 w-100">
-                {available === false && (
+                {!available && (
                   <span className="text-danger">
                     Extension not available on page
                   </span>
@@ -532,7 +521,7 @@ const ReaderConfig: React.FunctionComponent<{
             </Col>
           </Row>
         )}
-      </RendererContext.Provider>
+      </SchemaFieldContext.Provider>
     </div>
   );
 };

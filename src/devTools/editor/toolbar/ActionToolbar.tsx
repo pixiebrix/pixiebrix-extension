@@ -17,7 +17,7 @@
 
 import React from "react";
 import { IExtension } from "@/core";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { useFormikContext } from "formik";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

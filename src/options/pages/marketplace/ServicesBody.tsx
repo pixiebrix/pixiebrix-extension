@@ -15,181 +15,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
-import ServiceAuthSelector, {
-  AuthOption,
-  useAuthOptions,
-} from "@/options/pages/extensionEditor/ServiceAuthSelector";
-import { uniq } from "lodash";
-import { v4 as uuidv4 } from "uuid";
-import { Button, Card, Table } from "react-bootstrap";
+import React, { useMemo } from "react";
+import { Card, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { RecipeDefinition, ServiceDefinition } from "@/types/definitions";
 import { useSelectedExtensions } from "@/options/pages/marketplace/ConfigureBody";
-import {
-  faCloud,
-  faInfoCircle,
-  faPlus,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCloud, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useFetch } from "@/hooks/fetch";
-import ServiceEditorModal from "@/options/pages/services/ServiceEditorModal";
-import { useAsyncState } from "@/hooks/common";
-import registry, { PIXIEBRIX_SERVICE_ID } from "@/services/registry";
-import { RawServiceConfiguration } from "@/core";
-import { servicesSlice } from "@/options/slices";
-import { useDispatch } from "react-redux";
-import { useToasts } from "react-toast-notifications";
+import useFetch from "@/hooks/useFetch";
+import { PIXIEBRIX_SERVICE_ID } from "@/services/constants";
+import AuthWidget from "@/options/pages/marketplace/AuthWidget";
+import ServiceDescriptor from "@/options/pages/marketplace/ServiceDescriptor";
 import { useField } from "formik";
-import { persistor } from "@/options/store";
-import { refresh as refreshBackgroundLocator } from "@/background/locator";
-
-const { updateServiceConfig } = servicesSlice.actions;
+import { ServiceAuthPair } from "@/core";
+import { useAuthOptions } from "@/hooks/auth";
 
 interface OwnProps {
   blueprint: RecipeDefinition;
 }
 
-const AuthWidget: React.FunctionComponent<{
-  authOptions: AuthOption[];
-  serviceId: string;
-}> = ({ serviceId, authOptions }) => {
-  const helpers = useField(`services.${serviceId}`)[2];
-  const dispatch = useDispatch();
-  const { addToast } = useToasts();
-
-  const [showModal, setShow] = useState(false);
-
-  const [serviceDefinition, isPending, error] = useAsyncState(
-    async () => (await registry.all()).find((x) => x.id === serviceId),
-    [serviceId]
-  );
-
-  const options = useMemo(
-    () => authOptions.filter((x) => x.serviceId === serviceId),
-    [authOptions, serviceId]
-  );
-
-  const save = useCallback(
-    async (values: RawServiceConfiguration) => {
-      const id = uuidv4();
-
-      dispatch(
-        updateServiceConfig({
-          ...values,
-          serviceId,
-          id,
-        })
-      );
-
-      // Need to write the current options to storage so the locator can read them during checks
-      await persistor.flush();
-
-      // Also refresh the service locator on the background so the new auth works immediately
-      await refreshBackgroundLocator({ remote: false, local: true });
-
-      addToast(`Added configuration for integration`, {
-        appearance: "success",
-        autoDismiss: true,
-      });
-
-      // Don't need to track changes locally via setCreated; the new auth automatically flows
-      // through via the redux selectors
-
-      helpers.setValue(id);
-
-      setShow(false);
-    },
-    [helpers, addToast, dispatch, setShow, serviceId]
-  );
-
-  const initialConfiguration: RawServiceConfiguration = useMemo(
-    () =>
-      ({
-        serviceId,
-        label: "New Configuration",
-        config: {},
-      } as RawServiceConfiguration),
-    [serviceId]
-  );
-
-  return (
-    <>
-      {showModal && (
-        <ServiceEditorModal
-          configuration={initialConfiguration}
-          service={serviceDefinition}
-          onClose={() => setShow(false)}
-          onSave={save}
-        />
-      )}
-
-      <div className="d-inline-flex">
-        {options.length > 0 && (
-          <div style={{ minWidth: "300px" }} className="mr-2">
-            <ServiceAuthSelector
-              name={`services.${serviceId}`}
-              serviceId={serviceId}
-              authOptions={options}
-            />
-          </div>
-        )}
-        <div>
-          <Button
-            variant={options.length > 0 ? "info" : "primary"}
-            size="sm"
-            style={{ height: "36px", marginTop: "1px" }}
-            onClick={() => setShow(true)}
-            disabled={isPending || error != null}
-          >
-            <FontAwesomeIcon icon={faPlus} />{" "}
-            {options.length > 0 ? "Add New" : "Configure"}
-          </Button>
-        </div>
-      </div>
-    </>
-  );
-};
-
-const ServiceDescriptor: React.FunctionComponent<{
-  serviceConfigs: ServiceDefinition[];
-  serviceId: string;
-}> = ({ serviceId, serviceConfigs }) => {
-  const config = useMemo(
-    () => serviceConfigs?.find((x) => x.metadata.id === serviceId),
-    [serviceId, serviceConfigs]
-  );
-
-  if (config) {
-    return (
-      <div>
-        <div>{config && <span>{config.metadata.name}</span>}</div>
-        <code className="small p-0">{serviceId}</code>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      {config && <span>{config.metadata.name}</span>}
-      <code className="p-0">{serviceId}</code>
-    </div>
-  );
-};
-
 const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
-  const [authOptions] = useAuthOptions();
+  const [authOptions, refreshAuthOptions] = useAuthOptions();
+
+  const [field] = useField<ServiceAuthPair[]>("services");
 
   const selected = useSelectedExtensions(blueprint.extensionPoints);
 
-  const serviceConfigs = useFetch<ServiceDefinition[]>("/api/services/");
+  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
+    "/api/services/"
+  );
 
-  const serviceIds = useMemo(
+  const visibleServiceIds = useMemo(
     // The PixieBrix service gets automatically configured, so don't need to show it. If the PixieBrix service is
     // the only service, the wizard won't render the ServicesBody component at all
     () =>
-      uniq(selected.flatMap((x) => Object.values(x.services ?? {}))).filter(
-        (serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID
+      new Set(
+        selected
+          .flatMap((x) => Object.values(x.services ?? {}))
+          .filter((serviceId) => serviceId !== PIXIEBRIX_SERVICE_ID)
       ),
     [selected]
   );
@@ -221,20 +84,29 @@ const ServicesBody: React.FunctionComponent<OwnProps> = ({ blueprint }) => {
           </tr>
         </thead>
         <tbody>
-          {serviceIds.map((serviceId) => (
-            <tr key={serviceId}>
-              <td>
-                <ServiceDescriptor
-                  serviceId={serviceId}
-                  serviceConfigs={serviceConfigs}
-                />
-              </td>
-              <td>
-                <AuthWidget authOptions={authOptions} serviceId={serviceId} />
-              </td>
-            </tr>
-          ))}
-          {serviceIds.length === 0 && (
+          {field.value.map(({ id: serviceId }, index) =>
+            // Can't filter using `filter` because the index used in the field name for AuthWidget needs to be
+            // consistent with the index in field.value
+            visibleServiceIds.has(serviceId) ? (
+              <tr key={serviceId}>
+                <td>
+                  <ServiceDescriptor
+                    serviceId={serviceId}
+                    serviceConfigs={serviceConfigs}
+                  />
+                </td>
+                <td>
+                  <AuthWidget
+                    authOptions={authOptions}
+                    serviceId={serviceId}
+                    name={[field.name, index, "config"].join(".")}
+                    onRefresh={refreshAuthOptions}
+                  />
+                </td>
+              </tr>
+            ) : null
+          )}
+          {visibleServiceIds.size === 0 && (
             <tr>
               <td colSpan={2}>No services to configure</td>
             </tr>

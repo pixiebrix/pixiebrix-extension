@@ -15,16 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import axios from "axios";
-import Cookies from "js-cookie";
-import { isExtensionContext } from "webext-detect-page";
+import { createContext } from "react";
 import { AuthState } from "@/core";
-
-if (!isExtensionContext()) {
-  console.debug("Setting axios web app authentication context");
-  axios.defaults.headers.post["X-CSRFToken"] = Cookies.get("csrftoken");
-}
 
 const anonAuthState: AuthState = {
   userId: undefined,
@@ -36,6 +28,6 @@ const anonAuthState: AuthState = {
   flags: [],
 };
 
-const AuthContext = React.createContext(anonAuthState);
+const AuthContext = createContext(anonAuthState);
 
 export default AuthContext;

@@ -43,6 +43,7 @@
     .nav-item {
       margin-right: 0;
       margin-left: 0;
+      white-space: nowrap;
 
       .nav-link {
         &.active {
@@ -149,24 +150,6 @@
     font-size: 0.875rem;
   }
 
-  //.col {
-  //  padding-left: 0;
-  //  padding-right: 0;
-  //}
-
-  .ReaderTree {
-    &__copy-path {
-      cursor: pointer;
-      color: lightgray;
-      margin-left: 5px;
-      &:hover {
-        color: #007bff;
-      }
-    }
-  }
-
-  // https://github.com/tomkp/react-split-pane
-
   .Resizer {
     background: #000;
     opacity: 0.2;
@@ -215,40 +198,6 @@
   }
   .Resizer.disabled:hover {
     border-color: transparent;
-  }
-
-  .RecommendationContainer {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 200px);
-    grid-gap: 2rem;
-
-    .RecommendationCard {
-      &:hover {
-        cursor: pointer;
-        background-color: #ececff;
-      }
-
-      &__image {
-        font-size: 50px;
-        height: 80px;
-
-        div {
-          margin: auto;
-
-          svg {
-            vertical-align: middle;
-          }
-        }
-      }
-
-      .card-body:nth-child(1) {
-        padding-bottom: 10px;
-      }
-
-      .card-body {
-        padding-top: 10px;
-      }
-    }
   }
 
   .BlockAccordion {

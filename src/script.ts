@@ -19,7 +19,7 @@
  * The script that gets injected into the host page. Shares a JS context with the host page
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 
 const JQUERY_WINDOW_PROP = "$$jquery";
 const PAGESCRIPT_SYMBOL = Symbol.for("pixiebrix-page-script");
@@ -31,22 +31,19 @@ declare global {
   }
 }
 
-// False positive: using constant symbol defined above
-// eslint-disable-next-line security/detect-object-injection
-if (!window[PAGESCRIPT_SYMBOL]) {
-  // False positive: using constant symbol defined above
-  // eslint-disable-next-line security/detect-object-injection
-  window[PAGESCRIPT_SYMBOL] = uuidv4();
-} else {
+// eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
+if (window[PAGESCRIPT_SYMBOL]) {
   throw new Error(
-    // False positive: using constant symbol defined above
-    // eslint-disable-next-line security/detect-object-injection
+    // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
     `PixieBrix pageScript already installed: ${window[PAGESCRIPT_SYMBOL]}`
   );
+} else {
+  // eslint-disable-next-line security/detect-object-injection -- using constant symbol defined above
+  window[PAGESCRIPT_SYMBOL] = uuidv4();
 }
 
 import jQuery from "jquery";
-import { isEmpty, identity, castArray, fromPairs, cloneDeep } from "lodash";
+import { isEmpty, identity, castArray, cloneDeep } from "lodash";
 import {
   CONNECT_EXTENSION,
   DETECT_FRAMEWORK_VERSIONS,
@@ -81,21 +78,7 @@ import {
   WriteableComponentAdapter,
 } from "@/frameworks/component";
 import { elementInfo } from "@/nativeEditor/frameworks";
-import { BusinessError } from "@/errors";
-
-function requireSingleElement(selector: string): HTMLElement {
-  // eslint-disable-next-line unicorn/no-array-callback-reference -- False positive
-  const $elt = jQuery(document).find(selector);
-  if ($elt.length === 0) {
-    throw new BusinessError(`No elements found for selector: '${selector}'`);
-  } else if ($elt.length > 1) {
-    throw new BusinessError(
-      `Multiple elements found for selector: '${selector}'`
-    );
-  }
-
-  return $elt.get(0);
-}
+import { requireSingleElement } from "@/nativeEditor/utils";
 
 const attachListener = initialize();
 
@@ -121,7 +104,7 @@ function readPathSpec(
   }
 
   if (Array.isArray(pathSpec) || typeof pathSpec === "string") {
-    return fromPairs(
+    return Object.fromEntries(
       castArray(pathSpec).map((prop) => [prop, toJS(get(obj, prop))])
     );
   }
@@ -131,17 +114,15 @@ function readPathSpec(
     if (typeof pathOrObj === "object") {
       const { path, args } = pathOrObj;
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(obj as { [prop: string]: unknown }, path, {
-        args: args as object,
+      values[key] = getPropByPath(obj as Record<string, unknown>, path, {
+        args: args as Record<string, unknown>,
         proxy,
       });
     } else {
       // eslint-disable-next-line security/detect-object-injection -- key is coming from pathSpec
-      values[key] = getPropByPath(
-        obj as { [prop: string]: unknown },
-        pathOrObj,
-        { proxy }
-      );
+      values[key] = getPropByPath(obj as Record<string, unknown>, pathOrObj, {
+        proxy,
+      });
     }
   }
 

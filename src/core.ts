@@ -15,23 +15,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JSONSchema7, JSONSchema7Definition } from "json-schema";
+import {
+  JSONSchema7,
+  JSONSchema7Definition,
+  JSONSchema7TypeName,
+} from "json-schema";
 import { UiSchema as StandardUiSchema } from "@rjsf/core";
 import { AxiosRequestConfig } from "axios";
-import { Primitive } from "type-fest";
+import { Except, Primitive } from "type-fest";
 import { ErrorObject } from "serialize-error";
 import { Permissions } from "webextension-polyfill-ts";
 import { pick } from "lodash";
 
 export type TemplateEngine = "mustache" | "nunjucks" | "handlebars";
+// Use our own name in the project so we can re-map/adjust the typing as necessary
 export type Schema = JSONSchema7;
 export type UiSchema = StandardUiSchema;
 export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = Record<string, SchemaDefinition>;
+export type SchemaPropertyType = JSONSchema7TypeName;
 
 export type RenderedHTML = string;
 
 export type ActionType = string;
+
+export type OutputKey = string;
+
+/**
+ * A string known not to be tainted with user-generated input.
+ */
+export type SafeString = string & {
+  _safeStringBrand: never;
+};
+
+export type UUID = string & {
+  // Nominal subtyping
+  _uuidBrand: never;
+};
+
+/**
+ * A brick registry id conforming to `@scope/collection/name`
+ */
+export type RegistryId = string & {
+  // Nominal subtyping
+  _registryIdBrand: never;
+};
+type ServiceId = RegistryId;
 
 export interface Meta {
   nonce?: string;
@@ -56,33 +85,37 @@ export interface Message<
  * Log event metadata for the extensions internal logging infrastructure.
  * @see Logger
  */
-export interface MessageContext {
-  readonly deploymentId?: string;
-  readonly blueprintId?: string;
-  readonly extensionPointId?: string;
-  readonly blockId?: string;
-  readonly extensionId?: string;
-  readonly serviceId?: string;
-  readonly authId?: string;
-}
+export type MessageContext = {
+  /**
+   * A human-readable label, e.g., provided via a `label:` directive to help identify the context when there's multiple
+   * blocks with the same id being used.
+   */
+  readonly label?: string;
+  readonly deploymentId?: UUID;
+  readonly blueprintId?: RegistryId;
+  readonly extensionPointId?: RegistryId;
+  readonly blockId?: RegistryId;
+  readonly extensionId?: UUID;
+  readonly serviceId?: RegistryId;
+  readonly authId?: UUID;
+};
 
 export type SerializedError = Primitive | ErrorObject;
+
+export type Data = Record<string, unknown>;
 
 export interface Logger {
   readonly context: MessageContext;
   /**
-   * Return a child logger with additional message context
+   * Return a new child logger with additional message context
    */
   childLogger: (additionalContext: MessageContext) => Logger;
-  trace: (msg: string, data?: Record<string, unknown>) => void;
-  warn: (msg: string, data?: Record<string, unknown>) => void;
-  debug: (msg: string, data?: Record<string, unknown>) => void;
-  log: (msg: string, data?: Record<string, unknown>) => void;
-  info: (msg: string, data?: Record<string, unknown>) => void;
-  error: (
-    error: SerializedError | Error,
-    data?: Record<string, unknown>
-  ) => void;
+  trace: (msg: string, data?: Data) => void;
+  warn: (msg: string, data?: Data) => void;
+  debug: (msg: string, data?: Data) => void;
+  log: (msg: string, data?: Data) => void;
+  info: (msg: string, data?: Data) => void;
+  error: (error: unknown, data?: Data) => void;
 }
 
 export type ReaderRoot = HTMLElement | Document;
@@ -102,73 +135,124 @@ export interface BlockOptions {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type BlockArg = Record<string, any>;
 
-export interface IOption {
-  value: string | number | boolean;
-  label: string;
-}
-
 export type BlockIcon = string;
 
 /**
  * Metadata about a block, extension point, or service
  */
 export interface Metadata {
-  id: string;
-  name: string;
-  version?: string;
-  description?: string;
-  icon?: BlockIcon;
-  author?: string;
+  readonly id: RegistryId;
+  readonly name: string;
+  readonly version?: string;
+  readonly description?: string;
+
+  /**
+   * @deprecated experimental prop that will likely be removed in the future
+   */
+  readonly icon?: BlockIcon;
+
+  /**
+   * @deprecated experimental prop that will likely be removed in the future
+   */
+  readonly author?: string;
+}
+
+export interface Sharing {
+  readonly public: boolean;
+  readonly organizations: string[];
 }
 
 export function selectMetadata(metadata: Metadata): Metadata {
   return pick(metadata, ["id", "name", "version", "description"]);
 }
 
-// Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
-// the inputs using jsonschema, so the types should match what's expected.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type BaseExtensionConfig = Record<string, any>;
+export type Config = Record<string, unknown>;
+
+export type EmptyConfig = Record<never, unknown>;
+
+export type InnerDefinitions = Record<string, Config>;
 
 export interface ServiceDependency {
-  id: string;
+  /**
+   * The registry id of the service.
+   */
+  id: RegistryId;
+
+  /**
+   * The output key for the dependency (without the leading "@")
+   */
   outputKey: string;
-  config?: string;
+
+  /**
+   * The UUID of the service configuration.
+   */
+  config?: UUID;
 }
 
 export type ServiceLocator = (
-  serviceId: string,
-  id?: string
+  serviceId: RegistryId,
+  configurationId?: UUID
 ) => Promise<SanitizedServiceConfiguration>;
 
 export type ServiceAuthPair = {
-  id: string;
-  config: string;
+  /**
+   * The registry id of the service.
+   */
+  id: RegistryId;
+
+  /**
+   * UUID of the service configuration.
+   */
+  config: UUID;
 };
 
 export interface DeploymentContext {
-  id: string;
+  id: UUID;
   timestamp: string;
 }
 
-export type ExtensionIdentifier = {
-  extensionId: string;
-  extensionPointId: string;
-};
-
-export interface IExtension<
-  T extends BaseExtensionConfig = BaseExtensionConfig
-> {
-  id: string;
-
-  extensionPointId: string;
-
-  _deployment?: DeploymentContext;
-
-  label?: string;
+export type ExtensionRef = {
+  /**
+   * UUID of the extension.
+   */
+  extensionId: UUID;
 
   /**
-   * Default template engine when running the extension
+   * Registry id of the extension point.
+   */
+  extensionPointId: RegistryId;
+};
+
+export type IExtension<T extends Config = EmptyConfig> = {
+  /**
+   * UUID of the extension.
+   */
+  id: UUID;
+
+  /**
+   * Registry id of the extension point.
+   */
+  extensionPointId: RegistryId;
+
+  /**
+   * Metadata about the deployment used to install the extension, or `undefined` if the extension was not installed
+   * via a deployment.
+   */
+  _deployment?: DeploymentContext;
+
+  /**
+   * Metadata about the recipe used to install the extension, or `undefined` if the user created this extension
+   * directly.
+   */
+  _recipe: Metadata | undefined;
+
+  /**
+   * A human-readable label for the extension.
+   */
+  label: string | null;
+
+  /**
+   * Default template engine when running the extension.
    */
   templateEngine?: TemplateEngine;
 
@@ -178,17 +262,77 @@ export interface IExtension<
   permissions?: Permissions.Permissions;
 
   /**
-   * Configured services/integrations for the extension
+   * Inner/anonymous definitions used by the extension.
+   *
+   * Supported definitions:
+   * - extension points
+   * - components
+   * - readers
+   *
+   * @see ResolvedExtension
    */
-  services: ServiceDependency[];
+  definitions?: InnerDefinitions;
+
+  /**
+   * Configured services/integrations for the extension.
+   */
+  services?: ServiceDependency[];
 
   /**
    * Options the end-user has configured (i.e., during blueprint activation)
    */
-  optionsArgs?: OptionsArgs;
+  optionsArgs?: UserOptions;
 
+  /**
+   * The extension configuration for the extension point.
+   */
   config: T;
-}
+
+  /**
+   * True iff the extension is activated in the client
+   *
+   * For extensions on the server, but not activated on the client, this will be false.
+   */
+  active?: boolean;
+};
+
+/**
+ * An extension that has been saved locally.
+ * @see IExtension
+ * @see UserExtension
+ */
+export type PersistedExtension<
+  T extends Config = EmptyConfig
+> = IExtension<T> & {
+  /**
+   * True to indicate this extension has been activated on the client.
+   */
+  active: true;
+
+  /**
+   * Creation timestamp in ISO format with timezone.
+   *
+   * Currently not used for anything - might be used for sorting, etc. in the future.
+   */
+  createTimestamp: string;
+
+  /**
+   * Update timestamp in ISO format with timezone.
+   *
+   * Used to determine if local version is outdated compared to user's version on the server.
+   */
+  updateTimestamp: string;
+};
+
+/**
+ * An `IExtension` with all definitions resolved.
+ */
+export type ResolvedExtension<T extends Config = EmptyConfig> = Except<
+  IExtension<T>,
+  "definitions"
+> & {
+  _resolvedExtensionBrand: never;
+};
 
 export interface IExtensionPoint extends Metadata {
   inputSchema: Schema;
@@ -224,6 +368,9 @@ export interface IExtensionPoint extends Metadata {
    */
   syncExtensions(extensions: IExtension[]): void;
 
+  /**
+   * Run the installed extensions for extension point.
+   */
   run(): Promise<void>;
 
   /**
@@ -247,12 +394,37 @@ export interface IBlock extends Metadata {
    */
   permissions: Permissions.Permissions;
 
+  /**
+   * Returns true iff the block is guaranteed to be side-effect free, (i.e., it can be safely re-run).
+   *
+   * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
+   * the other blocks to resolve their purity).
+   *
+   * FIXME: isPure is marked as optional because we're using IBlock to represent packages/bricks in some places, e.g.,
+   *  the BrickModal. We need to make this require and fix the types in the places that break. For example, some places
+   *  take advantages the IExtensionPoint is compatible with the the IBlock interface even though they represent two
+   *  different concepts
+   *
+   * Examples of impure actions:
+   * - Calling an API
+   * - Showing a prompt
+   * - Writing to the session state
+   */
+  isPure?: () => Promise<boolean>;
+
+  /**
+   * (Optional) default root output key to use when this block is added in the page editor.
+   *
+   * If not provided, the Page Editor will use a generic name, potentially based on the inferred type of the brick.
+   *
+   * For example, "foo" will produce: foo, foo2, foo3, foo4, etc.
+   */
+  defaultOutputKey?: string;
+
   run: (value: BlockArg, options: BlockOptions) => Promise<unknown>;
 }
 
-export interface ReaderOutput {
-  [key: string]: unknown;
-}
+export type ReaderOutput = Record<string, unknown>;
 
 /**
  * A block that can read data from a page or part of the page.
@@ -264,32 +436,41 @@ export interface IReader extends IBlock {
   read: (root: ReaderRoot) => Promise<ReaderOutput>;
 }
 
-type ServiceId = string;
+export type KeyedConfig = Record<string, string | null>;
 
-// eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- we're extending to get nominal typing
-export interface KeyedConfig {
-  [key: string]: string | null;
-}
-
-export interface SanitizedConfig extends KeyedConfig {
-  // Nominal typing to distinguish from ServiceConfig
+export type SanitizedConfig = KeyedConfig & {
+  /**
+   * Nominal typing to distinguish from `ServiceConfig`
+   * @see `ServiceConfig`
+   */
   _sanitizedConfigBrand: null;
-}
+};
 
-export interface ServiceConfig extends KeyedConfig {
-  // Nominal typing to distinguish from SanitizedConfig
+export type ServiceConfig = KeyedConfig & {
+  /**
+   * Nominal typing to distinguish from SanitizedConfig
+   * @see `SanitizedConfig`
+   */
   _serviceConfigBrand: null;
-}
+};
 
+/**
+ * Data received from the 3rd-party service during an OAuth or token-exchange flow.
+ *
+ * @see setCachedAuthData
+ * @see getCachedAuthData
+ */
 export interface AuthData {
-  // Nominal typing to distinguish from SanitizedConfig and ServiceConfig
-  _oauth: null;
+  /**
+   * Nominal typing to distinguish from `SanitizedConfig` and `ServiceConfig`
+   */
+  _oauthBrand: null;
   [key: string]: string | null;
 }
 
 export interface TokenContext {
   url: string;
-  data: Record<string, unknown>;
+  data: Config;
 }
 
 export interface OAuth2Context {
@@ -309,10 +490,17 @@ export interface RawServiceConfiguration {
   /**
    * UUID of the service configuration
    */
-  id: string | undefined;
+  id: UUID | undefined;
 
+  /**
+   * Registry identifier for the service, e.g., `@pixiebrix/api`.
+   */
   serviceId: ServiceId;
 
+  /**
+   * Human-readable label for the configuration to distinguish it from other configurations for the same service in the
+   * interface.
+   */
   label: string | undefined;
 
   /**
@@ -326,10 +514,13 @@ export interface SanitizedServiceConfiguration {
   _sanitizedServiceConfigurationBrand: null;
 
   /**
-   * UUID of the service configuration
+   * UUID of the service configuration.
    */
-  id?: string;
+  id?: UUID;
 
+  /**
+   * Registry identifier for the service, e.g., @pixiebrix/api
+   */
   serviceId: ServiceId;
 
   /**
@@ -383,15 +574,10 @@ export interface IconConfig {
   color?: string;
 }
 
-export interface OptionsArgs {
-  [prop: string]: Primitive;
-}
+export type UserOptions = Record<string, Primitive>;
 
-export interface RenderedArgs {
-  // FIXME: enforcing nominal typing will require helper methods to product the RenderedArgs
-  // _renderedArgsBrand: null;
-  [prop: string]: unknown;
-}
+// Nice-to-have: add nominal typing to distinguish rendered vs. non-rendered args
+export type RenderedArgs = Record<string, unknown>;
 
 export interface OrganizationAuthState {
   readonly id: string;
@@ -407,6 +593,10 @@ export interface AuthState {
   readonly isOnboarded: boolean;
   readonly extension: boolean;
   readonly organization?: OrganizationAuthState | null;
+
+  /**
+   * List of feature flags enabled for the user.
+   */
   readonly flags: string[];
 }
 
@@ -414,3 +604,19 @@ export type RawConfig = {
   kind: "service" | "extensionPoint" | "component" | "reader" | "recipe";
   metadata: Metadata;
 };
+
+export function isReader(block: IBlock): block is IReader {
+  return "read" in block;
+}
+
+export function isRendererBlock(
+  // eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
+  block: IBlock & { render?: Function }
+): boolean {
+  return typeof block.render === "function";
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types -- typing enforced by other interfaces
+export function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
+  return typeof block.effect === "function";
+}

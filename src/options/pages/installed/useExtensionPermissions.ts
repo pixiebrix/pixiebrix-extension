@@ -20,7 +20,8 @@ import { useCallback, useMemo, useState } from "react";
 import { useAsyncEffect } from "use-async-effect";
 import { castArray } from "lodash";
 import { ensureAllPermissions, extensionPermissions } from "@/permissions";
-import { containsPermissions, mergePermissions } from "@/utils/permissions";
+import { mergePermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/background/messenger/api";
 
 /**
  * WARNING: This hook swallows errors (to simplify the behavior for the `InstalledPage` extension table.

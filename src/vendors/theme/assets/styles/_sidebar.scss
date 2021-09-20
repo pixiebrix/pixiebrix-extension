@@ -1,5 +1,4 @@
 .sidebar {
-  min-height: calc(100vh - #{$navbar-height});
   background: $sidebar-light-bg;
   padding: 0;
   width: $sidebar-width-lg;
@@ -23,6 +22,32 @@
     flex-direction: column;
     &:not(.sub-menu) {
       padding-bottom: 60px;
+    }
+
+    .nav-text-item {
+      padding: 0 $sidebar-menu-padding-x;
+      @include transition-duration(0.25s);
+      transition-property: background;
+      -webkit-transition-property: background;
+      .ReactCollapse--collapse {
+        transition: height 500ms;
+      }
+      .collapse {
+        z-index: 999;
+      }
+
+      cursor: default;
+
+      .nav-text {
+        @include display-flex;
+        @include align-items(center);
+        white-space: nowrap;
+        padding: $sidebar-menu-padding-y 0 $sidebar-menu-padding-y 0;
+        @include transition-duration(0.45s);
+        transition-property: color;
+        color: $sidebar-light-menu-icon-color;
+        font-weight: bold;
+      }
     }
 
     .nav-item {
@@ -153,6 +178,7 @@
       &:hover {
         background: $sidebar-light-menu-hover-bg;
       }
+
       &.nav-profile {
         .nav-link {
           height: auto;
@@ -261,20 +287,22 @@
   }
 }
 
+.sidebar-icon-only .nav-text-item {
+  display: none;
+}
+
 /* style for off-canvas menu*/
-@media screen and (max-width: 991px) {
-  .sidebar-offcanvas {
-    position: fixed;
-    max-height: calc(100vh - #{$navbar-height});
-    top: $navbar-height;
-    bottom: 0;
-    overflow: auto;
-    right: -$sidebar-width-lg;
-    -webkit-transition: all 0.25s ease-out;
-    -o-transition: all 0.25s ease-out;
+.sidebar-offcanvas {
+  position: fixed;
+  top: $navbar-height;
+  bottom: 0;
+  overflow: auto;
+
+  @media screen and (max-width: 991px) {
+    left: -$sidebar-width-lg;
     transition: all 0.25s ease-out;
     &.active {
-      right: 0;
+      left: 0;
     }
   }
 }

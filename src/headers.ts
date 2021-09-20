@@ -17,9 +17,18 @@
 
 import fs from "fs";
 import blockRegistry from "@/blocks/registry";
-import extensionPointRegistry from "@/extensionPoints/registry";
-import "@/blocks";
-import "@/contrib";
+
+// Maintaining this number is a simple way to ensure bricks don't accidentally get dropped
+const EXPECTED_HEADER_COUNT = 76;
+
+// Import for side-effects (these modules register the blocks)
+// NOTE: we don't need to also include extensionPoints because we got rid of all the legacy hard-coded extension points
+// (e.g., the Pipedrive calendar extension point, and TechCrunch entity extension point)
+import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
+import registerContribBlocks from "@/contrib/registerContribBlocks";
+
+registerBuiltinBlocks();
+registerContribBlocks();
 
 Error.stackTraceLimit = Number.POSITIVE_INFINITY;
 
@@ -28,7 +37,7 @@ console.log(`version: ${process.env.NPM_PACKAGE_VERSION}`);
 const blockDefinitions = blockRegistry.cached().map((block) => ({
   apiVersion: "v1",
   header: true,
-  kind: (block as any).read ? "reader" : "component",
+  kind: "read" in block ? "reader" : "component",
   metadata: {
     id: block.id,
     version: process.env.NPM_PACKAGE_VERSION,
@@ -40,23 +49,24 @@ const blockDefinitions = blockRegistry.cached().map((block) => ({
   outputSchema: block.outputSchema,
 }));
 
-const extensionPointDefinitions = extensionPointRegistry
-  .cached()
-  .map((block) => ({
-    apiVersion: "v1",
-    header: true,
-    kind: "extensionPoint",
-    metadata: {
-      id: block.id,
-      version: process.env.NPM_PACKAGE_VERSION,
-      name: block.name,
-      description: block.description,
-      author: block.author,
-    },
-    inputSchema: block.inputSchema,
-  }));
+console.log(`Number of block headers: ${blockDefinitions.length}`);
 
-fs.writeFileSync(
-  "headers.json",
-  JSON.stringify([...blockDefinitions, ...extensionPointDefinitions])
-);
+if (blockDefinitions.length === 0) {
+  throw new Error("No block definitions generated");
+}
+
+if (blockDefinitions.length > EXPECTED_HEADER_COUNT) {
+  throw new Error(
+    `Expected ${EXPECTED_HEADER_COUNT} block definitions. Actual: ${blockDefinitions.length}. Did you forget to bump the EXPECTED_HEADER_COUNT constant?`
+  );
+}
+
+if (blockDefinitions.length < EXPECTED_HEADER_COUNT) {
+  throw new Error(
+    `Expected ${EXPECTED_HEADER_COUNT} block definitions. Actual: ${blockDefinitions.length}. Did you forget to register a block definition?`
+  );
+}
+
+fs.writeFileSync("headers.json", JSON.stringify(blockDefinitions));
+
+console.log("headers.json written to disk");

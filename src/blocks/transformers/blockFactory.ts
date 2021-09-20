@@ -20,16 +20,20 @@ import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
 import { ValidationError } from "@/errors";
 import { castArray } from "lodash";
+import { reducePipeline } from "@/blocks/combinators";
 import {
-  BlockConfig,
-  BlockPipeline,
-  reducePipeline,
-} from "@/blocks/combinators";
-import { BlockArg, BlockOptions, IBlock, Metadata, Schema } from "@/core";
+  BlockArg,
+  BlockOptions,
+  Config,
+  IBlock,
+  Metadata,
+  Schema,
+} from "@/core";
 import { dereference } from "@/validators/generic";
 import blockSchema from "@schemas/component.json";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
 type ComponentKind =
   | "reader"
@@ -72,7 +76,7 @@ function validateBlockDefinition(
 }
 
 class ExternalBlock extends Block {
-  private readonly component: ComponentConfig;
+  public readonly component: ComponentConfig;
 
   readonly inputSchema: Schema;
 
@@ -93,12 +97,29 @@ class ExternalBlock extends Block {
       throw new Error("Cannot deserialize reader as block");
     }
 
-    // @ts-expect-error: we're being dynamic here to set the corresponding method for the kind since
+    // @ts-expect-error we're being dynamic here to set the corresponding method for the kind since
     // we use that method to distinguish between block types in places
     this[METHOD_MAP.get(kind)] = async (
       renderedInputs: BlockArg,
       options: BlockOptions
     ) => this.run(renderedInputs, options);
+  }
+
+  async isPure(): Promise<boolean> {
+    const pipeline = castArray(this.component.pipeline);
+
+    return Promise.all(
+      pipeline.map(async (blockConfig) => {
+        const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
+        return resolvedBlock.isPure;
+      })
+    )
+      .then((purity) => purity.every((x) => x))
+      .catch(
+        () =>
+          // Use safe default if one of the blocks can't be resolved
+          false
+      );
   }
 
   async inferType(): Promise<ComponentKind | null> {
@@ -114,6 +135,10 @@ class ExternalBlock extends Block {
   }
 
   async run(renderedInputs: BlockArg, options: BlockOptions): Promise<unknown> {
+    options.logger.debug("Running component pipeline", {
+      renderedInputs,
+    });
+
     return reducePipeline(
       this.component.pipeline,
       renderedInputs,
@@ -129,7 +154,7 @@ class ExternalBlock extends Block {
   }
 }
 
-export function fromJS(component: Record<string, unknown>): IBlock {
+export function fromJS(component: Config): IBlock {
   if (component.kind == null) {
     throw new ValidationError(
       "Component definition is missing a 'kind' property",

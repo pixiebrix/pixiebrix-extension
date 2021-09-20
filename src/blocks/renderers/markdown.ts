@@ -18,11 +18,10 @@
 import { Renderer } from "@/types";
 import marked from "marked";
 import createDOMPurify, { DOMPurifyI } from "dompurify";
-import { registerBlock } from "@/blocks/registry";
 import { propertiesToSchema } from "@/validators/generic";
 import { BlockArg } from "@/core";
 
-export class Markdown extends Renderer {
+export class MarkdownRenderer extends Renderer {
   private DOMPurify: DOMPurifyI;
 
   constructor() {
@@ -52,5 +51,3 @@ export class Markdown extends Renderer {
     return this.DOMPurify.sanitize(marked(markdown));
   }
 }
-
-registerBlock(new Markdown());

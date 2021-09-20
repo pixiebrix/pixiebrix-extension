@@ -14,30 +14,46 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-import { useToasts } from "react-toast-notifications";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import blockRegistry from "@/blocks/registry";
 import serviceRegistry from "@/services/registry";
 import { stubTrue } from "lodash";
-import { refresh as refreshLocator } from "@/background/locator";
+import { refresh as refreshBackgroundAuthLocator } from "@/background/locator";
 import { useCallback, useState } from "react";
 import { getErrorMessage } from "@/errors";
+import useNotifications from "@/hooks/useNotifications";
+import { clearServiceCache as clearBackgroundServiceCache } from "@/background/requests";
 
+/**
+ * Refresh registries for the current context.
+ *
+ * Additionally refreshes background states necessary for making network calls.
+ */
 export async function refreshRegistries(): Promise<void> {
-  // TODO: clarify in which contexts (e.g., current page, the background, etc.) this method refreshes the registries in
   console.debug("Refreshing bricks from the server");
   await Promise.all([
     extensionPointRegistry.fetch(),
     blockRegistry.fetch(),
     serviceRegistry.fetch(),
-    refreshLocator(),
+    refreshBackgroundAuthLocator(),
   ]);
+
+  // Ensure the background page is using the latest service definitions for fulfilling requests. This must come after
+  // the call to serviceRegistry, because that populates the local IDB definitions.
+  await clearBackgroundServiceCache();
 }
 
-function useRefresh(refreshOnMount = true): [boolean, () => Promise<void>] {
+function useRefresh(options?: {
+  refreshOnMount: boolean;
+}): [boolean, () => Promise<void>] {
+  const { refreshOnMount } = {
+    refreshOnMount: true,
+    ...options,
+  };
+
   const [loaded, setLoaded] = useState(false);
-  const { addToast } = useToasts();
+  const notify = useNotifications();
 
   const refresh = useCallback(
     async (isMounted = stubTrue) => {
@@ -49,11 +65,10 @@ function useRefresh(refreshOnMount = true): [boolean, () => Promise<void>] {
           return;
         }
 
-        addToast(
+        notify.error(
           `Error refreshing bricks from server: ${getErrorMessage(error)}`,
           {
-            appearance: "error",
-            autoDismiss: true,
+            error,
           }
         );
       } finally {
@@ -62,7 +77,7 @@ function useRefresh(refreshOnMount = true): [boolean, () => Promise<void>] {
         }
       }
     },
-    [addToast, setLoaded]
+    [notify, setLoaded]
   );
 
   useAsyncEffect(
@@ -71,7 +86,8 @@ function useRefresh(refreshOnMount = true): [boolean, () => Promise<void>] {
         await refresh(isMounted);
       }
     },
-    [refresh]
+    // Dependencies intentionally left blank -- only running on the initial mount
+    []
   );
 
   return [loaded, refresh];

@@ -15,12 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JSONPath } from "jsonpath-plus";
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 
 export class JSONPathTransformer extends Transformer {
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   constructor() {
     super(
       "@pixiebrix/jsonpath",
@@ -44,8 +46,9 @@ export class JSONPathTransformer extends Transformer {
     { path }: BlockArg,
     { ctxt }: BlockOptions
   ): Promise<unknown> {
+    const { JSONPath } = await import("jsonpath-plus");
+
+    // eslint-disable-next-line new-cap -- export from a library
     return JSONPath({ preventEval: true, path, json: ctxt });
   }
 }
-
-registerBlock(new JSONPathTransformer());

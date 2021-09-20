@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "vendors/theme/app/app.scss";
+import "@/vendors/theme/app/app.scss";
 import "@/vendors/overrides.scss";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faMusic } from "@fortawesome/free-solid-svg-icons";

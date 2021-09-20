@@ -20,18 +20,15 @@ import { useField, useFormikContext } from "formik";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { Card, Table } from "react-bootstrap";
 import { ExtensionPointConfig, RecipeDefinition } from "@/types/definitions";
-import pickBy from "lodash/pickBy";
-import identity from "lodash/identity";
-import { WizardValues } from "@/options/pages/marketplace/wizard";
+import { identity, pickBy } from "lodash";
+import { WizardValues } from "@/options/pages/marketplace/wizardTypes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { ServiceAuthPair } from "@/core";
 
-export function selectedAuths(values: WizardValues): ServiceAuthPair[] {
-  return Object.entries(values.services)
-    .filter(([, config]) => config)
-    .map(([id, config]) => ({ id, config }));
+function selectedAuths(values: WizardValues): ServiceAuthPair[] {
+  return values.services.filter((x) => x.config);
 }
 
 export function selectedExtensions(
@@ -41,11 +38,7 @@ export function selectedExtensions(
   const indexes = Object.keys(pickBy(values.extensions, identity)).map((x) =>
     Number.parseInt(x, 10)
   );
-  console.debug("selected extensions", {
-    extensions: values.extensions,
-    indexes,
-  });
-  return extensions.filter((x, i) => indexes.includes(i));
+  return extensions.filter((_, index) => indexes.includes(index));
 }
 
 export function useSelectedAuths(): ServiceAuthPair[] {

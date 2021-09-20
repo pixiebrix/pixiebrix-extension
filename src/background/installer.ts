@@ -17,11 +17,9 @@
 
 import { browser, Runtime } from "webextension-polyfill-ts";
 import { liftBackground } from "@/background/protocol";
-import urljoin from "url-join";
 import { reportEvent, initTelemetry } from "@/telemetry/events";
 import { DNT_STORAGE_KEY, getDNT, getUID } from "@/background/telemetry";
 
-const SERVICE_URL = process.env.SERVICE_URL;
 const UNINSTALL_URL = "https://www.pixiebrix.com/uninstall/";
 
 let _availableVersion: string | null = null;
@@ -33,12 +31,10 @@ async function openInstallPage() {
 function install({ reason }: Runtime.OnInstalledDetailsType) {
   if (reason === "install") {
     void openInstallPage();
-    initTelemetry();
     reportEvent("PixieBrixInstall", {
       version: browser.runtime.getManifest().version,
     });
   } else if (reason === "update") {
-    initTelemetry();
     reportEvent("PixieBrixUpdate", {
       version: browser.runtime.getManifest().version,
     });
@@ -48,15 +44,6 @@ function install({ reason }: Runtime.OnInstalledDetailsType) {
 function onUpdateAvailable({ version }: Runtime.OnUpdateAvailableDetailsType) {
   _availableVersion = version;
 }
-
-function init() {
-  initTelemetry();
-}
-
-export const hasAppAccount = liftBackground("CHECK_APP_ACCOUNT", async () => {
-  const tabs = await browser.tabs.query({ url: urljoin(SERVICE_URL, "setup") });
-  return tabs.length > 0 ? { id: tabs[0].id } : null;
-});
 
 export const getAvailableVersion = liftBackground(
   "GET_AVAILABLE_VERSION",
@@ -80,7 +67,7 @@ async function setUninstallURL(): Promise<void> {
 
 browser.runtime.onUpdateAvailable.addListener(onUpdateAvailable);
 browser.runtime.onInstalled.addListener(install);
-browser.runtime.onStartup.addListener(init);
+browser.runtime.onStartup.addListener(initTelemetry);
 
 browser.storage.onChanged.addListener((changes) => {
   if (DNT_STORAGE_KEY in changes) {

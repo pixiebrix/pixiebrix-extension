@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -15,9 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { isFirefox } from "@/helpers";
+import { isFirefox } from "webext-detect-page";
 import { browser } from "webextension-polyfill-ts";
-import { expectBackgroundPage } from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 
 const FIREFOX_OPTIONS_MENU_ID = "PIXIEBRIX_FIREFOX_OPTIONS";
 
@@ -28,13 +29,13 @@ function onContextMenuClick({ menuItemId }: browser.contextMenus.OnClickData) {
 }
 
 export default async function initFirefoxCompat(): Promise<void> {
-  expectBackgroundPage();
-  if (!isFirefox) {
+  expectContext("background");
+  if (!isFirefox()) {
     return;
   }
 
   browser.contextMenus.onClicked.addListener(onContextMenuClick);
-  await browser.contextMenus.create({
+  browser.contextMenus.create({
     id: FIREFOX_OPTIONS_MENU_ID,
     title: "Options",
     contexts: ["browser_action"],

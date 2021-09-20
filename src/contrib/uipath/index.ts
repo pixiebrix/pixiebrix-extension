@@ -15,6 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import "./process";
-import "./localProcess";
-import "./embedApp";
+export { RunProcess } from "./process";
+export { RunLocalProcess } from "./localProcess";
+export { UiPathAppRenderer } from "./embedApp";

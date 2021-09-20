@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Table } from "react-bootstrap";
-import { LogEntry } from "@/background/logging";
+import type { LogEntry } from "@/background/logging";
 import EntryRow from "@/components/logViewer/EntryRow";
 
 const LogTable: React.FunctionComponent<{
@@ -30,6 +30,7 @@ const LogTable: React.FunctionComponent<{
         <th>&nbsp;</th>
         <th>Timestamp</th>
         <th>Level</th>
+        <th>Label</th>
         <th>Block/Service</th>
         <th className="w-100">Message/Error</th>
       </tr>
@@ -41,7 +42,7 @@ const LogTable: React.FunctionComponent<{
       {pageEntries.length === 0 && (
         <tr>
           <td>&nbsp;</td>
-          <td colSpan={4}>
+          <td colSpan={5}>
             {hasEntries ? (
               <span>There are no log entries at this log level</span>
             ) : (

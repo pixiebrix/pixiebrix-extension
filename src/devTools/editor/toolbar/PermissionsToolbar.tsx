@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useState } from "react";
-import { FormState } from "@/devTools/editor/editorSlice";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { Button, ButtonGroup } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShieldAlt } from "@fortawesome/free-solid-svg-icons";
@@ -24,10 +24,10 @@ import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { ensureAllPermissions, extensionPermissions } from "@/permissions";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { Permissions } from "webextension-polyfill-ts";
-import useAsyncEffect from "use-async-effect";
+import { useAsyncEffect } from "use-async-effect";
 import { useDebounce } from "use-debounce";
 import { useToasts } from "react-toast-notifications";
-import { containsPermissions } from "@/utils/permissions";
+import { containsPermissions } from "@/background/messenger/api";
 
 type PermissionsState = {
   hasPermissions: boolean;

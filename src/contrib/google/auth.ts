@@ -20,7 +20,7 @@ import { getErrorMessage } from "@/errors";
 
 export async function ensureAuth(
   scopes: string[],
-  { interactive }: { interactive: boolean } = { interactive: true }
+  { interactive = true } = {}
 ): Promise<string> {
   if (!gapi) {
     throw new Error("Google API not loaded. Are you using Chrome?");
@@ -40,7 +40,7 @@ export async function ensureAuth(
     throw new Error(`Cannot get Chrome OAuth token: ${getErrorMessage(error)}`);
   }
 
-  throw new Error(`Cannot get Chrome OAuth token`);
+  throw new Error("Cannot get Chrome OAuth token");
 }
 
 class PermissionsError extends Error {

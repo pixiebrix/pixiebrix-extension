@@ -16,45 +16,62 @@
  */
 
 import React, { useContext } from "react";
-import Dropdown from "react-bootstrap/Dropdown";
-import Nav from "react-bootstrap/Nav";
+import { Dropdown, Nav } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faSignOutAlt,
   faBars,
   faCaretDown,
   faExternalLinkAlt,
+  faSignOutAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import AuthContext from "@/auth/AuthContext";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import logo from "@img/logo.svg";
-import logoSmall from "@img/logo-small.svg";
+import logoSmall from "@img/logo-small-rounded.svg";
 import { DEFAULT_SERVICE_URL, getBaseURL } from "@/services/baseService";
 import { useAsyncState } from "@/hooks/common";
-import { getExtensionToken } from "@/auth/token";
+import { isLinked } from "@/auth/token";
+import { useSelector } from "react-redux";
+import { SettingsState } from "@/options/slices";
+import { toggleSidebar } from "./toggleSidebar";
 
 const Navbar: React.FunctionComponent = () => {
   const { email, extension } = useContext(AuthContext);
   const [serviceURL] = useAsyncState<string>(getBaseURL);
-  const [token, tokenPending] = useAsyncState(getExtensionToken);
+  const [connected, connectedPending] = useAsyncState(isLinked);
+  const mode = useSelector<{ settings: SettingsState }, string>(
+    ({ settings }) => settings.mode
+  );
+
+  // Use `connectedPending` to optimistically show the toggle
+  const showNavbarToggle = mode === "local" || connected || connectedPending;
 
   return (
     <nav className="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div className="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+      <div className="text-center navbar-brand-wrapper navbar-toggler-wrapper d-flex align-items-center justify-content-center">
         <Link className="navbar-brand brand-logo" to="/">
           <img src={logo} alt="PixieBrix logo" />
         </Link>
         <Link className="navbar-brand brand-logo-mini" to="/">
           <img src={logoSmall} alt="PixieBrix mini logo" />
         </Link>
+        {showNavbarToggle && (
+          <button
+            className="navbar-toggler"
+            type="button"
+            onClick={toggleSidebar}
+          >
+            <FontAwesomeIcon icon={faBars} />
+          </button>
+        )}
       </div>
       <div className="navbar-menu-wrapper d-flex align-items-stretch">
-        {(token != null || tokenPending) && (
+        {showNavbarToggle && (
           <button
-            className="navbar-toggler navbar-toggler align-self-center"
+            className="navbar-toggler align-self-center"
             type="button"
-            onClick={() => document.body.classList.toggle("sidebar-icon-only")}
+            onClick={toggleSidebar}
           >
             <FontAwesomeIcon icon={faBars} />
           </button>
@@ -67,11 +84,13 @@ const Navbar: React.FunctionComponent = () => {
               target="_blank"
               href={serviceURL ?? DEFAULT_SERVICE_URL}
             >
-              Open Web App <FontAwesomeIcon icon={faExternalLinkAlt} />
+              <FontAwesomeIcon icon={faExternalLinkAlt} className="mr-1" />
+              Open Admin Console
             </Nav.Link>
           )}
 
           {email && !extension && (
+            // FIXME: remove https://github.com/pixiebrix/pixiebrix-app/issues/494
             <li className="nav-item nav-profile">
               <Dropdown alignRight>
                 <Dropdown.Toggle id="profile-dropdown" className="nav-link">
@@ -86,8 +105,9 @@ const Navbar: React.FunctionComponent = () => {
                 <Dropdown.Menu className="navbar-dropdown">
                   <Dropdown.Item
                     href="#"
-                    onClick={async (e: any) => {
+                    onClick={async (e) => {
                       e.preventDefault();
+                      // Posting to the Django view, not the API
                       await axios.post("/logout/");
                       location.href = "/";
                     }}

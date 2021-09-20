@@ -17,9 +17,8 @@
 
 import { Effect } from "@/types";
 import { proxyService } from "@/background/requests";
-import { registerBlock } from "@/blocks/registry";
 import { Schema, BlockArg } from "@/core";
-import partial from "lodash/partial";
+import { partial } from "lodash";
 import { BusinessError } from "@/errors";
 
 function makeProperties(
@@ -27,7 +26,7 @@ function makeProperties(
   propertyKey = "property"
 ) {
   return Object.entries(obj)
-    .filter(([, value]) => !!value)
+    .filter(([, value]) => Boolean(value))
     .map(([property, value]) => ({
       [propertyKey]: property,
       value,
@@ -122,7 +121,7 @@ export class AddUpdateContact extends Effect {
         );
       }
 
-      // @ts-ignore: come back and define types for the hubspot API
+      // @ts-expect-error come back and define types for the hubspot API
       const { contacts } = await proxyHubspot({
         url: "https://api.hubapi.com/contacts/v1/search/query",
         params: { q: `${firstname} ${lastname} ${company}`.trim(), count: 5 },
@@ -138,7 +137,7 @@ export class AddUpdateContact extends Effect {
         throw new BusinessError("Multiple Hubspot contacts found");
       } else {
         await proxyHubspot({
-          url: `https://api.hubapi.com/contacts/v1/contact/`,
+          url: "https://api.hubapi.com/contacts/v1/contact/",
           method: "post",
           data: { properties },
         });
@@ -198,7 +197,7 @@ export class AddUpdateCompany extends Effect {
 
     const hostName = new URL(website).hostname;
 
-    // @ts-ignore: come back and define types for the hubspot API
+    // @ts-expect-error come back and define types for the hubspot API
     const { results } = await proxyHubspot({
       url: `https://api.hubapi.com/companies/v2/domains/${hostName}/companies`,
       method: "post",
@@ -227,6 +226,3 @@ export class AddUpdateCompany extends Effect {
     }
   }
 }
-
-registerBlock(new AddUpdateContact());
-registerBlock(new AddUpdateCompany());

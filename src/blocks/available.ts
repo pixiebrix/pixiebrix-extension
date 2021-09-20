@@ -16,7 +16,7 @@
  */
 
 import { patternToRegex } from "webext-patterns";
-import castArray from "lodash/castArray";
+import { castArray } from "lodash";
 import { Availability } from "@/blocks/types";
 import { BusinessError } from "@/errors";
 
@@ -65,7 +65,10 @@ export async function checkAvailable({
     return false;
   }
 
-  if (selectors.length > 0 && !selectors.some(testSelector)) {
+  if (
+    selectors.length > 0 &&
+    !selectors.some((selector) => testSelector(selector))
+  ) {
     // Console.debug("Page doesn't match any selectors", selectors);
     return false;
   }

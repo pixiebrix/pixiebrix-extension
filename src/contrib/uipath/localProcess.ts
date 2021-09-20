@@ -16,15 +16,15 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
 import UiPathRobot from "@/contrib/uipath/UiPathRobot";
 import { JobResult } from "@uipath/robot/dist/models";
 import { BusinessError } from "@/errors";
+import { validateRegistryId } from "@/types/helpers";
 
 UiPathRobot.settings.disableTelemetry = true;
 
-export const UIPATH_ID = "@pixiebrix/uipath/local-process";
+export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/local-process");
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
   releaseKey: {
@@ -71,8 +71,9 @@ export class RunLocalProcess extends Transformer {
 
         const process = processes.find((x) => x.id === releaseKey);
         if (!process) {
-          logger.error(`Cannot find UiPath release: ${releaseKey}`);
-          throw new BusinessError(`Cannot find UiPath release`);
+          // `releaseKey`'s type is checked in the inputSchema
+          logger.error(`Cannot find UiPath release: ${releaseKey as string}`);
+          throw new BusinessError("Cannot find UiPath release");
         }
 
         console.debug("Running local UiPath process", { releaseKey });
@@ -86,5 +87,3 @@ export class RunLocalProcess extends Transformer {
     ]);
   }
 }
-
-registerBlock(new RunLocalProcess());

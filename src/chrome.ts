@@ -15,16 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import isEmpty from "lodash/isEmpty";
 import pDefer from "p-defer";
 import pTimeout from "p-timeout";
+import { isExtensionContext } from "webext-detect-page";
 import { browser, Runtime } from "webextension-polyfill-ts";
-import { forbidBackgroundPage } from "./utils/expectContext";
+import { forbidContext } from "./utils/expectContext";
+import { JsonValue } from "type-fest";
 
-export const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
+// eslint-disable-next-line prefer-destructuring -- It breaks EnvironmentPlugin
 const CHROME_EXTENSION_ID = process.env.CHROME_EXTENSION_ID;
+const CHROME_EXTENSION_STORAGE_KEY = "chrome_extension_id";
 
-type StorageLocation = "local" | "sync";
+/**
+ * A storage key managed manually (i.e., not using redux-persist).
+ * @see ReduxStorageKey
+ */
+export type ManualStorageKey = string & {
+  _manualStorageKeyBrand: never;
+};
+
+/**
+ * A storage key managed by redux-persist.
+ * @see ManualStorageKey
+ */
+export type ReduxStorageKey = string & {
+  _reduxStorageKeyBrand: never;
+};
 
 export class RequestError extends Error {
   readonly response: unknown;
@@ -37,43 +53,14 @@ export class RequestError extends Error {
 }
 
 export function isBrowserActionPanel(): boolean {
-  const isExtensionContext =
-    typeof chrome === "object" &&
-    chrome &&
-    typeof chrome.extension === "object";
-
-  if (!isExtensionContext) {
-    return false;
-  }
-
-  const url = new URL("action.html", location.origin);
-
-  return url.pathname === location.pathname && url.origin === location.origin;
+  return isExtensionContext() && location.pathname === "/action.html";
 }
 
-export function isDevtoolsPage(): boolean {
-  const isExtensionContext =
-    typeof chrome === "object" &&
-    chrome &&
-    typeof chrome.extension === "object";
+export function setChromeExtensionId(extensionId = ""): void {
+  forbidContext("extension");
 
-  if (!isExtensionContext || !chrome?.runtime?.getManifest) {
-    return false;
-  }
-
-  // Make sure dev tools are installed
-  const { devtools_page } = chrome.runtime.getManifest();
-  if (typeof devtools_page !== "string") {
-    return false;
-  }
-
-  const url = new URL("devtoolsPanel.html", location.origin);
-
-  return url.pathname === location.pathname && url.origin === location.origin;
-}
-
-export function setChromeExtensionId(extensionId: string): void {
-  if (isEmpty(extensionId)) {
+  extensionId = extensionId.trim();
+  if (extensionId) {
     localStorage.removeItem(CHROME_EXTENSION_STORAGE_KEY);
   } else {
     localStorage.setItem(CHROME_EXTENSION_STORAGE_KEY, extensionId);
@@ -81,8 +68,11 @@ export function setChromeExtensionId(extensionId: string): void {
 }
 
 export function getChromeExtensionId(): string {
-  const manualKey = localStorage.getItem(CHROME_EXTENSION_STORAGE_KEY);
-  return isEmpty(manualKey ?? "") ? CHROME_EXTENSION_ID : manualKey;
+  forbidContext("extension");
+
+  return (
+    localStorage.getItem(CHROME_EXTENSION_STORAGE_KEY) ?? CHROME_EXTENSION_ID
+  );
 }
 
 /**
@@ -91,7 +81,7 @@ export function getChromeExtensionId(): string {
  * needs to send one message back within a second.
  * */
 export async function runtimeConnect(name: string): Promise<Runtime.Port> {
-  forbidBackgroundPage();
+  forbidContext("background");
 
   const { resolve, reject, promise: connectionPromise } = pDefer();
 
@@ -130,27 +120,88 @@ export class RuntimeNotFoundError extends Error {
 }
 
 /**
- * @deprecated use browser.storage directly
+ * Read from `browser.storage.local`, updating the value to be stored as an object instead of a JSON-stringified value
+ *
+ * WARNING: this method will convert string numbers, e.g., "42" to the the corresponding number. So this method is
+ * not safe to use with storage holding primitive user-defined data.
+ *
+ * @deprecated Use `readStorage` instead
+ * @see readStorage
  */
-export async function readStorage<T>(
-  storageKey: string,
-  storageType: StorageLocation = "local"
-): Promise<T> {
-  const result = await browser.storage[storageType].get(storageKey);
-  return result[storageKey];
-}
-
-/**
- * @deprecated use browser.storage directly
- */
-export async function setStorage(
-  storageKey: string,
-  value: string,
-  storageType: StorageLocation = "local"
-): Promise<void> {
-  if (typeof value !== "string") {
-    throw new TypeError("Expected string value");
+export async function readStorageWithMigration<T = unknown>(
+  storageKey: ManualStorageKey,
+  defaultValue?: T
+): Promise<T | undefined> {
+  const storedValue = await readStorage<T>(storageKey, defaultValue);
+  if (typeof storedValue !== "string") {
+    // No migration necessary
+    return storedValue;
   }
 
-  await browser.storage[storageType].set({ [storageKey]: value });
+  let parsedValue: T;
+
+  try {
+    parsedValue = JSON.parse(storedValue) as T;
+    await browser.storage.local.set({ [storageKey]: parsedValue });
+  } catch {
+    // If it's not a valid JSON-string we must be working with a value that's already been migrated
+    parsedValue = storedValue;
+  }
+
+  return parsedValue;
+}
+
+export async function readStorage<T = unknown>(
+  storageKey: ManualStorageKey,
+  defaultValue?: T
+): Promise<T | undefined> {
+  // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
+  // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
+  const result = await browser.storage.local.get(storageKey);
+
+  if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
+    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
+    return result[storageKey];
+  }
+
+  return defaultValue;
+}
+
+export async function readReduxStorage<T extends JsonValue = JsonValue>(
+  storageKey: ReduxStorageKey,
+  defaultValue?: T
+): Promise<T | undefined> {
+  // `browser.storage.local` is supposed to have a signature that takes an object that includes default values.
+  // On Chrome 93.0.4577.63 that signature appears to return the defaultValue even when the value is set?
+  const result = await browser.storage.local.get(storageKey);
+
+  if (Object.prototype.hasOwnProperty.call(result, storageKey)) {
+    // eslint-disable-next-line security/detect-object-injection -- Just checked with hasOwnProperty
+    const value = result[storageKey];
+    if (typeof value === "string") {
+      return JSON.parse(value);
+    }
+
+    if (value !== undefined) {
+      console.warn("Expected JSON-stringified value for key %s", storageKey, {
+        value,
+      });
+    }
+  }
+
+  return defaultValue;
+}
+
+export async function setStorage(
+  storageKey: ManualStorageKey,
+  value: unknown
+): Promise<void> {
+  await browser.storage.local.set({ [storageKey]: value });
+}
+
+export async function setReduxStorage<T extends JsonValue = JsonValue>(
+  storageKey: ReduxStorageKey,
+  value: T
+): Promise<void> {
+  await browser.storage.local.set({ [storageKey]: JSON.stringify(value) });
 }

@@ -17,7 +17,6 @@
 
 import { Effect } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { registerBlock } from "@/blocks/registry";
 
 // https://developer.mozilla.org/en-US/docs/Web/Events
 const DOM_EVENTS = [
@@ -75,12 +74,15 @@ export class ElementEvent extends Effect {
     { selector, event }: BlockArg,
     { logger }: BlockOptions
   ): Promise<void> {
+    // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
     const $element = $(document).find(selector);
 
     if ($element.length === 0) {
-      logger.debug(`Element not found for selector: ${selector}`);
+      logger.debug(`Element not found for selector: ${selector as string}`);
     } else if ($element.length > 1) {
-      logger.debug(`Multiple elements found for selector: ${selector}`);
+      logger.debug(
+        `Multiple elements found for selector: ${selector as string}`
+      );
     }
 
     // Triggers the event. NOTE: the event is not "trusted" as being a user action
@@ -88,5 +90,3 @@ export class ElementEvent extends Effect {
     $element.trigger(event);
   }
 }
-
-registerBlock(new ElementEvent());

@@ -15,94 +15,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-const { merge } = require("lodash");
 const path = require("path");
 const rootDir = path.resolve(__dirname, "../");
 const webpack = require("webpack");
+const mergeWithShared = require("../webpack.sharedConfig.js");
 
-const { resolve } = require("../resolve.config.js");
-
-module.exports = {
+module.exports = mergeWithShared({
   mode: "development",
   target: "node",
-  devtool: "eval",
-  context: rootDir,
+  devtool: "nosources-source-map",
   entry: {
     headers: path.resolve(rootDir, "src/headers"),
   },
   output: {
-    filename: "[name].js",
     path: path.resolve(rootDir, "scripts", "bin"),
   },
   externals: {
-    // https://github.com/Automattic/node-canvas/issues/1314#issuecomment-443068600
-    canvas: "commonjs canvas",
-    // https://github.com/yan-foto/electron-reload/issues/71#issuecomment-588988382
-    fsevents: "require('fsevents')",
+    // Exclude some troublesome/unnecessary dependencies
+    "webextension-polyfill": "{}",
+    rollbar: "{init(){}}",
   },
-  resolve: merge(resolve, {
+  resolve: {
     alias: {
-      "@uipath/robot": path.resolve(rootDir, "src/__mocks__/robotMock"),
+      "@/icons/list": path.resolve("src/__mocks__/iconsListMock"),
+      "@uipath/robot": path.resolve("src/__mocks__/robotMock"),
     },
-    fallback: {
-      chokidar: false,
-    },
-  }),
+  },
   plugins: [
+    // Fixes warning:
+    //  WARNING in ./node_modules/nunjucks/src/node-loaders.js 155:17-38
+    //  Critical dependency: the request of a dependency is an expression
+    new webpack.IgnorePlugin({
+      resourceRegExp: /node-loaders/,
+      contextRegExp: /nunjucks/,
+    }),
     new webpack.ProvidePlugin({
-      window: "global/window.js",
-      document: "global/document.js",
+      document: "min-document",
+    }),
+    new webpack.EnvironmentPlugin({
+      NPM_PACKAGE_VERSION: process.env.npm_package_version,
     }),
     new webpack.DefinePlugin({
-      "process.env": {
-        NPM_PACKAGE_VERSION: JSON.stringify(process.env.npm_package_version),
-      },
-      chrome: {
-        runtime: {
-          id: 42,
-        },
-      },
+      // Patch browser variable selectively to avoid environment misdetection in React
+      window: webpack.DefinePlugin.runtimeValue((ctx) =>
+        ctx.module.resource.includes("css-selector-generator")
+          ? "global"
+          : "window"
+      ),
+      self: webpack.DefinePlugin.runtimeValue((ctx) =>
+        ctx.module.resource.includes("css-selector-generator")
+          ? "global"
+          : "self"
+      ),
     }),
   ],
-  module: {
-    rules: [
-      {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: "ts-loader",
-            options: {
-              configFile: "tsconfig.webpack.json",
-            },
-          },
-        ],
-        exclude: /node_modules/,
-      },
-      {
-        test: /\.(svg|png|jpg|gif)?$/,
-        exclude: /(bootstrap-icons|simple-icons)/,
-        type: "asset/resource",
-        generator: {
-          filename: "img/[name][ext]",
-        },
-      },
-      {
-        test: /(bootstrap-icons|simple-icons).*\.svg$/,
-        loader: "svg-inline-loader",
-      },
-      {
-        test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
-        exclude: /(bootstrap-icons|simple-icons)/,
-        type: "asset/resource",
-        generator: {
-          filename: "fonts/[name][ext]",
-        },
-      },
-      {
-        test: /\.ya?ml$/,
-        type: "json", // Required by Webpack v4
-        use: "yaml-loader",
-      },
-    ],
-  },
-};
+});

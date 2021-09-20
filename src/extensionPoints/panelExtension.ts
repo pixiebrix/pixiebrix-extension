@@ -15,18 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4 } from "@/types/helpers";
 import { ExtensionPoint } from "@/types";
 import Mustache from "mustache";
 import { errorBoundary } from "@/blocks/renderers/common";
 import { checkAvailable } from "@/blocks/available";
-import { castArray } from "lodash";
+import { castArray, cloneDeep } from "lodash";
 import {
   reducePipeline,
   mergeReaders,
   blockList,
-  BlockConfig,
-  BlockPipeline,
   makeServiceContext,
 } from "@/blocks/combinators";
 import { boolean } from "@/utils";
@@ -43,6 +41,7 @@ import {
   IReader,
   ReaderOutput,
   Schema,
+  UUID,
 } from "@/core";
 import {
   ExtensionPointDefinition,
@@ -53,15 +52,16 @@ import { PanelComponent, render } from "@/extensionPoints/dom";
 import { Permissions } from "webextension-polyfill-ts";
 import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
-import iconAsSVG from "@/icons/svgIcons";
+import getSvgIcon from "@/icons/getSvgIcon";
+import { BlockConfig, BlockPipeline } from "@/blocks/types";
 
-export interface PanelConfig {
+export type PanelConfig = {
   heading?: string;
   body: BlockConfig | BlockPipeline;
   icon?: IconConfig;
   collapsible?: boolean;
   shadowDOM?: boolean;
-}
+};
 
 const RENDER_LOOP_THRESHOLD = 25;
 const RENDER_LOOP_WINDOW_MS = 500;
@@ -82,10 +82,10 @@ function detectLoop(timestamps: Date[]): void {
     const diffs = timestamps.map((x) =>
       Math.abs(current.getTime() - x.getTime())
     );
-    console.error(`Panel is stuck in a render loop`, {
+    console.error("Panel is stuck in a render loop", {
       diffs,
     });
-    throw new Error(`Panel is stuck in a render loop`);
+    throw new Error("Panel is stuck in a render loop");
   }
 }
 
@@ -97,7 +97,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
   protected $container: JQuery;
 
-  private readonly collapsedExtensions: { [key: string]: boolean };
+  private readonly collapsedExtensions: Map<UUID, boolean>;
 
   private readonly cancelPending: Set<() => void>;
 
@@ -119,7 +119,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
   ) {
     super(id, name, description, icon);
     this.$container = null;
-    this.collapsedExtensions = {};
+    this.collapsedExtensions = new Map();
     this.cancelPending = new Set();
     this.cancelRemovalMonitor = new Map();
     this.renderTimestamps = new Map();
@@ -214,19 +214,23 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     const selector = this.getContainerSelector();
 
-    console.debug(`Awaiting panel container for ${this.id}: ${selector}`);
+    console.debug(
+      `Awaiting panel container for ${this.id}: ${JSON.stringify(selector)}`
+    );
 
     const [containerPromise, cancelInstall] = awaitElementOnce(selector);
     this.cancelPending.add(cancelInstall);
 
-    this.$container = (await containerPromise) as JQuery<HTMLElement>;
+    this.$container = (await containerPromise) as JQuery;
 
     if (this.$container.length === 0) {
       return false;
     }
 
     if (this.$container.length > 1) {
-      console.error(`Multiple containers found for selector: ${selector}`);
+      console.error(
+        `Multiple containers found for selector: ${JSON.stringify(selector)}`
+      );
       this.logger.error(`Multiple containers found: ${this.$container.length}`);
       return false;
     }
@@ -235,7 +239,11 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       this.$container.get(0),
       this.id,
       () => {
-        console.debug(`Container removed from DOM for ${this.id}: ${selector}`);
+        console.debug(
+          `Container removed from DOM for ${this.id}: ${JSON.stringify(
+            selector
+          )}`
+        );
         this.$container = undefined;
       }
     );
@@ -244,7 +252,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       this.cancelPending.add(cancelWatchRemote);
     }
 
-    return !!cancelWatchRemote;
+    return Boolean(cancelWatchRemote);
   }
 
   addPanel($panel: JQuery): void {
@@ -291,7 +299,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
     // Start collapsed
     if (collapsible && cnt === 1) {
-      this.collapsedExtensions[extension.id] = true;
+      this.collapsedExtensions.set(extension.id, true);
     }
 
     const serviceContext = await makeServiceContext(extension.services);
@@ -302,7 +310,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         heading: Mustache.render(heading, extensionContext),
         // Render a placeholder body that we'll fill in async
         body: `<div id="${bodyUUID}"></div>`,
-        icon: await iconAsSVG?.(icon),
+        icon: icon ? await getSvgIcon(icon) : null,
         bodyUUID,
       })
     );
@@ -393,7 +401,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     };
 
     if (collapsible) {
-      const startExpanded = !this.collapsedExtensions[extension.id];
+      const startExpanded = !this.collapsedExtensions.get(extension.id);
 
       $bodyContainers.addClass(["collapse"]);
       const $toggle = $panel.find('[data-toggle="collapse"]');
@@ -407,7 +415,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
         const showing = $bodyContainers.hasClass("show");
         $toggle.attr("aria-expanded", String(showing));
         $toggle.toggleClass("active", showing);
-        this.collapsedExtensions[extension.id] = !showing;
+        this.collapsedExtensions.set(extension.id, !showing);
         if (showing) {
           console.debug(
             `Installing body for collapsible panel: ${extension.id}`
@@ -439,7 +447,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       throw new Error("Reader returned null/undefined");
     }
 
-    const errors = [];
+    const errors: unknown[] = [];
 
     for (const extension of this.extensions) {
       if (extensionIds != null && !extensionIds.includes(extension.id)) {
@@ -447,9 +455,10 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
       }
 
       try {
+        // Running in loop to ensure consistent placement. OK because `installBody` in runExtension is runs asynchronously
+        // eslint-disable-next-line no-await-in-loop
         await this.runExtension(readerContext, extension);
-        // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
-      } catch (error) {
+      } catch (error: unknown) {
         errors.push(error);
         this.logger
           .childLogger({
@@ -494,11 +503,13 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
   public readonly rawConfig: ExtensionPointConfig<PanelDefinition>;
 
   constructor(config: ExtensionPointConfig<PanelDefinition>) {
-    const { id, name, description } = config.metadata;
+    // `cloneDeep` to ensure we have an isolated copy (since proxies could get revoked)
+    const cloned = cloneDeep(config);
+    const { id, name, description } = cloned.metadata;
     super(id, name, description);
-    this._definition = config.definition;
-    this.rawConfig = config;
-    const { isAvailable } = config.definition;
+    this._definition = cloned.definition;
+    this.rawConfig = cloned;
+    const { isAvailable } = cloned.definition;
     this.permissions = {
       permissions: ["tabs", "webNavigation"],
       origins: castArray(isAvailable.matchPatterns),
@@ -524,7 +535,7 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
     const { position = "append" } = this._definition;
 
     if (typeof position !== "string") {
-      throw new TypeError(`Expected string for panel position`);
+      throw new TypeError("Expected string for panel position");
     }
 
     switch (position) {
@@ -537,6 +548,8 @@ class RemotePanelExtensionPoint extends PanelExtensionPoint {
       }
 
       default: {
+        // Type is `never` due to checks above
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Unexpected position: ${position}`);
       }
     }

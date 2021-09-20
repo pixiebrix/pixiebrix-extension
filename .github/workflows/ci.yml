@@ -1,0 +1,151 @@
+name: CI
+
+on: push
+
+env:
+  # Creates and uploads sourcemaps to Rollbar, and save the built extension as an artifact
+  PUBLIC_RELEASE: ${{ github.ref == 'refs/heads/main' }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run test -- --coverage
+      - name: Run codacy-coverage-reporter
+        uses: codacy/codacy-coverage-reporter-action@v1
+        # Skip step for dependabot: https://github.com/pixiebrix/pixiebrix-app/issues/231
+        # @see https://dev.to/github/conditional-workflows-and-failures-in-github-actions-2okk
+        if: ${{ github.actor != 'dependabot[bot]' }}
+        with:
+          # https://github.com/codacy/codacy-coverage-reporter-action
+          project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+          coverage-reports: coverage/lcov.info
+
+  build-stage:
+    runs-on: ubuntu-latest
+    env:
+      # Uploads sourcemaps to S3, if it's a public release
+      SOURCE_MAP_PATH: sourcemaps/${{ github.job }}/${{ github.sha }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run build:webpack
+        env:
+          ENVIRONMENT: staging
+          EXTERNALLY_CONNECTABLE: ${{ secrets.STAGING_SERVICE_URL }}*,http://127.0.0.1/*
+          SERVICE_URL: ${{ secrets.STAGING_SERVICE_URL }}
+          ROLLBAR_BROWSER_ACCESS_TOKEN: ${{ secrets.ROLLBAR_BROWSER_ACCESS_TOKEN }}
+          ROLLBAR_POST_SERVER_ITEM_TOKEN: ${{ secrets.ROLLBAR_POST_SERVER_ITEM_TOKEN }}
+          SUPPORT_WIDGET_ID: ${{ secrets.SUPPORT_WIDGET_ID }}
+          CHROME_EXTENSION_ID: kkomancachnjkdalpcokenmjlimmbaog
+          CHROME_MANIFEST_KEY: ${{ secrets.CHROME_MANIFEST_STAGING_PUBLIC_KEY }}
+          GOOGLE_APP_ID: ${{ secrets.GOOGLE_APP_ID }}
+          GOOGLE_API_KEY: ${{ secrets.STAGE_GOOGLE_API_KEY }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.STAGE_GOOGLE_OAUTH_CLIENT_ID }}
+      - uses: actions/upload-artifact@v2
+        name: Save extension
+        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
+        with:
+          name: build-staging
+          path: |
+            dist
+            !dist/**/*.map
+          retention-days: 5
+          if-no-files-found: error
+
+      - uses: actions/upload-artifact@v2
+        name: Save report.html
+        with:
+          name: staging-build-size
+          path: report.html
+          retention-days: 5
+          if-no-files-found: error
+
+      - run: npm run upload:sourcemaps
+        if: ${{ fromJSON(env.PUBLIC_RELEASE)}}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.SOURCEMAP_USER_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.SOURCEMAP_USER_KEY }}
+          AWS_DEFAULT_REGION: "us-east-2"
+
+  generate-headers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run build:scripts
+      - run: npm run generate:headers
+      - uses: actions/upload-artifact@v2
+        name: Save headers.json
+        with:
+          name: brick-headers
+          path: headers.json
+          retention-days: 5
+          if-no-files-found: error
+
+  types:
+    # Surface type errors in GitHub’s UI faster and outside webpack
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run build:typescript
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+          cache: npm
+      - run: npm ci
+      - run: npm run lint -- --quiet
+
+  # https://pre-commit.com/#usage-in-continuous-integration
+  prettier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - uses: pre-commit/action@v2.0.3
+
+  # https://github.com/packtracker/webpack-plugin#cli
+  bundle-size:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 2 # packtracker requires HEAD^
+      - run: npm ci
+      - name: build
+        run: npm run build:webpack -- --json dist/stats.json
+      - name: upload
+        run: npx --package @packtracker/webpack-plugin -- packtracker-upload --stats dist/stats.json
+        env:
+          PT_PROJECT_TOKEN: ${{ secrets.PT_PROJECT_TOKEN }}
+          PT_FAIL_BUILD: true

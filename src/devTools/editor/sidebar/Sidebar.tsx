@@ -16,7 +16,7 @@
  */
 
 import React, { FormEvent, useContext, useMemo, useState } from "react";
-import { EditorState } from "@/devTools/editor/editorSlice";
+import { EditorState } from "@/devTools/editor/slices/editorSlice";
 import { DevToolsContext } from "@/devTools/context";
 import { sortBy } from "lodash";
 import {
@@ -39,7 +39,7 @@ import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
 import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
-import useSvg from "@/hooks/useSvg";
+import { Except } from "type-fest";
 
 const DropdownEntry: React.FunctionComponent<{
   caption: string;
@@ -62,7 +62,10 @@ const DropdownEntry: React.FunctionComponent<{
 );
 
 const Sidebar: React.FunctionComponent<
-  Omit<EditorState, "error" | "dirty" | "knownEditable" | "selectionSeq"> & {
+  Except<
+    EditorState,
+    "error" | "dirty" | "knownEditable" | "selectionSeq" | "isBetaUI"
+  > & {
     installed: IExtension[];
   }
 > = ({ inserting, activeElement, installed, elements }) => {
@@ -80,21 +83,21 @@ const Sidebar: React.FunctionComponent<
     unavailableCount,
   } = useInstallState(installed, elements);
 
-  const elementHash = hash(sortBy(elements.map((x) => x.uuid)));
+  const elementHash = hash(sortBy(elements.map((formState) => formState.uuid)));
   const entries = useMemo(
     () => {
-      const elementIds = new Set(elements.map((x) => x.uuid));
+      const elementIds = new Set(elements.map((formState) => formState.uuid));
       const entries = [
         ...elements.filter(
-          (x) =>
+          (formState) =>
             showAll ||
-            availableDynamicIds?.has(x.uuid) ||
-            activeElement === x.uuid
+            availableDynamicIds?.has(formState.uuid) ||
+            activeElement === formState.uuid
         ),
         ...installed.filter(
-          (x) =>
-            !elementIds.has(x.id) &&
-            (showAll || installedIds?.includes(x.extensionPointId))
+          (extension) =>
+            !elementIds.has(extension.id) &&
+            (showAll || installedIds?.includes(extension.extensionPointId))
         ),
       ];
       return sortBy(entries, (x) => x.label);
@@ -114,20 +117,19 @@ const Sidebar: React.FunctionComponent<
 
   const addElement = useAddElement(reservedNames);
 
-  const logo = useSvg(logoUrl);
-
   return (
     <div className="Sidebar d-flex flex-column vh-100">
       <div className="Sidebar__actions flex-grow-0">
         <div className="d-inline-flex flex-wrap">
           <a
-            className="Sidebar__logo"
-            dangerouslySetInnerHTML={{ __html: logo }}
             href="/options.html"
             target="_blank"
-          />
+            title="Open PixieBrix Options"
+          >
+            <img src={logoUrl} alt="" width={31} height={31} />
+          </a>
           <DropdownButton
-            disabled={!!inserting || !hasPermissions}
+            disabled={Boolean(inserting) || !hasPermissions}
             variant="info"
             size="sm"
             title="Add"
@@ -148,20 +150,18 @@ const Sidebar: React.FunctionComponent<
               )
             )}
           </DropdownButton>
-          <div className="my-auto">
-            <Form.Check
-              type="checkbox"
-              label={
-                unavailableCount != null
-                  ? `Show ${unavailableCount} unavailable`
-                  : `Show unavailable`
-              }
-              defaultChecked={showAll}
-              onChange={(event: FormEvent<HTMLInputElement>) => {
-                setShowAll(event.currentTarget.checked);
-              }}
-            />
-          </div>
+          {unavailableCount ? (
+            <div className="my-auto">
+              <Form.Check
+                type="checkbox"
+                label={`Show ${unavailableCount} unavailable`}
+                defaultChecked={showAll}
+                onChange={(event: FormEvent<HTMLInputElement>) => {
+                  setShowAll(event.currentTarget.checked);
+                }}
+              />
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="Sidebar__extensions flex-grow-1">

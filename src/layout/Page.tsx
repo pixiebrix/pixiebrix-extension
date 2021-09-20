@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useTitle } from "@/hooks/title";
+import { getErrorMessage } from "@/errors";
+import GridLoader from "react-spinners/GridLoader";
 
 export const PageTitle: React.FunctionComponent<{
   title: React.ReactNode;
@@ -36,15 +38,53 @@ export const PageTitle: React.FunctionComponent<{
   </div>
 );
 
+const ErrorDisplay: React.FC<{ error: unknown }> = ({ error }) => (
+  <div>
+    <h2 className="text-danger">An error occurred</h2>
+    <p>{getErrorMessage(error)}</p>
+  </div>
+);
+
 const Page: React.FunctionComponent<{
   icon: IconProp;
   title: string;
-  description: string | React.ReactNode;
+  description?: React.ReactNode;
   breadcrumb?: React.ReactNode;
   toolbar?: React.ReactNode;
   children: React.ReactNode;
-}> = ({ icon, title, breadcrumb, toolbar, description, children }) => {
+
+  /**
+   * True to show a loader for the main page content.
+   */
+  isPending?: boolean;
+
+  /**
+   * Error to show for the main page content
+   */
+  error?: unknown;
+}> = ({
+  icon,
+  title,
+  error,
+  isPending,
+  breadcrumb,
+  toolbar,
+  description = null,
+  children,
+}) => {
   useTitle(title);
+
+  const body = useMemo(() => {
+    if (isPending) {
+      return <GridLoader />;
+    }
+
+    if (error) {
+      return <ErrorDisplay error={error} />;
+    }
+
+    return children;
+  }, [children, isPending, error]);
 
   return (
     <div>
@@ -62,7 +102,7 @@ const Page: React.FunctionComponent<{
         </div>
         {toolbar && <div>{toolbar}</div>}
       </div>
-      {children}
+      {body}
     </div>
   );
 };

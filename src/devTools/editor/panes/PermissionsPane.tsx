@@ -17,18 +17,18 @@
 
 import React, { useCallback, useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
-import { getTabInfo } from "@/background/devtools";
 import Centered from "@/devTools/editor/components/Centered";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { requestPermissions } from "@/utils/permissions";
 import AsyncButton from "@/components/AsyncButton";
+import { getCurrentURL } from "@/devTools/utils";
 
 const PermissionsPane: React.FunctionComponent = () => {
   const { port, connect } = useContext(DevToolsContext);
 
   const onRequestPermission = useCallback(async () => {
-    const { url } = await getTabInfo(port);
+    const url = await getCurrentURL();
     if (await requestPermissions({ origins: [url] })) {
       await connect();
     }
@@ -44,14 +44,13 @@ const PermissionsPane: React.FunctionComponent = () => {
           <FontAwesomeIcon icon={faShieldAlt} /> Grant Permanent Access
         </AsyncButton>
       </p>
-      <p className="text-info">
-        <FontAwesomeIcon icon={faInfoCircle} /> You can revoke PixieBrix&apos;s
-        access to a site at any time on PixieBrix&apos;s Settings page
-      </p>
       <p>
-        Or, grant temporary access by 1) clicking on the PixieBrix extension
-        menu item in your browser&apos;s extensions dropdown, and 2) then
-        refreshing the page
+        Or grant temporary access by clicking on the PixieBrix extension menu
+        item in your browser&apos;s extensions dropdown.
+      </p>
+      <p className="text-info">
+        <FontAwesomeIcon icon={faInfoCircle} /> You can revoke access to a site
+        at any time on PixieBrix&apos;s Settings page
       </p>
     </Centered>
   );

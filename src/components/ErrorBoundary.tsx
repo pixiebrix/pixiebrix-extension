@@ -27,8 +27,8 @@ interface State {
   stack: string;
 }
 
-class ErrorBoundary extends React.Component<{}, State> {
-  constructor(props: {}) {
+class ErrorBoundary extends React.Component<Record<string, unknown>, State> {
+  constructor(props: Record<string, unknown>) {
     super(props);
     this.state = { hasError: false, errorMessage: undefined, stack: undefined };
   }
@@ -55,7 +55,11 @@ class ErrorBoundary extends React.Component<{}, State> {
             <p>{this.state.errorMessage}</p>
           </div>
           <div>
-            <Button onClick={() => location.reload()}>
+            <Button
+              onClick={() => {
+                location.reload();
+              }}
+            >
               <FontAwesomeIcon icon={faRedo} /> Reload the Page
             </Button>
           </div>

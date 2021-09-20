@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -28,11 +29,9 @@ import {
 import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
-import {
-  expectBackgroundPage,
-  expectContentScript,
-} from "@/utils/expectContext";
+import { expectContext } from "@/utils/expectContext";
 import { getErrorMessage } from "@/errors";
+import type { Target } from "@/types";
 
 export const MESSAGE_PREFIX = "@@pixiebrix/contentScript/";
 export const ROOT_FRAME_ID = 0;
@@ -57,7 +56,7 @@ async function handleRequest(
   console.debug(`Handling contentScript action ${type}`);
 
   if (isNotification(options)) {
-    handler(...payload);
+    void handler(...payload);
     return;
   }
 
@@ -74,123 +73,20 @@ async function handleRequest(
   }
 }
 
-async function getTabIds(): Promise<number[]> {
-  const tabs = await browser.tabs.query({});
-  return tabs.map((x) => x.id);
-}
-
-export function notifyContentScripts(
-  type: string,
-  method: () => void
-): (tabId: number | null) => Promise<void>;
-export function notifyContentScripts<T>(
-  type: string,
-  method: (a0: T) => void
-): (tabId: number | null, a0: T) => Promise<void>;
-export function notifyContentScripts<T0, T1>(
-  type: string,
-  method: (a0: T0, a1: T1) => void
-): (tabId: number | null, a0: T0, a1: T1) => Promise<void>;
-export function notifyContentScripts(
-  type: string,
-  method: (...args: unknown[]) => void
-): (tabId: number | null, ...args: unknown[]) => Promise<void> {
-  const fullType = `${MESSAGE_PREFIX}${type}`;
-
-  if (isContentScript()) {
-    // AddContentScriptListener logs to console when the handler is installed on the window. So it would be confusing
-    // to include a console.debug statement here
-    handlers.set(fullType, {
-      // HandlerEntry's Handler field has a return value, not void
-      handler: method as (...args: unknown[]) => null,
-      options: { asyncResponse: false },
-    });
-  }
-
-  return async (tabId: number | null, ...args: unknown[]) => {
-    expectBackgroundPage(ContentScriptActionError);
-
-    console.debug(
-      `Broadcasting content script notification ${fullType} to tab: ${
-        tabId ?? "<all>"
-      }`
-    );
-    const messageOne = async (tabId: number) =>
-      browser.tabs.sendMessage(
-        tabId,
-        { type: fullType, payload: args },
-        { frameId: ROOT_FRAME_ID }
-      );
-
-    const tabIds = tabId ? [tabId] : await getTabIds();
-    // `notifyContentScripts` should never throw an error due to connectivity with content scripts. Some tabs are
-    // expected to fail, because getTabIds will return tab ids that PixieBrix does not have access to
-    const results = await Promise.allSettled(
-      tabIds.map(async (tabId) => messageOne(tabId))
-    );
-
-    const failed = results.filter(
-      (x) => x.status === "rejected"
-    ) as PromiseRejectedResult[];
-    if (failed.length > 0) {
-      console.warn(
-        `${failed.length} error(s) broadcasting content script notification: %s`,
-        fullType,
-        {
-          errors: failed.map((x) => x.reason),
-        }
-      );
-    }
-  };
-}
-
-export type Target = {
-  tabId: number;
-  frameId: number;
-};
-
 /**
  * Lift a method to be run in the contentScript
  * @param type a unique name for the contentScript action
  * @param method the method to lift
  * @param options contentScript action handler options
  */
-export function liftContentScript<R extends SerializableResponse>(
-  type: string,
-  method: () => R | Promise<R>,
-  options?: HandlerOptions
-): (target: Target | null) => Promise<R>;
-export function liftContentScript<T, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T) => R | Promise<R>,
-  options?: HandlerOptions
-): (target: Target | null, a0: T) => Promise<R>;
-export function liftContentScript<T0, T1, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1) => R | Promise<R>,
-  options?: HandlerOptions
-): (target: Target | null, a0: T0, a1: T1) => Promise<R>;
-export function liftContentScript<T0, T1, T2, R extends SerializableResponse>(
-  type: string,
-  method: (a0: T0, a1: T1, a2: T2) => R | Promise<R>,
-  options?: HandlerOptions
-): (target: Target | null, a0: T0, a1: T1, a2: T2) => Promise<R>;
 export function liftContentScript<
-  T0,
-  T1,
-  T2,
-  T3,
+  TArguments extends unknown[],
   R extends SerializableResponse
 >(
   type: string,
-  method: (a0: T0, a1: T1, a2: T2, a3: T3) => R,
+  method: (...args: TArguments) => Promise<R>,
   options?: HandlerOptions
-): (target: Target | null, a0: T0, a1: T1, a2: T2, a3: T3) => Promise<R>;
-export function liftContentScript<R extends SerializableResponse>(
-  type: string,
-  method: (...args: unknown[]) => R,
-  options?: HandlerOptions
-): (target: Target | null, ...args: unknown[]) => Promise<R> {
+): (target: Target | null, ...args: TArguments) => Promise<R> {
   const fullType = `${MESSAGE_PREFIX}${type}`;
 
   if (isContentScript()) {
@@ -202,10 +98,10 @@ export function liftContentScript<R extends SerializableResponse>(
   return async (target: Target | null, ...args: unknown[]) => {
     if (isContentScript()) {
       console.debug("Resolving call from the contentScript immediately");
-      return method(...args);
+      return method(...(args as TArguments));
     }
 
-    expectBackgroundPage(ContentScriptActionError);
+    expectContext("background", ContentScriptActionError);
 
     console.debug(
       `Sending content script action ${fullType} to tab ${
@@ -274,7 +170,7 @@ function contentScriptListener(
 }
 
 function addContentScriptListener(): void {
-  expectContentScript();
+  expectContext("contentScript");
 
   browser.runtime.onMessage.addListener(contentScriptListener);
   console.debug(

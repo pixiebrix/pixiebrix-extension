@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
+import pTimeout from "p-timeout";
 import { Menus } from "webextension-polyfill-ts";
 
 type Handler = (args: Menus.OnClickData) => Promise<void>;
@@ -27,33 +27,27 @@ export function registerHandler(extensionId: string, handler: Handler): void {
   handlers.set(extensionId, handler);
 }
 
-export const handleMenuAction = liftContentScript(
-  "HANDLE_MENU_ACTION",
-  async ({
-    extensionId,
-    args,
-    maxWaitMillis = 0,
-  }: {
-    extensionId: string;
-    args: Menus.OnClickData;
-    maxWaitMillis: number;
-  }) => {
-    const start = Date.now();
-    do {
-      const handler = handlers.get(extensionId);
-      if (handler) {
-        await handler(args);
-        return;
-      }
-    } while (Date.now() - start <= maxWaitMillis);
-
-    console.error(`No context menu found for extension: ${extensionId}`, {
-      extensionId,
-      handlers: [...handlers.keys()],
-    });
-
-    throw new Error(
-      `No context menu handler found for extension in ${maxWaitMillis}ms`
-    );
+export async function handleMenuAction({
+  extensionId,
+  args,
+  maxWaitMillis = Number.POSITIVE_INFINITY,
+}: {
+  extensionId: string;
+  args: Menus.OnClickData;
+  maxWaitMillis: number;
+}): Promise<void> {
+  const handler = handlers.get(extensionId);
+  if (handler) {
+    await pTimeout(handler(args), maxWaitMillis);
+    return;
   }
-);
+
+  console.error(`No context menu found for extension: ${extensionId}`, {
+    extensionId,
+    handlers: [...handlers.keys()],
+  });
+
+  throw new Error(
+    `No context menu handler found for extension in ${maxWaitMillis}ms`
+  );
+}

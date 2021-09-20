@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-exported */
 /*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
@@ -25,9 +26,11 @@ import {
 } from "@/registry/localRegistry";
 import { groupBy } from "lodash";
 import { RegistryPackage } from "@/types/contract";
+import { getErrorMessage } from "@/errors";
+import { RegistryId } from "@/core";
 
-export interface RegistryItem {
-  id: string;
+export interface RegistryItem<T extends RegistryId = RegistryId> {
+  id: T;
 }
 
 export class DoesNotExistError extends Error {
@@ -40,42 +43,46 @@ export class DoesNotExistError extends Error {
   }
 }
 
-export class Registry<TItem extends RegistryItem> {
-  private cache: { [key: string]: TItem };
+/**
+ * Local brick registry backed by IDB.
+ */
+export class Registry<
+  Id extends RegistryId = RegistryId,
+  Item extends RegistryItem<Id> = RegistryItem<Id>
+> {
+  // Use RegistryId for `cache` and `remote` because they come from the external service
 
-  private remote: Set<string>;
+  private readonly cache = new Map<RegistryId, Item>();
+
+  private readonly remote: Set<RegistryId>;
 
   private readonly remoteResourcePath: string;
 
   public readonly kinds: Set<Kind>;
 
-  private readonly deserialize: (raw: unknown) => TItem;
+  private readonly deserialize: (raw: unknown) => Item;
 
   constructor(
     kinds: Kind[],
     remoteResourcePath: string,
-    deserialize: (raw: unknown) => TItem
+    deserialize: (raw: unknown) => Item
   ) {
-    this.cache = {};
-    this.remote = new Set<string>();
+    this.remote = new Set<Id>();
     this.kinds = new Set(kinds);
     this.remoteResourcePath = remoteResourcePath;
     this.deserialize = deserialize;
   }
 
-  async exists(id: string): Promise<boolean> {
-    return (
-      Object.prototype.hasOwnProperty.call(this.cache, id) ||
-      (await find(id)) != null
-    );
+  async exists(id: Id): Promise<boolean> {
+    return this.cache.has(id) || (await find(id)) != null;
   }
 
-  async lookup(id: string): Promise<TItem> {
+  async lookup(id: Id): Promise<Item> {
     if (!id) {
       throw new Error("id is required");
     }
 
-    const cached = this.cache[id];
+    const cached = this.cache.get(id);
 
     if (cached) {
       return cached;
@@ -84,14 +91,19 @@ export class Registry<TItem extends RegistryItem> {
     const raw = await find(id);
 
     if (!raw) {
-      console.debug(`Cannot find ${id} in registry ${this.remoteResourcePath}`);
+      console.debug(
+        `Cannot find ${id as string} in registry ${this.remoteResourcePath}`
+      );
       throw new DoesNotExistError(id);
     }
 
     const item = this.parse(raw.config);
 
     if (!item) {
-      throw new Error(`Unable to parse block ${item}`);
+      console.debug("Unable to parse block", {
+        config: raw.config,
+      });
+      throw new Error("Unable to parse block");
     }
 
     this.register(item);
@@ -102,46 +114,54 @@ export class Registry<TItem extends RegistryItem> {
   /**
    * @deprecated needed for header generation; will be removed in future versions
    */
-  cached(): TItem[] {
-    return Object.values(this.cache);
+  cached(): Item[] {
+    return [...this.cache.values()];
   }
 
   /**
    * @deprecated requires all data to be parsed
    */
-  async all(): Promise<TItem[]> {
-    for (const kind of this.kinds.values()) {
-      for (const raw of await getKind(kind)) {
-        const parsed = this.parse(raw.config);
-        if (parsed) {
-          this.register(parsed);
+  async all(): Promise<Item[]> {
+    await Promise.allSettled(
+      [...this.kinds.values()].map(async (kind) => {
+        for (const raw of await getKind(kind)) {
+          const parsed = this.parse(raw.config);
+          if (parsed) {
+            this.register(parsed);
+          }
         }
-      }
-    }
-
-    return Object.values(this.cache);
+      })
+    );
+    return [...this.cache.values()];
   }
 
-  register(...items: TItem[]): void {
+  register(...items: Item[]): void {
     for (const item of items) {
       if (item.id == null) {
-        console.warn(`Skipping item with no id`, item);
+        console.warn("Skipping item with no id", item);
         continue;
       }
 
-      this.cache[item.id] = item;
+      this.cache.set(item.id, item);
     }
   }
 
-  private parse(raw: unknown): TItem | undefined {
+  private parse(raw: unknown): Item | undefined {
     try {
       return this.deserialize(raw);
     } catch (error: unknown) {
-      console.warn(`Error de-serializing item: ${error}`, raw);
+      console.warn(
+        "Error de-serializing item: %s",
+        getErrorMessage(error),
+        raw
+      );
       return undefined;
     }
   }
 
+  /**
+   * Fetch remote brick definitions.
+   */
   async fetch(): Promise<void> {
     const timestamp = new Date();
 
@@ -163,17 +183,17 @@ export class Registry<TItem extends RegistryItem> {
         .split(".")
         .map((x) => Number.parseInt(x, 10));
 
-      const match = item.metadata.id.match(PACKAGE_NAME_REGEX);
+      const match = PACKAGE_NAME_REGEX.exec(item.metadata.id);
 
       if (!this.kinds.has(item.kind)) {
         console.warn(
-          `Item ${item.metadata?.id ?? "<unknown>"} has kind ${
+          `Item ${item.metadata?.id ?? "[[unknown]]"} has kind ${
             item.kind
           }; expected: ${[...this.kinds.values()].join(", ")}`
         );
       }
 
-      delete this.cache[item.metadata.id];
+      this.cache.delete(item.metadata.id);
 
       packages.push({
         id: item.metadata.id,
@@ -188,15 +208,20 @@ export class Registry<TItem extends RegistryItem> {
       this.remote.add(item.metadata.id);
     }
 
-    for (const [kind, kindPackages] of Object.entries(
-      groupBy(packages, (x) => x.kind)
-    )) {
-      await syncRemote(kind as Kind, kindPackages);
-    }
+    await Promise.all(
+      Object.entries(groupBy(packages, (x) => x.kind)).map(
+        async ([kind, kindPackages]) => {
+          await syncRemote(kind as Kind, kindPackages);
+        }
+      )
+    );
   }
 
+  /**
+   * Clear the registry cache.
+   */
   clear(): void {
-    this.cache = {};
+    this.cache.clear();
   }
 }
 

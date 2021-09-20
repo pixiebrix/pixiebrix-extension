@@ -17,7 +17,6 @@
 
 import { proxyService } from "@/background/requests";
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { boolean } from "@/utils";
 
@@ -212,6 +211,3 @@ export class SendAdvancedSlackMessage extends Effect {
     });
   }
 }
-
-registerBlock(new SendSimpleSlackMessage());
-registerBlock(new SendAdvancedSlackMessage());

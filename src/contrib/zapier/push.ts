@@ -17,17 +17,16 @@
 
 import { proxyService } from "@/background/requests";
 import { Effect } from "@/types";
-import { registerBlock } from "@/blocks/registry";
-import { BlockArg, BlockOptions, Schema, SchemaProperties } from "@/core";
+import { BlockOptions, Schema, SchemaProperties } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { getBaseURL } from "@/services/baseService";
 import { validateInput } from "@/validators/generic";
 import { Webhook } from "@/contrib/zapier/contract";
 import { Permissions } from "webextension-polyfill-ts";
-import { v4 as uuidv4 } from "uuid";
+import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BusinessError } from "@/errors";
 
-export const ZAPIER_ID = "@pixiebrix/zapier/push-data";
+export const ZAPIER_ID = validateRegistryId("@pixiebrix/zapier/push-data");
 
 export const ZAPIER_PROPERTIES: SchemaProperties = {
   pushKey: {
@@ -63,7 +62,7 @@ export class PushZap extends Effect {
   permissions: Permissions.Permissions = ZAPIER_PERMISSIONS;
 
   async effect(
-    { pushKey, data }: BlockArg,
+    { pushKey, data }: { pushKey: string; data: Record<string, unknown> },
     options: BlockOptions
   ): Promise<void> {
     const { data: webhooks } = await proxyService<{
@@ -98,5 +97,3 @@ export class PushZap extends Effect {
     });
   }
 }
-
-registerBlock(new PushZap());

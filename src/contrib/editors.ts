@@ -17,8 +17,8 @@
 
 import optionsRegistry from "@/components/fields/optionsRegistry";
 import PushOptions from "@/contrib/zapier/pushOptions";
-import ProcessOptions from "@/contrib/uipath/processOptions";
-import LocalProcessOptions from "@/contrib/uipath/localProcessOptions";
+import ProcessOptions from "@/contrib/uipath/ProcessOptions";
+import LocalProcessOptions from "@/contrib/uipath/LocalProcessOptions";
 import AppendSpreadsheetOptions from "@/contrib/google/sheets/AppendSpreadsheetOptions";
 import SheetServiceOptions, {
   SERVICE_GOOGLE_SHEET_ID,
@@ -29,6 +29,12 @@ import { UIPATH_ID as LOCAL_UIPATH_ID } from "@/contrib/uipath/localProcess";
 import { GOOGLE_SHEETS_API_ID } from "@/contrib/google/sheets/append";
 import BotOptions from "@/contrib/automationanywhere/BotOptions";
 import { AUTOMATION_ANYWHERE_RUN_BOT_ID } from "@/contrib/automationanywhere/run";
+import FormModalOptions, {
+  FORM_MODAL_ID,
+} from "@/devTools/editor/fields/FormModalOptions";
+import FormRendererOptions, {
+  FORM_RENDERER_ID,
+} from "@/devTools/editor/fields/FormRendererOptions";
 
 optionsRegistry.set(SERVICE_GOOGLE_SHEET_ID, SheetServiceOptions);
 optionsRegistry.set(ZAPIER_ID, PushOptions);
@@ -36,3 +42,5 @@ optionsRegistry.set(UIPATH_ID, ProcessOptions);
 optionsRegistry.set(LOCAL_UIPATH_ID, LocalProcessOptions);
 optionsRegistry.set(GOOGLE_SHEETS_API_ID, AppendSpreadsheetOptions);
 optionsRegistry.set(AUTOMATION_ANYWHERE_RUN_BOT_ID, BotOptions);
+optionsRegistry.set(FORM_MODAL_ID, FormModalOptions);
+optionsRegistry.set(FORM_RENDERER_ID, FormRendererOptions);

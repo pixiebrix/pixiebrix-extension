@@ -40,7 +40,7 @@ import {
   TokenAuthenticationDefinition,
 } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
-import { isAbsoluteURL } from "@/hooks/fetch";
+import { isAbsoluteUrl } from "@/utils";
 
 /**
  * A service created from a local definition. Has the ability to authenticate requests because it has
@@ -162,7 +162,7 @@ class LocalDefinedService<
     requestConfig: AxiosRequestConfig
   ): void {
     const absoluteURL =
-      baseURL && !isAbsoluteURL(requestConfig.url)
+      baseURL && !isAbsoluteUrl(requestConfig.url)
         ? urljoin(baseURL, requestConfig.url)
         : requestConfig.url;
 
@@ -192,7 +192,7 @@ class LocalDefinedService<
       serviceConfig
     );
 
-    if (!baseURL && !isAbsoluteURL(requestConfig.url)) {
+    if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
         "Must use absolute URLs for services that don't define a baseURL"
       );
@@ -200,8 +200,8 @@ class LocalDefinedService<
 
     const result = produce(requestConfig, (draft) => {
       requestConfig.baseURL = baseURL;
-      draft.headers = { ...(draft.headers ?? {}), ...headers };
-      draft.params = { ...(draft.params ?? {}), ...params };
+      draft.headers = { ...draft.headers, ...headers };
+      draft.params = { ...draft.params, ...params };
     });
 
     this.checkRequestUrl(baseURL, requestConfig);
@@ -225,7 +225,7 @@ class LocalDefinedService<
       { ...serviceConfig, ...tokenData }
     );
 
-    if (!baseURL && !isAbsoluteURL(requestConfig.url)) {
+    if (!baseURL && !isAbsoluteUrl(requestConfig.url)) {
       throw new Error(
         "Must use absolute URLs for services that don't define a baseURL"
       );
@@ -233,7 +233,7 @@ class LocalDefinedService<
 
     const result = produce(requestConfig, (draft) => {
       requestConfig.baseURL = baseURL;
-      draft.headers = { ...(draft.headers ?? {}), ...headers };
+      draft.headers = { ...draft.headers, ...headers };
     });
 
     this.checkRequestUrl(baseURL, requestConfig);
