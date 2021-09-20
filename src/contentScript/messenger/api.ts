@@ -34,6 +34,7 @@ export const queueReactivateTab = getContentScriptMethod(
   "QUEUE_REACTIVATE_TAB"
 );
 export const reactivateTab = getContentScriptMethod("REACTIVATE_TAB");
+export const handleMenuAction = getContentScriptMethod("HANDLE_MENU_ACTION");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;

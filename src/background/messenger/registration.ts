@@ -34,6 +34,9 @@ import {
 
 expectContext("background");
 
+// Temporary, webext-messenger depends on this global
+(globalThis as any).browser = browser;
+
 declare global {
   interface MessengerMethods {
     CONTAINS_PERMISSIONS: typeof browser.permissions.contains;
@@ -59,6 +62,3 @@ registerMethods({
   MARK_TAB_AS_READY: markTabAsReady,
   OPEN_TAB: openTab,
 });
-
-// Temporary, webext-messenger depends on this global
-(globalThis as any).browser = browser;

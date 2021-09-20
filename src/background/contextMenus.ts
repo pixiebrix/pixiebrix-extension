@@ -20,7 +20,7 @@ import { browser, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { noop } from "lodash";
-import { handleMenuAction } from "@/contentScript/contextMenus";
+import { handleMenuAction } from "@/contentScript/messenger/api";
 import { showNotification } from "@/contentScript/notify";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
