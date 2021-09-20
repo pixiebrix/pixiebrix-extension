@@ -37,7 +37,7 @@ import {
 import { validateRegistryId } from "@/types/helpers";
 import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(

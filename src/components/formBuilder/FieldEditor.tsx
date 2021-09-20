@@ -19,13 +19,8 @@
 import { Field, useField } from "formik";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "./FieldEditor.module.scss";
-import {
-  RJSFSchema,
-  SelectStringOption,
-  SetActiveField,
-} from "./formBuilderTypes";
+import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import { Row, Form as BootstrapForm, Col } from "react-bootstrap";
-import Select from "react-select";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import {
   FIELD_TYPE_OPTIONS,
@@ -37,6 +32,7 @@ import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 
 const FieldEditor: React.FC<{
   name: string;
@@ -108,7 +104,8 @@ const FieldEditor: React.FC<{
     setActiveField(nextName);
   };
 
-  const onUiTypeChange = ({ value }: SelectStringOption) => {
+  const onUiTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
     if (!value) {
       return;
     }
@@ -184,20 +181,14 @@ const FieldEditor: React.FC<{
         label="Default value"
       />
 
-      <BootstrapForm.Group as={Row}>
-        <BootstrapForm.Label column sm="3">
-          Type
-        </BootstrapForm.Label>
-        <Col sm="9" className={styles.fieldColumn}>
-          <Select
-            className={styles.select}
-            name={getFullFieldName("uiType")}
-            options={FIELD_TYPE_OPTIONS}
-            value={getSelectedUiTypeOption()}
-            onChange={onUiTypeChange}
-          />
-        </Col>
-      </BootstrapForm.Group>
+      <FieldTemplate
+        name={getFullFieldName("uiType")}
+        label="Type"
+        as={SelectWidget}
+        options={FIELD_TYPE_OPTIONS}
+        value={getSelectedUiTypeOption().value}
+        onChange={onUiTypeChange}
+      />
 
       <BootstrapForm.Group as={Row}>
         <BootstrapForm.Label column sm="3">

@@ -23,6 +23,7 @@ import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -108,6 +109,7 @@ export const CustomSubmit: ComponentStory<typeof Form> = (args) => (
 const AllFieldsSchema: yup.ObjectSchema = yup.object().shape({
   name: yup.string().required(),
   story: yup.string(),
+  select: yup.string(),
   public: yup.boolean(),
 });
 const allFieldsInitialValues = {
@@ -115,6 +117,20 @@ const allFieldsInitialValues = {
   story: "",
   public: false,
 };
+const selectOptions: Option[] = [
+  {
+    label: "Option 1",
+    value: 1,
+  },
+  {
+    label: "Option 2",
+    value: 2,
+  },
+  {
+    label: "Option 3",
+    value: 3,
+  },
+];
 export const AllFields: ComponentStory<typeof Form> = (args) => (
   <Form
     validationSchema={AllFieldsSchema}
@@ -134,6 +150,14 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       as="textarea"
       description="Tell me your story"
       rows={10}
+    />
+    <ConnectedFieldTemplate
+      name="select"
+      layout="horizontal"
+      label="Select"
+      description="Demonstration dropdown"
+      as={SelectWidget}
+      options={selectOptions}
     />
     <ConnectedFieldTemplate
       name="public"

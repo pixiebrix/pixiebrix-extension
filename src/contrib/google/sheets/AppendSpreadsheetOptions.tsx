@@ -29,7 +29,7 @@ import { isNullOrBlank } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { getErrorMessage } from "@/errors";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 

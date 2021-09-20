@@ -34,7 +34,7 @@ import { requestPermissions } from "@/utils/permissions";
 import { containsPermissions } from "@/background/messenger/api";
 import AsyncButton from "@/components/AsyncButton";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 
 function useHooks(): {
   hooks: Webhook[];

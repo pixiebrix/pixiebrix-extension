@@ -38,7 +38,7 @@ import useDependency from "@/services/useDependency";
 import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
 import { getErrorMessage } from "@/errors";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import { releaseSchema } from "@/contrib/uipath/typeUtils";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";

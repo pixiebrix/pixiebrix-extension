@@ -35,7 +35,7 @@ import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
-import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { ODataResponseData, Release, Robot } from "./uipathContract";
 import { releaseSchema } from "@/contrib/uipath/typeUtils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";

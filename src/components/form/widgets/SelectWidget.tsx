@@ -17,7 +17,6 @@
 
 import React from "react";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
-import { useField } from "formik";
 import Select from "react-select";
 import { getErrorMessage } from "@/errors";
 
@@ -38,13 +37,12 @@ const SelectWidget: CustomFieldWidget<OwnProps> = ({
   options,
   isClearable = false,
   isLoading,
-  loadingMessage: string,
   loadError,
   disabled,
-  ...props
+  value,
+  onChange,
+  name,
 }) => {
-  const [field, , helpers] = useField<unknown>(props);
-
   if (loadError) {
     return (
       <div className="text-danger">
@@ -53,17 +51,18 @@ const SelectWidget: CustomFieldWidget<OwnProps> = ({
     );
   }
 
+  const patchedOnChange = ({ value }: Option) => {
+    onChange({ target: { value, name, options } });
+  };
+
   return (
     <Select
       isDisabled={disabled}
       isLoading={isLoading}
       isClearable={isClearable}
       options={options}
-      value={options.filter((option: Option) => field.value === option.value)}
-      onChange={(option) => {
-        console.debug("Selecting option", { options, option, field });
-        helpers.setValue(option.value);
-      }}
+      value={options.find((option: Option) => value === option.value)}
+      onChange={patchedOnChange}
     />
   );
 };
