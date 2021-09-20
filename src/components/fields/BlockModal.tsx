@@ -218,7 +218,7 @@ const BlockModal: React.FunctionComponent<{
                     </Col>
                   </Row>
                 </Col>
-                <Col xs={7} className="BlockDetail">
+                <Col xs={7} className="BlockDetail" key={detailBlock?.id}>
                   {detailBlock ? (
                     <BlockDetail
                       block={detailBlock}

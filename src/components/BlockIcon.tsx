@@ -44,7 +44,7 @@ import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtensio
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import cx from "classnames";
 
-// TODO: Unable to use dynamic font awesome icons without importing them first
+// Unable to use dynamic font awesome icons without importing them first
 //  maybe there is a better way to do this?
 library.add(fas, fab, far);
 
@@ -113,7 +113,7 @@ const BlockIcon: React.FunctionComponent<{
 
   const fa_icon = useMemo(() => {
     if (listing?.fa_icon) {
-      // The fa_icon database value includes the css class e.g. far, fab, etc.
+      // The fa_icon database value is a string e.g. "fas fa-coffee"
       const icon = listing.fa_icon.split(" ");
       icon[1] = icon[1].replace("fa-", "");
       return icon as IconProp;
