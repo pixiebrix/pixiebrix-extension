@@ -25,7 +25,7 @@ import FieldSection from "@/devTools/editor/fields/FieldSection";
 import UrlMatchPatternField from "@/devTools/editor/fields/UrlMatchPatternField";
 import IconWidget from "@/components/fields/IconWidget";
 import LocationWidget from "@/devTools/editor/fields/LocationWidget";
-import SelectWidget, { Option } from "@/devTools/editor/fields/SelectWidget";
+import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },

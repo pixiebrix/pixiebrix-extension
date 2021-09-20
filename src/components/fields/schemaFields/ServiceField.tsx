@@ -32,7 +32,7 @@ import { freshIdentifier } from "@/utils";
 import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
-import SelectWidget from "@/devTools/editor/fields/SelectWidget";
+import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { isEmpty } from "lodash";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service";

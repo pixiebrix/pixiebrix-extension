@@ -23,7 +23,7 @@ import { action } from "@storybook/addon-actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget, { Option } from "@/devTools/editor/fields/SelectWidget";
+import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
