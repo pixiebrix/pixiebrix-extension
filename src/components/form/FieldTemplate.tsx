@@ -53,6 +53,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
   error,
   touched,
   value,
+  children,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
@@ -71,7 +72,9 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
           isInvalid={isInvalid}
           value={nonUndefinedValue}
           {...restFieldProps}
-        />
+        >
+          {children}
+        </BootstrapForm.Control>
         {description && (
           <BootstrapForm.Text className="text-muted">
             {description}
@@ -94,17 +97,14 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
   error,
   touched,
   value,
+  children,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
   const nonUndefinedValue = typeof value === "undefined" ? "" : value;
 
   return (
-    <BootstrapForm.Group
-      as={Col}
-      controlId={name}
-      className={styles.verticalFormGroup}
-    >
+    <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
       {label && (
         <BootstrapForm.Label className={styles.verticalFormLabel}>
           {label}
@@ -115,7 +115,9 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
         isInvalid={isInvalid}
         value={nonUndefinedValue}
         {...restFieldProps}
-      />
+      >
+        {children}
+      </BootstrapForm.Control>
       {description && (
         <BootstrapForm.Text className="text-muted">
           {description}

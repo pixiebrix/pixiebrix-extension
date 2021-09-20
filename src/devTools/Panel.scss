@@ -232,23 +232,6 @@
     }
   }
 
-  .BlockAccordion {
-    .card {
-      border-radius: 0;
-    }
-
-    .card + .card {
-      border-top: 0;
-    }
-
-    &__header {
-      cursor: pointer;
-      padding-top: 6px;
-      padding-bottom: 6px;
-      border-radius: 0;
-    }
-  }
-
   .ReaderSidebar {
     button {
       border-radius: 0;

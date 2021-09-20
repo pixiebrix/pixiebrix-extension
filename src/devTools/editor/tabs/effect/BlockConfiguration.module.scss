@@ -15,12 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.verticalFormGroup {
-  padding-left: 0;
-  padding-right: 0;
+.advancedLinks {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
 }
 
-.verticalFormLabel {
-  padding-bottom: 0.25rem;
-  width: 100%;
+.card {
+  border-radius: 0 !important;
+}
+
+.cardHeader {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
 }
