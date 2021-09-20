@@ -40,6 +40,7 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BlockIcon from "@/components/BlockIcon";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
+import { FixedSizeList as List } from "react-window";
 
 const BlockResult: React.FunctionComponent<{
   block: IBlock;
@@ -203,17 +204,27 @@ const BlockModal: React.FunctionComponent<{
                   <Row>
                     <Col>
                       <div className="BlockModal__results">
-                        <ListGroup>
-                          {searchResults.map(({ block }) => (
-                            <BlockResult
-                              key={block.id}
-                              block={block}
-                              onSelect={() => {
-                                setDetailBlock(block);
-                              }}
-                            />
-                          ))}
-                        </ListGroup>
+                        <List
+                          height={600}
+                          itemCount={searchResults.length}
+                          itemSize={91}
+                          itemData={searchResults}
+                        >
+                          {({ index, style, data }) => {
+                            const { block } = data[index];
+                            return (
+                              <div style={style}>
+                                <BlockResult
+                                  key={block.id}
+                                  block={block}
+                                  onSelect={() => {
+                                    setDetailBlock(block);
+                                  }}
+                                />
+                              </div>
+                            );
+                          }}
+                        </List>
                       </div>
                     </Col>
                   </Row>
