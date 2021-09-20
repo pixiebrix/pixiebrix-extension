@@ -109,7 +109,7 @@ function insertActionPanel(): string {
   return nonce;
 }
 
-export async function showActionPanel(): Promise<string> {
+export function showActionPanel(): string {
   reportEvent("SidePanelShow");
 
   adjustDocumentStyle();
@@ -141,16 +141,15 @@ export function hideActionPanel(): void {
   $(PANEL_CONTAINER_SELECTOR).remove();
 }
 
-export async function toggleActionPanel(): Promise<string | void> {
-  if (await isActionPanelVisible()) {
-    hideActionPanel();
-    return;
+export function toggleActionPanel(): string | void {
+  if (!isActionPanelVisible()) {
+    return showActionPanel();
   }
 
-  return showActionPanel();
+  hideActionPanel();
 }
 
-export async function isActionPanelVisible(): Promise<boolean> {
+export function isActionPanelVisible(): boolean {
   return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
