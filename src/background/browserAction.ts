@@ -51,10 +51,7 @@ const tabNonces = new Map<number, string>();
  */
 const tabFrames = new Map<number, number>();
 
-async function handleBrowserAction(
-  tab: browser.tabs.Tab,
-  fallback = true
-): Promise<void> {
+async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
   // We're either getting a new frame, or getting rid of the existing one. Forget the old frame
   // id so we're not sending messages to a dead frame
   tabFrames.delete(tab.id);
@@ -73,21 +70,13 @@ async function handleBrowserAction(
       tabId: tab.id,
       frameId: TOP_LEVEL_FRAME_ID,
     });
-  } catch (error: unknown) {
-    // Avoid loops, report error
-    if (!fallback) {
-      reportError(error);
-      return;
-    }
-
+  } catch {
     // The sidebar was not injected in the page, so we'll create a new tab instead
     // https://github.com/pixiebrix/pixiebrix-extension/issues/1334
-    const options = await browser.tabs.create({
-      url: browser.runtime.getURL("options.html"),
+    await browser.tabs.create({
+      url: browser.runtime.getURL("action.html"),
       openerTabId: tab.id,
     });
-    await sleep(2000);
-    await handleBrowserAction(options, false);
   }
 }
 
