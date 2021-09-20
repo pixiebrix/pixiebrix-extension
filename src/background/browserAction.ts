@@ -48,7 +48,7 @@ const tabSeqNumber = new Map<number, number>();
 /**
  * Mapping from tabId to the nonce for the browser action iframe
  */
-const tabNonces = new Map<number, string>();
+const tabNonces = new Map<number, string | void>();
 
 /**
  * Mapping from tabId to the browser frame id for the browser action iframe
@@ -67,9 +67,7 @@ async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
       tabId: tab.id,
       frameId: TOP_LEVEL_FRAME_ID,
     });
-    if (nonce) {
-      tabNonces.set(tab.id, nonce);
-    }
+    tabNonces.set(tab.id, nonce);
 
     // Inform editor that it now has the ActiveTab permission, if it's open
     emitDevtools("HistoryStateUpdate", {
