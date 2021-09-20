@@ -19,7 +19,7 @@
   &__results {
     // use capital M to get the CSS method instead of SASS method
     // https://css-tricks.com/when-sass-and-new-css-features-collide/#the-solution
-    max-height: Min(calc(100vh - 175px), 600px);
+    max-height: Min(calc(100vh - 100px), 600px);
     overflow-y: scroll;
   }
 
@@ -67,4 +67,10 @@
       }
     }
   }
+}
+
+.BlockDetail {
+  // 54px to match height of BlockModal results above
+  max-height: Min(calc(100vh - 54px), 600px);
+  overflow-y: scroll;
 }
