@@ -66,6 +66,10 @@ export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
     label: "Number",
     value: stringifyUiType({ propertyType: "number" }),
   },
+  {
+    label: "Dropdown",
+    value: stringifyUiType({ propertyType: "string", uiWidget: "select" }),
+  },
 ];
 
 /**
