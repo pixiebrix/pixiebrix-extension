@@ -108,7 +108,7 @@
       .list-group-item {
         padding-left: 12px;
         padding-right: 12px;
-        border-right: none;
+        border-radius: 0;
         font-size: 0.875rem;
       }
     }
@@ -130,7 +130,9 @@
     }
 
     &__actions button {
-      border-radius: 5px;
+      border-radius: 0;
+      margin-right: 0;
+      margin-left: 0;
     }
 
     label {
