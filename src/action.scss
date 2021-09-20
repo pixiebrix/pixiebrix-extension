@@ -16,6 +16,8 @@
  */
 
 html {
+  // Keep in sync with `SIDEBAR_WIDTH_PX` in `contentScript/browserAction.ts`
+  --sidebar-width: 400px;
   font-size: 16px;
   max-height: 100vh;
   height: 100vh;
@@ -31,7 +33,9 @@ body {
 
 #container {
   height: 100%;
-  width: 100%;
+  width: var(--sidebar-width);
+  border-left: 1px solid lightgray;
+  margin-left: auto;
 
   .action-sidebar-loader {
     width: 100%;

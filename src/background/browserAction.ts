@@ -18,12 +18,12 @@
 import { isBackgroundPage } from "webext-detect-page";
 import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
-import { ensureContentScript, showErrorInOptions } from "@/background/util";
+import { ensureContentScript } from "@/background/util";
 import { browser } from "webextension-polyfill-ts";
 import { sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
 import { HandlerMap } from "@/messaging/protocol";
-import { getErrorMessage, isPrivatePageError } from "@/errors";
+import { getErrorMessage } from "@/errors";
 import { emitDevtools } from "@/background/devtools/internal";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
@@ -70,22 +70,13 @@ async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
       tabId: tab.id,
       frameId: TOP_LEVEL_FRAME_ID,
     });
-  } catch (error: unknown) {
-    if (isPrivatePageError(error)) {
-      void showErrorInOptions(
-        "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",
-        tab.index
-      );
-      return;
-    }
-
-    // Firefox does not catch injection errors so we don't get a specific error message
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/579#issuecomment-866451242
-    await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
-    console.error(error);
-
-    // Only report unknown-reason errors
-    reportError(error);
+  } catch {
+    // The sidebar was not injected in the page, so we'll create a new tab instead
+    // https://github.com/pixiebrix/pixiebrix-extension/issues/1334
+    await browser.tabs.create({
+      url: browser.runtime.getURL("action.html"),
+      openerTabId: tab.id,
+    });
   }
 }
 

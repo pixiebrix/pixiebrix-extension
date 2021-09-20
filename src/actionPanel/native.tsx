@@ -31,6 +31,7 @@ import { reportEvent } from "@/telemetry/events";
 import { expectContext } from "@/utils/expectContext";
 import { ExtensionRef } from "@/core";
 
+// Keep in sync with `--sidebar-width` in `actions.scss`
 const SIDEBAR_WIDTH_PX = 400;
 const PANEL_CONTAINER_ID = "pixiebrix-extension";
 const PANEL_CONTAINER_SELECTOR = "#" + PANEL_CONTAINER_ID;
@@ -93,7 +94,7 @@ function insertActionPanel(): string {
   const actionURL = browser.runtime.getURL("action.html");
 
   const $panelContainer = $(
-    `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; border-left: 1px solid lightgray; background-color: rgb(255, 255, 255); display: block;"></div>`
+    `<div id="${PANEL_CONTAINER_ID}" data-nonce="${nonce}" style="height: 100%; margin: 0; padding: 0; border-radius: 0; width: ${SIDEBAR_WIDTH_PX}px; position: fixed; top: 0; right: 0; z-index: 2147483647; background-color: rgb(255, 255, 255); display: block;"></div>`
   );
 
   // CSS approach not well supported? https://stackoverflow.com/questions/15494568/html-iframe-disable-scroll
