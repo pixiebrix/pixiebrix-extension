@@ -155,8 +155,11 @@ const BlockModal: React.FunctionComponent<{
   const searchResults = useMemo(
     () =>
       isNullOrBlank(debouncedQuery)
-        ? blockOptions
-        : fuse.search(debouncedQuery).map((x) => x.item),
+        ? blockOptions.slice(0, 10)
+        : fuse
+            .search(debouncedQuery)
+            .map((x) => x.item)
+            .slice(0, 10),
     [debouncedQuery, fuse, blockOptions]
   );
 
