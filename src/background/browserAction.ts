@@ -16,7 +16,6 @@
  */
 
 import { isBackgroundPage } from "webext-detect-page";
-import * as contentScript from "@/contentScript/browserAction";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import { browser } from "webextension-polyfill-ts";
@@ -25,6 +24,11 @@ import { JsonObject, JsonValue } from "type-fest";
 import { HandlerMap } from "@/messaging/protocol";
 import { getErrorMessage, isPrivatePageError } from "@/errors";
 import { emitDevtools } from "@/background/devtools/internal";
+import {
+  hideActionPanel,
+  showActionPanel,
+  toggleActionPanel,
+} from "@/contentScript/messenger/api";
 
 const MESSAGE_PREFIX = "@@pixiebrix/background/browserAction/";
 export const REGISTER_ACTION_FRAME = `${MESSAGE_PREFIX}/REGISTER_ACTION_FRAME`;
@@ -59,11 +63,13 @@ async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
 
   try {
     await ensureContentScript({ tabId: tab.id, frameId: TOP_LEVEL_FRAME_ID });
-    const nonce = await contentScript.toggleActionPanel({
+    const nonce = await toggleActionPanel({
       tabId: tab.id,
       frameId: TOP_LEVEL_FRAME_ID,
     });
-    tabNonces.set(tab.id, nonce);
+    if (nonce) {
+      tabNonces.set(tab.id, nonce);
+    }
 
     // Inform editor that it now has the ActiveTab permission, if it's open
     emitDevtools("HistoryStateUpdate", {
@@ -251,7 +257,7 @@ handlers.set(
 handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
   const tabId = sender.tab.id;
   tabFrames.delete(tabId);
-  const nonce = await contentScript.showActionPanel({
+  const nonce = await showActionPanel({
     tabId,
     frameId: TOP_LEVEL_FRAME_ID,
   });
@@ -263,7 +269,7 @@ handlers.set(SHOW_ACTION_FRAME, async (_, sender) => {
 handlers.set(HIDE_ACTION_FRAME, async (_, sender) => {
   const tabId = sender.tab.id;
   tabFrames.delete(tabId);
-  await contentScript.hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
+  await hideActionPanel({ tabId, frameId: TOP_LEVEL_FRAME_ID });
   console.debug("Clearing action frame nonce", { sender });
   tabNonces.delete(tabId);
   tabSeqNumber.delete(tabId);

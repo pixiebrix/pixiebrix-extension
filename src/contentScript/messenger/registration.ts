@@ -26,6 +26,12 @@ import {
   resolveForm,
   cancelForm,
 } from "@/contentScript/modalForms";
+import {
+  hideActionPanel,
+  showActionPanel,
+  toggleActionPanel,
+  removeExtension,
+} from "@/actionPanel/native";
 
 expectContext("contentScript");
 
@@ -40,6 +46,10 @@ declare global {
     QUEUE_REACTIVATE_TAB: typeof queueReactivateTab;
     REACTIVATE_TAB: typeof reactivateTab;
     HANDLE_MENU_ACTION: typeof handleMenuAction;
+    TOGGLE_ACTION_PANEL: typeof toggleActionPanel;
+    SHOW_ACTION_PANEL: typeof showActionPanel;
+    HIDE_ACTION_PANEL: typeof hideActionPanel;
+    REMOVE_ACTION_PANEL: typeof removeExtension;
   }
 }
 
@@ -50,4 +60,8 @@ registerMethods({
   QUEUE_REACTIVATE_TAB: queueReactivateTab,
   REACTIVATE_TAB: reactivateTab,
   HANDLE_MENU_ACTION: handleMenuAction,
+  TOGGLE_ACTION_PANEL: toggleActionPanel,
+  SHOW_ACTION_PANEL: showActionPanel,
+  HIDE_ACTION_PANEL: hideActionPanel,
+  REMOVE_ACTION_PANEL: removeExtension,
 });

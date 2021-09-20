@@ -22,7 +22,6 @@ import { Framework, FrameworkMeta } from "@/messaging/constants";
 import * as nativeSelectionProtocol from "@/nativeEditor/selector";
 import * as nativeEditorProtocol from "@/nativeEditor";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
-import * as browserActionProtocol from "@/contentScript/browserAction";
 import { Availability } from "@/blocks/types";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
 import {
@@ -34,6 +33,10 @@ import { isEmpty } from "lodash";
 import type { Target } from "@/types";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { RegistryId, UUID } from "@/core";
+import {
+  removeActionPanel,
+  showActionPanel,
+} from "@/contentScript/messenger/api";
 
 export const registerPort = liftBackground(
   "REGISTER_PORT",
@@ -122,7 +125,7 @@ export const insertPanel: (
 
 export const showBrowserActionPanel = liftBackground(
   "SHOW_BROWSER_ACTION_PANEL",
-  (target: Target) => async () => browserActionProtocol.showActionPanel(target)
+  (target: Target) => async () => showActionPanel(target)
 );
 
 export const updateDynamicElement = liftBackground(
@@ -215,7 +218,7 @@ export const uninstallActionPanelPanel = liftBackground(
   "UNINSTALL_ACTION_PANEL_PANEL",
   // False positive - it's the inner method that should be async
   (target) => async ({ extensionId }: { extensionId: UUID }) =>
-    browserActionProtocol.removeActionPanelPanel(target, extensionId)
+    removeActionPanel(target, extensionId)
 );
 
 export const initUiPathRobot = liftBackground(
