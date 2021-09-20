@@ -31,6 +31,10 @@ export class ParseDataUrl extends Transformer {
     );
   }
 
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   inputSchema: Schema = propertiesToSchema(
     {
       url: {

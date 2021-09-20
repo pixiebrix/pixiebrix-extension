@@ -30,6 +30,10 @@ export class ParseCsv extends Transformer {
     );
   }
 
+  async isPure(): Promise<boolean> {
+    return true;
+  }
+
   inputSchema: Schema = propertiesToSchema({
     content: {
       type: "string",
