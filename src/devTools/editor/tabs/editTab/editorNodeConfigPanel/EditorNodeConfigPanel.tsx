@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
@@ -57,45 +57,47 @@ const EditorNodeConfigPanel: React.FC<{
 
   return (
     <>
-      <ConnectedFieldTemplate
-        name={`${blockFieldName}.label`}
-        layout="horizontal"
-        label="Step Name"
-        placeholder={blockInfo?.block.name}
-      />
+      <Row>
+        <Col>
+          <ConnectedFieldTemplate
+            name={`${blockFieldName}.label`}
+            layout="horizontal"
+            label="Step Name"
+            placeholder={blockInfo?.block.name}
+          />
+        </Col>
 
-      {blockInfo == null || showOutputKey(blockInfo?.type) ? (
-        <ConnectedFieldTemplate
-          name={`${blockFieldName}.outputKey`}
-          layout="horizontal"
-          label="Output"
-          as={OutputKeyWidget}
-          description={
-            <p>
-              Provide a output key to refer to the outputs of this block later.
-              For example, if you provide the name <code>myOutput</code>, you
-              can use the output later with <code>@myOutput</code>.
-            </p>
-          }
-        />
-      ) : (
-        <ConnectedFieldTemplate
-          name={`${blockFieldName}.outputKey`}
-          layout="horizontal"
-          label="Output"
-          disabled
-          as={OutputKeyWidget}
-          description={<p>Effect and renderer bricks do not produce outputs</p>}
-        />
-      )}
+        <Col>
+          {blockInfo == null || showOutputKey(blockInfo?.type) ? (
+            <ConnectedFieldTemplate
+              name={`${blockFieldName}.outputKey`}
+              layout="horizontal"
+              label="Output"
+              as={OutputKeyWidget}
+              description="Provide a output key to refer to the outputs of this block later."
+            />
+          ) : (
+            <ConnectedFieldTemplate
+              name={`${blockFieldName}.outputKey`}
+              layout="horizontal"
+              label="Output"
+              disabled
+              as={OutputKeyWidget}
+              description="Effect and renderer bricks do not produce outputs"
+            />
+          )}
+        </Col>
 
-      <Button
-        variant="danger"
-        onClick={onRemoveNode}
-        className={styles.removeButton}
-      >
-        <FontAwesomeIcon icon={faTrash} /> Remove Brick
-      </Button>
+        <Col sm="auto">
+          <Button
+            variant="danger"
+            onClick={onRemoveNode}
+            className={styles.removeButton}
+          >
+            <FontAwesomeIcon icon={faTrash} /> Remove
+          </Button>
+        </Col>
+      </Row>
 
       <BlockConfiguration name={blockFieldName} blockId={blockId} />
     </>
