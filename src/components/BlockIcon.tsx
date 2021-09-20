@@ -44,8 +44,6 @@ import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtensio
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import cx from "classnames";
 
-// Unable to use dynamic font awesome icons without importing them first
-//  maybe there is a better way to do this?
 library.add(fas, fab, far);
 
 export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
