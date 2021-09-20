@@ -139,14 +139,21 @@ const ActionPanelApp: React.FunctionComponent = () => {
         <ToastProvider>
           <div className="d-flex flex-column" style={{ height: "100vh" }}>
             <div className="d-flex flex-row mb-2 p-2 justify-content-between align-content-center">
-              <Button
-                className="action-panel-button"
-                onClick={closeSidebar}
-                size="sm"
-                variant="link"
-              >
-                <FontAwesomeIcon icon={faAngleDoubleRight} className="fa-lg" />
-              </Button>
+              {
+                /* Only when iframed #1395 */ self === top || (
+                  <Button
+                    className="action-panel-button"
+                    onClick={closeSidebar}
+                    size="sm"
+                    variant="link"
+                  >
+                    <FontAwesomeIcon
+                      icon={faAngleDoubleRight}
+                      className="fa-lg"
+                    />
+                  </Button>
+                )
+              }
               <div className="align-self-center">
                 <img
                   src={logo}
