@@ -21,8 +21,8 @@ import React from "react";
 import { validateRegistryId } from "@/types/helpers";
 import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
-import { useDispatch, useSelector } from "react-redux";
 import FormEditor from "@/components/formBuilder/FormEditor";
+import useReduxState from "@/hooks/useReduxState";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -42,12 +42,10 @@ const FormModalOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
-  const dispatch = useDispatch();
-  const setActiveField = (activeField: string) => {
-    dispatch(elementWizardActions.setActiveField(activeField));
-  };
-
-  const activeField = useSelector(formBuilderSelectors.formBuilderActiveField);
+  const [activeField, setActiveField] = useReduxState(
+    formBuilderSelectors.formBuilderActiveField,
+    elementWizardActions.setActiveField
+  );
 
   const configName = `${name}.${configKey}`;
 

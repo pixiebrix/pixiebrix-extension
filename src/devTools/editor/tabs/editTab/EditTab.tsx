@@ -44,6 +44,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
 import FormPreview from "@/components/formBuilder/FormPreview";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
+import useReduxState from "@/hooks/useReduxState";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -85,13 +86,9 @@ const EditTab: React.FC<{
     icon,
     EditorNode: FoundationNode = NotImplementedFoundationEditor,
   } = ADAPTERS.get(elementType);
-  const dispatch = useDispatch();
-  const setFormBuilderActiveField = (activeField: string) => {
-    dispatch(elementWizardActions.setActiveField(activeField));
-  };
-
-  const formBuilderActiveField = useSelector(
-    formBuilderSelectors.formBuilderActiveField
+  const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
+    formBuilderSelectors.formBuilderActiveField,
+    elementWizardActions.setActiveField
   );
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
