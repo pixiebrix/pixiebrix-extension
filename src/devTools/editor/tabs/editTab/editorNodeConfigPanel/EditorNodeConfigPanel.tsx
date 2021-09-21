@@ -69,15 +69,14 @@ const EditorNodeConfigPanel: React.FC<{
   return (
     <>
       <Row>
-        <Col>
+        <Col xl>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.label`}
             label="Step Name"
             placeholder={blockInfo?.block.name}
           />
         </Col>
-
-        <Col>
+        <Col xl>
           {blockInfo == null || showOutputKey(blockInfo?.type) ? (
             <ConnectedFieldTemplate
               name={`${blockFieldName}.outputKey`}
@@ -99,14 +98,14 @@ const EditorNodeConfigPanel: React.FC<{
             />
           )}
         </Col>
-
         <Col sm="auto">
           <Button
             variant="danger"
             onClick={onRemoveNode}
             className={styles.removeButton}
           >
-            <FontAwesomeIcon icon={faTrash} /> Remove
+            <FontAwesomeIcon icon={faTrash} />{" "}
+            <span className={styles.removeText}>Remove</span>
           </Button>
         </Col>
       </Row>
