@@ -94,7 +94,6 @@ const BlockIcon: React.FunctionComponent<{
   size?: "1x" | "2x";
 }> = ({ block, size = "1x" }) => {
   const [type, setType] = useState<BlockType>(null);
-
   const { data: listings } = useGetMarketplaceListingsQuery();
 
   const listing = useMemo(

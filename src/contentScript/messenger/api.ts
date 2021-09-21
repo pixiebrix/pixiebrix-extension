@@ -35,6 +35,10 @@ export const queueReactivateTab = getContentScriptMethod(
 );
 export const reactivateTab = getContentScriptMethod("REACTIVATE_TAB");
 export const handleMenuAction = getContentScriptMethod("HANDLE_MENU_ACTION");
+export const toggleActionPanel = getContentScriptMethod("TOGGLE_ACTION_PANEL");
+export const showActionPanel = getContentScriptMethod("SHOW_ACTION_PANEL");
+export const hideActionPanel = getContentScriptMethod("HIDE_ACTION_PANEL");
+export const removeActionPanel = getContentScriptMethod("REMOVE_ACTION_PANEL");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;

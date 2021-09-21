@@ -69,24 +69,6 @@
   }
 }
 
-.root {
-  width: 100%;
-  cursor: pointer;
-  border-radius: 0;
-  text-align: left;
-
-  &:hover {
-    color: #fff;
-    background-color: #b66dff;
-  }
-
-  &:global(.list-group-item).active {
-    border-color: #e5d3ff;
-    color: black;
-    background-color: #f0e1ff;
-  }
-}
-
 .BlockDetail {
   // 54px to match height of BlockModal results above
   max-height: Min(calc(100vh - 54px), 600px);
