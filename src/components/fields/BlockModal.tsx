@@ -58,7 +58,13 @@ const BlockResult: React.FunctionComponent<{
         <div className={styles.ellipsis}>{block.name}</div>
         <code className={cx("small", styles.id)}>{block.id}</code>
         <p className={cx("small mb-0", styles.ellipsis)}>
-          {truncate(block.description, { length: 256 })}
+          {/* FIXME: applying both truncate and the CSS ellipses style is redundant */}
+          {/* Use a span if no description to ensure a consistent height for react-window */}
+          {block.description ? (
+            truncate(block.description, { length: 256 })
+          ) : (
+            <span>&nbsp;</span>
+          )}
         </p>
       </div>
       <div className="flex-grow-0">
@@ -212,6 +218,7 @@ const BlockModal: React.FunctionComponent<{
                               itemData={searchResults}
                             >
                               {({ index, style, data }) => {
+                                // eslint-disable-next-line security/detect-object-injection -- index is a number
                                 const { block } = data[index];
                                 return (
                                   <div style={style}>
