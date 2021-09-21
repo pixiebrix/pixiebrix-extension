@@ -26,7 +26,6 @@ import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
 import "@/contentScript/devTools";
 import "@/contentScript/contextMenus";
-import "@/contentScript/browserAction";
 import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
 import addExecutorListener from "@/contentScript/executor";

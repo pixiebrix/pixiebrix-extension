@@ -15,47 +15,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { ListGroup } from "react-bootstrap";
-import { BlockType, getType } from "@/blocks/util";
-import { useAsyncEffect } from "use-async-effect";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getIcon } from "@/components/fields/BlockModal";
 import cx from "classnames";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import styles from "./BlockResult.module.scss";
 import { OfficialBadge } from "@/components/OfficialBadge";
+import BlockIcon from "@/components/BlockIcon";
 
 const BlockResult: React.FunctionComponent<{
   block: ReferenceEntry;
   active?: boolean;
   onSelect: () => void;
-}> = ({ block, onSelect, active }) => {
-  const [type, setType] = useState<BlockType>(null);
-
-  useAsyncEffect(async () => {
-    setType(await getType(block));
-  }, [block, setType]);
-
-  return (
-    <ListGroup.Item
-      onClick={onSelect}
-      className={cx(styles.root, { [styles.active]: active, active })}
-    >
-      <div className="d-flex">
-        <div className="mr-2 text-muted">
-          <FontAwesomeIcon icon={getIcon(block, type)} fixedWidth />
-        </div>
-        <div className={cx("flex-grow-1", styles.titleColumn)}>
-          <div className={styles.ellipsis}>{block.name}</div>
-          <code className={cx("small", styles.id)}>{block.id}</code>
-        </div>
-        <div className="flex-grow-0">
-          <OfficialBadge id={block.id} />
-        </div>
+}> = ({ block, onSelect, active }) => (
+  <ListGroup.Item
+    onClick={onSelect}
+    className={cx(styles.root, { [styles.active]: active, active })}
+  >
+    <div className="d-flex">
+      <div className="mr-2 text-muted">
+        <BlockIcon block={block} />
       </div>
-    </ListGroup.Item>
-  );
-};
+      <div className={cx("flex-grow-1", styles.titleColumn)}>
+        <div className={styles.ellipsis}>{block.name}</div>
+        <code className={cx("small", styles.id)}>{block.id}</code>
+      </div>
+      <div className="flex-grow-0">
+        <OfficialBadge id={block.id} />
+      </div>
+    </div>
+  </ListGroup.Item>
+);
 
 export default BlockResult;

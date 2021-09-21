@@ -16,70 +16,58 @@
  */
 
 import React, { useMemo } from "react";
+import "./QuickAdd.scss";
 import { IBlock } from "@/core";
 import { useFormikContext } from "formik";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { Card } from "react-bootstrap";
-import { browser } from "webextension-polyfill-ts";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IconDefinition } from "@fortawesome/fontawesome-common-types";
-import {
-  faCloud,
-  faGlobe,
-  faHighlighter,
-  faKeyboard,
-  faListOl,
-  faWindowRestore,
-} from "@fortawesome/free-solid-svg-icons";
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
+import BlockIcon from "@/components/BlockIcon";
 
-type Recommendation =
-  | {
-      id: string;
-      icon?: IconDefinition;
-    }
-  | { id: string; src: string };
+type Recommendation = {
+  id: string;
+};
 
 const RECOMMENDED_BRICKS = new Map<ElementType, Recommendation[]>([
   [
     "menuItem",
     [
-      { id: "@pixiebrix/browser/open-tab", icon: faWindowRestore },
-      { id: "@pixiebrix/zapier/push-data", src: "img/zapier.svg" },
-      { id: "@pixiebrix/forms/set", icon: faKeyboard },
+      { id: "@pixiebrix/browser/open-tab" },
+      { id: "@pixiebrix/zapier/push-data" },
+      { id: "@pixiebrix/forms/set" },
     ],
   ],
   [
     "trigger",
     [
-      { id: "@pixiebrix/google/sheets-append", src: "img/google_sheets.svg" },
-      { id: "@pixiebrix/highlight", icon: faHighlighter },
-      { id: "@pixiebrix/zapier/push-data", src: "img/zapier.svg" },
+      { id: "@pixiebrix/google/sheets-append" },
+      { id: "@pixiebrix/highlight" },
+      { id: "@pixiebrix/zapier/push-data" },
     ],
   ],
   [
     "contextMenu",
     [
-      { id: "@pixiebrix/browser/open-tab", icon: faWindowRestore },
-      { id: "@pixiebrix/zapier/push-data", src: "img/zapier.svg" },
-      { id: "slack/simple-message", src: "img/slack.svg" },
-      { id: "@pixiebrix/google/sheets-append", src: "img/google_sheets.svg" },
+      { id: "@pixiebrix/browser/open-tab" },
+      { id: "@pixiebrix/zapier/push-data" },
+      { id: "slack/simple-message" },
+      { id: "@pixiebrix/google/sheets-append" },
     ],
   ],
   [
     "panel",
     [
-      { id: "@pixiebrix/property-table", icon: faListOl },
-      { id: "@pixiebrix/iframe", icon: faGlobe },
-      { id: "@pixiebrix/get", icon: faCloud },
+      { id: "@pixiebrix/property-table" },
+      { id: "@pixiebrix/iframe" },
+      { id: "@pixiebrix/get" },
     ],
   ],
   [
     "actionPanel",
     [
-      { id: "@pixiebrix/property-table", icon: faListOl },
-      { id: "@pixiebrix/iframe", icon: faGlobe },
-      { id: "@pixiebrix/get", icon: faCloud },
+      { id: "@pixiebrix/property-table" },
+      { id: "@pixiebrix/iframe" },
+      { id: "@pixiebrix/get" },
     ],
   ],
 ]);
@@ -106,7 +94,7 @@ const QuickAdd: React.FunctionComponent<{
     <div>
       <h4>Recommended Bricks</h4>
       <div className="RecommendationContainer">
-        {recommendedBlocks.map(({ block, recommendation }) => (
+        {recommendedBlocks.map(({ block }) => (
           <Card
             className="RecommendationCard"
             key={block.id}
@@ -116,15 +104,7 @@ const QuickAdd: React.FunctionComponent<{
           >
             <Card.Body className="text-center RecommendationCard__image">
               <div>
-                {"src" in recommendation ? (
-                  <img
-                    src={browser.runtime.getURL(recommendation.src)}
-                    height="50"
-                    alt={block.name}
-                  />
-                ) : (
-                  <FontAwesomeIcon icon={recommendation.icon} color="#6462aa" />
-                )}
+                <BlockIcon block={block} />
               </div>
             </Card.Body>
             <Card.Body>

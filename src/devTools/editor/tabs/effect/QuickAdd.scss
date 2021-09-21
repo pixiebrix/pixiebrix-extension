@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,29 +15,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
-import * as native from "@/actionPanel/native";
+.RecommendationContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 200px);
+  grid-gap: 2rem;
 
-export const toggleActionPanel = liftContentScript(
-  "TOGGLE_ACTION_PANEL",
-  async () => native.toggleActionPanel()
-);
+  .RecommendationCard {
+    max-width: 200px;
 
-export const showActionPanel = liftContentScript(
-  "SHOW_ACTION_PANEL",
-  async () => native.showActionPanel()
-);
+    &:hover {
+      cursor: pointer;
+      background-color: #ececff;
+    }
 
-export const hideActionPanel = liftContentScript(
-  "HIDE_ACTION_PANEL",
-  async () => {
-    native.hideActionPanel();
+    &__image {
+      font-size: 50px;
+      height: 80px;
+
+      div {
+        margin: auto;
+
+        svg {
+          vertical-align: middle;
+        }
+      }
+    }
+
+    .card-body:nth-child(1) {
+      padding-bottom: 10px;
+    }
+
+    .card-body {
+      padding-top: 10px;
+    }
   }
-);
-
-export const removeActionPanelPanel = liftContentScript(
-  "REMOVE_ACTION_PANEL_PANEL",
-  async (extensionId: string) => {
-    native.removeExtension(extensionId);
-  }
-);
+}

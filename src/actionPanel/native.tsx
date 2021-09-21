@@ -141,17 +141,16 @@ export function hideActionPanel(): void {
   $(PANEL_CONTAINER_SELECTOR).remove();
 }
 
-export function toggleActionPanel(): string | null {
-  if (isActionPanelVisible()) {
-    hideActionPanel();
-    return null;
+export function toggleActionPanel(): string | void {
+  if (!isActionPanelVisible()) {
+    return showActionPanel();
   }
 
-  return showActionPanel();
+  hideActionPanel();
 }
 
 export function isActionPanelVisible(): boolean {
-  return document.querySelector(PANEL_CONTAINER_SELECTOR) != null;
+  return Boolean(document.querySelector(PANEL_CONTAINER_SELECTOR));
 }
 
 export function getStore(): ActionPanelStore {

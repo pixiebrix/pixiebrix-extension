@@ -160,7 +160,7 @@ const ActionPanelApp: React.FunctionComponent = () => {
                 target="_blank"
                 size="sm"
                 variant="link"
-                className="action-panel-button d-inline-flex align-items-center"
+                className="action-panel-button d-inline-flex align-items-center text-decoration-none"
               >
                 <span>
                   Options <FontAwesomeIcon icon={faCog} />
