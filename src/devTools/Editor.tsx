@@ -35,7 +35,6 @@ import useInstallState from "@/devTools/editor/hooks/useInstallState";
 import useEscapeHandler from "@/devTools/editor/hooks/useEscapeHandler";
 import GenericInsertPane from "@/devTools/editor/panes/insert/GenericInsertPane";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
 import { actions } from "@/devTools/editor/slices/editorSlice";
 
 const selectEditor = ({ editor }: RootState) => editor;
@@ -69,8 +68,6 @@ const Editor: React.FunctionComponent = () => {
 
   useEscapeHandler(cancelInsert, inserting != null);
 
-  const reservedNames = useReservedNames(elements);
-
   const { availableDynamicIds, unavailableCount } = useInstallState(
     installed,
     elements
@@ -99,7 +96,6 @@ const Editor: React.FunctionComponent = () => {
             <GenericInsertPane
               cancel={cancelInsert}
               config={ADAPTERS.get(inserting)}
-              reservedNames={reservedNames}
             />
           );
       }
@@ -138,7 +134,6 @@ const Editor: React.FunctionComponent = () => {
     availableDynamicIds?.size,
     unavailableCount,
     tabState,
-    reservedNames,
   ]);
 
   return (

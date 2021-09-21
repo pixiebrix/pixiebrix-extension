@@ -28,6 +28,7 @@ import {
   ElementConfig,
   ElementType,
 } from "@/devTools/editor/extensionPoints/elementConfig";
+import { hasInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 
 export const ADAPTERS = new Map<ElementType, ElementConfig>([
   ["trigger", triggerExtension],
@@ -38,10 +39,17 @@ export const ADAPTERS = new Map<ElementType, ElementConfig>([
 ]);
 
 export async function selectType(extension: IExtension): Promise<ElementType> {
+  if (hasInnerExtensionPoint(extension)) {
+    return ((extension.definitions[
+      extension.extensionPointId
+    ] as unknown) as ExtensionPointConfig).definition.type;
+  }
+
   const brick = await findBrick(extension.extensionPointId);
   if (!brick) {
     console.error("Cannot find extension point", {
       extensionPointId: extension.extensionPointId,
+      extension,
     });
     throw new Error("Cannot find extension point");
   }

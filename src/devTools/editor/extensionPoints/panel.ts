@@ -17,7 +17,6 @@
  */
 
 import { IExtension, Metadata } from "@/core";
-import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -106,18 +105,12 @@ const DEFAULT_TRAITS: PanelTraits = {
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  panel: PanelSelectionResult,
-  frameworks: FrameworkMeta[]
+  panel: PanelSelectionResult
 ): PanelFormState {
   return {
     type: "panel",
     label: `My ${getDomain(url)} panel`,
-    ...makeBaseState(
-      panel.uuid,
-      panel.foundation.containerSelector,
-      metadata,
-      frameworks
-    ),
+    ...makeBaseState(panel.uuid),
     containerInfo: panel.containerInfo,
     extensionPoint: {
       metadata,

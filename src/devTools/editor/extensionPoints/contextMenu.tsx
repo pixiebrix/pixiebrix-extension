@@ -17,7 +17,6 @@
  */
 
 import { IExtension, Metadata } from "@/core";
-import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -86,11 +85,9 @@ export interface ContextMenuFormState extends BaseFormState {
 
 function fromNativeElement(
   url: string,
-  metadata: Metadata,
-  element: null,
-  frameworks: FrameworkMeta[]
+  metadata: Metadata
 ): ContextMenuFormState {
-  const base = makeBaseState(uuidv4(), null, metadata, frameworks);
+  const base = makeBaseState();
   // Don't include a reader since in most cases can't use a selection reader
   base.readers = [];
 
