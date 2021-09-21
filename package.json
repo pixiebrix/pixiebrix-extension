@@ -181,6 +181,8 @@
     "@types/react-redux": "^7.1.18",
     "@types/react-router-dom": "^5.1.8",
     "@types/react-select": "^4.0.17",
+    "@types/react-virtualized-auto-sizer": "^1.0.1",
+    "@types/react-window": "^1.8.5",
     "@types/redux-logger": "^3.0.9",
     "@types/redux-persist-webextension-storage": "^1.0.0",
     "@types/selenium-webdriver": "^4.0.15",

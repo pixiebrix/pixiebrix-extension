@@ -206,6 +206,7 @@ const BlockModal: React.FunctionComponent<{
                             <List
                               height={height}
                               itemCount={searchResults.length}
+                              // react-window library requires exact height
                               itemSize={87}
                               itemData={searchResults}
                             >
