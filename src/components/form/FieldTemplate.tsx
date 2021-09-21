@@ -89,11 +89,11 @@ const RenderedField: React.FC<FieldProps> = ({
   ) : (
     <BootstrapForm.Group as={Row} controlId={name}>
       {label && (
-        <BootstrapForm.Label column sm="3">
+        <BootstrapForm.Label column lg="3">
           {label}
         </BootstrapForm.Label>
       )}
-      <Col sm={label ? "9" : "12"}>
+      <Col lg={label ? "9" : "12"}>
         <BootstrapForm.Control
           name={name}
           isInvalid={isInvalid}
