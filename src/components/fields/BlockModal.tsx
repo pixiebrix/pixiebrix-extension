@@ -40,7 +40,7 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BlockIcon from "@/components/BlockIcon";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
-import { FixedSizeList as List } from "react-window";
+import { FixedSizeList as LazyList } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";
 import cx from "classnames";
@@ -201,12 +201,13 @@ const BlockModal: React.FunctionComponent<{
                   <Row>
                     <Col>
                       <div className="BlockModal__results">
-                        <AutoSizer disableWidth>
-                          {({ height }) => (
-                            <List
+                        <AutoSizer>
+                          {({ height, width }) => (
+                            <LazyList
                               height={height}
+                              width={width}
                               itemCount={searchResults.length}
-                              // react-window library requires exact height
+                              // The react-window library requires exact height
                               itemSize={87}
                               itemData={searchResults}
                             >
@@ -224,7 +225,7 @@ const BlockModal: React.FunctionComponent<{
                                   </div>
                                 );
                               }}
-                            </List>
+                            </LazyList>
                           )}
                         </AutoSizer>
                       </div>
