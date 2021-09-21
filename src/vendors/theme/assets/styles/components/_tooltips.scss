@@ -19,7 +19,7 @@
     .bs-tooltip-left-demo {
       .arrow {
         &:before {
-          top: calc((100%-#{$tooltip-arrow-width}) / 2);
+          top: calc((100% - #{$tooltip-arrow-width}) / 2);
         }
       }
     }
