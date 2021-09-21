@@ -17,7 +17,7 @@
 
 import React from "react";
 import { Schema } from "@/core";
-import { Col, ListGroup } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 
 const PrimitiveEntry: React.FunctionComponent<{
   prop: string;
@@ -33,7 +33,15 @@ const PrimitiveEntry: React.FunctionComponent<{
             <code>{prop}</code>
           </span>
           <span className="type badge badge-pill badge-secondary ml-1">
-            {format ? `${format} ${type}` : type}
+            {Array.isArray(type)
+              ? type.map((value, index) => (
+                  <>
+                    {value} {index < type.length - 1 && <>| </>}
+                  </>
+                ))
+              : format
+              ? `${format} ${type}`
+              : type}
           </span>
         </div>
         <div>
