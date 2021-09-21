@@ -40,7 +40,9 @@ const FormRendererOptions: React.FC<{
     dispatch(elementWizardActions.setFormBuilderActiveField(activeField));
   };
 
-  const activeField = useSelector(elementWizardSelectors.activeField);
+  const activeField = useSelector(
+    elementWizardSelectors.formBuilderActiveField
+  );
 
   const configName = `${name}.${configKey}`;
 

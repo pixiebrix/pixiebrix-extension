@@ -40,8 +40,10 @@ import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceV
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockIcon from "@/components/BlockIcon";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { actions as elementWizardActions } from "@/devTools/editor/slices/elementWizardSlice";
+import FormPreview from "@/components/formBuilder/FormPreview";
+import elementWizardSelectors from "@/devTools/editor/slices/elementWizardSelectors";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -84,6 +86,13 @@ const EditTab: React.FC<{
     EditorNode: FoundationNode = NotImplementedFoundationEditor,
   } = ADAPTERS.get(elementType);
   const dispatch = useDispatch();
+  const setFormBuilderActiveField = (activeField: string) => {
+    dispatch(elementWizardActions.setFormBuilderActiveField(activeField));
+  };
+
+  const formBuilderActiveField = useSelector(
+    elementWizardSelectors.formBuilderActiveField
+  );
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 
@@ -121,14 +130,13 @@ const EditTab: React.FC<{
     [resolvedBlocks]
   );
 
-  const onSelectNode = useCallback(
+  const onSelectNode =
     // Wrapper only accepting a number (i.e., does not accept a state update method)
-    (index: number) => {
+    useCallback((index: number) => {
       setActiveNodeIndex(index);
-      dispatch(elementWizardActions.setFormBuilderActiveField(null));
-    },
-    [dispatch]
-  );
+      setFormBuilderActiveField(null);
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- Referencing stable functions only
+    }, []);
 
   const removeBlock = (pipelineIndex: number) => {
     const newPipeline = produce(blockPipeline, (draft) => {
@@ -202,6 +210,9 @@ const EditTab: React.FC<{
     [onSelectNode, pipelineFieldHelpers, blockPipeline]
   );
 
+  const blockFieldConfigName = `${blockFieldName}.config`;
+  const [{ value: configValue }] = useField(blockFieldConfigName);
+
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
@@ -240,6 +251,16 @@ const EditTab: React.FC<{
           {activeNodeIndex === 0 && (
             <FoundationTraceView instanceId={blockPipeline[0]?.instanceId} />
           )}
+
+          {activeNodeIndex > 0 &&
+            configValue?.schema &&
+            configValue?.uiSchema && (
+              <FormPreview
+                name={blockFieldConfigName}
+                activeField={formBuilderActiveField}
+                setActiveField={setFormBuilderActiveField}
+              />
+            )}
 
           {activeNodeIndex > 0 && (
             <TraceView

@@ -19,7 +19,7 @@ import { RootState } from "@/devTools/store";
 
 const elementWizardSelectors = {
   step: ({ elementWizard }: RootState) => elementWizard.step,
-  activeField: ({ elementWizard }: RootState) =>
+  formBuilderActiveField: ({ elementWizard }: RootState) =>
     elementWizard.formBuilderActiveField,
 };
 

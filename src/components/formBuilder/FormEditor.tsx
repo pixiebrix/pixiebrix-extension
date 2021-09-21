@@ -40,6 +40,7 @@ import {
 import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
+import styles from "./FormEditor.module.scss";
 
 const FormEditor: React.FC<{
   name: string;
@@ -150,7 +151,7 @@ const FormEditor: React.FC<{
     uiOrder[uiOrder.length - 2] !== activeField;
 
   return (
-    <div>
+    <div className={styles.root}>
       <BootstrapForm.Group>
         <h5>Edit form</h5>
         <hr />
