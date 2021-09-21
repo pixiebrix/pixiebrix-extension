@@ -27,9 +27,13 @@ import { Tab, Tabs } from "react-bootstrap";
 import styles from "./TraceView.module.scss";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import PreviewView from "@/devTools/editor/tabs/effect/PreviewView";
-import { FastField, FieldInputProps } from "formik";
+import { FastField, FieldInputProps, useField } from "formik";
 import { BlockConfig } from "@/blocks/types";
 import useInterval from "@/hooks/useInterval";
+import FormPreview from "@/components/formBuilder/FormPreview";
+import useReduxState from "@/hooks/useReduxState";
+import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
+import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
 
 export function useLatestTraceRecord(instanceId: UUID) {
   return useAsyncState(async () => {
@@ -73,6 +77,13 @@ const TraceView: React.FunctionComponent<{
     [record?.templateContext]
   );
 
+  const blockFieldConfigName = `${blockFieldName}.config`;
+  const [{ value: configValue }] = useField(blockFieldConfigName);
+  const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
+    formBuilderSelectors.formBuilderActiveField,
+    elementWizardActions.setActiveField
+  );
+
   if (isLoading) {
     return (
       <div>
@@ -81,37 +92,47 @@ const TraceView: React.FunctionComponent<{
     );
   }
 
-  if (error) {
-    return (
-      <div className="text-danger">
-        Error loading trace: {getErrorMessage(error)}
-      </div>
-    );
-  }
+  const showFormPreview = configValue?.schema && configValue?.uiSchema;
 
-  if (!record) {
-    return (
-      <div className="text-muted">
-        No trace available, run the extension to generate data
-      </div>
-    );
-  }
+  const defaultKey = showFormPreview ? "preview" : record ? "output" : "nodata";
 
   return (
-    <Tabs defaultActiveKey="output">
-      <Tab eventKey="context" title="Context" tabClassName={styles.tab}>
-        <JsonTree data={relevantContext} copyable searchable />
-      </Tab>
-      <Tab eventKey="rendered" title="Rendered Input" tabClassName={styles.tab}>
-        <JsonTree data={record.renderedArgs} copyable searchable />
-      </Tab>
-      <Tab eventKey="output" title="Output" tabClassName={styles.tab}>
-        {"output" in record && (
-          <JsonTree data={record.output} copyable searchable label="Data" />
-        )}
+    <Tabs defaultActiveKey={defaultKey}>
+      {record ? (
+        <>
+          <Tab eventKey="context" title="Context" tabClassName={styles.tab}>
+            <JsonTree data={relevantContext} copyable searchable />
+          </Tab>
+          <Tab
+            eventKey="rendered"
+            title="Rendered Input"
+            tabClassName={styles.tab}
+          >
+            <JsonTree data={record.renderedArgs} copyable searchable />
+          </Tab>
+          <Tab eventKey="output" title="Output" tabClassName={styles.tab}>
+            {"output" in record && (
+              <JsonTree data={record.output} copyable searchable label="Data" />
+            )}
 
-        {"error" in record && <JsonTree data={record.error} label="Error" />}
-      </Tab>
+            {"error" in record && (
+              <JsonTree data={record.error} label="Error" />
+            )}
+          </Tab>
+        </>
+      ) : (
+        <Tab eventKey="nodata" title="Trace" tabClassName={styles.tab}>
+          {error ? (
+            <div className="text-danger">
+              Error loading trace: {getErrorMessage(error)}
+            </div>
+          ) : (
+            <div className="text-muted">
+              No trace available, run the extension to generate data
+            </div>
+          )}
+        </Tab>
+      )}
       <Tab
         eventKey="preview"
         title="Preview"
@@ -120,13 +141,21 @@ const TraceView: React.FunctionComponent<{
         mountOnEnter
         unmountOnExit
       >
-        <ErrorBoundary>
-          <FastField name={blockFieldName}>
-            {({ field }: { field: FieldInputProps<BlockConfig> }) => (
-              <PreviewView traceRecord={record} blockConfig={field.value} />
-            )}
-          </FastField>
-        </ErrorBoundary>
+        {showFormPreview ? (
+          <FormPreview
+            name={blockFieldConfigName}
+            activeField={formBuilderActiveField}
+            setActiveField={setFormBuilderActiveField}
+          />
+        ) : (
+          <ErrorBoundary>
+            <FastField name={blockFieldName}>
+              {({ field }: { field: FieldInputProps<BlockConfig> }) => (
+                <PreviewView traceRecord={record} blockConfig={field.value} />
+              )}
+            </FastField>
+          </ErrorBoundary>
+        )}
       </Tab>
     </Tabs>
   );

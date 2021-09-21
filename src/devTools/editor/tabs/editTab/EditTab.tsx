@@ -40,10 +40,6 @@ import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceV
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockIcon from "@/components/BlockIcon";
-import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
-import FormPreview from "@/components/formBuilder/FormPreview";
-import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
-import useReduxState from "@/hooks/useReduxState";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -85,10 +81,6 @@ const EditTab: React.FC<{
     icon,
     EditorNode: FoundationNode = NotImplementedFoundationEditor,
   } = ADAPTERS.get(elementType);
-  const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
-    formBuilderSelectors.formBuilderActiveField,
-    elementWizardActions.setActiveField
-  );
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 
@@ -204,9 +196,6 @@ const EditTab: React.FC<{
     [onSelectNode, pipelineFieldHelpers, blockPipeline]
   );
 
-  const blockFieldConfigName = `${blockFieldName}.config`;
-  const [{ value: configValue }] = useField(blockFieldConfigName);
-
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
@@ -245,16 +234,6 @@ const EditTab: React.FC<{
           {activeNodeIndex === 0 && (
             <FoundationTraceView instanceId={blockPipeline[0]?.instanceId} />
           )}
-
-          {activeNodeIndex > 0 &&
-            configValue?.schema &&
-            configValue?.uiSchema && (
-              <FormPreview
-                name={blockFieldConfigName}
-                activeField={formBuilderActiveField}
-                setActiveField={setFormBuilderActiveField}
-              />
-            )}
 
           {activeNodeIndex > 0 && (
             <TraceView
