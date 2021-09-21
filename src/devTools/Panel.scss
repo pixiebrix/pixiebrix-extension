@@ -44,14 +44,7 @@
       white-space: nowrap;
 
       .nav-link {
-        &.active {
-          border: 1px solid #007bff;
-        }
-
-        &:not(.active) {
-          border: 1px solid #fff;
-        }
-
+        height: 100%;
         font-size: 0.875rem;
         border-radius: 0;
         padding-top: 4px;
@@ -67,10 +60,6 @@
 
   .tab-pane {
     overflow-y: auto;
-  }
-
-  .tab-content {
-    padding: 5px 5px 45px 5px;
   }
 
   .ReaderData {
