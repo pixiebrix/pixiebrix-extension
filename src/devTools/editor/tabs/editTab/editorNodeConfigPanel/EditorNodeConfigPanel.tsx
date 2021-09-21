@@ -74,7 +74,8 @@ const EditorNodeConfigPanel: React.FC<{
               layout="horizontal"
               label="Output"
               as={OutputKeyWidget}
-              description="Provide a output key to refer to the outputs of this block later."
+              description="Provide an output key to refer to the outputs of this block later."
+              isPopoverDescription
             />
           ) : (
             <ConnectedFieldTemplate
@@ -84,6 +85,7 @@ const EditorNodeConfigPanel: React.FC<{
               disabled
               as={OutputKeyWidget}
               description="Effect and renderer bricks do not produce outputs"
+              isPopoverDescription
             />
           )}
         </Col>

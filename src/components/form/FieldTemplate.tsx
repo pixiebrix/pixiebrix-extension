@@ -15,18 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactElement, ReactNode, useContext } from "react";
+import React, { ReactNode, useContext } from "react";
 import {
   Col,
   Form as BootstrapForm,
   FormControlProps,
+  OverlayTrigger,
   Row,
+  Tooltip,
 } from "react-bootstrap";
 import { Except } from "type-fest";
 import SwitchButton from "@/components/form/switchButton/SwitchButton";
 import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -36,6 +40,7 @@ export type FieldProps<
     layout?: "horizontal" | "vertical" | "switch" | undefined;
     label?: string | ReactNode | undefined;
     description?: ReactNode | undefined;
+    isPopoverDescription?: boolean | undefined;
     error?: string | undefined;
     touched?: boolean | undefined;
   };
@@ -46,10 +51,12 @@ export type CustomFieldWidget<TExtra = never> = React.ComponentType<
 
 type FieldRenderProps = Except<FieldProps, "layout">;
 
-const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
+const RenderedField: React.FC<FieldProps> = ({
   name,
-  label,
+  layout,
+  label = "",
   description,
+  isPopoverDescription = false,
   error,
   touched,
   value,
@@ -59,11 +66,63 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
   const isInvalid = touched && Boolean(error);
   const nonUndefinedValue = typeof value === "undefined" ? "" : value;
 
-  return (
+  const renderTooltip = (props: unknown) => (
+    <Tooltip id={`${name}-tooltip`} {...props}>
+      {description}
+    </Tooltip>
+  );
+
+  const showLabel =
+    Boolean(label) || (Boolean(description) && isPopoverDescription);
+
+  const renderedLabel =
+    description && isPopoverDescription ? (
+      <OverlayTrigger
+        placement="bottom"
+        delay={{ show: 250, hide: 400 }}
+        overlay={renderTooltip}
+      >
+        {({ ref, ...rest }) => (
+          <span {...rest}>
+            {label} <FontAwesomeIcon forwardedRef={ref} icon={faInfoCircle} />
+          </span>
+        )}
+      </OverlayTrigger>
+    ) : (
+      label ?? ""
+    );
+
+  return layout === "vertical" ? (
+    <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
+      {showLabel && (
+        <BootstrapForm.Label className={styles.verticalFormLabel}>
+          {renderedLabel}
+        </BootstrapForm.Label>
+      )}
+      <BootstrapForm.Control
+        name={name}
+        isInvalid={isInvalid}
+        value={nonUndefinedValue}
+        {...restFieldProps}
+      >
+        {children}
+      </BootstrapForm.Control>
+      {description && !isPopoverDescription && (
+        <BootstrapForm.Text className="text-muted">
+          {description}
+        </BootstrapForm.Text>
+      )}
+      {isInvalid && (
+        <BootstrapForm.Control.Feedback type="invalid">
+          {getErrorMessage(error)}
+        </BootstrapForm.Control.Feedback>
+      )}
+    </BootstrapForm.Group>
+  ) : (
     <BootstrapForm.Group as={Row} controlId={name}>
-      {label && (
+      {showLabel && (
         <BootstrapForm.Label column sm="3">
-          {label}
+          {renderedLabel}
         </BootstrapForm.Label>
       )}
       <Col sm={label ? "9" : "12"}>
@@ -75,7 +134,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
         >
           {children}
         </BootstrapForm.Control>
-        {description && (
+        {description && !isPopoverDescription && (
           <BootstrapForm.Text className="text-muted">
             {description}
           </BootstrapForm.Text>
@@ -90,49 +149,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
   );
 };
 
-const renderVertical: (props: FieldRenderProps) => ReactElement = ({
-  name,
-  label,
-  description,
-  error,
-  touched,
-  value,
-  children,
-  ...restFieldProps
-}) => {
-  const isInvalid = touched && Boolean(error);
-  const nonUndefinedValue = typeof value === "undefined" ? "" : value;
-
-  return (
-    <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
-      {label && (
-        <BootstrapForm.Label className={styles.verticalFormLabel}>
-          {label}
-        </BootstrapForm.Label>
-      )}
-      <BootstrapForm.Control
-        name={name}
-        isInvalid={isInvalid}
-        value={nonUndefinedValue}
-        {...restFieldProps}
-      >
-        {children}
-      </BootstrapForm.Control>
-      {description && (
-        <BootstrapForm.Text className="text-muted">
-          {description}
-        </BootstrapForm.Text>
-      )}
-      {isInvalid && (
-        <BootstrapForm.Control.Feedback type="invalid">
-          {getErrorMessage(error)}
-        </BootstrapForm.Control.Feedback>
-      )}
-    </BootstrapForm.Group>
-  );
-};
-
-const renderSwitch: (props: FieldRenderProps) => ReactElement = ({
+const RenderedSwitch: React.FC<FieldRenderProps> = ({
   name,
   label,
   value = false,
@@ -145,13 +162,10 @@ const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProps }) => {
   const theme = useContext(FormTheme);
 
   switch (layout ?? theme.layout) {
-    case "vertical":
-      return renderVertical(restProps);
     case "switch":
-      return renderSwitch(restProps);
-    case "horizontal":
+      return <RenderedSwitch {...restProps} />;
     default:
-      return renderHorizontal(restProps);
+      return <RenderedField layout={layout} {...restProps} />;
   }
 };
 
