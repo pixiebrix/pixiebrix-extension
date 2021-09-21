@@ -41,31 +41,28 @@ import BlockIcon from "@/components/BlockIcon";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
 import { FixedSizeList as List } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
+import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";
+import cx from "classnames";
 
 const BlockResult: React.FunctionComponent<{
   block: IBlock;
   onSelect: () => void;
 }> = ({ block, onSelect }) => (
-  <ListGroup.Item onClick={onSelect}>
+  <ListGroup.Item onClick={onSelect} className={cx(styles.root)}>
     <div className="d-flex">
       <div className="mr-2 text-muted">
         <BlockIcon block={block} />
       </div>
-      <div className="flex-grow-1">
-        <div className="d-flex BlockModal__title">
-          <div className="flex-grow-1">{block.name}</div>
-          <div className="flex-grow-0 BlockModal__badges">
-            <OfficialBadge id={block.id} />
-          </div>
-        </div>
-        <div className="BlockModal__id">
-          <code className="small">{block.id}</code>
-        </div>
-        <div>
-          <p className="mb-0 small">
-            {truncate(block.description, { length: 256 })}
-          </p>
-        </div>
+      <div className={cx("flex-grow-1", styles.titleColumn)}>
+        <div className={styles.ellipsis}>{block.name}</div>
+        <code className={cx("small", styles.id)}>{block.id}</code>
+        <p className={cx("small mb-0", styles.ellipsis)}>
+          {truncate(block.description, { length: 256 })}
+        </p>
+      </div>
+      <div className="flex-grow-0">
+        <OfficialBadge id={block.id} />
       </div>
     </div>
   </ListGroup.Item>
@@ -204,27 +201,31 @@ const BlockModal: React.FunctionComponent<{
                   <Row>
                     <Col>
                       <div className="BlockModal__results">
-                        <List
-                          height={600}
-                          itemCount={searchResults.length}
-                          itemSize={91}
-                          itemData={searchResults}
-                        >
-                          {({ index, style, data }) => {
-                            const { block } = data[index];
-                            return (
-                              <div style={style}>
-                                <BlockResult
-                                  key={block.id}
-                                  block={block}
-                                  onSelect={() => {
-                                    setDetailBlock(block);
-                                  }}
-                                />
-                              </div>
-                            );
-                          }}
-                        </List>
+                        <AutoSizer disableWidth>
+                          {({ height }) => (
+                            <List
+                              height={height}
+                              itemCount={searchResults.length}
+                              itemSize={87}
+                              itemData={searchResults}
+                            >
+                              {({ index, style, data }) => {
+                                const { block } = data[index];
+                                return (
+                                  <div style={style}>
+                                    <BlockResult
+                                      key={block.id}
+                                      block={block}
+                                      onSelect={() => {
+                                        setDetailBlock(block);
+                                      }}
+                                    />
+                                  </div>
+                                );
+                              }}
+                            </List>
+                          )}
+                        </AutoSizer>
                       </div>
                     </Col>
                   </Row>
