@@ -15,13 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
 import { groupBy, isEmpty } from "lodash";
@@ -39,6 +33,9 @@ import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import styles from "./ElementWizard.module.scss";
 import cx from "classnames";
+import { actions as elementWizardActions } from "./slices/elementWizardSlice";
+import elementWizardSelectors from "./slices/elementWizardSelectors";
+import { useDispatch, useSelector } from "react-redux";
 
 const LOG_STEP_NAME = "Logs";
 
@@ -92,11 +89,15 @@ const ElementWizard: React.FunctionComponent<{
     element.type,
   ]);
 
-  const [step, setStep] = useState(wizard[0].step);
+  const dispatch = useDispatch();
+  const setStep = (step: string) => {
+    dispatch(elementWizardActions.setStep(step));
+  };
+  const step = useSelector(elementWizardSelectors.step);
 
   useEffect(() => {
     setStep(wizard[0].step);
-  }, [wizard, setStep]);
+  }, [wizard]);
 
   const { refresh: refreshLogs } = useContext(LogContext);
 
