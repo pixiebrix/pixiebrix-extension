@@ -22,9 +22,10 @@ import { FieldProps, IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
 import { useField } from "formik";
-import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
+import { UI_ORDER, UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { Card } from "react-bootstrap";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { produce } from "immer";
 
 const FormPreview: React.FC<{
   name: string;
@@ -49,18 +50,32 @@ const FormPreview: React.FC<{
   }, [rjsfSchema]);
 
   useEffect(() => {
+    const { schema, uiSchema } = rjsfSchema;
     if (activeField) {
-      const uiSchema = { ...rjsfSchema.uiSchema };
-      uiSchema[activeField] = {
-        ...uiSchema[activeField],
-        [UI_SCHEMA_ACTIVE]: true,
-      };
-      setLocalRjsfSchema({
-        schema: rjsfSchema.schema,
-        uiSchema,
+      const nextLocalRjsfSchema = produce(rjsfSchema, (draft) => {
+        if (!draft.uiSchema[activeField]) {
+          draft.uiSchema[activeField] = {};
+        }
+
+        draft.uiSchema[activeField][UI_SCHEMA_ACTIVE] = true;
       });
+
+      setLocalRjsfSchema(nextLocalRjsfSchema);
     } else {
       setLocalRjsfSchema(rjsfSchema);
+
+      const firstInOrder =
+        // eslint-disable-next-line security/detect-object-injection -- is a constant
+        uiSchema?.[UI_ORDER]?.length > 1 ? uiSchema[UI_ORDER][0] : undefined;
+      if (firstInOrder && firstInOrder !== "*") {
+        setActiveField(firstInOrder);
+        return;
+      }
+
+      const firstInProperties = Object.keys(schema?.properties || {})[0];
+      if (firstInProperties) {
+        setActiveField(firstInProperties);
+      }
     }
   }, [activeField, rjsfSchema]);
 
