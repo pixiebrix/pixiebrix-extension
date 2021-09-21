@@ -40,7 +40,6 @@ import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceV
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockIcon from "@/components/BlockIcon";
-import { useDispatch, useSelector } from "react-redux";
 import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
 import FormPreview from "@/components/formBuilder/FormPreview";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";

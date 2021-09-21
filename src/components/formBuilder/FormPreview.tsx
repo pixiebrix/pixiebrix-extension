@@ -52,7 +52,6 @@ const FormPreview: React.FC<{
   useEffect(() => {
     const { schema, uiSchema } = rjsfSchema;
     const firstInOrder =
-      // eslint-disable-next-line security/detect-object-injection -- is a constant
       uiSchema?.[UI_ORDER]?.length > 1 ? uiSchema[UI_ORDER][0] : undefined;
     if (firstInOrder && firstInOrder !== "*") {
       setActiveField(firstInOrder);
@@ -69,7 +68,7 @@ const FormPreview: React.FC<{
   // Setting local schema
   useEffect(() => {
     if (activeField) {
-      const nextLocalRjsfSchema = produce(rjsfSchema, (draft) => {
+      const nextLocalRjsfSchema = produce<RJSFSchema>(rjsfSchema, (draft) => {
         if (!draft.uiSchema[activeField]) {
           draft.uiSchema[activeField] = {};
         }
@@ -108,9 +107,7 @@ const FormPreview: React.FC<{
                 schema={localRjsfSchema.schema}
                 uiSchema={localRjsfSchema.uiSchema}
                 onChange={onDataChanged}
-              >
-                <div></div>
-              </JsonSchemaForm>
+              />
             )}
         </ErrorBoundary>
       </Card.Body>
