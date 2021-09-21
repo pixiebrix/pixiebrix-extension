@@ -16,9 +16,10 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, Schema } from "@/core";
+import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { registerBlock } from "@/blocks/registry";
+import { BusinessError } from "@/errors";
 
 export class ParseCsv extends Transformer {
   constructor() {
@@ -51,11 +52,30 @@ export class ParseCsv extends Transformer {
         additionalProperties: true,
       },
     },
+    meta: {
+      type: "object",
+      properties: {
+        fieldNames: {
+          type: "array",
+          items: {
+            type: "string",
+          },
+        },
+      },
+    },
   });
 
-  async transform({ content }: BlockArg): Promise<unknown> {
+  async transform(
+    { content }: BlockArg,
+    { logger }: BlockOptions
+  ): Promise<unknown> {
     const { default: Papa } = await import("papaparse");
-    const { data } = await Papa.parse(content);
+    const { data, errors } = Papa.parse(content);
+
+    if (errors.length > 0) {
+      logger.warn("Error(s) parsing CSV file", { errors });
+      throw new BusinessError(errors[0].message);
+    }
 
     return {
       data,
