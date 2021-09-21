@@ -72,7 +72,6 @@ const EditorNodeConfigPanel: React.FC<{
         <Col>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.label`}
-            layout="horizontal"
             label="Step Name"
             placeholder={blockInfo?.block.name}
           />
@@ -82,7 +81,6 @@ const EditorNodeConfigPanel: React.FC<{
           {blockInfo == null || showOutputKey(blockInfo?.type) ? (
             <ConnectedFieldTemplate
               name={`${blockFieldName}.outputKey`}
-              layout="horizontal"
               label={
                 <PopoverOutputLabel description="Provide an output key to refer to the outputs of this block later." />
               }
@@ -92,7 +90,6 @@ const EditorNodeConfigPanel: React.FC<{
           ) : (
             <ConnectedFieldTemplate
               name={`${blockFieldName}.outputKey`}
-              layout="horizontal"
               label={
                 <PopoverOutputLabel description="Effect and renderer bricks do not produce outputs" />
               }
