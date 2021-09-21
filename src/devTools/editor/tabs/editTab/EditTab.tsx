@@ -40,6 +40,7 @@ import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpe
 import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { isNullOrBlank } from "@/utils";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -144,7 +145,7 @@ const EditTab: React.FC<{
   ).map(([action, block, type], index) =>
     block
       ? {
-          title: action.label ?? block?.name,
+          title: isNullOrBlank(action.label) ? block?.name : action.label,
           outputKey: action.outputKey,
           icon: getIcon(block, type),
           onClick: () => {

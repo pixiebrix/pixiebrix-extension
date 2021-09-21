@@ -26,6 +26,8 @@ import GridLoader from "react-spinners/GridLoader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./BlockConfiguration.module.scss";
 
+const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
+
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
   blockId: RegistryId;
@@ -54,13 +56,18 @@ const BlockConfiguration: React.FunctionComponent<{
 
   return (
     <>
-      {templateEngineValue && (
-        <div className={styles.advancedLinks}>
-          <Button variant="link" size="sm" onClick={onClickTemplateEngineLink}>
-            {`Template Engine: ${templateEngineValue}`}
-          </Button>
-        </div>
-      )}
+      {templateEngineValue &&
+        templateEngineValue !== DEFAULT_TEMPLATE_ENGINE_VALUE && (
+          <div className={styles.advancedLinks}>
+            <Button
+              variant="link"
+              size="sm"
+              onClick={onClickTemplateEngineLink}
+            >
+              {`Template Engine: ${templateEngineValue}`}
+            </Button>
+          </div>
+        )}
       <Card className={styles.card}>
         <Card.Header className={styles.cardHeader}>Input</Card.Header>
         <Card.Body>
