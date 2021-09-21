@@ -81,9 +81,7 @@ const RenderedField: React.FC<FieldProps> = ({
         </BootstrapForm.Text>
       )}
       {isInvalid && (
-        <BootstrapForm.Control.Feedback type="invalid">
-          {getErrorMessage(error)}
-        </BootstrapForm.Control.Feedback>
+        <div className={styles.invalidMessage}>{getErrorMessage(error)}</div>
       )}
     </BootstrapForm.Group>
   ) : (
@@ -112,9 +110,7 @@ const RenderedField: React.FC<FieldProps> = ({
           </BootstrapForm.Text>
         )}
         {isInvalid && (
-          <BootstrapForm.Control.Feedback type="invalid">
-            {getErrorMessage(error)}
-          </BootstrapForm.Control.Feedback>
+          <div className={styles.invalidMessage}>{getErrorMessage(error)}</div>
         )}
       </Col>
     </BootstrapForm.Group>
