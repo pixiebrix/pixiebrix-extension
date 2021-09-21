@@ -17,13 +17,15 @@
 
 /* eslint-disable security/detect-object-injection */
 import { useField } from "formik";
-import React, { useEffect } from "react";
-import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
+import React, { useCallback, useEffect } from "react";
+import { RJSFSchema } from "./formBuilderTypes";
 import { Button, Form as BootstrapForm } from "react-bootstrap";
 import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
   moveStringInArray,
   replaceStringInArray,
 } from "./formBuilderHelpers";
@@ -38,22 +40,35 @@ import {
 import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/devTools/store";
+import { actions } from "@/devTools/editor/slices/formBuilderSlice";
 
 const FormEditor: React.FC<{
   name: string;
-  activeField?: string;
-  setActiveField: SetActiveField;
-}> = ({ name, activeField, setActiveField }) => {
+}> = ({ name }) => {
   const [
     { value: rjsfSchema },
     ,
     { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
+
   const [{ value: uiOrder }, , { setValue: setUiOrder }] = useField<string[]>(
     `${name}.uiSchema.${UI_ORDER}`
   );
 
-  const { schema } = rjsfSchema;
+  const { schema, uiSchema } = rjsfSchema;
+
+  const activeField = useSelector(
+    (rootState: RootState) => rootState.formBuilder.activeField
+  );
+  const dispatch = useDispatch();
+  const setActiveField = useCallback(
+    (activeField: string) => {
+      dispatch(actions.setActiveField(activeField));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     // Set uiSchema order if needed
@@ -62,7 +77,37 @@ const FormEditor: React.FC<{
       const nextUiOrder = [...propertyKeys, "*"];
       setUiOrder(nextUiOrder);
     }
-  }, [schema, uiOrder, setUiOrder]);
+
+    // Initialize active field
+    if (!activeField) {
+      const firstInOrder =
+        uiSchema?.[UI_ORDER]?.length > 1 ? uiSchema[UI_ORDER][0] : undefined;
+      if (firstInOrder) {
+        setActiveField(firstInOrder);
+        return;
+      }
+
+      const firstInProperties = Object.keys(schema?.properties || {})[0];
+      if (firstInProperties) {
+        setActiveField(firstInProperties);
+      }
+    }
+  }, [schema, uiOrder, setUiOrder, activeField, setActiveField, uiSchema]);
+
+  if (!schema || !uiSchema) {
+    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      if (!draft.schema) {
+        draft.schema = MINIMAL_SCHEMA;
+      }
+
+      if (!draft.uiSchema) {
+        draft.uiSchema = MINIMAL_UI_SCHEMA;
+      }
+    });
+    setRjsfSchema(nextRjsfSchema);
+
+    return null;
+  }
 
   const addProperty = () => {
     const propertyName = generateNewPropertyName(

@@ -19,17 +19,18 @@
 import React, { useCallback, useEffect, useState } from "react";
 import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { FieldProps, IChangeEvent } from "@rjsf/core";
-import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
+import { RJSFSchema } from "./formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
 import { useField } from "formik";
 import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { Card } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/devTools/store";
+import { actions } from "@/devTools/editor/slices/formBuilderSlice";
 
 const FormPreview: React.FC<{
   name: string;
-  activeField?: string;
-  setActiveField: SetActiveField;
-}> = ({ name, activeField, setActiveField }) => {
+}> = ({ name }) => {
   const [{ value: rjsfSchema }] = useField<RJSFSchema>(name);
 
   const [data, setData] = useState(null);
@@ -41,6 +42,17 @@ const FormPreview: React.FC<{
   // Important to have schema and uiSchema always in sync, hence caching both
   const [localRjsfSchema, setLocalRjsfSchema] = useState<RJSFSchema>(
     rjsfSchema
+  );
+
+  const activeField = useSelector(
+    (rootState: RootState) => rootState.formBuilder.activeField
+  );
+  const dispatch = useDispatch();
+  const setActiveField = useCallback(
+    (activeField: string) => {
+      dispatch(actions.setActiveField(activeField));
+    },
+    [dispatch]
   );
 
   useEffect(() => {

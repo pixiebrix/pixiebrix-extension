@@ -16,10 +16,10 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import FormBuilder from "@/components/formBuilder/FormBuilder";
 import { Schema } from "@/core";
 import React from "react";
 import { validateRegistryId } from "@/types/helpers";
+import FormEditor from "@/components/formBuilder/FormEditor";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -36,7 +36,7 @@ const FormRendererOptions: React.FC<{
 
   return (
     <div>
-      <FormBuilder name={configName} />
+      <FormEditor name={configName} />
 
       <SchemaField name={`${configName}.recordId`} schema={recordIdSchema} />
     </div>

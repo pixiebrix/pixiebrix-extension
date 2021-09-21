@@ -15,14 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Schema, UiSchema } from "@/core";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type RJSFSchema = {
-  schema: Schema;
-  uiSchema: UiSchema;
+export interface FormBuilderState {
+  /**
+   * The currently active field in the Form Builder
+   */
+  activeField: string;
+}
+
+export const initialState: FormBuilderState = {
+  activeField: "",
 };
 
-export type SelectStringOption = {
-  label: string;
-  value: string;
-};
+export const formBuilderSlice = createSlice({
+  name: "formBuilder",
+  initialState,
+  reducers: {
+    setActiveField: (state, action: PayloadAction<string>) => {
+      state.activeField = action.payload;
+    },
+  },
+});
+
+export const { actions } = formBuilderSlice;

@@ -15,78 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useState } from "react";
+import React from "react";
 import FormEditor from "./FormEditor";
 import FormPreview from "./FormPreview";
-import { useField } from "formik";
-import { UI_ORDER } from "./schemaFieldNames";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { RJSFSchema } from "./formBuilderTypes";
-import { MINIMAL_SCHEMA, MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
-import { produce } from "immer";
 import styles from "./FormBuilder.module.scss";
 
 const FormBuilder: React.FC<{
   name: string;
-}> = ({ name }) => {
-  const [
-    { value: rjsfSchema },
-    ,
-    { setValue: setRjsfSchema },
-  ] = useField<RJSFSchema>(name);
-  const { schema, uiSchema } = rjsfSchema;
-
-  const [activeField, setActiveField] = useState(() => {
-    const firstInOrder =
-      // eslint-disable-next-line security/detect-object-injection -- is a constant
-      uiSchema?.[UI_ORDER]?.length > 1 ? uiSchema[UI_ORDER][0] : undefined;
-    if (firstInOrder) {
-      return firstInOrder;
-    }
-
-    const firstInProperties = Object.keys(schema?.properties || {})[0];
-    if (firstInProperties) {
-      return firstInProperties;
-    }
-
-    return "";
-  });
-
-  if (!schema || !uiSchema) {
-    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      if (!draft.schema) {
-        draft.schema = MINIMAL_SCHEMA;
-      }
-
-      if (!draft.uiSchema) {
-        draft.uiSchema = MINIMAL_UI_SCHEMA;
-      }
-    });
-    setRjsfSchema(nextRjsfSchema);
-
-    return null;
-  }
-
-  return (
-    <div className={styles.root}>
-      <div className={styles.column}>
-        <FormEditor
-          name={name}
-          activeField={activeField}
-          setActiveField={setActiveField}
-        />
-      </div>
-      <div className={styles.column}>
-        <ErrorBoundary>
-          <FormPreview
-            name={name}
-            activeField={activeField}
-            setActiveField={setActiveField}
-          />
-        </ErrorBoundary>
-      </div>
+}> = ({ name }) => (
+  <div className={styles.root}>
+    <div className={styles.column}>
+      <FormEditor name={name} />
     </div>
-  );
-};
+    <div className={styles.column}>
+      <ErrorBoundary>
+        <FormPreview name={name} />
+      </ErrorBoundary>
+    </div>
+  </div>
+);
 
 export default FormBuilder;
