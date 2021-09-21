@@ -21,8 +21,8 @@ import React from "react";
 import { validateRegistryId } from "@/types/helpers";
 import FormEditor from "@/components/formBuilder/FormEditor";
 import { useDispatch, useSelector } from "react-redux";
-import { actions as elementWizardActions } from "@/devTools/editor/slices/elementWizardSlice";
-import elementWizardSelectors from "@/devTools/editor/slices/elementWizardSelectors";
+import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
+import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -37,12 +37,10 @@ const FormRendererOptions: React.FC<{
 }> = ({ name, configKey }) => {
   const dispatch = useDispatch();
   const setActiveField = (activeField: string) => {
-    dispatch(elementWizardActions.setFormBuilderActiveField(activeField));
+    dispatch(elementWizardActions.setActiveField(activeField));
   };
 
-  const activeField = useSelector(
-    elementWizardSelectors.formBuilderActiveField
-  );
+  const activeField = useSelector(formBuilderSelectors.formBuilderActiveField);
 
   const configName = `${name}.${configKey}`;
 

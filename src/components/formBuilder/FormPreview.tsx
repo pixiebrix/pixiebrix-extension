@@ -51,6 +51,23 @@ const FormPreview: React.FC<{
 
   useEffect(() => {
     const { schema, uiSchema } = rjsfSchema;
+    const firstInOrder =
+      // eslint-disable-next-line security/detect-object-injection -- is a constant
+      uiSchema?.[UI_ORDER]?.length > 1 ? uiSchema[UI_ORDER][0] : undefined;
+    if (firstInOrder && firstInOrder !== "*") {
+      setActiveField(firstInOrder);
+      return;
+    }
+
+    const firstInProperties = Object.keys(schema?.properties || {})[0];
+    if (firstInProperties) {
+      setActiveField(firstInProperties);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- resetting activeField only on new name
+  }, [name]);
+
+  // Setting local schema
+  useEffect(() => {
     if (activeField) {
       const nextLocalRjsfSchema = produce(rjsfSchema, (draft) => {
         if (!draft.uiSchema[activeField]) {
@@ -63,19 +80,6 @@ const FormPreview: React.FC<{
       setLocalRjsfSchema(nextLocalRjsfSchema);
     } else {
       setLocalRjsfSchema(rjsfSchema);
-
-      const firstInOrder =
-        // eslint-disable-next-line security/detect-object-injection -- is a constant
-        uiSchema?.[UI_ORDER]?.length > 1 ? uiSchema[UI_ORDER][0] : undefined;
-      if (firstInOrder && firstInOrder !== "*") {
-        setActiveField(firstInOrder);
-        return;
-      }
-
-      const firstInProperties = Object.keys(schema?.properties || {})[0];
-      if (firstInProperties) {
-        setActiveField(firstInProperties);
-      }
     }
   }, [activeField, rjsfSchema]);
 

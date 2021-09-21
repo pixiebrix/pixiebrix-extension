@@ -32,9 +32,9 @@ import { persistServicesConfig } from "@/store/services";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { appApi } from "@/services/api";
 import {
-  elementWizardSlice,
-  ElementWizardState,
-} from "@/devTools/editor/slices/elementWizardSlice";
+  formBuilderSlice,
+  FormBuilderState,
+} from "@/devTools/editor/slices/formBuilderSlice";
 
 const REDUX_DEV_TOOLS: boolean = boolean(process.env.REDUX_DEV_TOOLS);
 
@@ -46,7 +46,7 @@ const persistSettingsConfig = {
 export interface RootState {
   options: OptionsState;
   editor: EditorState;
-  elementWizard: ElementWizardState;
+  formBuilder: FormBuilderState;
   settings: SettingsState;
 }
 
@@ -63,7 +63,7 @@ const store = configureStore({
     services: persistReducer(persistServicesConfig, servicesSlice.reducer),
     settings: persistReducer(persistSettingsConfig, settingsSlice.reducer),
     editor: editorSlice.reducer,
-    elementWizard: elementWizardSlice.reducer,
+    formBuilder: formBuilderSlice.reducer,
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware: (getDefaultMiddleware) => [

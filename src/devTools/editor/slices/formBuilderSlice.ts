@@ -17,34 +17,25 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export interface ElementWizardState {
-  /**
-   * The currently active step in the Element Wizard
-   */
-  step: string;
+export interface FormBuilderState {
   /**
    * The currently active field in the Form Builder
    */
-  formBuilderActiveField: string;
+  activeField: string;
 }
 
-export const initialState: ElementWizardState = {
-  step: null,
-  formBuilderActiveField: null,
+export const initialState: FormBuilderState = {
+  activeField: null,
 };
 
-export const elementWizardSlice = createSlice({
-  name: "elementWizard",
+export const formBuilderSlice = createSlice({
+  name: "formBuilder",
   initialState,
   reducers: {
-    setStep: (state, action: PayloadAction<string>) => {
-      state.step = action.payload;
-      state.formBuilderActiveField = null;
-    },
-    setFormBuilderActiveField: (state, action: PayloadAction<string>) => {
-      state.formBuilderActiveField = action.payload;
+    setActiveField: (state, action: PayloadAction<string>) => {
+      state.activeField = action.payload;
     },
   },
 });
 
-export const { actions } = elementWizardSlice;
+export const { actions } = formBuilderSlice;

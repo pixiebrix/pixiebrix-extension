@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useContext, useEffect, useMemo } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
 import { groupBy, isEmpty } from "lodash";
@@ -33,9 +39,6 @@ import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import styles from "./ElementWizard.module.scss";
 import cx from "classnames";
-import { actions as elementWizardActions } from "@/devTools/editor/slices/elementWizardSlice";
-import elementWizardSelectors from "@/devTools/editor/slices/elementWizardSelectors";
-import { useDispatch, useSelector } from "react-redux";
 
 const LOG_STEP_NAME = "Logs";
 
@@ -89,17 +92,11 @@ const ElementWizard: React.FunctionComponent<{
     element.type,
   ]);
 
-  const dispatch = useDispatch();
-  const setStep = (step: string) => {
-    dispatch(elementWizardActions.setStep(step));
-  };
-
-  const step = useSelector(elementWizardSelectors.step);
+  const [step, setStep] = useState(wizard[0].step);
 
   useEffect(() => {
     setStep(wizard[0].step);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- setStep dispatches an action, the `dispatch` reference is guaranteed to be stable
-  }, [wizard]);
+  }, [wizard, setStep]);
 
   const { refresh: refreshLogs } = useContext(LogContext);
 
@@ -122,13 +119,16 @@ const ElementWizard: React.FunctionComponent<{
     console.warn("Form errors", { errors });
   }
 
-  const selectTabHandler = (step: string) => {
-    setStep(step);
-    if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
-      // If user is clicking over to the logs tab, they most likely want to see the most recent logs
-      void refreshLogs();
-    }
-  };
+  const selectTabHandler = useCallback(
+    (step: string) => {
+      setStep(step);
+      if (step.toLowerCase() === LOGS_EVENT_KEY.toLowerCase()) {
+        // If user is clicking over to the logs tab, they most likely want to see the most recent logs
+        void refreshLogs();
+      }
+    },
+    [setStep, refreshLogs]
+  );
 
   return (
     <Tab.Container activeKey={step} key={element.uuid}>

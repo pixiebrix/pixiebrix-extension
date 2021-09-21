@@ -41,9 +41,9 @@ import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockIcon from "@/components/BlockIcon";
 import { useDispatch, useSelector } from "react-redux";
-import { actions as elementWizardActions } from "@/devTools/editor/slices/elementWizardSlice";
+import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
 import FormPreview from "@/components/formBuilder/FormPreview";
-import elementWizardSelectors from "@/devTools/editor/slices/elementWizardSelectors";
+import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -87,11 +87,11 @@ const EditTab: React.FC<{
   } = ADAPTERS.get(elementType);
   const dispatch = useDispatch();
   const setFormBuilderActiveField = (activeField: string) => {
-    dispatch(elementWizardActions.setFormBuilderActiveField(activeField));
+    dispatch(elementWizardActions.setActiveField(activeField));
   };
 
   const formBuilderActiveField = useSelector(
-    elementWizardSelectors.formBuilderActiveField
+    formBuilderSelectors.formBuilderActiveField
   );
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
@@ -134,8 +134,6 @@ const EditTab: React.FC<{
     // Wrapper only accepting a number (i.e., does not accept a state update method)
     useCallback((index: number) => {
       setActiveNodeIndex(index);
-      setFormBuilderActiveField(null);
-      // eslint-disable-next-line react-hooks/exhaustive-deps -- Referencing stable functions only
     }, []);
 
   const removeBlock = (pipelineIndex: number) => {
