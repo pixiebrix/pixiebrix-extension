@@ -42,8 +42,12 @@ const ArrayEntry: React.FunctionComponent<{
           style={{ cursor: "pointer" }}
         >
           <FontAwesomeIcon icon={collapsed ? faCaretRight : faCaretDown} />{" "}
-          <span>{prop}</span>
-          <span className="type">: array of objects</span>
+          <span>
+            <code>{prop}</code>
+          </span>
+          <span className="type badge badge-pill badge-secondary ml-1">
+            array of objects
+          </span>
         </div>
         {!collapsed && (
           // @ts-expect-error we filtered over the boolean case
@@ -55,8 +59,12 @@ const ArrayEntry: React.FunctionComponent<{
 
   return (
     <ListGroup.Item>
-      <span>{prop}</span>
-      <span className="type">: array of {itemType ?? "unknown"}</span>
+      <span>
+        <code>{prop}</code>
+      </span>
+      <span className="type badge badge-pill badge-secondary ml-1">
+        array of {itemType ?? "unknown"}
+      </span>
     </ListGroup.Item>
   );
 };

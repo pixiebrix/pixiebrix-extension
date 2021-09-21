@@ -17,18 +17,29 @@
 
 import React from "react";
 import { Schema } from "@/core";
-import { ListGroup } from "react-bootstrap";
+import { Col, ListGroup } from "react-bootstrap";
 
 const PrimitiveEntry: React.FunctionComponent<{
   prop: string;
   definition: Schema;
 }> = ({ prop, definition }) => {
-  const { type = "unknown", format } = definition;
+  const { type = "unknown", format, description } = definition;
   // FIXME: template can be an array https://github.com/pixiebrix/pixiebrix-extension/issues/990
   return (
     <ListGroup.Item key={prop}>
-      <span>{prop}</span>
-      <span className="type">: {format ? `${format} ${type}` : type}</span>
+      <div className="d-flex">
+        <div className="text-nowrap">
+          <span>
+            <code>{prop}</code>
+          </span>
+          <span className="type badge badge-pill badge-secondary ml-1">
+            {format ? `${format} ${type}` : type}
+          </span>
+        </div>
+        <div>
+          <p className="m-0 pl-3">{description}</p>
+        </div>
+      </div>
     </ListGroup.Item>
   );
 };

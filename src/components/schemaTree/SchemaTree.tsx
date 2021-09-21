@@ -40,6 +40,9 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     );
   }
 
+  console.log("SchemaTree");
+  console.log(schema);
+
   return (
     <ListGroup variant="flush" className="SchemaTree">
       {isEmpty(schema.properties) && (
