@@ -68,7 +68,7 @@ const EditorNodeConfigPanel: React.FC<{
 
   return (
     <>
-      <Row>
+      <Row className={styles.topRow}>
         <Col xl>
           <ConnectedFieldTemplate
             name={`${blockFieldName}.label`}

@@ -87,7 +87,11 @@ const RenderedField: React.FC<FieldProps> = ({
       )}
     </BootstrapForm.Group>
   ) : (
-    <BootstrapForm.Group as={Row} controlId={name}>
+    <BootstrapForm.Group
+      as={Row}
+      controlId={name}
+      className={styles.horizontalFormGroup}
+    >
       {label && (
         <BootstrapForm.Label column lg="3">
           {label}
