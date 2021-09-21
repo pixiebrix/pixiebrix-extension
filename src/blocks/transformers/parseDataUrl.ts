@@ -40,7 +40,7 @@ export class ParseDataUrl extends Transformer {
         type: "string",
         format: "data-url",
         description:
-          "The data: URI, https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs",
+          "https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs",
       },
     },
     ["url"]
