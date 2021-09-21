@@ -20,17 +20,13 @@ import {
   Col,
   Form as BootstrapForm,
   FormControlProps,
-  OverlayTrigger,
   Row,
-  Tooltip,
 } from "react-bootstrap";
 import { Except } from "type-fest";
 import SwitchButton from "@/components/form/switchButton/SwitchButton";
 import styles from "./FieldTemplate.module.scss";
 import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 export type FieldProps<
   As extends React.ElementType = React.ElementType
@@ -40,7 +36,6 @@ export type FieldProps<
     layout?: "horizontal" | "vertical" | "switch" | undefined;
     label?: string | ReactNode | undefined;
     description?: ReactNode | undefined;
-    isPopoverDescription?: boolean | undefined;
     error?: string | undefined;
     touched?: boolean | undefined;
   };
@@ -54,9 +49,8 @@ type FieldRenderProps = Except<FieldProps, "layout">;
 const RenderedField: React.FC<FieldProps> = ({
   name,
   layout,
-  label = "",
+  label,
   description,
-  isPopoverDescription = false,
   error,
   touched,
   value,
@@ -66,37 +60,11 @@ const RenderedField: React.FC<FieldProps> = ({
   const isInvalid = touched && Boolean(error);
   const nonUndefinedValue = typeof value === "undefined" ? "" : value;
 
-  const renderTooltip = (props: unknown) => (
-    <Tooltip id={`${name}-tooltip`} {...props}>
-      {description}
-    </Tooltip>
-  );
-
-  const showLabel =
-    Boolean(label) || (Boolean(description) && isPopoverDescription);
-
-  const renderedLabel =
-    description && isPopoverDescription ? (
-      <OverlayTrigger
-        placement="bottom"
-        delay={{ show: 250, hide: 400 }}
-        overlay={renderTooltip}
-      >
-        {({ ref, ...rest }) => (
-          <span {...rest}>
-            {label} <FontAwesomeIcon forwardedRef={ref} icon={faInfoCircle} />
-          </span>
-        )}
-      </OverlayTrigger>
-    ) : (
-      label ?? ""
-    );
-
   return layout === "vertical" ? (
     <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
-      {showLabel && (
+      {label && (
         <BootstrapForm.Label className={styles.verticalFormLabel}>
-          {renderedLabel}
+          {label}
         </BootstrapForm.Label>
       )}
       <BootstrapForm.Control
@@ -107,7 +75,7 @@ const RenderedField: React.FC<FieldProps> = ({
       >
         {children}
       </BootstrapForm.Control>
-      {description && !isPopoverDescription && (
+      {description && (
         <BootstrapForm.Text className="text-muted">
           {description}
         </BootstrapForm.Text>
@@ -120,9 +88,9 @@ const RenderedField: React.FC<FieldProps> = ({
     </BootstrapForm.Group>
   ) : (
     <BootstrapForm.Group as={Row} controlId={name}>
-      {showLabel && (
+      {label && (
         <BootstrapForm.Label column sm="3">
-          {renderedLabel}
+          {label}
         </BootstrapForm.Label>
       )}
       <Col sm={label ? "9" : "12"}>
@@ -134,7 +102,7 @@ const RenderedField: React.FC<FieldProps> = ({
         >
           {children}
         </BootstrapForm.Control>
-        {description && !isPopoverDescription && (
+        {description && (
           <BootstrapForm.Text className="text-muted">
             {description}
           </BootstrapForm.Text>

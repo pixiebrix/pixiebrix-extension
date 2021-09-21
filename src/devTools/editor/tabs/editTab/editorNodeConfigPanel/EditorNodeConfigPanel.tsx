@@ -28,6 +28,7 @@ import { showOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EditorNodeConfigPanel.module.scss";
+import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 
 const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
   <InputGroup>
@@ -36,6 +37,16 @@ const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
     </InputGroup.Prepend>
     <Form.Control {...props} />
   </InputGroup>
+);
+
+const PopoverOutputLabel: React.FC<{
+  description: string;
+}> = ({ description }) => (
+  <PopoverInfoLabel
+    name="output-label"
+    label="Output"
+    description={description}
+  />
 );
 
 const EditorNodeConfigPanel: React.FC<{
@@ -72,19 +83,21 @@ const EditorNodeConfigPanel: React.FC<{
             <ConnectedFieldTemplate
               name={`${blockFieldName}.outputKey`}
               layout="horizontal"
-              label="Output"
+              label={
+                <PopoverOutputLabel description="Provide an output key to refer to the outputs of this block later." />
+              }
               as={OutputKeyWidget}
-              description="Provide an output key to refer to the outputs of this block later."
               isPopoverDescription
             />
           ) : (
             <ConnectedFieldTemplate
               name={`${blockFieldName}.outputKey`}
               layout="horizontal"
-              label="Output"
+              label={
+                <PopoverOutputLabel description="Effect and renderer bricks do not produce outputs" />
+              }
               disabled
               as={OutputKeyWidget}
-              description="Effect and renderer bricks do not produce outputs"
               isPopoverDescription
             />
           )}
