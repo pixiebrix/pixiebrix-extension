@@ -49,6 +49,7 @@ import {
   NotConfiguredError,
 } from "@/services/errors";
 import { extensionValidatorFactory } from "./validation";
+import { resolveDefinitions } from "@/registry/internal";
 
 const SCHEMA_URLS: Record<string, Record<string, unknown>> = {
   "http://json-schema.org/draft-07/schema": draft07,
@@ -172,8 +173,10 @@ async function validateExtension(
 ): Promise<ExtensionValidationResult> {
   console.debug(`Validating ${extension.id}`);
 
+  const resolved = await resolveDefinitions(extension);
+
   const extensionPoint = await extensionPointRegistry.lookup(
-    extension.extensionPointId
+    resolved.extensionPointId
   );
 
   const extensionValidator = extensionValidatorFactory(

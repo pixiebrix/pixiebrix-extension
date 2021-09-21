@@ -53,6 +53,11 @@ export type UUID = string & {
   _uuidBrand: never;
 };
 
+export type InnerDefinitionRef = string & {
+  // Nominal subtyping
+  _innerDefinitionRefBrand: never;
+};
+
 /**
  * A brick registry id conforming to `@scope/collection/name`
  */
@@ -230,9 +235,9 @@ export type IExtension<T extends Config = EmptyConfig> = {
   id: UUID;
 
   /**
-   * Registry id of the extension point.
+   * Registry id of the extension point, or a reference to the definitions section.
    */
-  extensionPointId: RegistryId;
+  extensionPointId: RegistryId | InnerDefinitionRef;
 
   /**
    * Metadata about the deployment used to install the extension, or `undefined` if the extension was not installed
@@ -331,6 +336,12 @@ export type ResolvedExtension<T extends Config = EmptyConfig> = Except<
   IExtension<T>,
   "definitions"
 > & {
+  /**
+   * The registry id of the extension point (will be an `@internal` scope, if the extension point was originally defined
+   * internally.
+   */
+  extensionPointId: RegistryId;
+
   _resolvedExtensionBrand: never;
 };
 
@@ -360,13 +371,13 @@ export interface IExtensionPoint extends Metadata {
   /**
    * Register an extension with the extension point. Does not actually install/run the extension.
    */
-  addExtension(extension: IExtension): void;
+  addExtension(extension: ResolvedExtension): void;
 
   /**
    * Sync registered extensions, removing any extensions that aren't provided here. Does not actually install/run
    * the extensions.
    */
-  syncExtensions(extensions: IExtension[]): void;
+  syncExtensions(extensions: ResolvedExtension[]): void;
 
   /**
    * Run the installed extensions for extension point.
@@ -376,7 +387,7 @@ export interface IExtensionPoint extends Metadata {
   /**
    * Returns any blocks configured in extension.
    */
-  getBlocks: (extension: IExtension) => Promise<IBlock[]>;
+  getBlocks: (extension: ResolvedExtension) => Promise<IBlock[]>;
 }
 
 export interface IBlock extends Metadata {

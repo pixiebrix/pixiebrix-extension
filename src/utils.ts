@@ -448,6 +448,17 @@ export function makeURL(
   );
 }
 
+export async function allSettledValues<T = unknown>(
+  promises: Array<Promise<T>>
+): Promise<T[]> {
+  return (await Promise.allSettled(promises))
+    .filter(
+      (promise): promise is PromiseFulfilledResult<T> =>
+        promise.status === "fulfilled"
+    )
+    .map(({ value }) => value);
+}
+
 export async function allSettledRejections(
   promises: Array<Promise<unknown>>
 ): Promise<unknown[]> {

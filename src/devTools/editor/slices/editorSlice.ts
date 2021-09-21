@@ -52,7 +52,7 @@ export interface EditorState {
   /**
    * The uuid of the active element, or null if no elements are active
    */
-  activeElement: string | null;
+  activeElement: UUID | null;
 
   error: string | null;
 
@@ -66,7 +66,7 @@ export interface EditorState {
   /**
    * Brick ids (not UUIDs) that are known to be editable by the current user
    */
-  knownEditable: string[];
+  knownEditable: RegistryId[];
 
   /**
    * True if error is because user does not have access to beta features

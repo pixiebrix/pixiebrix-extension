@@ -19,6 +19,7 @@ import {
   Config,
   EmptyConfig,
   IExtension,
+  InnerDefinitionRef,
   Metadata,
   RegistryId,
   SafeString,
@@ -29,6 +30,7 @@ import { castArray, cloneDeep, isPlainObject, omit } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
 import {
+  assertExtensionPointConfig,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
@@ -56,9 +58,13 @@ export interface WizardStep {
   extraProps?: Record<string, unknown>;
 }
 
+const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
+
 const INNER_SCOPE = "@internal";
 
-export function isInnerExtensionPoint(id: RegistryId): boolean {
+export function isInnerExtensionPoint(
+  id: RegistryId | InnerDefinitionRef
+): boolean {
   return id.startsWith(INNER_SCOPE + "/");
 }
 
@@ -134,17 +140,20 @@ export function makeExtensionReaders({
 export async function makeReaderFormState(
   extensionPoint: ExtensionPointConfig
 ): Promise<Array<ReaderFormState | ReaderReferenceFormState>> {
-  const readerId = extensionPoint.definition.reader;
+  assertExtensionPointConfig(extensionPoint);
+
+  const readerConfig = extensionPoint.definition.reader ?? [];
 
   let readerIds: RegistryId[];
 
-  if (isPlainObject(readerId)) {
+  if (isPlainObject(readerConfig)) {
     throw new Error("Key-based composite readers not supported");
-  } else if (typeof readerId === "string") {
-    readerIds = [readerId];
-  } else if (Array.isArray(readerId)) {
-    readerIds = readerId as RegistryId[];
+  } else if (typeof readerConfig === "string") {
+    readerIds = [readerConfig];
+  } else if (Array.isArray(readerConfig)) {
+    readerIds = readerConfig as RegistryId[];
   } else {
+    console.error("Unexpected reader configuration", { extensionPoint });
     throw new TypeError("Unexpected reader configuration");
   }
 
@@ -189,6 +198,8 @@ type SimpleAvailability = {
 export function selectIsAvailable(
   extensionPoint: ExtensionPointConfig
 ): SimpleAvailability {
+  assertExtensionPointConfig(extensionPoint);
+
   const { isAvailable } = extensionPoint.definition;
   const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
   const selectors = castArray(isAvailable.selectors ?? []);
@@ -243,16 +254,19 @@ export async function lookupExtensionPoint<
     const definition = config.definitions[config.extensionPointId];
     console.debug(
       "Converting extension definition to temporary extension point",
-      { definition }
+      definition
     );
-    return ({
+    const innerExtensionPoint = ({
       apiVersion: "v1",
       kind: "extensionPoint",
       metadata: internalExtensionPointMetaFactory(),
-      definition,
+      ...definition,
     } as unknown) as ExtensionPointConfig<TDefinition> & {
       definition: { type: TType };
     };
+
+    assertExtensionPointConfig(innerExtensionPoint);
+    return innerExtensionPoint;
   }
 
   const brick = await findBrick(config.extensionPointId);
@@ -293,8 +307,6 @@ export function baseSelectExtensionPoint(
   };
 }
 
-const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
-
 export function extensionWithInnerDefinitions(
   extension: IExtension,
   extensionPointDefinition: ExtensionPointDefinition
@@ -305,9 +317,9 @@ export function extensionWithInnerDefinitions(
       [...Object.keys(extension.definitions ?? {})]
     );
 
-    const inner = cloneDeep(extension);
-    inner.definitions = {
-      ...inner.definitions,
+    const result = cloneDeep(extension);
+    result.definitions = {
+      ...result.definitions,
       [extensionPointId]: {
         kind: "extensionPoint",
         definition: extensionPointDefinition,
@@ -315,9 +327,9 @@ export function extensionWithInnerDefinitions(
     };
 
     // XXX: we need to fix the type of IExtension.extensionPointId to support variable names
-    inner.extensionPointId = extensionPointId as RegistryId;
+    result.extensionPointId = extensionPointId as RegistryId;
 
-    return inner;
+    return result;
   }
 
   return extension;

@@ -24,10 +24,10 @@ import {
 import { ExtensionPoint, Reader } from "@/types";
 import {
   IBlock,
-  IExtension,
   IExtensionPoint,
   IReader,
   ReaderOutput,
+  ResolvedExtension,
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
@@ -201,7 +201,9 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     ["title", "action"]
   );
 
-  async getBlocks(extension: IExtension<ContextMenuConfig>): Promise<IBlock[]> {
+  async getBlocks(
+    extension: ResolvedExtension<ContextMenuConfig>
+  ): Promise<IBlock[]> {
     return blockList(extension.config.action);
   }
 
@@ -239,7 +241,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   async ensureMenu(
-    extension: Pick<IExtension<ContextMenuConfig>, "id" | "config">
+    extension: Pick<ResolvedExtension<ContextMenuConfig>, "id" | "config">
   ): Promise<void> {
     const { title } = extension.config;
 
@@ -278,7 +280,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
   }
 
   private async registerExtension(
-    extension: IExtension<ContextMenuConfig>
+    extension: ResolvedExtension<ContextMenuConfig>
   ): Promise<void> {
     const { action: actionConfig } = extension.config;
 

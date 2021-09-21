@@ -17,6 +17,7 @@
 
 import {
   Config,
+  InnerDefinitionRef,
   InnerDefinitions,
   Metadata,
   OutputKey,
@@ -32,7 +33,7 @@ export type ExtensionPointConfig = {
   /**
    * The id of the ExtensionPoint.
    */
-  id: RegistryId;
+  id: RegistryId | InnerDefinitionRef;
 
   /**
    * Human-readable name for the extension to display in the UI.
@@ -59,6 +60,8 @@ export type ExtensionPointConfig = {
 };
 
 export type ResolvedExtensionPointConfig = ExtensionPointConfig & {
+  id: RegistryId;
+
   _resolvedExtensionPointConfigBrand: never;
 };
 

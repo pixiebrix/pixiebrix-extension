@@ -19,7 +19,7 @@ import { castArray, noop, once } from "lodash";
 // @ts-expect-error no type definitions
 import initialize from "@/vendors/initialize";
 import { sleep, waitAnimationFrame } from "@/utils";
-import { IExtension, MessageContext } from "@/core";
+import { MessageContext, ResolvedExtension } from "@/core";
 
 export const EXTENSION_POINT_DATA_ATTR = "data-pb-extension-point";
 
@@ -285,7 +285,9 @@ export function acquireElement(
   return onNodeRemoved(element, onRemove);
 }
 
-export function selectExtensionContext(extension: IExtension): MessageContext {
+export function selectExtensionContext(
+  extension: ResolvedExtension
+): MessageContext {
   return {
     label: extension.label,
     extensionId: extension.id,

@@ -69,7 +69,7 @@ const InstalledExtensionRow: React.FunctionComponent<{
   onRemove: RemoveAction;
   onExportBlueprint: ExportBlueprintAction;
 }> = ({ extension, onRemove, onExportBlueprint }) => {
-  const { id, label, extensionPointId, _recipe } = extension;
+  const { id: extensionId, label, _recipe } = extension;
   const notify = useNotifications();
   const { scope } = useContext(AuthContext);
 
@@ -120,8 +120,8 @@ const InstalledExtensionRow: React.FunctionComponent<{
   };
 
   const onUninstall = () => {
-    onRemove({ extensionId: id, extensionPointId });
-    notify.success(`Removed brick ${label ?? id}`, {
+    onRemove({ extensionId });
+    notify.success(`Removed brick ${label ?? extensionId}`, {
       event: "ExtensionRemove",
     });
   };
@@ -129,7 +129,7 @@ const InstalledExtensionRow: React.FunctionComponent<{
   return (
     <tr>
       <td>&nbsp;</td>
-      <td>{label ?? id}</td>
+      <td>{label ?? extensionId}</td>
       <td className="text-wrap">{statusElt}</td>
       <td>
         <EllipsisMenu
@@ -142,7 +142,7 @@ const InstalledExtensionRow: React.FunctionComponent<{
               ),
               hide: _recipe != null || scope == null,
               action: () => {
-                dispatch(push(`/installed/share/${id}`));
+                dispatch(push(`/installed/share/${extensionId}`));
               },
             },
             {
@@ -152,7 +152,7 @@ const InstalledExtensionRow: React.FunctionComponent<{
                 </>
               ),
               action: () => {
-                onExportBlueprint(id);
+                onExportBlueprint(extensionId);
               },
             },
             {

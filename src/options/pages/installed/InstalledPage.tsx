@@ -22,7 +22,7 @@ import Page from "@/layout/Page";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
 import { Link, Redirect, Route } from "react-router-dom";
 import { Col, Row } from "react-bootstrap";
-import { ExtensionRef, IExtension, UUID } from "@/core";
+import { IExtension, UUID } from "@/core";
 import "./InstalledPage.scss";
 import { uninstallContextMenu } from "@/background/messenger/api";
 import { reportError } from "@/telemetry/logging";
@@ -199,14 +199,14 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
   push: (path: string) => {
     dispatch(push(path));
   },
-  onRemove: (ref: ExtensionRef) => {
+  onRemove: ({ extensionId }: { extensionId: UUID }) => {
     reportEvent("ExtensionRemove", {
-      extensionId: ref.extensionId,
+      extensionId,
     });
     // Remove from storage first so it doesn't get re-added in reactivate step below
-    dispatch(removeExtension(ref));
+    dispatch(removeExtension({ extensionId }));
     // XXX: also remove remove side panel panels that are already open?
-    void uninstallContextMenu(ref).catch(reportError);
+    void uninstallContextMenu({ extensionId }).catch(reportError);
     void reactivate().catch((error: unknown) => {
       console.warn("Error re-activating content scripts", { error });
     });

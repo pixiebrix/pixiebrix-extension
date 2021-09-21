@@ -40,7 +40,7 @@ import {
 } from "@/extensionPoints/types";
 import {
   IBlock,
-  IExtension,
+  ResolvedExtension,
   IExtensionPoint,
   ReaderOutput,
   Schema,
@@ -330,7 +330,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
   }
 
   async getBlocks(
-    extension: IExtension<MenuItemExtensionConfig>
+    extension: ResolvedExtension<MenuItemExtensionConfig>
   ): Promise<IBlock[]> {
     return blockList(extension.config.action);
   }
@@ -425,13 +425,13 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
 
   protected abstract makeItem(
     html: string,
-    extension: IExtension<MenuItemExtensionConfig>
+    extension: ResolvedExtension<MenuItemExtensionConfig>
   ): JQuery;
 
   private async runExtension(
     menu: HTMLElement,
     ctxtPromise: Promise<ReaderOutput>,
-    extension: IExtension<MenuItemExtensionConfig>
+    extension: ResolvedExtension<MenuItemExtensionConfig>
   ) {
     if (!extension.id) {
       this.logger.error(`Refusing to run extension without id for ${this.id}`);
@@ -570,7 +570,9 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
     }
   }
 
-  watchDependencies(extension: IExtension<MenuItemExtensionConfig>): void {
+  watchDependencies(
+    extension: ResolvedExtension<MenuItemExtensionConfig>
+  ): void {
     const { dependencies = [] } = extension.config;
 
     // Clean up old observers
@@ -854,7 +856,7 @@ class RemoteMenuItemExtensionPoint extends MenuItemExtensionPoint {
 
   protected makeItem(
     html: string,
-    extension: IExtension<MenuItemExtensionConfig>
+    extension: ResolvedExtension<MenuItemExtensionConfig>
   ): JQuery {
     let $root: JQuery;
 
