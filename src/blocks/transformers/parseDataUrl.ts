@@ -16,7 +16,6 @@
  */
 
 import { Transformer } from "@/types";
-import { registerBlock } from "@/blocks/registry";
 import { BlockArg, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
 import { PropError } from "@/errors";
@@ -40,6 +39,8 @@ export class ParseDataUrl extends Transformer {
       url: {
         type: "string",
         format: "data-url",
+        description:
+          "The data: URI, https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URIs",
       },
     },
     ["url"]
@@ -49,6 +50,10 @@ export class ParseDataUrl extends Transformer {
     mimeType: {
       type: "string",
       description: "The MIME media type",
+    },
+    encoding: {
+      type: "string",
+      description: "The encoding used to decode the body",
     },
     body: {
       type: "string",
@@ -76,14 +81,12 @@ export class ParseDataUrl extends Transformer {
     const encodingName = labelToName(
       dataURL.mimeType.parameters.get("charset") || "utf-8"
     );
-    const bodyDecoded = decode(dataURL.body, encodingName);
 
     return {
       // eslint-disable-next-line @typescript-eslint/no-base-to-string -- see documentation for data-urls
       mimeType: dataURL.mimeType.toString(),
-      body: bodyDecoded,
+      encoding: encodingName,
+      body: decode(dataURL.body, encodingName),
     };
   }
 }
-
-registerBlock(new ParseDataUrl());

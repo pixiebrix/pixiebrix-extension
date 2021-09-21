@@ -18,7 +18,6 @@
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
-import { registerBlock } from "@/blocks/registry";
 import { BusinessError } from "@/errors";
 
 export class ParseCsv extends Transformer {
@@ -82,5 +81,3 @@ export class ParseCsv extends Transformer {
     };
   }
 }
-
-registerBlock(new ParseCsv());

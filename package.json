@@ -3,6 +3,7 @@
   "version": "1.3.2-alpha.2",
   "description": "PixieBrix Browser Extension",
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "test": "jest",
     "test:watch": "jest --watchAll",
     "test:selenium": "jest --config selenium/jest.config.js",
@@ -220,6 +221,7 @@
     "mini-css-extract-plugin": "~2.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "node-sass": "^6.0.1",
+    "npm-force-resolutions": "^0.0.10",
     "random-words": "^1.1.1",
     "raw-loader": "^4.0.1",
     "rollbar-sourcemap-webpack-plugin": "^3.3.0",
@@ -241,6 +243,9 @@
     "yaml-jest-transform": "^1.0.0",
     "yaml-loader": "^0.6.0",
     "zip-dir": "^2.0.0"
+  },
+  "resolutions": {
+    "webidl-conversions": "7.0.0"
   },
   "jest": {
     "silent": true,
