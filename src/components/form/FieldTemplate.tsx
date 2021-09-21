@@ -78,9 +78,7 @@ const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
           </BootstrapForm.Text>
         )}
         {isInvalid && (
-          <BootstrapForm.Control.Feedback type="invalid">
-            {getErrorMessage(error)}
-          </BootstrapForm.Control.Feedback>
+          <div className={styles.invalidMessage}>{getErrorMessage(error)}</div>
         )}
       </Col>
     </BootstrapForm.Group>
