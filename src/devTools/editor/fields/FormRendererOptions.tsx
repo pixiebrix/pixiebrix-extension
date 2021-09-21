@@ -16,10 +16,13 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import FormBuilder from "@/components/formBuilder/FormBuilder";
 import { Schema } from "@/core";
 import React from "react";
 import { validateRegistryId } from "@/types/helpers";
+import FormEditor from "@/components/formBuilder/FormEditor";
+import { useDispatch, useSelector } from "react-redux";
+import { actions as elementWizardActions } from "@/devTools/editor/slices/elementWizardSlice";
+import elementWizardSelectors from "@/devTools/editor/slices/elementWizardSelectors";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -32,11 +35,22 @@ const FormRendererOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
+  const dispatch = useDispatch();
+  const setActiveField = (activeField: string) => {
+    dispatch(elementWizardActions.setFormBuilderActiveField(activeField));
+  };
+
+  const activeField = useSelector(elementWizardSelectors.activeField);
+
   const configName = `${name}.${configKey}`;
 
   return (
     <div>
-      <FormBuilder name={configName} />
+      <FormEditor
+        name={configName}
+        activeField={activeField}
+        setActiveField={setActiveField}
+      />
 
       <SchemaField name={`${configName}.recordId`} schema={recordIdSchema} />
     </div>

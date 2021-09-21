@@ -142,9 +142,12 @@ const FormEditor: React.FC<{
   };
 
   // There's always at least 1 item in uiOrder array, "*".
-  const canMoveUp = uiOrder?.length > 2 && uiOrder[0] !== activeField;
+  const canMoveUp =
+    Boolean(activeField) && uiOrder?.length > 2 && uiOrder[0] !== activeField;
   const canMoveDown =
-    uiOrder?.length > 2 && uiOrder[uiOrder.length - 2] !== activeField;
+    Boolean(activeField) &&
+    uiOrder?.length > 2 &&
+    uiOrder[uiOrder.length - 2] !== activeField;
 
   return (
     <div>
@@ -192,7 +195,12 @@ const FormEditor: React.FC<{
       >
         <FontAwesomeIcon icon={faArrowDown} />
       </Button>
-      <Button onClick={removeProperty} variant="danger" size="sm">
+      <Button
+        onClick={removeProperty}
+        disabled={!activeField}
+        variant="danger"
+        size="sm"
+      >
         <FontAwesomeIcon icon={faTimes} />
       </Button>
     </div>

@@ -40,6 +40,8 @@ import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceV
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockIcon from "@/components/BlockIcon";
+import { useDispatch } from "react-redux";
+import { actions as elementWizardActions } from "@/devTools/editor/slices/elementWizardSlice";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -81,6 +83,7 @@ const EditTab: React.FC<{
     icon,
     EditorNode: FoundationNode = NotImplementedFoundationEditor,
   } = ADAPTERS.get(elementType);
+  const dispatch = useDispatch();
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 
@@ -122,8 +125,9 @@ const EditTab: React.FC<{
     // Wrapper only accepting a number (i.e., does not accept a state update method)
     (index: number) => {
       setActiveNodeIndex(index);
+      dispatch(elementWizardActions.setFormBuilderActiveField(null));
     },
-    [setActiveNodeIndex]
+    [dispatch]
   );
 
   const removeBlock = (pipelineIndex: number) => {
