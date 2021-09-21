@@ -40,31 +40,35 @@ import { useGetMarketplaceListingsQuery } from "@/services/api";
 import BlockIcon from "@/components/BlockIcon";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
+import { FixedSizeList as LazyList } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
+import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";
+import cx from "classnames";
 
 const BlockResult: React.FunctionComponent<{
   block: IBlock;
   onSelect: () => void;
 }> = ({ block, onSelect }) => (
-  <ListGroup.Item onClick={onSelect}>
+  <ListGroup.Item onClick={onSelect} className={cx(styles.root)}>
     <div className="d-flex">
       <div className="mr-2 text-muted">
         <BlockIcon block={block} />
       </div>
-      <div className="flex-grow-1">
-        <div className="d-flex BlockModal__title">
-          <div className="flex-grow-1">{block.name}</div>
-          <div className="flex-grow-0 BlockModal__badges">
-            <OfficialBadge id={block.id} />
-          </div>
-        </div>
-        <div className="BlockModal__id">
-          <code className="small">{block.id}</code>
-        </div>
-        <div>
-          <p className="mb-0 small">
-            {truncate(block.description, { length: 256 })}
-          </p>
-        </div>
+      <div className={cx("flex-grow-1", styles.titleColumn)}>
+        <div className={styles.ellipsis}>{block.name}</div>
+        <code className={cx("small", styles.id)}>{block.id}</code>
+        <p className={cx("small mb-0", styles.ellipsis)}>
+          {/* FIXME: applying both truncate and the CSS ellipses style is redundant */}
+          {/* Use a span if no description to ensure a consistent height for react-window */}
+          {block.description ? (
+            truncate(block.description, { length: 256 })
+          ) : (
+            <span>&nbsp;</span>
+          )}
+        </p>
+      </div>
+      <div className="flex-grow-0">
+        <OfficialBadge id={block.id} />
       </div>
     </div>
   </ListGroup.Item>
@@ -203,17 +207,34 @@ const BlockModal: React.FunctionComponent<{
                   <Row>
                     <Col>
                       <div className="BlockModal__results">
-                        <ListGroup>
-                          {searchResults.map(({ block }) => (
-                            <BlockResult
-                              key={block.id}
-                              block={block}
-                              onSelect={() => {
-                                setDetailBlock(block);
+                        <AutoSizer>
+                          {({ height, width }) => (
+                            <LazyList
+                              height={height}
+                              width={width}
+                              itemCount={searchResults.length}
+                              // The react-window library requires exact height
+                              itemSize={87}
+                              itemData={searchResults}
+                            >
+                              {({ index, style, data }) => {
+                                // eslint-disable-next-line security/detect-object-injection -- index is a number
+                                const { block } = data[index];
+                                return (
+                                  <div style={style}>
+                                    <BlockResult
+                                      key={block.id}
+                                      block={block}
+                                      onSelect={() => {
+                                        setDetailBlock(block);
+                                      }}
+                                    />
+                                  </div>
+                                );
                               }}
-                            />
-                          ))}
-                        </ListGroup>
+                            </LazyList>
+                          )}
+                        </AutoSizer>
                       </div>
                     </Col>
                   </Row>
