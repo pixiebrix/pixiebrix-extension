@@ -47,9 +47,11 @@ Primitives.args = {
     properties: {
       name: {
         type: "string",
+        description: "The first name of the person",
       },
       age: {
         type: "number",
+        description: "The person's age",
       },
     },
   },
@@ -64,10 +66,12 @@ StringFormats.args = {
       url: {
         type: "string",
         format: "uri",
+        description: "A valid url",
       },
       email: {
         type: "string",
         format: "email",
+        description: "The person's email",
       },
       uuid: {
         type: "string",
@@ -95,9 +99,11 @@ Arrays.args = {
           properties: {
             name: {
               type: "string",
+              description: "The first name of the person",
             },
             age: {
               type: "number",
+              description: "The person's age",
             },
           },
         },
@@ -116,9 +122,11 @@ NestedObject.args = {
         properties: {
           name: {
             type: "string",
+            description: "The first name of the person",
           },
           age: {
             type: "number",
+            description: "The person's age",
           },
         },
       },

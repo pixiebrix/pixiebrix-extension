@@ -33,8 +33,12 @@ const ObjectEntry: React.FunctionComponent<{
   if (isEmpty(definition.properties)) {
     return (
       <ListGroup.Item key={prop}>
-        <span>{prop}</span>
-        <span className="type">: object</span>
+        <span>
+          <code>{prop}</code>
+        </span>
+        <span className="type badge badge-pill badge-secondary ml-1">
+          object
+        </span>
       </ListGroup.Item>
     );
   }
@@ -48,8 +52,12 @@ const ObjectEntry: React.FunctionComponent<{
         style={{ cursor: "pointer" }}
       >
         <FontAwesomeIcon icon={collapsed ? faCaretRight : faCaretDown} />{" "}
-        <span>{prop}</span>
-        <span className="type">: object</span>
+        <span>
+          <code>{prop}</code>
+        </span>
+        <span className="type badge badge-pill badge-secondary ml-1">
+          object
+        </span>
       </div>
       {!collapsed && <TreeRenderer schema={definition} />}
     </ListGroup.Item>
