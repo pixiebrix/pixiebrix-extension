@@ -24,6 +24,7 @@ import FormPreviewStringField from "./FormPreviewStringField";
 import { useField } from "formik";
 import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { Card } from "react-bootstrap";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const FormPreview: React.FC<{
   name: string;
@@ -78,16 +79,21 @@ const FormPreview: React.FC<{
     <Card>
       <Card.Header>Preview</Card.Header>
       <Card.Body>
-        <JsonSchemaForm
-          tagName="div"
-          formData={data}
-          fields={fields}
-          schema={localRjsfSchema.schema}
-          uiSchema={localRjsfSchema.uiSchema}
-          onChange={onDataChanged}
-        >
-          <div></div>
-        </JsonSchemaForm>
+        <ErrorBoundary>
+          {Boolean(localRjsfSchema.schema) &&
+            Boolean(localRjsfSchema.uiSchema) && (
+              <JsonSchemaForm
+                tagName="div"
+                formData={data}
+                fields={fields}
+                schema={localRjsfSchema.schema}
+                uiSchema={localRjsfSchema.uiSchema}
+                onChange={onDataChanged}
+              >
+                <div></div>
+              </JsonSchemaForm>
+            )}
+        </ErrorBoundary>
       </Card.Body>
     </Card>
   );

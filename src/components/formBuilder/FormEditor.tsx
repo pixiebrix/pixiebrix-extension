@@ -24,6 +24,8 @@ import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
   moveStringInArray,
   replaceStringInArray,
 } from "./formBuilderHelpers";
@@ -53,16 +55,34 @@ const FormEditor: React.FC<{
     `${name}.uiSchema.${UI_ORDER}`
   );
 
-  const { schema } = rjsfSchema;
+  const { schema, uiSchema } = rjsfSchema;
 
   useEffect(() => {
-    // Set uiSchema order if needed
-    if (!uiOrder) {
-      const propertyKeys = Object.keys(schema.properties || {});
-      const nextUiOrder = [...propertyKeys, "*"];
-      setUiOrder(nextUiOrder);
+    // Set default values if needed
+    if (!schema || !uiSchema || !uiOrder?.includes("*")) {
+      const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+        if (!draft.schema) {
+          draft.schema = MINIMAL_SCHEMA;
+        }
+
+        if (!draft.uiSchema) {
+          draft.uiSchema = MINIMAL_UI_SCHEMA;
+        }
+
+        if (!draft.uiSchema[UI_ORDER]) {
+          const propertyKeys = Object.keys(draft.schema.properties || {});
+          draft.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
+        } else if (!draft.uiSchema[UI_ORDER].includes("*")) {
+          draft.uiSchema[UI_ORDER].push("*");
+        }
+      });
+      setRjsfSchema(nextRjsfSchema);
     }
-  }, [schema, uiOrder, setUiOrder]);
+  }, [rjsfSchema, schema, uiSchema, uiOrder, setRjsfSchema]);
+
+  if (!schema || !uiSchema) {
+    return null;
+  }
 
   const addProperty = () => {
     const propertyName = generateNewPropertyName(

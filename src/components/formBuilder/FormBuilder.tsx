@@ -20,21 +20,17 @@ import FormEditor from "./FormEditor";
 import FormPreview from "./FormPreview";
 import { useField } from "formik";
 import { UI_ORDER } from "./schemaFieldNames";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import { RJSFSchema } from "./formBuilderTypes";
-import { MINIMAL_SCHEMA, MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
-import { produce } from "immer";
 import styles from "./FormBuilder.module.scss";
 
 const FormBuilder: React.FC<{
   name: string;
 }> = ({ name }) => {
   const [
-    { value: rjsfSchema },
-    ,
-    { setValue: setRjsfSchema },
+    {
+      value: { schema, uiSchema },
+    },
   ] = useField<RJSFSchema>(name);
-  const { schema, uiSchema } = rjsfSchema;
 
   const [activeField, setActiveField] = useState(() => {
     const firstInOrder =
@@ -52,21 +48,6 @@ const FormBuilder: React.FC<{
     return "";
   });
 
-  if (!schema || !uiSchema) {
-    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-      if (!draft.schema) {
-        draft.schema = MINIMAL_SCHEMA;
-      }
-
-      if (!draft.uiSchema) {
-        draft.uiSchema = MINIMAL_UI_SCHEMA;
-      }
-    });
-    setRjsfSchema(nextRjsfSchema);
-
-    return null;
-  }
-
   return (
     <div className={styles.root}>
       <div className={styles.column}>
@@ -77,13 +58,11 @@ const FormBuilder: React.FC<{
         />
       </div>
       <div className={styles.column}>
-        <ErrorBoundary>
-          <FormPreview
-            name={name}
-            activeField={activeField}
-            setActiveField={setActiveField}
-          />
-        </ErrorBoundary>
+        <FormPreview
+          name={name}
+          activeField={activeField}
+          setActiveField={setActiveField}
+        />
       </div>
     </div>
   );
