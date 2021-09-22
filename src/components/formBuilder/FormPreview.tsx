@@ -41,7 +41,7 @@ const FormPreview: React.FC<{
 
   // Maintain a local version of the RJSF schema to reflect the active field
   // Important to have schema and uiSchema always in sync, hence caching both
-  const [localRjsfSchema, setLocalRjsfSchema] = useState<RJSFSchema>(
+  const [{ schema, uiSchema }, setLocalRjsfSchema] = useState<RJSFSchema>(
     rjsfSchema
   );
 
@@ -95,22 +95,18 @@ const FormPreview: React.FC<{
 
   return (
     <Card>
-      <Card.Header>Preview</Card.Header>
-      <Card.Body>
-        <ErrorBoundary>
-          {Boolean(localRjsfSchema.schema) &&
-            Boolean(localRjsfSchema.uiSchema) && (
-              <JsonSchemaForm
-                tagName="div"
-                formData={data}
-                fields={fields}
-                schema={localRjsfSchema.schema}
-                uiSchema={localRjsfSchema.uiSchema}
-                onChange={onDataChanged}
-              />
-            )}
-        </ErrorBoundary>
-      </Card.Body>
+      <ErrorBoundary>
+        {schema && uiSchema && (
+          <JsonSchemaForm
+            tagName="div"
+            formData={data}
+            fields={fields}
+            schema={schema}
+            uiSchema={uiSchema}
+            onChange={onDataChanged}
+          />
+        )}
+      </ErrorBoundary>
     </Card>
   );
 };

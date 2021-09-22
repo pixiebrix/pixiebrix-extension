@@ -21,6 +21,7 @@
 
 .paneContent {
   height: 100%;
+  width: 100%;
   display: inline-flex;
   flex-direction: row;
   align-items: stretch;
@@ -42,7 +43,7 @@
   overflow-y: auto;
 }
 
-.tracePanel {
+.dataPanel {
   flex-grow: 1;
   flex-basis: 0;
   padding: 10px;
