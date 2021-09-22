@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,6 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.tab {
-  font-size: small;
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
+export interface FormBuilderState {
+  /**
+   * The currently active field in the Form Builder
+   */
+  activeField: string;
 }
+
+export const initialState: FormBuilderState = {
+  activeField: null,
+};
+
+export const formBuilderSlice = createSlice({
+  name: "formBuilder",
+  initialState,
+  reducers: {
+    setActiveField: (state, action: PayloadAction<string>) => {
+      state.activeField = action.payload;
+    },
+  },
+});
+
+export const { actions } = formBuilderSlice;

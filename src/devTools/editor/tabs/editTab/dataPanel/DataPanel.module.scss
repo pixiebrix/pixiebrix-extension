@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,21 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { utils } from "@rjsf/core";
-import React from "react";
-import FormPreviewFieldTemplate, {
-  FormPreviewFieldProps,
-} from "./FormPreviewFieldTemplate";
-import styles from "./FormPreviewBooleanField.module.scss";
+.tabNav {
+  font-size: small;
+}
 
-const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
-
-const FormPreviewStringField: React.FC<FormPreviewFieldProps> = (props) => (
-  <FormPreviewFieldTemplate
-    as={RjsfStringField}
-    className={styles.root}
-    {...props}
-  />
-);
-
-export default FormPreviewStringField;
+.loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

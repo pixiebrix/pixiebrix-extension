@@ -16,10 +16,13 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import FormBuilder from "@/components/formBuilder/FormBuilder";
 import { Schema } from "@/core";
 import React from "react";
 import { validateRegistryId } from "@/types/helpers";
+import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
+import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
+import FormEditor from "@/components/formBuilder/FormEditor";
+import useReduxState from "@/hooks/useReduxState";
 
 export const FORM_MODAL_ID = validateRegistryId("@pixiebrix/form-modal");
 
@@ -39,11 +42,20 @@ const FormModalOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
+  const [activeField, setActiveField] = useReduxState(
+    formBuilderSelectors.activeField,
+    elementWizardActions.setActiveField
+  );
+
   const configName = `${name}.${configKey}`;
 
   return (
     <div>
-      <FormBuilder name={configName} />
+      <FormEditor
+        name={configName}
+        activeField={activeField}
+        setActiveField={setActiveField}
+      />
 
       <SchemaField
         name={`${configName}.cancelable`}

@@ -15,21 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { utils } from "@rjsf/core";
-import React from "react";
-import FormPreviewFieldTemplate, {
-  FormPreviewFieldProps,
-} from "./FormPreviewFieldTemplate";
-import styles from "./FormPreviewBooleanField.module.scss";
+import { RootState } from "@/devTools/store";
 
-const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
+const formBuilderSelectors = {
+  activeField: ({ formBuilder }: RootState) => formBuilder.activeField,
+};
 
-const FormPreviewStringField: React.FC<FormPreviewFieldProps> = (props) => (
-  <FormPreviewFieldTemplate
-    as={RjsfStringField}
-    className={styles.root}
-    {...props}
-  />
-);
-
-export default FormPreviewStringField;
+export default formBuilderSelectors;

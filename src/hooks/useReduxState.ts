@@ -15,21 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { utils } from "@rjsf/core";
-import React from "react";
-import FormPreviewFieldTemplate, {
-  FormPreviewFieldProps,
-} from "./FormPreviewFieldTemplate";
-import styles from "./FormPreviewBooleanField.module.scss";
+import { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Action, AnyAction, Dispatch } from "redux";
 
-const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
+const useReduxState = <TValue, TState, TAction extends Action = AnyAction>(
+  selector: (state: TState) => TValue,
+  actionCreator: (nextValue: TValue) => TAction
+): [TValue, (nextValue: TValue) => void] => {
+  const value = useSelector(selector);
 
-const FormPreviewStringField: React.FC<FormPreviewFieldProps> = (props) => (
-  <FormPreviewFieldTemplate
-    as={RjsfStringField}
-    className={styles.root}
-    {...props}
-  />
-);
+  const dispatch = useDispatch<Dispatch<TAction>>();
+  const setValue = useCallback(
+    (nextValue: TValue) => {
+      dispatch(actionCreator(nextValue));
+    },
+    [dispatch, actionCreator]
+  );
 
-export default FormPreviewStringField;
+  return [value, setValue];
+};
+
+export default useReduxState;

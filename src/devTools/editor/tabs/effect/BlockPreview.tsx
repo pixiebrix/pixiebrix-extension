@@ -33,7 +33,7 @@ import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
 import { getType } from "@/blocks/util";
 
-const PreviewView: React.FunctionComponent<{
+const BlockPreview: React.FunctionComponent<{
   traceRecord: TraceRecord;
   blockConfig: BlockConfig;
   previewRefreshMillis?: 250;
@@ -141,4 +141,4 @@ const PreviewView: React.FunctionComponent<{
   );
 };
 
-export default PreviewView;
+export default BlockPreview;
