@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { RegistryId } from "@/core";
 import { BaseQueryFn, createApi } from "@reduxjs/toolkit/query/react";
 import { ServiceDefinition } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
@@ -56,11 +57,21 @@ export const appApi = createApi({
     getServiceAuths: builder.query<SanitizedAuth[], void>({
       query: () => ({ url: "/api/services/shared/?meta=1", method: "get" }),
     }),
-    getMarketplaceListings: builder.query<MarketplaceListing[], void>({
+    getMarketplaceListings: builder.query<
+      Record<RegistryId, MarketplaceListing>,
+      void
+    >({
       query: () => ({
         url: "/api/marketplace/listings/?show_detail=true",
         method: "get",
       }),
+      transformResponse(
+        baseQueryReturnValue: MarketplaceListing[]
+      ): Record<RegistryId, MarketplaceListing> {
+        return Object.fromEntries(
+          baseQueryReturnValue.map((x) => [x.package.name as RegistryId, x])
+        );
+      },
     }),
   }),
 });

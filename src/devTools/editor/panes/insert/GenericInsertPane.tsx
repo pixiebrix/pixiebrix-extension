@@ -22,7 +22,7 @@ import { showBrowserActionPanel } from "@/background/devtools";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import Centered from "@/devTools/editor/components/Centered";
 import { Button } from "react-bootstrap";
-import BlockModal from "@/components/fields/BlockModal";
+import BlockModal from "@/components/brickModal/BrickModal";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -122,7 +122,7 @@ const GenericInsertPane: React.FunctionComponent<{
       <div className="text-left">{config.insertModeHelp}</div>
       <div>
         <BlockModal
-          blocks={extensionPoints ?? []}
+          bricks={extensionPoints ?? []}
           caption={`Select ${config.label} Foundation`}
           renderButton={({ show }) => (
             <Button

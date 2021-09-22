@@ -37,7 +37,7 @@ import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BlockIcon from "@/components/BlockIcon";
+import BrickIcon from "@/components/BrickIcon";
 import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
@@ -138,7 +138,7 @@ const EditTab: React.FC<{
         ? {
             title: isNullOrBlank(action.label) ? block?.name : action.label,
             outputKey: action.outputKey,
-            icon: <BlockIcon block={block} size="2x" />,
+            icon: <BrickIcon brick={block} size="2x" />,
             onClick: () => {
               onSelectNode(index + 1);
             },

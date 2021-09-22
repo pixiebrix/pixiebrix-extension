@@ -27,7 +27,10 @@ import {
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
 import { IBlock } from "@/core";
-import BlockModal from "@/components/fields/BlockModal";
+import BlockModal from "@/components/brickModal/BrickModal";
+import { useFormikContext } from "formik";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { RECOMMENDED_BRICKS } from "@/devTools/editor/tabs/editTab/recommendations";
 
 const renderAppend = ({ show }: { show: () => void }) => (
   <>
@@ -38,6 +41,12 @@ const renderAppend = ({ show }: { show: () => void }) => (
     />
     <EditorNode muted title="Add" icon={faPlus} onClick={show} />
   </>
+);
+
+const addBrickCaption = (
+  <span>
+    <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add brick
+  </span>
 );
 
 const EditorNodeLayout: React.FC<{
@@ -53,6 +62,12 @@ const EditorNodeLayout: React.FC<{
   addBlock,
   showAppend,
 }) => {
+  const {
+    values: { type },
+  } = useFormikContext<FormState>();
+
+  const recommendations = RECOMMENDED_BRICKS.get(type).map((x) => x.id);
+
   const renderInsert = useCallback(
     ({ show }) => (
       // Don't use bootstrap styling
@@ -74,8 +89,10 @@ const EditorNodeLayout: React.FC<{
           <React.Fragment key={index}>
             {index !== 0 && (
               <BlockModal
-                blocks={relevantBlocksToAdd}
+                bricks={relevantBlocksToAdd}
                 renderButton={renderInsert}
+                recommendations={recommendations}
+                selectCaption={addBrickCaption}
                 onSelect={(block) => {
                   addBlock(block, index);
                 }}
@@ -86,8 +103,10 @@ const EditorNodeLayout: React.FC<{
         ))}
       {showAppend && (
         <BlockModal
-          blocks={relevantBlocksToAdd}
+          bricks={relevantBlocksToAdd}
           renderButton={renderAppend}
+          recommendations={recommendations}
+          selectCaption={addBrickCaption}
           onSelect={(block) => {
             addBlock(block, nodes.length);
           }}

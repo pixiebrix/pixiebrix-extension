@@ -631,3 +631,8 @@ export function isRendererBlock(
 export function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
   return typeof block.effect === "function";
 }
+
+/**
+ * Brick is an inclusive term for entities with an id + version.
+ */
+export type IBrick = IBlock | IService | IExtensionPoint;
