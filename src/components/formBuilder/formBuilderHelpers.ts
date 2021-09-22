@@ -63,12 +63,31 @@ export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
     value: stringifyUiType({ propertyType: "string", propertyFormat: "email" }),
   },
   {
+    label: "Website",
+    value: stringifyUiType({ propertyType: "string", propertyFormat: "uri" }),
+  },
+  {
+    label: "Date",
+    value: stringifyUiType({ propertyType: "string", propertyFormat: "date" }),
+  },
+  {
+    label: "Date and time",
+    value: stringifyUiType({
+      propertyType: "string",
+      propertyFormat: "date-time",
+    }),
+  },
+  {
     label: "Number",
     value: stringifyUiType({ propertyType: "number" }),
   },
   {
     label: "Dropdown",
     value: stringifyUiType({ propertyType: "string", uiWidget: "select" }),
+  },
+  {
+    label: "Checkbox",
+    value: stringifyUiType({ propertyType: "boolean" }),
   },
 ];
 

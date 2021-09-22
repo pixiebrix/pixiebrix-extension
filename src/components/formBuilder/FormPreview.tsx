@@ -24,6 +24,7 @@ import FormPreviewStringField from "./FormPreviewStringField";
 import { useField } from "formik";
 import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { Card } from "react-bootstrap";
+import FormPreviewBooleanField from "./FormPreviewBooleanField";
 
 const FormPreview: React.FC<{
   name: string;
@@ -69,9 +70,16 @@ const FormPreview: React.FC<{
     ),
     [setActiveField]
   );
+  const BooleanField = useCallback(
+    (props: FieldProps) => (
+      <FormPreviewBooleanField setActiveField={setActiveField} {...props} />
+    ),
+    [setActiveField]
+  );
 
   const fields = {
     StringField,
+    BooleanField,
   };
 
   return (
