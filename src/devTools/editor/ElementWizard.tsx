@@ -38,7 +38,6 @@ import LogContext from "@/components/logViewer/LogContext";
 import { LOGS_EVENT_KEY } from "@/devTools/editor/tabs/LogsTab";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import styles from "./ElementWizard.module.scss";
-import cx from "classnames";
 
 const LOG_STEP_NAME = "Logs";
 
@@ -170,7 +169,7 @@ const ElementWizard: React.FunctionComponent<{
         </Nav>
 
         {status && <div className="text-danger">{status}</div>}
-        <Tab.Content className={cx(styles.tabContent, styles.tabPadding)}>
+        <Tab.Content className={styles.tabContent}>
           {wizard.map(({ Component, step, extraProps = {} }) => (
             <Component
               key={step}
