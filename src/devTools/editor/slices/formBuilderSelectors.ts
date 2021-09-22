@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,37 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.tabPane {
-  height: 100%;
-}
+import { RootState } from "@/devTools/store";
 
-.paneContent {
-  height: 100%;
-  width: 100%;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: stretch;
-}
+const formBuilderSelectors = {
+  activeField: ({ formBuilder }: RootState) => formBuilder.activeField,
+};
 
-.nodeLayout {
-  flex-grow: 0;
-  flex-shrink: 0;
-  height: 100%;
-  width: 120px;
-  overflow-y: auto;
-  padding-top: 10px;
-}
-
-.configPanel {
-  flex-grow: 2;
-  flex-basis: 0;
-  padding: 15px 10px 10px 10px;
-  overflow-y: auto;
-}
-
-.dataPanel {
-  flex-grow: 1;
-  flex-basis: 0;
-  padding: 10px;
-  overflow: auto;
-}
+export default formBuilderSelectors;

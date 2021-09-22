@@ -16,10 +16,13 @@
  */
 
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
-import FormBuilder from "@/components/formBuilder/FormBuilder";
 import { Schema } from "@/core";
 import React from "react";
 import { validateRegistryId } from "@/types/helpers";
+import FormEditor from "@/components/formBuilder/FormEditor";
+import { actions as elementWizardActions } from "@/devTools/editor/slices/formBuilderSlice";
+import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
+import useReduxState from "@/hooks/useReduxState";
 
 export const FORM_RENDERER_ID = validateRegistryId("@pixiebrix/form");
 
@@ -32,11 +35,20 @@ const FormRendererOptions: React.FC<{
   name: string;
   configKey: string;
 }> = ({ name, configKey }) => {
+  const [activeField, setActiveField] = useReduxState(
+    formBuilderSelectors.activeField,
+    elementWizardActions.setActiveField
+  );
+
   const configName = `${name}.${configKey}`;
 
   return (
     <div>
-      <FormBuilder name={configName} />
+      <FormEditor
+        name={configName}
+        activeField={activeField}
+        setActiveField={setActiveField}
+      />
 
       <SchemaField name={`${configName}.recordId`} schema={recordIdSchema} />
     </div>

@@ -24,6 +24,8 @@ import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
   moveStringInArray,
   replaceStringInArray,
 } from "./formBuilderHelpers";
@@ -38,6 +40,7 @@ import {
 import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
+import styles from "./FormEditor.module.scss";
 
 const FormEditor: React.FC<{
   name: string;
@@ -53,16 +56,34 @@ const FormEditor: React.FC<{
     `${name}.uiSchema.${UI_ORDER}`
   );
 
-  const { schema } = rjsfSchema;
+  const { schema, uiSchema } = rjsfSchema;
 
   useEffect(() => {
-    // Set uiSchema order if needed
-    if (!uiOrder) {
-      const propertyKeys = Object.keys(schema.properties || {});
-      const nextUiOrder = [...propertyKeys, "*"];
-      setUiOrder(nextUiOrder);
+    // Set default values if needed
+    if (!schema || !uiSchema || !uiOrder?.includes("*")) {
+      const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+        if (!draft.schema) {
+          draft.schema = MINIMAL_SCHEMA;
+        }
+
+        if (!draft.uiSchema) {
+          draft.uiSchema = MINIMAL_UI_SCHEMA;
+        }
+
+        if (!draft.uiSchema[UI_ORDER]) {
+          const propertyKeys = Object.keys(draft.schema.properties || {});
+          draft.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
+        } else if (!draft.uiSchema[UI_ORDER].includes("*")) {
+          draft.uiSchema[UI_ORDER].push("*");
+        }
+      });
+      setRjsfSchema(nextRjsfSchema);
     }
-  }, [schema, uiOrder, setUiOrder]);
+  }, [rjsfSchema, schema, uiSchema, uiOrder, setRjsfSchema]);
+
+  if (!schema || !uiSchema) {
+    return null;
+  }
 
   const addProperty = () => {
     const propertyName = generateNewPropertyName(
@@ -122,12 +143,15 @@ const FormEditor: React.FC<{
   };
 
   // There's always at least 1 item in uiOrder array, "*".
-  const canMoveUp = uiOrder?.length > 2 && uiOrder[0] !== activeField;
+  const canMoveUp =
+    Boolean(activeField) && uiOrder?.length > 2 && uiOrder[0] !== activeField;
   const canMoveDown =
-    uiOrder?.length > 2 && uiOrder[uiOrder.length - 2] !== activeField;
+    Boolean(activeField) &&
+    uiOrder?.length > 2 &&
+    uiOrder[uiOrder.length - 2] !== activeField;
 
   return (
-    <div>
+    <div className={styles.root}>
       <BootstrapForm.Group>
         <h5>Edit form</h5>
         <hr />
@@ -172,7 +196,12 @@ const FormEditor: React.FC<{
       >
         <FontAwesomeIcon icon={faArrowDown} />
       </Button>
-      <Button onClick={removeProperty} variant="danger" size="sm">
+      <Button
+        onClick={removeProperty}
+        disabled={!activeField}
+        variant="danger"
+        size="sm"
+      >
         <FontAwesomeIcon icon={faTimes} />
       </Button>
     </div>

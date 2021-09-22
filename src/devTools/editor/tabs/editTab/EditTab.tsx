@@ -26,22 +26,21 @@ import { BlockType, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { compact, noop, zip } from "lodash";
-import { IBlock, UUID } from "@/core";
+import { IBlock } from "@/core";
 import hash from "object-hash";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
-import TraceView from "@/devTools/editor/tabs/editTab/TraceView";
 import { uuidv4 } from "@/types/helpers";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
-import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockIcon from "@/components/BlockIcon";
 import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -97,10 +96,6 @@ const EditTab: React.FC<{
     [pipelineFieldName, activeNodeIndex]
   );
 
-  const [{ value: blockInstanceId }] = useField<UUID>(
-    `${blockFieldName}.instanceId`
-  );
-
   // Load once
   const [allBlocks] = useAsyncState(async () => blockRegistry.all(), [], []);
 
@@ -120,13 +115,11 @@ const EditTab: React.FC<{
     [resolvedBlocks]
   );
 
-  const onSelectNode = useCallback(
+  const onSelectNode =
     // Wrapper only accepting a number (i.e., does not accept a state update method)
-    (index: number) => {
+    useCallback((index: number) => {
       setActiveNodeIndex(index);
-    },
-    [setActiveNodeIndex]
-  );
+    }, []);
 
   const removeBlock = (pipelineIndex: number) => {
     const newPipeline = produce(blockPipeline, (draft) => {
@@ -244,17 +237,12 @@ const EditTab: React.FC<{
             </FormTheme.Provider>
           </ErrorBoundary>
         </div>
-        <div className={styles.tracePanel}>
-          {activeNodeIndex === 0 && (
-            <FoundationTraceView instanceId={blockPipeline[0]?.instanceId} />
-          )}
-
-          {activeNodeIndex > 0 && (
-            <TraceView
-              blockFieldName={blockFieldName}
-              instanceId={blockInstanceId}
-            />
-          )}
+        <div className={styles.dataPanel}>
+          <DataPanel
+            blockFieldName={blockFieldName}
+            // eslint-disable-next-line security/detect-object-injection
+            instanceId={blockPipeline[activeNodeIndex]?.instanceId}
+          />
         </div>
       </div>
     </Tab.Pane>
