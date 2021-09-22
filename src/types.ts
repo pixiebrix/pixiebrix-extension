@@ -43,6 +43,10 @@ import { validateRegistryId } from "@/types/helpers";
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
 
+/** 
+ * Type to be preferred over a plain `object` 
+ * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md
+ */
 export type UnknownObject = Record<string, unknown>;
 
 export abstract class Service<
