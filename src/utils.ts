@@ -198,13 +198,6 @@ export function clearObject(obj: Record<string, unknown>): void {
   }
 }
 
-export function castFunction(valueOrFunction: Function): Function;
-export function castFunction(valueOrFunction: any): () => any {
-  return typeof valueOrFunction === "function"
-    ? valueOrFunction
-    : () => valueOrFunction;
-}
-
 /**
  * Set values to undefined that can't be sent across the boundary between the host site context and the
  * content script context

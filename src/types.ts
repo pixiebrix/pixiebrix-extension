@@ -43,6 +43,8 @@ import { validateRegistryId } from "@/types/helpers";
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
 
+export type UnknownObject = Record<string, unknown>;
+
 export abstract class Service<
   TConfig extends KeyedConfig = KeyedConfig,
   TOAuth extends AuthData = AuthData
