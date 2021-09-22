@@ -81,6 +81,21 @@ StringFormats.args = {
   },
 };
 
+export const EnumType = Template.bind({});
+// https://json-schema.org/understanding-json-schema/reference/string.html#built-in-formats
+EnumType.args = {
+  schema: {
+    type: "object",
+    properties: {
+      favorite_color: {
+        type: "string",
+        enum: ["red", "orange", "yellow", "green", "blue", "indigo", "violet"],
+        description: "Your favorite color in the rainbow",
+      },
+    },
+  },
+};
+
 export const Arrays = Template.bind({});
 Arrays.args = {
   schema: {
