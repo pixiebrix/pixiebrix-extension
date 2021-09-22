@@ -16,10 +16,10 @@
  */
 
 import React, { useMemo, useState } from "react";
-import { IBlock, IService } from "@/core";
+import { IBrick } from "@/core";
 import { BlockType, getType } from "@/blocks/util";
 import { useAsyncEffect } from "use-async-effect";
-import { library, IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IconProp, library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -46,12 +46,12 @@ import cx from "classnames";
 
 library.add(fas, fab, far);
 
-export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
-  if ("schema" in block) {
+export function getIcon(brick: IBrick, blockType: BlockType): IconProp {
+  if ("schema" in brick) {
     return faCloud;
   }
 
-  switch (type) {
+  switch (blockType) {
     case "reader":
       return faBookReader;
     case "transform":
@@ -64,23 +64,23 @@ export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
       break;
   }
 
-  if (block instanceof TriggerExtensionPoint) {
+  if (brick instanceof TriggerExtensionPoint) {
     return faBolt;
   }
 
-  if (block instanceof MenuItemExtensionPoint) {
+  if (brick instanceof MenuItemExtensionPoint) {
     return faMousePointer;
   }
 
-  if (block instanceof ContextMenuExtensionPoint) {
+  if (brick instanceof ContextMenuExtensionPoint) {
     return faBars;
   }
 
-  if (block instanceof PanelExtensionPoint) {
+  if (brick instanceof PanelExtensionPoint) {
     return faWindowMaximize;
   }
 
-  if (block instanceof ActionPanelExtensionPoint) {
+  if (brick instanceof ActionPanelExtensionPoint) {
     return faColumns;
   }
 
@@ -89,16 +89,21 @@ export function getIcon(block: IBlock | IService, type: BlockType): IconProp {
 
 const SIZE_REGEX = /^(?<size>\d)x$/i;
 
-const BlockIcon: React.FunctionComponent<{
-  block: IBlock | IService;
+/**
+ * WARNING: avoid rendering a lot of brick icons (20+) icons on a page at once. Each one waits for the marketplace
+ * listing and searches all the listings.
+ */
+const BrickIcon: React.FunctionComponent<{
+  brick: IBrick;
   size?: "1x" | "2x";
-}> = ({ block, size = "1x" }) => {
+}> = ({ brick, size = "1x" }) => {
   const [type, setType] = useState<BlockType>(null);
+  // XXX: process the result and map by id for faster lookup
   const { data: listings } = useGetMarketplaceListingsQuery();
 
   const listing = useMemo(
-    () => (listings ?? []).find((listing) => listing.package.name === block.id),
-    [listings, block.id]
+    () => (listings ?? []).find((listing) => listing.package.name === brick.id),
+    [listings, brick.id]
   );
 
   const sizeMultiplier = SIZE_REGEX.exec(size).groups?.size;
@@ -106,8 +111,8 @@ const BlockIcon: React.FunctionComponent<{
   const cssSize = `${sizeMultiplier}em`;
 
   useAsyncEffect(async () => {
-    setType(await getType(block));
-  }, [block, setType]);
+    setType(await getType(brick));
+  }, [brick, setType]);
 
   const fa_icon = useMemo(() => {
     if (listing?.fa_icon) {
@@ -117,8 +122,8 @@ const BlockIcon: React.FunctionComponent<{
       return icon as IconProp;
     }
 
-    return getIcon(block, type);
-  }, [block, type, listing]);
+    return getIcon(brick, type);
+  }, [brick, type, listing]);
 
   return (
     <>
@@ -143,4 +148,4 @@ const BlockIcon: React.FunctionComponent<{
   );
 };
 
-export default BlockIcon;
+export default BrickIcon;

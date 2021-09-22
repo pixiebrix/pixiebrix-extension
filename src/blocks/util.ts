@@ -20,6 +20,7 @@ import { IBlock, IService, RegistryId } from "@/core";
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 
 export async function getType(
+  // HACK: including IService here is a hack to fix some call-sites. This method can only return block types
   block: IBlock | IService
 ): Promise<BlockType | null> {
   if ("inferType" in block) {

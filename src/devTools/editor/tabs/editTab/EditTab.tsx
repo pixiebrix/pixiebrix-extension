@@ -39,7 +39,7 @@ import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpe
 import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BlockIcon from "@/components/BlockIcon";
+import BrickIcon from "@/components/BrickIcon";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -143,7 +143,7 @@ const EditTab: React.FC<{
         ? {
             title: action.label ?? block?.name,
             outputKey: action.outputKey,
-            icon: <BlockIcon block={block} size="2x" />,
+            icon: <BrickIcon brick={block} size="2x" />,
             onClick: () => {
               onSelectNode(index + 1);
             },

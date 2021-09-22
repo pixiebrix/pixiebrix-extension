@@ -21,9 +21,7 @@ import React, { useCallback, useContext } from "react";
 import { IService, RawServiceConfiguration } from "@/core";
 import { RootState } from "@/options/store";
 import { uuidv4 } from "@/types/helpers";
-import { ServiceDefinition } from "@/types/definitions";
-import ServiceModal from "@/components/fields/ServiceModal";
-import useFetch from "@/hooks/useFetch";
+import BrickModal from "@/components/brickModal/BrickModal";
 import { faEyeSlash, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
@@ -48,10 +46,6 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   const notify = useNotifications();
   const { isLoggedIn } = useContext(AuthContext);
 
-  const { data: serviceConfigs } = useFetch<ServiceDefinition[]>(
-    "/api/services/"
-  );
-
   const configuredServices = useSelector<RootState, RawServiceConfiguration[]>(
     selectConfiguredServices
   );
@@ -71,11 +65,11 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   );
 
   const onSelect = useCallback(
-    (definition: ServiceDefinition) => {
+    (service: IService) => {
       onCreate({
         id: uuidv4(),
         label: undefined,
-        serviceId: definition.metadata.id,
+        serviceId: service.id,
         config: {},
       } as RawServiceConfiguration);
     },
@@ -182,11 +176,10 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         </tbody>
       </Table>
       <Card.Footer>
-        <ServiceModal
+        <BrickModal
           onSelect={onSelect}
-          services={serviceConfigs}
-          caption="Add private integration"
-          variant="primary"
+          bricks={services}
+          caption="Add Private Integration"
         />
       </Card.Footer>
     </>

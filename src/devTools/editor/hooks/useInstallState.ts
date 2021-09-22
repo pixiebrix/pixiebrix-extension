@@ -60,7 +60,7 @@ function useInstallState(
     }
 
     return new Set<UUID>();
-  }, [port, navSequence, meta]);
+  }, [port, navSequence, meta, installed]);
 
   const [availableDynamicIds] = useAsyncState(async () => {
     // At this point, if the extensionPoint is an inner extension point (without its own id), then it will have

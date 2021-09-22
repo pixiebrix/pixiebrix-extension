@@ -16,35 +16,41 @@
  */
 
 import React from "react";
+import { IBrick } from "@/core";
 import { ListGroup } from "react-bootstrap";
 import cx from "classnames";
-import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
-import styles from "./BlockResult.module.scss";
-import { OfficialBadge } from "@/components/OfficialBadge";
+import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";
 import BrickIcon from "@/components/BrickIcon";
+import { truncate } from "lodash";
+import { OfficialBadge } from "@/components/OfficialBadge";
 
-const BlockResult: React.FunctionComponent<{
-  block: ReferenceEntry;
-  active?: boolean;
+const BrickResult: React.FunctionComponent<{
+  brick: IBrick;
   onSelect: () => void;
-}> = ({ block, onSelect, active }) => (
-  <ListGroup.Item
-    onClick={onSelect}
-    className={cx(styles.root, { [styles.active]: active, active })}
-  >
+}> = ({ brick, onSelect }) => (
+  <ListGroup.Item onClick={onSelect} className={cx(styles.root)}>
     <div className="d-flex">
       <div className="mr-2 text-muted">
-        <BrickIcon brick={block} />
+        <BrickIcon brick={brick} />
       </div>
       <div className={cx("flex-grow-1", styles.titleColumn)}>
-        <div className={styles.ellipsis}>{block.name}</div>
-        <code className={cx("small", styles.id)}>{block.id}</code>
+        <div className={styles.ellipsis}>{brick.name}</div>
+        <code className={cx("small", styles.id)}>{brick.id}</code>
+        <p className={cx("small mb-0", styles.ellipsis)}>
+          {/* FIXME: applying both truncate and the CSS ellipses style is redundant */}
+          {/* Use a span if no description to ensure a consistent height for react-window */}
+          {brick.description ? (
+            truncate(brick.description, { length: 256 })
+          ) : (
+            <span>&nbsp;</span>
+          )}
+        </p>
       </div>
       <div className="flex-grow-0">
-        <OfficialBadge id={block.id} />
+        <OfficialBadge id={brick.id} />
       </div>
     </div>
   </ListGroup.Item>
 );
 
-export default BlockResult;
+export default BrickResult;
