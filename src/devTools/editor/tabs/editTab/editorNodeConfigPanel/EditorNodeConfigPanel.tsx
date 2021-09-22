@@ -66,6 +66,13 @@ const EditorNodeConfigPanel: React.FC<{
     };
   }, [blockId]);
 
+  const isOutputDisabled = !(
+    blockInfo === null || showOutputKey(blockInfo?.type)
+  );
+  const outputDescription = isOutputDisabled
+    ? "Effect and renderer bricks do not produce outputs"
+    : "Provide an output key to refer to the outputs of this block later.";
+
   return (
     <>
       <Row className={styles.topRow}>
@@ -77,26 +84,12 @@ const EditorNodeConfigPanel: React.FC<{
           />
         </Col>
         <Col xl>
-          {blockInfo == null || showOutputKey(blockInfo?.type) ? (
-            <ConnectedFieldTemplate
-              name={`${blockFieldName}.outputKey`}
-              label={
-                <PopoverOutputLabel description="Provide an output key to refer to the outputs of this block later." />
-              }
-              as={OutputKeyWidget}
-              isPopoverDescription
-            />
-          ) : (
-            <ConnectedFieldTemplate
-              name={`${blockFieldName}.outputKey`}
-              label={
-                <PopoverOutputLabel description="Effect and renderer bricks do not produce outputs" />
-              }
-              disabled
-              as={OutputKeyWidget}
-              isPopoverDescription
-            />
-          )}
+          <ConnectedFieldTemplate
+            name={`${blockFieldName}.outputKey`}
+            label={<PopoverOutputLabel description={outputDescription} />}
+            disabled={isOutputDisabled}
+            as={OutputKeyWidget}
+          />
         </Col>
         <Col sm="auto">
           <Button
