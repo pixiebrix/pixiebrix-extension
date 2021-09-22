@@ -181,7 +181,7 @@ const FieldEditor: React.FC<{
   };
 
   return (
-    <div className={styles.active}>
+    <div>
       <FieldTemplate
         required
         name={`${name}.${propertyName}`}
