@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FormEditor It renders 1`] = `
+exports[`FormEditor it renders empty schema 1`] = `
 <DocumentFragment>
   <form
     action="#"
@@ -127,6 +127,340 @@ exports[`FormEditor It renders 1`] = `
       <button
         class="btn btn-danger btn-sm"
         disabled=""
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-times fa-w-11 "
+          data-icon="times"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 352 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+    </div>
+  </form>
+</DocumentFragment>
+`;
+
+exports[`FormEditor it renders simple schema 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div>
+      <div
+        class="form-group"
+      >
+        <h5>
+          Edit form
+        </h5>
+        <hr />
+      </div>
+      <div
+        class="form-group row"
+      >
+        <label
+          class="form-label col-form-label col-lg-3"
+          for="rjsfSchema.schema.title"
+        >
+          Title
+        </label>
+        <div
+          class="col-lg-9"
+        >
+          <input
+            class="form-control"
+            id="rjsfSchema.schema.title"
+            name="rjsfSchema.schema.title"
+            value="A form"
+          />
+        </div>
+      </div>
+      <div
+        class="form-group row"
+      >
+        <label
+          class="form-label col-form-label col-lg-3"
+          for="rjsfSchema.schema.description"
+        >
+          Description
+        </label>
+        <div
+          class="col-lg-9"
+        >
+          <input
+            class="form-control"
+            id="rjsfSchema.schema.description"
+            name="rjsfSchema.schema.description"
+            value="A form example."
+          />
+        </div>
+      </div>
+      <div
+        class="form-group"
+      >
+        <h6>
+          Edit fields
+        </h6>
+        <hr />
+      </div>
+      <div>
+        <div
+          class="form-group row"
+        >
+          <label
+            class="form-label col-form-label col-lg-3"
+            for="rjsfSchema.firstName"
+          >
+            Name
+          </label>
+          <div
+            class="col-lg-9"
+          >
+            <input
+              class="form-control"
+              id="rjsfSchema.firstName"
+              name="rjsfSchema.firstName"
+              required=""
+              value="firstName"
+            />
+          </div>
+        </div>
+        <div
+          class="form-group row"
+        >
+          <label
+            class="form-label col-form-label col-lg-3"
+            for="rjsfSchema.schema.properties.firstName.title"
+          >
+            Label
+          </label>
+          <div
+            class="col-lg-9"
+          >
+            <input
+              class="form-control"
+              id="rjsfSchema.schema.properties.firstName.title"
+              name="rjsfSchema.schema.properties.firstName.title"
+              value="First name"
+            />
+          </div>
+        </div>
+        <div
+          class="form-group row"
+        >
+          <label
+            class="form-label col-form-label col-lg-3"
+            for="rjsfSchema.schema.properties.firstName.description"
+          >
+            Help text
+          </label>
+          <div
+            class="col-lg-9"
+          >
+            <input
+              class="form-control"
+              id="rjsfSchema.schema.properties.firstName.description"
+              name="rjsfSchema.schema.properties.firstName.description"
+              value=""
+            />
+          </div>
+        </div>
+        <div
+          class="form-group row"
+        >
+          <label
+            class="form-label col-form-label col-lg-3"
+            for="rjsfSchema.schema.properties.firstName.default"
+          >
+            Default value
+          </label>
+          <div
+            class="col-lg-9"
+          >
+            <input
+              class="form-control"
+              id="rjsfSchema.schema.properties.firstName.default"
+              name="rjsfSchema.schema.properties.firstName.default"
+              value="Chuck"
+            />
+          </div>
+        </div>
+        <div
+          class="form-group row"
+        >
+          <label
+            class="form-label col-form-label col-lg-3"
+            for="rjsfSchema.schema.properties.firstName.uiType"
+          >
+            Type
+          </label>
+          <div
+            class="col-lg-9"
+          >
+            <div
+              class=" css-2b097c-container"
+            >
+              <span
+                aria-atomic="false"
+                aria-live="polite"
+                aria-relevant="additions text"
+                class="css-1f43avz-a11yText-A11yText"
+              />
+              <div
+                class=" css-yk16xz-control"
+              >
+                <div
+                  class=" css-g1d714-ValueContainer"
+                >
+                  <div
+                    class=" css-1uccc91-singleValue"
+                  >
+                    Single line text
+                  </div>
+                  <div
+                    class="css-b8ldur-Input"
+                  >
+                    <div
+                      class=""
+                      style="display: inline-block;"
+                    >
+                      <input
+                        aria-autocomplete="list"
+                        autocapitalize="none"
+                        autocomplete="off"
+                        autocorrect="off"
+                        id="react-select-2-input"
+                        spellcheck="false"
+                        style="box-sizing: content-box; width: 2px; border: 0px; opacity: 1; outline: 0; padding: 0px;"
+                        tabindex="0"
+                        type="text"
+                        value=""
+                      />
+                      <div
+                        style="position: absolute; top: 0px; left: 0px; visibility: hidden; height: 0px; overflow: scroll; white-space: pre; font-family: -webkit-small-control; letter-spacing: normal; text-transform: none;"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class=" css-1hb7zxy-IndicatorsContainer"
+                >
+                  <span
+                    class=" css-1okebmr-indicatorSeparator"
+                  />
+                  <div
+                    aria-hidden="true"
+                    class=" css-tlfecz-indicatorContainer"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="css-tj5bde-Svg"
+                      focusable="false"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      width="20"
+                    >
+                      <path
+                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="form-group row"
+        >
+          <label
+            class="form-label col-form-label col-sm-3"
+          >
+            Required
+          </label>
+          <div
+            class="col-sm-9"
+          >
+            <input
+              name="rjsfSchema.schema.required"
+              type="checkbox"
+              value="firstName"
+            />
+          </div>
+        </div>
+      </div>
+      <button
+        class="btn btn-primary btn-sm"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-plus fa-w-14 "
+          data-icon="plus"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+      <button
+        class="btn btn-light btn-sm"
+        disabled=""
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-arrow-up fa-w-14 "
+          data-icon="arrow-up"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+      <button
+        class="btn btn-light btn-sm"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-inline--fa fa-arrow-down fa-w-14 "
+          data-icon="arrow-down"
+          data-prefix="fas"
+          focusable="false"
+          role="img"
+          viewBox="0 0 448 512"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M413.1 222.5l22.2 22.2c9.4 9.4 9.4 24.6 0 33.9L241 473c-9.4 9.4-24.6 9.4-33.9 0L12.7 278.6c-9.4-9.4-9.4-24.6 0-33.9l22.2-22.2c9.5-9.5 25-9.3 34.3.4L184 343.4V56c0-13.3 10.7-24 24-24h32c13.3 0 24 10.7 24 24v287.4l114.8-120.5c9.3-9.8 24.8-10 34.3-.4z"
+            fill="currentColor"
+          />
+        </svg>
+      </button>
+      <button
+        class="btn btn-danger btn-sm"
         type="button"
       >
         <svg

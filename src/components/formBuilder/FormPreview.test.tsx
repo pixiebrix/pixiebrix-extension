@@ -20,12 +20,12 @@ import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
 import { Form, Formik } from "formik";
 import React, { PropsWithChildren } from "react";
 import { RJSFSchema } from "./formBuilderTypes";
-import FormEditor, { FormEditorProps } from "./FormEditor";
+import FormPreview, { FormPreviewProps } from "./FormPreview";
 
 const rjsfSchemaPropertyName = "rjsfSchema";
 
-describe("FormEditor", () => {
-  const defaultProps: Partial<FormEditorProps> = {
+describe("FormPreview", () => {
+  const defaultProps: Partial<FormPreviewProps> = {
     name: rjsfSchemaPropertyName,
     setActiveField: jest.fn(),
   };
@@ -47,7 +47,7 @@ describe("FormEditor", () => {
 
   testItRenders({
     testName: "it renders empty schema",
-    Component: FormEditor,
+    Component: FormPreview,
     props: defaultProps,
     TemplateComponent: createFormikTemplate({} as RJSFSchema),
   });
@@ -75,13 +75,13 @@ describe("FormEditor", () => {
     };
     const uiSchema: UiSchema = {};
 
-    const options: ItRendersOptions<FormEditorProps> = {
+    const options: ItRendersOptions<FormPreviewProps> = {
       testName: "it renders simple schema",
-      Component: FormEditor,
+      Component: FormPreview,
       props: {
         ...defaultProps,
         activeField: "firstName",
-      } as FormEditorProps,
+      } as FormPreviewProps,
       TemplateComponent: createFormikTemplate({
         schema,
         uiSchema,
