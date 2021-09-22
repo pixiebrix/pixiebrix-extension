@@ -18,7 +18,6 @@
 const fs = require("fs");
 const path = require("path");
 const JSON5 = require("json5");
-const SizePlugin = require("size-plugin");
 const { mergeWithCustomize, customizeObject } = require("webpack-merge");
 
 const merge = mergeWithCustomize({
@@ -33,6 +32,7 @@ const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 const shared = {
   stats: {
     preset: "errors-warnings",
+    entrypoints: true,
     timings: true,
   },
   resolve: {
@@ -50,7 +50,6 @@ const shared = {
       chokidar: false,
     },
   },
-  plugins: [new SizePlugin({ writeFile: false })],
   module: {
     rules: [
       {
