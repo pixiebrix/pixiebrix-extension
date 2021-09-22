@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { UUID } from "@/core";
 import useInterval from "@/hooks/useInterval";
 import { isEmpty, pickBy, sortBy } from "lodash";
@@ -32,9 +32,8 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockPreview from "@/devTools/editor/tabs/effect/BlockPreview";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/devTools/store";
 import { BlockConfig } from "@/blocks/types";
+import useReduxState from "@/hooks/useReduxState";
 
 const TRACE_RELOAD_MILLIS = 250;
 
@@ -118,13 +117,9 @@ const DataPanel: React.FC<{
 
   const blockFieldConfigName = `${blockFieldName}.config`;
   const [{ value: configValue }] = useField(blockFieldConfigName);
-  const formBuilderActiveField = useSelector<RootState, string>(
-    formBuilderSelectors.activeField
-  );
-  const dispatch = useDispatch();
-  const setFormBuilderActiveField = useCallback(
-    (activeField: string) => dispatch(actions.setActiveField(activeField)),
-    [dispatch]
+  const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
+    formBuilderSelectors.activeField,
+    actions.setActiveField
   );
 
   const { value: blockConfig } = useField<BlockConfig>(blockFieldName)[0];
