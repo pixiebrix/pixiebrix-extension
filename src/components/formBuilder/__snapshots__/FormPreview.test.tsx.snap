@@ -1,0 +1,154 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormPreview it renders empty schema 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  />
+</DocumentFragment>
+`;
+
+exports[`FormPreview it renders simple schema 1`] = `
+<DocumentFragment>
+  <form
+    action="#"
+  >
+    <div
+      class="rjsf"
+    >
+      <div
+        class="form-group"
+      >
+        <div
+          class="my-1"
+        >
+          <h5>
+            A form
+          </h5>
+          <hr
+            class="border-0 bg-secondary"
+            style="height: 1px;"
+          />
+        </div>
+        <div>
+          <div
+            class="mb-3"
+          >
+            A form example.
+          </div>
+        </div>
+        <div
+          class="p-0 container-fluid"
+        >
+          <div
+            class="row"
+            style="margin-bottom: 10px;"
+          >
+            <div
+              class="col-12"
+            >
+               
+              <div
+                class="form-group"
+              >
+                <div
+                  class="undefined"
+                  role="group"
+                >
+                  <div
+                    class="mb-0 form-group"
+                  >
+                    <label
+                      class="form-label"
+                    >
+                      First name
+                    </label>
+                    <input
+                      class="form-control"
+                      id="root_firstName"
+                      placeholder=""
+                      type="text"
+                      value="Chuck"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="row"
+            style="margin-bottom: 10px;"
+          >
+            <div
+              class="col-12"
+            >
+               
+              <div
+                class="form-group"
+              >
+                <div
+                  class=""
+                  role="group"
+                >
+                  <div
+                    class="mb-0 form-group"
+                  >
+                    <label
+                      class="form-label"
+                    >
+                      Age
+                    </label>
+                    <input
+                      class="form-control"
+                      id="root_age"
+                      placeholder=""
+                      type="number"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="row"
+            style="margin-bottom: 10px;"
+          >
+            <div
+              class="col-12"
+            >
+               
+              <div
+                class="form-group"
+              >
+                <div
+                  class=""
+                  role="group"
+                >
+                  <div
+                    class="mb-0 form-group"
+                  >
+                    <label
+                      class="form-label"
+                    >
+                      Telephone
+                    </label>
+                    <input
+                      class="form-control"
+                      id="root_telephone"
+                      placeholder=""
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div />
+    </div>
+  </form>
+</DocumentFragment>
+`;

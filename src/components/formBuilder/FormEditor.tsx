@@ -42,11 +42,16 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import styles from "./FormEditor.module.scss";
 
-const FormEditor: React.FC<{
+export type FormEditorProps = {
   name: string;
   activeField?: string;
   setActiveField: SetActiveField;
-}> = ({ name, activeField, setActiveField }) => {
+};
+const FormEditor: React.FC<FormEditorProps> = ({
+  name,
+  activeField,
+  setActiveField,
+}) => {
   const [
     { value: rjsfSchema },
     ,

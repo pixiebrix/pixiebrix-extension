@@ -26,11 +26,17 @@ import { UI_ORDER, UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { produce } from "immer";
 import FormPreviewBooleanField from "./FormPreviewBooleanField";
 
-const FormPreview: React.FC<{
+export type FormPreviewProps = {
   name: string;
   activeField?: string;
   setActiveField: SetActiveField;
-}> = ({ name, activeField, setActiveField }) => {
+};
+
+const FormPreview: React.FC<FormPreviewProps> = ({
+  name,
+  activeField,
+  setActiveField,
+}) => {
   const [{ value: rjsfSchema }] = useField<RJSFSchema>(name);
 
   const [data, setData] = useState(null);

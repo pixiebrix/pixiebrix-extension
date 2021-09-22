@@ -68,19 +68,21 @@ const FieldEditor: React.FC<{
   const validatePropertyName = (nextName: string) => {
     let error: string = null;
 
-    if (nextName === "") {
-      error = "Name cannot be empty.";
-    }
+    if (nextName !== propertyName) {
+      if (nextName === "") {
+        error = "Name cannot be empty.";
+      }
 
-    if (nextName.includes(".")) {
-      error = "Name must not contain periods.";
-    }
+      if (nextName.includes(".")) {
+        error = "Name must not contain periods.";
+      }
 
-    const existingProperties = Object.keys(schema.properties);
-    if (existingProperties.includes(nextName)) {
-      error = `Name must be unique. Another property "${
-        (schema.properties[nextName] as Schema).title
-      }" already has the name "${nextName}".`;
+      const existingProperties = Object.keys(schema.properties);
+      if (existingProperties.includes(nextName)) {
+        error = `Name must be unique. Another property "${
+          (schema.properties[nextName] as Schema).title
+        }" already has the name "${nextName}".`;
+      }
     }
 
     setPropertyNameError(error);
@@ -96,6 +98,9 @@ const FieldEditor: React.FC<{
 
   const updatePropertyName = () => {
     const nextName = internalPropertyName;
+    if (nextName === propertyName) {
+      return;
+    }
 
     const error = validatePropertyName(nextName);
     if (error) {
