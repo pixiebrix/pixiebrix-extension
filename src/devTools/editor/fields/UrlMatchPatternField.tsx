@@ -18,6 +18,7 @@
 import UrlMatchPatternWidget from "@/devTools/editor/components/UrlMatchPatternWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import React from "react";
+import LockedLabel from "@/components/form/lockedLabel/LockedLabel";
 
 const defaultDescription = (
   <span>
@@ -43,14 +44,25 @@ const UrlMatchPatternField: React.FC<{
   disabled,
   description = defaultDescription,
   label = "Sites",
-}) => (
-  <ConnectedFieldTemplate
-    name={name}
-    as={UrlMatchPatternWidget}
-    disabled={disabled}
-    label={label}
-    description={description}
-  />
-);
+}) => {
+  const displayLabel = disabled ? (
+    <LockedLabel
+      label={label}
+      message="Value comes from published foundation"
+    />
+  ) : (
+    label
+  );
+
+  return (
+    <ConnectedFieldTemplate
+      name={name}
+      as={UrlMatchPatternWidget}
+      disabled={disabled}
+      label={displayLabel}
+      description={description}
+    />
+  );
+};
 
 export default UrlMatchPatternField;
