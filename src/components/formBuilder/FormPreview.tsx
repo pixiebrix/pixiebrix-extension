@@ -24,6 +24,7 @@ import FormPreviewStringField from "./FormPreviewStringField";
 import { useField } from "formik";
 import { UI_ORDER, UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
 import { produce } from "immer";
+import FormPreviewBooleanField from "./FormPreviewBooleanField";
 
 const FormPreview: React.FC<{
   name: string;
@@ -86,6 +87,12 @@ const FormPreview: React.FC<{
     ),
     [setActiveField]
   );
+  const BooleanField = useCallback(
+    (props: FieldProps) => (
+      <FormPreviewBooleanField setActiveField={setActiveField} {...props} />
+    ),
+    [setActiveField]
+  );
 
   if (!schema || !uiSchema) {
     return null;
@@ -93,6 +100,7 @@ const FormPreview: React.FC<{
 
   const fields = {
     StringField,
+    BooleanField,
   };
 
   return (

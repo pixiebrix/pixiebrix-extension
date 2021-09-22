@@ -22,14 +22,14 @@ import FormPreviewFieldTemplate, {
 } from "./FormPreviewFieldTemplate";
 import styles from "./FormPreviewBooleanField.module.scss";
 
-const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
+const RjsfBooleanField = utils.getDefaultRegistry().fields.BooleanField;
 
-const FormPreviewStringField: React.FC<FormPreviewFieldProps> = (props) => (
+const FormPreviewBooleanField: React.FC<FormPreviewFieldProps> = (props) => (
   <FormPreviewFieldTemplate
-    as={RjsfStringField}
+    as={RjsfBooleanField}
     className={styles.root}
     {...props}
   />
 );
 
-export default FormPreviewStringField;
+export default FormPreviewBooleanField;
