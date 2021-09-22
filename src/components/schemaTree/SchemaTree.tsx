@@ -24,50 +24,121 @@ import ObjectEntry from "@/components/schemaTree/entries/ObjectEntry";
 import ArrayEntry from "./entries/ArrayEntry";
 import { TreeEntry } from "@/components/schemaTree/types";
 import { useTable, useExpanded } from "react-table";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
 
 const typeEntries = new Map<string, TreeEntry>([
   ["object", ObjectEntry],
   ["array", ArrayEntry],
 ]);
 
+const CodeCell: React.FunctionComponent<{
+  cell;
+}> = ({ cell }) => <code>{cell.value}</code>;
+
+const RequiredCell: React.FunctionComponent<{
+  row;
+}> = ({ row }) => (
+  <div className="text-center">
+    {row.values.required && (
+      <FontAwesomeIcon icon={faCheck} className="text-success" />
+    )}
+  </div>
+);
+
+const DescriptionCell: React.FunctionComponent<{
+  row;
+}> = ({ row }) => <p className="m-0">{row.values.description}</p>;
+
 const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
 }) => {
+  const getType = (definition) => {
+    const { type, format } = definition as Schema;
+
+    if (definition.oneOf) {
+      return "one of many objects";
+    }
+
+    if (definition.anyOf) {
+      for (const field of definition.anyOf) {
+        if (isServiceField(field)) {
+          return "integration";
+        }
+      }
+
+      return "one or more of many objects";
+    }
+
+    if (type === "array") {
+      const items = definition.items ?? { type: "unknown" };
+      const itemType = ((items as Schema) ?? {}).type;
+      return itemType ? `${itemType} array` : "array";
+    }
+
+    let formatted_type = type;
+    if (Array.isArray(type)) {
+      formatted_type = `[${type.map(
+        (value, index) => `${index !== 0 ? " " : ""}${value}`
+      )}]`;
+    }
+
+    if (definition.enum) {
+      return `${formatted_type} enum`;
+    }
+
+    if (format) {
+      return `${format} ${type}`;
+    }
+
+    return formatted_type ? formatted_type : "unknown";
+  };
+
   const data = useMemo(() => {
     console.log("SchemaTree");
     console.log(schema);
+
+    if (!schema) {
+      return [];
+    }
 
     return sortBy(Object.entries(schema.properties ?? {}), (x) => x[0])
       .filter(([, definition]) => typeof definition !== "boolean")
       .map(([prop, definition]) => {
         const schemaDefinition = definition as Schema;
-        const { type, description } = schemaDefinition;
+        const { type, format, enum: type_enum, description } = schemaDefinition;
 
         return {
           name: prop,
-          type,
+          required: schema.required ? schema.required.includes(prop) : false,
+          type: getType(schemaDefinition),
           description,
         };
       });
-  }, []);
+  }, [schema]);
 
   const columns = useMemo(
     () => [
       {
         Header: "Name",
         accessor: "name",
+        Cell: CodeCell,
       },
       {
         Header: "Required",
         accessor: "required",
+        Cell: RequiredCell,
       },
       {
         Header: "Type",
         accessor: "type",
+        Cell: CodeCell,
       },
       {
         Header: "Description",
         accessor: "description",
+        Cell: DescriptionCell,
       },
     ],
     []
