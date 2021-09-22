@@ -185,7 +185,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
           bricks={services}
           selectCaption={
             <span>
-              <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add
+              <FontAwesomeIcon icon={faPlus} className="mr-1" /> Configure
             </span>
           }
           caption="Add Private Integration"

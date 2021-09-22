@@ -98,13 +98,9 @@ const BrickIcon: React.FunctionComponent<{
   size?: "1x" | "2x";
 }> = ({ brick, size = "1x" }) => {
   const [type, setType] = useState<BlockType>(null);
-  const { data: listings } = useGetMarketplaceListingsQuery();
+  const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
-  // PERFORMANCE: figure out how to post-process the result centrally to map by id for fast lookups
-  const listing = useMemo(
-    () => (listings ?? []).find((listing) => listing.package.name === brick.id),
-    [listings, brick.id]
-  );
+  const listing = listings[brick.id];
 
   const sizeMultiplier = SIZE_REGEX.exec(size).groups?.size;
   // Setting height and width via em allows for scaling with font size

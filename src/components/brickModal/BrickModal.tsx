@@ -96,6 +96,19 @@ type ButtonProps = {
   renderButton?: ({ show }: { show: () => void }) => React.ReactNode;
 };
 
+// Need to provide a key because we reorder elements on selection
+// See https://react-window.vercel.app/#/api/FixedSizeList
+function itemKey(index: number, data: BrickOption[]): RegistryId {
+  // Find the item at the specified index.
+  // In this case "data" is an Array that was passed to List as "itemData".
+  // eslint-disable-next-line security/detect-object-injection -- numeric value
+  const item = data[index];
+
+  // Return a value that uniquely identifies this item.
+  // Typically this will be a UID of some sort.
+  return item.value;
+}
+
 function ActualModal<T extends IBrick>({
   bricks = [],
   close,
@@ -106,7 +119,7 @@ function ActualModal<T extends IBrick>({
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
 
-  const { data: listings = [] } = useGetMarketplaceListingsQuery();
+  const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
   const searchResults = useSearch(bricks, query);
 
@@ -171,7 +184,9 @@ function ActualModal<T extends IBrick>({
                           itemCount={searchResults.length}
                           // The react-window library requires exact height
                           itemSize={87}
-                          itemData={searchResults}
+                          itemKey={itemKey}
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- typing the generic is tricky
+                          itemData={searchResults as any}
                         >
                           {({ index, style, data }) => {
                             // eslint-disable-next-line security/detect-object-injection -- index is a number
@@ -179,10 +194,9 @@ function ActualModal<T extends IBrick>({
                             return (
                               <div style={style}>
                                 <BrickResult
-                                  key={brick.id}
                                   brick={brick}
                                   onSelect={() => {
-                                    setDetailBrick(brick);
+                                    setDetailBrick(brick as T);
                                   }}
                                 />
                               </div>
@@ -199,9 +213,7 @@ function ActualModal<T extends IBrick>({
               {detailBrick ? (
                 <BrickDetail
                   brick={detailBrick}
-                  listing={listings.find(
-                    (listing) => detailBrick.id === listing.package.name
-                  )}
+                  listing={listings[detailBrick.id]}
                   selectCaption={selectCaption}
                   onSelect={() => {
                     onSelect(detailBrick);
