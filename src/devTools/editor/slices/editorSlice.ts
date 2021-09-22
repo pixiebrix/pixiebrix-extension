@@ -174,8 +174,6 @@ export const editorSlice = createSlice({
       state.beta = null;
       state.activeElement = action.payload;
       state.selectionSeq++;
-
-      console.log("selectElement", state);
     },
     markSaved: (state, action: PayloadAction<UUID>) => {
       const element = state.elements.find((x) => action.payload === x.uuid);

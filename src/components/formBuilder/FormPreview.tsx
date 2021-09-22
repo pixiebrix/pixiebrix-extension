@@ -23,8 +23,6 @@ import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
 import { useField } from "formik";
 import { UI_ORDER, UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
-import { Card } from "react-bootstrap";
-import ErrorBoundary from "@/components/ErrorBoundary";
 import { produce } from "immer";
 
 const FormPreview: React.FC<{
@@ -89,25 +87,27 @@ const FormPreview: React.FC<{
     [setActiveField]
   );
 
+  if (!schema || !uiSchema) {
+    return null;
+  }
+
   const fields = {
     StringField,
   };
 
   return (
-    <Card>
-      <ErrorBoundary>
-        {schema && uiSchema && (
-          <JsonSchemaForm
-            tagName="div"
-            formData={data}
-            fields={fields}
-            schema={schema}
-            uiSchema={uiSchema}
-            onChange={onDataChanged}
-          />
-        )}
-      </ErrorBoundary>
-    </Card>
+    <JsonSchemaForm
+      tagName="div"
+      formData={data}
+      fields={fields}
+      schema={schema}
+      uiSchema={uiSchema}
+      onChange={onDataChanged}
+    >
+      <div>
+        {/* This <div/> prevents JsonSchemaForm from rendering a Submit button */}
+      </div>
+    </JsonSchemaForm>
   );
 };
 

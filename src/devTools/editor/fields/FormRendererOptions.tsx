@@ -36,7 +36,7 @@ const FormRendererOptions: React.FC<{
   configKey: string;
 }> = ({ name, configKey }) => {
   const [activeField, setActiveField] = useReduxState(
-    formBuilderSelectors.formBuilderActiveField,
+    formBuilderSelectors.activeField,
     elementWizardActions.setActiveField
   );
 

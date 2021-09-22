@@ -94,7 +94,11 @@ const DataTab: React.FC<
     contents = children;
   }
 
-  return <Tab.Pane {...tabProps}>{contents}</Tab.Pane>;
+  return (
+    <Tab.Pane {...tabProps} className="pt-3">
+      {contents}
+    </Tab.Pane>
+  );
 };
 
 const DataPanel: React.FC<{
@@ -115,7 +119,7 @@ const DataPanel: React.FC<{
   const blockFieldConfigName = `${blockFieldName}.config`;
   const [{ value: configValue }] = useField(blockFieldConfigName);
   const formBuilderActiveField = useSelector<RootState, string>(
-    formBuilderSelectors.formBuilderActiveField
+    formBuilderSelectors.activeField
   );
   const dispatch = useDispatch();
   const setFormBuilderActiveField = useCallback(
@@ -188,11 +192,13 @@ const DataPanel: React.FC<{
           unmountOnExit
         >
           {showFormPreview ? (
-            <FormPreview
-              name={blockFieldConfigName}
-              activeField={formBuilderActiveField}
-              setActiveField={setFormBuilderActiveField}
-            />
+            <ErrorBoundary>
+              <FormPreview
+                name={blockFieldConfigName}
+                activeField={formBuilderActiveField}
+                setActiveField={setFormBuilderActiveField}
+              />
+            </ErrorBoundary>
           ) : // eslint-disable-next-line unicorn/no-nested-ternary -- pre-commit removes the parens
           showBlockPreview ? (
             <ErrorBoundary>

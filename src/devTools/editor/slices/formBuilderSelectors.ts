@@ -18,8 +18,7 @@
 import { RootState } from "@/devTools/store";
 
 const formBuilderSelectors = {
-  formBuilderActiveField: ({ formBuilder }: RootState) =>
-    formBuilder.activeField,
+  activeField: ({ formBuilder }: RootState) => formBuilder.activeField,
 };
 
 export default formBuilderSelectors;
