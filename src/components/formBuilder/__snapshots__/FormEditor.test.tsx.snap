@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FormEditor it renders empty schema 1`] = `
+exports[`FormEditor renders empty schema 1`] = `
 <DocumentFragment>
   <form
     action="#"
@@ -150,7 +150,7 @@ exports[`FormEditor it renders empty schema 1`] = `
 </DocumentFragment>
 `;
 
-exports[`FormEditor it renders simple schema 1`] = `
+exports[`FormEditor renders simple schema 1`] = `
 <DocumentFragment>
   <form
     action="#"

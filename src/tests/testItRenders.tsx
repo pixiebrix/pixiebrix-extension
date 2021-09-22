@@ -17,21 +17,28 @@
 
 import React, { PropsWithChildren } from "react";
 import { render } from "@testing-library/react";
+import { waitForEffect } from "./testHelpers";
 
 export type ItRendersOptions<TProps> = {
   Component: React.ComponentType<TProps>;
   props: TProps;
   testName?: string;
   TemplateComponent?: React.ComponentType<PropsWithChildren<unknown>>;
+  isAsync?: boolean;
 };
 
 function testItRenders<TProps = unknown>(
   options: ItRendersOptions<TProps> | (() => ItRendersOptions<TProps>)
 ) {
-  const { Component, props, testName = "It renders", TemplateComponent } =
-    typeof options === "function" ? options() : options;
+  const {
+    Component,
+    props,
+    testName = "It renders",
+    TemplateComponent,
+    isAsync = false,
+  } = typeof options === "function" ? options() : options;
 
-  test(testName, () => {
+  test(testName, async () => {
     const ui = TemplateComponent ? (
       <TemplateComponent>
         <Component {...props} />
@@ -40,6 +47,10 @@ function testItRenders<TProps = unknown>(
       <Component {...props} />
     );
     const rendered = render(ui);
+    if (isAsync) {
+      await waitForEffect();
+    }
+
     expect(rendered.asFragment()).toMatchSnapshot();
   });
 }

@@ -16,78 +16,162 @@
  */
 
 import { Schema, UiSchema } from "@/core";
+import { waitForEffect } from "@/tests/testHelpers";
 import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
-import { Form, Formik } from "formik";
-import React, { PropsWithChildren } from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import React from "react";
+import { Except } from "type-fest";
+import {
+  createFormikTemplate,
+  RJSF_SCHEMA_PROPERTY_NAME,
+} from "./formBuilderTestHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 import FormEditor, { FormEditorProps } from "./FormEditor";
 
-const rjsfSchemaPropertyName = "rjsfSchema";
-
 describe("FormEditor", () => {
-  const defaultProps: Partial<FormEditorProps> = {
-    name: rjsfSchemaPropertyName,
+  const defaultProps: Except<FormEditorProps, "activeField"> = {
+    name: RJSF_SCHEMA_PROPERTY_NAME,
     setActiveField: jest.fn(),
   };
 
-  const createFormikTemplate = (rjsfSchema: RJSFSchema) => {
-    const FormikTemplate = ({ children }: PropsWithChildren<never>) => (
-      <Formik
-        initialValues={{
-          [rjsfSchemaPropertyName]: rjsfSchema,
-        }}
-        onSubmit={jest.fn()}
-      >
-        <Form>{children}</Form>
-      </Formik>
-    );
-    FormikTemplate.displayName = "FormikTemplate";
-    return FormikTemplate;
-  };
+  describe("renders", () => {
+    testItRenders({
+      testName: "empty schema",
+      Component: FormEditor,
+      props: defaultProps,
+      TemplateComponent: createFormikTemplate({} as RJSFSchema),
+      isAsync: true,
+    });
 
-  testItRenders({
-    testName: "it renders empty schema",
-    Component: FormEditor,
-    props: defaultProps,
-    TemplateComponent: createFormikTemplate({} as RJSFSchema),
+    testItRenders(() => {
+      const schema: Schema = {
+        title: "A form",
+        description: "A form example.",
+        type: "object",
+        properties: {
+          firstName: {
+            type: "string",
+            title: "First name",
+            default: "Chuck",
+          },
+          age: {
+            type: "number",
+            title: "Age",
+          },
+          telephone: {
+            type: "string",
+            title: "Telephone",
+          },
+        },
+      };
+      const uiSchema: UiSchema = {};
+
+      const props: FormEditorProps = {
+        ...defaultProps,
+        activeField: "firstName",
+      };
+
+      const options: ItRendersOptions<FormEditorProps> = {
+        testName: "simple schema",
+        Component: FormEditor,
+        props,
+        TemplateComponent: createFormikTemplate({
+          schema,
+          uiSchema,
+        } as RJSFSchema),
+        isAsync: true,
+      };
+
+      return options;
+    });
   });
 
-  testItRenders(() => {
+  test("doesn't mark name field as invalid on blur", async () => {
+    const fieldName = "firstName";
+    const activeFieldTitle = "First name";
+
     const schema: Schema = {
       title: "A form",
-      description: "A form example.",
       type: "object",
       properties: {
-        firstName: {
+        [fieldName]: {
           type: "string",
-          title: "First name",
+          title: activeFieldTitle,
           default: "Chuck",
-        },
-        age: {
-          type: "number",
-          title: "Age",
-        },
-        telephone: {
-          type: "string",
-          title: "Telephone",
         },
       },
     };
-    const uiSchema: UiSchema = {};
+    const FormikTemplate = createFormikTemplate({
+      schema,
+      uiSchema: {},
+    } as RJSFSchema);
 
-    const options: ItRendersOptions<FormEditorProps> = {
-      testName: "it renders simple schema",
-      Component: FormEditor,
-      props: {
-        ...defaultProps,
-        activeField: "firstName",
-      } as FormEditorProps,
-      TemplateComponent: createFormikTemplate({
-        schema,
-        uiSchema,
-      } as RJSFSchema),
+    render(
+      <FormikTemplate>
+        <FormEditor activeField={fieldName} {...defaultProps} />
+      </FormikTemplate>
+    );
+
+    await waitForEffect();
+
+    const fieldNameInput = screen.getByLabelText("Name");
+    fireEvent.focus(fieldNameInput);
+    fireEvent.blur(fieldNameInput);
+
+    await waitForEffect();
+
+    const errorMessage = screen.queryByText(
+      `Name must be unique. Another property "${activeFieldTitle}" already has the name "${fieldName}".`
+    );
+    expect(errorMessage).toBeNull();
+
+    // Ensure the field is still active
+    expect(screen.getByLabelText("Name")).not.toBeNull();
+  });
+
+  test("validates the field name is unique", async () => {
+    const fieldName = "firstName";
+    const anotherFieldName = "lastName";
+    const anotherFieldTitle = "Another field";
+
+    const schema: Schema = {
+      title: "A form",
+      type: "object",
+      properties: {
+        [fieldName]: {
+          type: "string",
+          title: "First name",
+        },
+        [anotherFieldName]: {
+          type: "string",
+          title: anotherFieldTitle,
+        },
+      },
     };
+    const FormikTemplate = createFormikTemplate({
+      schema,
+      uiSchema: {},
+    } as RJSFSchema);
 
-    return options;
+    render(
+      <FormikTemplate>
+        <FormEditor activeField={fieldName} {...defaultProps} />
+      </FormikTemplate>
+    );
+
+    await waitForEffect();
+
+    const fieldNameInput = screen.getByLabelText("Name");
+    fireEvent.focus(fieldNameInput);
+    fireEvent.change(fieldNameInput, { target: { value: anotherFieldName } });
+    fireEvent.blur(fieldNameInput);
+
+    const errorMessage = screen.getByText(
+      `Name must be unique. Another property "${anotherFieldTitle}" already has the name "${anotherFieldName}".`
+    );
+    expect(errorMessage).not.toBeNull();
+
+    // Ensure the field is still active
+    expect(screen.getByLabelText("Name")).not.toBeNull();
   });
 });

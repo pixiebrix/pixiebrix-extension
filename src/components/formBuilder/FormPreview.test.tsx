@@ -17,32 +17,18 @@
 
 import { Schema, UiSchema } from "@/core";
 import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
-import { Form, Formik } from "formik";
-import React, { PropsWithChildren } from "react";
+import { Except } from "type-fest";
+import {
+  createFormikTemplate,
+  RJSF_SCHEMA_PROPERTY_NAME,
+} from "./formBuilderTestHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
 import FormPreview, { FormPreviewProps } from "./FormPreview";
 
-const rjsfSchemaPropertyName = "rjsfSchema";
-
 describe("FormPreview", () => {
-  const defaultProps: Partial<FormPreviewProps> = {
-    name: rjsfSchemaPropertyName,
+  const defaultProps: Except<FormPreviewProps, "activeField"> = {
+    name: RJSF_SCHEMA_PROPERTY_NAME,
     setActiveField: jest.fn(),
-  };
-
-  const createFormikTemplate = (rjsfSchema: RJSFSchema) => {
-    const FormikTemplate = ({ children }: PropsWithChildren<never>) => (
-      <Formik
-        initialValues={{
-          [rjsfSchemaPropertyName]: rjsfSchema,
-        }}
-        onSubmit={jest.fn()}
-      >
-        <Form>{children}</Form>
-      </Formik>
-    );
-    FormikTemplate.displayName = "FormikTemplate";
-    return FormikTemplate;
   };
 
   testItRenders({
@@ -75,13 +61,15 @@ describe("FormPreview", () => {
     };
     const uiSchema: UiSchema = {};
 
+    const props: FormPreviewProps = {
+      ...defaultProps,
+      activeField: "firstName",
+    };
+
     const options: ItRendersOptions<FormPreviewProps> = {
       testName: "it renders simple schema",
       Component: FormPreview,
-      props: {
-        ...defaultProps,
-        activeField: "firstName",
-      } as FormPreviewProps,
+      props,
       TemplateComponent: createFormikTemplate({
         schema,
         uiSchema,
