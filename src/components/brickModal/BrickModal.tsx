@@ -86,19 +86,23 @@ function useSearch<T extends IBrick>(
 type ModalProps<T extends IBrick = IBlock> = {
   bricks: T[];
   onSelect: (brick: T) => void;
+  selectCaption?: React.ReactNode;
+  recommendations?: RegistryId[];
+  close: () => void;
+};
+
+type ButtonProps = {
   caption?: string | React.ReactNode;
   renderButton?: ({ show }: { show: () => void }) => React.ReactNode;
-  recommendations?: RegistryId[];
 };
 
 function ActualModal<T extends IBrick>({
-  onSelect,
-  close,
   bricks = [],
+  close,
+  onSelect,
+  selectCaption,
   recommendations = [],
-}: Except<ModalProps<T>, "renderButton" | "caption"> & {
-  close: () => void;
-}): React.ReactElement<T> {
+}: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
 
@@ -198,6 +202,7 @@ function ActualModal<T extends IBrick>({
                   listing={listings.find(
                     (listing) => detailBrick.id === listing.package.name
                   )}
+                  selectCaption={selectCaption}
                   onSelect={() => {
                     onSelect(detailBrick);
                     close();
@@ -224,8 +229,8 @@ function ActualModal<T extends IBrick>({
 function BrickModal<T extends IBrick>({
   caption = "Select a Brick",
   renderButton,
-  ...rest
-}: ModalProps<T>): React.ReactElement<T> {
+  ...modalProps
+}: Except<ModalProps<T>, "close"> & ButtonProps): React.ReactElement<T> {
   const [show, setShow] = useState(false);
 
   const close = useCallback(() => {
@@ -234,7 +239,7 @@ function BrickModal<T extends IBrick>({
 
   return (
     <>
-      {show && <ActualModal {...rest} close={close} />}
+      {show && <ActualModal {...modalProps} close={close} />}
 
       {renderButton ? (
         renderButton({

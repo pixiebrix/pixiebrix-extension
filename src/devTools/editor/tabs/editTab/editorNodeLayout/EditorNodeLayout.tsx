@@ -43,6 +43,12 @@ const renderAppend = ({ show }: { show: () => void }) => (
   </>
 );
 
+const addBrickCaption = (
+  <span>
+    <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add brick
+  </span>
+);
+
 const EditorNodeLayout: React.FC<{
   nodes: EditorNodeProps[];
   activeNodeIndex: number;
@@ -86,6 +92,7 @@ const EditorNodeLayout: React.FC<{
                 bricks={relevantBlocksToAdd}
                 renderButton={renderInsert}
                 recommendations={recommendations}
+                selectCaption={addBrickCaption}
                 onSelect={(block) => {
                   addBlock(block, index);
                 }}
@@ -99,6 +106,7 @@ const EditorNodeLayout: React.FC<{
           bricks={relevantBlocksToAdd}
           renderButton={renderAppend}
           recommendations={recommendations}
+          selectCaption={addBrickCaption}
           onSelect={(block) => {
             addBlock(block, nodes.length);
           }}

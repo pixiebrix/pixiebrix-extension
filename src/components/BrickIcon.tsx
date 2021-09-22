@@ -98,9 +98,9 @@ const BrickIcon: React.FunctionComponent<{
   size?: "1x" | "2x";
 }> = ({ brick, size = "1x" }) => {
   const [type, setType] = useState<BlockType>(null);
-  // XXX: process the result and map by id for faster lookup
   const { data: listings } = useGetMarketplaceListingsQuery();
 
+  // PERFORMANCE: figure out how to post-process the result centrally to map by id for fast lookups
   const listing = useMemo(
     () => (listings ?? []).find((listing) => listing.package.name === brick.id),
     [listings, brick.id]

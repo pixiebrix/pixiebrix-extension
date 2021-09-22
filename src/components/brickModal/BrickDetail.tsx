@@ -1,18 +1,19 @@
 import React from "react";
-import { IBlock, IService } from "@/core";
+import { IBrick } from "@/core";
 import { MarketplaceListing } from "@/types/contract";
 import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import "./BrickModal.scss";
 
 const BrickDetail: React.FunctionComponent<{
-  brick: IBlock | IService;
+  brick: IBrick;
   listing?: MarketplaceListing;
   onSelect: () => void;
-}> = ({ brick, listing, onSelect }) => (
+  selectCaption?: React.ReactNode;
+}> = ({ brick, selectCaption = "Select", listing, onSelect }) => (
   <Row>
     <Col xs={12} className="d-flex justify-content-between">
       <div>
@@ -35,25 +36,31 @@ const BrickDetail: React.FunctionComponent<{
       </div>
       <div>
         <Button variant="primary mr-1 text-nowrap" onClick={onSelect}>
-          <FontAwesomeIcon icon={faPlus} className="mr-1" />
-          Add brick
+          {selectCaption}
         </Button>
       </div>
     </Col>
 
-    {"inputSchema" in brick ? (
-      <Col xs={12}>
-        <h5 className="my-3">Input Schema</h5>
-        <SchemaTree schema={brick.inputSchema} />
-        <h5 className="my-3">Output Schema</h5>
-        <SchemaTree schema={brick.outputSchema} />
-      </Col>
-    ) : (
-      <Col xs={12}>
-        <h5 className="my-3">Schema</h5>
-        <SchemaTree schema={brick.schema} />
-      </Col>
-    )}
+    <Col xs={12}>
+      {"inputSchema" in brick && (
+        <>
+          <h5 className="my-3">Input Schema</h5>
+          <SchemaTree schema={brick.inputSchema} />
+        </>
+      )}
+      {"outputSchema" in brick && (
+        <>
+          <h5 className="my-3">Output Schema</h5>
+          <SchemaTree schema={brick.outputSchema} />
+        </>
+      )}
+      {"schema" in brick && (
+        <>
+          <h5 className="my-3">Schema</h5>
+          <SchemaTree schema={brick.schema} />
+        </>
+      )}
+    </Col>
   </Row>
 );
 

@@ -633,6 +633,6 @@ export function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
 }
 
 /**
- * Brick is an inclusive term for entities with an id+version.
+ * Brick is an inclusive term for entities with an id + version.
  */
 export type IBrick = IBlock | IService | IExtensionPoint;

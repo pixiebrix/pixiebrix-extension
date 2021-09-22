@@ -22,7 +22,11 @@ import { IService, RawServiceConfiguration } from "@/core";
 import { RootState } from "@/options/store";
 import { uuidv4 } from "@/types/helpers";
 import BrickModal from "@/components/brickModal/BrickModal";
-import { faEyeSlash, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEyeSlash,
+  faPlus,
+  faSignOutAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
 import { deleteCachedAuth } from "@/background/requests";
@@ -179,6 +183,11 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         <BrickModal
           onSelect={onSelect}
           bricks={services}
+          selectCaption={
+            <span>
+              <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add
+            </span>
+          }
           caption="Add Private Integration"
         />
       </Card.Footer>
