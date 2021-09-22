@@ -17,7 +17,6 @@
  */
 
 import { IExtension, Metadata } from "@/core";
-import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -81,11 +80,9 @@ export interface ActionPanelFormState extends BaseFormState {
 
 function fromNativeElement(
   url: string,
-  metadata: Metadata,
-  element: null,
-  frameworks: FrameworkMeta[]
+  metadata: Metadata
 ): ActionPanelFormState {
-  const base = makeBaseState(uuidv4(), null, metadata, frameworks);
+  const base = makeBaseState();
 
   const heading = `${getDomain(url)} side panel`;
 

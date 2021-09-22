@@ -39,3 +39,37 @@ export interface ExtensionPointConfig<
   definition: T;
   kind: "extensionPoint";
 }
+
+export function assertExtensionPointConfig(
+  maybeExtensionPointConfig: unknown
+): asserts maybeExtensionPointConfig is ExtensionPointConfig {
+  const errorContext = { value: maybeExtensionPointConfig };
+
+  if (typeof maybeExtensionPointConfig !== "object") {
+    console.warn("Expected extension point", errorContext);
+    throw new TypeError("Expected object for ExtensionPointConfig");
+  }
+
+  const config = maybeExtensionPointConfig as Record<string, unknown>;
+
+  if (config.kind !== "extensionPoint") {
+    console.warn("Expected extension point", errorContext);
+    throw new TypeError(
+      "Expected kind 'extensionPoint' for ExtensionPointConfig"
+    );
+  }
+
+  if (typeof config.definition !== "object") {
+    console.warn("Expected extension point", errorContext);
+    throw new TypeError(
+      "Expected object for definition in ExtensionPointConfig"
+    );
+  }
+
+  const definition = config.definition as ExtensionPointDefinition;
+
+  if (typeof definition.isAvailable !== "object") {
+    console.warn("Expected object for definition.isAvailable", errorContext);
+    throw new TypeError("Invalid definition in ExtensionPointConfig");
+  }
+}

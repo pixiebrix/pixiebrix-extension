@@ -15,14 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { RegistryId } from "@/core";
-import { FastField, FieldInputProps, getIn, useFormikContext } from "formik";
+import React, { useRef } from "react";
+import { RegistryId, TemplateEngine } from "@/core";
+import { getIn, useField, useFormikContext } from "formik";
 import { useBlockOptions } from "@/hooks/useBlockOptions";
-import { Card, Form } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import SchemaFieldContext from "@/components/fields/schemaFields/SchemaFieldContext";
 import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverrides";
 import GridLoader from "react-spinners/GridLoader";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import styles from "./BlockConfiguration.module.scss";
+
+const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
 
 const BlockConfiguration: React.FunctionComponent<{
   name: string;
@@ -34,10 +38,38 @@ const BlockConfiguration: React.FunctionComponent<{
 
   const [{ error }, BlockOptions] = useBlockOptions(blockId);
 
+  const templateEngineFieldName = `${name}.templateEngine`;
+
+  const { value: templateEngineValue } = useField<TemplateEngine>(
+    templateEngineFieldName
+  )[0];
+
+  const templateEngineRef = useRef<HTMLDivElement>();
+
+  const onClickTemplateEngineLink = () => {
+    if (templateEngineRef.current === undefined) {
+      return;
+    }
+
+    templateEngineRef.current.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
-    <div className="BlockAccordion">
-      <Card>
-        <Card.Header className="BlockAccordion__header">Input</Card.Header>
+    <>
+      {templateEngineValue &&
+        templateEngineValue !== DEFAULT_TEMPLATE_ENGINE_VALUE && (
+          <div className={styles.advancedLinks}>
+            <Button
+              variant="link"
+              size="sm"
+              onClick={onClickTemplateEngineLink}
+            >
+              {`Template Engine: ${templateEngineValue}`}
+            </Button>
+          </div>
+        )}
+      <Card className={styles.card}>
+        <Card.Header className={styles.cardHeader}>Input</Card.Header>
         <Card.Body>
           <div>
             <SchemaFieldContext.Provider value={devtoolFieldOverrides}>
@@ -57,28 +89,30 @@ const BlockConfiguration: React.FunctionComponent<{
           </div>
         </Card.Body>
       </Card>
-      <Card>
-        <Card.Header className="BlockAccordion__header">
-          Advanced: Template Engine
+      <Card className={styles.card}>
+        <Card.Header className={styles.cardHeader}>
+          Advanced Options
         </Card.Header>
-        <Card.Body>
-          <Form.Label>Template engine</Form.Label>
-          <FastField name={`${name}.templateEngine`}>
-            {({ field }: { field: FieldInputProps<string> }) => (
-              <Form.Control as="select" {...field}>
-                <option value="mustache">Mustache</option>
-                <option value="handlebars">Handlebars</option>
-                <option value="nunjucks">Nunjucks</option>
-              </Form.Control>
-            )}
-          </FastField>
-          <Form.Text className="text-muted">
-            The template engine controls how PixieBrix fills in{" "}
-            <code>{"{{variables}}"}</code> in the inputs.
-          </Form.Text>
+        <Card.Body ref={templateEngineRef}>
+          <ConnectedFieldTemplate
+            name={templateEngineFieldName}
+            layout="vertical"
+            label="Template engine"
+            as="select"
+            description={
+              <p>
+                The template engine controls how PixieBrix fills in{" "}
+                <code>{"{{variables}}"}</code> in the inputs.
+              </p>
+            }
+          >
+            <option value="mustache">Mustache</option>
+            <option value="handlebars">Handlebars</option>
+            <option value="nunjucks">Nunjucks</option>
+          </ConnectedFieldTemplate>
         </Card.Body>
       </Card>
-    </div>
+    </>
   );
 };
 

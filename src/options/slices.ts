@@ -300,6 +300,7 @@ export const optionsSlice = createSlice({
         extensionId,
         extensionPointId,
         config,
+        definitions,
         label,
         optionsArgs,
         services,
@@ -322,6 +323,7 @@ export const optionsSlice = createSlice({
         // If the user updates an extension, detach it from the recipe -- it's now a personal extension
         _recipe: null,
         label,
+        definitions,
         optionsArgs,
         services,
         config,

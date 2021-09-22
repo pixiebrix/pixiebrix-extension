@@ -49,6 +49,7 @@ import {
   ElementType,
   isCustomReader,
 } from "@/devTools/editor/extensionPoints/elementConfig";
+import { resolveDefinitions } from "@/registry/internal";
 
 export interface DynamicDefinition<
   TExtensionPoint extends ExtensionPointDefinition = ExtensionPointDefinition,
@@ -127,7 +128,10 @@ export const updateDynamicElement = liftContentScript(
 
     clearDynamic(extensionConfig.id, { clearTrace: false });
 
-    extensionPoint.addExtension(extensionConfig);
+    // In practice, should be a no-op because the page editor handles the extensionPoint
+    const resolved = await resolveDefinitions(extensionConfig);
+
+    extensionPoint.addExtension(resolved);
     await runDynamic(extensionConfig.id, extensionPoint);
   }
 );

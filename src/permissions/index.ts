@@ -18,7 +18,6 @@
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { IExtension, IExtensionPoint, ServiceAuthPair } from "@/core";
 import {
-  ExtensionPointConfig,
   RecipeDefinition,
   ResolvedExtensionPointConfig,
 } from "@/types/definitions";
@@ -106,7 +105,7 @@ export async function collectPermissions(
   );
 
   const extensionPointPromises = extensionPoints.map(
-    async ({ id, permissions = {}, config }: ExtensionPointConfig) => {
+    async ({ id, permissions = {}, config }: ResolvedExtensionPointConfig) => {
       const extensionPoint = await extensionPointRegistry.lookup(id);
 
       let inner: Permissions.Permissions = {};

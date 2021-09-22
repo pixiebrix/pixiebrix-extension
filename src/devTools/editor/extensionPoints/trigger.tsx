@@ -17,7 +17,6 @@
  */
 
 import { IExtension, Metadata } from "@/core";
-import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -84,13 +83,12 @@ export interface TriggerFormState extends BaseFormState {
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  _element: null,
-  frameworks: FrameworkMeta[]
+  _element: null
 ): TriggerFormState {
   return {
     type: "trigger",
     label: `My ${getDomain(url)} trigger`,
-    ...makeBaseState(uuidv4(), null, metadata, frameworks),
+    ...makeBaseState(),
     extensionPoint: {
       metadata,
       definition: {

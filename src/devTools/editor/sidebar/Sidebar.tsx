@@ -78,12 +78,14 @@ const Sidebar: React.FunctionComponent<
   const [showAll, setShowAll] = useState(false);
 
   const {
-    installedIds,
+    availableInstalledIds,
     availableDynamicIds,
     unavailableCount,
   } = useInstallState(installed, elements);
 
-  const elementHash = hash(sortBy(elements.map((formState) => formState.uuid)));
+  const elementHash = hash(
+    sortBy(elements.map((formState) => `${formState.uuid}-${formState.label}`))
+  );
   const entries = useMemo(
     () => {
       const elementIds = new Set(elements.map((formState) => formState.uuid));
@@ -97,7 +99,7 @@ const Sidebar: React.FunctionComponent<
         ...installed.filter(
           (extension) =>
             !elementIds.has(extension.id) &&
-            (showAll || installedIds?.includes(extension.extensionPointId))
+            (showAll || availableInstalledIds?.has(extension.id))
         ),
       ];
       return sortBy(entries, (x) => x.label);
@@ -108,7 +110,7 @@ const Sidebar: React.FunctionComponent<
       elementHash,
       availableDynamicIds,
       showAll,
-      installedIds,
+      availableInstalledIds,
       activeElement,
     ]
   );
@@ -177,8 +179,10 @@ const Sidebar: React.FunctionComponent<
               <InstalledEntry
                 key={`installed-${entry.id}`}
                 extension={entry}
-                installedIds={installedIds}
                 activeElement={activeElement}
+                available={
+                  !availableInstalledIds || availableInstalledIds.has(entry.id)
+                }
               />
             ) : (
               <DynamicEntry
@@ -186,7 +190,7 @@ const Sidebar: React.FunctionComponent<
                 item={entry}
                 port={port}
                 available={
-                  !availableDynamicIds || availableDynamicIds?.has(entry.uuid)
+                  !availableDynamicIds || availableDynamicIds.has(entry.uuid)
                 }
                 activeElement={activeElement}
               />

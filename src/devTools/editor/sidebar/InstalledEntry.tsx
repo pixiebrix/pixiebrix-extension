@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback } from "react";
-import { IExtension } from "@/core";
+import { IExtension, UUID } from "@/core";
 import { useDispatch } from "react-redux";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -37,16 +37,15 @@ import {
  */
 const InstalledEntry: React.FunctionComponent<{
   extension: IExtension;
-  installedIds: string[];
-  activeElement: string | null;
-}> = ({ extension, installedIds, activeElement }) => {
+  activeElement: UUID | null;
+  available: boolean;
+}> = ({ extension, available, activeElement }) => {
   const dispatch = useDispatch();
   const [type] = useAsyncState(async () => selectType(extension), [
     extension.extensionPointId,
   ]);
-  const available = installedIds?.includes(extension.extensionPointId);
 
-  const selectInstalled = useCallback(
+  const selectHandler = useCallback(
     async (extension: IExtension) => {
       try {
         const state = await extensionToFormState(extension);
@@ -63,7 +62,7 @@ const InstalledEntry: React.FunctionComponent<{
     <ListGroup.Item
       active={extension.id === activeElement}
       key={`installed-${extension.id}`}
-      onClick={async () => selectInstalled(extension)}
+      onClick={async () => selectHandler(extension)}
       style={{ cursor: "pointer" }}
     >
       <ExtensionIcon type={type} /> {extension.label ?? extension.id}

@@ -15,23 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.topRow {
-  align-items: center;
-}
-
-.label {
-  width: 100%;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-}
-
-.removeButton {
-  margin-bottom: 16px;
-  margin-left: auto;
-}
-
-.removeText {
-  @media (max-width: 1460px) {
-    display: none;
-  }
+.span {
+  white-space: nowrap;
 }

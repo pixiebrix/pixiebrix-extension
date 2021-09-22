@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IExtension } from "@/core";
+import { IExtension, UUID } from "@/core";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -26,10 +26,11 @@ import {
 } from "@/background/devtools";
 import { zip } from "lodash";
 import hash from "object-hash";
+import { resolveDefinitions } from "@/registry/internal";
 
 export interface InstallState {
-  installedIds: string[] | undefined;
-  availableDynamicIds: Set<string> | undefined;
+  availableInstalledIds: Set<UUID> | undefined;
+  availableDynamicIds: Set<UUID> | undefined;
   unavailableCount: number | null;
 }
 
@@ -42,29 +43,42 @@ function useInstallState(
     tabState: { navSequence, meta },
   } = useContext(DevToolsContext);
 
-  const [installedIds] = useAsyncState(async () => {
+  const [availableInstalledIds] = useAsyncState(async () => {
     if (meta) {
-      return getInstalledExtensionPointIds(port);
+      const extensionPointIds = new Set(
+        await getInstalledExtensionPointIds(port)
+      );
+      const resolved = await Promise.all(
+        installed.map(async (extension) => resolveDefinitions(extension))
+      );
+      const available = resolved
+        .filter((x) => extensionPointIds.has(x.extensionPointId))
+        .map((x) => x.id);
+      return new Set<UUID>(
+        installed.filter((x) => available.includes(x.id)).map((x) => x.id)
+      );
     }
 
-    return [];
+    return new Set<UUID>();
   }, [port, navSequence, meta]);
 
   const [availableDynamicIds] = useAsyncState(async () => {
+    // At this point, if the extensionPoint is an inner extension point (without its own id), then it will have
+    // been expanded to extensionPoint
     if (meta) {
       const availability = await Promise.all(
         elements.map(async (element) =>
           checkAvailable(port, element.extensionPoint.definition.isAvailable)
         )
       );
-      return new Set<string>(
+      return new Set<UUID>(
         zip(elements, availability)
           .filter(([, available]) => available)
           .map(([extension]) => extension.uuid)
       );
     }
 
-    return new Set<string>();
+    return new Set<UUID>();
   }, [
     port,
     meta,
@@ -77,21 +91,13 @@ function useInstallState(
     ),
   ]);
 
-  const unavailableCount = useMemo(() => {
-    if (meta) {
-      if (installed && installedIds) {
-        return installed.filter(
-          (x) => !installedIds.includes(x.extensionPointId)
-        ).length;
-      }
-
-      return null;
-    }
-
-    return installed?.length;
-  }, [installed, installedIds, meta]);
-
-  return { installedIds, availableDynamicIds, unavailableCount };
+  return {
+    availableInstalledIds,
+    availableDynamicIds,
+    unavailableCount: meta
+      ? installed.length - availableInstalledIds.size
+      : null,
+  };
 }
 
 export default useInstallState;
