@@ -18,11 +18,7 @@
 import React, { useMemo } from "react";
 import { Schema } from "@/core";
 import { ListGroup, Table } from "react-bootstrap";
-import { isEmpty, sortBy } from "lodash";
-import PrimitiveEntry from "@/components/schemaTree/entries/PrimitiveEntry";
-import ObjectEntry from "@/components/schemaTree/entries/ObjectEntry";
-import ArrayEntry from "./entries/ArrayEntry";
-import { TreeEntry } from "@/components/schemaTree/types";
+import { sortBy } from "lodash";
 import { useTable, useExpanded } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -31,11 +27,6 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
-
-const typeEntries = new Map<string, TreeEntry>([
-  ["object", ObjectEntry],
-  ["array", ArrayEntry],
-]);
 
 const ExpandableCell: React.FunctionComponent<{
   row;
@@ -83,7 +74,7 @@ const DescriptionCell: React.FunctionComponent<{
 const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
 }) => {
-  const getType = (definition) => {
+  const getFormattedType = (definition) => {
     const { type, format } = definition as Schema;
 
     if (definition.oneOf) {
@@ -103,10 +94,10 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     if (type === "array") {
       const items = definition.items ?? { type: "unknown" };
       const itemType = ((items as Schema) ?? {}).type;
-      return itemType ? `${itemType} array` : "array";
+      return itemType ? `array of ${itemType}s` : "array";
     }
 
-    let formatted_type = type;
+    let formatted_type = type as string;
     if (Array.isArray(type)) {
       formatted_type = `[${type.map(
         (value, index) => `${index !== 0 ? " " : ""}${value}`
@@ -124,12 +115,10 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     return formatted_type ? formatted_type : "unknown";
   };
 
-  const data = useMemo(() => {
-    console.log("SchemaTree");
-    console.log(schema);
-
-    if (!schema) {
-      return [];
+  const getFormattedData = (schema) => {
+    if (schema.items) {
+      // This is an array, crawl array instead
+      return getFormattedData(schema.items);
     }
 
     return sortBy(Object.entries(schema.properties ?? {}), (x) => x[0])
@@ -141,18 +130,22 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
         return {
           name: prop,
           required: schema.required ? schema.required.includes(prop) : false,
-          type: getType(schemaDefinition),
+          type: getFormattedType(schemaDefinition),
           description,
-          subRows: [
-            {
-              name: "test prop",
-              required: false,
-              type: "test",
-              description: "a test sub row",
-            },
-          ],
+          subRows: getFormattedData(definition),
         };
       });
+  };
+
+  const data = useMemo(() => {
+    console.log("SchemaTree");
+    console.log(schema);
+
+    if (!schema) {
+      return [];
+    }
+
+    return getFormattedData(schema);
   }, [schema]);
 
   const columns = useMemo(
@@ -188,7 +181,6 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     headerGroups,
     rows,
     prepareRow,
-    state: { expanded },
   } = useTable({ columns, data }, useExpanded);
 
   if (!schema) {
@@ -200,65 +192,29 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   }
 
   return (
-    <>
-      <Table {...getTableProps()}>
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-              ))}
+    <Table {...getTableProps()}>
+      <thead>
+        {headerGroups.map((headerGroup) => (
+          <tr {...headerGroup.getHeaderGroupProps()}>
+            {headerGroup.headers.map((column) => (
+              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody {...getTableBodyProps()}>
+        {rows.map((row) => {
+          prepareRow(row);
+          return (
+            <tr {...row.getRowProps()}>
+              {row.cells.map((cell) => {
+                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+              })}
             </tr>
-          ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </Table>
-      <ListGroup variant="flush" className="SchemaTree">
-        {isEmpty(schema.properties) && (
-          <ListGroup.Item>No properties</ListGroup.Item>
-        )}
-        {sortBy(Object.entries(schema.properties ?? {}), (x) => x[0])
-          .filter(([, definition]) => typeof definition !== "boolean")
-          .map(([prop, definition]) => {
-            const schemaDefinition = definition as Schema;
-            const { type } = schemaDefinition;
-            const Entry =
-              typeof type === "string" ? typeEntries.get(type) : null;
-
-            if (Entry) {
-              return (
-                <Entry
-                  key={prop}
-                  prop={prop}
-                  definition={schemaDefinition}
-                  TreeRenderer={SchemaTree}
-                />
-              );
-            }
-
-            return (
-              <PrimitiveEntry
-                key={prop}
-                prop={prop}
-                definition={schemaDefinition}
-              />
-            );
-          })}
-      </ListGroup>
-    </>
+          );
+        })}
+      </tbody>
+    </Table>
   );
 };
 
