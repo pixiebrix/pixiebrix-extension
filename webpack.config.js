@@ -314,9 +314,8 @@ module.exports = (env, options) =>
     },
 
     performance: {
-      // Silence warnings because the size includes the sourcemaps
-      maxEntrypointSize: 15_120_000,
-      maxAssetSize: 15_120_000,
+      maxEntrypointSize: 5_120_000,
+      maxAssetSize: 5_120_000,
     },
     plugins: compact([
       rollbarPlugin,

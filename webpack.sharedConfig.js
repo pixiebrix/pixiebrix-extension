@@ -30,11 +30,6 @@ const merge = mergeWithCustomize({
 const tsconfig = JSON5.parse(fs.readFileSync("./tsconfig.json", "utf8"));
 
 const shared = {
-  stats: {
-    preset: "errors-warnings",
-    entrypoints: true,
-    timings: true,
-  },
   resolve: {
     alias: {
       // An existence check triggers webpack’s warnings https://github.com/handlebars-lang/handlebars.js/issues/953
