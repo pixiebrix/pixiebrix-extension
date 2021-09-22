@@ -17,26 +17,27 @@
 
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { useDispatch } from "react-redux";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { AxiosError } from "axios";
 import { optionsSlice } from "@/options/slices";
 import { FormikHelpers } from "formik";
-import { uniq } from "lodash";
 import { AddToast, useToasts } from "react-toast-notifications";
 import { reportError } from "@/telemetry/logging";
 import blockRegistry from "@/blocks/registry";
 import extensionPointRegistry from "@/extensionPoints/registry";
-import { makeExtensionReaders } from "@/devTools/editor/extensionPoints/base";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { reactivate } from "@/background/navigation";
 import { reportEvent } from "@/telemetry/events";
 import { fromJS as extensionPointFactory } from "@/extensionPoints/factory";
 import { extensionPermissions } from "@/permissions";
-import { isCustomReader } from "@/devTools/editor/extensionPoints/elementConfig";
 import { requestPermissions } from "@/utils/permissions";
 import { getErrorMessage } from "@/errors";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { objToYaml } from "@/utils/objToYaml";
+import {
+  extensionWithInnerDefinitions,
+  isInnerExtensionPoint,
+} from "@/devTools/editor/extensionPoints/base";
 
 const { saveExtension } = optionsSlice.actions;
 const { markSaved } = editorSlice.actions;
@@ -125,8 +126,6 @@ export function useCreate(): CreateCallback {
 
   const dispatch = useDispatch();
   const { addToast } = useToasts();
-  // Which reader ids have been saved in this session. If a reader has been saved,
-  const [savedReaders, setSavedReaders] = useState<string[]>([]);
 
   return useCallback(
     async (
@@ -163,63 +162,45 @@ export function useCreate(): CreateCallback {
           );
         }
 
-        // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
-        // number of bricks implemented and frequency of saves
-        const { data: editablePackages } = await (
-          await getLinkedApiClient()
-        ).get<EditablePackage[]>("api/bricks/");
+        const extensionPointId = element.extensionPoint.metadata.id;
+        const hasInnerExtensionPoint = isInnerExtensionPoint(extensionPointId);
 
-        const isEditable = editablePackages.some(
-          (x) => x.name === element.extensionPoint.metadata.id
-        );
-        const isLocked = element.installed && !isEditable;
+        let isEditable = false;
 
-        if (!isLocked) {
-          try {
-            // Save custom readers first because the extension point definition will reference them
-            const customReaders = makeExtensionReaders(
-              element
-            ).filter((reader) => isCustomReader(reader));
-            for (const customReader of customReaders) {
-              // SavedReaders is to handle case where save failed for the foundation, so subsequent saves needs
-              // to update the reader
-              const packageId =
-                element.installed ||
-                savedReaders.includes(customReader.metadata.id)
-                  ? editablePackages.find(
-                      // Bricks endpoint uses "name" instead of id
-                      (x) => x.name === customReader.metadata.id
-                    )?.id
-                  : null;
+        if (!hasInnerExtensionPoint) {
+          // PERFORMANCE: inefficient, grabbing all visible bricks prior to save. Not a big deal for now given
+          // number of bricks implemented and frequency of saves
+          const { data: editablePackages } = await (
+            await getLinkedApiClient()
+          ).get<EditablePackage[]>("api/bricks/");
 
-              await upsertConfig(packageId, "reader", customReader);
+          isEditable = editablePackages.some(
+            (x) => x.name === extensionPointId
+          );
 
-              setSavedReaders((prev) =>
-                uniq([...prev, customReader.metadata.id])
+          const isLocked = element.installed && !isEditable;
+
+          if (!isLocked) {
+            try {
+              const extensionPointConfig = adapter.selectExtensionPoint(
+                element
               );
+              const packageId = element.installed
+                ? editablePackages.find(
+                    // Bricks endpoint uses "name" instead of id
+                    (x) => x.name === extensionPointConfig.metadata.id
+                  )?.id
+                : null;
+
+              await upsertConfig(
+                packageId,
+                "extensionPoint",
+                extensionPointConfig
+              );
+            } catch (error: unknown) {
+              onStepError(error, "saving foundation");
+              return;
             }
-          } catch (error: unknown) {
-            onStepError(error, "saving reader definition");
-            return;
-          }
-
-          try {
-            const extensionPointConfig = adapter.selectExtensionPoint(element);
-            const packageId = element.installed
-              ? editablePackages.find(
-                  // Bricks endpoint uses "name" instead of id
-                  (x) => x.name === extensionPointConfig.metadata.id
-                )?.id
-              : null;
-
-            await upsertConfig(
-              packageId,
-              "extensionPoint",
-              extensionPointConfig
-            );
-          } catch (error: unknown) {
-            onStepError(error, "saving foundation");
-            return;
           }
         }
 
@@ -228,7 +209,7 @@ export function useCreate(): CreateCallback {
         });
 
         try {
-          // Make sure the pages have the latest blocks/etc (e.g., the saved reader). for when we reactivate below
+          // Make sure the pages have the latest blocks for when we reactivate below
           await Promise.all([
             blockRegistry.fetch(),
             extensionPointRegistry.fetch(),
@@ -245,7 +226,21 @@ export function useCreate(): CreateCallback {
         }
 
         try {
-          dispatch(saveExtension(adapter.selectExtension(element)));
+          const rawExtension = adapter.selectExtension(element);
+          if (hasInnerExtensionPoint) {
+            const extensionPointConfig = adapter.selectExtensionPoint(element);
+            dispatch(
+              saveExtension(
+                extensionWithInnerDefinitions(
+                  rawExtension,
+                  extensionPointConfig.definition
+                )
+              )
+            );
+          } else {
+            dispatch(saveExtension(rawExtension));
+          }
+
           dispatch(markSaved(element.uuid));
         } catch (error: unknown) {
           onStepError(error, "saving extension");
@@ -282,6 +277,6 @@ export function useCreate(): CreateCallback {
         setSubmitting(false);
       }
     },
-    [dispatch, addToast, setSavedReaders, savedReaders]
+    [dispatch, addToast]
   );
 }

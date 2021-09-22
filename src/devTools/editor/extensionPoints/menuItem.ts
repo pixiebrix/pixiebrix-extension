@@ -21,7 +21,6 @@ import {
   ButtonDefinition,
   ButtonSelectionResult,
 } from "@/nativeEditor/insertButton";
-import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
@@ -99,18 +98,12 @@ export interface ActionFormState extends BaseFormState {
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  button: ButtonSelectionResult,
-  frameworks: FrameworkMeta[]
+  button: ButtonSelectionResult
 ): ActionFormState {
   return {
     type: "menuItem",
     label: `My ${getDomain(url)} button`,
-    ...makeBaseState(
-      button.uuid,
-      button.menu.containerSelector,
-      metadata,
-      frameworks
-    ),
+    ...makeBaseState(button.uuid),
     containerInfo: button.containerInfo,
     extensionPoint: {
       metadata,

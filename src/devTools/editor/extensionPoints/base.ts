@@ -19,26 +19,24 @@ import {
   Config,
   EmptyConfig,
   IExtension,
+  InnerDefinitionRef,
   Metadata,
   RegistryId,
+  SafeString,
   selectMetadata,
   UUID,
 } from "@/core";
-import { Framework, FrameworkMeta, KNOWN_READERS } from "@/messaging/constants";
-import { castArray, isPlainObject, omit } from "lodash";
+import { castArray, cloneDeep, isPlainObject, omit } from "lodash";
 import brickRegistry from "@/blocks/registry";
 import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
 import {
-  defaultSelector,
-  readerOptions,
-} from "@/devTools/editor/tabs/reader/ReaderConfig";
-import {
+  assertExtensionPointConfig,
   ExtensionPointConfig,
   ExtensionPointDefinition,
 } from "@/extensionPoints/types";
 import { find as findBrick } from "@/registry/localRegistry";
 import React from "react";
-import { createSitePattern, getDomain } from "@/permissions/patterns";
+import { createSitePattern } from "@/permissions/patterns";
 import {
   BaseFormState,
   isCustomReader,
@@ -48,6 +46,7 @@ import {
 import { Except } from "type-fest";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BlockPipeline } from "@/blocks/types";
+import { freshIdentifier } from "@/utils";
 
 export interface WizardStep {
   step: string;
@@ -59,11 +58,14 @@ export interface WizardStep {
   extraProps?: Record<string, unknown>;
 }
 
-function defaultReader(frameworks: FrameworkMeta[]): Framework {
-  const knownFrameworks = (frameworks ?? []).filter((x) =>
-    KNOWN_READERS.includes(x.id)
-  );
-  return knownFrameworks.length > 0 ? knownFrameworks[0].id : "jquery";
+const DEFAULT_EXTENSION_POINT_VAR = "extensionPoint";
+
+const INNER_SCOPE = "@internal";
+
+export function isInnerExtensionPoint(
+  id: RegistryId | InnerDefinitionRef
+): boolean {
+  return id.startsWith(INNER_SCOPE + "/");
 }
 
 export function makeIsAvailable(
@@ -101,108 +103,26 @@ export function excludeInstanceIds<T extends Config>(
   };
 }
 
-export function makeReaderId(
-  foundationId: string,
-  excludeIds: string[] = []
-): RegistryId {
-  const base = `${foundationId}-reader`;
-  if (!excludeIds.includes(base)) {
-    return validateRegistryId(base);
-  }
-
-  let num = 1;
-  let id: string;
-  do {
-    num++;
-    id = `${base}-${num}`;
-  } while (excludeIds.includes(id));
-
-  return validateRegistryId(id);
-}
-
-interface ReaderOptions {
-  defaultSelector?: string;
-  reservedIds?: string[];
-  name?: string;
-}
-
-export function makeDefaultReader(
-  metadata: Metadata,
-  frameworks: FrameworkMeta[],
-  { defaultSelector, reservedIds = [], name }: ReaderOptions = {}
-): ReaderFormState {
-  return {
-    metadata: {
-      id: makeReaderId(metadata.id, reservedIds),
-      name: name ?? `Default reader for ${metadata.id}`,
-    },
-    outputSchema: {},
-    definition: {
-      type: defaultReader(frameworks),
-      selector: defaultSelector,
-      optional: false,
-      selectors: {},
-    },
-  };
-}
-
 export function makeBaseState(
-  uuid: UUID,
-  defaultSelector: string | null,
-  metadata: Metadata,
-  frameworks: FrameworkMeta[]
+  uuid: UUID = uuidv4()
 ): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
     services: [],
-    readers: [makeDefaultReader(metadata, frameworks, { defaultSelector })],
+    readers: [],
     extension: {},
   };
 }
 
-export async function generateExtensionPointMetadata(
-  label: string,
-  scope: string,
-  url: string,
-  reservedNames: string[]
-): Promise<Metadata> {
-  const domain = getDomain(url);
-
-  await brickRegistry.fetch();
-
-  const allowId = async (id: RegistryId) => {
-    if (!reservedNames.includes(id)) {
-      try {
-        await brickRegistry.lookup(id);
-      } catch {
-        // Name doesn't exist yet
-        return true;
-      }
-    }
-
-    return false;
+/**
+ * Create metadata for a temporary extension point definition. When the extension point is saved, it will be moved
+ * into the definitions section of the extension.
+ */
+export function internalExtensionPointMetaFactory(): Metadata {
+  return {
+    id: validateRegistryId(`${INNER_SCOPE}/${uuidv4()}`),
+    name: "Temporary extension point",
   };
-
-  // Find next available foundation id
-  const collection = `${scope ?? "@local"}/${domain}`;
-  for (let index = 1; index < 1000; index++) {
-    const id = validateRegistryId(
-      [collection, index === 1 ? "foundation" : `foundation-${index}`].join("/")
-    );
-
-    // Can't parallelize loop because we're looking for first alternative
-    const ok = (await Promise.all([allowId(id), allowId(makeReaderId(id))])) // eslint-disable-line no-await-in-loop
-      .every((allowed) => allowed);
-
-    if (ok) {
-      return {
-        id: validateRegistryId(id),
-        name: `${domain} ${label}`,
-      };
-    }
-  }
-
-  throw new Error("Could not find available id");
 }
 
 export function makeExtensionReaders({
@@ -213,41 +133,27 @@ export function makeExtensionReaders({
       return { metadata: reader.metadata };
     }
 
-    const { metadata, definition, outputSchema = {} } = reader;
-
-    const readerOption = readerOptions.find((x) => x.value === definition.type);
-
-    return {
-      apiVersion: "v1",
-      kind: "reader",
-      metadata: {
-        id: metadata.id,
-        name: metadata.name,
-        version: "1.0.0",
-        description: "Reader created with the Page Editor",
-      },
-      definition: {
-        reader: (readerOption?.makeConfig ?? defaultSelector)(definition),
-      },
-      outputSchema,
-    };
+    throw new Error("makeExtensionReaders does not support custom readers");
   });
 }
 
 export async function makeReaderFormState(
   extensionPoint: ExtensionPointConfig
 ): Promise<Array<ReaderFormState | ReaderReferenceFormState>> {
-  const readerId = extensionPoint.definition.reader;
+  assertExtensionPointConfig(extensionPoint);
+
+  const readerConfig = extensionPoint.definition.reader ?? [];
 
   let readerIds: RegistryId[];
 
-  if (isPlainObject(readerId)) {
+  if (isPlainObject(readerConfig)) {
     throw new Error("Key-based composite readers not supported");
-  } else if (typeof readerId === "string") {
-    readerIds = [readerId];
-  } else if (Array.isArray(readerId)) {
-    readerIds = readerId as RegistryId[];
+  } else if (typeof readerConfig === "string") {
+    readerIds = [readerConfig];
+  } else if (Array.isArray(readerConfig)) {
+    readerIds = readerConfig as RegistryId[];
   } else {
+    console.error("Unexpected reader configuration", { extensionPoint });
     throw new TypeError("Unexpected reader configuration");
   }
 
@@ -292,6 +198,8 @@ type SimpleAvailability = {
 export function selectIsAvailable(
   extensionPoint: ExtensionPointConfig
 ): SimpleAvailability {
+  assertExtensionPointConfig(extensionPoint);
+
   const { isAvailable } = extensionPoint.definition;
   const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
   const selectors = castArray(isAvailable.selectors ?? []);
@@ -314,6 +222,20 @@ export function selectIsAvailable(
   };
 }
 
+export function hasInnerExtensionPoint(extension: IExtension): boolean {
+  const hasInner = extension.extensionPointId in (extension.definitions ?? {});
+
+  if (!hasInner && isInnerExtensionPoint(extension.extensionPointId)) {
+    console.warn(
+      "Extension is missing inner definition for %s",
+      extension.extensionPointId,
+      { extension }
+    );
+  }
+
+  return hasInner;
+}
+
 export async function lookupExtensionPoint<
   TDefinition extends ExtensionPointDefinition,
   TConfig extends EmptyConfig,
@@ -326,6 +248,25 @@ export async function lookupExtensionPoint<
 > {
   if (!config) {
     throw new Error("config is required");
+  }
+
+  if (hasInnerExtensionPoint(config)) {
+    const definition = config.definitions[config.extensionPointId];
+    console.debug(
+      "Converting extension definition to temporary extension point",
+      definition
+    );
+    const innerExtensionPoint = ({
+      apiVersion: "v1",
+      kind: "extensionPoint",
+      metadata: internalExtensionPointMetaFactory(),
+      ...definition,
+    } as unknown) as ExtensionPointConfig<TDefinition> & {
+      definition: { type: TType };
+    };
+
+    assertExtensionPointConfig(innerExtensionPoint);
+    return innerExtensionPoint;
   }
 
   const brick = await findBrick(config.extensionPointId);
@@ -364,4 +305,32 @@ export function baseSelectExtensionPoint(
       description: metadata.description ?? "Created using the Page Editor",
     },
   };
+}
+
+export function extensionWithInnerDefinitions(
+  extension: IExtension,
+  extensionPointDefinition: ExtensionPointDefinition
+): IExtension {
+  if (isInnerExtensionPoint(extension.extensionPointId)) {
+    const extensionPointId = freshIdentifier(
+      DEFAULT_EXTENSION_POINT_VAR as SafeString,
+      [...Object.keys(extension.definitions ?? {})]
+    );
+
+    const result = cloneDeep(extension);
+    result.definitions = {
+      ...result.definitions,
+      [extensionPointId]: {
+        kind: "extensionPoint",
+        definition: extensionPointDefinition,
+      },
+    };
+
+    // XXX: we need to fix the type of IExtension.extensionPointId to support variable names
+    result.extensionPointId = extensionPointId as RegistryId;
+
+    return result;
+  }
+
+  return extension;
 }

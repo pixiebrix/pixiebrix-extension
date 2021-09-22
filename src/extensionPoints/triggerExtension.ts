@@ -24,7 +24,7 @@ import {
 } from "@/blocks/combinators";
 import {
   IBlock,
-  IExtension,
+  ResolvedExtension,
   IExtensionPoint,
   ReaderOutput,
   ReaderRoot,
@@ -112,7 +112,9 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
     },
   });
 
-  async getBlocks(extension: IExtension<TriggerConfig>): Promise<IBlock[]> {
+  async getBlocks(
+    extension: ResolvedExtension<TriggerConfig>
+  ): Promise<IBlock[]> {
     return blockList(extension.config.action);
   }
 
@@ -122,7 +124,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
 
   private async runExtension(
     ctxt: ReaderOutput,
-    extension: IExtension<TriggerConfig>,
+    extension: ResolvedExtension<TriggerConfig>,
     root: ReaderRoot
   ) {
     const extensionLogger = this.logger.childLogger(
