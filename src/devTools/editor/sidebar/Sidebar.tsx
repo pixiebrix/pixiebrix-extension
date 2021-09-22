@@ -83,7 +83,9 @@ const Sidebar: React.FunctionComponent<
     unavailableCount,
   } = useInstallState(installed, elements);
 
-  const elementHash = hash(sortBy(elements.map((formState) => formState.uuid)));
+  const elementHash = hash(
+    sortBy(elements.map((formState) => `${formState.uuid}-${formState.label}`))
+  );
   const entries = useMemo(
     () => {
       const elementIds = new Set(elements.map((formState) => formState.uuid));

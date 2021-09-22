@@ -15,23 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.topRow {
-  align-items: center;
+.advancedLinks {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 5px;
 }
 
-.label {
-  width: 100%;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
+.card {
+  border-radius: 0 !important;
 }
 
-.removeButton {
-  margin-bottom: 16px;
-  margin-left: auto;
-}
-
-.removeText {
-  @media (max-width: 1460px) {
-    display: none;
-  }
+.cardHeader {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
 }

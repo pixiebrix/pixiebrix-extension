@@ -16,7 +16,7 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import { Tab } from "react-bootstrap";
+import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useField, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
@@ -40,6 +40,8 @@ import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceV
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockIcon from "@/components/BlockIcon";
+import { isNullOrBlank } from "@/utils";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -57,7 +59,7 @@ const NotImplementedFoundationEditor: React.FC<{ isLocked: boolean }> = () => (
 );
 
 const blockConfigTheme: ThemeProps = {
-  layout: "vertical",
+  layout: "horizontal",
 };
 
 const EditTab: React.FC<{
@@ -141,7 +143,7 @@ const EditTab: React.FC<{
     ([action, block], index) =>
       block
         ? {
-            title: action.label ?? block?.name,
+            title: isNullOrBlank(action.label) ? block?.name : action.label,
             outputKey: action.outputKey,
             icon: <BlockIcon block={block} size="2x" />,
             onClick: () => {
@@ -217,7 +219,17 @@ const EditTab: React.FC<{
         <div className={styles.configPanel}>
           <ErrorBoundary>
             <FormTheme.Provider value={blockConfigTheme}>
-              {activeNodeIndex === 0 && <FoundationNode isLocked={isLocked} />}
+              {activeNodeIndex === 0 && (
+                <>
+                  <Col>
+                    <ConnectedFieldTemplate
+                      name="label"
+                      label="Extension Name"
+                    />
+                  </Col>
+                  <FoundationNode isLocked={isLocked} />
+                </>
+              )}
 
               {activeNodeIndex > 0 && (
                 <EditorNodeConfigPanel
