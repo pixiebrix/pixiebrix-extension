@@ -25,13 +25,42 @@ import ArrayEntry from "./entries/ArrayEntry";
 import { TreeEntry } from "@/components/schemaTree/types";
 import { useTable, useExpanded } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faCaretRight,
+  faCheck,
+} from "@fortawesome/free-solid-svg-icons";
 import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
 
 const typeEntries = new Map<string, TreeEntry>([
   ["object", ObjectEntry],
   ["array", ArrayEntry],
 ]);
+
+const ExpandableCell: React.FunctionComponent<{
+  row;
+  cell;
+}> = ({ row, cell }) => (
+  <span
+    {...row.getToggleRowExpandedProps({
+      style: {
+        // Indent the row according to depth level
+        paddingLeft: `${row.depth * 2}rem`,
+      },
+    })}
+  >
+    {row.canExpand && (
+      <>
+        {row.isExpanded ? (
+          <FontAwesomeIcon icon={faCaretDown} />
+        ) : (
+          <FontAwesomeIcon icon={faCaretRight} />
+        )}
+      </>
+    )}
+    <code>{cell.value}</code>
+  </span>
+);
 
 const CodeCell: React.FunctionComponent<{
   cell;
@@ -40,16 +69,16 @@ const CodeCell: React.FunctionComponent<{
 const RequiredCell: React.FunctionComponent<{
   row;
 }> = ({ row }) => (
-  <div className="text-center">
+  <span>
     {row.values.required && (
       <FontAwesomeIcon icon={faCheck} className="text-success" />
     )}
-  </div>
+  </span>
 );
 
 const DescriptionCell: React.FunctionComponent<{
-  row;
-}> = ({ row }) => <p className="m-0">{row.values.description}</p>;
+  cell;
+}> = ({ cell }) => <p className="m-0">{cell.value}</p>;
 
 const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
@@ -107,13 +136,21 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
       .filter(([, definition]) => typeof definition !== "boolean")
       .map(([prop, definition]) => {
         const schemaDefinition = definition as Schema;
-        const { type, format, enum: type_enum, description } = schemaDefinition;
+        const { description } = schemaDefinition;
 
         return {
           name: prop,
           required: schema.required ? schema.required.includes(prop) : false,
           type: getType(schemaDefinition),
           description,
+          subRows: [
+            {
+              name: "test prop",
+              required: false,
+              type: "test",
+              description: "a test sub row",
+            },
+          ],
         };
       });
   }, [schema]);
@@ -121,9 +158,10 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   const columns = useMemo(
     () => [
       {
+        id: "expander",
         Header: "Name",
         accessor: "name",
-        Cell: CodeCell,
+        Cell: ExpandableCell,
       },
       {
         Header: "Required",
@@ -144,15 +182,14 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     []
   );
 
-  const tableInstance = useTable({ columns, data });
-
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
     prepareRow,
-  } = tableInstance;
+    state: { expanded },
+  } = useTable({ columns, data }, useExpanded);
 
   if (!schema) {
     return (
