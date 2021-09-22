@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  CSSProperties,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import {
   Button,
   Col,
@@ -96,13 +102,43 @@ type ButtonProps = {
   renderButton?: ({ show }: { show: () => void }) => React.ReactNode;
 };
 
-// Need to provide a key because we reorder elements on selection
+type ItemType = {
+  searchResults: BrickOption[];
+  setDetailBrick: (brick: IBrick) => void;
+};
+
+// The item renderer must be it's own separate component to react-window from re-mounting the results
+// https://github.com/bvaughn/react-window/issues/420#issuecomment-585813335
+const ItemRenderer = ({
+  index,
+  style,
+  data: { searchResults, setDetailBrick },
+}: {
+  index: number;
+  style: CSSProperties;
+  data: ItemType;
+}) => {
+  // eslint-disable-next-line security/detect-object-injection -- numeric value from library
+  const { data: brick } = searchResults[index];
+  return (
+    <div style={style}>
+      <BrickResult
+        brick={brick}
+        onSelect={() => {
+          setDetailBrick(brick);
+        }}
+      />
+    </div>
+  );
+};
+
+// Need to provide a key because we reorder elements on search
 // See https://react-window.vercel.app/#/api/FixedSizeList
-function itemKey(index: number, data: BrickOption[]): RegistryId {
+function itemKey(index: number, { searchResults }: ItemType): RegistryId {
   // Find the item at the specified index.
   // In this case "data" is an Array that was passed to List as "itemData".
   // eslint-disable-next-line security/detect-object-injection -- numeric value
-  const item = data[index];
+  const item = searchResults[index];
 
   // Return a value that uniquely identifies this item.
   // Typically this will be a UID of some sort.
@@ -144,7 +180,7 @@ function ActualModal<T extends IBrick>({
 
   return (
     <Modal
-      className="BlockModal"
+      className="BrickModal"
       show
       size="xl"
       onHide={close}
@@ -185,23 +221,11 @@ function ActualModal<T extends IBrick>({
                           // The react-window library requires exact height
                           itemSize={87}
                           itemKey={itemKey}
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- typing the generic is tricky
-                          itemData={searchResults as any}
+                          itemData={
+                            { searchResults, setDetailBrick } as ItemType
+                          }
                         >
-                          {({ index, style, data }) => {
-                            // eslint-disable-next-line security/detect-object-injection -- index is a number
-                            const { data: brick } = data[index];
-                            return (
-                              <div style={style}>
-                                <BrickResult
-                                  brick={brick}
-                                  onSelect={() => {
-                                    setDetailBrick(brick as T);
-                                  }}
-                                />
-                              </div>
-                            );
-                          }}
+                          {ItemRenderer}
                         </LazyList>
                       )}
                     </AutoSizer>
@@ -209,7 +233,7 @@ function ActualModal<T extends IBrick>({
                 </Col>
               </Row>
             </Col>
-            <Col xs={7} className="BlockDetail" key={detailBrick?.id}>
+            <Col xs={7} className="BrickDetail" key={detailBrick?.id}>
               {detailBrick ? (
                 <BrickDetail
                   brick={detailBrick}

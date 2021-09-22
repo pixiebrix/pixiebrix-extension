@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { IBrick } from "@/core";
 import { BlockType, getType } from "@/blocks/util";
-import { useAsyncEffect } from "use-async-effect";
 import { IconProp, library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
@@ -43,6 +42,7 @@ import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import cx from "classnames";
+import { useAsyncState } from "@/hooks/common";
 
 library.add(fas, fab, far);
 
@@ -97,7 +97,7 @@ const BrickIcon: React.FunctionComponent<{
   brick: IBrick;
   size?: "1x" | "2x";
 }> = ({ brick, size = "1x" }) => {
-  const [type, setType] = useState<BlockType>(null);
+  const [type] = useAsyncState(async () => getType(brick), [brick]);
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
   const listing = listings[brick.id];
@@ -105,10 +105,6 @@ const BrickIcon: React.FunctionComponent<{
   const sizeMultiplier = SIZE_REGEX.exec(size).groups?.size;
   // Setting height and width via em allows for scaling with font size
   const cssSize = `${sizeMultiplier}em`;
-
-  useAsyncEffect(async () => {
-    setType(await getType(brick));
-  }, [brick, setType]);
 
   const fa_icon = useMemo(() => {
     if (listing?.fa_icon) {
