@@ -23,7 +23,7 @@ const PrimitiveEntry: React.FunctionComponent<{
   prop: string;
   definition: Schema;
 }> = ({ prop, definition }) => {
-  const { type = "unknown", format, description } = definition;
+  const { type = "unknown", enum: type_enum, format, description } = definition;
   // FIXME: template can be an array https://github.com/pixiebrix/pixiebrix-extension/issues/990
   return (
     <ListGroup.Item key={prop}>
@@ -32,16 +32,23 @@ const PrimitiveEntry: React.FunctionComponent<{
           <span>
             <code>{prop}</code>
           </span>
+        </div>
+        <div>
           <span className="type badge badge-pill badge-secondary ml-1">
             {Array.isArray(type)
-              ? type.map((value, index) => (
-                  <>
-                    {value} {index < type.length - 1 && <>| </>}
-                  </>
-                ))
+              ? type.map(
+                  (value, index) =>
+                    `${value} ${index < type.length - 1 && " | "}`
+                )
               : format
               ? `${format} ${type}`
               : type}
+
+            {type_enum && ": enum"}
+          </span>
+          <br />
+          <span className="small">
+            {type_enum && type_enum.map((value, index) => `"${value}", `)}
           </span>
         </div>
         <div>
