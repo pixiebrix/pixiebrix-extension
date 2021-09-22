@@ -112,10 +112,18 @@ export class PropertyTableRenderer extends Renderer {
     );
   }
 
-  inputSchema = propertiesToSchema({});
+  inputSchema = propertiesToSchema(
+    {
+      data: {
+        description:
+          "The data to show in the table, or null/blank to show the implicit data",
+      },
+    },
+    []
+  );
 
   async render(
-    inputs: BlockArg,
+    { data }: BlockArg,
     { ctxt }: BlockOptions
   ): Promise<RenderedHTML> {
     const PropertyTree = (
@@ -128,7 +136,7 @@ export class PropertyTableRenderer extends Renderer {
     return {
       Component: PropertyTree,
       props: {
-        value: shapeData(ctxt),
+        value: shapeData(data ?? ctxt),
       },
     } as any;
   }
