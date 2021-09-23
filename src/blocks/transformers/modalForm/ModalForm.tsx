@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import Form from "@rjsf/core";
+import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { UUID } from "@/core";
 import { useAsyncState } from "@/hooks/common";
 import {
@@ -63,7 +63,7 @@ const ModalForm: React.FC = () => {
 
   return (
     <ModalLayout>
-      <Form
+      <JsonSchemaForm
         schema={definition.schema}
         uiSchema={definition.uiSchema}
         onSubmit={({ formData: values }) => {
@@ -86,7 +86,7 @@ const ModalForm: React.FC = () => {
             </button>
           )}
         </div>
-      </Form>
+      </JsonSchemaForm>
     </ModalLayout>
   );
 };
