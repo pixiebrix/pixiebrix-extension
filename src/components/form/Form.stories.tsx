@@ -169,18 +169,6 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
         </span>
       }
     />
-    <ConnectedFieldTemplate
-      name="stringArray"
-      layout="switch"
-      label="Sets/resets the 'foo' value in the stringArray"
-      value="foo"
-    />
-    <ConnectedFieldTemplate
-      name="stringArray"
-      layout="switch"
-      label="Sets/resets the 'bar' value in the stringArray"
-      value="bar"
-    />
   </Form>
 );
 
