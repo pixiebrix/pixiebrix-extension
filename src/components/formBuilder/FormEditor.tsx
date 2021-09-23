@@ -19,7 +19,7 @@
 import { useField } from "formik";
 import React, { useEffect } from "react";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
-import { Button, Form as BootstrapForm } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
@@ -156,20 +156,26 @@ const FormEditor: React.FC<FormEditorProps> = ({
     uiOrder[uiOrder.length - 2] !== activeField;
 
   return (
-    <div className={styles.root}>
-      <BootstrapForm.Group>
-        <h5>Edit form</h5>
-        <hr />
-      </BootstrapForm.Group>
-      <ConnectedFieldTemplate name={`${name}.schema.title`} label="Title" />
+    <>
+      <ConnectedFieldTemplate
+        name={`${name}.schema.title`}
+        label="Form Title"
+      />
       <ConnectedFieldTemplate
         name={`${name}.schema.description`}
-        label="Description"
+        label="Form Description"
       />
-      <BootstrapForm.Group>
-        <h6>Edit fields</h6>
-        <hr />
-      </BootstrapForm.Group>
+      <hr />
+      <Row className={styles.currFieldRow}>
+        <Col xl="3" className={styles.currField}>
+          <h6>Current Field</h6>
+        </Col>
+        <Col xl="9">
+          <small className="text-muted">
+            Use the Preview Tab on the right to select a field to edit ⟶
+          </small>
+        </Col>
+      </Row>
       {activeField && Boolean(schema.properties?.[activeField]) && (
         <FieldEditor
           name={name}
@@ -209,7 +215,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
       >
         <FontAwesomeIcon icon={faTimes} />
       </Button>
-    </div>
+    </>
   );
 };
 
