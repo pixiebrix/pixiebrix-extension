@@ -58,7 +58,12 @@ const RenderedField: React.FC<FieldProps> = ({
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
-  const nonUndefinedValue = typeof value === "undefined" ? "" : value;
+
+  // `value` prop on `input` should never be null.
+  // It should be `undefined` for uncontrolled components (not this case).
+  // To clear the component the `value` should be an empty string.
+  const nonUndefinedValue =
+    typeof value === "undefined" || value === null ? "" : value;
 
   return layout === "vertical" ? (
     <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
