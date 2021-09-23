@@ -46,7 +46,7 @@ import {
 import { Except } from "type-fest";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BlockPipeline } from "@/blocks/types";
-import { freshIdentifier } from "@/utils";
+import { freshIdentifier, removeUndefined } from "@/utils";
 
 export interface WizardStep {
   step: string;
@@ -333,4 +333,21 @@ export function extensionWithInnerDefinitions(
   }
 
   return extension;
+}
+
+/**
+ * Remove object entries undefined and empty-string values.
+ *
+ * - Formik/React need real blank values in order to control `input` tag components.
+ * - PixieBrix does not want those because it treats an empty string as "", not null/undefined
+ */
+// eslint-disable-next-line @typescript-eslint/ban-types -- support interfaces that don't have index types
+export function removeEmptyValues<T extends object>(obj: T): T {
+  // Technically the return type is Partial<T> (with recursive partials). However, we'll trust that the PageEditor
+  // requires the user to set values that actually need to be set. (They'll also get caught by input validation in
+  // when the bricks are run.
+  return removeUndefined(
+    obj,
+    (x: unknown) => typeof x === "undefined" || x === ""
+  ) as T;
 }

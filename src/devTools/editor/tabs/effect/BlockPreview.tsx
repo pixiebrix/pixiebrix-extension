@@ -32,6 +32,7 @@ import JsonTree from "@/components/jsonTree/JsonTree";
 import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
 import { getType } from "@/blocks/util";
+import { removeEmptyValues } from "@/devTools/editor/extensionPoints/base";
 
 const BlockPreview: React.FunctionComponent<{
   traceRecord: TraceRecord;
@@ -56,7 +57,10 @@ const BlockPreview: React.FunctionComponent<{
     async (blockConfig: BlockConfig, args: Record<string, unknown>) => {
       setIsRunning(true);
       try {
-        const result = await runBlock(port, { blockConfig, args });
+        const result = await runBlock(port, {
+          blockConfig: removeEmptyValues(blockConfig),
+          args,
+        });
         setOutput(result);
       } catch (error: unknown) {
         setOutput(error);

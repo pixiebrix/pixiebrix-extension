@@ -163,7 +163,17 @@ export function isPrimitive(val: unknown): val is Primitive {
   return typeof val !== "function";
 }
 
-export function removeUndefined(obj: unknown): unknown {
+const isUndefined = (value: unknown) => typeof value === "undefined";
+
+/**
+ * Recursively exclude properties that have undefined values
+ * @param obj an object
+ * @param predicate predicate returning true if value is undefined
+ */
+export function removeUndefined(
+  obj: unknown,
+  predicate: (value: unknown) => boolean = isUndefined
+): unknown {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null
   // `typeof null === "object"`, so have to check for it before the "object" check below
   if (obj == null) {
@@ -171,13 +181,13 @@ export function removeUndefined(obj: unknown): unknown {
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((x) => removeUndefined(x));
+    return obj.map((item) => removeUndefined(item, predicate));
   }
 
   if (typeof obj === "object") {
     return mapValues(
-      pickBy(obj, (x) => x !== undefined),
-      (x) => removeUndefined(x)
+      pickBy(obj, (value) => !predicate(value)),
+      (value) => removeUndefined(value, predicate)
     );
   }
 

@@ -25,6 +25,7 @@ import {
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
+  removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
@@ -123,7 +124,7 @@ function selectExtensionPoint(
   const {
     definition: { isAvailable, documentUrlPatterns, contexts = ["all"] },
   } = extensionPoint;
-  return {
+  return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "contextMenu",
@@ -132,14 +133,14 @@ function selectExtensionPoint(
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
     },
-  };
+  });
 }
 
 function selectExtension(
   { uuid, label, extensionPoint, extension, services }: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ContextMenuConfig> {
-  return {
+  return removeEmptyValues({
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
@@ -148,7 +149,7 @@ function selectExtension(
     config: options.includeInstanceIds
       ? extension
       : excludeInstanceIds(extension, "action"),
-  };
+  });
 }
 
 async function fromExtension(
