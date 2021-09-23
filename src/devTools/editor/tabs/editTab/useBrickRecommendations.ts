@@ -33,6 +33,7 @@ const typeRecommendations = new Map<ElementType, RegistryId[]>([
   [
     "menuItem",
     [
+      "@pixiebrix/form-modal",
       "@pixiebrix/browser/open-tab",
       "@pixiebrix/zapier/push-data",
       "@pixiebrix/forms/set",
@@ -49,6 +50,7 @@ const typeRecommendations = new Map<ElementType, RegistryId[]>([
   [
     "contextMenu",
     [
+      "@pixiebrix/form-modal",
       "@pixiebrix/browser/open-tab",
       "@pixiebrix/zapier/push-data",
       "slack/simple-message",
