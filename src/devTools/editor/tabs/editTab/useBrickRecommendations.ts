@@ -19,8 +19,13 @@ import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { RegistryId } from "@/core";
 import blockRegistry from "@/blocks/registry";
 import { getType } from "@/blocks/util";
-import { uniq } from "lodash";
+import { isEqual, uniq } from "lodash";
 import { allSettledValues } from "@/utils";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { useFormikContext } from "formik";
+import { useDebounce } from "use-debounce";
+import { useAsyncState } from "@/hooks/common";
+import { collectRegistryIds } from "@/devTools/editor/tabs/editTab/editHelpers";
 
 const READER_COUNT_THRESHOLD = 1;
 
@@ -73,7 +78,7 @@ const commonReaders = [
   "@pixiebrix/component-reader",
 ] as RegistryId[];
 
-export async function getRecommendations(
+async function getRecommendations(
   elementType: ElementType,
   current: RegistryId[]
 ): Promise<RegistryId[]> {
@@ -98,3 +103,28 @@ export async function getRecommendations(
 
   return uniq([...commonReaders, ...typeRecommendations.get(elementType)]);
 }
+
+function selectState(formState: FormState) {
+  return [formState.type, collectRegistryIds(formState)];
+}
+
+const DEFAULT_RECOMMENDATIONS: RegistryId[] = [];
+
+function useBrickRecommendations(): RegistryId[] {
+  const { values } = useFormikContext<FormState>();
+
+  const [debouncedValues] = useDebounce(values, 750, {
+    leading: true,
+    trailing: true,
+    equalityFn: (lhs, rhs) => isEqual(selectState(lhs), selectState(rhs)),
+  });
+
+  const [recommendations] = useAsyncState(async () => {
+    const { type } = debouncedValues;
+    return getRecommendations(type, collectRegistryIds(values));
+  }, [debouncedValues]);
+
+  return recommendations ?? DEFAULT_RECOMMENDATIONS;
+}
+
+export default useBrickRecommendations;

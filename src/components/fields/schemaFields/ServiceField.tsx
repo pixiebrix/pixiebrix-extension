@@ -19,18 +19,17 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField, useFormikContext } from "formik";
 import {
-  ServiceKeyVar,
+  OutputKey,
   RegistryId,
   SafeString,
   Schema,
   ServiceDependency,
-  OutputKey,
+  ServiceKeyVar,
 } from "@/core";
 import {
   createTypePredicate,
   fieldLabel,
 } from "@/components/fields/fieldUtils";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useAuthOptions } from "@/hooks/auth";
 import { AuthOption } from "@/auth/authTypes";
 import { produce } from "immer";
@@ -39,8 +38,11 @@ import { freshIdentifier } from "@/utils";
 import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
+import SelectWidget, {
+  SelectWidgetOnChange,
+} from "@/components/form/widgets/SelectWidget";
 import { isEmpty } from "lodash";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -110,7 +112,7 @@ const ServiceField: React.FunctionComponent<
 > = ({ label, detectDefault = true, schema, ...props }) => {
   const [authOptions] = useAuthOptions();
 
-  const [{ value, ...field }, , helpers] = useField<ServiceKeyVar>(props);
+  const [{ value, ...field }, meta, helpers] = useField<ServiceKeyVar>(props);
 
   const { values: root, setValues } = useFormikContext<{
     services: ServiceDependency[];
@@ -126,7 +128,7 @@ const ServiceField: React.FunctionComponent<
     };
   }, [authOptions, schema]);
 
-  const option = useMemo(() => {
+  const selectedOption = useMemo(() => {
     const dependency =
       value == null
         ? null
@@ -137,10 +139,12 @@ const ServiceField: React.FunctionComponent<
       : authOptions.find((x) => x.value === dependency.config);
   }, [root.services, authOptions, value]);
 
-  const onChange = useCallback(
-    (option: AuthOption) => {
+  const onChange: SelectWidgetOnChange<AuthOption> = useCallback(
+    ({ target: { value, options } }) => {
       // Key Assumption: only one service of each type is configured. If a user changes the auth for one brick,
       // it changes the auth for all the bricks.
+
+      const option = options.find((x) => x.value === value);
 
       let outputKey: OutputKey;
 
@@ -200,8 +204,15 @@ const ServiceField: React.FunctionComponent<
           );
           helpers.setValue(keyToFieldValue(match.outputKey));
         } else if (options.length === 1) {
-          // Try defaulting to the only option available
-          onChange(options[0]);
+          console.debug("Defaulting to only integration option", {
+            option: options[0],
+            options,
+          });
+          // Try defaulting to the only option available. Use onChange instead of helpers.setValue b/c it automatically
+          // updates the services part of the form state
+          onChange({
+            target: { value: options[0].value, name: field.name, options },
+          });
         }
       }
     },
@@ -209,10 +220,10 @@ const ServiceField: React.FunctionComponent<
     [serviceIds, options]
   );
 
-  console.debug("Render ServiceField", { option, options });
-
+  // Use FieldTemplate here directly b/c this component is mapping between the Formik state and the options for the
+  // select widget.
   return (
-    <ConnectedFieldTemplate
+    <FieldTemplate
       name={field.name}
       label={label ?? fieldLabel(field.name)}
       description={
@@ -230,8 +241,11 @@ const ServiceField: React.FunctionComponent<
       }
       as={SelectWidget}
       options={options}
+      // The SelectWidget re-looks up the option based on the value
+      value={selectedOption?.value}
       onChange={onChange}
-      value={option?.value}
+      error={meta.error}
+      touched={meta.touched}
     />
   );
 };

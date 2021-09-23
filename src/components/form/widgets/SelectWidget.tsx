@@ -20,17 +20,24 @@ import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import Select from "react-select";
 import { getErrorMessage } from "@/errors";
 
-export type Option = {
+export type Option<TValue = unknown> = {
   label: string;
-  value: unknown;
+  value: TValue;
 };
 
-type OwnProps = {
+// The signature of onChange is dictated by the compatibility with Formik. for a Widget to be compatible with Formik
+// it should trigger onChange with an event, that has target and value
+export type SelectWidgetOnChange<TOption extends Option = Option> = (event: {
+  target: { value: TOption["value"]; name: string; options: TOption[] };
+}) => void;
+
+type OwnProps<TOption extends Option = Option> = {
   isClearable?: boolean;
-  options: Option[];
+  options: TOption[];
   isLoading?: boolean;
   loadingMessage?: string;
   error?: unknown;
+  onChange?: SelectWidgetOnChange<TOption>;
 };
 
 const SelectWidget: CustomFieldWidget<OwnProps> = ({

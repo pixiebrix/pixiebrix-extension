@@ -27,7 +27,7 @@ type OwnProps<T extends IBrick = IBrick> = {
 };
 
 const QuickAdd: React.FunctionComponent<OwnProps> = ({
-  recommendations,
+  recommendations = [],
   onSelect,
 }) => (
   <div>

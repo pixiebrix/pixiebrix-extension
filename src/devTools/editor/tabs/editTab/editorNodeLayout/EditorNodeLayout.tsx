@@ -26,14 +26,9 @@ import {
   faPlus,
   faPlusCircle,
 } from "@fortawesome/free-solid-svg-icons";
-import { IBlock } from "@/core";
+import { IBlock, RegistryId } from "@/core";
 import BlockModal from "@/components/brickModal/BrickModal";
-import { useFormikContext } from "formik";
-import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { getRecommendations } from "@/devTools/editor/tabs/editTab/recommendations";
-import { useAsyncState } from "@/hooks/common";
-import { collectRegistryIds } from "@/devTools/editor/tabs/editTab/editHelpers";
-import { useDebounce } from "use-debounce";
+import useBrickRecommendations from "@/devTools/editor/tabs/editTab/useBrickRecommendations";
 
 const renderAppend = ({ show }: { show: () => void }) => (
   <>
@@ -65,19 +60,7 @@ const EditorNodeLayout: React.FC<{
   addBlock,
   showAppend,
 }) => {
-  const { values } = useFormikContext<FormState>();
-
-  const { type } = values;
-
-  const debouncedValues = useDebounce(values, 750, {
-    leading: true,
-    trailing: true,
-  });
-
-  const [recommendations] = useAsyncState(
-    async () => getRecommendations(type, collectRegistryIds(values)),
-    [type, debouncedValues]
-  );
+  const recommendations: RegistryId[] = useBrickRecommendations();
 
   const renderInsert = useCallback(
     ({ show }) => (
