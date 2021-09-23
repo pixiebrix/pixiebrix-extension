@@ -15,22 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import { ReaderConfig } from "@/blocks/types";
+import { RegistryId } from "@/core";
 
-const BooleanField: React.FunctionComponent<SchemaFieldProps<boolean>> = ({
-  name,
-  label,
-  schema,
-}) => (
-  <ConnectedFieldTemplate
-    name={name}
-    layout="switch"
-    label={label ?? fieldLabel(name)}
-    description={schema.description}
-  />
-);
+export function selectReaderIds(config: ReaderConfig): RegistryId[] {
+  if (typeof config === "string") {
+    return [config];
+  }
 
-export default BooleanField;
+  if (Array.isArray(config)) {
+    return config.flatMap((x) => selectReaderIds(x));
+  }
+
+  if (typeof config === "object") {
+    return Object.values(config).flatMap((x) => selectReaderIds(x));
+  }
+
+  return [];
+}

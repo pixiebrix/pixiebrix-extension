@@ -165,7 +165,7 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       layout="switch"
       label={
         <span>
-          <FontAwesomeIcon icon={faGlobe} /> Public
+          <FontAwesomeIcon icon={faGlobe} /> This is a boolean field
         </span>
       }
     />

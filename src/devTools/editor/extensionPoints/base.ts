@@ -23,12 +23,9 @@ import {
   Metadata,
   RegistryId,
   SafeString,
-  selectMetadata,
   UUID,
 } from "@/core";
-import { castArray, cloneDeep, isPlainObject, omit } from "lodash";
-import brickRegistry from "@/blocks/registry";
-import { ReaderConfig, ReaderReference } from "@/blocks/readers/factory";
+import { castArray, cloneDeep, omit } from "lodash";
 import {
   assertExtensionPointConfig,
   ExtensionPointConfig,
@@ -39,13 +36,15 @@ import React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import {
   BaseFormState,
-  isCustomReader,
-  ReaderFormState,
-  ReaderReferenceFormState,
+  SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
-import { BlockPipeline } from "@/blocks/types";
+import {
+  BlockPipeline,
+  NormalizedAvailability,
+  ReaderConfig,
+} from "@/blocks/types";
 import { deepPickBy, freshIdentifier } from "@/utils";
 
 export interface WizardStep {
@@ -68,12 +67,10 @@ export function isInnerExtensionPoint(
   return id.startsWith(INNER_SCOPE + "/");
 }
 
-export function makeIsAvailable(
-  url: string
-): { matchPatterns: string; selectors: string | null } {
+export function makeIsAvailable(url: string): NormalizedAvailability {
   return {
-    matchPatterns: createSitePattern(url),
-    selectors: null,
+    matchPatterns: [createSitePattern(url)],
+    selectors: [],
   };
 }
 
@@ -103,13 +100,12 @@ export function excludeInstanceIds<T extends Config>(
   };
 }
 
-export function makeBaseState(
+export function makeInitialBaseState(
   uuid: UUID = uuidv4()
 ): Except<BaseFormState, "type" | "label" | "extensionPoint"> {
   return {
     uuid,
     services: [],
-    readers: [],
     extension: {},
   };
 }
@@ -125,100 +121,21 @@ export function internalExtensionPointMetaFactory(): Metadata {
   };
 }
 
-export function makeExtensionReaders({
-  readers,
-}: BaseFormState): Array<ReaderConfig | ReaderReference> {
-  return readers.map((reader) => {
-    if (!isCustomReader(reader)) {
-      return { metadata: reader.metadata };
-    }
-
-    throw new Error("makeExtensionReaders does not support custom readers");
-  });
-}
-
-export async function makeReaderFormState(
-  extensionPoint: ExtensionPointConfig
-): Promise<Array<ReaderFormState | ReaderReferenceFormState>> {
-  assertExtensionPointConfig(extensionPoint);
-
-  const readerConfig = extensionPoint.definition.reader ?? [];
-
-  let readerIds: RegistryId[];
-
-  if (isPlainObject(readerConfig)) {
-    throw new Error("Key-based composite readers not supported");
-  } else if (typeof readerConfig === "string") {
-    readerIds = [readerConfig];
-  } else if (Array.isArray(readerConfig)) {
-    readerIds = readerConfig as RegistryId[];
-  } else {
-    console.error("Unexpected reader configuration", { extensionPoint });
-    throw new TypeError("Unexpected reader configuration");
-  }
-
-  return Promise.all(
-    readerIds.map(async (readerId) => {
-      const brick = await findBrick(readerId);
-
-      if (!brick) {
-        try {
-          const reader = await brickRegistry.lookup(readerId);
-          return { metadata: selectMetadata(reader) };
-        } catch (error: unknown) {
-          console.error("Cannot find reader", { readerId, error });
-          throw new Error("Cannot find reader");
-        }
-      }
-
-      const reader = (brick.config as unknown) as ReaderConfig;
-      return {
-        metadata: reader.metadata,
-        outputSchema: reader.outputSchema,
-        definition: reader.definition.reader,
-      };
-    })
-  );
-}
-
-/**
- * Availability with single matchPattern and selector.
- * The page editor UI currently doesn't support multiple patterns/selectors
- * @see Availability
- */
-type SimpleAvailability = {
-  matchPatterns: string | undefined;
-  selectors: string | undefined;
-};
-
 /**
  * Map availability from extension point configuration to state for the page editor.
- * @throws Error if the isAvailable definition use features that aren't supported by the Page Editor
  */
 export function selectIsAvailable(
   extensionPoint: ExtensionPointConfig
-): SimpleAvailability {
+): NormalizedAvailability {
   assertExtensionPointConfig(extensionPoint);
 
   const { isAvailable } = extensionPoint.definition;
   const matchPatterns = castArray(isAvailable.matchPatterns ?? []);
   const selectors = castArray(isAvailable.selectors ?? []);
 
-  if (matchPatterns.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability match patterns not implemented"
-    );
-  }
-
-  if (selectors.length > 1) {
-    throw new Error(
-      "Editing extension point with multiple availability selectors not implemented"
-    );
-  }
-
   return {
-    matchPatterns: matchPatterns[0],
-    selectors: selectors[0],
+    matchPatterns,
+    selectors,
   };
 }
 
@@ -350,4 +267,18 @@ export function removeEmptyValues<T extends object>(obj: T): T {
     obj,
     (x: unknown) => typeof x !== "undefined" && x !== ""
   ) as T;
+}
+
+/**
+ * Return a composite reader to automatically include in new extensions created with the Page Editor.
+ */
+export function getImplicitReader(): SingleLayerReaderConfig {
+  return [validateRegistryId("@pixiebrix/document-metadata")];
+}
+
+/**
+ * Hack to use SingleLayerReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
+ */
+export function readerHack(reader: ReaderConfig): SingleLayerReaderConfig {
+  return reader as SingleLayerReaderConfig;
 }

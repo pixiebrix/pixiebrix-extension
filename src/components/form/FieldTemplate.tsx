@@ -124,7 +124,7 @@ const RenderedField: React.FC<FieldProps> = ({
 const RenderedSwitch: React.FC<FieldRenderProps> = ({
   name,
   label,
-  value = false,
+  value,
   onChange,
 }) => (
   <SwitchButton name={name} label={label} value={value} onChange={onChange} />

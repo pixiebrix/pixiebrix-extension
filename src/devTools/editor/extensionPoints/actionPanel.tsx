@@ -20,18 +20,18 @@ import { IExtension, Metadata } from "@/core";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
+  getImplicitReader,
   lookupExtensionPoint,
-  makeBaseState,
-  makeExtensionReaders,
+  makeInitialBaseState,
   makeIsAvailable,
-  makeReaderFormState,
+  readerHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray, identity, pickBy } from "lodash";
+import { castArray } from "lodash";
 import {
   ActionPanelConfig,
   ActionPanelExtensionPoint,
@@ -46,9 +46,10 @@ import ActionPanelConfiguration from "@/devTools/editor/tabs/actionPanel/ActionP
 import {
   BaseFormState,
   ElementConfig,
+  SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import React from "react";
-import { BlockPipeline } from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
 const wizard: WizardStep[] = [
@@ -66,10 +67,8 @@ export interface ActionPanelFormState extends BaseFormState {
   extensionPoint: {
     metadata: Metadata;
     definition: {
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
+      isAvailable: NormalizedAvailability;
+      reader: SingleLayerReaderConfig;
     };
   };
 
@@ -83,7 +82,7 @@ function fromNativeElement(
   url: string,
   metadata: Metadata
 ): ActionPanelFormState {
-  const base = makeBaseState();
+  const base = makeInitialBaseState();
 
   const heading = `${getDomain(url)} side panel`;
 
@@ -95,6 +94,7 @@ function fromNativeElement(
       metadata,
       definition: {
         isAvailable: makeIsAvailable(url),
+        reader: getImplicitReader(),
       },
     },
     extension: {
@@ -107,16 +107,16 @@ function fromNativeElement(
 function selectExtensionPoint(
   formState: ActionPanelFormState
 ): ExtensionPointConfig<PanelDefinition> {
-  const { extensionPoint, readers } = formState;
+  const { extensionPoint } = formState;
   const {
-    definition: { isAvailable },
+    definition: { isAvailable, reader },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "actionPanel",
-      reader: readers.map((x) => x.metadata.id),
-      isAvailable: pickBy(isAvailable, identity),
+      reader,
+      isAvailable,
     },
   });
 }
@@ -142,7 +142,6 @@ function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
     type: "actionPanel",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
-    readers: makeExtensionReaders(element),
   };
 }
 
@@ -162,7 +161,6 @@ export async function fromExtensionPoint(
     type: extensionPoint.definition.type,
     label: heading,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: [],
 
     extension: {
@@ -174,6 +172,7 @@ export async function fromExtensionPoint(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
+        reader: readerHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -195,7 +194,6 @@ async function fromExtension(
     type: extensionPoint.definition.type,
     label: config.label,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: config.services,
 
     extension: {
@@ -208,6 +206,7 @@ async function fromExtension(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
+        reader: readerHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
