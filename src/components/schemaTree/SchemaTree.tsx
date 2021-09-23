@@ -94,26 +94,34 @@ const getFormattedType = (definition: Schema) => {
 
   if (type === "array") {
     const items = definition.items ?? { type: "unknown" };
-    const itemType = ((items as Schema) ?? {}).type;
+    const itemType = ((items as Schema) ?? {}).type as string;
     return itemType ? `array of ${itemType}s` : "array";
   }
 
-  let formatted_type = type;
+  let formatted_type = "";
   if (Array.isArray(type)) {
-    formatted_type = `[${type.map(
-      (value, index) => `${index !== 0 ? " " : ""}${value}`
-    )}]` as "string";
+    for (const t of type) {
+      formatted_type = `${formatted_type ? `${formatted_type}, ` : ""}${
+        t as string
+      }`;
+    }
+
+    formatted_type = `[${formatted_type}]`;
   }
 
   if (definition.enum) {
-    return `${formatted_type} enum`;
+    return formatted_type ? `${formatted_type} enum` : `${type as string} enum`;
+  }
+
+  if (formatted_type) {
+    return formatted_type;
   }
 
   if (format) {
-    return `${format} ${type}`;
+    return `${format} ${type as string}`;
   }
 
-  return formatted_type ? formatted_type : "unknown";
+  return type ? type : "unknown";
 };
 
 const getFormattedData = (schema: Schema): SchemaTreeRow[] => {
