@@ -39,7 +39,19 @@ export type RenderedHTML = string;
 
 export type ActionType = string;
 
-export type OutputKey = string;
+/**
+ * A valid identifier for a brick output key or a service key. (Does not include the preceding "@".)
+ */
+export type OutputKey = string & {
+  _outputKeyBrand: never;
+};
+
+/**
+ * A key with a "@"-prefix that refers to a service
+ */
+export type ServiceKeyVar = string & {
+  _serviceKeyVarBrand: never;
+};
 
 /**
  * A string known not to be tainted with user-generated input.
@@ -186,7 +198,7 @@ export interface ServiceDependency {
   /**
    * The output key for the dependency (without the leading "@")
    */
-  outputKey: string;
+  outputKey: OutputKey;
 
   /**
    * The UUID of the service configuration.

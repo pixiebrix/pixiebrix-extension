@@ -18,7 +18,14 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField, useFormikContext } from "formik";
-import { RegistryId, SafeString, Schema, ServiceDependency } from "@/core";
+import {
+  ServiceKeyVar,
+  RegistryId,
+  SafeString,
+  Schema,
+  ServiceDependency,
+  OutputKey,
+} from "@/core";
 import {
   createTypePredicate,
   fieldLabel,
@@ -35,7 +42,7 @@ import { faCloud } from "@fortawesome/free-solid-svg-icons";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { isEmpty } from "lodash";
 
-const DEFAULT_SERVICE_OUTPUT_KEY = "service";
+const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
 export const SERVICE_FIELD_REFS = [
   "https://app.pixiebrix.com/schemas/service#/definitions/configuredServiceOrVar",
@@ -55,19 +62,21 @@ export const isServiceField = createTypePredicate(
 
 function defaultOutputKey(
   serviceId: RegistryId | null,
-  otherOutputKeys: string[]
-): string {
+  otherOutputKeys: OutputKey[]
+): OutputKey {
   let rawKey = DEFAULT_SERVICE_OUTPUT_KEY;
 
   if (serviceId) {
     const match = PACKAGE_REGEX.exec(serviceId);
-    rawKey =
-      match.groups.collection?.replace(".", "_").replace("-", "_") ??
-      DEFAULT_SERVICE_OUTPUT_KEY;
+    rawKey = (match.groups.collection?.replace(".", "_").replace("-", "_") ??
+      DEFAULT_SERVICE_OUTPUT_KEY) as OutputKey;
   }
 
   // OK to cast to SafeString since defaultOutputKey checks it's a valid PACKAGE_REGEX
-  return freshIdentifier(rawKey as SafeString, otherOutputKeys);
+  return freshIdentifier(
+    (rawKey as unknown) as SafeString,
+    otherOutputKeys
+  ) as OutputKey;
 }
 
 function extractServiceIds(schema: Schema): RegistryId[] {
@@ -85,8 +94,8 @@ function extractServiceIds(schema: Schema): RegistryId[] {
   throw new Error("Expected $ref or anyOf in schema for service");
 }
 
-function keyToFieldValue(serviceKey: string): string {
-  return serviceKey == null ? null : `@${serviceKey}`;
+function keyToFieldValue(key: OutputKey): ServiceKeyVar {
+  return key == null ? null : (`@${key}` as ServiceKeyVar);
 }
 
 /**
@@ -94,14 +103,15 @@ function keyToFieldValue(serviceKey: string): string {
  * @see ServiceDependency
  */
 const ServiceField: React.FunctionComponent<
-  SchemaFieldProps<string> & {
+  SchemaFieldProps<ServiceKeyVar> & {
     /** Set the value of the field on mount to the service already selected, or the only available credential (default=true) */
     detectDefault?: boolean;
   }
 > = ({ label, detectDefault = true, schema, ...props }) => {
   const [authOptions] = useAuthOptions();
 
-  const [{ value, ...field }, , helpers] = useField(props);
+  const [{ value, ...field }, , helpers] = useField<ServiceKeyVar>(props);
+
   const { values: root, setValues } = useFormikContext<{
     services: ServiceDependency[];
   }>();
@@ -116,17 +126,15 @@ const ServiceField: React.FunctionComponent<
     };
   }, [authOptions, schema]);
 
-  const { option } = useMemo(() => {
+  const option = useMemo(() => {
     const dependency =
       value == null
-        ? value
+        ? null
         : root.services.find((x) => keyToFieldValue(x.outputKey) === value);
-    return {
-      option:
-        dependency == null
-          ? null
-          : authOptions.find((x) => x.value === dependency.config),
-    };
+
+    return dependency == null
+      ? null
+      : authOptions.find((x) => x.value === dependency.config);
   }, [root.services, authOptions, value]);
 
   const onChange = useCallback(
@@ -134,7 +142,7 @@ const ServiceField: React.FunctionComponent<
       // Key Assumption: only one service of each type is configured. If a user changes the auth for one brick,
       // it changes the auth for all the bricks.
 
-      let outputKey: string;
+      let outputKey: OutputKey;
 
       setValues(
         produce(root, (draft) => {
@@ -170,6 +178,7 @@ const ServiceField: React.FunctionComponent<
         })
       );
 
+      console.debug("Setting value to %s", outputKey);
       helpers.setValue(keyToFieldValue(outputKey));
     },
     [root, helpers, setValues, serviceIds]
@@ -200,10 +209,12 @@ const ServiceField: React.FunctionComponent<
     [serviceIds, options]
   );
 
+  console.debug("Render ServiceField", { option, options });
+
   return (
     <ConnectedFieldTemplate
       name={field.name}
-      label={fieldLabel(field.name)}
+      label={label ?? fieldLabel(field.name)}
       description={
         <span>
           A configured integration.{" "}
@@ -220,7 +231,7 @@ const ServiceField: React.FunctionComponent<
       as={SelectWidget}
       options={options}
       onChange={onChange}
-      value={option}
+      value={option?.value}
     />
   );
 };
