@@ -25,6 +25,7 @@ import {
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
+  removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
@@ -110,7 +111,7 @@ function selectExtensionPoint(
   const {
     definition: { isAvailable, rootSelector, trigger },
   } = extensionPoint;
-  return {
+  return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "trigger",
@@ -119,14 +120,14 @@ function selectExtensionPoint(
       trigger,
       rootSelector,
     },
-  };
+  });
 }
 
 function selectExtension(
   { uuid, label, extensionPoint, extension, services }: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<TriggerConfig> {
-  return {
+  return removeEmptyValues({
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
@@ -135,7 +136,7 @@ function selectExtension(
     config: options.includeInstanceIds
       ? extension
       : excludeInstanceIds(extension, "action"),
-  };
+  });
 }
 
 function asDynamicElement(element: TriggerFormState): DynamicDefinition {
