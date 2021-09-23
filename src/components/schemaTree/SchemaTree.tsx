@@ -18,7 +18,7 @@
 import React, { useMemo } from "react";
 import { Schema } from "@/core";
 import { ListGroup, Table } from "react-bootstrap";
-import { sortBy } from "lodash";
+import { isEmpty, sortBy } from "lodash";
 import { useTable, useExpanded } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -187,6 +187,14 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
     return (
       <ListGroup variant="flush" className="SchemaTree">
         <ListGroup.Item>No schema</ListGroup.Item>
+      </ListGroup>
+    );
+  }
+
+  if (isEmpty(schema.properties)) {
+    return (
+      <ListGroup variant="flush" className="SchemaTree">
+        <ListGroup.Item>No properties defined</ListGroup.Item>
       </ListGroup>
     );
   }
