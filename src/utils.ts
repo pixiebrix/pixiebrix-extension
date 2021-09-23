@@ -32,10 +32,28 @@ import {
   zip,
   pickBy,
   isPlainObject,
+  compact,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { getErrorMessage } from "@/errors";
 import { SafeString } from "@/core";
+
+/**
+ * Create a Formik field name, validating the individual path parts.
+ * @param baseFieldName The base field name
+ * @param rest the other Formik field name path parts
+ * @throws Error if a path part is invalid
+ */
+export function joinName(
+  baseFieldName: string | null,
+  ...rest: string[]
+): string {
+  if (rest.some((x) => x.includes("."))) {
+    throw new Error("Formik path parts cannot contain periods");
+  }
+
+  return compact([baseFieldName, ...rest]).join(".");
+}
 
 export function mostCommonElement<T>(items: T[]): T {
   // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
