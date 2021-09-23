@@ -27,6 +27,7 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
+import styles from "./SchemaTree.module.scss";
 
 type SchemaTreeRow = {
   name: string;
@@ -243,7 +244,11 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
               {row.cells.map((cell) => {
                 const { key, ...restCellProps } = cell.getCellProps();
                 return (
-                  <td key={key} {...restCellProps}>
+                  <td
+                    key={key}
+                    {...restCellProps}
+                    className={styles.SchemaTree__table_cell}
+                  >
                     {cell.render("Cell")}
                   </td>
                 );
