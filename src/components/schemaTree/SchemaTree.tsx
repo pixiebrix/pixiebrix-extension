@@ -28,6 +28,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
 
+type SchemaTreeRow = {
+  name: string;
+  required: boolean;
+  type: string;
+  description: string;
+};
+
 const ExpandableCell: React.FunctionComponent<{
   row;
   cell;
@@ -43,9 +50,9 @@ const ExpandableCell: React.FunctionComponent<{
     {row.canExpand && (
       <>
         {row.isExpanded ? (
-          <FontAwesomeIcon icon={faCaretDown} />
+          <FontAwesomeIcon icon={faCaretDown} className="mr-1" />
         ) : (
-          <FontAwesomeIcon icon={faCaretRight} />
+          <FontAwesomeIcon icon={faCaretRight} className="mr-1" />
         )}
       </>
     )}
