@@ -241,7 +241,7 @@ const EditTab: React.FC<{
           <DataPanel
             blockFieldName={blockFieldName}
             // eslint-disable-next-line security/detect-object-injection
-            instanceId={blockPipeline[activeNodeIndex]?.instanceId}
+            instanceId={blockPipeline[activeNodeIndex - 1]?.instanceId}
           />
         </div>
       </div>
