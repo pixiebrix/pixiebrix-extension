@@ -15,159 +15,77 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React from "react";
+import { partial } from "lodash";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
-import { Schema } from "@/core";
+import { SanitizedServiceConfiguration, Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
 import { Button } from "react-bootstrap";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useDependency from "@/services/useDependency";
 import {
   Bot,
   BOT_TYPE,
   Device,
   Interface,
+  interfaceToInputSchema,
   ListResponse,
 } from "@/contrib/automationanywhere/contract";
 import { validateRegistryId } from "@/types/helpers";
 import ServiceField from "@/components/fields/schemaFields/ServiceField";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
+import { Option } from "@/components/form/widgets/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
+import { joinName } from "@/utils";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
 );
 
-function useBots(): {
-  bots: Bot[];
-  isPending: boolean;
-  error: unknown;
-} {
-  const { config } = useDependency(AUTOMATION_ANYWHERE_SERVICE_ID);
-
-  const [bots, isPending, error] = useAsyncState(async () => {
-    if (!config) {
-      return [];
-    }
-
-    const response = await proxyService<ListResponse<Bot>>(config, {
-      url: `/v2/repository/folders/${config.config.folderId}/list`,
-      method: "POST",
-      data: {},
-    });
-    return response.data.list.filter((x) => x.type === BOT_TYPE);
-  }, [config]);
-
-  return { bots, isPending, error };
+async function fetchBots(
+  config: SanitizedServiceConfiguration
+): Promise<Option[]> {
+  const response = await proxyService<ListResponse<Bot>>(config, {
+    url: `/v2/repository/folders/${config.config.folderId}/list`,
+    method: "POST",
+    data: {},
+  });
+  const bots = response.data.list?.filter((x) => x.type === BOT_TYPE) ?? [];
+  return bots.map((bot) => ({
+    value: bot.id,
+    label: bot.name,
+  }));
 }
 
-function useDevices(): {
-  devices: Device[];
-  isPending: boolean;
-  error: unknown;
-} {
-  const { config } = useDependency(AUTOMATION_ANYWHERE_SERVICE_ID);
-
-  const [devices, isPending, error] = useAsyncState(async () => {
-    if (!config) {
-      return [];
-    }
-
-    const response = await proxyService<ListResponse<Device>>(config, {
-      url: "/v2/devices/list",
-      method: "POST",
-      data: {},
-    });
-    return response.data.list;
-  }, [config]);
-
-  return { devices, isPending, error };
+async function fetchDevices(
+  config: SanitizedServiceConfiguration
+): Promise<Option[]> {
+  const response = await proxyService<ListResponse<Device>>(config, {
+    url: "/v2/devices/list",
+    method: "POST",
+    data: {},
+  });
+  const devices = response.data.list ?? [];
+  return devices.map((device) => ({
+    value: device.id,
+    label: `${device.nickname} (${device.hostName})`,
+  }));
 }
-
-function interfaceToInputSchema(botInterface: Interface): Schema {
-  return {
-    type: "object",
-    properties: Object.fromEntries(
-      botInterface.variables
-        .filter((x) => x.input)
-        .map((v) => [
-          v.name,
-          {
-            type: "string",
-            description: v.description,
-          },
-        ])
-    ),
-  };
-}
-
-const RobotField: React.FunctionComponent<SchemaFieldProps<string>> = ({
-  label,
-  schema,
-  ...props
-}) => {
-  const { bots, error } = useBots();
-
-  const options = useMemo(
-    () => (bots ?? []).map((bot) => ({ value: bot.id, label: bot.name, bot })),
-    [bots]
-  );
-
-  return (
-    <ConnectedFieldTemplate
-      label={label ?? fieldLabel(props.name)}
-      description="The Automation Anywhere bot to run"
-      as={SelectWidget}
-      options={options}
-      loadError={error}
-    />
-  );
-};
-
-const DeviceField: React.FunctionComponent<SchemaFieldProps<string>> = ({
-  label,
-  schema,
-  ...props
-}) => {
-  const { devices, error } = useDevices();
-
-  const options = useMemo(
-    () =>
-      (devices ?? []).map((device) => ({
-        value: device.id,
-        label: `${device.nickname} (${device.hostName})`,
-        device,
-      })),
-    [devices]
-  );
-
-  return (
-    <ConnectedFieldTemplate
-      label={label ?? fieldLabel(props.name)}
-      description="The device to run the bot on"
-      as={SelectWidget}
-      options={options}
-      loadError={error}
-    />
-  );
-};
 
 const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const basePath = compact([name, configKey]).join(".");
+  const configName = partial(joinName, name, configKey);
+
   const { hasPermissions, requestPermissions, config } = useDependency(
     AUTOMATION_ANYWHERE_SERVICE_ID
   );
 
-  const [{ value: fileId }] = useField<string>(`${basePath}.fileId`);
+  const [{ value: fileId }] = useField<string>(configName("fileId"));
 
   const [inputSchema, schemaPending, schemaError] = useAsyncState(async () => {
     if (hasPermissions && fileId) {
@@ -179,24 +97,28 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
     }
   }, [config, fileId, hasPermissions]);
 
+  const serviceField = (
+    <ServiceField
+      label="Integration"
+      name={configName("service")}
+      schema={AUTOMATION_ANYWHERE_PROPERTIES.service as Schema}
+    />
+  );
+
   if (!config) {
-    return (
-      <div className="my-2">
-        <p>
-          You must configure an Automation Anywhere integration to use this
-          action.
-        </p>
-      </div>
-    );
+    return <div>{serviceField}</div>;
   }
 
   if (!hasPermissions) {
     return (
-      <div className="my-2">
+      <div>
+        {serviceField}
+
         <p>
           You must grant permissions for you browser to send information to the
           Automation Anywhere Control Room API.
         </p>
+
         <Button onClick={requestPermissions}>Grant Permissions</Button>
       </div>
     );
@@ -204,27 +126,31 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 
   return (
     <div>
-      <ServiceField
-        key="service"
-        name={`${basePath}.service`}
-        schema={AUTOMATION_ANYWHERE_PROPERTIES.service as Schema}
+      {serviceField}
+
+      <ConnectedFieldTemplate
+        label="Bot"
+        name={configName("fileId")}
+        description="The Automation Anywhere bot"
+        as={RemoteSelectWidget}
+        optionsFactory={fetchBots}
+        config={config}
       />
-      <RobotField
-        label="fileId"
-        name={`${basePath}.fileId`}
-        schema={AUTOMATION_ANYWHERE_PROPERTIES.fileId as Schema}
-      />
-      <DeviceField
-        label="deviceId"
-        name={`${basePath}.deviceId`}
-        schema={AUTOMATION_ANYWHERE_PROPERTIES.deviceId as Schema}
+
+      <ConnectedFieldTemplate
+        label="Device"
+        name={configName("deviceId")}
+        description="The device to run the bot on"
+        as={RemoteSelectWidget}
+        optionsFactory={fetchDevices}
+        config={config}
       />
 
       {fileId != null && (
         <ChildObjectField
-          heading="inputArguments"
+          heading="Input Arguments"
+          name={configName("data")}
           schema={inputSchema}
-          name={compact([basePath, "data"]).join(".")}
           schemaError={schemaError}
           schemaLoading={schemaPending}
         />

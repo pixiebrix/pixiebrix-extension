@@ -15,15 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Schema } from "@/core";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-export type TreeRenderer = React.FunctionComponent<{
-  schema: Schema;
-  prop?: string;
-}>;
-export type TreeEntry = React.FunctionComponent<{
-  prop: string;
-  definition: Schema;
-  TreeRenderer: TreeRenderer;
-}>;
+export interface FormBuilderState {
+  /**
+   * The currently active field in the Form Builder
+   */
+  activeField: string;
+}
+
+export const initialState: FormBuilderState = {
+  activeField: null,
+};
+
+export const formBuilderSlice = createSlice({
+  name: "formBuilder",
+  initialState,
+  reducers: {
+    setActiveField: (state, action: PayloadAction<string>) => {
+      state.activeField = action.payload;
+    },
+  },
+});
+
+export const { actions } = formBuilderSlice;

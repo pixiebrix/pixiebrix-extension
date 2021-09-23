@@ -17,15 +17,15 @@
  */
 
 import { IExtension, Metadata } from "@/core";
-import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
+  getImplicitReader,
   lookupExtensionPoint,
-  makeBaseState,
-  makeExtensionReaders,
+  makeInitialBaseState,
   makeIsAvailable,
-  makeReaderFormState,
+  readerHack,
+  removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
@@ -46,8 +46,9 @@ import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import {
   BaseFormState,
   ElementConfig,
+  SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { BlockPipeline } from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
@@ -69,10 +70,8 @@ export interface TriggerFormState extends BaseFormState {
     definition: {
       rootSelector: string | null;
       trigger: Trigger;
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
+      reader: SingleLayerReaderConfig;
+      isAvailable: NormalizedAvailability;
     };
   };
 
@@ -84,18 +83,18 @@ export interface TriggerFormState extends BaseFormState {
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  _element: null,
-  frameworks: FrameworkMeta[]
+  _element: null
 ): TriggerFormState {
   return {
     type: "trigger",
     label: `My ${getDomain(url)} trigger`,
-    ...makeBaseState(uuidv4(), null, metadata, frameworks),
+    ...makeInitialBaseState(),
     extensionPoint: {
       metadata,
       definition: {
         rootSelector: null,
         trigger: "load",
+        reader: getImplicitReader(),
         isAvailable: makeIsAvailable(url),
       },
     },
@@ -108,27 +107,27 @@ function fromNativeElement(
 function selectExtensionPoint(
   formState: TriggerFormState
 ): ExtensionPointConfig<TriggerDefinition> {
-  const { extensionPoint, readers } = formState;
+  const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, rootSelector, trigger },
+    definition: { isAvailable, rootSelector, reader, trigger },
   } = extensionPoint;
-  return {
+  return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "trigger",
-      reader: readers.map((x) => x.metadata.id),
+      reader,
       isAvailable: pickBy(isAvailable, identity),
       trigger,
       rootSelector,
     },
-  };
+  });
 }
 
 function selectExtension(
   { uuid, label, extensionPoint, extension, services }: TriggerFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<TriggerConfig> {
-  return {
+  return removeEmptyValues({
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
@@ -137,7 +136,7 @@ function selectExtension(
     config: options.includeInstanceIds
       ? extension
       : excludeInstanceIds(extension, "action"),
-  };
+  });
 }
 
 function asDynamicElement(element: TriggerFormState): DynamicDefinition {
@@ -145,7 +144,6 @@ function asDynamicElement(element: TriggerFormState): DynamicDefinition {
     type: "trigger",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
-    readers: makeExtensionReaders(element),
   };
 }
 
@@ -157,7 +155,12 @@ async function fromExtensionPoint(
     throw new Error("Expected trigger extension point type");
   }
 
-  const { type, rootSelector, trigger = "load" } = extensionPoint.definition;
+  const {
+    type,
+    rootSelector,
+    reader,
+    trigger = "load",
+  } = extensionPoint.definition;
 
   return {
     uuid: uuidv4(),
@@ -165,7 +168,6 @@ async function fromExtensionPoint(
     type,
     label: `My ${getDomain(url)} ${trigger} trigger`,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: [],
 
     extension: {
@@ -178,6 +180,7 @@ async function fromExtensionPoint(
         ...extensionPoint.definition,
         rootSelector,
         trigger,
+        reader: readerHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -193,13 +196,14 @@ async function fromExtension(
     "trigger"
   >(config, "trigger");
 
+  const { rootSelector, trigger, reader } = extensionPoint.definition;
+
   return {
     uuid: config.id,
     installed: true,
     type: extensionPoint.definition.type,
     label: config.label,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: config.services,
 
     extension: {
@@ -210,8 +214,9 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        rootSelector: extensionPoint.definition.rootSelector,
-        trigger: extensionPoint.definition.trigger,
+        rootSelector,
+        trigger,
+        reader: readerHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },

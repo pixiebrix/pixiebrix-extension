@@ -22,13 +22,12 @@ import { showBrowserActionPanel } from "@/background/devtools";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import Centered from "@/devTools/editor/components/Centered";
 import { Button } from "react-bootstrap";
-import BlockModal from "@/components/fields/BlockModal";
+import BlockModal from "@/components/brickModal/BrickModal";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCube, faPlus } from "@fortawesome/free-solid-svg-icons";
-import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
+import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
-import AuthContext from "@/auth/AuthContext";
 import { reportEvent } from "@/telemetry/events";
 import * as nativeOperations from "@/background/devtools";
 import { useToasts } from "react-toast-notifications";
@@ -39,12 +38,10 @@ const { addElement } = editorSlice.actions;
 
 const GenericInsertPane: React.FunctionComponent<{
   cancel: () => void;
-  reservedNames: string[];
   config: ElementConfig;
-}> = ({ cancel, reservedNames, config }) => {
+}> = ({ cancel, config }) => {
   const dispatch = useDispatch();
   const { addToast } = useToasts();
-  const { scope } = useContext(AuthContext);
   const { port } = useContext(DevToolsContext);
 
   const start = useCallback(
@@ -96,19 +93,14 @@ const GenericInsertPane: React.FunctionComponent<{
         });
       }
     },
-    [start, config, port, addToast]
+    [start, config, addToast]
   );
 
   const addNew = useCallback(async () => {
     try {
       const url = await getCurrentURL();
 
-      const metadata = await generateExtensionPointMetadata(
-        config.label,
-        scope,
-        url,
-        reservedNames
-      );
+      const metadata = internalExtensionPointMetaFactory();
 
       await start(
         config.fromNativeElement(url, metadata, undefined, []) as FormState
@@ -120,7 +112,7 @@ const GenericInsertPane: React.FunctionComponent<{
         appearance: "error",
       });
     }
-  }, [start, config, port, scope, reservedNames, addToast]);
+  }, [start, config, addToast]);
 
   const extensionPoints = useAvailableExtensionPoints(config.baseClass);
 
@@ -130,7 +122,7 @@ const GenericInsertPane: React.FunctionComponent<{
       <div className="text-left">{config.insertModeHelp}</div>
       <div>
         <BlockModal
-          blocks={extensionPoints ?? []}
+          bricks={extensionPoints ?? []}
           caption={`Select ${config.label} Foundation`}
           renderButton={({ show }) => (
             <Button

@@ -22,14 +22,21 @@ import { FieldProps, IChangeEvent } from "@rjsf/core";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import FormPreviewStringField from "./FormPreviewStringField";
 import { useField } from "formik";
-import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
-import { Card } from "react-bootstrap";
+import { UI_ORDER, UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
+import { produce } from "immer";
+import FormPreviewBooleanField from "./FormPreviewBooleanField";
 
-const FormPreview: React.FC<{
+export type FormPreviewProps = {
   name: string;
   activeField?: string;
   setActiveField: SetActiveField;
-}> = ({ name, activeField, setActiveField }) => {
+};
+
+const FormPreview: React.FC<FormPreviewProps> = ({
+  name,
+  activeField,
+  setActiveField,
+}) => {
   const [{ value: rjsfSchema }] = useField<RJSFSchema>(name);
 
   const [data, setData] = useState(null);
@@ -39,7 +46,7 @@ const FormPreview: React.FC<{
 
   // Maintain a local version of the RJSF schema to reflect the active field
   // Important to have schema and uiSchema always in sync, hence caching both
-  const [localRjsfSchema, setLocalRjsfSchema] = useState<RJSFSchema>(
+  const [{ schema, uiSchema }, setLocalRjsfSchema] = useState<RJSFSchema>(
     rjsfSchema
   );
 
@@ -48,16 +55,33 @@ const FormPreview: React.FC<{
   }, [rjsfSchema]);
 
   useEffect(() => {
+    const { schema, uiSchema } = rjsfSchema;
+    const firstInOrder =
+      uiSchema?.[UI_ORDER]?.length > 1 ? uiSchema[UI_ORDER][0] : undefined;
+    if (firstInOrder && firstInOrder !== "*") {
+      setActiveField(firstInOrder);
+      return;
+    }
+
+    const firstInProperties = Object.keys(schema?.properties || {})[0];
+    if (firstInProperties) {
+      setActiveField(firstInProperties);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- resetting activeField only on new name
+  }, [name]);
+
+  // Setting local schema
+  useEffect(() => {
     if (activeField) {
-      const uiSchema = { ...rjsfSchema.uiSchema };
-      uiSchema[activeField] = {
-        ...uiSchema[activeField],
-        [UI_SCHEMA_ACTIVE]: true,
-      };
-      setLocalRjsfSchema({
-        schema: rjsfSchema.schema,
-        uiSchema,
+      const nextLocalRjsfSchema = produce<RJSFSchema>(rjsfSchema, (draft) => {
+        if (!draft.uiSchema[activeField]) {
+          draft.uiSchema[activeField] = {};
+        }
+
+        draft.uiSchema[activeField][UI_SCHEMA_ACTIVE] = true;
       });
+
+      setLocalRjsfSchema(nextLocalRjsfSchema);
     } else {
       setLocalRjsfSchema(rjsfSchema);
     }
@@ -69,27 +93,35 @@ const FormPreview: React.FC<{
     ),
     [setActiveField]
   );
+  const BooleanField = useCallback(
+    (props: FieldProps) => (
+      <FormPreviewBooleanField setActiveField={setActiveField} {...props} />
+    ),
+    [setActiveField]
+  );
+
+  if (!schema || !uiSchema) {
+    return null;
+  }
 
   const fields = {
     StringField,
+    BooleanField,
   };
 
   return (
-    <Card>
-      <Card.Header>Preview</Card.Header>
-      <Card.Body>
-        <JsonSchemaForm
-          tagName="div"
-          formData={data}
-          fields={fields}
-          schema={localRjsfSchema.schema}
-          uiSchema={localRjsfSchema.uiSchema}
-          onChange={onDataChanged}
-        >
-          <div></div>
-        </JsonSchemaForm>
-      </Card.Body>
-    </Card>
+    <JsonSchemaForm
+      tagName="div"
+      formData={data}
+      fields={fields}
+      schema={schema}
+      uiSchema={uiSchema}
+      onChange={onDataChanged}
+    >
+      <div>
+        {/* This <div/> prevents JsonSchemaForm from rendering a Submit button */}
+      </div>
+    </JsonSchemaForm>
   );
 };
 

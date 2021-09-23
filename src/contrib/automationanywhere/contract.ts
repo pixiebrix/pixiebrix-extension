@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Schema } from "@/core";
+
 export interface ListResponse<TData> {
   page: {
     offset: number;
@@ -53,4 +55,21 @@ export interface Device {
   status: "CONNECTED";
   botAgentVersion: string;
   nickname: string;
+}
+
+export function interfaceToInputSchema(botInterface: Interface): Schema {
+  return {
+    type: "object",
+    properties: Object.fromEntries(
+      botInterface.variables
+        .filter((x) => x.input)
+        .map((v) => [
+          v.name,
+          {
+            type: "string",
+            description: v.description,
+          },
+        ])
+    ),
+  };
 }

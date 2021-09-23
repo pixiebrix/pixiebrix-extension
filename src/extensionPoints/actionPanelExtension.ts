@@ -24,10 +24,10 @@ import {
 import { ExtensionPoint } from "@/types";
 import {
   IBlock,
-  IExtension,
   IExtensionPoint,
   IReader,
   ReaderOutput,
+  ResolvedExtension,
   Schema,
 } from "@/core";
 import { propertiesToSchema } from "@/validators/generic";
@@ -96,7 +96,9 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
     ["heading", "body"]
   );
 
-  async getBlocks(extension: IExtension<ActionPanelConfig>): Promise<IBlock[]> {
+  async getBlocks(
+    extension: ResolvedExtension<ActionPanelConfig>
+  ): Promise<IBlock[]> {
     return blockList(extension.config.body);
   }
 
@@ -112,7 +114,7 @@ export abstract class ActionPanelExtensionPoint extends ExtensionPoint<ActionPan
 
   private async runExtension(
     readerContext: ReaderOutput,
-    extension: IExtension<ActionPanelConfig>
+    extension: ResolvedExtension<ActionPanelConfig>
   ) {
     const extensionLogger = this.logger.childLogger(
       selectExtensionContext(extension)

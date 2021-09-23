@@ -15,12 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.BlockModal {
+.BrickModal {
   &__results {
     // use capital M to get the CSS method instead of SASS method
     // https://css-tricks.com/when-sass-and-new-css-features-collide/#the-solution
     max-height: Min(calc(100vh - 100px), 600px);
-    overflow-y: scroll;
+    height: calc(100vh - 100px);
   }
 
   &__badges {
@@ -69,7 +69,7 @@
   }
 }
 
-.BlockDetail {
+.BrickDetail {
   // 54px to match height of BlockModal results above
   max-height: Min(calc(100vh - 54px), 600px);
   overflow-y: scroll;

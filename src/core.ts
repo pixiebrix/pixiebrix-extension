@@ -39,7 +39,19 @@ export type RenderedHTML = string;
 
 export type ActionType = string;
 
-export type OutputKey = string;
+/**
+ * A valid identifier for a brick output key or a service key. (Does not include the preceding "@".)
+ */
+export type OutputKey = string & {
+  _outputKeyBrand: never;
+};
+
+/**
+ * A key with a "@"-prefix that refers to a service
+ */
+export type ServiceKeyVar = string & {
+  _serviceKeyVarBrand: never;
+};
 
 /**
  * A string known not to be tainted with user-generated input.
@@ -51,6 +63,11 @@ export type SafeString = string & {
 export type UUID = string & {
   // Nominal subtyping
   _uuidBrand: never;
+};
+
+export type InnerDefinitionRef = string & {
+  // Nominal subtyping
+  _innerDefinitionRefBrand: never;
 };
 
 /**
@@ -181,7 +198,7 @@ export interface ServiceDependency {
   /**
    * The output key for the dependency (without the leading "@")
    */
-  outputKey: string;
+  outputKey: OutputKey;
 
   /**
    * The UUID of the service configuration.
@@ -230,9 +247,9 @@ export type IExtension<T extends Config = EmptyConfig> = {
   id: UUID;
 
   /**
-   * Registry id of the extension point.
+   * Registry id of the extension point, or a reference to the definitions section.
    */
-  extensionPointId: RegistryId;
+  extensionPointId: RegistryId | InnerDefinitionRef;
 
   /**
    * Metadata about the deployment used to install the extension, or `undefined` if the extension was not installed
@@ -331,6 +348,12 @@ export type ResolvedExtension<T extends Config = EmptyConfig> = Except<
   IExtension<T>,
   "definitions"
 > & {
+  /**
+   * The registry id of the extension point (will be an `@internal` scope, if the extension point was originally defined
+   * internally.
+   */
+  extensionPointId: RegistryId;
+
   _resolvedExtensionBrand: never;
 };
 
@@ -360,13 +383,13 @@ export interface IExtensionPoint extends Metadata {
   /**
    * Register an extension with the extension point. Does not actually install/run the extension.
    */
-  addExtension(extension: IExtension): void;
+  addExtension(extension: ResolvedExtension): void;
 
   /**
    * Sync registered extensions, removing any extensions that aren't provided here. Does not actually install/run
    * the extensions.
    */
-  syncExtensions(extensions: IExtension[]): void;
+  syncExtensions(extensions: ResolvedExtension[]): void;
 
   /**
    * Run the installed extensions for extension point.
@@ -376,7 +399,7 @@ export interface IExtensionPoint extends Metadata {
   /**
    * Returns any blocks configured in extension.
    */
-  getBlocks: (extension: IExtension) => Promise<IBlock[]>;
+  getBlocks: (extension: ResolvedExtension) => Promise<IBlock[]>;
 }
 
 export interface IBlock extends Metadata {
@@ -620,3 +643,8 @@ export function isRendererBlock(
 export function isEffectBlock(block: IBlock & { effect?: Function }): boolean {
   return typeof block.effect === "function";
 }
+
+/**
+ * Brick is an inclusive term for entities with an id + version.
+ */
+export type IBrick = IBlock | IService | IExtensionPoint;

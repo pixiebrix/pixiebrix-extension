@@ -22,7 +22,7 @@ import AuthContext from "@/auth/AuthContext";
 import { useToasts } from "react-toast-notifications";
 import { actions, FormState } from "@/devTools/editor/slices/editorSlice";
 import * as nativeOperations from "@/background/devtools";
-import { generateExtensionPointMetadata } from "@/devTools/editor/extensionPoints/base";
+import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
 import { reportError } from "@/telemetry/logging";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { getErrorMessage } from "@/errors";
@@ -30,7 +30,7 @@ import { getCurrentURL } from "@/devTools/utils";
 
 type AddElement = (config: ElementConfig) => void;
 
-function useAddElement(reservedNames: string[]): AddElement {
+function useAddElement(): AddElement {
   const dispatch = useDispatch();
   const { port, tabState } = useContext(DevToolsContext);
   const { scope, flags = [] } = useContext(AuthContext);
@@ -56,12 +56,7 @@ function useAddElement(reservedNames: string[]): AddElement {
         const element = await config.selectNativeElement(port);
         const url = await getCurrentURL();
 
-        const metadata = await generateExtensionPointMetadata(
-          config.label,
-          scope,
-          url,
-          reservedNames
-        );
+        const metadata = internalExtensionPointMetaFactory();
 
         const initialState = config.fromNativeElement(
           url,
@@ -95,15 +90,7 @@ function useAddElement(reservedNames: string[]): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [
-      dispatch,
-      port,
-      tabState.meta?.frameworks,
-      reservedNames,
-      scope,
-      addToast,
-      flags,
-    ]
+    [dispatch, port, tabState.meta?.frameworks, scope, addToast, flags]
   );
 }
 

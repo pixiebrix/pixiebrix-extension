@@ -69,8 +69,8 @@ const ExtensionGroup: React.FunctionComponent<{
 
   const removeMany = useUserAction(
     async (extensions: IExtension[]) => {
-      for (const { id: extensionId, extensionPointId } of extensions) {
-        onRemove({ extensionId, extensionPointId });
+      for (const { id: extensionId } of extensions) {
+        onRemove({ extensionId });
       }
     },
     {

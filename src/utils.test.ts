@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { freshIdentifier, getPropByPath } from "@/utils";
+import { freshIdentifier, getPropByPath, removeUndefined } from "@/utils";
 import type { SafeString } from "@/core";
 
 test("can get array element by index", () => {
@@ -45,4 +45,17 @@ test("can generate fresh identifier", () => {
   ).toBe("field0");
   expect(freshIdentifier(root, ["field"])).toBe("field2");
   expect(freshIdentifier(root, ["foo", "bar"])).toBe("field");
+});
+
+describe("removeUndefined", () => {
+  test("remove top-level undefined", () => {
+    expect(removeUndefined({ foo: undefined, bar: null })).toStrictEqual({
+      bar: null,
+    });
+  });
+  test("remove nested undefined", () => {
+    expect(removeUndefined({ foo: { bar: undefined } })).toStrictEqual({
+      foo: {},
+    });
+  });
 });

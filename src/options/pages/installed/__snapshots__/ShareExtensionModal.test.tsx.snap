@@ -34,13 +34,13 @@ exports[`renders modal 1`] = `
             class="form-group row"
           >
             <label
-              class="form-label col-form-label col-sm-3"
+              class="form-label col-form-label col-lg-3"
               for="name"
             >
               Name
             </label>
             <div
-              class="col-sm-9"
+              class="col-lg-9"
             >
               <input
                 class="form-control"
@@ -59,13 +59,13 @@ exports[`renders modal 1`] = `
             class="form-group row"
           >
             <label
-              class="form-label col-form-label col-sm-3"
+              class="form-label col-form-label col-lg-3"
               for="blueprintId"
             >
               Registry Id
             </label>
             <div
-              class="col-sm-9"
+              class="col-lg-9"
             >
               <input
                 class="form-control"
@@ -90,13 +90,13 @@ exports[`renders modal 1`] = `
             class="form-group row"
           >
             <label
-              class="form-label col-form-label col-sm-3"
+              class="form-label col-form-label col-lg-3"
               for="description"
             >
               Description
             </label>
             <div
-              class="col-sm-9"
+              class="col-lg-9"
             >
               <input
                 class="form-control"
@@ -162,11 +162,6 @@ exports[`renders modal 1`] = `
                   />
                 </div>
               </div>
-              <input
-                checked=""
-                name="public"
-                type="checkbox"
-              />
             </div>
             <div
               class="col-sm-9"

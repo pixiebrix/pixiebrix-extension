@@ -1,7 +1,5 @@
-$color-active: #007bff;
 .root {
-  padding: 5px;
-}
-.isActive {
-  box-shadow: 0 0 3px 1px $color-active, inset 0 0 1px 1px $color-active;
+  :global(.form-group) {
+    margin-bottom: 0 !important;
+  }
 }

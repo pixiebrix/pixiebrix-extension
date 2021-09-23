@@ -21,7 +21,6 @@ import {
   BlockIcon,
   BlockOptions,
   IBlock,
-  IExtension,
   IExtensionPoint,
   IReader,
   IService,
@@ -34,6 +33,7 @@ import {
   TokenContext,
   KeyedConfig,
   RegistryId,
+  ResolvedExtension,
 } from "./core";
 import { AxiosRequestConfig } from "axios";
 import { BackgroundLogger } from "@/background/logging";
@@ -42,6 +42,12 @@ import { validateRegistryId } from "@/types/helpers";
 
 type SanitizedBrand = { _sanitizedConfigBrand: null };
 type SecretBrand = { _serviceConfigBrand: null };
+
+/**
+ * Type to be preferred over a plain `object`
+ * https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/ban-types.md
+ */
+export type UnknownObject = Record<string, unknown>;
 
 export abstract class Service<
   TConfig extends KeyedConfig = KeyedConfig,
@@ -100,7 +106,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
 
   public readonly icon: BlockIcon;
 
-  protected readonly extensions: Array<IExtension<TConfig>> = [];
+  protected readonly extensions: Array<ResolvedExtension<TConfig>> = [];
 
   protected readonly template?: string;
 
@@ -138,7 +144,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
   /** Internal method to perform a partial uninstall of the extension point */
   protected abstract removeExtensions(extensionIds: string[]): void;
 
-  syncExtensions(extensions: Array<IExtension<TConfig>>): void {
+  syncExtensions(extensions: Array<ResolvedExtension<TConfig>>): void {
     const before = this.extensions.map((x) => x.id);
 
     const updatedIds = new Set(extensions.map((x) => x.id));
@@ -158,7 +164,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
     });
   }
 
-  addExtension(extension: IExtension<TConfig>): void {
+  addExtension(extension: ResolvedExtension<TConfig>): void {
     const index = this.extensions.findIndex((x) => x.id === extension.id);
     if (index >= 0) {
       console.warn(
@@ -174,7 +180,7 @@ export abstract class ExtensionPoint<TConfig extends EmptyConfig>
 
   abstract defaultReader(): Promise<IReader>;
 
-  abstract getBlocks(extension: IExtension<TConfig>): Promise<IBlock[]>;
+  abstract getBlocks(extension: ResolvedExtension<TConfig>): Promise<IBlock[]>;
 
   abstract isAvailable(): Promise<boolean>;
 

@@ -17,21 +17,21 @@
  */
 
 import { IExtension, Metadata } from "@/core";
-import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
+  getImplicitReader,
   lookupExtensionPoint,
-  makeBaseState,
-  makeExtensionReaders,
+  makeInitialBaseState,
   makeIsAvailable,
-  makeReaderFormState,
+  readerHack,
+  removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
 } from "@/devTools/editor/extensionPoints/base";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray, identity, pickBy } from "lodash";
+import { castArray } from "lodash";
 import {
   PanelConfig,
   PanelDefinition,
@@ -48,10 +48,11 @@ import * as nativeOperations from "@/background/devtools";
 import {
   BaseFormState,
   ElementConfig,
+  SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
 import { MenuPosition } from "@/extensionPoints/menuItemExtension";
-import { BlockPipeline } from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import PanelConfiguration from "@/devTools/editor/tabs/panel/PanelConfiguration";
 
@@ -81,10 +82,8 @@ export interface PanelFormState extends BaseFormState {
       containerSelector: string;
       position?: MenuPosition;
       template: string;
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
+      reader: SingleLayerReaderConfig;
+      isAvailable: NormalizedAvailability;
     };
     traits: PanelTraits;
   };
@@ -106,23 +105,18 @@ const DEFAULT_TRAITS: PanelTraits = {
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  panel: PanelSelectionResult,
-  frameworks: FrameworkMeta[]
+  panel: PanelSelectionResult
 ): PanelFormState {
   return {
     type: "panel",
     label: `My ${getDomain(url)} panel`,
-    ...makeBaseState(
-      panel.uuid,
-      panel.foundation.containerSelector,
-      metadata,
-      frameworks
-    ),
+    ...makeInitialBaseState(panel.uuid),
     containerInfo: panel.containerInfo,
     extensionPoint: {
       metadata,
       definition: {
         ...panel.foundation,
+        reader: getImplicitReader(),
         isAvailable: makeIsAvailable(url),
       },
       traits: DEFAULT_TRAITS,
@@ -139,29 +133,29 @@ function fromNativeElement(
 function selectExtensionPoint(
   formState: PanelFormState
 ): ExtensionPointConfig<PanelDefinition> {
-  const { extensionPoint, readers } = formState;
+  const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, position, template, containerSelector },
+    definition: { isAvailable, position, template, reader, containerSelector },
   } = extensionPoint;
 
-  return {
+  return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "panel",
-      reader: readers.map((x) => x.metadata.id),
-      isAvailable: pickBy(isAvailable, identity),
+      reader,
+      isAvailable,
       containerSelector,
       position,
       template,
     },
-  };
+  });
 }
 
 function selectExtension(
   { uuid, label, extensionPoint, extension, services }: PanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<PanelConfig> {
-  return {
+  return removeEmptyValues({
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
@@ -170,7 +164,7 @@ function selectExtension(
     config: options.includeInstanceIds
       ? extension
       : excludeInstanceIds(extension, "body"),
-  };
+  });
 }
 
 function asDynamicElement(element: PanelFormState): DynamicDefinition {
@@ -178,7 +172,6 @@ function asDynamicElement(element: PanelFormState): DynamicDefinition {
     type: "panel",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
-    readers: makeExtensionReaders(element),
   };
 }
 
@@ -199,7 +192,6 @@ async function fromExtensionPoint(
     type: "panel",
     label: `My ${getDomain(url)} panel`,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: [],
 
     extension: {
@@ -219,6 +211,7 @@ async function fromExtensionPoint(
       },
       definition: {
         ...extensionPoint.definition,
+        reader: readerHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -240,7 +233,6 @@ async function fromExtension(
     type: extensionPoint.definition.type,
     label: config.label,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: config.services,
 
     extension: {
@@ -259,6 +251,7 @@ async function fromExtension(
       },
       definition: {
         ...extensionPoint.definition,
+        reader: readerHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },

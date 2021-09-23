@@ -21,15 +21,15 @@ import {
   ButtonDefinition,
   ButtonSelectionResult,
 } from "@/nativeEditor/insertButton";
-import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
+  getImplicitReader,
   lookupExtensionPoint,
-  makeBaseState,
-  makeExtensionReaders,
+  makeInitialBaseState,
   makeIsAvailable,
-  makeReaderFormState,
+  readerHack,
+  removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
@@ -50,9 +50,10 @@ import * as nativeOperations from "@/background/devtools";
 import {
   BaseFormState,
   ElementConfig,
+  SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ElementInfo } from "@/nativeEditor/frameworks";
-import { BlockPipeline } from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import MenuItemConfiguration from "@/devTools/editor/tabs/menuItem/MenuItemConfiguration";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 
@@ -76,10 +77,8 @@ export interface ActionFormState extends BaseFormState {
       containerSelector: string;
       position?: MenuPosition;
       template: string;
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
+      reader: SingleLayerReaderConfig;
+      isAvailable: NormalizedAvailability;
     };
     traits?: {
       style: {
@@ -99,23 +98,18 @@ export interface ActionFormState extends BaseFormState {
 function fromNativeElement(
   url: string,
   metadata: Metadata,
-  button: ButtonSelectionResult,
-  frameworks: FrameworkMeta[]
+  button: ButtonSelectionResult
 ): ActionFormState {
   return {
     type: "menuItem",
     label: `My ${getDomain(url)} button`,
-    ...makeBaseState(
-      button.uuid,
-      button.menu.containerSelector,
-      metadata,
-      frameworks
-    ),
+    ...makeInitialBaseState(button.uuid),
     containerInfo: button.containerInfo,
     extensionPoint: {
       metadata,
       definition: {
         ...button.menu,
+        reader: getImplicitReader(),
         isAvailable: makeIsAvailable(url),
       },
       traits: {
@@ -135,28 +129,28 @@ function fromNativeElement(
 function selectExtensionPoint(
   formState: ActionFormState
 ): ExtensionPointConfig<MenuDefinition> {
-  const { extensionPoint, readers } = formState;
+  const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, position, template, containerSelector },
+    definition: { isAvailable, position, template, reader, containerSelector },
   } = extensionPoint;
-  return {
+  return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "menuItem",
-      reader: readers.map((x) => x.metadata.id),
+      reader,
       isAvailable: pickBy(isAvailable, identity),
       containerSelector,
       position,
       template,
     },
-  };
+  });
 }
 
 function selectExtension(
   { uuid, label, extensionPoint, extension, services }: ActionFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<MenuItemExtensionConfig> {
-  return {
+  return removeEmptyValues({
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
@@ -165,7 +159,7 @@ function selectExtension(
     config: options.includeInstanceIds
       ? extension
       : excludeInstanceIds(extension, "action"),
-  };
+  });
 }
 
 async function fromExtensionPoint(
@@ -182,7 +176,6 @@ async function fromExtensionPoint(
     type: extensionPoint.definition.type,
     label: `My ${getDomain(url)} button`,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: [],
 
     extension: {
@@ -202,6 +195,7 @@ async function fromExtensionPoint(
       },
       definition: {
         ...extensionPoint.definition,
+        reader: readerHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -223,7 +217,6 @@ export async function fromExtension(
     type: extensionPoint.definition.type,
     label: config.label,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: config.services,
 
     extension: {
@@ -237,6 +230,7 @@ export async function fromExtension(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
+        reader: readerHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -248,7 +242,6 @@ function asDynamicElement(element: ActionFormState): ButtonDefinition {
     type: "menuItem",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
-    readers: makeExtensionReaders(element),
   };
 }
 

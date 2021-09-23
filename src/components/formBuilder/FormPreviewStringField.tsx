@@ -15,42 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-import { FieldProps, utils } from "@rjsf/core";
+import { utils } from "@rjsf/core";
 import React from "react";
-import { SetActiveField } from "./formBuilderTypes";
-import { UI_SCHEMA_ACTIVE } from "./schemaFieldNames";
-import styles from "./FormPreviewStringField.module.scss";
-import cx from "classnames";
-
-interface FormPreviewStringFieldProps extends FieldProps {
-  setActiveField: SetActiveField;
-}
+import FormPreviewFieldTemplate, {
+  FormPreviewFieldProps,
+} from "./FormPreviewFieldTemplate";
+import styles from "./FormPreviewBooleanField.module.scss";
 
 const RjsfStringField = utils.getDefaultRegistry().fields.StringField;
 
-const FormPreviewStringField: React.FC<FormPreviewStringFieldProps> = ({
-  setActiveField,
-  ...rest
-}) => {
-  const { name, uiSchema = {} } = rest;
-  // eslint-disable-next-line security/detect-object-injection -- is a constant
-  const isActive = Boolean(uiSchema[UI_SCHEMA_ACTIVE]);
-
-  return (
-    <div
-      onClick={() => {
-        if (!isActive) {
-          setActiveField(name);
-        }
-      }}
-      className={cx(styles.root, { [styles.isActive]: isActive })}
-      role="group"
-    >
-      <RjsfStringField {...rest} />
-    </div>
-  );
-};
+const FormPreviewStringField: React.FC<FormPreviewFieldProps> = (props) => (
+  <FormPreviewFieldTemplate
+    as={RjsfStringField}
+    className={styles.root}
+    {...props}
+  />
+);
 
 export default FormPreviewStringField;

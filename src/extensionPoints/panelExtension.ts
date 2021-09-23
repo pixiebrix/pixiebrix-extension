@@ -36,7 +36,7 @@ import {
 import {
   IBlock,
   IconConfig,
-  IExtension,
+  ResolvedExtension,
   IExtensionPoint,
   IReader,
   ReaderOutput,
@@ -155,7 +155,9 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     ["heading", "body"]
   );
 
-  async getBlocks(extension: IExtension<PanelConfig>): Promise<IBlock[]> {
+  async getBlocks(
+    extension: ResolvedExtension<PanelConfig>
+  ): Promise<IBlock[]> {
     return blockList(extension.config.body);
   }
 
@@ -261,7 +263,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
 
   private async runExtension(
     readerContext: ReaderOutput,
-    extension: IExtension<PanelConfig>
+    extension: ResolvedExtension<PanelConfig>
   ) {
     if (this.uninstalled) {
       throw new Error("panelExtension has already been destroyed");

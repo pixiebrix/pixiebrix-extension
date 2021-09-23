@@ -15,8 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/// <reference types="@maxim_mazurok/gapi.client.bigquery" />
-
 import { liftBackground } from "@/background/protocol";
 import { ensureAuth, handleRejection } from "@/contrib/google/auth";
 

@@ -21,7 +21,7 @@ import cx from "classnames";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import styles from "./BlockResult.module.scss";
 import { OfficialBadge } from "@/components/OfficialBadge";
-import BlockIcon from "@/components/BlockIcon";
+import BrickIcon from "@/components/BrickIcon";
 
 const BlockResult: React.FunctionComponent<{
   block: ReferenceEntry;
@@ -34,7 +34,7 @@ const BlockResult: React.FunctionComponent<{
   >
     <div className="d-flex">
       <div className="mr-2 text-muted">
-        <BlockIcon block={block} />
+        <BrickIcon brick={block} />
       </div>
       <div className={cx("flex-grow-1", styles.titleColumn)}>
         <div className={styles.ellipsis}>{block.name}</div>

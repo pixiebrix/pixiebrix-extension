@@ -17,9 +17,21 @@
 
 .verticalFormGroup {
   padding-left: 0;
+  padding-right: 0;
 }
 
 .verticalFormLabel {
   padding-bottom: 0.25rem;
   width: 100%;
+}
+
+.horizontalFormGroup {
+  align-items: center;
+}
+
+.invalidMessage {
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 80%;
+  color: #dc3545;
 }

@@ -32,10 +32,28 @@ import {
   zip,
   pickBy,
   isPlainObject,
+  compact,
 } from "lodash";
 import { Primitive } from "type-fest";
 import { getErrorMessage } from "@/errors";
 import { SafeString } from "@/core";
+
+/**
+ * Create a Formik field name, validating the individual path parts.
+ * @param baseFieldName The base field name
+ * @param rest the other Formik field name path parts
+ * @throws Error if a path part is invalid
+ */
+export function joinName(
+  baseFieldName: string | null,
+  ...rest: string[]
+): string {
+  if (rest.some((x) => x.includes("."))) {
+    throw new Error("Formik path parts cannot contain periods");
+  }
+
+  return compact([baseFieldName, ...rest]).join(".");
+}
 
 export function mostCommonElement<T>(items: T[]): T {
   // https://stackoverflow.com/questions/49731282/the-most-frequent-item-of-an-array-using-lodash
@@ -145,7 +163,16 @@ export function isPrimitive(val: unknown): val is Primitive {
   return typeof val !== "function";
 }
 
-export function removeUndefined(obj: unknown): unknown {
+/**
+ * Recursively pick entries that match property
+ * @param obj an object
+ * @param predicate predicate returns true to include an entry
+ * @see pickBy
+ */
+export function deepPickBy(
+  obj: unknown,
+  predicate: (value: unknown) => boolean
+): unknown {
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof#typeof_null
   // `typeof null === "object"`, so have to check for it before the "object" check below
   if (obj == null) {
@@ -153,17 +180,21 @@ export function removeUndefined(obj: unknown): unknown {
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((x) => removeUndefined(x));
+    return obj.map((item) => deepPickBy(item, predicate));
   }
 
   if (typeof obj === "object") {
     return mapValues(
-      pickBy(obj, (x) => x !== undefined),
-      (x) => removeUndefined(x)
+      pickBy(obj, (value) => predicate(value)),
+      (value) => deepPickBy(value, predicate)
     );
   }
 
   return obj;
+}
+
+export function removeUndefined(obj: unknown): unknown {
+  return deepPickBy(obj, (value: unknown) => typeof value !== "undefined");
 }
 
 export function boolean(value: unknown): boolean {
@@ -196,13 +227,6 @@ export function clearObject(obj: Record<string, unknown>): void {
       delete obj[member];
     }
   }
-}
-
-export function castFunction(valueOrFunction: Function): Function;
-export function castFunction(valueOrFunction: any): () => any {
-  return typeof valueOrFunction === "function"
-    ? valueOrFunction
-    : () => valueOrFunction;
 }
 
 /**
@@ -446,6 +470,17 @@ export function makeURL(
     result.search,
     result.search.replaceAll("+", SPACE_ENCODED_VALUE)
   );
+}
+
+export async function allSettledValues<T = unknown>(
+  promises: Array<Promise<T>>
+): Promise<T[]> {
+  return (await Promise.allSettled(promises))
+    .filter(
+      (promise): promise is PromiseFulfilledResult<T> =>
+        promise.status === "fulfilled"
+    )
+    .map(({ value }) => value);
 }
 
 export async function allSettledRejections(

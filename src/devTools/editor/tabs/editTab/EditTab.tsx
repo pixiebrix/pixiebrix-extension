@@ -16,30 +16,33 @@
  */
 
 import React, { useCallback, useMemo, useState } from "react";
-import { Tab } from "react-bootstrap";
+import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { useField, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { BlockType, getType } from "@/blocks/util";
+import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { compact, noop, zip } from "lodash";
-import { IBlock, UUID } from "@/core";
+import { IBlock, OutputKey } from "@/core";
 import hash from "object-hash";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
-import TraceView from "@/devTools/editor/tabs/editTab/TraceView";
 import { uuidv4 } from "@/types/helpers";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { generateFreshOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
-import FoundationTraceView from "@/devTools/editor/tabs/editTab/FoundationTraceView";
 import FormTheme, { ThemeProps } from "@/components/form/FormTheme";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BlockIcon from "@/components/BlockIcon";
+import BrickIcon from "@/components/BrickIcon";
+import { isNullOrBlank } from "@/utils";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
+import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
+import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -52,35 +55,27 @@ async function filterBlocks(
     .map(([block]) => block);
 }
 
-const NotImplementedFoundationEditor: React.FC<{ isLocked: boolean }> = () => (
-  <div>Configuration pane not implement for this extension type yet.</div>
-);
-
 const blockConfigTheme: ThemeProps = {
-  layout: "vertical",
+  layout: "horizontal",
 };
 
 const EditTab: React.FC<{
   eventKey: string;
   editable?: Set<string>;
   pipelineFieldName?: string;
-}> = ({ eventKey, pipelineFieldName = "extension.body", editable }) => {
+}> = ({ eventKey, pipelineFieldName = "extension.body" }) => {
   const {
-    installed,
     extensionPoint,
     type: elementType,
   } = useFormikContext<FormState>().values;
 
+  // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
-    () => installed && !editable?.has(extensionPoint.metadata.id),
-    [editable, installed, extensionPoint.metadata.id]
+    () => !isInnerExtensionPoint(extensionPoint.metadata.id),
+    [extensionPoint.metadata.id]
   );
 
-  const {
-    label,
-    icon,
-    EditorNode: FoundationNode = NotImplementedFoundationEditor,
-  } = ADAPTERS.get(elementType);
+  const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 
@@ -93,10 +88,6 @@ const EditTab: React.FC<{
   const blockFieldName = useMemo(
     () => `${pipelineFieldName}[${activeNodeIndex - 1}]`,
     [pipelineFieldName, activeNodeIndex]
-  );
-
-  const [{ value: blockInstanceId }] = useField<UUID>(
-    `${blockFieldName}.instanceId`
   );
 
   // Load once
@@ -118,13 +109,11 @@ const EditTab: React.FC<{
     [resolvedBlocks]
   );
 
-  const onSelectNode = useCallback(
+  const onSelectNode =
     // Wrapper only accepting a number (i.e., does not accept a state update method)
-    (index: number) => {
+    useCallback((index: number) => {
       setActiveNodeIndex(index);
-    },
-    [setActiveNodeIndex]
-  );
+    }, []);
 
   const removeBlock = (pipelineIndex: number) => {
     const newPipeline = produce(blockPipeline, (draft) => {
@@ -141,9 +130,9 @@ const EditTab: React.FC<{
     ([action, block], index) =>
       block
         ? {
-            title: action.label ?? block?.name,
+            title: isNullOrBlank(action.label) ? block?.name : action.label,
             outputKey: action.outputKey,
-            icon: <BlockIcon block={block} size="2x" />,
+            icon: <BrickIcon brick={block} size="2x" />,
             onClick: () => {
               onSelectNode(index + 1);
             },
@@ -187,10 +176,14 @@ const EditTab: React.FC<{
         id: block.id,
         outputKey: await generateFreshOutputKey(
           block,
-          compact(["@input", ...blockPipeline.map((x) => x.outputKey)])
+          compact([
+            "input" as OutputKey,
+            ...blockPipeline.map((x) => x.outputKey),
+          ])
         ),
         instanceId: uuidv4(),
-        config: {},
+        config:
+          getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
       };
       pipelineFieldHelpers.setValue([...prev, newBlock, ...next]);
       onSelectNode(nodeIndex);
@@ -217,7 +210,17 @@ const EditTab: React.FC<{
         <div className={styles.configPanel}>
           <ErrorBoundary>
             <FormTheme.Provider value={blockConfigTheme}>
-              {activeNodeIndex === 0 && <FoundationNode isLocked={isLocked} />}
+              {activeNodeIndex === 0 && (
+                <>
+                  <Col>
+                    <ConnectedFieldTemplate
+                      name="label"
+                      label="Extension Name"
+                    />
+                  </Col>
+                  <FoundationNode isLocked={isLocked} />
+                </>
+              )}
 
               {activeNodeIndex > 0 && (
                 <EditorNodeConfigPanel
@@ -232,17 +235,12 @@ const EditTab: React.FC<{
             </FormTheme.Provider>
           </ErrorBoundary>
         </div>
-        <div className={styles.tracePanel}>
-          {activeNodeIndex === 0 && (
-            <FoundationTraceView instanceId={blockPipeline[0]?.instanceId} />
-          )}
-
-          {activeNodeIndex > 0 && (
-            <TraceView
-              blockFieldName={blockFieldName}
-              instanceId={blockInstanceId}
-            />
-          )}
+        <div className={styles.dataPanel}>
+          <DataPanel
+            blockFieldName={blockFieldName}
+            // eslint-disable-next-line security/detect-object-injection
+            instanceId={blockPipeline[activeNodeIndex - 1]?.instanceId}
+          />
         </div>
       </div>
     </Tab.Pane>

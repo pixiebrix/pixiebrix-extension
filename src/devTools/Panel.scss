@@ -33,8 +33,6 @@
 
   .nav-pills {
     padding-bottom: 0;
-    margin-bottom: 5px;
-    border-bottom: none;
 
     button {
       border-radius: 0;
@@ -46,14 +44,7 @@
       white-space: nowrap;
 
       .nav-link {
-        &.active {
-          border: 1px solid #007bff;
-        }
-
-        &:not(.active) {
-          border: 1px solid #fff;
-        }
-
+        height: 100%;
         font-size: 0.875rem;
         border-radius: 0;
         padding-top: 4px;
@@ -69,10 +60,6 @@
 
   .tab-pane {
     overflow-y: auto;
-  }
-
-  .tab-content {
-    padding: 10px 5px 45px 5px;
   }
 
   .ReaderData {
@@ -109,7 +96,7 @@
       .list-group-item {
         padding-left: 12px;
         padding-right: 12px;
-        border-radius: 0;
+        border-right: none;
         font-size: 0.875rem;
       }
     }
@@ -121,13 +108,10 @@
     }
 
     &__logo {
-      width: 31px;
-      cursor: pointer;
-      margin-right: 2px;
-
-      svg:hover {
-        filter: brightness(0.75);
-      }
+      background-color: #6462aa; // Make logo icon look square
+    }
+    &__logo:hover {
+      filter: brightness(0.75);
     }
 
     &__actions button {
@@ -227,7 +211,7 @@
     }
 
     .list-group-item {
-      border-radius: 0;
+      border-right: none;
       font-size: 0.8rem;
       padding-left: 5px;
       padding-right: 5px;

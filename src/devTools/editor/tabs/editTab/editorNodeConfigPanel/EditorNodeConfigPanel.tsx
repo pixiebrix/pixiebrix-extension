@@ -16,7 +16,7 @@
  */
 
 import React from "react";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { Button, Col, Form, InputGroup, Row } from "react-bootstrap";
 import { RegistryId } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
@@ -28,6 +28,7 @@ import { showOutputKey } from "@/devTools/editor/tabs/editTab/editHelpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EditorNodeConfigPanel.module.scss";
+import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
 
 const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
   <InputGroup>
@@ -36,6 +37,16 @@ const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
     </InputGroup.Prepend>
     <Form.Control {...props} />
   </InputGroup>
+);
+
+const PopoverOutputLabel: React.FC<{
+  description: string;
+}> = ({ description }) => (
+  <PopoverInfoLabel
+    name="output-label"
+    label="Output"
+    description={description}
+  />
 );
 
 const EditorNodeConfigPanel: React.FC<{
@@ -55,47 +66,42 @@ const EditorNodeConfigPanel: React.FC<{
     };
   }, [blockId]);
 
+  const isOutputDisabled = !(
+    blockInfo === null || showOutputKey(blockInfo?.type)
+  );
+  const outputDescription = isOutputDisabled
+    ? "Effect and renderer bricks do not produce outputs"
+    : "Provide an output key to refer to the outputs of this block later.";
+
   return (
     <>
-      <ConnectedFieldTemplate
-        name={`${blockFieldName}.label`}
-        layout="horizontal"
-        label="Step Name"
-        placeholder={blockInfo?.block.name}
-      />
-
-      {blockInfo == null || showOutputKey(blockInfo?.type) ? (
-        <ConnectedFieldTemplate
-          name={`${blockFieldName}.outputKey`}
-          layout="horizontal"
-          label="Output"
-          as={OutputKeyWidget}
-          description={
-            <p>
-              Provide a output key to refer to the outputs of this block later.
-              For example, if you provide the name <code>myOutput</code>, you
-              can use the output later with <code>@myOutput</code>.
-            </p>
-          }
-        />
-      ) : (
-        <ConnectedFieldTemplate
-          name={`${blockFieldName}.outputKey`}
-          layout="horizontal"
-          label="Output"
-          disabled
-          as={OutputKeyWidget}
-          description={<p>Effect and renderer bricks do not produce outputs</p>}
-        />
-      )}
-
-      <Button
-        variant="danger"
-        onClick={onRemoveNode}
-        className={styles.removeButton}
-      >
-        <FontAwesomeIcon icon={faTrash} /> Remove Brick
-      </Button>
+      <Row className={styles.topRow}>
+        <Col xl>
+          <ConnectedFieldTemplate
+            name={`${blockFieldName}.label`}
+            label="Step Name"
+            placeholder={blockInfo?.block.name}
+          />
+        </Col>
+        <Col xl>
+          <ConnectedFieldTemplate
+            name={`${blockFieldName}.outputKey`}
+            label={<PopoverOutputLabel description={outputDescription} />}
+            disabled={isOutputDisabled}
+            as={OutputKeyWidget}
+          />
+        </Col>
+        <Col sm="auto">
+          <Button
+            variant="danger"
+            onClick={onRemoveNode}
+            className={styles.removeButton}
+          >
+            <FontAwesomeIcon icon={faTrash} />{" "}
+            <span className={styles.removeText}>Remove</span>
+          </Button>
+        </Col>
+      </Row>
 
       <BlockConfiguration name={blockFieldName} blockId={blockId} />
     </>

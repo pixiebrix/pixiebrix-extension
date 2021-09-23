@@ -157,6 +157,7 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       label="Select"
       description="Demonstration dropdown"
       as={SelectWidget}
+      blankValue={null}
       options={selectOptions}
     />
     <ConnectedFieldTemplate
@@ -164,7 +165,7 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       layout="switch"
       label={
         <span>
-          <FontAwesomeIcon icon={faGlobe} /> Public
+          <FontAwesomeIcon icon={faGlobe} /> This is a boolean field
         </span>
       }
     />

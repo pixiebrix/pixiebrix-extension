@@ -45,7 +45,7 @@ export interface SchemaFieldProps<TValue> {
    * A label for the field. If not provided, the label is automatically generated from the field name/schema.
    * @see fieldLabel
    */
-  label?: string;
+  label?: React.ReactNode;
 
   /**
    * Description to override the description from the schema

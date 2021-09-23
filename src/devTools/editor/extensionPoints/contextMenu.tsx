@@ -17,15 +17,14 @@
  */
 
 import { IExtension, Metadata } from "@/core";
-import { FrameworkMeta } from "@/messaging/constants";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
+  getImplicitReader,
   lookupExtensionPoint,
-  makeBaseState,
-  makeExtensionReaders,
+  makeInitialBaseState,
   makeIsAvailable,
-  makeReaderFormState,
+  removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
@@ -33,7 +32,7 @@ import {
 import { uuidv4 } from "@/types/helpers";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
-import { castArray, identity, pickBy } from "lodash";
+import { castArray } from "lodash";
 import LogsTab from "@/devTools/editor/tabs/LogsTab";
 import {
   ContextMenuConfig,
@@ -46,9 +45,10 @@ import { faBars } from "@fortawesome/free-solid-svg-icons";
 import {
   BaseFormState,
   ElementConfig,
+  SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Menus } from "webextension-polyfill-ts";
-import { BlockPipeline } from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import ContextMenuConfiguration from "@/devTools/editor/tabs/contextMenu/ContextMenuConfiguration";
@@ -71,10 +71,8 @@ export interface ContextMenuFormState extends BaseFormState {
       defaultOptions: ContextMenuDefaultOptions;
       documentUrlPatterns: string[];
       contexts: Menus.ContextType[];
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
+      reader: SingleLayerReaderConfig;
+      isAvailable: NormalizedAvailability;
     };
   };
 
@@ -86,13 +84,9 @@ export interface ContextMenuFormState extends BaseFormState {
 
 function fromNativeElement(
   url: string,
-  metadata: Metadata,
-  element: null,
-  frameworks: FrameworkMeta[]
+  metadata: Metadata
 ): ContextMenuFormState {
-  const base = makeBaseState(uuidv4(), null, metadata, frameworks);
-  // Don't include a reader since in most cases can't use a selection reader
-  base.readers = [];
+  const base = makeInitialBaseState();
 
   const isAvailable = makeIsAvailable(url);
 
@@ -106,7 +100,8 @@ function fromNativeElement(
     extensionPoint: {
       metadata,
       definition: {
-        documentUrlPatterns: [isAvailable.matchPatterns],
+        reader: getImplicitReader(),
+        documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
         defaultOptions: {},
         isAvailable,
@@ -122,27 +117,32 @@ function fromNativeElement(
 function selectExtensionPoint(
   formState: ContextMenuFormState
 ): ExtensionPointConfig<MenuDefinition> {
-  const { extensionPoint, readers } = formState;
+  const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, documentUrlPatterns, contexts = ["all"] },
+    definition: {
+      isAvailable,
+      documentUrlPatterns,
+      reader,
+      contexts = ["all"],
+    },
   } = extensionPoint;
-  return {
+  return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "contextMenu",
       documentUrlPatterns,
       contexts,
-      reader: readers.map((x) => x.metadata.id),
-      isAvailable: pickBy(isAvailable, identity),
+      reader,
+      isAvailable,
     },
-  };
+  });
 }
 
 function selectExtension(
   { uuid, label, extensionPoint, extension, services }: ContextMenuFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ContextMenuConfig> {
-  return {
+  return removeEmptyValues({
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
@@ -151,7 +151,7 @@ function selectExtension(
     config: options.includeInstanceIds
       ? extension
       : excludeInstanceIds(extension, "action"),
-  };
+  });
 }
 
 async function fromExtension(
@@ -168,6 +168,7 @@ async function fromExtension(
     documentUrlPatterns,
     defaultOptions,
     contexts,
+    reader,
   } = extensionPoint.definition;
 
   return {
@@ -176,7 +177,6 @@ async function fromExtension(
     type: "contextMenu",
     label: config.label,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: config.services,
 
     extension: {
@@ -190,6 +190,8 @@ async function fromExtension(
         documentUrlPatterns,
         defaultOptions,
         contexts,
+        // See comment on SingleLayerReaderConfig
+        reader: reader as SingleLayerReaderConfig,
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -208,6 +210,7 @@ async function fromExtensionPoint(
     defaultOptions = {},
     documentUrlPatterns = [],
     type,
+    reader,
   } = extensionPoint.definition;
 
   return {
@@ -216,7 +219,6 @@ async function fromExtensionPoint(
     type,
     label: `My ${getDomain(url)} context menu`,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: [],
 
     extension: {
@@ -230,6 +232,8 @@ async function fromExtensionPoint(
         ...extensionPoint.definition,
         defaultOptions,
         documentUrlPatterns,
+        // See comment on SingleLayerReaderConfig
+        reader: reader as SingleLayerReaderConfig,
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -241,7 +245,6 @@ function asDynamicElement(element: ContextMenuFormState): DynamicDefinition {
     type: "contextMenu",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
-    readers: makeExtensionReaders(element),
   };
 }
 

@@ -24,6 +24,7 @@ import { getAllPropertyNames, isGetter, isPrimitive } from "@/utils";
 import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 import { findElement } from "@/frameworks/dom";
+import { UnknownObject } from "@/types";
 
 const EMBER_MAX_DEPTH = 5;
 
@@ -138,7 +139,7 @@ export function getProp(value: any, prop: string | number): unknown {
   return undefined;
 }
 
-function pickExternalProps(obj: object): object {
+function pickExternalProps(obj: UnknownObject): UnknownObject {
   // Lodash's pickby was having issues with some getters
   return Object.fromEntries(
     Object.entries(obj).filter(([key]) => !EMBER_INTERNAL_PROPS.has(key))
@@ -216,7 +217,7 @@ const EMBER_INTERNAL_PROPS = new Set([
  * Returns the "target" of a (classic) component.
  * See: https://github.com/emberjs/ember-inspector/blob/d4f1fbb1ee30d178f81ce03bf8f037722bd4b166/ember_debug/libs/capture-render-tree.js
  */
-function targetForComponent(component: any): object {
+function targetForComponent(component: any): UnknownObject {
   return component._target || component._targetObject;
 }
 

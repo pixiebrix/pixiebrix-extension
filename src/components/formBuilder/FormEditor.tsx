@@ -24,6 +24,8 @@ import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
   generateNewPropertyName,
+  MINIMAL_SCHEMA,
+  MINIMAL_UI_SCHEMA,
   moveStringInArray,
   replaceStringInArray,
 } from "./formBuilderHelpers";
@@ -38,31 +40,74 @@ import {
 import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
+import styles from "./FormEditor.module.scss";
+import { joinName } from "@/utils";
+import { isEmpty } from "lodash";
 
-const FormEditor: React.FC<{
+export type FormEditorProps = {
   name: string;
   activeField?: string;
   setActiveField: SetActiveField;
-}> = ({ name, activeField, setActiveField }) => {
+};
+
+function initDefaults(obj: RJSFSchema): void {
+  if (!obj.schema) {
+    obj.schema = MINIMAL_SCHEMA;
+  }
+
+  if (!obj.uiSchema) {
+    obj.uiSchema = MINIMAL_UI_SCHEMA;
+  }
+
+  if (!obj.uiSchema[UI_ORDER]) {
+    const propertyKeys = Object.keys(obj.schema.properties || {});
+    obj.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
+  } else if (!obj.uiSchema[UI_ORDER].includes("*")) {
+    obj.uiSchema[UI_ORDER].push("*");
+  }
+}
+
+const FormEditor: React.FC<FormEditorProps> = ({
+  name,
+  activeField,
+  setActiveField,
+}) => {
   const [
     { value: rjsfSchema },
     ,
     { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
   const [{ value: uiOrder }, , { setValue: setUiOrder }] = useField<string[]>(
-    `${name}.uiSchema.${UI_ORDER}`
+    joinName(name, "uiSchema", UI_ORDER)
   );
 
-  const { schema } = rjsfSchema;
+  const { schema, uiSchema } = rjsfSchema;
 
   useEffect(() => {
-    // Set uiSchema order if needed
-    if (!uiOrder) {
-      const propertyKeys = Object.keys(schema.properties || {});
-      const nextUiOrder = [...propertyKeys, "*"];
-      setUiOrder(nextUiOrder);
+    // Set default values if needed
+    if (!schema || !uiSchema || !uiOrder?.includes("*")) {
+      setRjsfSchema(
+        produce(rjsfSchema, (draft) => {
+          initDefaults(draft);
+        })
+      );
     }
-  }, [schema, uiOrder, setUiOrder]);
+  }, [rjsfSchema, schema, uiSchema, uiOrder, setRjsfSchema]);
+
+  // Select the first field by default
+  useEffect(
+    () => {
+      if (activeField == null && !isEmpty(schema?.properties)) {
+        setActiveField(Object.keys(schema.properties)[0]);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run onMount
+    []
+  );
+
+  if (!schema || !uiSchema) {
+    return null;
+  }
 
   const addProperty = () => {
     const propertyName = generateNewPropertyName(
@@ -104,11 +149,10 @@ const FormEditor: React.FC<{
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
       if (schema.required?.length > 0) {
-        const nextRequired = replaceStringInArray(
+        draft.schema.required = replaceStringInArray(
           schema.required,
           propertyToRemove
         );
-        draft.schema.required = nextRequired;
       }
 
       draft.uiSchema[UI_ORDER] = nextUiOrder;
@@ -122,19 +166,25 @@ const FormEditor: React.FC<{
   };
 
   // There's always at least 1 item in uiOrder array, "*".
-  const canMoveUp = uiOrder?.length > 2 && uiOrder[0] !== activeField;
+  const canMoveUp =
+    Boolean(activeField) && uiOrder?.length > 2 && uiOrder[0] !== activeField;
   const canMoveDown =
-    uiOrder?.length > 2 && uiOrder[uiOrder.length - 2] !== activeField;
+    Boolean(activeField) &&
+    uiOrder?.length > 2 &&
+    uiOrder[uiOrder.length - 2] !== activeField;
 
   return (
-    <div>
+    <div className={styles.root}>
       <BootstrapForm.Group>
         <h5>Edit form</h5>
         <hr />
       </BootstrapForm.Group>
-      <ConnectedFieldTemplate name={`${name}.schema.title`} label="Title" />
       <ConnectedFieldTemplate
-        name={`${name}.schema.description`}
+        name={joinName(name, "schema", "title")}
+        label="Title"
+      />
+      <ConnectedFieldTemplate
+        name={joinName(name, "schema", "description")}
         label="Description"
       />
       <BootstrapForm.Group>
@@ -172,7 +222,12 @@ const FormEditor: React.FC<{
       >
         <FontAwesomeIcon icon={faArrowDown} />
       </Button>
-      <Button onClick={removeProperty} variant="danger" size="sm">
+      <Button
+        onClick={removeProperty}
+        disabled={!activeField}
+        variant="danger"
+        size="sm"
+      >
         <FontAwesomeIcon icon={faTimes} />
       </Button>
     </div>

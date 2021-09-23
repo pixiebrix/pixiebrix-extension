@@ -21,11 +21,11 @@ import { ReaderOutput, ReaderRoot } from "@/core";
 import { castArray, compact } from "lodash";
 import { getComponentData, ReadPayload } from "@/pageScript/protocol";
 
-type FrameworkConfig = ReadPayload & {
+export type FrameworkConfig = ReadPayload & {
   /**
    * @deprecated Legacy emberjs reader config. Use patchSpec instead
    */
-  attrs: string | string[];
+  attrs?: string | string[];
 };
 
 function isHTMLElement(root: ReaderRoot): root is HTMLElement {

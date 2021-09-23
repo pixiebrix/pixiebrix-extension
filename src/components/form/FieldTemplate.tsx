@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactElement, ReactNode, useContext } from "react";
+import React, { ReactNode, useContext } from "react";
 import {
   Col,
   Form as BootstrapForm,
@@ -34,10 +34,11 @@ export type FieldProps<
   React.ComponentProps<As> & {
     name: string;
     layout?: "horizontal" | "vertical" | "switch" | undefined;
-    label?: string | ReactNode | undefined;
+    label?: ReactNode | undefined;
     description?: ReactNode | undefined;
     error?: string | undefined;
     touched?: boolean | undefined;
+    blankValue?: unknown;
   };
 
 export type CustomFieldWidget<TExtra = never> = React.ComponentType<
@@ -46,65 +47,25 @@ export type CustomFieldWidget<TExtra = never> = React.ComponentType<
 
 type FieldRenderProps = Except<FieldProps, "layout">;
 
-const renderHorizontal: (props: FieldRenderProps) => ReactElement = ({
+const RenderedField: React.FC<FieldProps> = ({
   name,
+  layout,
   label,
   description,
   error,
   touched,
   value,
+  children,
+  blankValue = "",
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
-  const nonUndefinedValue = typeof value === "undefined" ? "" : value;
 
-  return (
-    <BootstrapForm.Group as={Row} controlId={name}>
-      {label && (
-        <BootstrapForm.Label column sm="3">
-          {label}
-        </BootstrapForm.Label>
-      )}
-      <Col sm={label ? "9" : "12"}>
-        <BootstrapForm.Control
-          name={name}
-          isInvalid={isInvalid}
-          value={nonUndefinedValue}
-          {...restFieldProps}
-        />
-        {description && (
-          <BootstrapForm.Text className="text-muted">
-            {description}
-          </BootstrapForm.Text>
-        )}
-        {isInvalid && (
-          <BootstrapForm.Control.Feedback type="invalid">
-            {getErrorMessage(error)}
-          </BootstrapForm.Control.Feedback>
-        )}
-      </Col>
-    </BootstrapForm.Group>
-  );
-};
+  // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
+  const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
 
-const renderVertical: (props: FieldRenderProps) => ReactElement = ({
-  name,
-  label,
-  description,
-  error,
-  touched,
-  value,
-  ...restFieldProps
-}) => {
-  const isInvalid = touched && Boolean(error);
-  const nonUndefinedValue = typeof value === "undefined" ? "" : value;
-
-  return (
-    <BootstrapForm.Group
-      as={Col}
-      controlId={name}
-      className={styles.verticalFormGroup}
-    >
+  return layout === "vertical" ? (
+    <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
       {label && (
         <BootstrapForm.Label className={styles.verticalFormLabel}>
           {label}
@@ -115,25 +76,55 @@ const renderVertical: (props: FieldRenderProps) => ReactElement = ({
         isInvalid={isInvalid}
         value={nonUndefinedValue}
         {...restFieldProps}
-      />
+      >
+        {children}
+      </BootstrapForm.Control>
       {description && (
         <BootstrapForm.Text className="text-muted">
           {description}
         </BootstrapForm.Text>
       )}
       {isInvalid && (
-        <BootstrapForm.Control.Feedback type="invalid">
-          {getErrorMessage(error)}
-        </BootstrapForm.Control.Feedback>
+        <div className={styles.invalidMessage}>{getErrorMessage(error)}</div>
       )}
+    </BootstrapForm.Group>
+  ) : (
+    <BootstrapForm.Group
+      as={Row}
+      controlId={name}
+      className={styles.horizontalFormGroup}
+    >
+      {label && (
+        <BootstrapForm.Label column lg="3">
+          {label}
+        </BootstrapForm.Label>
+      )}
+      <Col lg={label ? "9" : "12"}>
+        <BootstrapForm.Control
+          name={name}
+          isInvalid={isInvalid}
+          value={nonUndefinedValue}
+          {...restFieldProps}
+        >
+          {children}
+        </BootstrapForm.Control>
+        {description && (
+          <BootstrapForm.Text className="text-muted">
+            {description}
+          </BootstrapForm.Text>
+        )}
+        {isInvalid && (
+          <div className={styles.invalidMessage}>{getErrorMessage(error)}</div>
+        )}
+      </Col>
     </BootstrapForm.Group>
   );
 };
 
-const renderSwitch: (props: FieldRenderProps) => ReactElement = ({
+const RenderedSwitch: React.FC<FieldRenderProps> = ({
   name,
   label,
-  value = false,
+  value,
   onChange,
 }) => (
   <SwitchButton name={name} label={label} value={value} onChange={onChange} />
@@ -143,13 +134,10 @@ const FieldTemplate: React.FC<FieldProps> = ({ layout, ...restProps }) => {
   const theme = useContext(FormTheme);
 
   switch (layout ?? theme.layout) {
-    case "vertical":
-      return renderVertical(restProps);
     case "switch":
-      return renderSwitch(restProps);
-    case "horizontal":
+      return <RenderedSwitch {...restProps} />;
     default:
-      return renderHorizontal(restProps);
+      return <RenderedField layout={layout} {...restProps} />;
   }
 };
 

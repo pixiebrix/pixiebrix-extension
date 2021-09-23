@@ -19,6 +19,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   IExtension,
   Metadata,
+  OutputKey,
   PersistedExtension,
   RawServiceConfiguration,
   RegistryId,
@@ -255,7 +256,7 @@ export const optionsSlice = createSlice({
           definitions: recipe.definitions ?? {},
           optionsArgs,
           services: Object.entries(services).map(
-            ([outputKey, id]: [string, RegistryId]) => ({
+            ([outputKey, id]: [OutputKey, RegistryId]) => ({
               outputKey,
               config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
               id,
@@ -300,6 +301,7 @@ export const optionsSlice = createSlice({
         extensionId,
         extensionPointId,
         config,
+        definitions,
         label,
         optionsArgs,
         services,
@@ -322,6 +324,7 @@ export const optionsSlice = createSlice({
         // If the user updates an extension, detach it from the recipe -- it's now a personal extension
         _recipe: null,
         label,
+        definitions,
         optionsArgs,
         services,
         config,

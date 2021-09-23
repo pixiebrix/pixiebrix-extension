@@ -20,8 +20,9 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { Card } from "react-bootstrap";
 import UrlMatchPatternField from "@/devTools/editor/fields/UrlMatchPatternField";
 import FieldSection from "@/devTools/editor/fields/FieldSection";
+import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
 
-const PanelConfiguration: React.FC<{
+const ActionPanelConfiguration: React.FC<{
   isLocked: boolean;
 }> = ({ isLocked = false }) => (
   <Card>
@@ -33,12 +34,11 @@ const PanelConfiguration: React.FC<{
       />
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
-        label="Sites"
-        disabled={isLocked}
+        name="extensionPoint.definition.isAvailable.matchPatterns[0]"
+        {...makeLockableFieldProps("Sites", isLocked)}
       />
     </FieldSection>
   </Card>
 );
 
-export default PanelConfiguration;
+export default ActionPanelConfiguration;
