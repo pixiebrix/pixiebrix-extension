@@ -30,9 +30,8 @@ const LockedExtensionPointLabel: React.FC<{
   const [{ value: name }] = useField<string>("extensionPoint.metadata.name");
   const defaultMessage = (
     <p>
-      Value provided by published foundation{" "}
-      <span className={styles.name}>{name}</span>. Edit the foundation in the
-      Workshop.
+      Provided by foundation <span className={styles.name}>{name}</span>. Edit
+      the foundation in the Workshop.
     </p>
   );
 
