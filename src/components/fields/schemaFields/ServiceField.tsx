@@ -39,7 +39,9 @@ import { freshIdentifier } from "@/utils";
 import { browser } from "webextension-polyfill-ts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCloud } from "@fortawesome/free-solid-svg-icons";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
+import SelectWidget, {
+  SelectWidgetOnChange,
+} from "@/components/form/widgets/SelectWidget";
 import { isEmpty } from "lodash";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
@@ -137,10 +139,12 @@ const ServiceField: React.FunctionComponent<
       : authOptions.find((x) => x.value === dependency.config);
   }, [root.services, authOptions, value]);
 
-  const onChange = useCallback(
-    (option: AuthOption) => {
+  const onChange: SelectWidgetOnChange<AuthOption> = useCallback(
+    ({ target: { value, options } }) => {
       // Key Assumption: only one service of each type is configured. If a user changes the auth for one brick,
       // it changes the auth for all the bricks.
+
+      const option = options.find((x) => x.value === value);
 
       let outputKey: OutputKey;
 
@@ -201,7 +205,9 @@ const ServiceField: React.FunctionComponent<
           helpers.setValue(keyToFieldValue(match.outputKey));
         } else if (options.length === 1) {
           // Try defaulting to the only option available
-          onChange(options[0]);
+          onChange({
+            target: { value: options[0].value, name: field.name, options },
+          });
         }
       }
     },
@@ -231,7 +237,6 @@ const ServiceField: React.FunctionComponent<
       as={SelectWidget}
       options={options}
       onChange={onChange}
-      value={option?.value}
     />
   );
 };
