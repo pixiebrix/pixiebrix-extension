@@ -78,6 +78,7 @@ export const ProcessField: React.FunctionComponent<
       label={label ?? fieldLabel(field.name)}
       description="The UiPath process to run"
       as={SelectWidget}
+      blankValue={null}
       isLoading={isPending}
       error={fetchError}
       loadingMessage="Loading processes from UiPath Assistant"

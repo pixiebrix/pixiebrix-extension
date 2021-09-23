@@ -42,7 +42,7 @@ import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
-import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
+import ActionPanelConfiguration from "@/devTools/editor/tabs/actionPanel/ActionPanelConfiguration";
 import {
   BaseFormState,
   ElementConfig,
@@ -228,7 +228,7 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   selectExtension,
   fromExtension,
   wizard,
-  EditorNode: PanelConfiguration,
+  EditorNode: ActionPanelConfiguration,
   insertModeHelp: (
     <div>
       <p>

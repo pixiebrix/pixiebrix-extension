@@ -24,6 +24,7 @@ import TemplateWidget, {
   Snippet,
 } from "@/devTools/editor/fields/TemplateWidget";
 import LocationWidget from "@/devTools/editor/fields/LocationWidget";
+import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
 
 const panelSnippets: Snippet[] = [
   { label: "heading", value: "{{{heading}}}" },
@@ -43,15 +44,14 @@ const PanelConfiguration: React.FC<{
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.containerSelector"
-        label="Location"
         as={LocationWidget}
         description="Location on the page"
+        {...makeLockableFieldProps("Location", isLocked)}
       />
 
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns"
-        label="Sites"
-        disabled={isLocked}
+        {...makeLockableFieldProps("Sites", isLocked)}
       />
     </FieldSection>
 
@@ -72,10 +72,10 @@ const PanelConfiguration: React.FC<{
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.template"
-        label="Template"
         as={TemplateWidget}
         description="A template for the item, with a placeholder for the heading and body"
         snippets={panelSnippets}
+        {...makeLockableFieldProps("Template", isLocked)}
       />
     </FieldSection>
   </Card>
