@@ -19,18 +19,17 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useField, useFormikContext } from "formik";
 import {
-  ServiceKeyVar,
+  OutputKey,
   RegistryId,
   SafeString,
   Schema,
   ServiceDependency,
-  OutputKey,
+  ServiceKeyVar,
 } from "@/core";
 import {
   createTypePredicate,
   fieldLabel,
 } from "@/components/fields/fieldUtils";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { useAuthOptions } from "@/hooks/auth";
 import { AuthOption } from "@/auth/authTypes";
 import { produce } from "immer";
@@ -43,6 +42,7 @@ import SelectWidget, {
   SelectWidgetOnChange,
 } from "@/components/form/widgets/SelectWidget";
 import { isEmpty } from "lodash";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 const DEFAULT_SERVICE_OUTPUT_KEY = "service" as OutputKey;
 
@@ -112,7 +112,7 @@ const ServiceField: React.FunctionComponent<
 > = ({ label, detectDefault = true, schema, ...props }) => {
   const [authOptions] = useAuthOptions();
 
-  const [{ value, ...field }, , helpers] = useField<ServiceKeyVar>(props);
+  const [{ value, ...field }, meta, helpers] = useField<ServiceKeyVar>(props);
 
   const { values: root, setValues } = useFormikContext<{
     services: ServiceDependency[];
@@ -128,7 +128,7 @@ const ServiceField: React.FunctionComponent<
     };
   }, [authOptions, schema]);
 
-  const option = useMemo(() => {
+  const selectedOption = useMemo(() => {
     const dependency =
       value == null
         ? null
@@ -204,7 +204,12 @@ const ServiceField: React.FunctionComponent<
           );
           helpers.setValue(keyToFieldValue(match.outputKey));
         } else if (options.length === 1) {
-          // Try defaulting to the only option available
+          console.debug("Defaulting to only integration option", {
+            option: options[0],
+            options,
+          });
+          // Try defaulting to the only option available. Use onChange instead of helpers.setValue b/c it automatically
+          // updates the services part of the form state
           onChange({
             target: { value: options[0].value, name: field.name, options },
           });
@@ -215,10 +220,10 @@ const ServiceField: React.FunctionComponent<
     [serviceIds, options]
   );
 
-  console.debug("Render ServiceField", { option, options });
-
+  // Use FieldTemplate here directly b/c this component is mapping between the Formik state and the options for the
+  // select widget.
   return (
-    <ConnectedFieldTemplate
+    <FieldTemplate
       name={field.name}
       label={label ?? fieldLabel(field.name)}
       description={
@@ -236,7 +241,11 @@ const ServiceField: React.FunctionComponent<
       }
       as={SelectWidget}
       options={options}
+      // The SelectWidget re-looks up the option based on the value
+      value={selectedOption?.value}
       onChange={onChange}
+      error={meta.error}
+      touched={meta.touched}
     />
   );
 };

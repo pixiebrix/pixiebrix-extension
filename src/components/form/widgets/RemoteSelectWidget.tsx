@@ -33,6 +33,9 @@ type OwnProps = {
   loadingMessage?: string;
 };
 
+/**
+ * Widget for selecting values retrieved from a 3rd party API
+ */
 const RemoteSelectWidget: CustomFieldWidget<OwnProps> = ({
   config,
   optionsFactory,

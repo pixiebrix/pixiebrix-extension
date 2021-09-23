@@ -147,8 +147,8 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       {fileId != null && (
         <ChildObjectField
           heading="Input Arguments"
-          schema={inputSchema}
           name={compact([basePath, "data"]).join(".")}
+          schema={inputSchema}
           schemaError={schemaError}
           schemaLoading={schemaPending}
         />

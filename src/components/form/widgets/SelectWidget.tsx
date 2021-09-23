@@ -25,6 +25,8 @@ export type Option<TValue = unknown> = {
   value: TValue;
 };
 
+// The signature of onChange is dictated by the compatibility with Formik. for a Widget to be compatible with Formik
+// it should trigger onChange with an event, that has target and value
 export type SelectWidgetOnChange<TOption extends Option = Option> = (event: {
   target: { value: TOption["value"]; name: string; options: TOption[] };
 }) => void;
