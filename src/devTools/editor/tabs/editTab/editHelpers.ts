@@ -21,6 +21,7 @@ import { freshIdentifier } from "@/utils";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import { castArray } from "lodash";
 import { BlockPipeline } from "@/blocks/types";
+import { selectReaderIds } from "@/blocks/readers/readerUtils";
 
 export function collectRegistryIds(form: FormState): RegistryId[] {
   const extension = form.extension as any;
@@ -30,7 +31,7 @@ export function collectRegistryIds(form: FormState): RegistryId[] {
 
   return [
     form.extensionPoint.metadata.id,
-    ...form.readers.map((x) => x.metadata.id),
+    ...selectReaderIds(form.extensionPoint.definition.reader),
     ...form.services.map((x) => x.id),
     ...pipeline.map((x) => x.id),
   ];

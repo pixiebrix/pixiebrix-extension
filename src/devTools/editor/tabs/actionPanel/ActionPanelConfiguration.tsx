@@ -34,7 +34,7 @@ const ActionPanelConfiguration: React.FC<{
       />
 
       <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
+        name="extensionPoint.definition.isAvailable.matchPatterns[0]"
         {...makeLockableFieldProps("Sites", isLocked)}
       />
     </FieldSection>

@@ -17,11 +17,18 @@
 import React from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Runtime } from "webextension-polyfill-ts";
-import { IExtension, Metadata, Schema, ServiceDependency, UUID } from "@/core";
+import {
+  IExtension,
+  Metadata,
+  RegistryId,
+  ServiceDependency,
+  UUID,
+} from "@/core";
 import { FrameworkMeta } from "@/messaging/constants";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import { WizardStep } from "@/devTools/editor/extensionPoints/base";
 import { DynamicDefinition } from "@/nativeEditor/dynamic";
+import { NormalizedAvailability } from "@/blocks/types";
 
 export type ElementType =
   | "menuItem"
@@ -31,40 +38,20 @@ export type ElementType =
   | "actionPanel";
 
 /**
- * A reference to an existing reader.
+ * A simplified type for ReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
+ * @see ReaderConfig
  */
-export type ReaderReferenceFormState = {
-  metadata: Metadata;
-};
-
-export function isCustomReader(
-  reader: ReaderFormState | ReaderReferenceFormState
-): reader is ReaderFormState {
-  return "definition" in reader;
-}
-
-export interface ReaderFormState {
-  _new?: boolean;
-  metadata: Metadata;
-  outputSchema: Schema;
-  definition: {
-    /**
-     * Reader type corresponding to built-in reader factory, e.g., jquery, react.
-     */
-    type: string | null;
-    selector: string | null;
-    selectors: Record<string, string>;
-    optional: boolean;
-  };
-}
+export type SingleLayerReaderConfig =
+  | RegistryId
+  | RegistryId[]
+  | Record<string, RegistryId>;
 
 export interface BaseExtensionPointState {
   metadata: Metadata;
   definition: {
-    isAvailable: {
-      matchPatterns: string;
-      selectors: string;
-    };
+    // We're currently not allowing users to modify readers in the page editor
+    reader: SingleLayerReaderConfig;
+    isAvailable: NormalizedAvailability;
   };
 }
 
@@ -96,8 +83,6 @@ export interface BaseFormState {
   label: string;
 
   services: ServiceDependency[];
-
-  readers: Array<ReaderFormState | ReaderReferenceFormState>;
 
   extensionPoint: BaseExtensionPointState;
 
