@@ -24,7 +24,7 @@ import {
   SITES_PATTERN,
 } from "@/permissions/patterns";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
-import { Alert, Button, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import styles from "./UrlMatchPatternWidget.module.scss";
 import { useField } from "formik";
 
@@ -45,11 +45,7 @@ const UrlMatchPatternWidget: CustomFieldWidget = (props) => {
 
   return (
     <>
-      {disabled ? (
-        <Alert variant="info">
-          You do not have permission to edit this foundation
-        </Alert>
-      ) : (
+      {!disabled && (
         <div className="small">
           <span>Shortcuts:</span>
           <UrlMatchShortcut

@@ -41,6 +41,7 @@ import BrickIcon from "@/components/BrickIcon";
 import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
+import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -53,10 +54,6 @@ async function filterBlocks(
     .map(([block]) => block);
 }
 
-const NotImplementedFoundationEditor: React.FC<{ isLocked: boolean }> = () => (
-  <div>Configuration pane not implement for this extension type yet.</div>
-);
-
 const blockConfigTheme: ThemeProps = {
   layout: "horizontal",
 };
@@ -65,23 +62,19 @@ const EditTab: React.FC<{
   eventKey: string;
   editable?: Set<string>;
   pipelineFieldName?: string;
-}> = ({ eventKey, pipelineFieldName = "extension.body", editable }) => {
+}> = ({ eventKey, pipelineFieldName = "extension.body" }) => {
   const {
-    installed,
     extensionPoint,
     type: elementType,
   } = useFormikContext<FormState>().values;
 
+  // For now, don't allow modifying extensionPoint packages via the Page Editor.
   const isLocked = useMemo(
-    () => installed && !editable?.has(extensionPoint.metadata.id),
-    [editable, installed, extensionPoint.metadata.id]
+    () => !isInnerExtensionPoint(extensionPoint.metadata.id),
+    [extensionPoint.metadata.id]
   );
 
-  const {
-    label,
-    icon,
-    EditorNode: FoundationNode = NotImplementedFoundationEditor,
-  } = ADAPTERS.get(elementType);
+  const { label, icon, EditorNode: FoundationNode } = ADAPTERS.get(elementType);
 
   const [activeNodeIndex, setActiveNodeIndex] = useState<number>(0);
 

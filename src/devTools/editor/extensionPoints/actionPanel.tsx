@@ -25,6 +25,7 @@ import {
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
+  removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
@@ -41,7 +42,7 @@ import { DynamicDefinition } from "@/nativeEditor/dynamic";
 import { uuidv4 } from "@/types/helpers";
 import { getDomain } from "@/permissions/patterns";
 import { faColumns } from "@fortawesome/free-solid-svg-icons";
-import PanelConfiguration from "@/devTools/editor/tabs/actionPanel/PanelConfiguration";
+import ActionPanelConfiguration from "@/devTools/editor/tabs/actionPanel/ActionPanelConfiguration";
 import {
   BaseFormState,
   ElementConfig,
@@ -110,21 +111,21 @@ function selectExtensionPoint(
   const {
     definition: { isAvailable },
   } = extensionPoint;
-  return {
+  return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "actionPanel",
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
     },
-  };
+  });
 }
 
 function selectExtension(
   { uuid, label, extensionPoint, extension, services }: ActionPanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ActionPanelConfig> {
-  return {
+  return removeEmptyValues({
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
@@ -133,7 +134,7 @@ function selectExtension(
     config: options.includeInstanceIds
       ? extension
       : excludeInstanceIds(extension, "body"),
-  };
+  });
 }
 
 function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
@@ -227,7 +228,7 @@ const config: ElementConfig<never, ActionPanelFormState> = {
   selectExtension,
   fromExtension,
   wizard,
-  EditorNode: PanelConfiguration,
+  EditorNode: ActionPanelConfiguration,
   insertModeHelp: (
     <div>
       <p>

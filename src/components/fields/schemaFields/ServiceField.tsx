@@ -240,6 +240,7 @@ const ServiceField: React.FunctionComponent<
         </span>
       }
       as={SelectWidget}
+      blankValue={null}
       options={options}
       // The SelectWidget re-looks up the option based on the value
       value={selectedOption?.value}

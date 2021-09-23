@@ -34,10 +34,11 @@ export type FieldProps<
   React.ComponentProps<As> & {
     name: string;
     layout?: "horizontal" | "vertical" | "switch" | undefined;
-    label?: string | ReactNode | undefined;
+    label?: ReactNode | undefined;
     description?: ReactNode | undefined;
     error?: string | undefined;
     touched?: boolean | undefined;
+    blankValue?: unknown;
   };
 
 export type CustomFieldWidget<TExtra = never> = React.ComponentType<
@@ -55,10 +56,13 @@ const RenderedField: React.FC<FieldProps> = ({
   touched,
   value,
   children,
+  blankValue = "",
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
-  const nonUndefinedValue = typeof value === "undefined" ? "" : value;
+
+  // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
+  const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
 
   return layout === "vertical" ? (
     <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>

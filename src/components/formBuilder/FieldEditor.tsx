@@ -211,6 +211,7 @@ const FieldEditor: React.FC<{
         name={getFullFieldName("uiType")}
         label="Type"
         as={SelectWidget}
+        blankValue={null}
         options={FIELD_TYPE_OPTIONS}
         value={getSelectedUiTypeOption().value}
         onChange={onUiTypeChange}

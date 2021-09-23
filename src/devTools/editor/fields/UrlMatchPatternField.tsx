@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import UrlMatchPatternWidget from "@/devTools/editor/components/UrlMatchPatternWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import React from "react";
 
 const defaultDescription = (
   <span>
@@ -35,14 +35,14 @@ const defaultDescription = (
 
 const UrlMatchPatternField: React.FC<{
   name: string;
-  disabled: boolean;
-  label?: string;
+  disabled?: boolean;
+  label?: React.ReactNode;
   description?: React.ReactNode;
 }> = ({
   name,
   disabled,
-  description = defaultDescription,
   label = "Sites",
+  description = defaultDescription,
 }) => (
   <ConnectedFieldTemplate
     name={name}

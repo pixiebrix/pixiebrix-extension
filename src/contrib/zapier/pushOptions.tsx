@@ -78,6 +78,7 @@ export const ZapField: React.FunctionComponent<
       label={label ?? fieldLabel(field.name)}
       description="The Zap to run"
       as={SelectWidget}
+      blankValue={null}
       options={options}
       loadingMessage="Loading Zaps..."
       loadingError={error}
