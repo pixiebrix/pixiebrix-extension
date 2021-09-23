@@ -26,6 +26,7 @@ const BooleanField: React.FunctionComponent<SchemaFieldProps<boolean>> = ({
   schema,
 }) => (
   <ConnectedFieldTemplate
+    name={name}
     layout="switch"
     label={label ?? fieldLabel(name)}
     description={schema.description}
