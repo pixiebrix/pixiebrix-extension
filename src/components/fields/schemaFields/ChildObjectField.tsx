@@ -27,6 +27,7 @@ import ObjectWidget from "@/components/fields/schemaFields/widgets/ObjectWidget"
 import { Schema } from "@/core";
 import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { UnknownObject } from "@/types";
 
 const FALLBACK_SCHEMA: Schema = {
   type: "object",
@@ -58,7 +59,7 @@ const ChildContainer: React.FC<{ heading: string }> = ({
 );
 
 const ChildObjectWidget: CustomFieldWidget<
-  SchemaFieldProps<Record<string, unknown>> & OwnProps
+  SchemaFieldProps<UnknownObject> & OwnProps
 > = ({ name, schema, schemaLoading, schemaError, heading }) => {
   if (schemaLoading) {
     return (
@@ -76,7 +77,7 @@ const ChildObjectWidget: CustomFieldWidget<
     );
   }
 
-  if (isEmpty(schema.properties)) {
+  if (isEmpty(schema?.properties)) {
     return (
       <ChildContainer heading={heading}>
         <span className="text-muted">No parameters</span>
@@ -105,14 +106,14 @@ const ChildObjectWidget: CustomFieldWidget<
 };
 
 const ChildObjectField: React.FunctionComponent<
-  SchemaFieldProps<Record<string, unknown>> & OwnProps
+  SchemaFieldProps<UnknownObject> & OwnProps
 > = (props) => (
   <ConnectedFieldTemplate
     {...props}
     description={
       props.schemaError
         ? getErrorMessage(props.schemaError)
-        : props.schema.description
+        : props.schema?.description
     }
     as={ChildObjectWidget}
   />

@@ -16,8 +16,8 @@
  */
 
 import React from "react";
+import { partial } from "lodash";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { compact } from "lodash";
 import { AUTOMATION_ANYWHERE_PROPERTIES } from "@/contrib/automationanywhere/run";
 import { SanitizedServiceConfiguration, Schema } from "@/core";
 import { useField } from "formik";
@@ -39,6 +39,7 @@ import { Option } from "@/components/form/widgets/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
+import { joinName } from "@/utils";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
@@ -78,12 +79,13 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const basePath = compact([name, configKey]).join(".");
+  const configName = partial(joinName, name, configKey);
+
   const { hasPermissions, requestPermissions, config } = useDependency(
     AUTOMATION_ANYWHERE_SERVICE_ID
   );
 
-  const [{ value: fileId }] = useField<string>(`${basePath}.fileId`);
+  const [{ value: fileId }] = useField<string>(configName("fileId"));
 
   const [inputSchema, schemaPending, schemaError] = useAsyncState(async () => {
     if (hasPermissions && fileId) {
@@ -98,7 +100,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   const serviceField = (
     <ServiceField
       label="Integration"
-      name={[basePath, "service"].join(".")}
+      name={configName("service")}
       schema={AUTOMATION_ANYWHERE_PROPERTIES.service as Schema}
     />
   );
@@ -128,8 +130,8 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 
       <ConnectedFieldTemplate
         label="Bot"
-        name={`${basePath}.fileId`}
-        description="The file id of the bot"
+        name={configName("fileId")}
+        description="The Automation Anywhere bot"
         as={RemoteSelectWidget}
         optionsFactory={fetchBots}
         config={config}
@@ -137,7 +139,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
 
       <ConnectedFieldTemplate
         label="Device"
-        name={`${basePath}.deviceId`}
+        name={configName("deviceId")}
         description="The device to run the bot on"
         as={RemoteSelectWidget}
         optionsFactory={fetchDevices}
@@ -147,8 +149,8 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       {fileId != null && (
         <ChildObjectField
           heading="Input Arguments"
+          name={configName("data")}
           schema={inputSchema}
-          name={compact([basePath, "data"]).join(".")}
           schemaError={schemaError}
           schemaLoading={schemaPending}
         />
