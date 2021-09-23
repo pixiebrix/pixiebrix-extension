@@ -1,6 +1,7 @@
 // Issues with mis-matched type signatures between @types/react-table 7.7.2+ and react-table-config.d.ts
 //  resulted in modifying the type signatures in this file.
-//  Reference: https://stackoverflow.com/a/68766549
+//  Once the @types/react-table resolves this issue, this file can be updated.
+//  Reference: https://github.com/pixiebrix/pixiebrix-extension/issues/1437
 
 import {
   UseExpandedHooks,
