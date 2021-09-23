@@ -143,6 +143,7 @@ export const ReleaseField: React.FunctionComponent<
       label={label ?? fieldLabel(props.name)}
       description={description}
       as={SelectWidget}
+      blankValue={null}
       options={options}
     />
   );

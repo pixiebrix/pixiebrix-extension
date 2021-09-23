@@ -78,6 +78,7 @@ const TabField: React.FunctionComponent<
       label="Tab Name"
       description="The spreadsheet tab"
       as={SelectWidget}
+      blankValue={null}
       loadError={tabsError}
       isLoading={tabsPending}
       options={sheetOptions}

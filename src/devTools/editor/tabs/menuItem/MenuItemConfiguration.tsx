@@ -75,6 +75,7 @@ const MenuItemConfiguration: React.FC<{
         name="extensionPoint.definition.position"
         description="Position relative to other menu items/buttons"
         as={SelectWidget}
+        blankValue={null}
         options={positionOptions}
         {...makeLockableFieldProps("Order/Position", isLocked)}
       />
