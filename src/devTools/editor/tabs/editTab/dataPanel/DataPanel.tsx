@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { UUID } from "@/core";
 import useInterval from "@/hooks/useInterval";
 import { isEmpty, pickBy, sortBy } from "lodash";
@@ -140,9 +140,18 @@ const DataPanel: React.FC<{
   const showBlockPreview = record && blockConfig;
 
   const defaultKey = showFormPreview ? "preview" : "output";
+  const [activeTabKey, setActiveTabKey] = useState<string>(defaultKey);
+  const handleSelect = useCallback(
+    (eventKey: string) => {
+      setActiveTabKey(eventKey);
+    },
+    [setActiveTabKey]
+  );
+
+  console.log(`active key: ${activeTabKey}`);
 
   return (
-    <Tab.Container defaultActiveKey={defaultKey}>
+    <Tab.Container activeKey={activeTabKey} onSelect={handleSelect}>
       <Nav variant="tabs">
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
