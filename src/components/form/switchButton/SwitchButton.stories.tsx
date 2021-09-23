@@ -37,7 +37,7 @@ const SwitchButtonTemplate: ComponentStory<typeof SwitchButton> = (args) => (
 );
 export const Default = SwitchButtonTemplate.bind({});
 Default.args = {
-  name: "paubli",
+  name: "public",
   label: (
     <span>
       <FontAwesomeIcon icon={faGlobe} /> Public

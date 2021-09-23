@@ -162,11 +162,6 @@ exports[`renders modal 1`] = `
                   />
                 </div>
               </div>
-              <input
-                checked=""
-                name="public"
-                type="checkbox"
-              />
             </div>
             <div
               class="col-sm-9"

@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useMemo } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
 import { DevToolsContext } from "@/devTools/context";
 import { useField } from "formik";
-import { compact } from "lodash";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
+import { joinName } from "@/utils";
 
 type FrameworkOption = {
   value: Framework;
@@ -54,8 +54,8 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const configFieldName = compact([name, configKey]).join(".");
-  const frameworkFieldName = [configFieldName, "framework"].join(".");
+  const configFieldName = joinName(name, configKey);
+  const frameworkFieldName = joinName(configFieldName, "framework");
 
   const {
     tabState: { meta },
@@ -86,14 +86,14 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
       />
 
       <ConnectedFieldTemplate
-        name={[configFieldName, "selector"].join(".")}
+        name={joinName(configFieldName, "selector")}
         label="Component Selector"
         description="A CSS/JQuery selector for an element corresponding to the component"
         as={SelectorSelectorWidget}
       />
 
       <ConnectedFieldTemplate
-        name={[configFieldName, "optional"].join(".")}
+        name={joinName(configFieldName, "optional")}
         label="Optional"
         description="Toggle to produce null/undefined if a component is not found (instead of raising an error)"
         layout="switch"

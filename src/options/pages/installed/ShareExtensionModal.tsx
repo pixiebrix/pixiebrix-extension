@@ -183,7 +183,6 @@ const ShareExtensionModal: React.FC<{
       <ConnectedFieldTemplate
         name="public"
         layout="switch"
-        value={values.public}
         label={
           values.public ? (
             <span>
