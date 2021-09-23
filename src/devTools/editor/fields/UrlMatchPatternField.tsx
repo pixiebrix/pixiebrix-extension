@@ -36,7 +36,7 @@ const defaultDescription = (
 const UrlMatchPatternField: React.FC<{
   name: string;
   disabled?: boolean;
-  label?: string | React.ReactNode;
+  label?: React.ReactNode;
   description?: React.ReactNode;
 }> = ({
   name,
