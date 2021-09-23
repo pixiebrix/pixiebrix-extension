@@ -89,7 +89,7 @@ function backgroundMessageListener(
     if (notification) {
       handlerPromise.catch((error: unknown) => {
         console.warn(
-          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce}): ${error}`,
+          `An error occurred when handling notification ${type} (nonce: ${meta?.nonce})`,
           error
         );
       });

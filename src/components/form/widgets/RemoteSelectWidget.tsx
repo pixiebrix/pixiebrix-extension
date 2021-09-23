@@ -16,55 +16,44 @@
  */
 
 import React from "react";
+import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
+import { SanitizedServiceConfiguration } from "@/core";
+import { useAsyncState } from "@/hooks/common";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
-import Select from "react-select";
-import { getErrorMessage } from "@/errors";
+import { BusinessError } from "@/errors";
 
-export type Option = {
-  label: string;
-  value: unknown;
-};
+export type OptionsFactory = (
+  config: SanitizedServiceConfiguration
+) => Promise<Option[]>;
 
 type OwnProps = {
   isClearable?: boolean;
-  options: Option[];
-  isLoading?: boolean;
+  optionsFactory: OptionsFactory;
+  config: SanitizedServiceConfiguration | null;
   loadingMessage?: string;
-  error?: unknown;
 };
 
-const SelectWidget: CustomFieldWidget<OwnProps> = ({
-  options,
-  isClearable = false,
-  isLoading,
-  loadError,
-  disabled,
-  value,
-  onChange,
-  name,
+const RemoteSelectWidget: CustomFieldWidget<OwnProps> = ({
+  config,
+  optionsFactory,
+  ...selectProps
 }) => {
-  if (loadError) {
-    return (
-      <div className="text-danger">
-        Error loading options: {getErrorMessage(loadError)}
-      </div>
-    );
-  }
+  const [options, isLoading, error] = useAsyncState(async () => {
+    if (config) {
+      return optionsFactory(config);
+    }
 
-  const patchedOnChange = ({ value }: Option) => {
-    onChange({ target: { value, name, options } });
-  };
+    throw new BusinessError("No integration configured");
+  }, [config, optionsFactory]);
 
   return (
-    <Select
-      isDisabled={disabled}
-      isLoading={isLoading}
-      isClearable={isClearable}
+    <SelectWidget
       options={options}
-      value={options?.find((option: Option) => value === option.value)}
-      onChange={patchedOnChange}
+      isLoading={isLoading}
+      loadError={error}
+      {...selectProps}
     />
   );
 };
 
-export default SelectWidget;
+export default RemoteSelectWidget;

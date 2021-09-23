@@ -26,7 +26,7 @@ import { BlockType, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { compact, noop, zip } from "lodash";
-import { IBlock } from "@/core";
+import { IBlock, OutputKey } from "@/core";
 import hash from "object-hash";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
@@ -182,7 +182,10 @@ const EditTab: React.FC<{
         id: block.id,
         outputKey: await generateFreshOutputKey(
           block,
-          compact(["@input", ...blockPipeline.map((x) => x.outputKey)])
+          compact([
+            "input" as OutputKey,
+            ...blockPipeline.map((x) => x.outputKey),
+          ])
         ),
         instanceId: uuidv4(),
         config: {},
@@ -241,7 +244,7 @@ const EditTab: React.FC<{
           <DataPanel
             blockFieldName={blockFieldName}
             // eslint-disable-next-line security/detect-object-injection
-            instanceId={blockPipeline[activeNodeIndex]?.instanceId}
+            instanceId={blockPipeline[activeNodeIndex - 1]?.instanceId}
           />
         </div>
       </div>

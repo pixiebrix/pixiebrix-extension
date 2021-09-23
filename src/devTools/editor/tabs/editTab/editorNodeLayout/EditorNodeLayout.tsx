@@ -30,7 +30,10 @@ import { IBlock } from "@/core";
 import BlockModal from "@/components/brickModal/BrickModal";
 import { useFormikContext } from "formik";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
-import { RECOMMENDED_BRICKS } from "@/devTools/editor/tabs/editTab/recommendations";
+import { getRecommendations } from "@/devTools/editor/tabs/editTab/recommendations";
+import { useAsyncState } from "@/hooks/common";
+import { collectRegistryIds } from "@/devTools/editor/tabs/editTab/editHelpers";
+import { useDebounce } from "use-debounce";
 
 const renderAppend = ({ show }: { show: () => void }) => (
   <>
@@ -62,11 +65,19 @@ const EditorNodeLayout: React.FC<{
   addBlock,
   showAppend,
 }) => {
-  const {
-    values: { type },
-  } = useFormikContext<FormState>();
+  const { values } = useFormikContext<FormState>();
 
-  const recommendations = RECOMMENDED_BRICKS.get(type).map((x) => x.id);
+  const { type } = values;
+
+  const debouncedValues = useDebounce(values, 750, {
+    leading: true,
+    trailing: true,
+  });
+
+  const [recommendations] = useAsyncState(
+    async () => getRecommendations(type, collectRegistryIds(values)),
+    [type, debouncedValues]
+  );
 
   const renderInsert = useCallback(
     ({ show }) => (

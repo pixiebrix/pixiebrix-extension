@@ -15,9 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, SafeString } from "@/core";
+import { IBlock, OutputKey, RegistryId, SafeString } from "@/core";
 import { BlockType, getType } from "@/blocks/util";
 import { freshIdentifier } from "@/utils";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
+import { castArray } from "lodash";
+import { BlockPipeline } from "@/blocks/types";
+
+export function collectRegistryIds(form: FormState): RegistryId[] {
+  const extension = form.extension as any;
+  const pipeline = castArray(
+    extension.action ?? extension.body ?? []
+  ) as BlockPipeline;
+
+  return [
+    form.extensionPoint.metadata.id,
+    ...form.readers.map((x) => x.metadata.id),
+    ...form.services.map((x) => x.id),
+    ...pipeline.map((x) => x.id),
+  ];
+}
 
 export function showOutputKey(blockType: BlockType): boolean {
   return blockType !== "effect" && blockType !== "renderer";
@@ -30,8 +47,8 @@ export function showOutputKey(blockType: BlockType): boolean {
  */
 export async function generateFreshOutputKey(
   block: IBlock,
-  outputKeys: string[]
-): Promise<string | undefined> {
+  outputKeys: OutputKey[]
+): Promise<OutputKey | undefined> {
   const type = await getType(block);
 
   if (!showOutputKey(type)) {
@@ -40,16 +57,22 @@ export async function generateFreshOutputKey(
   }
 
   if (block.defaultOutputKey) {
-    return freshIdentifier(block.defaultOutputKey as SafeString, outputKeys);
+    return freshIdentifier(
+      block.defaultOutputKey as SafeString,
+      outputKeys
+    ) as OutputKey;
   }
 
   if (type === "reader") {
-    return freshIdentifier("data" as SafeString, outputKeys);
+    return freshIdentifier("data" as SafeString, outputKeys) as OutputKey;
   }
 
   if (type === "transform") {
-    return freshIdentifier("transformed" as SafeString, outputKeys);
+    return freshIdentifier(
+      "transformed" as SafeString,
+      outputKeys
+    ) as OutputKey;
   }
 
-  return freshIdentifier(type as SafeString, outputKeys);
+  return freshIdentifier(type as SafeString, outputKeys) as OutputKey;
 }

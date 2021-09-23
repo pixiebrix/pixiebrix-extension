@@ -20,6 +20,7 @@ import { mapValues, pickBy, isPlainObject } from "lodash";
 import { Schema, SchemaProperties } from "@/core";
 import { getPropByPath } from "@/utils";
 import { Renderer } from "@/utils/renderers";
+import { UnknownObject } from "@/types";
 
 // First part of the path can be global context with a @
 const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;
@@ -29,7 +30,7 @@ const pathRegex = /^(@?[\w-]+\??)(\.[\w-]+\??)*$/;
  * @param maybePath
  * @param ctxt
  */
-export function isSimplePath(maybePath: string, ctxt: object): boolean {
+export function isSimplePath(maybePath: string, ctxt: UnknownObject): boolean {
   if (!pathRegex.test(maybePath)) {
     return false;
   }
@@ -39,39 +40,40 @@ export function isSimplePath(maybePath: string, ctxt: object): boolean {
   return ctxt ? Object.prototype.hasOwnProperty.call(ctxt, path) : false;
 }
 
-type Args = string | object | object[];
+type Args = string | UnknownObject | UnknownObject[];
 
 /**
  * Recursively apply a template renderer to a configuration.
  */
 export function mapArgs(
   config: string,
-  ctxt: object,
+  ctxt: UnknownObject,
   render?: Renderer
 ): string;
+// eslint-disable-next-line @typescript-eslint/ban-types -- TODO: Type too broad
 export function mapArgs<T extends object>(
   config: T,
-  ctxt: object,
+  ctxt: UnknownObject,
   render?: Renderer
 ): T;
 export function mapArgs(
-  config: object[],
-  ctxt: object,
+  config: UnknownObject[],
+  ctxt: UnknownObject,
   render?: Renderer
-): object[];
+): UnknownObject[];
 export function mapArgs(
   config: Args,
-  ctxt: object,
+  ctxt: UnknownObject,
   render: Renderer = Mustache.render
 ): unknown {
   if (Array.isArray(config)) {
     return config.map((x) => mapArgs(x, ctxt, render));
   }
 
-  if (isPlainObject(config)) {
+  if (isPlainObject(config) && typeof config === "object") {
     return pickBy(
-      mapValues(config as object, (subConfig) =>
-        mapArgs(subConfig, ctxt, render)
+      mapValues(config, (subConfig) =>
+        mapArgs(subConfig as UnknownObject, ctxt, render)
       ),
       (x) => x != null
     );

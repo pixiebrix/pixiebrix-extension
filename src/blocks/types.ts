@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { RegistryId, TemplateEngine, UUID } from "@/core";
+import { OutputKey, RegistryId, TemplateEngine, UUID } from "@/core";
 
 export interface Availability {
   matchPatterns?: string | string[];
@@ -47,7 +47,7 @@ export interface BlockConfig {
 
   window?: "self" | "opener" | "target" | "broadcast" | "remote";
 
-  outputKey?: string;
+  outputKey?: OutputKey;
 
   /**
    * (Optional) condition expression written in templateEngine for deciding if the step should be run. If not
