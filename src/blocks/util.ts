@@ -15,7 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { IBlock, IService, RegistryId } from "@/core";
+import { IBlock, IService, RegistryId, Schema } from "@/core";
+import { UnknownObject } from "@/types";
+import { mapValues, pickBy } from "lodash";
+import { removeUndefined } from "@/utils";
 
 export type BlockType = "reader" | "effect" | "transform" | "renderer";
 
@@ -48,4 +51,28 @@ export async function getType(
 
 export function isOfficial(id: RegistryId): boolean {
   return id.startsWith("@pixiebrix/");
+}
+
+/**
+ * Returns the initial state for a blockConfig.
+ * @param schema the JSON Schema
+ */
+export function defaultBlockConfig(schema: Schema): UnknownObject {
+  if (typeof schema.properties === "object") {
+    return removeUndefined(
+      mapValues(
+        pickBy(
+          schema.properties,
+          (x) => typeof x !== "boolean" && x.default && !x.anyOf && !x.oneOf
+        ),
+        (propertySchema: Schema) => {
+          if (typeof propertySchema.default !== "object") {
+            return propertySchema.default;
+          }
+        }
+      )
+    ) as UnknownObject;
+  }
+
+  return {};
 }

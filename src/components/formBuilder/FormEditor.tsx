@@ -41,12 +41,32 @@ import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import styles from "./FormEditor.module.scss";
+import { joinName } from "@/utils";
+import { isEmpty } from "lodash";
 
 export type FormEditorProps = {
   name: string;
   activeField?: string;
   setActiveField: SetActiveField;
 };
+
+function initDefaults(obj: RJSFSchema): void {
+  if (!obj.schema) {
+    obj.schema = MINIMAL_SCHEMA;
+  }
+
+  if (!obj.uiSchema) {
+    obj.uiSchema = MINIMAL_UI_SCHEMA;
+  }
+
+  if (!obj.uiSchema[UI_ORDER]) {
+    const propertyKeys = Object.keys(obj.schema.properties || {});
+    obj.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
+  } else if (!obj.uiSchema[UI_ORDER].includes("*")) {
+    obj.uiSchema[UI_ORDER].push("*");
+  }
+}
+
 const FormEditor: React.FC<FormEditorProps> = ({
   name,
   activeField,
@@ -58,7 +78,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
     { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
   const [{ value: uiOrder }, , { setValue: setUiOrder }] = useField<string[]>(
-    `${name}.uiSchema.${UI_ORDER}`
+    joinName(name, "uiSchema", UI_ORDER)
   );
 
   const { schema, uiSchema } = rjsfSchema;
@@ -66,25 +86,24 @@ const FormEditor: React.FC<FormEditorProps> = ({
   useEffect(() => {
     // Set default values if needed
     if (!schema || !uiSchema || !uiOrder?.includes("*")) {
-      const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-        if (!draft.schema) {
-          draft.schema = MINIMAL_SCHEMA;
-        }
-
-        if (!draft.uiSchema) {
-          draft.uiSchema = MINIMAL_UI_SCHEMA;
-        }
-
-        if (!draft.uiSchema[UI_ORDER]) {
-          const propertyKeys = Object.keys(draft.schema.properties || {});
-          draft.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
-        } else if (!draft.uiSchema[UI_ORDER].includes("*")) {
-          draft.uiSchema[UI_ORDER].push("*");
-        }
-      });
-      setRjsfSchema(nextRjsfSchema);
+      setRjsfSchema(
+        produce(rjsfSchema, (draft) => {
+          initDefaults(draft);
+        })
+      );
     }
   }, [rjsfSchema, schema, uiSchema, uiOrder, setRjsfSchema]);
+
+  // Select the first field by default
+  useEffect(
+    () => {
+      if (activeField == null && !isEmpty(schema?.properties)) {
+        setActiveField(Object.keys(schema.properties)[0]);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run onMount
+    []
+  );
 
   if (!schema || !uiSchema) {
     return null;
@@ -130,11 +149,10 @@ const FormEditor: React.FC<FormEditorProps> = ({
 
     const nextRjsfSchema = produce(rjsfSchema, (draft) => {
       if (schema.required?.length > 0) {
-        const nextRequired = replaceStringInArray(
+        draft.schema.required = replaceStringInArray(
           schema.required,
           propertyToRemove
         );
-        draft.schema.required = nextRequired;
       }
 
       draft.uiSchema[UI_ORDER] = nextUiOrder;
@@ -161,9 +179,12 @@ const FormEditor: React.FC<FormEditorProps> = ({
         <h5>Edit form</h5>
         <hr />
       </BootstrapForm.Group>
-      <ConnectedFieldTemplate name={`${name}.schema.title`} label="Title" />
       <ConnectedFieldTemplate
-        name={`${name}.schema.description`}
+        name={joinName(name, "schema", "title")}
+        label="Title"
+      />
+      <ConnectedFieldTemplate
+        name={joinName(name, "schema", "description")}
         label="Description"
       />
       <BootstrapForm.Group>
