@@ -19,7 +19,7 @@ import React, { useMemo } from "react";
 import { Schema } from "@/core";
 import { ListGroup, Table } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
-import { useTable, useExpanded } from "react-table";
+import { useTable, useExpanded, Row, Cell } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCaretDown,
@@ -33,11 +33,12 @@ type SchemaTreeRow = {
   required: boolean;
   type: string;
   description: string;
+  subRow?: SchemaTreeRow;
 };
 
 const ExpandableCell: React.FunctionComponent<{
-  row;
-  cell;
+  row: Row & { values: SchemaTreeRow };
+  cell: Cell;
 }> = ({ row, cell }) => (
   <span
     {...row.getToggleRowExpandedProps({
@@ -61,11 +62,11 @@ const ExpandableCell: React.FunctionComponent<{
 );
 
 const CodeCell: React.FunctionComponent<{
-  cell;
+  cell: Cell;
 }> = ({ cell }) => <code>{cell.value}</code>;
 
 const RequiredCell: React.FunctionComponent<{
-  row;
+  row: Row & { values: SchemaTreeRow };
 }> = ({ row }) => (
   <span>
     {row.values.required && (
@@ -74,76 +75,76 @@ const RequiredCell: React.FunctionComponent<{
   </span>
 );
 
+const getFormattedType = (definition: Schema) => {
+  const { type, format, oneOf, anyOf } = definition;
+
+  if (oneOf) {
+    return "one of many objects";
+  }
+
+  if (anyOf) {
+    for (const field of anyOf) {
+      if (isServiceField(field)) {
+        return "integration";
+      }
+    }
+
+    return "one or more of many objects";
+  }
+
+  if (type === "array") {
+    const items = definition.items ?? { type: "unknown" };
+    const itemType = ((items as Schema) ?? {}).type;
+    return itemType ? `array of ${itemType}s` : "array";
+  }
+
+  let formatted_type = type;
+  if (Array.isArray(type)) {
+    formatted_type = `[${type.map(
+      (value, index) => `${index !== 0 ? " " : ""}${value}`
+    )}]` as "string";
+  }
+
+  if (definition.enum) {
+    return `${formatted_type} enum`;
+  }
+
+  if (format) {
+    return `${format} ${type}`;
+  }
+
+  return formatted_type ? formatted_type : "unknown";
+};
+
+const getFormattedData = (schema: Schema): SchemaTreeRow[] => {
+  if (schema.items) {
+    // This is an array, crawl array items instead
+    return getFormattedData(schema.items as Schema);
+  }
+
+  return sortBy(Object.entries(schema.properties ?? {}), (x) => x[0])
+    .filter(([, definition]) => typeof definition !== "boolean")
+    .map(([prop, definition]) => {
+      const schemaDefinition = definition as Schema;
+      const { description } = schemaDefinition;
+
+      return {
+        name: prop,
+        required: schema.required ? schema.required.includes(prop) : false,
+        type: getFormattedType(schemaDefinition),
+        description,
+        subRows: getFormattedData(schemaDefinition),
+      };
+    }) as SchemaTreeRow[];
+};
+
 const DescriptionCell: React.FunctionComponent<{
-  cell;
+  cell: Cell;
 }> = ({ cell }) => <p className="m-0">{cell.value}</p>;
 
 const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
 }) => {
-  const getFormattedType = (definition) => {
-    const { type, format } = definition as Schema;
-
-    if (definition.oneOf) {
-      return "one of many objects";
-    }
-
-    if (definition.anyOf) {
-      for (const field of definition.anyOf) {
-        if (isServiceField(field)) {
-          return "integration";
-        }
-      }
-
-      return "one or more of many objects";
-    }
-
-    if (type === "array") {
-      const items = definition.items ?? { type: "unknown" };
-      const itemType = ((items as Schema) ?? {}).type;
-      return itemType ? `array of ${itemType}s` : "array";
-    }
-
-    let formatted_type = type as string;
-    if (Array.isArray(type)) {
-      formatted_type = `[${type.map(
-        (value, index) => `${index !== 0 ? " " : ""}${value}`
-      )}]`;
-    }
-
-    if (definition.enum) {
-      return `${formatted_type} enum`;
-    }
-
-    if (format) {
-      return `${format} ${type}`;
-    }
-
-    return formatted_type ? formatted_type : "unknown";
-  };
-
-  const getFormattedData = (schema) => {
-    if (schema.items) {
-      // This is an array, crawl array instead
-      return getFormattedData(schema.items);
-    }
-
-    return sortBy(Object.entries(schema.properties ?? {}), (x) => x[0])
-      .filter(([, definition]) => typeof definition !== "boolean")
-      .map(([prop, definition]) => {
-        const schemaDefinition = definition as Schema;
-        const { description } = schemaDefinition;
-
-        return {
-          name: prop,
-          required: schema.required ? schema.required.includes(prop) : false,
-          type: getFormattedType(schemaDefinition),
-          description,
-          subRows: getFormattedData(definition),
-        };
-      });
-  };
-
   const data = useMemo(() => {
     if (!schema) {
       return [];
@@ -206,21 +207,38 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   return (
     <Table {...getTableProps()}>
       <thead>
-        {headerGroups.map((headerGroup) => (
-          <tr {...headerGroup.getHeaderGroupProps()}>
-            {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
-            ))}
-          </tr>
-        ))}
+        {headerGroups.map((headerGroup) => {
+          const {
+            key,
+            ...restHeaderGroupProps
+          } = headerGroup.getHeaderGroupProps();
+          return (
+            <tr key={key} {...restHeaderGroupProps}>
+              {headerGroup.headers.map((column) => {
+                const { key, ...restColumn } = column.getHeaderProps();
+                return (
+                  <th key={key} {...restColumn}>
+                    {column.render("Header")}
+                  </th>
+                );
+              })}
+            </tr>
+          );
+        })}
       </thead>
-      <tbody {...getTableBodyProps()}>
+      <tbody {...getTableBodyProps}>
         {rows.map((row) => {
           prepareRow(row);
+          const { key, ...restRowProps } = row.getRowProps();
           return (
-            <tr {...row.getRowProps()}>
+            <tr key={key} {...restRowProps}>
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                const { key, ...restCellProps } = cell.getCellProps();
+                return (
+                  <td key={key} {...restCellProps}>
+                    {cell.render("Cell")}
+                  </td>
+                );
               })}
             </tr>
           );
