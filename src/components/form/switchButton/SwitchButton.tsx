@@ -20,12 +20,16 @@ import { Col, Form as BootstrapForm, Row } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import styles from "./SwitchButton.module.scss";
 
+type CheckBoxLike = {
+  name: string;
+  value: boolean;
+};
+
 export type SwitchButtonProps = {
   name: string;
   label: ReactNode;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
-  value?: string;
-  checked: boolean;
+  onChange: React.ChangeEventHandler<CheckBoxLike>;
+  value?: boolean;
 };
 
 const SwitchButton: React.FC<SwitchButtonProps> = ({
@@ -33,12 +37,11 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
   label,
   onChange,
   value,
-  checked,
 }) => {
   const patchedOnChange = (checked: boolean) => {
     onChange({
-      target: { value, name, checked, type: "checkbox" },
-    } as ChangeEvent<HTMLInputElement>);
+      target: { value: checked, name },
+    } as ChangeEvent<CheckBoxLike>);
   };
 
   return (
@@ -48,7 +51,7 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
         <BootstrapSwitchButton
           onlabel=" "
           offlabel=" "
-          checked={checked}
+          checked={value}
           onChange={patchedOnChange}
         />
       </Col>
