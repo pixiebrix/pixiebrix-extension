@@ -1,3 +1,7 @@
+// Issues with mis-matched type signatures between @types/react-table 7.7.2+ and react-table-config.d.ts
+//  resulted in modifying the type signatures in this file.
+//  Reference: https://stackoverflow.com/a/68766549
+
 import {
   UseExpandedHooks,
   UseExpandedInstanceProps,
@@ -24,47 +28,37 @@ declare module "react-table" {
   // Add entries for any plugins we use in the project. See the GitHub for all of the possible plugins/configurations
   // https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/react-table
 
-  // @ts-expect-error -- won't match the generic type definitions
-  export interface TableOptions<D extends Record<string, unknown>>
+  // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
+  export interface TableOptions<D extends object>
     extends UseExpandedOptions<D>,
       ActionOptions<D> {}
 
-  // @ts-expect-error -- won't match the generic type definitions
-  export interface Hooks<
-    D extends Record<string, unknown> = Record<string, unknown>
-  > extends UseExpandedHooks<D> {}
+  // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
+  export interface Hooks<D extends object = {}> extends UseExpandedHooks<D> {}
 
-  // @ts-expect-error -- won't match the generic type definitions
-  export interface TableInstance<
-    D extends Record<string, unknown> = Record<string, unknown>
-  > extends UseExpandedInstanceProps<D>,
-      ActionInstanceProps<D>,
+  // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
+  export interface TableInstance<D extends object = {}>
+    extends UseExpandedInstanceProps<D>,
       UseGlobalFiltersInstanceProps<D> {}
 
-  // @ts-expect-error -- won't match the generic type definitions
-  export interface TableState<
-    D extends Record<string, unknown> = Record<string, unknown>
-  > extends UseExpandedState<D> {}
+  // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
+  export interface TableState<D extends object = {}>
+    extends UseExpandedState<D> {}
 
-  // @ts-expect-error -- won't match the generic type definitions
-  export interface ColumnInterface<
-    D extends Record<string, unknown> = Record<string, unknown>
-  > extends UseGlobalFiltersColumnOptions<D> {}
+  // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
+  export interface ColumnInterface<D extends object = {}>
+    extends UseGlobalFiltersColumnOptions<D> {}
 
-  // @ts-expect-error -- won't match the generic type definitions
-  export interface ColumnInstance<
-    D extends Record<string, unknown> = Record<string, unknown>
-  > extends UseExpandedOptions<D> {}
+  // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
+  export interface ColumnInstance<D extends object = {}>
+    extends UseExpandedOptions<D> {}
 
-  // @ts-expect-error -- won't match the generic type definitions
-  export interface Cell<
-    D extends Record<string, unknown> = Record<string, unknown>,
-    V = any
-  > extends UseRowStateCellProps<D> {}
+  // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
+  export interface Cell<D extends object = {}, V = any>
+    extends UseRowStateCellProps<D> {}
 
-  // @ts-expect-error -- won't match the generic type definitions
-  export interface Row<
-    D extends Record<string, unknown> = Record<string, unknown>
-  > extends UseExpandedRowProps<D>,
+  // eslint-disable-next-line @typescript-eslint/ban-types -- index signature required for extension
+  export interface Row<D extends object = {}>
+    extends UseExpandedRowProps<D>,
       UseRowStateRowProps<D> {}
 }
