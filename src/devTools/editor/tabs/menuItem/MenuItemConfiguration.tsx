@@ -76,6 +76,7 @@ const MenuItemConfiguration: React.FC<{
         label="Order/Position"
         description="Position relative to other menu items/buttons"
         as={SelectWidget}
+        blankValue={null}
         options={positionOptions}
       />
 
