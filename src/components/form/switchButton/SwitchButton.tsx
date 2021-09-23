@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useRef } from "react";
+import React, { ChangeEvent, ReactNode } from "react";
 import { Col, Form as BootstrapForm, Row } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import styles from "./SwitchButton.module.scss";
@@ -24,18 +24,21 @@ export type SwitchButtonProps = {
   name: string;
   label: ReactNode;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
-  value?: boolean;
+  value?: string;
+  checked: boolean;
 };
 
 const SwitchButton: React.FC<SwitchButtonProps> = ({
   name,
   label,
   onChange,
-  value = false,
+  value,
+  checked,
 }) => {
-  const checkboxRef = useRef<HTMLInputElement>();
-  const onSwitchChange = () => {
-    checkboxRef.current.click();
+  const patchedOnChange = (checked: boolean) => {
+    onChange({
+      target: { value, name, checked, type: "checkbox" },
+    } as ChangeEvent<HTMLInputElement>);
   };
 
   return (
@@ -45,17 +48,8 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
         <BootstrapSwitchButton
           onlabel=" "
           offlabel=" "
-          checked={value}
-          onChange={onSwitchChange}
-        />
-        {/* input generates the normal onChange event and fires */}
-        <input
-          ref={checkboxRef}
-          className={styles.checkbox}
-          name={name}
-          type="checkbox"
-          checked={value}
-          onChange={onChange}
+          checked={checked}
+          onChange={patchedOnChange}
         />
       </Col>
       <Col sm="9" className={styles.label}>

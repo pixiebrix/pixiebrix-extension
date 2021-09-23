@@ -164,9 +164,21 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
       layout="switch"
       label={
         <span>
-          <FontAwesomeIcon icon={faGlobe} /> Public
+          <FontAwesomeIcon icon={faGlobe} /> This is a boolean field
         </span>
       }
+    />
+    <ConnectedFieldTemplate
+      name="stringArray"
+      layout="switch"
+      label="Sets/resets the 'foo' value in the stringArray"
+      value="foo"
+    />
+    <ConnectedFieldTemplate
+      name="stringArray"
+      layout="switch"
+      label="Sets/resets the 'bar' value in the stringArray"
+      value="bar"
     />
   </Form>
 );
