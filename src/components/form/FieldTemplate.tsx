@@ -38,6 +38,7 @@ export type FieldProps<
     description?: ReactNode | undefined;
     error?: string | undefined;
     touched?: boolean | undefined;
+    blankValue?: unknown;
   };
 
 export type CustomFieldWidget<TExtra = never> = React.ComponentType<
@@ -55,6 +56,7 @@ const RenderedField: React.FC<FieldProps> = ({
   touched,
   value,
   children,
+  blankValue = "",
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
@@ -63,7 +65,7 @@ const RenderedField: React.FC<FieldProps> = ({
   // It should be `undefined` for uncontrolled components (not this case).
   // To clear the component the `value` should be an empty string.
   const nonUndefinedValue =
-    typeof value === "undefined" || value === null ? "" : value;
+    typeof value === "undefined" || value === null ? blankValue : value;
 
   return layout === "vertical" ? (
     <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
