@@ -73,7 +73,6 @@ const readerLike = [
 ];
 
 const commonReaders = [
-  "@pixiebrix/document-metadata",
   "@pixiebrix/jquery-reader",
   "@pixiebrix/component-reader",
 ] as RegistryId[];

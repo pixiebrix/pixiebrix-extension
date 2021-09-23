@@ -20,11 +20,11 @@ import { IExtension, Metadata } from "@/core";
 import {
   baseSelectExtensionPoint,
   excludeInstanceIds,
+  getImplicitReader,
   lookupExtensionPoint,
-  makeBaseState,
-  makeExtensionReaders,
+  makeInitialBaseState,
   makeIsAvailable,
-  makeReaderFormState,
+  readerHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -46,8 +46,9 @@ import { faBolt } from "@fortawesome/free-solid-svg-icons";
 import {
   BaseFormState,
   ElementConfig,
+  SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
-import { BlockPipeline } from "@/blocks/types";
+import { BlockPipeline, NormalizedAvailability } from "@/blocks/types";
 import React from "react";
 import EditTab from "@/devTools/editor/tabs/editTab/EditTab";
 import TriggerConfiguration from "@/devTools/editor/tabs/trigger/TriggerConfiguration";
@@ -69,10 +70,8 @@ export interface TriggerFormState extends BaseFormState {
     definition: {
       rootSelector: string | null;
       trigger: Trigger;
-      isAvailable: {
-        matchPatterns: string;
-        selectors: string;
-      };
+      reader: SingleLayerReaderConfig;
+      isAvailable: NormalizedAvailability;
     };
   };
 
@@ -89,12 +88,13 @@ function fromNativeElement(
   return {
     type: "trigger",
     label: `My ${getDomain(url)} trigger`,
-    ...makeBaseState(),
+    ...makeInitialBaseState(),
     extensionPoint: {
       metadata,
       definition: {
         rootSelector: null,
         trigger: "load",
+        reader: getImplicitReader(),
         isAvailable: makeIsAvailable(url),
       },
     },
@@ -107,15 +107,15 @@ function fromNativeElement(
 function selectExtensionPoint(
   formState: TriggerFormState
 ): ExtensionPointConfig<TriggerDefinition> {
-  const { extensionPoint, readers } = formState;
+  const { extensionPoint } = formState;
   const {
-    definition: { isAvailable, rootSelector, trigger },
+    definition: { isAvailable, rootSelector, reader, trigger },
   } = extensionPoint;
   return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "trigger",
-      reader: readers.map((x) => x.metadata.id),
+      reader,
       isAvailable: pickBy(isAvailable, identity),
       trigger,
       rootSelector,
@@ -144,7 +144,6 @@ function asDynamicElement(element: TriggerFormState): DynamicDefinition {
     type: "trigger",
     extension: selectExtension(element, { includeInstanceIds: true }),
     extensionPoint: selectExtensionPoint(element),
-    readers: makeExtensionReaders(element),
   };
 }
 
@@ -164,7 +163,6 @@ async function fromExtensionPoint(
     type,
     label: `My ${getDomain(url)} ${trigger} trigger`,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: [],
 
     extension: {
@@ -177,6 +175,7 @@ async function fromExtensionPoint(
         ...extensionPoint.definition,
         rootSelector,
         trigger,
+        reader: readerHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -192,13 +191,14 @@ async function fromExtension(
     "trigger"
   >(config, "trigger");
 
+  const { rootSelector, trigger, reader } = extensionPoint.definition;
+
   return {
     uuid: config.id,
     installed: true,
     type: extensionPoint.definition.type,
     label: config.label,
 
-    readers: await makeReaderFormState(extensionPoint),
     services: config.services,
 
     extension: {
@@ -209,8 +209,9 @@ async function fromExtension(
     extensionPoint: {
       metadata: extensionPoint.metadata,
       definition: {
-        rootSelector: extensionPoint.definition.rootSelector,
-        trigger: extensionPoint.definition.trigger,
+        rootSelector,
+        trigger,
+        reader: readerHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },

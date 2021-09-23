@@ -16,10 +16,7 @@
  */
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {
-  ElementType,
-  isCustomReader,
-} from "@/devTools/editor/extensionPoints/elementConfig";
+import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { ActionFormState } from "@/devTools/editor/extensionPoints/menuItem";
 import { ActionPanelFormState } from "@/devTools/editor/extensionPoints/actionPanel";
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
@@ -182,18 +179,7 @@ export const editorSlice = createSlice({
       }
 
       if (!element.installed) {
-        state.knownEditable.push(
-          element.extensionPoint.metadata.id,
-          ...element.readers
-            .filter((x) => isCustomReader(x))
-            .map((x) => x.metadata.id)
-        );
-      }
-
-      for (const reader of element.readers) {
-        if (isCustomReader(reader)) {
-          reader._new = false;
-        }
+        state.knownEditable.push(element.extensionPoint.metadata.id);
       }
 
       element.installed = true;

@@ -17,10 +17,19 @@
 
 import { OutputKey, RegistryId, TemplateEngine, UUID } from "@/core";
 
-export interface Availability {
+export type Availability = {
   matchPatterns?: string | string[];
   selectors?: string | string[];
-}
+};
+
+/**
+ * Availability with consistent shape
+ * @see Availability
+ */
+export type NormalizedAvailability = {
+  matchPatterns?: string[];
+  selectors?: string[];
+};
 
 export type ReaderConfig =
   | RegistryId

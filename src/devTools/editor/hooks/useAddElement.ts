@@ -30,7 +30,7 @@ import { getCurrentURL } from "@/devTools/utils";
 
 type AddElement = (config: ElementConfig) => void;
 
-function useAddElement(reservedNames: string[]): AddElement {
+function useAddElement(): AddElement {
   const dispatch = useDispatch();
   const { port, tabState } = useContext(DevToolsContext);
   const { scope, flags = [] } = useContext(AuthContext);
@@ -90,15 +90,7 @@ function useAddElement(reservedNames: string[]): AddElement {
         dispatch(actions.toggleInsert(null));
       }
     },
-    [
-      dispatch,
-      port,
-      tabState.meta?.frameworks,
-      reservedNames,
-      scope,
-      addToast,
-      flags,
-    ]
+    [dispatch, port, tabState.meta?.frameworks, scope, addToast, flags]
   );
 }
 

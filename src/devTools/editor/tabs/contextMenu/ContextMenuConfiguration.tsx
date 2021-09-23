@@ -85,7 +85,7 @@ const ContextMenuConfiguration: React.FC<{
 
     <FieldSection title="Advanced">
       <UrlMatchPatternField
-        name="extensionPoint.definition.isAvailable.matchPatterns"
+        name="extensionPoint.definition.isAvailable.matchPatterns[0]"
         description={
           <span>
             URL match patterns give PixieBrix access to a page without you first
