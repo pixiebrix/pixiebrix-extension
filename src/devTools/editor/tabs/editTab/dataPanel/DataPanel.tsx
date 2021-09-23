@@ -21,7 +21,7 @@ import useInterval from "@/hooks/useInterval";
 import { isEmpty, pickBy, sortBy } from "lodash";
 import { useAsyncState } from "@/hooks/common";
 import { getByInstanceId } from "@/telemetry/trace";
-import { useField } from "formik";
+import { useField, useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
 import { Nav, Tab, TabPaneProps } from "react-bootstrap";
@@ -34,8 +34,13 @@ import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import { BlockConfig } from "@/blocks/types";
 import useReduxState from "@/hooks/useReduxState";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 
 const TRACE_RELOAD_MILLIS = 250;
+
+const SHOW_DEVELOPER_PANELS = Boolean(process.env.DEBUG);
 
 function useLatestTraceRecord(instanceId: UUID) {
   return useAsyncState(async () => {
@@ -63,13 +68,19 @@ const contextFilter = (value: unknown, key: string) => {
   return true;
 };
 
-const DataTab: React.FC<
-  TabPaneProps & {
-    isLoading: boolean;
-    isTraceEmpty: boolean;
-    error: unknown;
-  }
-> = ({ isLoading, isTraceEmpty, error, children, ...tabProps }) => {
+type TabStateProps = {
+  isLoading?: boolean;
+  isTraceEmpty?: boolean;
+  error?: unknown;
+};
+
+const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
+  isLoading = false,
+  isTraceEmpty = false,
+  error,
+  children,
+  ...tabProps
+}) => {
   let contents;
   if (isLoading) {
     contents = (
@@ -104,6 +115,8 @@ const DataPanel: React.FC<{
   blockFieldName: string;
   instanceId: UUID;
 }> = ({ blockFieldName, instanceId }) => {
+  const { values: formState } = useFormikContext<FormState>();
+
   const [record, isLoading, error, recalculate] = useLatestTraceRecord(
     instanceId
   );
@@ -114,7 +127,6 @@ const DataPanel: React.FC<{
     () => pickBy(record?.templateContext ?? {}, contextFilter),
     [record?.templateContext]
   );
-
   const blockFieldConfigName = `${blockFieldName}.config`;
   const [{ value: configValue }] = useField(blockFieldConfigName);
   const [formBuilderActiveField, setFormBuilderActiveField] = useReduxState(
@@ -135,6 +147,16 @@ const DataPanel: React.FC<{
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
         </Nav.Item>
+        {SHOW_DEVELOPER_PANELS && (
+          <>
+            <Nav.Item className={styles.tabNav}>
+              <Nav.Link eventKey="formik">Formik</Nav.Link>
+            </Nav.Item>
+            <Nav.Item className={styles.tabNav}>
+              <Nav.Link eventKey="blockConfig">Raw Block</Nav.Link>
+            </Nav.Item>
+          </>
+        )}
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="rendered">Rendered</Nav.Link>
         </Nav.Item>
@@ -154,6 +176,24 @@ const DataPanel: React.FC<{
         >
           <JsonTree data={relevantContext} copyable searchable />
         </DataTab>
+        {SHOW_DEVELOPER_PANELS && (
+          <>
+            <DataTab eventKey="formik">
+              <div className="text-info">
+                <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
+                in DEBUG builds
+              </div>
+              <JsonTree data={formState ?? {}} searchable />
+            </DataTab>
+            <DataTab eventKey="blockConfig">
+              <div className="text-info">
+                <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
+                in DEBUG builds
+              </div>
+              <JsonTree data={blockConfig ?? {}} />
+            </DataTab>
+          </>
+        )}
         <DataTab
           eventKey="rendered"
           isLoading={isLoading}

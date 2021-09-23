@@ -19,6 +19,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
   IExtension,
   Metadata,
+  OutputKey,
   PersistedExtension,
   RawServiceConfiguration,
   RegistryId,
@@ -255,7 +256,7 @@ export const optionsSlice = createSlice({
           definitions: recipe.definitions ?? {},
           optionsArgs,
           services: Object.entries(services).map(
-            ([outputKey, id]: [string, RegistryId]) => ({
+            ([outputKey, id]: [OutputKey, RegistryId]) => ({
               outputKey,
               config: auths[id], // eslint-disable-line security/detect-object-injection -- type-checked as RegistryId
               id,
