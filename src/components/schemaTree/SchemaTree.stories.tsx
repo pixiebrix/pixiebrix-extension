@@ -138,13 +138,27 @@ Arrays.args = {
         items: {
           type: "object",
           properties: {
-            name: {
-              type: "string",
-              description: "The first name of the person",
+            deepArray: {
+              type: "array",
+              items: {
+                type: "string",
+              },
             },
-            age: {
-              type: "number",
-              description: "The person's age",
+            person: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: {
+                    type: "string",
+                    description: "The first name of the person",
+                  },
+                  age: {
+                    type: "number",
+                    description: "The person's age",
+                  },
+                },
+              },
             },
           },
         },
