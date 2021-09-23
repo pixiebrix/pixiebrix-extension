@@ -84,7 +84,7 @@ const getFormattedType = (definition: Schema) => {
 
   if (anyOf) {
     for (const field of anyOf) {
-      if (isServiceField(field)) {
+      if (isServiceField(field as Schema)) {
         return "integration";
       }
     }
