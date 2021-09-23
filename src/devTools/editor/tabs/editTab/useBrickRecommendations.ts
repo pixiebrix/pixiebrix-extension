@@ -27,7 +27,7 @@ import { useDebounce } from "use-debounce";
 import { useAsyncState } from "@/hooks/common";
 import { collectRegistryIds } from "@/devTools/editor/tabs/editTab/editHelpers";
 
-const READER_COUNT_THRESHOLD = 1;
+const READER_COUNT_THRESHOLD = 2;
 
 const typeRecommendations = new Map<ElementType, RegistryId[]>([
   [
