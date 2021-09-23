@@ -16,8 +16,6 @@
     // Rules to fix and enforce over time
     "no-await-in-loop": "warn",
     "no-negated-condition": "warn",
-    "no-return-await": "warn",
-    "no-promise-executor-return": "warn",
 
     "unicorn/no-array-callback-reference": "warn", // Buggy with jQuery
     "unicorn/no-useless-undefined": "warn", // Buggy with React
@@ -26,18 +24,10 @@
     "unicorn/prefer-prototype-methods": "warn", // Buggy with abstract classes
     "unicorn/prefer-switch": "warn",
 
-    "@typescript-eslint/ban-types": "warn",
     "@typescript-eslint/no-base-to-string": "warn",
     "@typescript-eslint/consistent-type-assertions": "warn",
-    "@typescript-eslint/no-require-imports": "warn",
     "@typescript-eslint/no-dynamic-delete": "warn",
-    "@typescript-eslint/triple-slash-reference": "warn",
     "@typescript-eslint/no-redeclare": "warn",
-    "@typescript-eslint/no-misused-promises": "warn",
-    "@typescript-eslint/unified-signatures": "warn",
-    "@typescript-eslint/prefer-regexp-exec": "warn",
-    "@typescript-eslint/no-useless-constructor": "warn",
-    "@typescript-eslint/default-param-last": "warn",
 
     "jsx-a11y/click-events-have-key-events": "warn",
     "jsx-a11y/no-static-element-interactions": "warn",

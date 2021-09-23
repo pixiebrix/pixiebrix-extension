@@ -34,6 +34,7 @@ import { useTabEventListener } from "@/hooks/events";
 import { sleep } from "@/utils";
 import { getErrorMessage } from "@/errors";
 import { getCurrentURL } from "@/devTools/utils";
+import { Except } from "type-fest";
 
 interface FrameMeta {
   url: string;
@@ -61,7 +62,7 @@ interface FrameConnectionState {
   meta: FrameMeta | undefined;
 }
 
-const initialFrameState: Omit<FrameConnectionState, "frameId"> = {
+const initialFrameState: Except<FrameConnectionState, "frameId"> = {
   navSequence: undefined,
   hasPermissions: false,
   error: undefined,

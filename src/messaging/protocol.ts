@@ -20,6 +20,7 @@ import { serializeError } from "serialize-error";
 import { browser, Runtime } from "webextension-polyfill-ts";
 import isPromise from "is-promise";
 
+// eslint-disable-next-line @typescript-eslint/ban-types -- Line can be dropped once we migrate to `webext-messenger`
 export type SerializableResponse = boolean | string | number | object | void;
 
 export interface RemoteProcedureCallRequest<TMeta extends Meta = Meta>
