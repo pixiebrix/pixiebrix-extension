@@ -16,13 +16,13 @@
  */
 
 import React from "react";
-import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { WidgetProps } from "@/components/form/FieldTemplate";
 import Select from "react-select";
 import { getErrorMessage } from "@/errors";
 
 export type Option = {
   label: string;
-  value: unknown;
+  value: string | number;
 };
 
 type OwnProps = {
@@ -30,10 +30,11 @@ type OwnProps = {
   options: Option[];
   isLoading?: boolean;
   loadingMessage?: string;
-  error?: unknown;
+  loadError?: unknown;
+  disabled?: boolean;
 };
 
-const SelectWidget: CustomFieldWidget<OwnProps> = ({
+const SelectWidget: React.FC<WidgetProps<HTMLSelectElement> & OwnProps> = ({
   options,
   isClearable = false,
   isLoading,
@@ -52,7 +53,8 @@ const SelectWidget: CustomFieldWidget<OwnProps> = ({
   }
 
   const patchedOnChange = ({ value }: Option) => {
-    onChange({ target: { value, name, options } });
+    // Faking an onChange event of HTML Select, disregarding typings
+    onChange({ target: { value, name, options: options } } as any);
   };
 
   return (

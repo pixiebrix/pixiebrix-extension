@@ -15,7 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { ReactNode, useContext } from "react";
+import React, {
+  ElementType,
+  ReactNode,
+  useContext,
+  FocusEvent,
+  ChangeEventHandler,
+} from "react";
 import {
   Col,
   Form as BootstrapForm,
@@ -29,22 +35,31 @@ import FormTheme from "@/components/form/FormTheme";
 import { getErrorMessage } from "@/errors";
 
 export type FieldProps<
-  As extends React.ElementType = React.ElementType
-> = FormControlProps &
-  React.ComponentProps<As> & {
-    name: string;
-    layout?: "horizontal" | "vertical" | "switch" | undefined;
-    label?: string | ReactNode | undefined;
-    description?: ReactNode | undefined;
-    error?: string | undefined;
-    touched?: boolean | undefined;
-  };
+  WidgetProps = FormControlProps,
+  As = ElementType<WidgetProps>
+> = WidgetProps & {
+  name: string;
+  label?: ReactNode;
+  description?: ReactNode;
+  layout?: "horizontal" | "vertical" | "switch";
+  error?: string;
+  touched?: boolean;
+  value: string;
+  as?: As;
+  onBlur?: (event: FocusEvent<any>) => void;
+};
 
-export type CustomFieldWidget<TExtra = never> = React.ComponentType<
-  FieldProps & TExtra
->;
+export type WidgetProps<ControlElement = Element> = {
+  name: string;
+  isInvalid: boolean;
+  value: string;
+  onChange: ChangeEventHandler<ControlElement>;
+};
 
-type FieldRenderProps = Except<FieldProps, "layout">;
+/**
+ * @deprecated just don't use. Define your own type
+ */
+export type CustomFieldWidget<TExtra = void> = TExtra;
 
 const RenderedField: React.FC<FieldProps> = ({
   name,
@@ -67,11 +82,13 @@ const RenderedField: React.FC<FieldProps> = ({
           {label}
         </BootstrapForm.Label>
       )}
+      <input type="" />
       <BootstrapForm.Control
         name={name}
         isInvalid={isInvalid}
+        as="textarea"
         value={nonUndefinedValue}
-        {...restFieldProps}
+        // {...restFieldProps}
       >
         {children}
       </BootstrapForm.Control>
@@ -117,7 +134,7 @@ const RenderedField: React.FC<FieldProps> = ({
   );
 };
 
-const RenderedSwitch: React.FC<FieldRenderProps> = ({
+const RenderedSwitch: React.FC<Except<FieldProps, "layout">> = ({
   name,
   label,
   value = false,

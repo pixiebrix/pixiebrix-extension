@@ -19,31 +19,42 @@ import React from "react";
 import { connect, getIn } from "formik";
 import FieldTemplate, { FieldProps } from "@/components/form/FieldTemplate";
 import { FormikContextType } from "formik/dist/types";
+import { Except } from "type-fest";
 
-export type ConnectedFieldProps<Values> = FieldProps & {
+type ConnectedFieldProps = Except<
+  FieldProps,
+  "value" | "onChange" | "onBlur" | "error" | "touched"
+>;
+
+export type FormikFieldTemplateProps<Values> = FieldProps & {
   formik: FormikContextType<Values>;
 };
 
 const FormikFieldTemplate = <Values,>({
   formik,
-  ...fieldProps
-}: ConnectedFieldProps<Values>) => {
-  const error = getIn(formik.errors, fieldProps.name);
-  const touched = getIn(formik.touched, fieldProps.name);
-  const value = getIn(formik.values, fieldProps.name);
+  name,
+  value,
+  error,
+  touched,
+  onChange,
+  onBlur,
+  ...restFieldProps
+}: FormikFieldTemplateProps<Values>) => {
+  const formikValue = getIn(formik.values, name);
+  const formikError = getIn(formik.errors, name);
+  const formikTouched = getIn(formik.touched, name);
 
   return (
     <FieldTemplate
-      // FIXME: string values are not valid for all input types. The caller should be responsible for ensuring
-      //  a value is passed into FormikFieldTemplate
-      value={value ?? ""}
-      error={error}
-      touched={touched}
+      name={name}
+      value={formikValue}
+      error={formikError}
+      touched={formikTouched}
       onChange={formik.handleChange}
       onBlur={formik.handleBlur}
-      {...fieldProps}
+      {...restFieldProps}
     />
   );
 };
 
-export default connect<FieldProps>(FormikFieldTemplate);
+export default connect<ConnectedFieldProps>(FormikFieldTemplate);
