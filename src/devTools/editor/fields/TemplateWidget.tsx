@@ -52,23 +52,25 @@ const TemplateWidget: CustomFieldWidget<OwnProps> = ({
 
   return (
     <div>
-      <div className="small">
-        <span>Insert at cursor:</span>
-        {snippets.map((snippet: Snippet) => (
-          <a
-            key={snippet.label}
-            href="#"
-            className="mx-2"
-            role="button"
-            onClick={(e) => {
-              insertSnippet(snippet.value);
-              e.preventDefault();
-            }}
-          >
-            {snippet.label}
-          </a>
-        ))}
-      </div>
+      {!props.disabled && (
+        <div className="small">
+          <span>Insert at cursor:</span>
+          {snippets.map((snippet: Snippet) => (
+            <a
+              key={snippet.label}
+              href="#"
+              className="mx-2"
+              role="button"
+              onClick={(e) => {
+                insertSnippet(snippet.value);
+                e.preventDefault();
+              }}
+            >
+              {snippet.label}
+            </a>
+          ))}
+        </div>
+      )}
       <Form.Control {...controlProps} {...props} ref={templateInput} />
     </div>
   );
