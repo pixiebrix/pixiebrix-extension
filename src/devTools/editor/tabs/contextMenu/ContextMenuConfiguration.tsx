@@ -24,6 +24,7 @@ import TemplateWidget, {
   Snippet,
 } from "@/devTools/editor/fields/TemplateWidget";
 import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
+import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
 
 const menuSnippets: Snippet[] = [{ label: "selected text", value: "%s" }];
 
@@ -64,7 +65,6 @@ const ContextMenuConfiguration: React.FC<{
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.contexts"
-        label="Contexts"
         as={MultiSelectWidget}
         options={contextOptions}
         description={
@@ -74,20 +74,18 @@ const ContextMenuConfiguration: React.FC<{
             right-clicking selected text.
           </span>
         }
+        {...makeLockableFieldProps("Contexts", isLocked)}
       />
 
       <UrlMatchPatternField
         name="extensionPoint.definition.documentUrlPatterns[0]"
-        label="Sites"
-        disabled={isLocked}
+        {...makeLockableFieldProps("Sites", isLocked)}
       />
     </FieldSection>
 
     <FieldSection title="Advanced">
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns"
-        label="Automatic Permissions"
-        disabled={isLocked}
         description={
           <span>
             URL match patterns give PixieBrix access to a page without you first
@@ -96,6 +94,7 @@ const ContextMenuConfiguration: React.FC<{
             clicked to invoke the context menu.
           </span>
         }
+        {...makeLockableFieldProps("Automatic Permissions", isLocked)}
       />
     </FieldSection>
   </Card>

@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import React from "react";
 import UrlMatchPatternWidget from "@/devTools/editor/components/UrlMatchPatternWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import React from "react";
-import LockedLabel from "@/components/form/lockedLabel/LockedLabel";
 
 const defaultDescription = (
   <span>
@@ -36,33 +35,22 @@ const defaultDescription = (
 
 const UrlMatchPatternField: React.FC<{
   name: string;
-  disabled: boolean;
-  label?: string;
+  disabled?: boolean;
+  label?: string | React.ReactNode;
   description?: React.ReactNode;
 }> = ({
   name,
   disabled,
-  description = defaultDescription,
   label = "Sites",
-}) => {
-  const displayLabel = disabled ? (
-    <LockedLabel
-      label={label}
-      message="Value comes from published foundation"
-    />
-  ) : (
-    label
-  );
-
-  return (
-    <ConnectedFieldTemplate
-      name={name}
-      as={UrlMatchPatternWidget}
-      disabled={disabled}
-      label={displayLabel}
-      description={description}
-    />
-  );
-};
+  description = defaultDescription,
+}) => (
+  <ConnectedFieldTemplate
+    name={name}
+    as={UrlMatchPatternWidget}
+    disabled={disabled}
+    label={label}
+    description={description}
+  />
+);
 
 export default UrlMatchPatternField;

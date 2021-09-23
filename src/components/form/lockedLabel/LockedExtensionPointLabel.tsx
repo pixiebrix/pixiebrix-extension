@@ -20,14 +20,25 @@ import { OverlayTrigger, Tooltip } from "react-bootstrap";
 import { uuidv4 } from "@/types/helpers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLock } from "@fortawesome/free-solid-svg-icons";
+import { useField } from "formik";
+import styles from "./LockedExtensionPointLabel.module.scss";
 
-const LockedLabel: React.FC<{
+const LockedExtensionPointLabel: React.FC<{
   label: string;
-  message: string;
+  message?: string;
 }> = ({ label, message }) => {
+  const [{ value: name }] = useField<string>("extensionPoint.metadata.name");
+  const defaultMessage = (
+    <p>
+      Value provided by published foundation{" "}
+      <span className={styles.name}>{name}</span>. Edit the foundation in the
+      Workshop.
+    </p>
+  );
+
   const renderTooltip = (props: unknown) => (
     <Tooltip id={`${uuidv4()}-tooltip`} {...props}>
-      {message}
+      {message ?? defaultMessage}
     </Tooltip>
   );
 
@@ -46,4 +57,4 @@ const LockedLabel: React.FC<{
   );
 };
 
-export default LockedLabel;
+export default LockedExtensionPointLabel;

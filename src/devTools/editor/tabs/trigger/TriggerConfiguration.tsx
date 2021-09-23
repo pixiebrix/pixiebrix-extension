@@ -24,6 +24,7 @@ import LocationWidget from "@/devTools/editor/fields/LocationWidget";
 import { useField, useFormikContext } from "formik";
 import { TriggerFormState } from "@/devTools/editor/extensionPoints/trigger";
 import { Trigger } from "@/extensionPoints/triggerExtension";
+import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
 
 const TriggerConfiguration: React.FC<{
   isLocked: boolean;
@@ -49,10 +50,10 @@ const TriggerConfiguration: React.FC<{
       <FieldSection title="Configuration">
         <ConnectedFieldTemplate
           name="extensionPoint.definition.trigger"
-          label="Trigger"
           as="select"
           description="Trigger event"
           onChange={onTriggerChange}
+          {...makeLockableFieldProps("Trigger", isLocked)}
         >
           <option value="load">Page Load</option>
           <option value="click">Click</option>
@@ -64,17 +65,16 @@ const TriggerConfiguration: React.FC<{
         {trigger !== "load" && (
           <ConnectedFieldTemplate
             name="extensionPoint.definition.rootSelector"
-            label="Element"
             as={LocationWidget}
             selectionMode="element"
             description="An element to watch"
+            {...makeLockableFieldProps("Element", isLocked)}
           />
         )}
 
         <UrlMatchPatternField
           name="extensionPoint.definition.isAvailable.matchPatterns"
-          label="Sites"
-          disabled={isLocked}
+          {...makeLockableFieldProps("Sites", isLocked)}
         />
       </FieldSection>
     </Card>
