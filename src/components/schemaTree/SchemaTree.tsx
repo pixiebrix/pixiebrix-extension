@@ -138,9 +138,6 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   };
 
   const data = useMemo(() => {
-    console.log("SchemaTree");
-    console.log(schema);
-
     if (!schema) {
       return [];
     }
