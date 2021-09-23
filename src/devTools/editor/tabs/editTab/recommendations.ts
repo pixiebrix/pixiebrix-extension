@@ -17,51 +17,84 @@
 
 import { ElementType } from "@/devTools/editor/extensionPoints/elementConfig";
 import { RegistryId } from "@/core";
+import blockRegistry from "@/blocks/registry";
+import { getType } from "@/blocks/util";
+import { uniq } from "lodash";
+import { allSettledValues } from "@/utils";
 
-type Recommendation = {
-  id: RegistryId;
-};
+const READER_COUNT_THRESHOLD = 1;
 
-export const RECOMMENDED_BRICKS = new Map<ElementType, Recommendation[]>([
+const typeRecommendations = new Map<ElementType, RegistryId[]>([
   [
     "menuItem",
     [
-      { id: "@pixiebrix/browser/open-tab" },
-      { id: "@pixiebrix/zapier/push-data" },
-      { id: "@pixiebrix/forms/set" },
+      "@pixiebrix/browser/open-tab",
+      "@pixiebrix/zapier/push-data",
+      "@pixiebrix/forms/set",
     ],
   ],
   [
     "trigger",
     [
-      { id: "@pixiebrix/google/sheets-append" },
-      { id: "@pixiebrix/highlight" },
-      { id: "@pixiebrix/zapier/push-data" },
+      "@pixiebrix/google/sheets-append",
+      "@pixiebrix/highlight",
+      "@pixiebrix/zapier/push-data",
     ],
   ],
   [
     "contextMenu",
     [
-      { id: "@pixiebrix/browser/open-tab" },
-      { id: "@pixiebrix/zapier/push-data" },
-      { id: "slack/simple-message" },
-      { id: "@pixiebrix/google/sheets-append" },
+      "@pixiebrix/browser/open-tab",
+      "@pixiebrix/zapier/push-data",
+      "slack/simple-message",
+      "@pixiebrix/google/sheets-append",
     ],
   ],
   [
     "panel",
-    [
-      { id: "@pixiebrix/property-table" },
-      { id: "@pixiebrix/iframe" },
-      { id: "@pixiebrix/get" },
-    ],
+    ["@pixiebrix/property-table", "@pixiebrix/iframe", "@pixiebrix/get"],
   ],
   [
     "actionPanel",
-    [
-      { id: "@pixiebrix/property-table" },
-      { id: "@pixiebrix/iframe" },
-      { id: "@pixiebrix/get" },
-    ],
+    ["@pixiebrix/property-table", "@pixiebrix/iframe", "@pixiebrix/get"],
   ],
-] as Array<[ElementType, Recommendation[]]>);
+] as Array<[ElementType, RegistryId[]]>);
+
+const readerLike = [
+  // The following two bricks are technically "transforms", but serve the roles as readers
+  "@pixiebrix/forms/data",
+  "@pixiebrix/jquery-reader",
+  "@pixiebrix/component-reader",
+];
+
+const commonReaders = [
+  "@pixiebrix/document-metadata",
+  "@pixiebrix/jquery-reader",
+  "@pixiebrix/component-reader",
+] as RegistryId[];
+
+export async function getRecommendations(
+  elementType: ElementType,
+  current: RegistryId[]
+): Promise<RegistryId[]> {
+  // Ignore errors resolving blocks. Errors can be caused by any number of things, e.g., internal ids, etc.
+  const currentBlocks = await allSettledValues(
+    current.map(async (registryId) => {
+      const block = await blockRegistry.lookup(registryId);
+      const type = await getType(block);
+      return {
+        block,
+        type,
+        isReaderLike: type === "reader" || readerLike.includes(registryId),
+      };
+    })
+  );
+
+  const readerCount = currentBlocks.filter((x) => x.isReaderLike).length;
+
+  if (readerCount >= READER_COUNT_THRESHOLD) {
+    return typeRecommendations.get(elementType);
+  }
+
+  return uniq([...commonReaders, ...typeRecommendations.get(elementType)]);
+}
