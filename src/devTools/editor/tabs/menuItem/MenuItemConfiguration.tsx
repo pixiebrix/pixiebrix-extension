@@ -26,6 +26,7 @@ import UrlMatchPatternField from "@/devTools/editor/fields/UrlMatchPatternField"
 import IconWidget from "@/components/fields/IconWidget";
 import LocationWidget from "@/devTools/editor/fields/LocationWidget";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
+import { makeLockableFieldProps } from "@/devTools/editor/fields/makeLockableFieldProps";
 
 const menuSnippets: Snippet[] = [
   { label: "caption", value: "{{{caption}}}" },
@@ -51,15 +52,14 @@ const MenuItemConfiguration: React.FC<{
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.containerSelector"
-        label="Location"
         as={LocationWidget}
         description="Location on the page"
+        {...makeLockableFieldProps("Location", isLocked)}
       />
 
       <UrlMatchPatternField
         name="extensionPoint.definition.isAvailable.matchPatterns"
-        label="Sites"
-        disabled={isLocked}
+        {...makeLockableFieldProps("Sites", isLocked)}
       />
     </FieldSection>
 
@@ -73,18 +73,18 @@ const MenuItemConfiguration: React.FC<{
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.position"
-        label="Order/Position"
         description="Position relative to other menu items/buttons"
         as={SelectWidget}
         options={positionOptions}
+        {...makeLockableFieldProps("Order/Position", isLocked)}
       />
 
       <ConnectedFieldTemplate
         name="extensionPoint.definition.template"
-        label="Template"
         as={TemplateWidget}
         description="A template for the item, with a placeholder for the caption and/or icon"
         snippets={menuSnippets}
+        {...makeLockableFieldProps("Template", isLocked)}
       />
     </FieldSection>
   </Card>

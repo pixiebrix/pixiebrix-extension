@@ -34,7 +34,7 @@ export type FieldProps<
   React.ComponentProps<As> & {
     name: string;
     layout?: "horizontal" | "vertical" | "switch" | undefined;
-    label?: string | ReactNode | undefined;
+    label?: ReactNode | undefined;
     description?: ReactNode | undefined;
     error?: string | undefined;
     touched?: boolean | undefined;
