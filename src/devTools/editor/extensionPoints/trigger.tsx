@@ -155,7 +155,12 @@ async function fromExtensionPoint(
     throw new Error("Expected trigger extension point type");
   }
 
-  const { type, rootSelector, trigger = "load" } = extensionPoint.definition;
+  const {
+    type,
+    rootSelector,
+    reader,
+    trigger = "load",
+  } = extensionPoint.definition;
 
   return {
     uuid: uuidv4(),
@@ -175,7 +180,7 @@ async function fromExtensionPoint(
         ...extensionPoint.definition,
         rootSelector,
         trigger,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerHack(reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
