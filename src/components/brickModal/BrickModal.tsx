@@ -31,7 +31,7 @@ import {
   Modal,
   Row,
 } from "react-bootstrap";
-import { sortBy } from "lodash";
+import { compact, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
 import "./BrickModal.scss";
@@ -159,13 +159,17 @@ function ActualModal<T extends IBrick>({
 
   const searchResults = useSearch(bricks, query);
 
-  const recommendedBricks = useMemo(
-    () =>
-      recommendations.length > 0
-        ? bricks.filter((x) => recommendations.includes(x.id))
-        : [],
-    [recommendations, bricks]
-  );
+  const recommendedBricks = useMemo(() => {
+    if (recommendations.length === 0) {
+      return;
+    }
+
+    // Retain the same order that the recommendations were passed in
+    const brickMap = new Map(bricks.map((brick) => [brick.id, brick]));
+    return compact(
+      recommendations.map((registryId) => brickMap.get(registryId))
+    );
+  }, [recommendations, bricks]);
 
   // If there's no recommendations, default to the first brick so the right side isn't blank
   useEffect(
