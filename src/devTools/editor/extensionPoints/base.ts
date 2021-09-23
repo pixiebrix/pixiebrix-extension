@@ -46,7 +46,7 @@ import {
 import { Except } from "type-fest";
 import { uuidv4, validateRegistryId } from "@/types/helpers";
 import { BlockPipeline } from "@/blocks/types";
-import { freshIdentifier, removeUndefined } from "@/utils";
+import { deepPickBy, freshIdentifier } from "@/utils";
 
 export interface WizardStep {
   step: string;
@@ -346,8 +346,8 @@ export function removeEmptyValues<T extends object>(obj: T): T {
   // Technically the return type is Partial<T> (with recursive partials). However, we'll trust that the PageEditor
   // requires the user to set values that actually need to be set. (They'll also get caught by input validation in
   // when the bricks are run.
-  return removeUndefined(
+  return deepPickBy(
     obj,
-    (x: unknown) => typeof x === "undefined" || x === ""
+    (x: unknown) => typeof x !== "undefined" && x !== ""
   ) as T;
 }
