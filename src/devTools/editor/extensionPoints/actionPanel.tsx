@@ -25,6 +25,7 @@ import {
   makeExtensionReaders,
   makeIsAvailable,
   makeReaderFormState,
+  removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
   WizardStep,
@@ -110,21 +111,21 @@ function selectExtensionPoint(
   const {
     definition: { isAvailable },
   } = extensionPoint;
-  return {
+  return removeEmptyValues({
     ...baseSelectExtensionPoint(formState),
     definition: {
       type: "actionPanel",
       reader: readers.map((x) => x.metadata.id),
       isAvailable: pickBy(isAvailable, identity),
     },
-  };
+  });
 }
 
 function selectExtension(
   { uuid, label, extensionPoint, extension, services }: ActionPanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<ActionPanelConfig> {
-  return {
+  return removeEmptyValues({
     id: uuid,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
@@ -133,7 +134,7 @@ function selectExtension(
     config: options.includeInstanceIds
       ? extension
       : excludeInstanceIds(extension, "body"),
-  };
+  });
 }
 
 function asDynamicElement(element: ActionPanelFormState): DynamicDefinition {
