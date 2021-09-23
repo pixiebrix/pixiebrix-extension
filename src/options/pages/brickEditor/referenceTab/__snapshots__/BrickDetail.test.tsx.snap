@@ -60,42 +60,111 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
             </svg>
              Copy Argument YAML
           </button>
-          <div
-            class="SchemaTree list-group list-group-flush"
+          <table
+            class="table"
+            role="table"
           >
-            <div
-              class="list-group-item"
-            >
-              <div
-                style="cursor: pointer;"
+            <thead>
+              <tr
+                role="row"
               >
-                <svg
-                  aria-hidden="true"
-                  class="svg-inline--fa fa-caret-right fa-w-6 "
-                  data-icon="caret-right"
-                  data-prefix="fas"
-                  focusable="false"
-                  role="img"
-                  viewBox="0 0 192 512"
-                  xmlns="http://www.w3.org/2000/svg"
+                <th
+                  colspan="1"
+                  role="columnheader"
                 >
-                  <path
-                    d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                    fill="currentColor"
-                  />
-                </svg>
-                 
-                <span>
-                  columns
-                </span>
-                <span
-                  class="type"
+                  Name
+                </th>
+                <th
+                  colspan="1"
+                  role="columnheader"
                 >
-                  : array of objects
-                </span>
-              </div>
-            </div>
-          </div>
+                  Required
+                </th>
+                <th
+                  colspan="1"
+                  role="columnheader"
+                >
+                  Type
+                </th>
+                <th
+                  colspan="1"
+                  role="columnheader"
+                >
+                  Description
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                role="row"
+              >
+                <td
+                  role="cell"
+                >
+                  <span
+                    style="cursor: pointer; padding-left: 0rem;"
+                    title="Toggle Row Expanded"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-caret-right fa-w-6 mr-1"
+                      data-icon="caret-right"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 192 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <code>
+                      columns
+                    </code>
+                  </span>
+                </td>
+                <td
+                  role="cell"
+                >
+                  <span>
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-check fa-w-16 text-success"
+                      data-icon="check"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </span>
+                </td>
+                <td
+                  role="cell"
+                >
+                  <code>
+                    array of objects
+                  </code>
+                </td>
+                <td
+                  role="cell"
+                >
+                  <p
+                    class="m-0"
+                  >
+                    Column labels and values to show
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -199,42 +268,111 @@ exports[`renders @pixiebrix/table loaded 1`] = `
             </svg>
              Copy Argument YAML
           </button>
-          <div
-            class="SchemaTree list-group list-group-flush"
+          <table
+            class="table"
+            role="table"
           >
-            <div
-              class="list-group-item"
-            >
-              <div
-                style="cursor: pointer;"
+            <thead>
+              <tr
+                role="row"
               >
-                <svg
-                  aria-hidden="true"
-                  class="svg-inline--fa fa-caret-right fa-w-6 "
-                  data-icon="caret-right"
-                  data-prefix="fas"
-                  focusable="false"
-                  role="img"
-                  viewBox="0 0 192 512"
-                  xmlns="http://www.w3.org/2000/svg"
+                <th
+                  colspan="1"
+                  role="columnheader"
                 >
-                  <path
-                    d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
-                    fill="currentColor"
-                  />
-                </svg>
-                 
-                <span>
-                  columns
-                </span>
-                <span
-                  class="type"
+                  Name
+                </th>
+                <th
+                  colspan="1"
+                  role="columnheader"
                 >
-                  : array of objects
-                </span>
-              </div>
-            </div>
-          </div>
+                  Required
+                </th>
+                <th
+                  colspan="1"
+                  role="columnheader"
+                >
+                  Type
+                </th>
+                <th
+                  colspan="1"
+                  role="columnheader"
+                >
+                  Description
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                role="row"
+              >
+                <td
+                  role="cell"
+                >
+                  <span
+                    style="cursor: pointer; padding-left: 0rem;"
+                    title="Toggle Row Expanded"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-caret-right fa-w-6 mr-1"
+                      data-icon="caret-right"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 192 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                    <code>
+                      columns
+                    </code>
+                  </span>
+                </td>
+                <td
+                  role="cell"
+                >
+                  <span>
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-check fa-w-16 text-success"
+                      data-icon="check"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"
+                        fill="currentColor"
+                      />
+                    </svg>
+                  </span>
+                </td>
+                <td
+                  role="cell"
+                >
+                  <code>
+                    array of objects
+                  </code>
+                </td>
+                <td
+                  role="cell"
+                >
+                  <p
+                    class="m-0"
+                  >
+                    Column labels and values to show
+                  </p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

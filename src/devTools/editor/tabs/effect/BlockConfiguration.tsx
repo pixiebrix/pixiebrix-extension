@@ -96,7 +96,6 @@ const BlockConfiguration: React.FunctionComponent<{
         <Card.Body ref={templateEngineRef}>
           <ConnectedFieldTemplate
             name={templateEngineFieldName}
-            layout="vertical"
             label="Template engine"
             as="select"
             description={

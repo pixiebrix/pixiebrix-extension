@@ -16,11 +16,21 @@
  */
 
 import { OutputKey, RegistryId, TemplateEngine, UUID } from "@/core";
+import { UnknownObject } from "@/types";
 
-export interface Availability {
+export type Availability = {
   matchPatterns?: string | string[];
   selectors?: string | string[];
-}
+};
+
+/**
+ * Availability with consistent shape
+ * @see Availability
+ */
+export type NormalizedAvailability = {
+  matchPatterns?: string[];
+  selectors?: string[];
+};
 
 export type ReaderConfig =
   | RegistryId
@@ -65,7 +75,7 @@ export interface BlockConfig {
    */
   templateEngine?: TemplateEngine;
 
-  config: Record<string, unknown>;
+  config: UnknownObject;
 
   /**
    * A unique id for the configured block, used to correlate traces across runs when using the Page Editor.

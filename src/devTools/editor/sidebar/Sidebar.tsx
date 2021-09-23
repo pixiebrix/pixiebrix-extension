@@ -38,7 +38,6 @@ import DynamicEntry from "@/devTools/editor/sidebar/DynamicEntry";
 import { isExtension } from "@/devTools/editor/sidebar/common";
 import useAddElement from "@/devTools/editor/hooks/useAddElement";
 import Footer from "@/devTools/editor/sidebar/Footer";
-import useReservedNames from "@/devTools/editor/hooks/useReservedNames";
 import { Except } from "type-fest";
 
 const DropdownEntry: React.FunctionComponent<{
@@ -115,9 +114,7 @@ const Sidebar: React.FunctionComponent<
     ]
   );
 
-  const reservedNames = useReservedNames(elements);
-
-  const addElement = useAddElement(reservedNames);
+  const addElement = useAddElement();
 
   return (
     <div className="Sidebar d-flex flex-column vh-100">

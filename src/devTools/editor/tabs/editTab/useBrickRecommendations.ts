@@ -27,12 +27,13 @@ import { useDebounce } from "use-debounce";
 import { useAsyncState } from "@/hooks/common";
 import { collectRegistryIds } from "@/devTools/editor/tabs/editTab/editHelpers";
 
-const READER_COUNT_THRESHOLD = 1;
+const READER_COUNT_THRESHOLD = 2;
 
 const typeRecommendations = new Map<ElementType, RegistryId[]>([
   [
     "menuItem",
     [
+      "@pixiebrix/form-modal",
       "@pixiebrix/browser/open-tab",
       "@pixiebrix/zapier/push-data",
       "@pixiebrix/forms/set",
@@ -49,6 +50,7 @@ const typeRecommendations = new Map<ElementType, RegistryId[]>([
   [
     "contextMenu",
     [
+      "@pixiebrix/form-modal",
       "@pixiebrix/browser/open-tab",
       "@pixiebrix/zapier/push-data",
       "slack/simple-message",
@@ -73,7 +75,6 @@ const readerLike = [
 ];
 
 const commonReaders = [
-  "@pixiebrix/document-metadata",
   "@pixiebrix/jquery-reader",
   "@pixiebrix/component-reader",
 ] as RegistryId[];

@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { UUID } from "@/core";
 import useInterval from "@/hooks/useInterval";
 import { isEmpty, pickBy, sortBy } from "lodash";
@@ -37,10 +37,9 @@ import useReduxState from "@/hooks/useReduxState";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
+import AuthContext from "@/auth/AuthContext";
 
 const TRACE_RELOAD_MILLIS = 250;
-
-const SHOW_DEVELOPER_PANELS = Boolean(process.env.DEBUG);
 
 function useLatestTraceRecord(instanceId: UUID) {
   return useAsyncState(async () => {
@@ -115,6 +114,10 @@ const DataPanel: React.FC<{
   blockFieldName: string;
   instanceId: UUID;
 }> = ({ blockFieldName, instanceId }) => {
+  const { flags } = useContext(AuthContext);
+
+  const showDeveloperTabs = flags.includes("page-editor-developer");
+
   const { values: formState } = useFormikContext<FormState>();
 
   const [record, isLoading, error, recalculate] = useLatestTraceRecord(
@@ -156,7 +159,7 @@ const DataPanel: React.FC<{
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
         </Nav.Item>
-        {SHOW_DEVELOPER_PANELS && (
+        {showDeveloperTabs && (
           <>
             <Nav.Item className={styles.tabNav}>
               <Nav.Link eventKey="formik">Formik</Nav.Link>
@@ -185,19 +188,19 @@ const DataPanel: React.FC<{
         >
           <JsonTree data={relevantContext} copyable searchable />
         </DataTab>
-        {SHOW_DEVELOPER_PANELS && (
+        {showDeveloperTabs && (
           <>
             <DataTab eventKey="formik">
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
-                in DEBUG builds
+                to developers
               </div>
               <JsonTree data={formState ?? {}} searchable />
             </DataTab>
             <DataTab eventKey="blockConfig">
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
-                in DEBUG builds
+                to developers
               </div>
               <JsonTree data={blockConfig ?? {}} />
             </DataTab>

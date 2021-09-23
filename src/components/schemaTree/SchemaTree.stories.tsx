@@ -47,9 +47,11 @@ Primitives.args = {
     properties: {
       name: {
         type: "string",
+        description: "The first name of the person",
       },
       age: {
         type: "number",
+        description: "The person's age",
       },
     },
   },
@@ -64,14 +66,57 @@ StringFormats.args = {
       url: {
         type: "string",
         format: "uri",
+        description: "A valid url",
       },
       email: {
         type: "string",
         format: "email",
+        description: "The person's email",
       },
       uuid: {
         type: "string",
         format: "uuid",
+      },
+    },
+  },
+};
+
+export const EnumType = Template.bind({});
+EnumType.args = {
+  schema: {
+    type: "object",
+    properties: {
+      favorite_color: {
+        type: "string",
+        enum: ["red", "orange", "yellow", "green", "blue", "indigo", "violet"],
+        description: "Your favorite color in the rainbow",
+      },
+    },
+  },
+};
+
+export const MixedTypeEnumType = Template.bind({});
+MixedTypeEnumType.args = {
+  schema: {
+    type: "object",
+    properties: {
+      favorite_thing: {
+        type: ["string", "number"],
+        enum: ["cookies", "rainbows", 42],
+        description: "Your favorite color in the rainbow",
+      },
+    },
+  },
+};
+
+export const MultipleTypeType = Template.bind({});
+MultipleTypeType.args = {
+  schema: {
+    type: "object",
+    properties: {
+      text: {
+        type: ["string", "number", "boolean"],
+        description: "Body text description",
       },
     },
   },
@@ -93,11 +138,27 @@ Arrays.args = {
         items: {
           type: "object",
           properties: {
-            name: {
-              type: "string",
+            deepArray: {
+              type: "array",
+              items: {
+                type: "string",
+              },
             },
-            age: {
-              type: "number",
+            person: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  name: {
+                    type: "string",
+                    description: "The first name of the person",
+                  },
+                  age: {
+                    type: "number",
+                    description: "The person's age",
+                  },
+                },
+              },
             },
           },
         },
@@ -116,9 +177,11 @@ NestedObject.args = {
         properties: {
           name: {
             type: "string",
+            description: "The first name of the person",
           },
           age: {
             type: "number",
+            description: "The person's age",
           },
         },
       },

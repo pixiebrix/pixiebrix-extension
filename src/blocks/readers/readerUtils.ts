@@ -15,15 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
-import { Schema } from "@/core";
+import { ReaderConfig } from "@/blocks/types";
+import { RegistryId } from "@/core";
 
-export type TreeRenderer = React.FunctionComponent<{
-  schema: Schema;
-  prop?: string;
-}>;
-export type TreeEntry = React.FunctionComponent<{
-  prop: string;
-  definition: Schema;
-  TreeRenderer: TreeRenderer;
-}>;
+export function selectReaderIds(config: ReaderConfig): RegistryId[] {
+  if (typeof config === "string") {
+    return [config];
+  }
+
+  if (Array.isArray(config)) {
+    return config.flatMap((x) => selectReaderIds(x));
+  }
+
+  if (typeof config === "object") {
+    return Object.values(config).flatMap((x) => selectReaderIds(x));
+  }
+
+  return [];
+}

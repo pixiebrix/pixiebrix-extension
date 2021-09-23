@@ -22,7 +22,7 @@ import { useField, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
 import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
-import { BlockType, getType } from "@/blocks/util";
+import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { compact, noop, zip } from "lodash";
@@ -42,6 +42,7 @@ import { isNullOrBlank } from "@/utils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
 import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
+import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -181,7 +182,8 @@ const EditTab: React.FC<{
           ])
         ),
         instanceId: uuidv4(),
-        config: {},
+        config:
+          getExampleBlockConfig(block) ?? defaultBlockConfig(block.inputSchema),
       };
       pipelineFieldHelpers.setValue([...prev, newBlock, ...next]);
       onSelectNode(nodeIndex);

@@ -41,6 +41,8 @@ import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import { produce } from "immer";
 import styles from "./FormEditor.module.scss";
+import { joinName } from "@/utils";
+import { isEmpty } from "lodash";
 import FieldTemplate from "@/components/form/FieldTemplate";
 
 export type FormEditorProps = {
@@ -48,6 +50,23 @@ export type FormEditorProps = {
   activeField?: string;
   setActiveField: SetActiveField;
 };
+
+function initDefaults(obj: RJSFSchema): void {
+  if (!obj.schema) {
+    obj.schema = MINIMAL_SCHEMA;
+  }
+
+  if (!obj.uiSchema) {
+    obj.uiSchema = MINIMAL_UI_SCHEMA;
+  }
+
+  if (!obj.uiSchema[UI_ORDER]) {
+    const propertyKeys = Object.keys(obj.schema.properties || {});
+    obj.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
+  } else if (!obj.uiSchema[UI_ORDER].includes("*")) {
+    obj.uiSchema[UI_ORDER].push("*");
+  }
+}
 
 const LayoutWidget: React.FC<{
   canMoveUp: boolean;
@@ -81,7 +100,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
     { setValue: setRjsfSchema },
   ] = useField<RJSFSchema>(name);
   const [{ value: uiOrder }, , { setValue: setUiOrder }] = useField<string[]>(
-    `${name}.uiSchema.${UI_ORDER}`
+    joinName(name, "uiSchema", UI_ORDER)
   );
 
   const { schema, uiSchema } = rjsfSchema;
@@ -89,25 +108,24 @@ const FormEditor: React.FC<FormEditorProps> = ({
   useEffect(() => {
     // Set default values if needed
     if (!schema || !uiSchema || !uiOrder?.includes("*")) {
-      const nextRjsfSchema = produce(rjsfSchema, (draft) => {
-        if (!draft.schema) {
-          draft.schema = MINIMAL_SCHEMA;
-        }
-
-        if (!draft.uiSchema) {
-          draft.uiSchema = MINIMAL_UI_SCHEMA;
-        }
-
-        if (!draft.uiSchema[UI_ORDER]) {
-          const propertyKeys = Object.keys(draft.schema.properties || {});
-          draft.uiSchema[UI_ORDER] = [...propertyKeys, "*"];
-        } else if (!draft.uiSchema[UI_ORDER].includes("*")) {
-          draft.uiSchema[UI_ORDER].push("*");
-        }
-      });
-      setRjsfSchema(nextRjsfSchema);
+      setRjsfSchema(
+        produce(rjsfSchema, (draft) => {
+          initDefaults(draft);
+        })
+      );
     }
   }, [rjsfSchema, schema, uiSchema, uiOrder, setRjsfSchema]);
+
+  // Select the first field by default
+  useEffect(
+    () => {
+      if (activeField == null && !isEmpty(schema?.properties)) {
+        setActiveField(Object.keys(schema.properties)[0]);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run onMount
+    []
+  );
 
   if (!schema || !uiSchema) {
     return null;
@@ -180,11 +198,11 @@ const FormEditor: React.FC<FormEditorProps> = ({
   return (
     <>
       <ConnectedFieldTemplate
-        name={`${name}.schema.title`}
+        name={joinName(name, "schema", "title")}
         label="Form Title"
       />
       <ConnectedFieldTemplate
-        name={`${name}.schema.description`}
+        name={joinName(name, "schema", "description")}
         label="Form Description"
       />
       <hr />
@@ -226,7 +244,7 @@ const FormEditor: React.FC<FormEditorProps> = ({
       {activeField && (canMoveUp || canMoveDown) && (
         <FieldTemplate
           name="layoutButtons"
-          label="Field Layout"
+          label="Field Order"
           as={LayoutWidget}
           canMoveUp={canMoveUp}
           moveUp={() => {

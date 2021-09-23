@@ -18,7 +18,6 @@
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { FieldArray, useField } from "formik";
-import { getDefaultField } from "@/components/fields/schemaFields/SchemaFieldContext";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import { Button } from "react-bootstrap";
 import React from "react";
@@ -28,18 +27,27 @@ import {
   findOneOf,
   textPredicate,
 } from "@/components/fields/schemaFields/schemaUtils";
+import { UnknownObject } from "@/types";
+import { defaultBlockConfig } from "@/blocks/util";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { joinName } from "@/utils";
+
+// Empty value for text fields for the Formik state
+const EMPTY_TEXT_VALUE = "";
 
 function getDefaultArrayItem(schema: Schema): unknown {
+  // TODO: handle enum and const
+
   if (schema.default) {
     return schema.default;
   }
 
   if (textPredicate(schema)) {
-    return "";
+    return EMPTY_TEXT_VALUE;
   }
 
   if (schema.type === "object") {
-    return {};
+    return defaultBlockConfig(schema);
   }
 
   if (findOneOf(schema, booleanPredicate)) {
@@ -47,7 +55,7 @@ function getDefaultArrayItem(schema: Schema): unknown {
   }
 
   if (findOneOf(schema, textPredicate)) {
-    return "";
+    return EMPTY_TEXT_VALUE;
   }
 
   return null;
@@ -58,7 +66,7 @@ const ArrayWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = ({
   label,
   name,
 }) => {
-  const [field] = useField<Array<Record<string, unknown>>>(name);
+  const [field] = useField<UnknownObject[]>(name);
 
   if (Array.isArray(schema.items)) {
     throw new TypeError("Support for arrays of mixed types is not implemented");
@@ -73,28 +81,29 @@ const ArrayWidget: CustomFieldWidget<SchemaFieldProps<unknown>> = ({
       {({ remove, push }) => (
         <>
           <ul className="list-group">
-            {(field.value ?? []).map((item: unknown, index: number) => {
-              const Renderer = getDefaultField(schemaItems);
-              return (
-                <li className="list-group-item" key={index}>
-                  <Renderer
-                    key={index}
-                    name={[name, String(index)].join(".")}
-                    schema={schemaItems}
-                    label={`${label ?? fieldLabel(name)} #${index + 1}`}
-                  />
-                  <Button
-                    variant="danger"
-                    size="sm"
-                    onClick={() => {
-                      remove(index);
-                    }}
-                  >
-                    Remove Item
-                  </Button>
-                </li>
-              );
-            })}
+            {(field.value ?? []).map((item: unknown, index: number) => (
+              <li className="list-group-item" key={index}>
+                <SchemaField
+                  key={index}
+                  name={joinName(name, String(index))}
+                  schema={schemaItems}
+                  label={
+                    <span>
+                      {label ?? fieldLabel(name)} #{index + 1}
+                    </span>
+                  }
+                />
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => {
+                    remove(index);
+                  }}
+                >
+                  Remove Item
+                </Button>
+              </li>
+            ))}
           </ul>
           <Button
             onClick={() => {
