@@ -122,7 +122,7 @@ const DataPanel: React.FC<{
     actions.setActiveField
   );
 
-  const { value: blockConfig } = useField<BlockConfig>(blockFieldName)[0];
+  const [{ value: blockConfig }] = useField<BlockConfig>(blockFieldName);
 
   const showFormPreview = configValue?.schema && configValue?.uiSchema;
   const showBlockPreview = record && blockConfig;
