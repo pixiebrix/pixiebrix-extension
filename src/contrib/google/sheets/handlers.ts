@@ -18,6 +18,7 @@
 import { liftBackground } from "@/background/protocol";
 import { liftBackground as liftDevtools } from "@/background/devtools/internal";
 import { ensureAuth, handleRejection } from "@/contrib/google/auth";
+import { columnToLetter } from "@/contrib/google/sheets/sheetsHelpers";
 
 type AppendValuesResponse = gapi.client.sheets.AppendValuesResponse;
 type BatchGetValuesResponse = gapi.client.sheets.BatchGetValuesResponse;
@@ -28,7 +29,6 @@ type SpreadsheetProperties = gapi.client.sheets.SpreadsheetProperties;
 // https://developers.google.com/sheets/api/guides/authorizing
 export const GOOGLE_SHEETS_SCOPES = [
   "https://www.googleapis.com/auth/drive.file",
-  // "https://www.googleapis.com/auth/spreadsheets"
 ];
 
 export const DISCOVERY_DOCS = [
@@ -122,19 +122,6 @@ export const batchGet = liftBackground(
     }
   }
 );
-
-function columnToLetter(column: number): string {
-  // https://stackoverflow.com/a/21231012/402560
-  let temp;
-  let letter = "";
-  while (column > 0) {
-    temp = (column - 1) % 26;
-    letter = String.fromCharCode(temp + 65) + letter;
-    column = (column - temp - 1) / 26;
-  }
-
-  return letter;
-}
 
 export async function getSheetProperties(
   spreadsheetId: string

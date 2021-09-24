@@ -17,68 +17,63 @@
 
 import React, { useContext, useState } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
 import { useField } from "formik";
 import { Schema } from "@/core";
-import { useAsyncState } from "@/hooks/common";
 import { APPEND_SCHEMA } from "@/contrib/google/sheets/append";
-import { DevToolsContext } from "@/devTools/context";
-import { isNullOrBlank, joinName } from "@/utils";
+import { joinName } from "@/utils";
 import { SheetMeta } from "@/contrib/google/sheets/types";
 import FileWidget from "@/contrib/google/sheets/FileWidget";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import { getErrorMessage } from "@/errors";
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import TabField from "@/contrib/google/sheets/TabField";
+import { DevToolsContext } from "@/devTools/context";
+import { useAsyncState } from "@/hooks/common";
+import { devtoolsProtocol } from "@/contrib/google/sheets/handlers";
+import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { getErrorMessage } from "@/errors";
 
-const DEFAULT_FIELDS_SCHEMA: Schema = {
-  type: "object",
-  additionalProperties: true,
+const DEFAULT_HEADER_SCHEMA = {
+  type: "string",
 };
 
-const PropertiesField: React.FunctionComponent<{
+const HeaderField: React.FunctionComponent<{
   name: string;
   doc: SheetMeta | null;
   tabName: string;
 }> = ({ name, tabName, doc }) => {
   const { port } = useContext(DevToolsContext);
 
-  const [sheetSchema, , schemaError] = useAsyncState(async () => {
+  const [headerSchema, , headersError] = useAsyncState(async () => {
     if (doc?.id && tabName) {
       const headers = await devtoolsProtocol.getHeaders(port, {
         spreadsheetId: doc.id,
         tabName,
       });
       return {
-        type: "object",
-        properties: Object.fromEntries(
-          headers
-            .filter((x) => !isNullOrBlank(x))
-            .map((header) => [header, { type: "string" }])
-        ),
-      } as Schema;
+        type: "string",
+        enum: headers ?? [],
+      };
     }
 
-    return DEFAULT_FIELDS_SCHEMA;
+    return DEFAULT_HEADER_SCHEMA;
   }, [doc?.id, tabName]);
 
   return (
     <SchemaField
       name={name}
-      label="Row Values"
+      label="Column Header"
       description={
-        schemaError ? (
+        headersError ? (
           <span className="text-warning">
-            Error determining columns: {getErrorMessage(schemaError)}
+            Error determining columns: {getErrorMessage(headersError)}
           </span>
         ) : null
       }
-      schema={sheetSchema ?? DEFAULT_FIELDS_SCHEMA}
+      schema={(headerSchema ?? DEFAULT_HEADER_SCHEMA) as Schema}
     />
   );
 };
 
-const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
+const LookupSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
@@ -103,13 +98,24 @@ const AppendSpreadsheetOptions: React.FunctionComponent<BlockOptionProps> = ({
         schema={APPEND_SCHEMA.properties.tabName as Schema}
         doc={doc}
       />
-      <PropertiesField
-        name={joinName(basePath, "rowValues")}
+      <HeaderField
+        name={joinName(basePath, "header")}
         tabName={tabName}
         doc={doc}
+      />
+      <ConnectedFieldTemplate
+        name={joinName(basePath, "query")}
+        label="Query"
+        description="Value to search for in the column"
+      />
+      <ConnectedFieldTemplate
+        name={joinName(basePath, "multi")}
+        label="All Matches"
+        layout="switch"
+        description="Toggle on to return an array of matches"
       />
     </div>
   );
 };
 
-export default AppendSpreadsheetOptions;
+export default LookupSpreadsheetOptions;

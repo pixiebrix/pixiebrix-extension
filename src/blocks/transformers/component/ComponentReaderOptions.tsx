@@ -36,14 +36,9 @@ function useFrameworkOptions(frameworks: FrameworkMeta[]): FrameworkOption[] {
         return {
           ...option,
           detected,
-          label:
-            option.value === "jquery"
-              ? option.label
-              : `${option.label} - ${
-                  detected
-                    ? detected.version ?? "Unknown Version"
-                    : "Not detected"
-                }`,
+          label: `${option.label} - ${
+            detected ? detected.version ?? "Unknown Version" : "Not detected"
+          }`,
         };
       }),
     [frameworks]
