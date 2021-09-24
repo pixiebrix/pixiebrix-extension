@@ -237,8 +237,8 @@ const EditTab: React.FC<{
         </div>
         <div className={styles.dataPanel}>
           <DataPanel
+            key={activeNodeIndex}
             blockFieldName={blockFieldName}
-            // eslint-disable-next-line security/detect-object-injection
             instanceId={blockPipeline[activeNodeIndex - 1]?.instanceId}
           />
         </div>
