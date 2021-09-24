@@ -40,7 +40,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
       >
         <div>
           <button
-            class="p-0 btn btn-link"
+            class="p-0 mb-3 btn btn-link"
             type="button"
           >
             <svg
@@ -61,7 +61,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
              Copy Argument YAML
           </button>
           <table
-            class="table"
+            class="table table-sm"
             role="table"
           >
             <thead>
@@ -120,9 +120,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                         fill="currentColor"
                       />
                     </svg>
-                    <code>
-                      columns
-                    </code>
+                    columns
                   </span>
                 </td>
                 <td
@@ -131,7 +129,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                   <span>
                     <svg
                       aria-hidden="true"
-                      class="svg-inline--fa fa-check fa-w-16 text-success"
+                      class="svg-inline--fa fa-check fa-w-16 text-muted"
                       data-icon="check"
                       data-prefix="fas"
                       focusable="false"
@@ -149,18 +147,12 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                 <td
                   role="cell"
                 >
-                  <code>
-                    array of objects
-                  </code>
+                  array of objects
                 </td>
                 <td
                   role="cell"
                 >
-                  <p
-                    class="m-0"
-                  >
-                    Column labels and values to show
-                  </p>
+                  Column labels and values to show
                 </td>
               </tr>
             </tbody>
@@ -248,7 +240,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
       >
         <div>
           <button
-            class="p-0 btn btn-link"
+            class="p-0 mb-3 btn btn-link"
             type="button"
           >
             <svg
@@ -269,7 +261,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
              Copy Argument YAML
           </button>
           <table
-            class="table"
+            class="table table-sm"
             role="table"
           >
             <thead>
@@ -328,9 +320,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                         fill="currentColor"
                       />
                     </svg>
-                    <code>
-                      columns
-                    </code>
+                    columns
                   </span>
                 </td>
                 <td
@@ -339,7 +329,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                   <span>
                     <svg
                       aria-hidden="true"
-                      class="svg-inline--fa fa-check fa-w-16 text-success"
+                      class="svg-inline--fa fa-check fa-w-16 text-muted"
                       data-icon="check"
                       data-prefix="fas"
                       focusable="false"
@@ -357,18 +347,12 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                 <td
                   role="cell"
                 >
-                  <code>
-                    array of objects
-                  </code>
+                  array of objects
                 </td>
                 <td
                   role="cell"
                 >
-                  <p
-                    class="m-0"
-                  >
-                    Column labels and values to show
-                  </p>
+                  Column labels and values to show
                 </td>
               </tr>
             </tbody>
