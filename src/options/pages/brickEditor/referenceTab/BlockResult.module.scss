@@ -22,8 +22,18 @@
   text-align: left;
 
   &:hover {
-    color: #fff;
-    background-color: #b66dff;
+    background-color: #ececff;
+    transition: background-color 0.15s ease-in-out;
+
+    .actionButtons {
+      display: flex;
+      button {
+        z-index: 2;
+      }
+    }
+    .officialBadge {
+      display: none;
+    }
   }
 
   &:global(.list-group-item).active {
@@ -42,6 +52,14 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.actionButtons {
+  display: none;
+}
+
+.officialBadge {
+  display: block;
 }
 
 .id {

@@ -17,7 +17,7 @@
 
 import React, { useMemo } from "react";
 import { Schema } from "@/core";
-import { ListGroup, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { isEmpty, sortBy } from "lodash";
 import { useTable, useExpanded, Row, Cell } from "react-table";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -119,7 +119,7 @@ const getFormattedType = (definition: Schema) => {
   }
 
   if (format) {
-    return `${format} ${type as string}`;
+    return `${format}`;
   }
 
   return type ? type : "unknown";
@@ -198,23 +198,15 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   } = useTable({ columns, data }, useExpanded);
 
   if (!schema) {
-    return (
-      <ListGroup variant="flush" className="SchemaTree">
-        <ListGroup.Item>No schema</ListGroup.Item>
-      </ListGroup>
-    );
+    return <div className="text-muted">No schema</div>;
   }
 
   if (isEmpty(schema.properties)) {
-    return (
-      <ListGroup variant="flush" className="SchemaTree">
-        <ListGroup.Item>No properties defined</ListGroup.Item>
-      </ListGroup>
-    );
+    return <div className="text-muted">No properties defined</div>;
   }
 
   return (
-    <Table {...getTableProps()}>
+    <Table {...getTableProps()} size="sm">
       <thead>
         {headerGroups.map((headerGroup) => {
           const {

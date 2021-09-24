@@ -4,7 +4,7 @@ import { MarketplaceListing } from "@/types/contract";
 import { Button, Col, Row } from "react-bootstrap";
 import BrickIcon from "@/components/BrickIcon";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faPlus } from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import "./BrickModal.scss";
 
@@ -35,8 +35,14 @@ const BrickDetail: React.FunctionComponent<{
         )}
       </div>
       <div>
-        <Button variant="primary mr-1 text-nowrap" onClick={onSelect}>
-          {selectCaption}
+        <Button variant="primary mr-1 text-nowrap" size="lg" onClick={onSelect}>
+          {selectCaption ? (
+            selectCaption
+          ) : (
+            <>
+              <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add
+            </>
+          )}
         </Button>
       </div>
     </Col>

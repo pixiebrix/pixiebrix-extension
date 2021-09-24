@@ -20,6 +20,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -105,6 +106,9 @@ type ButtonProps = {
 type ItemType = {
   searchResults: BrickOption[];
   setDetailBrick: (brick: IBrick) => void;
+  selectCaption?: React.ReactNode;
+  onSelect: (brick: IBrick) => void;
+  close: () => void;
 };
 
 // The item renderer must be it's own separate component to react-window from re-mounting the results
@@ -112,7 +116,7 @@ type ItemType = {
 const ItemRenderer = ({
   index,
   style,
-  data: { searchResults, setDetailBrick },
+  data: { searchResults, setDetailBrick, selectCaption, onSelect, close },
 }: {
   index: number;
   style: CSSProperties;
@@ -121,12 +125,17 @@ const ItemRenderer = ({
   // eslint-disable-next-line security/detect-object-injection -- numeric value from library
   const { data: brick } = searchResults[index];
   return (
-    <div style={style}>
+    <div style={style} className="brickResult">
       <BrickResult
         brick={brick}
-        onSelect={() => {
+        onDetail={() => {
           setDetailBrick(brick);
         }}
+        onSelect={() => {
+          onSelect(brick);
+          close();
+        }}
+        selectCaption={selectCaption}
       />
     </div>
   );
@@ -154,6 +163,14 @@ function ActualModal<T extends IBrick>({
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
+  const searchInput = useRef(null);
+  // The react-window library requires exact height
+  const brickResultSize = 87;
+
+  // Auto-focus search input upon opening Modal
+  useEffect(() => {
+    searchInput.current.focus();
+  }, [query]);
 
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
@@ -203,6 +220,7 @@ function ActualModal<T extends IBrick>({
                         <InputGroup.Text>Search</InputGroup.Text>
                       </InputGroup.Prepend>
                       <Form.Control
+                        ref={searchInput}
                         placeholder="Start typing to find results"
                         value={query}
                         onChange={(e) => {
@@ -222,11 +240,16 @@ function ActualModal<T extends IBrick>({
                           height={height}
                           width={width}
                           itemCount={searchResults.length}
-                          // The react-window library requires exact height
-                          itemSize={87}
+                          itemSize={brickResultSize}
                           itemKey={itemKey}
                           itemData={
-                            { searchResults, setDetailBrick } as ItemType
+                            {
+                              searchResults,
+                              setDetailBrick,
+                              selectCaption,
+                              onSelect,
+                              close,
+                            } as ItemType
                           }
                         >
                           {ItemRenderer}
