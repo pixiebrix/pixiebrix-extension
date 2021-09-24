@@ -18,7 +18,6 @@
 import { loadOptions } from "@/options/loader";
 import extensionPointRegistry from "@/extensionPoints/registry";
 import { ResolvedExtension, IExtensionPoint, RegistryId, UUID } from "@/core";
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import * as context from "@/contentScript/context";
 import * as actionPanel from "@/actionPanel/native";
 import { PromiseCancelled, sleep } from "@/utils";
@@ -295,9 +294,8 @@ async function waitLoaded(cancel: () => boolean): Promise<void> {
  * Handle a website navigation, e.g., page load or a URL change in an SPA.
  */
 export async function handleNavigate({
-  openerTabId,
   force,
-}: { openerTabId?: number; force?: boolean } = {}): Promise<void> {
+}: { force?: boolean } = {}): Promise<void> {
   if (context.frameId == null) {
     console.debug(
       "Ignoring handleNavigate because context.frameId is not set yet"
@@ -326,10 +324,6 @@ export async function handleNavigate({
 
   const extensionPoints = await loadExtensionsOnce();
 
-  if (openerTabId != null) {
-    console.debug(`Setting opener tabId: ${openerTabId}`);
-  }
-
   if (extensionPoints.length > 0) {
     _navSequence++;
 
@@ -357,13 +351,6 @@ export async function handleNavigate({
     );
   }
 }
-
-export const notifyNavigation = liftContentScript(
-  "NAVIGATE",
-  async ({ openerTabId }: { openerTabId?: number; frameId?: number }) =>
-    handleNavigate({ openerTabId }),
-  { asyncResponse: false }
-);
 
 export async function queueReactivateTab() {
   console.debug("contentScript will reload extensions on next navigation");

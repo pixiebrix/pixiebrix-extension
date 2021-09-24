@@ -39,6 +39,33 @@ export const toggleActionPanel = getContentScriptMethod("TOGGLE_ACTION_PANEL");
 export const showActionPanel = getContentScriptMethod("SHOW_ACTION_PANEL");
 export const hideActionPanel = getContentScriptMethod("HIDE_ACTION_PANEL");
 export const removeActionPanel = getContentScriptMethod("REMOVE_ACTION_PANEL");
+export const insertPanel = getContentScriptMethod("INSERT_PANEL");
+export const insertButton = getContentScriptMethod("INSERT_BUTTON");
+
+export const initRobot = getContentScriptMethod("UIPATH_INIT");
+export const getProcesses = getContentScriptMethod("UIPATH_GET_PROCESSES");
+export const searchWindow = getContentScriptMethod("SEARCH_WINDOW");
+export const detectFrameworks = getContentScriptMethod("DETECT_FRAMEWORKS");
+
+export const runBlock = getContentScriptMethod("RUN_SINGLE_BLOCK");
+export const runReaderBlock = getContentScriptMethod("RUN_READER_BLOCK");
+export const runReader = getContentScriptMethod("RUN_READER");
+export const readSelected = getContentScriptMethod("READ_SELECTED");
+
+export const clearDynamicElements = getContentScriptMethod(
+  "CLEAR_DYNAMIC_ELEMENTS"
+);
+export const updateDynamicElement = getContentScriptMethod(
+  "UPDATE_DYNAMIC_ELEMENT"
+);
+export const enableOverlay = getContentScriptMethod("ENABLE_OVERLAY");
+export const disableOverlay = getContentScriptMethod("DISABLE_OVERLAY");
+export const getInstalledExtensionPointIds = getContentScriptMethod(
+  "INSTALLED_EXTENSIONS"
+);
+export const checkAvailable = getContentScriptMethod("CHECK_AVAILABLE");
+export const handleNavigate = getContentScriptMethod("HANDLE_NAVIGATE");
+export const showNotification = getContentScriptMethod("SHOW_NOTIFICATION");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;

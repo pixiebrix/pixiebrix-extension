@@ -18,7 +18,6 @@
 // https://github.com/facebook/react/blob/7559722a865e89992f75ff38c1015a865660c3cd/packages/react-devtools-shared/src/backend/views/Highlighter/index.js
 
 import { uuidv4 } from "@/types/helpers";
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { ElementInfo } from "./frameworks";
 import { userSelectElement } from "./selector";
 import * as pageScript from "@/pageScript/protocol";
@@ -28,7 +27,7 @@ import {
   MenuItemExtensionConfig,
 } from "@/extensionPoints/menuItemExtension";
 import { html as beautifyHTML } from "js-beautify";
-import { DynamicDefinition } from "./dynamic";
+import type { DynamicDefinition } from "./dynamic";
 import { Except } from "type-fest";
 import { UUID } from "@/core";
 
@@ -46,7 +45,7 @@ export type ButtonSelectionResult = {
   containerInfo: ElementInfo;
 };
 
-export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
+export async function insertButton(): Promise<ButtonSelectionResult> {
   let selected = await userSelectElement();
 
   // Anchor is an inline element, so if the structure in a > span, the user has no way of
@@ -86,4 +85,4 @@ export const insertButton = liftContentScript("INSERT_BUTTON", async () => {
   };
 
   return element;
-});
+}
