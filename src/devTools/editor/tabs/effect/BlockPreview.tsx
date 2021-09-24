@@ -79,7 +79,8 @@ export function usePreviewInfo(blockId: RegistryId): AsyncState<PreviewInfo> {
 }
 
 const traceWarning = (
-  <div className="text-warning mb-2">
+  // The text-warning font color is brutal. This is more of a warning, but this color/style will have to do for now
+  <div className="text-info mb-2">
     <FontAwesomeIcon icon={faExclamationTriangle} />
     &nbsp; No trace available. The actual output will differ from the preview if
     the configuration uses templates/variables

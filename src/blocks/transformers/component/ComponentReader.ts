@@ -17,7 +17,10 @@
 
 import { Transformer } from "@/types";
 import { BlockArg, BlockOptions, Schema } from "@/core";
-import { frameworkReadFactory } from "@/blocks/readers/frameworkReader";
+import {
+  FrameworkConfig,
+  frameworkReadFactory,
+} from "@/blocks/readers/frameworkReader";
 import { KNOWN_READERS } from "@/messaging/constants";
 import { validateRegistryId } from "@/types/helpers";
 
@@ -66,11 +69,8 @@ export class ComponentReader extends Transformer {
     return true;
   }
 
-  async transform(
-    { framework, selector }: BlockArg,
-    { root }: BlockOptions
-  ): Promise<unknown> {
-    console.debug("ComponentReader", { framework, selector, root });
-    return frameworkReadFactory(framework)({ framework, selector }, root);
+  async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
+    console.debug("ComponentReader", args);
+    return frameworkReadFactory(args.framework)(args as FrameworkConfig, root);
   }
 }
