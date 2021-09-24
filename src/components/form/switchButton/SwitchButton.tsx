@@ -20,7 +20,7 @@ import { Col, Form as BootstrapForm, Row } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import styles from "./SwitchButton.module.scss";
 
-type CheckBoxLike = {
+export type CheckBoxLike = {
   name: string;
   value: boolean;
 };
