@@ -191,6 +191,8 @@ const EditTab: React.FC<{
     [onSelectNode, pipelineFieldHelpers, blockPipeline]
   );
 
+  const blockInstanceId = blockPipeline[activeNodeIndex - 1]?.instanceId;
+
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
@@ -237,9 +239,9 @@ const EditTab: React.FC<{
         </div>
         <div className={styles.dataPanel}>
           <DataPanel
-            key={activeNodeIndex}
+            key={blockInstanceId}
             blockFieldName={blockFieldName}
-            instanceId={blockPipeline[activeNodeIndex - 1]?.instanceId}
+            instanceId={blockInstanceId}
           />
         </div>
       </div>
