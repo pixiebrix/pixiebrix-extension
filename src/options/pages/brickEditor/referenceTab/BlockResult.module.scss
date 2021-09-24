@@ -27,9 +27,6 @@
 
     .actionButtons {
       display: flex;
-      button {
-        z-index: 2;
-      }
     }
     .officialBadge {
       display: none;
@@ -37,9 +34,9 @@
   }
 
   &:global(.list-group-item).active {
-    border-color: #e5d3ff;
+    border-color: #dedeff;
     color: black;
-    background-color: #f0e1ff;
+    background-color: #ececff;
   }
 }
 

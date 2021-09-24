@@ -29,9 +29,13 @@ const BrickResult: React.FunctionComponent<{
   brick: IBrick;
   onSelect: () => void;
   onDetail: () => void;
+  active?: boolean;
   selectCaption?: React.ReactNode;
-}> = ({ brick, onSelect, onDetail, selectCaption }) => (
-  <ListGroup.Item onClick={onDetail} className={cx(styles.root)}>
+}> = ({ brick, onSelect, onDetail, selectCaption, active }) => (
+  <ListGroup.Item
+    onClick={onDetail}
+    className={cx(styles.root, { [styles.active]: active, active })}
+  >
     <div className="d-flex">
       <div className="mr-2 text-muted">
         <BrickIcon brick={brick} />

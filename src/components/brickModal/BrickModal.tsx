@@ -109,6 +109,7 @@ type ItemType = {
   selectCaption?: React.ReactNode;
   onSelect: (brick: IBrick) => void;
   close: () => void;
+  activeBrick: IBrick | null;
 };
 
 // The item renderer must be it's own separate component to react-window from re-mounting the results
@@ -116,7 +117,14 @@ type ItemType = {
 const ItemRenderer = ({
   index,
   style,
-  data: { searchResults, setDetailBrick, selectCaption, onSelect, close },
+  data: {
+    searchResults,
+    setDetailBrick,
+    selectCaption,
+    onSelect,
+    close,
+    activeBrick,
+  },
 }: {
   index: number;
   style: CSSProperties;
@@ -136,6 +144,7 @@ const ItemRenderer = ({
           close();
         }}
         selectCaption={selectCaption}
+        active={activeBrick?.id === brick.id}
       />
     </div>
   );
@@ -246,6 +255,7 @@ function ActualModal<T extends IBrick>({
                             {
                               searchResults,
                               setDetailBrick,
+                              activeBrick: detailBrick,
                               selectCaption,
                               onSelect,
                               close,
