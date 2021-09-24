@@ -136,6 +136,10 @@ const EditTab: React.FC<{
               <BrickIcon
                 brick={block}
                 size="2x"
+                // This makes brick icons that use basic font awesome icons
+                //   inherit the editor node layout color scheme.
+                // Customized SVG icons are unaffected and keep their branded
+                //   color schemes.
                 faIconClass={styles.brickFaIcon}
               />
             ),

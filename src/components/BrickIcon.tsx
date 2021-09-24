@@ -96,6 +96,7 @@ const SIZE_REGEX = /^(?<size>\d)x$/i;
 const BrickIcon: React.FunctionComponent<{
   brick: IBrick;
   size?: "1x" | "2x";
+  // This prop sets a className only in cases where a <FontAwesomeIcon/> is used
   faIconClass?: string;
 }> = ({ brick, size = "1x", faIconClass = "" }) => {
   const [type] = useAsyncState(async () => getType(brick), [brick]);
