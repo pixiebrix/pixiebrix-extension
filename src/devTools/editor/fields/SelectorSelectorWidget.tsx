@@ -99,7 +99,8 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
 
   // By default, sort by selector length in `element` selection mode. Don't sort in `container` mode because
   // the order is based on structure (because selectors for multiple elements are returned).
-  const sort = rawSort ?? selectMode === "element";
+  const defaultSort = selectMode === "element";
+  const sort = rawSort ?? defaultSort;
 
   const { port } = useContext(DevToolsContext);
   const notify = useNotifications();
