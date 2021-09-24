@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { UUID } from "@/core";
 import useInterval from "@/hooks/useInterval";
 import { isEmpty, pickBy, sortBy } from "lodash";
@@ -29,7 +29,9 @@ import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BlockPreview from "@/devTools/editor/tabs/effect/BlockPreview";
+import BlockPreview, {
+  usePreviewInfo,
+} from "@/devTools/editor/tabs/effect/BlockPreview";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import { BlockConfig } from "@/blocks/types";
@@ -37,10 +39,9 @@ import useReduxState from "@/hooks/useReduxState";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
+import AuthContext from "@/auth/AuthContext";
 
 const TRACE_RELOAD_MILLIS = 250;
-
-const SHOW_DEVELOPER_PANELS = Boolean(process.env.DEBUG);
 
 function useLatestTraceRecord(instanceId: UUID) {
   return useAsyncState(async () => {
@@ -71,12 +72,14 @@ const contextFilter = (value: unknown, key: string) => {
 type TabStateProps = {
   isLoading?: boolean;
   isTraceEmpty?: boolean;
+  isTraceOptional?: boolean;
   error?: unknown;
 };
 
 const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
   isLoading = false,
   isTraceEmpty = false,
+  isTraceOptional = false,
   error,
   children,
   ...tabProps
@@ -87,6 +90,20 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
       <div className={styles.loading}>
         <GridLoader />
       </div>
+    );
+  } else if (isTraceEmpty && isTraceOptional) {
+    contents = (
+      <>
+        <div className="text-muted">
+          No trace available, run the extension to generate data
+        </div>
+
+        <div className="text-info mt-2">
+          <FontAwesomeIcon icon={faInfoCircle} />
+          &nbsp;This brick supports traceless output previews. See the Preview
+          tab for the current preview
+        </div>
+      </>
     );
   } else if (isTraceEmpty) {
     contents = (
@@ -115,6 +132,10 @@ const DataPanel: React.FC<{
   blockFieldName: string;
   instanceId: UUID;
 }> = ({ blockFieldName, instanceId }) => {
+  const { flags } = useContext(AuthContext);
+
+  const showDeveloperTabs = flags.includes("page-editor-developer");
+
   const { values: formState } = useFormikContext<FormState>();
 
   const [record, isLoading, error, recalculate] = useLatestTraceRecord(
@@ -136,8 +157,11 @@ const DataPanel: React.FC<{
 
   const [{ value: blockConfig }] = useField<BlockConfig>(blockFieldName);
 
+  const [previewInfo] = usePreviewInfo(blockConfig?.id);
+
   const showFormPreview = configValue?.schema && configValue?.uiSchema;
-  const showBlockPreview = record && blockConfig;
+  const showBlockPreview =
+    (record && blockConfig) || previewInfo?.traceOptional;
 
   const defaultKey = showFormPreview ? "preview" : "output";
 
@@ -147,7 +171,7 @@ const DataPanel: React.FC<{
         <Nav.Item className={styles.tabNav}>
           <Nav.Link eventKey="context">Context</Nav.Link>
         </Nav.Item>
-        {SHOW_DEVELOPER_PANELS && (
+        {showDeveloperTabs && (
           <>
             <Nav.Item className={styles.tabNav}>
               <Nav.Link eventKey="formik">Formik</Nav.Link>
@@ -176,19 +200,19 @@ const DataPanel: React.FC<{
         >
           <JsonTree data={relevantContext} copyable searchable />
         </DataTab>
-        {SHOW_DEVELOPER_PANELS && (
+        {showDeveloperTabs && (
           <>
             <DataTab eventKey="formik">
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
-                in DEBUG builds
+                to developers
               </div>
               <JsonTree data={formState ?? {}} searchable />
             </DataTab>
             <DataTab eventKey="blockConfig">
               <div className="text-info">
                 <FontAwesomeIcon icon={faInfoCircle} /> This tab is only visible
-                in DEBUG builds
+                to developers
               </div>
               <JsonTree data={blockConfig ?? {}} />
             </DataTab>
@@ -208,6 +232,7 @@ const DataPanel: React.FC<{
           eventKey="output"
           isLoading={isLoading}
           isTraceEmpty={!record}
+          isTraceOptional={previewInfo?.traceOptional}
           error={error}
         >
           {record && "output" in record && (
@@ -241,7 +266,7 @@ const DataPanel: React.FC<{
             </ErrorBoundary>
           ) : (
             <div className="text-muted">
-              Add a brick and run the extension to view the output
+              Run the extension once to enable live preview
             </div>
           )}
         </DataTab>

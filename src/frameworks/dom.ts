@@ -19,6 +19,9 @@ export function isNode(x: unknown): x is Node {
   return typeof x === "object" && "nodeType" in x;
 }
 
+/**
+ * Returns the DOM Element enclosing a DOM Node, or the node itself if it is a DOM Element.
+ */
 export function findElement(node: Node): Element | null {
   let current = node;
   while (current && !(current instanceof Element)) {
