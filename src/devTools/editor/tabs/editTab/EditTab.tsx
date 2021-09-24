@@ -132,7 +132,13 @@ const EditTab: React.FC<{
         ? {
             title: isNullOrBlank(action.label) ? block?.name : action.label,
             outputKey: action.outputKey,
-            icon: <BrickIcon brick={block} size="2x" />,
+            icon: (
+              <BrickIcon
+                brick={block}
+                size="2x"
+                faIconClass={styles.brickFaIcon}
+              />
+            ),
             onClick: () => {
               onSelectNode(index + 1);
             },
