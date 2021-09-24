@@ -17,226 +17,159 @@
 
 import React, { useEffect, useMemo } from "react";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import { compact } from "lodash";
+import { partial } from "lodash";
 import {
   UIPATH_PROPERTIES,
   UIPATH_SERVICE_IDS,
 } from "@/contrib/uipath/process";
-import { Schema } from "@/core";
+import { SanitizedServiceConfiguration, Schema } from "@/core";
 import { useField } from "formik";
-import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
-import { Button } from "react-bootstrap";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import useDependency from "@/services/useDependency";
-import { getErrorMessage } from "@/errors";
-import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import MultiSelectWidget from "@/devTools/editor/fields/MultiSelectWidget";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
+import { Option } from "@/components/form/widgets/SelectWidget";
 import { ODataResponseData, Release, Robot } from "./uipathContract";
 import { releaseSchema } from "@/contrib/uipath/typeUtils";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { joinName } from "@/utils";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
+import { useAsyncState } from "@/hooks/common";
+import RequireServiceConfig from "@/contrib/RequireServiceConfig";
+import RemoteMultiSelectWidget from "@/components/form/widgets/RemoteMultiSelectWidget";
+import { optionalFactory } from "@/contrib/remoteOptionUtils";
 
-export function useReleases(): {
-  releases: Release[];
-  isPending: boolean;
-  error: unknown;
-  hasConfig: boolean;
-} {
-  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_IDS);
+type ReleaseOption = Option & { data: Release };
 
-  const [releases, isPending, error] = useAsyncState(async () => {
-    if (config && hasPermissions) {
-      const response = await proxyService<ODataResponseData<Release>>(config, {
-        url: "/odata/Releases",
-        method: "get",
-      });
-      return response.data.value;
-    }
-
-    return null;
-  }, [config, hasPermissions]);
-
-  return { releases, isPending, error, hasConfig: config != null };
+async function fetchReleases(
+  config: SanitizedServiceConfiguration
+): Promise<ReleaseOption[]> {
+  const response = await proxyService<ODataResponseData<Release>>(config, {
+    url: "/odata/Releases",
+    method: "get",
+  });
+  const releases = response.data.value;
+  return releases.map((x) => ({
+    value: x.Key,
+    label: `${x.Name} - ${x.ProcessVersion}`,
+    data: x,
+  }));
 }
 
-function useRobots(): { robots: Robot[]; isPending: boolean; error: unknown } {
-  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_IDS);
-  const [robots, isPending, error] = useAsyncState(async () => {
-    if (config && hasPermissions) {
-      const response = await proxyService<ODataResponseData<Robot>>(config, {
-        url: "/odata/Robots",
-        method: "get",
-      });
-      return response.data.value;
-    }
+const optionalFetchReleases = optionalFactory(fetchReleases);
 
-    return [];
-  }, [config, hasPermissions]);
-
-  return { robots, isPending, error };
+async function fetchRobots(
+  config: SanitizedServiceConfiguration
+): Promise<Option[]> {
+  const response = await proxyService<ODataResponseData<Robot>>(config, {
+    url: "/odata/Robots",
+    method: "get",
+  });
+  const robots = response.data.value;
+  return (robots ?? []).map((x) => ({ value: x.Id, label: String(x.Id) }));
 }
 
-const RobotsField: React.FunctionComponent<SchemaFieldProps<number[]>> = ({
-  label,
-  schema,
-  ...props
-}) => {
-  const { robots, error } = useRobots();
+export function useSelectedRelease(releaseKeyFieldName: string) {
+  const [{ value: releaseKey }] = useField<string>(releaseKeyFieldName);
 
-  const options = useMemo(
-    () => (robots ?? []).map((x) => ({ value: x.Id, label: x.Id })),
-    [robots]
+  const { config, hasPermissions } = useDependency(UIPATH_SERVICE_IDS);
+
+  const releasesPromise = useMemo(
+    async () => optionalFetchReleases(hasPermissions ? config : null),
+    [config, hasPermissions]
   );
 
-  let description: React.ReactNode =
-    "One or more robots on which to run the process";
-
-  if (error) {
-    description = (
-      <span className="text-danger small">
-        Error fetching robots: {getErrorMessage(error)}
-      </span>
+  const [selectedRelease] = useAsyncState(async () => {
+    const options = await releasesPromise;
+    const { data: release } = (options as ReleaseOption[]).find(
+      (option) => option.data.Key === releaseKey
     );
-  }
+    const schema = release ? releaseSchema(release) : null;
+    return {
+      release,
+      schema,
+    };
+  }, [releasesPromise, releaseKey]);
 
-  return (
-    <ConnectedFieldTemplate
-      {...props}
-      label={label ?? fieldLabel(props.name)}
-      description={description}
-      as={MultiSelectWidget}
-      options={options}
-    />
-  );
-};
-
-export const ReleaseField: React.FunctionComponent<
-  SchemaFieldProps<string> & { releases: Release[]; fetchError: unknown }
-> = ({ label, schema, releases, fetchError, ...props }) => {
-  const options = useMemo(
-    () =>
-      (releases ?? []).map((x) => ({
-        value: x.Key,
-        label: `${x.Name} - ${x.ProcessVersion}`,
-        release: x,
-      })),
-    [releases]
-  );
-
-  let description: React.ReactNode = "The UIPath process to run";
-
-  if (fetchError) {
-    description = (
-      <span className="text-danger small">
-        Error fetching releases: {getErrorMessage(fetchError)}
-      </span>
-    );
-  }
-
-  return (
-    <ConnectedFieldTemplate
-      {...props}
-      label={label ?? fieldLabel(props.name)}
-      description={description}
-      as={SelectWidget}
-      blankValue={null}
-      options={options}
-    />
-  );
-};
+  return {
+    selectedRelease,
+    releasesPromise,
+  };
+}
 
 const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
-  const basePath = compact([name, configKey]).join(".");
+  const basePath = joinName(name, configKey);
+  const configName = partial(joinName, basePath);
 
-  const { hasPermissions, requestPermissions } = useDependency(
-    UIPATH_SERVICE_IDS
-  );
-
-  const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);
   const [{ value: strategy }, , strategyHelpers] = useField<string>(
-    `${basePath}.strategy`
+    configName("strategy")
   );
   const [{ value: jobsCount }, , jobsCountHelpers] = useField<number>(
-    `${basePath}.jobsCount`
+    configName("jobsCount")
   );
 
-  const { releases, error: releasesError } = useReleases();
+  const { selectedRelease, releasesPromise } = useSelectedRelease(
+    configName("releaseKey")
+  );
 
   useEffect(() => {
-    if (!strategy) {
-      strategyHelpers.setValue((UIPATH_PROPERTIES.strategy as any).default);
-    } else if (strategy === "JobsCount" && jobsCount == null) {
+    if (strategy === "JobsCount" && jobsCount == null) {
       jobsCountHelpers.setValue(1);
     }
   }, [strategy, jobsCount, jobsCountHelpers, strategyHelpers]);
 
-  const [release, schema] = useMemo(() => {
-    const release = releases?.find((x) => x.Key === releaseKey);
-    const schema = release ? releaseSchema(release) : null;
-    return [release, schema];
-  }, [releases, releaseKey]);
-
-  if (!hasPermissions) {
-    return (
-      <div className="my-2">
-        <p>
-          You must grant permissions for you browser to send information to
-          UiPath.
-        </p>
-        <Button onClick={requestPermissions}>Grant Permissions</Button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      <ServiceField
-        key="uipath"
-        name={`${basePath}.uipath`}
-        schema={UIPATH_PROPERTIES.uipath as Schema}
-      />
-      <ReleaseField
-        label="release"
-        name={`${basePath}.releaseKey`}
-        schema={UIPATH_PROPERTIES.releaseKey as Schema}
-        releases={releases}
-        fetchError={releasesError}
-      />
-      <SchemaField
-        name={`${basePath}.strategy`}
-        schema={UIPATH_PROPERTIES.strategy as Schema}
-      />
+    <RequireServiceConfig
+      serviceSchema={UIPATH_PROPERTIES.uipath as Schema}
+      serviceFieldName={configName("service")}
+    >
+      {({ config }) => (
+        <>
+          <ConnectedFieldTemplate
+            label="Release"
+            name={configName("releaseKey")}
+            description="The UiPath release/process"
+            as={RemoteSelectWidget}
+            blankValue={null}
+            optionsFactory={releasesPromise}
+          />
+          <SchemaField
+            name={configName("strategy")}
+            schema={UIPATH_PROPERTIES.strategy as Schema}
+          />
+          {strategy === "Specific" && (
+            <ConnectedFieldTemplate
+              label="Robots"
+              name={configName("releaseKey")}
+              description="One or more robots"
+              as={RemoteMultiSelectWidget}
+              optionsFactory={fetchRobots}
+              blankValue={[]}
+              config={config}
+            />
+          )}
+          {strategy === "JobsCount" && (
+            <SchemaField
+              name={configName("jobsCount")}
+              schema={UIPATH_PROPERTIES.jobsCount as Schema}
+            />
+          )}
+          <SchemaField
+            name={configName("awaitResult")}
+            schema={UIPATH_PROPERTIES.awaitResult as Schema}
+          />
 
-      {strategy === "Specific" && (
-        <RobotsField
-          name={`${basePath}.robotIds`}
-          schema={UIPATH_PROPERTIES.robotIds as Schema}
-        />
+          <ChildObjectField
+            heading={selectedRelease?.release?.Name ?? "Input Arguments"}
+            schema={selectedRelease?.schema}
+            name={joinName("inputArguments")}
+          />
+        </>
       )}
-      {strategy === "JobsCount" && (
-        <SchemaField
-          name={`${basePath}.jobsCount`}
-          schema={UIPATH_PROPERTIES.jobsCount as Schema}
-        />
-      )}
-      <SchemaField
-        name={`${basePath}.awaitResult`}
-        schema={UIPATH_PROPERTIES.awaitResult as Schema}
-      />
-
-      <ChildObjectField
-        heading={release?.Name ?? "Process"}
-        schema={schema}
-        name={compact([name, configKey, "inputArguments"]).join(".")}
-      />
-    </div>
+    </RequireServiceConfig>
   );
 };
 

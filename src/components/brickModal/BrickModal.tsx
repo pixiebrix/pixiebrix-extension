@@ -70,7 +70,10 @@ function useSearch<T extends IBrick>(
 
   const { fuse, brickOptions } = useMemo(() => {
     const brickOptions = sortBy(
-      (bricks ?? []).map((x) => makeBlockOption(x)),
+      // We should never show @internal bricks to users. However they'll sometimes find their way in from the registry
+      (bricks ?? [])
+        .filter((x) => !x.id.startsWith("@internal/"))
+        .map((x) => makeBlockOption(x)),
       (x) => x.label
     );
     const fuse: Fuse<BrickOption<T>> = new Fuse(brickOptions, {
