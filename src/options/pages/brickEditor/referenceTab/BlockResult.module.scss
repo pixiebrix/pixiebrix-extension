@@ -23,7 +23,10 @@
 
   &:hover {
     background-color: #ececff;
+    border-color: #c7c7ff;
     transition: background-color 0.15s ease-in-out;
+    // Lifts brick result to expose all borders
+    z-index: 3;
 
     .actionButtons {
       display: flex;
