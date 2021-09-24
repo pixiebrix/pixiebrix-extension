@@ -67,7 +67,7 @@ const RequiredCell: React.FunctionComponent<{
 }> = ({ row }) => (
   <span>
     {row.values.required && (
-      <FontAwesomeIcon icon={faCheck} className="text-muted" />
+      <FontAwesomeIcon icon={faCheck} className="text-success" />
     )}
   </span>
 );
