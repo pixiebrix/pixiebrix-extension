@@ -129,7 +129,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                   <span>
                     <svg
                       aria-hidden="true"
-                      class="svg-inline--fa fa-check fa-w-16 text-muted"
+                      class="svg-inline--fa fa-check fa-w-16 text-success"
                       data-icon="check"
                       data-prefix="fas"
                       focusable="false"
@@ -329,7 +329,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                   <span>
                     <svg
                       aria-hidden="true"
-                      class="svg-inline--fa fa-check fa-w-16 text-muted"
+                      class="svg-inline--fa fa-check fa-w-16 text-success"
                       data-icon="check"
                       data-prefix="fas"
                       focusable="false"
