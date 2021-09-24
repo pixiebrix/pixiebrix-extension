@@ -70,6 +70,7 @@ export class ComponentReader extends Transformer {
     { framework, selector }: BlockArg,
     { root }: BlockOptions
   ): Promise<unknown> {
+    console.debug("ComponentReader", { framework, selector, root });
     return frameworkReadFactory(framework)({ framework, selector }, root);
   }
 }

@@ -6,7 +6,7 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
-import { joinName } from "@/utils";
+import { isNullOrBlank, joinName } from "@/utils";
 
 type FrameworkOption = {
   value: Framework;
@@ -17,15 +17,15 @@ type FrameworkOption = {
 export const readerOptions: FrameworkOption[] = [
   { value: "react", label: "React" },
   {
-    value: "angularjs",
-    label: "AngularJS",
-  },
-  { value: "emberjs", label: "Ember.js" },
-  {
     // XXX: check if this needs to be vue or vuejs
     value: "vue",
     label: "Vue.js",
   },
+  {
+    value: "angularjs",
+    label: "AngularJS",
+  },
+  { value: "emberjs", label: "Ember.js" },
 ];
 
 function useFrameworkOptions(frameworks: FrameworkMeta[]): FrameworkOption[] {
@@ -56,19 +56,19 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
     tabState: { meta },
   } = useContext(DevToolsContext);
 
-  const [{ value: framework }, , helpers] = useField<Framework>(
+  const [{ value: framework }, , frameworkHelpers] = useField<Framework>(
     frameworkFieldName
   );
 
   const frameworkOptions = useFrameworkOptions(meta.frameworks);
 
   useEffect(() => {
-    if (!framework) {
-      helpers.setValue(
-        meta.frameworks.find((x) => x.version)?.id ?? meta.frameworks[0].id
-      );
+    if (isNullOrBlank(framework)) {
+      const option = frameworkOptions.find((x) => x.detected);
+      console.debug("Defaulting framework", { option, frameworkOptions });
+      frameworkHelpers.setValue(option?.value ?? "react");
     }
-  }, [framework, helpers, meta.frameworks]);
+  }, [framework, frameworkHelpers, frameworkOptions]);
 
   return (
     <>
@@ -77,6 +77,7 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
         label="Framework"
         description="Select the front-end framework (auto-detected)"
         as={SelectWidget}
+        blankValue={null}
         options={frameworkOptions}
       />
 

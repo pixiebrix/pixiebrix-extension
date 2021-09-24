@@ -156,6 +156,8 @@ export async function runStage(
     extensionId: logger.context.extensionId,
   };
 
+  console.debug("runStage", { argContext, stageConfig, root });
+
   if (isReader(block)) {
     if ((stage.window ?? "self") === "self") {
       // TODO: allow the stage to define a different root within the extension root

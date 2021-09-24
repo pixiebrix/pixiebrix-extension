@@ -29,7 +29,9 @@ import JsonTree from "@/components/jsonTree/JsonTree";
 import styles from "./DataPanel.module.scss";
 import FormPreview from "@/components/formBuilder/FormPreview";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import BlockPreview from "@/devTools/editor/tabs/effect/BlockPreview";
+import BlockPreview, {
+  usePreviewInfo,
+} from "@/devTools/editor/tabs/effect/BlockPreview";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import { BlockConfig } from "@/blocks/types";
@@ -139,8 +141,11 @@ const DataPanel: React.FC<{
 
   const [{ value: blockConfig }] = useField<BlockConfig>(blockFieldName);
 
+  const [previewInfo] = usePreviewInfo(blockConfig?.id);
+
   const showFormPreview = configValue?.schema && configValue?.uiSchema;
-  const showBlockPreview = record && blockConfig;
+  const showBlockPreview =
+    (record && blockConfig) || previewInfo?.traceOptional;
 
   const defaultKey = showFormPreview ? "preview" : "output";
   const [activeTabKey, setActiveTabKey] = useState<string>(defaultKey);
@@ -251,7 +256,7 @@ const DataPanel: React.FC<{
             </ErrorBoundary>
           ) : (
             <div className="text-muted">
-              Add a brick and run the extension to view the output
+              Run the extension once to enable live preview
             </div>
           )}
         </DataTab>
