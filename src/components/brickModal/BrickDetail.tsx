@@ -50,19 +50,19 @@ const BrickDetail: React.FunctionComponent<{
     <Col xs={12}>
       {"inputSchema" in brick && (
         <>
-          <h5 className="my-3">Input Schema</h5>
+          <h6 className="my-3">Input Schema</h6>
           <SchemaTree schema={brick.inputSchema} />
         </>
       )}
       {"outputSchema" in brick && (
         <>
-          <h5 className="my-3">Output Schema</h5>
+          <h6 className="my-3">Output Schema</h6>
           <SchemaTree schema={brick.outputSchema} />
         </>
       )}
       {"schema" in brick && (
         <>
-          <h5 className="my-3">Schema</h5>
+          <h6 className="my-3">Schema</h6>
           <SchemaTree schema={brick.schema} />
         </>
       )}

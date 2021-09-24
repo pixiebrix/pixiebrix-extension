@@ -58,20 +58,16 @@ const ExpandableCell: React.FunctionComponent<{
         )}
       </>
     )}
-    <code>{cell.value}</code>
+    {cell.value}
   </span>
 );
-
-const CodeCell: React.FunctionComponent<{
-  cell: Cell;
-}> = ({ cell }) => <code>{cell.value}</code>;
 
 const RequiredCell: React.FunctionComponent<{
   row: Row & { values: SchemaTreeRow };
 }> = ({ row }) => (
   <span>
     {row.values.required && (
-      <FontAwesomeIcon icon={faCheck} className="text-success" />
+      <FontAwesomeIcon icon={faCheck} className="text-muted" />
     )}
   </span>
 );
@@ -147,10 +143,6 @@ const getFormattedData = (schema: Schema): SchemaTreeRow[] => {
     }) as SchemaTreeRow[];
 };
 
-const DescriptionCell: React.FunctionComponent<{
-  cell: Cell;
-}> = ({ cell }) => <p className="m-0">{cell.value}</p>;
-
 const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
   schema,
 }) => {
@@ -178,12 +170,10 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
       {
         Header: "Type",
         accessor: "type",
-        Cell: CodeCell,
       },
       {
         Header: "Description",
         accessor: "description",
-        Cell: DescriptionCell,
       },
     ],
     []
