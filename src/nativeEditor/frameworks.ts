@@ -60,7 +60,13 @@ export async function elementInfo(
       continue;
     }
 
-    const component = adapter.getComponent(element);
+    let component;
+
+    try {
+      component = adapter.getComponent(element);
+    } catch (error: unknown) {
+      console.debug("Could not get component information", { error });
+    }
 
     if (component) {
       return {

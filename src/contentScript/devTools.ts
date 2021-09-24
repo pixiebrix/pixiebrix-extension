@@ -76,6 +76,9 @@ export type RunBlockArgs = {
   args: Record<string, unknown>;
 };
 
+/**
+ * Run a single block (e.g., for generating output previews)
+ */
 export const runBlock = liftContentScript(
   "RUN_SINGLE_BLOCK",
   async ({ blockConfig, args }: RunBlockArgs) => {
@@ -89,7 +92,7 @@ export const runBlock = liftContentScript(
       logValues: false,
       // TODO: need to support other roots for triggers. Or we at least need to throw an error so we can show a message
       //  in the UX that non-root contexts aren't supported
-      root: null,
+      root: document,
     });
 
     return cloneDeep(result) as SerializableResponse;

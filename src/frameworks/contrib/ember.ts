@@ -20,7 +20,12 @@
 // https://github.com/emberjs/ember-inspector/blob/d4f1fbb1ee30d178f81ce03bf8f037722bd4b166/ember_debug/object-inspector.js
 
 import { mapValues, partial, unary } from "lodash";
-import { getAllPropertyNames, isGetter, isPrimitive } from "@/utils";
+import {
+  getAllPropertyNames,
+  isGetter,
+  isNullOrBlank,
+  isPrimitive,
+} from "@/utils";
 import { ReadableComponentAdapter } from "@/frameworks/component";
 import { FrameworkNotFound, ignoreNotFound } from "@/frameworks/errors";
 import { findElement } from "@/frameworks/dom";
@@ -81,6 +86,10 @@ export function getEmberApplication(): EmberApplication {
 }
 
 export function getEmberComponentById(componentId: string): EmberObject {
+  if (isNullOrBlank(componentId)) {
+    throw new Error("componentId is required for getEmberComponentById");
+  }
+
   const app = getEmberApplication();
   if (!app) {
     throw new FrameworkNotFound("Ember application not found");
@@ -221,12 +230,32 @@ function targetForComponent(component: any): UnknownObject {
   return component._target || component._targetObject;
 }
 
+function isEmberElement(node: Node): boolean {
+  return (
+    node instanceof Element && node.getAttribute("id")?.startsWith("ember")
+  );
+}
+
+export function findEmberElement(node: Node): Element | null {
+  let current = node;
+
+  while (current && !isEmberElement(current)) {
+    current = current.parentNode;
+  }
+
+  if (isEmberElement(current)) {
+    return current as Element;
+  }
+
+  return null;
+}
+
 const adapter: ReadableComponentAdapter<EmberObject> = {
   isManaged,
   getComponent: (node) => {
-    const elt = findElement(node);
+    const elt = findEmberElement(node);
     if (!elt) {
-      throw new Error("No DOM HTMLElement for node");
+      throw new Error("No Ember component associated with the DOM node");
     }
 
     return ignoreNotFound(() => getEmberComponentById(elt.id));
@@ -234,13 +263,13 @@ const adapter: ReadableComponentAdapter<EmberObject> = {
   getParent: (instance) => instance.parentView,
   getNode: (instance) => instance.element,
   hasData: (instance) => {
-    const target = targetForComponent(instance) as Record<string, unknown>;
+    const target = targetForComponent(instance) as UnknownObject;
     return getAllPropertyNames(target).some(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );
   },
   getData: (instance) => {
-    const target = targetForComponent(instance) as Record<string, unknown>;
+    const target = targetForComponent(instance) as UnknownObject;
     const props = getAllPropertyNames(target).filter(
       (prop) => !prop.startsWith("_") && !EMBER_INTERNAL_PROPS.has(prop)
     );
