@@ -151,8 +151,6 @@ const DataPanel: React.FC<{
     [setActiveTabKey]
   );
 
-  console.log(`active key: ${activeTabKey}`);
-
   return (
     <Tab.Container activeKey={activeTabKey} onSelect={handleSelect}>
       <Nav variant="tabs">
