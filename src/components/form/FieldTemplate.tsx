@@ -57,6 +57,7 @@ const RenderedField: React.FC<FieldProps> = ({
   value,
   children,
   blankValue = "",
+  as: AsControl,
   ...restFieldProps
 }) => {
   const isInvalid = touched && Boolean(error);
@@ -64,6 +65,27 @@ const RenderedField: React.FC<FieldProps> = ({
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
 
+  const formControl =
+    typeof AsControl === "undefined" || typeof AsControl === "string" ? (
+      <BootstrapForm.Control
+        name={name}
+        isInvalid={isInvalid}
+        value={nonUndefinedValue}
+        as={AsControl}
+        {...restFieldProps}
+      >
+        {children}
+      </BootstrapForm.Control>
+    ) : (
+      <AsControl
+        name={name}
+        isInvalid={isInvalid}
+        value={nonUndefinedValue}
+        {...restFieldProps}
+      >
+        {children}
+      </AsControl>
+    );
   return layout === "vertical" ? (
     <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
       {label && (
@@ -71,14 +93,7 @@ const RenderedField: React.FC<FieldProps> = ({
           {label}
         </BootstrapForm.Label>
       )}
-      <BootstrapForm.Control
-        name={name}
-        isInvalid={isInvalid}
-        value={nonUndefinedValue}
-        {...restFieldProps}
-      >
-        {children}
-      </BootstrapForm.Control>
+      {formControl}
       {description && (
         <BootstrapForm.Text className="text-muted">
           {description}
@@ -100,14 +115,7 @@ const RenderedField: React.FC<FieldProps> = ({
         </BootstrapForm.Label>
       )}
       <Col lg={label ? "9" : "12"}>
-        <BootstrapForm.Control
-          name={name}
-          isInvalid={isInvalid}
-          value={nonUndefinedValue}
-          {...restFieldProps}
-        >
-          {children}
-        </BootstrapForm.Control>
+        {formControl}
         {description && (
           <BootstrapForm.Text className="text-muted">
             {description}
