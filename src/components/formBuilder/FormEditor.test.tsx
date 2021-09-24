@@ -18,9 +18,10 @@
 import { Schema, UiSchema } from "@/core";
 import { waitForEffect } from "@/tests/testHelpers";
 import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { Except } from "type-fest";
+import { MINIMAL_SCHEMA, MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
 import {
   createFormikTemplate,
   RJSF_SCHEMA_PROPERTY_NAME,
@@ -173,5 +174,111 @@ describe("FormEditor", () => {
 
     // Ensure the field is still active
     expect(screen.getByLabelText("Name")).not.toBeNull();
+  });
+
+  test("can add field", async () => {
+    const onSubmitMock = jest.fn();
+
+    const FormikTemplate = createFormikTemplate(
+      {
+        schema: MINIMAL_SCHEMA,
+        uiSchema: MINIMAL_UI_SCHEMA,
+      } as RJSFSchema,
+      onSubmitMock
+    );
+
+    render(
+      <FormikTemplate>
+        <FormEditor {...defaultProps} />
+      </FormikTemplate>
+    );
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: /add new field/i,
+      })
+    );
+    fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+
+    await waitFor(() => {
+      expect(onSubmitMock).toHaveBeenCalledWith(
+        {
+          [RJSF_SCHEMA_PROPERTY_NAME]: {
+            schema: {
+              type: "object",
+              properties: {
+                field1: {
+                  name: "field1",
+                  title: "field1",
+                  type: "string",
+                },
+              },
+            },
+            uiSchema: {
+              "ui:order": ["field1", "*"],
+            },
+          },
+        },
+        expect.any(Object)
+      );
+    });
+  });
+
+  test("switches the required field", async () => {
+    const fieldName = "firstName";
+    const schema: Schema = {
+      title: "A form",
+      type: "object",
+      properties: {
+        [fieldName]: {
+          type: "string",
+          title: "First name",
+        },
+      },
+    };
+    const onSubmitMock = jest.fn();
+    const FormikTemplate = createFormikTemplate(
+      {
+        schema,
+        uiSchema: MINIMAL_UI_SCHEMA,
+      } as RJSFSchema,
+      onSubmitMock
+    );
+
+    const rendered = render(
+      <FormikTemplate>
+        <FormEditor activeField={fieldName} {...defaultProps} />
+      </FormikTemplate>
+    );
+
+    const submitButton = screen.getByRole("button", { name: /submit/i });
+
+    const getRequiredFieldFromMock = (callNumber: number) =>
+      // eslint-disable-next-line security/detect-object-injection
+      (onSubmitMock.mock.calls[callNumber][0][
+        RJSF_SCHEMA_PROPERTY_NAME
+      ] as RJSFSchema).schema.required;
+
+    // Check the field is not required
+    fireEvent.click(submitButton);
+    await waitForEffect();
+    expect(getRequiredFieldFromMock(0)).toBeUndefined();
+
+    // Make it required
+    const requiredSwitch = rendered.container.querySelector(".switch.btn");
+    fireEvent.click(requiredSwitch);
+
+    // Check the field is required
+    fireEvent.click(submitButton);
+    await waitForEffect();
+    expect(getRequiredFieldFromMock(1)).toEqual([fieldName]);
+
+    // Make it not required
+    fireEvent.click(requiredSwitch);
+
+    // Check the field is not required
+    fireEvent.click(submitButton);
+    await waitForEffect();
+    expect(getRequiredFieldFromMock(2)).toEqual([]);
   });
 });

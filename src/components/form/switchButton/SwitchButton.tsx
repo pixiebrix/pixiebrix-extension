@@ -47,7 +47,6 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
   return (
     <BootstrapForm.Group as={Row} controlId={name}>
       <Col sm="3">
-        {/* BootstrapSwitchButton is for UI, sends click to the input */}
         <BootstrapSwitchButton
           onlabel=" "
           offlabel=" "

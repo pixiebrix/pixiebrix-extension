@@ -21,15 +21,21 @@ import { RJSFSchema } from "./formBuilderTypes";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
-export const createFormikTemplate = (rjsfSchema: RJSFSchema) => {
+export const createFormikTemplate = (
+  rjsfSchema: RJSFSchema,
+  onSubmit = jest.fn()
+) => {
   const FormikTemplate = ({ children }: PropsWithChildren<unknown>) => (
     <Formik
       initialValues={{
         [RJSF_SCHEMA_PROPERTY_NAME]: rjsfSchema,
       }}
-      onSubmit={jest.fn()}
+      onSubmit={onSubmit}
     >
-      <Form>{children}</Form>
+      <Form>
+        {children}
+        <button type="submit">Submit</button>
+      </Form>
     </Formik>
   );
   FormikTemplate.displayName = "FormikTemplate";

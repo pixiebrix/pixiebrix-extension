@@ -4,7 +4,13 @@ exports[`FormPreview it renders empty schema 1`] = `
 <DocumentFragment>
   <form
     action="#"
-  />
+  >
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
+  </form>
 </DocumentFragment>
 `;
 
@@ -149,6 +155,11 @@ exports[`FormPreview it renders simple schema 1`] = `
       </div>
       <div />
     </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
   </form>
 </DocumentFragment>
 `;
