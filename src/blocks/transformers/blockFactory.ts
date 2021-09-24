@@ -108,18 +108,14 @@ class ExternalBlock extends Block {
   async isPure(): Promise<boolean> {
     const pipeline = castArray(this.component.pipeline);
 
-    return Promise.all(
+    const purity = await Promise.all(
       pipeline.map(async (blockConfig) => {
         const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
-        return resolvedBlock.isPure;
+        return resolvedBlock.isPure();
       })
-    )
-      .then((purity) => purity.every((x) => x))
-      .catch(
-        () =>
-          // Use safe default if one of the blocks can't be resolved
-          false
-      );
+    );
+
+    return purity.every((x) => x);
   }
 
   async inferType(): Promise<ComponentKind | null> {
