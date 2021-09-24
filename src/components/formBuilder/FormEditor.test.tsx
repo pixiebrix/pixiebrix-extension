@@ -18,12 +18,14 @@
 import { Schema, UiSchema } from "@/core";
 import { waitForEffect } from "@/tests/testHelpers";
 import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { Except } from "type-fest";
 import { MINIMAL_SCHEMA, MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
 import {
   createFormikTemplate,
+  getSubmitButton,
+  fireTextInput,
   RJSF_SCHEMA_PROPERTY_NAME,
 } from "./formBuilderTestHelpers";
 import { RJSFSchema } from "./formBuilderTypes";
@@ -160,12 +162,8 @@ describe("FormEditor", () => {
       </FormikTemplate>
     );
 
-    await waitForEffect();
-
     const fieldNameInput = screen.getByLabelText("Name");
-    fireEvent.focus(fieldNameInput);
-    fireEvent.change(fieldNameInput, { target: { value: anotherFieldName } });
-    fireEvent.blur(fieldNameInput);
+    fireTextInput(fieldNameInput, anotherFieldName);
 
     const errorMessage = screen.getByText(
       `Name must be unique. Another property "${anotherFieldTitle}" already has the name "${anotherFieldName}".`
@@ -176,7 +174,7 @@ describe("FormEditor", () => {
     expect(screen.getByLabelText("Name")).not.toBeNull();
   });
 
-  test("can add field", async () => {
+  test("adds a field", async () => {
     const onSubmitMock = jest.fn();
 
     const FormikTemplate = createFormikTemplate(
@@ -198,30 +196,30 @@ describe("FormEditor", () => {
         name: /add new field/i,
       })
     );
-    fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+    fireEvent.click(getSubmitButton());
 
-    await waitFor(() => {
-      expect(onSubmitMock).toHaveBeenCalledWith(
-        {
-          [RJSF_SCHEMA_PROPERTY_NAME]: {
-            schema: {
-              type: "object",
-              properties: {
-                field1: {
-                  name: "field1",
-                  title: "field1",
-                  type: "string",
-                },
+    await waitForEffect();
+
+    expect(onSubmitMock).toHaveBeenCalledWith(
+      {
+        [RJSF_SCHEMA_PROPERTY_NAME]: {
+          schema: {
+            type: "object",
+            properties: {
+              field1: {
+                name: "field1",
+                title: "field1",
+                type: "string",
               },
             },
-            uiSchema: {
-              "ui:order": ["field1", "*"],
-            },
+          },
+          uiSchema: {
+            "ui:order": ["field1", "*"],
           },
         },
-        expect.any(Object)
-      );
-    });
+      },
+      expect.any(Object)
+    );
   });
 
   test("switches the required field", async () => {
@@ -233,6 +231,10 @@ describe("FormEditor", () => {
         [fieldName]: {
           type: "string",
           title: "First name",
+        },
+        anotherFieldName: {
+          type: "string",
+          title: "Another field name",
         },
       },
     };
@@ -251,7 +253,7 @@ describe("FormEditor", () => {
       </FormikTemplate>
     );
 
-    const submitButton = screen.getByRole("button", { name: /submit/i });
+    const submitButton = getSubmitButton();
 
     const getRequiredFieldFromMock = (callNumber: number) =>
       // eslint-disable-next-line security/detect-object-injection
@@ -281,4 +283,128 @@ describe("FormEditor", () => {
     await waitForEffect();
     expect(getRequiredFieldFromMock(2)).toEqual([]);
   });
+
+  const initRenamingCases = () => {
+    const fieldName = "fieldToBeRenamed";
+    const newFieldName = "newFieldName";
+
+    const renamingCases: RJSFSchema[][] = [
+      [
+        {
+          schema: {
+            title: "A form",
+            type: "object",
+            required: [fieldName],
+            properties: {
+              [fieldName]: {
+                type: "string",
+                title: "First name",
+              },
+              anotherFieldName: {
+                type: "string",
+                title: "Another field name",
+              },
+            },
+          },
+          uiSchema: {
+            "ui:order": [fieldName, "*"],
+          },
+        },
+        {
+          schema: {
+            title: "A form",
+            type: "object",
+            required: [newFieldName],
+            properties: {
+              [newFieldName]: {
+                type: "string",
+                title: "First name",
+              },
+              anotherFieldName: {
+                type: "string",
+                title: "Another field name",
+              },
+            },
+          },
+          uiSchema: {
+            "ui:order": [newFieldName, "*"],
+          },
+        },
+      ],
+      [
+        {
+          schema: {
+            title: "A form",
+            type: "object",
+            properties: {
+              [fieldName]: {
+                type: "string",
+                title: "First name",
+              },
+              anotherFieldName: {
+                type: "string",
+                title: "Another field name",
+              },
+            },
+          },
+          uiSchema: {
+            "ui:order": [fieldName, "*"],
+          },
+        },
+        {
+          schema: {
+            title: "A form",
+            type: "object",
+            properties: {
+              [newFieldName]: {
+                type: "string",
+                title: "First name",
+              },
+              anotherFieldName: {
+                type: "string",
+                title: "Another field name",
+              },
+            },
+          },
+          uiSchema: {
+            "ui:order": [newFieldName, "*"],
+          },
+        },
+      ],
+    ];
+
+    return renamingCases;
+  };
+
+  test.each(initRenamingCases())(
+    "renames a field",
+    async (initialSchema, expectedSchema) => {
+      const fieldName = "fieldToBeRenamed";
+      const newFieldName = "newFieldName";
+
+      const onSubmitMock = jest.fn();
+      const FormikTemplate = createFormikTemplate(initialSchema, onSubmitMock);
+
+      render(
+        <FormikTemplate>
+          <FormEditor activeField={fieldName} {...defaultProps} />
+        </FormikTemplate>
+      );
+
+      await waitForEffect();
+
+      const fieldNameInput = screen.getByLabelText("Name");
+      fireTextInput(fieldNameInput, newFieldName);
+      fireEvent.click(getSubmitButton());
+
+      await waitForEffect();
+
+      expect(onSubmitMock).toHaveBeenCalledWith(
+        {
+          [RJSF_SCHEMA_PROPERTY_NAME]: expectedSchema,
+        },
+        expect.any(Object)
+      );
+    }
+  );
 });

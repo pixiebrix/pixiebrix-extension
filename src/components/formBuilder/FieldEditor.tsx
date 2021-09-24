@@ -113,6 +113,14 @@ const FieldEditor: React.FC<{
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete draft.schema.properties[propertyName];
 
+      if (draft.schema.required?.includes(propertyName)) {
+        draft.schema.required = replaceStringInArray(
+          draft.schema.required,
+          propertyName,
+          nextName
+        );
+      }
+
       const nextUiOrder = replaceStringInArray(
         draft.uiSchema[UI_ORDER],
         propertyName,

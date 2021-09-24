@@ -18,6 +18,7 @@
 import { Form, Formik } from "formik";
 import React, { PropsWithChildren } from "react";
 import { RJSFSchema } from "./formBuilderTypes";
+import { fireEvent, screen } from "@testing-library/react";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
@@ -40,4 +41,13 @@ export const createFormikTemplate = (
   );
   FormikTemplate.displayName = "FormikTemplate";
   return FormikTemplate;
+};
+
+export const getSubmitButton = () =>
+  screen.getByRole("button", { name: /submit/i });
+
+export const fireTextInput = (input: HTMLElement, text: string) => {
+  fireEvent.focus(input);
+  fireEvent.change(input, { target: { value: text } });
+  fireEvent.blur(input);
 };
