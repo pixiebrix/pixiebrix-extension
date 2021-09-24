@@ -95,6 +95,11 @@ exports[`FormEditor renders empty schema 1`] = `
         </small>
       </div>
     </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
   </form>
 </DocumentFragment>
 `;
@@ -499,6 +504,11 @@ exports[`FormEditor renders simple schema 1`] = `
         </div>
       </div>
     </div>
+    <button
+      type="submit"
+    >
+      Submit
+    </button>
   </form>
 </DocumentFragment>
 `;

@@ -33,6 +33,8 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import OptionsWidget from "@/components/form/widgets/OptionsWidget";
+import { CheckBoxLike } from "@/components/form/switchButton/SwitchButton";
+import { uniq } from "lodash";
 
 const FieldEditor: React.FC<{
   name: string;
@@ -111,6 +113,14 @@ const FieldEditor: React.FC<{
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete draft.schema.properties[propertyName];
 
+      if (draft.schema.required?.includes(propertyName)) {
+        draft.schema.required = replaceStringInArray(
+          draft.schema.required,
+          propertyName,
+          nextName
+        );
+      }
+
       const nextUiOrder = replaceStringInArray(
         draft.uiSchema[UI_ORDER],
         propertyName,
@@ -184,6 +194,30 @@ const FieldEditor: React.FC<{
       : selected;
   };
 
+  const onRequiredChange = ({
+    target: { value: nextIsRequired },
+  }: React.ChangeEvent<CheckBoxLike>) => {
+    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      if (!draft.schema.required) {
+        draft.schema.required = [];
+      }
+
+      if (nextIsRequired) {
+        draft.schema.required.push(propertyName);
+        draft.schema.required = uniq(draft.schema.required);
+      } else {
+        draft.schema.required = replaceStringInArray(
+          draft.schema.required,
+          propertyName
+        );
+      }
+    });
+
+    setRjsfSchema(nextRjsfSchema);
+  };
+
+  const isRequired = (schema.required ?? []).includes(propertyName);
+
   return (
     <div className={styles.root}>
       <FieldTemplate
@@ -230,10 +264,12 @@ const FieldEditor: React.FC<{
         />
       )}
 
-      <ConnectedFieldTemplate
+      <FieldTemplate
         name={`${name}.schema.required`}
         label="Required Field?"
         layout="switch"
+        value={isRequired}
+        onChange={onRequiredChange}
       />
     </div>
   );
