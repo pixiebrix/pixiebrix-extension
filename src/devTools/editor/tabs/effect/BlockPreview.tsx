@@ -26,7 +26,11 @@ import { Button } from "react-bootstrap";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faInfoCircle,
+  faSync,
+} from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { isEmpty } from "lodash";
@@ -74,6 +78,14 @@ export function usePreviewInfo(blockId: RegistryId): AsyncState<PreviewInfo> {
   }, [blockId]);
 }
 
+const traceWarning = (
+  <div className="text-warning mb-2">
+    <FontAwesomeIcon icon={faExclamationTriangle} />
+    &nbsp; No trace available. The actual output will differ from the preview if
+    the configuration uses templates/variables
+  </div>
+);
+
 const BlockPreview: React.FunctionComponent<{
   traceRecord: TraceRecord;
   blockConfig: BlockConfig;
@@ -107,20 +119,14 @@ const BlockPreview: React.FunctionComponent<{
 
   const context = traceRecord?.templateContext;
 
+  const showTraceWarning = !traceRecord && blockInfo?.traceOptional;
+
   useEffect(() => {
     if ((context && blockInfo?.isPure) || blockInfo?.traceOptional) {
       void debouncedRun(blockConfig, context);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
   }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
-
-  if (blockLoading || isRunning) {
-    return (
-      <div>
-        <GridLoader />
-      </div>
-    );
-  }
 
   if (blockInfo?.type === "renderer") {
     return (
@@ -139,6 +145,15 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
+  if (blockLoading || isRunning) {
+    return (
+      <div>
+        {showTraceWarning && traceWarning}
+        <GridLoader />
+      </div>
+    );
+  }
+
   if (!blockInfo?.traceOptional && !traceRecord) {
     return (
       <div className="text-info">
@@ -152,6 +167,8 @@ const BlockPreview: React.FunctionComponent<{
 
   return (
     <div>
+      {showTraceWarning && traceWarning}
+
       {blockInfo != null && !blockInfo.isPure && (
         <Button
           variant="info"

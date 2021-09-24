@@ -72,12 +72,14 @@ const contextFilter = (value: unknown, key: string) => {
 type TabStateProps = {
   isLoading?: boolean;
   isTraceEmpty?: boolean;
+  isTraceOptional?: boolean;
   error?: unknown;
 };
 
 const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
   isLoading = false,
   isTraceEmpty = false,
+  isTraceOptional = false,
   error,
   children,
   ...tabProps
@@ -88,6 +90,20 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
       <div className={styles.loading}>
         <GridLoader />
       </div>
+    );
+  } else if (isTraceEmpty && isTraceOptional) {
+    contents = (
+      <>
+        <div className="text-muted">
+          No trace available, run the extension to generate data
+        </div>
+
+        <div className="text-info mt-2">
+          <FontAwesomeIcon icon={faInfoCircle} />
+          &nbsp;This brick supports traceless output previews. See the Preview
+          tab for the current preview
+        </div>
+      </>
     );
   } else if (isTraceEmpty) {
     contents = (
@@ -223,6 +239,7 @@ const DataPanel: React.FC<{
           eventKey="output"
           isLoading={isLoading}
           isTraceEmpty={!record}
+          isTraceOptional={previewInfo?.traceOptional}
           error={error}
         >
           {record && "output" in record && (

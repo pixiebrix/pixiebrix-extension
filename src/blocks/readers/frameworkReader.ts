@@ -23,7 +23,7 @@ import { getComponentData, ReadPayload } from "@/pageScript/protocol";
 
 export type FrameworkConfig = ReadPayload & {
   /**
-   * @deprecated Legacy emberjs reader config. Use patchSpec instead
+   * @deprecated Legacy emberjs reader config. Use pathSpec instead
    */
   attrs?: string | string[];
 };
