@@ -15,7 +15,7 @@ const BrickDetail: React.FunctionComponent<{
   selectCaption?: React.ReactNode;
 }> = ({ brick, selectCaption = "Select", listing, onSelect }) => (
   <Row>
-    <Col xs={12} className="d-flex justify-content-between">
+    <Col xs={12} className="d-flex justify-content-between mb-3">
       <div>
         <h4>
           {brick.name} <BrickIcon brick={brick} />
