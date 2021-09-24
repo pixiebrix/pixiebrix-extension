@@ -43,53 +43,61 @@ function useInstallState(
     tabState: { navSequence, meta },
   } = useContext(DevToolsContext);
 
-  const [availableInstalledIds] = useAsyncState(async () => {
-    if (meta) {
-      const extensionPointIds = new Set(
-        await getInstalledExtensionPointIds(port)
-      );
-      const resolved = await Promise.all(
-        installed.map(async (extension) => resolveDefinitions(extension))
-      );
-      const available = resolved
-        .filter((x) => extensionPointIds.has(x.extensionPointId))
-        .map((x) => x.id);
-      return new Set<UUID>(
-        installed.filter((x) => available.includes(x.id)).map((x) => x.id)
-      );
-    }
+  const [availableInstalledIds] = useAsyncState(
+    async () => {
+      if (meta) {
+        const extensionPointIds = new Set(
+          await getInstalledExtensionPointIds(port)
+        );
+        const resolved = await Promise.all(
+          installed.map(async (extension) => resolveDefinitions(extension))
+        );
+        const available = resolved
+          .filter((x) => extensionPointIds.has(x.extensionPointId))
+          .map((x) => x.id);
+        return new Set<UUID>(
+          installed.filter((x) => available.includes(x.id)).map((x) => x.id)
+        );
+      }
 
-    return new Set<UUID>();
-  }, [port, navSequence, meta, installed]);
+      return new Set<UUID>();
+    },
+    [port, navSequence, meta, installed],
+    new Set<UUID>()
+  );
 
-  const [availableDynamicIds] = useAsyncState(async () => {
-    // At this point, if the extensionPoint is an inner extension point (without its own id), then it will have
-    // been expanded to extensionPoint
-    if (meta) {
-      const availability = await Promise.all(
-        elements.map(async (element) =>
-          checkAvailable(port, element.extensionPoint.definition.isAvailable)
-        )
-      );
-      return new Set<UUID>(
-        zip(elements, availability)
-          .filter(([, available]) => available)
-          .map(([extension]) => extension.uuid)
-      );
-    }
+  const [availableDynamicIds] = useAsyncState(
+    async () => {
+      // At this point, if the extensionPoint is an inner extension point (without its own id), then it will have
+      // been expanded to extensionPoint
+      if (meta) {
+        const availability = await Promise.all(
+          elements.map(async (element) =>
+            checkAvailable(port, element.extensionPoint.definition.isAvailable)
+          )
+        );
+        return new Set<UUID>(
+          zip(elements, availability)
+            .filter(([, available]) => available)
+            .map(([extension]) => extension.uuid)
+        );
+      }
 
-    return new Set<UUID>();
-  }, [
-    port,
-    meta,
-    navSequence,
-    hash(
-      elements.map((x) => ({
-        uuid: x.uuid,
-        isAvailable: x.extensionPoint.definition.isAvailable,
-      }))
-    ),
-  ]);
+      return new Set<UUID>();
+    },
+    [
+      port,
+      meta,
+      navSequence,
+      hash(
+        elements.map((x) => ({
+          uuid: x.uuid,
+          isAvailable: x.extensionPoint.definition.isAvailable,
+        }))
+      ),
+    ],
+    new Set<UUID>()
+  );
 
   return {
     availableInstalledIds,
