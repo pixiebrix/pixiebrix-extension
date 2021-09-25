@@ -17,23 +17,13 @@
  */
 
 import { liftBackground } from "@/background/protocol";
-import { browser, WebNavigation } from "webextension-polyfill-ts";
+import { browser } from "webextension-polyfill-ts";
 import { handleNavigate, reactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "@/background/util";
 
-async function historyListener(
-  details: WebNavigation.OnHistoryStateUpdatedDetailsType
-) {
-  try {
-    await handleNavigate(details);
-  } catch (error: unknown) {
-    console.warn("Error notifying page navigation", error);
-  }
-}
-
 function initNavigation(): void {
   // Updates from the history API
-  browser.webNavigation.onHistoryStateUpdated.addListener(historyListener);
+  browser.webNavigation.onHistoryStateUpdated.addListener(handleNavigate);
 }
 
 export const reactivate = liftBackground(
