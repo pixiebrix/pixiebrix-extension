@@ -31,9 +31,12 @@ export const getFormDefinition = getContentScriptMethod("FORM_GET_DEFINITION");
 export const resolveForm = getContentScriptMethod("FORM_RESOLVE");
 export const cancelForm = getContentScriptMethod("FORM_CANCEL");
 export const queueReactivateTab = getContentScriptMethod(
-  "QUEUE_REACTIVATE_TAB"
+  "QUEUE_REACTIVATE_TAB",
+  { isNotification: true }
 );
-export const reactivateTab = getContentScriptMethod("REACTIVATE_TAB");
+export const reactivateTab = getContentScriptMethod("REACTIVATE_TAB", {
+  isNotification: true,
+});
 export const handleMenuAction = getContentScriptMethod("HANDLE_MENU_ACTION");
 export const toggleActionPanel = getContentScriptMethod("TOGGLE_ACTION_PANEL");
 export const showActionPanel = getContentScriptMethod("SHOW_ACTION_PANEL");
@@ -64,7 +67,9 @@ export const getInstalledExtensionPointIds = getContentScriptMethod(
   "INSTALLED_EXTENSIONS"
 );
 export const checkAvailable = getContentScriptMethod("CHECK_AVAILABLE");
-export const handleNavigate = getContentScriptMethod("HANDLE_NAVIGATE");
+export const handleNavigate = getContentScriptMethod("HANDLE_NAVIGATE", {
+  isNotification: true,
+});
 export const showNotification = getContentScriptMethod("SHOW_NOTIFICATION");
 
 // Temporary, webext-messenger depends on this global

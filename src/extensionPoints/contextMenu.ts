@@ -213,9 +213,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id }).catch(
-          (error) => {
-            reportError(error);
-          }
+          reportError
         );
       }
     }

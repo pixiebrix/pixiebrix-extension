@@ -23,7 +23,7 @@ import { patternToRegex } from "webext-patterns";
 import { ENSURE_CONTENT_SCRIPT_READY } from "@/messaging/constants";
 import { isRemoteProcedureCallRequest } from "@/messaging/protocol";
 import { expectContext } from "@/utils/expectContext";
-import { allSettledRejections, evaluableFunction } from "@/utils";
+import { evaluableFunction } from "@/utils";
 import pTimeout from "p-timeout";
 import type { Target } from "@/types";
 
@@ -184,18 +184,11 @@ export async function showErrorInOptions(
   });
 }
 
-// This function should never throw, it should just log warnings to the console
-export async function notifyTabs<
-  TReturnValue,
-  TCallback extends (target: { tabId: number }) => Promise<TReturnValue>
->(callback: TCallback, message: string): Promise<void> {
+export async function forEachTab<
+  TCallback extends (target: { tabId: number }) => void
+>(callback: TCallback): Promise<void> {
   // TODO: Only include PixieBrix tabs, this will reduce the chance of errors
-  const tabs = await browser.tabs.query({});
-  const promises = tabs.map(async ({ id }) => callback({ tabId: id }));
-  const errors = await allSettledRejections(promises);
-  if (errors.length > 0) {
-    console.warn(message, {
-      errors,
-    });
+  for (const tab of await browser.tabs.query({})) {
+    callback({ tabId: tab.id });
   }
 }
