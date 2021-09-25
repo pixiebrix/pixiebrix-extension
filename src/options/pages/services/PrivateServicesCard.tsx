@@ -32,6 +32,7 @@ import AuthContext from "@/auth/AuthContext";
 import { deleteCachedAuth } from "@/background/requests";
 import { ServicesState } from "@/options/slices";
 import useNotifications from "@/hooks/useNotifications";
+import styles from "./PrivateServicesCard.module.scss";
 
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
@@ -183,6 +184,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         <BrickModal
           onSelect={onSelect}
           bricks={services}
+          modalClassName={styles.ModalOverride}
           selectCaption={
             <span>
               <FontAwesomeIcon icon={faPlus} className="mr-1" /> Configure

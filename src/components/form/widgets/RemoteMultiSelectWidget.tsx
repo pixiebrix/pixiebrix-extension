@@ -63,13 +63,15 @@ const RemoteMultiSelectWidget: CustomFieldWidget<OwnProps> = ({
       isMulti
       isDisabled={disabled}
       isClearable={isClearable}
-      options={options}
+      options={options ?? []}
       isLoading={isLoading}
-      value={options?.filter((option: Option) =>
-        (field.value ?? []).includes(option.value)
-      )}
-      onChange={(values) => {
-        helpers.setValue(values.map((x) => x.value));
+      value={
+        options?.filter((option: Option) =>
+          (field.value ?? []).includes(option.value)
+        ) ?? []
+      }
+      onChange={(options) => {
+        helpers.setValue(options.map((option) => option.value));
       }}
     />
   );

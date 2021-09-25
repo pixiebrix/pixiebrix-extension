@@ -44,6 +44,7 @@ import BrickResult from "./BrickResult";
 import BrickDetail from "./BrickDetail";
 import QuickAdd from "@/components/brickModal/QuickAdd";
 import { Except } from "type-fest";
+import cx from "classnames";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -98,6 +99,7 @@ type ModalProps<T extends IBrick = IBlock> = {
   selectCaption?: React.ReactNode;
   recommendations?: RegistryId[];
   close: () => void;
+  modalClassName?: string;
 };
 
 type ButtonProps = {
@@ -154,6 +156,7 @@ function ActualModal<T extends IBrick>({
   onSelect,
   selectCaption,
   recommendations = [],
+  modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
@@ -187,7 +190,7 @@ function ActualModal<T extends IBrick>({
 
   return (
     <Modal
-      className="BrickModal"
+      className={cx("BrickModal", modalClassName)}
       show
       size="xl"
       onHide={close}

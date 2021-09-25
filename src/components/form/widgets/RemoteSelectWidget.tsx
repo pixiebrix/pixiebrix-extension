@@ -40,10 +40,14 @@ export function useOptionsResolver<T>(
 ): AsyncState<Array<Option<T>>> {
   return useAsyncState<Array<Option<T>>>(async () => {
     if (isPromise(optionsFactory)) {
+      console.debug("Options is a promise, returning promise directly");
       return (optionsFactory as unknown) as Promise<Array<Option<T>>>;
     }
 
     if (config) {
+      console.debug("Options is a factory, fetching options with config", {
+        config,
+      });
       return optionsFactory(config);
     }
 

@@ -113,7 +113,7 @@ const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
       serviceSchema={AUTOMATION_ANYWHERE_PROPERTIES.service as Schema}
       serviceFieldName={configName("service")}
     >
-      {() => (
+      {({ config }) => (
         <>
           <ConnectedFieldTemplate
             label="Bot"

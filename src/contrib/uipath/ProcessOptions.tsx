@@ -66,7 +66,7 @@ async function fetchRobots(
     method: "get",
   });
   const robots = response.data.value;
-  return (robots ?? []).map((x) => ({ value: x.Id, label: String(x.Id) }));
+  return (robots ?? []).map((x) => ({ value: x.Id, label: String(x.Name) }));
 }
 
 export function useSelectedRelease(releaseKeyFieldName: string) {
@@ -124,7 +124,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
   return (
     <RequireServiceConfig
       serviceSchema={UIPATH_PROPERTIES.uipath as Schema}
-      serviceFieldName={configName("service")}
+      serviceFieldName={configName("uipath")}
     >
       {({ config }) => (
         <>
@@ -137,6 +137,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
             optionsFactory={releasesPromise}
           />
           <SchemaField
+            label="Strategy"
             name={configName("strategy")}
             schema={UIPATH_PROPERTIES.strategy as Schema}
           />
@@ -153,11 +154,13 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
           )}
           {strategy === "JobsCount" && (
             <SchemaField
+              label="Jobs Count"
               name={configName("jobsCount")}
               schema={UIPATH_PROPERTIES.jobsCount as Schema}
             />
           )}
           <SchemaField
+            label="Await Result"
             name={configName("awaitResult")}
             schema={UIPATH_PROPERTIES.awaitResult as Schema}
           />
@@ -165,7 +168,7 @@ const ProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
           <ChildObjectField
             heading={selectedRelease?.release?.Name ?? "Input Arguments"}
             schema={selectedRelease?.schema}
-            name={joinName("inputArguments")}
+            name={configName("inputArguments")}
           />
         </>
       )}
