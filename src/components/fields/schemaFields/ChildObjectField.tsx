@@ -28,6 +28,7 @@ import { Schema } from "@/core";
 import { isEmpty } from "lodash";
 import SchemaField from "@/components/fields/schemaFields/SchemaField";
 import { UnknownObject } from "@/types";
+import { joinName } from "@/utils";
 
 const FALLBACK_SCHEMA: Schema = {
   type: "object",
@@ -69,7 +70,7 @@ const ChildObjectWidget: CustomFieldWidget<
     );
   }
 
-  if (schemaError) {
+  if (schemaError || !schema) {
     return (
       <ChildContainer heading={heading}>
         <ObjectWidget name={name} schema={FALLBACK_SCHEMA} />
@@ -96,7 +97,7 @@ const ChildObjectWidget: CustomFieldWidget<
           return (
             <SchemaField
               key={prop}
-              name={[name, prop].join(".")}
+              name={joinName(name, prop)}
               schema={schema}
             />
           );

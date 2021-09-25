@@ -23,7 +23,6 @@ import { SanitizedServiceConfiguration, Schema } from "@/core";
 import { useField } from "formik";
 import { useAsyncState } from "@/hooks/common";
 import { proxyService } from "@/background/requests";
-import { Button } from "react-bootstrap";
 import useDependency from "@/services/useDependency";
 import {
   Bot,
@@ -34,12 +33,12 @@ import {
   ListResponse,
 } from "@/contrib/automationanywhere/contract";
 import { validateRegistryId } from "@/types/helpers";
-import ServiceField from "@/components/fields/schemaFields/ServiceField";
 import { Option } from "@/components/form/widgets/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 import { joinName } from "@/utils";
+import RequireServiceConfig from "@/contrib/RequireServiceConfig";
 
 const AUTOMATION_ANYWHERE_SERVICE_ID = validateRegistryId(
   "automation-anywhere/control-room"
@@ -75,87 +74,77 @@ async function fetchDevices(
   }));
 }
 
+async function fetchSchema(
+  config: SanitizedServiceConfiguration,
+  fileId: string
+) {
+  if (config && fileId) {
+    const response = await proxyService<Interface>(config, {
+      url: `/v1/filecontent/${fileId}/interface`,
+      method: "GET",
+    });
+    return interfaceToInputSchema(response.data);
+  }
+}
+
 const BotOptions: React.FunctionComponent<BlockOptionProps> = ({
   name,
   configKey,
 }) => {
   const configName = partial(joinName, name, configKey);
 
-  const { hasPermissions, requestPermissions, config } = useDependency(
+  const { hasPermissions, config } = useDependency(
     AUTOMATION_ANYWHERE_SERVICE_ID
   );
 
   const [{ value: fileId }] = useField<string>(configName("fileId"));
 
-  const [inputSchema, schemaPending, schemaError] = useAsyncState(async () => {
-    if (hasPermissions && fileId) {
-      const response = await proxyService<Interface>(config, {
-        url: `/v1/filecontent/${fileId}/interface`,
-        method: "GET",
-      });
-      return interfaceToInputSchema(response.data);
-    }
-  }, [config, fileId, hasPermissions]);
-
-  const serviceField = (
-    <ServiceField
-      label="Integration"
-      name={configName("service")}
-      schema={AUTOMATION_ANYWHERE_PROPERTIES.service as Schema}
-    />
+  const [
+    remoteSchema,
+    remoteSchemaPending,
+    remoteSchemaError,
+  ] = useAsyncState(
+    async () => fetchSchema(hasPermissions ? config : null, fileId),
+    [config, fileId, hasPermissions]
   );
 
-  if (!config) {
-    return <div>{serviceField}</div>;
-  }
-
-  if (!hasPermissions) {
-    return (
-      <div>
-        {serviceField}
-
-        <p>
-          You must grant permissions for you browser to send information to the
-          Automation Anywhere Control Room API.
-        </p>
-
-        <Button onClick={requestPermissions}>Grant Permissions</Button>
-      </div>
-    );
-  }
-
   return (
-    <div>
-      {serviceField}
+    <RequireServiceConfig
+      serviceSchema={AUTOMATION_ANYWHERE_PROPERTIES.service as Schema}
+      serviceFieldName={configName("service")}
+    >
+      {({ config }) => (
+        <>
+          <ConnectedFieldTemplate
+            label="Bot"
+            name={configName("fileId")}
+            description="The Automation Anywhere bot"
+            as={RemoteSelectWidget}
+            optionsFactory={fetchBots}
+            config={config}
+          />
 
-      <ConnectedFieldTemplate
-        label="Bot"
-        name={configName("fileId")}
-        description="The Automation Anywhere bot"
-        as={RemoteSelectWidget}
-        optionsFactory={fetchBots}
-        config={config}
-      />
+          <ConnectedFieldTemplate
+            label="Device"
+            name={configName("deviceId")}
+            description="The device to run the bot on"
+            as={RemoteSelectWidget}
+            optionsFactory={fetchDevices}
+            config={config}
+          />
 
-      <ConnectedFieldTemplate
-        label="Device"
-        name={configName("deviceId")}
-        description="The device to run the bot on"
-        as={RemoteSelectWidget}
-        optionsFactory={fetchDevices}
-        config={config}
-      />
-
-      {fileId != null && (
-        <ChildObjectField
-          heading="Input Arguments"
-          name={configName("data")}
-          schema={inputSchema}
-          schemaError={schemaError}
-          schemaLoading={schemaPending}
-        />
+          {fileId != null && (
+            <ChildObjectField
+              heading="Input Arguments"
+              name={configName("data")}
+              schema={remoteSchema}
+              schemaError={remoteSchemaError}
+              schemaLoading={remoteSchemaPending}
+            />
+          )}
+        </>
       )}
-    </div>
+    </RequireServiceConfig>
   );
 };
 
