@@ -17,15 +17,12 @@
  */
 
 import {
-  linkChildTab,
-  MESSAGE_CHECK_AVAILABILITY,
-  MESSAGE_RUN_BLOCK as CONTENT_MESSAGE_RUN_BLOCK,
   RemoteBlockOptions,
-  RunBlockAction,
+  RunBlockRequestAction,
 } from "@/contentScript/executor";
 import { browser, Runtime, Tabs } from "webextension-polyfill-ts";
 import { liftBackground, MESSAGE_PREFIX } from "@/background/protocol";
-import { ActionType, Message, RegistryId, RenderedArgs } from "@/core";
+import { RegistryId, RenderedArgs } from "@/core";
 import { emitDevtools } from "@/background/devtools/internal";
 import { Availability } from "@/blocks/types";
 import { BusinessError, getErrorMessage } from "@/errors";
@@ -36,7 +33,13 @@ import { partition, zip } from "lodash";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { JsonObject } from "type-fest";
 import { MessengerMeta } from "webext-messenger";
+import {
+  checkAvailable,
+  linkChildTab,
+  runBlockInContentScript,
+} from "@/contentScript/messenger/api";
 
+const CONTENT_MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
 const MESSAGE_RUN_BLOCK_OPENER = `${MESSAGE_PREFIX}RUN_BLOCK_OPENER`;
 const MESSAGE_RUN_BLOCK_TARGET = `${MESSAGE_PREFIX}RUN_BLOCK_TARGET`;
 const MESSAGE_RUN_BLOCK_BROADCAST = `${MESSAGE_PREFIX}RUN_BLOCK_BROADCAST`;
@@ -62,11 +65,6 @@ interface WaitOptions {
   isAvailable?: Availability;
 }
 
-interface ObjectPayloadMessage<T extends ActionType = ActionType>
-  extends Message<T> {
-  payload: Record<string, unknown>;
-}
-
 async function waitNonceReady(
   nonce: string,
   { maxWaitMillis = 10_000, isAvailable }: WaitOptions = {}
@@ -85,14 +83,7 @@ async function waitNonceReady(
     }
 
     if (isAvailable) {
-      return browser.tabs.sendMessage(
-        target.tabId,
-        {
-          type: MESSAGE_CHECK_AVAILABILITY,
-          payload: { isAvailable },
-        },
-        { frameId: target.frameId }
-      );
+      return checkAvailable(target, isAvailable);
     }
 
     return true;
@@ -136,31 +127,26 @@ const handlers = new HandlerMap();
 
 handlers.set(
   MESSAGE_RUN_BLOCK_OPENER,
-  async (request: ObjectPayloadMessage, sender) => {
+  async (request: RunBlockRequestAction, sender) => {
     const opener = tabToOpener.get(sender.tab.id);
 
     if (!opener) {
       throw new BusinessError("Sender tab has no opener");
     }
 
-    return browser.tabs.sendMessage(
-      opener,
+    return runBlockInContentScript(
+      { tabId: opener },
       {
-        type: CONTENT_MESSAGE_RUN_BLOCK,
-        payload: {
-          sourceTabId: sender.tab.id,
-          ...request.payload,
-        },
-      },
-      // For now, only support top-level frame as opener
-      { frameId: TOP_LEVEL_FRAME }
+        sourceTabId: sender.tab.id,
+        ...request.payload,
+      }
     );
   }
 );
 
 handlers.set(
   MESSAGE_RUN_BLOCK_BROADCAST,
-  async (request: ObjectPayloadMessage, sender) => {
+  async (request: RunBlockRequestAction, sender) => {
     const tabIds = Object.entries(tabReady)
       .filter(
         ([tabId, ready]) =>
@@ -176,17 +162,16 @@ handlers.set(
 
     const results = await Promise.allSettled(
       tabIds.map(async (tabId) =>
-        browser.tabs.sendMessage(
-          tabId,
+        runBlockInContentScript(
           {
-            type: CONTENT_MESSAGE_RUN_BLOCK,
-            payload: {
-              sourceTabId: sender.tab.id,
-              ...request.payload,
-            },
+            tabId,
+            // For now, only support top-level frame as opener
+            frameId: TOP_LEVEL_FRAME,
           },
-          // For now, only support top-level frame as opener
-          { frameId: TOP_LEVEL_FRAME }
+          {
+            sourceTabId: sender.tab.id,
+            ...request.payload,
+          }
         )
       )
     );
@@ -215,7 +200,7 @@ handlers.set(
 
 handlers.set(
   MESSAGE_RUN_BLOCK_FRAME_NONCE,
-  async (request: RunBlockAction, sender) => {
+  async (request: RunBlockRequestAction, sender) => {
     const { nonce, ...payload } = request.payload;
 
     console.debug(`Waiting for frame with nonce ${nonce} to be ready`);
@@ -227,23 +212,16 @@ handlers.set(
     console.debug(
       `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target.tabId} frame ${target.frameId} (sender=${sender.tab.id})`
     );
-    return browser.tabs.sendMessage(
-      target.tabId,
-      {
-        type: CONTENT_MESSAGE_RUN_BLOCK,
-        payload: {
-          sourceTabId: sender.tab.id,
-          ...payload,
-        },
-      },
-      { frameId: target.frameId }
-    );
+    return runBlockInContentScript(target, {
+      sourceTabId: sender.tab.id,
+      ...request.payload,
+    });
   }
 );
 
 handlers.set(
   MESSAGE_RUN_BLOCK_TARGET,
-  async (request: ObjectPayloadMessage, sender) => {
+  async (request: RunBlockRequestAction, sender) => {
     const target = tabToTarget.get(sender.tab.id);
 
     if (!target) {
@@ -256,16 +234,12 @@ handlers.set(
     console.debug(
       `Sending ${CONTENT_MESSAGE_RUN_BLOCK} to target tab ${target} (sender=${sender.tab.id})`
     );
-    return browser.tabs.sendMessage(
-      target,
+    return runBlockInContentScript(
+      { tabId: target, frameId: 0 },
       {
-        type: CONTENT_MESSAGE_RUN_BLOCK,
-        payload: {
-          sourceTabId: sender.tab.id,
-          ...request.payload,
-        },
-      },
-      { frameId: 0 }
+        sourceTabId: sender.tab.id,
+        ...request.payload,
+      }
     );
   }
 );

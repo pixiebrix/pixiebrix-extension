@@ -71,6 +71,12 @@ export const handleNavigate = getContentScriptMethod("HANDLE_NAVIGATE", {
   isNotification: true,
 });
 export const showNotification = getContentScriptMethod("SHOW_NOTIFICATION");
+export const linkChildTab = getContentScriptMethod("LINK_CHILD_TAB");
+export const runBlockInContentScript = getContentScriptMethod(
+  "CONTENT_MESSAGE_RUN_BLOCK"
+);
+export const cancelSelect = getContentScriptMethod("CANCEL_SELECT_ELEMENT");
+export const selectElement = getContentScriptMethod("SELECT_ELEMENT");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;

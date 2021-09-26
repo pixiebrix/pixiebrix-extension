@@ -16,21 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { browser } from "webextension-polyfill-ts";
 import blockRegistry from "@/blocks/registry";
 import { BackgroundLogger } from "@/background/logging";
 import { MessageContext, RegistryId, RenderedArgs } from "@/core";
-import {
-  liftContentScript,
-  MESSAGE_PREFIX,
-} from "@/contentScript/backgroundProtocol";
 import { Availability } from "@/blocks/types";
-import { checkAvailable } from "@/blocks/available";
-import { expectContext } from "@/utils/expectContext";
-import { HandlerMap } from "@/messaging/protocol";
-
-export const MESSAGE_CHECK_AVAILABILITY = `${MESSAGE_PREFIX}CHECK_AVAILABILITY`;
-export const MESSAGE_RUN_BLOCK = `${MESSAGE_PREFIX}RUN_BLOCK`;
 
 export interface RemoteBlockOptions {
   ctxt: unknown;
@@ -39,31 +28,24 @@ export interface RemoteBlockOptions {
   isAvailable?: Availability;
 }
 
-export interface CheckAvailabilityAction {
-  type: typeof MESSAGE_CHECK_AVAILABILITY;
-  payload: {
-    isAvailable: Availability;
-  };
+export interface RunBlock {
+  sourceTabId?: number;
+  nonce?: string;
+  blockId: RegistryId;
+  blockArgs: RenderedArgs;
+  options: RemoteBlockOptions;
 }
 
-export interface RunBlockAction {
-  type: typeof MESSAGE_RUN_BLOCK;
-  payload: {
-    sourceTabId?: number;
-    nonce?: string;
-    blockId: RegistryId;
-    blockArgs: RenderedArgs;
-    options: RemoteBlockOptions;
-  };
+export interface RunBlockRequestAction {
+  type: string;
+  payload: RunBlock;
 }
 
 const childTabs = new Set<number>();
 
-const handlers = new HandlerMap();
-
-handlers.set(MESSAGE_RUN_BLOCK, async (request: RunBlockAction) => {
+export async function runBlockInContentScript(request: RunBlock) {
   // XXX: validate sourceTabId? Can't use childTabs because we also support `window: broadcast`
-  const { blockId, blockArgs, options } = request.payload;
+  const { blockId, blockArgs, options } = request;
   const block = await blockRegistry.lookup(blockId);
   const logger = new BackgroundLogger(options.messageContext);
 
@@ -82,28 +64,8 @@ handlers.set(MESSAGE_RUN_BLOCK, async (request: RunBlockAction) => {
     });
     throw error;
   }
-});
-
-handlers.set(
-  MESSAGE_CHECK_AVAILABILITY,
-  async (request: CheckAvailabilityAction) => {
-    const { isAvailable } = request.payload;
-    return checkAvailable(isAvailable);
-  }
-);
-
-export const linkChildTab = liftContentScript(
-  "TAB_OPENED",
-  async (tabId: number) => {
-    childTabs.add(tabId);
-  },
-  { asyncResponse: false }
-);
-
-function addExecutorListener(): void {
-  expectContext("contentScript");
-
-  browser.runtime.onMessage.addListener(handlers.asListener());
 }
 
-export default addExecutorListener;
+export async function linkChildTab(tabId: number): Promise<void> {
+  childTabs.add(tabId);
+}
