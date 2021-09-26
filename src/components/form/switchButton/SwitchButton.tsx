@@ -20,7 +20,7 @@ import { Col, Form as BootstrapForm, Row } from "react-bootstrap";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import styles from "./SwitchButton.module.scss";
 
-type CheckBoxLike = {
+export type CheckBoxLike = {
   name: string;
   value: boolean;
 };
@@ -47,7 +47,6 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
   return (
     <BootstrapForm.Group as={Row} controlId={name}>
       <Col sm="3">
-        {/* BootstrapSwitchButton is for UI, sends click to the input */}
         <BootstrapSwitchButton
           onlabel=" "
           offlabel=" "

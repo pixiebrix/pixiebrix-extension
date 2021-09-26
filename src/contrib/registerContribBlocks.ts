@@ -35,11 +35,13 @@ import { AddLead } from "./salesforce";
 import { RunLocalProcess, RunProcess, UiPathAppRenderer } from "./uipath";
 import { PushZap } from "./zapier";
 import { RunBot } from "./automationanywhere";
+import { GoogleSheetsLookup } from "@/contrib/google/sheets/lookup";
 
 function registerContribBlocks(): void {
   // Google
   registerBlock(new GoogleBigQueryQuery());
   registerBlock(new GoogleSheetsAppend());
+  registerBlock(new GoogleSheetsLookup());
   registerBlock(new GeocodeTransformer());
 
   // HubSpot

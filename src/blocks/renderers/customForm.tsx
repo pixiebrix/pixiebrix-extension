@@ -18,7 +18,7 @@
 import React from "react";
 import { Renderer } from "@/types";
 import { BlockArg, BlockOptions, RenderedHTML, Schema, UiSchema } from "@/core";
-import Form from "@rjsf/core";
+import JsonSchemaForm from "@rjsf/bootstrap-4";
 import { JsonObject } from "type-fest";
 import { getRecord, setRecord } from "@/background/dataStore";
 import { reportError } from "@/telemetry/logging";
@@ -36,7 +36,7 @@ const CustomFormComponent: React.FunctionComponent<{
   <div className="CustomForm">
     <link rel="stylesheet" href={theme} />
     <link rel="stylesheet" href={custom} />
-    <Form
+    <JsonSchemaForm
       schema={schema}
       uiSchema={uiSchema}
       formData={formData}
@@ -49,7 +49,7 @@ const CustomFormComponent: React.FunctionComponent<{
           Save
         </button>
       </div>
-    </Form>
+    </JsonSchemaForm>
   </div>
 );
 

@@ -95,7 +95,7 @@ const RenderedField: React.FC<FieldProps> = ({
       className={styles.horizontalFormGroup}
     >
       {label && (
-        <BootstrapForm.Label column lg="3">
+        <BootstrapForm.Label column lg="3" className={styles.horizontalLabel}>
           {label}
         </BootstrapForm.Label>
       )}

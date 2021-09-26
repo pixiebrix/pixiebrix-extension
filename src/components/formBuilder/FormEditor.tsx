@@ -19,7 +19,7 @@
 import { useField } from "formik";
 import React, { useEffect } from "react";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
-import { Button, Form as BootstrapForm } from "react-bootstrap";
+import { Button, ButtonGroup, Col, Row } from "react-bootstrap";
 import FieldEditor from "./FieldEditor";
 import {
   DEFAULT_FIELD_TYPE,
@@ -35,7 +35,7 @@ import {
   faArrowDown,
   faArrowUp,
   faPlus,
-  faTimes,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { Schema } from "@/core";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
@@ -43,6 +43,7 @@ import { produce } from "immer";
 import styles from "./FormEditor.module.scss";
 import { joinName } from "@/utils";
 import { isEmpty } from "lodash";
+import FieldTemplate from "@/components/form/FieldTemplate";
 
 export type FormEditorProps = {
   name: string;
@@ -66,6 +67,27 @@ function initDefaults(obj: RJSFSchema): void {
     obj.uiSchema[UI_ORDER].push("*");
   }
 }
+
+const LayoutWidget: React.FC<{
+  canMoveUp: boolean;
+  moveUp: () => void;
+  canMoveDown: boolean;
+  moveDown: () => void;
+}> = ({ canMoveUp, moveUp, canMoveDown, moveDown }) => (
+  <ButtonGroup>
+    <Button onClick={moveUp} disabled={!canMoveUp} variant="light" size="sm">
+      <FontAwesomeIcon icon={faArrowUp} /> Move up
+    </Button>
+    <Button
+      onClick={moveDown}
+      disabled={!canMoveDown}
+      variant="light"
+      size="sm"
+    >
+      <FontAwesomeIcon icon={faArrowDown} /> Move down
+    </Button>
+  </ButtonGroup>
+);
 
 const FormEditor: React.FC<FormEditorProps> = ({
   name,
@@ -174,23 +196,43 @@ const FormEditor: React.FC<FormEditorProps> = ({
     uiOrder[uiOrder.length - 2] !== activeField;
 
   return (
-    <div className={styles.root}>
-      <BootstrapForm.Group>
-        <h5>Edit form</h5>
-        <hr />
-      </BootstrapForm.Group>
+    <>
       <ConnectedFieldTemplate
         name={joinName(name, "schema", "title")}
-        label="Title"
+        label="Form Title"
       />
       <ConnectedFieldTemplate
         name={joinName(name, "schema", "description")}
-        label="Description"
+        label="Form Description"
       />
-      <BootstrapForm.Group>
-        <h6>Edit fields</h6>
-        <hr />
-      </BootstrapForm.Group>
+      <hr />
+
+      <Row className={styles.addRow}>
+        <Col>
+          <Button onClick={addProperty} variant="primary" size="sm">
+            <FontAwesomeIcon icon={faPlus} /> Add new field
+          </Button>
+        </Col>
+      </Row>
+
+      <Row className={styles.currFieldRow}>
+        <Col xl="3" className={styles.currField}>
+          <h6>Current Field</h6>
+        </Col>
+        {activeField && (
+          <Col xl>
+            <Button onClick={removeProperty} variant="danger" size="sm">
+              <FontAwesomeIcon icon={faTrash} /> Remove field
+            </Button>
+          </Col>
+        )}
+        <Col xl>
+          <small className="text-muted">
+            Use the Preview Tab on the right to select a field to edit ⟶
+          </small>
+        </Col>
+      </Row>
+
       {activeField && Boolean(schema.properties?.[activeField]) && (
         <FieldEditor
           name={name}
@@ -199,38 +241,22 @@ const FormEditor: React.FC<FormEditorProps> = ({
         />
       )}
 
-      <Button onClick={addProperty} variant="primary" size="sm">
-        <FontAwesomeIcon icon={faPlus} />
-      </Button>
-      <Button
-        onClick={() => {
-          moveProperty("up");
-        }}
-        disabled={!canMoveUp}
-        variant="light"
-        size="sm"
-      >
-        <FontAwesomeIcon icon={faArrowUp} />
-      </Button>
-      <Button
-        onClick={() => {
-          moveProperty("down");
-        }}
-        disabled={!canMoveDown}
-        variant="light"
-        size="sm"
-      >
-        <FontAwesomeIcon icon={faArrowDown} />
-      </Button>
-      <Button
-        onClick={removeProperty}
-        disabled={!activeField}
-        variant="danger"
-        size="sm"
-      >
-        <FontAwesomeIcon icon={faTimes} />
-      </Button>
-    </div>
+      {activeField && (canMoveUp || canMoveDown) && (
+        <FieldTemplate
+          name="layoutButtons"
+          label="Field Order"
+          as={LayoutWidget}
+          canMoveUp={canMoveUp}
+          moveUp={() => {
+            moveProperty("up");
+          }}
+          canMoveDown={canMoveDown}
+          moveDown={() => {
+            moveProperty("down");
+          }}
+        />
+      )}
+    </>
   );
 };
 

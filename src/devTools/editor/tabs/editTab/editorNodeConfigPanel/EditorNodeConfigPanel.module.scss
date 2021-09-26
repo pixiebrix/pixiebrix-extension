@@ -33,5 +33,9 @@
 .removeText {
   @media (max-width: 1460px) {
     display: none;
+
+    @media (max-width: 1200px) {
+      display: inline;
+    }
   }
 }

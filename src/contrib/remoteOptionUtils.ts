@@ -15,22 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export function isNode(x: unknown): x is Node {
-  return typeof x === "object" && "nodeType" in x;
-}
+import { OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
+import { SanitizedServiceConfiguration } from "@/core";
+import { Option } from "@/components/form/widgets/SelectWidget";
 
-/**
- * Returns the DOM Element enclosing a DOM Node, or the node itself if it is a DOM Element.
- */
-export function findElement(node: Node): Element | null {
-  let current = node;
-  while (current && !(current instanceof Element)) {
-    current = current.parentNode;
-  }
+export function optionalFactory(factory: OptionsFactory): OptionsFactory {
+  return async (config: SanitizedServiceConfiguration) => {
+    if (config) {
+      return factory(config);
+    }
 
-  if (current instanceof Element) {
-    return current;
-  }
-
-  return null;
+    return [] as Option[];
+  };
 }

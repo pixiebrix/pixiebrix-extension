@@ -37,6 +37,7 @@ import Centered from "@/devTools/editor/components/Centered";
 import { ModalProvider } from "@/components/ConfirmationModal";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
+import { getErrorMessage } from "@/errors";
 
 // Import custom options widgets/forms for the built-in bricks
 import "@/contrib/editors";
@@ -85,7 +86,7 @@ const Panel: React.FunctionComponent = () => {
     return (
       <Centered>
         <div className="PaneTitle">Error authenticating account</div>
-        <div>{authError?.toString() ?? "Unknown error"}</div>
+        <div>{getErrorMessage(authError)}</div>
         <Button
           onClick={() => {
             location.reload();

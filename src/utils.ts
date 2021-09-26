@@ -48,6 +48,12 @@ export function joinName(
   baseFieldName: string | null,
   ...rest: string[]
 ): string {
+  if (rest.length === 0) {
+    throw new Error(
+      "Expected one or more field names to join with the main path"
+    );
+  }
+
   if (rest.some((x) => x.includes("."))) {
     throw new Error("Formik path parts cannot contain periods");
   }

@@ -16,111 +16,26 @@
  */
 
 import React, { useContext, useMemo, useState } from "react";
-import { compact } from "lodash";
-import { UIPATH_PROPERTIES } from "@/contrib/uipath/localProcess";
+import { partial } from "lodash";
+import { UIPATH_PROPERTIES as REMOTE_UIPATH_PROPERTIES } from "@/contrib/uipath/process";
 import { Schema } from "@/core";
 import { useField } from "formik";
-import { useAsyncState } from "@/hooks/common";
-import { Button } from "react-bootstrap";
-import { fieldLabel } from "@/components/fields/fieldUtils";
-import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { useAsyncEffect } from "use-async-effect";
 import {
   getUiPathProcesses,
   initUiPathRobot,
 } from "@/background/devtools/protocol";
 import { DevToolsContext } from "@/devTools/context";
-import { RobotProcess } from "@uipath/robot/dist/models";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useReleases } from "@/contrib/uipath/ProcessOptions";
-import { faInfo } from "@fortawesome/free-solid-svg-icons";
-import useDependency from "@/services/useDependency";
-import { UIPATH_SERVICE_IDS } from "@/contrib/uipath/process";
-import { getErrorMessage } from "@/errors";
-import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
-import SelectWidget from "@/components/form/widgets/SelectWidget";
 import ChildObjectField from "@/components/fields/schemaFields/ChildObjectField";
-import { releaseSchema } from "@/contrib/uipath/typeUtils";
 import { BlockOptionProps } from "@/components/fields/schemaFields/genericOptionsFactory";
-import SchemaField from "@/components/fields/schemaFields/SchemaField";
+import { useSelectedRelease } from "@/contrib/uipath/ProcessOptions";
+import { joinName } from "@/utils";
+import RequireServiceConfig from "@/contrib/RequireServiceConfig";
+import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import RemoteSelectWidget from "@/components/form/widgets/RemoteSelectWidget";
 
-interface Process {
-  id: string;
-  name: string;
-}
-
-const FALLBACK_PROCESS_SCHEMA: Schema = {
-  type: "object",
-  additionalProperties: true,
-};
-
-export const ProcessField: React.FunctionComponent<
-  SchemaFieldProps<string> & {
-    processes: Process[];
-    isPending: boolean;
-    fetchError: unknown;
-  }
-> = ({ label, schema, processes, fetchError, isPending, ...props }) => {
-  const [{ value, ...field }] = useField(props);
-
-  const options = useMemo(
-    () =>
-      (processes ?? []).map((x) => ({
-        value: x.id,
-        label: x.name,
-        process: x,
-      })),
-    [processes]
-  );
-
-  return (
-    <ConnectedFieldTemplate
-      label={label ?? fieldLabel(field.name)}
-      description="The UiPath process to run"
-      as={SelectWidget}
-      blankValue={null}
-      isLoading={isPending}
-      error={fetchError}
-      loadingMessage="Loading processes from UiPath Assistant"
-      options={options}
-      value={options.find((x) => x.value === value)}
-    />
-  );
-};
-
-function useReleaseSchema(releaseKey: string) {
-  const { releases, isPending, error, hasConfig } = useReleases();
-  const schema = useMemo(() => {
-    if (releaseKey != null && releases != null) {
-      const release = releases.find((x) => x.Key === releaseKey);
-      if (release) {
-        return releaseSchema(release);
-      }
-    }
-
-    return null;
-  }, [releaseKey, releases]);
-
-  return { schema, isPending, error, hasConfig };
-}
-
-const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
-  name,
-  configKey,
-}) => {
+function useLocalRobot() {
   const { port } = useContext(DevToolsContext);
-  const basePath = compact([name, configKey]).join(".");
-
-  const [{ value: releaseKey }] = useField<string>(`${basePath}.releaseKey`);
-
-  const {
-    config: remoteConfig,
-    hasPermissions,
-    requestPermissions,
-  } = useDependency(UIPATH_SERVICE_IDS);
-
-  const { schema, error: schemaError } = useReleaseSchema(releaseKey);
-
   const [robotAvailable, setRobotAvailable] = useState(false);
   const [consentCode, setConsentCode] = useState(null);
   const [initError, setInitError] = useState(null);
@@ -142,30 +57,32 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     }
   }, [port, setConsentCode, setRobotAvailable, setInitError]);
 
-  const [processes, processesPending, processesError] = useAsyncState<
-    RobotProcess[]
-  >(async () => {
+  return {
+    robotAvailable,
+    consentCode,
+    initError,
+  };
+}
+
+const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
+  name,
+  configKey,
+}) => {
+  const { port } = useContext(DevToolsContext);
+  const configName = partial(joinName, name, configKey);
+
+  const [{ value: releaseKey }] = useField<string>(configName("releaseKey"));
+
+  const { robotAvailable, consentCode } = useLocalRobot();
+  const { selectedRelease } = useSelectedRelease(releaseKey);
+
+  const processesPromise = useMemo(async () => {
     if (robotAvailable) {
       return getUiPathProcesses(port);
     }
 
     return [];
-  }, [robotAvailable]);
-
-  const process = useMemo(() => processes?.find((x) => x.id === releaseKey), [
-    processes,
-    releaseKey,
-  ]);
-
-  if (!port) {
-    return (
-      <div>
-        <span className="text-danger">
-          This action can only be configured from the Page Editor
-        </span>
-      </div>
-    );
-  }
+  }, [port, robotAvailable]);
 
   if (!robotAvailable) {
     return (
@@ -184,8 +101,6 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
     );
   }
 
-  const argumentsName = compact([name, configKey, "inputArguments"]).join(".");
-
   return (
     <div>
       {consentCode && (
@@ -193,55 +108,32 @@ const LocalProcessOptions: React.FunctionComponent<BlockOptionProps> = ({
           UiPath Assistant consent code: {consentCode}
         </span>
       )}
-      <ProcessField
-        label="process"
-        name={`${basePath}.releaseKey`}
-        schema={UIPATH_PROPERTIES.releaseKey as Schema}
-        isPending={processesPending}
-        processes={processes}
-        fetchError={initError ?? processesError}
-      />
 
-      {!remoteConfig && (
-        <span className="text-info">
-          <FontAwesomeIcon icon={faInfo} /> Add a UiPath Orchestrator API
-          integration to automatically fetch the input argument definitions.
-        </span>
-      )}
+      <RequireServiceConfig
+        // FIXME: this service use is options-only. As-is this will create an integration entry in the background. We
+        //  need to support 1) making RemoteServiceConfig optional, and 2) not storing the state in Formik
+        serviceSchema={REMOTE_UIPATH_PROPERTIES.uipath as Schema}
+        serviceFieldName={configName("service")}
+      >
+        {() => (
+          <>
+            <ConnectedFieldTemplate
+              label="Process"
+              description="Select a local process"
+              name={configName("releaseKey")}
+              as={RemoteSelectWidget}
+              blankValue={null}
+              optionsFactory={processesPromise}
+            />
 
-      {!hasPermissions && remoteConfig != null && (
-        <div>
-          <div>
-            <span className="text-info">
-              <FontAwesomeIcon icon={faInfo} /> Grant PixieBrix access to
-              connect to UiPath to fetch the input argument definitions
-            </span>
-          </div>
-          <div>
-            <Button onClick={requestPermissions}>Grant Permissions</Button>
-          </div>
-        </div>
-      )}
-
-      {schemaError && (
-        <span className="text-danger">
-          Error fetching input arguments: {getErrorMessage(schemaError)}
-        </span>
-      )}
-
-      {schema ? (
-        <ChildObjectField
-          heading={process?.name}
-          name={argumentsName}
-          schema={schema}
-        />
-      ) : (
-        <SchemaField
-          name={argumentsName}
-          label={process?.name ?? "inputArguments"}
-          schema={FALLBACK_PROCESS_SCHEMA}
-        />
-      )}
+            <ChildObjectField
+              heading={selectedRelease?.release?.Name ?? "Input Arguments"}
+              schema={selectedRelease?.schema}
+              name={joinName("inputArguments")}
+            />
+          </>
+        )}
+      </RequireServiceConfig>
     </div>
   );
 };

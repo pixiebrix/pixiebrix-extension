@@ -17,7 +17,7 @@
 
 import React, { useContext, useEffect, useState } from "react";
 import { BlockConfig } from "@/blocks/types";
-import { useAsyncState } from "@/hooks/common";
+import { AsyncState, useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
 import { runBlock } from "@/background/devtools";
 import { DevToolsContext } from "@/devTools/context";
@@ -26,13 +26,66 @@ import { Button } from "react-bootstrap";
 import GridLoader from "react-spinners/GridLoader";
 import { getErrorMessage } from "@/errors";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faSync } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle,
+  faInfoCircle,
+  faSync,
+} from "@fortawesome/free-solid-svg-icons";
 import objectHash from "object-hash";
 import JsonTree from "@/components/jsonTree/JsonTree";
 import { isEmpty } from "lodash";
 import { TraceRecord } from "@/telemetry/trace";
-import { getType } from "@/blocks/util";
+import { BlockType, getType } from "@/blocks/util";
 import { removeEmptyValues } from "@/devTools/editor/extensionPoints/base";
+import { UnknownObject } from "@/types";
+import { IBlock, RegistryId } from "@/core";
+
+/**
+ * Bricks to preview even if there's no trace.
+ */
+const HACK_TRACE_OPTIONAL = new Set([
+  "@pixiebrix/component-reader",
+  "@pixiebrix/jquery-reader",
+]);
+
+function isTraceOptional(
+  blockId: RegistryId,
+  { type }: { type: BlockType }
+): boolean {
+  return type === "reader" || HACK_TRACE_OPTIONAL.has(blockId);
+}
+
+type PreviewInfo = {
+  block: IBlock;
+  type: BlockType;
+  isPure: boolean;
+  traceOptional: boolean;
+};
+
+/**
+ * Return metadata about preview requirements for a block.
+ */
+export function usePreviewInfo(blockId: RegistryId): AsyncState<PreviewInfo> {
+  return useAsyncState(async () => {
+    const block = await blockRegistry.lookup(blockId);
+    const type = await getType(block);
+    return {
+      block,
+      isPure: await block.isPure(),
+      type,
+      traceOptional: isTraceOptional(blockId, { type }),
+    };
+  }, [blockId]);
+}
+
+const traceWarning = (
+  // The text-warning font color is brutal. This is more of a warning, but this color/style will have to do for now
+  <div className="text-info mb-2">
+    <FontAwesomeIcon icon={faExclamationTriangle} />
+    &nbsp; No trace available. The actual output will differ from the preview if
+    the configuration uses templates/variables
+  </div>
+);
 
 const BlockPreview: React.FunctionComponent<{
   traceRecord: TraceRecord;
@@ -44,17 +97,10 @@ const BlockPreview: React.FunctionComponent<{
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState<unknown | undefined>();
 
-  const [blockInfo, blockLoading, blockError] = useAsyncState(async () => {
-    const block = await blockRegistry.lookup(blockConfig.id);
-    return {
-      block,
-      isPure: await block.isPure(),
-      type: await getType(block),
-    };
-  }, [blockConfig.id]);
+  const [blockInfo, blockLoading, blockError] = usePreviewInfo(blockConfig.id);
 
   const debouncedRun = useDebouncedCallback(
-    async (blockConfig: BlockConfig, args: Record<string, unknown>) => {
+    async (blockConfig: BlockConfig, args: UnknownObject) => {
       setIsRunning(true);
       try {
         const result = await runBlock(port, {
@@ -74,25 +120,19 @@ const BlockPreview: React.FunctionComponent<{
 
   const context = traceRecord?.templateContext;
 
+  const showTraceWarning = !traceRecord && blockInfo?.traceOptional;
+
   useEffect(() => {
-    if (context && blockInfo?.isPure) {
+    if ((context && blockInfo?.isPure) || blockInfo?.traceOptional) {
       void debouncedRun(blockConfig, context);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- using objectHash for context
-  }, [debouncedRun, blockConfig, blockInfo?.isPure, objectHash(context ?? {})]);
-
-  if (blockLoading || isRunning) {
-    return (
-      <div>
-        <GridLoader />
-      </div>
-    );
-  }
+  }, [debouncedRun, blockConfig, blockInfo, objectHash(context ?? {})]);
 
   if (blockInfo?.type === "renderer") {
     return (
       <div className="text-muted">
-        Output previews are not currently available for renderers
+        Output previews are not currently supported for renderers
       </div>
     );
   }
@@ -106,7 +146,16 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
-  if (!traceRecord) {
+  if (blockLoading || isRunning) {
+    return (
+      <div>
+        {showTraceWarning && traceWarning}
+        <GridLoader />
+      </div>
+    );
+  }
+
+  if (!blockInfo?.traceOptional && !traceRecord) {
     return (
       <div className="text-info">
         <FontAwesomeIcon icon={faInfoCircle} /> Run the brick once to enable
@@ -115,8 +164,12 @@ const BlockPreview: React.FunctionComponent<{
     );
   }
 
+  const isError = output instanceof Error;
+
   return (
     <div>
+      {showTraceWarning && traceWarning}
+
       {blockInfo != null && !blockInfo.isPure && (
         <Button
           variant="info"
@@ -126,19 +179,19 @@ const BlockPreview: React.FunctionComponent<{
             void debouncedRun(blockConfig, context);
           }}
         >
-          <FontAwesomeIcon icon={faSync} /> Refresh
+          <FontAwesomeIcon icon={faSync} /> Refresh Preview
         </Button>
       )}
 
-      {output && !(output instanceof Error) && !isEmpty(output) && (
-        <JsonTree data={output} />
+      {output && !isError && !isEmpty(output) && (
+        <JsonTree data={output} searchable />
       )}
 
-      {output && !(output instanceof Error) && isEmpty(output) && (
+      {output && !isError && isEmpty(output) && (
         <div>Brick produced empty output</div>
       )}
 
-      {output && output instanceof Error && (
+      {output && isError && (
         <div className="text-danger">{getErrorMessage(output)}</div>
       )}
     </div>

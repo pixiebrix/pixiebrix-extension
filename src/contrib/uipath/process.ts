@@ -35,7 +35,7 @@ export const UIPATH_SERVICE_IDS: RegistryId[] = [
 ].map((x) => validateRegistryId(x));
 export const UIPATH_ID = validateRegistryId("@pixiebrix/uipath/process");
 
-const MAX_WAIT_MILLIS = 20_000;
+const MAX_WAIT_MILLIS = 30_000;
 const POLL_MILLIS = 1000;
 
 export const UIPATH_PROPERTIES: SchemaProperties = {
@@ -123,7 +123,7 @@ export class RunProcess extends Transformer {
     }: BlockArg,
     { logger }: BlockOptions
   ): Promise<unknown> {
-    const { data: startData } = await proxyService<JobsResponse>(uipath, {
+    const responsePromise = proxyService<JobsResponse>(uipath, {
       url: "/odata/Jobs/UiPath.Server.Configuration.OData.StartJobs",
       method: "post",
       data: {
@@ -138,44 +138,47 @@ export class RunProcess extends Transformer {
       },
     });
 
+    if (!awaitResult) {
+      return {};
+    }
+
+    const { data: startData } = await responsePromise;
+
     const start = Date.now();
 
-    if (awaitResult) {
-      if (startData.value.length > 1) {
-        throw new Error("Awaiting response of multiple jobs not supported");
-      }
-
-      do {
-        // eslint-disable-next-line no-await-in-loop -- polling for response
-        const { data: resultData } = await proxyService<JobsResponse>(uipath, {
-          url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
-          method: "get",
-        });
-
-        if (resultData.value.length === 0) {
-          logger.error(`UiPath job not found: ${startData.value[0].Id}`);
-          throw new BusinessError("UiPath job not found");
-        }
-
-        if (resultData.value[0].State === "Successful") {
-          return JSON.parse(resultData.value[0].OutputArguments);
-        }
-
-        if (resultData.value[0].State === "Faulted") {
-          logger.error(`UiPath job failed: ${resultData.value[0].Info}`);
-          throw new BusinessError("UiPath job failed");
-        }
-
-        // eslint-disable-next-line no-await-in-loop -- polling for response
-        await sleep(POLL_MILLIS);
-      } while (Date.now() - start < MAX_WAIT_MILLIS);
-
+    if (startData.value.length > 1) {
       throw new BusinessError(
-        `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
+        "Awaiting response of multiple jobs not supported"
       );
     }
 
-    // Not awaiting the result
-    return {};
+    do {
+      // eslint-disable-next-line no-await-in-loop -- polling for response
+      const { data: resultData } = await proxyService<JobsResponse>(uipath, {
+        url: `/odata/Jobs?$filter=Id eq ${startData.value[0].Id}`,
+        method: "get",
+      });
+
+      if (resultData.value.length === 0) {
+        logger.error(`UiPath job not found: ${startData.value[0].Id}`);
+        throw new BusinessError("UiPath job not found");
+      }
+
+      if (resultData.value[0].State === "Successful") {
+        return JSON.parse(resultData.value[0].OutputArguments);
+      }
+
+      if (resultData.value[0].State === "Faulted") {
+        logger.error(`UiPath job failed: ${resultData.value[0].Info}`);
+        throw new BusinessError("UiPath job failed");
+      }
+
+      // eslint-disable-next-line no-await-in-loop -- polling for response
+      await sleep(POLL_MILLIS);
+    } while (Date.now() - start < MAX_WAIT_MILLIS);
+
+    throw new BusinessError(
+      `UiPath job did not finish in ${MAX_WAIT_MILLIS / 1000} seconds`
+    );
   }
 }

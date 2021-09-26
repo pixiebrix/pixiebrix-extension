@@ -16,11 +16,10 @@
  */
 
 /* eslint-disable security/detect-object-injection */
-import { Field, useField } from "formik";
+import { useField } from "formik";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import styles from "./FieldEditor.module.scss";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
-import { Row, Form as BootstrapForm, Col } from "react-bootstrap";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import {
   FIELD_TYPE_OPTIONS,
@@ -34,6 +33,8 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import OptionsWidget from "@/components/form/widgets/OptionsWidget";
+import { CheckBoxLike } from "@/components/form/switchButton/SwitchButton";
+import { uniq } from "lodash";
 
 const FieldEditor: React.FC<{
   name: string;
@@ -112,6 +113,14 @@ const FieldEditor: React.FC<{
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete draft.schema.properties[propertyName];
 
+      if (draft.schema.required?.includes(propertyName)) {
+        draft.schema.required = replaceStringInArray(
+          draft.schema.required,
+          propertyName,
+          nextName
+        );
+      }
+
       const nextUiOrder = replaceStringInArray(
         draft.uiSchema[UI_ORDER],
         propertyName,
@@ -185,8 +194,32 @@ const FieldEditor: React.FC<{
       : selected;
   };
 
+  const onRequiredChange = ({
+    target: { value: nextIsRequired },
+  }: React.ChangeEvent<CheckBoxLike>) => {
+    const nextRjsfSchema = produce(rjsfSchema, (draft) => {
+      if (!draft.schema.required) {
+        draft.schema.required = [];
+      }
+
+      if (nextIsRequired) {
+        draft.schema.required.push(propertyName);
+        draft.schema.required = uniq(draft.schema.required);
+      } else {
+        draft.schema.required = replaceStringInArray(
+          draft.schema.required,
+          propertyName
+        );
+      }
+    });
+
+    setRjsfSchema(nextRjsfSchema);
+  };
+
+  const isRequired = (schema.required ?? []).includes(propertyName);
+
   return (
-    <div>
+    <div className={styles.root}>
       <FieldTemplate
         required
         name={`${name}.${propertyName}`}
@@ -196,25 +229,31 @@ const FieldEditor: React.FC<{
         onBlur={updatePropertyName}
         touched
         error={propertyNameError}
+        description="Enter a name to refer to this value in the output later"
       />
-      <ConnectedFieldTemplate name={getFullFieldName("title")} label="Label" />
+      <ConnectedFieldTemplate
+        name={getFullFieldName("title")}
+        label="Label"
+        description="The user-visible label for this field"
+      />
       <ConnectedFieldTemplate
         name={getFullFieldName("description")}
-        label="Help text"
+        label="Field Description"
+        description="Explain to the user what this field is used for"
       />
-      <ConnectedFieldTemplate
-        name={getFullFieldName("default")}
-        label="Default value"
-      />
-
       <FieldTemplate
         name={getFullFieldName("uiType")}
-        label="Type"
+        label="Input Type"
         as={SelectWidget}
         blankValue={null}
         options={FIELD_TYPE_OPTIONS}
         value={getSelectedUiTypeOption().value}
         onChange={onUiTypeChange}
+      />
+      <ConnectedFieldTemplate
+        name={getFullFieldName("default")}
+        label="Default value"
+        type={parseUiType(getSelectedUiTypeOption().value).propertyType}
       />
 
       {propertySchema.enum && (
@@ -225,18 +264,13 @@ const FieldEditor: React.FC<{
         />
       )}
 
-      <BootstrapForm.Group as={Row}>
-        <BootstrapForm.Label column sm="3">
-          Required
-        </BootstrapForm.Label>
-        <Col sm="9" className={styles.fieldColumn}>
-          <Field
-            type="checkbox"
-            name={`${name}.schema.required`}
-            value={propertyName}
-          />
-        </Col>
-      </BootstrapForm.Group>
+      <FieldTemplate
+        name={`${name}.schema.required`}
+        label="Required Field?"
+        layout="switch"
+        value={isRequired}
+        onChange={onRequiredChange}
+      />
     </div>
   );
 };

@@ -96,7 +96,9 @@ const SIZE_REGEX = /^(?<size>\d)x$/i;
 const BrickIcon: React.FunctionComponent<{
   brick: IBrick;
   size?: "1x" | "2x";
-}> = ({ brick, size = "1x" }) => {
+  // This prop sets a className only in cases where a <FontAwesomeIcon/> is used
+  faIconClass?: string;
+}> = ({ brick, size = "1x", faIconClass = "" }) => {
   const [type] = useAsyncState(async () => getType(brick), [brick]);
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
@@ -123,7 +125,7 @@ const BrickIcon: React.FunctionComponent<{
         <FontAwesomeIcon
           icon={fa_icon}
           color={listing?.icon_color}
-          className={cx({ "text-muted": !listing?.icon_color })}
+          className={cx(faIconClass, { "text-muted": !listing?.icon_color })}
           size={size}
           fixedWidth
         />
