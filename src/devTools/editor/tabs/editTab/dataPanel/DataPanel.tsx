@@ -17,10 +17,7 @@
 
 import React, { useContext, useMemo } from "react";
 import { UUID } from "@/core";
-import useInterval from "@/hooks/useInterval";
-import { isEmpty, pickBy, sortBy } from "lodash";
-import { useAsyncState } from "@/hooks/common";
-import { getByInstanceId } from "@/telemetry/trace";
+import { isEmpty, pickBy } from "lodash";
 import { useField, useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
@@ -40,19 +37,8 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import AuthContext from "@/auth/AuthContext";
-
-const TRACE_RELOAD_MILLIS = 250;
-
-function useLatestTraceRecord(instanceId: UUID) {
-  return useAsyncState(async () => {
-    if (instanceId == null) {
-      throw new Error("No instance id found");
-    }
-
-    const records = await getByInstanceId(instanceId);
-    return sortBy(records, (x) => new Date(x.timestamp)).reverse()[0];
-  }, [instanceId]);
-}
+import { useSelector } from "react-redux";
+import { makeSelectBlockTrace } from "@/devTools/editor/slices/runtimeSelectors";
 
 const contextFilter = (value: unknown, key: string) => {
   if (!key.startsWith("@")) {
@@ -138,11 +124,10 @@ const DataPanel: React.FC<{
 
   const { values: formState } = useFormikContext<FormState>();
 
-  const [record, isLoading, error, recalculate] = useLatestTraceRecord(
-    instanceId
-  );
-
-  useInterval(recalculate, TRACE_RELOAD_MILLIS);
+  const { record } = useSelector(makeSelectBlockTrace(instanceId));
+  // FIXME: what state should flow through to the tab?
+  const isLoading = false;
+  const error: unknown = null;
 
   const relevantContext = useMemo(
     () => pickBy(record?.templateContext ?? {}, contextFilter),
