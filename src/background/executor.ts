@@ -135,7 +135,8 @@ handlers.set(
     }
 
     return runBlockInContentScript(
-      { tabId: opener },
+      // For now, only support top-level frame as opener
+      { tabId: opener, frameId: TOP_LEVEL_FRAME },
       {
         sourceTabId: sender.tab.id,
         ...request.payload,
@@ -290,11 +291,7 @@ async function linkTabListener(tab: Tabs.Tab): Promise<void> {
   if (tab.openerTabId) {
     tabToOpener.set(tab.id, tab.openerTabId);
     tabToTarget.set(tab.openerTabId, tab.id);
-    try {
-      await linkChildTab({ tabId: tab.openerTabId, frameId: 0 }, tab.id);
-    } catch (error: unknown) {
-      console.warn("Error linking child tab", error);
-    }
+    linkChildTab({ tabId: tab.openerTabId, frameId: 0 }, tab.id);
   }
 }
 

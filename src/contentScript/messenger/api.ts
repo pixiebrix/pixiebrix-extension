@@ -71,7 +71,9 @@ export const handleNavigate = getContentScriptMethod("HANDLE_NAVIGATE", {
   isNotification: true,
 });
 export const showNotification = getContentScriptMethod("SHOW_NOTIFICATION");
-export const linkChildTab = getContentScriptMethod("LINK_CHILD_TAB");
+export const linkChildTab = getContentScriptMethod("LINK_CHILD_TAB", {
+  isNotification: true,
+});
 export const runBlockInContentScript = getContentScriptMethod(
   "CONTENT_MESSAGE_RUN_BLOCK"
 );
