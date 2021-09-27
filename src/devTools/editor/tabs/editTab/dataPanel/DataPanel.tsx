@@ -17,10 +17,7 @@
 
 import React, { useContext, useMemo } from "react";
 import { UUID } from "@/core";
-import useInterval from "@/hooks/useInterval";
-import { isEmpty, pickBy, sortBy } from "lodash";
-import { useAsyncState } from "@/hooks/common";
-import { getByInstanceId } from "@/telemetry/trace";
+import { isEmpty, pickBy } from "lodash";
 import { useField, useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
@@ -32,27 +29,14 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockPreview, {
   usePreviewInfo,
 } from "@/devTools/editor/tabs/effect/BlockPreview";
-import GridLoader from "react-spinners/GridLoader";
-import { getErrorMessage } from "@/errors";
 import { BlockConfig } from "@/blocks/types";
 import useReduxState from "@/hooks/useReduxState";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
 import AuthContext from "@/auth/AuthContext";
-
-const TRACE_RELOAD_MILLIS = 250;
-
-function useLatestTraceRecord(instanceId: UUID) {
-  return useAsyncState(async () => {
-    if (instanceId == null) {
-      throw new Error("No instance id found");
-    }
-
-    const records = await getByInstanceId(instanceId);
-    return sortBy(records, (x) => new Date(x.timestamp)).reverse()[0];
-  }, [instanceId]);
-}
+import { useSelector } from "react-redux";
+import { makeSelectBlockTrace } from "@/devTools/editor/slices/runtimeSelectors";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -78,21 +62,13 @@ type TabStateProps = {
 };
 
 const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
-  isLoading = false,
   isTraceEmpty = false,
   isTraceOptional = false,
-  error,
   children,
   ...tabProps
 }) => {
   let contents;
-  if (isLoading) {
-    contents = (
-      <div className={styles.loading}>
-        <GridLoader />
-      </div>
-    );
-  } else if (isTraceEmpty && isTraceOptional) {
+  if (isTraceEmpty && isTraceOptional) {
     contents = (
       <>
         <div className="text-muted">
@@ -110,12 +86,6 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
     contents = (
       <div className="text-muted">
         No trace available, run the extension to generate data
-      </div>
-    );
-  } else if (error) {
-    contents = (
-      <div className="text-danger">
-        Error loading trace: {getErrorMessage(error)}
       </div>
     );
   } else {
@@ -139,11 +109,7 @@ const DataPanel: React.FC<{
 
   const { values: formState } = useFormikContext<FormState>();
 
-  const [record, isLoading, error, recalculate] = useLatestTraceRecord(
-    instanceId
-  );
-
-  useInterval(recalculate, TRACE_RELOAD_MILLIS);
+  const { record } = useSelector(makeSelectBlockTrace(instanceId));
 
   const relevantContext = useMemo(
     () => pickBy(record?.templateContext ?? {}, contextFilter),
@@ -193,12 +159,7 @@ const DataPanel: React.FC<{
         </Nav.Item>
       </Nav>
       <Tab.Content>
-        <DataTab
-          eventKey="context"
-          isLoading={isLoading}
-          isTraceEmpty={!record}
-          error={error}
-        >
+        <DataTab eventKey="context" isTraceEmpty={!record}>
           <JsonTree data={relevantContext} copyable searchable />
         </DataTab>
         {showDeveloperTabs && (
@@ -219,22 +180,15 @@ const DataPanel: React.FC<{
             </DataTab>
           </>
         )}
-        <DataTab
-          eventKey="rendered"
-          isLoading={isLoading}
-          isTraceEmpty={!record}
-          error={error}
-        >
+        <DataTab eventKey="rendered" isTraceEmpty={!record}>
           {record && (
             <JsonTree data={record.renderedArgs} copyable searchable />
           )}
         </DataTab>
         <DataTab
           eventKey="output"
-          isLoading={isLoading}
           isTraceEmpty={!record}
           isTraceOptional={previewInfo?.traceOptional}
-          error={error}
         >
           {record && "output" in record && (
             <JsonTree data={record.output} copyable searchable label="Data" />
@@ -245,7 +199,6 @@ const DataPanel: React.FC<{
         </DataTab>
         <DataTab
           eventKey="preview"
-          isLoading={isLoading}
           isTraceEmpty={false}
           error={null}
           // Only mount if the user is viewing it, because output previews take up resources to run

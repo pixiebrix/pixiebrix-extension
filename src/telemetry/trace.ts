@@ -82,6 +82,8 @@ export type TraceExitData = TraceRecordMeta & (Output | ErrorOutput);
 
 export type TraceRecord = TraceEntryData & Partial<TraceExitData>;
 
+export type TraceError = TraceEntryData & ErrorOutput;
+
 const indexKeys: Array<
   keyof Pick<TraceRecordMeta, "runId" | "blockInstanceId" | "extensionId">
 > = ["runId", "blockInstanceId", "extensionId"];
@@ -193,6 +195,33 @@ export async function clearExtensionTraces(extensionId: UUID): Promise<void> {
   }
 
   console.debug("Cleared %d trace entries for extension %s", cnt, extensionId);
+}
+
+export async function getLatestRunByExtensionId(
+  extensionId: UUID
+): Promise<TraceRecord[]> {
+  const db = await getDB();
+  const tx = db.transaction(ENTRY_OBJECT_STORE, "readonly");
+
+  const matches = [];
+  for await (const cursor of tx.store) {
+    if (cursor.value.extensionId === extensionId) {
+      matches.push(cursor.value);
+    }
+  }
+
+  // Use both reverse and sortBy because we want insertion order if there's a tie in the timestamp
+  const sorted = sortBy(
+    matches.reverse(),
+    (x) => -new Date(x.timestamp).getTime()
+  );
+
+  if (sorted.length > 0) {
+    const { runId } = sorted[0];
+    return sorted.filter((x) => x.runId === runId);
+  }
+
+  return [];
 }
 
 export async function getByInstanceId(
