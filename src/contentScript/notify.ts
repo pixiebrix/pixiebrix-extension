@@ -17,12 +17,15 @@
 
 import { merge } from "lodash";
 
+interface Notification {
+  message: string;
+  className: "error" | "info" | "success";
+}
 export async function showNotification(
-  message: string,
-  className: "error" | "info" | "success"
+  notification: Notification
 ): Promise<void> {
-  $.notify(message, {
-    className,
+  $.notify(notification.message, {
+    className: notification.className,
   });
 }
 
