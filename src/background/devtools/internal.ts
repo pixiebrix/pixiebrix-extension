@@ -39,10 +39,10 @@ import { isBackgroundPage } from "webext-detect-page";
 import { uuidv4 } from "@/types/helpers";
 import { callBackground } from "@/background/devtools/external";
 import { ensureContentScript } from "@/background/util";
-import * as nativeEditorProtocol from "@/nativeEditor";
 import { reactivate } from "@/background/navigation";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 import { getErrorMessage, isPrivatePageError } from "@/errors";
+import { clearDynamicElements } from "@/contentScript/messenger/api";
 
 const TOP_LEVEL_FRAME_ID = 0;
 
@@ -184,10 +184,7 @@ export function liftBackground<
 
 async function resetTab(tabId: number): Promise<void> {
   try {
-    await nativeEditorProtocol.clear(
-      { tabId, frameId: TOP_LEVEL_FRAME_ID },
-      {}
-    );
+    await clearDynamicElements({ tabId, frameId: TOP_LEVEL_FRAME_ID }, {});
   } catch (error: unknown) {
     console.warn("Error clearing dynamic elements for tab: %d", tabId, {
       error,

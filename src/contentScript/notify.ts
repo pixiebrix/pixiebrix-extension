@@ -15,17 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { merge } from "lodash";
 
-export const showNotification = liftContentScript(
-  "SHOW_NOTIFICATION",
-  async ({ message, className }: { message: string; className: string }) => {
-    $.notify(message, {
-      className,
-    });
-  }
-);
+interface Notification {
+  message: string;
+  className: "error" | "info" | "success";
+}
+export async function showNotification(
+  notification: Notification
+): Promise<void> {
+  $.notify(notification.message, {
+    className: notification.className,
+  });
+}
 
 export const DEFAULT_ACTION_RESULTS = {
   error: {

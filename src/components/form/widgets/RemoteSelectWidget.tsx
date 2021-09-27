@@ -18,20 +18,42 @@
 import React from "react";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
 import { SanitizedServiceConfiguration } from "@/core";
-import { useAsyncState } from "@/hooks/common";
+import { AsyncState, useAsyncState } from "@/hooks/common";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 import { BusinessError } from "@/errors";
+import isPromise from "is-promise";
 
-export type OptionsFactory = (
+export type OptionsFactory<T = unknown> = (
   config: SanitizedServiceConfiguration
-) => Promise<Option[]>;
+) => Promise<Array<Option<T>>>;
 
-type OwnProps = {
+type OwnProps<T = unknown> = {
   isClearable?: boolean;
-  optionsFactory: OptionsFactory;
+  optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
   config: SanitizedServiceConfiguration | null;
   loadingMessage?: string;
 };
+
+export function useOptionsResolver<T>(
+  config: SanitizedServiceConfiguration,
+  optionsFactory: OptionsFactory<T>
+): AsyncState<Array<Option<T>>> {
+  return useAsyncState<Array<Option<T>>>(async () => {
+    if (isPromise(optionsFactory)) {
+      console.debug("Options is a promise, returning promise directly");
+      return (optionsFactory as unknown) as Promise<Array<Option<T>>>;
+    }
+
+    if (config) {
+      console.debug("Options is a factory, fetching options with config", {
+        config,
+      });
+      return optionsFactory(config);
+    }
+
+    throw new BusinessError("No integration configured");
+  }, [config, optionsFactory]);
+}
 
 /**
  * Widget for selecting values retrieved from a 3rd party API
@@ -41,13 +63,10 @@ const RemoteSelectWidget: CustomFieldWidget<OwnProps> = ({
   optionsFactory,
   ...selectProps
 }) => {
-  const [options, isLoading, error] = useAsyncState(async () => {
-    if (config) {
-      return optionsFactory(config);
-    }
-
-    throw new BusinessError("No integration configured");
-  }, [config, optionsFactory]);
+  const [options, isLoading, error] = useOptionsResolver(
+    config,
+    optionsFactory
+  );
 
   return (
     <SelectWidget

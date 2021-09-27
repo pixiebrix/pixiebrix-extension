@@ -17,40 +17,39 @@
 
 import React from "react";
 import { CustomFieldWidget } from "@/components/form/FieldTemplate";
+import { useField } from "formik";
 import Select from "react-select";
+import { Option } from "@/components/form/widgets/SelectWidget";
+import { SanitizedServiceConfiguration } from "@/core";
+import {
+  OptionsFactory,
+  useOptionsResolver,
+} from "@/components/form/widgets/RemoteSelectWidget";
 import { getErrorMessage } from "@/errors";
 
-export type Option<TValue = unknown> = {
-  label: string;
-  value: TValue;
-};
-
-// The signature of onChange is dictated by the compatibility with Formik. for a Widget to be compatible with Formik
-// it should trigger onChange with an event, that has target and value
-export type SelectWidgetOnChange<TOption extends Option = Option> = (event: {
-  target: { value: TOption["value"]; name: string; options: TOption[] };
-}) => void;
-
-type OwnProps<TOption extends Option = Option> = {
+type OwnProps<T = unknown> = {
   isClearable?: boolean;
-  options: TOption[];
-  isLoading?: boolean;
+  optionsFactory: OptionsFactory<T> | Promise<Array<Option<T>>>;
+  config: SanitizedServiceConfiguration | null;
   loadingMessage?: string;
-  error?: unknown;
-  onChange?: SelectWidgetOnChange<TOption>;
 };
 
-const SelectWidget: CustomFieldWidget<OwnProps> = ({
-  id,
-  options,
+/**
+ * @see RemoteSelectWidget
+ */
+const RemoteMultiSelectWidget: CustomFieldWidget<OwnProps> = ({
   isClearable = false,
-  isLoading,
-  loadError,
   disabled,
-  value,
-  onChange,
-  name,
+  optionsFactory,
+  config,
+  ...props
 }) => {
+  const [field, , helpers] = useField<unknown[]>(props);
+  const [options, isLoading, loadError] = useOptionsResolver(
+    config,
+    optionsFactory
+  );
+
   if (loadError) {
     return (
       <div className="text-danger">
@@ -59,22 +58,23 @@ const SelectWidget: CustomFieldWidget<OwnProps> = ({
     );
   }
 
-  const patchedOnChange = ({ value }: Option) => {
-    onChange({ target: { value, name, options } });
-  };
-
   return (
     <Select
-      inputId={id}
-      name={name}
+      isMulti
       isDisabled={disabled}
-      isLoading={isLoading}
       isClearable={isClearable}
-      options={options}
-      value={options?.find((option: Option) => value === option.value)}
-      onChange={patchedOnChange}
+      options={options ?? []}
+      isLoading={isLoading}
+      value={
+        options?.filter((option: Option) =>
+          (field.value ?? []).includes(option.value)
+        ) ?? []
+      }
+      onChange={(options) => {
+        helpers.setValue(options.map((option) => option.value));
+      }}
     />
   );
 };
 
-export default SelectWidget;
+export default RemoteMultiSelectWidget;

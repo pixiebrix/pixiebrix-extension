@@ -18,7 +18,7 @@
 import { useSelector } from "react-redux";
 import { Button, Card, Table } from "react-bootstrap";
 import React, { useCallback, useContext } from "react";
-import { IService, RawServiceConfiguration } from "@/core";
+import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { RootState } from "@/options/store";
 import { uuidv4 } from "@/types/helpers";
 import BrickModal from "@/components/brickModal/BrickModal";
@@ -32,6 +32,7 @@ import AuthContext from "@/auth/AuthContext";
 import { deleteCachedAuth } from "@/background/requests";
 import { ServicesState } from "@/options/slices";
 import useNotifications from "@/hooks/useNotifications";
+import styles from "./PrivateServicesCard.module.scss";
 
 const selectConfiguredServices = ({ services }: { services: ServicesState }) =>
   Object.values(services.configured);
@@ -55,7 +56,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   );
 
   const resetAuth = useCallback(
-    async (authId: string) => {
+    async (authId: UUID) => {
       try {
         await deleteCachedAuth(authId);
         notify.success("Reset login for integration");
@@ -183,6 +184,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
         <BrickModal
           onSelect={onSelect}
           bricks={services}
+          modalClassName={styles.ModalOverride}
           selectCaption={
             <span>
               <FontAwesomeIcon icon={faPlus} className="mr-1" /> Configure

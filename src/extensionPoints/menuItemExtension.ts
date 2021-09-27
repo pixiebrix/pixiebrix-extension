@@ -25,6 +25,7 @@ import {
   mergeReaders,
   blockList,
   makeServiceContext,
+  apiVersionOptions,
 } from "@/blocks/combinators";
 import { reportError } from "@/telemetry/logging";
 import {
@@ -479,6 +480,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           validate: true,
           serviceArgs: serviceContext,
           optionsArgs: extension.optionsArgs,
+          ...apiVersionOptions(extension.apiVersion),
         }
       );
 
@@ -523,6 +525,7 @@ export abstract class MenuItemExtensionPoint extends ExtensionPoint<MenuItemExte
           validate: true,
           serviceArgs: serviceContext,
           optionsArgs: extension.optionsArgs,
+          ...apiVersionOptions(extension.apiVersion),
         });
 
         extensionLogger.info("Successfully ran menu action");

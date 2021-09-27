@@ -15,11 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export {
-  clearDynamicElements,
-  enableOverlay,
-  disableOverlay,
-  updateDynamicElement,
-} from "./dynamic";
-export { insertButton } from "./insertButton";
-export { insertPanel } from "./insertPanel";
+import { OptionsFactory } from "@/components/form/widgets/RemoteSelectWidget";
+import { SanitizedServiceConfiguration } from "@/core";
+import { Option } from "@/components/form/widgets/SelectWidget";
+
+export function optionalFactory(factory: OptionsFactory): OptionsFactory {
+  return async (config: SanitizedServiceConfiguration) => {
+    if (config) {
+      return factory(config);
+    }
+
+    return [] as Option[];
+  };
+}

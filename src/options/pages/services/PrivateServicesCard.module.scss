@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,8 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Permissions } from "webextension-polyfill-ts";
+.ModalOverride {
+  :global(.BrickDetail) {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    background-color: white;
+  }
 
-export const PERMISSIONS_NOTIFICATIONS: Permissions.Permissions = {
-  permissions: ["notifications"],
-};
+  :global(code) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}

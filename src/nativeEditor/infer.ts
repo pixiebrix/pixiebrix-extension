@@ -16,9 +16,10 @@
  */
 
 import { uniq, compact, sortBy, unary, intersection } from "lodash";
-import { getCssSelector, css_selector_type } from "css-selector-generator";
+import { getCssSelector } from "css-selector-generator";
 import { isNullOrBlank, mostCommonElement } from "@/utils";
 import { BusinessError } from "@/errors";
+import { CssSelectorType } from "css-selector-generator/types/types";
 
 const BUTTON_TAGS: string[] = ["li", "button", "a", "span", "input", "svg"];
 const BUTTON_SELECTORS: string[] = ["[role='button']"];
@@ -456,7 +457,7 @@ function commonPanelHTML(tag: string, $items: JQuery): string {
   return outerHTML($common);
 }
 
-const DEFAULT_SELECTOR_PRIORITIES: css_selector_type[] = [
+const DEFAULT_SELECTOR_PRIORITIES: CssSelectorType[] = [
   "tag",
   "id",
   "class",
@@ -471,7 +472,7 @@ const DEFAULT_SELECTOR_PRIORITIES: css_selector_type[] = [
  */
 export function safeCssSelector(
   element: HTMLElement,
-  selectors: css_selector_type[] | undefined,
+  selectors: CssSelectorType[] | undefined,
   root: Element = undefined
 ): string {
   // https://github.com/fczbkk/css-selector-generator
@@ -501,7 +502,7 @@ export function inferSelectors(
   element: HTMLElement,
   root: Element = undefined
 ): string[] {
-  const makeSelector = (allowed: css_selector_type[]) => {
+  const makeSelector = (allowed: CssSelectorType[]) => {
     try {
       return safeCssSelector(element, allowed, root);
     } catch (error: unknown) {
