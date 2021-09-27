@@ -96,7 +96,7 @@ function useSearch<T extends IBrick>(
 type ModalProps<T extends IBrick = IBlock> = {
   bricks: T[];
   onSelect: (brick: T) => void;
-  selectCaption: React.ReactNode;
+  selectCaption?: React.ReactNode;
   recommendations?: RegistryId[];
   close: () => void;
 };
