@@ -15,10 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { deserializeError } from "serialize-error";
-import { isContentScript } from "webext-detect-page";
-import { withDetectFrameworkVersions, withSearchWindow } from "@/common";
 import { makeRead, ReaderTypeConfig } from "@/blocks/readers/factory";
 import FRAMEWORK_ADAPTERS from "@/frameworks/adapters";
 import { getComponentData } from "@/pageScript/protocol";
@@ -26,25 +23,12 @@ import blockRegistry from "@/blocks/registry";
 import { getCssSelector } from "css-selector-generator";
 import { runStage } from "@/blocks/combinators";
 import { IReader, RegistryId } from "@/core";
-import {
-  addListenerForUpdateSelectedElement,
-  selectedElement,
-} from "@/devTools/getSelectedElement";
-
-// Install handlers
-import "@/nativeEditor/insertButton";
-import "@/nativeEditor/insertPanel";
-import "@/nativeEditor/dynamic";
+import { selectedElement } from "@/devTools/getSelectedElement";
 import { isNullOrBlank, resolveObj } from "@/utils";
-import type { Target } from "@/types";
 import { BlockConfig } from "@/blocks/types";
 import { cloneDeep } from "lodash";
 import ConsoleLogger from "@/tests/ConsoleLogger";
 import { SerializableResponse } from "@/messaging/protocol";
-
-if (isContentScript()) {
-  addListenerForUpdateSelectedElement();
-}
 
 async function read(factory: () => Promise<unknown>): Promise<unknown> {
   try {
@@ -58,19 +42,6 @@ async function read(factory: () => Promise<unknown>): Promise<unknown> {
   }
 }
 
-export const detectFrameworks = liftContentScript(
-  "DETECT_FRAMEWORKS",
-  async () => withDetectFrameworkVersions(null)
-);
-
-export const searchWindow: (
-  target: Target,
-  query: string
-) => Promise<{ results: unknown[] }> = liftContentScript(
-  "SEARCH_WINDOW",
-  async (query: string) => withSearchWindow({ query })
-);
-
 export type RunBlockArgs = {
   blockConfig: BlockConfig;
   args: Record<string, unknown>;
@@ -79,82 +50,79 @@ export type RunBlockArgs = {
 /**
  * Run a single block (e.g., for generating output previews)
  */
-export const runBlock = liftContentScript(
-  "RUN_SINGLE_BLOCK",
-  async ({ blockConfig, args }: RunBlockArgs) => {
-    const block = await blockRegistry.lookup(blockConfig.id);
+export async function runBlock({ blockConfig, args }: RunBlockArgs) {
+  const block = await blockRegistry.lookup(blockConfig.id);
 
-    const result = await runStage(block, blockConfig, args, {
-      context: args,
-      logger: new ConsoleLogger(),
-      headless: true,
-      validate: true,
-      logValues: false,
-      // TODO: need to support other roots for triggers. Or we at least need to throw an error so we can show a message
-      //  in the UX that non-root contexts aren't supported
-      root: document,
-    });
+  const result = await runStage(block, blockConfig, args, {
+    context: args,
+    logger: new ConsoleLogger(),
+    headless: true,
+    validate: true,
+    logValues: false,
+    // TODO: need to support other roots for triggers. Or we at least need to throw an error so we can show a message
+    //  in the UX that non-root contexts aren't supported
+    root: document,
+  });
 
-    return cloneDeep(result) as SerializableResponse;
-  }
-);
+  return cloneDeep(result) as SerializableResponse;
+}
 
-export const runReaderBlock = liftContentScript(
-  "RUN_READER_BLOCK",
-  async ({ id, rootSelector }: { id: RegistryId; rootSelector?: string }) => {
-    const root = isNullOrBlank(rootSelector)
-      ? document
-      : // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
-        $(document).find(rootSelector).get(0);
+export async function runReaderBlock({
+  id,
+  rootSelector,
+}: {
+  id: RegistryId;
+  rootSelector?: string;
+}) {
+  const root = isNullOrBlank(rootSelector)
+    ? document
+    : // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for jquery find method
+      $(document).find(rootSelector).get(0);
 
-    if (id === "@pixiebrix/context-menu-data") {
-      // HACK: special handling for context menu built-in
-      if (root instanceof HTMLElement) {
-        return {
-          // TODO: extract the media type
-          mediaType: null,
-          // Use `innerText` because only want human readable elements
-          // https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent#differences_from_innertext
-          // eslint-disable-next-line unicorn/prefer-dom-node-text-content
-          linkText: root.tagName === "A" ? root.innerText : null,
-          linkUrl: root.tagName === "A" ? root.getAttribute("href") : null,
-          srcUrl: root.getAttribute("src"),
-          documentUrl: document.location.href,
-        };
-      }
-
+  if (id === "@pixiebrix/context-menu-data") {
+    // HACK: special handling for context menu built-in
+    if (root instanceof HTMLElement) {
       return {
-        selectionText: window.getSelection().toString(),
+        // TODO: extract the media type
+        mediaType: null,
+        // Use `innerText` because only want human readable elements
+        // https://developer.mozilla.org/en-US/docs/Web/API/Node/textContent#differences_from_innertext
+        // eslint-disable-next-line unicorn/prefer-dom-node-text-content
+        linkText: root.tagName === "A" ? root.innerText : null,
+        linkUrl: root.tagName === "A" ? root.getAttribute("href") : null,
+        srcUrl: root.getAttribute("src"),
         documentUrl: document.location.href,
       };
     }
 
-    const reader = (await blockRegistry.lookup(id)) as IReader;
-    return reader.read(root);
+    return {
+      selectionText: window.getSelection().toString(),
+      documentUrl: document.location.href,
+    };
   }
-);
 
-export const runReader = liftContentScript(
-  "RUN_READER",
-  async ({
-    config,
-    rootSelector,
-  }: {
-    config: ReaderTypeConfig;
-    rootSelector?: string;
-  }) => {
-    console.debug("runReader", { config, rootSelector });
+  const reader = (await blockRegistry.lookup(id)) as IReader;
+  return reader.read(root);
+}
 
-    const root = isNullOrBlank(rootSelector)
-      ? document
-      : // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
-        $(document).find(rootSelector).get(0);
+export async function runReader({
+  config,
+  rootSelector,
+}: {
+  config: ReaderTypeConfig;
+  rootSelector?: string;
+}) {
+  console.debug("runReader", { config, rootSelector });
 
-    return makeRead(config)(root);
-  }
-);
+  const root = isNullOrBlank(rootSelector)
+    ? document
+    : // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
+      $(document).find(rootSelector).get(0);
 
-export const readSelected = liftContentScript("READ_SELECTED", async () => {
+  return makeRead(config)(root);
+}
+
+export async function readSelected() {
   if (selectedElement) {
     const selector = getCssSelector(selectedElement);
     console.debug(`Generated selector: ${selector}`);
@@ -179,4 +147,4 @@ export const readSelected = liftContentScript("READ_SELECTED", async () => {
   return {
     error: "No element selected",
   };
-});
+}
