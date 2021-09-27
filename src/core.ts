@@ -135,15 +135,41 @@ export interface Logger {
   error: (error: unknown, data?: Data) => void;
 }
 
+export type ReaderRootMode = "document" | "element";
+
 export type ReaderRoot = HTMLElement | Document;
 
 export interface BlockOptions {
   // Using "any" for now so that blocks don't have to assert/cast all their argument types. We're checking
   // the inputs using yup/jsonschema, so the types should match what's expected.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ctxt: Record<string, any>;
+  /**
+   * The full context for the stage. Should only be used for internal logging/observeability. For user-configurable
+   * behavior expose a property the user can pass data to.
+   * @see runStage
+   */
+  ctxt: Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+
   logger: Logger;
+
+  /**
+   * The DOM root to use for readers that use selectors.
+   *
+   * Necessary for providing support for extensionPoints that can attach to multiple DOM elements (e.g., trigger
+   * and menuItem).
+   *
+   * Expose a rootMode property on readers to enable the user ton
+   *
+   */
   root: ReaderRoot;
+
+  /**
+   * True to throw an error if a renderer brick is encountered.
+   *
+   * Used to short-circuit execution in the contentScript so that the output of the previous step can be passed toa
+   * PixieBrix sidebar panel (i.e., actionPanel)
+   *
+   * @see runStage
+   */
   headless?: boolean;
 }
 

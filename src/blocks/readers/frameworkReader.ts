@@ -17,11 +17,20 @@
 
 import { Read } from "@/blocks/readers/factory";
 import { Framework } from "@/messaging/constants";
-import { ReaderOutput, ReaderRoot } from "@/core";
+import { ReaderOutput, ReaderRoot, ReaderRootMode } from "@/core";
 import { castArray, compact } from "lodash";
 import { getComponentData, ReadPayload } from "@/pageScript/protocol";
 
 export type FrameworkConfig = ReadPayload & {
+  /**
+   * Controls which root to use for the selector
+   * - `document`: always use the DOM document
+   * - `element`: use the context for the extension (e.g., the element that triggered the event)
+   *
+   * @see BlockOptions
+   */
+  rootMode?: ReaderRootMode;
+
   /**
    * @deprecated Legacy emberjs reader config. Use pathSpec instead
    */
@@ -32,6 +41,11 @@ function isHTMLElement(root: ReaderRoot): root is HTMLElement {
   return root !== document;
 }
 
+/**
+ * Returns a unique element selector for uniquely identifying an element across the contentScript/pageScript boundary.
+ *
+ * The selector is _NOT_ intended to be readable/robust over time.
+ */
 async function asyncFastCssSelector(element: HTMLElement): Promise<string> {
   // Load async because css-selector-generator references the window variable which fails when
   // generating headers
@@ -48,7 +62,7 @@ export function frameworkReadFactory(
 ): Read<FrameworkConfig> {
   async function read(
     reader: FrameworkConfig,
-    root: ReaderRoot
+    defaultRoot: ReaderRoot
   ): Promise<ReaderOutput> {
     const {
       selector,
@@ -58,7 +72,11 @@ export function frameworkReadFactory(
       optional,
       attrs,
       pathSpec,
+      // The default rootMode is `element` in order to preserve backward compatability in existing readers
+      rootMode = "element",
     } = reader;
+
+    const root = rootMode === "document" ? document : defaultRoot;
 
     const rootSelector = isHTMLElement(root)
       ? await asyncFastCssSelector(root)

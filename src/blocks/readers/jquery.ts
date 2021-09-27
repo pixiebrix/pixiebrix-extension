@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ReaderOutput } from "@/core";
+import { ReaderOutput, ReaderRootMode } from "@/core";
 import { asyncMapValues, sleep } from "@/utils";
 import { BusinessError, MultipleElementsFoundError } from "@/errors";
 
@@ -57,10 +57,11 @@ type Result =
   // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style -- can't use Record for recursive signature
   | { [key: string]: Result };
 
-export interface JQueryConfig {
+export type JQueryConfig = {
   type: "jquery";
+  rootMode: ReaderRootMode;
   selectors: SelectorMap;
-}
+};
 
 function cleanValue(value: string): string {
   return value.trim().replace(/\s+/g, " ");
@@ -224,9 +225,11 @@ async function select(
 
 export async function readJQuery(
   reader: JQueryConfig,
-  root: HTMLElement | Document
+  defaultRoot: HTMLElement | Document
 ): Promise<ReaderOutput> {
-  const { selectors } = reader;
+  const { selectors, rootMode } = reader;
+
+  const root = rootMode === "document" ? document : defaultRoot;
   const $root = $(root ?? document);
   if ($root.length === 0) {
     throw new Error("JQuery reader requires the document or element(s)");

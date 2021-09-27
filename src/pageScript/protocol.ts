@@ -31,13 +31,46 @@ export type PathSpec =
   | string[]
   | Record<string, string | { path: string; args: unknown }>;
 
+/**
+ * @see read (in script.ts)
+ */
 export type ReadOptions = {
-  pathSpec?: PathSpec;
+  /**
+   * If set/non-zero, attempt to re-read the component until a non-empty value is returned (default=0)
+   */
   waitMillis?: number;
+
+  /**
+   * When using waitMillis, the number of milliseconds to wait between retries
+   */
   retryMillis?: number;
+
+  /**
+   * The number of Framework components to traverse upward from the component selected with the selector (default=0)
+   *
+   * Used for when you want to read from a component for which there isn't a DOM element on the page. E.g., in React
+   * there will often be a non-DOM React Component with the interesting state that renders multiple presentation-only
+   * DOM elements as children
+   */
   traverseUp?: number;
-  rootProp?: string;
+
+  /**
+   * If true, do not throw an error if the component is not found (default=false)
+   */
   optional?: boolean;
+
+  /**
+   * An object specifying which properties to read from the component. If not provided, all properties are recursively
+   * read up to a hard-coded depth
+   *
+   * @see readPathSpec
+   */
+  pathSpec?: PathSpec;
+
+  /**
+   * The root component property for the pathSpec
+   */
+  rootProp?: string;
 };
 
 export type ReadPayload = ReadOptions & {

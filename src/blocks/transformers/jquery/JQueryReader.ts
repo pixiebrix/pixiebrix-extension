@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockOptions, Schema } from "@/core";
+import { BlockOptions, ReaderRootMode, Schema } from "@/core";
 import { readJQuery, SelectorMap } from "@/blocks/readers/jquery";
 
 export class JQueryReader extends Transformer {
@@ -34,6 +34,13 @@ export class JQueryReader extends Transformer {
     type: "object",
     required: ["selectors"],
     properties: {
+      rootMode: {
+        type: "string",
+        description:
+          "The root for selecting data. Either the document, or the element context from the foundation",
+        enum: ["document", "element"],
+        default: "document",
+      },
       selectors: {
         type: "object",
         additionalProperties: {
@@ -88,9 +95,12 @@ export class JQueryReader extends Transformer {
   }
 
   async transform(
-    { selectors }: { selectors: SelectorMap },
-    { root }: BlockOptions
+    {
+      selectors,
+      rootMode = "document",
+    }: { selectors: SelectorMap; rootMode: ReaderRootMode },
+    { root: defaultRoot }: BlockOptions
   ): Promise<unknown> {
-    return readJQuery({ type: "jquery", selectors }, root);
+    return readJQuery({ type: "jquery", rootMode, selectors }, defaultRoot);
   }
 }

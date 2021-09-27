@@ -16,7 +16,7 @@
  */
 
 import { Transformer } from "@/types";
-import { BlockArg, BlockOptions, Schema } from "@/core";
+import { BlockOptions, Schema } from "@/core";
 import {
   FrameworkConfig,
   frameworkReadFactory,
@@ -47,6 +47,13 @@ export class ComponentReader extends Transformer {
         type: "string",
         enum: KNOWN_READERS.filter((x) => x !== "jquery"),
       },
+      rootMode: {
+        type: "string",
+        description:
+          "The root for selecting data. Either the document, or the element context from the foundation",
+        enum: ["document", "element"],
+        default: "document",
+      },
       selector: {
         type: "string",
         format: "selector",
@@ -69,7 +76,10 @@ export class ComponentReader extends Transformer {
     return true;
   }
 
-  async transform(args: BlockArg, { root }: BlockOptions): Promise<unknown> {
-    return frameworkReadFactory(args.framework)(args as FrameworkConfig, root);
+  async transform(
+    args: FrameworkConfig,
+    { root: defaultRoot }: BlockOptions
+  ): Promise<unknown> {
+    return frameworkReadFactory(args.framework)(args, defaultRoot);
   }
 }

@@ -26,6 +26,12 @@
           "type": "string",
           "enum": ["react", "angularjs", "vue", "emberjs"]
         },
+        "rootMode": {
+          "type": "string",
+          "description": "The root for selecting data. Either the document, or the element context from the foundation",
+          "enum": ["document", "element"],
+          "default": "element"
+        },
         "selector": {
           "type": "string",
           "description": "The selector for the framework argument"
@@ -109,6 +115,12 @@
         "type": {
           "type": "string",
           "const": "jquery"
+        },
+        "rootMode": {
+          "type": "string",
+          "description": "The root for selecting data. Either the document, or the element context from the foundation",
+          "enum": ["document", "element"],
+          "default": "element"
         },
         "selectors": {
           "type": "object",
