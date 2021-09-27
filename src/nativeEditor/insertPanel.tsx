@@ -18,7 +18,6 @@
 // https://github.com/facebook/react/blob/7559722a865e89992f75ff38c1015a865660c3cd/packages/react-devtools-shared/src/backend/views/Highlighter/index.js
 
 import { uuidv4 } from "@/types/helpers";
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { ElementInfo } from "./frameworks";
 import { userSelectElement } from "./selector";
 import * as pageScript from "@/pageScript/protocol";
@@ -40,7 +39,7 @@ export type PanelSelectionResult = {
   containerInfo: ElementInfo;
 };
 
-export const insertPanel = liftContentScript("INSERT_PANEL", async () => {
+export async function insertPanel(): Promise<PanelSelectionResult> {
   const selected = await userSelectElement();
 
   const { container, selectors } = findContainer(selected);
@@ -65,4 +64,4 @@ export const insertPanel = liftContentScript("INSERT_PANEL", async () => {
   };
 
   return element;
-});
+}

@@ -16,35 +16,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as contentScript from "@/contentScript/lifecycle";
 import { liftBackground } from "@/background/protocol";
-import { browser, WebNavigation } from "webextension-polyfill-ts";
-import { reactivateTab } from "@/contentScript/messenger/api";
-import { notifyTabs } from "@/background/util";
-
-async function historyListener(
-  details: WebNavigation.OnHistoryStateUpdatedDetailsType
-) {
-  try {
-    await contentScript.notifyNavigation(
-      { tabId: details.tabId, frameId: details.frameId },
-      {}
-    );
-  } catch (error: unknown) {
-    console.warn("Error notifying page navigation", error);
-  }
-}
+import { browser } from "webextension-polyfill-ts";
+import { handleNavigate, reactivateTab } from "@/contentScript/messenger/api";
+import { forEachTab } from "@/background/util";
 
 function initNavigation(): void {
   // Updates from the history API
-  browser.webNavigation.onHistoryStateUpdated.addListener(historyListener);
+  browser.webNavigation.onHistoryStateUpdated.addListener(handleNavigate);
 }
 
 export const reactivate = liftBackground(
   "REACTIVATE",
   async () => {
     console.debug("Reactivate all tabs");
-    await notifyTabs(reactivateTab, "Reactivation failed for some tabs");
+    void forEachTab(reactivateTab);
   },
   { asyncResponse: false }
 );

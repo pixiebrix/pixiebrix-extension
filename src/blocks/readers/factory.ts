@@ -18,7 +18,14 @@
 import { Reader } from "@/types";
 import { checkAvailable } from "@/blocks/available";
 import { ValidationError } from "@/errors";
-import { Metadata, IReader, Schema, ReaderOutput, ReaderRoot } from "@/core";
+import {
+  Metadata,
+  IReader,
+  Schema,
+  ReaderOutput,
+  ReaderRoot,
+  ApiVersion,
+} from "@/core";
 import { Availability } from "@/blocks/types";
 import { Validator } from "@cfworker/json-schema";
 import { dereference } from "@/validators/generic";
@@ -39,7 +46,7 @@ export interface ReaderDefinition {
 export interface ReaderConfig<
   TDefinition extends ReaderDefinition = ReaderDefinition
 > {
-  apiVersion?: "v1";
+  apiVersion?: ApiVersion;
   metadata: Metadata;
   outputSchema: Schema;
   kind: "reader";

@@ -17,10 +17,8 @@
 
 import { browser, Runtime } from "webextension-polyfill-ts";
 import * as contentScriptProtocol from "@/contentScript/devTools";
-import * as robotProtocol from "@/contentScript/uipath";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import * as nativeSelectionProtocol from "@/nativeEditor/selector";
-import * as nativeEditorProtocol from "@/nativeEditor";
 import { PanelSelectionResult } from "@/nativeEditor/insertPanel";
 import { Availability } from "@/blocks/types";
 import { ReaderTypeConfig } from "@/blocks/readers/factory";
@@ -37,6 +35,7 @@ import {
   removeActionPanel,
   showActionPanel,
 } from "@/contentScript/messenger/api";
+import * as contentScript from "@/contentScript/messenger/api";
 
 export const registerPort = liftBackground(
   "REGISTER_PORT",
@@ -67,15 +66,14 @@ export const ensureScript = liftBackground(
 
 export const readSelectedElement = liftBackground(
   "READ_ELEMENT",
-  (target: Target) => async () => contentScriptProtocol.readSelected(target)
+  (target: Target) => async () => contentScript.readSelected(target)
 );
 
 export const detectFrameworks: (
   port: Runtime.Port
 ) => Promise<FrameworkMeta[]> = liftBackground(
   "DETECT_FRAMEWORKS",
-  (target: Target) => async () =>
-    contentScriptProtocol.detectFrameworks(target) as Promise<FrameworkMeta[]>
+  (target: Target) => async () => contentScript.detectFrameworks(target, null)
 );
 
 export const cancelSelectElement = liftBackground(
@@ -113,14 +111,14 @@ export const selectElement = liftBackground(
 
 export const insertButton = liftBackground(
   "INSERT_BUTTON",
-  (target: Target) => async () => nativeEditorProtocol.insertButton(target)
+  (target: Target) => async () => contentScript.insertButton(target)
 );
 
 export const insertPanel: (
   port: Runtime.Port
 ) => Promise<PanelSelectionResult> = liftBackground(
   "INSERT_PANEL",
-  (target: Target) => async () => nativeEditorProtocol.insertPanel(target)
+  (target: Target) => async () => contentScript.insertPanel(target)
 );
 
 export const showBrowserActionPanel = liftBackground(
@@ -131,42 +129,42 @@ export const showBrowserActionPanel = liftBackground(
 export const updateDynamicElement = liftBackground(
   "UPDATE_DYNAMIC_ELEMENT",
   (target: Target) => async (element: DynamicDefinition) =>
-    nativeEditorProtocol.updateDynamicElement(target, element)
+    contentScript.updateDynamicElement(target, element)
 );
 
 export const clearDynamicElements = liftBackground(
   "CLEAR_DYNAMIC",
   (target: Target) => async ({ uuid }: { uuid?: UUID }) =>
-    nativeEditorProtocol.clear(target, { uuid })
+    contentScript.clearDynamicElements(target, { uuid })
 );
 
 export const enableDataOverlay = liftBackground(
   "ENABLE_ELEMENT",
   (target: Target) => async (uuid: UUID) =>
-    nativeEditorProtocol.enableOverlay(target, `[data-uuid="${uuid}"]`)
+    contentScript.enableOverlay(target, `[data-uuid="${uuid}"]`)
 );
 
 export const enableSelectorOverlay = liftBackground(
   "ENABLE_SELECTOR",
   (target: Target) => async (selector: string) =>
-    nativeEditorProtocol.enableOverlay(target, selector)
+    contentScript.enableOverlay(target, selector)
 );
 
 export const disableOverlay = liftBackground(
   "DISABLE_ELEMENT",
-  (target: Target) => async () => nativeEditorProtocol.disableOverlay(target)
+  (target: Target) => async () => contentScript.disableOverlay(target)
 );
 
 export const getInstalledExtensionPointIds = liftBackground(
   "INSTALLED_EXTENSION_POINT_IDS",
   (target: Target) => async () =>
-    nativeEditorProtocol.getInstalledExtensionPointIds(target)
+    contentScript.getInstalledExtensionPointIds(target)
 );
 
 export const checkAvailable = liftBackground(
   "CHECK_AVAILABLE",
   (target: Target) => async (availability: Availability) =>
-    nativeEditorProtocol.checkAvailable(target, availability)
+    contentScript.checkAvailable(target, availability)
 );
 
 export const searchWindow: (
@@ -175,13 +173,13 @@ export const searchWindow: (
 ) => Promise<{ results: unknown[] }> = liftBackground(
   "SEARCH_WINDOW",
   (target: Target) => async (query: string) =>
-    contentScriptProtocol.searchWindow(target, query)
+    contentScript.searchWindow(target, query)
 );
 
 export const runBlock = liftBackground(
   "RUN_BLOCK",
   (target: Target) => async (args: contentScriptProtocol.RunBlockArgs) =>
-    contentScriptProtocol.runBlock(target, args)
+    contentScript.runBlock(target, args)
 );
 
 export const runReaderBlock = liftBackground(
@@ -193,7 +191,7 @@ export const runReaderBlock = liftBackground(
     id: RegistryId;
     rootSelector?: string;
   }) =>
-    contentScriptProtocol.runReaderBlock(target, {
+    contentScript.runReaderBlock(target, {
       id,
       rootSelector,
     })
@@ -208,7 +206,7 @@ export const runReader = liftBackground(
     config: ReaderTypeConfig;
     rootSelector?: string;
   }) =>
-    contentScriptProtocol.runReader(target, {
+    contentScript.runReader(target, {
       config,
       rootSelector,
     })
@@ -216,17 +214,16 @@ export const runReader = liftBackground(
 
 export const uninstallActionPanelPanel = liftBackground(
   "UNINSTALL_ACTION_PANEL_PANEL",
-  // False positive - it's the inner method that should be async
   (target) => async ({ extensionId }: { extensionId: UUID }) =>
     removeActionPanel(target, extensionId)
 );
 
 export const initUiPathRobot = liftBackground(
   "UIPATH_INIT",
-  (target: Target) => async () => robotProtocol.initRobot(target)
+  (target: Target) => async () => contentScript.initRobot(target)
 );
 
 export const getUiPathProcesses = liftBackground(
   "UIPATH_GET_PROCESSES",
-  (target: Target) => async () => robotProtocol.getProcesses(target)
+  (target: Target) => async () => contentScript.getProcesses(target)
 );

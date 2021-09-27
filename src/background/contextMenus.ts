@@ -20,8 +20,10 @@ import { browser, Menus, Tabs } from "webextension-polyfill-ts";
 import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { noop } from "lodash";
-import { handleMenuAction } from "@/contentScript/messenger/api";
-import { showNotification } from "@/contentScript/notify";
+import {
+  handleMenuAction,
+  showNotification,
+} from "@/contentScript/messenger/api";
 import { ensureContentScript } from "@/background/util";
 import { reportEvent } from "@/telemetry/events";
 import { getErrorMessage, hasCancelRootCause } from "@/errors";
@@ -75,22 +77,16 @@ async function dispatchMenu(
       args: info,
       maxWaitMillis: CONTEXT_MENU_INSTALL_MS,
     });
-    void showNotification(target, {
-      message: "Ran content menu item action",
-      className: "success",
-    });
+    void showNotification(target, "Ran content menu item action", "success");
   } catch (error: unknown) {
     if (hasCancelRootCause(error)) {
-      void showNotification(target, {
-        message: "The action was cancelled",
-        className: "info",
-      });
+      void showNotification(target, "The action was cancelled", "info");
     } else {
       const message = `Error processing context menu action: ${getErrorMessage(
         error
       )}`;
       reportError(new Error(message));
-      void showNotification(target, { message, className: "error" });
+      void showNotification(target, message, "error");
     }
   }
 

@@ -22,7 +22,7 @@ import { isBackgroundPage } from "webext-detect-page";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
 if (isBackgroundPage()) {
-  console.trace(
+  console.warn(
     "This should not have been imported in the background page. Use the API directly instead."
   );
 }

@@ -345,7 +345,7 @@ exports[`FormEditor renders simple schema 1`] = `
                       autocapitalize="none"
                       autocomplete="off"
                       autocorrect="off"
-                      id="react-select-2-input"
+                      id="rjsfSchema.schema.properties.firstName.uiType"
                       spellcheck="false"
                       style="box-sizing: content-box; width: 2px; border: 0px; opacity: 1; outline: 0; padding: 0px;"
                       tabindex="0"
@@ -383,6 +383,11 @@ exports[`FormEditor renders simple schema 1`] = `
                 </div>
               </div>
             </div>
+            <input
+              name="rjsfSchema.schema.properties.firstName.uiType"
+              type="hidden"
+              value="string::"
+            />
           </div>
         </div>
       </div>

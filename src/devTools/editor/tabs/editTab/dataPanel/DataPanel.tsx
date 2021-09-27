@@ -40,11 +40,10 @@ import AuthContext from "@/auth/AuthContext";
 import { useSelector } from "react-redux";
 import { makeSelectBlockTrace } from "@/devTools/editor/slices/runtimeSelectors";
 
+/**
+ * Exclude irrelevant top-level keys.
+ */
 const contextFilter = (value: unknown, key: string) => {
-  if (!key.startsWith("@")) {
-    return false;
-  }
-
   // `@options` comes from marketplace-installed extensions. There's a chance the user might add a brick that has
   // @options as an output key. In that case, we'd expect values to flow into it. So just checking to see if there's
   // any data is a good compromise even though we miss the corner-case where @options is user-defined but empty
@@ -52,6 +51,8 @@ const contextFilter = (value: unknown, key: string) => {
     return false;
   }
 
+  // At one point, we also excluded keys that weren't prefixed with "@" as a stop-gap for encouraging the use of output
+  // keys. With the introduction of ApiVersion v2, we removed that filter
   return true;
 };
 
