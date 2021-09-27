@@ -136,7 +136,7 @@ const ItemRenderer = ({
   // eslint-disable-next-line security/detect-object-injection -- numeric value from library
   const { data: brick } = searchResults[index];
   return (
-    <div style={style} className="brickResult">
+    <div style={style}>
       <BrickResult
         brick={brick}
         onShowDetail={() => {
