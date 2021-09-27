@@ -58,12 +58,14 @@ const tabFrames = new Map<number, number>();
 const webstores = ["chrome.google.com", "addons.mozilla.org"];
 async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
   const { protocol, hostname } = safeParseUrl(tab.url);
-  if (
-    !hostname ||
-    !protocol.startsWith("http") ||
-    webstores.includes(hostname)
-  ) {
-    // Page not supported/allowed. Just open the options page instead
+  console.log(tab.url, hostname);
+  if (webstores.includes(hostname)) {
+    void showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE_WEBSTORE", tab.index);
+    return;
+  }
+
+  if (!hostname || !protocol.startsWith("http")) {
+    // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
     return;
   }
