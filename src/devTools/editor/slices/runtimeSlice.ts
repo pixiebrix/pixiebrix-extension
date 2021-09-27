@@ -30,7 +30,7 @@ const initialState: RuntimeState = {
   extensionTraces: {},
 };
 
-function selectRunId(records: TraceRecord[]): UUID {
+export function selectRunId(records: TraceRecord[]): UUID {
   return (records ?? [])[0]?.runId;
 }
 

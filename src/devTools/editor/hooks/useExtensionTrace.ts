@@ -18,8 +18,11 @@
 import { getLatestRunByExtensionId } from "@/telemetry/trace";
 import useInterval from "@/hooks/useInterval";
 import { useDispatch, useSelector } from "react-redux";
-import runtimeSlice from "@/devTools/editor/slices/runtimeSlice";
+import runtimeSlice, {
+  selectRunId,
+} from "@/devTools/editor/slices/runtimeSlice";
 import { selectActiveExtension } from "@/devTools/editor/slices/editorSelectors";
+import { selectExtensionTrace } from "@/devTools/editor/slices/runtimeSelectors";
 
 const { setExtensionTrace } = runtimeSlice.actions;
 
@@ -32,10 +35,14 @@ function useExtensionTrace() {
   const dispatch = useDispatch();
   // XXX: should this use the Formik state to get the extension id instead? In practice they should always be in sync
   const extensionId = useSelector(selectActiveExtension);
+  const extensionTrace = useSelector(selectExtensionTrace);
 
   const refreshTrace = async () => {
     const records = await getLatestRunByExtensionId(extensionId);
-    dispatch(setExtensionTrace({ extensionId, records }));
+    // Keep the Redux log clean. Don't setExtensionTrace unless we have to
+    if (selectRunId(records) !== selectRunId(extensionTrace)) {
+      dispatch(setExtensionTrace({ extensionId, records }));
+    }
   };
 
   useInterval(refreshTrace, TRACE_RELOAD_MILLIS);

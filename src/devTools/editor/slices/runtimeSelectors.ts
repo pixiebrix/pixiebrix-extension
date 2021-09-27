@@ -33,10 +33,12 @@ export const selectTraceError: EditorSelector<TraceError> = (state) => {
   return (records ?? []).find((x) => "error" in x && x.error) as TraceError;
 };
 
+const EMPTY_TRACE: TraceRecord[] = Object.freeze([]) as TraceRecord[];
+
 export const selectExtensionTrace: EditorSelector<TraceRecord[]> = ({
   runtime,
   editor,
-}) => runtime.extensionTraces[editor.activeElement];
+}) => runtime.extensionTraces[editor.activeElement] ?? EMPTY_TRACE;
 
 export function makeSelectBlockTrace(
   blockInstanceId: UUID
