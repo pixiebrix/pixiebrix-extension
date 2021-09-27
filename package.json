@@ -288,6 +288,9 @@
       "jest-webextension-mock",
       "fake-indexeddb/auto"
     ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/testAfterEnv.js"
+    ],
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "!src/**/*.stories.tsx",
@@ -301,8 +304,8 @@
       "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
       "^@contrib/(.*)$": "<rootDir>/contrib/$1",
       "^@schemas/(.*)$": "<rootDir>/schemas/$1",
-      "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.module.(css|scss)$": "identity-obj-proxy",
+      "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
   },

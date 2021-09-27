@@ -2,7 +2,9 @@
 
 exports[`renders @pixiebrix/table brick in loading state 1`] = `
 <DocumentFragment>
-  <div>
+  <div
+    class="root"
+  >
     <div>
       <h3>
         A customizable table
@@ -99,6 +101,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                 role="row"
               >
                 <td
+                  class="SchemaTree__table_cell"
                   role="cell"
                 >
                   <span
@@ -125,6 +128,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                   </span>
                 </td>
                 <td
+                  class="SchemaTree__table_cell"
                   role="cell"
                 >
                   <span>
@@ -146,6 +150,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                   </span>
                 </td>
                 <td
+                  class="SchemaTree__table_cell"
                   role="cell"
                 >
                   <span
@@ -155,6 +160,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                   </span>
                 </td>
                 <td
+                  class="SchemaTree__table_cell"
                   role="cell"
                 >
                   Column labels and values to show
@@ -207,7 +213,9 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
 
 exports[`renders @pixiebrix/table loaded 1`] = `
 <DocumentFragment>
-  <div>
+  <div
+    class="root"
+  >
     <div>
       <h3>
         A customizable table
@@ -304,6 +312,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                 role="row"
               >
                 <td
+                  class="SchemaTree__table_cell"
                   role="cell"
                 >
                   <span
@@ -330,6 +339,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                   </span>
                 </td>
                 <td
+                  class="SchemaTree__table_cell"
                   role="cell"
                 >
                   <span>
@@ -351,6 +361,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                   </span>
                 </td>
                 <td
+                  class="SchemaTree__table_cell"
                   role="cell"
                 >
                   <span
@@ -360,6 +371,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                   </span>
                 </td>
                 <td
+                  class="SchemaTree__table_cell"
                   role="cell"
                 >
                   Column labels and values to show
@@ -412,7 +424,9 @@ exports[`renders @pixiebrix/table loaded 1`] = `
 
 exports[`renders empty brick in loading state 1`] = `
 <DocumentFragment>
-  <div>
+  <div
+    class="root"
+  >
     <div>
       <h3 />
       <code

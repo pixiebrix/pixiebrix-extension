@@ -15,4 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-process.env.SERVICE_URL = "https://app.pixiebrix.com";
+import $ from "jquery";
+import "@testing-library/jest-dom";
+
+global.$ = $;
+global.jQuery = $;
