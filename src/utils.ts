@@ -528,3 +528,10 @@ export function freshIdentifier(
 
   return `${root}${next}`;
 }
+
+export function camelCaseToSentenceCase(camelCase: string) {
+  const replaced = camelCase.replace(/([A-Z]+|\d+)/g, " $1");
+  const withFirstCharUpper =
+    replaced.charAt(0).toUpperCase() + replaced.slice(1);
+  return withFirstCharUpper.trimStart(); // In case the first char was upper already, remove extra space
+}

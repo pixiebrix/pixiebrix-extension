@@ -16,10 +16,11 @@
  */
 
 import { Schema, SchemaDefinition } from "@/core";
+import { camelCaseToSentenceCase } from "@/utils";
 
 export function fieldLabel(name: string): string {
   const parts = name.split(".");
-  return parts[parts.length - 1];
+  return camelCaseToSentenceCase(parts[parts.length - 1]);
 }
 
 type TypePredicate = (fieldDefinition: Schema) => boolean;
