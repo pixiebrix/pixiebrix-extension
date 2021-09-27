@@ -102,6 +102,7 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                   role="cell"
                 >
                   <span
+                    class=""
                     style="cursor: pointer; padding-left: 0rem;"
                     title="Toggle Row Expanded"
                   >
@@ -147,7 +148,11 @@ exports[`renders @pixiebrix/table brick in loading state 1`] = `
                 <td
                   role="cell"
                 >
-                  array of objects
+                  <span
+                    class=""
+                  >
+                    array of objects
+                  </span>
                 </td>
                 <td
                   role="cell"
@@ -302,6 +307,7 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                   role="cell"
                 >
                   <span
+                    class=""
                     style="cursor: pointer; padding-left: 0rem;"
                     title="Toggle Row Expanded"
                   >
@@ -347,7 +353,11 @@ exports[`renders @pixiebrix/table loaded 1`] = `
                 <td
                   role="cell"
                 >
-                  array of objects
+                  <span
+                    class=""
+                  >
+                    array of objects
+                  </span>
                 </td>
                 <td
                   role="cell"
