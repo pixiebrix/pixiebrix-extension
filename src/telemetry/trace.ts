@@ -82,6 +82,7 @@ export type TraceExitData = TraceRecordMeta & (Output | ErrorOutput);
 
 export type TraceRecord = TraceEntryData & Partial<TraceExitData>;
 
+export type TraceSuccess = TraceEntryData & Output;
 export type TraceError = TraceEntryData & ErrorOutput;
 
 const indexKeys: Array<

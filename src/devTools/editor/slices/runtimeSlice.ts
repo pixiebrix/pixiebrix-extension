@@ -30,10 +30,6 @@ const initialState: RuntimeState = {
   extensionTraces: {},
 };
 
-export function selectRunId(records: TraceRecord[]): UUID {
-  return (records ?? [])[0]?.runId;
-}
-
 const runtimeSlice = createSlice({
   name: "runtime",
   initialState,
@@ -43,14 +39,8 @@ const runtimeSlice = createSlice({
       { payload }: PayloadAction<{ extensionId: UUID; records: TraceRecord[] }>
     ) {
       const { extensionId, records } = payload;
-
-      // @ts-expect-error -- why does this cause infinite typing issues? Probably related to partial over sum type
-      const previousRunId = selectRunId(state.extensionTraces[extensionId]);
-      const currentRunId = selectRunId(records);
-
-      if (previousRunId !== currentRunId) {
-        state.extensionTraces[extensionId] = records;
-      }
+      // @ts-expect-error -- infinite type warning caused by Partial over Output and Error states in TraceRecord?
+      state.extensionTraces[extensionId] = records;
     },
   },
 });
