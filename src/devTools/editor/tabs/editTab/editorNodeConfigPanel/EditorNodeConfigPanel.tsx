@@ -29,6 +29,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import styles from "./EditorNodeConfigPanel.module.scss";
 import PopoverInfoLabel from "@/components/form/popoverInfoLabel/PopoverInfoLabel";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const OutputKeyWidget: CustomFieldWidget = (props: FieldProps) => (
   <InputGroup>
@@ -103,7 +104,9 @@ const EditorNodeConfigPanel: React.FC<{
         </Col>
       </Row>
 
-      <BlockConfiguration name={blockFieldName} blockId={blockId} />
+      <ErrorBoundary>
+        <BlockConfiguration name={blockFieldName} blockId={blockId} />
+      </ErrorBoundary>
     </>
   );
 };
