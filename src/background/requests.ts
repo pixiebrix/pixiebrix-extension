@@ -17,7 +17,7 @@
 
 import axios, { AxiosRequestConfig, AxiosResponse, Method } from "axios";
 import { liftBackground } from "@/background/protocol";
-import { SanitizedServiceConfiguration, ServiceConfig } from "@/core";
+import { SanitizedServiceConfiguration, ServiceConfig, UUID } from "@/core";
 import { pixieServiceFactory } from "@/services/locator";
 import { RemoteServiceError } from "@/services/errors";
 import serviceRegistry from "@/services/registry";
@@ -116,7 +116,7 @@ const backgroundRequest = liftBackground(
 
 export const deleteCachedAuth = liftBackground(
   "DELETE_CACHED_AUTH",
-  async (authId: string) => {
+  async (authId: UUID) => {
     await deleteCachedAuthData(authId);
   }
 );
