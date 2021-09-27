@@ -19,10 +19,10 @@ import { isBackgroundPage } from "webext-detect-page";
 import { reportError } from "@/telemetry/logging";
 import { ensureContentScript, showErrorInOptions } from "@/background/util";
 import { browser } from "webextension-polyfill-ts";
-import { sleep } from "@/utils";
+import { safeParseUrl, sleep } from "@/utils";
 import { JsonObject, JsonValue } from "type-fest";
 import { HandlerMap } from "@/messaging/protocol";
-import { getErrorMessage, isPrivatePageError } from "@/errors";
+import { getErrorMessage } from "@/errors";
 import { emitDevtools } from "@/background/devtools/internal";
 import {
   hideActionPanel,
@@ -55,7 +55,19 @@ const tabNonces = new Map<number, string | void>();
  */
 const tabFrames = new Map<number, number>();
 
+const webstores = ["chrome.google.com", "addons.mozilla.org"];
 async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
+  const { protocol, hostname } = safeParseUrl(tab.url);
+  if (
+    !hostname ||
+    !protocol.startsWith("http") ||
+    webstores.includes(hostname)
+  ) {
+    // Page not supported/allowed. Just open the options page instead
+    void browser.runtime.openOptionsPage();
+    return;
+  }
+
   // We're either getting a new frame, or getting rid of the existing one. Forget the old frame
   // id so we're not sending messages to a dead frame
   tabFrames.delete(tab.id);
@@ -75,20 +87,8 @@ async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
       frameId: TOP_LEVEL_FRAME_ID,
     });
   } catch (error: unknown) {
-    if (isPrivatePageError(error)) {
-      void showErrorInOptions(
-        "ERR_BROWSER_ACTION_TOGGLE_SPECIAL_PAGE",
-        tab.index
-      );
-      return;
-    }
-
-    // Firefox does not catch injection errors so we don't get a specific error message
-    // https://github.com/pixiebrix/pixiebrix-extension/issues/579#issuecomment-866451242
     await showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE", tab.index);
     console.error(error);
-
-    // Only report unknown-reason errors
     reportError(error);
   }
 }
