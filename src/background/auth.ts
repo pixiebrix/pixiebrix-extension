@@ -97,7 +97,7 @@ export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
     await setStorage(OAUTH2_STORAGE_KEY, current);
   } else {
     console.warn(
-      `deleteCachedAuthData: No cached auth data exists for key: %s`,
+      "deleteCachedAuthData: No cached auth data exists for key: %s",
       serviceAuthId
     );
   }
