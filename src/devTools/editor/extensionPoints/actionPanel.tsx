@@ -94,7 +94,7 @@ function fromNativeElement(
       metadata,
       definition: {
         isAvailable: makeIsAvailable(url),
-        reader: getImplicitReader(),
+        reader: getImplicitReader("actionPanel"),
       },
     },
     extension: {

@@ -116,7 +116,7 @@ function fromNativeElement(
       metadata,
       definition: {
         ...panel.foundation,
-        reader: getImplicitReader(),
+        reader: getImplicitReader("panel"),
         isAvailable: makeIsAvailable(url),
       },
       traits: DEFAULT_TRAITS,

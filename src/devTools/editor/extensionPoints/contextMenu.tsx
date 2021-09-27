@@ -100,7 +100,7 @@ function fromNativeElement(
     extensionPoint: {
       metadata,
       definition: {
-        reader: getImplicitReader(),
+        reader: getImplicitReader("contextMenu"),
         documentUrlPatterns: isAvailable.matchPatterns,
         contexts: ["all"],
         defaultOptions: {},

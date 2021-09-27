@@ -36,6 +36,7 @@ import React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import {
   BaseFormState,
+  ElementType,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
@@ -272,7 +273,18 @@ export function removeEmptyValues<T extends object>(obj: T): T {
 /**
  * Return a composite reader to automatically include in new extensions created with the Page Editor.
  */
-export function getImplicitReader(): SingleLayerReaderConfig {
+export function getImplicitReader(
+  elementType: ElementType
+): SingleLayerReaderConfig {
+  if (elementType === "trigger") {
+    return [
+      validateRegistryId("@pixiebrix/document-metadata"),
+      {
+        element: validateRegistryId("@pixiebrix/html/element"),
+      },
+    ] as SingleLayerReaderConfig;
+  }
+
   return [validateRegistryId("@pixiebrix/document-metadata")];
 }
 

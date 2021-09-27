@@ -17,6 +17,7 @@
 
 import { Reader } from "@/types";
 import { Schema } from "@/core";
+import { isHTMLElement } from "@/blocks/readers/frameworkReader";
 
 export class ElementReader extends Reader {
   defaultOutputKey = "element";
@@ -30,12 +31,9 @@ export class ElementReader extends Reader {
   }
 
   async read(elementOrDocument: HTMLElement | Document) {
-    const element = elementOrDocument as HTMLElement;
-
-    if (!element?.tagName) {
-      throw new Error("Expected an HTML Element");
-    }
-
+    const element = isHTMLElement(elementOrDocument)
+      ? elementOrDocument
+      : document.body;
     const $element = $(element);
 
     return {
@@ -73,7 +71,7 @@ export class ElementReader extends Reader {
         additionalProperties: true,
       },
     },
-    required: ["tagName", "attrs", "data", "text"],
+    required: ["tagName", "text", "attrs", "data"],
     additionalProperties: false,
   };
 

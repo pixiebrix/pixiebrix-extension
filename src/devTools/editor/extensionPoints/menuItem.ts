@@ -109,7 +109,7 @@ function fromNativeElement(
       metadata,
       definition: {
         ...button.menu,
-        reader: getImplicitReader(),
+        reader: getImplicitReader("menuItem"),
         isAvailable: makeIsAvailable(url),
       },
       traits: {

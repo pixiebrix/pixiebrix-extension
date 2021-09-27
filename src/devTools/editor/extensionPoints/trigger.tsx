@@ -94,7 +94,7 @@ function fromNativeElement(
       definition: {
         rootSelector: null,
         trigger: "load",
-        reader: getImplicitReader(),
+        reader: getImplicitReader("trigger"),
         isAvailable: makeIsAvailable(url),
       },
     },
