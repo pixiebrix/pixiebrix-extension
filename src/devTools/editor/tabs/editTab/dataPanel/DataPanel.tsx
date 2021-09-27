@@ -126,9 +126,6 @@ const DataPanel: React.FC<{
   const { values: formState } = useFormikContext<FormState>();
 
   const { record } = useSelector(makeSelectBlockTrace(instanceId));
-  // FIXME: what state should flow through to the tab?
-  const isLoading = false;
-  const error: unknown = null;
 
   const relevantContext = useMemo(
     () => pickBy(record?.templateContext ?? {}, contextFilter),
@@ -178,12 +175,7 @@ const DataPanel: React.FC<{
         </Nav.Item>
       </Nav>
       <Tab.Content>
-        <DataTab
-          eventKey="context"
-          isLoading={isLoading}
-          isTraceEmpty={!record}
-          error={error}
-        >
+        <DataTab eventKey="context" isTraceEmpty={!record}>
           <JsonTree data={relevantContext} copyable searchable />
         </DataTab>
         {showDeveloperTabs && (
@@ -204,22 +196,15 @@ const DataPanel: React.FC<{
             </DataTab>
           </>
         )}
-        <DataTab
-          eventKey="rendered"
-          isLoading={isLoading}
-          isTraceEmpty={!record}
-          error={error}
-        >
+        <DataTab eventKey="rendered" isTraceEmpty={!record}>
           {record && (
             <JsonTree data={record.renderedArgs} copyable searchable />
           )}
         </DataTab>
         <DataTab
           eventKey="output"
-          isLoading={isLoading}
           isTraceEmpty={!record}
           isTraceOptional={previewInfo?.traceOptional}
-          error={error}
         >
           {record && "output" in record && (
             <JsonTree data={record.output} copyable searchable label="Data" />
@@ -230,7 +215,6 @@ const DataPanel: React.FC<{
         </DataTab>
         <DataTab
           eventKey="preview"
-          isLoading={isLoading}
           isTraceEmpty={false}
           error={null}
           // Only mount if the user is viewing it, because output previews take up resources to run
