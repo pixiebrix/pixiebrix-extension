@@ -21,6 +21,7 @@ import Select from "react-select";
 import { getErrorMessage } from "@/errors";
 
 export type Option<TValue = unknown> = {
+  id?: string;
   label: string;
   value: TValue;
 };
@@ -41,6 +42,7 @@ type OwnProps<TOption extends Option = Option> = {
 };
 
 const SelectWidget: CustomFieldWidget<OwnProps> = ({
+  id,
   options,
   isClearable = false,
   isLoading,
@@ -64,6 +66,8 @@ const SelectWidget: CustomFieldWidget<OwnProps> = ({
 
   return (
     <Select
+      inputId={id}
+      name={name}
       isDisabled={disabled}
       isLoading={isLoading}
       isClearable={isClearable}
