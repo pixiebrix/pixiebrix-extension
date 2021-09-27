@@ -22,6 +22,7 @@ import styles from "./FieldEditor.module.scss";
 import { RJSFSchema, SetActiveField } from "./formBuilderTypes";
 import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import {
+  FIELD_TYPES_WITHOUT_DEFAULT,
   FIELD_TYPE_OPTIONS,
   parseUiType,
   replaceStringInArray,
@@ -143,15 +144,19 @@ const FieldEditor: React.FC<{
       const draftPropertySchema = draft.schema.properties[
         propertyName
       ] as Schema;
-      if (propertySchema.type !== propertyType) {
-        draftPropertySchema.default = undefined;
-        draftPropertySchema.type = propertyType;
-      }
+      draftPropertySchema.type = propertyType;
 
       if (propertyFormat) {
         draftPropertySchema.format = propertyFormat;
       } else {
         delete draftPropertySchema.format;
+      }
+
+      if (
+        propertySchema.type !== propertyType ||
+        propertySchema.format !== propertyFormat
+      ) {
+        delete draftPropertySchema.default;
       }
 
       if (uiWidget) {
@@ -165,7 +170,11 @@ const FieldEditor: React.FC<{
         delete draft.uiSchema[propertyName][UI_WIDGET];
       }
 
-      draftPropertySchema.enum = uiWidget === "select" ? [] : undefined;
+      if (uiWidget === "select") {
+        draftPropertySchema.enum = [];
+      } else {
+        delete draftPropertySchema.enum;
+      }
     });
 
     setRjsfSchema(nextRjsfSchema);
@@ -218,6 +227,8 @@ const FieldEditor: React.FC<{
 
   const isRequired = (schema.required ?? []).includes(propertyName);
 
+  const selectedUiTypeOption = getSelectedUiTypeOption();
+
   return (
     <div className={styles.root}>
       <FieldTemplate
@@ -247,14 +258,17 @@ const FieldEditor: React.FC<{
         as={SelectWidget}
         blankValue={null}
         options={FIELD_TYPE_OPTIONS}
-        value={getSelectedUiTypeOption().value}
+        value={selectedUiTypeOption.value}
         onChange={onUiTypeChange}
       />
-      <ConnectedFieldTemplate
-        name={getFullFieldName("default")}
-        label="Default value"
-        type={parseUiType(getSelectedUiTypeOption().value).propertyType}
-      />
+
+      {!FIELD_TYPES_WITHOUT_DEFAULT.includes(selectedUiTypeOption.value) && (
+        <ConnectedFieldTemplate
+          name={getFullFieldName("default")}
+          label="Default value"
+          type={parseUiType(selectedUiTypeOption.value).propertyType}
+        />
+      )}
 
       {propertySchema.enum && (
         <ConnectedFieldTemplate

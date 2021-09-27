@@ -67,6 +67,13 @@ export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
     value: stringifyUiType({ propertyType: "string", propertyFormat: "uri" }),
   },
   {
+    label: "File",
+    value: stringifyUiType({
+      propertyType: "string",
+      propertyFormat: "data-url",
+    }),
+  },
+  {
     label: "Date",
     value: stringifyUiType({ propertyType: "string", propertyFormat: "date" }),
   },
@@ -89,6 +96,13 @@ export const FIELD_TYPE_OPTIONS: SelectStringOption[] = [
     label: "Checkbox",
     value: stringifyUiType({ propertyType: "boolean" }),
   },
+];
+
+export const FIELD_TYPES_WITHOUT_DEFAULT = [
+  stringifyUiType({
+    propertyType: "string",
+    propertyFormat: "data-url",
+  }),
 ];
 
 /**

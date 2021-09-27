@@ -50,6 +50,8 @@ const FormPreview: React.FC<FormPreviewProps> = ({
     rjsfSchema
   );
 
+  console.log("FormPreview", rjsfSchema, schema, uiSchema);
+
   useEffect(() => {
     setData(null);
   }, [rjsfSchema]);
