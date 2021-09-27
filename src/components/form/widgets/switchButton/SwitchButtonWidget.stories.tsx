@@ -22,7 +22,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
 const componentMeta: ComponentMeta<typeof SwitchButtonWidget> = {
-  title: "Fields/SwitchButton",
+  title: "Fields/SwitchButtonWidget",
   component: SwitchButtonWidget,
   argTypes: {
     onChange: {
