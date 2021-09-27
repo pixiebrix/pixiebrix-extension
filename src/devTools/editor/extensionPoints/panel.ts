@@ -24,6 +24,7 @@ import {
   lookupExtensionPoint,
   makeInitialBaseState,
   makeIsAvailable,
+  PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
   readerHack,
   removeEmptyValues,
   selectIsAvailable,
@@ -152,11 +153,19 @@ function selectExtensionPoint(
 }
 
 function selectExtension(
-  { uuid, label, extensionPoint, extension, services }: PanelFormState,
+  {
+    uuid,
+    apiVersion,
+    label,
+    extensionPoint,
+    extension,
+    services,
+  }: PanelFormState,
   options: { includeInstanceIds?: boolean } = {}
 ): IExtension<PanelConfig> {
   return removeEmptyValues({
     id: uuid,
+    apiVersion,
     extensionPointId: extensionPoint.metadata.id,
     _recipe: null,
     label,
@@ -188,6 +197,7 @@ async function fromExtensionPoint(
 
   return {
     uuid: uuidv4(),
+    apiVersion: PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
     installed: true,
     type: "panel",
     label: `My ${getDomain(url)} panel`,
@@ -229,6 +239,7 @@ async function fromExtension(
 
   return {
     uuid: config.id,
+    apiVersion: config.apiVersion,
     installed: true,
     type: extensionPoint.definition.type,
     label: config.label,
