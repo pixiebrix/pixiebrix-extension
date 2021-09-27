@@ -77,16 +77,22 @@ async function dispatchMenu(
       args: info,
       maxWaitMillis: CONTEXT_MENU_INSTALL_MS,
     });
-    void showNotification(target, "Ran content menu item action", "success");
+    void showNotification(target, {
+      message: "Ran content menu item action",
+      className: "success",
+    });
   } catch (error: unknown) {
     if (hasCancelRootCause(error)) {
-      void showNotification(target, "The action was cancelled", "info");
+      void showNotification(target, {
+        message: "The action was cancelled",
+        className: "info",
+      });
     } else {
       const message = `Error processing context menu action: ${getErrorMessage(
         error
       )}`;
       reportError(new Error(message));
-      void showNotification(target, message, "error");
+      void showNotification(target, { message, className: "error" });
     }
   }
 

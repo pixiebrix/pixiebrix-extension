@@ -529,6 +529,15 @@ export function freshIdentifier(
   return `${root}${next}`;
 }
 
+/** Like `new URL(url)` except it never throws and always returns an URL object, empty if the url is invalid */
+export function safeParseUrl(url: string): URL {
+  try {
+    return new URL(url);
+  } catch {
+    return new URL("invalid-url://");
+  }
+}
+
 export function camelCaseToSentenceCase(camelCase: string) {
   const replaced = camelCase.replace(/([A-Z]+|\d+)/g, " $1");
   const withFirstCharUpper =

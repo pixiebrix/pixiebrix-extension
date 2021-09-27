@@ -21,7 +21,6 @@ import testItRenders, { ItRendersOptions } from "@/tests/testItRenders";
 import { fireEvent, render, screen } from "@testing-library/react";
 import React from "react";
 import { Except } from "type-fest";
-import { MINIMAL_UI_SCHEMA } from "./formBuilderHelpers";
 import {
   createFormikTemplate,
   fireTextInput,
@@ -32,8 +31,10 @@ import { RJSFSchema } from "./formBuilderTypes";
 import FormEditor, { FormEditorProps } from "./FormEditor";
 import {
   initAddingFieldCases,
+  initOneFieldSchemaCase,
   initRenamingCases,
 } from "./formEditor.testCases";
+import selectEvent from "react-select-event";
 
 describe("FormEditor", () => {
   const defaultProps: Except<FormEditorProps, "activeField"> = {
@@ -211,26 +212,9 @@ describe("FormEditor", () => {
 
   test("switches the required field", async () => {
     const fieldName = "firstName";
-    const schema: Schema = {
-      title: "A form",
-      type: "object",
-      properties: {
-        [fieldName]: {
-          type: "string",
-          title: "First name",
-        },
-        anotherFieldName: {
-          type: "string",
-          title: "Another field name",
-        },
-      },
-    };
     const onSubmitMock = jest.fn();
     const FormikTemplate = createFormikTemplate(
-      {
-        schema,
-        uiSchema: MINIMAL_UI_SCHEMA,
-      } as RJSFSchema,
+      initOneFieldSchemaCase(fieldName),
       onSubmitMock
     );
 
@@ -294,4 +278,41 @@ describe("FormEditor", () => {
       );
     }
   );
+
+  test("clears the default value when switches uiType", async () => {
+    const fieldName = "firstName";
+    const onSubmitMock = jest.fn();
+    const FormikTemplate = createFormikTemplate(
+      initOneFieldSchemaCase(fieldName),
+      onSubmitMock
+    );
+
+    render(
+      <FormikTemplate>
+        <FormEditor activeField={fieldName} {...defaultProps} />
+      </FormikTemplate>
+    );
+
+    const defaultValue = "Initial default value";
+    const defaultValueInput = screen.getByLabelText("Default value");
+    fireTextInput(defaultValueInput, defaultValue);
+
+    await fireFormSubmit();
+
+    expect(
+      // eslint-disable-next-line security/detect-object-injection
+      ((onSubmitMock.mock.calls[0][0][RJSF_SCHEMA_PROPERTY_NAME] as RJSFSchema)
+        .schema.properties[fieldName] as Schema).default
+    ).toBe(defaultValue);
+
+    await selectEvent.select(screen.getByLabelText("Input Type"), "File");
+
+    await fireFormSubmit();
+
+    expect(
+      // eslint-disable-next-line security/detect-object-injection
+      ((onSubmitMock.mock.calls[1][0][RJSF_SCHEMA_PROPERTY_NAME] as RJSFSchema)
+        .schema.properties[fieldName] as Schema).default
+    ).toBeUndefined();
+  });
 });

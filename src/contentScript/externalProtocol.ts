@@ -27,7 +27,6 @@ import pTimeout from "p-timeout";
 import oneMutation from "one-mutation";
 import { isContentScript } from "webext-detect-page";
 import { deserializeError } from "serialize-error";
-import { ContentScriptActionError } from "@/contentScript/backgroundProtocol";
 import { PIXIEBRIX_READY_ATTRIBUTE } from "@/contentScript/context";
 import { expectContext, forbidContext } from "@/utils/expectContext";
 
@@ -178,10 +177,7 @@ export function liftExternal<
   }
 
   return async (...args: TArguments) => {
-    forbidContext(
-      "extension",
-      new ContentScriptActionError("Expected call from external page")
-    );
+    forbidContext("extension");
 
     await waitExtensionLoaded();
 

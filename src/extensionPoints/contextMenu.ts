@@ -16,6 +16,7 @@
  */
 
 import {
+  apiVersionOptions,
   blockList,
   makeServiceContext,
   mergeReaders,
@@ -310,6 +311,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           validate: true,
           serviceArgs: serviceContext,
           optionsArgs: extension.optionsArgs,
+          ...apiVersionOptions(extension.apiVersion),
         });
       } catch (error: unknown) {
         if (isErrorObject(error)) {
