@@ -29,8 +29,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import BlockPreview, {
   usePreviewInfo,
 } from "@/devTools/editor/tabs/effect/BlockPreview";
-import GridLoader from "react-spinners/GridLoader";
-import { getErrorMessage } from "@/errors";
 import { BlockConfig } from "@/blocks/types";
 import useReduxState from "@/hooks/useReduxState";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
@@ -64,21 +62,13 @@ type TabStateProps = {
 };
 
 const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
-  isLoading = false,
   isTraceEmpty = false,
   isTraceOptional = false,
-  error,
   children,
   ...tabProps
 }) => {
   let contents;
-  if (isLoading) {
-    contents = (
-      <div className={styles.loading}>
-        <GridLoader />
-      </div>
-    );
-  } else if (isTraceEmpty && isTraceOptional) {
+  if (isTraceEmpty && isTraceOptional) {
     contents = (
       <>
         <div className="text-muted">
@@ -96,12 +86,6 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
     contents = (
       <div className="text-muted">
         No trace available, run the extension to generate data
-      </div>
-    );
-  } else if (error) {
-    contents = (
-      <div className="text-danger">
-        Error loading trace: {getErrorMessage(error)}
       </div>
     );
   } else {
