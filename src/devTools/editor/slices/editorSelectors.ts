@@ -15,11 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
-import { withSearchWindow, withDetectFrameworkVersions } from "@/common";
+import { EditorState } from "@/devTools/editor/slices/editorSlice";
 
-export const searchWindow = liftContentScript("searchWindow", withSearchWindow);
-export const detectFrameworks = liftContentScript(
-  "detectFrameworks",
-  withDetectFrameworkVersions
-);
+type RootState = { editor: EditorState };
+
+export const selectActiveExtension = ({ editor }: RootState) =>
+  editor.activeElement;

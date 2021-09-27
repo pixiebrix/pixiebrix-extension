@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Renderer } from "@/types";
+import { Renderer, UnknownObject } from "@/types";
 import { isEmpty } from "lodash";
 import { BlockArg, BlockOptions, Schema } from "@/core";
 import { uuidv4 } from "@/types/helpers";
@@ -86,7 +86,7 @@ export class UiPathAppRenderer extends Renderer {
     frameURL.searchParams.set("url", url);
     frameURL.searchParams.set("nonce", nonce);
 
-    const inputs = rawInputs as Record<string, unknown>;
+    const inputs = rawInputs as UnknownObject;
 
     if (!isEmpty(inputs)) {
       executeForNonce(

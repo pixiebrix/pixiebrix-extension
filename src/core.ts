@@ -35,6 +35,16 @@ export type SchemaDefinition = JSONSchema7Definition;
 export type SchemaProperties = Record<string, SchemaDefinition>;
 export type SchemaPropertyType = JSONSchema7TypeName;
 
+/**
+ * The PixieBrix brick definition API. Controls how the PixieBrix runtime interprets brick definitions.
+ *
+ * Incremented whenever backward-incompatible changes are made.
+ *
+ * - v1: original, implicit templating and dataflow
+ * - v2: introduces explicitDataFlow
+ */
+export type ApiVersion = "v1" | "v2";
+
 export type RenderedHTML = string;
 
 export type ActionType = string;
@@ -245,6 +255,12 @@ export type IExtension<T extends Config = EmptyConfig> = {
    * UUID of the extension.
    */
   id: UUID;
+
+  /**
+   * The PixieBrix brick definition API version, controlling how the runtime interprets configuration values.
+   * @see ApiVersion
+   */
+  apiVersion: ApiVersion;
 
   /**
    * Registry id of the extension point, or a reference to the definitions section.

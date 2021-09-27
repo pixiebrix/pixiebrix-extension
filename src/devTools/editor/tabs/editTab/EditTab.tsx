@@ -43,6 +43,8 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
 import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
+import useRuntimeErrors from "@/devTools/editor/hooks/useRuntimeErrors";
+import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -64,6 +66,9 @@ const EditTab: React.FC<{
   editable?: Set<string>;
   pipelineFieldName?: string;
 }> = ({ eventKey, pipelineFieldName = "extension.body" }) => {
+  useExtensionTrace();
+  useRuntimeErrors(pipelineFieldName);
+
   const {
     extensionPoint,
     type: elementType,
@@ -132,7 +137,17 @@ const EditTab: React.FC<{
         ? {
             title: isNullOrBlank(action.label) ? block?.name : action.label,
             outputKey: action.outputKey,
-            icon: <BrickIcon brick={block} size="2x" />,
+            icon: (
+              <BrickIcon
+                brick={block}
+                size="2x"
+                // This makes brick icons that use basic font awesome icons
+                //   inherit the editor node layout color scheme.
+                // Customized SVG icons are unaffected and keep their branded
+                //   color schemes.
+                faIconClass={styles.brickFaIcon}
+              />
+            ),
             onClick: () => {
               onSelectNode(index + 1);
             },
@@ -191,6 +206,8 @@ const EditTab: React.FC<{
     [onSelectNode, pipelineFieldHelpers, blockPipeline]
   );
 
+  const blockInstanceId = blockPipeline[activeNodeIndex - 1]?.instanceId;
+
   return (
     <Tab.Pane eventKey={eventKey} className={styles.tabPane}>
       <div className={styles.paneContent}>
@@ -237,9 +254,9 @@ const EditTab: React.FC<{
         </div>
         <div className={styles.dataPanel}>
           <DataPanel
+            key={blockInstanceId}
             blockFieldName={blockFieldName}
-            // eslint-disable-next-line security/detect-object-injection
-            instanceId={blockPipeline[activeNodeIndex - 1]?.instanceId}
+            instanceId={blockInstanceId}
           />
         </div>
       </div>

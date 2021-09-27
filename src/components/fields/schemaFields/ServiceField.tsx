@@ -81,7 +81,7 @@ function defaultOutputKey(
   ) as OutputKey;
 }
 
-function extractServiceIds(schema: Schema): RegistryId[] {
+export function extractServiceIds(schema: Schema): RegistryId[] {
   if ("$ref" in schema) {
     const match = SERVICE_ID_REGEX.exec(schema.$ref ?? "");
     return match ? [match.groups.id as RegistryId] : [];

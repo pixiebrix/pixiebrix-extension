@@ -16,6 +16,7 @@
  */
 
 import {
+  apiVersionOptions,
   blockList,
   makeServiceContext,
   mergeReaders,
@@ -213,9 +214,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
     if (global) {
       for (const extension of extensions) {
         void uninstallContextMenu({ extensionId: extension.id }).catch(
-          (error) => {
-            reportError(error);
-          }
+          reportError
         );
       }
     }
@@ -312,6 +311,7 @@ export abstract class ContextMenuExtensionPoint extends ExtensionPoint<ContextMe
           validate: true,
           serviceArgs: serviceContext,
           optionsArgs: extension.optionsArgs,
+          ...apiVersionOptions(extension.apiVersion),
         });
       } catch (error: unknown) {
         if (isErrorObject(error)) {

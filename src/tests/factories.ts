@@ -51,6 +51,7 @@ export const extensionFactory: (
   extensionProps?: Partial<IExtension>
 ) => IExtension = (extensionProps) => ({
   id: randomWords() as UUID,
+  apiVersion: "v1",
   extensionPointId: randomWords() as RegistryId,
   _deployment: null,
   _recipe: null,

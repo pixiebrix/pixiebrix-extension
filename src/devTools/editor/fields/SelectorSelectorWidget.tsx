@@ -89,12 +89,18 @@ const SelectorSelectorWidget: CustomFieldWidget<SelectorSelectorProps> = ({
   selectMode = "element",
   traverseUp = 0,
   isClearable = false,
-  sort = false,
+  // Leave off default here because we dynamically determine default based on `selectMode`
+  sort: rawSort,
   root,
   disabled = false,
   placeholder = "Choose a selector...",
 }) => {
   const [{ value }, , { setValue }] = useField<string>(name);
+
+  // By default, sort by selector length in `element` selection mode. Don't sort in `container` mode because
+  // the order is based on structure (because selectors for multiple elements are returned).
+  const defaultSort = selectMode === "element";
+  const sort = rawSort ?? defaultSort;
 
   const { port } = useContext(DevToolsContext);
   const notify = useNotifications();

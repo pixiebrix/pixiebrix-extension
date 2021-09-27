@@ -21,7 +21,13 @@ import {
   readStorageWithMigration,
   setStorage,
 } from "@/chrome";
-import { IService, AuthData, RawServiceConfiguration, UUID } from "@/core";
+import {
+  IService,
+  AuthData,
+  RawServiceConfiguration,
+  UUID,
+  OAuth2Context,
+} from "@/core";
 import { browser } from "webextension-polyfill-ts";
 import {
   computeChallenge,
@@ -30,6 +36,7 @@ import {
 } from "@/vendors/pkce";
 import { BusinessError, getErrorMessage } from "@/errors";
 import { expectContext } from "@/utils/expectContext";
+import { UnknownObject } from "@/types";
 
 const OAUTH2_STORAGE_KEY = "OAUTH2" as ManualStorageKey;
 
@@ -43,7 +50,8 @@ async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   );
 
   const current = await readStorageWithMigration<Record<UUID, TAuthData>>(
-    OAUTH2_STORAGE_KEY
+    OAUTH2_STORAGE_KEY,
+    {}
   );
   await setStorage(OAUTH2_STORAGE_KEY, {
     ...current,
@@ -59,8 +67,9 @@ export async function getCachedAuthData(
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorageWithMigration<Record<string, AuthData>>(
-    OAUTH2_STORAGE_KEY
+  const current = await readStorageWithMigration<Record<UUID, AuthData>>(
+    OAUTH2_STORAGE_KEY,
+    {}
   );
   if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
     // eslint-disable-next-line security/detect-object-injection -- Just checked with `hasOwnProperty`
@@ -68,24 +77,28 @@ export async function getCachedAuthData(
   }
 }
 
-export async function deleteCachedAuthData(key: string): Promise<void> {
+export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
   expectContext(
     "background",
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorageWithMigration<Record<string, AuthData>>(
-    OAUTH2_STORAGE_KEY
+  const current = await readStorageWithMigration<Record<UUID, AuthData>>(
+    OAUTH2_STORAGE_KEY,
+    {}
   );
-  if (Object.prototype.hasOwnProperty.call(current, key)) {
-    console.debug(`deleteCachedAuthData: removed data for auth ${key}`);
+  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
+    console.debug(
+      `deleteCachedAuthData: removed data for auth ${serviceAuthId}`
+    );
     // OK because we're guarding with hasOwnProperty
     // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
-    delete current[key];
+    delete current[serviceAuthId];
     await setStorage(OAUTH2_STORAGE_KEY, current);
   } else {
     console.warn(
-      `deleteCachedAuthData: No cached auth data exists for key: ${key}`
+      "deleteCachedAuthData: No cached auth data exists for key: %s",
+      serviceAuthId
     );
   }
 }
@@ -119,16 +132,87 @@ export async function getToken(
   return responseData;
 }
 
-export async function launchOAuth2Flow(
-  service: IService,
-  auth: RawServiceConfiguration
-): Promise<AuthData> {
-  // Reference: https://github.com/kylpo/salesforce-chrome-oauth/blob/master/index.js
-  if (!service.isOAuth2) {
-    throw new Error(`Service ${service.id} is not an OAuth2 service`);
+function parseResponseParams(url: URL): UnknownObject {
+  const hasSearchParams = [...url.searchParams.keys()].length > 0;
+
+  if (hasSearchParams) {
+    return Object.fromEntries(url.searchParams.entries());
   }
 
-  const oauth2 = service.getOAuth2Context(auth.config);
+  // Microsoft returns the params as part of the hash
+  if (url.hash) {
+    // Remove the leading "#"
+    const params = new URLSearchParams(url.hash.slice(1));
+    return Object.fromEntries(params.entries());
+  }
+
+  throw new Error("Unexpected response URL structure");
+}
+
+async function implicitGrantFlow(
+  auth: RawServiceConfiguration,
+  oauth2: OAuth2Context
+): Promise<AuthData> {
+  const redirect_uri = browser.identity.getRedirectURL("oauth2");
+
+  const { client_id, authorizeUrl: rawAuthorizeUrl, ...params } = oauth2;
+
+  const state = getRandomString(16);
+
+  const authorizeURL = new URL(rawAuthorizeUrl);
+
+  for (const [key, value] of Object.entries({
+    redirect_uri,
+    response_type: "token",
+    display: "page",
+    client_id,
+    state,
+    ...params,
+  })) {
+    authorizeURL.searchParams.set(key, value);
+  }
+
+  console.debug("Initiating implicit grant flow", {
+    redirect_uri,
+    client_id,
+    authorize_url: authorizeURL,
+  });
+
+  const responseUrl = await browser.identity.launchWebAuthFlow({
+    url: authorizeURL.toString(),
+    interactive: true,
+  });
+
+  if (!responseUrl) {
+    throw new Error("Authentication cancelled");
+  }
+
+  const responseParams = parseResponseParams(new URL(responseUrl));
+
+  const { access_token, state: stateResponse, ...rest } = responseParams;
+
+  if (state !== stateResponse) {
+    throw new Error("OAuth2 state mismatch");
+  }
+
+  if (!access_token) {
+    console.warn("Error performing implicit grant flow", {
+      responseParams,
+      responseUrl,
+    });
+    throw new Error("Error performing implicit grant flow");
+  }
+
+  const data: AuthData = ({ access_token, ...rest } as unknown) as AuthData;
+  await setCachedAuthData(auth.id, data);
+  return data;
+}
+
+async function codeGrantFlow(
+  auth: RawServiceConfiguration,
+  oauth2: OAuth2Context
+): Promise<AuthData> {
+  const redirect_uri = browser.identity.getRedirectURL("oauth2");
 
   const {
     code_challenge_method,
@@ -137,16 +221,6 @@ export async function launchOAuth2Flow(
     tokenUrl: rawTokenUrl,
     ...params
   } = oauth2;
-
-  if (!rawAuthorizeUrl) {
-    throw new BusinessError("authorizeUrl is required for oauth2");
-  } else if (!rawTokenUrl) {
-    throw new BusinessError("tokenUrl is required for oauth2");
-  }
-
-  const redirect_uri = browser.identity.getRedirectURL("oauth2");
-
-  // Console.debug("OAuth2 context", {redirect_uri, context: oauth2});
 
   const authorizeURL = new URL(rawAuthorizeUrl);
   for (const [key, value] of Object.entries({
@@ -275,4 +349,33 @@ export async function launchOAuth2Flow(
       "Error getting OAuth2 token: unexpected response format"
     );
   }
+}
+
+export async function launchOAuth2Flow(
+  service: IService,
+  auth: RawServiceConfiguration
+): Promise<AuthData> {
+  // Reference: https://github.com/kylpo/salesforce-chrome-oauth/blob/master/index.js
+  if (!service.isOAuth2) {
+    throw new Error(`Service ${service.id} is not an OAuth2 service`);
+  }
+
+  const oauth2 = service.getOAuth2Context(auth.config);
+
+  const { authorizeUrl: rawAuthorizeUrl, tokenUrl: rawTokenUrl } = oauth2;
+
+  // `tokenUrl` is not required for implicit flow
+  if (!rawAuthorizeUrl) {
+    throw new BusinessError("authorizeUrl is required for oauth2");
+  }
+
+  const isImplicitFlow = typeof rawTokenUrl === "undefined";
+
+  if (isImplicitFlow) {
+    console.debug("Using implicitGrantFlow because not tokenUrl was provided");
+    return implicitGrantFlow(auth, oauth2);
+  }
+
+  console.debug("Using codeGrantFlow");
+  return codeGrantFlow(auth, oauth2);
 }

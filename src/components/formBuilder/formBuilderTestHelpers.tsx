@@ -18,20 +18,39 @@
 import { Form, Formik } from "formik";
 import React, { PropsWithChildren } from "react";
 import { RJSFSchema } from "./formBuilderTypes";
+import { fireEvent, screen } from "@testing-library/react";
+import { waitForEffect } from "@/tests/testHelpers";
 
 export const RJSF_SCHEMA_PROPERTY_NAME = "rjsfSchema";
 
-export const createFormikTemplate = (rjsfSchema: RJSFSchema) => {
+export const createFormikTemplate = (
+  rjsfSchema: RJSFSchema,
+  onSubmit = jest.fn()
+) => {
   const FormikTemplate = ({ children }: PropsWithChildren<unknown>) => (
     <Formik
       initialValues={{
         [RJSF_SCHEMA_PROPERTY_NAME]: rjsfSchema,
       }}
-      onSubmit={jest.fn()}
+      onSubmit={onSubmit}
     >
-      <Form>{children}</Form>
+      <Form>
+        {children}
+        <button type="submit">Submit</button>
+      </Form>
     </Formik>
   );
   FormikTemplate.displayName = "FormikTemplate";
   return FormikTemplate;
+};
+
+export const fireFormSubmit = async () => {
+  fireEvent.click(screen.getByRole("button", { name: /submit/i }));
+  await waitForEffect();
+};
+
+export const fireTextInput = (input: HTMLElement, text: string) => {
+  fireEvent.focus(input);
+  fireEvent.change(input, { target: { value: text } });
+  fireEvent.blur(input);
 };

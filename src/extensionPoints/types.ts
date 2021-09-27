@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Metadata } from "@/core";
+import { ApiVersion, Metadata } from "@/core";
 import { Availability, ReaderConfig } from "@/blocks/types";
 
 type ExtensionPointType =
@@ -34,7 +34,7 @@ export interface ExtensionPointDefinition {
 export interface ExtensionPointConfig<
   T extends ExtensionPointDefinition = ExtensionPointDefinition
 > {
-  apiVersion?: "v1";
+  apiVersion?: ApiVersion;
   metadata: Metadata;
   definition: T;
   kind: "extensionPoint";

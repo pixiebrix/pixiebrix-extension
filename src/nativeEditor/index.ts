@@ -16,12 +16,10 @@
  */
 
 export {
-  clear,
+  clearDynamicElements,
   enableOverlay,
   disableOverlay,
   updateDynamicElement,
-  checkAvailable,
-  getInstalledExtensionPointIds,
 } from "./dynamic";
 export { insertButton } from "./insertButton";
 export { insertPanel } from "./insertPanel";

@@ -24,19 +24,14 @@ import "@/contentScript/messenger/registration";
 import addErrorListeners from "@/contentScript/errors";
 import registerBuiltinBlocks from "@/blocks/registerBuiltinBlocks";
 import registerContribBlocks from "@/contrib/registerContribBlocks";
-import "@/contentScript/devTools";
-import "@/contentScript/contextMenus";
-import addContentScriptListener from "@/contentScript/backgroundProtocol";
 import { handleNavigate } from "@/contentScript/lifecycle";
-import addExecutorListener from "@/contentScript/executor";
 import "@/messaging/external";
-import "@/contentScript/script";
 import "@/vendors/notify";
 import { markReady, updateTabInfo } from "@/contentScript/context";
 import { initTelemetry } from "@/telemetry/events";
-import "@/contentScript/uipath";
 import { markTabAsReady, whoAmI } from "@/background/messenger/api";
 import { ENSURE_CONTENT_SCRIPT_READY } from "./messaging/constants";
+import { addListenerForUpdateSelectedElement } from "./devTools/getSelectedElement";
 
 const PIXIEBRIX_SYMBOL = Symbol.for("pixiebrix-content-script");
 const uuid = uuidv4();
@@ -54,8 +49,7 @@ async function init(): Promise<void> {
   // Add error listeners first so they can catch any initialization errors
   addErrorListeners();
 
-  addContentScriptListener();
-  addExecutorListener();
+  addListenerForUpdateSelectedElement();
   initTelemetry();
 
   const sender = await whoAmI();

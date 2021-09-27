@@ -17,6 +17,7 @@
 
 import { ExtensionPoint } from "@/types";
 import {
+  apiVersionOptions,
   blockList,
   makeServiceContext,
   mergeReaders,
@@ -140,6 +141,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
         validate: true,
         serviceArgs: serviceContext,
         optionsArgs: extension.optionsArgs,
+        ...apiVersionOptions(extension.apiVersion),
       });
       extensionLogger.info("Successfully ran trigger");
       // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch

@@ -22,7 +22,7 @@ import { isContentScript } from "webext-detect-page";
 
 // TODO: This should be a hard error, but due to unknown dependency routes, it can't be enforced yet
 if (isContentScript()) {
-  console.trace(
+  console.warn(
     "This should not have been imported in the content script. Use the API directly instead."
   );
 }
@@ -31,14 +31,54 @@ export const getFormDefinition = getContentScriptMethod("FORM_GET_DEFINITION");
 export const resolveForm = getContentScriptMethod("FORM_RESOLVE");
 export const cancelForm = getContentScriptMethod("FORM_CANCEL");
 export const queueReactivateTab = getContentScriptMethod(
-  "QUEUE_REACTIVATE_TAB"
+  "QUEUE_REACTIVATE_TAB",
+  { isNotification: true }
 );
-export const reactivateTab = getContentScriptMethod("REACTIVATE_TAB");
+export const reactivateTab = getContentScriptMethod("REACTIVATE_TAB", {
+  isNotification: true,
+});
 export const handleMenuAction = getContentScriptMethod("HANDLE_MENU_ACTION");
 export const toggleActionPanel = getContentScriptMethod("TOGGLE_ACTION_PANEL");
 export const showActionPanel = getContentScriptMethod("SHOW_ACTION_PANEL");
 export const hideActionPanel = getContentScriptMethod("HIDE_ACTION_PANEL");
 export const removeActionPanel = getContentScriptMethod("REMOVE_ACTION_PANEL");
+export const insertPanel = getContentScriptMethod("INSERT_PANEL");
+export const insertButton = getContentScriptMethod("INSERT_BUTTON");
+
+export const initRobot = getContentScriptMethod("UIPATH_INIT");
+export const getProcesses = getContentScriptMethod("UIPATH_GET_PROCESSES");
+export const searchWindow = getContentScriptMethod("SEARCH_WINDOW");
+export const detectFrameworks = getContentScriptMethod("DETECT_FRAMEWORKS");
+
+export const runBlock = getContentScriptMethod("RUN_SINGLE_BLOCK");
+export const runReaderBlock = getContentScriptMethod("RUN_READER_BLOCK");
+export const runReader = getContentScriptMethod("RUN_READER");
+export const readSelected = getContentScriptMethod("READ_SELECTED");
+
+export const clearDynamicElements = getContentScriptMethod(
+  "CLEAR_DYNAMIC_ELEMENTS"
+);
+export const updateDynamicElement = getContentScriptMethod(
+  "UPDATE_DYNAMIC_ELEMENT"
+);
+export const enableOverlay = getContentScriptMethod("ENABLE_OVERLAY");
+export const disableOverlay = getContentScriptMethod("DISABLE_OVERLAY");
+export const getInstalledExtensionPointIds = getContentScriptMethod(
+  "INSTALLED_EXTENSIONS"
+);
+export const checkAvailable = getContentScriptMethod("CHECK_AVAILABLE");
+export const handleNavigate = getContentScriptMethod("HANDLE_NAVIGATE", {
+  isNotification: true,
+});
+export const showNotification = getContentScriptMethod("SHOW_NOTIFICATION");
+export const linkChildTab = getContentScriptMethod("LINK_CHILD_TAB", {
+  isNotification: true,
+});
+export const runBlockInContentScript = getContentScriptMethod(
+  "CONTENT_MESSAGE_RUN_BLOCK"
+);
+export const cancelSelect = getContentScriptMethod("CANCEL_SELECT_ELEMENT");
+export const selectElement = getContentScriptMethod("SELECT_ELEMENT");
 
 // Temporary, webext-messenger depends on this global
 (globalThis as any).browser = browser;

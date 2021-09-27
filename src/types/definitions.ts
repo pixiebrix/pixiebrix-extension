@@ -16,6 +16,7 @@
  */
 
 import {
+  ApiVersion,
   Config,
   InnerDefinitionRef,
   InnerDefinitions,
@@ -81,7 +82,7 @@ type Kind = "recipe" | "service" | "reader" | "component";
  * A PixieBrix brick or extension point definition
  */
 export interface Definition {
-  apiVersion: "v1";
+  apiVersion: ApiVersion;
   kind: Kind;
   metadata: Metadata;
 }

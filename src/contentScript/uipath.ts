@@ -15,9 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { IRobotSDK } from "@uipath/robot/dist/iRobotSDK";
 import UiPathRobot from "@/contrib/uipath/UiPathRobot";
+import { RobotProcess } from "@uipath/robot/dist/models";
 
 let _robot: IRobotSDK;
 
@@ -27,7 +27,7 @@ type InitResponse = {
   consentCode?: string;
 };
 
-async function _initRobot(): Promise<InitResponse> {
+export async function initRobot(): Promise<InitResponse> {
   if (_robot) {
     return {
       missingComponents: false,
@@ -60,17 +60,10 @@ async function _initRobot(): Promise<InitResponse> {
   });
 }
 
-export const initRobot = liftContentScript("UIPATH_INIT", async () =>
-  _initRobot()
-);
-
-export const getProcesses = liftContentScript(
-  "UIPATH_GET_PROCESSES",
-  async () => {
-    if (!_robot) {
-      throw new Error("UiPath not initialized");
-    }
-
-    return _robot.getProcesses();
+export async function getProcesses(): Promise<RobotProcess[]> {
+  if (!_robot) {
+    throw new Error("UiPath not initialized");
   }
-);
+
+  return _robot.getProcesses();
+}

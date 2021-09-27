@@ -25,22 +25,7 @@ import { expectContext } from "@/utils/expectContext";
 import { whoAmI } from "@/background/messenger/api";
 
 const MODAL_OPEN_CLASS = "pixiebrix-modal-open";
-
-function getMaxZ() {
-  let max = -1;
-
-  $("body *").each(function () {
-    const $this = $(this);
-    if ($this.css("position") !== "static") {
-      const zIndex = Number($this.css("z-index")) || 1;
-      if (zIndex > max) {
-        max = zIndex;
-      }
-    }
-  });
-
-  return max;
-}
+const HIGHEST_Z_INDEX = 2_147_483_647;
 
 export class ModalTransformer extends Transformer {
   defaultOutputKey = "form";
@@ -113,8 +98,8 @@ export class ModalTransformer extends Transformer {
     // (We might do this anyway in the future to support draggable modals)
     $(shadowRoot).append(`
         <link rel="stylesheet" href="${theme}" />
-        <div class="modal-backdrop show"></div>
-        <div id="${id}" class="modal show" style="display: block">
+        <div class="modal-backdrop show" style="z-index: ${HIGHEST_Z_INDEX}"></div>
+        <div id="${id}" class="modal show" style="display: block; z-index: ${HIGHEST_Z_INDEX}">
             <div class="modal-dialog modal-dialog-scrollable" role="document">
                 <div class="modal-content" style="height: 100vh; background: none transparent; border: none;">
                     <iframe src="${frameSrc.toString()}" frameborder="0" allowtransparency="true" width="100%" height="100%"/>
@@ -150,13 +135,7 @@ export class ModalTransformer extends Transformer {
       modalController._setScrollbar();
     });
 
-    setTimeout(() => {
-      // Ensure we're the top-most element. Perform outside the main render loop because getMaxZ would otherwise cause
-      // a slight delay in rendering. 1050 is the default Bootstrap 4 z-index for modals.
-      const zIndex = getMaxZ();
-      $modal.css("z-index", Math.max(zIndex, 1050));
-    }, 0);
-
+    $modal.css("z-index", HIGHEST_Z_INDEX);
     $modal.find("iframe").trigger("focus");
 
     try {

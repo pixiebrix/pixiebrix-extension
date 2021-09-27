@@ -20,8 +20,9 @@ import { readerFactory } from "@/blocks/readers/factory";
 import { Validator, Schema as ValidatorSchema } from "@cfworker/json-schema";
 import { ValidationError } from "@/errors";
 import { castArray } from "lodash";
-import { reducePipeline } from "@/blocks/combinators";
+import { apiVersionOptions, reducePipeline } from "@/blocks/combinators";
 import {
+  ApiVersion,
   BlockArg,
   BlockOptions,
   Config,
@@ -49,6 +50,7 @@ const METHOD_MAP: Map<ComponentKind, string> = new Map([
 ]);
 
 interface ComponentConfig {
+  apiVersion?: ApiVersion;
   kind: ComponentKind;
   metadata: Metadata;
   defaultOptions: Record<string, string>;
@@ -78,6 +80,8 @@ function validateBlockDefinition(
 class ExternalBlock extends Block {
   public readonly component: ComponentConfig;
 
+  readonly apiVersion: ApiVersion;
+
   readonly inputSchema: Schema;
 
   readonly outputSchema: Schema;
@@ -87,6 +91,7 @@ class ExternalBlock extends Block {
   constructor(component: ComponentConfig) {
     const { id, name, description, icon } = component.metadata;
     super(id, name, description, icon);
+    this.apiVersion = component.apiVersion ?? "v1";
     this.component = component;
     this.inputSchema = this.component.inputSchema;
     this.outputSchema = this.component.outputSchema;
@@ -108,18 +113,14 @@ class ExternalBlock extends Block {
   async isPure(): Promise<boolean> {
     const pipeline = castArray(this.component.pipeline);
 
-    return Promise.all(
+    const purity = await Promise.all(
       pipeline.map(async (blockConfig) => {
         const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
-        return resolvedBlock.isPure;
+        return resolvedBlock.isPure();
       })
-    )
-      .then((purity) => purity.every((x) => x))
-      .catch(
-        () =>
-          // Use safe default if one of the blocks can't be resolved
-          false
-      );
+    );
+
+    return purity.every((x) => x);
   }
 
   async inferType(): Promise<ComponentKind | null> {
@@ -149,6 +150,7 @@ class ExternalBlock extends Block {
         // OptionsArgs are set at the blueprint level. For composite bricks, they options should be passed in
         // at part of the brick inputs
         optionsArgs: undefined,
+        ...apiVersionOptions(this.component.apiVersion),
       }
     );
   }

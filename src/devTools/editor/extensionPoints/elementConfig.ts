@@ -18,6 +18,7 @@ import React from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { Runtime } from "webextension-polyfill-ts";
 import {
+  ApiVersion,
   IExtension,
   Metadata,
   RegistryId,
@@ -56,6 +57,12 @@ export interface BaseExtensionPointState {
 }
 
 export interface BaseFormState {
+  /**
+   * The apiVersion of the brick definition, controlling how PixieBrix interprets brick definitions
+   * @see ApiVersion
+   */
+  readonly apiVersion: ApiVersion;
+
   /**
    * The extension uuid
    */

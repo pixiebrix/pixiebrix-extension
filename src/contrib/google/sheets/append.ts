@@ -26,16 +26,13 @@ import { propertiesToSchema } from "@/validators/generic";
 import { isNullOrBlank } from "@/utils";
 import { unary } from "lodash";
 import { validateRegistryId } from "@/types/helpers";
+import { normalizeHeader } from "@/contrib/google/sheets/sheetsHelpers";
 
 type CellValue = string | number | null;
 
 interface RowValue {
   header: string;
   value: CellValue;
-}
-
-function normalizeHeader(header: string): string {
-  return header.toLowerCase().trim();
 }
 
 export const APPEND_SCHEMA: Schema = propertiesToSchema(
@@ -106,7 +103,7 @@ function makeValues(headerRow: string[], rowValues: RowValue[]): CellValue[] {
   return row;
 }
 
-export const GOOGLE_SHEETS_API_ID = validateRegistryId(
+export const GOOGLE_SHEETS_APPEND_ID = validateRegistryId(
   "@pixiebrix/google/sheets-append"
 );
 
@@ -117,7 +114,7 @@ function isAuthError(error: { code: number }): boolean {
 export class GoogleSheetsAppend extends Effect {
   constructor() {
     super(
-      GOOGLE_SHEETS_API_ID,
+      GOOGLE_SHEETS_APPEND_ID,
       "Add Google sheet row",
       "Add a row of data to a Google sheet",
       "faTable"
