@@ -58,7 +58,6 @@ const tabFrames = new Map<number, number>();
 const webstores = ["chrome.google.com", "addons.mozilla.org"];
 async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
   const { protocol, hostname } = safeParseUrl(tab.url);
-  console.log(tab.url, hostname);
   if (webstores.includes(hostname)) {
     void showErrorInOptions("ERR_BROWSER_ACTION_TOGGLE_WEBSTORE", tab.index);
     return;
