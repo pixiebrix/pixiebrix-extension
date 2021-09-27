@@ -24,6 +24,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
+import {
+  Col,
+  Form as BootstrapForm,
+  FormControlProps,
+  Row,
+} from "react-bootstrap";
+import { CustomFieldWidget } from "./FieldTemplate";
 
 const componentMeta: ComponentMeta<typeof Form> = {
   title: "Forms/Formik",
@@ -60,8 +67,19 @@ export const WithFormikHorizontalField: ComponentStory<typeof Form> = (
       layout="horizontal"
       placeholder="Title"
     />
-    <ConnectedFieldTemplate name="name" label="Name" description="A name" />
-    <ConnectedFieldTemplate name="age" label="Age" description="Your age" />
+    <ConnectedFieldTemplate
+      name="name"
+      layout="horizontal"
+      placeholder="Title"
+      label="Name"
+      description="A name"
+    />
+    <ConnectedFieldTemplate
+      name="age"
+      layout="horizontal"
+      label="Age"
+      description="Your age"
+    />
   </Form>
 );
 WithFormikHorizontalField.storyName = "With Horizontal FormikField";
@@ -131,6 +149,13 @@ const selectOptions: Option[] = [
     value: 3,
   },
 ];
+
+const BootstrapFormControlWidget: React.FC<CustomFieldWidget> = (props) => (
+  <div style={{ border: "1px solid black" }}>
+    <BootstrapForm.Control type="password" {...props} />
+  </div>
+);
+
 export const AllFields: ComponentStory<typeof Form> = (args) => (
   <Form
     validationSchema={AllFieldsSchema}
@@ -168,6 +193,13 @@ export const AllFields: ComponentStory<typeof Form> = (args) => (
           <FontAwesomeIcon icon={faGlobe} /> This is a boolean field
         </span>
       }
+    />
+    <ConnectedFieldTemplate
+      name="bsCustomFormControl"
+      layout="horizontal"
+      label="BS Form Control as Custom Widget"
+      as={BootstrapFormControlWidget}
+      description="You can use a FormControl as a wrapped Widget"
     />
   </Form>
 );
