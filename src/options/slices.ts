@@ -228,6 +228,7 @@ export const optionsSlice = createSlice({
         extensionPoints,
         deployment,
       } = payload;
+
       for (const {
         id: extensionPointId,
         label,
@@ -244,6 +245,8 @@ export const optionsSlice = createSlice({
 
         const extension: PersistedExtension = {
           id: extensionId,
+          // Default to `v1` for backward compatability
+          apiVersion: recipe.apiVersion ?? "v1",
           _deployment: deployment
             ? {
                 id: deployment.id,
@@ -298,6 +301,7 @@ export const optionsSlice = createSlice({
 
       const {
         id,
+        apiVersion,
         extensionId,
         extensionPointId,
         config,
@@ -320,6 +324,7 @@ export const optionsSlice = createSlice({
 
       const extension: PersistedExtension = {
         id: persistedId,
+        apiVersion,
         extensionPointId,
         // If the user updates an extension, detach it from the recipe -- it's now a personal extension
         _recipe: null,

@@ -26,6 +26,7 @@ import {
   mergeReaders,
   blockList,
   makeServiceContext,
+  apiVersionOptions,
 } from "@/blocks/combinators";
 import { boolean } from "@/utils";
 import {
@@ -383,6 +384,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
             validate: true,
             serviceArgs: serviceContext,
             optionsArgs: extension.optionsArgs,
+            ...apiVersionOptions(extension.apiVersion),
           }
         ) as Promise<PanelComponent>;
 
