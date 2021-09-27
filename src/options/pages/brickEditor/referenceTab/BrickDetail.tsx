@@ -100,7 +100,7 @@ const BrickDetail: React.FunctionComponent<{
           <div className="text-muted">No input schema provided</div>
         ) : (
           <div>
-            <Button className="p-0" variant="link" onClick={copyHandler}>
+            <Button className="p-0 mb-3" variant="link" onClick={copyHandler}>
               <FontAwesomeIcon icon={faClipboard} /> Copy Argument YAML
             </Button>
             <SchemaTree schema={schema} />
