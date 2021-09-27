@@ -16,9 +16,10 @@
  */
 
 import { SafeString, Schema, SchemaPropertyType, UiSchema } from "@/core";
-import { SelectStringOption } from "./formBuilderTypes";
-import { UI_ORDER } from "./schemaFieldNames";
+import { RJSFSchema, SelectStringOption } from "./formBuilderTypes";
+import { UI_ORDER, UI_WIDGET } from "./schemaFieldNames";
 import { freshIdentifier } from "@/utils";
+import produce from "immer";
 
 export const MINIMAL_SCHEMA: Schema = {
   type: "object",
@@ -145,4 +146,113 @@ export const moveStringInArray = (
   // eslint-disable-next-line security/detect-object-injection
   [arr[fromIndex], arr[toIndex]] = [arr[toIndex], arr[fromIndex]];
   return arr;
+};
+
+export const validateNextPropertyName = (
+  schema: Schema,
+  propertyName: string,
+  nextPropertyName: string
+) => {
+  let error: string = null;
+
+  if (nextPropertyName !== propertyName) {
+    if (nextPropertyName === "") {
+      error = "Name cannot be empty.";
+    }
+
+    if (nextPropertyName.includes(".")) {
+      error = "Name must not contain periods.";
+    }
+
+    const existingProperties = Object.keys(schema.properties);
+    if (existingProperties.includes(nextPropertyName)) {
+      error = `Name must be unique. Another property "${
+        // eslint-disable-next-line security/detect-object-injection
+        (schema.properties[nextPropertyName] as Schema).title
+      }" already has the name "${nextPropertyName}".`;
+    }
+  }
+
+  return error;
+};
+
+export const produceSchemaOnPropertyNameChange = (
+  rjsfSchema: RJSFSchema,
+  propertyName: string,
+  nextPropertyName: string
+) =>
+  produce(rjsfSchema, (draft) => {
+    // eslint-disable-next-line security/detect-object-injection
+    draft.schema.properties[nextPropertyName] =
+      // eslint-disable-next-line security/detect-object-injection
+      draft.schema.properties[propertyName];
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete,  security/detect-object-injection
+    delete draft.schema.properties[propertyName];
+
+    if (draft.schema.required?.includes(propertyName)) {
+      draft.schema.required = replaceStringInArray(
+        draft.schema.required,
+        propertyName,
+        nextPropertyName
+      );
+    }
+
+    const nextUiOrder = replaceStringInArray(
+      // eslint-disable-next-line security/detect-object-injection
+      draft.uiSchema[UI_ORDER],
+      propertyName,
+      nextPropertyName
+    );
+    // eslint-disable-next-line security/detect-object-injection
+    draft.uiSchema[UI_ORDER] = nextUiOrder;
+  });
+
+export const produceSchemaOnUiTypeChange = (
+  rjsfSchema: RJSFSchema,
+  propertyName: string,
+  nextUiType: string
+) => {
+  const { propertyType, uiWidget, propertyFormat } = parseUiType(nextUiType);
+
+  return produce(rjsfSchema, (draft) => {
+    // eslint-disable-next-line security/detect-object-injection
+    const draftPropertySchema = draft.schema.properties[propertyName] as Schema;
+    draftPropertySchema.type = propertyType;
+
+    if (propertyFormat) {
+      draftPropertySchema.format = propertyFormat;
+    } else {
+      delete draftPropertySchema.format;
+    }
+
+    // eslint-disable-next-line security/detect-object-injection
+    const propertySchema = rjsfSchema.schema.properties[propertyName] as Schema;
+    if (
+      propertySchema.type !== propertyType ||
+      propertySchema.format !== propertyFormat
+    ) {
+      delete draftPropertySchema.default;
+    }
+
+    if (uiWidget) {
+      // eslint-disable-next-line security/detect-object-injection
+      if (!draft.uiSchema[propertyName]) {
+        // eslint-disable-next-line security/detect-object-injection
+        draft.uiSchema[propertyName] = {};
+      }
+
+      // eslint-disable-next-line security/detect-object-injection
+      draft.uiSchema[propertyName][UI_WIDGET] = uiWidget;
+      // eslint-disable-next-line security/detect-object-injection
+    } else if (draft.uiSchema[propertyName]) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, security/detect-object-injection
+      delete draft.uiSchema[propertyName][UI_WIDGET];
+    }
+
+    if (uiWidget === "select") {
+      draftPropertySchema.enum = [];
+    } else {
+      delete draftPropertySchema.enum;
+    }
+  });
 };

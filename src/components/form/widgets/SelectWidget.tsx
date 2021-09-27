@@ -21,7 +21,6 @@ import Select from "react-select";
 import { getErrorMessage } from "@/errors";
 
 export type Option<TValue = unknown> = {
-  id?: string;
   label: string;
   value: TValue;
 };
