@@ -22,18 +22,16 @@ import cx from "classnames";
 import styles from "@/options/pages/brickEditor/referenceTab/BlockResult.module.scss";
 import BrickIcon from "@/components/BrickIcon";
 import { OfficialBadge } from "@/components/OfficialBadge";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const BrickResult: React.FunctionComponent<{
   brick: IBrick;
   onSelect: () => void;
-  onDetail: () => void;
+  onShowDetail: () => void;
   active?: boolean;
-  selectCaption?: React.ReactNode;
-}> = ({ brick, onSelect, onDetail, selectCaption, active }) => (
+  selectCaption: React.ReactNode;
+}> = ({ brick, onSelect, onShowDetail, selectCaption, active }) => (
   <ListGroup.Item
-    onClick={onDetail}
+    onClick={onShowDetail}
     className={cx(styles.root, { [styles.active]: active, active })}
   >
     <div className="d-flex">
@@ -57,14 +55,12 @@ const BrickResult: React.FunctionComponent<{
           styles.actionButtons
         )}
       >
-        <Button variant="info" className="mb-1 text-nowrap" onClick={onSelect}>
-          {selectCaption ? (
-            selectCaption
-          ) : (
-            <>
-              <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add
-            </>
-          )}
+        <Button
+          variant="primary"
+          className="mb-1 text-nowrap"
+          onClick={onSelect}
+        >
+          {selectCaption}
         </Button>
       </div>
     </div>

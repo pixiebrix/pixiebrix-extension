@@ -35,7 +35,6 @@ import {
 import { compact, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
-import "./BrickModal.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
@@ -45,6 +44,10 @@ import BrickResult from "./BrickResult";
 import BrickDetail from "./BrickDetail";
 import QuickAdd from "@/components/brickModal/QuickAdd";
 import { Except } from "type-fest";
+import cx from "classnames";
+import styles from "./BrickModal.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -93,7 +96,7 @@ function useSearch<T extends IBrick>(
 type ModalProps<T extends IBrick = IBlock> = {
   bricks: T[];
   onSelect: (brick: T) => void;
-  selectCaption?: React.ReactNode;
+  selectCaption: React.ReactNode;
   recommendations?: RegistryId[];
   close: () => void;
 };
@@ -106,7 +109,7 @@ type ButtonProps = {
 type ItemType = {
   searchResults: BrickOption[];
   setDetailBrick: (brick: IBrick) => void;
-  selectCaption?: React.ReactNode;
+  selectCaption: React.ReactNode;
   onSelect: (brick: IBrick) => void;
   close: () => void;
   activeBrick: IBrick | null;
@@ -136,7 +139,7 @@ const ItemRenderer = ({
     <div style={style} className="brickResult">
       <BrickResult
         brick={brick}
-        onDetail={() => {
+        onShowDetail={() => {
           setDetailBrick(brick);
         }}
         onSelect={() => {
@@ -163,23 +166,29 @@ function itemKey(index: number, { searchResults }: ItemType): RegistryId {
   return item.value;
 }
 
+const defaultAddCaption = (
+  <span>
+    <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add
+  </span>
+);
+
 function ActualModal<T extends IBrick>({
   bricks = [],
   close,
   onSelect,
-  selectCaption,
+  selectCaption = defaultAddCaption,
   recommendations = [],
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
   const searchInput = useRef(null);
   // The react-window library requires exact height
-  const brickResultSize = 87;
+  const brickResultSizePx = 87;
 
   // Auto-focus search input upon opening Modal
   useEffect(() => {
     searchInput.current.focus();
-  }, [query]);
+  }, []);
 
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
@@ -210,7 +219,7 @@ function ActualModal<T extends IBrick>({
 
   return (
     <Modal
-      className="BrickModal"
+      className={cx(styles.root)}
       show
       size="xl"
       onHide={close}
@@ -242,14 +251,14 @@ function ActualModal<T extends IBrick>({
               </Row>
               <Row>
                 <Col>
-                  <div className="BrickModal__results">
+                  <div className={cx(styles.results)}>
                     <AutoSizer>
                       {({ height, width }) => (
                         <LazyList
                           height={height}
                           width={width}
                           itemCount={searchResults.length}
-                          itemSize={brickResultSize}
+                          itemSize={brickResultSizePx}
                           itemKey={itemKey}
                           itemData={
                             {
@@ -270,7 +279,11 @@ function ActualModal<T extends IBrick>({
                 </Col>
               </Row>
             </Col>
-            <Col xs={7} className="BrickDetail" key={detailBrick?.id}>
+            <Col
+              xs={7}
+              className={cx(styles.brickDetail)}
+              key={detailBrick?.id}
+            >
               {detailBrick ? (
                 <BrickDetail
                   brick={detailBrick}

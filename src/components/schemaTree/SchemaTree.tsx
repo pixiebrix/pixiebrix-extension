@@ -28,6 +28,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { isServiceField } from "@/components/fields/schemaFields/ServiceField";
 import styles from "./SchemaTree.module.scss";
+import cx from "classnames";
 
 type SchemaTreeRow = {
   name: string;
@@ -42,6 +43,7 @@ const ExpandableCell: React.FunctionComponent<{
   cell: Cell;
 }> = ({ row, cell }) => (
   <span
+    className={cx(styles.codeCell)}
     {...row.getToggleRowExpandedProps({
       style: {
         // Indent the row according to depth level
@@ -62,6 +64,12 @@ const ExpandableCell: React.FunctionComponent<{
   </span>
 );
 
+const TypeCell: React.FunctionComponent<{
+  row: Row & { values: SchemaTreeRow };
+}> = ({ row }) => (
+  <span className={cx(styles.codeCell)}>{row.values.type}</span>
+);
+
 const RequiredCell: React.FunctionComponent<{
   row: Row & { values: SchemaTreeRow };
 }> = ({ row }) => (
@@ -76,7 +84,7 @@ const getFormattedType = (definition: Schema) => {
   const { type, format, oneOf, anyOf } = definition;
 
   if (oneOf) {
-    return "one of many objects";
+    return "mixed objects";
   }
 
   if (anyOf) {
@@ -86,7 +94,7 @@ const getFormattedType = (definition: Schema) => {
       }
     }
 
-    return "one or more of many objects";
+    return "mixed objects";
   }
 
   if (type === "array") {
@@ -170,6 +178,7 @@ const SchemaTree: React.FunctionComponent<{ schema: Schema }> = ({
       {
         Header: "Type",
         accessor: "type",
+        Cell: TypeCell,
       },
       {
         Header: "Description",
