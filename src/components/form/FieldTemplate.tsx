@@ -42,7 +42,7 @@ export type FieldProps<
   };
 
 export type CustomFieldWidget<TExtra = never> = React.ComponentType<
-  FieldProps & TExtra
+  FieldProps & { controlId?: string } & TExtra
 >;
 
 type FieldRenderProps = Except<FieldProps, "layout">;
@@ -65,6 +65,14 @@ const RenderedField: React.FC<FieldProps> = ({
   // Prevent undefined values to keep the HTML `input` tag from becoming uncontrolled
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
 
+  // Note on `controlId` and Bootstrap FormGroup.
+  // We set `controlId` on the Bootstrap FormGroup. With this we must not set `id` on `FormLabel` and `FormControl`.
+  // A custom widget on the other hand needs and to be specified.
+  // However we have to give it another name so it is possible to use a FormControl as a custom widget
+  // (otherwise it would get the `id` prop, fetch the `controlId` from Group context and will complain).
+  // See their logic at https://github.com/react-bootstrap/react-bootstrap/blob/v1.6.4/src/FormControl.tsx#L179:L182
+  const controlId = name;
+
   const formControl =
     typeof AsControl === "undefined" || typeof AsControl === "string" ? (
       <BootstrapForm.Control
@@ -78,6 +86,7 @@ const RenderedField: React.FC<FieldProps> = ({
       </BootstrapForm.Control>
     ) : (
       <AsControl
+        controlId={controlId}
         name={name}
         isInvalid={isInvalid}
         value={nonUndefinedValue}
@@ -87,7 +96,10 @@ const RenderedField: React.FC<FieldProps> = ({
       </AsControl>
     );
   return layout === "vertical" ? (
-    <BootstrapForm.Group controlId={name} className={styles.verticalFormGroup}>
+    <BootstrapForm.Group
+      controlId={controlId}
+      className={styles.verticalFormGroup}
+    >
       {label && (
         <BootstrapForm.Label className={styles.verticalFormLabel}>
           {label}
