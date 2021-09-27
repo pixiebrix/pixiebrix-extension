@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import Overlay from "@/nativeEditor/Overlay";
-import { liftContentScript } from "@/contentScript/backgroundProtocol";
 import { findContainer, safeCssSelector } from "@/nativeEditor/infer";
 import { Framework } from "@/messaging/constants";
 import { uniq } from "lodash";
@@ -151,68 +150,62 @@ export type SelectMode = "element" | "container";
 //     }
 // )
 
-export const cancelSelect = liftContentScript(
-  "CANCEL_SELECT_ELEMENT",
-  async () => {
-    if (_cancelSelect) {
-      _cancelSelect();
+export async function cancelSelect() {
+  if (_cancelSelect) {
+    _cancelSelect();
+  }
+}
+
+export async function selectElement({
+  traverseUp = 0,
+  mode = "element",
+  framework,
+  root,
+}: {
+  traverseUp: number;
+  framework?: Framework;
+  mode: SelectMode;
+  isMulti?: boolean;
+  root?: string;
+}) {
+  const rootElement = root == null ? undefined : requireSingleElement(root);
+  const elements = await userSelectElement(rootElement);
+
+  switch (mode) {
+    case "container": {
+      if (root) {
+        throw new Error(`root selector not implemented for mode: ${mode}`);
+      }
+
+      const { selectors } = findContainer(elements);
+
+      requireSingleElement(selectors[0]);
+
+      return pageScript.getElementInfo({
+        selector: selectors[0],
+        framework,
+        traverseUp,
+      });
+    }
+
+    case "element": {
+      const selector = safeCssSelector(elements[0], [], rootElement);
+
+      console.debug(`Generated selector: ${selector}`);
+
+      // Double-check we have a valid selector
+      requireSingleElement(selector);
+
+      return pageScript.getElementInfo({
+        selector,
+        framework,
+        traverseUp,
+      });
+    }
+
+    default: {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for type `never`
+      throw new Error(`Unexpected mode: ${mode}`);
     }
   }
-);
-
-export const selectElement = liftContentScript(
-  "SELECT_ELEMENT",
-  async ({
-    traverseUp = 0,
-    mode = "element",
-    framework,
-    root,
-  }: {
-    traverseUp: number;
-    framework?: Framework;
-    mode: SelectMode;
-    isMulti?: boolean;
-    root?: string;
-  }) => {
-    const rootElement = root == null ? undefined : requireSingleElement(root);
-    const elements = await userSelectElement(rootElement);
-
-    switch (mode) {
-      case "container": {
-        if (root) {
-          throw new Error(`root selector not implemented for mode: ${mode}`);
-        }
-
-        const { selectors } = findContainer(elements);
-
-        requireSingleElement(selectors[0]);
-
-        return pageScript.getElementInfo({
-          selector: selectors[0],
-          framework,
-          traverseUp,
-        });
-      }
-
-      case "element": {
-        const selector = safeCssSelector(elements[0], [], rootElement);
-
-        console.debug(`Generated selector: ${selector}`);
-
-        // Double-check we have a valid selector
-        requireSingleElement(selector);
-
-        return pageScript.getElementInfo({
-          selector,
-          framework,
-          traverseUp,
-        });
-      }
-
-      default: {
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions -- dynamic check for type `never`
-        throw new Error(`Unexpected mode: ${mode}`);
-      }
-    }
-  }
-);
+}
