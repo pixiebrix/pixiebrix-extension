@@ -50,7 +50,8 @@ async function setCachedAuthData<TAuthData extends Partial<AuthData>>(
   );
 
   const current = await readStorageWithMigration<Record<UUID, TAuthData>>(
-    OAUTH2_STORAGE_KEY
+    OAUTH2_STORAGE_KEY,
+    {}
   );
   await setStorage(OAUTH2_STORAGE_KEY, {
     ...current,
@@ -66,8 +67,9 @@ export async function getCachedAuthData(
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorageWithMigration<Record<string, AuthData>>(
-    OAUTH2_STORAGE_KEY
+  const current = await readStorageWithMigration<Record<UUID, AuthData>>(
+    OAUTH2_STORAGE_KEY,
+    {}
   );
   if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
     // eslint-disable-next-line security/detect-object-injection -- Just checked with `hasOwnProperty`
@@ -75,24 +77,27 @@ export async function getCachedAuthData(
   }
 }
 
-export async function deleteCachedAuthData(key: string): Promise<void> {
+export async function deleteCachedAuthData(serviceAuthId: UUID): Promise<void> {
   expectContext(
     "background",
     "Only the background page can access oauth2 information"
   );
 
-  const current = await readStorageWithMigration<Record<string, AuthData>>(
-    OAUTH2_STORAGE_KEY
+  const current = await readStorageWithMigration<Record<UUID, AuthData>>(
+    OAUTH2_STORAGE_KEY,
+    {}
   );
-  if (Object.prototype.hasOwnProperty.call(current, key)) {
-    console.debug(`deleteCachedAuthData: removed data for auth ${key}`);
+  if (Object.prototype.hasOwnProperty.call(current, serviceAuthId)) {
+    console.debug(
+      `deleteCachedAuthData: removed data for auth ${serviceAuthId}`
+    );
     // OK because we're guarding with hasOwnProperty
     // eslint-disable-next-line security/detect-object-injection,@typescript-eslint/no-dynamic-delete
-    delete current[key];
+    delete current[serviceAuthId];
     await setStorage(OAUTH2_STORAGE_KEY, current);
   } else {
     console.warn(
-      `deleteCachedAuthData: No cached auth data exists for key: ${key}`
+      `deleteCachedAuthData: No cached auth data exists for key: ${serviceAuthId}`
     );
   }
 }
