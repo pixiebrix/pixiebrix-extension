@@ -63,7 +63,7 @@ async function handleBrowserAction(tab: browser.tabs.Tab): Promise<void> {
     return;
   }
 
-  if (!hostname || !protocol.startsWith("http")) {
+  if (!protocol.startsWith("http")) {
     // Page not supported. Open the options page instead
     void browser.runtime.openOptionsPage();
     return;
