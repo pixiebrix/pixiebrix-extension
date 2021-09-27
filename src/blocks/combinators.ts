@@ -499,6 +499,11 @@ export async function reducePipeline(
         extraContext[`@${stage.outputKey}`] = output;
       } else if (isFinalStage || !explicitDataFlow) {
         currentArgs = output as any;
+      } else if (explicitDataFlow) {
+        // Force correct use of outputKey in `apiVersion: v2` usage
+        throw new BusinessError(
+          "outputKey is required for blocks that return data"
+        );
       }
       // eslint-disable-next-line @typescript-eslint/no-implicit-any-catch
     } catch (error) {
