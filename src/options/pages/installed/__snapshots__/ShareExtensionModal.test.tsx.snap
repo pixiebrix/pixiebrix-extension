@@ -163,8 +163,9 @@ exports[`renders modal 1`] = `
                 </div>
               </div>
             </div>
-            <div
+            <label
               class="col-sm-9"
+              for="public"
             >
               <span>
                 <svg
@@ -192,7 +193,7 @@ exports[`renders modal 1`] = `
                   </i>
                 </span>
               </span>
-            </div>
+            </label>
           </div>
         </div>
         <div

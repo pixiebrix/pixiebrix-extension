@@ -24,12 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import SelectWidget, { Option } from "@/components/form/widgets/SelectWidget";
-import {
-  Col,
-  Form as BootstrapForm,
-  FormControlProps,
-  Row,
-} from "react-bootstrap";
+import { Form as BootstrapForm } from "react-bootstrap";
 import { CustomFieldWidget } from "./FieldTemplate";
 
 const componentMeta: ComponentMeta<typeof Form> = {

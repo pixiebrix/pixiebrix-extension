@@ -66,16 +66,17 @@ const RenderedField: React.FC<FieldProps> = ({
   const nonUndefinedValue = typeof value === "undefined" ? blankValue : value;
 
   // Note on `controlId` and Bootstrap FormGroup.
-  // We set `controlId` on the Bootstrap FormGroup. With this we must not set `id` on `FormLabel` and `FormControl`.
-  // A custom widget on the other hand needs and to be specified.
-  // However we have to give it another name so it is possible to use a FormControl as a custom widget
-  // (otherwise it would get the `id` prop, fetch the `controlId` from Group context and will complain).
+  // If we set `controlId` on the Bootstrap FormGroup, we must not set `id` on `FormLabel` and `FormControl`.
+  // This makes it impossible to use a FormControl as a CustomWidget,
+  // because it gets both `controlId` from Group and `id` from props of `AsControl`.
   // See their logic at https://github.com/react-bootstrap/react-bootstrap/blob/v1.6.4/src/FormControl.tsx#L179:L182
+  // The most simple solution is to manually set `htmlFor` on the Label and `id` on the Control.
   const controlId = name;
 
   const formControl =
     typeof AsControl === "undefined" || typeof AsControl === "string" ? (
       <BootstrapForm.Control
+        id={controlId}
         name={name}
         isInvalid={isInvalid}
         value={nonUndefinedValue}
@@ -86,7 +87,7 @@ const RenderedField: React.FC<FieldProps> = ({
       </BootstrapForm.Control>
     ) : (
       <AsControl
-        controlId={controlId}
+        id={controlId}
         name={name}
         isInvalid={isInvalid}
         value={nonUndefinedValue}
@@ -96,12 +97,12 @@ const RenderedField: React.FC<FieldProps> = ({
       </AsControl>
     );
   return layout === "vertical" ? (
-    <BootstrapForm.Group
-      controlId={controlId}
-      className={styles.verticalFormGroup}
-    >
+    <BootstrapForm.Group className={styles.verticalFormGroup}>
       {label && (
-        <BootstrapForm.Label className={styles.verticalFormLabel}>
+        <BootstrapForm.Label
+          className={styles.verticalFormLabel}
+          htmlFor={controlId}
+        >
           {label}
         </BootstrapForm.Label>
       )}
@@ -116,13 +117,14 @@ const RenderedField: React.FC<FieldProps> = ({
       )}
     </BootstrapForm.Group>
   ) : (
-    <BootstrapForm.Group
-      as={Row}
-      controlId={name}
-      className={styles.horizontalFormGroup}
-    >
+    <BootstrapForm.Group as={Row} className={styles.horizontalFormGroup}>
       {label && (
-        <BootstrapForm.Label column lg="3" className={styles.horizontalLabel}>
+        <BootstrapForm.Label
+          column
+          lg="3"
+          className={styles.horizontalLabel}
+          htmlFor={controlId}
+        >
           {label}
         </BootstrapForm.Label>
       )}

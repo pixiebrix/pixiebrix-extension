@@ -55,7 +55,7 @@ const SwitchButton: React.FC<SwitchButtonProps> = ({
           onChange={patchedOnChange}
         />
       </Col>
-      <Col sm="9" className={styles.label}>
+      <Col sm="9" className={styles.label} as="label" htmlFor={name}>
         {label}
       </Col>
     </BootstrapForm.Group>
