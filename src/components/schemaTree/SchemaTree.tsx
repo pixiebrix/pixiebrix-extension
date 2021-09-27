@@ -84,7 +84,7 @@ const getFormattedType = (definition: Schema) => {
   const { type, format, oneOf, anyOf } = definition;
 
   if (oneOf) {
-    return "mixed objects";
+    return "various types";
   }
 
   if (anyOf) {
@@ -94,7 +94,7 @@ const getFormattedType = (definition: Schema) => {
       }
     }
 
-    return "mixed objects";
+    return "various types";
   }
 
   if (type === "array") {
