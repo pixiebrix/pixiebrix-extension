@@ -38,6 +38,7 @@ import { ExtensionOptionsState } from "@/store/extensions";
 import { getLinkedApiClient } from "@/services/apiClient";
 import { queueReactivateTab } from "@/contentScript/messenger/api";
 import { forEachTab } from "./util";
+import { parse as parseSemVer, satisfies, SemVer } from "semver";
 
 const { reducer, actions } = optionsSlice;
 
@@ -133,6 +134,26 @@ function makeDeploymentTimestampLookup(extensions: IExtension[]) {
   return timestamps;
 }
 
+/**
+ * Return true if the deployment can be automatically installed
+ */
+function canAutomaticallyInstall({
+  deployment,
+  hasPermissions,
+  extensionVersion,
+}: {
+  deployment: Deployment;
+  hasPermissions: boolean;
+  extensionVersion: SemVer;
+}): boolean {
+  if (!hasPermissions) {
+    return false;
+  }
+
+  const requiredRange = deployment.package.config.metadata.extensionVersion;
+  return !requiredRange || satisfies(extensionVersion, requiredRange);
+}
+
 async function updateDeployments() {
   if (!(await isLinked())) {
     return;
@@ -146,6 +167,9 @@ async function updateDeployments() {
     console.debug("No deployments installed");
     return;
   }
+
+  const { version: extensionVersionString } = browser.runtime.getManifest();
+  const extensionVersion = parseSemVer(extensionVersionString);
 
   const { data: deployments } = await (await getLinkedApiClient()).post<
     Deployment[]
@@ -170,7 +194,7 @@ async function updateDeployments() {
     return;
   }
 
-  // Fetch the current brick definitions, which will have the current permissions
+  // Fetch the current brick definitions, which will have the current permissions and extensionVersion requirements
   try {
     await refreshRegistries();
   } catch (error: unknown) {
@@ -190,9 +214,8 @@ async function updateDeployments() {
     }))
   );
 
-  const [automatic, manual] = partition(
-    deploymentRequirements,
-    (x) => x.hasPermissions
+  const [automatic, manual] = partition(deploymentRequirements, (x) =>
+    canAutomaticallyInstall({ ...x, extensionVersion })
   );
 
   let automaticError: unknown;

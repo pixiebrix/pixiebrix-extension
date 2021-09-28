@@ -50,6 +50,13 @@ export type RenderedHTML = string;
 export type ActionType = string;
 
 /**
+ * Simple semantic version number, major.minor.patch
+ */
+export type SemVerString = string & {
+  _semVerBrand: never;
+};
+
+/**
  * A valid identifier for a brick output key or a service key. (Does not include the preceding "@".)
  */
 export type OutputKey = string & {
@@ -182,6 +189,12 @@ export interface Metadata {
    * @deprecated experimental prop that will likely be removed in the future
    */
   readonly author?: string;
+
+  /**
+   * PixieBrix extension version required to install the brick/run the extension
+   * @since 1.4.0
+   */
+  readonly extensionVersion?: SemVerString;
 }
 
 export interface Sharing {
