@@ -68,35 +68,33 @@ test.each([
   expect(screen.getByLabelText(label)).not.toBeNull();
 });
 
+const testLabel = "Test label";
+const testValue = "Test value";
 test("passes value to custom widget", () => {
-  const label = randomWords();
-  const value = randomWords(3);
   renderFieldTemplate({
-    label,
-    value,
+    label: testLabel,
+    value: testValue,
     as: (({ id, value }) => (
       <input type="text" id={id} value={value} onChange={jest.fn()} />
     )) as CustomFieldWidget,
   });
 
-  expect(screen.getByLabelText(label)).toHaveValue(value);
+  expect(screen.getByLabelText(testLabel)).toHaveValue(testValue);
 });
 
 test("emits onChange", () => {
-  const label = randomWords();
-  const value = randomWords(3);
   const onChangeMock = jest.fn();
 
   renderFieldTemplate({
-    label,
+    label: testLabel,
     onChange: onChangeMock,
     as: (({ id, onChange }) => (
       <input type="text" id={id} onChange={onChange} />
     )) as CustomFieldWidget,
   });
 
-  fireTextInput(screen.getByLabelText(label), value);
+  fireTextInput(screen.getByLabelText(testLabel), testValue);
 
   expect(onChangeMock).toHaveBeenCalledTimes(1);
-  expect(onChangeMock.mock.calls[0][0].target.value).toBe(value);
+  expect(onChangeMock.mock.calls[0][0].target.value).toBe(testValue);
 });
