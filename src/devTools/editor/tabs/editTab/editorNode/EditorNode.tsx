@@ -20,6 +20,7 @@ import styles from "./EditorNode.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import cx from "classnames";
+import { Badge } from "react-bootstrap";
 
 export type EditorNodeProps = {
   title: string;
@@ -56,6 +57,8 @@ const EditorNode: React.FC<EditorNodeProps> = ({
     iconProp
   );
 
+  const hasError = true;
+
   return (
     // Use our own custom style here, not bootstrap
     <div className={styles.root}>
@@ -63,11 +66,16 @@ const EditorNode: React.FC<EditorNodeProps> = ({
       <button
         type="button"
         onClick={onClick}
-        className={cx(styles.box, {
+        className={cx(styles.button, {
           [styles.mutedNode]: muted,
           [styles.activeNode]: active,
         })}
       >
+        {hasError && (
+          <Badge pill variant="danger" className={styles.errorBadge}>
+            !
+          </Badge>
+        )}
         {icon}
       </button>
       <div className={styles.outputKey}>{outputName}</div>
