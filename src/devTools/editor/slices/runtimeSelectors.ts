@@ -30,7 +30,7 @@ type EditorSelector<T> = (state: RootState) => T;
  */
 export const selectTraceError: EditorSelector<TraceError> = (state) => {
   const records = selectExtensionTrace(state);
-  return (records ?? []).find((x) => "error" in x && x.error) as TraceError;
+  return records.find((x) => "error" in x && x.error) as TraceError;
 };
 
 const EMPTY_TRACE: TraceRecord[] = Object.freeze([]) as TraceRecord[];
