@@ -21,13 +21,18 @@ import { isEmpty } from "lodash";
 import copy from "copy-to-clipboard";
 import AceEditor from "@/vendors/AceEditor";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClipboard } from "@fortawesome/free-solid-svg-icons";
+import {
+  faClipboard,
+  faExternalLinkAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import SchemaTree from "@/components/schemaTree/SchemaTree";
 import useUserAction from "@/hooks/useUserAction";
 import DetailSection from "./DetailSection";
 import { ReferenceEntry } from "@/options/pages/brickEditor/brickEditorTypes";
 import { Schema } from "@/core";
 import styles from "./BrickDetail.module.scss";
+import { useGetMarketplaceListingsQuery } from "@/services/api";
+import BrickIcon from "@/components/BrickIcon";
 
 function makeArgumentYaml(schema: Schema): string {
   let result = "";
@@ -70,6 +75,9 @@ const BrickDetail: React.FunctionComponent<{
   const schema = "schema" in brick ? brick.schema : brick.inputSchema;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const outputSchema = (brick as any).outputSchema as Schema;
+  const { data: listings = {} } = useGetMarketplaceListingsQuery();
+
+  const listing = listings[brick.id];
 
   const copyHandler = useUserAction(
     async () => {
@@ -84,9 +92,28 @@ const BrickDetail: React.FunctionComponent<{
 
   return (
     <div className={styles.root}>
-      <div>
-        <h3>{brick.name}</h3>
-        <code className="p-0">{brick.id}</code>
+      <div className="d-flex justify-content-between">
+        <div>
+          <h3 className="text-left">
+            {brick.name}&nbsp;
+            <BrickIcon brick={brick} />
+          </h3>
+          <p>
+            <code className="p-0">{brick.id}</code>
+          </p>
+        </div>
+        {listing && (
+          <div className="ml-4">
+            <a
+              href={`https://pixiebrix.com/marketplace/${listing.id}`}
+              className="btn btn-outline-info text-nowrap"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FontAwesomeIcon icon={faExternalLinkAlt} /> View in Marketplace
+            </a>
+          </div>
+        )}
       </div>
 
       <DetailSection title="Description">

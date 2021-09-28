@@ -94,9 +94,9 @@ const BrickReference: React.FunctionComponent<{
   }, [selected, initialSelected, query, fuse, sortedBricks]);
 
   return (
-    <Container className="px-0 h-100" fluid>
+    <Container className="h-100" fluid>
       <Row className="h-100">
-        <Col md={4} className="h-100">
+        <Col md={4} className="h-100 px-0">
           <InputGroup className="mr-sm-2">
             <InputGroup.Prepend>
               <InputGroup.Text>Search</InputGroup.Text>
@@ -125,7 +125,7 @@ const BrickReference: React.FunctionComponent<{
             ))}
           </ListGroup>
         </Col>
-        <Col md={8} className={cx("pt-4")}>
+        <Col md={8} className={cx("p-5")}>
           {selected ? (
             <BrickDetail
               brick={selected}
