@@ -21,11 +21,11 @@ import { DevToolsContext } from "@/devTools/context";
 import { showBrowserActionPanel } from "@/background/devtools";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import Centered from "@/devTools/editor/components/Centered";
-import { Button } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import BlockModal from "@/components/brickModal/BrickModal";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faCube, faExpand, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { internalExtensionPointMetaFactory } from "@/devTools/editor/extensionPoints/base";
 import { ElementConfig } from "@/devTools/editor/extensionPoints/elementConfig";
 import { reportEvent } from "@/telemetry/events";
@@ -118,32 +118,40 @@ const GenericInsertPane: React.FunctionComponent<{
 
   return (
     <Centered isScrollable>
-      <div className="PaneTitle">Add {config.label}</div>
+      <div className="PaneTitle">Build new {config.label} extension</div>
       <div className="text-left">{config.insertModeHelp}</div>
-      <div>
-        <BlockModal
-          bricks={extensionPoints ?? []}
-          caption={`Select ${config.label} Foundation`}
-          renderButton={({ show }) => (
-            <Button
-              variant="info"
-              onClick={show}
-              disabled={!extensionPoints?.length}
-            >
-              <FontAwesomeIcon icon={faCube} /> Use Existing {config.label}
-            </Button>
-          )}
-          onSelect={async (block) => addExisting(block)}
-        />
+      <Row>
+        <Col sm={3}>
+          <h6>Start with:</h6>
+        </Col>
+        <Col
+          sm={9}
+          className="text-left d-flex flex-column align-items-stretch px-5"
+        >
+          <BlockModal
+            bricks={extensionPoints ?? []}
+            renderButton={({ show }) => (
+              <Button
+                variant="info"
+                onClick={show}
+                disabled={!extensionPoints?.length}
+              >
+                <FontAwesomeIcon icon={faCube} /> Existing Foundation
+              </Button>
+            )}
+            onSelect={async (block) => addExisting(block)}
+          />
 
-        <Button variant="info" className="ml-2" onClick={addNew}>
-          <FontAwesomeIcon icon={faPlus} /> Create New
+          <Button variant="info" className="mt-2" onClick={addNew}>
+            <FontAwesomeIcon icon={faExpand} /> Empty {config.label}
+          </Button>
+        </Col>
+      </Row>
+      <Row>
+        <Button variant="outline-danger" className="m-3" onClick={cancel}>
+          <FontAwesomeIcon icon={faTimes} /> Cancel
         </Button>
-
-        <Button variant="danger" className="ml-2" onClick={cancel}>
-          Cancel Insert
-        </Button>
-      </div>
+      </Row>
     </Centered>
   );
 };
