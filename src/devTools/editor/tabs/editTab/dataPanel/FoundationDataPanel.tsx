@@ -71,8 +71,8 @@ const FoundationDataPanel: React.FC<{
       <Tab.Content>
         <Tab.Pane eventKey="context" className={styles.tabPane}>
           <div className="text-muted">
-            Extension points are the first step in the execution flow, input
-            context is empty.
+            A foundation is the first step in the execution flow, they do not
+            receive inputs
           </div>
         </Tab.Pane>
         {showDeveloperTabs && (
@@ -95,8 +95,8 @@ const FoundationDataPanel: React.FC<{
         )}
         <Tab.Pane eventKey="rendered" className={styles.tabPane}>
           <div className="text-muted">
-            Extension points are the first step in the execution flow, there are
-            no rendered inputs.
+            A foundation is the first step in the execution flow, they do not
+            receive inputs
           </div>
         </Tab.Pane>
         <Tab.Pane eventKey="output" className={styles.tabPane}>
@@ -109,15 +109,15 @@ const FoundationDataPanel: React.FC<{
             />
           ) : (
             <div className="text-muted">
-              No trace available, add a brick and run the extension to generate
-              data
+              No trace available, add a brick and run the extension to see the
+              data produced by the foundation
             </div>
           )}
         </Tab.Pane>
         <Tab.Pane eventKey="preview" className={styles.tabPane}>
           <div className="text-muted">
-            Extension points do not support live preview, check the Output tab
-            to see data for the latest run.
+            Foundations do not currently support live preview, check the Output
+            tab to see data for the latest run.
           </div>
         </Tab.Pane>
       </Tab.Content>
