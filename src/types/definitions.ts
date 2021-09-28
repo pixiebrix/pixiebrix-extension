@@ -71,10 +71,10 @@ export interface OptionsDefinition {
   uiSchema?: UiSchema;
 }
 
-export interface SharingDefinition {
+export type SharingDefinition = {
   public: boolean;
   organizations: UUID[];
-}
+};
 
 type Kind = "recipe" | "service" | "reader" | "component";
 

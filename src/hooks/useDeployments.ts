@@ -30,9 +30,12 @@ import { selectInstalledDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
-import { Permissions } from "webextension-polyfill-ts";
+import { browser, Permissions } from "webextension-polyfill-ts";
 import { IExtension, UUID, RegistryId } from "@/core";
 import { getLinkedApiClient } from "@/services/apiClient";
+import { satisfies } from "semver";
+import { compact } from "lodash";
+import chromeP from "webext-polyfill-kinda";
 
 const { actions } = optionsSlice;
 
@@ -138,7 +141,7 @@ function useDeployments(): DeploymentState {
 
     try {
       notify.info("Fetching latest brick definitions");
-      // Get the latest brick definitions so we have the latest permission requirements
+      // Get the latest brick definitions so we have the latest permission and version requirements
       // XXX: is this being broadcast to the content scripts so they get the updated brick definition content?
       await refreshRegistries();
     } catch (error: unknown) {
@@ -147,6 +150,27 @@ function useDeployments(): DeploymentState {
         `Error fetching latest bricks from server: ${getErrorMessage(error)}`,
         { error, report: true }
       );
+    }
+
+    // Check that the user's extension van run the deployment
+    const { version: extensionVersion } = browser.runtime.getManifest();
+    const versionRanges = compact(
+      deployments.map((x) => x.package.config.metadata.extensionVersion)
+    );
+    // For now assume the only version restrictions will be that the version must be greater than a certain number
+    if (
+      versionRanges.some(
+        (versionRange) => !satisfies(extensionVersion, versionRange)
+      )
+    ) {
+      await chromeP.runtime.requestUpdateCheck();
+      notify.warning(
+        "You must update the PixieBrix browser extension to activate the deployment",
+        {
+          event: "DeploymentRejectVersion",
+        }
+      );
+      return;
     }
 
     const permissions = await selectDeploymentPermissions(deployments);
