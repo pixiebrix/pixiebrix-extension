@@ -41,7 +41,7 @@ import { forEachTab } from "./util";
 
 const { reducer, actions } = optionsSlice;
 
-const UPDATE_INTERVAL_MS = 10 * 60 * 1000;
+const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
 type ActiveDeployment = {
   deployment: string;
