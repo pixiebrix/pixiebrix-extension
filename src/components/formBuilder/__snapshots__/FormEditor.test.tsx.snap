@@ -415,8 +415,14 @@ exports[`FormEditor renders simple schema 1`] = `
       <div
         class="form-group row"
       >
+        <label
+          class="form-label col-form-label col-lg-3"
+          for="rjsfSchema.schema.required"
+        >
+          Required Field?
+        </label>
         <div
-          class="col-sm-3"
+          class="col-lg-9"
         >
           <div
             class="switch btn off btn-light"
@@ -440,12 +446,6 @@ exports[`FormEditor renders simple schema 1`] = `
             </div>
           </div>
         </div>
-        <label
-          class="col-sm-9"
-          for="rjsfSchema.schema.required"
-        >
-          Required Field?
-        </label>
       </div>
     </div>
     <div
