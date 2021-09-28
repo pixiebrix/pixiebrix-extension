@@ -25,10 +25,9 @@ import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { compact, noop, zip } from "lodash";
+import { compact, zip } from "lodash";
 import { IBlock, OutputKey } from "@/core";
 import hash from "object-hash";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -154,8 +153,6 @@ const EditTab: React.FC<{
           }
         : {
             title: "Loading...",
-            icon: faSpinner,
-            onClick: noop,
           }
   );
 

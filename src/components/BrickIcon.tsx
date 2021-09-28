@@ -39,7 +39,6 @@ import { ContextMenuExtensionPoint } from "@/extensionPoints/contextMenu";
 import { PanelExtensionPoint } from "@/extensionPoints/panelExtension";
 import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtension";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
-import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
 import { useAsyncEffect } from "use-async-effect";
 import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
@@ -140,7 +139,7 @@ const BrickIcon: React.FunctionComponent<{
         <FontAwesomeIcon
           icon={faIcon}
           color={listing?.icon_color}
-          className={cx(faIconClass, { "text-muted": !listing?.icon_color })}
+          className={faIconClass}
           size={size}
           fixedWidth
         />
