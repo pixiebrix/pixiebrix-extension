@@ -38,25 +38,65 @@ export type ReaderConfig =
   | { [key: string]: ReaderConfig }
   | ReaderConfig[];
 
-export interface BlockConfig {
+/**
+ * A block configuration to be executed by the PixieBrix runtime.
+ * @see runStage
+ * @see reducePipeline
+ */
+export type BlockConfig = {
+  /**
+   * The registry id of the configured block
+   */
   id: RegistryId;
 
   /**
-   * (Optional) human-readable label for the step. Shown in the progress indicator
+   * The configuration of the block
+   */
+  config: UnknownObject;
+
+  /**
+   * (Optional) human-readable label for the step.
+   *
+   * Shown in the page editor, logs, and the progress indicator
+   * @see notifyProgress
    */
   label?: string;
 
   /**
-   * (Optional) indicate the step is being run in the interface
+   * (Optional) `true` to indicate on the host page that the step is being run
    */
   notifyProgress?: boolean;
 
+  /**
+   * (Optional) If the brick is being run in the context of a deployment, if an error occurs in this step an
+   * alert email is send to the admins for the deployment with the brick input.
+   *
+   * Used as a stopgap/recovery mechanism operations that aren't safe to retry. (For example, sending data to a
+   * UiPath queue for execution)
+   */
   onError?: {
     alert?: boolean;
   };
 
+  /**
+   * Where to execute the brick (default=`self`)
+   * - self: the current tab
+   * - opener: the tab that opened the current tab
+   * - target: the last tab that the current tab opened
+   * - broadcast: all tabs that PixieBrix has access to (the result is returned as an array)
+   * - remote: the server (currently only support identity, get, and http bricks)
+   */
   window?: "self" | "opener" | "target" | "broadcast" | "remote";
 
+  /**
+   * The output key (without the preceding "@") to assign the brick output to
+   *
+   * As of brick API `v2`, the outputKey is required except:
+   * - Effect bricks (because they don't produce an output)
+   * - The last brick in pipeline
+   *
+   * @see ApiVersionOptions.explicitDataFlow
+   */
   outputKey?: OutputKey;
 
   /**
@@ -66,16 +106,28 @@ export interface BlockConfig {
   if?: string | boolean | number;
 
   /**
-   * (Optional) root selector for reader
+   * (Optional) whether the block should inherit the current root element, or if it should use the document
+   * (default=`inherit`)
+   *
+   * @see root
+   * @since 1.4.0
+   */
+  rootMode?: "inherit" | "document";
+
+  /**
+   * (Optional) root JQuery/CSS selector. The selector is relative to the `root` that is passed to the pipeline/stage.
+   *
+   * An error is thrown at runtime if the selector doesn't match exactly one argument
+   * @see rootMode
    */
   root?: string;
 
   /**
-   * (Optional) template language to use for rendering the if and config properties. Default is mustache
+   * (Optional) template language to use for rendering the `if` and `config` properties (default=`mustache`)
+   * @see config
+   * @see if
    */
   templateEngine?: TemplateEngine;
-
-  config: UnknownObject;
 
   /**
    * A unique id for the configured block, used to correlate traces across runs when using the Page Editor.
@@ -83,6 +135,6 @@ export interface BlockConfig {
    * DO NOT SET: generated automatically by the Page Editor when configuring a dynamic element.
    */
   instanceId?: UUID;
-}
+};
 
 export type BlockPipeline = BlockConfig[];

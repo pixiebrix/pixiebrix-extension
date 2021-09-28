@@ -93,6 +93,7 @@ type ApiVersionOptions = {
   /**
    * If set to `true`, data only flows via output keys. The last output of the last stage is returned.
    * @since apiVersion 2
+   * @since 1.4.0
    */
   explicitDataFlow?: boolean;
 };
@@ -190,14 +191,14 @@ export async function runStage(
   };
 
   if (isReader(block)) {
+    // `reducePipeline` is responsible for passing the correct root into runStage based based on the BlockConfig
     if ((stage.window ?? "self") === "self") {
-      // TODO: allow the stage to define a different root within the extension root
       blockArgs = { root };
       logger.debug(
         `Passed root to reader ${stage.id} (window=${stage.window ?? "self"})`
       );
     } else {
-      // TODO: allow other roots in other tabs
+      // TODO: allow non-document roots in other tabs
       blockArgs = {};
       // By not setting the root, the other tab's document is user
       logger.debug(
@@ -354,6 +355,35 @@ export function apiVersionOptions(
   }
 }
 
+/**
+ * Select the root element for a stage based on the rootMode and root
+ * @see BlockConfig.rootMode
+ * @see BlockConfig.root
+ */
+function selectStageRoot(
+  stage: BlockConfig,
+  defaultRoot: ReaderRoot
+): ReaderRoot {
+  const rootMode = stage.rootMode ?? "inherit";
+
+  const root = rootMode === "inherit" ? defaultRoot : document;
+  const $root = $(root ?? document);
+
+  // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
+  const $stageRoot = stage.root ? $root.find(stage.root) : $root;
+
+  if ($stageRoot.length > 1) {
+    throw new BusinessError(`Multiple roots found for ${stage.root}`);
+  } else if ($stageRoot.length === 0) {
+    const rootDescriptor = (defaultRoot as HTMLElement).tagName ?? "document";
+    throw new BusinessError(
+      `No roots found for ${stage.root} (root=${rootDescriptor})`
+    );
+  }
+
+  return $stageRoot.get(0);
+}
+
 /** Execute a pipeline of blocks and return the result. */
 export async function reducePipeline(
   pipeline: BlockConfig | BlockPipeline,
@@ -397,22 +427,7 @@ export async function reducePipeline(
     const stageLogger = logger.childLogger(stageContext);
 
     try {
-      const $stageRoot = stage.root
-        ? // eslint-disable-next-line unicorn/no-array-callback-reference -- false positive for JQuery
-          $(root ?? document).find(stage.root)
-        : $(root ?? document);
-
-      if ($stageRoot.length > 1) {
-        throw new BusinessError(`Multiple roots found for ${stage.root}`);
-      } else if ($stageRoot.length === 0) {
-        throw new BusinessError(
-          `No roots found for ${stage.root} (root=${
-            (root as HTMLElement).tagName ?? "document"
-          })`
-        );
-      }
-
-      const stageRoot = $stageRoot.get(0);
+      const stageRoot = selectStageRoot(stage, root);
 
       if ("if" in stage) {
         const renderer = await engineRenderer(stage.templateEngine);

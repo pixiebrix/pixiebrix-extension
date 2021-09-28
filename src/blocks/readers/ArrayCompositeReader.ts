@@ -67,6 +67,13 @@ class ArrayCompositeReader extends Reader {
     return availability.every((x) => x);
   }
 
+  async isRootAware(): Promise<boolean> {
+    const awareness = await Promise.all(
+      this._readers.map(async (x) => x.isRootAware())
+    );
+    return awareness.some((x) => x);
+  }
+
   async read(root: HTMLElement | Document): Promise<ReaderOutput> {
     let result = {};
     const readResults = await Promise.all(
