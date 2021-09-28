@@ -50,7 +50,7 @@ const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
       <div className="mx-auto d-flex">
         <div className="flex-grow-1" />
         <div className="align-self-center">
-          New team bricks are ready to activate
+          New/updated team bricks are ready to activate
         </div>
         <div className="ml-3">
           <AsyncButton className="info" size="sm" onClick={update}>

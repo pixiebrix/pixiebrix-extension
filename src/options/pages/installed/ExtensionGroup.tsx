@@ -23,7 +23,7 @@ import {
   faCaretRight,
   faCheck,
   faList,
-  faPauseCircle,
+  faPause,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
@@ -107,18 +107,18 @@ const ExtensionGroup: React.FunctionComponent<{
       );
     }
 
-    if (managed) {
+    if (paused) {
       return (
         <>
-          <FontAwesomeIcon icon={faCheck} /> Managed
+          <FontAwesomeIcon icon={faPause} /> Paused
         </>
       );
     }
 
-    if (paused) {
+    if (managed) {
       return (
         <>
-          <FontAwesomeIcon icon={faPauseCircle} /> Paused
+          <FontAwesomeIcon icon={faCheck} /> Managed
         </>
       );
     }
@@ -130,7 +130,7 @@ const ExtensionGroup: React.FunctionComponent<{
         <FontAwesomeIcon icon={faCheck} /> Active
       </>
     );
-  }, [managed, hasPermissions, requestPermissions]);
+  }, [paused, managed, hasPermissions, requestPermissions]);
 
   const onViewLogs = () => {
     dispatch(

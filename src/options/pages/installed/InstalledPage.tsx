@@ -57,7 +57,7 @@ const InstalledPage: React.FunctionComponent<{
 }> = ({ extensions, onRemove, push }) => {
   const { flags } = useContext(AuthContext);
 
-  const [allExtensions] = useAsyncState(
+  const [allExtensions, , cloudError] = useAsyncState(
     async () => {
       const lookup = new Set<UUID>(extensions.map((x) => x.id));
       const { data } = await (await getLinkedApiClient()).get<CloudExtension[]>(
@@ -73,7 +73,7 @@ const InstalledPage: React.FunctionComponent<{
     extensions ?? []
   );
 
-  const [resolvedExtensions] = useAsyncState(
+  const [resolvedExtensions, , resolveError] = useAsyncState(
     async () =>
       Promise.all(
         allExtensions.map(async (extension) => resolveDefinitions(extension))
@@ -106,10 +106,18 @@ const InstalledPage: React.FunctionComponent<{
     [notify, allExtensions]
   );
 
-  const noExtensions = allExtensions.length === 0;
+  // Guard race condition with load when visiting the URL directly
+  const noExtensions =
+    extensions.length === 0 &&
+    allExtensions != null &&
+    allExtensions.length === 0;
 
   return (
-    <Page title="Active Bricks" icon={faCubes}>
+    <Page
+      title="Active Bricks"
+      icon={faCubes}
+      error={cloudError ?? resolveError}
+    >
       <Route
         exact
         path="/installed/share/:extensionId"
@@ -177,9 +185,9 @@ const InstalledPage: React.FunctionComponent<{
           </div>
         </Col>
       </Row>
-      {noExtensions ? (
-        <NoExtensionsPage />
-      ) : (
+      {noExtensions && <NoExtensionsPage />}
+
+      {resolvedExtensions && (
         <ActiveBricksCard
           extensions={resolvedExtensions}
           onRemove={onRemove}

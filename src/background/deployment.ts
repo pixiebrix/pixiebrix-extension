@@ -141,6 +141,7 @@ async function updateDeployments() {
   // Always get the freshest options slice from the local storage
   const { extensions } = await loadOptions();
 
+  // For a user has to go to the Active Bricks page to activate their first deployment
   if (!extensions.some((x) => x._deployment?.id)) {
     console.debug("No deployments installed");
     return;
