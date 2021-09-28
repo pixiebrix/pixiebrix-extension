@@ -17,13 +17,13 @@
 
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import SwitchButton from "./SwitchButton";
+import SwitchButtonWidget from "./SwitchButtonWidget";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
-const componentMeta: ComponentMeta<typeof SwitchButton> = {
-  title: "Fields/SwitchButton",
-  component: SwitchButton,
+const componentMeta: ComponentMeta<typeof SwitchButtonWidget> = {
+  title: "Fields/SwitchButtonWidget",
+  component: SwitchButtonWidget,
   argTypes: {
     onChange: {
       action: "onChange",
@@ -32,9 +32,9 @@ const componentMeta: ComponentMeta<typeof SwitchButton> = {
   },
 };
 
-const SwitchButtonTemplate: ComponentStory<typeof SwitchButton> = (args) => (
-  <SwitchButton {...args} />
-);
+const SwitchButtonTemplate: ComponentStory<typeof SwitchButtonWidget> = (
+  args
+) => <SwitchButtonWidget {...args} />;
 export const Default = SwitchButtonTemplate.bind({});
 Default.args = {
   name: "public",

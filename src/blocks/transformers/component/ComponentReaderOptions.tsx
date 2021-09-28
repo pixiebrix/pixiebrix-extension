@@ -7,6 +7,7 @@ import SelectWidget from "@/components/form/widgets/SelectWidget";
 import { Framework, FrameworkMeta } from "@/messaging/constants";
 import SelectorSelectorWidget from "@/devTools/editor/fields/SelectorSelectorWidget";
 import { isNullOrBlank, joinName } from "@/utils";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 type FrameworkOption = {
   value: Framework;
@@ -92,7 +93,7 @@ const ComponentReaderOptions: React.FunctionComponent<BlockOptionProps> = ({
         name={joinName(configFieldName, "optional")}
         label="Optional"
         description="Toggle to produce null/undefined if a component is not found (instead of raising an error)"
-        layout="switch"
+        as={SwitchButtonWidget}
       />
     </>
   );
