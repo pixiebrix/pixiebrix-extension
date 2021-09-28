@@ -18,7 +18,6 @@
 // Required for react-select-virtualized https://github.com/guiyep/react-select-virtualized/issues/283
 import "regenerator-runtime/runtime";
 
-// @ts-expect-error no types for this one :(
 import Select from "react-select-virtualized";
 import React, { useMemo } from "react";
 import { IconOption } from "@/icons/types";
@@ -74,6 +73,7 @@ const IconSelector: React.FunctionComponent<OwnProps> = ({
 
   return (
     <Select
+      // @ts-expect-error `isClearable` type missing from "react-select-virtualized"
       isClearable={isClearable}
       value={selectedOption}
       options={iconOptions}

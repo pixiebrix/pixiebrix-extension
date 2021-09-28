@@ -130,7 +130,7 @@ export class RuntimeNotFoundError extends Error {
  */
 export async function readStorageWithMigration<T = unknown>(
   storageKey: ManualStorageKey,
-  defaultValue?: T
+  defaultValue: T
 ): Promise<T | undefined> {
   const storedValue = await readStorage<T>(storageKey, defaultValue);
   if (typeof storedValue !== "string") {

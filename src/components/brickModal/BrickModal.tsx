@@ -20,6 +20,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import {
@@ -34,7 +35,6 @@ import {
 import { compact, sortBy } from "lodash";
 import { IBlock, IBrick, RegistryId } from "@/core";
 import { useDebounce } from "use-debounce";
-import "./BrickModal.scss";
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import Fuse from "fuse.js";
 import { isNullOrBlank } from "@/utils";
@@ -45,6 +45,9 @@ import BrickDetail from "./BrickDetail";
 import QuickAdd from "@/components/brickModal/QuickAdd";
 import { Except } from "type-fest";
 import cx from "classnames";
+import styles from "./BrickModal.module.scss";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 type BrickOption<T extends IBrick = IBlock> = {
   data: T;
@@ -110,6 +113,10 @@ type ButtonProps = {
 type ItemType = {
   searchResults: BrickOption[];
   setDetailBrick: (brick: IBrick) => void;
+  selectCaption: React.ReactNode;
+  onSelect: (brick: IBrick) => void;
+  close: () => void;
+  activeBrick: IBrick | null;
 };
 
 // The item renderer must be it's own separate component to react-window from re-mounting the results
@@ -117,7 +124,14 @@ type ItemType = {
 const ItemRenderer = ({
   index,
   style,
-  data: { searchResults, setDetailBrick },
+  data: {
+    searchResults,
+    setDetailBrick,
+    selectCaption,
+    onSelect,
+    close,
+    activeBrick,
+  },
 }: {
   index: number;
   style: CSSProperties;
@@ -129,9 +143,15 @@ const ItemRenderer = ({
     <div style={style}>
       <BrickResult
         brick={brick}
-        onSelect={() => {
+        onShowDetail={() => {
           setDetailBrick(brick);
         }}
+        onSelect={() => {
+          onSelect(brick);
+          close();
+        }}
+        selectCaption={selectCaption}
+        active={activeBrick?.id === brick.id}
       />
     </div>
   );
@@ -150,16 +170,30 @@ function itemKey(index: number, { searchResults }: ItemType): RegistryId {
   return item.value;
 }
 
+const defaultAddCaption = (
+  <span>
+    <FontAwesomeIcon icon={faPlus} className="mr-1" /> Add
+  </span>
+);
+
 function ActualModal<T extends IBrick>({
   bricks = [],
   close,
   onSelect,
-  selectCaption,
+  selectCaption = defaultAddCaption,
   recommendations = [],
   modalClassName,
 }: ModalProps<T>): React.ReactElement<T> {
   const [query, setQuery] = useState("");
   const [detailBrick, setDetailBrick] = useState<T>(null);
+  const searchInput = useRef(null);
+  // The react-window library requires exact height
+  const brickResultSizePx = 87;
+
+  // Auto-focus search input upon opening Modal
+  useEffect(() => {
+    searchInput.current.focus();
+  }, []);
 
   const { data: listings = {} } = useGetMarketplaceListingsQuery();
 
@@ -190,7 +224,7 @@ function ActualModal<T extends IBrick>({
 
   return (
     <Modal
-      className={cx("BrickModal", modalClassName)}
+      className={cx(styles.root, modalClassName)}
       show
       size="xl"
       onHide={close}
@@ -209,6 +243,7 @@ function ActualModal<T extends IBrick>({
                         <InputGroup.Text>Search</InputGroup.Text>
                       </InputGroup.Prepend>
                       <Form.Control
+                        ref={searchInput}
                         placeholder="Start typing to find results"
                         value={query}
                         onChange={(e) => {
@@ -221,18 +256,24 @@ function ActualModal<T extends IBrick>({
               </Row>
               <Row>
                 <Col>
-                  <div className="BrickModal__results">
+                  <div className={cx(styles.results)}>
                     <AutoSizer>
                       {({ height, width }) => (
                         <LazyList
                           height={height}
                           width={width}
                           itemCount={searchResults.length}
-                          // The react-window library requires exact height
-                          itemSize={87}
+                          itemSize={brickResultSizePx}
                           itemKey={itemKey}
                           itemData={
-                            { searchResults, setDetailBrick } as ItemType
+                            {
+                              searchResults,
+                              setDetailBrick,
+                              activeBrick: detailBrick,
+                              selectCaption,
+                              onSelect,
+                              close,
+                            } as ItemType
                           }
                         >
                           {ItemRenderer}
@@ -243,7 +284,11 @@ function ActualModal<T extends IBrick>({
                 </Col>
               </Row>
             </Col>
-            <Col xs={7} className="BrickDetail" key={detailBrick?.id}>
+            <Col
+              xs={7}
+              className={cx(styles.brickDetail)}
+              key={detailBrick?.id}
+            >
               {detailBrick ? (
                 <BrickDetail
                   brick={detailBrick}

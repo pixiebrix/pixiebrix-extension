@@ -34,6 +34,8 @@ import { TemplateTransformer } from "./template";
 import { UrlParams } from "./url";
 import { ComponentReader } from "./component/ComponentReader";
 import { JQueryReader } from "./jquery/JQueryReader";
+import { ParseCsv } from "./parseCsv";
+import { ParseDataUrl } from "./parseDataUrl";
 
 function registerTransformers() {
   registerBlock(new JQTransformer());
@@ -54,6 +56,8 @@ function registerTransformers() {
   registerBlock(new UrlParams());
   registerBlock(new JQueryReader());
   registerBlock(new ComponentReader());
+  registerBlock(new ParseCsv());
+  registerBlock(new ParseDataUrl());
 }
 
 export default registerTransformers;

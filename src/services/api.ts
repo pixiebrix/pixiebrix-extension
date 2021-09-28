@@ -21,7 +21,11 @@ import { ServiceDefinition } from "@/types/definitions";
 import { AxiosRequestConfig } from "axios";
 import { getApiClient, getLinkedApiClient } from "@/services/apiClient";
 import { isAxiosError } from "@/errors";
-import { MarketplaceListing, SanitizedAuth } from "@/types/contract";
+import {
+  MarketplaceListing,
+  Organization,
+  SanitizedAuth,
+} from "@/types/contract";
 
 // https://redux-toolkit.js.org/rtk-query/usage/customizing-queries#axios-basequery
 const appBaseQuery = (): BaseQueryFn<{
@@ -57,6 +61,9 @@ export const appApi = createApi({
     getServiceAuths: builder.query<SanitizedAuth[], void>({
       query: () => ({ url: "/api/services/shared/?meta=1", method: "get" }),
     }),
+    getOrganizations: builder.query<Organization[], void>({
+      query: () => ({ url: "/api/organizations/", method: "get" }),
+    }),
     getMarketplaceListings: builder.query<
       Record<RegistryId, MarketplaceListing>,
       void
@@ -80,4 +87,5 @@ export const {
   useGetServicesQuery,
   useGetServiceAuthsQuery,
   useGetMarketplaceListingsQuery,
+  useGetOrganizationsQuery,
 } = appApi;

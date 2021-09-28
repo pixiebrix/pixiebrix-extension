@@ -24,7 +24,7 @@ import React, {
 } from "react";
 import { DevToolsContext } from "@/devTools/context";
 import { useFormikContext } from "formik";
-import { groupBy, isEmpty } from "lodash";
+import { groupBy } from "lodash";
 import { checkAvailable } from "@/background/devtools";
 import { Badge, Form, Nav, Tab } from "react-bootstrap";
 import { FormState } from "@/devTools/editor/slices/editorSlice";
@@ -106,17 +106,12 @@ const ElementWizard: React.FunctionComponent<{
   );
 
   const {
-    errors,
     isSubmitting,
     isValid,
     status,
     handleSubmit,
     handleReset,
   } = useFormikContext<FormState>();
-
-  if (!isEmpty(errors)) {
-    console.warn("Form errors", { errors });
-  }
 
   const selectTabHandler = useCallback(
     (step: string) => {

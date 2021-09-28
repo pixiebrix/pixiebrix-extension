@@ -25,10 +25,9 @@ import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
 import blockRegistry from "@/blocks/registry";
-import { compact, noop, zip } from "lodash";
+import { compact, zip } from "lodash";
 import { IBlock, OutputKey } from "@/core";
 import hash from "object-hash";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { produce } from "immer";
 import EditorNodeConfigPanel from "@/devTools/editor/tabs/editTab/editorNodeConfigPanel/EditorNodeConfigPanel";
 import styles from "./EditTab.module.scss";
@@ -43,6 +42,8 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
 import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
+import useRuntimeErrors from "@/devTools/editor/hooks/useRuntimeErrors";
+import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -64,6 +65,9 @@ const EditTab: React.FC<{
   editable?: Set<string>;
   pipelineFieldName?: string;
 }> = ({ eventKey, pipelineFieldName = "extension.body" }) => {
+  useExtensionTrace();
+  useRuntimeErrors(pipelineFieldName);
+
   const {
     extensionPoint,
     type: elementType,
@@ -149,8 +153,6 @@ const EditTab: React.FC<{
           }
         : {
             title: "Loading...",
-            icon: faSpinner,
-            onClick: noop,
           }
   );
 

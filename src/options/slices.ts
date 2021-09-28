@@ -17,6 +17,7 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
+  DeploymentContext,
   IExtension,
   Metadata,
   OutputKey,
@@ -172,6 +173,18 @@ export const servicesSlice = createSlice({
   /* eslint-enable security/detect-object-injection */
 });
 
+function selectDeploymentContext(
+  deployment: Deployment
+): DeploymentContext | undefined {
+  if (deployment) {
+    return {
+      id: deployment.id,
+      timestamp: deployment.updated_at,
+      active: deployment.active,
+    };
+  }
+}
+
 export const optionsSlice = createSlice({
   name: "options",
   initialState: initialOptionsState,
@@ -216,7 +229,7 @@ export const optionsSlice = createSlice({
         services?: Record<RegistryId, UUID>;
         extensionPoints: ExtensionPointConfig[];
         optionsArgs?: UserOptions;
-        deployment?: Pick<Deployment, "id" | "updated_at">;
+        deployment?: Deployment;
       }>
     ) {
       requireLatestState(state);
@@ -247,12 +260,7 @@ export const optionsSlice = createSlice({
           id: extensionId,
           // Default to `v1` for backward compatability
           apiVersion: recipe.apiVersion ?? "v1",
-          _deployment: deployment
-            ? {
-                id: deployment.id,
-                timestamp: deployment.updated_at,
-              }
-            : undefined,
+          _deployment: selectDeploymentContext(deployment),
           _recipe: recipe.metadata,
           // Definitions are pushed down into the extensions. That's OK because `resolveDefinitions` determines
           // uniqueness based on the content of the definition. Therefore, bricks will be re-used as necessary
@@ -328,6 +336,7 @@ export const optionsSlice = createSlice({
         extensionPointId,
         // If the user updates an extension, detach it from the recipe -- it's now a personal extension
         _recipe: null,
+        _deployment: undefined,
         label,
         definitions,
         optionsArgs,

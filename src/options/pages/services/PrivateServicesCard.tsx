@@ -18,7 +18,7 @@
 import { useSelector } from "react-redux";
 import { Button, Card, Table } from "react-bootstrap";
 import React, { useCallback, useContext } from "react";
-import { IService, RawServiceConfiguration } from "@/core";
+import { IService, RawServiceConfiguration, UUID } from "@/core";
 import { RootState } from "@/options/store";
 import { uuidv4 } from "@/types/helpers";
 import BrickModal from "@/components/brickModal/BrickModal";
@@ -56,7 +56,7 @@ const PrivateServicesCard: React.FunctionComponent<OwnProps> = ({
   );
 
   const resetAuth = useCallback(
-    async (authId: string) => {
+    async (authId: UUID) => {
       try {
         await deleteCachedAuth(authId);
         notify.success("Reset login for integration");

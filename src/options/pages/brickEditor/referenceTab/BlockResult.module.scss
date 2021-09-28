@@ -22,14 +22,24 @@
   text-align: left;
 
   &:hover {
-    color: #fff;
-    background-color: #b66dff;
+    background-color: #ececff;
+    border-color: #c7c7ff;
+    transition: background-color 0.05s ease-in-out;
+    // Lifts brick result to expose all borders
+    z-index: 3;
+
+    .actionButtons {
+      display: flex;
+    }
+    .officialBadge {
+      display: none;
+    }
   }
 
   &:global(.list-group-item).active {
-    border-color: #e5d3ff;
+    border-color: #c7c7ff;
     color: black;
-    background-color: #f0e1ff;
+    background-color: #ececff;
   }
 }
 
@@ -42,6 +52,14 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.actionButtons {
+  display: none;
+}
+
+.officialBadge {
+  display: block;
 }
 
 .id {

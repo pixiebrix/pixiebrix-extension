@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (C) 2021 PixieBrix, Inc.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -15,40 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.RecommendationContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, 200px);
-  grid-gap: 2rem;
+import { EditorState } from "@/devTools/editor/slices/editorSlice";
 
-  .RecommendationCard {
-    max-width: 200px;
+type RootState = { editor: EditorState };
 
-    &:hover {
-      cursor: pointer;
-      background-color: #ececff;
-      border-color: #c7c7ff;
-      transition: background-color 0.15s ease-in-out;
-    }
-
-    &__image {
-      font-size: 50px;
-      height: 80px;
-
-      div {
-        margin: auto;
-
-        svg {
-          vertical-align: middle;
-        }
-      }
-    }
-
-    .card-body:nth-child(1) {
-      padding-bottom: 10px;
-    }
-
-    .card-body {
-      padding-top: 10px;
-    }
-  }
-}
+export const selectActiveExtension = ({ editor }: RootState) =>
+  editor.activeElement;
