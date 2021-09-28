@@ -18,7 +18,7 @@
 import React, { ChangeEvent } from "react";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
 import { Except } from "type-fest";
-import { CustomFieldWidget, FieldProps } from "@/components/form/FieldTemplate";
+import { FieldProps } from "@/components/form/FieldTemplate";
 
 export type CheckBoxLike = {
   name: string;
@@ -29,7 +29,7 @@ export type SwitchButtonProps = Except<FieldProps, "onChange"> & {
   onChange: React.ChangeEventHandler<CheckBoxLike>;
 };
 
-const SwitchButtonWidget: CustomFieldWidget<SwitchButtonProps> = ({
+const SwitchButtonWidget: React.FC<SwitchButtonProps> = ({
   name,
   onChange,
   value,
