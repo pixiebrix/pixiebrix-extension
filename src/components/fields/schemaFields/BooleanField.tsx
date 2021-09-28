@@ -19,6 +19,7 @@ import React from "react";
 import { SchemaFieldProps } from "@/components/fields/schemaFields/propTypes";
 import { fieldLabel } from "@/components/fields/fieldUtils";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
+import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 
 const BooleanField: React.FunctionComponent<SchemaFieldProps<boolean>> = ({
   name,
@@ -27,7 +28,7 @@ const BooleanField: React.FunctionComponent<SchemaFieldProps<boolean>> = ({
 }) => (
   <ConnectedFieldTemplate
     name={name}
-    layout="switch"
+    as={SwitchButtonWidget} // Do not use layout="switch" by default
     label={label ?? fieldLabel(name)}
     description={schema.description}
   />

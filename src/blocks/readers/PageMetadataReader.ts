@@ -33,6 +33,10 @@ export class PageMetadataReader extends Reader {
     return true;
   }
 
+  async isRootAware(): Promise<boolean> {
+    return false;
+  }
+
   async read() {
     const { getMetadata } = await import(
       // @ts-expect-error no type definitions available

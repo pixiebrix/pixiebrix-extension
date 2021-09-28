@@ -123,6 +123,19 @@ class ExternalBlock extends Block {
     return purity.every((x) => x);
   }
 
+  async isRootAware(): Promise<boolean> {
+    const pipeline = castArray(this.component.pipeline);
+
+    const awareness = await Promise.all(
+      pipeline.map(async (blockConfig) => {
+        const resolvedBlock = await blockRegistry.lookup(blockConfig.id);
+        return resolvedBlock.isRootAware();
+      })
+    );
+
+    return awareness.some((x) => x);
+  }
+
   async inferType(): Promise<ComponentKind | null> {
     const pipeline = castArray(this.component.pipeline);
     const last = pipeline[pipeline.length - 1];

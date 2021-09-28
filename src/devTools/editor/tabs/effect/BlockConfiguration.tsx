@@ -25,6 +25,9 @@ import devtoolFieldOverrides from "@/devTools/editor/fields/devtoolFieldOverride
 import GridLoader from "react-spinners/GridLoader";
 import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import styles from "./BlockConfiguration.module.scss";
+import { joinName } from "@/utils";
+import { useAsyncState } from "@/hooks/common";
+import { FormState } from "@/devTools/editor/slices/editorSlice";
 
 const DEFAULT_TEMPLATE_ENGINE_VALUE = "mustache";
 
@@ -32,13 +35,15 @@ const BlockConfiguration: React.FunctionComponent<{
   name: string;
   blockId: RegistryId;
 }> = ({ name, blockId }) => {
-  const context = useFormikContext();
+  const context = useFormikContext<FormState>();
 
   const blockErrors = getIn(context.errors, name);
 
-  const [{ error }, BlockOptions] = useBlockOptions(blockId);
+  const [{ block, error }, BlockOptions] = useBlockOptions(blockId);
 
-  const templateEngineFieldName = `${name}.templateEngine`;
+  const [isRootAware] = useAsyncState(async () => block.isRootAware(), [block]);
+
+  const templateEngineFieldName = joinName(name, "templateEngine");
 
   const { value: templateEngineValue } = useField<TemplateEngine>(
     templateEngineFieldName
@@ -109,6 +114,23 @@ const BlockConfiguration: React.FunctionComponent<{
             <option value="handlebars">Handlebars</option>
             <option value="nunjucks">Nunjucks</option>
           </ConnectedFieldTemplate>
+
+          {
+            // Only show if necessary. Currently only the trigger extension point passes the element that triggered the
+            // event through for the reader root
+            isRootAware && context.values.type === "trigger" && (
+              <ConnectedFieldTemplate
+                name={joinName(name, "rootMode")}
+                label="Root Mode"
+                as="select"
+                blankValue="inherit"
+                description="The root mode controls which page element PixieBrix provides as the implicit element"
+              >
+                <option value="inherit">Inherit</option>
+                <option value="document">Document</option>
+              </ConnectedFieldTemplate>
+            )
+          }
         </Card.Body>
       </Card>
     </>
