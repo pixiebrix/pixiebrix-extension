@@ -204,11 +204,17 @@ async function loadExtensions() {
 
   const options = await loadOptions();
 
-  const externalized = await Promise.all(
-    options.extensions.map(async (x) => resolveDefinitions(x))
+  // Exclude disabled deployments first (the organization admin might have disabled the deployment because it was
+  // breaking this method).
+  const activeExtensions = options.extensions.filter(
+    (x) => x._deployment?.active == null || x._deployment.active
   );
 
-  const extensionMap = groupBy(externalized, (x) => x.extensionPointId);
+  const resolvedExtensions = await Promise.all(
+    activeExtensions.map(async (x) => resolveDefinitions(x))
+  );
+
+  const extensionMap = groupBy(resolvedExtensions, (x) => x.extensionPointId);
 
   await Promise.all(
     Object.entries(extensionMap).map(async (entry) => {

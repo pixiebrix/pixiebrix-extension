@@ -106,6 +106,7 @@ const ActiveBricksCard: React.FunctionComponent<{
                         label={extensions[0]._recipe.name}
                         extensions={extensions}
                         managed
+                        paused={deployment.active != null && !deployment.active}
                         groupMessageContext={messageContext}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}

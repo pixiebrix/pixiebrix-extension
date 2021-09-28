@@ -23,6 +23,7 @@ import {
   faCaretRight,
   faCheck,
   faList,
+  faPauseCircle,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import AsyncButton from "@/components/AsyncButton";
@@ -43,7 +44,17 @@ import { installedPageSlice } from "./installedPageSlice";
 const ExtensionGroup: React.FunctionComponent<{
   label: string;
   extensions: ResolvedExtension[];
+  /**
+   * True iff the group corresponds to a managed Deployment
+   * @see Deployment
+   * @see DeploymentContext
+   */
   managed?: boolean;
+  /**
+   * True if the extension group is temporarily disabled. (Currently only deployments can be disabled without
+   * uninstalling them).
+   */
+  paused?: boolean;
   startExpanded?: boolean;
   groupMessageContext: MessageContext;
   onRemove: RemoveAction;
@@ -51,7 +62,8 @@ const ExtensionGroup: React.FunctionComponent<{
 }> = ({
   label,
   extensions,
-  managed,
+  managed = false,
+  paused = false,
   startExpanded,
   groupMessageContext,
   onRemove,
@@ -99,6 +111,14 @@ const ExtensionGroup: React.FunctionComponent<{
       return (
         <>
           <FontAwesomeIcon icon={faCheck} /> Managed
+        </>
+      );
+    }
+
+    if (paused) {
+      return (
+        <>
+          <FontAwesomeIcon icon={faPauseCircle} /> Paused
         </>
       );
     }

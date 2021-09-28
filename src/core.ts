@@ -233,10 +233,30 @@ export type ServiceAuthPair = {
   config: UUID;
 };
 
-export interface DeploymentContext {
+/**
+ * Context about an automatically activated organization Deployment.
+ */
+export type DeploymentContext = {
+  /**
+   * Unique id of the deployment
+   */
   id: UUID;
+
+  /**
+   * `updated_at` timestamp of the deployment object from the server (in ISO format). Used to determine whether the
+   * client has latest deployment settings installed.
+   */
   timestamp: string;
-}
+
+  /**
+   * Whether or not the deployment is temporarily disabled.
+   *
+   * If undefined, is considered active for backward compatability
+   *
+   * @since 1.4.0
+   */
+  active?: boolean;
+};
 
 export type ExtensionRef = {
   /**

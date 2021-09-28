@@ -26,7 +26,7 @@ import { selectExtensions } from "@/options/selectors";
 import { getErrorMessage } from "@/errors";
 import useNotifications from "@/hooks/useNotifications";
 import { getExtensionVersion, getUID } from "@/background/telemetry";
-import { activeDeployments } from "@/background/deployment";
+import { selectInstalledDeployments } from "@/background/deployment";
 import { refreshRegistries } from "@/hooks/useRefresh";
 import { Dispatch } from "redux";
 import { mergePermissions } from "@/utils/permissions";
@@ -56,7 +56,7 @@ async function fetchDeployments(
   >("/api/deployments/", {
     uid: await getUID(),
     version: await getExtensionVersion(),
-    active: activeDeployments(installedExtensions),
+    active: selectInstalledDeployments(installedExtensions),
   });
   return deployments;
 }

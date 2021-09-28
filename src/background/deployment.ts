@@ -43,15 +43,18 @@ const { reducer, actions } = optionsSlice;
 
 const UPDATE_INTERVAL_MS = 5 * 60 * 1000;
 
-type ActiveDeployment = {
-  deployment: string;
-  blueprint: string;
+/**
+ * Deployment installed on the client. A deployment may be installed but not active (see DeploymentContext.active)
+ */
+type InstalledDeployment = {
+  deployment: UUID;
+  blueprint: RegistryId;
   blueprintVersion: string;
 };
 
-export function activeDeployments(
+export function selectInstalledDeployments(
   extensions: Array<Pick<IExtension, "_deployment" | "_recipe">>
-): ActiveDeployment[] {
+): InstalledDeployment[] {
   return uniqBy(
     extensions
       .filter((x) => x._deployment?.id != null)
@@ -135,6 +138,7 @@ async function updateDeployments() {
     return;
   }
 
+  // Always get the freshest options slice from the local storage
   const { extensions } = await loadOptions();
 
   if (!extensions.some((x) => x._deployment?.id)) {
@@ -147,14 +151,17 @@ async function updateDeployments() {
   >("/api/deployments/", {
     uid: await getUID(),
     version: await getExtensionVersion(),
-    active: activeDeployments(extensions),
+    active: selectInstalledDeployments(extensions),
   });
 
   const timestamps = makeDeploymentTimestampLookup(extensions);
 
+  // This check also detects changes to the `active` flag of the deployment, because the updated_at is bumped whenever
+  // the active flag changes
   const updatedDeployments = deployments.filter(
-    (x: Deployment) =>
-      !timestamps.has(x.id) || new Date(x.updated_at) > timestamps.get(x.id)
+    (deployment) =>
+      !timestamps.has(deployment.id) ||
+      new Date(deployment.updated_at) > timestamps.get(deployment.id)
   );
 
   if (updatedDeployments.length === 0) {
