@@ -72,7 +72,12 @@ const store = configureStore({
     [appApi.reducerPath]: appApi.reducer,
   },
   middleware: (getDefaultMiddleware) => [
-    ...getDefaultMiddleware(),
+    ...getDefaultMiddleware({
+      // See https://github.com/rt2zz/redux-persist/issues/988#issuecomment-654875104
+      serializableCheck: {
+        ignoredActions: ["persist/PERSIST"],
+      },
+    }),
     appApi.middleware,
     ...conditionalMiddleware,
   ],
