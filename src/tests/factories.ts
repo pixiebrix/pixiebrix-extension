@@ -16,7 +16,7 @@
  */
 
 import { IExtension, RegistryId, UUID } from "@/core";
-import { randomWords } from "./testHelpers";
+import { v4 } from "uuid";
 
 const config = {
   apiVersion: "v1",
@@ -50,12 +50,12 @@ const config = {
 export const extensionFactory: (
   extensionProps?: Partial<IExtension>
 ) => IExtension = (extensionProps) => ({
-  id: randomWords() as UUID,
+  id: v4() as UUID,
   apiVersion: "v1",
-  extensionPointId: randomWords() as RegistryId,
+  extensionPointId: v4() as RegistryId,
   _deployment: null,
   _recipe: null,
-  label: randomWords(),
+  label: "Test label",
   templateEngine: null,
   permissions: null,
   definitions: null,

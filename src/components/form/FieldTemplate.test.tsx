@@ -17,18 +17,16 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { randomWords } from "@/tests/testHelpers";
 import FieldTemplate, { CustomFieldWidget, FieldProps } from "./FieldTemplate";
 import styles from "./FieldTemplate.module.scss";
 import { fireTextInput } from "@/components/formBuilder/formBuilderTestHelpers";
 
+const testLabel = "Test label";
+const testValue = "Test value";
+
 const renderFieldTemplate = (partialProps?: Partial<FieldProps>) =>
   render(
-    <FieldTemplate
-      name={randomWords()}
-      onChange={jest.fn()}
-      {...partialProps}
-    />
+    <FieldTemplate name={"testName"} onChange={jest.fn()} {...partialProps} />
   );
 test("renders horizontal layout by default", () => {
   const { container } = renderFieldTemplate();
@@ -56,20 +54,17 @@ test.each([
     )) as CustomFieldWidget,
   ],
 ])("binds label and input for %s", (_caseName, as) => {
-  const label = randomWords();
   renderFieldTemplate({
-    label,
+    label: testLabel,
     as,
   });
 
   // Label
-  expect(screen.getByText(label)).not.toBeNull();
+  expect(screen.getByText(testLabel)).not.toBeNull();
   // Input
-  expect(screen.getByLabelText(label)).not.toBeNull();
+  expect(screen.getByLabelText(testLabel)).not.toBeNull();
 });
 
-const testLabel = "Test label";
-const testValue = "Test value";
 test("passes value to custom widget", () => {
   renderFieldTemplate({
     label: testLabel,
