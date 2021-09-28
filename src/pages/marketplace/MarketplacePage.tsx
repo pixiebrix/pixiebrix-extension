@@ -32,10 +32,10 @@ import type { ButtonProps } from "react-bootstrap";
 import useFetch from "@/hooks/useFetch";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AuthContext from "@/auth/AuthContext";
-import { useOrganization } from "@/hooks/organization";
 import { sortBy } from "lodash";
 import Pagination from "@/components/pagination/Pagination";
 import { Organization } from "@/types/contract";
+import { useGetOrganizationsQuery } from "@/services/api";
 
 export type InstallRecipe = (recipe: RecipeDefinition) => Promise<void>;
 
@@ -174,7 +174,7 @@ const MarketplacePage: React.FunctionComponent<MarketplaceProps> = ({
   installedRecipes,
   recipesPerPage = 10,
 }) => {
-  const { organizations } = useOrganization();
+  const { data: organizations = [] } = useGetOrganizationsQuery();
   const { data: rawRecipes } = useFetch<RecipeDefinition[]>("/api/recipes/");
   const [query, setQuery] = useState("");
   const { scope } = useContext(AuthContext);

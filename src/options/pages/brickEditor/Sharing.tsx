@@ -23,10 +23,10 @@ import { sortBy, uniq } from "lodash";
 import { Table } from "react-bootstrap";
 import React from "react";
 import { useField } from "formik";
-import { useOrganization } from "@/hooks/organization";
+import { useGetOrganizationsQuery } from "@/services/api";
 
 const SharingTable: React.FunctionComponent = () => {
-  const { organizations = [] } = useOrganization();
+  const { data: organizations = [] } = useGetOrganizationsQuery();
   const [publicField, , { setValue: setPublic }] = useField("public");
   const [organizationsField, , { setValue: setOrganizations }] = useField(
     "organizations"

@@ -32,11 +32,6 @@ import {
 import { components } from "@/types/swagger";
 import { Except } from "type-fest";
 
-export enum MemberRole {
-  Member = 1,
-  Admin = 2,
-}
-
 export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
 export type Invitation = components["schemas"]["Invitation"];
