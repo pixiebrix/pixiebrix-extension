@@ -37,6 +37,7 @@ import { FormState } from "@/devTools/editor/slices/editorSlice";
 import AuthContext from "@/auth/AuthContext";
 import { useSelector } from "react-redux";
 import { makeSelectBlockTrace } from "@/devTools/editor/slices/runtimeSelectors";
+import { JsonObject } from "type-fest";
 
 /**
  * Exclude irrelevant top-level keys.
@@ -122,6 +123,13 @@ const DataPanel: React.FC<{
     actions.setActiveField
   );
 
+  const outputObj: JsonObject =
+    record !== undefined && "output" in record
+      ? "outputKey" in record
+        ? { [`@${record.outputKey}`]: record.output }
+        : record.output
+      : null;
+
   const [{ value: blockConfig }] = useField<BlockConfig>(blockFieldName);
 
   const [previewInfo] = usePreviewInfo(blockConfig?.id);
@@ -190,8 +198,8 @@ const DataPanel: React.FC<{
           isTraceEmpty={!record}
           isTraceOptional={previewInfo?.traceOptional}
         >
-          {record && "output" in record && (
-            <JsonTree data={record.output} copyable searchable label="Data" />
+          {outputObj && (
+            <JsonTree data={outputObj} copyable searchable label="Data" />
           )}
           {record && "error" in record && (
             <JsonTree data={record.error} label="Error" />
