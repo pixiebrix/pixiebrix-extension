@@ -17,23 +17,14 @@
 
 import React, { ChangeEvent } from "react";
 import BootstrapSwitchButton from "bootstrap-switch-button-react";
-import { Except } from "type-fest";
-import { FieldProps } from "@/components/form/FieldTemplate";
+import { CustomFieldWidget } from "@/components/form/FieldTemplate";
 
 export type CheckBoxLike = {
   name: string;
   value: boolean;
 };
 
-export type SwitchButtonProps = Except<FieldProps, "onChange"> & {
-  onChange: React.ChangeEventHandler<CheckBoxLike>;
-};
-
-const SwitchButtonWidget: React.FC<SwitchButtonProps> = ({
-  name,
-  onChange,
-  value,
-}) => {
+const SwitchButtonWidget: CustomFieldWidget = ({ name, onChange, value }) => {
   const patchedOnChange = (checked: boolean) => {
     onChange({
       target: { value: checked, name },
