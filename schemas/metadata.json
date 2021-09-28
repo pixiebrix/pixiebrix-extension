@@ -28,6 +28,11 @@
       "type": "string",
       "description": "A optional URL to find more information about the object",
       "format": "uri"
+    },
+    "extensionVersion": {
+      "type": "string",
+      "description": "PixieBrix extension version requirement (a semantic version range)",
+      "examples": [">=1.4.0"]
     }
   },
   "additionalProperties": false,

@@ -122,6 +122,7 @@ function useNotifications(): Notifications {
       notify(content, {
         report: false,
         autoDismiss: true,
+        appearance: "warning",
         ...options,
       });
     },

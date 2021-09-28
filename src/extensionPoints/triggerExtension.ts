@@ -50,6 +50,7 @@ import { notifyError } from "@/contentScript/notify";
 // @ts-expect-error using for the EventHandler type below
 import JQuery from "jquery";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { selectEventData } from "@/telemetry/deployments";
 
 export type TriggerConfig = {
   action: BlockPipeline | BlockConfig;
@@ -165,9 +166,7 @@ export abstract class TriggerExtensionPoint extends ExtensionPoint<TriggerConfig
           return error;
         }
 
-        reportEvent("TriggerRun", {
-          extensionId: extension.id,
-        });
+        reportEvent("TriggerRun", selectEventData(extension));
       })
     );
     return compact(errors);

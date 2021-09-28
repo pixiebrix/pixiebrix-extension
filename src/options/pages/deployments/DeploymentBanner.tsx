@@ -15,51 +15,71 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React from "react";
+import React, { useCallback } from "react";
 import "@/layout/Banner";
 import cx from "classnames";
 import useDeployments from "@/hooks/useDeployments";
 import AsyncButton from "@/components/AsyncButton";
 import { useRouteMatch } from "react-router";
+import { browser } from "webextension-polyfill-ts";
+import chromeP from "webext-polyfill-kinda";
+
+const Banner: React.FC<{ className?: string }> = ({ className, children }) => (
+  <div
+    className={cx("deployment-banner w-100", className)}
+    style={{ flex: "none" }}
+  >
+    <div className="mx-auto d-flex">
+      <div className="flex-grow-1" />
+      <div className="align-self-center">{children}</div>
+      <div className="flex-grow-1" />
+    </div>
+  </div>
+);
 
 const DeploymentBanner: React.FunctionComponent<{ className?: string }> = ({
   className,
 }) => {
-  const { hasUpdate, update } = useDeployments();
+  const { hasUpdate, update, extensionUpdateRequired } = useDeployments();
 
+  // Only show on certain pages where the user expects to see a top-level install button. It's especially confusing
+  // to show the banner on other pages with an activate button (e.g., the marketplace wizard, in the workshop, etc.)
   const matchRoot = useRouteMatch({ path: "/", exact: true });
   const matchInstalled = useRouteMatch({ path: "/installed", exact: true });
   const matchMarketplace = useRouteMatch({ path: "/blueprints", exact: true });
   const matchTemplates = useRouteMatch({ path: "/templates", exact: true });
+
+  const updateExtension = useCallback(async () => {
+    await chromeP.runtime.requestUpdateCheck();
+    browser.runtime.reload();
+  }, []);
 
   if (!hasUpdate) {
     return null;
   }
 
   if (!(matchRoot || matchInstalled || matchMarketplace || matchTemplates)) {
-    // Only show on certain pages where the user expects to see a top-level install button. It's especially confusing
-    // to show the banner on other pages with an activate button (e.g., the marketplace wizard, in the workshop, etc.)
     return null;
   }
 
+  if (extensionUpdateRequired) {
+    return (
+      <Banner className={className}>
+        Update the PixieBrix extension to activate team bricks
+        <AsyncButton className="info ml-3" size="sm" onClick={updateExtension}>
+          Update
+        </AsyncButton>
+      </Banner>
+    );
+  }
+
   return (
-    <div
-      className={cx("deployment-banner w-100", className)}
-      style={{ flex: "none" }}
-    >
-      <div className="mx-auto d-flex">
-        <div className="flex-grow-1" />
-        <div className="align-self-center">
-          New/updated team bricks are ready to activate
-        </div>
-        <div className="ml-3">
-          <AsyncButton className="info" size="sm" onClick={update}>
-            Activate
-          </AsyncButton>
-        </div>
-        <div className="flex-grow-1" />
-      </div>
-    </div>
+    <Banner className={className}>
+      Team bricks are ready to activate
+      <AsyncButton className="info ml-3" size="sm" onClick={update}>
+        Activate
+      </AsyncButton>
+    </Banner>
   );
 };
 

@@ -29,7 +29,7 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-  readerHack,
+  readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -110,7 +110,7 @@ function fromNativeElement(
       metadata,
       definition: {
         ...button.menu,
-        reader: getImplicitReader(),
+        reader: getImplicitReader("menuItem"),
         isAvailable: makeIsAvailable(url),
       },
       traits: {
@@ -205,7 +205,7 @@ async function fromExtensionPoint(
       },
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -241,7 +241,7 @@ export async function fromExtension(
       metadata: extensionPoint.metadata,
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
