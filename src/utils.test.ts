@@ -15,12 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-  camelCaseToSentenceCase,
-  freshIdentifier,
-  getPropByPath,
-  removeUndefined,
-} from "@/utils";
+import { freshIdentifier, getPropByPath, removeUndefined } from "@/utils";
 import type { SafeString } from "@/core";
 
 test("can get array element by index", () => {
