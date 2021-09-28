@@ -36,7 +36,9 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import OptionsWidget from "@/components/form/widgets/OptionsWidget";
-import { CheckBoxLike } from "@/components/form/switchButton/SwitchButton";
+import SwitchButtonWidget, {
+  CheckBoxLike,
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { uniq } from "lodash";
 
 const FieldEditor: React.FC<{
@@ -217,7 +219,7 @@ const FieldEditor: React.FC<{
       <FieldTemplate
         name={`${name}.schema.required`}
         label="Required Field?"
-        layout="switch"
+        as={SwitchButtonWidget}
         value={isRequired}
         onChange={onRequiredChange}
       />

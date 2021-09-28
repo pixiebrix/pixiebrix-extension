@@ -65,6 +65,10 @@ export class ComponentReader extends Transformer {
     },
   };
 
+  async isRootAware(): Promise<boolean> {
+    return true;
+  }
+
   async isPure(): Promise<boolean> {
     return true;
   }

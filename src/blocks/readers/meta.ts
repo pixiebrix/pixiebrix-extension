@@ -37,6 +37,10 @@ export class TimestampReader extends Reader {
     };
   }
 
+  async isRootAware(): Promise<boolean> {
+    return false;
+  }
+
   outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
@@ -73,6 +77,10 @@ export class PixieBrixSessionReader extends Reader {
       navigationTimestamp: session.navigationTimestamp.toISOString(),
       ...(await getExtensionAuth()),
     };
+  }
+
+  async isRootAware(): Promise<boolean> {
+    return false;
   }
 
   async isPure(): Promise<boolean> {
@@ -139,6 +147,10 @@ export class PixieBrixProfileReader extends Reader {
     return true;
   }
 
+  async isRootAware(): Promise<boolean> {
+    return false;
+  }
+
   outputSchema: Schema = {
     $schema: "https://json-schema.org/draft/2019-09/schema#",
     type: "object",
@@ -179,6 +191,10 @@ export class DocumentReader extends Reader {
     };
   }
 
+  async isRootAware(): Promise<boolean> {
+    return false;
+  }
+
   async isPure(): Promise<boolean> {
     return true;
   }
@@ -215,6 +231,10 @@ export class ManifestReader extends Reader {
       "Chrome manifest reader",
       "Read the Chrome extension manifest"
     );
+  }
+
+  async isRootAware(): Promise<boolean> {
+    return false;
   }
 
   async isAvailable() {

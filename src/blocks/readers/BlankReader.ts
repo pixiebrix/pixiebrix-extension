@@ -34,6 +34,10 @@ export class BlankReader extends Reader {
     additionalProperties: false,
   };
 
+  async isRootAware(): Promise<boolean> {
+    return false;
+  }
+
   async isAvailable() {
     return true;
   }
