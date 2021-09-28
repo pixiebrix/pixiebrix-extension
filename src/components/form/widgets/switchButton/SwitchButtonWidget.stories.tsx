@@ -18,8 +18,6 @@
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import SwitchButtonWidget from "./SwitchButtonWidget";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGlobe } from "@fortawesome/free-solid-svg-icons";
 
 const componentMeta: ComponentMeta<typeof SwitchButtonWidget> = {
   title: "Fields/SwitchButtonWidget",
@@ -38,10 +36,5 @@ const SwitchButtonTemplate: ComponentStory<typeof SwitchButtonWidget> = (
 export const Default = SwitchButtonTemplate.bind({});
 Default.args = {
   name: "public",
-  label: (
-    <span>
-      <FontAwesomeIcon icon={faGlobe} /> Public
-    </span>
-  ),
 };
 export default componentMeta;
