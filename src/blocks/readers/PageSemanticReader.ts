@@ -29,6 +29,10 @@ export class PageSemanticReader extends Reader {
     );
   }
 
+  async isRootAware(): Promise<boolean> {
+    return false;
+  }
+
   async read(): Promise<ReaderOutput> {
     const [{ Handler }, { Parser }] = await Promise.all([
       import("htmlmetaparser"),

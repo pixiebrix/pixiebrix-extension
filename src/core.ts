@@ -485,11 +485,24 @@ export interface IBlock extends Metadata {
   isPure?: () => Promise<boolean>;
 
   /**
+   * Returns `true` if the block can use the reader root from the block options
+   *
+   * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
+   * the other blocks to resolve their purity).
+   *
+   * @see BlockOptions.root
+   * @since 1.4.0
+   */
+  isRootAware?: () => Promise<boolean>;
+
+  /**
    * (Optional) default root output key to use when this block is added in the page editor.
    *
    * If not provided, the Page Editor will use a generic name, potentially based on the inferred type of the brick.
    *
    * For example, "foo" will produce: foo, foo2, foo3, foo4, etc.
+   *
+   * @since 1.3.2
    */
   defaultOutputKey?: string;
 
