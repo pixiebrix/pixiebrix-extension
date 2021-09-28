@@ -37,6 +37,7 @@ import React from "react";
 import { createSitePattern } from "@/permissions/patterns";
 import {
   BaseFormState,
+  ElementType,
   SingleLayerReaderConfig,
 } from "@/devTools/editor/extensionPoints/elementConfig";
 import { Except } from "type-fest";
@@ -283,13 +284,22 @@ export function removeEmptyValues<T extends object>(obj: T): T {
 /**
  * Return a composite reader to automatically include in new extensions created with the Page Editor.
  */
-export function getImplicitReader(): SingleLayerReaderConfig {
+export function getImplicitReader(type: ElementType): SingleLayerReaderConfig {
+  if (type === "trigger") {
+    return readerTypeHack([
+      validateRegistryId("@pixiebrix/document-metadata"),
+      { element: validateRegistryId("@pixiebrix/html/element") },
+    ]);
+  }
+
+  // NOTE: we don't need to provide "@pixiebrix/context-menu-data" here because it's automatically attached by the
+  // the contextMenu extension point.
   return [validateRegistryId("@pixiebrix/document-metadata")];
 }
 
 /**
  * Hack to use SingleLayerReaderConfig to prevent TypeScript reporting problems with infinite type instantiation
  */
-export function readerHack(reader: ReaderConfig): SingleLayerReaderConfig {
+export function readerTypeHack(reader: ReaderConfig): SingleLayerReaderConfig {
   return reader as SingleLayerReaderConfig;
 }

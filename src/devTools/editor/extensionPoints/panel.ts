@@ -25,7 +25,7 @@ import {
   makeInitialBaseState,
   makeIsAvailable,
   PAGE_EDITOR_DEFAULT_BRICK_API_VERSION,
-  readerHack,
+  readerTypeHack,
   removeEmptyValues,
   selectIsAvailable,
   withInstanceIds,
@@ -117,7 +117,7 @@ function fromNativeElement(
       metadata,
       definition: {
         ...panel.foundation,
-        reader: getImplicitReader(),
+        reader: getImplicitReader("panel"),
         isAvailable: makeIsAvailable(url),
       },
       traits: DEFAULT_TRAITS,
@@ -221,7 +221,7 @@ async function fromExtensionPoint(
       },
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
@@ -262,7 +262,7 @@ async function fromExtension(
       },
       definition: {
         ...extensionPoint.definition,
-        reader: readerHack(extensionPoint.definition.reader),
+        reader: readerTypeHack(extensionPoint.definition.reader),
         isAvailable: selectIsAvailable(extensionPoint),
       },
     },
