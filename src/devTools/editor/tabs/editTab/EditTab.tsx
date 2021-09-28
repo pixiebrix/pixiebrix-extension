@@ -44,6 +44,7 @@ import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
 import useRuntimeErrors from "@/devTools/editor/hooks/useRuntimeErrors";
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
+import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -250,11 +251,17 @@ const EditTab: React.FC<{
           </ErrorBoundary>
         </div>
         <div className={styles.dataPanel}>
-          <DataPanel
-            key={blockInstanceId}
-            blockFieldName={blockFieldName}
-            instanceId={blockInstanceId}
-          />
+          {activeNodeIndex === 0 ? (
+            <FoundationDataPanel
+              firstBlockInstanceId={blockPipeline[0]?.instanceId}
+            />
+          ) : (
+            <DataPanel
+              key={blockInstanceId}
+              blockFieldName={blockFieldName}
+              instanceId={blockInstanceId}
+            />
+          )}
         </div>
       </div>
     </Tab.Pane>

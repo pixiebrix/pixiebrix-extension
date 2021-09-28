@@ -58,7 +58,6 @@ type TabStateProps = {
   isLoading?: boolean;
   isTraceEmpty?: boolean;
   isTraceOptional?: boolean;
-  error?: unknown;
 };
 
 const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
@@ -93,7 +92,7 @@ const DataTab: React.FC<TabPaneProps & TabStateProps> = ({
   }
 
   return (
-    <Tab.Pane {...tabProps} className="pt-3">
+    <Tab.Pane {...tabProps} className={styles.tabPane}>
       {contents}
     </Tab.Pane>
   );
@@ -182,7 +181,12 @@ const DataPanel: React.FC<{
         )}
         <DataTab eventKey="rendered" isTraceEmpty={!record}>
           {record && (
-            <JsonTree data={record.renderedArgs} copyable searchable />
+            <JsonTree
+              data={record.renderedArgs}
+              copyable
+              searchable
+              label="Rendered Inputs"
+            />
           )}
         </DataTab>
         <DataTab
@@ -200,7 +204,6 @@ const DataPanel: React.FC<{
         <DataTab
           eventKey="preview"
           isTraceEmpty={false}
-          error={null}
           // Only mount if the user is viewing it, because output previews take up resources to run
           mountOnEnter
           unmountOnExit
