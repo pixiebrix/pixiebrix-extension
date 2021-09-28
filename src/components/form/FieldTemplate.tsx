@@ -153,7 +153,9 @@ const RenderedSwitch: React.FC<FieldRenderProps> = ({
     <Col sm="3">
       <SwitchButtonWidget name={name} onChange={onChange} {...restFieldProps} />
     </Col>
-    <Col sm="9">{label}</Col>
+    <Col sm="9" as="label" htmlFor={name}>
+      {label}
+    </Col>
   </BootstrapForm.Group>
 );
 
