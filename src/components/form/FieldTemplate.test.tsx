@@ -20,6 +20,7 @@ import { render, screen } from "@testing-library/react";
 import { randomWords } from "@/tests/testHelpers";
 import FieldTemplate, { CustomFieldWidget, FieldProps } from "./FieldTemplate";
 import styles from "./FieldTemplate.module.scss";
+import { fireTextInput } from "@/components/formBuilder/formBuilderTestHelpers";
 
 const renderFieldTemplate = (partialProps?: Partial<FieldProps>) =>
   render(
@@ -50,12 +51,13 @@ test.each([
   ["BS FormControl", undefined],
   [
     "custom widget",
-    (({ id }) => <input type="text" id={id} />) as CustomFieldWidget,
+    (({ id }) => (
+      <input type="text" id={id} onChange={jest.fn()} />
+    )) as CustomFieldWidget,
   ],
 ])("binds label and input for %s", (_caseName, as) => {
   const label = randomWords();
   renderFieldTemplate({
-    name: randomWords(),
     label,
     as,
   });
@@ -64,4 +66,37 @@ test.each([
   expect(screen.getByText(label)).not.toBeNull();
   // Input
   expect(screen.getByLabelText(label)).not.toBeNull();
+});
+
+test("passes value to custom widget", () => {
+  const label = randomWords();
+  const value = randomWords(3);
+  renderFieldTemplate({
+    label,
+    value,
+    as: (({ id, value }) => (
+      <input type="text" id={id} value={value} onChange={jest.fn()} />
+    )) as CustomFieldWidget,
+  });
+
+  expect(screen.getByLabelText(label)).toHaveValue(value);
+});
+
+test("emits onChange", () => {
+  const label = randomWords();
+  const value = randomWords(3);
+  const onChangeMock = jest.fn();
+
+  renderFieldTemplate({
+    label,
+    onChange: onChangeMock,
+    as: (({ id, onChange }) => (
+      <input type="text" id={id} onChange={onChange} />
+    )) as CustomFieldWidget,
+  });
+
+  fireTextInput(screen.getByLabelText(label), value);
+
+  expect(onChangeMock).toHaveBeenCalledTimes(1);
+  expect(onChangeMock.mock.calls[0][0].target.value).toBe(value);
 });
