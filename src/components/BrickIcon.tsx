@@ -15,12 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import { IBrick } from "@/core";
+import { Split } from "type-fest";
 import { BlockType, getType } from "@/blocks/util";
-import { IconProp, library } from "@fortawesome/fontawesome-svg-core";
-import { fab } from "@fortawesome/free-brands-svg-icons";
-import { far } from "@fortawesome/free-regular-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -32,7 +31,6 @@ import {
   faMagic,
   faMousePointer,
   faRandom,
-  fas,
   faWindowMaximize,
 } from "@fortawesome/free-solid-svg-icons";
 import { TriggerExtensionPoint } from "@/extensionPoints/triggerExtension";
@@ -43,10 +41,13 @@ import { ActionPanelExtensionPoint } from "@/extensionPoints/actionPanelExtensio
 import { useGetMarketplaceListingsQuery } from "@/services/api";
 import cx from "classnames";
 import { useAsyncState } from "@/hooks/common";
+import { useAsyncEffect } from "use-async-effect";
+import { fetchFortAwesomeIcon } from "@/components/AsyncIcon";
 
-library.add(fas, fab, far);
-
-export function getIcon(brick: IBrick, blockType: BlockType): IconProp {
+export function getDefaultBrickIcon(
+  brick: IBrick,
+  blockType: BlockType
+): IconProp {
   if ("schema" in brick) {
     return faCloud;
   }
@@ -108,22 +109,36 @@ const BrickIcon: React.FunctionComponent<{
   // Setting height and width via em allows for scaling with font size
   const cssSize = `${sizeMultiplier}em`;
 
-  const fa_icon = useMemo(() => {
-    if (listing?.fa_icon) {
-      // The fa_icon database value is a string e.g. "fas fa-coffee"
-      const icon = listing.fa_icon.split(" ");
-      icon[1] = icon[1].replace("fa-", "");
-      return icon as IconProp;
-    }
+  const [faIcon, setFaIcon] = useState<IconProp>(
+    getDefaultBrickIcon(brick, type)
+  );
 
-    return getIcon(brick, type);
-  }, [brick, type, listing]);
+  useAsyncEffect(
+    async (isMounted) => {
+      if (listing.fa_icon) {
+        // The fa_icon database value is a string e.g. "fas fa-coffee"
+        const [library, icon] = listing.fa_icon.split(" ") as Split<
+          typeof listing.fa_icon,
+          " "
+        >;
+        const svg = await fetchFortAwesomeIcon(library, icon);
+        if (!isMounted()) {
+          return;
+        }
+
+        if (svg) {
+          setFaIcon(svg);
+        }
+      }
+    },
+    [listing]
+  );
 
   return (
     <>
       {listing?.image == null ? (
         <FontAwesomeIcon
-          icon={fa_icon}
+          icon={faIcon}
           color={listing?.icon_color}
           className={cx(faIconClass, { "text-muted": !listing?.icon_color })}
           size={size}
@@ -132,7 +147,7 @@ const BrickIcon: React.FunctionComponent<{
       ) : (
         <svg width={cssSize} height={cssSize}>
           <image
-            xlinkHref={listing?.image.url}
+            xlinkHref={listing.image.url}
             width={cssSize}
             height={cssSize}
           />
