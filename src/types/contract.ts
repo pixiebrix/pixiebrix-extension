@@ -31,6 +31,7 @@ import {
 
 import { components } from "@/types/swagger";
 import { Except } from "type-fest";
+import { FortAwesomeLibrary } from "@/components/AsyncIcon";
 
 export type Kind = "block" | "foundation" | "service" | "blueprint" | "reader";
 
@@ -89,7 +90,7 @@ export type CloudExtension<T extends Config = EmptyConfig> = Except<
 export type MarketplaceListing = {
   id: string;
   package: Record<string, unknown>;
-  fa_icon: string;
+  fa_icon: `${FortAwesomeLibrary} ${string}`;
   icon_color: string;
   image?: {
     url: string;
