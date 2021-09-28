@@ -28,8 +28,8 @@ export type FrameworkConfig = ReadPayload & {
   attrs?: string | string[];
 };
 
-function isHTMLElement(root: ReaderRoot): root is HTMLElement {
-  return root !== document;
+export function isHTMLElement(root: ReaderRoot): root is HTMLElement {
+  return root && root !== document;
 }
 
 async function asyncFastCssSelector(element: HTMLElement): Promise<string> {
