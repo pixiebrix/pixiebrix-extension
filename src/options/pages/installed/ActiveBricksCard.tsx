@@ -23,6 +23,7 @@ import ExtensionGroup from "./ExtensionGroup";
 import ExtensionGroupHeader from "./ExtensionGroupHeader";
 import { groupBy } from "lodash";
 import ExtensionRows from "./ExtensionRows";
+import { isDeploymentActive } from "@/options/deploymentUtils";
 
 const groupByRecipe = (
   extensions: ResolvedExtension[]
@@ -106,7 +107,7 @@ const ActiveBricksCard: React.FunctionComponent<{
                         label={extensions[0]._recipe.name}
                         extensions={extensions}
                         managed
-                        paused={deployment.active != null && !deployment.active}
+                        paused={!isDeploymentActive(extensions[0])}
                         groupMessageContext={messageContext}
                         onRemove={onRemove}
                         onExportBlueprint={onExportBlueprint}

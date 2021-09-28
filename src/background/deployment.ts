@@ -82,20 +82,20 @@ function installDeployment(
   let returnState = state;
   const installed = selectExtensions({ options: state });
 
+  // Uninstall existing versions of the extensions
   for (const extension of installed) {
     if (extension._recipe.id === deployment.package.package_id) {
-      const identifier = {
-        extensionPointId: extension.extensionPointId,
+      const extensionRef = {
         extensionId: extension.id,
       };
 
-      void uninstallContextMenu(identifier).catch(reportError);
+      void uninstallContextMenu(extensionRef).catch(reportError);
 
-      returnState = reducer(returnState, actions.removeExtension(identifier));
+      returnState = reducer(returnState, actions.removeExtension(extensionRef));
     }
   }
 
-  // Install the blueprint with the service definition
+  // Install the deployment's blueprint with the service definition
   returnState = reducer(
     returnState,
     actions.installRecipe({

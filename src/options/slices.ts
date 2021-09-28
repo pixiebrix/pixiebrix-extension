@@ -180,7 +180,7 @@ function selectDeploymentContext(
     return {
       id: deployment.id,
       timestamp: deployment.updated_at,
-      active: deployment.active ?? true,
+      active: deployment.active,
     };
   }
 }
@@ -336,6 +336,7 @@ export const optionsSlice = createSlice({
         extensionPointId,
         // If the user updates an extension, detach it from the recipe -- it's now a personal extension
         _recipe: null,
+        _deployment: undefined,
         label,
         definitions,
         optionsArgs,

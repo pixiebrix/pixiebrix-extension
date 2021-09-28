@@ -28,6 +28,7 @@ import { browser } from "webextension-polyfill-ts";
 import { groupBy } from "lodash";
 import { resolveDefinitions } from "@/registry/internal";
 import { clearExtensionTraces } from "@/background/trace";
+import { isDeploymentActive } from "@/options/deploymentUtils";
 
 let _scriptPromise: Promise<void> | undefined;
 const _dynamic: Map<UUID, IExtensionPoint> = new Map();
@@ -204,10 +205,10 @@ async function loadExtensions() {
 
   const options = await loadOptions();
 
-  // Exclude disabled deployments first (the organization admin might have disabled the deployment because it was
-  // breaking this method).
-  const activeExtensions = options.extensions.filter(
-    (x) => x._deployment?.active == null || x._deployment.active
+  // Exclude disabled deployments first (because the organization admin might have disabled the deployment because it
+  // was failing to install/load on the  page)
+  const activeExtensions = options.extensions.filter((extension) =>
+    isDeploymentActive(extension)
   );
 
   const resolvedExtensions = await Promise.all(

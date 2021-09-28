@@ -68,12 +68,9 @@ function useReinstall(): Reinstall {
       // Uninstall first to avoid duplicates
       await Promise.all(
         recipeExtensions.map(async (extension) => {
-          await uninstallContextMenu({ extensionId: extension.id });
-          dispatch(
-            removeExtension({
-              extensionId: extension.id,
-            })
-          );
+          const extensionRef = { extensionId: extension.id };
+          await uninstallContextMenu(extensionRef);
+          dispatch(removeExtension(extensionRef));
         })
       );
 
