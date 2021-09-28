@@ -36,8 +36,9 @@ import FieldTemplate from "@/components/form/FieldTemplate";
 import { produce } from "immer";
 import SelectWidget from "@/components/form/widgets/SelectWidget";
 import OptionsWidget from "@/components/form/widgets/OptionsWidget";
-import SwitchButtonWidget from "@/components/form/widgets/switchButton/SwitchButtonWidget";
-import { CheckBoxLike } from "@/components/form/widgets/switchButton/SwitchButtonWidget";
+import SwitchButtonWidget, {
+  CheckBoxLike,
+} from "@/components/form/widgets/switchButton/SwitchButtonWidget";
 import { uniq } from "lodash";
 
 const FieldEditor: React.FC<{

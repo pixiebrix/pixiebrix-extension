@@ -56,12 +56,12 @@ const PanelConfiguration: React.FC<{
       />
     </FieldSection>
 
-    <FieldSection title="Configuration">
+    <FieldSection title="Advanced">
       <ConnectedFieldTemplate
         name="extension.collapsible"
         as={SwitchButtonWidget}
         label="Collapsible"
-        description="Panel heading to show in the sidebar"
+        description="Render the panel as a collapsible drawer"
       />
 
       <ConnectedFieldTemplate
