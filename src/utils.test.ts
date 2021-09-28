@@ -64,26 +64,3 @@ describe("removeUndefined", () => {
     });
   });
 });
-
-describe("camelCaseToSentenceCase()", () => {
-  test("myCamelCaseString", () => {
-    expect(camelCaseToSentenceCase("myCamelCaseString")).toStrictEqual(
-      "My Camel Case String"
-    );
-  });
-  test("MyPascalCaseString", () => {
-    expect(camelCaseToSentenceCase("MyPascalCaseString")).toStrictEqual(
-      "My Pascal Case String"
-    );
-  });
-  test("stringnospaces", () => {
-    expect(camelCaseToSentenceCase("stringnospaces")).toStrictEqual(
-      "Stringnospaces"
-    );
-  });
-  test("string34WithNumbers14", () => {
-    expect(camelCaseToSentenceCase("string34WithNumbers14")).toStrictEqual(
-      "String 34 With Numbers 14"
-    );
-  });
-});
