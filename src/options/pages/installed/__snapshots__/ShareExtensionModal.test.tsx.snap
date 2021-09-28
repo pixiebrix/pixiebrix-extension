@@ -164,7 +164,7 @@ exports[`renders modal 1`] = `
               </div>
             </div>
             <label
-              class="label col-sm-9"
+              class="col-sm-9"
               for="public"
             >
               <span>
