@@ -23,11 +23,11 @@ import cx from "classnames";
 
 export type EditorNodeProps = {
   title: string;
-  outputKey?: string;
   icon?: IconProp | React.ReactNode;
   onClick?: () => void;
-  muted?: boolean | undefined;
-  active?: boolean | undefined;
+  muted?: boolean;
+  active?: boolean;
+  hasError?: boolean;
 };
 
 function isFontAwesomeIcon(
@@ -46,6 +46,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   outputKey,
   muted,
   active,
+  hasError,
 }) => {
   const outputName = outputKey ? `@${outputKey}` : "";
 

@@ -20,7 +20,9 @@ import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { getIn, useField, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
-import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
+import EditorNode, {
+  EditorNodeProps,
+} from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
@@ -46,6 +48,8 @@ import useRuntimeErrors from "@/devTools/editor/hooks/useRuntimeErrors";
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
+import { useSelector } from "react-redux";
+import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -136,6 +140,9 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
+  const traceError = useSelector(selectTraceError);
+  console.log("traceError", traceError);
+
   const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
     ([action, block], index) =>
       block
@@ -153,6 +160,7 @@ const EditTab: React.FC<{
                 faIconClass={styles.brickFaIcon}
               />
             ),
+            hasError: traceError?.blockInstanceId === action.instanceId,
             onClick: () => {
               onSelectNode(index + 1);
             },

@@ -57,6 +57,8 @@ type RuntimeErrors = {
  * @see useExtensionTrace
  */
 function useRuntimeErrors(pipelineFieldName: string): RuntimeErrors {
+  // ToDo get the field (action) error from Formik rather than Redux
+  // this thing sets the error, need to get in the EditTab
   const { setFieldError, setFieldTouched } = useFormikContext<FormState>();
   const [{ value: blockPipeline = [] }] = useField<BlockPipeline>(
     pipelineFieldName
