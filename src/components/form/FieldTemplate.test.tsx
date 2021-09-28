@@ -16,9 +16,9 @@
  */
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { randomWords } from "@/tests/testHelpers";
-import FieldTemplate, { FieldProps } from "./FieldTemplate";
+import FieldTemplate, { CustomFieldWidget, FieldProps } from "./FieldTemplate";
 import styles from "./FieldTemplate.module.scss";
 
 const renderFieldTemplate = (partialProps?: Partial<FieldProps>) =>
@@ -44,4 +44,24 @@ test("renders vertical layout", () => {
     layout: "vertical",
   });
   expect(container.firstChild).toHaveClass(styles.verticalFormGroup);
+});
+
+test.each([
+  ["BS FormControl", undefined],
+  [
+    "custom widget",
+    (({ id }) => <input type="text" id={id} />) as CustomFieldWidget,
+  ],
+])("binds label and input for %s", (_caseName, as) => {
+  const label = randomWords();
+  renderFieldTemplate({
+    name: randomWords(),
+    label,
+    as,
+  });
+
+  // Label
+  expect(screen.getByText(label)).not.toBeNull();
+  // Input
+  expect(screen.getByLabelText(label)).not.toBeNull();
 });
