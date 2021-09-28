@@ -55,6 +55,7 @@ import { reportEvent } from "@/telemetry/events";
 import { notifyError } from "@/contentScript/notify";
 import getSvgIcon from "@/icons/getSvgIcon";
 import { BlockConfig, BlockPipeline } from "@/blocks/types";
+import { selectEventData } from "@/telemetry/deployments";
 
 export type PanelConfig = {
   heading?: string;
@@ -345,9 +346,7 @@ export abstract class PanelExtensionPoint extends ExtensionPoint<PanelConfig> {
     } else {
       console.debug(`Adding new panel for ${extension.id}`);
       this.addPanel($panel);
-      reportEvent("PanelAdd", {
-        extensionId: extension.id,
-      });
+      reportEvent("PanelAdd", selectEventData(extension));
     }
 
     // FIXME: required sites that remove the panel, e.g., Pipedrive. Currently causing infinite loop on Salesforce
