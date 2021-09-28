@@ -488,7 +488,7 @@ export interface IBlock extends Metadata {
    * Returns `true` if the block can use the reader root from the block options
    *
    * Defined as a promise to support blocks that refer to other blocks (and therefore need to look up the status of
-   * the other blocks to resolve their purity).
+   * the other blocks to resolve their isRootAware status).
    *
    * @see BlockOptions.root
    * @since 1.4.0
