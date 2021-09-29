@@ -43,12 +43,9 @@ export const selectExtensionTrace: EditorSelector<TraceRecord[]> = ({
 export function makeSelectBlockTrace(
   blockInstanceId: UUID
 ): EditorSelector<{ record: TraceRecord }> {
-  return ({ runtime, editor }: RootState) => {
-    console.log("all traces", runtime.extensionTraces);
-    return {
-      record: runtime.extensionTraces[editor.activeElement]?.find(
-        (x) => x.blockInstanceId === blockInstanceId
-      ),
-    };
-  };
+  return ({ runtime, editor }: RootState) => ({
+    record: runtime.extensionTraces[editor.activeElement]?.find(
+      (x) => x.blockInstanceId === blockInstanceId
+    ),
+  });
 }

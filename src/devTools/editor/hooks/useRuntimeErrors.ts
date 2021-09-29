@@ -66,7 +66,6 @@ function useRuntimeErrors(pipelineFieldName: string): RuntimeErrors {
 
   useEffect(
     () => {
-      console.log("useRuntimeErrors", traceError);
       if (traceError && isInputValidationError(traceError.error)) {
         const { error, blockInstanceId } = traceError;
         const blockIndex = blockPipeline.findIndex(

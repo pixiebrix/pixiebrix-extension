@@ -24,11 +24,13 @@ import { Badge } from "react-bootstrap";
 
 export type EditorNodeProps = {
   title: string;
+  outputKey?: string;
   icon?: IconProp | React.ReactNode;
   onClick?: () => void;
   muted?: boolean;
   active?: boolean;
   hasError?: boolean;
+  hasWarning?: boolean;
 };
 
 function isFontAwesomeIcon(
@@ -48,6 +50,7 @@ const EditorNode: React.FC<EditorNodeProps> = ({
   muted,
   active,
   hasError,
+  hasWarning,
 }) => {
   const outputName = outputKey ? `@${outputKey}` : "";
 
@@ -69,8 +72,12 @@ const EditorNode: React.FC<EditorNodeProps> = ({
           [styles.activeNode]: active,
         })}
       >
-        {hasError && (
-          <Badge pill variant="danger" className={styles.errorBadge}>
+        {(hasError || hasWarning) && (
+          <Badge
+            pill
+            variant={hasError ? "danger" : "warning"}
+            className={styles.errorBadge}
+          >
             !
           </Badge>
         )}

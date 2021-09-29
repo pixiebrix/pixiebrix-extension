@@ -20,9 +20,7 @@ import { Col, Tab } from "react-bootstrap";
 import EditorNodeLayout from "@/devTools/editor/tabs/editTab/editorNodeLayout/EditorNodeLayout";
 import { getIn, useField, useFormikContext } from "formik";
 import { BlockPipeline } from "@/blocks/types";
-import EditorNode, {
-  EditorNodeProps,
-} from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
+import { EditorNodeProps } from "@/devTools/editor/tabs/editTab/editorNode/EditorNode";
 import { ADAPTERS } from "@/devTools/editor/extensionPoints/adapter";
 import { BlockType, defaultBlockConfig, getType } from "@/blocks/util";
 import { useAsyncState } from "@/hooks/common";
@@ -140,7 +138,7 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
-  console.log("EditTab. PipelineError", blockPipelineError);
+  const traceError = useSelector(selectTraceError);
   const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
     ([action, block], index) =>
       block
@@ -160,6 +158,7 @@ const EditTab: React.FC<{
             ),
             // eslint-disable-next-line security/detect-object-injection
             hasError: Boolean(blockPipelineError?.[index]),
+            hasWarning: traceError?.blockInstanceId === action.instanceId,
             onClick: () => {
               onSelectNode(index + 1);
             },
