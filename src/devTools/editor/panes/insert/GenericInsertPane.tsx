@@ -21,7 +21,7 @@ import { DevToolsContext } from "@/devTools/context";
 import { showBrowserActionPanel } from "@/background/devtools";
 import useAvailableExtensionPoints from "@/devTools/editor/hooks/useAvailableExtensionPoints";
 import Centered from "@/devTools/editor/components/Centered";
-import { Button, Col, Row } from "react-bootstrap";
+import { Button, Row } from "react-bootstrap";
 import BlockModal from "@/components/brickModal/BrickModal";
 import { editorSlice, FormState } from "@/devTools/editor/slices/editorSlice";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
