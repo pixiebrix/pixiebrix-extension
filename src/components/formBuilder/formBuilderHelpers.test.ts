@@ -1,10 +1,9 @@
-import { randomWords } from "@/tests/testHelpers";
 import { replaceStringInArray } from "./formBuilderHelpers";
 
 describe("replaceStringInArray", () => {
   let array: string[];
   beforeEach(() => {
-    array = [randomWords(), randomWords(), randomWords()];
+    array = ["word1", "word2", "word3"];
   });
 
   test("does not mutate the source array", () => {
@@ -21,7 +20,7 @@ describe("replaceStringInArray", () => {
   });
 
   test("can replace a string", () => {
-    const stringToInsert = randomWords();
+    const stringToInsert = "insert";
     const expected = [array[0], stringToInsert, array[2]];
     expect(replaceStringInArray(array, array[1], stringToInsert)).toEqual(
       expected
@@ -29,7 +28,7 @@ describe("replaceStringInArray", () => {
   });
 
   test("returns the same array when string is not found", () => {
-    expect(replaceStringInArray(array, randomWords(), randomWords())).toEqual(
+    expect(replaceStringInArray(array, "anotherWord1", "anotherWord2")).toEqual(
       array
     );
   });

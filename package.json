@@ -230,7 +230,6 @@
     "node-polyfill-webpack-plugin": "^1.1.4",
     "node-sass": "^6.0.1",
     "npm-force-resolutions": "^0.0.10",
-    "random-words": "^1.1.1",
     "raw-loader": "^4.0.1",
     "react-select-event": "^5.3.0",
     "rollbar-sourcemap-webpack-plugin": "^3.3.0",
@@ -288,6 +287,9 @@
       "jest-webextension-mock",
       "fake-indexeddb/auto"
     ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/testAfterEnv.js"
+    ],
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "!src/**/*.stories.tsx",
@@ -301,8 +303,8 @@
       "^vendors/(.*)$": "<rootDir>/src/vendors/$1",
       "^@contrib/(.*)$": "<rootDir>/contrib/$1",
       "^@schemas/(.*)$": "<rootDir>/schemas/$1",
-      "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.module.(css|scss)$": "identity-obj-proxy",
+      "\\.(css|less|scss)$": "<rootDir>/src/__mocks__/styleMock.js",
       "\\.(gif|ttf|eot|svg)$": "<rootDir>/src/__mocks__/fileMock.js"
     }
   },

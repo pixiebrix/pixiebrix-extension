@@ -33,11 +33,11 @@ export type FieldProps<
 > = FormControlProps &
   React.ComponentProps<As> & {
     name: string;
-    layout?: "horizontal" | "vertical" | "switch" | undefined;
-    label?: ReactNode | undefined;
-    description?: ReactNode | undefined;
-    error?: string | undefined;
-    touched?: boolean | undefined;
+    layout?: "horizontal" | "vertical" | "switch";
+    label?: ReactNode;
+    description?: ReactNode;
+    error?: string;
+    touched?: boolean;
     blankValue?: unknown;
   };
 
