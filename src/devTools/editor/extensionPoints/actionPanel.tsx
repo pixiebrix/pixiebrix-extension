@@ -243,12 +243,12 @@ const config: ElementConfig<never, ActionPanelFormState> = {
     <div>
       <p>
         A sidebar panel can be configured to appear in the PixieBrix sidebar on
-        pages you choose
+        pages you choose.
       </p>
 
       <p>
-        Use an existing foundation, or start from scratch to have full control
-        over when the panel appears
+        Search for an existing sidebar panel in the marketplace, or start from
+        scratch to have full control over when the panel appears.
       </p>
     </div>
   ),

@@ -257,8 +257,8 @@ const config: ElementConfig<undefined, TriggerFormState> = {
         etc.)
       </p>
       <p>
-        Use an existing foundation, or start from scratch to have full control
-        over when the trigger runs
+        Search for an existing trigger in the marketplace, or start from scratch
+        to have full control over when the trigger runs.
       </p>
     </div>
   ),

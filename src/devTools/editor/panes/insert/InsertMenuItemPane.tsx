@@ -55,8 +55,8 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
       <div className="text-left">
         <p>
           <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on an
-          existing <code>button</code> or button-like element to add a button
-          that that button group. You can also select a menu item or nav link.
+          existing <code>button</code> or button-like element to add a button to
+          that button&apos;s group. You can also select a menu item or nav link.
         </p>
 
         <div>

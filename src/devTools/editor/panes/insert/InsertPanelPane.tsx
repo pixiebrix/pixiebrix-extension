@@ -51,10 +51,10 @@ const InsertPanelPane: React.FunctionComponent<{
 
       <div className="text-left">
         <p>
-          <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on a
-          container to insert a panel in that container. Or, click{" "}
-          <span className="text-info">Use Existing Panel</span> to use a panel
-          foundation that already exists for the page
+          <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on an
+          existing <code>div</code> or container-like element to insert a panel
+          in that container. You may also search the{" "}
+          <span className="text-info">Marketplace</span> for existing panels.
         </p>
 
         <div>
