@@ -28,8 +28,9 @@ import { Alert, Button } from "react-bootstrap";
 import config from "@/devTools/editor/extensionPoints/panel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCube,
   faExclamationTriangle,
+  faSearch,
+  faTimes,
 } from "@fortawesome/free-solid-svg-icons";
 import useAddExisting from "@/devTools/editor/panes/insert/useAddExisting";
 
@@ -72,14 +73,14 @@ const InsertPanelPane: React.FunctionComponent<{
               onClick={show}
               disabled={!panelExtensionPoints?.length}
             >
-              <FontAwesomeIcon icon={faCube} /> Use Existing Panel
+              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
             </Button>
           )}
           onSelect={async (block) => addExistingPanel(block as PanelWithConfig)}
         />
 
-        <Button className="ml-2" variant="danger" onClick={cancel}>
-          Cancel Insert
+        <Button className="ml-2" variant="outline-danger" onClick={cancel}>
+          <FontAwesomeIcon icon={faTimes} /> Cancel
         </Button>
       </div>
     </Centered>

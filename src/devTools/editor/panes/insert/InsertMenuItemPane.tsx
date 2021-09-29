@@ -25,7 +25,7 @@ import {
 import Centered from "@/devTools/editor/components/Centered";
 import { Alert, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube, faInfo } from "@fortawesome/free-solid-svg-icons";
+import { faInfo, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
 import BlockModal from "@/components/brickModal/BrickModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import useAddExisting from "@/devTools/editor/panes/insert/useAddExisting";
@@ -73,14 +73,14 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
               onClick={show}
               disabled={!menuItemExtensionPoints?.length}
             >
-              <FontAwesomeIcon icon={faCube} /> Use Existing Button
+              <FontAwesomeIcon icon={faSearch} /> Search Marketplace
             </Button>
           )}
           onSelect={async (block) => addExisting(block as MenuItemWithConfig)}
         />
 
-        <Button variant="danger" className="ml-2" onClick={cancel}>
-          Cancel Insert
+        <Button variant="outline-danger" className="ml-2" onClick={cancel}>
+          <FontAwesomeIcon icon={faTimes} /> Cancel
         </Button>
       </div>
     </Centered>
