@@ -29,6 +29,7 @@ import config from "@/devTools/editor/extensionPoints/panel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faExclamationTriangle,
+  faMousePointer,
   faSearch,
   faTimes,
 } from "@fortawesome/free-solid-svg-icons";
@@ -50,7 +51,8 @@ const InsertPanelPane: React.FunctionComponent<{
 
       <div className="text-left">
         <p>
-          Click on a container to insert a panel in that container. Or, click{" "}
+          <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on a
+          container to insert a panel in that container. Or, click{" "}
           <span className="text-info">Use Existing Panel</span> to use a panel
           foundation that already exists for the page
         </p>

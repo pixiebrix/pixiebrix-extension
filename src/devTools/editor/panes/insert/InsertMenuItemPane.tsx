@@ -25,7 +25,12 @@ import {
 import Centered from "@/devTools/editor/components/Centered";
 import { Alert, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfo, faSearch, faTimes } from "@fortawesome/free-solid-svg-icons";
+import {
+  faInfo,
+  faMousePointer,
+  faSearch,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
 import BlockModal from "@/components/brickModal/BrickModal";
 import { ExtensionPointConfig } from "@/extensionPoints/types";
 import useAddExisting from "@/devTools/editor/panes/insert/useAddExisting";
@@ -49,9 +54,9 @@ const InsertMenuItemPane: React.FunctionComponent<{ cancel: () => void }> = ({
 
       <div className="text-left">
         <p>
-          Click on an existing <code>button</code> or button-like element to add
-          a button that that button group. You can also select a menu item or
-          nav link.
+          <FontAwesomeIcon icon={faMousePointer} size="lg" /> Click on an
+          existing <code>button</code> or button-like element to add a button
+          that that button group. You can also select a menu item or nav link.
         </p>
 
         <div>
