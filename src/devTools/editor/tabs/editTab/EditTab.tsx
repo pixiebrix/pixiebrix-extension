@@ -42,10 +42,11 @@ import ConnectedFieldTemplate from "@/components/form/ConnectedFieldTemplate";
 import DataPanel from "@/devTools/editor/tabs/editTab/dataPanel/DataPanel";
 import { isInnerExtensionPoint } from "@/devTools/editor/extensionPoints/base";
 import { getExampleBlockConfig } from "@/devTools/editor/tabs/editTab/exampleBlockConfigs";
-import useRuntimeErrors from "@/devTools/editor/hooks/useRuntimeErrors";
 import useExtensionTrace from "@/devTools/editor/hooks/useExtensionTrace";
 import FoundationDataPanel from "@/devTools/editor/tabs/editTab/dataPanel/FoundationDataPanel";
 import { produceExcludeUnusedDependencies } from "@/components/fields/schemaFields/ServiceField";
+import { useSelector } from "react-redux";
+import { selectTraceError } from "@/devTools/editor/slices/runtimeSelectors";
 
 async function filterBlocks(
   blocks: IBlock[],
@@ -68,7 +69,7 @@ const EditTab: React.FC<{
   pipelineFieldName?: string;
 }> = ({ eventKey, pipelineFieldName = "extension.body" }) => {
   useExtensionTrace();
-  useRuntimeErrors(pipelineFieldName);
+  // ToDo Figure out how to properly bind field validation errors to Formik state // useRuntimeErrors(pipelineFieldName);
 
   const { values, setValues: setFormValues } = useFormikContext<FormState>();
   const { extensionPoint, type: elementType } = values;
@@ -85,7 +86,7 @@ const EditTab: React.FC<{
 
   const [
     { value: blockPipeline = [] },
-    ,
+    { error: blockPipelineError },
     pipelineFieldHelpers,
   ] = useField<BlockPipeline>(pipelineFieldName);
 
@@ -136,6 +137,7 @@ const EditTab: React.FC<{
     setFormValues(nextState);
   };
 
+  const traceError = useSelector(selectTraceError);
   const blockNodes: EditorNodeProps[] = zip(blockPipeline, resolvedBlocks).map(
     ([action, block], index) =>
       block
@@ -153,6 +155,9 @@ const EditTab: React.FC<{
                 faIconClass={styles.brickFaIcon}
               />
             ),
+            // eslint-disable-next-line security/detect-object-injection
+            hasError: Boolean(blockPipelineError?.[index]),
+            hasWarning: traceError?.blockInstanceId === action.instanceId,
             onClick: () => {
               onSelectNode(index + 1);
             },
