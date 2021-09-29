@@ -137,7 +137,6 @@ export function produceExcludeUnusedDependencies<
   T extends ServiceSlice = ServiceSlice
 >(state: T): T {
   const used = selectTopLevelVars(state);
-  console.debug("produceExcludeUnusedDependencies", { used });
   return produce(state, (draft) => {
     draft.services = draft.services.filter((x) =>
       used.has(keyToFieldValue(x.outputKey))
@@ -193,8 +192,6 @@ function produceServiceAuths(
         config: option.value,
       });
     }
-
-    console.debug("Setting field value", { fieldName });
   });
 
   // Update field value before calling produceExcludeUnusedDependencies, otherwise it will see the stale service var
