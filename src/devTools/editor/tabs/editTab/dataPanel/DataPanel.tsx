@@ -17,7 +17,7 @@
 
 import React, { useContext, useMemo } from "react";
 import { UUID } from "@/core";
-import { isEmpty, pickBy } from "lodash";
+import { isEmpty, pickBy, startsWith } from "lodash";
 import { useField, useFormikContext } from "formik";
 import formBuilderSelectors from "@/devTools/editor/slices/formBuilderSelectors";
 import { actions } from "@/devTools/editor/slices/formBuilderSlice";
@@ -167,7 +167,14 @@ const DataPanel: React.FC<{
       </Nav>
       <Tab.Content>
         <DataTab eventKey="context" isTraceEmpty={!record}>
-          <JsonTree data={relevantContext} copyable searchable />
+          <JsonTree
+            data={relevantContext}
+            copyable
+            searchable
+            shouldExpandNode={(keyPath) =>
+              keyPath.length === 1 && startsWith(keyPath[0].toString(), "@")
+            }
+          />
         </DataTab>
         {showDeveloperTabs && (
           <>
@@ -203,7 +210,17 @@ const DataPanel: React.FC<{
           isTraceOptional={previewInfo?.traceOptional}
         >
           {outputObj && (
-            <JsonTree data={outputObj} copyable searchable label="Data" />
+            <JsonTree
+              data={outputObj}
+              copyable
+              searchable
+              label="Data"
+              shouldExpandNode={(keyPath) =>
+                keyPath.length === 1 &&
+                "outputKey" in record &&
+                keyPath[0] === `@${record.outputKey}`
+              }
+            />
           )}
           {record && "error" in record && (
             <JsonTree data={record.error} label="Error" />

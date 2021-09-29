@@ -106,6 +106,9 @@ const FoundationDataPanel: React.FC<{
               copyable
               searchable
               label="Data"
+              shouldExpandNode={(keyPath) =>
+                keyPath.length === 1 && keyPath[0] === "@input"
+              }
             />
           ) : (
             <div className="text-muted">
