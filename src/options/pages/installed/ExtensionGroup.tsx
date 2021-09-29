@@ -174,21 +174,20 @@ const ExtensionGroup: React.FunctionComponent<{
                 ),
                 action: onViewLogs,
               },
-              // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In the future
-              // we'll want this to depend on the member's role within the deployment's organization
-              flags.includes("deployments-uninstall")
-                ? {
-                    title: (
-                      <>
-                        <FontAwesomeIcon icon={faTimes} /> Uninstall
-                      </>
-                    ),
-                    action: async () => {
-                      await removeMany(extensions);
-                    },
-                    className: "text-danger",
-                  }
-                : null,
+              {
+                title: (
+                  <>
+                    <FontAwesomeIcon icon={faTimes} /> Uninstall
+                  </>
+                ),
+                // #1532: temporary approach to controlling whether or not deployments can be uninstalled. In
+                // the future we'll want this to depend on the member's role within the deployment's organization
+                hide: managed && !flags.includes("deployments-uninstall"),
+                action: async () => {
+                  await removeMany(extensions);
+                },
+                className: "text-danger",
+              },
             ])}
           />
         </td>
